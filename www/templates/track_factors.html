@@ -1,0 +1,188 @@
+<ion-view view-title="Track Factors">
+    <ion-content>
+        <div class="card" ng-show="showTrack">
+            <div class="item item-text-wrap">
+                <div>
+                    <div >
+                        <span class="heading calm">Track {{factor}}</span>
+                        <ul class="from_top">
+                            <!--<li>What do you want to track?</li>-->
+                            <li>{{help_text}}</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <label class="item item-input">
+                <i class="icon ion-search placeholder-icon"></i>
+                <input ng-model="search_term" ng-change="search(search_term)" id="track_search" type="text" placeholder="Search">
+
+            </label>
+            <p></p>
+            <ion-list>
+                <ion-item style="text-align:center;border-bottom: 1px solid rgb(221, 221, 221);" ng-show="loading">
+                <img src="img/loader.gif">
+               </ion-item>
+            </ion-list>
+            
+            <ion-list ng-show="list.length" class>
+              <ion-item ng-click="measure(item)" ng-repeat="item in list | orderBy:'-latestMeasurementTime' | limitTo:5 ">
+               <div>
+                   <p style="font-size:18px;">{{item.name}}</p>
+                   <p>{{item.latestMeasurementTime | fromNow}}</p>
+               </div>
+              </ion-item>
+            </ion-list>
+            
+            <ion-list>
+                <ion-item style="border-top: 1px solid rgb(221, 221, 221);" ng-click="add_variable()">
+                 + Add a new {{category}} Variable
+                </ion-item>
+            </ion-list>
+        </div>
+
+        <div class="card" ng-show="showAddVariable">
+            <div class="list">
+              <p class="heading calm" style="padding:14px;">Add New Variable</p>
+
+
+                <label class="item item-input item-select" ng-if="showCategoryAsSelector">
+                    <div class="input-label">
+                        Category
+                    </div>
+                    <select ng-model="variable_category">
+                        <option ng-repeat="i in variableCategories track by i.id" value="{{i.name}}">
+                            {{i.name}}
+                        </option>
+                    </select>
+                </label>
+
+                <label class="item item-input item-stacked-label" ng-if="!showCategoryAsSelector">
+                    <span class="input-label">Category</span>
+                    <input type="text" ng-model="variable_category" readonly id="category_name" placeholder="Category name">
+                </label>
+
+                <label class="item item-input item-stacked-label">
+                    <span class="input-label">Variable</span>
+                    <input type="text" ng-model="variable_name" id="variable_name" placeholder="Variable name">
+                </label>
+                
+                <label class="item item-radio">
+                    <input type="radio" ng-model="sumAvg" value="sum" name="group" >
+                    <div class="item-content" >
+                        Sum
+                    </div>
+                    <i class="radio-icon ion-checkmark" ></i>
+                </label>
+
+                <label class="item item-radio">
+                    <input type="radio" ng-model="sumAvg" value="avg" name="group">
+                    <div class="item-content" >
+                        Average
+                    </div>
+                    <i class="radio-icon ion-checkmark" ></i>
+                </label>
+            </div>
+        </div>
+
+        <div class="card" ng-show="showAddMeasurement" style="overflow: visible">
+            <p class="heading calm" style="padding:14px;">Add Measurement</p>
+            <div class="list">
+
+                <div ng-if="(category != 'Mood' && category != 'Symptoms')" class="row labeled-control">
+                    <div class="col">
+                        <span>
+                            Value
+                        </span>
+                    </div>
+                    <div  class="col">
+                        <input type="text" ng-model="$parent.$parent.variable_value" id="variable_value" placeholder="Enter Value Here">
+                    </div>
+                </div>
+
+                <div class="tracking_factors col" ng-if="category=='Mood' || category == 'Symptoms'">
+                    <img ng-repeat="option in tracking_factor_numbers"
+                         ng-click="select_tracking_factor($event, option.value)"
+                         ng-src="{{option.img}}">
+                </div>
+
+
+                <div class="row labeled-control" ng-if="(category != 'Mood' && category != 'Symptoms')">
+                    <div class="col">
+                        <span class="input-label">Unit</span>
+                    </div>
+                    <div class="col">
+                        <div class="row">
+                            <div class="col-90">
+                                <input type="text" ng-change="showUnitsDropDown()" ng-model="unit_text" placeholder="Enter Unit Here">
+                            </div>
+                            <div class="col-10">
+                                <button style="float: right;" on-tap="toggleShowUnits()" class="button button-small button-clear">
+                                    <i class="icon ion-chevron-down"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="row labeled-control">
+                            <div class="col">
+                                <ion-list ng-show="show_units">
+                                    <ion-item ng-repeat="unit in units | filter:unit_text" on-tap="unit_selected(unit)">
+                                        {{unit.name}}
+                                    </ion-item>
+                                </ion-list>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+              <div class="row labeled-control">
+                  <div class="col">
+                      <span>
+                        Date
+                      </span>
+                  </div>
+                  <div class="col date_col" style="padding-top: 11px;">
+                      <ionic-datepicker style="width:100%" idate="currentDate" disablepreviousdates="false"  callback="datePickerCallback">
+                          <button class="button button-block measure_date" style="font-size:14px;border:none;color:black;background-color: white;margin-bottom: 0px;margin-top: 0px;">
+                              {{ currentDate | date:'dd - MMMM - yyyy' }}
+                          </button>
+                      </ionic-datepicker>
+                  </div>
+              </div>
+
+                <div class="row labeled-control">
+                    <div class="col">
+                      <span>
+                          Time
+                      </span>
+                    </div>
+                    <div class="col" style="padding-top: 11px;">
+                        <ionic-timepicker style="width:54%" etime="slots.epochTime" format="slots.format" step="slots.step" callback="timePickerCallback">
+                            <button class="button button-block" style="text-align:right;font-size:14px;border:none;color:black;background-color: white;margin-bottom: 0px;margin-top: 0px;">
+                                {{slots.epochTime | toTime}}
+                            </button>
+                        </ionic-timepicker>
+                    </div>
+                </div>
+
+            </div>
+
+
+
+
+
+
+
+                </div>
+            </label>
+        </div>
+
+        <div class="card" ng-show="showAddMeasurement">
+            <button ng-click="cancel()" class="button button-assertive button-block">
+                Cancel
+            </button>
+            <button ng-click="done()" class="button button-calm button-block">
+                Done
+            </button>
+        </div>
+    </ion-content>
+</ion-view>

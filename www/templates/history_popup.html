@@ -1,0 +1,24 @@
+<div class="card history_edit_card">
+	<div class="item item-text-wrap">
+	  	<div class="tracking_factors tracking_factor_history">
+	  		<img ng-repeat="option in tracking_factor_options"
+                 ng-click="select_tracking_factor($event, option)"
+                 ng-src="{{option.img}}"
+                 class="{{option.value}}"
+            >
+		</div>
+		<br/>
+		<input type="text" placeholder="Add a note here!" ng-model="selected_item.note">
+		<br/>
+
+		<div class="buttons center">
+			<button class="button button-calm" ng-click="save_value();">
+				Save
+			</button>
+			<button class="button button-assertive" ng-click="close_popover();">
+				Cancel
+			</button>
+		</div>
+	  	
+	</div>
+</div>
