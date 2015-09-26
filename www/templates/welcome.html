@@ -1,0 +1,105 @@
+<ion-view view-title="{{view_title}}">
+<ion-content>
+
+<div id="login_iframe">
+</div>
+
+<div ng-show="show_tracking_factor_card" class="card tracking_factor_reporting">
+	<div class="item item-text-wrap">
+		<h1>Welcome to <span class="calm">{{view_title}}</span></h1>
+		<ul>
+			<li>{{welcome_text}}</li>
+			<li>{{tracking_question}}</li>
+		</ul>
+	</div>
+</div>
+
+<div ng-show="show_tracking_factor_card" class="card tracking_factor_reporting">
+	<div class="item item-text-wrap">
+		<div  class="tracking_factors">
+            <img ng-repeat="option in tracking_factor_options"
+                 ng-click="report_tracking_factor(option.value)"
+                 ng-src="{{option.img}}"
+            >
+		</div>
+	</div>
+</div>
+
+<div class="card reporting_interval" ng-show="show_interval_card && !show_tracking_factor_card">
+	<div class="item item-text-wrap">
+		<h1 class="calm">Report Interval</h1>      
+		<ul>
+			<li>A subtle notification and easy-to-use popup complement each other perfectly, ensuring you'll never forget to report your <span class="lower-text">{{tracking_factor}}<span></li>
+		</ul>
+		<ul class="list">
+			<li class="item item-input item-select">
+				<div class="input-label">
+					Interval
+				</div>
+
+				<div ng-show="isAndroid || isChrome">
+					<select ng-model="$parent.notification_interval">
+						<option value="never">Never</option>
+	                    <!-- <option value="minute">Every Minute</option> -->
+	                    <option value="five_minutes">Every five Minutes</option>
+						<option value="hourly">Hourly</option>
+						<option value="three">Every three hours</option>
+						<option value="twice">Twice daily</option>
+						<option value="daily">Daily</option>
+					</select>
+				</div>
+				<div ng-show="isIOS || (!isAndroid && !isChrome)  ">
+					<select ng-model="$parent.notification_interval">
+						<option value="never">Never</option>
+	                    <!-- <option value="second">Every Second</option> -->
+						<option value="hour">Hourly</option>
+						<option value="day">Every Day</option>
+					</select>
+				</div>
+
+				
+			</li>
+			<li class="item item-checkbox checkbox-calm">
+				<label class="checkbox">
+					<input ng-model="$parent.subscribe_notification" type="checkbox">
+				</label>
+				Show Notifications
+			</li>
+			<li ng-show="isAndroid" class="item item-checkbox checkbox-calm">
+				<label class="checkbox">
+					<input type="checkbox">
+				</label>
+				Show Popups
+			</li>
+		</ul>
+		<button class="button button-block button-calm" ng-click="save_interval(notification_interval)">
+			Schedule
+		</button>
+        <button class="button button-block button-assertive" ng-click="skip_interval()">
+            Skip
+        </button>
+	</div>
+</div>
+
+<div class="card sign_in" ng-show="!isLoggedIn && !show_tracking_factor_card && !show_interval_card ">
+        <div class="item item-text-wrap">
+            <h1 class="calm">Sync and Analyze Your Data</h1>
+            <br/>
+            <ul>
+                <li>By creating a FREE account you'll be able to:</li>
+                <li> - Automatically backup and sync your data across devices</li>
+                <li> - Track diet, treatments, symptoms, and anything else</li>
+                <li> - Analyze your data to see the top predictors for your {{tracking_factor}}</li>
+            </ul>
+            <button class="button button-block button-calm" ng-click="login()">
+                Sign In
+            </button>
+            <button class="button button-block button-assertive" ng-click="skipLogin()">
+                <span ng-if="!isWelcomed">Skip</span>
+                <span ng-if="isWelcomed">Cancel</span>
+            </button>
+        </div>
+    </div>
+
+</ion-content>
+</ion-view>

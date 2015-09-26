@@ -1,0 +1,77 @@
+<ion-side-menus  enable-menu-with-back-views="true">
+  <ion-side-menu-content>
+    <ion-nav-bar class="bar-calm">
+      <!--<ion-nav-back-button>
+      </ion-nav-back-button>-->
+
+      <ion-nav-buttons side="left">
+        <button ng-hide="hideMenu && !isWelcomed" class="button button-icon button-clear ion-navicon" menu-toggle="left">
+        </button>
+      </ion-nav-buttons>
+
+      <ion-nav-buttons side="right">
+        <div class="buttons">
+          <button class="button button-icon ion-calendar" ng-show="showCalender" ng-click="showCalenderF($event)"></button>
+        </div>
+      </ion-nav-buttons>
+    </ion-nav-bar>
+      <div class="col" ng-class="{'blink': isSyncing,'sync-indicator':isSyncing}" ng-show="isSyncing">
+          <span>Data is Syncing</span>
+      </div>
+    <ion-nav-view name="menuContent">
+
+    </ion-nav-view>
+  </ion-side-menu-content>
+
+  <ion-side-menu  side="left">
+    <ion-header-bar class="bar-calm">
+      <h1 class="title"></h1>
+    </ion-header-bar>
+    <ion-content >
+      <ion-list>
+        <ion-item menu-close href="#/app/track">
+          Track {{tracking_factor}}
+        </ion-item>
+        <ion-item ng-click="toggleSubMenu()">
+          {{showSubMenu?'-':'+'}} Track Factors
+        </ion-item>
+          <ion-item class="sub-menu" ng-show="showSubMenu" href="#/app/track_factors" menu-close>
+              Track anything
+          </ion-item>
+          <ion-item class="sub-menu" ng-show="showSubMenu" href="#/app/track_factors_category/Foods" menu-close>
+              Track foods
+          </ion-item>
+          <ion-item class="sub-menu" ng-show="showSubMenu" href="#/app/track_factors_category/Mood" menu-close>
+              Track mood
+          </ion-item>
+          <ion-item class="sub-menu" ng-show="showSubMenu" href="#/app/track_factors_category/Symptoms" menu-close>
+              Track symptoms
+          </ion-item>
+          <ion-item class="sub-menu" ng-show="showSubMenu" href="#/app/track_factors_category/Treatments" menu-close>
+              Track treatments
+          </ion-item>
+        <ion-item menu-close href="#app/history">
+          History
+        </ion-item>
+        <ion-item menu-close href="#/app/import">
+          Import Data
+        </ion-item>
+        <ion-item menu-close href="#/app/positive">
+          Positive Predictors
+        </ion-item>
+        <ion-item menu-close href="#app/negative">
+          Negative Predictors
+        </ion-item>
+        <ion-item menu-close href="#app/settings">
+          Settings
+        </ion-item>
+        <ion-item menu-close ng-href="{{ window.chrome ? 'mailto:help@quantimo.do':'#app/feedback'}}">
+          Help
+        </ion-item>
+        <ion-item menu-close ng-href="{{ window.chrome ? 'mailto:help@quantimo.do':'#app/feedback'}}">
+          Feedback
+        </ion-item>
+      </ion-list>
+    </ion-content>
+  </ion-side-menu>
+</ion-side-menus>
