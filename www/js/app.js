@@ -62,9 +62,15 @@ angular.module('starter', ['ionic','oc.lazyLoad','highcharts-ng','ngCordova','io
             return false;
         };
 
-        if(getAppNameFromUrl()){
-            return $ocLazyLoad.load(appsManager.getAppConfig(getAppNameFromUrl()));
-        } else return $ocLazyLoad.load(appsManager.getDefaultConfig());
+        var appName = getAppNameFromUrl();
+
+        if(appName){
+            console.log('loadin', appsManager.getAppConfig(appName), appsManager.getPrivateConfig(appName));
+            return $ocLazyLoad.load([appsManager.getAppConfig(appName), appsManager.getPrivateConfig(appName)]);
+        } else{
+            console.log('loading default ', 'MoodiModo');
+            return $ocLazyLoad.load([appsManager.getDefaultConfig(), appsManager.getDefaultPrivateConfig()]);          
+        } 
 
       }]
     };

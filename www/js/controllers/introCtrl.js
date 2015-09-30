@@ -1,6 +1,9 @@
 angular.module('starter')
 .controller('IntroCtrl', function($scope, $state, localStorageService, $ionicSlideBoxDelegate, $ionicLoading) {
     
+    $scope.view_title = config.appSettings.app_name;
+    $scope.tracking_factor = config.appSettings.tracking_factor;
+    
     $scope.intro = {
         ready : false,
 

@@ -285,3 +285,45 @@ label.item.item-input.item-text > input[type="text"] {
 .button.ng-hide{
   display:none;
 }
+
+
+/* Intro */
+
+div.previous {
+  float: left; 
+  margin-left: 15px; 
+  margin-top: 50%; 
+  font-size: 40px;
+}
+
+div.next{
+  float:right; 
+  margin-right:15px; 
+  margin-top: 50%; 
+  font-size: 40px;
+}
+
+
+div.intro_content{
+  margin: -20px 40px 0px 40px;
+}
+
+p.intro_para {
+  font-size: 18px; 
+  line-height: initial;
+}
+
+p.intro_para_small {
+  font-size: 16px; 
+  line-height: initial;
+}
+
+p.intro_header {
+  font-size:26px; 
+  line-height:initial
+}
+
+img.intro_mood {
+  height: 75px;
+  width: 75px;
+}
