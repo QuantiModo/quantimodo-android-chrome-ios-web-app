@@ -1,6 +1,9 @@
 A generic app that can be easily configured to help the user track and optimize any give outcome variable.
 ---
 
+[![Deploy](https://s3.amazonaws.com/heroku-devcenter-files/article-images/2151-imported-1443570568-2151-imported-1443555045-button.svg)](https://heroku.com/deploy?template=https://github.com/Abolitionist-Project/QuantiModo-Ionic-Template-App/tree/develop)
+
+
 #QuantiModo Ionic App
 ---
 ## File Structure
