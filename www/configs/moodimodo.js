@@ -12,22 +12,6 @@ window.config = {
     bugsnag:{
         notifyReleaseStages:['Production','Staging']
     },
-    chrome_app:{
-        client_id:'moodimodo_chrome_app',
-        client_secret: 'moodimodo_chrome_app_secret'
-    },
-    client_ids : {
-        iOS : 'ionic',
-        Android : 'ionic',
-        Web : 'ionic'
-    },
-    client_secrets : {
-        iOS : 'ionic_secret',
-        Android : 'ionic_secret',
-        Web : 'ionic_secret'
-    },
-    default_client_id : "ionic",
-    default_client_secret : "ionic_secret",
     client_source_name : "MoodiModo "+getPlatform(),
     domain : 'app.quantimo.do',
     mashape_domain : 'https://quantimodo-quantimodo-v1.p.mashape.com/api/',
@@ -36,25 +20,7 @@ window.config = {
     port : '4417',
     protocol : 'https',
     shopping_cart_enabled : true,
-    use_mashape : false,
-    mashape_keys : {
-        iOS : {
-            Testing : 'P2CG1qUKHimshmh9gYY97DLYojB0p1KHUbujsnQrTgP5xpOHZk',
-            Production : '2KfZEupvGemshEWU1IFjRKlSTDv0p1fJUd0jsndQo0JEDUlTdA'
-        },
-        Android : {
-            Testing : 'ql9sbtnGFvmsh1pBrd2qgFX4B0WNp1AwBU5jsn95V9Pe3KuAuP',
-            Production : '2QZeUAEsK2msh13ikldtubmnh8lWp1RGAACjsnC4IUjsStKGib'
-        },
-        Web : {
-            Testing : 'wsLZ3OhaZLmshirpn5Z50QWfTHF4p1bCTfCjsnPtPjzdfenrJr',
-            Production : 'BzQoPobn35mshnCpyddJ7TYYXfwSp1Yjhj8jsnAOadHk0qMbVU'
-        }
-    },
-    default_mashape_key : {
-        Testing : 'TsbHIeTpdYmshe4zMXZyTWruMQTBp15AHTFjsnhQSledm6tq5A',
-        Production : 'GHEw65lEJimshxzIOOCEC0zBqCGGp1kTnOwjsnyBzF6L3QRAfl'
-    }
+    use_mashape : false
 };
 
 config.appSettings  = {
@@ -200,28 +166,28 @@ config.getMashapeKey = function(){
         var platform = getPlatform();
         var environment = config.getEnv() !== "Production" ? "Testing" : "Production";
 
-        return platform === "Ionic"? config.default_mashape_key[environment] : platform === "Web"? 
-        config.mashape_keys.Web[environment] : platform === "iOS"? 
-        config.mashape_keys.iOS[environment] : config.mashape_keys.Android[environment];
+        return platform === "Ionic"? window.private_keys.mashape_keys.Web[environment] : platform === "Web"? 
+        window.private_keys.mashape_keys.Web[environment] : platform === "iOS"? 
+        window.private_keys.mashape_keys.iOS[environment] : window.private_keys.mashape_keys.Android[environment];
     }
 };
 
 config.getClientId = function(){
     //if chrome app
     if (window.chrome && chrome.runtime && chrome.runtime.id) {
-        return config.chrome_app.client_id;
+        return window.private_keys.client_ids.Chrome;
     } else {
         var platform = getPlatform();
-        return platform === "Ionic"? config.default_client_id : platform === "Web"? config.client_ids.Web : platform === "iOS"? config.client_ids.iOS : config.client_ids.Android;
+        return platform === "Ionic"? window.private_keys.client_ids.Web : platform === "Web"? window.private_keys.client_ids.Web : platform === "iOS"? window.private_keys.client_ids.iOS : window.private_keys.client_ids.Android;
     }
 };
 
 config.getClientSecret = function(){
     if (window.chrome && chrome.runtime && chrome.runtime.id) {
-        return config.chrome_app.client_secret;
+        return window.private_keys.client_secrets.Chrome;
     } else {
         var platform = getPlatform();
-        return platform === "Ionic"? config.default_client_secret : platform === "Web"? config.client_secrets.Web : platform === "iOS"? config.client_secrets.iOS : config.client_secrets.Android;
+        return platform === "Ionic"? window.private_keys.client_secrets.Web : platform === "Web"? window.private_keys.client_secrets.Web : platform === "iOS"? window.private_keys.client_secrets.iOS : window.private_keys.client_secrets.Android;
     }
 };
 
