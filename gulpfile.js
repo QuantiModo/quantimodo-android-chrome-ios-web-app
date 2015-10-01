@@ -156,7 +156,13 @@ gulp.task('private', function(){
 				console.log(appName+'_WEB_MASHAPE_KEY_PRODUCTION'+' Detected');
 			} else {
 				console.log(appName+'_WEB_MASHAPE_KEY_PRODUCTION'+' NOT DETECTED');
-			}		
+			}
+            if(typeof env_keys['IONIC_BUGSNAG_KEY'] !== "undefined"){
+                configkeys.bugsnag_key = env_keys['IONIC_BUGSNAG_KEY'];
+                console.log('IONIC_BUGSNAG_KEY' +' Detected');
+            } else {
+                console.log('IONIC_BUGSNAG_KEY'+' NOT DETECTED');
+            }
 
 			var content = 'window.private_keys = '+JSON.stringify(configkeys, 0, 2);
 

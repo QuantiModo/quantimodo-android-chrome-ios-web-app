@@ -6,6 +6,7 @@ angular.module('starter', ['ionic','oc.lazyLoad','highcharts-ng','ngCordova','io
         if(typeof config !== "undefined"){
             clearInterval(intervalChecker);
             //Set Bugsnag Release Stage
+            Bugsnag.apiKey = private_keys.bugsnag_key;
             Bugsnag.releaseStage = config.getEnv();
             Bugsnag.notifyReleaseStages = config.bugsnag.notifyReleaseStages;
 
@@ -70,7 +71,7 @@ angular.module('starter', ['ionic','oc.lazyLoad','highcharts-ng','ngCordova','io
         } else{
             console.log('loading default ', 'MoodiModo');
             return $ocLazyLoad.load([appsManager.getDefaultConfig(), appsManager.getDefaultPrivateConfig()]);          
-        } 
+        }
 
       }]
     };
