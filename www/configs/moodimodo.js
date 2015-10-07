@@ -310,7 +310,8 @@ config.getURL = function(path, should_add_mashape_header_to_query_parameter, ign
          
          url+="/"+path;
     } else {
-        url = window.location.origin + "/" + path;
+        url = config.protocol + "://" + config.domain + "/" + path;
+        // url = window.location.origin + "/" + path;
     }
 
    return url;
