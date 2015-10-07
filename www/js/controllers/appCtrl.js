@@ -219,50 +219,54 @@ angular.module('starter')
 
             var ref = window.open(url,'_blank');
 
-            // broadcast message question every second to sibling tabs
-            var interval = setInterval(function(){
-                ref.postMessage('isLoggedIn?','https://app.quantimo.do/ionic/Modo/www/callback/');
-                ref.postMessage('isLoggedIn?','https://local.quantimo.do:4417/ionic/Modo/www/callback/');
-                ref.postMessage('isLoggedIn?','https://staging.quantimo.do/ionic/Modo/www/callback/');
-            }, 1000);
+            if(!ref){
+                alert("You must first unblock popups, and and refresh the page for this to work!");
+            } else {
+                // broadcast message question every second to sibling tabs
+                var interval = setInterval(function(){
+                    ref.postMessage('isLoggedIn?','https://app.quantimo.do/ionic/Modo/www/callback/');
+                    ref.postMessage('isLoggedIn?','https://local.quantimo.do:4417/ionic/Modo/www/callback/');
+                    ref.postMessage('isLoggedIn?','https://staging.quantimo.do/ionic/Modo/www/callback/');
+                }, 1000);
 
-            // handler when a message is recieved from a sibling tab
-            window.onMessageRecieved = function(event){
-                console.log("message recieved", event.data);
-                
-                // Don't ask login question anymore
-                clearInterval(interval);
-                
-                // the url that QuantiModo redirected us to
-                var iframe_url = event.data;
-
-                // validate if the url is same as we wanted it to be
-                if(utilsService.hasInIt(iframe_url, "/ionic/Modo/www/callback")) {
+                // handler when a message is recieved from a sibling tab
+                window.onMessageRecieved = function(event){
+                    console.log("message recieved", event.data);
                     
-                    // if there is no error
-                    if(!utilsService.getUrlParameter(iframe_url,'error')) {
-                        
-                        // extract token
-                        var requestToken = utilsService.getUrlParameter(iframe_url, 'code');
-                        
-                        // get auth token from request token
-                        $scope.getAuthToken(requestToken);
-                        
-                        // close the sibling tab
-                        ref.close();
+                    // Don't ask login question anymore
+                    clearInterval(interval);
+                    
+                    // the url that QuantiModo redirected us to
+                    var iframe_url = event.data;
 
-                    } else {
-                        // TODO : display_error
-                        console.log("error occoured", utilsService.getUrlParameter(iframe_url, 'error'));
+                    // validate if the url is same as we wanted it to be
+                    if(utilsService.hasInIt(iframe_url, "/ionic/Modo/www/callback")) {
+                        
+                        // if there is no error
+                        if(!utilsService.getUrlParameter(iframe_url,'error')) {
+                            
+                            // extract token
+                            var requestToken = utilsService.getUrlParameter(iframe_url, 'code');
+                            
+                            // get auth token from request token
+                            $scope.getAuthToken(requestToken);
+                            
+                            // close the sibling tab
+                            ref.close();
 
-                        // close the sibling tab
-                        ref.close();
-                    }
-                }  
-            };
+                        } else {
+                            // TODO : display_error
+                            console.log("error occoured", utilsService.getUrlParameter(iframe_url, 'error'));
 
-            // listen to broadcast messages from other tabs within browser 
-            window.addEventListener("message", window.onMessageRecieved, false);
+                            // close the sibling tab
+                            ref.close();
+                        }
+                    }  
+                };
+
+                // listen to broadcast messages from other tabs within browser 
+                window.addEventListener("message", window.onMessageRecieved, false);
+            }
 
 		} else {
 
