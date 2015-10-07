@@ -6,5 +6,5 @@ platforms/
 plugins/
 www/lib/
 chromeApps/*/www
-private_configs/*.config.js
-!private_configs/sample_private.config.js
+www/private_configs/*.config.js
+!www/private_configs/sample_private.config.js

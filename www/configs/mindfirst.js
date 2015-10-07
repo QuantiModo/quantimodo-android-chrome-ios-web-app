@@ -86,6 +86,85 @@ config.appSettings  = {
         "ok" : 3,
         "happy" : 4,
         "ecstatic": 5 
+    },
+
+    intro : {
+        "screen1" : {
+            img : {
+                width : '150',
+                height : '150',
+                url : 'img/main_icon.png'
+            }
+        },
+        "screen2" : {
+            images : {
+                height : '75',
+                width : '75'
+            }
+        },
+        "screen3" : {
+            img : {
+                width : '140',
+                height : '220',
+                url : 'img/track_moods.png'
+            }
+        },
+        "screen4" : {
+            img : {
+                width : '200',
+                height : '150',
+                url : 'img/history_page.png'
+            }
+        },
+        "screen5" : {
+            img : {
+                width : '220',
+                height : '200',
+                url : 'img/mood_note.png'
+            }
+        },
+        "screen6" : {
+            img : {
+                width : '220',
+                height : '190',
+                url : 'img/track_foods.png'
+            }
+        },
+        "screen7" : {
+            img : {
+                width : '190',
+                height : '180',
+                url : 'img/track_symptoms.png'
+            }
+        },
+        "screen8" : {
+            img : {
+                width : '210',
+                height : '180',
+                url : 'img/track_treatments.png'
+            }
+        },
+        "screen9" : {
+            img : {
+                width : '220',
+                height : '200',
+                url : 'img/positive_predictors.png'
+            }
+        },
+        "screen10" : {
+            img : {
+                width : '220',
+                height : '200',
+                url : 'img/negative_predictors.png'
+            }
+        },
+        "screen11" : {
+            img : {
+                width : '180',
+                height : '180',
+                url : 'img/ic_mood_ecstatic.png'
+            }
+        }
     }
 };
 

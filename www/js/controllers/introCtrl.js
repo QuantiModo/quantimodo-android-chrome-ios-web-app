@@ -3,6 +3,9 @@ angular.module('starter')
     
     $scope.view_title = config.appSettings.app_name;
     $scope.tracking_factor = config.appSettings.tracking_factor;
+    $scope.tracking_factor_options = config.getTrackingFactorOptions();
+    $scope.tracking_factor_numbers = config.getTrackingFactorOptions(true);
+    $scope.intro_config = config.appSettings.intro;
     
     $scope.intro = {
         ready : false,

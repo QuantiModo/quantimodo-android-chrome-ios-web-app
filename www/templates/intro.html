@@ -37,7 +37,7 @@
             <p class="intro_header">Welcome to <span class="calm"> {{view_title}}</span></p>
             
             <div id="logo">
-              <img width="150" height="150" src="img/main_icon.png">
+              <img style="width:{{intro_config.screen1.img.width}}px; height:{{intro_config.screen1.img.height}}px;" ng-src="{{intro_config.screen1.img.url}}">
             </div>
 
             <p class="intro_para">
@@ -61,34 +61,16 @@
         <div class="content intro_content" >
             <p class="intro_header" class="calm">&nbsp;</p>
             <div id="">
-                <div style="display:inline-block">
-                    <img class="intro_mood" src="img/ic_mood_ecstatic.png">
-                    <p>Ecstatic</p>
-                </div>
-                
-                <div style="display:inline-block">
-                    <img class="intro_mood" src="img/ic_mood_happy.png">
-                    <p>Happy</p>
+
+                <div class="ponka" style="display:inline-block" ng-repeat="option in tracking_factor_options">
+                    <img style="width:{{intro_config.screen2.images.width}}px; height:{{intro_config.screen2.images.height}}px;" class="intro_mood" ng-src="{{option.img}}">
+                    <p>{{option.value}}</p>
                 </div>
 
-                <div style="display:inline-block">
-                    <img class="intro_mood" src="img/ic_mood_ok.png">
-                    <p>OK</p>
-                </div>
-
-                <div style="display:inline-block">
-                    <img class="intro_mood" src="img/ic_mood_sad.png">
-                    <p>Sad</p>
-                </div>
-
-                <div style="display:inline-block">
-                    <img class="intro_mood" src="img/ic_mood_depressed.png">
-                    <p>Depressed</p>
-                </div>
             </div>
           <br />
           <p class="intro_para">
-           Go to the <span class="calm">Track Moods</span> page to report your mood!
+           Go to the <span class="calm">Track {{tracking_factor}}</span> page to report your {{tracking_factor}}!
           <p>
         </div>
       </ion-slide>
@@ -106,14 +88,14 @@
             <span class="ion-chevron-right calm" data-pack="default" data-tags="talk"></span>
         </div>
         <div class="content intro_content" >
-          <p class="intro_header" class="calm">Track Mood</p>
+          <p class="intro_header" class="calm">Track {{tracking_factor}}</p>
           
           <div id="">
-            <img width="140" height="220" src="img/track_moods.png">
+            <img style="width:{{intro_config.screen3.img.width}}px; height:{{intro_config.screen3.img.height}}px;" ng-src="{{intro_config.screen3.img.url}}">
           </div>
           <br/>
           <p class="intro_para_small">
-            On the <span class="calm">Track Moods</span> page. You can also view your  <span class="calm">Average Mood</span> as well as charts illustrating how it changes over time.
+            On the <span class="calm">Track {{tracking_factor}}</span> page, you can view your <span class="calm">average {{tracking_factor}}</span> as well as charts illustrating how it changes over time.
           <p>
         </div>
       </ion-slide>
@@ -134,11 +116,11 @@
           <p class="intro_header" class="calm">History</p>
           <br>
           <div id="logo">
-            <img width="200" height="150" src="img/history_page.png">
+            <img style="width:{{intro_config.screen4.img.width}}px; height:{{intro_config.screen4.img.height}}px;" ng-src="{{intro_config.screen4.img.url}}">
           </div>
           <br/>
           <p class="intro_para">
-            You can see and edit your past mood ratings and notes by opening the <span class="calm">History</span> page.
+            You can see and edit your past {{tracking_factor}} ratings and notes by opening the <span class="calm">History</span> page.
           <p>
         </div>
       </ion-slide>
@@ -159,11 +141,11 @@
           <p class="intro_header" class="calm">Add a Note</p>
           
           <div id="logo">
-            <img width="220" height="200" src="img/mood_note.png">
+            <img style="width:{{intro_config.screen5.img.width}}px; height:{{intro_config.screen5.img.height}}px;" ng-src="{{intro_config.screen5.img.url}}">
           </div>
           
           <p class="intro_para">
-            Add a note by tapping on a mood rating in the <span class="calm">History</span> page. You can also <span class="calm">Edit</span> your mood there too.
+            Add a note by tapping on a {{tracking_factor}} rating in the <span class="calm">History</span> page. You can also <span class="calm">Edit</span> your {{tracking_factor}} there too.
           <p>
         </div>
       </ion-slide>
@@ -183,7 +165,7 @@
         <div class="content intro_content" >
           <p class="intro_header" class="calm">Track Foods</p>
           <div id="logo">
-            <img width="220" height="190" src="img/track_foods.png">
+            <img style="width:{{intro_config.screen6.img.width}}px; height:{{intro_config.screen6.img.height}}px;" ng-src="{{intro_config.screen6.img.url}}">
           </div>
           <p class="intro_para_small">
             Track your diet on the <span class="calm">Track Foods</span> page. You can also <span class="calm">Add a new Food Variable</span> if you don't find the meal you looked for in the search results.
@@ -207,7 +189,7 @@
           <p class="intro_header" class="calm">Track Symptoms</p>
           
           <div id="logo">
-            <img width="190" height="180" src="img/track_symptoms.png">
+            <img style="width:{{intro_config.screen7.img.width}}px; height:{{intro_config.screen7.img.height}}px;" ng-src="{{intro_config.screen7.img.url}}">
           </div>
 
           <p class="intro_para_small">
@@ -217,7 +199,7 @@
       </ion-slide>
       <!-- 7 -->
 
-      <!-- 7 -->
+      <!-- 8 -->
       <ion-slide>
         <div ng-click="intro.previous()" ng-show="intro.slideIndex > 0" class="previous">
             <span class="ion-chevron-left calm" data-pack="default" data-tags="talk"></span>  
@@ -232,7 +214,7 @@
           <p class="intro_header" class="calm">Track Treatments</p>
           
           <div id="logo">
-            <img width="210" height="180" src="img/track_treatments.png">
+            <img style="width:{{intro_config.screen8.img.width}}px; height:{{intro_config.screen8.img.height}}px;" ng-src="{{intro_config.screen8.img.url}}">
           </div>
           
           <p class="intro_para_small">
@@ -240,9 +222,9 @@
           <p>
         </div>
       </ion-slide>
-      <!-- 7 -->
-      
       <!-- 8 -->
+      
+      <!-- 9 -->
       <ion-slide>
         <div ng-click="intro.previous()" ng-show="intro.slideIndex > 0" class="previous">
             <span class="ion-chevron-left calm" data-pack="default" data-tags="talk"></span>  
@@ -257,17 +239,17 @@
           <p class="intro_header" class="calm">Positive Predictors</p>
           
           <div id="logo">
-            <img width="220" height="200" src="img/positive_predictors.png">
+            <img style="width:{{intro_config.screen9.img.width}}px; height:{{intro_config.screen9.img.height}}px;" ng-src="{{intro_config.screen9.img.url}}">
           </div>
           
           <p class="intro_para_small">
-            Positive Predictors are the factors most predictive of <span class="calm">IMPROVING</span> Mood for the average QuantiModo user.
+            Positive Predictors are the factors most predictive of <span class="calm">IMPROVING</span> {{tracking_factor}} for the average QuantiModo user.
           <p>
         </div>
       </ion-slide>
-      <!-- 8 -->
-
       <!-- 9 -->
+
+      <!-- 10 -->
       <ion-slide>
         <div ng-click="intro.previous()" ng-show="intro.slideIndex > 0" class="previous">
             <span class="ion-chevron-left calm" data-pack="default" data-tags="talk"></span>  
@@ -282,17 +264,17 @@
           <p class="intro_header" class="calm">Negative Predictors</p>
           
           <div id="logo">
-            <img width="220" height="200" src="img/negative_predictors.png">
+            <img style="width:{{intro_config.screen10.img.width}}px; height:{{intro_config.screen10.img.height}}px;" ng-src="{{intro_config.screen10.img.url}}">
           </div>
           
           <p class="intro_para_small">
-            Negative Predictors are the factors most predictive of <span class="calm">DECREASING</span> Mood for the average QuantiModo user.
+            Negative Predictors are the factors most predictive of <span class="calm">DECREASING</span> {{tracking_factor}} for the average QuantiModo user.
           <p>
         </div>
       </ion-slide>
-      <!-- 9 -->
-      
       <!-- 10 -->
+      
+      <!-- 11 -->
       <ion-slide>
         <div ng-click="intro.previous()" ng-show="intro.slideIndex > 0" class="previous">
             <span class="ion-chevron-left calm" data-pack="default" data-tags="talk"></span>  
@@ -306,13 +288,14 @@
         <div class="content intro_content" >
             <p class="intro_para"><span class="calm">We are feeling ecstatic that you're helping us derive a mathematical equation for happiness!</span></p>
             <div id="logo">
-              <img width="180" height="180" src="img/ic_mood_ecstatic.png">
+              <img style="width:{{intro_config.screen11.img.width}}px; height:{{intro_config.screen11.img.height}}px;" ng-src="{{intro_config.screen11.img.url}}">
             </div>
             <p class="intro_para_small">
              Now start tracking and optimize your life!
             <p>
         </div>
       </ion-slide>
-      <!-- 10 -->
+      <!-- 11 -->
+
     </ion-slide-box>
   </ion-view>

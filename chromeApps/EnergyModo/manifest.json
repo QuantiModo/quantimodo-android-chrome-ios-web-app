@@ -1,12 +1,12 @@
 {
-  "name": "Mind First Mood Tracker",
-  "version": "0.1.5",
+  "name": "Energy Modo",
+  "version": "0.0.1",
   "manifest_version": 2,
   "minimum_chrome_version": "33",
   "icons": {
-      "16"	: "www/img/icon_mindfirst_16.png",
-      "48"	: "www/img/icon_mindfirst_48.png",
-      "128"	: "www/img/icon_mindfirst_128.png"
+      "16"	: "www/img/icon_energymodo_16.png",
+      "48"	: "www/img/icon_energymodo_48.png",
+      "128"	: "www/img/icon_energymodo_128.png"
   },
   "app": {
     "background": {

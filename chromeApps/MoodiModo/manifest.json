@@ -1,6 +1,6 @@
 {
   "name": "MoodiModo",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "manifest_version": 2,
   "minimum_chrome_version": "33",
   "icons": {
@@ -10,7 +10,7 @@
   },
   "app": {
     "background": {
-      "scripts": ["www/js/chromeApp/background.js"]
+      "scripts": ["scripts/background.js"]
     }
   },
   "permissions": [
