@@ -1,6 +1,5 @@
 # Specifies intentionally untracked files to ignore when using Git
 # http://git-scm.com/docs/gitignore
-
 node_modules/
 platforms/
 plugins/
@@ -8,3 +7,4 @@ www/lib/
 chromeApps/*/www
 www/private_configs/*.config.js
 !www/private_configs/sample_private.config.js
+chromeApps/zips/*.zip

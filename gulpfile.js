@@ -12,6 +12,12 @@ var q = require('q');
 var fs = require('fs');
 var CodeGen = require('swagger-js-codegen').CodeGen;
 var glob = require('glob');
+var zip = require('gulp-zip');
+var request = require('request');
+var open = require('gulp-open');
+var gcallback = require('gulp-callback');
+var runSequence = require('run-sequence');
+
 
 var paths = {
 	sass: ['./scss/**/*.scss']
@@ -176,6 +182,227 @@ gulp.task('private', function(){
 	return deferred.promise;
 	
 });
+
+var answer = '';
+gulp.task('getApp', function(){
+	var deferred = q.defer();
+
+	inquirer.prompt([{
+		type: 'input',
+		name: 'app',
+		message: 'Please enter the app name (moodimodo/energymodo/etc..)'
+	}], function( answers ) {
+		answer = answers.app;
+		answer = answer.trim();
+		deferred.resolve();
+	});
+
+	return deferred.promise;
+});
+
+var updatedVersion = '';
+gulp.task('getUpdatedVersion', ['getApp'], function(){
+	var deferred = q.defer();
+	inquirer.prompt([{
+		type : 'confirm',
+		name : 'updatedVersion',
+		'default' : false,
+		message : 'Have you updated the app\'s version number in chromeApps/'+answer+'/menifest.json ?'
+	}], function(answers){
+		if (answers.updatedVersion){
+			updatedVersion = answers.updatedVersion;
+			deferred.resolve();
+		} else {
+			console.log("PLEASE UPDATE IT BEFORE UPLOADING");
+			deferred.reject();
+		}
+	});
+	return deferred.promise;
+});
+
+gulp.task('copywww', ['getUpdatedVersion'], function(){
+	return gulp.src(['www/**/*'])
+	.pipe(gulp.dest('chromeApps/'+answer+'/www'));
+});
+
+gulp.task('makezip', ['copywww'], function(){
+	return gulp.src(['chromeApps/'+answer+'/**/*'])
+	.pipe(zip(answer+'.zip'))
+	.pipe(gulp.dest('chromeApps/zips'));
+});
+
+gulp.task('openbrowser', ['makezip'], function(){
+	 var deferred = q.defer();
+	 
+	 gulp.src(__filename)
+	.pipe(open({uri: 'https://accounts.google.com/o/oauth2/auth?response_type=code&scope=https://www.googleapis.com/auth/chromewebstore&client_id=1052648855194-h7mj5q7mmc31k0g3b9rj65ctk0uejo9p.apps.googleusercontent.com&redirect_uri=urn:ietf:wg:oauth:2.0:oob'}));
+
+	
+	deferred.resolve();
+	
+});
+
+var code = '';
+gulp.task('getCode', ['openbrowser'], function(){
+	var deferred = q.defer();
+	setTimeout(function(){
+		console.log("Starting getCode");
+		inquirer.prompt([{
+			type : 'input',
+			name : 'code',
+			message : 'Please Enter the Code Generated from the opened website'
+		}], function(answers){
+			code = answers.code;
+			code = code.trim();
+			console.log("code: ", code);
+			deferred.resolve();
+		});
+	}, 2000);
+	
+	return deferred.promise;
+});
+
+var access_token = '';
+gulp.task('getAccessTokenFromGoogle', ['getCode'], function(){
+	var deferred = q.defer();
+
+	var options = {
+		method : "POST",
+		url : "https://accounts.google.com/o/oauth2/token",
+		form : {
+			client_id : '1052648855194-h7mj5q7mmc31k0g3b9rj65ctk0uejo9p.apps.googleusercontent.com',
+			client_secret : 'gXbySqbFgRcg_RM9bIiXUmIS',
+			code : code,
+			grant_type : 'authorization_code',
+			redirect_uri : 'urn:ietf:wg:oauth:2.0:oob'
+		}
+	};
+
+	request(options, function(error, message, response){
+		if(error){
+			console.log('Failed to generate the access code');
+			defer.reject();
+		} else {
+			response = JSON.parse(response);	
+			access_token = response.access_token;
+			deferred.resolve();
+		}
+	});
+
+	return deferred.promise;
+});
+
+var getAppIds = function(){
+	return {
+		'moodimodo'  :  'homaagppbekhjkalcndpojiagijaiefm',
+		'mindfirst'  :  'jeadacoeabffebaeikfdpjgpjbjinobl',
+		'energymodo' : 	'aibgaobhplpnjmcnnmdamabfjnbgflob'
+	};
+};
+
+gulp.task('uploadToAppServer', ['getAccessTokenFromGoogle'], function(){
+	var deferred = q. defer();
+	var appIds =getAppIds();
+
+	var source = fs.createReadStream('./chromeApps/zips/'+answer+'.zip');
+
+	// upload the package
+	var options = {
+		url : "https://www.googleapis.com/upload/chromewebstore/v1.1/items/"+appIds[answer],
+		method : "PUT",
+		headers : {
+			'Authorization': 'Bearer '+ access_token,
+			'x-goog-api-version' : '2'
+		}
+	};
+
+	console.log('Gnerated URL for upload operation: ', options.url);
+	console.log('The Access Token: Bearer '+access_token);
+	console.log("UPLOADING. .. .. Please Wait! .. .");
+
+	source.pipe(request(options, function(error, message, data){
+		if(error){
+			console.log("Error in Uploading Data", error);
+			deferred.reject();
+		} else {
+			console.log('Upload Response Recieved');
+			data = JSON.parse(data);
+			
+			if(data.uploadState === "SUCCESS"){
+				console.log('Uploaded successfully!');
+				deferred.resolve();
+			} else {
+				console.log('Failed to upload the zip file');
+				console.log(JSON.stringify(data, 0 , 2));
+				deferred.reject();
+			}
+		}
+	}));
+
+	return deferred.promise;
+});
+
+var shouldPublish = true;
+gulp.task('shouldPublish', ['uploadToAppServer'], function(){
+	var deferred = q.defer();
+	inquirer.prompt([{
+		type : 'confirm',
+		name : 'shouldPublish',
+		message : 'Should we publish this version?',
+		default : true
+	}], function(answers){
+
+		if (answers.shouldPublish){
+			shouldPublish = answers.shouldPublish;
+			deferred.resolve();
+		} else {
+			console.log("Ended without publishing!");
+			deferred.reject();
+		}
+	});
+	return deferred.promise;
+});
+
+gulp.task('publishToGoogleAppStore', ['shouldPublish'],function(){
+	var deferred = q.defer();
+	var appIds =getAppIds();
+
+	// upload the package
+	var options = {
+		url : "https://www.googleapis.com/chromewebstore/v1.1/items/"+appIds[answer]+'/publish?publishTarget=trustedTesters',
+		method : "POST",
+		headers : {
+			'Authorization': 'Bearer '+ access_token,
+			'x-goog-api-version' : '2',
+			'publishTarget' : 'trustedTesters',
+			'Content-Length': '0'
+		}
+	};
+
+	request(options, function(error, message, publishResult){
+		if(error) { 
+			console.log("error in publishing to trusted Users");
+			deferred.reject();
+		} else {
+			publishResult = JSON.parse(publishResult);
+			if(publishResult.status.indexOf("OK")>-1){
+				console.log("published successfully");
+				deferred.resolve();
+			} else {
+				console.log('not published');
+				console.log(publishResult);
+				deferred.reject();
+			}
+		}
+	});
+
+	return deferred.promise;
+});
+
+gulp.task('chrome', ['publishToGoogleAppStore'], function () {
+	console.log('Enjoy your day!');
+});
+
 
 gulp.task('git-check', function(done) {
 	if (!sh.which('git')) {

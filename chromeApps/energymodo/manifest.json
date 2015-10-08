@@ -1,6 +1,6 @@
 {
   "name": "Energy Modo",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "manifest_version": 2,
   "minimum_chrome_version": "33",
   "icons": {
