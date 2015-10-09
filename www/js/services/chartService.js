@@ -64,7 +64,7 @@ angular.module('starter')
 	        },
 
 	        // generate line chart stub with data
-	        getLineChartStub : function(data){
+	        getLineChartStub1 : function(data){
 	            return {
 	                options : {
 	                    chart: {
@@ -80,13 +80,6 @@ angular.module('starter')
 	                    },
 	                    lang: {
 	                        loading: ''
-	                    },
-	                    loading: {
-	                        style: {
-	                            background: 'url(/res/loading3.gif) no-repeat center'
-	                        },
-	                        hideDuration: 10,
-	                        showDuration: 10
 	                    },
 	                    title: {
 	                        text: config.appSettings.tracking_factor+' Over Time'
@@ -125,6 +118,37 @@ angular.module('starter')
 	                    data: data
 	                }]
 	            };
+	        },
+
+	        // generate stock chart
+	        getLineChartStub : function(data){
+	        	return {
+	        		useHighStocks: true,
+	        		options : {
+	        			legend : {
+	        			    enabled : false
+	        			},
+	        			title: {
+	        			    text: config.appSettings.tracking_factor+' Over Time'
+	        			},
+	                    credits: {
+	                        enabled: false
+	                    },
+	                    rangeSelector: {
+                            enabled: true
+                        },
+                        navigator: {
+                            enabled: true
+                        }
+	        		},
+	        		series :[{
+			            name : config.appSettings.tracking_factor,
+			            data : data,
+			            tooltip: {
+			                valueDecimals: 2
+			            }
+			        }]
+	        	}
 	        }
 	    };
 
