@@ -63,63 +63,6 @@ angular.module('starter')
 	            };
 	        },
 
-	        // generate line chart stub with data
-	        getLineChartStub1 : function(data){
-	            return {
-	                options : {
-	                    chart: {
-	                        type: 'spline',
-	                        height : 400,
-	                        spacingBottom : 0,
-	                        spacingLeft : 0,
-	                        spacingRight : 0,
-	                        renderTo: 'LineContainer'
-	                    },
-	                    legend : {
-	                        enabled : false
-	                    },
-	                    lang: {
-	                        loading: ''
-	                    },
-	                    title: {
-	                        text: config.appSettings.tracking_factor+' Over Time'
-	                    },        
-	                    xAxis: {
-	                        type: 'datetime',
-	                        title: {
-	                           text: 'Date'
-	                        }
-	                    },
-	                    yAxis: {
-	                        title: {
-	                           text: config.appSettings.tracking_factor
-	                        }
-	                    },
-	                    plotOptions : {
-	                        spline : {
-	                            lineWidth : 2,
-	                            allowPointSelect : false,
-	                            marker : {
-	                                enabled : false
-	                            },
-	                            enableMouseTracking : false,
-	                            size : '100%',
-	                            dataLabels : {
-	                                enabled : false
-	                            }
-	                        }
-	                    },
-	                    credits: {
-	                        enabled: false
-	                    }
-	                },
-	                series: [{
-	                    name: config.appSettings.tracking_factor,
-	                    data: data
-	                }]
-	            };
-	        },
-
 	        // generate stock chart
 	        getLineChartStub : function(data){
 	        	return {
