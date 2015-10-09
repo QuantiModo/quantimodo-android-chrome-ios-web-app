@@ -599,7 +599,7 @@ angular.module('starter')
                         for(var i = 0; i<data.length; i++){
                             var current_value = Math.ceil(data[i].value);
                             if(data[i].unit == config.appSettings.primary_tracking_factor_details.unit && (current_value-1) <= 4 && (current_value-1) >= 0){
-                                lineArr.push([moment(data[i].humanTime.date).unix(), (current_value-1)*25] );
+                                lineArr.push([moment(data[i].humanTime.date).unix()*1000, (current_value-1)*25] );
                                 barArr[current_value-1]++;
                             }
                         }
