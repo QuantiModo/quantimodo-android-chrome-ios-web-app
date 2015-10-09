@@ -398,8 +398,8 @@ angular.module('starter')
                                         //Handling case if a tracking factor is updated
                                         //Extracting Updated Records
                                         var updated_records = response.filter(function(elem){
-                                            var updated_at_timestamp =  moment.utc(elem['updatedTime']).unix();
-                                            var created_at_timestamp =  moment.utc(elem['createdTime']).unix();
+                                            var updated_at_timestamp =  moment.utc(elem['updatedTime']*1000).unix();
+                                            var created_at_timestamp =  moment.utc(elem['createdTime']*1000).unix();
                                             //Criteria for updated records
                                             return (updated_at_timestamp > lastUpdatedTimestamp && created_at_timestamp != updated_at_timestamp) ;
                                         });
@@ -558,7 +558,7 @@ angular.module('starter')
                         {
                             var current_value = current_value;
                             if(data[i].unit == config.appSettings.primary_tracking_factor_details.unit && (current_value-1) <= 4 && (current_value-1) >= 0){
-                                lineChartArray.push([Date.parse(data[i].humanTime.date), (current_value-1)*25] );
+                                lineChartArray.push([moment(data[i].humanTime.date).unix(), (current_value-1)*25] );
                             }
                         }
 
@@ -599,7 +599,7 @@ angular.module('starter')
                         for(var i = 0; i<data.length; i++){
                             var current_value = Math.ceil(data[i].value);
                             if(data[i].unit == config.appSettings.primary_tracking_factor_details.unit && (current_value-1) <= 4 && (current_value-1) >= 0){
-                                lineArr.push([Date.parse(data[i].humanTime.date), (current_value-1)*25] );
+                                lineArr.push([moment(data[i].humanTime.date).unix()*1000, (current_value-1)*25] );
                                 barArr[current_value-1]++;
                             }
                         }
