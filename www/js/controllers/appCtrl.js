@@ -57,8 +57,8 @@ angular.module('starter')
 
     // update dates selected from calender
 	$scope.saveDates = function(){
-		var to = Date.parse(document.getElementById('toDate').value);
-		var from = Date.parse(document.getElementById('fromDate').value);
+		var to = moment(document.getElementById('toDate').value).unix();
+		var from = moment(document.getElementById('fromDate').value).unix();
 		
 		measurementService.setDates(to, from);
 		$scope.popover.hide();
