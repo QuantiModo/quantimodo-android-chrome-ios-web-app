@@ -306,6 +306,9 @@ div.next{
 
 div.intro_content{
   margin: -20px 40px 0px 40px;
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);
 }
 
 p.intro_para {
