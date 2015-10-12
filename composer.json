@@ -1,0 +1,19 @@
+{
+  "name": "abolitionist-project/quantimodo-ionic-template-app",
+  "homepage": "https://github.com/abolitionist-project/quantimodo-ionic-template-app",
+  "description": "Quantimodo Ionic App.",
+  "license": "MIT",
+  "type": "ionic-app",
+  "keywords": [
+    "ionic",
+    "app",
+    "javascript",
+    "quantimodo"
+  ],
+  "authors": [
+    {
+      "name": "Kashif Zaidi",
+      "email": "ikashifzaidi@gmail.com"
+    }
+  ]
+}
