@@ -10,6 +10,7 @@ A generic app that can be easily configured to help the user track and optimize 
 The main contents of the App are in the `www` folder. The structure is:
 ```
 | Modo
+|---chromeApps
 |---platforms
 |---plugins
 |---resources
@@ -125,3 +126,57 @@ Now you have your IPA file, you need to push this IPA to your device. An easy wa
 ##### 7. Use Test Flight for testing on multiple devices
 
 If you now want to push new versions of your app to yours or multiple devices quickly, you should sign up for TestFlight. It's pretty nice and easy to use. As long as the devices have the TestFlight app installed and you add their Device ID to your devices you should be able to push out to multiple devices with one easy step.
+
+## How to build a chrome app
+
+### Chrome App folder structure
+
+```
+| Modo
+|---chromeApps
+     |----moodimodo
+            |---private_configs
+                |---{{appname}}.config.js // contains your client id & client secret
+                |---sample_private_config.js // a sample configuration file
+            |---scripts
+                |---background.js // The background.js opens the app & handles the notifications scheduling
+                |---popup.js // popup.js handles the mood reporting from notifications
+            |---templates
+                |---popup.html // notification template
+            |---manifest.json
+```
+
+### Building chrome app for webstore
+
+* For building the app for webstore you first need to have an active chrome app developer account, that you can create here `https://chrome.google.com/webstore/developer/dashboard/`
+* Once you have an active developer account, go to your developer account dashboard and click on add new item.
+* Copy the `www` folder from project directory to /chromeApps/{{appname}} directory, create its zip archive and upload it to the developer dashboard.
+* Fill the details of the app and hit publish button.
+
+#### chrome app oAuth 
+
+For oAuth authentication, here are the three steps you need to complete:
+
+* Register a quantimodo developer account.
+* get your client id & client secret & add that in /chromeApps/{{appname}}/private_configs/config.js
+* Speficfy the redirection url in this format https://<extension-id>.chromiumapp.org/<anything-here> For example, if your app ID is abcdefghijklmnopqrstuvwxyzabcdef and you want provider_cb to be the path, to distinguish it with redirect URIs from other providers, you should use: https://abcdefghijklmnopqrstuvwxyzabcdef.chromiumapp.org/provider_cb
+
+### Building chrome app for webstore using gulp task
+
+You can use gulp task to simplify the process of building and publishing chrome app. To use the gulp task you must atleast publish it once manually and copy its app id in gulpfile.js like this https://github.com/Abolitionist-Project/QuantiModo-Ionic-Template-App/blob/develop/gulpfile.js#L21. Once you have done that, follow these steps to buid, upload and publish the chrome app to webstore
+
+1) run command gulp chrome
+2) Enter the name of the app that you want to release for example modimodo. 
+3) Task will ask you if you have increased the version number in the manifest.json file.
+4) A browser window will open, you need to login with your developer account and give permissions. After that a code will be displayed, copy that and paste it in the console.
+5) After 4th step, app will be uploaded to the chrome developer dashboard, you will be asked if you want to publish it. 
+6) Type Yes and press enter to publish it.  
+
+### Building the chrome app for local testing
+
+To run the chrome app locally, simply follow these steps:
+
+1. Open url chrome://extensions in your chrome browser.
+2. click on load unpacked extension button.
+3. select the path of the chrome app project in the file browser.
+4. That's it, the chrome app will be installed now, you can click on the launch link to launch the app.
