@@ -163,14 +163,16 @@ For oAuth authentication, here are the three steps you need to complete:
 
 ### Building chrome app for webstore using gulp task
 
-You can use gulp task to simplify the process of building and publishing chrome app. To use the gulp task you must atleast publish it once manually and copy its app id in gulpfile.js like this https://github.com/Abolitionist-Project/QuantiModo-Ionic-Template-App/blob/develop/gulpfile.js#L21. Once you have done that, follow these steps to buid, upload and publish the chrome app to webstore
+You can use gulp task to simplify the process of building and publishing Chrome app. To use the gulp task you must at least publish it once manually and copy its app id in gulpfile.js like this https://github.com/Abolitionist-Project/QuantiModo-Ionic-Template-App/blob/develop/gulpfile.js#L21. 
 
-1) run command gulp chrome
-2) Enter the name of the app that you want to release for example modimodo. 
-3) Task will ask you if you have increased the version number in the manifest.json file.
-4) A browser window will open, you need to login with your developer account and give permissions. After that a code will be displayed, copy that and paste it in the console.
-5) After 4th step, app will be uploaded to the chrome developer dashboard, you will be asked if you want to publish it. 
-6) Type Yes and press enter to publish it.  
+Once you have done that, follow these steps to build, upload, and publish the Chrome app to Webstore.
+
+1. run command gulp chrome
+1. Enter the name of the app that you want to release for example `moodimodo`. 
+1. Task will ask you if you have increased the version number in the manifest.json file.
+1. A browser window will open, you need to login with your developer account and give permissions. After that a code will be displayed, copy that and paste it in the console.
+1. After 4th step, app will be uploaded to the chrome developer dashboard, you will be asked if you want to publish it. 
+1. Type Yes and press enter to publish it.  
 
 ### Building the chrome app for local testing
 
