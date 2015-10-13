@@ -18,6 +18,11 @@ var open = require('gulp-open');
 var gcallback = require('gulp-callback');
 var runSequence = require('run-sequence');
 
+var appIds = {
+    'moodimodo': 'homaagppbekhjkalcndpojiagijaiefm',
+    'mindfirst': 'jeadacoeabffebaeikfdpjgpjbjinobl',
+    'energymodo': 'aibgaobhplpnjmcnnmdamabfjnbgflob'
+};
 
 var paths = {
 	sass: ['./scss/**/*.scss']
@@ -293,11 +298,7 @@ gulp.task('getAccessTokenFromGoogle', ['getCode'], function(){
 });
 
 var getAppIds = function(){
-	return {
-		'moodimodo'  :  'homaagppbekhjkalcndpojiagijaiefm',
-		'mindfirst'  :  'jeadacoeabffebaeikfdpjgpjbjinobl',
-		'energymodo' : 	'aibgaobhplpnjmcnnmdamabfjnbgflob'
-	};
+	return appIds;
 };
 
 gulp.task('uploadToAppServer', ['getAccessTokenFromGoogle'], function(){
