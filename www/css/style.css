@@ -189,6 +189,10 @@ label.item.item-input.item-text > input[type="text"] {
     color: #fff;
 }
 
+.button.button-assertive {
+    font-size: 15px;
+}
+
 .card_item {
 	padding-top: 8px;
 	padding-bottom: 8px;
