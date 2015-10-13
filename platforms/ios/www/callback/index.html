@@ -1,0 +1,28 @@
+<html>
+	<head>
+		<title>Redirecting</title>
+		<link rel="stylesheet" href="../lib/bootstrap/dist/css/bootstrap.min.css">
+        <script src="../configs/moodimodo.js"></script>
+	</head>
+	<body>
+		<section id="browse" class="browse">
+		    <div class="container">
+		        <div class="row">
+		            <div style="text-align:center;margin-top:70%;color:#11c1f3;">
+		                <h2>Redirecting...</h2>
+		            </div>
+		        </div>
+		    </div>
+		</section>
+		
+	</body>
+	<script>
+		var receiveMessage = function(event)
+		{
+			event.source.postMessage(window.location.href.toString(),event.origin);
+		};
+
+		window.addEventListener("message", receiveMessage, false);
+	</script>
+	
+</html>

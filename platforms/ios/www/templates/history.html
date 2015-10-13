@@ -1,0 +1,18 @@
+<ion-view view-title="History">
+     <ion-content>
+      <ion-list>
+          <div collection-repeat="historyItem in history" divider-collection-repeat>
+              <ion-item ng-click="open_popover(historyItem)" >
+                  <div style="display:inline-block;float:left;margin-right:15px;">
+                    <img ng-src="{{historyItem.value | ImageByValue }}" style="width:80px;" />
+                  </div>
+                  <div class="history_block">
+                    <h2 class="history_time" >{{historyItem.timestamp | time}}</h2>
+                    <br/>
+                    <h2 class="" >{{historyItem.value | percentage}}% {{historyItem.value | TrackingFactorByNumber}}</h2>  
+                  </div>
+              </ion-item>
+          </div>
+      </ion-list> 
+    </ion-content>
+</ion-view>

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
+    <title></title>
+
+    <link href="lib/ionic/css/ionic.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+    <link href="lib/ionic-datepicker/dist/style.css" rel="stylesheet"> 
+    <link href="customlib/ionic-timepicker/dist/style.css" rel="stylesheet">
+
+    <!-- IF using Sass (run gulp sass first), then uncomment below and remove the CSS includes above
+    <link href="css/ionic.app.css" rel="stylesheet">
+    -->
+
+
+    <!-- ionic/angularjs js -->
+    <script src="lib/ionic/js/ionic.bundle.js"></script>
+    <script src="lib/ngCordova/dist/ng-cordova.js"></script>
+    <!-- cordova script (this will be a 404 during development) -->
+    <script src="cordova.js"></script>
+    
+    <!-- load jQuery -->
+    <script src="lib/jquery/dist/jquery.min.js"></script>
+    <script src="lib/oclazyload/dist/ocLazyLoad.min.js"></script>
+    <script src="lib/highstock-release/highstock.js"></script>
+    <script src="lib/highcharts-ng/dist/highcharts-ng.js"></script>
+    <script src="lib/ionic-datepicker/dist/templates.js"></script>
+    <script src="lib/ionic-datepicker/dist/ionic-datepicker.js"></script>
+    <script src="customlib/ionic-timepicker/dist/templates.js"></script>
+    <script src="customlib/ionic-timepicker/dist/ionic-timepicker.js"></script>
+    <script src="lib/moment/moment.js"></script>
+      <script
+              src="lib/bugsnag/src/bugsnag.js"
+              data-autonotify="false">
+      </script>
+
+      <!-- your app's js -->
+    <script src="js/apps.js"></script>
+    <script src="js/app.js"></script>
+    
+    <script src="js/services/utilsService.js"></script>
+    <script src="js/services/authService.js"></script>
+    <script src="js/services/quantiModo.js"></script>
+    <script src="js/services/measurementService.js"></script>
+    <script src="js/services/chartService.js"></script>
+    <script src="js/services/notificationService.js"></script>
+    <script src="js/services/correlationsService.js"></script>
+    <script src="js/services/localstorageService.js"></script>
+
+    <script src="js/filters/fromNow.js"></script>
+    <script src="js/filters/trackingfactors.js"></script>
+    <script src="js/filters/percentage.js"></script>
+    <script src="js/filters/time.js"></script>
+    <script src="js/filters/toTime.js"></script>
+
+    <script src="js/controllers/introCtrl.js"></script>
+    <script src="js/controllers/appCtrl.js"></script>
+    <script src="js/controllers/welcomeCtrl.js"></script>
+    <script src="js/controllers/trackCtrl.js"></script>
+    <script src="js/controllers/settingsCtrl.js"></script>
+    <script src="js/controllers/positiveCtrl.js"></script>
+    <script src="js/controllers/negativeCtrl.js"></script>
+    <script src="js/controllers/externalCtrl.js"></script>
+    <script src="js/controllers/historyCtrl.js"></script>
+    <script src="js/controllers/importCtrl.js"></script>
+    <script src="js/controllers/trackFactorsCtrl.js"></script>
+    <script src="js/controllers/trackFactorsCategoryCtrl.js"></script>
+
+      <script>(function(){var w=window;var ic=w.Intercom;if(typeof ic==="function"){ic('reattach_activator');ic('update',intercomSettings);}else{var d=document;var i=function(){i.c(arguments)};i.q=[];i.c=function(args){i.q.push(args)};w.Intercom=i;function l(){var s=d.createElement('script');s.type='text/javascript';s.async=true;s.src='https://widget.intercom.io/widget/vtynnyja';var x=d.getElementsByTagName('script')[0];x.parentNode.insertBefore(s,x);}if(w.attachEvent){w.attachEvent('onload',l);}else{w.addEventListener('load',l,false);}}})()</script>
+
+      <script>
+          window.Intercom('boot', {
+              app_id: "uwtx2m33"
+          });
+      </script>
+
+  </head>
+
+  <body ng-app="starter" class="platform-ios platform-cordova platform-webview">
+    <ion-nav-bar class="bar-calm">
+        <ion-nav-back-button>
+        </ion-nav-back-button>
+    </ion-nav-bar>
+    <ion-nav-view></ion-nav-view>
+  </body>
+
+</html>

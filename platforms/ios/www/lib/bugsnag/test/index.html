@@ -1,0 +1,30 @@
+<!doctype html>
+<html>
+<head>
+  <title>Running</title>
+  <link rel="stylesheet" href="../node_modules/mocha/mocha.css" />
+</head>
+
+<body>
+  <!-- Mocha -->
+  <div id="mocha"></div>
+  <script src="../node_modules/mocha/mocha.js"></script>
+  <script src="../node_modules/mocha-browserstack/lib/mocha-browserstack.js"></script>
+  <script src="assert.js"></script>
+  <script src="stub.js"></script>
+
+  <script>
+    mocha.setup({ignoreLeaks: true, ui: "bdd", reporter: Mocha.BrowserStack});
+  </script>
+
+  <!-- Tests -->
+  <script src="test.bugsnag.js"></script>
+  <script>
+    if (window.mochaPhantomJS) {
+      mochaPhantomJS.run();
+    } else {
+      mocha.run();
+    }
+  </script>
+</body>
+</html>

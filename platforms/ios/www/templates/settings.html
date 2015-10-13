@@ -1,0 +1,79 @@
+<ion-view view-title="Settings">
+    <ion-content>
+        <div class="list card">
+            <div class="item item-text-wrap">
+                <p>RATING</p>
+            </div>
+
+            <a href="" ng-click="rating_popover.show();"  class="item ">
+              Ask for a rating
+              <p ng-show="ratings=='never'">Never</p>
+              <!--FOR DEVELOPMENT ONLY-->
+                <p ng-show="ratings=='minute'">Every minute</p>
+                <p ng-show="ratings=='five_minutes'">Every five minutes</p>
+                <!---->
+              <p ng-show="ratings=='hourly'">Hourly</p>
+              <p ng-show="ratings=='three'">Every three hours</p>
+              <p ng-show="ratings=='twice'">Twice daily</p>
+              <p ng-show="ratings=='daily'">Daily</p>
+            </a>
+	
+    		<a href="" ng-click="additional_rating_popover.show();" class="item ">
+    		  Additional required ratings
+    		  <p>{{addString}}</p>
+    		</a>
+        </div>
+
+
+        <div class="list card">
+            <div class="item item-text-wrap">
+                <p>Quantimodo</p>
+            </div>
+
+            <a href="" ng-show="!isLoggedIn" ng-click="login_from_settings()" class="item ">
+              Account
+              <p>Not Logged In, Tap to Sign in.</p>
+            </a>
+
+
+            <a href="" ng-show="isLoggedIn" ng-click="logout()" class="item ">
+              Account
+              <p>Signed In as {{user_name}}. Tap to Sign Out</p>
+            </a>
+    		
+        </div>
+
+        <div class="list card">
+            <div class="item item-text-wrap">
+                <p>Data</p>
+            </div>
+
+            <a href="" ng-click="export()" class="item ">
+              Export
+            </a>
+        </div>
+
+        <div class="list card">
+            <div class="item item-text-wrap">
+                <p>Feedback</p>
+            </div>
+
+            <a href="mailto:help@quantimo.do" class="item ">
+              Help
+            </a>
+			
+            <a href="mailto:help@quantimo.do" class="item ">
+              Feedback
+            </a>
+
+            <a href="#app/contact" class="item ">
+              Contact Us
+            </a>
+
+            <a href="#app/postidea" class="item ">
+              Post an Idea
+            </a>
+        </div>
+
+    </ion-content>
+</ion-view>
