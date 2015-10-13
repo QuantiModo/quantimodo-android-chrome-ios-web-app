@@ -295,21 +295,28 @@ label.item.item-input.item-text > input[type="text"] {
 
 div.previous {
   float: left; 
-  margin-left: 15px; 
-  margin-top: 50%; 
+  margin-left: 15px;  
   font-size: 40px;
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);
 }
 
 div.next{
   float:right; 
   margin-right:15px; 
-  margin-top: 50%; 
   font-size: 40px;
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);
 }
 
 
 div.intro_content{
   margin: -20px 40px 0px 40px;
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);
 }
 
 p.intro_para {
