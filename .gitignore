@@ -12,3 +12,4 @@ chromeApps/zips/*.zip
 hooks
 *.app.dSYM.zip
 *.ipa
+*.mobileprovision
