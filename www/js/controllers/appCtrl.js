@@ -2,7 +2,7 @@ angular.module('starter')
     
     // Parent Controller
     // This controller runs before every one else
-	.controller('AppCtrl', function($scope, $ionicModal, $timeout, utilsService, authService, measurementService, $ionicPopover, $ionicLoading, $state, $ionicHistory, QuantiModo, notificationService, $rootScope,localStorageService) {
+	.controller('AppCtrl', function($scope, $ionicModal, $timeout, $injector, utilsService, authService, measurementService, $ionicPopover, $ionicLoading, $state, $ionicHistory, QuantiModo, notificationService, $rootScope,localStorageService) {
 
     // flags
     $scope.controller_name = "AppCtrl";
@@ -10,7 +10,11 @@ angular.module('starter')
     $scope.showSubMenu = false;
     $scope.shopping_cart_enabled = config.shopping_cart_enabled;
     $rootScope.isSyncing = false;
+    var $cordovaFacebook = {};
 
+    if($injector.has('$cordovaFacebook')){
+        $cordovaFacebook = $injector.get('$cordovaFacebook');
+    }
     
     /*Wrapper Config*/
     $scope.view_title = config.appSettings.app_name;
@@ -310,6 +314,27 @@ angular.module('starter')
 
             });
         }
+    };
+
+    // log in with google
+    $scope.google_login = function(){
+        alert('login google');
+    };
+
+
+    // login with facebook
+    $scope.facebook_login = function(){
+        alert('login fb');
+        $cordovaFacebook.login(["public_profile", "email", "user_friends"])
+           .then(function(success) {
+             // success
+             alert("success");
+             console.log(success);
+           }, function (error) {
+             // error
+             alert("error");
+             console.log(error);
+           });
     };
 
     // when user click's skip button
