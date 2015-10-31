@@ -2,7 +2,7 @@ angular.module('starter')
     
     // Parent Controller
     // This controller runs before every one else
-	.controller('AppCtrl', function($scope, $ionicModal, $timeout, $injector, utilsService, authService, measurementService, $ionicPopover, $ionicLoading, $state, $ionicHistory, QuantiModo, notificationService, $rootScope, localStorageService, UserService) {
+	.controller('AppCtrl', function($scope, $ionicModal, $timeout, $injector, utilsService, authService, measurementService, $ionicPopover, $ionicLoading, $state, $ionicHistory, QuantiModo, notificationService, $rootScope, localStorageService) {
 
     // flags
     $scope.controller_name = "AppCtrl";
@@ -326,15 +326,6 @@ angular.module('starter')
 
         window.plugins.googleplus.login({}, function (user_data) {
         
-            UserService.setUser({
-                userID: user_data.userId,
-                name: user_data.displayName,
-                email: user_data.email,
-                picture: user_data.imageUrl,
-                accessToken: user_data.accessToken,
-                idToken: user_data.idToken
-            });
-
             $ionicLoading.hide();
             alert('success');
         
