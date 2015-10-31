@@ -1,7 +1,7 @@
 A generic app that can be easily configured to help the user track and optimize any give outcome variable.
 ---
 
-[![Deploy](https://s3.amazonaws.com/heroku-devcenter-files/article-images/2151-imported-1443570568-2151-imported-1443555045-button.svg)](https://heroku.com/deploy?template=https://github.com/Abolitionist-Project/QuantiModo-Ionic-Template-App/)
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/Abolitionist-Project/QuantiModo-Ionic-Template-App/)
 
 
 #QuantiModo Ionic App
@@ -32,102 +32,517 @@ The main contents of the App are in the `www` folder. The structure is:
 ```
 
 ## Controllers
-Controllers are located in `www/js/controllers` directory. Each View has a separate controller, or some views share the same controller if the functionality is same.
-The main controller for the app is `appCtrl.js` whereas all the other controllers run when their views come to focus.
+  Controllers are located in `www/js/controllers` directory. Each View has a separate controller, or some views share the same controller if the functionality is same.
+  The main controller for the app is `appCtrl.js` whereas all the other controllers run when their views come to focus.
 ## Services
-Services are the Data layer, which talks to `QuantiModo API`, Provide Chart Data, provides abstractions over the API as well as provide utility functions. 
+  Services are the Data layer, which talks to `QuantiModo API`, Provide Chart Data, provides abstractions over the API as well as provide utility functions. 
 ## Templates
-Templates are partial `html` files, They are separately made for each view as well as popovers with in those views.
-## Making an Android Build
-To generate a release build for Android, we can use the following cordova cli command:
+  Templates are partial `html` files, They are separately made for each view as well as popovers with in those views.
+
+#### Git-Structure
+
+The repository follows `Git-Flow` pattern, that means `develop` is the main `development` branch and `feature` branches are used to add features, which are then merged back into `develop`.
+
+The notable exceptions are the `app/[your_app_code_name_here]` branches. These are like `develop` never ending branches representing each app.
+
+So everytime you wish to deploy your app, take for example `app/moodimodo` you should `checkout app/moodimodo` then merge `develop` into the current `HEAD` branch. This will add all the changes to the app and you will be good to go for deployment.
+
+#### Adding a New App
+
+1. **Git**
+
+    To add a new app, you should choose a code name for it (anything without spaces and in lowercase letters) For example `Mind First Mood Tracker` became `mind first`.
+    
+    You should then create a new branch `app/[your_app_code_name_here]`. You can see other existing apps like `moodimodo` and `mind first`.
+
+2. **apps.json**
+    
+    Head over to `www/js/apps.json`. Add your app to the `apps object` on line 2.
+    ```
+    apps : {
+    “moodimodo” : “configs/moodimodo”,
+    “energymodo” : “configs/energymodo”,
+    “mind first” : “configs/mindfirst”,
+    “[your_app_code_here]” : “configs/[your_app_code_here]”
+  }
+    ```
+    
+    also update the `defaultApp` to [your_new_app_code_name] in the same file.
+    ```
+    defaultApp : “[your_app_code_name_here]”,
+    ```
+3.  **config.js**
+    
+    Head over to `www/js/configs` directory. Create a new file `[your_app_code_name_here].js`.
+    Then copy the contents of `www/js/configs/moodimodo.js` and paste them into your new file. This will give you the placeholder values and structure of how a config.js should look like, Then you can go forward and make appropriate changes according to your app by editing the file.
+
+4. **private_configs**
+    
+    Head over to `www/private_configs` directory. Create a new file
+`[your_app_code_name_here].config.js`
+    Then copy the contents of `www/private_configs/sample_private.config.js`. This will give you the placeholder structure and data required by the app in the private_config file. You should replace all the values with your own values or keys with respect to the new app you are building.
+
+5. **xmlconfigs**
+    
+    Head over to `xmlconfigs` directory. Create a new file `[your_app_code_name_here].xml`. Then copy the contents of `xmlconfigs/moodimodo.xml`. This will give you the boiler plate of the properties required in the xml file. You can make appropriate changes according to your app where necessary.
+
+> After these steps your app creation is complete. Now you can edit the app in the respective files as mentioned below.
+
+
+#### Editing an App
+
+Now Editing an app would mean understanding the structure of the app a little bit, so here goes,
+
+The current App has 3 config files:
+
+1. xmlconfigs/appname.xml
+2. www/configs/appname.js
+3. www/private_keys/appname.config.js
+
+##### **`appname.xml`**
+This file is the xml file, which will be used to make your “actual” iOS App project. So the most important variables in this file are:
+
+1. App Name
+  ```
+  <name>{{write_your_app_name_here}}</name>
+  ```
+This will be the name for your App, and will be the name of the .xcodeproj file, So remember to name your app here.
+
+2. App Description
+  ```
+  <description>{{write_your_app_description_here}}</description>
+  ```
+3. Widget ID
+  ```
+  <widget id=“{{com.company.appname}}” …>…</widget>
+  ```
+  This is your app identifier you would generate on the Apple’s Developer portal that will identify your app uniquely on the App Store.
+
+4. Notification Plugin
+  ```
+  <notificationplugin interactive=“true”>
+      <button id=“repeat_mood” display=“Report Last Mood” mode=“background”></button>
+      <button id=“other” display=“Other” mode=“foreground”></button>
+      <button id=“sad”  display=“Sad” mode=“background”></button>
+      <button id=“happy”  display=“Happy” mode=“background”></button>
+      <button id=“depressed” display=“Depressed” mode=“background”></button>
+      <button id=“ok” display=“OK” mode=“background”></button>
+      <TwoButtonLayout first=“repeat_mood” second=“other”></TwoButtonLayout>
+      <FourButtonLayout first=“sad” second=“happy” third=“ok” fourth=“depressed”>
+      </FourButtonLayout>
+</notificationplugin>
+  ```
+This is the notification plugin (for using interactive notifications in iOS) 
+
+  You can define the `buttons`, give each of them a unique `id` and set the text as to how they will be displayed in `display` property. 
+  
+  You should also set the run mode when the button is clicked through the notification bar, it can run in `background` or `foreground`.
+  
+  In `TwoButtonLayout`, you can select which of the two buttons you want to show by providing their id’s in `first` and `second` property.
+  
+  In `FourButtonLayout`, you can select which of the four buttons you want to show by providing their id’s in `first`,`second`,`third` and `fourth` property.
+
+##### **`private_configs/appname.config.js`**
+As you may have copied from the sample.config.js, you would need to replace all the placeholder values (or delete the one’s you don’t use).
+
+The most important one’s to keep the app working are the `client_ids`, `client_secrets` and `mashape_keys` for `Web`.
+You can delete the other keys and their values if you aren’t using them.
+
+> Notice that you can get the client_id and secret by contacting [m@quantimo.do](m@quantimo.do).
+
+> You can also get the Testing and Production id’s for Mashape after you create a mashape account and add yourself as a developer on [Quantimodo Mashape Portal](mashape.com/quantimodo/quantimodo).
+
+##### **`configş/appname.js`**
+This is the most important file for your app, where all the changes will be made to configure your app.
+
+There are a few Important things you need to change.
+
+**`window.config` object** 
 ```
-$ cordova build --release android
+window.config = {
+    bugsnag:{
+      notifyReleaseStages:[
+      'Production',
+      'Staging'
+      ]
+    },
+    client_source_name : "MoodiModo "+getPlatform(),
+    domain : 'app.quantimo.do',
+    mashape_domain : 'https://quantimodo-quantimodo-v1.p.mashape.com/api/',
+    environment: "Development",
+    permissions : [
+      'readmeasurements', 
+      'writemeasurements'
+  ],
+    port : '4417',
+    protocol : 'https',
+    shopping_cart_enabled : true,
+    use_mashape : false
+};
+```
+### Explanation
+
+`client_source_name` : Replace MoodiModo with your app name (The one you requested from hello@quantimodo.com while generating your app).
+
+`domain` : This is the domain used for making api requests only when `use_mashape` is set to false`.
+
+`mashape_domain` : This is the domain used for making api requests only if `use_mashape` is set to `true`.
+
+`environment` : Can be set to `Development`, `Staging`, or `Production`, This will determine what keys to use when making api requests on mashape.
+
+`permissions` : This is an array of permissions logging into the QuantiModo Api. 
+
+`port` : The port number on which the server is running (if running locally).
+
+`protocol` : (http or https) The protocol to use when requesting the api.
+
+`shipping_cart_enabled` : true or false if you wish to keep the shopping cart buttons in postive/negative predictor lists.
+
+`use_mashape` : if you wish to route the app's request through mashape set this to `true` otherwise set it to `false`.
+
+**`config.appSettings` Object **
+
+```
+config.appSettings  = {
+    app_name : 'EnergyModo',
+
+    tracking_factor : 'Energy',
+
+    storage_identifier: 'EnergyModoData*',
+      
+    primary_tracking_factor_details : { ... },
+
+    tracking_factors_options_labels : [ ... ],
+
+    tracking_factor_options : [ ... ],
+
+    welcome_text:"Let's start off by reporting your Energy on the card below",
+    
+    factor_average_text:"Your average energy level is ",
+    
+    notification_image : "file://img/logo.png",
+    
+    notification_text : "Rate your Energy",
+    
+    conversion_dataset: { ... },
+    
+    conversion_dataset_reversed : { ... },
+    
+    intro : { ... }
+};
+
+```
+### Explanation
+
+`app_name` :  The Name of your app.
+
+`tracking_factor` : The primary outcome variable you are tracking (like Mood or Energy etc.)
+
+`storage_identifier` : a unique to your app string that will be prepended to any key stored in `localStorage`. (no spaces or any characters not allowed in keys)
+
+`primary_tracking_factor_details`
+
+```
+primary_tracking_factor_details : {
+   name : "Overall Energy",
+   category : "Energy",
+   unit : "/5",
+   combinationOperation: "MEAN"
+},
 ```
 
-This will generate a release build based on the settings in your `config.xml`. Your Ionic app will have preset default values in this file, but if you need to customize how your app is built, you can edit this file to fit your preferences. 
+`name` : The actual tracking factor name in the QM API.
+`category` : The category of the tracking factor.
+`unit` :  the unit symbol for the tracking factor.
+`combinationOperation` : MEAN or SUM depending upon your tracking factor.
 
-Next, we can find our unsigned APK file in `platforms/android/bin`. In our example, the file was `platforms/android/bin/Modo-release-unsigned.apk`. Now, we need to sign the unsigned APK and run an alignment utility on it to optimize it and prepare it for the app store. If you already have a signing key, skip these steps and use that one instead.
 
-Let's generate our private key using the keytool command that comes with the JDK. 
+`tracking_factors_options_labels`
 ```
-$ keytool -genkey -v -keystore my-release-key.keystore -alias alias_name -keyalg RSA -keysize 2048 -validity 10000
+tracking_factors_options_labels : { 
+    'lowest', 
+    'low', 
+    'average', 
+    'high', 
+    'highest' 
+],
 ```
-You'll first be prompted to create a password for the keystore. Then, answer the rest of the nice tools's questions and when it's all done, you should have a file called my-release-key.keystore created in the current directory.
+These will be used on the charts, to represent the individual bars for the 5 different values. (replace them with values that you want to represent your bars with in the charts).
 
-**Note**: Make sure to save this file somewhere safe, if you lose it you won't be able to submit updates to your app!
-
-To sign the unsigned APK, run the jarsigner tool which is also included in the JDK:
-
+`tracking_factor_options`
 ```
-$ jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore my-release-key.keystore MoodiModo-release-unsigned.apk alias_name
+tracking_factor_options : [
+        {
+            value: 'lowest',
+            img: 'img/ic_1.png'
+        },
+        {
+            value: 'low',
+            img: 'img/ic_2.png'
+        },
+        {
+            value: 'average',
+            img: 'img/ic_3.png'
+        },
+        {
+            value: 'high',
+            img: 'img/ic_4.png'
+        },
+        {
+            value: 'highest',
+            img: 'img/ic_5.png'
+        }
+    ],
 ```
-This signs the apk in place. Finally, we need to run the zip align tool to optimize the APK:
+These are the five options (available on the Trrack page) that the users will rate. Each of the option has an `image` (that will replace the emoji) and `value` (the quantifiable value the image represents).
+
+**Note**: Make sure the values match with the values in the `tracking_factors_options_labels`. 
+
+`welcome_text` : The text app greets the user with when the app is opened for the first time.
+
+`tracking_question` : The question displayed on screen when user is on the Track Screen.
+
+`factor_average_text` : string that tells user his average tracking factor value.
+
+`notification_image` : the logo that gets displayed with the notification in ios
+
+`notification_text` : the text that appears in the notification on ios
+
+`conversion_dataset`
 ```
-$ zipalign -v 4 MoodiModo-release-unsigned.apk MoodiModo.apk
+conversion_dataset: {
+    "1": "lowest",
+    "2": "low",
+    "3": "average",
+    "4": "high",
+    "5": "highest" 
+},
+```
+This is the data set where the keys are the mapped with the buttons. For example, `button 1` will represent `lowest`.
+
+`conversion_dataset_reversed`
+```
+conversion_dataset_reversed : {
+   "lowest" : 1,
+    "sad" : 2,
+    "ok" : 3,
+    "happy" : 4,
+    "ecstatic": 5 
+},
 ```
 
-Now we have our final release binary called `MoodiModo.apk` and we can release this on the Google Play Store for all the world to enjoy!
+This is the reversed dataset, make sure you reverse the values of the `converstion_dataset`.
 
-## Making an iOS Build
-
-#### 1. Join the iOS Developer Program
-
-Other than using PhoneGap to develop ipas for you, the only way to build IPAs for testing on your devices is by joining Apple’s iOS developer program
-
-Jump into the iOS Developer Center and register for free. Being a registered Apple developer gives you access to a lot of information, but to be able to send apps to the App Store or to generate IPAs from XCode you will need to enroll in Apple’s iOS developer program. This is the part that costs you US$99 per year.
-
-In your Developer Member Center click the "join today" link. You will be asked to enroll as a company or individual, most will be enrolling as an individual but if you need to enroll as a company you will need some documentation from your employer.
-
-Once you proceed, you will be asked to sign in with your Apple ID for billing. You will be asked to select your Program, most likely the IOS Developer program. Add it to the cart and make your payment.
-
-run
+`intro`
 ```
-cordova platform add ios
-cordova build ios
+intro : {
+ "screen1" : {
+     img : {
+         width : '150',
+         height : '150',
+         url : 'img/main_icon.png'
+     }
+ },
+ "screen2" : {
+     images : {
+         height : '75',
+         width : '75'
+     }
+ },
+ "screen3" : {
+     img : {
+         width : '140',
+         height : '220',
+         url : 'img/track_moods.png'
+     }
+ },
+ "screen4" : {
+     img : {
+         width : '200',
+         height : '150',
+         url : 'img/history_page.png'
+     }
+ },
+ "screen5" : {
+     img : {
+         width : '220',
+         height : '200',
+         url : 'img/mood_note.png'
+     }
+ },
+ "screen6" : {
+     img : {
+         width : '220',
+         height : '190',
+         url : 'img/track_foods.png'
+     }
+ },
+ "screen7" : {
+     img : {
+         width : '190',
+         height : '180',
+         url : 'img/track_symptoms.png'
+     }
+ },
+ "screen8" : {
+     img : {
+         width : '210',
+         height : '180',
+         url : 'img/track_treatments.png'
+     }
+ },
+ "screen9" : {
+     img : {
+         width : '220',
+         height : '200',
+         url : 'img/positive_predictors.png'
+     }
+ },
+ "screen10" : {
+     img : {
+         width : '220',
+         height : '200',
+         url : 'img/negative_predictors.png'
+     }
+ },
+ "screen11" : {
+      img : {
+          width : '180',
+          height : '180',
+          url : 'img/ic_mood_ecstatic.png'
+      }
+  }
+}
 ```
-This will generate an Xcode project inside of `platforms/ios` which you can open with Xcode and sign your app for publishing.
+This is the dataset for intro, you can edit the images that get displayed according to your own app. You can set `width`, `height` and the `url` of your image.
 
-#### 2. Deploying the app to your iPad or iPhone for testing
 
-The app is built and ready to be pushed out as an IPA.
+**notification_callback**
+```
+window.notification_callback = function(reported_variable, reporting_time){
+  // implement the notification function here.
+  // use reported variable and the reported time.
+  ...
+}
+```
+More often then not you will end up keeping the existing function and making the changes in `conversion_dataset`'s would work just fine, but if you wish to change something else, you have the option to do it so in this function.
 
-You have to find the IOS application and launch it in XCode. It has been generated for you in /platforms/ios so the XCode project will be MoodiModo.xcodeproj in MoodiModo/platforms/ios/
+#### Running the App
+After you have generated your app, you can run the project through `node app.js`. This will run the project at [http://localhost:5000/](http://localhost:5000/)
 
-Open the file in XCode so you can deploy your IPA.
+#### Generate iOS App
+You should run the following cordova commands to setup your iOS project.
 
-##### 3. Create Provisioning Profile
+1. `gulp make`. This will copy your generated xml config file (xmlconfigs/[your_app_code_name_here].xml) into the main config.xml so that the iOS app is generated with your new app as default.
+2. `cordova platforms add iOS`. This would create the iOS app in `platforms/ios` folder
 
-Now to deploy your IPA to a device you will need to Create a Provisioning Profile. In your Developer account, click on Provisioning Profile and set one up.
+This should generate the app and you should be good to go!
 
-Verify that the Code Signing section in your app in XCode is set to your provisioning profile name. In the "Identity" section in the General tab, it should have your name in the Team field.
+#### Building the app
 
-##### 4. Set your device
+Before building an app, You have the choice to setup Bugsnag for your app, We recommend that you do, it helps to track the bugs, and you can report them to us so that we can have better data to help you.
 
-In the XCode File menu, select Product > Destination and select "IOS device". You will now need to select a Device ID that you are deploying to.
+We will be using CocoaPods for dependency Management in our iOS app.
 
-Jump into "Devices" in Apple Developer Centre and add your device UDID.
+1. install cocoa pods if you haven’t already by running `sudo gem install cocoa pods`.
+2. cd to `platforms/ios`
+3. run command `pod init`
+4. Add Bugsnag to your Profile. Copy the following line into the `PodFile`.
+```
+pod ‘Bugsnag’, :git => “https://github.com/bugsnag/bugsnag-cocoa.git”` 
+```
+5. Install Bugsnag by running `pod install`. (This might take some time on the first run).
+6. Import Bugsnag.h in your `ApplicationDelegate.m`
+```
+#import “Bugsnag.h”
+```
+7. In your application:didFinishLaunchingWithOptions: method, register with bugsnag by calling,
+```
+[Bugsnag startBugsnagWithApiKey:@“your_bugsnag_key”];
+```
 
-The easy way to find your devices UDID is to follow this guide, but it is pretty straight forward. Now add your device, or if you want to deploy to multiple devices you can add some additional ones.
+You can build the app with Xcode, or fastlane method (mentioned below).
 
-##### 5. Exporting to an IPA
+#### Deployment
 
-The easiest way to generate an IPA is to archive your applications and share it from the Xcode Organizer.
+##### Fastlane
+1. Install fastlane by running 
+```
+sudo gem install fastlane --verbose
+```
+2. Make sure, you have the latest version of the Xcode command line tools installed:
+```
+xcode-select --install
+```
+3. run `fastlane init` and it will ask you the appropriate questions, answer them once to setup the deployment script for your app.
 
-Build your app, Click Product > Build then Product > Archive to open up XCode Organizer. Click on Distribute. This is where you select to either publish your app to the Apple App Store or just export the IPA to be installed on your device. Select "Save for Enterprise or Ad Hoc Deployment". Click Next then select your provisioning profile.
+##### AppStore
+  
+1. Create an app identifier
+2. Create a Provisioning Profile
+3. Since we will use push notifications, We will need an Apple Store Certificate with Push Notifications enabled (so make sure you have that).
+4. Next is to create the app with your identifier in the iTunes Connect.
 
-Now finally, click "Export" to get your IPA file.
 
-You have finally exported the IPA to your file system. Select a folder where you will be keeping all of your versions of IPA files and click "Save".
+## Running the App
+After you have generated your app, you can run the project through `node app.js`. This will run the project at [http://localhost:5000/](http://localhost:5000/)
 
-##### 6. Install your IPA on a device
+#### Generate iOS App
+You should run the following cordova commands to setup your iOS project.
 
-Now you have your IPA file, you need to push this IPA to your device. An easy way to do this is to Connect your Device to your MacBook and open iTunes. Select the Apps tab, then from the file menu select File > Add to Library to add your IPA file. It will ask you to Install the app, it will now be running as an app on your iPhone or iPad.
+1. `gulp make`. This will copy your generated xml config file (xmlconfigs/[your_app_code_name_here].xml) into the main config.xml so that the iOS app is generated with your new app as default.
+2. `cordova platforms add iOS`. This would create the iOS app in `platforms/ios` folder
 
-##### 7. Use Test Flight for testing on multiple devices
+This should generate the app and you should be good to go!
 
-If you now want to push new versions of your app to yours or multiple devices quickly, you should sign up for TestFlight. It's pretty nice and easy to use. As long as the devices have the TestFlight app installed and you add their Device ID to your devices you should be able to push out to multiple devices with one easy step.
+## Building the app
 
-## How to build a chrome app
+Before building an app, You have the choice to setup Bugsnag for your app, We recommend that you do, it helps to track the bugs, and you can report them to us so that we can have better data to help you.
+
+We will be using CocoaPods for dependency Management in our iOS app.
+
+1. install cocoa pods if you haven’t already by running `sudo gem install cocoa pods`.
+2. cd to `platforms/ios`
+3. run command `pod init`
+4. Add Bugsnag to your Profile. Copy the following line into the `PodFile`.
+```
+pod ‘Bugsnag’, :git => “https://github.com/bugsnag/bugsnag-cocoa.git”` 
+```
+5. Install Bugsnag by running `pod install`. (This might take some time on the first run).
+6. Import Bugsnag.h in your `ApplicationDelegate.m`
+```
+#import “Bugsnag.h”
+```
+7. In your application:didFinishLaunchingWithOptions: method, register with bugsnag by calling,
+```
+[Bugsnag startBugsnagWithApiKey:@“your_bugsnag_key”];
+```
+
+You can build the app with Xcode, or fastlane method (mentioned below).
+
+## Deployment
+
+### Fastlane
+1. Install fastlane by running 
+```
+sudo gem install fastlane --verbose
+```
+2. Make sure, you have the latest version of the Xcode command line tools installed:
+```
+xcode-select --install
+```
+3. run `fastlane init` and it will ask you the appropriate questions, answer them once to setup the deployment script for your app.
+
+### AppStore
+  
+1. Create an app identifier
+2. Create a Provisioning Profile
+3. Since we will use push notifications, We will need an Apple Store Certificate with Push Notifications enabled (so make suenter code herere you have that).
+4. Next is to create the app with your identifier in the iTunes Connect.
+
+
+
+## Building a chrome app
 
 ### Chrome App folder structure
 
@@ -153,7 +568,7 @@ If you now want to push new versions of your app to yours or multiple devices qu
 * Copy the `www` folder from project directory to /chromeApps/{{appname}} directory, create its zip archive and upload it to the developer dashboard.
 * Fill the details of the app and hit publish button.
 
-#### chrome app oAuth 
+### chrome app oAuth 
 
 For oAuth authentication, here are the three steps you need to complete:
 
