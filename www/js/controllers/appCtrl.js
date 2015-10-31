@@ -2,7 +2,7 @@ angular.module('starter')
     
     // Parent Controller
     // This controller runs before every one else
-	.controller('AppCtrl', function($scope, $ionicModal, $timeout, $injector, utilsService, authService, measurementService, $ionicPopover, $ionicLoading, $state, $ionicHistory, QuantiModo, notificationService, $rootScope,localStorageService) {
+	.controller('AppCtrl', function($scope, $ionicModal, $timeout, $injector, utilsService, authService, measurementService, $ionicPopover, $ionicLoading, $state, $ionicHistory, QuantiModo, notificationService, $rootScope, localStorageService, UserService) {
 
     // flags
     $scope.controller_name = "AppCtrl";
@@ -319,22 +319,54 @@ angular.module('starter')
     // log in with google
     $scope.google_login = function(){
         alert('login google');
+
+        $ionicLoading.show({
+            template: 'Logging in...'
+        });
+
+        window.plugins.googleplus.login({}, function (user_data) {
+        
+            UserService.setUser({
+                userID: user_data.userId,
+                name: user_data.displayName,
+                email: user_data.email,
+                picture: user_data.imageUrl,
+                accessToken: user_data.accessToken,
+                idToken: user_data.idToken
+            });
+
+            $ionicLoading.hide();
+            alert('success');
+        
+        },
+        function (msg) {
+            $ionicLoading.hide();
+        });
+
     };
 
+    $scope.google_logout = function(){
+        window.plugins.googleplus.logout(function (msg) {
+          alert('logged_out');
+          
+      }, function(fail){
+          console.log("failed to logout", fail);
+      });
+    }
 
     // login with facebook
     $scope.facebook_login = function(){
         alert('login fb');
         $cordovaFacebook.login(["public_profile", "email", "user_friends"])
-           .then(function(success) {
-             // success
-             alert("success");
-             console.log(success);
-           }, function (error) {
-             // error
-             alert("error");
-             console.log(error);
-           });
+        .then(function(success) {
+            // success
+            alert("success");
+            console.log(success);
+        }, function (error) {
+            // error
+            alert("error");
+            console.log(error);
+        });
     };
 
     // when user click's skip button
