@@ -12,8 +12,13 @@ angular.module('starter')
     $rootScope.isSyncing = false;
     var $cordovaFacebook = {};
 
-    if($injector.has('$cordovaFacebook')){
+    $scope.isIOS = ionic.Platform.isIPad() || ionic.Platform.isIOS();
+    $scope.isAndroid = ionic.Platform.isAndroid();
+    $scope.isChrome = window.chrome ? true : false;
+
+    if($scope.isIOS && $injector.has('$cordovaFacebook')){
         $cordovaFacebook = $injector.get('$cordovaFacebook');
+        alert('got cordova facebook');
     }
     
     /*Wrapper Config*/
@@ -318,28 +323,22 @@ angular.module('starter')
 
     // log in with google
     $scope.google_login = function(){
-        alert('login google');
-
-        $ionicLoading.show({
-            template: 'Logging in...'
-        });
-
         window.plugins.googleplus.login({}, function (user_data) {
-        
-            $ionicLoading.hide();
-            alert('success');
-        
+            
+            console.log('successfully logged in');
+            console.log('google->', JSON.stringify(user_data));
+            var access_token = user_data.accessToken;
+            
         },
         function (msg) {
-            $ionicLoading.hide();
+            console.log("google login error", msg);
         });
 
     };
 
     $scope.google_logout = function(){
         window.plugins.googleplus.logout(function (msg) {
-          alert('logged_out');
-          
+          console.log("logged out of google!");
       }, function(fail){
           console.log("failed to logout", fail);
       });
@@ -347,16 +346,15 @@ angular.module('starter')
 
     // login with facebook
     $scope.facebook_login = function(){
-        alert('login fb');
         $cordovaFacebook.login(["public_profile", "email", "user_friends"])
         .then(function(success) {
             // success
-            alert("success");
-            console.log(success);
+            console.log("facebook_login_success");
+            console.log("facebook->", JSON.stringify(success));
+            var access_token = success.authService.accessToken;
         }, function (error) {
             // error
-            alert("error");
-            console.log(error);
+            console.log("facebook login error", error);
         });
     };
 
