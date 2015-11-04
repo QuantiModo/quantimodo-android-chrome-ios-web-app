@@ -8,13 +8,6 @@ module.exports = [
         ]
     },
     {
-        "file": "plugins/cordova-plugin-console/www/console-via-logger.js",
-        "id": "cordova-plugin-console.console",
-        "clobbers": [
-            "console"
-        ]
-    },
-    {
         "file": "plugins/cordova-plugin-console/www/logger.js",
         "id": "cordova-plugin-console.logger",
         "clobbers": [
@@ -22,17 +15,77 @@ module.exports = [
         ]
     },
     {
+        "file": "plugins/cordova-plugin-console/www/console-via-logger.js",
+        "id": "cordova-plugin-console.console",
+        "clobbers": [
+            "console"
+        ]
+    },
+    {
+        "file": "plugins/cordova-plugin-inappbrowser/www/inappbrowser.js",
+        "id": "cordova-plugin-inappbrowser.inappbrowser",
+        "clobbers": [
+            "cordova.InAppBrowser.open",
+            "window.open"
+        ]
+    },
+    {
+        "file": "plugins/cordova-plugin-splashscreen/www/splashscreen.js",
+        "id": "cordova-plugin-splashscreen.SplashScreen",
+        "clobbers": [
+            "navigator.splashscreen"
+        ]
+    },
+    {
+        "file": "plugins/de.appplant.cordova.plugin.local-notification/www/local-notification.js",
+        "id": "de.appplant.cordova.plugin.local-notification.LocalNotification",
+        "clobbers": [
+            "cordova.plugins.notification.local",
+            "plugin.notification.local"
+        ]
+    },
+    {
+        "file": "plugins/de.appplant.cordova.plugin.local-notification/www/local-notification-core.js",
+        "id": "de.appplant.cordova.plugin.local-notification.LocalNotification.Core",
+        "clobbers": [
+            "cordova.plugins.notification.local.core",
+            "plugin.notification.local.core"
+        ]
+    },
+    {
+        "file": "plugins/de.appplant.cordova.plugin.local-notification/www/local-notification-util.js",
+        "id": "de.appplant.cordova.plugin.local-notification.LocalNotification.Util",
+        "merges": [
+            "cordova.plugins.notification.local.core",
+            "plugin.notification.local.core"
+        ]
+    },
+    {
+        "file": "plugins/org.apache.cordova.statusbar/www/statusbar.js",
+        "id": "org.apache.cordova.statusbar.statusbar",
+        "clobbers": [
+            "window.StatusBar"
+        ]
+    },
+    {
+        "file": "plugins/phonegap-facebook-plugin/facebookConnectPlugin.js",
+        "id": "phonegap-facebook-plugin.FacebookConnectPlugin",
+        "clobbers": [
+            "facebookConnectPlugin"
+        ]
+    },
+    {
+        "file": "plugins/cordova-plugin-googleplus/www/GooglePlus.js",
+        "id": "cordova-plugin-googleplus.GooglePlus",
+        "clobbers": [
+            "window.plugins.googleplus"
+        ]
+    },
+    {
         "file": "plugins/cordova-plugin-datepicker/www/ios/DatePicker.js",
         "id": "cordova-plugin-datepicker.DatePicker",
         "clobbers": [
             "datePicker"
-        ]
-    },
-    {
-        "file": "plugins/cordova-plugin-device/www/device.js",
-        "id": "cordova-plugin-device.device",
-        "clobbers": [
-            "device"
         ]
     },
     {
@@ -182,49 +235,17 @@ module.exports = [
         "runs": true
     },
     {
-        "file": "plugins/cordova-plugin-inappbrowser/www/inappbrowser.js",
-        "id": "cordova-plugin-inappbrowser.inappbrowser",
-        "clobbers": [
-            "cordova.InAppBrowser.open",
-            "window.open"
-        ]
-    },
-    {
-        "file": "plugins/cordova-plugin-splashscreen/www/splashscreen.js",
-        "id": "cordova-plugin-splashscreen.SplashScreen",
-        "clobbers": [
-            "navigator.splashscreen"
-        ]
-    },
-    {
-        "file": "plugins/de.appplant.cordova.plugin.local-notification/www/local-notification.js",
-        "id": "de.appplant.cordova.plugin.local-notification.LocalNotification",
-        "clobbers": [
-            "cordova.plugins.notification.local",
-            "plugin.notification.local"
-        ]
-    },
-    {
-        "file": "plugins/de.appplant.cordova.plugin.local-notification/www/local-notification-core.js",
-        "id": "de.appplant.cordova.plugin.local-notification.LocalNotification.Core",
-        "clobbers": [
-            "cordova.plugins.notification.local.core",
-            "plugin.notification.local.core"
-        ]
-    },
-    {
-        "file": "plugins/de.appplant.cordova.plugin.local-notification/www/local-notification-util.js",
-        "id": "de.appplant.cordova.plugin.local-notification.LocalNotification.Util",
-        "merges": [
-            "cordova.plugins.notification.local.core",
-            "plugin.notification.local.core"
-        ]
-    },
-    {
-        "file": "plugins/io.github.pwlin.cordova.plugins.fileopener2/www/plugins.FileOpener2.js",
-        "id": "io.github.pwlin.cordova.plugins.fileopener2.FileOpener2",
+        "file": "plugins/cordova-plugin-file-opener2/www/plugins.FileOpener2.js",
+        "id": "cordova-plugin-file-opener2.FileOpener2",
         "clobbers": [
             "cordova.plugins.fileOpener2"
+        ]
+    },
+    {
+        "file": "plugins/org.apache.cordova.device/www/device.js",
+        "id": "org.apache.cordova.device.device",
+        "clobbers": [
+            "device"
         ]
     }
 ];
@@ -232,15 +253,19 @@ module.exports.metadata =
 // TOP OF METADATA
 {
     "com.ionic.keyboard": "1.0.4",
-    "cordova-plugin-console": "1.0.0",
-    "cordova-plugin-datepicker": "0.8.2",
-    "cordova-plugin-device": "1.0.0",
-    "cordova-plugin-file": "2.0.0",
-    "cordova-plugin-inappbrowser": "1.0.1-dev",
-    "cordova-plugin-splashscreen": "2.0.0",
+    "cordova-plugin-console": "1.0.1",
+    "cordova-plugin-googleplayservices": "19.0.3",
+    "cordova-plugin-inappbrowser": "1.0.1",
+    "cordova-plugin-splashscreen": "2.1.0",
     "cordova-plugin-whitelist": "1.0.0",
     "de.appplant.cordova.plugin.local-notification": "0.8.2dev",
-    "io.github.pwlin.cordova.plugins.fileopener2": "1.0.11"
+    "org.apache.cordova.statusbar": "0.1.10",
+    "phonegap-facebook-plugin": "0.12.0",
+    "cordova-plugin-googleplus": "4.0.3",
+    "cordova-plugin-datepicker": "0.9.3",
+    "cordova-plugin-file": "3.0.0",
+    "cordova-plugin-file-opener2": "2.0.1",
+    "org.apache.cordova.device": "0.3.0"
 }
 // BOTTOM OF METADATA
 });
