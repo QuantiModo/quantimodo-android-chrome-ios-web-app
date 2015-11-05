@@ -66,12 +66,16 @@ angular.module('starter')
                                 grant_type: 'refresh_token'
                             }, mashape_headers).success(function(data) {
                                 // update local storage
-                                var accessTokenRefreshed = authSrv.updateAccessToken(data);
+                                if (data.error) {
+                                	deferred.reject('refresh failed');
+                                } else {
+                                	var accessTokenRefreshed = authSrv.updateAccessToken(data);
 
-                                // respond
-                                deferred.resolve({
-                                    accessToken : accessTokenRefreshed
-                                });
+                                	// respond
+                                	deferred.resolve({
+                                	    accessToken : accessTokenRefreshed
+                                	});
+                                }
 
                             }).error(function(response) {
                                 console.log("refresh failed");
