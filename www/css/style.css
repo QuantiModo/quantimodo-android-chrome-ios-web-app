@@ -355,3 +355,7 @@ img.intro_mood {
 .uptop {
   margin-top: -8px;
 }
+
+.popup {
+  background-color: white!important;
+}
