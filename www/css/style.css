@@ -350,3 +350,11 @@ img.intro_mood {
   margin-left: 3px;
   margin-right: 3px;
 }
+
+.col-l {
+  margin-right: -100px;
+}
+
+.uptop {
+  margin-top: -8px;
+}
