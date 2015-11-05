@@ -89,13 +89,13 @@
             <div class="list">
 
                 <div ng-if="(category != 'Mood' && category != 'Symptoms')" class="row labeled-control">
-                    <div class="col">
+                    <div class="col col-l">
                         <span>
                             Value
                         </span>
                     </div>
                     <div class="col">
-                        <input type="text" ng-model="$parent.$parent.variable_value" id="variable_value" placeholder="Enter Value Here">
+                        <input type="text" ng-model="$parent.$parent.variable_value" id="variable_value" placeholder="Enter Value Here" class="uptop">
                     </div>
                 </div>
 
@@ -104,11 +104,11 @@
                 </div>
 
                 <div class="row labeled-control" ng-if="(category != 'Mood' && category != 'Symptoms')">
-                    <div class="col">
+                    <div class="col col-l">
                         <span class="input-label">Unit</span>
                     </div>
                     <div class="col">
-                        <div class="row" style="padding-left:0px;">
+                        <div class="row uptop" style="padding-left:0px;">
                             <div class="col-90">
                                 <input type="text" ng-change="showUnitsDropDown()" ng-model="unit_text" placeholder="Enter Unit Here">
                             </div>
@@ -132,14 +132,14 @@
                 </div>
 
                 <div class="row labeled-control">
-                    <div class="col">
+                    <div class="col col-l">
                         <span>
                             Date
                         </span>
                     </div>
                     <div class="col" style="padding-top: 15px;">
                         <ionic-datepicker style="width:100%" idate="currentDate" disablepreviousdates="false" callback="datePickerCallback">
-                            <button class="button button-block measure_date" style="font-size:14px;border:none;color:black;background-color: white;margin-bottom: 0px;margin-top: 0px;padding-left: 0px; text-align:left;">
+                            <button class="button button-block measure_date uptop" style="font-size:14px;border:none;color:black;background-color: white;margin-bottom: 0px;margin-top: 0px;padding-left: 0px; text-align:left;">
                                 {{ currentDate | date:'dd - MMMM - yyyy' }}
                             </button>
                         </ionic-datepicker>
@@ -147,14 +147,14 @@
                 </div>
 
                 <div class="row labeled-control">
-                    <div class="col">
+                    <div class="col col-l">
                         <span>
                             Time
                         </span>
                     </div>
                     <div class="col" style="padding-top: 11px;">
                         <ionic-timepicker style="width:54%" etime="slots.epochTime" format="slots.format" step="slots.step" callback="timePickerCallback">
-                            <button class="button button-block" style="text-align:left;font-size:14px;border:none;color:black;background-color: white;margin-bottom: 0px;margin-top: 0px;padding-left: 0px;">
+                            <button class="button button-block uptop" style="text-align:left;font-size:14px;border:none;color:black;background-color: white;margin-bottom: 0px;margin-top: 0px;padding-left: 0px;">
                                 {{slots.epochTime | toTime}}
                             </button>
                         </ionic-timepicker>
