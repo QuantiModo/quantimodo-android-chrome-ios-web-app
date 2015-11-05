@@ -23,19 +23,23 @@ angular.module('starter')
         var categoryConfig = {
             Foods:{
                 default_unit:"serving",
-                help_text:"What did you eat?"
+                help_text:"What did you eat?",
+                display_name: "Foods"
             },
             Mood:{
                 default_unit: "/5",
-                help_text: "Select an aspect of mood"
+                help_text: "Select an aspect of emotion",
+                display_name: "Emotions"
             },
             Symptoms:{
                 default_unit: "/5",
-                help_text: "What do you want to track?"
+                help_text: "What do you want to track?",
+                display_name: "Symptoms"
             },
             Treatments:{
                 default_unit: "count",
-                help_text:"What do you want to track?"
+                help_text:"What do you want to track?",
+                display_name: "Treatments"
             }
 
         };
@@ -64,6 +68,7 @@ angular.module('starter')
         $scope.variable_name = "";
         $scope.factor = category;
         $scope.help_text = categoryConfig[category].help_text;
+        $scope.display_name = categoryConfig[category].display_name;
         $scope.unit_text = '';
 
         // default operation
