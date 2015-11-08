@@ -89,7 +89,7 @@ angular.module('starter')
                 });
                 
                 setTimeout(function(){
-                    var value = matched[matched.length-1]? matched[matched.length-1].value : false;
+                    var value = matched[matched.length-1]? matched[matched.length-1].value : $scope.item.mostCommonValue;
                     if(value) $scope.variable_value = value;
                     // redraw view
                     $scope.$apply();
