@@ -4,7 +4,6 @@ angular.module('starter')
 
 		// sync the measurements in queue with QuantiModo API
 		var syncQueue = function(measurementsQueue){
-
 			var defer = $q.defer();
 
 			// measurements set
@@ -243,9 +242,26 @@ angular.module('starter')
                 }
 			},
 
+            post_tracking_measurement_locally : function(measurement_object){
+                var deferred = $q.defer();
+
+                localStorageService.getItem('allTrackingData', function(allTrackingData){
+                    var allTrackingData = allTrackingData? JSON.parse(allTrackingData) : [];
+
+                    // add to queue
+                    allTrackingData.push(measurement_object);
+
+                    //resave queue
+                    localStorageService.setItem('allTrackingData', JSON.stringify(allTrackingData));
+
+                    deferred.resolve();
+                });
+
+                return deferred.promise;
+            },
+
 			// post a singe measurement
 			post_tracking_measurement : function(epoch, variable, val, unit, isAvg, category){
-
 			   // measurements set
 			   var measurements = [
                     {
@@ -264,12 +280,28 @@ angular.module('starter')
                     }
                 ];
 
-                // send request
-                QuantiModo.postMeasurementsV2(measurements, function(response){
-                    console.log("success", response);
-                }, function(response){
-                    console.log("error", response);
+                // for local
+                var measurement = {
+                    name: variable,
+                    source: config.get('client_source_name'),
+                    category: category,
+                    combinationOperation: isAvg ? "MEAN" : "SUM",
+                    unit: unit,
+                    timestamp:  epoch / 1000,
+                    value: val,
+                    note : ""
+                };
+
+                measurementService.post_tracking_measurement_locally(measurement)
+                .then(function(){
+                    // send request
+                    QuantiModo.postMeasurementsV2(measurements, function(response){
+                        console.log("success", response);
+                    }, function(response){
+                        console.log("error", response);
+                    });
                 });
+
 			},
 
 			// edit existing measurement
