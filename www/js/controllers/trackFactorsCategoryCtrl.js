@@ -4,7 +4,7 @@
 angular.module('starter')
 
     // Controls the Track Factors Page
-    .controller('TrackFactorsCategoryCtrl', function($scope, $ionicModal, $timeout, $ionicPopup ,$ionicLoading, authService, measurementService, $state, $rootScope,$stateParams,utilsService){
+    .controller('TrackFactorsCategoryCtrl', function($scope, $ionicModal, $timeout, $ionicPopup ,$ionicLoading, authService, measurementService, $state, $rootScope, $stateParams, utilsService, localStorageService){
 
         $scope.controller_name = "TrackFactorsCategoryCtrl";
 
@@ -134,6 +134,8 @@ angular.module('starter')
 
             // update time in the datepicker
             $scope.slots = {epochTime: new Date().getTime()/1000, format: 24, step: 1};
+
+            $scope.onMeasurementStart();
         };
 
         // when add new variable is tapped
@@ -157,6 +159,24 @@ angular.module('starter')
             $scope.showAddVariable = false;
             $scope.showAddMeasurement = false;
             $scope.showTrack = true;
+        };
+
+        $scope.onMeasurementStart = function(){
+            localStorageService.getItem('allTrackingData', function(allTrackingData){
+                var allTrackingData = allTrackingData? JSON.parse(allTrackingData) : [];
+                
+                var current = '';
+                var matched = allTrackingData.filter(function(x){
+                    return x.unit === $scope.selected_sub;
+                });
+                
+                setTimeout(function(){
+                    var value = matched[matched.length-1]? matched[matched.length-1].value : false;
+                    if(value) $scope.variable_value = value;
+                    // redraw view
+                    $scope.$apply();
+                }, 500);
+            });
         };
 
         // completed adding and/or measuring
