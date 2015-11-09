@@ -96,12 +96,16 @@ angular.module('starter')
 			},
 
 			// get access token from request token
-			getAccessTokenFromRequestToken : function (requestToken) {
+			getAccessTokenFromRequestToken : function (requestToken, withJWT) {
 				console.log("request token : ",requestToken);
 
 				var deferred = $q.defer();
 
 				var url = config.getURL("api/oauth2/token")
+				
+				if(typeof withJWT !== "undefined")
+					url = config.getURL("api/v2/bshaffer/oauth/authorize");
+				
 				console.log('expired token, refreshing!');
 
 				// make request
@@ -133,8 +137,36 @@ angular.module('starter')
 				});
 
 				return deferred.promise;
-			}
+			},
 
+
+			getJWTToken : function(provider, accessToken){
+				var deferred = q.defer();
+				
+				var url = config.url('api/v2/auth/social/authorizeToken');
+
+				url += "provider="+provider;
+				url += "&accessToken="+accessToken;
+
+				var request = {
+					method : 'GET',
+					url : url,
+					responseType: 'json',
+					headers : {
+						'Content-Type' : 'application/json'
+					}
+				};
+
+				$http(request).success(function(response){
+					if(response.success && response.data && response.data.token) {
+						deferred.resolve(response.data.token);
+					} else deferred.reject(response);
+				}).error(function(response){
+				   deferred.reject(response);
+				});
+
+				return deferred.promise;	
+			}
 		};
 
 		return authSrv;
