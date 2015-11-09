@@ -98,8 +98,8 @@ config.appSettings  = {
         },
         "screen2" : {
             images : {
-                height : '75',
-                width : '75'
+                height : '70',
+                width : '70'
             }
         },
         "screen3" : {

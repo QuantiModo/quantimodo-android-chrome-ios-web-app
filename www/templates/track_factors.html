@@ -3,8 +3,8 @@
         <div class="card" ng-show="showTrack">
             <div class="item item-text-wrap">
                 <div>
-                    <div >
-                        <span class="heading calm">Track {{factor}}</span>
+                    <div>
+                        <span class="heading calm">Track {{display_name}}</span>
                         <ul class="from_top">
                             <!--<li>What do you want to track?</li>-->
                             <li>{{help_text}}</li>
@@ -20,29 +20,29 @@
             <p></p>
             <ion-list>
                 <ion-item style="text-align:center;border-bottom: 1px solid rgb(221, 221, 221);" ng-show="loading">
-                <img src="img/loader.gif">
-               </ion-item>
+                    <img src="img/loader.gif">
+                </ion-item>
             </ion-list>
-            
+
             <ion-list ng-show="list.length" class>
-              <ion-item ng-click="measure(item)" ng-repeat="item in list | orderBy:'-latestMeasurementTime' | limitTo:5 ">
-               <div>
-                   <p style="font-size:18px;">{{item.name}}</p>
-                   <p>{{item.latestMeasurementTime | fromNow}}</p>
-               </div>
-              </ion-item>
+                <ion-item ng-click="measure(item)" ng-repeat="item in list | orderBy:'-latestMeasurementTime' | limitTo:5 ">
+                    <div>
+                        <p style="font-size:18px;">{{item.name}}</p>
+                        <p>{{item.latestMeasurementTime | fromNow}}</p>
+                    </div>
+                </ion-item>
             </ion-list>
-            
+
             <ion-list>
                 <ion-item style="border-top: 1px solid rgb(221, 221, 221);" ng-click="add_variable()">
-                 + Add a new {{category}} Variable
+                    + Add a new {{display_name}} Variable
                 </ion-item>
             </ion-list>
         </div>
 
         <div class="card" ng-show="showAddVariable">
             <div class="list">
-              <p class="heading calm" style="padding:14px;">Add New Variable</p>
+                <p class="heading calm" style="padding:14px;">Add New Variable</p>
 
 
                 <label class="item item-input item-select" ng-if="showCategoryAsSelector">
@@ -65,21 +65,21 @@
                     <span class="input-label">Variable</span>
                     <input type="text" ng-model="variable_name" id="variable_name" placeholder="Variable name">
                 </label>
-                
+
                 <label class="item item-radio">
-                    <input type="radio" ng-model="sumAvg" value="sum" name="group" >
-                    <div class="item-content" >
+                    <input type="radio" ng-model="sumAvg" value="sum" name="group">
+                    <div class="item-content">
                         Sum
                     </div>
-                    <i class="radio-icon ion-checkmark" ></i>
+                    <i class="radio-icon ion-checkmark"></i>
                 </label>
 
                 <label class="item item-radio">
                     <input type="radio" ng-model="sumAvg" value="avg" name="group">
-                    <div class="item-content" >
+                    <div class="item-content">
                         Average
                     </div>
-                    <i class="radio-icon ion-checkmark" ></i>
+                    <i class="radio-icon ion-checkmark"></i>
                 </label>
             </div>
         </div>
@@ -89,29 +89,26 @@
             <div class="list">
 
                 <div ng-if="(category != 'Mood' && category != 'Symptoms')" class="row labeled-control">
-                    <div class="col">
+                    <div class="col col-l">
                         <span>
                             Value
                         </span>
                     </div>
-                    <div  class="col">
-                        <input type="text" ng-model="$parent.$parent.variable_value" id="variable_value" placeholder="Enter Value Here">
+                    <div class="col">
+                        <input type="text" ng-model="$parent.$parent.variable_value" id="variable_value" placeholder="Enter Value Here" class="uptop">
                     </div>
                 </div>
 
                 <div class="tracking_factors col" ng-if="category=='Mood' || category == 'Symptoms'">
-                    <img ng-repeat="option in tracking_factor_numbers"
-                         ng-click="select_tracking_factor($event, option.value)"
-                         ng-src="{{option.img}}">
+                    <img ng-repeat="option in tracking_factor_numbers" ng-click="select_tracking_factor($event, option.value)" ng-src="{{option.img}}">
                 </div>
 
-
                 <div class="row labeled-control" ng-if="(category != 'Mood' && category != 'Symptoms')">
-                    <div class="col">
+                    <div class="col col-l">
                         <span class="input-label">Unit</span>
                     </div>
                     <div class="col">
-                        <div class="row">
+                        <div class="row uptop" style="padding-left:0px;">
                             <div class="col-90">
                                 <input type="text" ng-change="showUnitsDropDown()" ng-model="unit_text" placeholder="Enter Unit Here">
                             </div>
@@ -134,47 +131,37 @@
                     </div>
                 </div>
 
-              <div class="row labeled-control">
-                  <div class="col">
-                      <span>
-                        Date
-                      </span>
-                  </div>
-                  <div class="col date_col" style="padding-top: 11px;">
-                      <ionic-datepicker style="width:100%" idate="currentDate" disablepreviousdates="false"  callback="datePickerCallback">
-                          <button class="button button-block measure_date" style="font-size:14px;border:none;color:black;background-color: white;margin-bottom: 0px;margin-top: 0px;">
-                              {{ currentDate | date:'dd - MMMM - yyyy' }}
-                          </button>
-                      </ionic-datepicker>
-                  </div>
-              </div>
+                <div class="row labeled-control">
+                    <div class="col col-l">
+                        <span>
+                            Date
+                        </span>
+                    </div>
+                    <div class="col" style="padding-top: 15px;">
+                        <ionic-datepicker style="width:100%" idate="currentDate" disablepreviousdates="false" callback="datePickerCallback">
+                            <button class="button button-block measure_date uptop" style="font-size:14px;border:none;color:black;background-color: white;margin-bottom: 0px;margin-top: 0px;padding-left: 0px; text-align:left;">
+                                {{ currentDate | date:'dd - MMMM - yyyy' }}
+                            </button>
+                        </ionic-datepicker>
+                    </div>
+                </div>
 
                 <div class="row labeled-control">
-                    <div class="col">
-                      <span>
-                          Time
-                      </span>
+                    <div class="col col-l">
+                        <span>
+                            Time
+                        </span>
                     </div>
                     <div class="col" style="padding-top: 11px;">
                         <ionic-timepicker style="width:54%" etime="slots.epochTime" format="slots.format" step="slots.step" callback="timePickerCallback">
-                            <button class="button button-block" style="text-align:right;font-size:14px;border:none;color:black;background-color: white;margin-bottom: 0px;margin-top: 0px;">
+                            <button class="button button-block uptop" style="text-align:left;font-size:14px;border:none;color:black;background-color: white;margin-bottom: 0px;margin-top: 0px;padding-left: 0px;">
                                 {{slots.epochTime | toTime}}
                             </button>
                         </ionic-timepicker>
                     </div>
                 </div>
-
             </div>
-
-
-
-
-
-
-
-                </div>
-            </label>
-        </div>
+        </div>    
 
         <div class="card" ng-show="showAddMeasurement">
             <button ng-click="cancel()" class="button button-assertive button-block">

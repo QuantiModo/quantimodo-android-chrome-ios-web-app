@@ -12,8 +12,13 @@ angular.module('starter')
     $rootScope.isSyncing = false;
     var $cordovaFacebook = {};
 
-    if($injector.has('$cordovaFacebook')){
+    $scope.isIOS = ionic.Platform.isIPad() || ionic.Platform.isIOS();
+    $scope.isAndroid = ionic.Platform.isAndroid();
+    $scope.isChrome = window.chrome ? true : false;
+
+    if($scope.isIOS && $injector.has('$cordovaFacebook')){
         $cordovaFacebook = $injector.get('$cordovaFacebook');
+        alert('got cordova facebook');
     }
     
     /*Wrapper Config*/
@@ -85,12 +90,13 @@ angular.module('starter')
 	};
 
     // get Authentication Token
-    $scope.getAuthToken = function(request_token){
+    $scope.getAuthToken = function(request_token, withJWT){
     	authService.getAccessTokenFromRequestToken(request_token)
     	.then(function(response) {
     		
             console.log("access token recieved",response);
-            authService.updateAccessToken(response);
+            if(withJWT)? authService.updateAccessToken(response, withJWT);
+            else authService.updateAccessToken(response);
     		
             // set flags
     		$scope.isLoggedIn = true;
@@ -316,30 +322,78 @@ angular.module('starter')
         }
     };
 
+    $scope.native_login = function(platform, accessToken){
+        authService.getJWTToken(platform, accessToken)
+        .then(function(response){
+            // success
+
+            console.log("Mobile device detected!");
+            var url = config.getURL("api/v2/bshaffer/oauth/authorize", true);
+
+            url += "response_type=code";
+            url += "&client_id="+config.getClientId();
+            url += "&client_secret="+config.getClientSecret();
+            url += "&scope="+config.getPermissionString();2
+            url += "&state=testabcd";
+            url += "&token="+
+
+            // open the auth window via inAppBrowser
+            var ref = window.open(url,'_blank', 'location=no,toolbar=no');
+            
+            // listen to it's event when the page changes
+            ref.addEventListener('loadstart', function(event) {
+                
+                // check if changed url is the same as redirection url
+                if(utilsService.hasInIt(event.url, "/ionic/Modo/www/callback")) {
+                    
+                    // if there is no error
+                    if(!utilsService.getUrlParameter(event.url,'error')) {
+                        
+                        // extract request token
+                        var requestToken = utilsService.getUrlParameter(event.url, 'code');
+                        
+                        // close inAppBrowser
+                        ref.close();
+                        
+                        var withJWT = true;
+                        // get auth token from request token
+                        $scope.getAuthToken(requestToken, withJWT);
+
+                    } else {
+
+                        console.log("error occoured", utilsService.getUrlParameter(event.url, 'error'));
+                        
+                        // close inAppBrowser
+                        ref.close();
+                    }
+                }
+
+            });
+        }, function(){
+            // error
+            console.log("error occured, couldn't generate JWT");
+        });
+    };
+
     // log in with google
     $scope.google_login = function(){
-        alert('login google');
-
-        $ionicLoading.show({
-            template: 'Logging in...'
-        });
-
         window.plugins.googleplus.login({}, function (user_data) {
-        
-            $ionicLoading.hide();
-            alert('success');
-        
+            
+            console.log('successfully logged in');
+            console.log('google->', JSON.stringify(user_data));
+            var accessToken = user_data.accessToken;
+            
+            $scope.native_login('google', accessToken);
         },
         function (msg) {
-            $ionicLoading.hide();
+            console.log("google login error", msg);
         });
 
     };
 
     $scope.google_logout = function(){
         window.plugins.googleplus.logout(function (msg) {
-          alert('logged_out');
-          
+          console.log("logged out of google!");
       }, function(fail){
           console.log("failed to logout", fail);
       });
@@ -347,16 +401,17 @@ angular.module('starter')
 
     // login with facebook
     $scope.facebook_login = function(){
-        alert('login fb');
         $cordovaFacebook.login(["public_profile", "email", "user_friends"])
         .then(function(success) {
             // success
-            alert("success");
-            console.log(success);
+            console.log("facebook_login_success");
+            console.log("facebook->", JSON.stringify(success));
+            var accessToken = success.authService.accessToken;
+
+            $scope.native_login('facebook', accessToken);
         }, function (error) {
             // error
-            alert("error");
-            console.log(error);
+            console.log("facebook login error", error);
         });
     };
 

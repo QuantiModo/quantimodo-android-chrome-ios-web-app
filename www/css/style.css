@@ -214,9 +214,6 @@ label.item.item-input.item-text > input[type="text"] {
     width: 85%;
     font-size: 14px;
 }
-.date_col {
-	margin-left: -100px;
-}
 
 .sub-menu {
     padding-left: 25px;
@@ -349,4 +346,16 @@ p.intro_header {
 img.intro_mood {
   margin-left: 3px;
   margin-right: 3px;
+}
+
+.col-l {
+  margin-right: -100px;
+}
+
+.uptop {
+  margin-top: -8px;
+}
+
+.popup {
+  background-color: white!important;
 }

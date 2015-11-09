@@ -1,7 +1,7 @@
 angular.module('starter')
     
     // Controls the Track Factors Page
-    .controller('TrackFactorsCtrl', function($scope, $ionicModal, $timeout, $ionicPopup ,$ionicLoading, authService, measurementService, $state, $rootScope,utilsService){
+    .controller('TrackFactorsCtrl', function($scope, $ionicModal, $timeout, $ionicPopup ,$ionicLoading, authService, measurementService, $state, $rootScope, utilsService, localStorageService){
 
         $scope.controller_name = "TrackFactorsCtrl";
 
@@ -79,6 +79,24 @@ angular.module('starter')
             },100);
         };
 
+        $scope.onMeasurementStart = function(){
+            localStorageService.getItem('allTrackingData', function(allTrackingData){
+                var allTrackingData = allTrackingData? JSON.parse(allTrackingData) : [];
+                
+                var current = '';
+                var matched = allTrackingData.filter(function(x){
+                    return x.unit === $scope.selected_sub;
+                });
+                
+                setTimeout(function(){
+                    var value = matched[matched.length-1]? matched[matched.length-1].value : $scope.item.mostCommonValue;
+                    if(value) $scope.variable_value = value;
+                    // redraw view
+                    $scope.$apply();
+                }, 500);
+            });
+        };
+
         // when an old measurement is tapped to remeasure
         $scope.measure = function(item){
             console.log(item);
@@ -97,6 +115,8 @@ angular.module('starter')
             
             // update time in the datepicker
             $scope.slots = {epochTime: new Date().getTime()/1000, format: 24, step: 1};
+
+            $scope.onMeasurementStart();
         };
 
         // when add new variable is tapped
