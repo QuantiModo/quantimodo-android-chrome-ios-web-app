@@ -99,8 +99,8 @@ div.dateDiv > input {
 .spinner svg {
   width: 28px;
   height: 28px;
-  stroke: #11C1F3;
-  fill: #11C1F3;
+  stroke: #3369E8;
+  fill: #3369E8;
 }
 
 
@@ -109,7 +109,7 @@ div.dateDiv > input {
 }
 
 p.item-icon-left{
-	color : #11C1F3;
+	color : #3369E8;
 }
 
 iframe {
@@ -184,8 +184,8 @@ label.item.item-input.item-text > input[type="text"] {
 }
 
 .button.button-positive {
-    border-color: #11c1f3 !important;
-    background-color: #11c1f3 !important;
+    border-color: #3369E8 !important;
+    background-color: #3369E8 !important;
     color: #fff;
 }
 
