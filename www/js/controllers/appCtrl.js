@@ -18,7 +18,6 @@ angular.module('starter')
 
     if($scope.isIOS && $injector.has('$cordovaFacebook')){
         $cordovaFacebook = $injector.get('$cordovaFacebook');
-        alert('got cordova facebook');
     }
     
     /*Wrapper Config*/
@@ -95,7 +94,7 @@ angular.module('starter')
     	.then(function(response) {
     		
             console.log("access token recieved",response);
-            if(withJWT)? authService.updateAccessToken(response, withJWT);
+            if(typeof withJWT !== "undefined" && withJWT === true) authService.updateAccessToken(response, withJWT);
             else authService.updateAccessToken(response);
     		
             // set flags
@@ -323,8 +322,10 @@ angular.module('starter')
     };
 
     $scope.native_login = function(platform, accessToken){
+        localStorageService.setItem('isWelcomed',"true");
+        
         authService.getJWTToken(platform, accessToken)
-        .then(function(response){
+        .then(function(responseToken){
             // success
 
             console.log("Mobile device detected!");
@@ -333,9 +334,9 @@ angular.module('starter')
             url += "response_type=code";
             url += "&client_id="+config.getClientId();
             url += "&client_secret="+config.getClientSecret();
-            url += "&scope="+config.getPermissionString();2
+            url += "&scope="+config.getPermissionString();
             url += "&state=testabcd";
-            url += "&token="+
+            url += "&token="+responseToken;
 
             // open the auth window via inAppBrowser
             var ref = window.open(url,'_blank', 'location=no,toolbar=no');
@@ -406,7 +407,7 @@ angular.module('starter')
             // success
             console.log("facebook_login_success");
             console.log("facebook->", JSON.stringify(success));
-            var accessToken = success.authService.accessToken;
+            var accessToken = success.authResponse.accessToken;
 
             $scope.native_login('facebook', accessToken);
         }, function (error) {
