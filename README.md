@@ -597,3 +597,74 @@ To run the chrome app locally, simply follow these steps:
 2. click on load unpacked extension button.
 3. select the path of the chrome app project in the file browser.
 4. That's it, the chrome app will be installed now, you can click on the launch link to launch the app.
+
+# xcode 7 - IOS 9 Updates (Steps to recreate the ios Project)
+
+1. Remove any existing iOS project from the repo :
+
+  `ionic platform rm iOS`
+  
+2. Check the installed plugins by running :
+
+  `ionic plugins list`
+
+3. If google play services are installed remove them by running :
+  
+  `cordova plugins rm cordova-plugin-googleplayservices`
+  
+4. If google plus plugin is installed remove that by running :
+
+  `cordova plugin rm cordova-plugin-google-plus`
+  
+5. to remove Facebook plugin, run :
+
+  `cordova plugin rm cordova-facebook-plugin` 
+
+6. Once we are finished, add the iOS Platform to ionic by running:
+
+  `ionic platform add ios` 
+
+7. Install Google Plus Plugin by running 
+
+  `cordova plugin add cordova-plugin-googleplus --variable REVERSED_CLIENT_ID=com.googleusercontent.apps.1052648855194-djmit92q5bbglkontak0vdc7lafupt0d` 
+
+ > Replace the client id according to the app you are building from Google’s Developer’s Console
+ 
+8. Download Facebook Plugin to `~/Developer/fbplugin/` by running 
+
+  `$ git clone https://github.com/Wizcorp/phonegap-facebook-plugin.git`
+
+9. Install the Fbplugin by running 
+
+  `cordova -d plugin add ~/Developer/fbplugin/phonegap-facebook-plugin --variable APP_ID="225078261031461" --variable APP_NAME="QuantiModo"` 
+> Replace the app with your appid and name. Also make sure your bundle id is included in the Facebook App Settings.
+
+10. run `pods Init` 
+> Make sure you have cocoa pods installed
+
+11. Open the PodFile in `platforms/ios/ProjectName/Podfile` directory and add a pod 
+
+  `’Bugsnag', :git => "https://github.com/bugsnag/bugsnag-cocoa.git”`.
+
+12. After adding the pod, run `install --no-repo-update --verbose` to install the required Pods.
+
+13. Open `Project.xcworkspace` in `xcode`.
+
+14. When we install both of the social plugins, they tend to override properties in `Resources/info.plist` file.
+
+15. Copy paste the keys after Facebook App id into your info.plist  from https://gist.github.com/8d0473c5a6010581b937 . This will resolve all iOS9 quirks for ionic.
+
+16. Add `#import "Bugsnag.h”` to your `AppDelegate.m`
+
+17. Open `AppDelegate.m`. In your 
+  `application:didFinishLaunchingWithOptions` method, register with Bugsnag by calling, `[Bugsnag startBugsnagWithApiKey:@"ae7bc49d1285848342342bb5c321a2cf”];`
+
+18. Open `Project Settings` > `General`. Check `Requires Full Screen`
+
+19. Open `Project Settings` > `Build Settings` > `Enable Bitcode` -> Set to `No`
+
+20. Open `Project Settings` > `Build Settings` > `Other Linker Flags` > Add `$(inherited)`
+
+21. Open `Project Settings` > `Build Settings` > (Select All and Combined Filters) > `Add Header Search Paths` (Debug & Release) to `"$(OBJROOT)/UninstalledProducts/$(PLATFORM_NAME)/include"`
+
+22. You should be ready to go,  Archive the project and upload it to the App Store

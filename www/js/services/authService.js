@@ -103,7 +103,7 @@ angular.module('starter')
 
 				var url = config.getURL("api/oauth2/token")
 				
-				if(typeof withJWT !== "undefined")
+				if(typeof withJWT !== "undefined" && withJWT === true)
 					url = config.getURL("api/v2/bshaffer/oauth/authorize");
 				
 				console.log('expired token, refreshing!');
@@ -141,27 +141,18 @@ angular.module('starter')
 
 
 			getJWTToken : function(provider, accessToken){
-				var deferred = q.defer();
+				var deferred = $q.defer();
 				
-				var url = config.url('api/v2/auth/social/authorizeToken');
+				var url = config.getURL('api/v2/auth/social/authorizeToken');
 
 				url += "provider="+provider;
 				url += "&accessToken="+accessToken;
 
-				var request = {
-					method : 'GET',
-					url : url,
-					responseType: 'json',
-					headers : {
-						'Content-Type' : 'application/json'
-					}
-				};
-
-				$http(request).success(function(response){
-					if(response.success && response.data && response.data.token) {
-						deferred.resolve(response.data.token);
+				$http.get(url).then(function(response){
+					if(response.data.success && response.data.data && response.data.data.token) {
+						deferred.resolve(response.data.data.token);
 					} else deferred.reject(response);
-				}).error(function(response){
+				}, function(response){
 				   deferred.reject(response);
 				});
 
