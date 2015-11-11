@@ -4,7 +4,7 @@
 angular.module('starter')
 
     // Controls the Track Factors Page
-    .controller('TrackFactorsCategoryCtrl', function($scope, $ionicModal, $timeout, $ionicPopup ,$ionicLoading, authService, measurementService, $state, $rootScope,$stateParams,utilsService){
+    .controller('TrackFactorsCategoryCtrl', function($scope, $ionicModal, $timeout, $ionicPopup ,$ionicLoading, authService, measurementService, $state, $rootScope, $stateParams, utilsService, localStorageService){
 
         $scope.controller_name = "TrackFactorsCategoryCtrl";
 
@@ -23,19 +23,23 @@ angular.module('starter')
         var categoryConfig = {
             Foods:{
                 default_unit:"serving",
-                help_text:"What did you eat?"
+                help_text:"What did you eat?",
+                display_name: "Foods"
             },
             Mood:{
                 default_unit: "/5",
-                help_text: "Select an aspect of mood"
+                help_text: "Select an aspect of emotion",
+                display_name: "Emotions"
             },
             Symptoms:{
                 default_unit: "/5",
-                help_text: "What do you want to track?"
+                help_text: "What do you want to track?",
+                display_name: "Symptoms"
             },
             Treatments:{
                 default_unit: "count",
-                help_text:"What do you want to track?"
+                help_text:"What do you want to track?",
+                display_name: "Treatments"
             }
 
         };
@@ -64,6 +68,7 @@ angular.module('starter')
         $scope.variable_name = "";
         $scope.factor = category;
         $scope.help_text = categoryConfig[category].help_text;
+        $scope.display_name = categoryConfig[category].display_name;
         $scope.unit_text = '';
 
         // default operation
@@ -129,6 +134,8 @@ angular.module('starter')
 
             // update time in the datepicker
             $scope.slots = {epochTime: new Date().getTime()/1000, format: 24, step: 1};
+
+            $scope.onMeasurementStart();
         };
 
         // when add new variable is tapped
@@ -152,6 +159,24 @@ angular.module('starter')
             $scope.showAddVariable = false;
             $scope.showAddMeasurement = false;
             $scope.showTrack = true;
+        };
+
+        $scope.onMeasurementStart = function(){
+            localStorageService.getItem('allTrackingData', function(allTrackingData){
+                var allTrackingData = allTrackingData? JSON.parse(allTrackingData) : [];
+                
+                var current = '';
+                var matched = allTrackingData.filter(function(x){
+                    return x.unit === $scope.selected_sub;
+                });
+                
+                setTimeout(function(){
+                    var value = matched[matched.length-1]? matched[matched.length-1].value : $scope.item.mostCommonValue;
+                    if(value) $scope.variable_value = value;
+                    // redraw view
+                    $scope.$apply();
+                }, 500);
+            });
         };
 
         // completed adding and/or measuring

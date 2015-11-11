@@ -61,7 +61,7 @@ NSString* const UIApplicationRegisterUserNotificationSettings = @"UIApplicationR
 #pragma mark UIApplicationDelegate implementation
 
 /**
- * This is main kick off after the app inits, the views and Settings are setup here. (preferred - iOS4 and up)
+ * This is main kick off after the app inits, the views and Settings are setup here. (preferred - iOS4 and up)/Users/macbookpro/Downloads/aps_production (1).cer
  */
 - (BOOL)application:(UIApplication*)application didFinishLaunchingWithOptions:(NSDictionary*)launchOptions
 {
