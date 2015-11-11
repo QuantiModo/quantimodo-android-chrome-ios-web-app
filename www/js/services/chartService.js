@@ -23,7 +23,7 @@ angular.module('starter')
 	                    },
 	                    yAxis : {
 	                        title : {
-	                            text : ''
+	                            text : 'Number of ratings'
 	                        },
 	                        min : 0
 	                    },
