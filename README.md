@@ -636,7 +636,7 @@ To run the chrome app locally, simply follow these steps:
 
 9. Install the Fbplugin by running 
 
-  `ionic -d plugin add ~/Developer/fbplugin/phonegap-facebook-plugin --variable APP_ID="225078261031461" --variable APP_NAME="QuantiModo"` 
+  `cordova -d plugin add ~/Developer/fbplugin/phonegap-facebook-plugin --variable APP_ID="225078261031461" --variable APP_NAME="QuantiModo"` 
 > Replace the app with your appid and name. Also make sure your bundle id is included in the Facebook App Settings.
 
 10. run `pods Init` 
