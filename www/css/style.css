@@ -359,3 +359,13 @@ img.intro_mood {
 .popup {
   background-color: white!important;
 }
+
+ #qm-loader {
+  position: absolute !important;
+  top: 45% !important;
+  left: 45% !important;
+}
+
+#import_iframe {
+  padding: 10px;
+}
