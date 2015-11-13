@@ -33,23 +33,9 @@ angular.module('starter')
 	            
 	            console.log("valid Token", token);
 
-	            // create an iframe
-	            var iframe = document.createElement('iframe');
-	            
-	            // when iframe load close the spinner
-	            iframe.onload=function(){
-	                window.closeloading();
-	            };
+	            $ionicLoading.hide();
 
-	            console.log("import url: ", "connect/connect.html?");
-	            // redirect to the mobile connect page with the token
-	            iframe.src = "connect/connect.html?";
-	            
-	            // append in view
-	            document.getElementById('import_iframe').appendChild(iframe);
-	            
-	            // set attributes
-	            jQuery("#import_iframe iframe").attr('frameborder', "0").attr('data-tap-disabled',"true");
+	            window.qmSetupOnIonic();
 
 	        }, function(){
 

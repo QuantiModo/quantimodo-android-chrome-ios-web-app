@@ -1,0 +1,14 @@
+{
+  "name": "phonegap-facebook-plugin",
+  "version": "0.12.0",
+  "_release": "0.12.0",
+  "_resolution": {
+    "type": "version",
+    "tag": "v0.12.0",
+    "commit": "c0f8da97a1d65397ada73e958dafed3aeef2e491"
+  },
+  "_source": "/Users/macbookpro/Developer/fbplugin/phonegap-facebook-plugin",
+  "_target": "~0.12.0",
+  "_originalSource": "/Users/macbookpro/Developer/fbplugin/phonegap-facebook-plugin",
+  "_direct": true
+}
