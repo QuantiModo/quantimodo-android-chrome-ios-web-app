@@ -1,0 +1,469 @@
+{
+    "prepare_queue": {
+        "installed": [],
+        "uninstalled": []
+    },
+    "config_munge": {
+        "files": {
+            "config.xml": {
+                "parents": {
+                    "/*": [
+                        {
+                            "xml": "<feature name=\"Keyboard\"><param name=\"ios-package\" onload=\"true\" value=\"IonicKeyboard\" /></feature>",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"Console\"><param name=\"ios-package\" value=\"CDVLogger\" /></feature>",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"DatePicker\"><param name=\"ios-package\" value=\"DatePicker\" /></feature>",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"Device\"><param name=\"ios-package\" value=\"CDVDevice\" /></feature>",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<preference name=\"AndroidPersistentFileLocation\" value=\"Internal\" />",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"File\"><param name=\"ios-package\" value=\"CDVFile\" /><param name=\"onload\" value=\"true\" /></feature>",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"FileOpener2\"><param name=\"ios-package\" value=\"FileOpener2\" /></feature>",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"InAppBrowser\"><param name=\"ios-package\" value=\"CDVInAppBrowser\" /></feature>",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"SplashScreen\"><param name=\"ios-package\" value=\"CDVSplashScreen\" /><param name=\"onload\" value=\"true\" /></feature>",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"LocalNotification\"><param name=\"ios-package\" onload=\"true\" value=\"APPLocalNotification\" /><param name=\"onload\" value=\"true\" /></feature>",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"StatusBar\"><param name=\"ios-package\" value=\"CDVStatusBar\" /><param name=\"onload\" value=\"true\" /></feature>",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<preference name=\"StatusBarOverlaysWebView\" value=\"true\" />",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<preference name=\"StatusBarStyle\" value=\"lightcontent\" />",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"GooglePlus\"><param name=\"ios-package\" value=\"GooglePlus\" /><param name=\"onload\" value=\"true\" /></feature>",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<access origin=\"https://accounts.google.com/*\" />",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"FacebookConnectPlugin\"><param name=\"ios-package\" value=\"FacebookConnectPlugin\" /><param name=\"onload\" value=\"true\" /></feature>",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<plugin name=\"FacebookConnectPlugin\" value=\"FacebookConnectPlugin\" />",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<access origin=\"https://m.facebook.com\" />",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<access origin=\"https://graph.facebook.com\" />",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<access origin=\"https://api.facebook.com\" />",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<access origin=\"https://*.fbcdn.net\" />",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<access origin=\"https://*.akamaihd.net\" />",
+                            "count": 1
+                        }
+                    ]
+                }
+            },
+            "*-Info.plist": {
+                "parents": {
+                    "CFBundleURLTypes": [
+                        {
+                            "xml": "<array><dict><key>CFBundleTypeRole</key><string>Editor</string><key>CFBundleURLName</key><string>com.quantimodo.moodimodoapp</string><key>CFBundleURLSchemes</key><array><string>com.quantimodo.moodimodoapp</string></array></dict><dict><key>CFBundleTypeRole</key><string>Editor</string><key>CFBundleURLName</key><string>REVERSED_CLIENT_ID</string><key>CFBundleURLSchemes</key><array><string>com.googleusercontent.apps.1052648855194-djmit92q5bbglkontak0vdc7lafupt0d</string></array></dict></array>",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<array><dict><key>CFBundleURLSchemes</key><array><string>fb225078261031461</string></array></dict></array>",
+                            "count": 1
+                        }
+                    ],
+                    "LSApplicationQueriesSchemes": [
+                        {
+                            "xml": "<array><string>com.quantimodo.moodimodoapp</string><string>com.googleusercontent.apps.1052648855194-djmit92q5bbglkontak0vdc7lafupt0d</string><string>com-google-gidconsent</string><string>com-google-gidconsent-google</string><string>com.google.gppconsent.2.4.0</string><string>com.google.gppconsent.2.4.1</string></array>",
+                            "count": 1
+                        }
+                    ],
+                    "FacebookAppID": [
+                        {
+                            "xml": "<string>225078261031461</string>",
+                            "count": 1
+                        }
+                    ],
+                    "FacebookDisplayName": [
+                        {
+                            "xml": "<string>QuantiModo</string>",
+                            "count": 1
+                        }
+                    ]
+                }
+            }
+        }
+    },
+    "installed_plugins": {
+        "com.ionic.keyboard": {
+            "PACKAGE_NAME": "com.quantimodo.moodimodoapp"
+        },
+        "cordova-plugin-console": {
+            "PACKAGE_NAME": "com.quantimodo.moodimodoapp"
+        },
+        "cordova-plugin-datepicker": {
+            "PACKAGE_NAME": "com.quantimodo.moodimodoapp"
+        },
+        "cordova-plugin-device": {
+            "PACKAGE_NAME": "com.quantimodo.moodimodoapp"
+        },
+        "cordova-plugin-file": {
+            "PACKAGE_NAME": "com.quantimodo.moodimodoapp"
+        },
+        "cordova-plugin-file-opener2": {
+            "PACKAGE_NAME": "com.quantimodo.moodimodoapp"
+        },
+        "cordova-plugin-inappbrowser": {
+            "PACKAGE_NAME": "com.quantimodo.moodimodoapp"
+        },
+        "cordova-plugin-splashscreen": {
+            "PACKAGE_NAME": "com.quantimodo.moodimodoapp"
+        },
+        "cordova-plugin-whitelist": {
+            "PACKAGE_NAME": "com.quantimodo.moodimodoapp"
+        },
+        "de.appplant.qm.cordova.common.registerusernotificationsettings": {
+            "PACKAGE_NAME": "com.quantimodo.moodimodoapp"
+        },
+        "de.appplant.cordova.plugin.local-notification": {
+            "PACKAGE_NAME": "com.quantimodo.moodimodoapp"
+        },
+        "org.apache.cordova.statusbar": {
+            "PACKAGE_NAME": "com.quantimodo.moodimodoapp"
+        },
+        "cordova-plugin-googleplus": {
+            "REVERSED_CLIENT_ID": "com.googleusercontent.apps.1052648855194-djmit92q5bbglkontak0vdc7lafupt0d",
+            "PACKAGE_NAME": "com.quantimodo.moodimodoapp"
+        },
+        "phonegap-facebook-plugin": {
+            "APP_ID": "225078261031461",
+            "APP_NAME": "QuantiModo",
+            "PACKAGE_NAME": "com.quantimodo.moodimodoapp"
+        }
+    },
+    "dependent_plugins": {},
+    "modules": [
+        {
+            "file": "plugins/com.ionic.keyboard/www/keyboard.js",
+            "id": "com.ionic.keyboard.keyboard",
+            "pluginId": "com.ionic.keyboard",
+            "clobbers": [
+                "cordova.plugins.Keyboard"
+            ]
+        },
+        {
+            "file": "plugins/cordova-plugin-console/www/logger.js",
+            "id": "cordova-plugin-console.logger",
+            "pluginId": "cordova-plugin-console",
+            "clobbers": [
+                "cordova.logger"
+            ]
+        },
+        {
+            "file": "plugins/cordova-plugin-console/www/console-via-logger.js",
+            "id": "cordova-plugin-console.console",
+            "pluginId": "cordova-plugin-console",
+            "clobbers": [
+                "console"
+            ]
+        },
+        {
+            "file": "plugins/cordova-plugin-datepicker/www/ios/DatePicker.js",
+            "id": "cordova-plugin-datepicker.DatePicker",
+            "pluginId": "cordova-plugin-datepicker",
+            "clobbers": [
+                "datePicker"
+            ]
+        },
+        {
+            "file": "plugins/cordova-plugin-device/www/device.js",
+            "id": "cordova-plugin-device.device",
+            "pluginId": "cordova-plugin-device",
+            "clobbers": [
+                "device"
+            ]
+        },
+        {
+            "file": "plugins/cordova-plugin-file/www/DirectoryEntry.js",
+            "id": "cordova-plugin-file.DirectoryEntry",
+            "pluginId": "cordova-plugin-file",
+            "clobbers": [
+                "window.DirectoryEntry"
+            ]
+        },
+        {
+            "file": "plugins/cordova-plugin-file/www/DirectoryReader.js",
+            "id": "cordova-plugin-file.DirectoryReader",
+            "pluginId": "cordova-plugin-file",
+            "clobbers": [
+                "window.DirectoryReader"
+            ]
+        },
+        {
+            "file": "plugins/cordova-plugin-file/www/Entry.js",
+            "id": "cordova-plugin-file.Entry",
+            "pluginId": "cordova-plugin-file",
+            "clobbers": [
+                "window.Entry"
+            ]
+        },
+        {
+            "file": "plugins/cordova-plugin-file/www/File.js",
+            "id": "cordova-plugin-file.File",
+            "pluginId": "cordova-plugin-file",
+            "clobbers": [
+                "window.File"
+            ]
+        },
+        {
+            "file": "plugins/cordova-plugin-file/www/FileEntry.js",
+            "id": "cordova-plugin-file.FileEntry",
+            "pluginId": "cordova-plugin-file",
+            "clobbers": [
+                "window.FileEntry"
+            ]
+        },
+        {
+            "file": "plugins/cordova-plugin-file/www/FileError.js",
+            "id": "cordova-plugin-file.FileError",
+            "pluginId": "cordova-plugin-file",
+            "clobbers": [
+                "window.FileError"
+            ]
+        },
+        {
+            "file": "plugins/cordova-plugin-file/www/FileReader.js",
+            "id": "cordova-plugin-file.FileReader",
+            "pluginId": "cordova-plugin-file",
+            "clobbers": [
+                "window.FileReader"
+            ]
+        },
+        {
+            "file": "plugins/cordova-plugin-file/www/FileSystem.js",
+            "id": "cordova-plugin-file.FileSystem",
+            "pluginId": "cordova-plugin-file",
+            "clobbers": [
+                "window.FileSystem"
+            ]
+        },
+        {
+            "file": "plugins/cordova-plugin-file/www/FileUploadOptions.js",
+            "id": "cordova-plugin-file.FileUploadOptions",
+            "pluginId": "cordova-plugin-file",
+            "clobbers": [
+                "window.FileUploadOptions"
+            ]
+        },
+        {
+            "file": "plugins/cordova-plugin-file/www/FileUploadResult.js",
+            "id": "cordova-plugin-file.FileUploadResult",
+            "pluginId": "cordova-plugin-file",
+            "clobbers": [
+                "window.FileUploadResult"
+            ]
+        },
+        {
+            "file": "plugins/cordova-plugin-file/www/FileWriter.js",
+            "id": "cordova-plugin-file.FileWriter",
+            "pluginId": "cordova-plugin-file",
+            "clobbers": [
+                "window.FileWriter"
+            ]
+        },
+        {
+            "file": "plugins/cordova-plugin-file/www/Flags.js",
+            "id": "cordova-plugin-file.Flags",
+            "pluginId": "cordova-plugin-file",
+            "clobbers": [
+                "window.Flags"
+            ]
+        },
+        {
+            "file": "plugins/cordova-plugin-file/www/LocalFileSystem.js",
+            "id": "cordova-plugin-file.LocalFileSystem",
+            "pluginId": "cordova-plugin-file",
+            "clobbers": [
+                "window.LocalFileSystem"
+            ],
+            "merges": [
+                "window"
+            ]
+        },
+        {
+            "file": "plugins/cordova-plugin-file/www/Metadata.js",
+            "id": "cordova-plugin-file.Metadata",
+            "pluginId": "cordova-plugin-file",
+            "clobbers": [
+                "window.Metadata"
+            ]
+        },
+        {
+            "file": "plugins/cordova-plugin-file/www/ProgressEvent.js",
+            "id": "cordova-plugin-file.ProgressEvent",
+            "pluginId": "cordova-plugin-file",
+            "clobbers": [
+                "window.ProgressEvent"
+            ]
+        },
+        {
+            "file": "plugins/cordova-plugin-file/www/fileSystems.js",
+            "id": "cordova-plugin-file.fileSystems",
+            "pluginId": "cordova-plugin-file"
+        },
+        {
+            "file": "plugins/cordova-plugin-file/www/requestFileSystem.js",
+            "id": "cordova-plugin-file.requestFileSystem",
+            "pluginId": "cordova-plugin-file",
+            "clobbers": [
+                "window.requestFileSystem"
+            ]
+        },
+        {
+            "file": "plugins/cordova-plugin-file/www/resolveLocalFileSystemURI.js",
+            "id": "cordova-plugin-file.resolveLocalFileSystemURI",
+            "pluginId": "cordova-plugin-file",
+            "merges": [
+                "window"
+            ]
+        },
+        {
+            "file": "plugins/cordova-plugin-file/www/ios/FileSystem.js",
+            "id": "cordova-plugin-file.iosFileSystem",
+            "pluginId": "cordova-plugin-file",
+            "merges": [
+                "FileSystem"
+            ]
+        },
+        {
+            "file": "plugins/cordova-plugin-file/www/fileSystems-roots.js",
+            "id": "cordova-plugin-file.fileSystems-roots",
+            "pluginId": "cordova-plugin-file",
+            "runs": true
+        },
+        {
+            "file": "plugins/cordova-plugin-file/www/fileSystemPaths.js",
+            "id": "cordova-plugin-file.fileSystemPaths",
+            "pluginId": "cordova-plugin-file",
+            "merges": [
+                "cordova"
+            ],
+            "runs": true
+        },
+        {
+            "file": "plugins/cordova-plugin-file-opener2/www/plugins.FileOpener2.js",
+            "id": "cordova-plugin-file-opener2.FileOpener2",
+            "pluginId": "cordova-plugin-file-opener2",
+            "clobbers": [
+                "cordova.plugins.fileOpener2"
+            ]
+        },
+        {
+            "file": "plugins/cordova-plugin-inappbrowser/www/inappbrowser.js",
+            "id": "cordova-plugin-inappbrowser.inappbrowser",
+            "pluginId": "cordova-plugin-inappbrowser",
+            "clobbers": [
+                "cordova.InAppBrowser.open",
+                "window.open"
+            ]
+        },
+        {
+            "file": "plugins/cordova-plugin-splashscreen/www/splashscreen.js",
+            "id": "cordova-plugin-splashscreen.SplashScreen",
+            "pluginId": "cordova-plugin-splashscreen",
+            "clobbers": [
+                "navigator.splashscreen"
+            ]
+        },
+        {
+            "file": "plugins/de.appplant.cordova.plugin.local-notification/www/local-notification.js",
+            "id": "de.appplant.cordova.plugin.local-notification.LocalNotification",
+            "pluginId": "de.appplant.cordova.plugin.local-notification",
+            "clobbers": [
+                "cordova.plugins.notification.local",
+                "plugin.notification.local"
+            ]
+        },
+        {
+            "file": "plugins/de.appplant.cordova.plugin.local-notification/www/local-notification-core.js",
+            "id": "de.appplant.cordova.plugin.local-notification.LocalNotification.Core",
+            "pluginId": "de.appplant.cordova.plugin.local-notification",
+            "clobbers": [
+                "cordova.plugins.notification.local.core",
+                "plugin.notification.local.core"
+            ]
+        },
+        {
+            "file": "plugins/de.appplant.cordova.plugin.local-notification/www/local-notification-util.js",
+            "id": "de.appplant.cordova.plugin.local-notification.LocalNotification.Util",
+            "pluginId": "de.appplant.cordova.plugin.local-notification",
+            "merges": [
+                "cordova.plugins.notification.local.core",
+                "plugin.notification.local.core"
+            ]
+        },
+        {
+            "file": "plugins/org.apache.cordova.statusbar/www/statusbar.js",
+            "id": "org.apache.cordova.statusbar.statusbar",
+            "pluginId": "org.apache.cordova.statusbar",
+            "clobbers": [
+                "window.StatusBar"
+            ]
+        },
+        {
+            "file": "plugins/cordova-plugin-googleplus/www/GooglePlus.js",
+            "id": "cordova-plugin-googleplus.GooglePlus",
+            "pluginId": "cordova-plugin-googleplus",
+            "clobbers": [
+                "window.plugins.googleplus"
+            ]
+        },
+        {
+            "file": "plugins/phonegap-facebook-plugin/facebookConnectPlugin.js",
+            "id": "phonegap-facebook-plugin.FacebookConnectPlugin",
+            "pluginId": "phonegap-facebook-plugin",
+            "clobbers": [
+                "facebookConnectPlugin"
+            ]
+        }
+    ]
+}

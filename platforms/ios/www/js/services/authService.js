@@ -103,8 +103,9 @@ angular.module('starter')
 
 				var url = config.getURL("api/oauth2/token")
 				
-				if(typeof withJWT !== "undefined" && withJWT === true)
-					url = config.getURL("api/v2/bshaffer/oauth/authorize");
+				// if(typeof withJWT !== "undefined" && withJWT === true){
+				// 	url = config.getURL("api/v2/bshaffer/oauth/authorize");
+				// }
 				
 				console.log('expired token, refreshing!');
 
@@ -120,9 +121,12 @@ angular.module('starter')
 				       client_id : config.getClientId(),
 				       client_secret : config.getClientSecret(),
 				       grant_type : 'authorization_code',
-				       code : requestToken
+				       code : requestToken,
+				       redirect_uri : 'https://app.quantimo.do/ionic/Modo/www/callback'
 				   }
 				};
+
+				console.log('request is ',request);
 
 				if(config.get('use_mashape') && config.getMashapeKey()) {
 					request.headers['X-Mashape-Key'] = config.getMashapeKey();
@@ -148,7 +152,13 @@ angular.module('starter')
 				url += "provider="+provider;
 				url += "&accessToken="+accessToken;
 
-				$http.get(url).then(function(response){
+				$http({
+				  method: 'GET',
+				  url: url,
+				  headers : {
+				  	'Content-Type' : 'application/json'
+				  }
+				}).then(function(response){
 					if(response.data.success && response.data.data && response.data.data.token) {
 						deferred.resolve(response.data.data.token);
 					} else deferred.reject(response);

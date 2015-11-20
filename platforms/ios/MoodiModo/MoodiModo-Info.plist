@@ -90,7 +90,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>1.0.3</string>
+	<string>1.0.4</string>
 	<key>FacebookAppID</key>
 	<string>225078261031461</string>
 	<key>FacebookDisplayName</key>
@@ -125,13 +125,15 @@
 		<true/>
 		<key>NSExceptionDomains</key>
 		<dict>
+			<key>accounts.google.com</key>
+			<dict/>
 			<key>akamaihd.net</key>
 			<dict>
 				<key>NSIncludesSubdomains</key>
 				<true/>
-				<key>NSThirdPartyExceptionRequiresForwardSecrecy</key>
-				<false/>
 			</dict>
+			<key>api.facebook.com</key>
+			<dict/>
 			<key>facebook.com</key>
 			<dict>
 				<key>NSIncludesSubdomains</key>
@@ -143,9 +145,11 @@
 			<dict>
 				<key>NSIncludesSubdomains</key>
 				<true/>
-				<key>NSThirdPartyExceptionRequiresForwardSecrecy</key>
-				<false/>
 			</dict>
+			<key>graph.facebook.com</key>
+			<dict/>
+			<key>m.facebook.com</key>
+			<dict/>
 		</dict>
 	</dict>
 	<key>NSMainNibFile</key>
@@ -257,12 +261,5 @@
 	</array>
 	<key>UIRequiresFullScreen</key>
 	<true/>
-	<key>UISupportedInterfaceOrientations~ipad</key>
-	<array>
-		<string>UIInterfaceOrientationPortrait</string>
-		<string>UIInterfaceOrientationLandscapeLeft</string>
-		<string>UIInterfaceOrientationPortraitUpsideDown</string>
-		<string>UIInterfaceOrientationLandscapeRight</string>
-	</array>
 </dict>
 </plist>

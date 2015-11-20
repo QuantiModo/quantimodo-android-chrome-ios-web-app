@@ -27,10 +27,8 @@
 
 #import "AppDelegate.h"
 #import "MainViewController.h"
-#import "Bugsnag.h"
-#import <Cordova/CDVPlugin.h>
 
-NSString* const UIApplicationRegisterUserNotificationSettings = @"UIApplicationRegisterUserNotificationSettings";
+#import <Cordova/CDVPlugin.h>
 
 @implementation AppDelegate
 
@@ -61,7 +59,7 @@ NSString* const UIApplicationRegisterUserNotificationSettings = @"UIApplicationR
 #pragma mark UIApplicationDelegate implementation
 
 /**
- * This is main kick off after the app inits, the views and Settings are setup here. (preferred - iOS4 and up)/Users/macbookpro/Downloads/aps_production (1).cer
+ * This is main kick off after the app inits, the views and Settings are setup here. (preferred - iOS4 and up)
  */
 - (BOOL)application:(UIApplication*)application didFinishLaunchingWithOptions:(NSDictionary*)launchOptions
 {
@@ -83,7 +81,7 @@ NSString* const UIApplicationRegisterUserNotificationSettings = @"UIApplicationR
     // Set your app's start page by setting the <content src='foo.html' /> tag in config.xml.
     // If necessary, uncomment the line below to override it.
     // self.viewController.startPage = @"index.html";
-    [Bugsnag startBugsnagWithApiKey:@"ae7bc49d1285848342342bb5c321a2cf"];
+
     // NOTE: To customize the view's frame size (which defaults to full screen), override
     // [self.viewController viewWillAppear:] in your view controller.
 
@@ -137,7 +135,11 @@ NSString* const UIApplicationRegisterUserNotificationSettings = @"UIApplicationR
     }
 #endif
 
+#if __IPHONE_OS_VERSION_MAX_ALLOWED < 90000
 - (NSUInteger)application:(UIApplication*)application supportedInterfaceOrientationsForWindow:(UIWindow*)window
+#else
+- (UIInterfaceOrientationMask)application:(UIApplication*)application supportedInterfaceOrientationsForWindow:(UIWindow*)window
+#endif
 {
     // iPhone doesn't support upside down by default, while the iPad does.  Override to allow all orientations always, and let the root view controller decide what's allowed (the supported orientations mask gets intersected).
     NSUInteger supportedInterfaceOrientations = (1 << UIInterfaceOrientationPortrait) | (1 << UIInterfaceOrientationLandscapeLeft) | (1 << UIInterfaceOrientationLandscapeRight) | (1 << UIInterfaceOrientationPortraitUpsideDown);
@@ -149,32 +151,5 @@ NSString* const UIApplicationRegisterUserNotificationSettings = @"UIApplicationR
 {
     [[NSURLCache sharedURLCache] removeAllCachedResponses];
 }
-
-#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 80000
-
-- (void)                    application:(UIApplication*)application
-    didRegisterUserNotificationSettings:(UIUserNotificationSettings*)settings
-{
-    NSNotificationCenter* center = [NSNotificationCenter
-                                    defaultCenter];
-
-    // re-post (broadcast)
-    [center postNotificationName:UIApplicationRegisterUserNotificationSettings
-                          object:settings];
-}
-- (void)application:(UIApplication *) application handleActionWithIdentifier: (NSString *) identifier 
-forLocalNotification: (NSDictionary *) notification 
-  completionHandler: (void (^)()) completionHandler { 
-     
-   NSDate *now = [NSDate date]; 
-   NSTimeInterval nowEpochSeconds = [now timeIntervalSince1970] * 1000; 
-    
-   NSString *script = [NSString stringWithFormat:@"window.notification_callback('%@',%f);", identifier, nowEpochSeconds]; 
-   [self.viewController.commandDelegate evalJs:script]; 
-     
-    // Must be called when finished 
-    completionHandler(); 
-} 
-#endif
 
 @end
