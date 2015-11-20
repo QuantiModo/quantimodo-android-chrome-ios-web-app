@@ -39,14 +39,7 @@
     "cordova-plugin-datepicker",
     "cordova-plugin-file",
     "cordova-plugin-file-opener2",
-    "org.apache.cordova.device",
-    {
-      "variables": {
-        "": ""
-      },
-      "locator": "cordova-plugin-googleplus",
-      "id": "cordova-plugin-googleplus"
-    }
+    "org.apache.cordova.device"
   ],
   "cordovaPlatforms": [
     "android",

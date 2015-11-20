@@ -90,7 +90,7 @@ angular.module('starter')
 
     // get Authentication Token
     $scope.getAuthToken = function(request_token, withJWT){
-    	authService.getAccessTokenFromRequestToken(request_token)
+    	authService.getAccessTokenFromRequestToken(request_token, withJWT)
     	.then(function(response) {
     		
             console.log("access token recieved",response);
@@ -206,12 +206,16 @@ angular.module('starter')
             url += "&client_secret="+config.getClientSecret();
             url += "&scope="+config.getPermissionString();
             url += "&state=testabcd";
+            url += "&redirect_uri=https://app.quantimo.do/ionic/Modo/www/callback";
 
             chrome.identity.launchWebAuthFlow({
                 'url': url, 
                 'interactive': true
             }, function(redirect_url) {
-                var requestToken = utilsService.getUrlParameter(redirect_url, 'code');
+                var requestToken = utilsService.getUrlParameter(event.url, 'code');
+                
+                if(requestToken === false) requestToken = utilsService.getUrlParameter(event.url, 'token');
+
                 $scope.getAuthToken(requestToken);
             });
         }
@@ -225,6 +229,7 @@ angular.module('starter')
             url += "&client_secret="+config.getClientSecret();
             url += "&scope="+config.getPermissionString();
             url += "&state=testabcd";
+            url += "&redirect_uri=https://app.quantimo.do/ionic/Modo/www/callback";
 
             var ref = window.open(url,'_blank');
 
@@ -249,13 +254,14 @@ angular.module('starter')
                     var iframe_url = event.data;
 
                     // validate if the url is same as we wanted it to be
-                    if(utilsService.hasInIt(iframe_url, "/ionic/Modo/www/callback")) {
-                        
+                    if(utilsService.startsWith(iframe_url, "https://app.quantimo.do/ionic/Modo/www/callback/")) {    
                         // if there is no error
                         if(!utilsService.getUrlParameter(iframe_url,'error')) {
                             
                             // extract token
-                            var requestToken = utilsService.getUrlParameter(iframe_url, 'code');
+                            var requestToken = utilsService.getUrlParameter(event.url, 'code');
+                            
+                            if(requestToken === false) requestToken = utilsService.getUrlParameter(event.url, 'token');
                             
                             // get auth token from request token
                             $scope.getAuthToken(requestToken);
@@ -286,22 +292,30 @@ angular.module('starter')
             url += "&client_secret="+config.getClientSecret();
             url += "&scope="+config.getPermissionString();
             url += "&state=testabcd";
+            url += "&redirect_uri=https://app.quantimo.do/ionic/Modo/www/callback";
 
             // open the auth window via inAppBrowser
 			var ref = window.open(url,'_blank', 'location=no,toolbar=no');
-			
+			                 
             // listen to it's event when the page changes
 			ref.addEventListener('loadstart', function(event) {
 				
+                console.log('the loadstart url is', event.url);
+
                 // check if changed url is the same as redirection url
-                if(utilsService.hasInIt(event.url, "/ionic/Modo/www/callback")) {
+                if(utilsService.startsWith(event.url, "https://app.quantimo.do/ionic/Modo/www/callback/")) {
 					
                     // if there is no error
                     if(!utilsService.getUrlParameter(event.url,'error')) {
-						
+                        
                         // extract request token
-                        var requestToken = utilsService.getUrlParameter(event.url, 'code');
-						
+						var requestToken = utilsService.getUrlParameter(event.url, 'code');
+                        console.log('code found', requestToken);
+
+                        if(requestToken === false) requestToken = utilsService.getUrlParameter(event.url, 'token');
+                        
+                        console.log('token found', requestToken);
+                        
                         // close inAppBrowser
                         ref.close();
 						
@@ -337,6 +351,7 @@ angular.module('starter')
             url += "&scope="+config.getPermissionString();
             url += "&state=testabcd";
             url += "&token="+responseToken;
+            url += "&redirect_uri=https://app.quantimo.do/ionic/Modo/www/callback";
 
             // open the auth window via inAppBrowser
             var ref = window.open(url,'_blank', 'location=no,toolbar=no');
@@ -344,15 +359,19 @@ angular.module('starter')
             // listen to it's event when the page changes
             ref.addEventListener('loadstart', function(event) {
                 
+                console.log("loadstart event", event);
                 // check if changed url is the same as redirection url
-                if(utilsService.hasInIt(event.url, "/ionic/Modo/www/callback")) {
+                
+                if(utilsService.startsWith(event.url, "https://app.quantimo.do/ionic/Modo/www/callback/")) {    
                     
                     // if there is no error
                     if(!utilsService.getUrlParameter(event.url,'error')) {
                         
+                        console.log('the request token that i got is: ' + event.url);
                         // extract request token
                         var requestToken = utilsService.getUrlParameter(event.url, 'code');
                         
+                        if(requestToken === false) requestToken = utilsService.getUrlParameter(event.url, 'token');
                         // close inAppBrowser
                         ref.close();
                         
