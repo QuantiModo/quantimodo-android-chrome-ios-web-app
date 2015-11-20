@@ -27,14 +27,19 @@
     "postinstall": "bower install && gulp private"
   },
   "cordovaPlugins": [
-    "de.appplant.cordova.plugin.local-notification@0.8.1",
+    "https://github.com/kashifzaidi1/cordova-plugin-local-notifications",
     "cordova-plugin-device",
     "cordova-plugin-console",
     "cordova-plugin-whitelist",
     "cordova-plugin-splashscreen",
     "com.ionic.keyboard",
     "cordova-plugin-inappbrowser",
-    "https://github.com/apache/cordova-plugin-inappbrowser"
+    "https://github.com/apache/cordova-plugin-inappbrowser",
+    "org.apache.cordova.statusbar",
+    "cordova-plugin-datepicker",
+    "cordova-plugin-file",
+    "cordova-plugin-file-opener2",
+    "org.apache.cordova.device"
   ],
   "cordovaPlatforms": [
     "android",
