@@ -10,3 +10,4 @@ www/private_configs/*.config.js
 chromeApps/zips/*.zip
 .idea/
 hooks
+.vagrant/
