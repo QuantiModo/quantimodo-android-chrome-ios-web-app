@@ -13,9 +13,8 @@ A generic app that can be easily configured to help the user track and optimize 
 5. Run `node app.js`
 6. See project at [http://localhost:5000/](http://localhost:5000/)
 
-
 #QuantiModo Ionic App
----m
+
 ## File Structure
 The main contents of the App are in the `www` folder. The structure is:
 ```
