@@ -13,6 +13,7 @@ A generic app that can be easily configured to help the user track and optimize 
 5. Install Gulp plugins `sudo npm install jshint gulp-jshint gulp-sass gulp-concat gulp-uglify gulp-rename --save-dev`
 6. Install Bower with `npm install -g bower`
 6. Run `bower install`
+7. Run `npm install express`
 5. Run `node app.js`
 6. See project at [http://localhost:5000/](http://localhost:5000/)
 
