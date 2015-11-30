@@ -43,7 +43,9 @@ angular.module('starter')
                         console.log('added mashape_key', request.headers);
                     }
                     $http(request).success(successHandler).error(function(data,status,headers,config){
-                        Bugsnag.notify("API Request to "+request.url+" Failed",data.error.message,{},"error");
+                        var error = "Error";
+                        if (data && data.error && data.error.message) error = data.error.message; 
+                        Bugsnag.notify("API Request to "+request.url+" Failed",error,{},"error");
                         errorHandler(data,status,headers,config);
                     });
 
@@ -86,7 +88,9 @@ angular.module('starter')
                     }
 
                     $http(request).success(successHandler).error(function(data,status,headers,config){
-                        Bugsnag.notify("API Request to "+request.url+" Failed",data.error.message,{},"error");
+                       var error = "Error";
+                       if (data && data.error && data.error.message) error = data.error.message; 
+                       Bugsnag.notify("API Request to "+request.url+" Failed",error,{},"error");
                         errorHandler(data,status,headers,config);
                     });
 
@@ -105,6 +109,10 @@ angular.module('starter')
             QuantiModo.getMeasurements = function(params){
                 var defer = $q.defer();
                 var response_array = [];
+                var errorCallback = function(){
+                    defer.resolve(response_array);
+                };
+
                 var successCallback =  function(response){
                     if(response.length === 0){
                         defer.resolve(response_array);
@@ -112,12 +120,11 @@ angular.module('starter')
                         response_array = response_array.concat(response);
                         params.offset+=200;
                         defer.notify(response);
-                        getMeasurements(params,successCallback,function(){});
+                        getMeasurements(params,successCallback,errorCallback);
                     }
                 }
 
-                getMeasurements(params,successCallback,function(){});
-
+                getMeasurements(params,successCallback,errorCallback);
 
                 return defer.promise;
             }
