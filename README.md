@@ -4,7 +4,7 @@ A generic app that can be easily configured to help the user track and optimize 
 [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/Abolitionist-Project/QuantiModo-Ionic-Template-App/)
 
 #Quick Start
-1. Create your free app at [admin.quantimo.do](https://admin.quantimo.do) to get your client_id and client_secret.
+1. Create your free app at [admin.quantimo.do](https://admin.quantimo.do) to get your client_id and client_secret. 
 1. Run `git clone https://github.com/Abolitionist-Project/QuantiModo-Ionic-Template-App`
 1. `cd QuantiModo-Ionic-Template-App`
 1. Install NodeJS with `sudo nvm install 0.12.6`
