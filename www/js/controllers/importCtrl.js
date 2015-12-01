@@ -48,5 +48,8 @@ angular.module('starter')
 	    };
 
 	    // call the constructor
-	    $scope.init();
+	    // when view is changed
+	    $scope.$on('$ionicView.enter', function(e) {
+			$scope.init();
+	    });
 	})
