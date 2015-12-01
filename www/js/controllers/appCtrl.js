@@ -259,9 +259,9 @@ angular.module('starter')
                         if(!utilsService.getUrlParameter(iframe_url,'error')) {
                             
                             // extract token
-                            var requestToken = utilsService.getUrlParameter(event.url, 'code');
+                            var requestToken = utilsService.getUrlParameter(event.data, 'code');
                             
-                            if(requestToken === false) requestToken = utilsService.getUrlParameter(event.url, 'token');
+                            if(requestToken === false) requestToken = utilsService.getUrlParameter(event.data, 'token');
                             
                             // get auth token from request token
                             $scope.getAuthToken(requestToken);
