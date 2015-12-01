@@ -268,19 +268,19 @@ module.exports = [
         ]
     },
     {
-        "file": "plugins/cordova-plugin-googleplus/www/GooglePlus.js",
-        "id": "cordova-plugin-googleplus.GooglePlus",
-        "pluginId": "cordova-plugin-googleplus",
-        "clobbers": [
-            "window.plugins.googleplus"
-        ]
-    },
-    {
         "file": "plugins/phonegap-facebook-plugin/facebookConnectPlugin.js",
         "id": "phonegap-facebook-plugin.FacebookConnectPlugin",
         "pluginId": "phonegap-facebook-plugin",
         "clobbers": [
             "facebookConnectPlugin"
+        ]
+    },
+    {
+        "file": "plugins/cordova-plugin-googleplus/www/GooglePlus.js",
+        "id": "cordova-plugin-googleplus.GooglePlus",
+        "pluginId": "cordova-plugin-googleplus",
+        "clobbers": [
+            "window.plugins.googleplus"
         ]
     }
 ];

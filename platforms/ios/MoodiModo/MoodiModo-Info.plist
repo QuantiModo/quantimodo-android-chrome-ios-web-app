@@ -63,6 +63,12 @@
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>fb225078261031461</string>
+			</array>
+		</dict>
+		<dict>
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
 			<key>CFBundleURLName</key>
@@ -80,12 +86,6 @@
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>com.googleusercontent.apps.1052648855194-djmit92q5bbglkontak0vdc7lafupt0d</string>
-			</array>
-		</dict>
-		<dict>
-			<key>CFBundleURLSchemes</key>
-			<array>
-				<string>fb225078261031461</string>
 			</array>
 		</dict>
 	</array>
@@ -125,6 +125,24 @@
 		<true/>
 		<key>NSExceptionDomains</key>
 		<dict>
+			<key>accounts.google.com</key>
+			<dict/>
+			<key>akamaihd.net</key>
+			<dict>
+				<key>NSIncludesSubdomains</key>
+				<true/>
+			</dict>
+			<key>api.facebook.com</key>
+			<dict/>
+			<key>fbcdn.net</key>
+			<dict>
+				<key>NSIncludesSubdomains</key>
+				<true/>
+			</dict>
+			<key>graph.facebook.com</key>
+			<dict/>
+			<key>m.facebook.com</key>
+			<dict/>
             <key>facebook.com</key>
             <dict>
                 <key>NSIncludesSubdomains</key>
@@ -146,24 +164,6 @@
                 <key>NSThirdPartyExceptionRequiresForwardSecrecy</key>
                 <false/>
             </dict>
-			<key>accounts.google.com</key>
-			<dict/>
-			<key>akamaihd.net</key>
-			<dict>
-				<key>NSIncludesSubdomains</key>
-				<true/>
-			</dict>
-			<key>api.facebook.com</key>
-			<dict/>
-			<key>fbcdn.net</key>
-			<dict>
-				<key>NSIncludesSubdomains</key>
-				<true/>
-			</dict>
-			<key>graph.facebook.com</key>
-			<dict/>
-			<key>m.facebook.com</key>
-			<dict/>
 		</dict>
 	</dict>
 	<key>NSMainNibFile</key>
