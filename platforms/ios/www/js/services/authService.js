@@ -101,11 +101,7 @@ angular.module('starter')
 
 				var deferred = $q.defer();
 
-				var url = config.getURL("api/oauth2/token")
-				
-				// if(typeof withJWT !== "undefined" && withJWT === true){
-				// 	url = config.getURL("api/v2/bshaffer/oauth/authorize");
-				// }
+				var url = config.getURL("api/oauth2/token");			
 				
 				console.log('expired token, refreshing!');
 

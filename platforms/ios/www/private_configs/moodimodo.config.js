@@ -1,4 +1,5 @@
 window.private_keys = {
+    "bugsnag_key" : "ae7bc49d1285848342342bb5c321a2cf",
     "client_ids": {
         "iOS": "ionic",
         "Android": "ionic",

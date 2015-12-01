@@ -20,17 +20,19 @@ angular.module('starter')
             // if search param is found: returns its value
             // returns false if not found
             getUrlParameter : function (url, sParam) {
-                var sPageURL = url.split('?')[1];
-                var sURLVariables = sPageURL.split('&');
-                for (var i = 0; i < sURLVariables.length; i++)
-                {
-                    var sParameterName = sURLVariables[i].split('=');
-                    if (sParameterName[0] == sParam)
+                if(url.split('?').length > 0){
+                    var sPageURL = url.split('?')[1];
+                    var sURLVariables = sPageURL.split('&');
+                    for (var i = 0; i < sURLVariables.length; i++)
                     {
-                        return sParameterName[1];
+                        var sParameterName = sURLVariables[i].split('=');
+                        if (sParameterName[0] == sParam)
+                        {
+                            return sParameterName[1];
+                        }
                     }
-                }
-                return false;
+                    return false;
+                } else return false;
             },
 
             showLoginRequiredAlert: function(login){
