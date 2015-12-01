@@ -259,9 +259,9 @@ angular.module('starter')
                         if(!utilsService.getUrlParameter(iframe_url,'error')) {
                             
                             // extract token
-                            var requestToken = utilsService.getUrlParameter(event.data, 'code');
+                            var requestToken = utilsService.getUrlParameter(iframe_url, 'code');
                             
-                            if(requestToken === false) requestToken = utilsService.getUrlParameter(event.data, 'token');
+                            if(requestToken === false) requestToken = utilsService.getUrlParameter(iframe_url, 'token');
                             
                             // get auth token from request token
                             $scope.getAuthToken(requestToken);
@@ -295,7 +295,7 @@ angular.module('starter')
             url += "&redirect_uri=https://app.quantimo.do/ionic/Modo/www/callback";
 
             // open the auth window via inAppBrowser
-			var ref = window.open(url,'_blank', 'location=no,toolbar=no');
+			var ref = window.open(url,'_blank', 'location=no,toolbar=yes');
 			                 
             // listen to it's event when the page changes
 			ref.addEventListener('loadstart', function(event) {
