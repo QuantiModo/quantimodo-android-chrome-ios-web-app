@@ -34,6 +34,8 @@ angular.module('starter')
 	        // open popover
 	        $scope.history_popover.show();
 	        
+	        $scope.selected_tracking_factor = history.value;
+
 	        // remove any previous factors if present
 	        jQuery('.tracking_factors .active_tracking_factor').removeClass('active_tracking_factor');
 	        
