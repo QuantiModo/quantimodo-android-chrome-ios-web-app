@@ -27,7 +27,7 @@
             <ion-list ng-show="list.length" class>
                 <ion-item ng-click="measure(item)" ng-repeat="item in list | orderBy:'-latestMeasurementTime' | limitTo:5 ">
                     <div>
-                        <p style="font-size:18px;">{{item.name}}</p>
+                        <p style="font-size:18px; white-space: pre;">{{item.name}}</p>
                         <p>{{item.latestMeasurementTime | fromNow}}</p>
                     </div>
                 </ion-item>
