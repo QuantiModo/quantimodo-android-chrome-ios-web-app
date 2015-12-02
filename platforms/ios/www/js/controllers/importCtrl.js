@@ -35,7 +35,16 @@ angular.module('starter')
 
 	            $ionicLoading.hide();
 
-	            window.qmSetupOnIonic();
+	            if(ionic.Platform.platforms[0] === "browser"){
+	            	window.qmSetupOnIonic();
+	            } else {	            	
+	            	var targetUrl = config.getURL("api/v1/connect/mobile", true);
+	            	targetUrl += "access_token="+token.accessToken;
+	            	var ref = window.open(targetUrl,'_blank', 'location=no,toolbar=yes');
+	            	ref.addEventListener('exit', function(){
+						$state.go('app.track');
+					});
+	            }	            
 
 	        }, function(){
 
