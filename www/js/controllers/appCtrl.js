@@ -337,7 +337,7 @@ angular.module('starter')
 
     $scope.native_login = function(platform, accessToken){
         localStorageService.setItem('isWelcomed',"true");
-        
+        showLoader('Talking to QuantiModo');
         authService.getJWTToken(platform, accessToken)
         .then(function(responseToken){
             // success
@@ -352,6 +352,8 @@ angular.module('starter')
             url += "&state=testabcd";
             url += "&token="+responseToken;
             url += "&redirect_uri=https://app.quantimo.do/ionic/Modo/www/callback";
+
+            $ionicLoading.hide();
 
             // open the auth window via inAppBrowser
             var ref = window.open(url,'_blank', 'location=no,toolbar=no');
@@ -391,14 +393,17 @@ angular.module('starter')
             });
         }, function(){
             // error
+
+            $ionicLoading.hide();
             console.log("error occured, couldn't generate JWT");
         });
     };
 
     // log in with google
     $scope.google_login = function(){
+        showLoader('Logging you in');
         window.plugins.googleplus.login({}, function (user_data) {
-            
+            $ionicLoading.hide();
             console.log('successfully logged in');
             console.log('google->', JSON.stringify(user_data));
             var accessToken = user_data.accessToken;
@@ -421,9 +426,11 @@ angular.module('starter')
 
     // login with facebook
     $scope.facebook_login = function(){
+        showLoader('Logging you in');
         $cordovaFacebook.login(["public_profile", "email", "user_friends"])
         .then(function(success) {
             // success
+            $ionicLoading.hide();
             console.log("facebook_login_success");
             console.log("facebook->", JSON.stringify(success));
             var accessToken = success.authResponse.accessToken;
