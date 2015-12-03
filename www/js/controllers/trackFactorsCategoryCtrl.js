@@ -78,6 +78,8 @@ angular.module('starter')
         // alert box
         $scope.showAlert = function(title, template) {
             var alertPopup = $ionicPopup.alert({
+                cssClass : 'calm',
+                okType : 'button-calm',
                 title: title,
                 template: template
             });
