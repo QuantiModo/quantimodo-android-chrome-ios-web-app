@@ -357,6 +357,7 @@ img.intro_mood {
 }
 
 .popup {
+  border: 1px solid gray !important;
   background-color: white!important;
 }
 

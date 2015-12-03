@@ -57,13 +57,9 @@
             <div class="item item-text-wrap">
                 <p>Feedback</p>
             </div>
-
-            <a href="mailto:help@quantimo.do" class="item ">
-              Help
-            </a>
 			
-            <a href="mailto:help@quantimo.do" class="item ">
-              Feedback
+            <a ng-href="{{ window.chrome ? 'mailto:help@quantimo.do':'#app/feedback'}}" class="item ">
+              Help & Feedback
             </a>
 
             <a href="#app/contact" class="item ">

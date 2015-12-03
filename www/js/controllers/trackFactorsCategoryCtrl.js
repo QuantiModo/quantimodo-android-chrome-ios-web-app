@@ -26,7 +26,7 @@ angular.module('starter')
                 help_text:"What did you eat?",
                 display_name: "Foods"
             },
-            Mood:{
+            Emotions:{
                 default_unit: "/5",
                 help_text: "Select an aspect of emotion",
                 display_name: "Emotions"
@@ -78,6 +78,8 @@ angular.module('starter')
         // alert box
         $scope.showAlert = function(title, template) {
             var alertPopup = $ionicPopup.alert({
+                cssClass : 'calm',
+                okType : 'button-calm',
                 title: title,
                 template: template
             });

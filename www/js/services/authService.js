@@ -53,18 +53,13 @@ angular.module('starter')
                             var url = config.getURL("api/oauth2/token")
                             console.log('expired token, refreshing!');
 
-                            var mashape_headers = {};
-							if(config.get('use_mashape') && config.getMashapeKey()){ 
-                        		mashape_headers['X-Mashape-Key'] = config.getMashapeKey();
-                        		console.log('added mashape_key', mashape_headers);
-                        	}
                             //expire token, refresh
                             $http.post(url, {
                                 client_id : config.getClientId(),
                                 client_secret : config.getClientSecret(),
                                 refresh_token: refreshToken,
                                 grant_type: 'refresh_token'
-                            }, mashape_headers).success(function(data) {
+                            }).success(function(data) {
                                 // update local storage
                                 if (data.error) {
                                 	deferred.reject('refresh failed');
@@ -123,11 +118,6 @@ angular.module('starter')
 				};
 
 				console.log('request is ',request);
-
-				if(config.get('use_mashape') && config.getMashapeKey()) {
-					request.headers['X-Mashape-Key'] = config.getMashapeKey();
-					console.log('added mashape_key', request.headers);
-				}
 				
 				// post
 				$http(request).success(function(response){
