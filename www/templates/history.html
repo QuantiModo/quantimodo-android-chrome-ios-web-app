@@ -7,7 +7,9 @@
                     <img ng-src="{{historyItem.value | ImageByValue }}" style="width:80px;" />
                   </div>
                   <div class="history_block">
-                    <h2 class="history_time" >{{historyItem.timestamp | time}}</h2>
+                    <h2 class="history_time" ng-repeat="line in (historyItem.timestamp | time) track by $index">
+                      {{line}}
+                    </h2>
                     <br/>
                     <h2 class="" >{{historyItem.value | percentage}}% {{historyItem.value | TrackingFactorByNumber}}</h2>  
                   </div>
