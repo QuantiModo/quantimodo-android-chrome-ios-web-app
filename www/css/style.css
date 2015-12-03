@@ -99,8 +99,8 @@ div.dateDiv > input {
 .spinner svg {
   width: 28px;
   height: 28px;
-  stroke: #3369E8;
-  fill: #3369E8;
+  stroke: #11C1F3;
+  fill: #11C1F3;
 }
 
 
@@ -109,7 +109,7 @@ div.dateDiv > input {
 }
 
 p.item-icon-left{
-	color : #3369E8;
+	color : #11C1F3;
 }
 
 iframe {
