@@ -26,7 +26,7 @@ angular.module('starter')
                 help_text:"What did you eat?",
                 display_name: "Foods"
             },
-            Mood:{
+            Emotions:{
                 default_unit: "/5",
                 help_text: "Select an aspect of emotion",
                 display_name: "Emotions"
