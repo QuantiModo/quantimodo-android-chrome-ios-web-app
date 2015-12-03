@@ -8,6 +8,8 @@ angular.module('starter')
 	    // Show alert with a title
 	    $scope.showAlert = function(title, template) {
 	       var alertPopup = $ionicPopup.alert({
+	         cssClass : 'calm',
+             okType : 'button-calm',
 	         title: title,
 	         template: template
 	       });
