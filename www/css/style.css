@@ -208,13 +208,6 @@ label.item.item-input.item-text > input[type="text"] {
 	padding-top: 0;
 }
 
-.history_time{
-	word-wrap: break-word !important;
-    white-space: pre-wrap !important;
-    width: 85%;
-    font-size: 14px;
-}
-
 .sub-menu {
     padding-left: 25px;
 }
