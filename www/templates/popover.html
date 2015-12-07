@@ -1,13 +1,19 @@
 <ion-popover-view>
 	<div class="dateDiv">
 		<br/>
-		<p class="calm">From</p><input type="date" class="form-control"  id="fromDate">
+		<p class="calm">From</p>
+		<ionic-datepicker style="width:100%" idate="fromDate" disablepreviousdates="false" callback="datePickerFromCallback">
+		    <button class="button button-block measure_date uptop" style="font-size:14px;border:none;color:black;background-color: white;margin-bottom: 0px;margin-top: 0px;padding-left: 0px; text-align:left;">
+		        {{ fromDate | date:'dd - MMMM - yyyy' }}
+		    </button>
+		</ionic-datepicker>
 		<br/>
-		<p class="calm">To</p> <input type="date" id="toDate">
-		<br/>
-		<button class="button button-full button-calm" ng-click="saveDates()">
-		  Save
-		</button>
+		<p class="calm">To</p> 
+		<ionic-datepicker style="width:100%" idate="toDate" disablepreviousdates="false" callback="datePickerToCallback">
+		    <button class="button button-block measure_date uptop" style="font-size:14px;border:none;color:black;background-color: white;margin-bottom: 0px;margin-top: 0px;padding-left: 0px; text-align:left;">
+		        {{ toDate | date:'dd - MMMM - yyyy' }}
+		    </button>
+		</ionic-datepicker>
 	</div>
 	
 
