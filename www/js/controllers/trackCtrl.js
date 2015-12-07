@@ -80,8 +80,6 @@ angular.module('starter')
 
         // updates all the visual elements on the page
         var draw = function(){
-
-
             localStorageService.getItem('averageTrackingFactorValue',function(averageTrackingFactorValue){
                 if(averageTrackingFactorValue){
                     updateTrackingFactorView(averageTrackingFactorValue);
@@ -93,14 +91,12 @@ angular.module('starter')
                         updateLineChart(JSON.parse(lineChartData));
 
                     // update bar chart
-
                     localStorageService.getItem('barChartData',function(barChartData){
-                        if(barChartData)
+                        if(barChartData){
                             updateBarChart(JSON.parse(barChartData));
-                        try{
-                            $scope.$apply();
-                        } catch(exception){
-
+                            if(!$scope.$$phase) {
+                                $scope.$apply();
+                            }
                         }
                     });
                 });
