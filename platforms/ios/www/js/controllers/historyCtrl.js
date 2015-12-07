@@ -8,6 +8,8 @@ angular.module('starter')
 	    // Show alert with a title
 	    $scope.showAlert = function(title, template) {
 	       var alertPopup = $ionicPopup.alert({
+	         cssClass : 'calm',
+             okType : 'button-calm',
 	         title: title,
 	         template: template
 	       });
@@ -34,6 +36,8 @@ angular.module('starter')
 	        // open popover
 	        $scope.history_popover.show();
 	        
+	        $scope.selected_tracking_factor = history.value;
+
 	        // remove any previous factors if present
 	        jQuery('.tracking_factors .active_tracking_factor').removeClass('active_tracking_factor');
 	        

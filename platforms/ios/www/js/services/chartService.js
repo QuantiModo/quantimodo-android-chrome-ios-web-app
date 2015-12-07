@@ -74,6 +74,19 @@ angular.module('starter')
 	        			title: {
 	        			    text: config.appSettings.tracking_factor+' Over Time'
 	        			},
+	        			xAxis : {
+	        				type: 'datetime',
+							dateTimeLabelFormats : {
+                    	        millisecond : '%I:%M %p',
+                    	        second : '%I:%M %p',
+                    	        minute: '%I:%M %p',
+                    	        hour: '%I %p',
+                	        	day: '%e. %b',
+                	        	week: '%e. %b',
+                	        	month: '%b \'%y',
+                	        	year: '%Y'
+                    	    }
+	        			},
 	                    credits: {
 	                        enabled: false
 	                    },
@@ -81,7 +94,20 @@ angular.module('starter')
                             enabled: true
                         },
                         navigator: {
-                            enabled: true
+                            enabled: true,
+                            xAxis: {
+                            	type : 'datetime',
+                            	dateTimeLabelFormats : {
+	                    	        millisecond : '%I:%M %p',
+	                    	        second : '%I:%M %p',
+	                    	        minute: '%I:%M %p',
+	                    	        hour: '%I %p',
+	                	        	day: '%e. %b',
+	                	        	week: '%e. %b',
+	                	        	month: '%b \'%y',
+	                	        	year: '%Y'
+	                    	    }
+							}
                         }
 	        		},
 	        		series :[{

@@ -37,11 +37,6 @@ angular.module('starter')
                         }
                     };
 
-                    // mashape headers
-                    if(config.get('use_mashape') && config.getMashapeKey()) {
-                        request.headers['X-Mashape-Key'] = config.getMashapeKey();
-                        console.log('added mashape_key', request.headers);
-                    }
                     $http(request).success(successHandler).error(function(data,status,headers,config){
                         var error = "Error";
                         if (data && data.error && data.error.message) error = data.error.message; 
@@ -80,12 +75,6 @@ angular.module('starter')
                         },
                         data : JSON.stringify(items)
                     };
-
-                    // mashape headers
-                    if(config.get('use_mashape') && config.getMashapeKey()){ 
-                        request.headers['X-Mashape-Key'] = config.getMashapeKey();
-                        console.log('added mashape_key', request.headers);
-                    }
 
                     $http(request).success(successHandler).error(function(data,status,headers,config){
                        var error = "Error";

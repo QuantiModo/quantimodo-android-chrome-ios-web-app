@@ -1,12 +1,7 @@
 (function connectjs() {
     "use strict";
 
-    if (typeof mashapeKey !== 'undefined' && mashapeKey) {
-        var baseUrl = 'https://quantimodo-quantimodo-v1.p.mashape.com';
-    } else {
-        var baseUrl = '{{{base}}}';
-    }
-
+    var baseUrl = '{{{base}}}';
     var mainDiv;
     var listData;
     var popup;
@@ -15,7 +10,6 @@
     var useConnectionWindow = true;
     var methodsDelegated = false;
     var access_token;
-    var mashapeKey;
 
     var templatePopup =
         '<div id="qm-popup">' +
@@ -89,8 +83,6 @@
         connectjs();
         baseUrl = config.getURL();
         access_token = localStorage[config.appSettings.storage_identifier + 'accessToken'];
-        if (config.get('use_mashape') && config.getMashapeKey())
-            mashapeKey = config.getMashapeKey();
         useConnectionWindow = false;
 
         var theDiv = document.getElementById('import_iframe');
@@ -398,11 +390,6 @@
         if (typeof accessToken !== 'undefined' && accessToken) {
             //access_token should be obtained from QuantiModo API server
             request.setRequestHeader('Authorization', 'Bearer ' + accessToken);
-        }
-
-        if (typeof mashapeKey !== 'undefined' && mashapeKey) {
-            //mashape key to perform API requests
-            request.setRequestHeader('X-Mashape-Key', mashapeKey);
         }
 
         request.onload = function () {

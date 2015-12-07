@@ -14,13 +14,11 @@ window.config = {
     },
     client_source_name : "MoodiModo "+getPlatform(),
     domain : 'app.quantimo.do',
-    mashape_domain : 'https://quantimodo-quantimodo-v1.p.mashape.com/api/',
     environment: "Development",
     permissions : ['readmeasurements', 'writemeasurements'],
     port : '4417',
     protocol : 'https',
-    shopping_cart_enabled : true,
-    use_mashape : false
+    shopping_cart_enabled : true
 };
 
 config.appSettings  = {
@@ -239,18 +237,6 @@ config.getEnv = function(){
     return env;
 };
 
-config.getMashapeKey = function(){
-    if(!config.get('use_mashape')) return false;
-    else {
-        var platform = getPlatform();
-        var environment = config.getEnv() !== "Production" ? "Testing" : "Production";
-
-        return platform === "Ionic"? window.private_keys.mashape_keys.Web[environment] : platform === "Web"? 
-        window.private_keys.mashape_keys.Web[environment] : platform === "iOS"? 
-        window.private_keys.mashape_keys.iOS[environment] : window.private_keys.mashape_keys.Android[environment];
-    }
-};
-
 config.getClientId = function(){
     //if chrome app
     if (window.chrome && chrome.runtime && chrome.runtime.id) {
@@ -280,17 +266,9 @@ config.getPermissionString = function(){
 };
 
 
-config.getURL = function(path, should_add_mashape_header_to_query_parameter, ignore_mashape){
+config.getURL = function(path){
     if(typeof path === "undefined") path = "";
     else path+= "?";
-    
-    if(typeof ignore_mashape === "undefined" || !ignore_mashape){
-        if(config.get('use_mashape') && !should_add_mashape_header_to_query_parameter) {
-            return config.get('mashape_domain')+'/'+path;
-        } else if(config.get('use_mashape') && config.getMashapeKey() && should_add_mashape_header_to_query_parameter){
-            return config.get('mashape_domain')+'/'+path+'mashape-key='+config.getMashapeKey()+'&';
-        }
-    }
 
     var url = "";
 
