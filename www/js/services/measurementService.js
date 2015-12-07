@@ -388,7 +388,8 @@ angular.module('starter')
 
 					// if the data is already synced
 					if(isSynced){
-						deferred.resolve();
+						isSyncing = false;
+                        deferred.resolve();
 						return;
 					}
 
