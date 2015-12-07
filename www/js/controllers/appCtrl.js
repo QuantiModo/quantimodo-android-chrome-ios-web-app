@@ -63,10 +63,32 @@ angular.module('starter')
 		$scope.popover = popover;
 	});
 
+    $scope.fromDate = new Date();
+    $scope.toDate = new Date();
+
+    // when date is updated
+    $scope.datePickerFromCallback = function (val) {
+      if(typeof(val)==='undefined'){        
+          console.log('Date not selected');
+      }else{
+          $scope.fromDate = new Date(val);
+          $scope.saveDates();
+      }
+    };
+
+    $scope.datePickerToCallback = function (val) {
+      if(typeof(val)==='undefined'){        
+          console.log('Date not selected');
+      }else{
+          $scope.toDate = new Date(val);
+          $scope.saveDates();
+      }
+    };
+
     // update dates selected from calender
 	$scope.saveDates = function(){
-		var to = moment(document.getElementById('toDate').value).unix();
-		var from = moment(document.getElementById('fromDate').value).unix();
+		var to = moment($scope.toDate).unix()*1000;
+		var from = moment($scope.fromDate).unix()*1000;
 		
 		measurementService.setDates(to, from);
 		$scope.popover.hide();
@@ -75,17 +97,13 @@ angular.module('starter')
 
     // show calender popup
 	$scope.showCalenderF = function($event){
-		console.log("showing");
         $scope.popover.show($event);
-
         measurementService.getToDate(function(end_date){
-            document.getElementById('toDate').valueAsDate = new Date(end_date);
+            $scope.toDate = new Date(end_date);
             measurementService.getFromDate(function(from_date){
-                document.getElementById('fromDate').valueAsDate = new Date(from_date);
+                $scope.fromDate = new Date(from_date);
             });
         });
-
-
 	};
 
     // get Authentication Token
