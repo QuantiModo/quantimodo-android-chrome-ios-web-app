@@ -103,7 +103,7 @@ angular.module('starter')
                 };
 
                 var successCallback =  function(response){
-                    if(response.length === 0){
+                    if(response.length === 0 || typeof response === "string"){
                         defer.resolve(response_array);
                     }else{
                         response_array = response_array.concat(response);

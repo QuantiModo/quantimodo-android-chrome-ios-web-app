@@ -3,9 +3,23 @@ A generic app that can be easily configured to help the user track and optimize 
 
 [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/Abolitionist-Project/QuantiModo-Ionic-Template-App/)
 
+#Quick Start
+1. Create your free app at [admin.quantimo.do](https://admin.quantimo.do) to get your client_id and client_secret. 
+1. Run `git clone https://github.com/Abolitionist-Project/QuantiModo-Ionic-Template-App`
+1. `cd QuantiModo-Ionic-Template-App`
+1. Install NodeJS with `sudo nvm install 0.12.6`
+1. Install Ionic with `sudo npm install -g cordova ionic`
+1. Install Gulp globally with `sudo npm install -g gulp`
+1. Install Gulp locally with `npm install --save-dev gulp`
+1. Install Gulp plugins `sudo npm install jshint gulp-jshint gulp-sass gulp-concat gulp-uglify gulp-rename --save-dev`
+1. Install Bower with `npm install -g bower`
+1. Run `bower install`
+1. Run `npm install express`
+1. Run `node app.js`
+1. See project at [http://localhost:5000/](http://localhost:5000/)
 
 #QuantiModo Ionic App
----
+
 ## File Structure
 The main contents of the App are in the `www` folder. The structure is:
 ```
