@@ -360,8 +360,6 @@ angular.module('starter')
                    });
                });
 
-
-
 				return deferred.promise;
 			},
 
@@ -403,7 +401,6 @@ angular.module('starter')
 							deferred.resolve(response);
 						}
 						else deferred.reject(false);
-
 					}, function(response){
                         deferred.reject(false);
                     }, function(response){
@@ -458,8 +455,7 @@ angular.module('starter')
                                 });
 
                             }
-
-                        }
+                        } 
                     });
 				};
 
