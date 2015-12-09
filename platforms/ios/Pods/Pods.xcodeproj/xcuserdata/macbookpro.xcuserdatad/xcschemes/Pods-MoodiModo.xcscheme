@@ -14,7 +14,7 @@
             buildForArchiving = "YES">
             <BuildableReference
                BuildableIdentifier = 'primary'
-               BlueprintIdentifier = '0FB16234BD419EC4E86A8A62'
+               BlueprintIdentifier = '724525B1ADDF041059D191E9'
                BlueprintName = 'Pods-MoodiModo'
                ReferencedContainer = 'container:Pods.xcodeproj'
                BuildableName = 'libPods-MoodiModo.a'>

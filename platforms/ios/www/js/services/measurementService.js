@@ -360,8 +360,6 @@ angular.module('starter')
                    });
                });
 
-
-
 				return deferred.promise;
 			},
 
@@ -388,7 +386,8 @@ angular.module('starter')
 
 					// if the data is already synced
 					if(isSynced){
-						deferred.resolve();
+						isSyncing = false;
+                        deferred.resolve();
 						return;
 					}
 
@@ -402,7 +401,6 @@ angular.module('starter')
 							deferred.resolve(response);
 						}
 						else deferred.reject(false);
-
 					}, function(response){
                         deferred.reject(false);
                     }, function(response){
@@ -457,8 +455,7 @@ angular.module('starter')
                                 });
 
                             }
-
-                        }
+                        } 
                     });
 				};
 
