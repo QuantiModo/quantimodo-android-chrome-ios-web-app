@@ -2,7 +2,7 @@ angular.module('starter')
     
     // Parent Controller
     // This controller runs before every one else
-	.controller('AppCtrl', function($scope, $ionicModal, $timeout, utilsService, authService, measurementService, $ionicPopover, $ionicLoading, $state, $ionicHistory, QuantiModo, notificationService, $rootScope,localStorageService) {
+	.controller('AppCtrl', function($scope, $ionicModal, $timeout, $injector, utilsService, authService, measurementService, $ionicPopover, $ionicLoading, $state, $ionicHistory, QuantiModo, notificationService, $rootScope, localStorageService) {
 
     // flags
     $scope.controller_name = "AppCtrl";
@@ -10,7 +10,15 @@ angular.module('starter')
     $scope.showSubMenu = false;
     $scope.shopping_cart_enabled = config.shopping_cart_enabled;
     $rootScope.isSyncing = false;
+    var $cordovaFacebook = {};
 
+    $scope.isIOS = ionic.Platform.isIPad() || ionic.Platform.isIOS();
+    $scope.isAndroid = ionic.Platform.isAndroid();
+    $scope.isChrome = window.chrome ? true : false;
+
+    if($scope.isIOS && $injector.has('$cordovaFacebook')){
+        $cordovaFacebook = $injector.get('$cordovaFacebook');
+    }
     
     /*Wrapper Config*/
     $scope.view_title = config.appSettings.app_name;
@@ -55,10 +63,32 @@ angular.module('starter')
 		$scope.popover = popover;
 	});
 
+    $scope.fromDate = new Date();
+    $scope.toDate = new Date();
+
+    // when date is updated
+    $scope.datePickerFromCallback = function (val) {
+      if(typeof(val)==='undefined'){        
+          console.log('Date not selected');
+      }else{
+          $scope.fromDate = new Date(val);
+          $scope.saveDates();
+      }
+    };
+
+    $scope.datePickerToCallback = function (val) {
+      if(typeof(val)==='undefined'){        
+          console.log('Date not selected');
+      }else{
+          $scope.toDate = new Date(val);
+          $scope.saveDates();
+      }
+    };
+
     // update dates selected from calender
 	$scope.saveDates = function(){
-		var to = Date.parse(document.getElementById('toDate').value);
-		var from = Date.parse(document.getElementById('fromDate').value);
+		var to = moment($scope.toDate).unix()*1000;
+		var from = moment($scope.fromDate).unix()*1000;
 		
 		measurementService.setDates(to, from);
 		$scope.popover.hide();
@@ -67,26 +97,23 @@ angular.module('starter')
 
     // show calender popup
 	$scope.showCalenderF = function($event){
-		console.log("showing");
         $scope.popover.show($event);
-
         measurementService.getToDate(function(end_date){
-            document.getElementById('toDate').valueAsDate = new Date(end_date);
+            $scope.toDate = new Date(end_date);
             measurementService.getFromDate(function(from_date){
-                document.getElementById('fromDate').valueAsDate = new Date(from_date);
+                $scope.fromDate = new Date(from_date);
             });
         });
-
-
 	};
 
     // get Authentication Token
-    $scope.getAuthToken = function(request_token){
-    	authService.getAccessTokenFromRequestToken(request_token)
+    $scope.getAuthToken = function(request_token, withJWT){
+    	authService.getAccessTokenFromRequestToken(request_token, withJWT)
     	.then(function(response) {
     		
             console.log("access token recieved",response);
-            authService.updateAccessToken(response);
+            if(typeof withJWT !== "undefined" && withJWT === true) authService.updateAccessToken(response, withJWT);
+            else authService.updateAccessToken(response);
     		
             // set flags
     		$scope.isLoggedIn = true;
@@ -197,12 +224,16 @@ angular.module('starter')
             url += "&client_secret="+config.getClientSecret();
             url += "&scope="+config.getPermissionString();
             url += "&state=testabcd";
+            url += "&redirect_uri=https://app.quantimo.do/ionic/Modo/www/callback";
 
             chrome.identity.launchWebAuthFlow({
                 'url': url, 
                 'interactive': true
             }, function(redirect_url) {
-                var requestToken = utilsService.getUrlParameter(redirect_url, 'code');
+                var requestToken = utilsService.getUrlParameter(event.url, 'code');
+                
+                if(requestToken === false) requestToken = utilsService.getUrlParameter(event.url, 'token');
+
                 $scope.getAuthToken(requestToken);
             });
         }
@@ -216,6 +247,7 @@ angular.module('starter')
             url += "&client_secret="+config.getClientSecret();
             url += "&scope="+config.getPermissionString();
             url += "&state=testabcd";
+            url += "&redirect_uri=https://app.quantimo.do/ionic/Modo/www/callback";
 
             var ref = window.open(url,'_blank');
 
@@ -240,13 +272,14 @@ angular.module('starter')
                     var iframe_url = event.data;
 
                     // validate if the url is same as we wanted it to be
-                    if(utilsService.hasInIt(iframe_url, "/ionic/Modo/www/callback")) {
-                        
+                    if(utilsService.startsWith(iframe_url, "https://app.quantimo.do/ionic/Modo/www/callback/")) {    
                         // if there is no error
                         if(!utilsService.getUrlParameter(iframe_url,'error')) {
                             
                             // extract token
                             var requestToken = utilsService.getUrlParameter(iframe_url, 'code');
+                            
+                            if(requestToken === false) requestToken = utilsService.getUrlParameter(iframe_url, 'token');
                             
                             // get auth token from request token
                             $scope.getAuthToken(requestToken);
@@ -277,22 +310,30 @@ angular.module('starter')
             url += "&client_secret="+config.getClientSecret();
             url += "&scope="+config.getPermissionString();
             url += "&state=testabcd";
+            url += "&redirect_uri=https://app.quantimo.do/ionic/Modo/www/callback";
 
             // open the auth window via inAppBrowser
-			var ref = window.open(url,'_blank', 'location=no,toolbar=no');
-			
+			var ref = window.open(url,'_blank', 'location=no,toolbar=yes');
+			                 
             // listen to it's event when the page changes
 			ref.addEventListener('loadstart', function(event) {
 				
+                console.log('the loadstart url is', event.url);
+
                 // check if changed url is the same as redirection url
-                if(utilsService.hasInIt(event.url, "/ionic/Modo/www/callback")) {
+                if(utilsService.startsWith(event.url, "https://app.quantimo.do/ionic/Modo/www/callback/")) {
 					
                     // if there is no error
                     if(!utilsService.getUrlParameter(event.url,'error')) {
-						
+                        
                         // extract request token
-                        var requestToken = utilsService.getUrlParameter(event.url, 'code');
-						
+						var requestToken = utilsService.getUrlParameter(event.url, 'code');
+                        console.log('code found', requestToken);
+
+                        if(requestToken === false) requestToken = utilsService.getUrlParameter(event.url, 'token');
+                        
+                        console.log('token found', requestToken);
+                        
                         // close inAppBrowser
                         ref.close();
 						
@@ -310,6 +351,113 @@ angular.module('starter')
 
             });
         }
+    };
+
+    $scope.native_login = function(platform, accessToken){
+        localStorageService.setItem('isWelcomed',"true");
+        showLoader('Talking to QuantiModo');
+        authService.getJWTToken(platform, accessToken)
+        .then(function(responseToken){
+            // success
+
+            console.log("Mobile device detected!");
+            var url = config.getURL("api/v2/bshaffer/oauth/authorize", true);
+
+            url += "response_type=code";
+            url += "&client_id="+config.getClientId();
+            url += "&client_secret="+config.getClientSecret();
+            url += "&scope="+config.getPermissionString();
+            url += "&state=testabcd";
+            url += "&token="+responseToken;
+            url += "&redirect_uri=https://app.quantimo.do/ionic/Modo/www/callback";
+
+            $ionicLoading.hide();
+
+            // open the auth window via inAppBrowser
+            var ref = window.open(url,'_blank', 'location=no,toolbar=no');
+            
+            // listen to it's event when the page changes
+            ref.addEventListener('loadstart', function(event) {
+                
+                console.log("loadstart event", event);
+                // check if changed url is the same as redirection url
+                
+                if(utilsService.startsWith(event.url, "https://app.quantimo.do/ionic/Modo/www/callback/")) {    
+                    
+                    // if there is no error
+                    if(!utilsService.getUrlParameter(event.url,'error')) {
+                        
+                        console.log('the request token that i got is: ' + event.url);
+                        // extract request token
+                        var requestToken = utilsService.getUrlParameter(event.url, 'code');
+                        
+                        if(requestToken === false) requestToken = utilsService.getUrlParameter(event.url, 'token');
+                        // close inAppBrowser
+                        ref.close();
+                        
+                        var withJWT = true;
+                        // get auth token from request token
+                        $scope.getAuthToken(requestToken, withJWT);
+
+                    } else {
+
+                        console.log("error occoured", utilsService.getUrlParameter(event.url, 'error'));
+                        
+                        // close inAppBrowser
+                        ref.close();
+                    }
+                }
+
+            });
+        }, function(){
+            // error
+
+            $ionicLoading.hide();
+            console.log("error occured, couldn't generate JWT");
+        });
+    };
+
+    // log in with google
+    $scope.google_login = function(){
+        showLoader('Logging you in');
+        window.plugins.googleplus.login({}, function (user_data) {
+            $ionicLoading.hide();
+            console.log('successfully logged in');
+            console.log('google->', JSON.stringify(user_data));
+            var accessToken = user_data.accessToken;
+            
+            $scope.native_login('google', accessToken);
+        },
+        function (msg) {
+            console.log("google login error", msg);
+        });
+
+    };
+
+    $scope.google_logout = function(){
+        window.plugins.googleplus.logout(function (msg) {
+          console.log("logged out of google!");
+      }, function(fail){
+          console.log("failed to logout", fail);
+      });
+    }
+
+    // login with facebook
+    $scope.facebook_login = function(){
+        showLoader('Logging you in');
+        $cordovaFacebook.login(["public_profile", "email", "user_friends"])
+        .then(function(success) {
+            // success
+            $ionicLoading.hide();
+            console.log("facebook_login_success");
+            console.log("facebook->", JSON.stringify(success));
+            var accessToken = success.authResponse.accessToken;
+
+            $scope.native_login('facebook', accessToken);
+        }, function (error) {
+            // error
+            console.log("facebook login error", error);
+        });
     };
 
     // when user click's skip button

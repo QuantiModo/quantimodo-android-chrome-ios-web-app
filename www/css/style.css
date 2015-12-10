@@ -184,9 +184,13 @@ label.item.item-input.item-text > input[type="text"] {
 }
 
 .button.button-positive {
-    border-color: #11c1f3 !important;
-    background-color: #11c1f3 !important;
+    border-color: #3369E8 !important;
+    background-color: #3369E8 !important;
     color: #fff;
+}
+
+.button.button-assertive {
+    font-size: 15px;
 }
 
 .card_item {
@@ -202,16 +206,6 @@ label.item.item-input.item-text > input[type="text"] {
 	margin : 0;
 	padding-bottom: 0;
 	padding-top: 0;
-}
-
-.history_time{
-	word-wrap: break-word !important;
-    white-space: pre-wrap !important;
-    width: 85%;
-    font-size: 14px;
-}
-.date_col {
-	margin-left: -100px;
 }
 
 .sub-menu {
@@ -291,21 +285,40 @@ label.item.item-input.item-text > input[type="text"] {
 
 div.previous {
   float: left; 
-  margin-left: 15px; 
-  margin-top: 50%; 
+  margin-left: 15px;  
   font-size: 40px;
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);
+  -ms-transform: translateY(-50%);
+  -webkit-transform: translateY(-50%);
+  -moz-transform: translateY(-50%);
+  -o-transform: translateY(-50%);
 }
 
 div.next{
   float:right; 
   margin-right:15px; 
-  margin-top: 50%; 
   font-size: 40px;
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);
+  -ms-transform: translateY(-50%);
+  -webkit-transform: translateY(-50%);
+  -moz-transform: translateY(-50%);
+  -o-transform: translateY(-50%);
 }
 
 
 div.intro_content{
-  margin: -20px 40px 0px 40px;
+  margin: -40px 40px 0px 40px;
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);
+  -ms-transform: translateY(-50%);
+  -webkit-transform: translateY(-50%);
+  -moz-transform: translateY(-50%);
+  -o-transform: translateY(-50%);
 }
 
 p.intro_para {
@@ -326,4 +339,27 @@ p.intro_header {
 img.intro_mood {
   margin-left: 3px;
   margin-right: 3px;
+}
+
+.col-l {
+  margin-right: -100px;
+}
+
+.uptop {
+  margin-top: -8px;
+}
+
+.popup {
+  border: 1px solid gray !important;
+  background-color: white!important;
+}
+
+ #qm-loader {
+  position: absolute !important;
+  top: 45% !important;
+  left: 45% !important;
+}
+
+#import_iframe {
+  padding: 10px;
 }

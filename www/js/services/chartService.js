@@ -23,7 +23,7 @@ angular.module('starter')
 	                    },
 	                    yAxis : {
 	                        title : {
-	                            text : ''
+	                            text : 'Number of ratings'
 	                        },
 	                        min : 0
 	                    },
@@ -63,68 +63,61 @@ angular.module('starter')
 	            };
 	        },
 
-	        // generate line chart stub with data
+	        // generate stock chart
 	        getLineChartStub : function(data){
-	            return {
-	                options : {
-	                    chart: {
-	                        type: 'spline',
-	                        height : 400,
-	                        spacingBottom : 0,
-	                        spacingLeft : 0,
-	                        spacingRight : 0,
-	                        renderTo: 'LineContainer'
-	                    },
-	                    legend : {
-	                        enabled : false
-	                    },
-	                    lang: {
-	                        loading: ''
-	                    },
-	                    loading: {
-	                        style: {
-	                            background: 'url(/res/loading3.gif) no-repeat center'
-	                        },
-	                        hideDuration: 10,
-	                        showDuration: 10
-	                    },
-	                    title: {
-	                        text: config.appSettings.tracking_factor+' Over Time'
-	                    },        
-	                    xAxis: {
-	                        type: 'datetime',
-	                        title: {
-	                           text: 'Date'
-	                        }
-	                    },
-	                    yAxis: {
-	                        title: {
-	                           text: config.appSettings.tracking_factor
-	                        }
-	                    },
-	                    plotOptions : {
-	                        spline : {
-	                            lineWidth : 2,
-	                            allowPointSelect : false,
-	                            marker : {
-	                                enabled : false
-	                            },
-	                            enableMouseTracking : false,
-	                            size : '100%',
-	                            dataLabels : {
-	                                enabled : false
-	                            }
-	                        }
-	                    },
+	        	return {
+	        		useHighStocks: true,
+	        		options : {
+	        			legend : {
+	        			    enabled : false
+	        			},
+	        			title: {
+	        			    text: config.appSettings.tracking_factor+' Over Time'
+	        			},
+	        			xAxis : {
+	        				type: 'datetime',
+							dateTimeLabelFormats : {
+                    	        millisecond : '%I:%M %p',
+                    	        second : '%I:%M %p',
+                    	        minute: '%I:%M %p',
+                    	        hour: '%I %p',
+                	        	day: '%e. %b',
+                	        	week: '%e. %b',
+                	        	month: '%b \'%y',
+                	        	year: '%Y'
+                    	    }
+	        			},
 	                    credits: {
 	                        enabled: false
-	                    }
-	                },
-	                series: [{
-	                    name: config.appSettings.tracking_factor,
-	                    data: data
-	                }]
-	            };
+	                    },
+	                    rangeSelector: {
+                            enabled: true
+                        },
+                        navigator: {
+                            enabled: true,
+                            xAxis: {
+                            	type : 'datetime',
+                            	dateTimeLabelFormats : {
+	                    	        millisecond : '%I:%M %p',
+	                    	        second : '%I:%M %p',
+	                    	        minute: '%I:%M %p',
+	                    	        hour: '%I %p',
+	                	        	day: '%e. %b',
+	                	        	week: '%e. %b',
+	                	        	month: '%b \'%y',
+	                	        	year: '%Y'
+	                    	    }
+							}
+                        }
+	        		},
+	        		series :[{
+			            name : config.appSettings.tracking_factor,
+			            data : data,
+			            tooltip: {
+			                valueDecimals: 2
+			            }
+			        }]
+	        	}
 	        }
 	    };
 

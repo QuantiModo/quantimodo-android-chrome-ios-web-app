@@ -91,8 +91,14 @@
                 <li> - Track diet, treatments, symptoms, and anything else</li>
                 <li> - Analyze your data to see the top predictors for your {{tracking_factor}}</li>
             </ul>
+            <button ng-show="isIOS" class="button button-block button-calm" ng-click="facebook_login()">
+                Facebook Sign In
+            </button>
+            <button ng-show="isIOS"  class="button button-block button-calm" ng-click="google_login()">
+                Google Sign In
+            </button>
             <button class="button button-block button-calm" ng-click="login()">
-                Sign In
+                QuantiModo Sign In
             </button>
             <button class="button button-block button-assertive" ng-click="skipLogin()">
                 <span ng-if="!isWelcomed">Skip</span>

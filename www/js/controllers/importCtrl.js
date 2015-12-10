@@ -33,23 +33,18 @@ angular.module('starter')
 	            
 	            console.log("valid Token", token);
 
-	            // create an iframe
-	            var iframe = document.createElement('iframe');
-	            
-	            // when iframe load close the spinner
-	            iframe.onload=function(){
-	                window.closeloading();
-	            };
+	            $ionicLoading.hide();
 
-	            console.log("import url: ", "connect/connect.html?");
-	            // redirect to the mobile connect page with the token
-	            iframe.src = "connect/connect.html?";
-	            
-	            // append in view
-	            document.getElementById('import_iframe').appendChild(iframe);
-	            
-	            // set attributes
-	            jQuery("#import_iframe iframe").attr('frameborder', "0").attr('data-tap-disabled',"true");
+	            if(ionic.Platform.platforms[0] === "browser"){
+	            	window.qmSetupOnIonic();
+	            } else {	            	
+	            	var targetUrl = config.getURL("api/v1/connect/mobile", true);
+	            	targetUrl += "access_token="+token.accessToken;
+	            	var ref = window.open(targetUrl,'_blank', 'location=no,toolbar=yes');
+	            	ref.addEventListener('exit', function(){
+						$state.go('app.track');
+					});
+	            }	            
 
 	        }, function(){
 
@@ -62,5 +57,8 @@ angular.module('starter')
 	    };
 
 	    // call the constructor
-	    $scope.init();
+	    // when view is changed
+	    $scope.$on('$ionicView.enter', function(e) {
+			$scope.init();
+	    });
 	})

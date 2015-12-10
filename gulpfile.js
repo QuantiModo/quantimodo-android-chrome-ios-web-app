@@ -18,6 +18,11 @@ var open = require('gulp-open');
 var gcallback = require('gulp-callback');
 var runSequence = require('run-sequence');
 
+var appIds = {
+    'moodimodo': 'homaagppbekhjkalcndpojiagijaiefm',
+    'mindfirst': 'jeadacoeabffebaeikfdpjgpjbjinobl',
+    'energymodo': 'aibgaobhplpnjmcnnmdamabfjnbgflob'
+};
 
 var paths = {
 	sass: ['./scss/**/*.scss']
@@ -98,22 +103,12 @@ gulp.task('private', function(){
 	// keys to set in heroku
 	// var env_keys = {
 	// 	"APPS": 'MOODIMODO,MINDFIRST,ENERGYMODO',
-		
 	// 	"MOODIMODO_WEB_CLIENT_ID" : 'zyx',
 	// 	"MOODIMODO_WEB_CLIENT_SECRET" : 'das',
-	// 	"MOODIMODO_WEB_MASHAPE_KEY_TESTING" : 'asdas',
-	// 	"MOODIMODO_WEB_MASHAPE_KEY_PRODUCTION" : 'asdas',
-		
 	// 	"MINDFIRST_WEB_CLIENT_ID" : 'asd',
 	// 	"MINDFIRST_WEB_CLIENT_SECRET" : 'das',
-	// 	"MINDFIRST_WEB_MASHAPE_KEY_TESTING" : 'ads',
-	// 	"MINDFIRST_WEB_MASHAPE_KEY_PRODUCTION" : 'asd',
-
 	// 	"ENERGYMODO_WEB_CLIENT_ID" : 'asd',
 	// 	"ENERGYMODO_WEB_CLIENT_SECRET" : 'asd',
-	// 	"ENERGYMODO_WEB_MASHAPE_KEY_TESTING" : 'sdfdsf',
-	// 	"ENERGYMODO_WEB_MASHAPE_KEY_PRODUCTION" : 'asda'
-
 	// };
 
 	var env_keys = process.env;
@@ -134,10 +129,7 @@ gulp.task('private', function(){
 			appName = appName.trim();
 			var configkeys = {
 				client_ids : {},
-				client_secrets : {},
-				mashape_keys : {
-					Web : {}
-				}
+				client_secrets : {}
 			};
 			if(typeof env_keys[appName+'_WEB_CLIENT_ID'] !== "undefined"){
 				configkeys.client_ids.Web = env_keys[appName+'_WEB_CLIENT_ID'];
@@ -151,18 +143,7 @@ gulp.task('private', function(){
 			} else {
 				console.log(appName+'_WEB_CLIENT_SECRET'+' NOT DETECTED');
 			}
-			if(typeof env_keys[appName+'_WEB_MASHAPE_KEY_TESTING'] !== "undefined"){
-				configkeys.mashape_keys.Web.Testing = env_keys[appName+'_WEB_MASHAPE_KEY_TESTING'];
-				console.log(appName+'_WEB_MASHAPE_KEY_TESTING'+' Detected');
-			} else {
-				console.log(appName+'_WEB_MASHAPE_KEY_TESTING'+' NOT DETECTED');
-			}
-			if(typeof env_keys[appName+'_WEB_MASHAPE_KEY_PRODUCTION'] !== "undefined"){
-				configkeys.mashape_keys.Web.Production = env_keys[appName+'_WEB_MASHAPE_KEY_PRODUCTION'];
-				console.log(appName+'_WEB_MASHAPE_KEY_PRODUCTION'+' Detected');
-			} else {
-				console.log(appName+'_WEB_MASHAPE_KEY_PRODUCTION'+' NOT DETECTED');
-			}
+			
             if(typeof env_keys['IONIC_BUGSNAG_KEY'] !== "undefined"){
                 configkeys.bugsnag_key = env_keys['IONIC_BUGSNAG_KEY'];
                 console.log('IONIC_BUGSNAG_KEY' +' Detected');
@@ -293,11 +274,7 @@ gulp.task('getAccessTokenFromGoogle', ['getCode'], function(){
 });
 
 var getAppIds = function(){
-	return {
-		'moodimodo'  :  'homaagppbekhjkalcndpojiagijaiefm',
-		'mindfirst'  :  'jeadacoeabffebaeikfdpjgpjbjinobl',
-		'energymodo' : 	'aibgaobhplpnjmcnnmdamabfjnbgflob'
-	};
+	return appIds;
 };
 
 gulp.task('uploadToAppServer', ['getAccessTokenFromGoogle'], function(){

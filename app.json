@@ -17,14 +17,6 @@
 		"MOODIMODO_WEB_CLIENT_SECRET": {
 			"description": "The client Secret generated from QuantiModo (for the app MOODIMODO).",
 			"value": "xyz"
-		},
-		"MOODIMODO_WEB_MASHAPE_KEY_TESTING": {
-			"description": "MASHAPE's Testing Key generated from your mashape Account.",
-			"value": "xyz"
-		},
-		"MOODIMODO_WEB_MASHAPE_KEY_PRODUCTION": {
-			"description": "MASHAPE's Production Key generated from your mashape Account.",
-			"value": "xyz"
 		}
 	}
 

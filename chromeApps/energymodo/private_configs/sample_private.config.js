@@ -10,19 +10,5 @@ window.private_keys = {
         "Android": "xyz",
         "Web": "xyz",
         "Chrome": "xyz"
-    },
-    "mashape_keys": {
-        "iOS": {
-            "Testing": "xyz",
-            "Production": "xyz"
-        },
-        "Android": {
-            "Testing": "xyz",
-            "Production": "xyz"
-        },
-        "Web": {
-            "Testing": "xyz",
-            "Production": "xyz"
-        }
     }
 };

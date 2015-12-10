@@ -4,7 +4,6 @@ angular.module('starter')
 
 		// sync the measurements in queue with QuantiModo API
 		var syncQueue = function(measurementsQueue){
-
 			var defer = $q.defer();
 
 			// measurements set
@@ -243,9 +242,26 @@ angular.module('starter')
                 }
 			},
 
+            post_tracking_measurement_locally : function(measurement_object){
+                var deferred = $q.defer();
+
+                localStorageService.getItem('allTrackingData', function(allTrackingData){
+                    var allTrackingData = allTrackingData? JSON.parse(allTrackingData) : [];
+
+                    // add to queue
+                    allTrackingData.push(measurement_object);
+
+                    //resave queue
+                    localStorageService.setItem('allTrackingData', JSON.stringify(allTrackingData));
+
+                    deferred.resolve();
+                });
+
+                return deferred.promise;
+            },
+
 			// post a singe measurement
 			post_tracking_measurement : function(epoch, variable, val, unit, isAvg, category){
-
 			   // measurements set
 			   var measurements = [
                     {
@@ -264,12 +280,28 @@ angular.module('starter')
                     }
                 ];
 
-                // send request
-                QuantiModo.postMeasurementsV2(measurements, function(response){
-                    console.log("success", response);
-                }, function(response){
-                    console.log("error", response);
+                // for local
+                var measurement = {
+                    name: variable,
+                    source: config.get('client_source_name'),
+                    category: category,
+                    combinationOperation: isAvg ? "MEAN" : "SUM",
+                    unit: unit,
+                    timestamp:  epoch / 1000,
+                    value: val,
+                    note : ""
+                };
+
+                measurementService.post_tracking_measurement_locally(measurement)
+                .then(function(){
+                    // send request
+                    QuantiModo.postMeasurementsV2(measurements, function(response){
+                        console.log("success", response);
+                    }, function(response){
+                        console.log("error", response);
+                    });
                 });
+
 			},
 
 			// edit existing measurement
@@ -328,8 +360,6 @@ angular.module('starter')
                    });
                });
 
-
-
 				return deferred.promise;
 			},
 
@@ -356,7 +386,8 @@ angular.module('starter')
 
 					// if the data is already synced
 					if(isSynced){
-						deferred.resolve();
+						isSyncing = false;
+                        deferred.resolve();
 						return;
 					}
 
@@ -370,7 +401,6 @@ angular.module('starter')
 							deferred.resolve(response);
 						}
 						else deferred.reject(false);
-
 					}, function(response){
                         deferred.reject(false);
                     }, function(response){
@@ -398,8 +428,8 @@ angular.module('starter')
                                         //Handling case if a tracking factor is updated
                                         //Extracting Updated Records
                                         var updated_records = response.filter(function(elem){
-                                            var updated_at_timestamp =  moment.utc(elem['updatedTime']).unix();
-                                            var created_at_timestamp =  moment.utc(elem['createdTime']).unix();
+                                            var updated_at_timestamp =  moment.utc(elem['updatedTime']*1000).unix();
+                                            var created_at_timestamp =  moment.utc(elem['createdTime']*1000).unix();
                                             //Criteria for updated records
                                             return (updated_at_timestamp > lastUpdatedTimestamp && created_at_timestamp != updated_at_timestamp) ;
                                         });
@@ -425,8 +455,7 @@ angular.module('starter')
                                 });
 
                             }
-
-                        }
+                        } 
                     });
 				};
 
@@ -558,7 +587,7 @@ angular.module('starter')
                         {
                             var current_value = current_value;
                             if(data[i].unit == config.appSettings.primary_tracking_factor_details.unit && (current_value-1) <= 4 && (current_value-1) >= 0){
-                                lineChartArray.push([Date.parse(data[i].humanTime.date), (current_value-1)*25] );
+                                lineChartArray.push([moment(data[i].humanTime.date).unix(), (current_value-1)*25] );
                             }
                         }
 
@@ -599,7 +628,7 @@ angular.module('starter')
                         for(var i = 0; i<data.length; i++){
                             var current_value = Math.ceil(data[i].value);
                             if(data[i].unit == config.appSettings.primary_tracking_factor_details.unit && (current_value-1) <= 4 && (current_value-1) >= 0){
-                                lineArr.push([Date.parse(data[i].humanTime.date), (current_value-1)*25] );
+                                lineArr.push([moment(data[i].humanTime.date).unix()*1000, (current_value-1)*25] );
                                 barArr[current_value-1]++;
                             }
                         }

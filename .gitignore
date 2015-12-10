@@ -8,3 +8,6 @@ chromeApps/*/www
 www/private_configs/*.config.js
 !www/private_configs/sample_private.config.js
 chromeApps/zips/*.zip
+.idea/
+hooks
+.vagrant/
