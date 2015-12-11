@@ -10,9 +10,9 @@
                     </div>
                 </div>
                 <ion-list>
-                    <div collection-repeat="negative in negatives" divider-collection-repeat>
-                        <ion-item>
-                            <h2 class="block" >{{negative.cause}}</h2>
+                    <div item-width="100%" item-height="100px" collection-repeat="negative in negatives" divider-collection-repeat>
+                        <ion-item style="border-style:hidden;">
+                            <h2 class="block" style="white-space: normal">{{negative.cause}}</h2>
                             <p class="like_dislike_buttons"></p>
                             <div class="allbuttons">
                                 <div ng-click="upvote(negative)" class="showinline">
@@ -31,7 +31,7 @@
             </ion-content>
        </ion-tab>
 
-        <ion-tab title="Yours" icon-on="ion-ios-person" icon-off="ion-ios-person-outline">
+        <ion-tab item-width="100%" item-height="100px" title="Yours" icon-on="ion-ios-person" icon-off="ion-ios-person-outline">
             <ion-content style="padding-top: 45px">
                 <div class="card card_calm">
                     <div class="item item-text-wrap card_item" >
@@ -40,8 +40,8 @@
                 </div>
                 <ion-list>
                     <div collection-repeat="negative in users_negative_factors" divider-collection-repeat>
-                        <ion-item>
-                            <h2 class="block" >{{negative.cause}}</h2>
+                        <ion-item style="border-style:hidden;">
+                            <h2 class="block"  style="white-space: normal">{{negative.cause}}</h2>
                             <p class="like_dislike_buttons"></p>
                             <div class="allbuttons">
                                 <div ng-click="upvote(negative)" class="showinline">
