@@ -3,7 +3,12 @@
 node_modules/
 platforms/android/
 plugins/
+!platforms/ios/platform_www/plugins
+!platforms/ios/MoodiModo/Plugins
+!platforms/ios/cordova/node_modules
 www/lib/
+!platforms/ios/www/lib/
+!platforms/ios/www/plugins
 chromeApps/*/www
 www/private_configs/*.config.js
 !www/private_configs/sample_private.config.js
@@ -13,3 +18,4 @@ hooks
 *.app.dSYM.zip
 *.ipa
 *.mobileprovision
+!platforms/ios/www/lib/bugsnag/dist

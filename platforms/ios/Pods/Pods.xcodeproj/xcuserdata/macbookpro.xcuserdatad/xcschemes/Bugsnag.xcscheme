@@ -14,7 +14,7 @@
             buildForArchiving = "YES">
             <BuildableReference
                BuildableIdentifier = 'primary'
-               BlueprintIdentifier = 'DB80DB25F8278F107012AC08'
+               BlueprintIdentifier = 'FB81A8D48E929D6441F7CADE'
                BlueprintName = 'Bugsnag'
                ReferencedContainer = 'container:Pods.xcodeproj'
                BuildableName = 'libBugsnag.a'>
