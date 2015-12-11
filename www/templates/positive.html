@@ -12,9 +12,9 @@
                     </div>
                 </div>
                 <ion-list>
-                    <div collection-repeat="positive in positives" divider-collection-repeat>
-                        <ion-item>
-                            <h2 class="block" >{{positive.cause}}</h2>
+                    <div item-width="100%" item-height="100px" collection-repeat="positive in positives" divider-collection-repeat>
+                        <ion-item style="border-style:hidden;">
+                            <h2 class="block" style="white-space: normal">{{positive.cause}}</h2>
                             <p class="like_dislike_buttons"></p>
                             <div class="allbuttons">
                                 <div ng-click="upvote(positive)" class="showinline">
@@ -45,9 +45,9 @@
                     </div>
                 </div>
                 <ion-list>
-                    <div collection-repeat="positive in users_positive_factors" divider-collection-repeat>
-                        <ion-item>
-                            <h2 class="block" >{{positive.cause}}</h2>
+                    <div item-width="100%" item-height="100px" collection-repeat="positive in users_positive_factors" divider-collection-repeat>
+                        <ion-item style="border-style:hidden;">
+                            <h2 class="block" style="white-space: normal">{{positive.cause}}</h2>
                             <p class="like_dislike_buttons"></p>
                             <div class="allbuttons">
                                 <div ng-click="upvote(positive)" class="showinline">
