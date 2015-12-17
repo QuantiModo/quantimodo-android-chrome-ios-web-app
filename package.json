@@ -13,15 +13,19 @@
     "gulp-minify-css": "^0.3.0",
     "gulp-open": "^1.0.0",
     "gulp-rename": "^1.2.0",
-    "gulp-sass": "^1.3.3",
+    "gulp-run": "^1.6.12",
+    "gulp-sass": "^2.1.1",
+    "gulp-shell": "^0.5.1",
     "gulp-util": "^3.0.6",
     "gulp-zip": "^3.0.2",
     "inquirer": "^0.9.0",
+    "plist": "^1.2.0",
     "q": "^1.4.1",
     "request": "^2.64.0",
     "run-sequence": "^1.1.4",
     "shelljs": "^0.5.3",
-    "swagger-js-codegen": "^1.1.4"
+    "swagger-js-codegen": "^1.1.4",
+    "xml2js": "^0.4.15"
   },
   "scripts": {
     "postinstall": "bower install && gulp private"

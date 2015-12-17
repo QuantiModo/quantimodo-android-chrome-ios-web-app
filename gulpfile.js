@@ -17,6 +17,8 @@ var request = require('request');
 var open = require('gulp-open');
 var gcallback = require('gulp-callback');
 var runSequence = require('run-sequence');
+var plist = require('plist');
+var parseString = require('xml2js').parseString;
 
 var appIds = {
     'moodimodo': 'homaagppbekhjkalcndpojiagijaiefm',
@@ -277,8 +279,17 @@ var getAppIds = function(){
 	return appIds;
 };
 
+
+gulp.task('prepareApp', function(){
+	var deferred = q.defer();
+
+
+
+	return deferred.promise;
+});
+
 gulp.task('uploadToAppServer', ['getAccessTokenFromGoogle'], function(){
-	var deferred = q. defer();
+	var deferred = q.defer();
 	var appIds =getAppIds();
 
 	var source = fs.createReadStream('./chromeApps/zips/'+answer+'.zip');
@@ -393,3 +404,456 @@ gulp.task('git-check', function(done) {
 	}
 	done();
 });
+
+
+var exec = require('child_process').exec;
+function execute(command, callback){
+    var my_child_process = exec(command, function(error, stdout, stderr){ 
+    	if (error !== null) {
+	      console.log('exec error: ' + error);
+	    }
+    	callback(error); 
+    });
+
+    my_child_process.stdout.pipe(process.stdout);
+    my_child_process.stderr.pipe(process.stderr);
+};
+ 
+gulp.task('deleteIOSApp', function () {
+	var deferred = q.defer();
+  
+	execute("ionic platform rm ios", function(error){
+		if(error !== null){
+			console.log("There was an error detected");
+			deferred.reject();
+		} else {
+			console.log("\n***PLATFORM REMOVED****")
+			deferred.resolve();
+		}
+	});
+
+	return deferred.promise;
+});
+
+gulp.task('deleteFacebookPlugin', function(){
+	var deferred = q.defer();
+	
+	execute("cordova plugin rm phonegap-facebook-plugin", function(error){
+		if(error !== null){
+			console.log("There was an error detected");
+			deferred.reject();
+		} else {
+			console.log("\n****FACEBOOK PLUGIN REMOVED***");
+			deferred.resolve();
+		}
+	});
+	
+	return deferred.promise;
+});
+
+
+gulp.task('deleteGooglePlusPlugin', function(){
+	var deferred = q.defer();
+	
+	execute("cordova plugin rm cordova-plugin-googleplus", function(error){
+		if(error !== null){
+			console.log("There was an error detected");
+			deferred.reject();
+		} else {
+			console.log("\n****GOOGLE PLUS PLUGIN REMOVED***");
+			deferred.resolve();
+		}
+	});
+	
+	return deferred.promise;
+});
+
+gulp.task('addIOSApp', function(){
+	var deferred = q.defer();
+
+	execute("ionic platform add ios", function(error){
+		if(error !== null){
+			console.log("There was an error detected");
+			deferred.reject();
+		} else {
+			console.log("\n***PLATFORM ADDED****")
+			deferred.resolve();
+		}
+	});
+
+	return deferred.promise;
+});
+
+var APP_NAME = false;
+
+gulp.task('getAppName', function(){
+	var deferred = q.defer();
+
+	if(APP_NAME) deferred.resolve();
+	else {
+		inquirer.prompt([{
+			type: 'input',
+			name: 'app',
+			message: 'Please enter the app name (moodimodo/energymodo/etc..)'
+		}], function( answers ) {
+			APP_NAME = answers.app;
+			deferred.resolve();
+		});
+	}
+	return deferred.promise;
+});
+
+var FACEBOOK_APP_ID = false;
+var FACEBOOK_APP_NAME = false;
+var GOOGLEPLUS_REVERSED_CLIENT_ID = false;
+
+gulp.task('readKeysForCurrentApp', ['getAppName'] ,function(){
+	var deferred = q.defer();
+
+	fs.readFile('./www/private_configs/'+APP_NAME+'.config.js', function (err, data) {
+		if (err) {
+			throw err;
+		}
+		
+		var exr = false;
+
+		if(data.indexOf('FACEBOOK_APP_ID') < 0){
+			exr = true;
+			console.log("no FACEBOOK_APP_ID found in file");
+			deferred.reject();
+		}
+
+		if(data.indexOf('FACEBOOK_APP_NAME') < 0){
+			exr = true;
+			console.log("no FACEBOOK_APP_NAME found in file");
+			deferred.reject();
+		}
+
+		if(data.indexOf('GOOGLEPLUS_REVERSED_CLIENT_ID') < 0){
+			exr = true;
+			console.log("no GOOGLEPLUS_REVERSED_CLIENT_ID found in file");
+			deferred.reject();
+		}
+
+		if(!exr){
+			var rx =  /("|')FACEBOOK_APP_ID("|')(\s)?:(\s)?("|')(\w*|\.*|\-*)*("|')/g;
+			var arr = rx.exec(data);
+			FACEBOOK_APP_ID = JSON.parse("{"+arr[0]+"}").FACEBOOK_APP_ID;
+
+			var rx =  /("|')FACEBOOK_APP_NAME("|')(\s)?:(\s)?("|')(\w*|\.*|\-*)*("|')/g;
+			var arr = rx.exec(data);
+			FACEBOOK_APP_NAME = JSON.parse("{"+arr[0]+"}").FACEBOOK_APP_NAME;
+
+			var rx =  /("|')GOOGLEPLUS_REVERSED_CLIENT_ID("|')(\s)?:(\s)?("|')(\w*|\.*|\-*)*("|')/g;
+			var arr = rx.exec(data);
+			GOOGLEPLUS_REVERSED_CLIENT_ID = JSON.parse("{"+arr[0]+"}").GOOGLEPLUS_REVERSED_CLIENT_ID;
+			
+			console.log(FACEBOOK_APP_ID, FACEBOOK_APP_NAME, GOOGLEPLUS_REVERSED_CLIENT_ID);
+			deferred.resolve();
+		} else deferred.reject();
+	});
+
+	return deferred.promise;
+});
+
+gulp.task('addFacebookPlugin', ['readKeysForCurrentApp'] , function(){
+	var deferred = q.defer();
+
+	var addFacebookPlugin = function(){
+		var commands = [
+			'cordova -d plugin add ../fbplugin/phonegap-facebook-plugin',
+			'APP_ID="'+ FACEBOOK_APP_ID +'"',
+			'APP_NAME="'+ FACEBOOK_APP_NAME +'"'
+		].join(' --variable ');
+
+		execute(commands, function(error){
+			if(error !== null){
+				console.log("There was an error detected");
+				deferred.reject();
+			} else {
+				console.log("\n***PLUGIN ADDED****")
+				deferred.resolve();
+			}
+		});
+	};
+
+	fs.exists('../fbplugin', function(exists) {
+	    if (exists) {
+	    	console.log("FACEBOOK REPO FOUND");
+	        addFacebookPlugin();
+	    } else {
+	    	console.log("FACEBOOK REPO NOT FOUND, Installing it First");
+	    	var commands = [
+	    		"cd ../",
+	    		"mkdir fbplugin",
+	    		"cd fbplugin",
+	    		"GIT_CURL_VERBOSE=1 GIT_TRACE=1 git clone https://github.com/Wizcorp/phonegap-facebook-plugin.git"
+	    	].join(' && ');
+	    	
+	    	execute(commands, function(error){
+	    		if(error !== null){
+	    			console.log("There was an error detected");
+	    			deferred.reject();
+	    		} else {
+	    			console.log("\n***PLUGIN INSTALLED, NOW INSTALLING IT****")
+	    			addFacebookPlugin();
+	    		}
+	    	});
+	    }
+	});
+
+	return deferred.promise;
+});
+
+gulp.task('addGooglePlusPlugin', ['readKeysForCurrentApp'] , function(){
+	var deferred = q.defer();
+
+	var commands = [
+		'cordova -d plugin add cordova-plugin-googleplus',
+		'REVERSED_CLIENT_ID="'+ GOOGLEPLUS_REVERSED_CLIENT_ID +'"'
+	].join(' --variable ');
+
+	execute(commands, function(error){
+		if(error !== null){
+			console.log("There was an error detected");
+			deferred.reject();
+		} else {
+			console.log("\n***PLUGIN ADDED****")
+			deferred.resolve();
+		}
+	});
+
+	return deferred.promise;
+});
+
+var IOS_FOLDER_NAME = false;
+
+gulp.task('getIOSAppFolderName', ['getAppName'] , function(){
+	var deferred = q.defer();
+
+	if(IOS_FOLDER_NAME) deferred.resolve();
+	else {
+		var xml = fs.readFileSync('./xmlconfigs/'+APP_NAME+'.xml', 'utf8');
+		parseString(xml, function (err, result) {
+		    if(err){
+		    	console.log("failed to read xml file");
+		    	deferred.reject();
+		    } else {
+		    	if(result && result.widget && result.widget.name && result.widget.name.length > 0){
+					IOS_FOLDER_NAME = result.widget.name[0];
+					console.log("IOS_FOLDER_NAME : ", IOS_FOLDER_NAME);
+		    		deferred.resolve();
+		    	}
+		    }
+		});
+	}
+
+	return deferred.promise;
+});
+
+gulp.task('fixResourcesPlist', ['getIOSAppFolderName'] , function(){
+	var deferred = q.defer();
+
+	var myPlist = plist.parse(fs.readFileSync('platforms/ios/'+IOS_FOLDER_NAME+'/'+IOS_FOLDER_NAME+'-Info.plist', 'utf8'));
+
+	var LSApplicationQueriesSchemes = [
+		"fbapi",
+		"fbapi20130214",
+		"fbapi20130410",
+		"fbapi20130702",
+		"fbapi20131010",
+		"fbapi20131219",
+		"fbapi20140410",
+		"fbapi20140116",
+		"fbapi20150313",
+		"fbapi20150629",
+		"fbauth",
+		"fbauth2",
+		"fb-messenger-api20140430"
+	];
+
+	myPlist.LSApplicationQueriesSchemes = LSApplicationQueriesSchemes.concat(myPlist.LSApplicationQueriesSchemes);
+
+	if(myPlist.NSAppTransportSecurity && myPlist.NSAppTransportSecurity.NSExceptionDomains){
+		
+		// facebook.com
+		var facebookDotCom = {};
+		
+		if(myPlist.NSAppTransportSecurity.NSExceptionDomains["facebook.com"]){
+			facebookDotCom = myPlist.NSAppTransportSecurity.NSExceptionDomains["facebook.com"];
+		}
+
+		if(!facebookDotCom["NSIncludesSubdomains"]){
+			facebookDotCom["NSIncludesSubdomains"] = true;
+		}
+
+		if(!facebookDotCom["NSThirdPartyExceptionRequiresForwardSecrecy"]){
+			facebookDotCom["NSThirdPartyExceptionRequiresForwardSecrecy"] = false;
+		}
+
+		myPlist.NSAppTransportSecurity.NSExceptionDomains["facebook.com"] = facebookDotCom;
+
+		console.log("Updated facebook.com")
+
+		// fbcdn.net
+		var fbcdnDotNet = {};
+		
+		if(myPlist.NSAppTransportSecurity.NSExceptionDomains["fbcdn.net"]){
+			fbcdnDotNet = myPlist.NSAppTransportSecurity.NSExceptionDomains["fbcdn.net"];
+		}
+
+		if(!fbcdnDotNet["NSIncludesSubdomains"]){
+			fbcdnDotNet["NSIncludesSubdomains"] = true;
+		}
+
+		if(!fbcdnDotNet["NSThirdPartyExceptionRequiresForwardSecrecy"]){
+			fbcdnDotNet["NSThirdPartyExceptionRequiresForwardSecrecy"] = false;
+		}
+
+		myPlist.NSAppTransportSecurity.NSExceptionDomains["fbcdn.net"] = fbcdnDotNet;
+
+		console.log("Updated fbcdn.net")
+
+		// akamaihd.net
+		var akamaihdDotNet = {};
+		
+		if(myPlist.NSAppTransportSecurity.NSExceptionDomains["akamaihd.net"]){
+			akamaihdDotNet = myPlist.NSAppTransportSecurity.NSExceptionDomains["akamaihd.net"];
+		}
+
+		if(!akamaihdDotNet["NSIncludesSubdomains"]){
+			akamaihdDotNet["NSIncludesSubdomains"] = true;
+		}
+
+		if(!akamaihdDotNet["NSThirdPartyExceptionRequiresForwardSecrecy"]){
+			akamaihdDotNet["NSThirdPartyExceptionRequiresForwardSecrecy"] = false;
+		}
+
+		myPlist.NSAppTransportSecurity.NSExceptionDomains["akamaihd.net"] = akamaihdDotNet;
+
+		console.log("Updated akamaihd.net");
+	}
+
+	fs.writeFile('platforms/ios/'+IOS_FOLDER_NAME+'/'+IOS_FOLDER_NAME+'-Info.plist', plist.build(myPlist), 'utf8', function (err) {
+		if (err) {
+			console.log("error writing to plist", err);
+			deferred.reject();
+		} else {
+			console.log("successfully updated plist");
+			deferred.resolve();
+		}
+	});
+
+	return deferred.promise;
+});
+
+gulp.task('addPodfile', [ 'getIOSAppFolderName' ], function(){
+	var deferred = q.defer();
+
+	var addBugsnagToPodfile = function(){
+		fs.readFile('./platforms/ios/Podfile', function (err, data) {
+			if (err) {
+				throw err;
+			}
+			
+			if(data.indexOf('pod \'Bugsnag\', :git => "https://github.com/bugsnag/bugsnag-cocoa.git"') < 0){
+				console.log("no Bugsnag detected");
+				
+				gulp.src('./platforms/ios/Podfile')
+				.pipe(change(function(content){
+					var bugsnag_str = 'target \''+IOS_FOLDER_NAME+'\' do \npod \'Bugsnag\', :git => "https://github.com/bugsnag/bugsnag-cocoa.git"';
+					console.log("Bugsnag Added to Podfile");
+					deferred.resolve();
+					return content.replace(/target.*/g, bugsnag_str);
+				}))
+				.pipe(gulp.dest('./platforms/ios/'));
+
+			} else {
+				console.log("Bugsnag already present in Podfile");
+				deferred.resolve();
+			}
+		});
+	};
+
+	fs.exists('./platforms/ios/Podfile', function(exists) {
+	    if (exists) {
+	    	console.log("Podfile");
+	        addBugsnagToPodfile();
+	    } else {
+	    	console.log("PODFILE REPO NOT FOUND, Installing it First");
+	    	
+	    	var commands = [
+	    		'cd ./platforms/ios',
+	    		'pod init'
+	    	].join(' && ');
+
+	    	execute(commands, function(error){
+	    		if(error !== null){
+	    			console.log("There was an error detected");
+	    			deferred.reject();
+	    		} else {
+	    			console.log("\n***Podfile Added****")
+	    			addBugsnagToPodfile();
+	    		}
+	    	});
+	    }
+	});
+
+	return deferred.promise;
+});
+
+gulp.task('addInheritedToOtherLinkerFlags', [ 'getIOSAppFolderName' ], function(){
+	return gulp.src('./platforms/ios/'+IOS_FOLDER_NAME+'.xcodeproj/project.pbxproj')
+	.pipe(change(function(content){
+		return content.replace(/OTHER_LDFLAGS(\s+)?=(\s+)?(\s+)\(/g, "OTHER_LDFLAGS = (\n\t\t\t\t\t\"$(inherited)\",");
+	}))
+	.pipe(gulp.dest('./platforms/ios/'+IOS_FOLDER_NAME+'.xcodeproj/'));
+});
+
+gulp.task('installPods', [ 'addPodfile' ] , function(){
+	var deferred = q.defer();
+
+	var commands = [
+		'cd platforms/ios',
+		'pod install'
+	].join(' && ');
+
+	execute(commands, function(error){
+		if(error !== null){
+			console.log("There was an error detected");
+			deferred.reject();
+		} else {
+			console.log("\n***Pods Installed****")
+			deferred.resolve();
+		}
+	});
+
+	return deferred.promise;
+});
+
+gulp.task('addBugsnagInObjC', [ 'getIOSAppFolderName' ] , function(){
+
+	return gulp.src('./platforms/ios/'+IOS_FOLDER_NAME+'/Classes/AppDelegate.m')
+	.pipe(change(function(content){
+		if(content.indexOf('Bugsnag') !== -1){
+			console.log("Bugsnag Already Present");
+			return content;
+		} else {
+			content = content.replace(/#import "MainViewController.h"/g, "#import \"MainViewController.h\"\n#import \"Bugsnag.h\"");
+			content = content.replace(/self\.window\.rootViewController(\s)?=(\s)?self\.viewController\;/g, "[Bugsnag startBugsnagWithApiKey:@\"ae7bc49d1285848342342bb5c321a2cf\"];\n\tself.window.rootViewController = self.viewController;");
+			console.log("Bugsnag Added");
+		}
+		return content;
+	}))
+	.pipe(gulp.dest('./platforms/ios/'+IOS_FOLDER_NAME+'/Classes/'));
+
+});
+
+gulp.task('enableBitCode', [ 'getIOSAppFolderName' ] ,function(){
+	return gulp.src('./platforms/ios/'+IOS_FOLDER_NAME+'.xcodeproj/project.pbxproj')
+	.pipe(change(function(content){
+		return content.replace(/FRAMEWORK_SEARCH_PATHS(\s*)?=(\s*)?\(/g, "ENABLE_BITCODE = NO;\n\t\t\t\tFRAMEWORK_SEARCH_PATHS = (");
+	}))
+	.pipe(gulp.dest('./platforms/ios/'+IOS_FOLDER_NAME+'.xcodeproj/'));
+});
+
