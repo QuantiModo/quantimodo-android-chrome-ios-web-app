@@ -416,95 +416,6 @@ function execute(command, callback){
     my_child_process.stdout.pipe(process.stdout);
     my_child_process.stderr.pipe(process.stderr);
 };
-
-gulp.task('buildBumper', ['getAppName'] ,function(){
-	var deferred = q.defer();
-
-	var xml = fs.readFileSync('./xmlconfigs/'+APP_NAME+'.xml', 'utf8');
-	parseString(xml, function (err, result) {
-	    if(err){
-	    	console.log("failed to read xml file");
-	    	deferred.reject();
-	    } else {
-	    	var version = "1.0.0";
-	    	var build = "1.0.0";
-
-	    	if(result && result.widget && result.widget.$ && result.widget.$.version){
-				version = result.widget.$.version;
-	    	}
-
-	    	if(result && result.widget && result.widget.$ && result.widget.$["ios-CFBundleVersion"]){
-				console.log("found");
-				build = result.widget.$["ios-CFBundleVersion"];
-	    	}
-
-	    	// bump build number
-	    	var numberToBumpArr = build.split('.'); 
-	    	var numberToBump = numberToBumpArr[numberToBumpArr.length-1];
-	    	numberToBumpArr[numberToBumpArr.length-1] = (parseInt(numberToBump)+1).toString();
-			build = numberToBumpArr.join('.');
-
-			result.widget.$["ios-CFBundleVersion"] = build;
-
-			var builder = new xml2js.Builder();
-			var updatedXml = builder.buildObject(result);
-
-			fs.writeFile('./xmlconfigs/'+APP_NAME+'.xml', updatedXml, 'utf8', function (err) {
-				if (err) {
-					console.log("error writing to xml file", err);
-					deferred.reject();
-				} else {
-					console.log("successfully updated the version number xml file");
-					deferred.resolve();
-				}
-			});
-	    }
-	});
-
-	return deferred.promise;
-});
-
-gulp.task('versionBumper', function(){
-	var deferred = q.defer();
-
-	var xml = fs.readFileSync('./xmlconfigs/'+APP_NAME+'.xml', 'utf8');
-	
-	parseString(xml, function (err, result) {
-		if(err){
-			console.log("failed to read xml file");
-			deferred.reject();
-		} else {
-			var version = "1.0.0";
-
-			if(result && result.widget && result.widget.$ && result.widget.$.version){
-				version = result.widget.$.version;
-			}
-
-	    	// bump version number
-	    	var numberToBumpArr = version.split('.'); 
-	    	var numberToBump = numberToBumpArr[numberToBumpArr.length-1];
-	    	numberToBumpArr[numberToBumpArr.length-1] = (parseInt(numberToBump)+1).toString();
-	    	version = numberToBumpArr.join('.');
-
-	    	result.widget.$["version"] = version;
-
-	    	var builder = new xml2js.Builder();
-	    	var updatedXml = builder.buildObject(result);
-
-	    	fs.writeFile('./xmlconfigs/'+APP_NAME+'.xml', updatedXml, 'utf8', function (err) {
-	    		if (err) {
-	    			console.log("error writing to xml file", err);
-	    			deferred.reject();
-	    		} else {
-	    			console.log("successfully updated the version number xml file");
-	    			deferred.resolve();
-	    		}
-	    	});
-	    }
-	});
-	
-	return deferred.promise;
-});
  
 gulp.task('deleteIOSApp', function () {
 	var deferred = q.defer();
@@ -958,4 +869,52 @@ gulp.task('makeApp', function(callback){
 	'addPodfile',
 	'installPods',
 	callback);
+});
+
+gulp.task('bumpVersion', function(){
+	var deferred = q.defer();
+
+	var xml = fs.readFileSync('./xmlconfigs/'+APP_NAME+'.xml', 'utf8');
+	
+	parseString(xml, function (err, result) {
+		if(err){
+			console.log("failed to read xml file");
+			deferred.reject();
+		} else {
+			var version = "1.0.0";
+
+			if(result && result.widget && result.widget.$ ){
+				if(result.widget.$['version']) version = result.widget.$['version'];
+				if(result.widget.$["ios-CFBundleVersion"]) version = result.widget.$["ios-CFBundleVersion"];
+			}
+			
+	    	// bump version number
+	    	var numberToBumpArr = version.split('.'); 
+	    	var numberToBump = numberToBumpArr[numberToBumpArr.length-1];
+	    	numberToBumpArr[numberToBumpArr.length-1] = (parseInt(numberToBump)+1).toString();
+	    	version = numberToBumpArr.join('.');
+
+	    	if(!result) result = {};
+	    	if(!result.widget) result['widget'] = {};
+	    	if(!result.widget.$) result.widget['$'] = {};
+	    	
+	    	result.widget.$["version"] = version;
+	    	result.widget.$["ios-CFBundleVersion"] = version;
+
+	    	var builder = new xml2js.Builder();
+	    	var updatedXml = builder.buildObject(result);
+
+	    	fs.writeFile('./xmlconfigs/'+APP_NAME+'.xml', updatedXml, 'utf8', function (err) {
+	    		if (err) {
+	    			console.log("error writing to xml file", err);
+	    			deferred.reject();
+	    		} else {
+	    			console.log("successfully updated the version number xml file");
+	    			deferred.resolve();
+	    		}
+	    	});
+	    }
+	});
+	
+	return deferred.promise;
 });
