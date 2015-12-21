@@ -18,7 +18,9 @@ var open = require('gulp-open');
 var gcallback = require('gulp-callback');
 var runSequence = require('run-sequence');
 var plist = require('plist');
+var xml2js = require('xml2js');
 var parseString = require('xml2js').parseString;
+
 
 var appIds = {
     'moodimodo': 'homaagppbekhjkalcndpojiagijaiefm',
@@ -57,27 +59,21 @@ gulp.task('install', ['git-check'], function() {
 		});
 });
 
-gulp.task('make', function(){
+gulp.task('make', ['getAppName'], function(){
 	
 	var deferred = q.defer();
-	var answer = '';
-	inquirer.prompt([{
-		type: 'input',
-		name: 'app',
-		message: 'Please enter the app name (moodimodo/energymodo/etc..)'
-	}], function( answers ) {
-				answer = answers.app;
-				gulp.src('./xmlconfigs/'+answers.app+'.xml')
-				.pipe(rename('config.xml'))
-				.pipe(gulp.dest('./'));
 
-				gulp.src('./www/js/apps.js')
-				.pipe(change(function(content){
-					return content.replace(/defaultApp\s?:\s?("|')\w+("|'),/g, 'defaultApp : "'+answer+'",');
-				}))
-				.pipe(gulp.dest('./www/js/'))
-				deferred.resolve();
-	});
+	gulp.src('./xmlconfigs/'+APP_NAME+'.xml')
+	.pipe(rename('config.xml'))
+	.pipe(gulp.dest('./'));
+
+	gulp.src('./www/js/apps.js')
+	.pipe(change(function(content){
+		deferred.resolve();
+		return content.replace(/defaultApp\s?:\s?("|')\w+("|'),/g, 'defaultApp : "'+APP_NAME+'",');
+	}))
+	.pipe(gulp.dest('./www/js/'))
+	
 	return deferred.promise;
 });
 
@@ -406,6 +402,8 @@ gulp.task('git-check', function(done) {
 });
 
 
+// making ios build
+
 var exec = require('child_process').exec;
 function execute(command, callback){
     var my_child_process = exec(command, function(error, stdout, stderr){ 
@@ -450,7 +448,6 @@ gulp.task('deleteFacebookPlugin', function(){
 	
 	return deferred.promise;
 });
-
 
 gulp.task('deleteGooglePlusPlugin', function(){
 	var deferred = q.defer();
@@ -857,3 +854,67 @@ gulp.task('enableBitCode', [ 'getIOSAppFolderName' ] ,function(){
 	.pipe(gulp.dest('./platforms/ios/'+IOS_FOLDER_NAME+'.xcodeproj/'));
 });
 
+gulp.task('makeApp', function(callback){
+	runSequence('deleteIOSApp',
+	'deleteFacebookPlugin',
+	'deleteGooglePlusPlugin',
+	'addIOSApp',
+	'readKeysForCurrentApp',
+	'addFacebookPlugin',
+	'addGooglePlusPlugin',
+	'fixResourcesPlist',
+	'addBugsnagInObjC',
+	'enableBitCode',
+	'addInheritedToOtherLinkerFlags',
+	'addPodfile',
+	'installPods',
+	callback);
+});
+
+gulp.task('bumpVersion', function(){
+	var deferred = q.defer();
+
+	var xml = fs.readFileSync('./xmlconfigs/'+APP_NAME+'.xml', 'utf8');
+	
+	parseString(xml, function (err, result) {
+		if(err){
+			console.log("failed to read xml file");
+			deferred.reject();
+		} else {
+			var version = "1.0.0";
+
+			if(result && result.widget && result.widget.$ ){
+				if(result.widget.$['version']) version = result.widget.$['version'];
+				if(result.widget.$["ios-CFBundleVersion"]) version = result.widget.$["ios-CFBundleVersion"];
+			}
+			
+	    	// bump version number
+	    	var numberToBumpArr = version.split('.'); 
+	    	var numberToBump = numberToBumpArr[numberToBumpArr.length-1];
+	    	numberToBumpArr[numberToBumpArr.length-1] = (parseInt(numberToBump)+1).toString();
+	    	version = numberToBumpArr.join('.');
+
+	    	if(!result) result = {};
+	    	if(!result.widget) result['widget'] = {};
+	    	if(!result.widget.$) result.widget['$'] = {};
+	    	
+	    	result.widget.$["version"] = version;
+	    	result.widget.$["ios-CFBundleVersion"] = version;
+
+	    	var builder = new xml2js.Builder();
+	    	var updatedXml = builder.buildObject(result);
+
+	    	fs.writeFile('./xmlconfigs/'+APP_NAME+'.xml', updatedXml, 'utf8', function (err) {
+	    		if (err) {
+	    			console.log("error writing to xml file", err);
+	    			deferred.reject();
+	    		} else {
+	    			console.log("successfully updated the version number xml file");
+	    			deferred.resolve();
+	    		}
+	    	});
+	    }
+	});
+	
+	return deferred.promise;
+});
