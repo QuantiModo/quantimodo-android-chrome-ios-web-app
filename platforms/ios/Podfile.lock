@@ -12,7 +12,7 @@ EXTERNAL SOURCES:
 
 CHECKOUT OPTIONS:
   Bugsnag:
-    :commit: d4000dcc87f6796c0fc902224ebcce28da6d2a37
+    :commit: a851bb076b89eb6d2224cb1452743d0f108d2347
     :git: https://github.com/bugsnag/bugsnag-cocoa.git
 
 SPEC CHECKSUMS:

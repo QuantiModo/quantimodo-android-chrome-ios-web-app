@@ -11,5 +11,8 @@ window.private_keys = {
         "Android": "mind_first_secret",
         "Web": "mind_first_secret",
         "Chrome": "mindfirst_chrome_app_secret"
-    }
+    },
+    "FACEBOOK_APP_ID" : "225078261031461",
+    "FACEBOOK_APP_NAME" : "QuantiModo",
+    "GOOGLEPLUS_REVERSED_CLIENT_ID" : "com.googleusercontent.apps.1052648855194-6v0vca8chlqpo1bfqsj8ir6vp6o5avmd"
 };

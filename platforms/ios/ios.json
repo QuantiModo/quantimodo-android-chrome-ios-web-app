@@ -61,14 +61,6 @@
                             "count": 1
                         },
                         {
-                            "xml": "<feature name=\"GooglePlus\"><param name=\"ios-package\" value=\"GooglePlus\" /><param name=\"onload\" value=\"true\" /></feature>",
-                            "count": 1
-                        },
-                        {
-                            "xml": "<access origin=\"https://accounts.google.com/*\" />",
-                            "count": 1
-                        },
-                        {
                             "xml": "<feature name=\"FacebookConnectPlugin\"><param name=\"ios-package\" value=\"FacebookConnectPlugin\" /><param name=\"onload\" value=\"true\" /></feature>",
                             "count": 1
                         },
@@ -95,28 +87,20 @@
                         {
                             "xml": "<access origin=\"https://*.akamaihd.net\" />",
                             "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"GooglePlus\"><param name=\"ios-package\" value=\"GooglePlus\" /><param name=\"onload\" value=\"true\" /></feature>",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<access origin=\"https://accounts.google.com/*\" />",
+                            "count": 1
                         }
                     ]
                 }
             },
             "*-Info.plist": {
                 "parents": {
-                    "CFBundleURLTypes": [
-                        {
-                            "xml": "<array><dict><key>CFBundleTypeRole</key><string>Editor</string><key>CFBundleURLName</key><string>com.quantimodo.moodimodoapp</string><key>CFBundleURLSchemes</key><array><string>com.quantimodo.moodimodoapp</string></array></dict><dict><key>CFBundleTypeRole</key><string>Editor</string><key>CFBundleURLName</key><string>REVERSED_CLIENT_ID</string><key>CFBundleURLSchemes</key><array><string>com.googleusercontent.apps.1052648855194-djmit92q5bbglkontak0vdc7lafupt0d</string></array></dict></array>",
-                            "count": 1
-                        },
-                        {
-                            "xml": "<array><dict><key>CFBundleURLSchemes</key><array><string>fb225078261031461</string></array></dict></array>",
-                            "count": 1
-                        }
-                    ],
-                    "LSApplicationQueriesSchemes": [
-                        {
-                            "xml": "<array><string>com.quantimodo.moodimodoapp</string><string>com.googleusercontent.apps.1052648855194-djmit92q5bbglkontak0vdc7lafupt0d</string><string>com-google-gidconsent</string><string>com-google-gidconsent-google</string><string>com.google.gppconsent.2.4.0</string><string>com.google.gppconsent.2.4.1</string></array>",
-                            "count": 1
-                        }
-                    ],
                     "FacebookAppID": [
                         {
                             "xml": "<string>225078261031461</string>",
@@ -128,6 +112,22 @@
                             "xml": "<string>QuantiModo</string>",
                             "count": 1
                         }
+                    ],
+                    "CFBundleURLTypes": [
+                        {
+                            "xml": "<array><dict><key>CFBundleURLSchemes</key><array><string>fb225078261031461</string></array></dict></array>",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<array><dict><key>CFBundleTypeRole</key><string>Editor</string><key>CFBundleURLName</key><string>com.ionicframework.modo149366</string><key>CFBundleURLSchemes</key><array><string>com.ionicframework.modo149366</string></array></dict><dict><key>CFBundleTypeRole</key><string>Editor</string><key>CFBundleURLName</key><string>REVERSED_CLIENT_ID</string><key>CFBundleURLSchemes</key><array><string>com.googleusercontent.apps.1052648855194-djmit92q5bbglkontak0vdc7lafupt0d</string></array></dict></array>",
+                            "count": 1
+                        }
+                    ],
+                    "LSApplicationQueriesSchemes": [
+                        {
+                            "xml": "<array><string>com.ionicframework.modo149366</string><string>com.googleusercontent.apps.1052648855194-djmit92q5bbglkontak0vdc7lafupt0d</string><string>com-google-gidconsent</string><string>com-google-gidconsent-google</string><string>com.google.gppconsent.2.4.0</string><string>com.google.gppconsent.2.4.1</string></array>",
+                            "count": 1
+                        }
                     ]
                 }
             }
@@ -135,49 +135,49 @@
     },
     "installed_plugins": {
         "com.ionic.keyboard": {
-            "PACKAGE_NAME": "com.quantimodo.moodimodoapp"
+            "PACKAGE_NAME": "com.ionicframework.modo149366"
         },
         "cordova-plugin-console": {
-            "PACKAGE_NAME": "com.quantimodo.moodimodoapp"
+            "PACKAGE_NAME": "com.ionicframework.modo149366"
         },
         "cordova-plugin-datepicker": {
-            "PACKAGE_NAME": "com.quantimodo.moodimodoapp"
+            "PACKAGE_NAME": "com.ionicframework.modo149366"
         },
         "cordova-plugin-device": {
-            "PACKAGE_NAME": "com.quantimodo.moodimodoapp"
+            "PACKAGE_NAME": "com.ionicframework.modo149366"
         },
         "cordova-plugin-file": {
-            "PACKAGE_NAME": "com.quantimodo.moodimodoapp"
+            "PACKAGE_NAME": "com.ionicframework.modo149366"
         },
         "cordova-plugin-file-opener2": {
-            "PACKAGE_NAME": "com.quantimodo.moodimodoapp"
+            "PACKAGE_NAME": "com.ionicframework.modo149366"
         },
         "cordova-plugin-inappbrowser": {
-            "PACKAGE_NAME": "com.quantimodo.moodimodoapp"
+            "PACKAGE_NAME": "com.ionicframework.modo149366"
         },
         "cordova-plugin-splashscreen": {
-            "PACKAGE_NAME": "com.quantimodo.moodimodoapp"
+            "PACKAGE_NAME": "com.ionicframework.modo149366"
         },
         "cordova-plugin-whitelist": {
-            "PACKAGE_NAME": "com.quantimodo.moodimodoapp"
+            "PACKAGE_NAME": "com.ionicframework.modo149366"
         },
         "de.appplant.qm.cordova.common.registerusernotificationsettings": {
-            "PACKAGE_NAME": "com.quantimodo.moodimodoapp"
+            "PACKAGE_NAME": "com.ionicframework.modo149366"
         },
         "de.appplant.cordova.plugin.local-notification": {
-            "PACKAGE_NAME": "com.quantimodo.moodimodoapp"
+            "PACKAGE_NAME": "com.ionicframework.modo149366"
         },
         "org.apache.cordova.statusbar": {
-            "PACKAGE_NAME": "com.quantimodo.moodimodoapp"
-        },
-        "cordova-plugin-googleplus": {
-            "REVERSED_CLIENT_ID": "com.googleusercontent.apps.1052648855194-djmit92q5bbglkontak0vdc7lafupt0d",
-            "PACKAGE_NAME": "com.quantimodo.moodimodoapp"
+            "PACKAGE_NAME": "com.ionicframework.modo149366"
         },
         "phonegap-facebook-plugin": {
             "APP_ID": "225078261031461",
             "APP_NAME": "QuantiModo",
-            "PACKAGE_NAME": "com.quantimodo.moodimodoapp"
+            "PACKAGE_NAME": "com.ionicframework.modo149366"
+        },
+        "cordova-plugin-googleplus": {
+            "REVERSED_CLIENT_ID": "com.googleusercontent.apps.1052648855194-djmit92q5bbglkontak0vdc7lafupt0d",
+            "PACKAGE_NAME": "com.ionicframework.modo149366"
         }
     },
     "dependent_plugins": {},
@@ -450,19 +450,19 @@
             ]
         },
         {
-            "file": "plugins/cordova-plugin-googleplus/www/GooglePlus.js",
-            "id": "cordova-plugin-googleplus.GooglePlus",
-            "pluginId": "cordova-plugin-googleplus",
-            "clobbers": [
-                "window.plugins.googleplus"
-            ]
-        },
-        {
             "file": "plugins/phonegap-facebook-plugin/facebookConnectPlugin.js",
             "id": "phonegap-facebook-plugin.FacebookConnectPlugin",
             "pluginId": "phonegap-facebook-plugin",
             "clobbers": [
                 "facebookConnectPlugin"
+            ]
+        },
+        {
+            "file": "plugins/cordova-plugin-googleplus/www/GooglePlus.js",
+            "id": "cordova-plugin-googleplus.GooglePlus",
+            "pluginId": "cordova-plugin-googleplus",
+            "clobbers": [
+                "window.plugins.googleplus"
             ]
         }
     ]

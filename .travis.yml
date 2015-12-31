@@ -1,0 +1,29 @@
+language: objective-c  
+os: osx  
+osx_image: xcode7  
+before_install:  
+- export LANG=en_US.UTF-8
+- brew update
+- npm install -g npm@2.14.5
+- npm install -g gulp cordova ionic
+before_script:  
+- ./scripts/decrypt-key.sh
+- ./scripts/add-key.sh
+script:  
+- npm install
+- gulp make
+- gulp makeApp
+after_success:  
+- ./scripts/package-and-upload.sh
+env:  
+  global:
+  - APP_NAME="MoodiModo"
+  - TEAM_ID="YD2FK7S2S5"
+  - DEVELOPER_NAME="iPhone Distribution: Mike Sinn (YD2FK7S2S5)"
+  - PROFILE_NAME="028ab892-9a5e-4004-adac-b8472e760bdb"
+  - PROFILE_UUID="028ab892-9a5e-4004-adac-b8472e760bdb"
+  - DELIVER_WHAT_TO_TEST="Test the Basics of the app and see if something breaks!"
+  - APP_UPLOAD_BRANCH="app/moodimodo"
+branches : 
+	only : 
+	- "app/moodimodo"

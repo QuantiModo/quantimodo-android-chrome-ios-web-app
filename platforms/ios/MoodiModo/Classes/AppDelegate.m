@@ -28,6 +28,7 @@
 #import "AppDelegate.h"
 #import "MainViewController.h"
 #import "Bugsnag.h"
+
 #import <Cordova/CDVPlugin.h>
 
 @implementation AppDelegate
@@ -81,11 +82,12 @@
     // Set your app's start page by setting the <content src='foo.html' /> tag in config.xml.
     // If necessary, uncomment the line below to override it.
     // self.viewController.startPage = @"index.html";
-    [Bugsnag startBugsnagWithApiKey:@"ae7bc49d1285848342342bb5c321a2cf"];
+
     // NOTE: To customize the view's frame size (which defaults to full screen), override
     // [self.viewController viewWillAppear:] in your view controller.
 
-    self.window.rootViewController = self.viewController;
+    [Bugsnag startBugsnagWithApiKey:@"ae7bc49d1285848342342bb5c321a2cf"];
+	self.window.rootViewController = self.viewController;
     [self.window makeKeyAndVisible];
 
     return YES;

@@ -410,7 +410,7 @@ function execute(command, callback){
     	if (error !== null) {
 	      console.log('exec error: ' + error);
 	    }
-    	callback(error); 
+    	callback(error, stdout); 
     });
 
     my_child_process.stdout.pipe(process.stdout);
@@ -483,11 +483,11 @@ gulp.task('addIOSApp', function(){
 
 var APP_NAME = false;
 
+
 gulp.task('getAppName', function(){
 	var deferred = q.defer();
 
-	if(APP_NAME) deferred.resolve();
-	else {
+	var inquireAboutAppName = function(){
 		inquirer.prompt([{
 			type: 'input',
 			name: 'app',
@@ -496,6 +496,23 @@ gulp.task('getAppName', function(){
 			APP_NAME = answers.app;
 			deferred.resolve();
 		});
+	};
+
+	if(APP_NAME) deferred.resolve();
+	else {
+		var command = 'git rev-parse --abbrev-ref HEAD';
+		execute(command, function(error, output){
+			output = output.trim();
+			if(error || output.indexOf('app/') < 0 || !output.split("/")[1] || output.split("/")[1].length === 0){
+				console.log("Failed to get App name automatically.");
+				inquireAboutAppName();
+			} else {
+				APP_NAME = output.split("/")[1];
+				console.log("the app name is", JSON.stringify(APP_NAME));
+				deferred.resolve();
+			}
+		});
+		
 	}
 	return deferred.promise;
 });
