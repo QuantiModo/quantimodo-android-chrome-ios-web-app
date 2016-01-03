@@ -27,3 +27,4 @@
 // "iPhone Developer": Development builds (default, local only; iOS Development certificate) or "iPhone Distribution": Distribution builds (Adhoc/In-House/AppStore; iOS Distribution certificate)
 CODE_SIGN_IDENTITY = iPhone Developer
 CODE_SIGN_IDENTITY[sdk=iphoneos*] = iPhone Developer
+ENABLE_BITCODE = NO
