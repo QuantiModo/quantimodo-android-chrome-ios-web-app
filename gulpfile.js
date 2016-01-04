@@ -500,19 +500,25 @@ gulp.task('getAppName', function(){
 
 	if(APP_NAME) deferred.resolve();
 	else {
-		var command = 'git rev-parse --abbrev-ref HEAD';
-		execute(command, function(error, output){
-			output = output.trim();
-			if(error || output.indexOf('app/') < 0 || !output.split("/")[1] || output.split("/")[1].length === 0){
-				console.log("Failed to get App name automatically.");
-				inquireAboutAppName();
-			} else {
-				APP_NAME = output.split("/")[1];
-				console.log("the app name is", JSON.stringify(APP_NAME));
-				deferred.resolve();
-			}
-		});
-		
+		var app_name = process.env["APP_NAME"];
+		if(app_name && app_name.length){
+			APP_NAME = app_name.toLowerCase();	
+			console.log("the app name fron env is", JSON.stringify(APP_NAME));
+			deferred.resolve();
+		} else {
+			var commandForGit = 'git rev-parse --abbrev-ref HEAD';
+			execute(commandForGit, function(error, output){
+				output = output.trim();
+				if(error || output.indexOf('app/') < 0 || !output.split("/")[1] || output.split("/")[1].length === 0){
+					console.log("Failed to get App name automatically.");
+					inquireAboutAppName();
+				} else {
+					APP_NAME = output.split("/")[1];
+					console.log("the app name from git branch is", JSON.stringify(APP_NAME));
+					deferred.resolve();
+				}
+			});
+		}
 	}
 	return deferred.promise;
 });
