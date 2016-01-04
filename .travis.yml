@@ -9,7 +9,9 @@ before_install:
 - npm install -g cordova 
 - npm install -g ionic
 before_script:
+- chmod a+x ./scripts/decrypt-key.sh
 - ./scripts/decrypt-key.sh
+- chmod a+x ./scripts/add-key.sh
 - ./scripts/add-key.sh
 script:
 - npm install
@@ -19,6 +21,7 @@ script:
 - gulp make
 - gulp makeApp
 after_success:
+- chmod a+x ./scripts/package-and-upload.sh
 - ./scripts/package-and-upload.sh
 env:
   global:
