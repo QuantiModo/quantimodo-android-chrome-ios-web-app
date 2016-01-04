@@ -25,6 +25,8 @@ if [[ ! -e "./scripts/certs/dist.p12.enc" ]]; then
     exit 1
 fi
 
+echo "$ENCRYPTION_SECRET";
+
 openssl aes-256-cbc \
 -k "$ENCRYPTION_SECRET" \
 -in "./scripts/profile/$PROFILE_NAME.mobileprovision.enc" -d -a \
