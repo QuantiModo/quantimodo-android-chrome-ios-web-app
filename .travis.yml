@@ -11,6 +11,9 @@ before_script:
 - ./scripts/add-key.sh
 script:
 - npm install
+- echo "npm has installed"
+- gulp -v
+- echo "ran through gulp"
 - gulp make
 - gulp makeApp
 after_success:
