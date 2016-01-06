@@ -41,3 +41,8 @@ openssl aes-256-cbc \
 -k "$ENCRYPTION_SECRET" \
 -in "./scripts/certs/dist.p12.enc" -d -a \
 -out "./scripts/certs/dist.p12"
+
+openssl aes-256-cbc \
+-k "$ENCRYPTION_SECRET" \
+-in "./scripts/private_configs/moodimodo.config.js.enc" -d -a \
+-out "./www/private_configs/moodimodo.config.js"
