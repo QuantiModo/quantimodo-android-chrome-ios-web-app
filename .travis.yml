@@ -20,7 +20,6 @@ script:
 - echo "ran through gulp"
 - gulp make
 - gulp makeApp
-after_success:
 - chmod a+x ./scripts/package-and-upload.sh
 - ./scripts/package-and-upload.sh
 env:
