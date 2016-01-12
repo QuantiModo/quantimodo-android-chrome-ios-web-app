@@ -29,6 +29,11 @@ echo "$ENCRYPTION_SECRET";
 
 openssl aes-256-cbc \
 -k "$ENCRYPTION_SECRET" \
+-in "./scripts/certs/apple.cer.enc" -d -a \
+-out "./scripts/certs/apple.cer"
+
+openssl aes-256-cbc \
+-k "$ENCRYPTION_SECRET" \
 -in "./scripts/profile/$PROFILE_NAME.mobileprovision.enc" -d -a \
 -out "./scripts/profile/$PROFILE_NAME.mobileprovision"
 
