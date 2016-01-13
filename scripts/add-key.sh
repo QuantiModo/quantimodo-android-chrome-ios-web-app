@@ -26,6 +26,8 @@ security default-keychain -s ios-build.keychain
 
 security list-keychains -d user -s login.keychain ios-build.keychain
 
+security unlock-keychain -p travis ios-build.keychain
+
 mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
 
 cp "./scripts/profile/$PROFILE_NAME.mobileprovision" ~/Library/MobileDevice/Provisioning\ Profiles/
