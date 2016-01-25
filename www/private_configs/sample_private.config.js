@@ -2,13 +2,13 @@ window.private_keys = {
     "client_ids": {
         "iOS": "xyz",
         "Android": "xyz",
-        "Web": "ionic",
+        "Web": "xyz",
         "Chrome": "xyz"
     },
     "client_secrets": {
         "iOS": "xyz",
         "Android": "xyz",
-        "Web": "ionic_secret",
+        "Web": "xyz",
         "Chrome": "xyz"
     },
     "FACEBOOK_APP_ID" : "123456789",
