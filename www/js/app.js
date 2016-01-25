@@ -137,6 +137,26 @@ angular.module('starter', ['ionic','oc.lazyLoad','highcharts-ng','ngCordova','io
               }
           }
       })
+      .state('app.search-variables', {
+          url: "/search-variables",
+          cache:false,
+          views: {
+              'menuContent': {
+                  templateUrl: "templates/search-variables.html",
+                  controller: 'IframeScreenCtrl'
+              }
+          }
+      })
+      .state('app.search-relationships', {
+          url: "/search-relationships",
+          cache:false,
+          views: {
+              'menuContent': {
+                  templateUrl: "templates/search-relationships.html",
+                  controller: 'IframeScreenCtrl'
+              }
+          }
+      })
       .state('app.negative', {
           url: "/negative",
           cache:false,
