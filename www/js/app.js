@@ -231,6 +231,50 @@ angular.module('starter', ['ionic','oc.lazyLoad','highcharts-ng','ngCordova','io
               }
           }
       })
+      .state('app.reminders_inbox', {
+          url: "/reminders-inbox",
+          cache:false,
+          views: {
+              'menuContent': {
+                  templateUrl: "templates/reminders_inbox.html",
+                  controller: 'RemindersInboxCtrl'
+              }
+          }
+      })
+      .state('app.reminders_manage', {
+          url: "/reminders-manage",
+          cache:false,
+          views: {
+              'menuContent': {
+                  templateUrl: "templates/manage_reminders.html",
+                  controller: 'RemindersInboxCtrl'
+              }
+          }
+      })
+      .state('app.reminders_category', {
+          url: "/reminders/:category",
+          cache:false,
+          views: {
+              'menuContent': {
+                  templateUrl: "templates/reminder.html",
+                  controller: 'RemindersCtrl'
+              }
+          }
+      })
+      .state('app.reminders', {
+          url: "/reminders",
+          cache:false,
+          params: {
+            reminder: null
+          },
+          views: {
+              'menuContent': {
+                  templateUrl: "templates/reminder.html",
+                  controller: 'RemindersCtrl'
+              }
+          }
+      });
+
 
       // if none of the above states are matched, use this as the fallback
       $urlRouterProvider.otherwise('/');

@@ -1,83 +1,107 @@
-<ion-side-menus  enable-menu-with-back-views="true">
-  <ion-side-menu-content>
-    <ion-nav-bar class="bar-calm">
-      <!--<ion-nav-back-button>
-      </ion-nav-back-button>-->
+<ion-side-menus enable-menu-with-back-views="true">
+    <ion-side-menu-content>
+        <ion-nav-bar class="bar-calm">
+            <ion-nav-buttons side="left">
+                <button ng-hide="hideMenu && !isWelcomed" class="button button-icon button-clear ion-navicon" menu-toggle="left">
+                </button>
+            </ion-nav-buttons>
 
-      <ion-nav-buttons side="left">
-        <button ng-hide="hideMenu && !isWelcomed" class="button button-icon button-clear ion-navicon" menu-toggle="left">
-        </button>
-      </ion-nav-buttons>
-
-      <ion-nav-buttons side="right">
-        <div class="buttons">
-          <button class="button button-icon ion-calendar" ng-show="showCalender" ng-click="showCalenderF($event)"></button>
+            <ion-nav-buttons side="right">
+                <div class="buttons">
+                    <button class="button button-icon ion-calendar" ng-show="showCalender" ng-click="showCalenderF($event)"></button>
+                </div>
+            </ion-nav-buttons>
+        </ion-nav-bar>
+        <div class="col" ng-class="{'blink': isSyncing,'sync-indicator':isSyncing}" ng-show="isSyncing">
+            <span>Data is Syncing</span>
         </div>
-      </ion-nav-buttons>
-    </ion-nav-bar>
-      <div class="col" ng-class="{'blink': isSyncing,'sync-indicator':isSyncing}" ng-show="isSyncing">
-          <span>Data is Syncing</span>
-      </div>
-    <ion-nav-view name="menuContent">
+        <ion-nav-view name="menuContent">
 
-    </ion-nav-view>
-  </ion-side-menu-content>
+        </ion-nav-view>
+    </ion-side-menu-content>
 
-  <ion-side-menu  side="left">
-    <ion-header-bar class="bar-calm">
-      <h1 class="title"></h1>
-    </ion-header-bar>
-    <ion-content >
-      <ion-list>
-        <ion-item menu-close href="#/app/track">
-          Track {{tracking_factor}}
-        </ion-item>
-        <ion-item ng-click="toggleSubMenu()">
-          {{showSubMenu?'-':'+'}} Track Factors
-        </ion-item>
-          <ion-item class="sub-menu" ng-show="showSubMenu" href="#/app/track_factors" menu-close>
-              Track anything
-          </ion-item>
-          <ion-item class="sub-menu" ng-show="showSubMenu" href="#/app/track_factors_category/Foods" menu-close>
-              Track foods
-          </ion-item>
-          <ion-item class="sub-menu" ng-show="showSubMenu" href="#/app/track_factors_category/Emotions" menu-close>
-              Track emotions
-          </ion-item>
-          <ion-item class="sub-menu" ng-show="showSubMenu" href="#/app/track_factors_category/Symptoms" menu-close>
-              Track symptoms
-          </ion-item>
-          <ion-item class="sub-menu" ng-show="showSubMenu" href="#/app/track_factors_category/Treatments" menu-close>
-              Track treatments
-          </ion-item>
-          <ion-item class="sub-menu" ng-show="showSubMenu" href="#/app/track_factors_category/Physical Activity" menu-close>
-              Track physical activity
-          </ion-item>
-        <ion-item menu-close href="#app/history">
-          History
-        </ion-item>
-        <ion-item menu-close href="#/app/import">
-          Import Data
-        </ion-item>
-        <ion-item menu-close ng-href="#app/search-variables">
-          Search for Variables
-        </ion-item>
-        <ion-item menu-close ng-href="#app/search-relationships">
-          Search for Predictors
-        </ion-item>
-        <ion-item menu-close href="#/app/positive">
-          Positive Predictors
-        </ion-item>
-        <ion-item menu-close href="#app/negative">
-          Negative Predictors
-        </ion-item>
-        <ion-item menu-close href="#app/settings">
-          Settings
-        </ion-item>
-        <ion-item menu-close ng-href="{{ window.chrome ? 'mailto:help@quantimo.do':'#app/feedback'}}">
-          Help & Feedback
-        </ion-item>
-      </ion-list>
-    </ion-content>
-  </ion-side-menu>
+    <ion-side-menu side="left">
+        <ion-header-bar class="bar-calm">
+            <h1 class="title"></h1>
+        </ion-header-bar>
+        <ion-content>
+            <ion-list>
+                <ion-item menu-close href="#/app/track">
+                    <i class="ion-happy-outline"> &nbsp; Track {{tracking_factor}} </i>
+                </ion-item>
+
+                <ion-item ng-click="toggleTrackingSubMenu()">
+                    <i class="{{showTrackingSubMenu?'ion-chevron-left':'ion-chevron-right'}}"> &nbsp; Track Factors</i>
+                </ion-item>
+                <ion-item class="sub-menu" ng-show="showTrackingSubMenu" href="#/app/track_factors" menu-close>
+                    <i class="ion-ios-world-outline"> &nbsp; Track anything</i>
+                </ion-item>
+                <ion-item class="sub-menu" ng-show="showTrackingSubMenu" href="#/app/track_factors_category/Foods" menu-close>
+                    <i class="ion-ios-nutrition-outline"> &nbsp;  Track foods </i> 
+                </ion-item>
+                <ion-item class="sub-menu" ng-show="showTrackingSubMenu" href="#/app/track_factors_category/Emotions" menu-close>
+                    <i class="ion-happy-outline"> &nbsp;  Track emotions </i> 
+                </ion-item>
+                <ion-item class="sub-menu" ng-show="showTrackingSubMenu" href="#/app/track_factors_category/Symptoms" menu-close>
+                    <i class="ion-ios-pulse"> &nbsp; Track symptoms</i>
+                </ion-item>
+                
+                <ion-item class="sub-menu" ng-show="showTrackingSubMenu" href="#/app/track_factors_category/Treatments" menu-close>
+                    <i class="ion-ios-medkit-outline"> &nbsp; Track treatments</i>
+                </ion-item>
+
+                <ion-item ng-click="toggleReminderSubMenu()">
+                    <i class="{{showReminderSubMenu?'ion-chevron-left':'ion-chevron-right'}}"> &nbsp; Reminders</i>
+                </ion-item>
+                
+                <ion-item class="sub-menu" ng-show="showReminderSubMenu" href="#/app/reminders-inbox" menu-close>
+                    <i class="ion-android-notifications-none"> &nbsp; Inbox</i>
+                </ion-item>
+
+                <ion-item class="sub-menu" ng-show="showReminderSubMenu" href="#/app/reminders-manage" menu-close>
+                    <i class="ion-ios-gear-outline"> &nbsp; Manage</i>
+                </ion-item>
+
+                <ion-item class="sub-menu" ng-show="showReminderSubMenu" href="#/app/reminders/Emotions" menu-close>
+                    <i class="ion-happy-outline"> &nbsp; Emotions</i>
+                </ion-item>
+
+                <ion-item class="sub-menu" ng-show="showReminderSubMenu" href="#/app/reminders/Symptoms" menu-close>
+                    <i class="ion-ios-pulse"> &nbsp; Symptoms</i>
+                </ion-item>
+
+                <ion-item class="sub-menu" ng-show="showReminderSubMenu" href="#/app/reminders/Treatments" menu-close>
+                    <i class="ion-ios-medkit-outline"> &nbsp; Treatments</i>
+                </ion-item>
+
+                <ion-item class="sub-menu" ng-show="showReminderSubMenu" href="#/app/reminders/Foods" menu-close>
+                    <i class="ion-ios-nutrition-outline"> &nbsp;  Foods</i>
+                </ion-item>
+
+                <ion-item menu-close href="#/app/history">
+                    <i class="ion-clipboard"> &nbsp; History</i>
+                </ion-item>
+
+                <ion-item menu-close href="#/app/import">
+                    <i class="ion-ios-cloud-download-outline"> &nbsp; Import Data</i>
+                </ion-item>
+
+                <ion-item menu-close href="#/app/positive">
+                    <i class="ion-ios-plus-outline"> &nbsp; Positive Predictors </i>
+                </ion-item>
+
+                <ion-item menu-close href="#/app/negative">
+                    <i class="ion-ios-minus-outline"> &nbsp; Negative Predictors </i>
+                </ion-item>
+
+                <ion-item menu-close href="#/app/settings">
+                    <i class="ion-ios-gear-outline"> &nbsp; Settings </i>
+                </ion-item>
+
+                <ion-item menu-close ng-href="{{ window.chrome ? 'mailto:help@quantimo.do':'#app/feedback'}}">
+                    <i class="ion-ios-help-outline"> &nbsp; Help & Feedback</i>
+                </ion-item>
+            </ion-list>
+        </ion-content>
+    </ion-side-menu>
 </ion-side-menus>

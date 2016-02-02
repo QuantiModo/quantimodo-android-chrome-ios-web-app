@@ -7,7 +7,8 @@ angular.module('starter')
     // flags
     $scope.controller_name = "AppCtrl";
     $scope.isLoggedIn  = false;
-    $scope.showSubMenu = false;
+    $scope.showTrackingSubMenu = false;
+    $scope.showReminderSubMenu = false;
     $scope.shopping_cart_enabled = config.shopping_cart_enabled;
     $rootScope.isSyncing = false;
     var $cordovaFacebook = {};
@@ -551,8 +552,12 @@ angular.module('starter')
 
     };
 
-    $scope.toggleSubMenu = function(){
-        $scope.showSubMenu = !$scope.showSubMenu;
+    $scope.toggleTrackingSubMenu = function(){
+        $scope.showTrackingSubMenu = !$scope.showTrackingSubMenu;
+    }
+
+    $scope.toggleReminderSubMenu = function(){
+        $scope.showReminderSubMenu = !$scope.showReminderSubMenu;
     }
 
     // call constructor

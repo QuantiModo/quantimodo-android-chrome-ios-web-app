@@ -43,6 +43,7 @@
     <script src="js/services/authService.js"></script>
     <script src="js/services/quantiModo.js"></script>
     <script src="js/services/measurementService.js"></script>
+    <script src="js/services/reminderService.js"></script>
     <script src="js/services/chartService.js"></script>
     <script src="js/services/notificationService.js"></script>
     <script src="js/services/correlationsService.js"></script>
@@ -53,6 +54,8 @@
     <script src="js/filters/percentage.js"></script>
     <script src="js/filters/time.js"></script>
     <script src="js/filters/toTime.js"></script>
+    <script src="js/filters/unique.js"></script>
+    <script src="js/filters/frequency.js"></script>
 
     <script src="js/controllers/introCtrl.js"></script>
     <script src="js/controllers/appCtrl.js"></script>
@@ -68,12 +71,23 @@
     <script src="js/controllers/importCtrl.js"></script>
     <script src="js/controllers/trackFactorsCtrl.js"></script>
     <script src="js/controllers/trackFactorsCategoryCtrl.js"></script>
+    <script src="js/controllers/remindersInboxCtrl.js"></script>
+    <script src="js/controllers/remindersCtrl.js"></script>
 
       <script>(function(){var w=window;var ic=w.Intercom;if(typeof ic==="function"){ic('reattach_activator');ic('update',intercomSettings);}else{var d=document;var i=function(){i.c(arguments)};i.q=[];i.c=function(args){i.q.push(args)};w.Intercom=i;function l(){var s=d.createElement('script');s.type='text/javascript';s.async=true;s.src='https://widget.intercom.io/widget/vtynnyja';var x=d.getElementsByTagName('script')[0];x.parentNode.insertBefore(s,x);}if(w.attachEvent){w.attachEvent('onload',l);}else{w.addEventListener('load',l,false);}}})()</script>
 
       <script>
           window.Intercom('boot', {
               app_id: "wsj1w4xj"
+          });
+
+          moment().calendar(null, {
+              sameDay: '[Today]',
+              nextDay: '[Tomorrow]',
+              nextWeek: 'dddd',
+              lastDay: '[Yesterday]',
+              lastWeek: '[Last] dddd',
+              sameElse: 'DD/MM/YYYY HH:MM'
           });
       </script>
 
