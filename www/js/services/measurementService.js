@@ -261,22 +261,25 @@ angular.module('starter')
             },
 
 			// post a singe measurement
-			post_tracking_measurement : function(epoch, variable, val, unit, isAvg, category){
-			   // measurements set
-			   var measurements = [
+			post_tracking_measurement : function(epoch, variable, val, unit, isAvg, category, usePromise){
+
+                var deferred = $q.defer();
+
+                // measurements set
+                var measurements = [
                     {
                         name: variable,
-					   	source: config.get('client_source_name'),
-					   	category: category,
-					   	combinationOperation: isAvg ? "MEAN" : "SUM",
-					   	unit: unit,
-					   	measurements : [
-						   	{
-						   		timestamp:  epoch / 1000,
-						   		value: val,
-						   		note : ""
-						   	}
-					   	]
+                	   	source: config.get('client_source_name'),
+                	   	category: category,
+                	   	combinationOperation: isAvg ? "MEAN" : "SUM",
+                	   	unit: unit,
+                	   	measurements : [
+                		   	{
+                		   		timestamp:  epoch / 1000,
+                		   		value: val,
+                		   		note : ""
+                		   	}
+                	   	]
                     }
                 ];
 
@@ -296,12 +299,20 @@ angular.module('starter')
                 .then(function(){
                     // send request
                     QuantiModo.postMeasurementsV2(measurements, function(response){
-                        console.log("success", response);
+                        if(response.success) {
+                            console.log("success", response);
+                            if(usePromise) deferred.resolve();
+                        } else {
+                            console.log("error", response);
+                            if(usePromise) deferred.reject();
+                        }
                     }, function(response){
                         console.log("error", response);
+                        if(usePromise) deferred.reject();
                     });
                 });
 
+                if(usePromise) return deferred.promise;
 			},
 
 			// edit existing measurement

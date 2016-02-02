@@ -1,0 +1,66 @@
+<ion-view view-title="{{state.title}}">
+    <ion-content scroll="true" overflow-scroll="true">
+		
+		<div class="list card" ng-show="state.showType">
+            <div class="item item-divider" style="background-color:#11c1f3; color:white;">Reminder Type</div>
+			<label class="item item-input item-select">
+				<div class="input-label">Select Type</div>
+				<select ng-model="state.selectedType" ng-change="onVariableChange()">
+					<option ng-repeat="type in variables.types" value="{{type.name}}">{{type.name}}</option>
+				</select>
+			</label>
+		</div>
+
+        <div class="list list-inset" ng-show="state.showSearchBox">
+          <div class="item item-divider" style="background-color:#11c1f3; color:white;">Find Reminders</div>
+          <label class="item item-input">
+            <i class="icon ion-search placeholder-icon"></i>
+            <input type="text" placeholder="Search" ng-model="state.searchQuery" ng-change="onSearch()" >
+          </label>
+        </div>
+
+
+        <div class="list card" ng-show="state.showResults" >
+            <div class="item item-divider" style="background-color:#11c1f3; color:white;">{{state.resultsHeaderText}}</div>
+            <p ng-show="state.searching"></p>
+            <ion-list>
+                <ion-item style="text-align:center;border-bottom: 1px solid rgb(221, 221, 221);" ng-show="state.searching">
+                    <img src="img/loader.gif">
+                </ion-item>
+            </ion-list>
+        	<a class="item" ng-repeat="result in variables.list | unique:'id' " ng-click="onReminderSelect(result)">{{result.name}}</a>
+        </div>
+
+        <div class="list card" ng-show="state.showCustomBox">
+        	<div class="item item-divider" style="background-color:#11c1f3; color:white;">Customize your reminder</div>
+        	<div class="row labeled-control">
+        		<div class="col">
+        			<input type="text" style="width:100%;text-align:right;" placeholder="Enter Value Here" ng-model="state.selectedDefaultValue" class="uptop">
+        		</div>
+        		<div class="col col-r">
+        			<span>
+        				{{state.selectedUnit}}
+        			</span>
+        		</div>
+        	</div>
+
+        	<label class="item item-input item-select">
+        		<div class="input-label">
+        			Reminder Frequency
+        		</div>
+        		<select ng-model="state.selectedFrequency" >
+                    <option ng-repeat="frequency in variables.frequencyVariables">{{frequency.name}}</option>
+        		</select>
+        	</label>
+	
+			<div class="row">
+				<div class="col col-50">
+					<button class="button button-block button-assertive" ng-click="cancel()">Cancel</button>
+				</div>
+				<div class="col col-50">
+					<button class="button button-block button-calm" ng-click="save()">Save</button>
+				</div>
+			</div>
+        </div>
+    </ion-content>
+</ion-view>

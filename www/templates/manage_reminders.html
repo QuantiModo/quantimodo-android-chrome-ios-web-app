@@ -1,0 +1,42 @@
+<ion-view view-title="Manage Reminders">
+	<ion-content scroll="true" overflow-scroll="true"> 
+		
+		<div class="list card">
+			<div class="item item-divider" style="background-color:#11c1f3; color:white;">Actions</div>
+			<a href="#/app/reminders" class="item item-icon-left">
+				<i class="icon ion-plus calm"></i>
+				Add a new Reminder
+			</a>
+		</div>
+
+		<div class="list card">
+			<div class="item item-divider" style="background-color:#11c1f3; color:white;">
+				All Reminders
+			</div>
+
+			<div class="list card" ng-repeat="reminder in state.allReminders" >
+				<div class="item" style="padding-bottom:0px;">
+					<div class="row">
+						<div class="col" style="padding-top: 0px;">
+							<img src="/img/clock.png" style="width: 100%;height:100%;" alt="">
+						</div>
+						<div class="col col-75">
+							<h2 style="white-space: normal;">{{reminder.variableName}}</h2>
+							<p style="white-space: normal;">{{reminder.defaultValue}}&nbsp;{{reminder.abbreviatedUnitName}} in {{reminder.variableCategoryName}} {{reminder.reminderFrequency | frequency}}. </p>
+						</div>							
+					</div>
+					<div class="row">
+						<div class="button-bar">
+							<a class="button button-clear button-assertive" style="text-overflow: clip;" ng-click="deleteReminder(reminder)"> <i class="ion-trash-b"> &nbsp; Delete</i></a>
+					  		<a class="button button-clear button-calm" ng-click="edit(reminder)" style="text-overflow: clip;"><i class="ion-edit"> &nbsp; Edit</i></a>
+						</div>
+					</div>
+				</div>
+			</div>
+			
+			<div class="button-bar">
+				<a class="button button-clear button-calm" ng-click="init()" style="text-overflow: clip;"><i class="ion-refresh">  Refresh</i></a>
+			</div>
+		</div>
+	</ion-content>
+</ion-view>
