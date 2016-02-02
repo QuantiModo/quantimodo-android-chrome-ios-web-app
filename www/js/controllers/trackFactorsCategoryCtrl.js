@@ -40,6 +40,11 @@ angular.module('starter')
                 default_unit: "count",
                 help_text:"What do you want to track?",
                 display_name: "Treatments"
+            },
+            "Physical Activity": {
+                default_unit: "count",
+                help_text:"What do you want to track?",
+                display_name: "Physical Activity"    
             }
 
         };
