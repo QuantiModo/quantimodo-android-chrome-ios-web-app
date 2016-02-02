@@ -1,0 +1,100 @@
+<ion-view view-title="Reminder Inbox">
+
+	<ion-content scroll="true" overflow-scroll="true"> 
+		<div class="list card">
+			<div class="item item-divider" style="background-color:#11c1f3; color:white;">Actions</div>
+			<a href="#/app/reminders" class="item item-icon-left">
+				<i class="icon ion-plus calm"></i>
+				Add a new Reminder
+			</a>
+		</div>
+
+		<div class="card" ng-show="state.showMeasurementBox" style="overflow: visible">
+            <div class="item item-divider" style="background-color:#11c1f3; color:white;">Measurement</div>
+            
+            <div class="list">
+				<div class="row" style="border-bottom: 1px solid lightgray;">
+					<div class="col col-33">
+						<label class="item item-input item-stacked-label" style="    padding-left: 10px;">
+							<span class="input-label">Unit</span>
+							<p style="color:black; padding: 7px 0px;">{{state.selectedReminder.abbreviatedUnitName}}</p>						    
+						</label>
+					</div>
+					<div class="col col-r" style="padding-left:10px">
+						<label class="item item-input item-stacked-label">
+							<span class="input-label">Value</span>
+							<input type="text" placeholder="Enter Value Here" ng-model="state.reminderDefaultValue">
+						</label>
+					</div>
+				</div>
+
+                <div class="row labeled-control">
+                    <div class="col col-l">
+                        <span>
+                            Date
+                        </span>
+                    </div>
+                    <div class="col" style="padding-top: 15px;">
+                        <ionic-datepicker style="width:100%" idate="state.measuementDate" disablepreviousdates="false" callback="currentDatePickerCallback">
+                            <button class="button button-block measure_date uptop" style="font-size:14px;border:none;color:black;background-color: white;margin-bottom: 0px;margin-top: 0px;padding-left: 0px; text-align:left;">
+                                {{ state.measuementDate | date:'dd - MMMM - yyyy' }}
+                            </button>
+                        </ionic-datepicker>
+                    </div>
+                </div>
+
+                <div class="row labeled-control">
+                    <div class="col col-l">
+                        <span>
+                            Time
+                        </span>
+                    </div>
+                    <div class="col" style="padding-top: 11px;">
+                        <ionic-timepicker style="width:54%" etime="state.slots.epochTime" format="state.slots.format" step="state.slots.step" callback="currentTimePickerCallback">
+                            <button class="button button-block uptop" style="text-align:left;font-size:14px;border:none;color:black;background-color: white;margin-bottom: 0px;margin-top: 0px;padding-left: 0px;">
+                                {{state.slots.epochTime | toTime}}
+                            </button>
+                        </ionic-timepicker>
+                    </div>
+                </div>
+
+                <div class="button-bar" style="    padding-top: 10px;">
+                	<a class="button button-clear button-assertive" style="text-overflow: clip;" ng-click="state.showMeasurementBox = !state.showMeasurementBox">Cancel</a>
+                	<a class="button button-clear button-calm" style="text-overflow: clip;" ng-click="saveMeasuement()">Save</a>
+                </div>
+            </div>
+        </div>    
+
+
+		<div class="list card" ng-show="!state.showMeasurementBox">
+			<div class="item item-divider" style="background-color:#11c1f3; color:white;">
+				Reminder Notifications
+			</div>
+
+			<div class="list card" ng-repeat="reminder in state.trackingRemindersNotifications" >
+				<div class="item" style="padding-bottom:0px;">
+					<div class="row">
+						<div class="col" style="padding-top: 0px;">
+							<i style="font-size: 60px;" class="icon calm ion-ios-alarm-outline"></i>
+						</div>
+						<div class="col col-75">
+							<h2 style="white-space: normal;">{{reminder.variableName}}</h2>
+							<p style="white-space: normal;">{{reminder.defaultValue}}&nbsp;{{reminder.abbreviatedUnitName}}, {{ reminder.trackingReminderNotificationTime | reminderTime}} </p>
+						</div>
+					</div>
+					<div class="button-bar">
+						<a class="button button-clear button-royal" style="text-overflow: clip;" ng-click="snooze(reminder)">Snooze</a>
+						<a class="button button-clear button-assertive" style="text-overflow: clip;" ng-click="skip(reminder)">Skip</a>
+					  	<a class="button button-clear button-calm" style="text-overflow: clip;" ng-click="editMeasuement(reminder)">Edit</a>
+					  	<a class="button button-clear button-balanced" style="text-overflow: clip;" ng-click="track(reminder)">Track</a>
+					</div>
+				</div>
+			</div>
+
+			<div class="button-bar">
+				<a class="button button-clear button-calm" ng-click="init()" style="text-overflow: clip;"><i class="ion-refresh">  Refresh</i></a>
+			</div>
+		</div>
+	</ion-content>
+
+</ion-view>

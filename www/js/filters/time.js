@@ -6,4 +6,11 @@ angular.module('starter')
 	    		return moment(time*1000).format("MMM Do YYYY, hh:mm a").split(/,/g);;
 	    	} else return "";
 	    }
+	})
+	.filter('reminderTime', function(){
+	    return function(time){
+	    	if(time){
+	    		return moment(time).calendar();
+	    	} else return "";
+	    }
 	});
