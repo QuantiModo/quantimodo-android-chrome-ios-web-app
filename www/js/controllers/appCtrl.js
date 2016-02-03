@@ -2,7 +2,7 @@ angular.module('starter')
     
     // Parent Controller
     // This controller runs before every one else
-	.controller('AppCtrl', function($scope, $ionicModal, $timeout, $injector, utilsService, authService, measurementService, $ionicPopover, $ionicLoading, $state, $ionicHistory, QuantiModo, notificationService, $rootScope, localStorageService) {
+	.controller('AppCtrl', function($scope, $ionicModal, $timeout, $injector, utilsService, authService, measurementService, $ionicPopover, $ionicLoading, $state, $ionicHistory, QuantiModo, notificationService, $rootScope, localStorageService, reminderService) {
 
     // flags
     $scope.controller_name = "AppCtrl";
@@ -31,23 +31,6 @@ angular.module('starter')
     $scope.factor_average_text = config.appSettings.factor_average_text;
     /*Wrapper Config End*/
 
-
-    // to handle transition event's triggered through sibling controllers.
-    /*$scope.$on('transition', function(){
-        // Timout to let the transition finish.
-        setTimeout(function(){
-            // For smaller devices, iphone <= 5s Only keep the first word of sentence in back button.
-            // to stop text from overlaying on top of each other.
-            console.log("transitioning");
-
-            var text = jQuery('.previous-title:visible').text();
-            if(text.length) {
-               jQuery('.previous-title:visible').text(text.split(" ")[0]);
-            }
-            
-        }, 300);
-    });*/
-
     // when view is changed
     $scope.$on('$ionicView.enter', function(e) {
         if(e.targetScope && e.targetScope.controller_name && e.targetScope.controller_name === "TrackCtrl" && $scope.isLoggedIn){
@@ -69,21 +52,21 @@ angular.module('starter')
 
     // when date is updated
     $scope.datePickerFromCallback = function (val) {
-      if(typeof(val)==='undefined'){        
-          console.log('Date not selected');
-      }else{
-          $scope.fromDate = new Date(val);
-          $scope.saveDates();
-      }
+        if(typeof(val)==='undefined'){        
+            console.log('Date not selected');
+        }else{
+            $scope.fromDate = new Date(val);
+            $scope.saveDates();
+        }
     };
 
     $scope.datePickerToCallback = function (val) {
-      if(typeof(val)==='undefined'){        
-          console.log('Date not selected');
-      }else{
-          $scope.toDate = new Date(val);
-          $scope.saveDates();
-      }
+        if(typeof(val)==='undefined'){        
+            console.log('Date not selected');
+        } else {
+            $scope.toDate = new Date(val);
+            $scope.saveDates();
+        }
     };
 
     // update dates selected from calender
@@ -106,6 +89,26 @@ angular.module('starter')
             });
         });
 	};
+
+    scheduleReminder = function(){
+        if($rootScope.reminderToSchedule){
+            
+            reminderService.addNewReminder(
+                $rootScope.reminderToSchedule.id,
+                $rootScope.reminderToSchedule.reportedVariableValue,
+                $rootScope.reminderToSchedule.interval, 
+                $rootScope.reminderToSchedule.name,
+                $rootScope.reminderToSchedule.category,
+                $rootScope.reminderToSchedule.unit,
+                $rootScope.reminderToSchedule.combinationOperation)
+            .then(function(){
+                delete $rootScope.reminderToSchedule;
+                console.log('reminder scheduled');
+            }, function(err){
+                console.log(err);
+            });
+        }
+    };
 
     // get Authentication Token
     $scope.getAuthToken = function(request_token, withJWT){
@@ -175,8 +178,6 @@ angular.module('starter')
                 // redraw everything according to updated appstate
                 $rootScope.$broadcast('redraw');
             }
-
-
         });
     };
 
@@ -205,8 +206,6 @@ angular.module('starter')
                 reload:true
             });
         });
-
-
     };
 
     // User wants to login
@@ -301,7 +300,6 @@ angular.module('starter')
                 // listen to broadcast messages from other tabs within browser 
                 window.addEventListener("message", window.onMessageRecieved, false);
             }
-
 		} else {
 
             console.log("Mobile device detected!");
@@ -492,6 +490,8 @@ angular.module('starter')
         console.log("Main Constructor Start");
         
         showLoader('Logging you in');
+        
+        scheduleReminder();
 
         // try to get access token
     	authService.getAccessToken().then(function(data) {
@@ -564,19 +564,16 @@ angular.module('starter')
     $scope.init();
 
     // redirection if already welcomed before
-        var isWelcomed;
-        localStorageService.getItem('isWelcomed',function(val){
-            isWelcomed = val;
-            console.log('isWelcomed '+isWelcomed);
-            if(isWelcomed  === true || isWelcomed === "true"){
-                $rootScope.isWelcomed=true;
-                $state.go('app.track');
-            } else {
-                $state.go('app.welcome');
-            }
+    var isWelcomed;
+    localStorageService.getItem('isWelcomed',function(val){
+        isWelcomed = val;
+        console.log('isWelcomed '+isWelcomed);
+        if(isWelcomed  === true || isWelcomed === "true"){
+            $rootScope.isWelcomed=true;
+            $state.go('app.track');
+        } else {
+            $state.go('app.welcome');
+        }
 
-        });
-
-
-
+    });
 })
