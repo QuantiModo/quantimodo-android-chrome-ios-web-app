@@ -1,6 +1,6 @@
 angular.module('starter')
     
-	.factory('authService', function($http, $q,localStorageService) {
+	.factory('authService', function($http, $q,localStorageService, utilsService) {
 
 		var authSrv =  {
 
@@ -153,7 +153,9 @@ angular.module('starter')
 				});
 
 				return deferred.promise;	
-			}
+			},
+
+			utilsService: utilsService
 		};
 
 		return authSrv;
