@@ -15,6 +15,7 @@ ul > li {
 .tracking_factors > img {
 	width: 18%;
 	padding:5px;
+    max-width: 100px;
 }
 
 .tracking_factor_history > img{
@@ -139,7 +140,10 @@ iframe {
 }
 
 .history_edit_card {
-	margin-top:20%
+    margin-top: 10%;
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .history_edit_card input {
