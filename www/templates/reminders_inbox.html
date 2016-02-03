@@ -1,13 +1,13 @@
 <ion-view view-title="Reminder Inbox">
 
 	<ion-content scroll="true" overflow-scroll="true"> 
-		<div class="list card">
+<!--		<div class="list card">
 			<div class="item item-divider" style="background-color:#11c1f3; color:white;">Actions</div>
 			<a href="#/app/reminders" class="item item-icon-left">
 				<i class="icon ion-plus calm"></i>
 				Add a new Reminder
 			</a>
-		</div>
+		</div>-->
 
 		<div class="card" ng-show="state.showMeasurementBox" style="overflow: visible">
             <div class="item item-divider" style="background-color:#11c1f3; color:white;">Track {{state.selectedReminder.variableName}}</div>
@@ -93,7 +93,7 @@
 					<div class="button-bar">
 						<a class="button button-clear button-royal" style="text-overflow: clip;" ng-click="snooze(reminder)">Snooze</a>
 						<a class="button button-clear button-assertive" style="text-overflow: clip;" ng-click="skip(reminder)">Skip</a>
-					  	<a class="button button-clear button-calm" style="text-overflow: clip;" ng-click="editMeasuement(reminder)">Edit</a>
+					  	<a class="button button-clear button-calm" style="text-overflow: clip;" ng-click="editMeasurement(reminder)">Edit</a>
 					  	<a class="button button-clear button-balanced" style="text-overflow: clip;" ng-click="track(reminder)">Track</a>
 					</div>
 				</div>

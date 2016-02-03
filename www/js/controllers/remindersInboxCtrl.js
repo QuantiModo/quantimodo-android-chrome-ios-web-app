@@ -191,7 +191,7 @@ angular.module('starter')
 
 	    };
 
-	    $scope.editMeasuement = function(reminder){
+	    $scope.editMeasurement = function(reminder){
 	    	
 	    	$scope.state.showMeasurementBox = true;
 	    	$scope.state.selectedReminder = reminder;
