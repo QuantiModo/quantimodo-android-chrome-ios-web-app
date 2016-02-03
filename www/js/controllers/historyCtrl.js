@@ -47,9 +47,15 @@ angular.module('starter')
 
 	    // when a value is edited
 	    $scope.save_value = function(){
-	        
+
+			var note = $scope.selected_item.note;
+
+			if(note == '') {
+				note = null;
+			}
+
 	        // update on the server
-	        measurementService.editTrackingFactor($scope.selected_item.timestamp, $scope.selected_tracking_factor, $scope.selected_item.note)
+	        measurementService.editTrackingFactor($scope.selected_item.timestamp, $scope.selected_tracking_factor, note)
 	        .then(function(){
 	        	// do nothing user would have safely navigated away
 	        	console.log("edit complete");
