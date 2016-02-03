@@ -50,6 +50,10 @@
                     <i class="ion-ios-medkit-outline"> &nbsp; Track treatments</i>
                 </ion-item>
 
+                <ion-item class="sub-menu" ng-show="showTrackingSubMenu" href="#/app/track_factors_category/Physical Activity" menu-close>
+                    <i class="ion-ios-body-outline"> &nbsp; Track physical activity</i>
+                </ion-item>
+
                 <ion-item ng-click="toggleReminderSubMenu()">
                     <i class="{{showReminderSubMenu?'ion-chevron-left':'ion-chevron-right'}}"> &nbsp; Reminders</i>
                 </ion-item>
@@ -84,6 +88,14 @@
 
                 <ion-item menu-close href="#/app/import">
                     <i class="ion-ios-cloud-download-outline"> &nbsp; Import Data</i>
+                </ion-item>
+
+                <ion-item menu-close ng-href="#app/search-variables">
+                    <i class="ion-ios-search-strong" > &nbsp; Search for Variables</i>
+                </ion-item>
+                
+                <ion-item menu-close ng-href="#app/search-relationships">
+                    <i class="ion-ios-search-strong" > &nbsp; Search for Predictors</i>
                 </ion-item>
 
                 <ion-item menu-close href="#/app/positive">
