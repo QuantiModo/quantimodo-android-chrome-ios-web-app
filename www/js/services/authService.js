@@ -32,60 +32,95 @@ angular.module('starter')
 			   var deferred = $q.defer();
 			   var now = new Date().getTime();
 
-                localStorageService.getItem('expiresAt',function(expiresAt){
-                    localStorageService.getItem('refreshToken',function(refreshToken){
+				if (window.location.search) {
+					var tokenInGetParams =
+							authSrv.utilsService.getUrlParameter(window.location.search, 'accessToken');
+				}
 
-                        // get expired time
-                        if (now < expiresAt) {
+				if (tokenInGetParams) {
+					cosnole.debug('Token fetched from get params:', tokenInGetParams);
+					//resolving promise using token fetched from get params
+					deferred.resolve({
+						accessToken: tokenInGetParams
+					});
+				} else {
 
-                            console.log('valid token');
+					$http.get(config.getURL("api/user")).then(
+							function (userCredentialsResp) {
+								//if direct API call was successful
+								console.debug('User credentials fetched:', userCredentialsResp);
 
-                            // valid token
+								var token = userCredentialsResp.data.token.split("|")[2];
 
-                            localStorageService.getItem('accessToken',function(accessToken){
-                                deferred.resolve({
-                                    accessToken: accessToken
-                                });
-                            });
+								//resolving promise using token fetched from credentials response
+								deferred.resolve({
+									accessToken: token
+								});
 
-                        } else if (refreshToken) {
+							},
+							function (errorResp) {
+								//if no luck with getting credentials
+								console.debug('Unable to fetch user credentials', errorResp);
 
-                            var url = config.getURL("api/oauth2/token")
-                            console.log('expired token, refreshing!');
+								localStorageService.getItem('expiresAt',function(expiresAt){
+									localStorageService.getItem('refreshToken',function(refreshToken){
 
-                            //expire token, refresh
-                            $http.post(url, {
-                                client_id : config.getClientId(),
-                                client_secret : config.getClientSecret(),
-                                refresh_token: refreshToken,
-                                grant_type: 'refresh_token'
-                            }).success(function(data) {
-                                // update local storage
-                                if (data.error) {
-                                	deferred.reject('refresh failed');
-                                } else {
-                                	var accessTokenRefreshed = authSrv.updateAccessToken(data);
+										// get expired time
+										if (now < expiresAt) {
 
-                                	// respond
-                                	deferred.resolve({
-                                	    accessToken : accessTokenRefreshed
-                                	});
-                                }
+											console.log('valid token');
 
-                            }).error(function(response) {
-                                console.log("refresh failed");
-                                // error refreshing
-                                deferred.reject(response);
-                            });
+											// valid token
 
-                        } else {
-                            // nothing in cache
-                            console.log('nothing in cache');
-                            deferred.reject();
-                        }
+											localStorageService.getItem('accessToken',function(accessToken){
+												deferred.resolve({
+													accessToken: accessToken
+												});
+											});
 
-                    });
-                });
+										} else if (refreshToken) {
+
+											var url = config.getURL("api/oauth2/token")
+											console.log('expired token, refreshing!');
+
+											//expire token, refresh
+											$http.post(url, {
+												client_id : config.getClientId(),
+												client_secret : config.getClientSecret(),
+												refresh_token: refreshToken,
+												grant_type: 'refresh_token'
+											}).success(function(data) {
+												// update local storage
+												if (data.error) {
+													deferred.reject('refresh failed');
+												} else {
+													var accessTokenRefreshed = authSrv.updateAccessToken(data);
+
+													// respond
+													deferred.resolve({
+														accessToken : accessTokenRefreshed
+													});
+												}
+
+											}).error(function(response) {
+												console.log("refresh failed");
+												// error refreshing
+												deferred.reject(response);
+											});
+
+										} else {
+											// nothing in cache
+											console.log('nothing in cache');
+											deferred.reject();
+										}
+
+									});
+								});
+
+							}
+
+				}
+
 
 			   return deferred.promise;
 			},
