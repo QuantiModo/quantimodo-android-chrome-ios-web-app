@@ -73,36 +73,44 @@
             </div>
         </div>    
 
-
 		<div class="list card" ng-show="!state.showMeasurementBox">
+	
 			<div class="item item-divider" style="background-color:#11c1f3; color:white;">
 				Reminder Notifications
 			</div>
+			<div ng-repeat="divider in state.filteredReminders">
 
-			<div class="list card" ng-repeat="reminder in state.trackingRemindersNotifications" >
-				<div class="item" style="padding-bottom:0px;">
-					<div class="row">
-						<div class="col" style="padding-top: 0px;">
-							<i style="font-size: 60px;" class="icon calm ion-ios-alarm-outline"></i>
+				<div class="item item-divider" style="">
+				  {{divider.name}}
+				</div>
+
+				
+				<div class="list card" ng-repeat="reminder in divider.reminders | limitTo:5" >
+					<div class="item" style="padding-bottom:0px;">
+						<div class="row">
+							<div class="col" style="padding-top: 0px;">
+								<i style="font-size: 60px;" class="icon calm ion-ios-alarm-outline"></i>
+							</div>
+							<div class="col col-75">
+								<h2 style="white-space: normal;">{{reminder.variableName}}</h2>
+								<p style="white-space: normal;">{{reminder.defaultValue}}&nbsp;{{reminder.abbreviatedUnitName}}, {{ reminder.trackingReminderNotificationTime | reminderTime}} </p>
+							</div>
 						</div>
-						<div class="col col-75">
-							<h2 style="white-space: normal;">{{reminder.variableName}}</h2>
-							<p style="white-space: normal;">{{reminder.defaultValue}}&nbsp;{{reminder.abbreviatedUnitName}}, {{ reminder.trackingReminderNotificationTime | reminderTime}} </p>
+						<div class="button-bar">
+							<a class="button button-clear button-royal" style="text-overflow: clip;" ng-click="snooze(reminder)">Snooze</a>
+							<a class="button button-clear button-assertive" style="text-overflow: clip;" ng-click="skip(reminder)">Skip</a>
+						  	<a class="button button-clear button-calm" style="text-overflow: clip;" ng-click="editMeasurement(reminder)">Edit</a>
+						  	<a class="button button-clear button-balanced" style="text-overflow: clip;" ng-click="track(reminder)">Track</a>
 						</div>
-					</div>
-					<div class="button-bar">
-						<a class="button button-clear button-royal" style="text-overflow: clip;" ng-click="snooze(reminder)">Snooze</a>
-						<a class="button button-clear button-assertive" style="text-overflow: clip;" ng-click="skip(reminder)">Skip</a>
-					  	<a class="button button-clear button-calm" style="text-overflow: clip;" ng-click="editMeasurement(reminder)">Edit</a>
-					  	<a class="button button-clear button-balanced" style="text-overflow: clip;" ng-click="track(reminder)">Track</a>
 					</div>
 				</div>
 			</div>
-
+			
 			<div class="button-bar">
 				<a class="button button-clear button-calm" ng-click="init()" style="text-overflow: clip;"><i class="ion-refresh">  Refresh</i></a>
 			</div>
 		</div>
+
 	</ion-content>
 
 </ion-view>

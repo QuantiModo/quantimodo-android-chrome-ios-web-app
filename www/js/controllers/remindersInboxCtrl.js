@@ -23,12 +23,66 @@ angular.module('starter')
 	    	],
 	    	trackingRemindersNotifications : [
 	    	],
+	    	filteredReminders : [
+	    	],
 	    	measuementDate : new Date(),
 	    	slots : {
 				epochTime: new Date().getTime()/1000, 
 				format: 24, 
 				step: 1
 			}
+	    };
+
+	    var filterViaDates = function(reminders){
+
+	    	var result = [];
+	    	var reference = moment(); 
+	    	var today = reference.clone().startOf('day');
+	    	var yesterday = reference.clone().subtract(1, 'days').startOf('day');
+	    	var weekold = reference.clone().subtract(7, 'days').startOf('day');
+	    	var monthold = reference.clone().subtract(30, 'days').startOf('day');
+	    	
+	    	var todayResult = reminders.filter(function(reminder){
+	    		return moment(reminder.trackingReminderNotificationTime).isSame(today, 'd') === true;
+	    	});
+
+	    	if(todayResult.length) result.push({ name : "Today", reminders : todayResult });
+
+	    	var yesterdayResult = reminders.filter(function(reminder){
+	    		return moment(reminder.trackingReminderNotificationTime).isSame(yesterday, 'd') === true;
+	    	});
+
+	    	if(yesterdayResult.length) result.push({ name : "Yesterday", reminders : yesterdayResult });
+
+	    	var last7DayResult = reminders.filter(function(reminder){
+	    		var date = moment(reminder.trackingReminderNotificationTime);
+	    		
+	    		return date.isAfter(weekold) === true 
+	    		&& date.isSame(yesterday, 'd') !== true
+	    		&& date.isSame(today, 'd') !== true;
+	    	});
+
+	    	if(last7DayResult.length) result.push({ name : "Last 7 Days", reminders : last7DayResult });
+
+	    	var last30DayResult = reminders.filter(function(reminder){
+	    		
+	    		var date = moment(reminder.trackingReminderNotificationTime);
+	    		
+	    		return date.isAfter(monthold) === true
+	    		&& date.isBefore(weekold) === true 
+	    		&& date.isSame(yesterday, 'd') !== true
+	    		&& date.isSame(today, 'd') !== true;
+	    	});
+
+	    	if(last30DayResult.length) result.push({ name : "Last 30 Days", reminders : last30DayResult });
+
+	    	var olderResult = reminders.filter(function(reminder){
+	    		return moment(reminder.trackingReminderNotificationTime).isBefore(monthold) === true;
+	    	});
+
+	    	if(olderResult.length) result.push({ name : "Older", reminders : olderResult });
+
+	    	return result;
 	    };
 
 	    var utils = {
@@ -72,6 +126,7 @@ angular.module('starter')
 	    	reminderService.getTrackingReminderNotifications()
 	    	.then(function(reminders){
 	    		$scope.state.trackingRemindersNotifications = reminders;
+	    		$scope.state.filteredReminders = filterViaDates(reminders);
 	    		utils.stopLoading();
 	    	}, function(){
 	    		utils.stopLoading();
