@@ -1,9 +1,9 @@
 
 var getPlatform = function(){
-    if(typeof ionic !== "undefined" && 
+    if(typeof ionic !== "undefined" &&
         typeof ionic.Platform !== "undefined" &&
-        typeof ionic.Platform.isIOS !== "undefined" && 
-        typeof ionic.Platform.isAndroid !== "undefined" ) 
+        typeof ionic.Platform.isIOS !== "undefined" &&
+        typeof ionic.Platform.isAndroid !== "undefined" )
         return ionic.Platform.isIOS()? "iOS" : ionic.Platform.isAndroid()? "Android" : "Web";
     else return "Ionic";
 };
@@ -27,7 +27,7 @@ config.appSettings  = {
     tracking_factor : 'Mood',
 
     storage_identifier: 'MoodiModoData*',
-      
+
     primary_tracking_factor_details : {
         id : 1398,
         name : "Overall Mood",
@@ -77,14 +77,14 @@ config.appSettings  = {
         "2": "sad",
         "3": "ok",
         "4": "happy",
-        "5": "ecstatic" 
+        "5": "ecstatic"
     },
     conversion_dataset_reversed : {
         "depressed" : 1,
         "sad" : 2,
         "ok" : 3,
         "happy" : 4,
-        "ecstatic": 5 
+        "ecstatic": 5
     },
 
     intro : {
@@ -281,13 +281,14 @@ config.getURL = function(path){
         //On localhost or mobile
         url = config.protocol+"://"+config.domain+"/"+path;
     }
-    else if(window.location.origin.indexOf("local.") > -1){
+    else if(window.location.origin.indexOf("local.quantimo.do") > -1){
          //local.quantimodo
-         url = config.protocol+"://"+config.domain;
-         
-         url+= (config.domain.indexOf('app.') === -1 && config.domain.indexOf('staging.') === -1)? ":"+config.port : "";
-         
-         url+="/"+path;
+         url = 'https://local.quantimo.do:4417/' + path;
+
+    } else if (window.location.origin.indexOf("staging.quantimo.do") > -1){
+        //local.quantimodo
+        url = 'https://staging.quantimo.do/' + path;
+
     } else {
         url = config.protocol + "://" + config.domain + "/" + path;
         // url = window.location.origin + "/" + path;
@@ -308,18 +309,18 @@ window.notification_callback = function(reported_variable, reporting_time){
 
     // convert values
     if(reported_variable === "repeat_mood"){
-        val = localStorage[key_identifier+'lastReportedTrackingFactorValue']? 
+        val = localStorage[key_identifier+'lastReportedTrackingFactorValue']?
         JSON.parse(localStorage[key_identifier+'lastReportedTrackingFactorValue']) : false;
     } else {
         val = config.appSettings.conversion_dataset_reversed[reported_variable]?
         config.appSettings.conversion_dataset_reversed[reported_variable] : false;
     }
-    
+
     // report
     if(val){
         // update localstorage
         localStorage[key_identifier+'lastReportedTrackingFactorValue'] = val;
-        
+
         var allDataObject = {
             storedValue : val,
             value : val,
