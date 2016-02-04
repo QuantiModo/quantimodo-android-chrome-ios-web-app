@@ -3,7 +3,7 @@ angular.module('starter')
 	.filter('toTime', function(){
 	    return function(value){
 	    	if (value){
-	    		return moment.utc(value*1000).format('hh:mm')
+	    		return moment(value*1000).format('hh:mm A')
 	    	} else return "";
         }
 	});
