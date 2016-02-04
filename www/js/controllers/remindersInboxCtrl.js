@@ -200,14 +200,14 @@ angular.module('starter')
 	    	});	
 	    };
 
-	    // constuctor
+	    // constructor
 	    $scope.init = function(){
 	      	if($state.is('app.reminders_manage')) 
 	      		getReminders(); 
 	      	else getTrackingReminders();
 	    };	
 
-	    $scope.saveMeasuement = function(){
+	    $scope.saveMeasurement = function(){
 
 	    	var dateFromDate = $scope.state.measuementDate;
 	    	var timeFromDate = new Date($scope.state.slots.epochTime * 1000);
