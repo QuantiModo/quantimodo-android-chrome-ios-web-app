@@ -329,7 +329,7 @@ angular.module('starter')
 					   	measurements : [{
 					   		timestamp:  timestamp,
 					   		value: val,
-					   		note : (note && note !== null)? note : ""
+					   		note : (note && note !== null)? note : null
 					   	}]
 					}
 				];
@@ -347,7 +347,7 @@ angular.module('starter')
 
                    // extract value
                    selected_dataset_item.value = val;
-                   selected_dataset_item.note = (selected_dataset_item.note && selected_dataset_item.note !== null)? selected_dataset_item.note : "";
+                   selected_dataset_item.note = (selected_dataset_item.note && selected_dataset_item.note !== null)? selected_dataset_item.note : null;
 
                    // update localstorage
                    localStorageService.setItem('allData',JSON.stringify(data_set));
