@@ -570,7 +570,7 @@ angular.module('starter')
         console.log('isWelcomed '+isWelcomed);
         if(isWelcomed  === true || isWelcomed === "true"){
             $rootScope.isWelcomed=true;
-            $state.go('app.track');
+            //$state.go('app.track');
         } else {
             $state.go('app.welcome');
         }
