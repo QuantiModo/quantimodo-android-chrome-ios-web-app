@@ -251,7 +251,7 @@ angular.module('starter')
 	    	$scope.state.showMeasurementBox = true;
 	    	$scope.state.selectedReminder = reminder;
 	    	$scope.state.reminderDefaultValue = reminder.defaultValue;
-	    	$scope.state.slots.epochTime = new Date(reminder.trackingReminderNotificationTime).getTime()/1000;
+	    	$scope.state.slots.epochTime = moment.utc(reminder.trackingReminderNotificationTime).unix();
 	    	$scope.state.measuementDate = new Date(reminder.trackingReminderNotificationTime);
 	    };
 
