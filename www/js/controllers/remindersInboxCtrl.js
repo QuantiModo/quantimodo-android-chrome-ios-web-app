@@ -27,8 +27,8 @@ angular.module('starter')
 	    	],
 	    	measuementDate : new Date(),
 	    	slots : {
-				epochTime: new Date().getTime()/1000, 
-				format: 24, 
+				epochTime: new Date().getTime()/1000,
+				format: 24,
 				step: 1
 			}
 	    };
@@ -36,12 +36,12 @@ angular.module('starter')
 	    var filterViaDates = function(reminders){
 
 	    	var result = [];
-	    	var reference = moment().local(); 
+	    	var reference = moment().local();
 	    	var today = reference.clone().startOf('day');
 	    	var yesterday = reference.clone().subtract(1, 'days').startOf('day');
 	    	var weekold = reference.clone().subtract(7, 'days').startOf('day');
 	    	var monthold = reference.clone().subtract(30, 'days').startOf('day');
-	    	
+
 	    	var todayResult = reminders.filter(function(reminder){
 	    		return moment.utc(reminder.trackingReminderNotificationTime).local().isSame(today, 'd') === true;
 	    	});
@@ -56,8 +56,8 @@ angular.module('starter')
 
 	    	var last7DayResult = reminders.filter(function(reminder){
 	    		var date = moment.utc(reminder.trackingReminderNotificationTime).local();
-	    		
-	    		return date.isAfter(weekold) === true 
+
+	    		return date.isAfter(weekold) === true
 	    		&& date.isSame(yesterday, 'd') !== true
 	    		&& date.isSame(today, 'd') !== true;
 	    	});
@@ -65,11 +65,11 @@ angular.module('starter')
 	    	if(last7DayResult.length) result.push({ name : "Last 7 Days", reminders : last7DayResult });
 
 	    	var last30DayResult = reminders.filter(function(reminder){
-	    		
+
 	    		var date = moment.utc(reminder.trackingReminderNotificationTime).local();
-	    		
+
 	    		return date.isAfter(monthold) === true
-	    		&& date.isBefore(weekold) === true 
+	    		&& date.isBefore(weekold) === true
 	    		&& date.isSame(yesterday, 'd') !== true
 	    		&& date.isSame(today, 'd') !== true;
 	    	});
@@ -146,7 +146,7 @@ angular.module('starter')
 
 	    		utils.stopLoading();
 	    		utils.showAlert('Failed to Track Reminder, Try again!', 'assertive');
-	    	});	
+	    	});
 	    };
 
 	    $scope.skip = function(reminder){
@@ -161,12 +161,12 @@ angular.module('starter')
 
 	    		utils.stopLoading();
 	    		utils.showAlert('Failed to Skip Reminder, Try again!', 'assertive');
-	    	});	
+	    	});
 	    };
 
 	    // when date is updated
 	    $scope.currentDatePickerCallback = function (val) {
-	    	if(typeof(val)==='undefined'){        
+	    	if(typeof(val)==='undefined'){
 	    		console.log('Date not selected');
 	    	} else {
 	    		$scope.state.measuementDate = new Date(val);
@@ -197,15 +197,15 @@ angular.module('starter')
 
 	    		utils.stopLoading();
 	    		utils.showAlert('Failed to Snooze Reminder, Try again!', 'assertive');
-	    	});	
+	    	});
 	    };
 
 	    // constructor
 	    $scope.init = function(){
-	      	if($state.is('app.reminders_manage')) 
-	      		getReminders(); 
+	      	if($state.is('app.reminders_manage'))
+	      		getReminders();
 	      	else getTrackingReminders();
-	    };	
+	    };
 
 	    $scope.saveMeasurement = function(){
 
@@ -219,20 +219,20 @@ angular.module('starter')
 	    	var params = {
 	    	    variable : $scope.state.selectedReminder.variableName,
 	    	    value : $scope.state.reminderDefaultValue,
-	    	    epoch : dateFromDate.getTime(),
+	    	    epoch : moment.utc(dateFromDate).valueOf(),
 	    	    unit : $scope.state.selectedReminder.abbreviatedUnitName,
 	    	    category : $scope.state.selectedReminder.variableCategoryName,
 	    	    isAvg : $scope.state.selectedReminder.combinationOperation === "MEAN"? false : true
 	    	};
-	    	
+
 	    	utils.startLoading();
     		var usePromise = true;
     	    // post measurement
-    	    measurementService.post_tracking_measurement(params.epoch, 
-    	        params.variable, 
-    	        params.value, 
-    	        params.unit, 
-    	        params.isAvg, 
+    	    measurementService.post_tracking_measurement(params.epoch,
+    	        params.variable,
+    	        params.value,
+    	        params.unit,
+    	        params.isAvg,
     	        params.category,
     	        usePromise)
     	    .then(function(){
@@ -247,7 +247,7 @@ angular.module('starter')
 	    };
 
 	    $scope.editMeasurement = function(reminder){
-	    	
+
 	    	$scope.state.showMeasurementBox = true;
 	    	$scope.state.selectedReminder = reminder;
 	    	$scope.state.reminderDefaultValue = reminder.defaultValue;
