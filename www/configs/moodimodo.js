@@ -285,9 +285,9 @@ config.getURL = function(path){
          //local.quantimodo
          url = 'https://local.quantimo.do:4417/' + path;
 
-    } else if (window.location.origin.indexOf("staging.quantimo.do") > -1){
-        //local.quantimodo
-        url = 'https://staging.quantimo.do/' + path;
+    // } else if (window.location.origin.indexOf("staging.quantimo.do") > -1){
+    //     //local.quantimodo
+    //     url = 'https://staging.quantimo.do/' + path;
 
     } else {
         url = config.protocol + "://" + config.domain + "/" + path;
