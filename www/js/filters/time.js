@@ -10,7 +10,7 @@ angular.module('starter')
 	.filter('reminderTime', function(){
 	    return function(time){
 	    	if(time){
-	    		return moment(time).calendar();
+	    		return moment.utc(time).local().calendar();
 	    	} else return "";
 	    }
 	});
