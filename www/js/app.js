@@ -147,12 +147,22 @@ angular.module('starter', ['ionic','oc.lazyLoad','highcharts-ng','ngCordova','io
               }
           }
       })
-      .state('app.search-relationships', {
-          url: "/search-relationships",
+      .state('app.search-common-relationships', {
+          url: "/search-common-relationships",
           cache:false,
           views: {
               'menuContent': {
-                  templateUrl: "templates/search-relationships.html",
+                  templateUrl: "templates/search-common-relationships.html",
+                  controller: 'IframeScreenCtrl'
+              }
+          }
+      })
+      .state('app.search-user-relationships', {
+          url: "/search-user-relationships",
+          cache:false,
+          views: {
+              'menuContent': {
+                  templateUrl: "templates/search-user-relationships.html",
                   controller: 'IframeScreenCtrl'
               }
           }

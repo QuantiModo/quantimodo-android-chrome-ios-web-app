@@ -93,14 +93,17 @@
 							</div>
 							<div class="col col-75">
 								<h2 style="white-space: normal;">{{reminder.variableName}}</h2>
-								<p style="white-space: normal;">{{reminder.defaultValue}}&nbsp;{{reminder.abbreviatedUnitName}}, {{ reminder.trackingReminderNotificationTime | reminderTime}} </p>
+								<p style="white-space: normal;">{{reminder.defaultValue}}&nbsp;{{reminder.abbreviatedUnitName}} {{ reminder.trackingReminderNotificationTime | reminderTime}} </p>
 							</div>
 						</div>
 						<div class="button-bar">
-							<a class="button button-clear button-royal" style="text-overflow: clip;" ng-click="snooze(reminder)">Snooze</a>
-							<a class="button button-clear button-assertive" style="text-overflow: clip;" ng-click="skip(reminder)">Skip</a>
-						  	<a class="button button-clear button-calm" style="text-overflow: clip;" ng-click="editMeasurement(reminder)">Edit</a>
-						  	<a class="button button-clear button-balanced" style="text-overflow: clip;" ng-click="track(reminder)">Track</a>
+							<a class="button button-clear button-royal" style="text-overflow: clip;" ng-click="snooze(reminder)"><i class="ion-android-notifications-off"> &nbsp; Snooze</i></a>
+							<a class="button button-clear button-assertive" style="text-overflow: clip;" ng-click="skip(reminder)"><i class="ion-android-cancel"> &nbsp; Skip</i></a>
+						  	<a class="button button-clear button-calm" style="text-overflow: clip;" ng-click="editMeasurement(reminder)"><i class="ion-edit"> &nbsp; Edit</i></a>
+						</div>
+						<div class="button-bar">
+							<a class="button button-clear button-calm" ng-click="edit(reminder)" style="text-overflow: clip;"><i class="ion-settings"> &nbsp; Settings</i></a>
+							<a class="button button-clear button-balanced" style="text-overflow: clip;" ng-click="track(reminder)"><i class="ion-android-done"> &nbsp; Track</i></a>
 						</div>
 					</div>
 				</div>
