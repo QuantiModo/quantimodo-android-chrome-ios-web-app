@@ -2,9 +2,9 @@
     <ion-content scroll="true" overflow-scroll="true">
 		
 		<div class="list card" ng-show="state.showType">
-            <div class="item item-divider" style="background-color:#11c1f3; color:white;">Reminder Type</div>
+            <div class="item item-divider" style="background-color:#11c1f3; color:white;">Select Variable Category</div>
 			<label class="item item-input item-select">
-				<div class="input-label">Select Type</div>
+				<div class="input-label">Category</div>
 				<select ng-model="state.selectedType" ng-change="onVariableChange()">
 					<option ng-repeat="type in variables.types" value="{{type.name}}">{{type.name}}</option>
 				</select>
@@ -12,7 +12,7 @@
 		</div>
 
         <div class="list list-inset" ng-show="state.showSearchBox">
-          <div class="item item-divider" style="background-color:#11c1f3; color:white;">Find Reminders</div>
+          <div class="item item-divider" style="background-color:#11c1f3; color:white;">Enter Variable Name</div>
           <label class="item item-input">
             <i class="icon ion-search placeholder-icon"></i>
             <input type="text" placeholder="Search" ng-model="state.searchQuery" ng-change="onSearch()" >
