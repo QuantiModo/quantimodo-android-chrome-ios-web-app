@@ -31,7 +31,7 @@
                 </ion-item>
 
                 <ion-item ng-click="toggleTrackingSubMenu()">
-                    <i class="{{showTrackingSubMenu?'ion-chevron-left':'ion-chevron-right'}}"> &nbsp; Track Factors</i>
+                    <i class="{{showTrackingSubMenu?'ion-chevron-down':'ion-chevron-right'}}"> &nbsp; Track Factors</i>
                 </ion-item>
                 <ion-item class="sub-menu" ng-show="showTrackingSubMenu" href="#/app/track_factors" menu-close>
                     <i class="ion-ios-world-outline"> &nbsp; Track anything</i>
@@ -55,7 +55,7 @@
                 </ion-item>
 
                 <ion-item ng-click="toggleReminderSubMenu()">
-                    <i class="{{showReminderSubMenu?'ion-chevron-left':'ion-chevron-right'}}"> &nbsp; Reminders</i>
+                    <i class="{{showReminderSubMenu?'ion-chevron-down':'ion-chevron-right'}}"> &nbsp; Reminders</i>
                 </ion-item>
                 
                 <ion-item class="sub-menu" ng-show="showReminderSubMenu" href="#/app/reminders-inbox" menu-close>
@@ -83,7 +83,7 @@
                 </ion-item>
 
                 <ion-item menu-close href="#/app/history">
-                    <i class="ion-clipboard"> &nbsp; History</i>
+                    <i class="ion-calendar"> &nbsp; History</i>
                 </ion-item>
 
                 <ion-item menu-close href="#/app/import">
@@ -91,19 +91,28 @@
                 </ion-item>
 
                 <ion-item menu-close ng-href="#app/search-variables">
-                    <i class="ion-ios-search-strong" > &nbsp; Search for Variables</i>
-                </ion-item>
-                
-                <ion-item menu-close ng-href="#app/search-relationships">
-                    <i class="ion-ios-search-strong" > &nbsp; Search for Predictors</i>
+                    <i class="ion-social-vimeo" > &nbsp; Variables</i>
                 </ion-item>
 
-                <ion-item menu-close href="#/app/positive">
-                    <i class="ion-ios-plus-outline"> &nbsp; Positive Predictors </i>
+                <ion-item ng-click="togglePredictorSearchSubMenu()">
+                    <i class="{{showPredictorSearchSubMenu?'ion-chevron-down':'ion-chevron-right'}}"> &nbsp; Predictor Search</i>
+                </ion-item>
+                <ion-item class="sub-menu" ng-show="showPredictorSearchSubMenu" href="#/app/search-common-relationships" menu-close>
+                    <i class="ion-ios-people"> &nbsp; Common</i>
+                </ion-item>
+                <ion-item class="sub-menu" ng-show="showPredictorSearchSubMenu" href="#/app/search-user-relationships" menu-close>
+                    <i class="ion-person"> &nbsp;  Yours </i>
                 </ion-item>
 
-                <ion-item menu-close href="#/app/negative">
-                    <i class="ion-ios-minus-outline"> &nbsp; Negative Predictors </i>
+
+                <ion-item ng-click="toggleOutcomePredictorSubMenu()">
+                    <i class="{{showOutcomePredictorSubMenu?'ion-chevron-down':'ion-chevron-right'}}"> &nbsp; Predictors of Mood</i>
+                </ion-item>
+                <ion-item class="sub-menu" ng-show="showOutcomePredictorSubMenu" href="#/app/positive" menu-close>
+                    <i class="ion-happy-outline"> &nbsp; Positive Mood</i>
+                </ion-item>
+                <ion-item class="sub-menu" ng-show="showOutcomePredictorSubMenu" href="#/app/negative" menu-close>
+                    <i class="ion-sad-outline"> &nbsp;  Negative Mood  </i>
                 </ion-item>
 
                 <ion-item menu-close href="#/app/settings">

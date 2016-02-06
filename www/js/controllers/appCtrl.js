@@ -556,6 +556,14 @@ angular.module('starter')
         $scope.showTrackingSubMenu = !$scope.showTrackingSubMenu;
     }
 
+    $scope.togglePredictorSearchSubMenu = function(){
+        $scope.showPredictorSearchSubMenu = !$scope.showPredictorSearchSubMenu;
+    }
+
+    $scope.toggleOutcomePredictorSubMenu = function(){
+        $scope.showOutcomePredictorSubMenu = !$scope.showOutcomePredictorSubMenu;
+    }
+
     $scope.toggleReminderSubMenu = function(){
         $scope.showReminderSubMenu = !$scope.showReminderSubMenu;
     }
