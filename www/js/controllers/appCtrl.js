@@ -159,7 +159,7 @@ angular.module('starter')
         // if user has seen the welcome screen before
         localStorageService.getItem('isWelcomed',function(isWelcomed) {
 
-            if(isWelcomed){
+            if(isWelcomed  === true || isWelcomed === "true"){
                 $rootScope.isWelcomed = true;
                 console.log("isWelcomed is true. going");
 
@@ -211,7 +211,8 @@ angular.module('starter')
     // User wants to login
     $scope.login = function() {
 
-        localStorageService.setItem('isWelcomed',"true");
+        localStorageService.setItem('isWelcomed', true);
+        $rootScope.isWelcomed = true;
 
     	var url = config.getURL("api/oauth2/authorize", true);
 
@@ -353,7 +354,9 @@ angular.module('starter')
     };
 
     $scope.native_login = function(platform, accessToken){
-        localStorageService.setItem('isWelcomed',"true");
+        localStorageService.setItem('isWelcomed', true);
+        $rootScope.isWelcomed = true;
+
         showLoader('Talking to QuantiModo');
         authService.getJWTToken(platform, accessToken)
         .then(function(responseToken){
@@ -461,7 +464,8 @@ angular.module('starter')
 
     // when user click's skip button
     $scope.skipLogin = function(){
-        localStorageService.setItem('isWelcomed',true);
+        localStorageService.setItem('isWelcomed', true)
+        $rootScope.isWelcomed = true;
         // move to the next screen
         $scope.movePage();
     }
@@ -575,12 +579,14 @@ angular.module('starter')
     var isWelcomed;
     localStorageService.getItem('isWelcomed',function(val){
         isWelcomed = val;
-        console.log('isWelcomed '+isWelcomed);
+        console.log('isWelcomed ' + isWelcomed);
         if(isWelcomed  === true || isWelcomed === "true"){
-            $rootScope.isWelcomed=true;
+            $rootScope.isWelcomed = true;
             //$state.go('app.track');
         } else {
-            localStorageService.setItem('isWelcomed',true);
+            console.log("isWelcomed is " + isWelcomed + ". Setting to true and going to welcome now.");
+            localStorageService.setItem('isWelcomed', true);
+            $rootScope.isWelcomed = true;
             $state.go('app.welcome');
         }
 
