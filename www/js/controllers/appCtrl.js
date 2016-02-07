@@ -161,7 +161,7 @@ angular.module('starter')
 
             if(isWelcomed){
                 $rootScope.isWelcomed = true;
-                console.log("going");
+                console.log("isWelcomed is true. going");
 
                 // move to tracking page
                 if($state.current.name == "app.welcome"){
@@ -580,6 +580,7 @@ angular.module('starter')
             $rootScope.isWelcomed=true;
             //$state.go('app.track');
         } else {
+            localStorageService.setItem('isWelcomed',true);
             $state.go('app.welcome');
         }
 
