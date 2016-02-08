@@ -3,11 +3,13 @@ angular.module('starter')
 		return function(value){
 
 			var reverseFrequencyChart = {
+				86400: "once a day",
+				43200: "twice a day",
+				28800: "three times a day",	
+				3600: "hourly",
+				10800: "every three hours",
+				1800: "every 30 minutes",
 				0: "never", 
-				3600: "hourly", 
-				10800: "every three hours", 
-				43200: "twice daily",
-				86400: "daily" 
 			};
 
 			return reverseFrequencyChart[value];

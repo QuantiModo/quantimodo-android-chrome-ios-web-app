@@ -11,7 +11,10 @@ angular.module('starter')
 				variableName, 
 				variableCategoryName, 
 				abbreviatedUnitName, 
-				combinationOperation){
+				combinationOperation,
+				firstDailyReminderTime,
+				secondDailyReminderTime,
+				thirdDailyReminderTime){
 				
 				var deferred = $q.defer();
 
@@ -22,7 +25,10 @@ angular.module('starter')
                     variableName : variableName,
                     variableCategoryName : variableCategoryName,
                     abbreviatedUnitName : abbreviatedUnitName,
-                    combinationOperation : combinationOperation
+                    combinationOperation : combinationOperation,
+                    firstDailyReminderTime : firstDailyReminderTime,
+                    secondDailyReminderTime : secondDailyReminderTime,
+                    thirdDailyReminderTime : thirdDailyReminderTime
                 };
 
                 QuantiModo.postTrackingReminder(params, function(){
@@ -41,7 +47,10 @@ angular.module('starter')
 				variableName, 
 				variableCategoryName, 
 				abbreviatedUnitName, 
-				combinationOperation){
+				combinationOperation,
+				firstDailyReminderTime,
+				secondDailyReminderTime,
+				thirdDailyReminderTime){
 				
 				var deferred = $q.defer();
 
@@ -53,7 +62,10 @@ angular.module('starter')
                     variableName : variableName,
                     variableCategoryName : variableCategoryName,
                     abbreviatedUnitName : abbreviatedUnitName,
-                    combinationOperation : combinationOperation
+                    combinationOperation : combinationOperation,
+                    firstDailyReminderTime : firstDailyReminderTime,
+                    secondDailyReminderTime : secondDailyReminderTime,
+                    thirdDailyReminderTime : thirdDailyReminderTime
                 };
 
                 QuantiModo.postTrackingReminder(params, function(){
