@@ -353,6 +353,12 @@ img.intro_mood {
   margin-top: -8px;
 }
 
+.popup-container {
+    top: 125px;
+    align-items: flex-start;
+    -webkit-align-items: flex-start;
+}
+
 .popup {
   border: 1px solid gray !important;
   background-color: white!important;
