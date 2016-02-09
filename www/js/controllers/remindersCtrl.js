@@ -404,15 +404,15 @@ angular.module('starter')
 	    		0: "Never", 
 	    	};
 
-			if($stateParams.reminder.firstDailyReminderTime !== null){
+			if(typeof $stateParams.reminder.firstDailyReminderTime !== "undefined" && $stateParams.reminder.firstDailyReminderTime !== null){
 				$scope.state.firstSelectedTime = $stateParams.reminder.firstDailyReminderTime;
 			}
 
-			if($stateParams.reminder.secondDailyReminderTime !== null){
+			if(typeof $stateParams.reminder.secondDailyReminderTime !== "undefined" && $stateParams.reminder.secondDailyReminderTime !== null){
 				$scope.state.secondSelectedTime = $stateParams.reminder.secondDailyReminderTime;
 			}
 
-			if($stateParams.reminder.thirdDailyReminderTime !== null){
+			if(typeof $stateParams.reminder.thirdDailyReminderTime !== "undefined" && $stateParams.reminder.thirdDailyReminderTime !== null){
 				$scope.state.thirdSelectedTime = $stateParams.reminder.thirdDailyReminderTime;
 			}
 
