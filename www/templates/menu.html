@@ -63,6 +63,10 @@
                     <i class="{{showReminderSubMenu?'ion-chevron-down':'ion-chevron-right'}}"> &nbsp; Reminders</i>
                 </ion-item>
                 
+                <ion-item class="sub-menu" ng-show="showReminderSubMenu" href="/#/app/reminders" menu-close>
+                    <i class="ion-ios-plus-outline"> &nbsp; Add new reminder</i>
+                </ion-item>
+                
                 <ion-item class="sub-menu" ng-show="showReminderSubMenu" href="#/app/reminders-inbox" menu-close>
                     <i class="ion-android-notifications-none"> &nbsp; Inbox</i>
                 </ion-item>
