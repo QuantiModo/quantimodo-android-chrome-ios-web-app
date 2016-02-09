@@ -155,7 +155,6 @@ angular.module('starter')
 
     // when work on this activity is complete
     $scope.movePage = function(){
-
         // if user has seen the welcome screen before
         localStorageService.getItem('isWelcomed',function(isWelcomed) {
 
@@ -175,8 +174,16 @@ angular.module('starter')
                     disableBack: true
                 });
 
+                if(location.href.toLowerCase().indexOf('hidemenu=true') !== -1) {
+                   $rootScope.skipMenu = true; 
+                }
+
                 // redraw everything according to updated appstate
                 $rootScope.$broadcast('redraw');
+            } else {
+                if(location.href.toLowerCase().indexOf('hidemenu=true') !== -1) {
+                   $rootScope.skipMenu = true; 
+                }
             }
         });
     };
