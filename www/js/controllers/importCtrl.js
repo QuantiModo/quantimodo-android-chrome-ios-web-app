@@ -37,21 +37,16 @@ angular.module('starter')
 
 	            if(ionic.Platform.platforms[0] === "browser"){
 					console.log("Browser Detected");
-					var pathArray = location.href.split( '/' );
-					var protocol = pathArray[0];
-					var host = pathArray[2];
-					var url = protocol + '//' + host + "/api/v1/connect/mobile?";
-					// add params
-					url += "accessToken=" + token;
-					//url += "&redirect_uri=https://app.quantimo.do/ionic/Modo/www/callback";
-
+					
+					var url = config.getURL("api/v1/connect/mobile", true);
+					url += "access_token=" + token.accessToken;
 					ref = window.open(url,'_blank');
 
 					if(!ref){
 						alert("Please unblock popups and refresh to access the Import Data page.");
 					}
+					
 					$state.go('app.track');
-	            	//window.qmSetupOnIonic();
 	            } else {	            	
 	            	var targetUrl = config.getURL("api/v1/connect/mobile", true);
 	            	targetUrl += "access_token="+token.accessToken;
