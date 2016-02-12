@@ -1,13 +1,13 @@
 <ion-view hide-nav-bar="skipMenu" view-title="Track Factors">
     <ion-content>
-        <div class="card" ng-show="showTrack">
+        <div class="card" ng-show="flags.showTrack">
             <div class="item item-text-wrap">
                 <div>
                     <div>
-                        <span class="heading calm">Track {{display_name}}</span>
+                        <span class="heading calm">Track {{state.display_name}}</span>
                         <ul class="from_top">
                             <!--<li>What do you want to track?</li>-->
-                            <li>{{help_text}}</li>
+                            <li>{{state.help_text}}</li>
                         </ul>
                     </div>
                 </div>
@@ -19,13 +19,13 @@
             </label>
             <p></p>
             <ion-list>
-                <ion-item style="text-align:center;border-bottom: 1px solid rgb(221, 221, 221);" ng-show="loading">
+                <ion-item style="text-align:center;border-bottom: 1px solid rgb(221, 221, 221);" ng-show="state.loading">
                     <img src="img/loader.gif">
                 </ion-item>
             </ion-list>
 
-            <ion-list ng-show="list.length" class>
-                <ion-item ng-click="measure(item)" ng-repeat="item in list | orderBy:'-latestMeasurementTime' | limitTo:5 | unique:'id'  ">
+            <ion-list ng-show="lists.list.length" class>
+                <ion-item ng-click="measure(item)" ng-repeat="item in lists.list | orderBy:'-latestMeasurementTime' | limitTo:5 | unique:'id'  ">
                     <div>
                         <p style="font-size:18px; white-space: pre;">{{item.name}}</p>
                         <p>{{item.latestMeasurementTime | fromNow}}</p>
@@ -35,39 +35,39 @@
 
             <ion-list>
                 <ion-item style="border-top: 1px solid rgb(221, 221, 221);" ng-click="add_variable()">
-                    + Add a new {{display_name}} Variable
+                    + Add a new {{state.display_name}} Variable
                 </ion-item>
             </ion-list>
         </div>
 
-        <div class="card" ng-show="showAddVariable">
+        <div class="card" ng-show="flags.showAddVariable">
             <div class="list">
                 <p class="heading calm" style="padding:14px;">Add New Variable</p>
 
 
-                <label class="item item-input item-select" ng-if="showCategoryAsSelector">
+                <label class="item item-input item-select" ng-if="flags.showCategoryAsSelector">
                     <div class="input-label">
                         Category
                     </div>
-                    <select ng-model="variable_category">
-                        <option ng-repeat="i in variableCategories track by i.id" value="{{i.name}}">
+                    <select ng-model="state.variable_category" ng-change=>
+                        <option ng-repeat="i in state.variableCategories track by i.id" value="{{i.name}}">
                             {{i.name}}
                         </option>
                     </select>
                 </label>
 
-                <label class="item item-input item-stacked-label" ng-if="!showCategoryAsSelector">
+                <label class="item item-input item-stacked-label" ng-if="!flags.showCategoryAsSelector">
                     <span class="input-label">Category</span>
-                    <input type="text" ng-model="variable_category" readonly id="category_name" placeholder="Category name">
+                    <input type="text" ng-model="state.variable_category" readonly id="category_name" placeholder="Category name">
                 </label>
 
                 <label class="item item-input item-stacked-label">
                     <span class="input-label">Variable</span>
-                    <input type="text" ng-model="variable_name" id="variable_name" placeholder="Variable name">
+                    <input type="text" ng-model="state.variable_name" id="variable_name" placeholder="Variable name">
                 </label>
 
                 <label class="item item-radio">
-                    <input type="radio" ng-model="sumAvg" value="sum" name="group">
+                    <input type="radio" ng-model="state.sumAvg" value="sum" name="group">
                     <div class="item-content">
                         Sum
                     </div>
@@ -75,7 +75,7 @@
                 </label>
 
                 <label class="item item-radio">
-                    <input type="radio" ng-model="sumAvg" value="avg" name="group">
+                    <input type="radio" ng-model="state.sumAvg" value="avg" name="group">
                     <div class="item-content">
                         Average
                     </div>
@@ -84,53 +84,53 @@
             </div>
         </div>
 
-        <div class="card" ng-show="showAddMeasurement" style="overflow: visible">
-            <p class="heading calm" style="padding:14px;">Track {{variable_name}}</p>
+        <div class="card" ng-show="flags.showAddMeasurement" style="overflow: visible">
+            <p class="heading calm" style="padding:14px;">Track {{state.variable_name}}</p>
             <div class="list">
 
-                <div ng-if="(category != 'Mood' && category != 'Symptoms')" class="row labeled-control">
+                <div ng-if="(flags.category != 'Emotions' && flags.category != 'Symptoms')" class="row labeled-control">
                     <div class="col col-l">
                         <span>
                             Value
                         </span>
                     </div>
                     <div class="col">
-                        <input type="text" ng-model="$parent.$parent.variable_value" id="variable_value" placeholder="Enter Value Here" class="uptop">
+                        <input type="text" ng-model="state.variable_value" id="variable_value" placeholder="Enter Value Here" class="uptop">
                     </div>
                 </div>
 
-                <div class="tracking_factors col" ng-if="category=='Mood' || category == 'Symptoms'">
+                <div class="tracking_factors col" ng-if="flags.category=='Emotions' || flags.category == 'Symptoms'">
                     <img ng-repeat="option in tracking_factor_numbers" ng-click="select_tracking_factor($event, option.value)" ng-src="{{option.img}}">
                 </div>
 
-                <div class="row labeled-control" ng-if="(category != 'Mood' && category != 'Symptoms')">
+                <div class="row labeled-control" ng-if="(flags.category != 'Emotions' && flags.category != 'Symptoms')">
                     <div class="col col-l">
                         <span class="input-label">Unit</span>
                     </div>
                     <div class="col">
                         <div class="row uptop" style="padding-left:0px;">
-                            <div class="col-90">
-                                <input type="text" ng-change="showUnitsDropDown()" ng-model="unit_text" placeholder="Enter Unit Here">
-                            </div>
-                            <div class="col-10">
-                                <button style="float: right;" on-tap="toggleShowUnits()" class="button button-small button-clear">
-                                    <i class="icon ion-chevron-down"></i>
-                                </button>
-                            </div>
-                        </div>
-                        <div class="row labeled-control">
-                            <div class="col">
-                                <ion-list ng-show="show_units">
-                                    <ion-item ng-repeat="unit in units | filter:unit_text" on-tap="unit_selected(unit)">
-                                        {{unit.name}}
-                                    </ion-item>
-                                </ion-list>
-                            </div>
+                            <div class="col" style="padding-top:5px;">
 
+                                <!-- show most common unit when tracking measurement, keep it editable-->
+                                <input type="text" ng-show="flags.showAddVariable" ng-change="unit_search(state.unit_text)" ng-model="state.unit_text" placeholder="Type to search">
+
+                                
+                                <!-- show default unit when tracking measurement-->
+                                <span ng-show="!flags.showAddVariable">{{state.selected_sub}}</span>
+                            </div>
+                           
                         </div>
                     </div>
                 </div>
-
+                <div class="card" ng-show="flags.show_units && state.searchedUnits.length">
+                    <div class="list">
+                        <ion-list>
+                            <ion-item ng-repeat="unit in state.searchedUnits" on-tap="unit_selected(unit)">
+                                {{unit.abbreviatedName}}
+                            </ion-item>
+                        </ion-list>
+                    </div>
+                </div>
                 <div class="row labeled-control">
                     <div class="col col-l">
                         <span>
@@ -163,7 +163,7 @@
             </div>
         </div>    
 
-        <div class="card" ng-show="showAddMeasurement">
+        <div class="card" ng-show="flags.showAddMeasurement">
             <button ng-click="cancel()" class="button button-assertive button-block">
                 Cancel
             </button>
