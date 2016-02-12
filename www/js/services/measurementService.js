@@ -304,11 +304,11 @@ angular.module('starter')
                             if(usePromise) deferred.resolve();
                         } else {
                             console.log("error", response);
-                            if(usePromise) deferred.reject();
+                            if(usePromise) deferred.reject(response.message? response.message.split('.')[0] : "Can't post measurement right now!");
                         }
                     }, function(response){
                         console.log("error", response);
-                        if(usePromise) deferred.reject();
+                        if(usePromise) deferred.reject(response.message? response.message.split('.')[0] : "Can't post measurement right now!");
                     });
                 });
 
