@@ -1,7 +1,7 @@
 angular.module('starter')
 
 	// Controls the History Page of the App.
-	.controller('RemindersInboxCtrl', function($scope, authService, $ionicPopup, localStorageService, $state, reminderService, $ionicLoading, measurementService){
+	.controller('RemindersInboxCtrl', function($scope, authService, $ionicPopup, localStorageService, $state, reminderService, $ionicLoading, measurementService, utilsService){
 
 	    $scope.controller_name = "RemindersInboxCtrl";
 
@@ -118,6 +118,9 @@ angular.module('starter')
 	    	}, function(){
 	    		utils.stopLoading();
 	    		console.log("failed to get reminders");
+				console.log("need to log in");
+				utilsService.showLoginRequiredAlert($scope.login);
+				$ionicLoading.hide();
 	    	});
 	    };
 
@@ -131,6 +134,8 @@ angular.module('starter')
 	    	}, function(){
 	    		utils.stopLoading();
 	    		console.log("failed to get reminders");
+				utilsService.showLoginRequiredAlert($scope.login);
+				$ionicLoading.hide();
 	    	});
 	    };
 
@@ -202,9 +207,16 @@ angular.module('starter')
 
 	    // constructor
 	    $scope.init = function(){
-	      	if($state.is('app.reminders_manage'))
-	      		getReminders();
-	      	else getTrackingReminders();
+			// get user token
+			authService.getAccessToken().then(function(token){
+				if($state.is('app.reminders_manage'))
+					getReminders();
+				else getTrackingReminders();
+			}, function(){
+				console.log("need to log in");
+				utilsService.showLoginRequiredAlert($scope.login);
+				$ionicLoading.hide();
+			});
 	    };
 
 	    $scope.saveMeasurement = function(){
