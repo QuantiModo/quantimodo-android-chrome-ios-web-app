@@ -1,7 +1,7 @@
 angular.module('starter')
 
 	// Controls the History Page of the App.
-	.controller('RemindersCtrl', function($scope, authService, $ionicPopup, localStorageService, $state, $stateParams, measurementService, reminderService, $ionicLoading){
+	.controller('RemindersCtrl', function($scope, authService, $ionicPopup, localStorageService, $state, $stateParams, measurementService, reminderService, $ionicLoading, utilsService){
 
 	    $scope.controller_name = "RemindersCtrl";
 
@@ -443,15 +443,23 @@ angular.module('starter')
 	    };
 
 	    // constuctor
-	    $scope.init = function(){	 
-			if($stateParams.category){
-				$scope.category = $stateParams.category;
-				setupCategory($scope.category);
-			}
-			else if($stateParams.reminder && $stateParams.reminder !== null) 
-				setupEditReminder($stateParams.reminder);
-			else 
-				setupNewReminder();
+	    $scope.init = function(){
+
+			// get user token
+			authService.getAccessToken().then(function(token){
+				if($stateParams.category){
+					$scope.category = $stateParams.category;
+					setupCategory($scope.category);
+				}
+				else if($stateParams.reminder && $stateParams.reminder !== null)
+					setupEditReminder($stateParams.reminder);
+				else
+					setupNewReminder();
+			}, function(){
+				console.log("need to log in");
+				utilsService.showLoginRequiredAlert($scope.login);
+				$ionicLoading.hide();
+			});
 	    };
 
         // when view is changed
