@@ -249,64 +249,73 @@ angular.module('starter')
 		else if(ionic.Platform.platforms[0] === "browser"){
 			console.log("Browser Detected");
 
-            // add params
-            url += "response_type=code";
-            url += "&client_id="+config.getClientId();
-            url += "&client_secret="+config.getClientSecret();
-            url += "&scope="+config.getPermissionString();
-            url += "&state=testabcd";
-            url += "&redirect_uri=https://app.quantimo.do/ionic/Modo/www/callback";
+            if(config.getClientId() != 'oAuthDisabled'){
+                // add params
+                url += "response_type=code";
+                url += "&client_id="+config.getClientId();
+                url += "&client_secret="+config.getClientSecret();
+                url += "&scope="+config.getPermissionString();
+                url += "&state=testabcd";
+                url += "&redirect_uri=https://app.quantimo.do/ionic/Modo/www/callback";
 
-            var ref = window.open(url,'_blank');
+                var ref = window.open(url,'_blank');
 
-            if(!ref){
-                alert("You must first unblock popups, and and refresh the page for this to work!");
-            } else {
-                // broadcast message question every second to sibling tabs
-                var interval = setInterval(function(){
-                    ref.postMessage('isLoggedIn?','https://app.quantimo.do/ionic/Modo/www/callback/');
-                    ref.postMessage('isLoggedIn?','https://local.quantimo.do:4417/ionic/Modo/www/callback/');
-                    ref.postMessage('isLoggedIn?','https://staging.quantimo.do/ionic/Modo/www/callback/');
-                }, 1000);
+                if(!ref){
+                    alert("You must first unblock popups, and and refresh the page for this to work!");
+                } else {
+                    // broadcast message question every second to sibling tabs
+                    var interval = setInterval(function () {
+                        ref.postMessage('isLoggedIn?', 'https://app.quantimo.do/ionic/Modo/www/callback/');
+                        ref.postMessage('isLoggedIn?', 'https://local.quantimo.do:4417/ionic/Modo/www/callback/');
+                        ref.postMessage('isLoggedIn?', 'https://staging.quantimo.do/ionic/Modo/www/callback/');
+                    }, 1000);
 
-                // handler when a message is recieved from a sibling tab
-                window.onMessageRecieved = function(event){
-                    console.log("message recieved", event.data);
-                    
-                    // Don't ask login question anymore
-                    clearInterval(interval);
-                    
-                    // the url that QuantiModo redirected us to
-                    var iframe_url = event.data;
+                    // handler when a message is recieved from a sibling tab
+                    window.onMessageRecieved = function (event) {
+                        console.log("message recieved", event.data);
 
-                    // validate if the url is same as we wanted it to be
-                    if(utilsService.startsWith(iframe_url, "https://app.quantimo.do/ionic/Modo/www/callback/")) {    
-                        // if there is no error
-                        if(!utilsService.getUrlParameter(iframe_url,'error')) {
-                            
-                            // extract token
-                            var requestToken = utilsService.getUrlParameter(iframe_url, 'code');
-                            
-                            if(requestToken === false) requestToken = utilsService.getUrlParameter(iframe_url, 'token');
-                            
-                            // get auth token from request token
-                            $scope.getAuthToken(requestToken);
-                            
-                            // close the sibling tab
-                            ref.close();
+                        // Don't ask login question anymore
+                        clearInterval(interval);
 
-                        } else {
-                            // TODO : display_error
-                            console.log("error occoured", utilsService.getUrlParameter(iframe_url, 'error'));
+                        // the url that QuantiModo redirected us to
+                        var iframe_url = event.data;
 
-                            // close the sibling tab
-                            ref.close();
+                        // validate if the url is same as we wanted it to be
+                        if (utilsService.startsWith(iframe_url, "https://app.quantimo.do/ionic/Modo/www/callback/")) {
+                            // if there is no error
+                            if (!utilsService.getUrlParameter(iframe_url, 'error')) {
+
+                                // extract token
+                                var requestToken = utilsService.getUrlParameter(iframe_url, 'code');
+
+                                if (requestToken === false) requestToken = utilsService.getUrlParameter(iframe_url, 'token');
+
+                                // get auth token from request token
+                                $scope.getAuthToken(requestToken);
+
+                                // close the sibling tab
+                                ref.close();
+
+                            } else {
+                                // TODO : display_error
+                                console.log("error occoured", utilsService.getUrlParameter(iframe_url, 'error'));
+
+                                // close the sibling tab
+                                ref.close();
+                            }
                         }
-                    }  
-                };
+                    };
 
-                // listen to broadcast messages from other tabs within browser 
-                window.addEventListener("message", window.onMessageRecieved, false);
+                    // listen to broadcast messages from other tabs within browser
+                    window.addEventListener("message", window.onMessageRecieved, false);
+                }
+            } else {
+                var loginUrl = config.getURL("api/v2/auth/login");
+                console.log("Client id is oAuthDisabled - will redirect to regular login.");
+                loginUrl += "redirect_uri=" + encodeURIComponent(window.location.href);
+                console.debug('AUTH redirect URL created:', loginUrl);
+                console.debug('GOOD LUCK!');
+                window.location.replace(loginUrl);
             }
 		} else {
 
