@@ -1,0 +1,21 @@
+<ion-view hide-nav-bar="skipMenu" view-title="History">
+     <ion-content>
+      <ion-list>
+          <div collection-repeat="historyItem in state.history" divider-collection-repeat>
+              <ion-item  >
+                  <div style="display:inline-block;float:left;margin-left:10px;margin-right:10px;width:80px;text-align:center">
+                    <i class="ion-speedometer" style="color:#11c1f3;font-size: 75px;"></i>
+                    <p style="font-weight:bold;white-space:normal">{{historyItem.variable}}</p>
+                  </div>
+                  <div class="history_block" style="margin-left:10px;">
+                    <h2 class="history_time" ng-repeat="line in (historyItem.updatedTime | time) track by $index">
+                      {{line}}
+                    </h2>
+                    <br/>
+                    <h2> {{historyItem.value}} {{getUnitFromUnitId(historyItem.unit).abbreviatedName}}</h2>  
+                  </div>
+              </ion-item>
+          </div>
+      </ion-list> 
+    </ion-content>
+</ion-view>

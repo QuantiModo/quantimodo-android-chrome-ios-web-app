@@ -726,6 +726,18 @@ angular.module('starter')
                 return deferred.promise;
             },
 
+            getHistoryMeasurements : function(params){
+                var deferred = $q.defer();
+
+                QuantiModo.getV1Measurements(params, function(response){
+                    deferred.resolve(response);
+                }, function(error){
+                    deferred.reject(error)
+                });
+
+                return deferred.promise;
+            },
+
 		   	// get variable categories
 			getVariableCategories : function(){
 				var deferred = $q.defer();

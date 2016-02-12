@@ -241,6 +241,15 @@ angular.module('starter', ['ionic','oc.lazyLoad','highcharts-ng','ngCordova','io
               }
           }
       })
+      .state('app.historyAll', {
+          url: "/history-all",
+          views: {
+              'menuContent': {
+                  templateUrl: "templates/history_all.html",
+                  controller: 'AllHistoryCtrl'
+              }
+          }
+      })
       .state('app.reminders_inbox', {
           url: "/reminders-inbox",
           cache:false,
