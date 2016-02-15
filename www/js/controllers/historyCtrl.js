@@ -1,7 +1,7 @@
 angular.module('starter')
 
 	// Controls the History Page of the App.
-	.controller('HistoryCtrl', function($scope, $ionicModal, $timeout, $ionicLoading, authService, $ionicPopover, measurementService, $ionicPopup,localStorageService){
+	.controller('HistoryCtrl', function($scope, $ionicModal, $timeout, $ionicLoading, authService, $ionicPopover, measurementService, $ionicPopup, localStorageService, utilsService){
 
 	    $scope.controller_name = "HistoryCtrl";
 
@@ -88,7 +88,8 @@ angular.module('starter')
 
 	    // constuctor
 	    $scope.init = function(){
-	        
+
+
 	        // show loading spinner
 	        $ionicLoading.show({
 	            noBackdrop: true,
@@ -114,8 +115,9 @@ angular.module('starter')
 	        }, function(){
 	            console.log("need to log in");
 	            $ionicLoading.hide();
+	            utilsService.showLoginRequiredAlert($scope.login);
 	        });
-	       
+
 	    };
 
         // when view is changed

@@ -52,8 +52,7 @@ angular.module('starter')
                             text:'Login',
                             type: 'button-positive',
                             onTap:function(e){
-                                login();
-                                $state.go('app.welcome');
+                                $state.go('app.login');
                             }
                         },
                         {

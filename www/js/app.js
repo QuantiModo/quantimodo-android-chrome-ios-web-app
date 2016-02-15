@@ -100,6 +100,15 @@ angular.module('starter', ['ionic','oc.lazyLoad','highcharts-ng','ngCordova','io
           }
         }
       })
+
+      .state('app.login', {
+        url: "/login",
+        views: {
+          'menuContent': {
+            templateUrl: "templates/login_page.html",
+          }
+        }
+      })
       .state('app.track', {
           url: "/track",
           views: {
