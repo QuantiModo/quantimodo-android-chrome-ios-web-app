@@ -163,7 +163,7 @@ angular.module('starter')
                 console.log("isWelcomed is true. going");
 
                 // move to tracking page
-                if($state.current.name == "app.welcome"){
+                if($state.current.name == "app.welcome" || $state.current.name == "app.login"){
                     $state.go('app.track');
                     $rootScope.hideMenu = false;
                 }
