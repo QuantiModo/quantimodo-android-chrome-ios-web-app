@@ -206,16 +206,11 @@ angular.module('starter')
 
 	    // constructor
 	    $scope.init = function(){
-			// get user token
-			authService.getAccessToken().then(function(token){
-				if($state.is('app.reminders_manage'))
-					getReminders();
-				else getTrackingReminders();
-			}, function(){
-				console.log("need to log in");
-				utilsService.showLoginRequiredAlert($scope.login);
-				$ionicLoading.hide();
-			});
+
+	    	console.log('hello', $stateParams, location.href);
+	      	// if($state.is('app.reminders_manage'))
+	      	// 	getReminders();
+	      	// else getTrackingReminders();
 	    };
 
 	    $scope.saveMeasurement = function(){
