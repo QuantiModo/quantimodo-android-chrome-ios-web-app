@@ -1,7 +1,6 @@
 angular.module('starter')
 
-	// Controls the History Page of the App.
-	.controller('RemindersInboxCtrl', function($scope, authService, $ionicPopup, localStorageService, $state, reminderService, $ionicLoading, measurementService, utilsService){
+	.controller('RemindersInboxCtrl', function($scope, authService, $ionicPopup, localStorageService, $state, reminderService, $ionicLoading, measurementService, utilsService, $stateParams, $location){
 
 	    $scope.controller_name = "RemindersInboxCtrl";
 
