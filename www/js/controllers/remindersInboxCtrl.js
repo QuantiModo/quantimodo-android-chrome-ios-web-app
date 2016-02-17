@@ -244,8 +244,10 @@ angular.module('starter')
 	    	var dateTime = utilsService.getUrlParameter(location.href, 'dateTime', true);
 	    	var value = utilsService.getUrlParameter(location.href, 'value', true);	    	
 
-	    	if($stateParams.unit !== null && $stateParams.variableName !== null 
-	    		&& $stateParams.dateTime !== null && $stateParams.value !== null){
+	    	if($stateParams.unit !== null && $stateParams.unit !== false
+	    		&& $stateParams.variableName !== null && $stateParams.variableName !== false 
+	    		&& $stateParams.dateTime !== null && $stateParams.dateTime !== false 
+	    		&& $stateParams.value !== null $stateParams.value !== false){
 	    			    		
 	    		setupTracking($stateParams.unit,
 	    			$stateParams.variableName,
