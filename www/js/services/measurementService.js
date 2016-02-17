@@ -271,8 +271,8 @@ angular.module('starter')
                         name: variable,
                 	   	source: config.get('client_source_name'),
                 	   	category: category,
-                	   	combinationOperation: isAvg ? "MEAN" : "SUM",
                 	   	unit: unit,
+                        combinationOperation : isAvg? "MEAN" : "SUM",
                 	   	measurements : [
                 		   	{
                 		   		timestamp:  epoch / 1000,
@@ -287,12 +287,12 @@ angular.module('starter')
                 var measurement = {
                     name: variable,
                     source: config.get('client_source_name'),
-                    category: category,
-                    combinationOperation: isAvg ? "MEAN" : "SUM",
                     unit: unit,
                     timestamp:  epoch / 1000,
                     value: val,
-                    note : ""
+                    category : category,
+                    note : "",
+                    combinationOperation : isAvg? "MEAN" : "SUM"
                 };
 
                 measurementService.post_tracking_measurement_locally(measurement)
@@ -694,6 +694,19 @@ angular.module('starter')
 
 				return deferred.promise;
 			},
+
+            getVariablesByName : function(name){
+                var deferred = $q.defer();
+
+                // refresh always
+                QuantiModo.getVariable(name, function(variable){
+                    deferred.resolve(variable);
+                }, function(){
+                    deferred.reject(false);
+                });
+
+                return deferred.promise;
+            },            
 
 			// get variables locally
 			getVariables : function(){

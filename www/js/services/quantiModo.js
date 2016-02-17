@@ -221,6 +221,14 @@ angular.module('starter')
                     errorHandler);
             };
 
+            QuantiModo.getVariable = function(variable, successHandler, errorHandler){
+                QuantiModo.get('api/v1/variables/' + encodeURIComponent(variable),
+                    [],
+                    {},
+                    successHandler,
+                    errorHandler);
+            };
+
             // get user variables
             QuantiModo.getVariablesByCategory = function(category,successHandler, errorHandler){
                 QuantiModo.get('api/v1/variables',

@@ -250,14 +250,30 @@ angular.module('starter', ['ionic','oc.lazyLoad','highcharts-ng','ngCordova','io
               }
           }
       })
+      .state('app.edit', {
+          url: "/edit",
+          cache:false,
+          params: {
+            unit: null,
+            variableName : null,
+            dateTime : null,
+            value : null
+          },
+          views: {
+              'menuContent': {
+                  templateUrl: "templates/reminders_inbox.html",
+                  controller: 'RemindersInboxCtrl'
+              }
+          }
+      })
       .state('app.reminders_inbox', {
           url: "/reminders-inbox",
           cache:false,
           params: {
             unit: null,
             variableName : null,
-            date : null,
-            time : null
+            dateTime : null,
+            value : null
           },
           views: {
               'menuContent': {

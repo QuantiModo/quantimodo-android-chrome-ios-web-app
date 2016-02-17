@@ -2,20 +2,24 @@
      <ion-content>
       <ion-list>
           <div collection-repeat="historyItem in state.history" divider-collection-repeat>
-              <ion-item  >
+              <ion-item  ng-click="editMeasurement(historyItem)">
                   <div style="display:inline-block;float:left;margin-left:10px;margin-right:10px;width:80px;text-align:center">
                     <i class="ion-speedometer" style="color:#11c1f3;font-size: 75px;"></i>
                     <p style="font-weight:bold;white-space:normal">{{historyItem.variable}}</p>
                   </div>
                   <div class="history_block" style="margin-left:10px;">
-                    <h2 class="history_time" ng-repeat="line in (historyItem.updatedTime | time) track by $index">
+                    <h2 class="history_time" ng-repeat="line in (historyItem.createdTime | time) track by $index">
                       {{line}}
                     </h2>
                     <br/>
                     <h2> {{historyItem.value}} {{getUnitFromUnitId(historyItem.unit).abbreviatedName}}</h2>  
                   </div>
               </ion-item>
+
           </div>
       </ion-list> 
+      <div class="button-bar">
+        <a class="button button-clear button-calm" ng-click="getNext()" style="text-overflow: clip;"><i class="ion-refresh">  Load More</i></a>
+      </div>
     </ion-content>
 </ion-view>

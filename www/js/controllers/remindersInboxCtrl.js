@@ -3,18 +3,9 @@ angular.module('starter')
 	.controller('RemindersInboxCtrl', function($scope, authService, $ionicPopup, localStorageService, $state, reminderService, $ionicLoading, measurementService, utilsService, $stateParams, $location){
 
 	    $scope.controller_name = "RemindersInboxCtrl";
-
-	    // Show alert with a title
-	    $scope.showAlert = function(title, template) {
-	       var alertPopup = $ionicPopup.alert({
-	         cssClass : 'calm',
-             okType : 'button-calm',
-	         title: title,
-	         template: template
-	       });
-	    };
-
+	    
 	    $scope.state = {
+	    	title : "Reminder Inbox",
 	    	showMeasurementBox : false,
 	    	selectedReminder : false,
 	    	reminderDefaultValue : "",
@@ -29,7 +20,9 @@ angular.module('starter')
 				epochTime: new Date().getTime()/1000,
 				format: 24,
 				step: 1
-			}
+			},
+			variable : {},
+			isDisabled : false
 	    };
 
 	    var filterViaDates = function(reminders){
@@ -100,12 +93,23 @@ angular.module('starter')
 
     	    // alert box
 	        showAlert : function(title, cssClass) {
-	           var alertPopup = $ionicPopup.alert({
-	             cssClass : cssClass? cssClass : 'calm',
-	             okType : cssClass? 'button-'+cssClass : 'button-calm',
-	             title: title
-	           });
+				return $ionicPopup.alert({
+					cssClass : cssClass? cssClass : 'calm',
+					okType : cssClass? 'button-'+cssClass : 'button-calm',
+					title: title
+				});
 	        }
+	    };
+
+	    var getVariable = function(variableName){
+	    	measurementService.getVariablesByName(variableName)
+	    	.then(function(variable){
+	    		$scope.state.variable = variable;
+	    	}, function(){
+	    		utils.showAlert('Can\'t find variable. Try again!', 'assertive').then(function(){
+	    			$state.go('app.historyAll');
+	    		});
+	    	});
 	    };
 
 	    var getReminders = function(){
@@ -136,6 +140,14 @@ angular.module('starter')
 				utilsService.showLoginRequiredAlert($scope.login);
 				$ionicLoading.hide();
 	    	});
+	    };
+
+	    $scope.cancel = function(){
+	    	$scope.state.showMeasurementBox = !$scope.state.showMeasurementBox;
+	    	
+	    	if($scope.state.title === "Edit Measurement"){
+				$state.go('app.historyAll');
+			}
 	    };
 
 	    $scope.track = function(reminder){
@@ -204,13 +216,62 @@ angular.module('starter')
 	    	});
 	    };
 
+	    var setupTracking = function(unit, variableName, dateTime, value){
+	    	console.log('track : ' , unit, variableName, dateTime, value);
+
+	    	if(dateTime.indexOf(" ") !== -1) 
+	    		dateTime = dateTime.replace(/\ /g,'+');
+
+	    	$scope.state.title = "Edit Measurement";
+	    	$scope.state.showMeasurementBox = true;
+
+	    	$scope.state.selectedReminder = {
+	    		variableName : variableName,
+	    		abbreviatedUnitName : unit
+	    	};
+	    	$scope.state.reminderDefaultValue = value;
+	    	$scope.state.slots.epochTime = moment(dateTime).unix();
+	    	$scope.state.measuementDate = moment(dateTime)._d;
+
+	    	getVariable(variableName);
+	    };
+
 	    // constructor
 	    $scope.init = function(){
+	    	
+	    	var unit = utilsService.getUrlParameter(location.href, 'unit', true);
+	    	var variableName = utilsService.getUrlParameter(location.href, 'variableName', true);
+	    	var dateTime = utilsService.getUrlParameter(location.href, 'dateTime', true);
+	    	var value = utilsService.getUrlParameter(location.href, 'value', true);	    	
 
-	    	console.log('hello', $stateParams, location.href);
-	      	// if($state.is('app.reminders_manage'))
-	      	// 	getReminders();
-	      	// else getTrackingReminders();
+	    	if($stateParams.unit !== null && $stateParams.variableName !== null 
+	    		&& $stateParams.dateTime !== null && $stateParams.value !== null){
+	    			    		
+	    		setupTracking($stateParams.unit,
+	    			$stateParams.variableName,
+	    			$stateParams.dateTime,
+	    			$stateParams.value);
+
+	    	} else if(unit || variableName || dateTime || value){
+	    		
+	    		$scope.state.title = "Edit Measurement";
+	    		$scope.state.showMeasurementBox = true;
+
+	    		if(unit && variableName && dateTime && value){
+	    			setupTracking(unit,
+	    				variableName,
+	    				dateTime,
+	    				value);
+	    		} else {
+	    			$scope.state.isDisabled = true;
+	    			utils.showAlert('Missing Parameters, need unit, variableName, dateTime and value!','assertive');
+	    		}
+
+	    	} else if($state.is('app.reminders_manage')){	      		
+	      		getReminders();
+	      	} else {
+	      		getTrackingReminders();
+	      	}
 	    };
 
 	    $scope.saveMeasurement = function(){
@@ -220,15 +281,39 @@ angular.module('starter')
 
 	    	dateFromDate.setHours(timeFromDate.getHours());
 	    	dateFromDate.setMinutes(timeFromDate.getMinutes());
+	    	dateFromDate.setSeconds(timeFromDate.getSeconds());
 
+	    	console.log("reported time: ", moment(dateFromDate).unix());
+
+	    	var category = "Emotions";
+
+	    	if($scope.state.selectedReminder.variableCategoryName) {
+	    		category = $scope.state.selectedReminder.variableCategoryName
+	    	}
+	    	if($scope.state.variable.category) {
+	    		category = $scope.state.variable.category
+	    	}
+
+	    	console.log("selected Category: ", category);
+
+	    	var isAvg = true;
+	    	if($scope.state.selectedReminder.combinationOperation) {
+	    		isAvg = $scope.state.selectedReminder.combinationOperation == "MEAN" ? false : true;
+	    	}
+	    	if($scope.state.variable.combinationOperation) {
+	    		isAvg = $scope.state.variable.combinationOperation == "MEAN" ? false : true;
+	    	}
+
+	    	console.log("selected combinationOperation is Average?: ", isAvg);
+	    	
 	    	// populate params
 	    	var params = {
 	    	    variable : $scope.state.selectedReminder.variableName,
 	    	    value : $scope.state.reminderDefaultValue,
-	    	    epoch : moment.utc(dateFromDate).valueOf(),
+	    	    epoch : moment(dateFromDate).valueOf(),
 	    	    unit : $scope.state.selectedReminder.abbreviatedUnitName,
-	    	    category : $scope.state.selectedReminder.variableCategoryName,
-	    	    isAvg : $scope.state.selectedReminder.combinationOperation === "MEAN"? false : true
+	    	    category : category,
+	    	    isAvg : isAvg
 	    	};
 
 	    	utils.startLoading();
@@ -242,9 +327,16 @@ angular.module('starter')
     	        params.category,
     	        usePromise)
     	    .then(function(){
-    	    	$scope.state.showMeasurementBox = false;
-    	    	$scope.skip($scope.state.selectedReminder);
-    	    	$scope.init();
+    	    	if($scope.state.title === "Edit Measurement"){
+    	    		utils.stopLoading();
+    	    		utils.showAlert('Measurement Updated!').then(function(){
+    	    			$state.go('app.historyAll');
+    	    		});
+    	    	} else {
+    	    		$scope.state.showMeasurementBox = false;
+    	    		$scope.skip($scope.state.selectedReminder);
+    	    		$scope.init();
+    	    	}
     	    }, function(){
     	    	utils.stopLoading();
     	    	utils.showAlert('Failed to post measuement, Try again!','assertive');

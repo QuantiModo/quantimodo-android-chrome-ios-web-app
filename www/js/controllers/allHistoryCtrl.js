@@ -1,11 +1,11 @@
 angular.module('starter')
 
 	// Controls the History Page of the App.
-	.controller('AllHistoryCtrl', function($scope, $ionicModal, $timeout, $ionicLoading, authService, $ionicPopover, measurementService, $ionicPopup, localStorageService, QuantiModo){
+	.controller('AllHistoryCtrl', function($scope, $state, $ionicModal, $timeout, $ionicLoading, authService, $ionicPopover, measurementService, $ionicPopup, localStorageService, QuantiModo){
 
 	    $scope.controller_name = "AllHistoryCtrl";
 
-	    $scope.utils = {
+	    var utils = {
 		    showAlert : function(title, template) {
 		       var alertPopup = $ionicPopup.alert({
 		         cssClass : 'calm',
@@ -16,7 +16,7 @@ angular.module('starter')
 		    },
 
 		    // Hide spinner
-		    closeloading : function(){
+		    stopLoading : function(){
 		        $ionicLoading.hide();
 		    },
 
@@ -31,9 +31,22 @@ angular.module('starter')
 	    }
 
 	    $scope.state = {
+	    	offset : 0,
+	    	limit : 50,
 	    	history : [],
 			units : [],
 			variableCategories : []
+	    };
+
+	    $scope.editMeasurement = function(measurement){
+	    	console.log(measurement);
+
+	    	$state.go('app.edit', {
+	    		unit: $scope.getUnitFromUnitId(measurement.unit).abbreviatedName,
+	    		variableName : measurement.variable,
+	    		dateTime : measurement.startTime,
+	    		value : measurement.value
+	    	});
 	    };
 
 	    $scope.getUnitFromUnitId = function(id){
@@ -56,9 +69,32 @@ angular.module('starter')
 
 	    	return variableCategory? variableCategory : false;
 	    };
+
+
+	    var getHistory = function(){
+	    	utils.startLoading();
+	    	measurementService.getHistoryMeasurements({
+    		    offset: $scope.state.offset,
+    		    limit: $scope.state.limit,
+    		    sort: "-updatedTime"
+	    	}).then(function(history){
+    			$scope.state.history = $scope.state.history.concat(history);
+    			utils.stopLoading();
+	    	}, function(error){
+	    		console.log('error getting measurements', error)
+	    		utils.stopLoading();
+	    	});
+
+	    }
+
+	    $scope.getNext = function(){
+	    	$scope.state.offset += $scope.state.limit;
+	    	getHistory();
+	    };
 	    
 	    // constuctor
 	    $scope.init = function(){
+	    	utils.startLoading();
 	    	measurementService.getVariableCategories()
 	    	.then(function(variableCategories){
 	    		$scope.state.variableCategories = variableCategories;
@@ -73,20 +109,12 @@ angular.module('starter')
 	    		console.log("error getting units", err);
 	    	});
 
-	    	measurementService.getHistoryMeasurements({
-    		    offset:0,
-    		    limit:200,
-    		    sort: "-updatedTime"
-	    	}).then(function(history){
-    			$scope.state.history = history;
-	    	}, function(error){
-	    		console.log('error getting measurements', error)
-	    	});
-
+	    	getHistory();
 	    };
 
         // when view is changed
     	$scope.$on('$ionicView.enter', function(e) {
+    		$scope.state.history = [];
     		$scope.init();
     	});
 

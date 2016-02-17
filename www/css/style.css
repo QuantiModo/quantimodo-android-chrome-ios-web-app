@@ -373,3 +373,12 @@ img.intro_mood {
 #import_iframe {
   padding: 10px;
 }
+
+.card_disabled {
+  background-color: lightgray;
+  pointer-events : none;
+}
+
+.card_disabled input, .card_disabled button {
+  background-color: lightgray !important;
+}
