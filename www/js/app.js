@@ -250,9 +250,40 @@ angular.module('starter', ['ionic','oc.lazyLoad','highcharts-ng','ngCordova','io
               }
           }
       })
+      .state('app.historyAll', {
+          url: "/history-all",
+          views: {
+              'menuContent': {
+                  templateUrl: "templates/history_all.html",
+                  controller: 'AllHistoryCtrl'
+              }
+          }
+      })
+      .state('app.edit', {
+          url: "/edit",
+          cache:false,
+          params: {
+            unit: null,
+            variableName : null,
+            dateTime : null,
+            value : null
+          },
+          views: {
+              'menuContent': {
+                  templateUrl: "templates/reminders_inbox.html",
+                  controller: 'RemindersInboxCtrl'
+              }
+          }
+      })
       .state('app.reminders_inbox', {
           url: "/reminders-inbox",
           cache:false,
+          params: {
+            unit: null,
+            variableName : null,
+            dateTime : null,
+            value : null
+          },
           views: {
               'menuContent': {
                   templateUrl: "templates/reminders_inbox.html",

@@ -3,7 +3,9 @@ angular.module('starter')
 	.filter('time', function(){
 	    return function(time){
 	    	if(time){
-	    		return moment(time*1000).format("MMM Do YYYY, hh:mm a").split(/,/g);;
+	    		if(typeof time === "number")
+	    			return moment(time*1000).format("MMM Do YYYY, hh:mm a").split(/,/g);
+	    		return moment.utc(time).local().format("dddd, MMMM Do YYYY, h:mm:ss a").split(/,/g);
 	    	} else return "";
 	    }
 	})

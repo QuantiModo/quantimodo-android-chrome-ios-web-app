@@ -19,8 +19,8 @@ angular.module('starter')
             // returns bool | string
             // if search param is found: returns its value
             // returns false if not found
-            getUrlParameter : function (url, sParam) {
-                if(url.split('?').length > 0){
+            getUrlParameter : function (url, sParam, shouldDecode) {
+                if(url.split('?').length > 1){
                     var sPageURL = url.split('?')[1];
                     var sURLVariables = sPageURL.split('&');
                     for (var i = 0; i < sURLVariables.length; i++)
@@ -28,7 +28,9 @@ angular.module('starter')
                         var sParameterName = sURLVariables[i].split('=');
                         if (sParameterName[0] == sParam)
                         {
-                            return sParameterName[1];
+                            if(typeof shouldDecode !== "undefined") 
+                                return decodeURIComponent(sParameterName[1]);
+                            else return sParameterName[1];
                         }
                     }
                     return false;

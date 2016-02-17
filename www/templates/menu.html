@@ -91,8 +91,20 @@
                     <i class="ion-ios-nutrition-outline"> &nbsp;  Foods</i>
                 </ion-item>
 
-                <ion-item menu-close href="#/app/history">
-                    <i class="ion-calendar"> &nbsp; History</i>
+                <ion-item ng-click="toggleHistorySubMenu()">
+                    <i class="{{showHistorySubMenu?'ion-chevron-down':'ion-chevron-right'}}"> &nbsp; History</i>
+                </ion-item>
+                
+                <ion-item class="sub-menu" ng-show="showHistorySubMenu" href="#/app/history" menu-close>
+                    <i class="ion-happy-outline"> &nbsp; Moods</i>
+                </ion-item>
+
+                <ion-item class="sub-menu" ng-show="showHistorySubMenu" href="#/app/history-all" menu-close>
+                    <i class="ion-ios-paper-outline"> &nbsp; All</i>
+                </ion-item>
+
+                <ion-item class="sub-menu" ng-show="showReminderSubMenu" href="/#/app/reminders" menu-close>
+                    <i class="ion-ios-plus-outline"> &nbsp; Add new reminder</i>
                 </ion-item>
 
                 <ion-item menu-close href="#/app/import">

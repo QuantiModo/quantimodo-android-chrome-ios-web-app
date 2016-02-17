@@ -9,6 +9,7 @@ angular.module('starter')
     $scope.isLoggedIn  = false;
     $scope.showTrackingSubMenu = false;
     $scope.showReminderSubMenu = false;
+    $scope.showHistorySubMenu = false;
     $scope.shopping_cart_enabled = config.shopping_cart_enabled;
     $rootScope.isSyncing = false;
     var $cordovaFacebook = {};
@@ -573,6 +574,10 @@ angular.module('starter')
 
     $scope.toggleOutcomePredictorSubMenu = function(){
         $scope.showOutcomePredictorSubMenu = !$scope.showOutcomePredictorSubMenu;
+    }
+
+    $scope.toggleHistorySubMenu = function(){
+        $scope.showHistorySubMenu = !$scope.showHistorySubMenu;
     }
 
     $scope.toggleReminderSubMenu = function(){

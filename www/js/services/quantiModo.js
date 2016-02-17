@@ -118,6 +118,14 @@ angular.module('starter')
                 return defer.promise;
             }
 
+            QuantiModo.getV1Measurements = function(params, successHandler, errorHandler){
+                QuantiModo.get('api/v1/measurements',
+                    ['source', 'limit', 'offset', 'sort'],
+                    params,
+                    successHandler,
+                    errorHandler);
+            };
+
             // post measurements old method
             QuantiModo.postMeasurements= function(measurements, successHandler ,errorHandler) { 
                 QuantiModo.post('api/measurements',
@@ -209,6 +217,14 @@ angular.module('starter')
                 QuantiModo.get('api/v1/variables',
                     ['limit'],
                     { limit:5 },
+                    successHandler,
+                    errorHandler);
+            };
+
+            QuantiModo.getVariable = function(variable, successHandler, errorHandler){
+                QuantiModo.get('api/v1/variables/' + encodeURIComponent(variable),
+                    [],
+                    {},
                     successHandler,
                     errorHandler);
             };
