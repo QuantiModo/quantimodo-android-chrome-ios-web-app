@@ -140,31 +140,22 @@ angular.module('starter')
 	    };
 
 	    $scope.track = function(reminder){
-	    	utils.startLoading();
 	    	reminderService.trackReminder(reminder.id)
 	    	.then(function(){
-
-	    		utils.stopLoading();
 	    		$scope.init();
 
 	    	}, function(err){
-
-	    		utils.stopLoading();
 	    		utils.showAlert('Failed to Track Reminder, Try again!', 'assertive');
 	    	});
 	    };
 
 	    $scope.skip = function(reminder){
-	    	utils.startLoading();
+	    	
 	    	reminderService.skipReminder(reminder.id)
 	    	.then(function(){
-
-	    		utils.stopLoading();
 	    		$scope.init();
 
 	    	}, function(err){
-
-	    		utils.stopLoading();
 	    		utils.showAlert('Failed to Skip Reminder, Try again!', 'assertive');
 	    	});
 	    };
@@ -191,16 +182,11 @@ angular.module('starter')
 		};
 
 	    $scope.snooze = function(reminder){
-	    	utils.startLoading();
 	    	reminderService.snoozeReminder(reminder.id)
 	    	.then(function(){
-
-	    		utils.stopLoading();
 	    		$scope.init();
 
 	    	}, function(err){
-
-	    		utils.stopLoading();
 	    		utils.showAlert('Failed to Snooze Reminder, Try again!', 'assertive');
 	    	});
 	    };
