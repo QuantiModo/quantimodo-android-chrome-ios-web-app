@@ -247,7 +247,7 @@ angular.module('starter')
 	    	if($stateParams.unit !== null && $stateParams.unit !== false
 	    		&& $stateParams.variableName !== null && $stateParams.variableName !== false 
 	    		&& $stateParams.dateTime !== null && $stateParams.dateTime !== false 
-	    		&& $stateParams.value !== null $stateParams.value !== false){
+	    		&& $stateParams.value !== null && $stateParams.value !== false){
 	    			    		
 	    		setupTracking($stateParams.unit,
 	    			$stateParams.variableName,
