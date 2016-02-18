@@ -261,7 +261,9 @@ angular.module('starter')
 	    // when adding/editing is cancelled
 	    $scope.cancel = function(){
 	    	if($stateParams.reminder && $stateParams.reminder !== null){
-	    		$state.go('app.reminders_manage');
+	    		if($stateParams.reminder.fromState){
+	    			$state.go($stateParams.reminder.fromState);
+	    		} else $state.go('app.reminders_manage');
 	    		return;
 	    	} else $state.reload();
 	    };
@@ -302,7 +304,10 @@ angular.module('starter')
 	    	.then(function(){
 
 	    		utils.stopLoading();
-	    		$state.go('app.reminders_manage');
+
+	    		if($stateParams.reminder.fromState){
+	    			$state.go($stateParams.reminder.fromState);
+	    		} else $state.go('app.reminders_manage');
 
 	    	}, function(err){
 
@@ -363,7 +368,9 @@ angular.module('starter')
 	    	.then(function(){
 
 	    		utils.stopLoading();
-	    		$state.go('app.reminders_manage');
+	    		if($stateParams.reminder.fromState){
+	    			$state.go($stateParams.reminder.fromState);
+	    		} else $state.go('app.reminders_manage');
 
 	    	}, function(err){
 
