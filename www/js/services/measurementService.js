@@ -261,22 +261,25 @@ angular.module('starter')
             },
 
 			// post a singe measurement
-			post_tracking_measurement : function(epoch, variable, val, unit, isAvg, category){
-			   // measurements set
-			   var measurements = [
+			post_tracking_measurement : function(epoch, variable, val, unit, isAvg, category, usePromise){
+
+                var deferred = $q.defer();
+
+                // measurements set
+                var measurements = [
                     {
                         name: variable,
-					   	source: config.get('client_source_name'),
-					   	category: category,
-					   	combinationOperation: isAvg ? "MEAN" : "SUM",
-					   	unit: unit,
-					   	measurements : [
-						   	{
-						   		timestamp:  epoch / 1000,
-						   		value: val,
-						   		note : ""
-						   	}
-					   	]
+                	   	source: config.get('client_source_name'),
+                	   	category: category,
+                	   	unit: unit,
+                        combinationOperation : isAvg? "MEAN" : "SUM",
+                	   	measurements : [
+                		   	{
+                		   		timestamp:  epoch / 1000,
+                		   		value: val,
+                		   		note : ""
+                		   	}
+                	   	]
                     }
                 ];
 
@@ -284,24 +287,32 @@ angular.module('starter')
                 var measurement = {
                     name: variable,
                     source: config.get('client_source_name'),
-                    category: category,
-                    combinationOperation: isAvg ? "MEAN" : "SUM",
                     unit: unit,
                     timestamp:  epoch / 1000,
                     value: val,
-                    note : ""
+                    category : category,
+                    note : "",
+                    combinationOperation : isAvg? "MEAN" : "SUM"
                 };
 
                 measurementService.post_tracking_measurement_locally(measurement)
                 .then(function(){
                     // send request
                     QuantiModo.postMeasurementsV2(measurements, function(response){
-                        console.log("success", response);
+                        if(response.success) {
+                            console.log("success", response);
+                            if(usePromise) deferred.resolve();
+                        } else {
+                            console.log("error", response);
+                            if(usePromise) deferred.reject(response.message? response.message.split('.')[0] : "Can't post measurement right now!");
+                        }
                     }, function(response){
                         console.log("error", response);
+                        if(usePromise) deferred.reject(response.message? response.message.split('.')[0] : "Can't post measurement right now!");
                     });
                 });
 
+                if(usePromise) return deferred.promise;
 			},
 
 			// edit existing measurement
@@ -318,7 +329,7 @@ angular.module('starter')
 					   	measurements : [{
 					   		timestamp:  timestamp,
 					   		value: val,
-					   		note : (note && note !== null)? note : ""
+					   		note : (note && note !== null)? note : null
 					   	}]
 					}
 				];
@@ -336,7 +347,7 @@ angular.module('starter')
 
                    // extract value
                    selected_dataset_item.value = val;
-                   selected_dataset_item.note = (selected_dataset_item.note && selected_dataset_item.note !== null)? selected_dataset_item.note : "";
+                   selected_dataset_item.note = (selected_dataset_item.note && selected_dataset_item.note !== null)? selected_dataset_item.note : null;
 
                    // update localstorage
                    localStorageService.setItem('allData',JSON.stringify(data_set));
@@ -684,6 +695,19 @@ angular.module('starter')
 				return deferred.promise;
 			},
 
+            getVariablesByName : function(name){
+                var deferred = $q.defer();
+
+                // refresh always
+                QuantiModo.getVariable(name, function(variable){
+                    deferred.resolve(variable);
+                }, function(){
+                    deferred.reject(false);
+                });
+
+                return deferred.promise;
+            },            
+
 			// get variables locally
 			getVariables : function(){
 				var deferred = $q.defer();
@@ -710,6 +734,18 @@ angular.module('starter')
                     deferred.resolve(vars);
                 }, function(){
                     deferred.reject(false);
+                });
+
+                return deferred.promise;
+            },
+
+            getHistoryMeasurements : function(params){
+                var deferred = $q.defer();
+
+                QuantiModo.getV1Measurements(params, function(response){
+                    deferred.resolve(response);
+                }, function(error){
+                    deferred.reject(error)
                 });
 
                 return deferred.promise;

@@ -28,6 +28,7 @@ config.appSettings  = {
     storage_identifier: 'EnergyModoData*',
       
     primary_tracking_factor_details : {
+        id : 108092,
         name : "Overall Energy",
         category : "Energy",
         unit : "/5",
@@ -69,7 +70,7 @@ config.appSettings  = {
     tracking_question:"How is your energy level right now?",
     factor_average_text:"Your average energy level is ",
     notification_image : "file://img/logo.png",
-    notification_text : "Rate your Energy",
+    notification_text : "Time to Track",
     conversion_dataset: {
         "1": "1",
         "2": "2",

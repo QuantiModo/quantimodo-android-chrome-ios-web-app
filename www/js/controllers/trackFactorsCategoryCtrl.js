@@ -8,18 +8,6 @@ angular.module('starter')
 
         $scope.controller_name = "TrackFactorsCategoryCtrl";
 
-       /* // if logged in
-        if(!$scope.isLoggedIn){
-
-            utilsService.showLoginRequiredAlert();
-
-            //$state.go('app.welcome');
-            // app wide signal to sibling controllers that the state has changed
-            $rootScope.$broadcast('transition');
-        }*/
-
-        //Defults for a selected categories
-
         var categoryConfig = {
             Foods:{
                 default_unit:"serving",
@@ -40,40 +28,53 @@ angular.module('starter')
                 default_unit: "count",
                 help_text:"What do you want to track?",
                 display_name: "Treatments"
+            },
+            "Physical Activity": {
+                default_unit: "count",
+                help_text:"What do you want to track?",
+                display_name: "Physical Activity"    
             }
-
         };
 
         var category = $stateParams.category;
 
         // flags
-        $scope.showTrack = true;
-        $scope.showAddVariable = false;
-        $scope.showAddMeasurement = false;
-        $scope.showCategoryAsSelector = false;
-        $scope.category  = category;
-        $scope.show_units= false;
+        $scope.flags = {
+            showTrack: true,
+            showAddVariable: false,
+            showAddMeasurement: false,
+            showCategoryAsSelector: false,
+            category: category,
+            show_units: false
+        };
+
 
         // lists
-        $scope.list = [];
-        $scope.userVariables = [];
-        $scope.searchVariables = [];
-        $scope.categories = [];
+        $scope.lists = {
+            list : [],
+            userVariables : [],
+            searchVariables : [],
+            categories : []
+        };
 
-        // category object
-        $scope.categoryValues = {};
+        $scope.state = {
+            // category object,
+            categoryValues : {}, 
 
-        // variables
-        $scope.variable_category = "";
-        $scope.variable_name = "";
-        $scope.factor = category;
-        $scope.help_text = categoryConfig[category].help_text;
-        $scope.display_name = categoryConfig[category].display_name;
-        $scope.unit_text = '';
+            // variables
+            variable_category : "",
+            variable_name : "",
+            factor : category,
+            help_text: categoryConfig[category].help_text,
+            display_name : categoryConfig[category].display_name,
+            unit_text : '',
+            
+            // default operation
+            sumAvg : "avg",
+            variable_value : "",
 
-        // default operation
-        $scope.sumAvg = "avg";
-        $scope.variable_value = "";
+            searchedUnits : []
+        };
 
         // alert box
         $scope.showAlert = function(title, template) {
@@ -90,7 +91,7 @@ angular.module('starter')
             console.log(unit);
 
             // filter the unit object from all units
-            var unit_obj = $scope.units.filter(function(x){return x.abbreviatedName === unit})[0];
+            var unit_obj = $scope.state.units.filter(function(x){return x.abbreviatedName === unit})[0];
             console.log("unit_obj", unit_obj);
 
             // hackish timeout for view to update itself
@@ -109,7 +110,7 @@ angular.module('starter')
                     console.log("unit_obj.abbreviatedName == ",unit_obj.abbreviatedName);
 
                     // update viewmodel
-                    $scope.selected_sub = unit_obj.abbreviatedName;
+                    $scope.state.selected_sub = unit_obj.abbreviatedName;
 
                     // redraw view
                     $scope.$apply();
@@ -124,15 +125,15 @@ angular.module('starter')
             $scope.item = item;
 
             // set values in form
-            $scope.sumAvg = item.combinationOperation == "MEAN"? "avg" : "sum";
-            $scope.variable_category = item.category;
-            $scope.variable_name = item.name;
+            $scope.state.sumAvg = item.combinationOperation == "MEAN"? "avg" : "sum";
+            $scope.state.variable_category = item.category;
+            $scope.state.variable_name = item.name;
             set_unit(item.abbreviatedUnitName);
 
             // set flags
-            $scope.showTrack = false;
-            $scope.showAddVariable = false;
-            $scope.showAddMeasurement = true;
+            $scope.flags.showTrack = false;
+            $scope.flags.showAddVariable = false;
+            $scope.flags.showAddMeasurement = true;
 
             // update time in the datepicker
             $scope.slots = {epochTime: new Date().getTime()/1000, format: 24, step: 1};
@@ -145,22 +146,22 @@ angular.module('starter')
             console.log("add variable");
 
             // set flags
-            $scope.showTrack = false;
-            $scope.showAddVariable = true;
-            $scope.showAddMeasurement = true;
+            $scope.flags.showTrack = false;
+            $scope.flags.showAddVariable = true;
+            $scope.flags.showAddMeasurement = true;
 
             // set default
-            $scope.variable_name = "";
-            $scope.variable_value = "";
+            $scope.state.variable_name = "";
+            $scope.state.variable_value = "";
         };
 
         // cancel activity
         $scope.cancel = function(){
 
             // show list again
-            $scope.showAddVariable = false;
-            $scope.showAddMeasurement = false;
-            $scope.showTrack = true;
+            $scope.flags.showAddVariable = false;
+            $scope.flags.showAddMeasurement = false;
+            $scope.flags.showTrack = true;
         };
 
         $scope.onMeasurementStart = function(){
@@ -169,12 +170,12 @@ angular.module('starter')
                 
                 var current = '';
                 var matched = allTrackingData.filter(function(x){
-                    return x.unit === $scope.selected_sub;
+                    return x.unit === $scope.state.selected_sub;
                 });
                 
                 setTimeout(function(){
                     var value = matched[matched.length-1]? matched[matched.length-1].value : $scope.item.mostCommonValue;
-                    if(value) $scope.variable_value = value;
+                    if(value) $scope.state.variable_value = value;
                     // redraw view
                     $scope.$apply();
                 }, 500);
@@ -186,18 +187,18 @@ angular.module('starter')
 
             // populate params
             var params = {
-                variable : $scope.variable_name || jQuery('#variable_name').val(),
-                value : $scope.variable_value || jQuery('#variable_value').val(),
+                variable : $scope.state.variable_name || jQuery('#variable_name').val(),
+                value : $scope.state.variable_value || jQuery('#variable_value').val(),
                 epoch : $scope.slots.epochTime * 1000,
-                unit : $scope.selected_sub,
-                category : $scope.variable_category,
-                isAvg : $scope.sumAvg === "avg"? true : false
+                unit : $scope.flags.showAddVariable? (typeof $scope.unit_text === "undefined" || $scope.unit_text === "" )? $scope.state.selected_sub : $scope.unit_text : $scope.state.selected_sub,
+                category : $scope.state.variable_category,
+                isAvg : $scope.state.sumAvg === "avg"? true : false
             };
 
             console.log(params);
 
             // check if it is a new variable
-            if($scope.showAddVariable){
+            if($scope.flags.showAddVariable){
 
                 // validation
                 if(params.variable_name === ""){
@@ -205,17 +206,20 @@ angular.module('starter')
                 } else {
 
                     // add variable
-                    measurementService.post_tracking_measurement(params.epoch, params.variable, params.value, params.unit, params.isAvg, params.category);
+                    measurementService.post_tracking_measurement(params.epoch, params.variable, params.value, params.unit, params.isAvg, params.category, true)
+                    .then(function(){
+                        $scope.showAlert('Added Variable');
 
-                    $scope.showAlert('Added Variable');
+                        // set flags
+                        $scope.flags.showAddVariable = false;
+                        $scope.flags.showAddMeasurement = false;
+                        $scope.flags.showTrack = true;
 
-                    // set flags
-                    $scope.showAddVariable = false;
-                    $scope.showAddMeasurement = false;
-                    $scope.showTrack = true;
-
-                    // refresh the last updated at from api
-                    setTimeout($scope.init, 200);
+                        // refresh the last updated at from api
+                        setTimeout($scope.init, 200);
+                    }, function(err){
+                        $scope.showAlert(err);
+                    });
                 }
 
             } else {
@@ -232,9 +236,9 @@ angular.module('starter')
                     $scope.showAlert('Measurement Added');
 
                     // set flags
-                    $scope.showAddVariable = false;
-                    $scope.showAddMeasurement = false;
-                    $scope.showTrack = true;
+                    $scope.flags.showAddVariable = false;
+                    $scope.flags.showAddMeasurement = false;
+                    $scope.flags.showTrack = true;
 
                     // refresh data
                     setTimeout($scope.init, 200);
@@ -249,10 +253,26 @@ angular.module('starter')
 
             // update the sub unit
             setTimeout(function(){
-                console.log('changed to ', $scope.categoryValues[$scope.selected_unit_category][0].abbreviatedName);
-                $scope.selected_sub = $scope.categoryValues[$scope.selected_unit_category][0].abbreviatedName;
+                console.log('changed to ', $scope.state.categoryValues[$scope.selected_unit_category][0].abbreviatedName);
+                $scope.state.selected_sub = $scope.state.categoryValues[$scope.selected_unit_category][0].abbreviatedName;
                 $scope.$apply();
             }, 100);
+        };
+
+        $scope.unit_search = function(){
+            var query = $scope.state.unit_text;
+            if(query !== ""){
+                $scope.flags.show_units = true;
+                var matches = $scope.state.units.filter(function(unit) {
+                    return unit.abbreviatedName.toLowerCase().indexOf(query.toLowerCase()) !== -1;
+                });
+
+                $timeout(function() {
+                    $scope.state.searchedUnits = matches;
+                }, 100);
+
+
+            } else $scope.flags.show_units = false;
         };
 
         // when a unit is selected
@@ -260,35 +280,33 @@ angular.module('starter')
             console.log("selecting_unit",unit);
 
             // update viewmodel
-            $scope.unit_text = unit.name;
-            $scope.show_units = false;
-            $scope.selected_sub = unit.abbreviatedName;
-
-
+            $scope.state.unit_text = unit.abbreviatedName;
+            $scope.flags.show_units = false;
+            $scope.state.selected_sub = unit.abbreviatedName;
         };
 
         // constructor
         $scope.init = function(){
 
             // $ionicLoading.hide();
-            $scope.loading = true;
-            $scope.userVariables = [];
-            $scope.searchVariables = [];
+            $scope.state.loading = true;
+            $scope.lists.userVariables = [];
+            $scope.lists.searchVariables = [];
 
             // data default
-            $scope.categories = [];
-            $scope.categoryValues = {};
+            $scope.lists.categories = [];
+            $scope.state.categoryValues = {};
 
             // variable
-            $scope.variable_category = "";
-            $scope.variable_name = "";
+            $scope.state.variable_category = "";
+            $scope.state.variable_name = "";
 
             // defaults
-            $scope.sumAvg = "avg";
-            $scope.variable_value = "";
-            $scope.variable_value = "";
-            $scope.unit_text = "";
-            $scope.selected_sub = "";
+            $scope.state.sumAvg = "avg";
+            $scope.state.variable_value = "";
+            $scope.state.variable_value = "";
+            $scope.state.unit_text = "";
+            $scope.state.selected_sub = "";
 
             // show spinner
             $ionicLoading.show({
@@ -305,12 +323,12 @@ angular.module('starter')
                     console.log("got variables", variables);
 
                     // update flags
-                    $scope.loading = false;
-                    $scope.userVariables = variables;
-                    $scope.list = [];
+                    $scope.state.loading = false;
+                    $scope.lists.userVariables = variables;
+                    $scope.lists.list = [];
 
                     // populate list
-                    $scope.list = $scope.list.concat(variables);
+                    $scope.lists.list = $scope.lists.list.concat(variables);
 
                     // show list
                     $ionicLoading.hide();
@@ -320,12 +338,12 @@ angular.module('starter')
                 measurementService.getVariableCategories().then(function(variableCategories){
 
                     // update viewmodel
-                    $scope.variableCategories = variableCategories;
+                    $scope.state.variableCategories = variableCategories;
                     console.log("got variable categories", variableCategories);
 
                     // hackish way to update category
                     setTimeout(function(){
-                        $scope.variable_category = category;
+                        $scope.state.variable_category = category;
 
                         // redraw everythign
                         $scope.$apply();
@@ -339,15 +357,15 @@ angular.module('starter')
                 // get units
                 measurementService.getUnits().then(function(units){
 
-                    $scope.units = units;
+                    $scope.state.units = units;
 
                     // populate categoryValues
                     for(var i in units){
-                        if($scope.categories.indexOf(units[i].category) === -1){
-                            $scope.categories.push(units[i].category);
-                            $scope.categoryValues[units[i].category] = [{name : units[i].name, abbreviatedName: units[i].abbreviatedName}];
+                        if($scope.lists.categories.indexOf(units[i].category) === -1){
+                            $scope.lists.categories.push(units[i].category);
+                            $scope.state.categoryValues[units[i].category] = [{name : units[i].name, abbreviatedName: units[i].abbreviatedName}];
                         } else {
-                            $scope.categoryValues[units[i].category].push({name: units[i].name, abbreviatedName: units[i].abbreviatedName});
+                            $scope.state.categoryValues[units[i].category].push({name: units[i].name, abbreviatedName: units[i].abbreviatedName});
                         }
                     }
 
@@ -355,7 +373,7 @@ angular.module('starter')
                     $scope.selected_unit_category = 'Duration';
 
                     // set first sub unit of selected category
-                    $scope.selected_sub = $scope.categoryValues[$scope.selected_unit_category][0].abbreviatedName;
+                    $scope.state.selected_sub = $scope.state.categoryValues[$scope.selected_unit_category][0].abbreviatedName;
 
                     console.log("got units", units);
 
@@ -389,7 +407,11 @@ angular.module('starter')
         };
 
         // time picker defaults
-        $scope.slots = {epochTime: new Date().getTime()/1000, format: 24, step: 1};
+        $scope.slots = {
+            epochTime: new Date().getTime()/1000, 
+            format: 24, 
+            step: 1
+        };
 
         // when time is changed
         $scope.timePickerCallback = function (val) {
@@ -407,7 +429,7 @@ angular.module('starter')
         $scope.search = function(query){
             console.log(query);
 
-            $scope.loading = true
+            $scope.state.loading = true
 
             if(query == ''){
                 // if search is cleared
@@ -415,32 +437,24 @@ angular.module('starter')
                 console.log('yay');
 
                 // repopulate to last reported variables
-                $scope.list = $scope.userVariables;
+                $scope.lists.list = $scope.lists.userVariables;
 
                 // update view
-                $scope.loading = false;
+                $scope.state.loading = false;
                 $scope.$apply();
+
             } else {
 
                 // search server for the query
                 measurementService.getPublicVariablesByCategory(query,category).then(function(variables){
 
                     // populate list with results
-                    $scope.searchVariables = variables;
-                    $scope.list = $scope.searchVariables;
-                    $scope.loading = false;
+                    $scope.lists.searchVariables = variables;
+                    $scope.list = $scope.lists.searchVariables;
+                    $scope.state.loading = false;
                 });
             }
         };
-
-        // delay function for searching variables to minimize requests on the server
-        var delay = (function(){
-            var timer = 0;
-            return function(callback, ms){
-                clearTimeout (timer);
-                timer = setTimeout(callback, ms);
-            };
-        })();
 
         $scope.select_tracking_factor = function($event, val){
             // remove any previous tracking factors if present
@@ -452,29 +466,15 @@ angular.module('starter')
             jQuery($event.target).parent().removeClass('tracking_factor_history').addClass('tracking_factor_history');
 
             // update view
-            $scope.variable_value = val;
+            $scope.state.variable_value = val;
         };
 
         $scope.toggleShowUnits = function(){
-            $scope.show_units=!$scope.show_units;
+            $scope.flags.show_units=!$scope.flags.show_units;
         };
 
         $scope.showUnitsDropDown = function(){
             $scope.showUnitsDropDown = true;
         }
 
-        // when query is being written
-        /*$('#track_search').keyup(function() {
-
-            console.log('binding key up event')
-
-            $scope.loading = true;
-
-            // delay it by 500 mseconds before requesting a search
-            delay(function(){
-                $scope.search(jQuery('#track_search').val());
-            }, 500 );
-        });*/
-
-        // $scope.init();
     });

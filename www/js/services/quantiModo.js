@@ -118,6 +118,14 @@ angular.module('starter')
                 return defer.promise;
             }
 
+            QuantiModo.getV1Measurements = function(params, successHandler, errorHandler){
+                QuantiModo.get('api/v1/measurements',
+                    ['source', 'limit', 'offset', 'sort'],
+                    params,
+                    successHandler,
+                    errorHandler);
+            };
+
             // post measurements old method
             QuantiModo.postMeasurements= function(measurements, successHandler ,errorHandler) { 
                 QuantiModo.post('api/measurements',
@@ -188,25 +196,33 @@ angular.module('starter')
 
             // get public variables
             QuantiModo.getPublicVariables = function(query, successHandler, errorHandler){
-                QuantiModo.get('api/variables/search/'+query,
-                    ['limit'],
-                    {'limit' : '5'},
+                QuantiModo.get('api/v1/variables/search/'+query,
+                    ['limit','includePublic'],
+                    {'limit' : 5, 'includePublic' : true},
                     successHandler,
                     errorHandler);
             };
 
             // get public variables
             QuantiModo.getPublicVariablesByCategory = function(query,cateogry, successHandler, errorHandler){
-                QuantiModo.get('api/variables/search/'+query,
-                    ['limit','categoryName'],
-                    {'limit' : '5',categoryName:cateogry},
+                QuantiModo.get('api/v1/variables/search/'+query,
+                    ['limit','categoryName','includePublic'],
+                    {'limit' : 5, 'categoryName': cateogry, 'includePublic': true},
                     successHandler,
                     errorHandler);
             };
 
             // get user variables
             QuantiModo.getVariables = function(successHandler, errorHandler){
-                QuantiModo.get('api/variables',
+                QuantiModo.get('api/v1/variables',
+                    ['limit'],
+                    { limit:5 },
+                    successHandler,
+                    errorHandler);
+            };
+
+            QuantiModo.getVariable = function(variable, successHandler, errorHandler){
+                QuantiModo.get('api/v1/variables/' + encodeURIComponent(variable),
                     [],
                     {},
                     successHandler,
@@ -215,9 +231,9 @@ angular.module('starter')
 
             // get user variables
             QuantiModo.getVariablesByCategory = function(category,successHandler, errorHandler){
-                QuantiModo.get('api/variables',
-                    ['category'],
-                    {category:category},
+                QuantiModo.get('api/v1/variables',
+                    ['category', 'limit'],
+                    {category:category, limit:5},
                     successHandler,
                     errorHandler);
             };
@@ -241,10 +257,85 @@ angular.module('starter')
             };
 
             // get user data
-            QuantiModo.getUser = function(successHandler,errorHandler){
+            QuantiModo.getUser = function(successHandler, errorHandler){
                 QuantiModo.get('/api/user/me',
                     [],
                     {},
+                    successHandler,
+                    errorHandler);
+            };
+
+            // get reminders
+            QuantiModo.getTrackingReminders = function(successHandler, errorHandler){
+                QuantiModo.get('/api/v1/trackingReminders',
+                    [],
+                    {},
+                    successHandler,
+                    errorHandler);
+            };
+
+            // get pending reminders 
+            QuantiModo.getTrackingReminderNotifications = function(successHandler, errorHandler){
+                QuantiModo.get('/api/v1/trackingReminderNotifications',
+                    [],
+                    {},
+                    successHandler,
+                    errorHandler);
+            };
+
+            // post tracking reminder
+            QuantiModo.postTrackingReminder = function(reminder, successHandler, errorHandler) { 
+                console.log(reminder);
+                QuantiModo.post('api/v1/trackingReminders',
+                    [
+                        'variableId', 
+                        'defaultValue',
+                        'reminderFrequency',
+                        'variableName',
+                        'variableCategoryName',
+                        'abbreviatedUnitName',
+                        'combinationOperation',
+                        'firstDailyReminderTime',
+                        'secondDailyReminderTime',
+                        'thirdDailyReminderTime'
+                    ],
+                    reminder,
+                    successHandler,
+                    errorHandler);
+            };
+
+            // delete tracking reminder
+            QuantiModo.deleteTrackingReminder = function(reminder, successHandler, errorHandler){
+                QuantiModo.post('/api/v1/trackingReminders/delete',
+                    ['id'],
+                    {id: reminder},
+                    successHandler,
+                    errorHandler);
+            };
+
+            // snooze tracking reminder
+            QuantiModo.snoozeTrackingReminder = function(reminder, successHandler, errorHandler){
+                QuantiModo.post('/api/v1/trackingReminderNotifications/snooze',
+                    ['id'],
+                    {id: reminder},
+                    successHandler,
+                    errorHandler);
+            };
+
+            // skip tracking reminder
+            QuantiModo.skipTrackingReminder = function(reminder, successHandler, errorHandler){
+                QuantiModo.post('/api/v1/trackingReminderNotifications/skip',
+                    ['id'],
+                    {id: reminder},
+                    successHandler,
+                    errorHandler);
+            };
+
+            // track tracking reminder with default value
+            QuantiModo.trackTrackingReminder = function(reminder, successHandler, errorHandler){
+                QuantiModo.post('/api/v1/trackingReminderNotifications/track',
+                    ['id'],
+                    {id: reminder},
                     successHandler,
                     errorHandler);
             };

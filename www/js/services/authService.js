@@ -1,160 +1,249 @@
 angular.module('starter')
-    
-	.factory('authService', function($http, $q,localStorageService) {
 
-		var authSrv =  {
+    .factory('authService', function ($http, $q, localStorageService, utilsService) {
 
-		   	// extract values from token response and saves in localstorage
-			updateAccessToken : function (accessResponse) {
-			   var accessToken = accessResponse.accessToken || accessResponse.access_token;
-			   var expiresIn = accessResponse.expiresIn || accessResponse.expires_in;
-			   var refreshToken = accessResponse.refreshToken || accessResponse.refresh_token;
+        var authSrv = {
 
-			   // save in localStorage
-			   localStorageService.setItem('accessToken',accessToken)
-               localStorageService.setItem('refreshToken',refreshToken)
-			   console.log("expires in: " , JSON.stringify(expiresIn), parseInt(expiresIn, 10));
-			   
-			   // calculate expires at
-			   var expiresAt = new Date().getTime() + parseInt(expiresIn, 10) * 1000 - 60000;
+            // extract values from token response and saves in localstorage
+            updateAccessToken: function (accessResponse) {
+                var accessToken = accessResponse.accessToken || accessResponse.access_token;
+                var expiresIn = accessResponse.expiresIn || accessResponse.expires_in;
+                var refreshToken = accessResponse.refreshToken || accessResponse.refresh_token;
 
-			   // save in localStorage
-			   localStorageService.setItem('expiresAt',expiresAt);
+                // save in localStorage
+                localStorageService.setItem('accessToken', accessToken)
+                localStorageService.setItem('refreshToken', refreshToken)
+                console.log("expires in: ", JSON.stringify(expiresIn), parseInt(expiresIn, 10));
 
-			   return accessToken;
+                // calculate expires at
+                var expiresAt = new Date().getTime() + parseInt(expiresIn, 10) * 1000 - 60000;
 
-			},
+                // save in localStorage
+                localStorageService.setItem('expiresAt', expiresAt);
 
-			// retrieves access token.
-			// if expired, renews it 
-			// if not logged in, returns rejects
-			getAccessToken : function () {
-			   var deferred = $q.defer();
-			   var now = new Date().getTime();
+                return accessToken;
 
-                localStorageService.getItem('expiresAt',function(expiresAt){
-                    localStorageService.getItem('refreshToken',function(refreshToken){
+            },
 
-                        // get expired time
-                        if (now < expiresAt) {
+            // retrieves access token.
+            // if expired, renews it
+            // if not logged in, returns rejects
+            getAccessToken: function () {
 
-                            console.log('valid token');
+                var deferred = $q.defer();
 
-                            // valid token
+                if (window.location.search) {
+                    var tokenInGetParams =
+                        authSrv.utilsService.getUrlParameter(window.location.search, 'accessToken');
+                }
 
-                            localStorageService.getItem('accessToken',function(accessToken){
-                                deferred.resolve({
-                                    accessToken: accessToken
-                                });
-                            });
+                //check if token in get params
+                if (tokenInGetParams) {
+                    //resolving promise using token fetched from get params
+                    console.log('resolving token using token fetched from get', tokenInGetParams);
+                    deferred.resolve({
+                        accessToken: tokenInGetParams
+                    });
+                } else {
 
-                        } else if (refreshToken) {
+                    //check if previously we already tried to get token from user credentials
+                    //this is possible if user logged in with cookie
+                    console.log('previously tried to fetch credentials:', authSrv.triedToFetchCredentials);
+                    if (authSrv.triedToFetchCredentials) {
 
-                            var url = config.getURL("api/oauth2/token")
-                            console.log('expired token, refreshing!');
+                        console.log('previous credentials fetch result:', authSrv.succesfullyFetchedCredentials);
+                        if (authSrv.succesfullyFetchedCredentials) {
 
-                            //expire token, refresh
-                            $http.post(url, {
-                                client_id : config.getClientId(),
-                                client_secret : config.getClientSecret(),
-                                refresh_token: refreshToken,
-                                grant_type: 'refresh_token'
-                            }).success(function(data) {
-                                // update local storage
-                                if (data.error) {
-                                	deferred.reject('refresh failed');
-                                } else {
-                                	var accessTokenRefreshed = authSrv.updateAccessToken(data);
+                            console.log('resolving token using value from local storage');
 
-                                	// respond
-                                	deferred.resolve({
-                                	    accessToken : accessTokenRefreshed
-                                	});
-                                }
-
-                            }).error(function(response) {
-                                console.log("refresh failed");
-                                // error refreshing
-                                deferred.reject(response);
+                            deferred.resolve({
+                                accessToken: localStorageService.getItemSync('accessToken')
                             });
 
                         } else {
-                            // nothing in cache
-                            console.log('nothing in cache');
-                            deferred.reject();
+
+                            console.log('starting oauth token fetching flow');
+
+                            authSrv._defaultGetAccessToken(deferred);
+
                         }
 
-                    });
+                    } else {
+                        console.log('trying to fetch user credentials');
+                        //try to fetch credentials with call to /api/user
+                        $http.get(config.getURL("api/user")).then(
+                            function (userCredentialsResp) {
+                                //if direct API call was successful
+                                console.log('User credentials fetched:', userCredentialsResp);
+                                //get token value from response
+                                var token = userCredentialsResp.data.token.split("|")[2];
+                                //update localy stored token
+                                localStorageService.setItem('accessToken', token);
+
+                                //set flags
+                                authSrv.triedToFetchCredentials = true;
+                                authSrv.succesfullyFetchedCredentials = true;
+
+                                //resolve promise
+                                deferred.resolve({
+                                    accessToken: token
+                                });
+
+                            },
+                            function (errorResp) {
+                                //if no luck with getting credentials
+                                console.log('failed to fetch user credentials', errorResp);
+
+                                //set flags
+                                authSrv.triedToFetchCredentials = true;
+                                authSrv.succesfullyFetchedCredentials = false;
+
+                                console.log('starting oauth token fetching flow');
+
+                                authSrv._defaultGetAccessToken(deferred);
+
+                            })
+
+                    }
+
+                }
+                return deferred.promise;
+            },
+
+            // get access token from request token
+            getAccessTokenFromRequestToken: function (requestToken, withJWT) {
+                console.log("request token : ", requestToken);
+
+                var deferred = $q.defer();
+
+                var url = config.getURL("api/oauth2/token");
+
+                console.log('expired token, refreshing!');
+
+                // make request
+                var request = {
+                    method: 'POST',
+                    url: url,
+                    responseType: 'json',
+                    headers: {
+                        'Content-Type': "application/json"
+                    },
+                    data: {
+                        client_id: config.getClientId(),
+                        client_secret: config.getClientSecret(),
+                        grant_type: 'authorization_code',
+                        code: requestToken,
+                        redirect_uri: 'https://app.quantimo.do/ionic/Modo/www/callback'
+                    }
+                };
+
+                console.log('request is ', request);
+
+                // post
+                $http(request).success(function (response) {
+                    deferred.resolve(response);
+                }).error(function (response) {
+                    deferred.reject(response);
                 });
 
-			   return deferred.promise;
-			},
+                return deferred.promise;
+            },
 
-			// get access token from request token
-			getAccessTokenFromRequestToken : function (requestToken, withJWT) {
-				console.log("request token : ",requestToken);
+            getJWTToken: function (provider, accessToken) {
+                var deferred = $q.defer();
 
-				var deferred = $q.defer();
+                var url = config.getURL('api/v2/auth/social/authorizeToken');
 
-				var url = config.getURL("api/oauth2/token");			
-				
-				console.log('expired token, refreshing!');
+                url += "provider=" + provider;
+                url += "&accessToken=" + accessToken;
 
-				// make request
-				var request = {   
-				   method : 'POST', 
-				   url: url,
-				   responseType: 'json', 
-				   headers : {
-				       'Content-Type': "application/json"
-				   },
-				   data : {
-				       client_id : config.getClientId(),
-				       client_secret : config.getClientSecret(),
-				       grant_type : 'authorization_code',
-				       code : requestToken,
-				       redirect_uri : 'https://app.quantimo.do/ionic/Modo/www/callback'
-				   }
-				};
+                $http({
+                    method: 'GET',
+                    url: url,
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }).then(function (response) {
+                    if (response.data.success && response.data.data && response.data.data.token) {
+                        deferred.resolve(response.data.data.token);
+                    } else deferred.reject(response);
+                }, function (response) {
+                    deferred.reject(response);
+                });
 
-				console.log('request is ',request);
-				
-				// post
-				$http(request).success(function(response){
-				   deferred.resolve(response);
-				}).error(function(response){
-				   deferred.reject(response);
-				});
+                return deferred.promise;
+            },
 
-				return deferred.promise;
-			},
+            _defaultGetAccessToken: function (deferred) {
+
+                console.log('oauth token resolving flow');
+
+                var now = new Date().getTime();
+                var expiresAt = localStorageService.getItemSync('expiresAt');
+                var refreshToken = localStorageService.getItemSync('refreshToken');
+                var accessToken = localStorageService.getItemSync('accessToken');
+
+                console.log('Values from local storage:', {
+                    expiresAt: expiresAt,
+                    refreshToken: refreshToken,
+                    accessToken: accessToken
+                });
+
+                // get expired time
+                if (now < expiresAt) {
+
+                    console.log('Current token should not be expired');
+                    // valid token
+                    console.log('Resolving token using value from local storage');
+
+                    deferred.resolve({
+                        accessToken: accessToken
+                    });
+
+                } else if (refreshToken) {
+
+                    console.log('Refresh token will be used to fetch access token from server');
+
+                    var url = config.getURL("api/oauth2/token");
+
+                    //expire token, refresh
+                    $http.post(url, {
+                        client_id: config.getClientId(),
+                        client_secret: config.getClientSecret(),
+                        refresh_token: refreshToken,
+                        grant_type: 'refresh_token'
+                    }).success(function (data) {
+                        // update local storage
+                        if (data.error) {
+                            deferred.reject('refresh failed');
+                        } else {
+                            var accessTokenRefreshed = authSrv.updateAccessToken(data);
+
+                            console.log('access token successfully updated from api server', data);
+                            console.log('resolving toke using response value');
+                            // respond
+                            deferred.resolve({
+                                accessToken: accessTokenRefreshed
+                            });
+                        }
+
+                    }).error(function (response) {
+                        console.log("failed to refresh token from api server", response);
+                        // error refreshing
+                        deferred.reject(response);
+                    });
+
+                } else {
+                    // nothing in cache
+                    console.warn('not enough data for oauth flow. rejecting token promise');
+                    deferred.reject();
+                }
 
 
-			getJWTToken : function(provider, accessToken){
-				var deferred = $q.defer();
-				
-				var url = config.getURL('api/v2/auth/social/authorizeToken');
+            },
 
-				url += "provider="+provider;
-				url += "&accessToken="+accessToken;
+            utilsService: utilsService
+        };
 
-				$http({
-				  method: 'GET',
-				  url: url,
-				  headers : {
-				  	'Content-Type' : 'application/json'
-				  }
-				}).then(function(response){
-					if(response.data.success && response.data.data && response.data.data.token) {
-						deferred.resolve(response.data.data.token);
-					} else deferred.reject(response);
-				}, function(response){
-				   deferred.reject(response);
-				});
-
-				return deferred.promise;	
-			}
-		};
-
-		return authSrv;
-	});
+        return authSrv;
+    });

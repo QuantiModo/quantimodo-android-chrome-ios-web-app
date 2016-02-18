@@ -29,6 +29,7 @@ config.appSettings  = {
     storage_identifier: 'MindFirstData*',
       
     primary_tracking_factor_details : {
+        id : 1398,
         name : "Overall Mood",
         category : "Mood",
         unit : "/5",
@@ -70,7 +71,7 @@ config.appSettings  = {
     tracking_question:"How are you feeling right now?",
     factor_average_text:"Your average mood is ",
     notification_image : "file://img/logo.png",
-    notification_text : "Rate your Mood",
+    notification_text : "Time to Track",
     conversion_dataset: {
         "1": "depressed",
         "2": "sad",
