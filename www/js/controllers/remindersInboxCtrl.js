@@ -342,6 +342,7 @@ angular.module('starter')
 	    };
 
 	    $scope.edit = function(reminder){
+	    	reminder["fromState"] = $state.current.name;
 	    	$state.go('app.reminders', {reminder : reminder})
 	    };
 
