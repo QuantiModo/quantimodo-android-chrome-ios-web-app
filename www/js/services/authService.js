@@ -32,13 +32,20 @@ angular.module('starter')
 
                 var deferred = $q.defer();
 
-                if (window.location.search) {
+                //if (window.location.search) {
                     var tokenInGetParams =
-                        authSrv.utilsService.getUrlParameter(window.location.search, 'accessToken');
+                        //authSrv.utilsService.getUrlParameter(window.location.search, 'accessToken');
+                        authSrv.utilsService.getUrlParameter(location.href, 'accessToken');
+                //}
+                if(!tokenInGetParams){
+                    tokenInGetParams =
+                        authSrv.utilsService.getUrlParameter(location.href, 'access_token');
                 }
 
                 //check if token in get params
                 if (tokenInGetParams) {
+
+                    localStorageService.setItem('accessToken', tokenInGetParams)
                     //resolving promise using token fetched from get params
                     console.log('resolving token using token fetched from get', tokenInGetParams);
                     deferred.resolve({
@@ -77,7 +84,7 @@ angular.module('starter')
                                 console.log('User credentials fetched:', userCredentialsResp);
                                 //get token value from response
                                 var token = userCredentialsResp.data.token.split("|")[2];
-                                //update localy stored token
+                                //update locally stored token
                                 localStorageService.setItem('accessToken', token);
 
                                 //set flags

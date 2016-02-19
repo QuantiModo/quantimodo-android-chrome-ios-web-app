@@ -524,6 +524,20 @@ angular.module('starter')
             $scope.isLoggedIn = true;
 
             localStorageService.getItem('user',function(user){
+                if(!user){
+                    console.log("Don't have a user.");
+                    QuantiModo.getUser(function(user){
+
+                        // set user data in local storage
+                        localStorageService.setItem('user', JSON.stringify(user));
+
+                        $scope.user_name = user.displayName;
+                    },function(err){
+
+                        // error
+                        console.log(err);
+                    });
+                }
                 if(user){
                     user = JSON.parse(user);
                     console.log('user:' + user);
