@@ -34,6 +34,7 @@ angular.module('starter')
 
                 //if (window.location.search) {
                     var tokenInGetParams =
+                        //authSrv.utilsService.getUrlParameter(window.location.search, 'accessToken');
                         authSrv.utilsService.getUrlParameter(location.href, 'accessToken');
                 //}
                 if(!tokenInGetParams){
