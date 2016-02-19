@@ -37,6 +37,8 @@ angular.module('starter')
                         }
                     };
 
+                    console.log("Making request with this token " + token.accessToken);
+
                     $http(request).success(successHandler).error(function(data,status,headers,config){
                         var error = "Error";
                         if (data && data.error && data.error.message) error = data.error.message; 
@@ -52,7 +54,7 @@ angular.module('starter')
             QuantiModo.post = function(baseURL, requiredFields, items, successHandler, errorHandler){
                 authService.getAccessToken().then(function(token){
                     
-                    console.log("TOKKEN : ", token.accessToken);
+                    console.log("Token : ", token.accessToken);
                     // configure params
                     for (var i = 0; i < items.length; i++) 
                     {
