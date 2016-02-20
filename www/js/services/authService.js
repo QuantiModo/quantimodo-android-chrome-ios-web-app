@@ -103,7 +103,9 @@ angular.module('starter')
 
                                 console.log("Platform is " + ionic.Platform.platforms[0] + " and client id is " + config.getClientId());
 
-                                if(ionic.Platform.platforms[0] === "browser" && config.getClientId() == 'oAuthDisabled'){
+                                //Using OAuth on Staging for tests
+                                if(ionic.Platform.platforms[0] === "browser" && config.getClientId() == 'oAuthDisabled'
+                                    && !(window.location.origin.indexOf('staging.quantimo.do') > -1)){
                                     console.log("Browser Detected and client id is oAuthDisabled.  ");
                                     var loginUrl = config.getURL("api/v2/auth/login");
                                     console.log("Client id is oAuthDisabled - will redirect to regular login.");
