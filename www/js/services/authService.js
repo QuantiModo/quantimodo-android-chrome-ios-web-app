@@ -101,7 +101,6 @@ angular.module('starter')
                                 //if no luck with getting credentials
                                 console.log('failed to fetch user credentials', errorResp);
 
-                                console.log("Platform is " + ionic.Platform.platforms[0] + " and client id is " + config.getClientId());
 
                                 //Using OAuth on Staging for tests
                                 //if(ionic.Platform.platforms[0] === "browser" && config.getClientId() == 'oAuthDisabled'
