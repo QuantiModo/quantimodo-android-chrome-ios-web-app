@@ -610,12 +610,18 @@ angular.module('starter')
     // call constructor
     $scope.init();
 
+    var tokenInGetParams = utilsService.getUrlParameter(location.href, 'accessToken');
+
+    if(!tokenInGetParams){
+        tokenInGetParams = utilsService.getUrlParameter(location.href, 'access_token');
+    }
+
     // redirection if already welcomed before
     var isWelcomed;
     localStorageService.getItem('isWelcomed',function(val){
         isWelcomed = val;
         console.log('isWelcomed ' + isWelcomed);
-        if(isWelcomed  === true || isWelcomed === "true"){
+        if(isWelcomed  === true || isWelcomed === "true" || tokenInGetParams){
             $rootScope.isWelcomed = true;
             //$state.go('app.track');
         } else {
