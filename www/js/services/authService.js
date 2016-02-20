@@ -11,8 +11,8 @@ angular.module('starter')
                 var refreshToken = accessResponse.refreshToken || accessResponse.refresh_token;
 
                 // save in localStorage
-                localStorageService.setItem('accessToken', accessToken)
-                localStorageService.setItem('refreshToken', refreshToken)
+                localStorageService.setItem('accessToken', accessToken);
+                localStorageService.setItem('refreshToken', refreshToken);
                 console.log("expires in: ", JSON.stringify(expiresIn), parseInt(expiresIn, 10));
 
                 // calculate expires at
@@ -101,14 +101,25 @@ angular.module('starter')
                                 //if no luck with getting credentials
                                 console.log('failed to fetch user credentials', errorResp);
 
-                                //set flags
-                                authSrv.triedToFetchCredentials = true;
-                                authSrv.succesfullyFetchedCredentials = false;
+                                console.log("Platform is " + ionic.Platform.platforms[0] + " and client id is " + config.getClientId());
 
-                                console.log('starting oauth token fetching flow');
+                                if(ionic.Platform.platforms[0] === "browser" && config.getClientId() == 'oAuthDisabled'){
+                                    console.log("Browser Detected and client id is oAuthDisabled.  ");
+                                    var loginUrl = config.getURL("api/v2/auth/login");
+                                    console.log("Client id is oAuthDisabled - will redirect to regular login.");
+                                    loginUrl += "redirect_uri=" + encodeURIComponent(window.location.href);
+                                    console.debug('AUTH redirect URL created:', loginUrl);
+                                    console.debug('GOOD LUCK!');
+                                    window.location.replace(loginUrl);
+                                } else {
+                                    //set flags
+                                    authSrv.triedToFetchCredentials = true;
+                                    authSrv.succesfullyFetchedCredentials = false;
 
-                                authSrv._defaultGetAccessToken(deferred);
+                                    console.log('starting oauth token fetching flow');
 
+                                    authSrv._defaultGetAccessToken(deferred);
+                                }
                             })
 
                     }

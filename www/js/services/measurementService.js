@@ -679,7 +679,7 @@ angular.module('starter')
                 return deferred.promise;
             },
 
-			// refresh localstorage with updated varaiables from QuantiModo API
+			// refresh localstorage with updated variables from QuantiModo API
 			refreshVariables : function(){
 				var deferred = $q.defer();
 
