@@ -254,8 +254,9 @@ angular.module('starter')
 
                 } else {
                     // nothing in cache
-                    localStorageService.clear();
-                    console.warn('Refresh token is undefined. Not enough data for oauth flow. rejecting token promise. Clearing localStorage.');
+                    localStorage.removeItem('accessToken');
+                    console.warn('Refresh token is undefined. Not enough data for oauth flow. rejecting token promise. ' +
+                        'Clearing accessToken from local storage.');
                     deferred.reject();
 
                 }
