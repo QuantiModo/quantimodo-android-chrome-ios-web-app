@@ -101,17 +101,18 @@ angular.module('starter')
                                 //if no luck with getting credentials
                                 console.log('failed to fetch user credentials', errorResp);
 
-                                console.log("Platform is " + ionic.Platform.platforms[0] + " and client id is " + config.getClientId());
 
-                                if(ionic.Platform.platforms[0] === "browser" && config.getClientId() == 'oAuthDisabled'){
-                                    console.log("Browser Detected and client id is oAuthDisabled.  ");
-                                    var loginUrl = config.getURL("api/v2/auth/login");
-                                    console.log("Client id is oAuthDisabled - will redirect to regular login.");
-                                    loginUrl += "redirect_uri=" + encodeURIComponent(window.location.href);
-                                    console.debug('AUTH redirect URL created:', loginUrl);
-                                    console.debug('GOOD LUCK!');
-                                    window.location.replace(loginUrl);
-                                } else {
+                                //Using OAuth on Staging for tests
+                                //if(ionic.Platform.platforms[0] === "browser" && config.getClientId() == 'oAuthDisabled'
+                                //    && !(window.location.origin.indexOf('staging.quantimo.do') > -1)){
+                                //    console.log("Browser Detected and client id is oAuthDisabled.  ");
+                                //    var loginUrl = config.getURL("api/v2/auth/login");
+                                //    console.log("Client id is oAuthDisabled - will redirect to regular login.");
+                                //    loginUrl += "redirect_uri=" + encodeURIComponent(window.location.href);
+                                //    console.debug('AUTH redirect URL created:', loginUrl);
+                                //    console.debug('GOOD LUCK!');
+                                //    window.location.replace(loginUrl);
+                                //} else {
                                     //set flags
                                     authSrv.triedToFetchCredentials = true;
                                     authSrv.succesfullyFetchedCredentials = false;
@@ -119,7 +120,7 @@ angular.module('starter')
                                     console.log('starting oauth token fetching flow');
 
                                     authSrv._defaultGetAccessToken(deferred);
-                                }
+                                //}
                             })
 
                     }

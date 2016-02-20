@@ -15,7 +15,7 @@ angular.module('starter')
 	    	],
 	    	filteredReminders : [
 	    	],
-	    	measuementDate : new Date(),
+	    	measurementDate : new Date(),
 	    	slots : {
 				epochTime: new Date().getTime()/1000,
 				format: 24,
@@ -176,7 +176,7 @@ angular.module('starter')
 	    	if(typeof(val)==='undefined'){
 	    		console.log('Date not selected');
 	    	} else {
-	    		$scope.state.measuementDate = new Date(val);
+	    		$scope.state.measurementDate = new Date(val);
 	    	}
 	    };
 
@@ -217,7 +217,7 @@ angular.module('starter')
 	    	};
 	    	$scope.state.reminderDefaultValue = value;
 	    	$scope.state.slots.epochTime = moment(dateTime).unix();
-	    	$scope.state.measuementDate = moment(dateTime)._d;
+	    	$scope.state.measurementDate = moment(dateTime)._d;
 
 	    	getVariable(variableName);
 	    };
@@ -264,7 +264,7 @@ angular.module('starter')
 
 	    $scope.saveMeasurement = function(){
 
-	    	var dateFromDate = $scope.state.measuementDate;
+	    	var dateFromDate = $scope.state.measurementDate;
 	    	var timeFromDate = new Date($scope.state.slots.epochTime * 1000);
 
 	    	dateFromDate.setHours(timeFromDate.getHours());
@@ -338,7 +338,7 @@ angular.module('starter')
 	    	$scope.state.selectedReminder = reminder;
 	    	$scope.state.reminderDefaultValue = reminder.defaultValue;
 	    	$scope.state.slots.epochTime = moment.utc(reminder.trackingReminderNotificationTime).unix();
-	    	$scope.state.measuementDate = new Date(reminder.trackingReminderNotificationTime);
+	    	$scope.state.measurementDate = new Date(reminder.trackingReminderNotificationTime);
 	    };
 
 	    $scope.edit = function(reminder){
