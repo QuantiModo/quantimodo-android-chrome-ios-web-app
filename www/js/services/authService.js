@@ -219,7 +219,7 @@ angular.module('starter')
                         accessToken: accessToken
                     });
 
-                } else if (refreshToken) {
+                } else if (refreshToken != undefined) {
 
                     console.log('Refresh token will be used to fetch access token from server');
 
@@ -254,8 +254,11 @@ angular.module('starter')
 
                 } else {
                     // nothing in cache
-                    console.warn('not enough data for oauth flow. rejecting token promise');
+                    localStorage.removeItem('accessToken');
+                    console.warn('Refresh token is undefined. Not enough data for oauth flow. rejecting token promise. ' +
+                        'Clearing accessToken from local storage.');
                     deferred.reject();
+
                 }
 
 
