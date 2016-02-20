@@ -667,10 +667,10 @@ angular.module('starter')
 				return deferred.promise;
 			},
 
-            getPublicVariablesByCategory : function(str,cateogry){
+            getPublicVariablesByCategory : function(str,category){
                 var deferred = $q.defer();
 
-                QuantiModo.getPublicVariablesByCategory(str,cateogry, function(vars){
+                QuantiModo.getPublicVariablesByCategory(str,category, function(vars){
                     deferred.resolve(vars);
                 }, function(){
                     deferred.reject(false);
@@ -679,7 +679,7 @@ angular.module('starter')
                 return deferred.promise;
             },
 
-			// refresh localstorage with updated varaiables from QuantiModo API
+			// refresh localstorage with updated variables from QuantiModo API
 			refreshVariables : function(){
 				var deferred = $q.defer();
 
