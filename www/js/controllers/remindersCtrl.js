@@ -304,9 +304,10 @@ angular.module('starter')
 	    	.then(function(){
 
 	    		utils.stopLoading();
-
-	    		if($stateParams.reminder.fromState){
-	    			$state.go($stateParams.reminder.fromState);
+	    		if($stateParams.reminder !== null && typeof $stateParams.reminder !== "undefined"){
+	    			if($stateParams.reminder.fromState){
+	    				$state.go($stateParams.reminder.fromState);
+	    			} else $state.go('app.reminders_manage');
 	    		} else $state.go('app.reminders_manage');
 
 	    	}, function(err){
@@ -368,8 +369,10 @@ angular.module('starter')
 	    	.then(function(){
 
 	    		utils.stopLoading();
-	    		if($stateParams.reminder.fromState){
-	    			$state.go($stateParams.reminder.fromState);
+	    		if($stateParams.reminder !== null && typeof $stateParams.reminder !== "undefined"){
+	    			if($stateParams.reminder.fromState){
+	    				$state.go($stateParams.reminder.fromState);
+	    			} else $state.go('app.reminders_manage');
 	    		} else $state.go('app.reminders_manage');
 
 	    	}, function(err){
