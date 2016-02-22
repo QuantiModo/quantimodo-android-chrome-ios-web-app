@@ -830,6 +830,17 @@ gulp.task('addInheritedToOtherLinkerFlags', [ 'getIOSAppFolderName' ], function(
 	.pipe(gulp.dest('./platforms/ios/'+IOS_FOLDER_NAME+'.xcodeproj/'));
 });
 
+gulp.task('viewProjectPbxProj', ['getIOSAppFolderName'], function(){
+	return gulp.src('./platforms/ios/'+IOS_FOLDER_NAME+'.xcodeproj/project.pbxproj')
+	.pipe(change(function(content){
+		console.log("**********pbxproj start***************\n\n");
+		console.log(content);
+		console.log("\n\n**********pbxproj end***************")
+		return content;
+	}))
+	.pipe(gulp.dest('./platforms/ios/'+IOS_FOLDER_NAME+'.xcodeproj/'));
+});
+
 gulp.task('installPods', [ 'addPodfile' ] , function(){
 	var deferred = q.defer();
 
@@ -891,6 +902,7 @@ gulp.task('makeApp', function(callback){
 	'addInheritedToOtherLinkerFlags',
 	'addPodfile',
 	'installPods',
+	'viewProjectPbxProj',
 	callback);
 });
 
