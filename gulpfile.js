@@ -830,13 +830,10 @@ gulp.task('addInheritedToOtherLinkerFlags', [ 'getIOSAppFolderName' ], function(
 	.pipe(gulp.dest('./platforms/ios/'+IOS_FOLDER_NAME+'.xcodeproj/'));
 });
 
-gulp.task('viewProjectPbxProj', ['getIOSAppFolderName'], function(){
+gulp.task('addDeploymentTarget', ['getIOSAppFolderName'], function(){
 	return gulp.src('./platforms/ios/'+IOS_FOLDER_NAME+'.xcodeproj/project.pbxproj')
 	.pipe(change(function(content){
-		console.log("**********pbxproj start***************\n\n");
-		console.log(content);
-		console.log("\n\n**********pbxproj end***************")
-		return content;
+		return content.replace(/OTHER_LDFLAGS(\s+)?=(\s+)?(\s+)\(/g, "IPHONEOS_DEPLOYMENT_TARGET = 6.0;\nOTHER_LDFLAGS = (");
 	}))
 	.pipe(gulp.dest('./platforms/ios/'+IOS_FOLDER_NAME+'.xcodeproj/'));
 });
@@ -900,9 +897,9 @@ gulp.task('makeApp', function(callback){
 	'addBugsnagInObjC',
 	'enableBitCode',
 	'addInheritedToOtherLinkerFlags',
+	'addDeploymentTarget',
 	'addPodfile',
 	'installPods',
-	'viewProjectPbxProj',
 	callback);
 });
 
