@@ -36,7 +36,17 @@ angular.module('starter')
 	            $ionicLoading.hide();
 
 	            if(ionic.Platform.platforms[0] === "browser"){
-	            	window.qmSetupOnIonic();
+					console.log("Browser Detected");
+					
+					var url = config.getURL("api/v1/connect/mobile", true);
+					url += "access_token=" + token.accessToken;
+					ref = window.open(url,'_blank');
+
+					if(!ref){
+						alert("Please unblock popups and refresh to access the Import Data page.");
+					}
+					
+					$state.go('app.track');
 	            } else {	            	
 	            	var targetUrl = config.getURL("api/v1/connect/mobile", true);
 	            	targetUrl += "access_token="+token.accessToken;

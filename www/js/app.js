@@ -100,6 +100,15 @@ angular.module('starter', ['ionic','oc.lazyLoad','highcharts-ng','ngCordova','io
           }
         }
       })
+
+      .state('app.login', {
+        url: "/login",
+        views: {
+          'menuContent': {
+            templateUrl: "templates/login_page.html",
+          }
+        }
+      })
       .state('app.track', {
           url: "/track",
           views: {
@@ -134,6 +143,36 @@ angular.module('starter', ['ionic','oc.lazyLoad','highcharts-ng','ngCordova','io
               'menuContent': {
                   templateUrl: "templates/import.html",
                   controller: 'ImportCtrl'
+              }
+          }
+      })
+      .state('app.search-variables', {
+          url: "/search-variables",
+          cache:false,
+          views: {
+              'menuContent': {
+                  templateUrl: "templates/search-variables.html",
+                  controller: 'IframeScreenCtrl'
+              }
+          }
+      })
+      .state('app.search-common-relationships', {
+          url: "/search-common-relationships",
+          cache:false,
+          views: {
+              'menuContent': {
+                  templateUrl: "templates/search-common-relationships.html",
+                  controller: 'IframeScreenCtrl'
+              }
+          }
+      })
+      .state('app.search-user-relationships', {
+          url: "/search-user-relationships",
+          cache:false,
+          views: {
+              'menuContent': {
+                  templateUrl: "templates/search-user-relationships.html",
+                  controller: 'IframeScreenCtrl'
               }
           }
       })
@@ -211,6 +250,81 @@ angular.module('starter', ['ionic','oc.lazyLoad','highcharts-ng','ngCordova','io
               }
           }
       })
+      .state('app.historyAll', {
+          url: "/history-all",
+          views: {
+              'menuContent': {
+                  templateUrl: "templates/history_all.html",
+                  controller: 'AllHistoryCtrl'
+              }
+          }
+      })
+      .state('app.edit', {
+          url: "/edit",
+          cache:false,
+          params: {
+            unit: null,
+            variableName : null,
+            dateTime : null,
+            value : null
+          },
+          views: {
+              'menuContent': {
+                  templateUrl: "templates/reminders_inbox.html",
+                  controller: 'RemindersInboxCtrl'
+              }
+          }
+      })
+      .state('app.reminders_inbox', {
+          url: "/reminders-inbox",
+          cache:false,
+          params: {
+            unit: null,
+            variableName : null,
+            dateTime : null,
+            value : null
+          },
+          views: {
+              'menuContent': {
+                  templateUrl: "templates/reminders_inbox.html",
+                  controller: 'RemindersInboxCtrl'
+              }
+          }
+      })
+      .state('app.reminders_manage', {
+          url: "/reminders-manage",
+          cache:false,
+          views: {
+              'menuContent': {
+                  templateUrl: "templates/manage_reminders.html",
+                  controller: 'RemindersInboxCtrl'
+              }
+          }
+      })
+      .state('app.reminders_category', {
+          url: "/reminders/:category",
+          cache:false,
+          views: {
+              'menuContent': {
+                  templateUrl: "templates/reminder.html",
+                  controller: 'RemindersCtrl'
+              }
+          }
+      })
+      .state('app.reminders', {
+          url: "/reminders",
+          cache:false,
+          params: {
+            reminder: null
+          },
+          views: {
+              'menuContent': {
+                  templateUrl: "templates/reminder.html",
+                  controller: 'RemindersCtrl'
+              }
+          }
+      });
+
 
       // if none of the above states are matched, use this as the fallback
       $urlRouterProvider.otherwise('/');

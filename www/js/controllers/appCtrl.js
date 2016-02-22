@@ -2,12 +2,14 @@ angular.module('starter')
     
     // Parent Controller
     // This controller runs before every one else
-	.controller('AppCtrl', function($scope, $ionicModal, $timeout, $injector, utilsService, authService, measurementService, $ionicPopover, $ionicLoading, $state, $ionicHistory, QuantiModo, notificationService, $rootScope, localStorageService) {
+	.controller('AppCtrl', function($scope, $ionicModal, $timeout, $injector, utilsService, authService, measurementService, $ionicPopover, $ionicLoading, $state, $ionicHistory, QuantiModo, notificationService, $rootScope, localStorageService, reminderService) {
 
     // flags
     $scope.controller_name = "AppCtrl";
     $scope.isLoggedIn  = false;
-    $scope.showSubMenu = false;
+    $scope.showTrackingSubMenu = false;
+    $scope.showReminderSubMenu = false;
+    $scope.showHistorySubMenu = false;
     $scope.shopping_cart_enabled = config.shopping_cart_enabled;
     $rootScope.isSyncing = false;
     var $cordovaFacebook = {};
@@ -30,23 +32,6 @@ angular.module('starter')
     $scope.factor_average_text = config.appSettings.factor_average_text;
     /*Wrapper Config End*/
 
-
-    // to handle transition event's triggered through sibling controllers.
-    /*$scope.$on('transition', function(){
-        // Timout to let the transition finish.
-        setTimeout(function(){
-            // For smaller devices, iphone <= 5s Only keep the first word of sentence in back button.
-            // to stop text from overlaying on top of each other.
-            console.log("transitioning");
-
-            var text = jQuery('.previous-title:visible').text();
-            if(text.length) {
-               jQuery('.previous-title:visible').text(text.split(" ")[0]);
-            }
-            
-        }, 300);
-    });*/
-
     // when view is changed
     $scope.$on('$ionicView.enter', function(e) {
         if(e.targetScope && e.targetScope.controller_name && e.targetScope.controller_name === "TrackCtrl" && $scope.isLoggedIn){
@@ -68,21 +53,21 @@ angular.module('starter')
 
     // when date is updated
     $scope.datePickerFromCallback = function (val) {
-      if(typeof(val)==='undefined'){        
-          console.log('Date not selected');
-      }else{
-          $scope.fromDate = new Date(val);
-          $scope.saveDates();
-      }
+        if(typeof(val)==='undefined'){        
+            console.log('Date not selected');
+        }else{
+            $scope.fromDate = new Date(val);
+            $scope.saveDates();
+        }
     };
 
     $scope.datePickerToCallback = function (val) {
-      if(typeof(val)==='undefined'){        
-          console.log('Date not selected');
-      }else{
-          $scope.toDate = new Date(val);
-          $scope.saveDates();
-      }
+        if(typeof(val)==='undefined'){        
+            console.log('Date not selected');
+        } else {
+            $scope.toDate = new Date(val);
+            $scope.saveDates();
+        }
     };
 
     // update dates selected from calender
@@ -105,6 +90,26 @@ angular.module('starter')
             });
         });
 	};
+
+    scheduleReminder = function(){
+        if($rootScope.reminderToSchedule){
+            
+            reminderService.addNewReminder(
+                $rootScope.reminderToSchedule.id,
+                $rootScope.reminderToSchedule.reportedVariableValue,
+                $rootScope.reminderToSchedule.interval, 
+                $rootScope.reminderToSchedule.name,
+                $rootScope.reminderToSchedule.category,
+                $rootScope.reminderToSchedule.unit,
+                $rootScope.reminderToSchedule.combinationOperation)
+            .then(function(){
+                delete $rootScope.reminderToSchedule;
+                console.log('reminder scheduled');
+            }, function(err){
+                console.log(err);
+            });
+        }
+    };
 
     // get Authentication Token
     $scope.getAuthToken = function(request_token, withJWT){
@@ -151,16 +156,15 @@ angular.module('starter')
 
     // when work on this activity is complete
     $scope.movePage = function(){
-
         // if user has seen the welcome screen before
         localStorageService.getItem('isWelcomed',function(isWelcomed) {
 
-            if(isWelcomed){
+            if(isWelcomed  === true || isWelcomed === "true"){
                 $rootScope.isWelcomed = true;
-                console.log("going");
+                console.log("isWelcomed is true. going");
 
                 // move to tracking page
-                if($state.current.name == "app.welcome"){
+                if($state.current.name == "app.welcome" || $state.current.name == "app.login"){
                     $state.go('app.track');
                     $rootScope.hideMenu = false;
                 }
@@ -171,11 +175,17 @@ angular.module('starter')
                     disableBack: true
                 });
 
+                if(location.href.toLowerCase().indexOf('hidemenu=true') !== -1) {
+                   $rootScope.skipMenu = true; 
+                }
+
                 // redraw everything according to updated appstate
                 $rootScope.$broadcast('redraw');
+            } else {
+                if(location.href.toLowerCase().indexOf('hidemenu=true') !== -1) {
+                   $rootScope.skipMenu = true; 
+                }
             }
-
-
         });
     };
 
@@ -204,14 +214,13 @@ angular.module('starter')
                 reload:true
             });
         });
-
-
     };
 
     // User wants to login
     $scope.login = function() {
 
-        localStorageService.setItem('isWelcomed',"true");
+        localStorageService.setItem('isWelcomed', true);
+        $rootScope.isWelcomed = true;
 
     	var url = config.getURL("api/oauth2/authorize", true);
 
@@ -241,66 +250,74 @@ angular.module('starter')
 		else if(ionic.Platform.platforms[0] === "browser"){
 			console.log("Browser Detected");
 
-            // add params
-            url += "response_type=code";
-            url += "&client_id="+config.getClientId();
-            url += "&client_secret="+config.getClientSecret();
-            url += "&scope="+config.getPermissionString();
-            url += "&state=testabcd";
-            url += "&redirect_uri=https://app.quantimo.do/ionic/Modo/www/callback";
+            if(config.getClientId() != 'oAuthDisabled'){
+                // add params
+                url += "response_type=code";
+                url += "&client_id="+config.getClientId();
+                url += "&client_secret="+config.getClientSecret();
+                url += "&scope="+config.getPermissionString();
+                url += "&state=testabcd";
+                url += "&redirect_uri=https://app.quantimo.do/ionic/Modo/www/callback";
 
-            var ref = window.open(url,'_blank');
+                var ref = window.open(url,'_blank');
 
-            if(!ref){
-                alert("You must first unblock popups, and and refresh the page for this to work!");
-            } else {
-                // broadcast message question every second to sibling tabs
-                var interval = setInterval(function(){
-                    ref.postMessage('isLoggedIn?','https://app.quantimo.do/ionic/Modo/www/callback/');
-                    ref.postMessage('isLoggedIn?','https://local.quantimo.do:4417/ionic/Modo/www/callback/');
-                    ref.postMessage('isLoggedIn?','https://staging.quantimo.do/ionic/Modo/www/callback/');
-                }, 1000);
+                if(!ref){
+                    alert("You must first unblock popups, and and refresh the page for this to work!");
+                } else {
+                    // broadcast message question every second to sibling tabs
+                    var interval = setInterval(function () {
+                        ref.postMessage('isLoggedIn?', 'https://app.quantimo.do/ionic/Modo/www/callback/');
+                        ref.postMessage('isLoggedIn?', 'https://local.quantimo.do:4417/ionic/Modo/www/callback/');
+                        ref.postMessage('isLoggedIn?', 'https://staging.quantimo.do/ionic/Modo/www/callback/');
+                    }, 1000);
 
-                // handler when a message is recieved from a sibling tab
-                window.onMessageRecieved = function(event){
-                    console.log("message recieved", event.data);
-                    
-                    // Don't ask login question anymore
-                    clearInterval(interval);
-                    
-                    // the url that QuantiModo redirected us to
-                    var iframe_url = event.data;
+                    // handler when a message is recieved from a sibling tab
+                    window.onMessageRecieved = function (event) {
+                        console.log("message recieved", event.data);
 
-                    // validate if the url is same as we wanted it to be
-                    if(utilsService.startsWith(iframe_url, "https://app.quantimo.do/ionic/Modo/www/callback/")) {    
-                        // if there is no error
-                        if(!utilsService.getUrlParameter(iframe_url,'error')) {
-                            
-                            // extract token
-                            var requestToken = utilsService.getUrlParameter(iframe_url, 'code');
-                            
-                            if(requestToken === false) requestToken = utilsService.getUrlParameter(iframe_url, 'token');
-                            
-                            // get auth token from request token
-                            $scope.getAuthToken(requestToken);
-                            
-                            // close the sibling tab
-                            ref.close();
+                        // Don't ask login question anymore
+                        clearInterval(interval);
 
-                        } else {
-                            // TODO : display_error
-                            console.log("error occoured", utilsService.getUrlParameter(iframe_url, 'error'));
+                        // the url that QuantiModo redirected us to
+                        var iframe_url = event.data;
 
-                            // close the sibling tab
-                            ref.close();
+                        // validate if the url is same as we wanted it to be
+                        if (utilsService.startsWith(iframe_url, "https://app.quantimo.do/ionic/Modo/www/callback/")) {
+                            // if there is no error
+                            if (!utilsService.getUrlParameter(iframe_url, 'error')) {
+
+                                // extract token
+                                var requestToken = utilsService.getUrlParameter(iframe_url, 'code');
+
+                                if (requestToken === false) requestToken = utilsService.getUrlParameter(iframe_url, 'token');
+
+                                // get auth token from request token
+                                $scope.getAuthToken(requestToken);
+
+                                // close the sibling tab
+                                ref.close();
+
+                            } else {
+                                // TODO : display_error
+                                console.log("error occoured", utilsService.getUrlParameter(iframe_url, 'error'));
+
+                                // close the sibling tab
+                                ref.close();
+                            }
                         }
-                    }  
-                };
+                    };
 
-                // listen to broadcast messages from other tabs within browser 
-                window.addEventListener("message", window.onMessageRecieved, false);
+                    // listen to broadcast messages from other tabs within browser
+                    window.addEventListener("message", window.onMessageRecieved, false);
+                }
+            } else {
+                var loginUrl = config.getURL("api/v2/auth/login");
+                console.log("Client id is oAuthDisabled - will redirect to regular login.");
+                loginUrl += "redirect_uri=" + encodeURIComponent(window.location.href);
+                console.debug('AUTH redirect URL created:', loginUrl);
+                console.debug('GOOD LUCK!');
+                window.location.replace(loginUrl);
             }
-
 		} else {
 
             console.log("Mobile device detected!");
@@ -354,7 +371,9 @@ angular.module('starter')
     };
 
     $scope.native_login = function(platform, accessToken){
-        localStorageService.setItem('isWelcomed',"true");
+        localStorageService.setItem('isWelcomed', true);
+        $rootScope.isWelcomed = true;
+
         showLoader('Talking to QuantiModo');
         authService.getJWTToken(platform, accessToken)
         .then(function(responseToken){
@@ -462,7 +481,8 @@ angular.module('starter')
 
     // when user click's skip button
     $scope.skipLogin = function(){
-        localStorageService.setItem('isWelcomed',true);
+        localStorageService.setItem('isWelcomed', true)
+        $rootScope.isWelcomed = true;
         // move to the next screen
         $scope.movePage();
     }
@@ -491,6 +511,8 @@ angular.module('starter')
         console.log("Main Constructor Start");
         
         showLoader('Logging you in');
+        
+        scheduleReminder();
 
         // try to get access token
     	authService.getAccessToken().then(function(data) {
@@ -502,6 +524,20 @@ angular.module('starter')
             $scope.isLoggedIn = true;
 
             localStorageService.getItem('user',function(user){
+                if(!user){
+                    console.log("Don't have a user.");
+                    QuantiModo.getUser(function(user){
+
+                        // set user data in local storage
+                        localStorageService.setItem('user', JSON.stringify(user));
+
+                        $scope.user_name = user.displayName;
+                    },function(err){
+
+                        // error
+                        console.log(err);
+                    });
+                }
                 if(user){
                     user = JSON.parse(user);
                     console.log('user:' + user);
@@ -551,27 +587,49 @@ angular.module('starter')
 
     };
 
-    $scope.toggleSubMenu = function(){
-        $scope.showSubMenu = !$scope.showSubMenu;
+    $scope.toggleTrackingSubMenu = function(){
+        $scope.showTrackingSubMenu = !$scope.showTrackingSubMenu;
+    }
+
+    $scope.togglePredictorSearchSubMenu = function(){
+        $scope.showPredictorSearchSubMenu = !$scope.showPredictorSearchSubMenu;
+    }
+
+    $scope.toggleOutcomePredictorSubMenu = function(){
+        $scope.showOutcomePredictorSubMenu = !$scope.showOutcomePredictorSubMenu;
+    }
+
+    $scope.toggleHistorySubMenu = function(){
+        $scope.showHistorySubMenu = !$scope.showHistorySubMenu;
+    }
+
+    $scope.toggleReminderSubMenu = function(){
+        $scope.showReminderSubMenu = !$scope.showReminderSubMenu;
     }
 
     // call constructor
     $scope.init();
 
+    var tokenInGetParams = utilsService.getUrlParameter(location.href, 'accessToken');
+
+    if(!tokenInGetParams){
+        tokenInGetParams = utilsService.getUrlParameter(location.href, 'access_token');
+    }
+
     // redirection if already welcomed before
-        var isWelcomed;
-        localStorageService.getItem('isWelcomed',function(val){
-            isWelcomed = val;
-            console.log('isWelcomed '+isWelcomed);
-            if(isWelcomed  === true || isWelcomed === "true"){
-                $rootScope.isWelcomed=true;
-                $state.go('app.track');
-            } else {
-                $state.go('app.welcome');
-            }
+    var isWelcomed;
+    localStorageService.getItem('isWelcomed',function(val){
+        isWelcomed = val;
+        console.log('isWelcomed ' + isWelcomed);
+        if(isWelcomed  === true || isWelcomed === "true" || tokenInGetParams){
+            $rootScope.isWelcomed = true;
+            //$state.go('app.track');
+        } else {
+            console.log("isWelcomed is " + isWelcomed + ". Setting to true and going to welcome now.");
+            localStorageService.setItem('isWelcomed', true);
+            $rootScope.isWelcomed = true;
+            $state.go('app.welcome');
+        }
 
-        });
-
-
-
+    });
 })

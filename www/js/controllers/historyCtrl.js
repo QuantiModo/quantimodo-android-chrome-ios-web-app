@@ -1,7 +1,7 @@
 angular.module('starter')
 
 	// Controls the History Page of the App.
-	.controller('HistoryCtrl', function($scope, $ionicModal, $timeout, $ionicLoading, authService, $ionicPopover, measurementService, $ionicPopup,localStorageService){
+	.controller('HistoryCtrl', function($scope, $ionicModal, $timeout, $ionicLoading, authService, $ionicPopover, measurementService, $ionicPopup, localStorageService, utilsService){
 
 	    $scope.controller_name = "HistoryCtrl";
 
@@ -47,9 +47,11 @@ angular.module('starter')
 
 	    // when a value is edited
 	    $scope.save_value = function(){
-	        
+
+			var note = $scope.selected_item.note? $scope.selected_item.note : null;
+
 	        // update on the server
-	        measurementService.editTrackingFactor($scope.selected_item.timestamp, $scope.selected_tracking_factor, $scope.selected_item.note)
+	        measurementService.editTrackingFactor($scope.selected_item.timestamp, $scope.selected_tracking_factor, note)
 	        .then(function(){
 	        	// do nothing user would have safely navigated away
 	        	console.log("edit complete");
@@ -86,7 +88,8 @@ angular.module('starter')
 
 	    // constuctor
 	    $scope.init = function(){
-	        
+
+
 	        // show loading spinner
 	        $ionicLoading.show({
 	            noBackdrop: true,
@@ -112,8 +115,9 @@ angular.module('starter')
 	        }, function(){
 	            console.log("need to log in");
 	            $ionicLoading.hide();
+	            utilsService.showLoginRequiredAlert($scope.login);
 	        });
-	       
+
 	    };
 
         // when view is changed
