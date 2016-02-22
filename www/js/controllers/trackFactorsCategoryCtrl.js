@@ -441,7 +441,6 @@ angular.module('starter')
 
                 // update view
                 $scope.state.loading = false;
-                $scope.$apply();
 
             } else {
 
@@ -450,7 +449,7 @@ angular.module('starter')
 
                     // populate list with results
                     $scope.lists.searchVariables = variables;
-                    $scope.list = $scope.lists.searchVariables;
+                    $scope.lists.list = $scope.lists.searchVariables;
                     $scope.state.loading = false;
                 });
             }
