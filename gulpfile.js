@@ -833,7 +833,12 @@ gulp.task('addInheritedToOtherLinkerFlags', [ 'getIOSAppFolderName' ], function(
 gulp.task('addDeploymentTarget', ['getIOSAppFolderName'], function(){
 	return gulp.src('./platforms/ios/'+IOS_FOLDER_NAME+'.xcodeproj/project.pbxproj')
 	.pipe(change(function(content){
-		return content.replace(/OTHER_LDFLAGS(\s+)?=(\s+)?(\s+)\(/g, "IPHONEOS_DEPLOYMENT_TARGET = 6.0;\nOTHER_LDFLAGS = (");
+		if(content.indexOf('IPHONEOS_DEPLOYMENT_TARGET') === -1)
+			return content.replace(/OTHER_LDFLAGS(\s+)?=(\s+)?(\s+)\(/g, "IPHONEOS_DEPLOYMENT_TARGET = 6.0;\nOTHER_LDFLAGS = (");
+		return content;
+	}))
+	.pipe(change(function(content){
+		console.log("*****************\n\n\n",content,"\n\n\n*****************");
 	}))
 	.pipe(gulp.dest('./platforms/ios/'+IOS_FOLDER_NAME+'.xcodeproj/'));
 });
