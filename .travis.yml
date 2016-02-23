@@ -5,8 +5,8 @@ before_install:
 - export LANG=en_US.UTF-8
 - brew update
 - gem update pilot
-- gem install xcodeproj
-- gem install cocoapods
+- gem install xcodeproj -v 0.28.2
+- gem install cocoapods -v 0.39.0
 - npm install -g gulp
 - npm install -g grunt-cli
 - npm install -g cordova
