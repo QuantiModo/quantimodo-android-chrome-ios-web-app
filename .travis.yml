@@ -5,6 +5,7 @@ before_install:
 - export LANG=en_US.UTF-8
 - brew update
 - gem update pilot
+- gem install cocoapods
 - npm install -g gulp
 - npm install -g grunt-cli
 - npm install -g cordova
