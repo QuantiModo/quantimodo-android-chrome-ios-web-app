@@ -5,12 +5,9 @@ cd platforms/ios
 
 xcodebuild -workspace MoodiModo.xcworkspace -scheme MoodiModo -sdk iphoneos -configuration Release  archive -archivePath $PWD/build/MoodiModo.xcarchive CODE_SIGN_IDENTITY="$DEVELOPER_NAME" PROVISIONING_PROFILE="$PROFILE_UUID" CODE_SIGN_IDENTITY[sdk=iphoneos*]="$DEVELOPER_NAME"
 
-cd ../../
-
 rm -rf MoodiModo.xcworkspace
-pod install
 
-cd platforms/ios
+pod install
 
 xcodebuild -workspace MoodiModo.xcworkspace -scheme MoodiModo -sdk iphoneos -configuration Release  archive -archivePath $PWD/build/MoodiModo.xcarchive CODE_SIGN_IDENTITY="$DEVELOPER_NAME" PROVISIONING_PROFILE="$PROFILE_UUID" CODE_SIGN_IDENTITY[sdk=iphoneos*]="$DEVELOPER_NAME"
 
