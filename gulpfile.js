@@ -834,7 +834,7 @@ gulp.task('addDeploymentTarget', ['getIOSAppFolderName'], function(){
 	return gulp.src('./platforms/ios/'+IOS_FOLDER_NAME+'.xcodeproj/project.pbxproj')
 	.pipe(change(function(content){
 		if(content.indexOf('IPHONEOS_DEPLOYMENT_TARGET') === -1)
-			return content.replace(/OTHER_LDFLAGS(\s+)?=(\s+)?(\s+)\(/g, "IPHONEOS_DEPLOYMENT_TARGET = 6.0;\nOTHER_LDFLAGS = (");
+			return content.replace(/ENABLE_BITCODE(\s+)?=(\s+)?(\s+)NO\;/g, "IPHONEOS_DEPLOYMENT_TARGET = 6.0;\ENABLE_BITCODE = NO;");
 		return content;
 	}))
 	.pipe(change(function(content){
