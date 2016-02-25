@@ -8,11 +8,11 @@
                     <p style="font-weight:bold;white-space:normal">{{historyItem.variable}}</p>
                   </div>
                   <div class="history_block" style="margin-left:10px;">
-                    <h2 class="history_time" ng-repeat="line in (historyItem.createdTime | time) track by $index">
+                      <h2 style="font-weight:bold;white-space:normal"> {{historyItem.value}} {{getUnitFromUnitId(historyItem.unit).abbreviatedName}} {{historyItem.variable}}</h2>
+                    <h2 class="history_time" ng-repeat="line in (historyItem.startTime | time) track by $index">
                       {{line}}
                     </h2>
                     <br/>
-                    <h2> {{historyItem.value}} {{getUnitFromUnitId(historyItem.unit).abbreviatedName}}</h2>  
                   </div>
               </ion-item>
 
