@@ -46,8 +46,7 @@
     "org.apache.cordova.device"
   ],
   "cordovaPlatforms": [
-    "android",
-    "ios"
+    "android"
   ],
   "engines": {
     "node": "0.10.x"

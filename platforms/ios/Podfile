@@ -1,9 +1,0 @@
-# Uncomment this line to define a global platform for your project
-# platform :ios, '8.0'
-# Uncomment this line if you're using Swift
-# use_frameworks!
-
-target 'MoodiModo' do 
-pod 'Bugsnag', :git => "https://github.com/bugsnag/bugsnag-cocoa.git"
-end
-
