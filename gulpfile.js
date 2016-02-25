@@ -776,7 +776,7 @@ gulp.task('addPodfile', [ 'getIOSAppFolderName' ], function(){
 				throw err;
 			}
 			
-			if(data.indexOf('pod \'Bugsnag\', :git => "https://github.com/bugsnag/bugsnag-cocoa.git"') < 0){
+			if(data.indexOf('Bugsnag') < 0){
 				console.log("no Bugsnag detected");
 				
 				gulp.src('./platforms/ios/Podfile')
