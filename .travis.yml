@@ -6,7 +6,8 @@ before_install:
 - brew update
 - gem update pilot
 - gem install xcodeproj -v 0.28.2
-- gem install cocoapods -v 0.39.0
+- gem install cocoapods -v 0.34.1
+- gem install cocoapods-deintegrate
 - npm install -g gulp
 - npm install -g grunt-cli
 - npm install -g cordova
