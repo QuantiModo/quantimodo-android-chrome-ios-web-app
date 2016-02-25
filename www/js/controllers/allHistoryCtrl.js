@@ -76,7 +76,7 @@ angular.module('starter')
 	    	measurementService.getHistoryMeasurements({
     		    offset: $scope.state.offset,
     		    limit: $scope.state.limit,
-    		    sort: "-updatedTime"
+    		    sort: "-startTime"
 	    	}).then(function(history){
     			$scope.state.history = $scope.state.history.concat(history);
     			utils.stopLoading();
