@@ -557,24 +557,36 @@ angular.module('starter')
             $ionicLoading.hide();
             //showLoader('Syncing data');
             
+            app.track, app.welcome, app.history
+
             // sync data
             $scope.movePage();
-            $rootScope.isSyncing = true;
-            console.log('setting sync true');
-            measurementService.sync_data().then(function(){
-                console.log("sync complete");
-                $rootScope.isSyncing = false;
-                
-                // update loader text
-                $ionicLoading.hide();
-                showLoader('Calculating stuff');
-                
-                // calculate tracking factor values
-                measurementService.calculateAverageTrackingFactorValue().then(function(){
-                    measurementService.getTrackingFactorValue().then(calculateChartValues, calculateChartValues);
-                });
+            
+            var sync_enabled_states = [
+                'app.track',
+                'app.welcome',
+                'app.history'
+            ];
 
-            }, hideLoaderMove);
+            if(sync_enabled_states.indexOf($state.current.name) !== -1){
+                $rootScope.isSyncing = true;
+                console.log('setting sync true');
+                
+                measurementService.sync_data().then(function(){
+                    console.log("sync complete");
+                    $rootScope.isSyncing = false;
+                    
+                    // update loader text
+                    $ionicLoading.hide();
+                    showLoader('Calculating stuff');
+                    
+                    // calculate tracking factor values
+                    measurementService.calculateAverageTrackingFactorValue().then(function(){
+                        measurementService.getTrackingFactorValue().then(calculateChartValues, calculateChartValues);
+                    });
+
+                }, hideLoaderMove);
+            }
 
         }, function () {
 
