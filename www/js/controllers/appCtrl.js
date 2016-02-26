@@ -191,29 +191,41 @@ angular.module('starter')
 
     // when user is logging out
     $scope.logout = function(){
-        
-        // set flags
-        $scope.isLoggedIn = false;
-        localStorageService.clear();
+        var after_logout = function(){
+            // set flags
+            $scope.isLoggedIn = false;
+            localStorageService.clear();
 
-        //clear notification
-        notificationService.cancelNotifications();
-        
-        //Set out localstorage flag for welcome screen variables
-        localStorageService.setItem('interval',true);
-        localStorageService.setItem('trackingFactorReportedWelcomeScreen',true);
-        localStorageService.setItem('allData',JSON.stringify([]));
+            //clear notification
+            notificationService.cancelNotifications();
+            
+            //Set out localstorage flag for welcome screen variables
+            localStorageService.setItem('interval',true);
+            localStorageService.setItem('trackingFactorReportedWelcomeScreen',true);
+            localStorageService.setItem('allData',JSON.stringify([]));
 
-        // calculate tracking factor and chart data
-        measurementService.calculateAverageTrackingFactorValue().then(function(){
-            measurementService.calculateBothChart();
-            measurementService.resetSyncFlag();
-            //hard reload
-            $state.go('app.welcome',{
-            },{
-                reload:true
+            // calculate tracking factor and chart data
+            measurementService.calculateAverageTrackingFactorValue().then(function(){
+                measurementService.calculateBothChart();
+                measurementService.resetSyncFlag();
+                //hard reload
+                $state.go('app.welcome',{
+                },{
+                    reload:true
+                });
             });
-        });
+        };
+
+        if(ionic.Platform.platforms[0] != "browser"){
+            // open the auth window via inAppBrowser
+            var ref = window.open('https://app.quantimo.do/api/v2/auth/logout','_blank', 'location=no,toolbar=yes');
+            
+            // listen to it's event when the page changes
+            ref.addEventListener('loadstart', function(event) {
+                ref.close();
+                after_logout();                
+            });
+        } else after_logout();
     };
 
     // User wants to login
@@ -557,24 +569,36 @@ angular.module('starter')
             $ionicLoading.hide();
             //showLoader('Syncing data');
             
+            app.track, app.welcome, app.history
+
             // sync data
             $scope.movePage();
-            $rootScope.isSyncing = true;
-            console.log('setting sync true');
-            measurementService.sync_data().then(function(){
-                console.log("sync complete");
-                $rootScope.isSyncing = false;
-                
-                // update loader text
-                $ionicLoading.hide();
-                showLoader('Calculating stuff');
-                
-                // calculate tracking factor values
-                measurementService.calculateAverageTrackingFactorValue().then(function(){
-                    measurementService.getTrackingFactorValue().then(calculateChartValues, calculateChartValues);
-                });
+            
+            var sync_enabled_states = [
+                'app.track',
+                'app.welcome',
+                'app.history'
+            ];
 
-            }, hideLoaderMove);
+            if(sync_enabled_states.indexOf($state.current.name) !== -1){
+                $rootScope.isSyncing = true;
+                console.log('setting sync true');
+                
+                measurementService.sync_data().then(function(){
+                    console.log("sync complete");
+                    $rootScope.isSyncing = false;
+                    
+                    // update loader text
+                    $ionicLoading.hide();
+                    showLoader('Calculating stuff');
+                    
+                    // calculate tracking factor values
+                    measurementService.calculateAverageTrackingFactorValue().then(function(){
+                        measurementService.getTrackingFactorValue().then(calculateChartValues, calculateChartValues);
+                    });
+
+                }, hideLoaderMove);
+            }
 
         }, function () {
 

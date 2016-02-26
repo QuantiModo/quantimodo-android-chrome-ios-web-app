@@ -32,15 +32,10 @@ angular.module('starter')
 
                 var deferred = $q.defer();
 
-                //if (window.location.search) {
-                    var tokenInGetParams =
-                        //authSrv.utilsService.getUrlParameter(window.location.search, 'accessToken');
-                        authSrv.utilsService.getUrlParameter(location.href, 'accessToken');
-                //}
-                if(!tokenInGetParams){
-                    tokenInGetParams =
-                        authSrv.utilsService.getUrlParameter(location.href, 'access_token');
-                }
+                var tokenInGetParams = authSrv.utilsService.getUrlParameter(location.href, 'accessToken');
+                
+                if(!tokenInGetParams)
+                    tokenInGetParams = authSrv.utilsService.getUrlParameter(location.href, 'access_token');
 
                 //check if token in get params
                 if (tokenInGetParams) {
@@ -219,7 +214,7 @@ angular.module('starter')
                         accessToken: accessToken
                     });
 
-                } else if (refreshToken != undefined) {
+                } else if (typeof refreshToken != "undefined") {
 
                     console.log('Refresh token will be used to fetch access token from server');
 
@@ -260,7 +255,6 @@ angular.module('starter')
                     deferred.reject();
 
                 }
-
 
             },
 
