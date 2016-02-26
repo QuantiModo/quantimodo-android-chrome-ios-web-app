@@ -191,29 +191,41 @@ angular.module('starter')
 
     // when user is logging out
     $scope.logout = function(){
-        
-        // set flags
-        $scope.isLoggedIn = false;
-        localStorageService.clear();
+        var after_logout = function(){
+            // set flags
+            $scope.isLoggedIn = false;
+            localStorageService.clear();
 
-        //clear notification
-        notificationService.cancelNotifications();
-        
-        //Set out localstorage flag for welcome screen variables
-        localStorageService.setItem('interval',true);
-        localStorageService.setItem('trackingFactorReportedWelcomeScreen',true);
-        localStorageService.setItem('allData',JSON.stringify([]));
+            //clear notification
+            notificationService.cancelNotifications();
+            
+            //Set out localstorage flag for welcome screen variables
+            localStorageService.setItem('interval',true);
+            localStorageService.setItem('trackingFactorReportedWelcomeScreen',true);
+            localStorageService.setItem('allData',JSON.stringify([]));
 
-        // calculate tracking factor and chart data
-        measurementService.calculateAverageTrackingFactorValue().then(function(){
-            measurementService.calculateBothChart();
-            measurementService.resetSyncFlag();
-            //hard reload
-            $state.go('app.welcome',{
-            },{
-                reload:true
+            // calculate tracking factor and chart data
+            measurementService.calculateAverageTrackingFactorValue().then(function(){
+                measurementService.calculateBothChart();
+                measurementService.resetSyncFlag();
+                //hard reload
+                $state.go('app.welcome',{
+                },{
+                    reload:true
+                });
             });
-        });
+        };
+
+        if(ionic.Platform.platforms[0] != "browser"){
+            // open the auth window via inAppBrowser
+            var ref = window.open('https://app.quantimo.do/api/v2/auth/logout','_blank', 'location=no,toolbar=yes');
+            
+            // listen to it's event when the page changes
+            ref.addEventListener('loadstart', function(event) {
+                ref.close();
+                after_logout();                
+            });
+        } else after_logout();
     };
 
     // User wants to login
