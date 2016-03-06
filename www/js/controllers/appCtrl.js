@@ -202,9 +202,6 @@ angular.module('starter')
                     ref.close();
                     showPopup();                
                 });
-            } else if (window.chrome && window.chrome.extension && typeof window.chrome.identity === "undefined"){
-                chrome.tabs.create({ url: "http://app.quantimo.do/api/v2/auth/logout" });
-                showPopup();
             } else showPopup();
         };
 
@@ -229,7 +226,8 @@ angular.module('starter')
             });
         };
         
-        var after_logout = function(){
+        var after_logout = function(){            
+
             // set flags
             $scope.isLoggedIn = false;
             localStorageService.clear();
@@ -252,6 +250,12 @@ angular.module('starter')
                     reload:true
                 });
             });
+
+            if(window.chrome && window.chrome.extension && typeof window.chrome.identity === "undefined"){
+                chrome.tabs.create({ 
+                    url: "http://app.quantimo.do/api/v2/auth/logout" 
+                });
+            }
         };
 
         var after_logout_no_local = function(){
@@ -280,6 +284,12 @@ angular.module('starter')
                     reload:true
                 });
             });
+
+            if(window.chrome && window.chrome.extension && typeof window.chrome.identity === "undefined"){
+                chrome.tabs.create({ 
+                    url: "http://app.quantimo.do/api/v2/auth/logout" 
+                });
+            }
         };
 
         start_logout();
