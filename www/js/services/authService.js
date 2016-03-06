@@ -6,23 +6,25 @@ angular.module('starter')
 
 			// extract values from token response and saves in localstorage
 			updateAccessToken: function (accessResponse) {
-				var accessToken = accessResponse.accessToken || accessResponse.access_token;
-				var expiresIn = accessResponse.expiresIn || accessResponse.expires_in;
-				var refreshToken = accessResponse.refreshToken || accessResponse.refresh_token;
+				if(accessResponse){
+					var accessToken = accessResponse.accessToken || accessResponse.access_token;
+					var expiresIn = accessResponse.expiresIn || accessResponse.expires_in;
+					var refreshToken = accessResponse.refreshToken || accessResponse.refresh_token;
 
-				// save in localStorage
-				localStorageService.setItem('accessToken', accessToken);
-				localStorageService.setItem('refreshToken', refreshToken);
-				console.log("expires in: ", JSON.stringify(expiresIn), parseInt(expiresIn, 10));
+					// save in localStorage
+					if(accessToken) localStorageService.setItem('accessToken', accessToken);
+					if(refreshToken) localStorageService.setItem('refreshToken', refreshToken);
+					
+					console.log("expires in: ", JSON.stringify(expiresIn), parseInt(expiresIn, 10));
 
-				// calculate expires at
-				var expiresAt = new Date().getTime() + parseInt(expiresIn, 10) * 1000 - 60000;
+					// calculate expires at
+					var expiresAt = new Date().getTime() + parseInt(expiresIn, 10) * 1000 - 60000;
 
-				// save in localStorage
-				localStorageService.setItem('expiresAt', expiresAt);
+					// save in localStorage
+					if(expiresAt) localStorageService.setItem('expiresAt', expiresAt);
 
-				return accessToken;
-
+					return accessToken;
+				} else return "";
 			},
 
 			// retrieves access token.

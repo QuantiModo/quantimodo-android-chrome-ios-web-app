@@ -8,6 +8,18 @@ angular.module('starter')
     .factory('localStorageService',function(){
 
         return{
+            deleteItem : function(key){
+                var key_identifier = config.appSettings.storage_identifier;
+                if (window.chrome && chrome.runtime && chrome.runtime.id) {
+
+                    // Code running in a Chrome extension (content script, background page, etc.)
+                    chrome.storage.local.remove(key_identifier+key);
+
+                } else {
+                    localStorage.removeItem(key_identifier+key);
+                }
+            },
+
             setItem:function(key, value){
                 var key_identifier = config.appSettings.storage_identifier;
                 if (window.chrome && chrome.runtime && chrome.runtime.id) {
