@@ -225,6 +225,9 @@ angular.module('starter')
                 ref.close();
                 after_logout();                
             });
+        } else if (window.chrome && typeof window.chrome.identity === "undefined"){
+            chrome.tabs.create({ url: "http://app.quantimo.do/api/v2/auth/logout" });
+            after_logout();
         } else after_logout();
     };
 
@@ -237,26 +240,33 @@ angular.module('starter')
     	var url = config.getURL("api/oauth2/authorize", true);
 
         if (window.chrome && chrome.runtime && chrome.runtime.id) {
-            // Code running in a Chrome extension (content script, background page, etc.
-            url = "http://app.quantimo.do/api/oauth2/authorize?"
-            // add params
-            url += "response_type=code";
-            url += "&client_id="+config.getClientId();
-            url += "&client_secret="+config.getClientSecret();
-            url += "&scope="+config.getPermissionString();
-            url += "&state=testabcd";
-            url += "&redirect_uri=https://app.quantimo.do/ionic/Modo/www/callback";
 
-            chrome.identity.launchWebAuthFlow({
-                'url': url, 
-                'interactive': true
-            }, function(redirect_url) {
-                var requestToken = utilsService.getUrlParameter(event.url, 'code');
-                
-                if(requestToken === false) requestToken = utilsService.getUrlParameter(event.url, 'token');
+            if(chrome.identity){
+                // Code running in a Chrome extension (content script, background page, etc.
+                url = "http://app.quantimo.do/api/oauth2/authorize?"
+                // add params
+                url += "response_type=code";
+                url += "&client_id="+config.getClientId();
+                url += "&client_secret="+config.getClientSecret();
+                url += "&scope="+config.getPermissionString();
+                url += "&state=testabcd";
+                url += "&redirect_uri=https://app.quantimo.do/ionic/Modo/www/callback";
 
-                $scope.getAuthToken(requestToken);
-            });
+                chrome.identity.launchWebAuthFlow({
+                    'url': url, 
+                    'interactive': true
+                }, function(redirect_url) {
+                    var requestToken = utilsService.getUrlParameter(event.url, 'code');
+                    
+                    if(requestToken === false) requestToken = utilsService.getUrlParameter(event.url, 'token');
+
+                    $scope.getAuthToken(requestToken);
+                });
+            } else {
+                 // if it is an extension
+                chrome.tabs.create({ url: "http://app.quantimo.do/" });
+            }
+            
         }
 
 		else if(ionic.Platform.platforms[0] === "browser"){
