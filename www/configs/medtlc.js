@@ -12,7 +12,7 @@ window.config = {
     bugsnag:{
         notifyReleaseStages:['Production','Staging']
     },
-    client_source_name : "MoodiModo "+getPlatform(),
+    client_source_name : "MedTLC " + getPlatform(),
     domain : 'app.quantimo.do',
     environment: "Development",
     permissions : ['readmeasurements', 'writemeasurements'],
@@ -22,11 +22,11 @@ window.config = {
 };
 
 config.appSettings  = {
-    app_name : 'MoodiModo',
+    app_name : 'MedTLC',
 
     tracking_factor : 'Mood',
 
-    storage_identifier: 'MoodiModoData*',
+    storage_identifier: 'MedTLCData*',
 
     primary_tracking_factor_details : {
         id : 1398,
