@@ -2,7 +2,8 @@ var appsManager = {
 	apps : {
 		"moodimodo" : "configs/moodimodo",
 		"energymodo" : "configs/energymodo",
-		"mindfirst" : "configs/mindfirst"
+		"mindfirst" : "configs/mindfirst",
+		"medtlc" : "configs/medtlc"
 	},
 	defaultApp : "moodimodo",
 	getDefaultConfig : function(){
