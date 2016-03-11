@@ -2,7 +2,7 @@ angular.module('starter')
     
     // Parent Controller
     // This controller runs before every one else
-	.controller('AppCtrl', function($scope, $ionicModal, $timeout, $injector, utilsService, authService, measurementService, $ionicPopover, $ionicLoading, $state, $ionicHistory, QuantiModo, notificationService, $rootScope, localStorageService, reminderService) {
+	.controller('AppCtrl', function($scope, $ionicModal, $timeout, $injector, utilsService, authService, measurementService, $ionicPopover, $ionicLoading, $state, $ionicHistory, QuantiModo, notificationService, $rootScope, localStorageService, reminderService, $ionicPopup) {
 
     // flags
     $scope.controller_name = "AppCtrl";
@@ -191,7 +191,43 @@ angular.module('starter')
 
     // when user is logging out
     $scope.logout = function(){
-        var after_logout = function(){
+
+        var start_logout = function(){
+            if(ionic.Platform.platforms[0] != "browser"){
+                // open the auth window via inAppBrowser
+                var ref = window.open('https://app.quantimo.do/api/v2/auth/logout','_blank', 'location=no,toolbar=yes');
+                
+                // listen to it's event when the page changes
+                ref.addEventListener('loadstart', function(event) {
+                    ref.close();
+                    showPopup();                
+                });
+            } else showPopup();
+        };
+
+        var showPopup = function(){
+            $ionicPopup.show({
+                title:'Clear local storage?',
+                subTitle: 'Do you want do delete all data from local storage?',
+                scope: $scope,            
+                buttons:[
+                    {
+                        text: 'No',
+                        type: 'button-assertive',
+                        onTap : after_logout_no_local
+                    },
+                    {
+                        text: 'Yes',
+                        type: 'button-positive',
+                        onTap: after_logout
+                    }
+                ]
+
+            });
+        };
+        
+        var after_logout = function(){            
+
             // set flags
             $scope.isLoggedIn = false;
             localStorageService.clear();
@@ -214,18 +250,50 @@ angular.module('starter')
                     reload:true
                 });
             });
+
+            if(window.chrome && window.chrome.extension && typeof window.chrome.identity === "undefined"){
+                chrome.tabs.create({ 
+                    url: "http://app.quantimo.do/api/v2/auth/logout" 
+                });
+            }
         };
 
-        if(ionic.Platform.platforms[0] != "browser"){
-            // open the auth window via inAppBrowser
-            var ref = window.open('https://app.quantimo.do/api/v2/auth/logout','_blank', 'location=no,toolbar=yes');
+        var after_logout_no_local = function(){
+            // set flags
+            $scope.isLoggedIn = false;
+
+            //clear notification
+            notificationService.cancelNotifications();
             
-            // listen to it's event when the page changes
-            ref.addEventListener('loadstart', function(event) {
-                ref.close();
-                after_logout();                
+            //Set out localstorage flag for welcome screen variables
+            localStorageService.setItem('isLoggedIn',false);
+            localStorageService.setItem('interval',true);
+            localStorageService.setItem('trackingFactorReportedWelcomeScreen',true);
+            localStorageService.deleteItem('accessToken');
+            localStorageService.deleteItem('refreshToken');
+            localStorageService.deleteItem('expiresAt');
+            
+
+            // calculate tracking factor and chart data
+            measurementService.calculateAverageTrackingFactorValue().then(function(){
+                measurementService.calculateBothChart();
+                measurementService.resetSyncFlag();
+                //hard reload
+                $state.go('app.welcome',{
+                },{
+                    reload:true
+                });
             });
-        } else after_logout();
+
+            if(window.chrome && window.chrome.extension && typeof window.chrome.identity === "undefined"){
+                chrome.tabs.create({ 
+                    url: "http://app.quantimo.do/api/v2/auth/logout" 
+                });
+            }
+        };
+
+        start_logout();
+
     };
 
     // User wants to login
@@ -237,26 +305,33 @@ angular.module('starter')
     	var url = config.getURL("api/oauth2/authorize", true);
 
         if (window.chrome && chrome.runtime && chrome.runtime.id) {
-            // Code running in a Chrome extension (content script, background page, etc.
-            url = "http://app.quantimo.do/api/oauth2/authorize?"
-            // add params
-            url += "response_type=code";
-            url += "&client_id="+config.getClientId();
-            url += "&client_secret="+config.getClientSecret();
-            url += "&scope="+config.getPermissionString();
-            url += "&state=testabcd";
-            url += "&redirect_uri=https://app.quantimo.do/ionic/Modo/www/callback";
 
-            chrome.identity.launchWebAuthFlow({
-                'url': url, 
-                'interactive': true
-            }, function(redirect_url) {
-                var requestToken = utilsService.getUrlParameter(event.url, 'code');
-                
-                if(requestToken === false) requestToken = utilsService.getUrlParameter(event.url, 'token');
+            if(chrome.identity){
+                // Code running in a Chrome extension (content script, background page, etc.
+                url = "http://app.quantimo.do/api/oauth2/authorize?"
+                // add params
+                url += "response_type=code";
+                url += "&client_id="+config.getClientId();
+                url += "&client_secret="+config.getClientSecret();
+                url += "&scope="+config.getPermissionString();
+                url += "&state=testabcd";
+                url += "&redirect_uri=https://app.quantimo.do/ionic/Modo/www/callback";
 
-                $scope.getAuthToken(requestToken);
-            });
+                chrome.identity.launchWebAuthFlow({
+                    'url': url, 
+                    'interactive': true
+                }, function(redirect_url) {
+                    var requestToken = utilsService.getUrlParameter(event.url, 'code');
+                    
+                    if(requestToken === false) requestToken = utilsService.getUrlParameter(event.url, 'token');
+
+                    $scope.getAuthToken(requestToken);
+                });
+            } else {
+                 // if it is an extension
+                chrome.tabs.create({ url: "http://app.quantimo.do/" });
+            }
+            
         }
 
 		else if(ionic.Platform.platforms[0] === "browser"){

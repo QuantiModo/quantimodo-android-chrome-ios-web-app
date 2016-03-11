@@ -1,6 +1,6 @@
 angular.module('starter')
     
-    // Handlers the Welcom Page
+    // Handlers the Welcome Page
     .controller('WelcomeCtrl', function($scope, $ionicModal, $timeout, utilsService, authService, measurementService, $state, $ionicHistory, notificationService, localStorageService, $rootScope, reminderService) {
         
         $scope.controller_name = "WelcomeCtrl";
@@ -92,9 +92,9 @@ angular.module('starter')
             });
         };
 
-        // constructo
+        // constructor
         $scope.init = function(){
-            console.log("welcom init");
+            console.log("welcome init");
             
             // for setting intervals
             $scope.timeRemaining = false;

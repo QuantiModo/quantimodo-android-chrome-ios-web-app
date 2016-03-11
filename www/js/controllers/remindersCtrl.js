@@ -437,7 +437,7 @@ angular.module('starter')
 
 	    // setup category view
 	    var setupCategory = function(category){
-	    	$scope.state.title = category;
+	    	$scope.state.title = 'Add ' + category + ' Reminder';
 	    	$scope.state.showSearchBox = true;
 	    	$scope.state.showResults = true;
 	    	$scope.state.resultsHeaderText = "Your previously tracked "+category;

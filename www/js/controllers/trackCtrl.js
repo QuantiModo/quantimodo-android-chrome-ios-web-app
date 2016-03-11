@@ -10,6 +10,12 @@ angular.module('starter')
             // flag for blink effect
             $scope.timeRemaining = true;
 
+            if(window.chrome && window.chrome.browserAction){
+                chrome.browserAction.setBadgeText({
+                    text: ""
+                });
+            }
+
             // update localstorage
             measurementService.updateTrackingFactorLocally(tracking_factor).then(function () {
                 
