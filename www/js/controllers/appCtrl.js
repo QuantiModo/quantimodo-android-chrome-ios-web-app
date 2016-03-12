@@ -202,10 +202,11 @@ angular.module('starter')
 
         var start_logout = function(){
             if(ionic.Platform.platforms[0] != "browser"){
-                // open the auth window via inAppBrowser
+                console.log('start_logout: Open the auth window via inAppBrowser.  Platform is ' + ionic.Platform.platforms[0]);
                 var ref = window.open('https://app.quantimo.do/api/v2/auth/logout','_blank', 'location=no,toolbar=yes');
-                
-                // listen to it's event when the page changes
+
+                console.log('start_logout: listen to its event when the page changes');
+
                 ref.addEventListener('loadstart', function(event) {
                     ref.close();
                     showPopup();                
@@ -315,7 +316,7 @@ angular.module('starter')
         if (window.chrome && chrome.runtime && chrome.runtime.id) {
 
             if(chrome.identity){
-                console.log("Code running in a Chrome extension (content script, background page, etc.");
+                console.log("login: Code running in a Chrome extension (content script, background page, etc.");
                 url = "http://app.quantimo.do/api/oauth2/authorize?"
                 // add params
                 url += "response_type=code";
@@ -416,6 +417,7 @@ angular.module('starter')
 		} else {
 
             console.log("Mobile device detected and ionic platform is " + ionic.Platform.platforms[0]);
+            console.log(JSON.stringify(ionic.Platform.platforms));
 
             url += "response_type=code";
             url += "&client_id="+config.getClientId();
@@ -474,7 +476,7 @@ angular.module('starter')
         .then(function(responseToken){
             // success
 
-            console.log("Mobile device detected and platform is " + platform);
+            console.log("native_login: Mobile device detected and platform is " + platform);
             var url = config.getURL("api/v2/bshaffer/oauth/authorize", true);
 
             url += "response_type=code";
@@ -696,23 +698,23 @@ angular.module('starter')
 
     $scope.toggleTrackingSubMenu = function(){
         $scope.showTrackingSubMenu = !$scope.showTrackingSubMenu;
-    }
+    };
 
     $scope.togglePredictorSearchSubMenu = function(){
         $scope.showPredictorSearchSubMenu = !$scope.showPredictorSearchSubMenu;
-    }
+    };
 
     $scope.toggleOutcomePredictorSubMenu = function(){
         $scope.showOutcomePredictorSubMenu = !$scope.showOutcomePredictorSubMenu;
-    }
+    };
 
     $scope.toggleHistorySubMenu = function(){
         $scope.showHistorySubMenu = !$scope.showHistorySubMenu;
-    }
+    };
 
     $scope.toggleReminderSubMenu = function(){
         $scope.showReminderSubMenu = !$scope.showReminderSubMenu;
-    }
+    };
 
     // call constructor
     $scope.init();
