@@ -40,7 +40,7 @@ angular.module('starter')
 		};
 
 		// get all data from date range to date range
-		var getAllData = function(tillNow,callback){
+		var getAllData = function(tillNow, callback){
 
             var allData;
 
@@ -50,7 +50,15 @@ angular.module('starter')
 
                 // filtered measurements
                 var returnFiltered = function(start,end){
-                    var filtered = allData.filter(function(x){return x.timestamp >= start && x.timestamp <= end})
+                    
+                    allData = allData.sort(function(a, b){
+                        return a.timestamp - b.timestamp;
+                    });
+
+                    var filtered = allData.filter(function(x){
+                        return x.timestamp >= start && x.timestamp <= end;
+                    });
+                    
                     return callback(filtered);
                 };
 
@@ -76,6 +84,7 @@ angular.module('starter')
                         });
                     }
                 });
+
             });
 		};
 
@@ -385,7 +394,8 @@ angular.module('starter')
                     lastUpdated = val || 0;
                     params = {
                         variableName : config.appSettings.primary_tracking_factor_details.name,
-                        'lastUpdated':'(ge)'+lastUpdated ,
+                        // 'lastUpdated':'(ge)'+lastUpdated ,
+                        sort : '-updatedTime',
                         limit:200,
                         offset:0
                     };
@@ -458,7 +468,10 @@ angular.module('starter')
                                         allData = allData.concat(new_records);
                                     }
 
-                                    measurementService.setDates(new Date().getTime(),allData[0].timestamp*1000);
+                                    var s  = 9999999999999; 
+                                    allData.forEach(function(x){if(x.timestamp <= s){s = x.timestamp;}});
+
+                                    measurementService.setDates(new Date().getTime(),s*1000);
                                     //updating last updated time and data in local storage so that we syncing should continue from this point
                                     //if user restarts the app or refreshes the page.
                                     localStorageService.setItem('allData',JSON.stringify(allData));
