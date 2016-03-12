@@ -116,19 +116,27 @@ angular.module('starter')
     	authService.getAccessTokenFromRequestToken(request_token, withJWT)
     	.then(function(response) {
     		
-            console.log("access token recieved",response);
-            if(typeof withJWT !== "undefined" && withJWT === true) authService.updateAccessToken(response, withJWT);
-            else authService.updateAccessToken(response);
-    		
-            // set flags
-    		$scope.isLoggedIn = true;
-            localStorageService.setItem('isLoggedIn', true);
+            if(response.error){
+                console.error("error in generating access token");
+                console.log('response', response);
+                // set flags
+                $scope.isLoggedIn = false;
+                localStorageService.setItem('isLoggedIn', false);
+            } else {
+                console.log("access token recieved",response);
+                if(typeof withJWT !== "undefined" && withJWT === true) authService.updateAccessToken(response, withJWT);
+                else authService.updateAccessToken(response);
+                
+                // set flags
+                $scope.isLoggedIn = true;
+                localStorageService.setItem('isLoggedIn', true);
 
-            // get user details from server
-            getUser();
+                // get user details from server
+                getUser();
 
-            // update app view wrt app state
-            $scope.init();
+                // update app view wrt app state
+                $scope.init();
+            }
     	})
     	.catch(function(err){
             

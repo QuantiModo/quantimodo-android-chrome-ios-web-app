@@ -91,7 +91,7 @@ angular.module('starter')
             // get Measuremnets for user
             var getMeasurements = function(params, successHandler, errorHandler){
                 QuantiModo.get('api/measurements',
-                    ['variableName', 'startTime', 'endTime', 'groupingWidth', 'groupingTimezone', 'source', 'unit','limit','offset','lastUpdated'],
+                    ['variableName', 'sort', 'startTime', 'endTime', 'groupingWidth', 'groupingTimezone', 'source', 'unit','limit','offset','lastUpdated'],
                     params,
                     successHandler,
                     errorHandler);
@@ -105,7 +105,7 @@ angular.module('starter')
                 };
 
                 var successCallback =  function(response){
-                    if(response.length === 0 || typeof response === "string"){
+                    if(response.length === 0 || typeof response === "string" || params.offset >= 3000){
                         defer.resolve(response_array);
                     }else{
                         response_array = response_array.concat(response);
@@ -260,7 +260,7 @@ angular.module('starter')
 
             // get user data
             QuantiModo.getUser = function(successHandler, errorHandler){
-                QuantiModo.get('/api/user/me',
+                QuantiModo.get('api/user/me',
                     [],
                     {},
                     successHandler,
@@ -269,7 +269,7 @@ angular.module('starter')
 
             // get reminders
             QuantiModo.getTrackingReminders = function(successHandler, errorHandler){
-                QuantiModo.get('/api/v1/trackingReminders',
+                QuantiModo.get('api/v1/trackingReminders',
                     [],
                     {},
                     successHandler,
@@ -278,7 +278,7 @@ angular.module('starter')
 
             // get pending reminders 
             QuantiModo.getTrackingReminderNotifications = function(successHandler, errorHandler){
-                QuantiModo.get('/api/v1/trackingReminderNotifications',
+                QuantiModo.get('api/v1/trackingReminderNotifications',
                     [],
                     {},
                     successHandler,
@@ -308,7 +308,7 @@ angular.module('starter')
 
             // delete tracking reminder
             QuantiModo.deleteTrackingReminder = function(reminder, successHandler, errorHandler){
-                QuantiModo.post('/api/v1/trackingReminders/delete',
+                QuantiModo.post('api/v1/trackingReminders/delete',
                     ['id'],
                     {id: reminder},
                     successHandler,
@@ -317,7 +317,7 @@ angular.module('starter')
 
             // snooze tracking reminder
             QuantiModo.snoozeTrackingReminder = function(reminder, successHandler, errorHandler){
-                QuantiModo.post('/api/v1/trackingReminderNotifications/snooze',
+                QuantiModo.post('api/v1/trackingReminderNotifications/snooze',
                     ['id'],
                     {id: reminder},
                     successHandler,
@@ -326,7 +326,7 @@ angular.module('starter')
 
             // skip tracking reminder
             QuantiModo.skipTrackingReminder = function(reminder, successHandler, errorHandler){
-                QuantiModo.post('/api/v1/trackingReminderNotifications/skip',
+                QuantiModo.post('api/v1/trackingReminderNotifications/skip',
                     ['id'],
                     {id: reminder},
                     successHandler,
@@ -335,7 +335,7 @@ angular.module('starter')
 
             // track tracking reminder with default value
             QuantiModo.trackTrackingReminder = function(reminder, successHandler, errorHandler){
-                QuantiModo.post('/api/v1/trackingReminderNotifications/track',
+                QuantiModo.post('api/v1/trackingReminderNotifications/track',
                     ['id'],
                     {id: reminder},
                     successHandler,
