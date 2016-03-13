@@ -1,8 +1,10 @@
 angular.module('starter')
-    
     // Parent Controller
     // This controller runs before every one else
-	.controller('AppCtrl', function($scope, $ionicModal, $timeout, $injector, utilsService, authService, measurementService, $ionicPopover, $ionicLoading, $state, $ionicHistory, QuantiModo, notificationService, $rootScope, localStorageService, reminderService, $ionicPopup) {
+	.controller('AppCtrl', function($scope, $ionicModal, $timeout, $injector, utilsService, authService,
+                                    measurementService, $ionicPopover, $ionicLoading, $state, $ionicHistory,
+                                    QuantiModo, notificationService, $rootScope, localStorageService, reminderService,
+                                    $ionicPopup) {
 
     // flags
     $scope.controller_name = "AppCtrl";
@@ -427,7 +429,7 @@ angular.module('starter')
             url += "&redirect_uri=https://app.quantimo.do/ionic/Modo/www/callback";
 
             console.log('open the auth window via inAppBrowser.');
-			var ref = cordova.InAppBrowser.open(url,'_blank', 'location=no,toolbar=yes');
+			var ref = window.open(url,'_blank', 'location=no,toolbar=yes');
 
             console.log('listen to its event when the page changes');
 			ref.addEventListener('loadstart', function(event) {
