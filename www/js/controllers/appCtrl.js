@@ -117,13 +117,13 @@ angular.module('starter')
     	.then(function(response) {
     		
             if(response.error){
-                console.error("error in generating access token");
+                console.error("Error generating access token");
                 console.log('response', response);
                 // set flags
                 $scope.isLoggedIn = false;
                 localStorageService.setItem('isLoggedIn', false);
             } else {
-                console.log("access token recieved",response);
+                console.log("Access token received",response);
                 if(typeof withJWT !== "undefined" && withJWT === true) authService.updateAccessToken(response, withJWT);
                 else authService.updateAccessToken(response);
                 
@@ -427,32 +427,31 @@ angular.module('starter')
             url += "&redirect_uri=https://app.quantimo.do/ionic/Modo/www/callback";
 
             console.log('open the auth window via inAppBrowser.');
-			var ref = window.open(url,'_blank', 'location=no,toolbar=yes');
+			var ref = cordova.InAppBrowser.open(url,'_blank', 'location=no,toolbar=yes');
 
             console.log('listen to its event when the page changes');
 			ref.addEventListener('loadstart', function(event) {
-				
-                console.log('the loadstart url is', event.url);
 
-                console.log('check if changed url is the same as redirection url.');
+                console.log(JSON.stringify(event));
+                console.log('The event.url is ' + event.url);
+
+                console.log('Checking if changed url is the same as redirection url.');
                 if(utilsService.startsWith(event.url, "https://app.quantimo.do/ionic/Modo/www/callback/")) {
 
-                    console.log('if there is no error');
+                    console.log('event.url starts with https://app.quantimo.do/ionic/Modo/www/callback/ ');
                     if(!utilsService.getUrlParameter(event.url,'error')) {
 
-                        console.log('extract request token.');
-						var requestToken = utilsService.getUrlParameter(event.url, 'code');
-                        console.log('code found', requestToken);
+                        console.log('extracting request token.');
+						var authorizationCode = utilsService.getUrlParameter(event.url, 'code');
+                        console.log('Authorization code is ' + authorizationCode);
 
-                        if(requestToken === false) requestToken = utilsService.getUrlParameter(event.url, 'token');
-                        
-                        console.log('token found', requestToken);
+                        if(authorizationCode === false) authorizationCode = utilsService.getUrlParameter(event.url, 'token');
 
-                        console.log('close inAppBrowser.');
+                        console.log('Closing inAppBrowser.');
                         ref.close();
 
-                        console.log('get auth token from request token.');
-                        $scope.getAuthToken(requestToken);
+                        console.log('Going to get an access token using authorization code.');
+                        $scope.getAuthToken(authorizationCode);
 
 					} else {
 
