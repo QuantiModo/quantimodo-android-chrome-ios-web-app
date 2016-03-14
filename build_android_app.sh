@@ -33,6 +33,31 @@ sudo usermod -aG docker vagrant
 
 
 sudo docker run -ti -p 8100:8100 -p 35729:35729 -v /vagrant/public.built/ionic/Modo/:/myApp gleclaire/ionic-framework /bin/bash
+
+
+android list sdk --all
+
+# Android SDK Build-tools, revision 23.0.2
+android update sdk -u -a -t 6
+
+# Google APIs, Android API 23, revision 1
+android update sdk -u -a -t 109
+
+# SDK Platform Android 6.0, API 23, revision 2
+android update sdk -u -a -t 28
+
+# Sources for Android SDK, API 23, revision 1
+android update sdk -u -a -t 142
+
+# Android Support Libraries
+android update sdk -u -a -t 153
+android update sdk -u -a -t 154
+
+# Android target 22
+android update sdk -u -a -t 26
+android update sdk -u -a -t 4
+android update sdk -u -a -t 2
+
 # npm install -g ionic
 npm install -g ionic
 ionic plugin add cordova-plugin-inappbrowser
