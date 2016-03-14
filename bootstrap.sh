@@ -3,6 +3,14 @@
 ANDROID_SDK_FILENAME=android-sdk_r24.2-linux.tgz
 ANDROID_SDK=http://dl.google.com/android/$ANDROID_SDK_FILENAME
 
+#npm uninstall cordova ionic
+#npm cache clean -f
+#npm install npm -g
+#npm uninstall node
+#apt-get purge npm
+#apt-get install npm
+#npm install node -g
+
 #sudo apt-get install python-software-properties
 #sudo add-apt-repository ppa:webupd8team/java
 apt-get update

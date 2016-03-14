@@ -9,6 +9,7 @@ angular.module('starter')
 	    	showMeasurementBox : false,
 	    	selectedReminder : false,
 	    	reminderDefaultValue : "",
+	    	selected1to5Value : false,
 	    	allReminders : [
 	    	],
 	    	trackingRemindersNotifications : [
@@ -24,6 +25,19 @@ angular.module('starter')
 			variable : {},
 			isDisabled : false
 	    };
+
+	    $scope.select_tracking_factor = function($event, val){
+	        // remove any previous tracking factors if present
+	        jQuery('.tracking_factors .active_tracking_factor').removeClass('active_tracking_factor');
+
+	        // make this tracking factor glow visually
+	        jQuery($event.target).addClass('active_tracking_factor');
+
+	        jQuery($event.target).parent().removeClass('tracking_factor_history').addClass('tracking_factor_history');
+
+	        $scope.state.selected1to5Value = val;
+
+		};
 
 	    var filterViaDates = function(reminders){
 
@@ -218,7 +232,6 @@ angular.module('starter')
 	    	$scope.state.reminderDefaultValue = value;
 	    	$scope.state.slots.epochTime = moment(dateTime).unix();
 	    	$scope.state.measurementDate = moment(dateTime)._d;
-
 	    	getVariable(variableName);
 	    };
 
@@ -304,6 +317,9 @@ angular.module('starter')
 	    	    isAvg : isAvg
 	    	};
 
+	    	if($scope.state.selectedReminder.abbreviatedUnitName === '/5') 
+	    		params.value = $scope.state.selected1to5Value;
+
 	    	utils.startLoading();
     		var usePromise = true;
     	    // post measurement
@@ -339,6 +355,16 @@ angular.module('starter')
 	    	$scope.state.reminderDefaultValue = reminder.defaultValue;
 	    	$scope.state.slots.epochTime = moment.utc(reminder.trackingReminderNotificationTime).unix();
 	    	$scope.state.measurementDate = new Date(reminder.trackingReminderNotificationTime);
+
+	    	if($scope.state.selectedReminder.abbreviatedUnitName === '/5'){
+	    		setTimeout(function(){
+	    			jQuery('.tracking_factors .active_tracking_factor').removeClass('active_tracking_factor');
+	    			jQuery('.tracking_factors img:nth-child('+ reminder.defaultValue +')').addClass('active_tracking_factor');
+	    			jQuery('.tracking_factors img:nth-child('+ reminder.defaultValue +')').parent().removeClass('tracking_factor_history').addClass('tracking_factor_history');
+	    		}, 500);
+
+	    		$scope.state.selected1to5Value = reminder.defaultValue;
+	    	}
 	    };
 
 	    $scope.edit = function(reminder){

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>MoodiModo Settings</title>
+	<link id="favicon" rel="icon" type="image/png" sizes="16x16" href="images/icon_16.png">
+	
+	<link rel="stylesheet" href="options-shared.css">
+	<link rel="stylesheet" href="navigation.css">
+	
+	<script src="navigation.js"></script>
+</head>
+
+<body style="height: 100%;">
+	<div id="navigation" data-width="155" class="changing-content" style="-webkit-transform: translateX(0px); font-family: 'Segoe UI', Tahoma, sans-serif; font-size: 75%; width: 155px; margin-top: -20px; z-index: 3; left: 0; height: 100%;">
+		<h1>MoodiModo</h1>
+		<ul>
+		  <li id="appearanceButton">
+			<button class="custom-appearance">Appearance</button>
+		  </li>
+		  <li id="settingsButton" class="selected" onclick="showSettings()">
+			<button class="custom-appearance">Settings</button>
+		  </li>
+		  <li id="helpNavItem">
+			<button class="custom-appearance">Help</button>
+		  </li>
+		</ul>
+	</div>
+	<div id="settingsContent" class="iframe-container" style="bottom: 0; left: 155px; position: absolute; right: 0;top: 0; z-index: 2;">
+		<iframe src="settings.html" style="border: none; display: block; height: 100%; width: 100%;"></iframe>
+	</div>
+	<div id="appearanceContent" class="iframe-container" style="bottom: 0; left: 155px; position: absolute; right: 0;top: 0; z-index: 1;">
+		<iframe src="appearance.html" style="border: none; display: block; height: 100%; width: 100%;"></iframe>
+	</div>
+</body>
+</html>
