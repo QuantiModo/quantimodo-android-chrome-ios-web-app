@@ -2,11 +2,11 @@ angular.module('starter')
 	// returns the Image string against value
 	.filter('ImageByValue', function(){
 	    return function(value){
-	        return config.getImageForTrackingFactorByNumber(value);
+	        return config.getImageForPrimaryOutcomeVariableByNumber(value);
 	    }
 	})
-	.filter('TrackingFactorByNumber', function(){
+	.filter('PrimaryOutcomeVariableByNumber', function(){
 		return function(value){
-			return config.getTrackingFactorByNumber(value);
+			return config.getPrimaryOutcomeVariableByNumber(value);
 		}
 	})

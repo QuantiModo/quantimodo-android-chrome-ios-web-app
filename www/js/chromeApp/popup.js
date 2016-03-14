@@ -81,7 +81,7 @@ var updateMood = function(mood,moodVal,report_time,done){
 
     // update localstorage
     var obj = {};
-    obj[config.appSettings.storage_identifier+'lastReportedTrackingFactorValue'] = mood;
+    obj[config.appSettings.storage_identifier+'lastReportedPrimaryOutcomeVariableValue'] = mood;
     chrome.storage.local.set({'mood':mood},function(){});
 
     chrome.storage.local.get([config.appSettings.storage_identifier+'allData',
