@@ -8,17 +8,17 @@ ul > li {
 	font-size: 16px;
 }
 
-.tracking_factors {
+.primary_outcome_variables {
 	text-align: center;
 }
 
-.tracking_factors > img {
+.primary_outcome_variables > img {
 	width: 18%;
 	padding:5px;
     max-width: 100px;
 }
 
-.tracking_factor_history > img{
+.primary_outcome_variable_history > img{
     opacity: 0.5;
 }
 
@@ -131,7 +131,7 @@ iframe {
 	height:auto !important;
 }
 
-.active_tracking_factor {
+.active_primary_outcome_variable {
     opacity: 1.0 !important;
 }
 
