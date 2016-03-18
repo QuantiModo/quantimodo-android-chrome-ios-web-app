@@ -28,6 +28,12 @@ config.appSettings  = {
 
     storage_identifier: 'MedTLCData*',
 
+    features: [
+        ' - Automatically backup and sync your data across devices',
+        ' - Track diet, treatments, symptoms, and anything else',
+        ' - Analyze your data to see the top predictors for your Mood'
+    ],
+
     primary_tracking_factor_details : {
         id : 1398,
         name : "Overall Mood",
