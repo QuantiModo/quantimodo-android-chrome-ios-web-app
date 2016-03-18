@@ -30,8 +30,8 @@ angular.module('starter')
         });
 
         
-        // when a tracking_factor is reported
-        $scope.report_tracking_factor = function(tracking_factor) {
+        // when a primary_outcome_variable is reported
+        $scope.report_primary_outcome_variable = function(primary_outcome_variable) {
             // when a primary_outcome_variable is reported
             $scope.report_primary_outcome_variable = function (primary_outcome_variable) {
 
