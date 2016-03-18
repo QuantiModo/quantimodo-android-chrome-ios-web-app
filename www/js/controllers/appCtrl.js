@@ -24,9 +24,9 @@ angular.module('starter')
     
     /*Wrapper Config*/
     $scope.view_title = config.appSettings.app_name;
-    $scope.tracking_factor = config.appSettings.tracking_factor;
-    $scope.tracking_factor_options = config.getTrackingFactorOptions();
-    $scope.tracking_factor_numbers = config.getTrackingFactorOptions(true);
+    $scope.primary_outcome_variable = config.appSettings.primary_outcome_variable;
+    $scope.primary_outcome_variable_options = config.getPrimaryOutcomeVariableOptions();
+    $scope.primary_outcome_variable_numbers = config.getPrimaryOutcomeVariableOptions(true);
     $scope.welcome_text = config.appSettings.welcome_text;
     $scope.tracking_question = config.appSettings.tracking_question;
     $scope.factor_average_text = config.appSettings.factor_average_text;
@@ -245,11 +245,11 @@ angular.module('starter')
             
             //Set out localstorage flag for welcome screen variables
             localStorageService.setItem('interval',true);
-            localStorageService.setItem('trackingFactorReportedWelcomeScreen',true);
+            localStorageService.setItem('primaryOutcomeVariableReportedWelcomeScreen',true);
             localStorageService.setItem('allData',JSON.stringify([]));
 
             // calculate tracking factor and chart data
-            measurementService.calculateAverageTrackingFactorValue().then(function(){
+            measurementService.calculateAveragePrimaryOutcomeVariableValue().then(function(){
                 measurementService.calculateBothChart();
                 measurementService.resetSyncFlag();
                 //hard reload
@@ -276,14 +276,14 @@ angular.module('starter')
             //Set out localstorage flag for welcome screen variables
             localStorageService.setItem('isLoggedIn',false);
             localStorageService.setItem('interval',true);
-            localStorageService.setItem('trackingFactorReportedWelcomeScreen',true);
+            localStorageService.setItem('primaryOutcomeVariableReportedWelcomeScreen',true);
             localStorageService.deleteItem('accessToken');
             localStorageService.deleteItem('refreshToken');
             localStorageService.deleteItem('expiresAt');
             
 
             // calculate tracking factor and chart data
-            measurementService.calculateAverageTrackingFactorValue().then(function(){
+            measurementService.calculateAveragePrimaryOutcomeVariableValue().then(function(){
                 measurementService.calculateBothChart();
                 measurementService.resetSyncFlag();
                 //hard reload
@@ -676,8 +676,8 @@ angular.module('starter')
                     showLoader('Calculating stuff');
                     
                     // calculate tracking factor values
-                    measurementService.calculateAverageTrackingFactorValue().then(function(){
-                        measurementService.getTrackingFactorValue().then(calculateChartValues, calculateChartValues);
+                    measurementService.calculateAveragePrimaryOutcomeVariableValue().then(function(){
+                        measurementService.getPrimaryOutcomeVariableValue().then(calculateChartValues, calculateChartValues);
                     });
 
                 }, hideLoaderMove);

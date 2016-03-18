@@ -16,10 +16,10 @@ angular.module('starter')
 	                        }
 	                    },
 	                    title : {
-	                        text : config.appSettings.tracking_factor+ ' Distribution'
+	                        text : config.appSettings.primary_outcome_variable+ ' Distribution'
 	                    },
 	                    xAxis : {
-	                        categories : config.getTrackingFactorOptionLabels()
+	                        categories : config.getPrimaryOutcomeVariableOptionLabels()
 	                    },
 	                    yAxis : {
 	                        title : {
@@ -57,7 +57,7 @@ angular.module('starter')
 	                    colors : [ "#55000000", "#5D83FF", "#68B107", "#ffbd40", "#CB0000" ]
 	                },
 	                series: [{
-	                    name : config.appSettings.tracking_factor,
+	                    name : config.appSettings.primary_outcome_variable,
 	                    data: data
 	                }]
 	            };
@@ -72,7 +72,7 @@ angular.module('starter')
 	        			    enabled : false
 	        			},
 	        			title: {
-	        			    text: config.appSettings.tracking_factor+' Over Time'
+	        			    text: config.appSettings.primary_outcome_variable+' Over Time'
 	        			},
 	        			xAxis : {
 	        				type: 'datetime',
@@ -111,7 +111,7 @@ angular.module('starter')
                         }
 	        		},
 	        		series :[{
-			            name : config.appSettings.tracking_factor,
+			            name : config.appSettings.primary_outcome_variable,
 			            data : data,
 			            tooltip: {
 			                valueDecimals: 2

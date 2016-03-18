@@ -213,15 +213,15 @@ window.config = {
 config.appSettings  = {
     app_name : 'EnergyModo',
 
-    tracking_factor : 'Energy',
+    primary_outcome_variable : 'Energy',
 
     storage_identifier: 'EnergyModoData*',
       
-    primary_tracking_factor_details : { ... },
+    primary_outcome_variable_details : { ... },
 
-    tracking_factors_options_labels : [ ... ],
+    primary_outcome_variables_options_labels : [ ... ],
 
-    tracking_factor_options : [ ... ],
+    primary_outcome_variable_options : [ ... ],
 
     welcome_text:"Let's start off by reporting your Energy on the card below",
     
@@ -243,14 +243,14 @@ config.appSettings  = {
 
 `app_name` :  The Name of your app.
 
-`tracking_factor` : The primary outcome variable you are tracking (like Mood or Energy etc.)
+`primary_outcome_variable` : The primary outcome variable you are tracking (like Mood or Energy etc.)
 
 `storage_identifier` : a unique to your app string that will be prepended to any key stored in `localStorage`. (no spaces or any characters not allowed in keys)
 
-`primary_tracking_factor_details`
+`primary_outcome_variable_details`
 
 ```
-primary_tracking_factor_details : {
+primary_outcome_variable_details : {
    name : "Overall Energy",
    category : "Energy",
    unit : "/5",
@@ -264,9 +264,9 @@ primary_tracking_factor_details : {
 `combinationOperation` : MEAN or SUM depending upon your tracking factor.
 
 
-`tracking_factors_options_labels`
+`primary_outcome_variables_options_labels`
 ```
-tracking_factors_options_labels : { 
+primary_outcome_variables_options_labels : { 
     'lowest', 
     'low', 
     'average', 
@@ -276,9 +276,9 @@ tracking_factors_options_labels : {
 ```
 These will be used on the charts, to represent the individual bars for the 5 different values. (replace them with values that you want to represent your bars with in the charts).
 
-`tracking_factor_options`
+`primary_outcome_variable_options`
 ```
-tracking_factor_options : [
+primary_outcome_variable_options : [
         {
             value: 'lowest',
             img: 'img/ic_1.png'
@@ -303,7 +303,7 @@ tracking_factor_options : [
 ```
 These are the five options (available on the Trrack page) that the users will rate. Each of the option has an `image` (that will replace the emoji) and `value` (the quantifiable value the image represents).
 
-**Note**: Make sure the values match with the values in the `tracking_factors_options_labels`. 
+**Note**: Make sure the values match with the values in the `primary_outcome_variables_options_labels`. 
 
 `welcome_text` : The text app greets the user with when the app is opened for the first time.
 

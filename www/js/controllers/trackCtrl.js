@@ -1,11 +1,39 @@
 angular.module('starter')
 
     // Controls the Track Page of the App
-    .controller('TrackCtrl', function($scope, $ionicModal, $state, $timeout, utilsService, authService, measurementService, chartService, $ionicPopup,localStorageService) {
+    .controller('TrackCtrl', function($scope, $ionicModal, $state, $timeout, utilsService, authService, measurementService, chartService, $ionicPopup, localStorageService) {
         $scope.controller_name = "TrackCtrl";
+        
+        $scope.not_show_help_popup;
+        localStorageService.getItem('not_show_help_popup',function(val){
+            $scope.not_show_help_popup = val ? JSON.parse(val) : false;
+
+            if(!$scope.not_show_help_popup){
+                $ionicPopup.show({
+                    title: config.appSettings.popup_messages.track.message,
+                    subTitle: '',
+                    scope:$scope,
+                    template:'<label><input type="checkbox" ng-model="$parent.not_show_help_popup" class="show-again-checkbox">Don\'t show help popup\'s again</label>',
+                    buttons:[
+                        {   
+                            text: 'OK',
+                            type: 'button-calm',
+                            onTap: function(){
+                                localStorageService.setItem('not_show_help_popup',JSON.stringify($scope.not_show_help_popup));
+                            }
+                        }
+                    ]
+
+                });
+
+            }
+        });
+
         
         // when a tracking_factor is reported
         $scope.report_tracking_factor = function(tracking_factor){
+        // when a primary_outcome_variable is reported
+        $scope.report_primary_outcome_variable = function(primary_outcome_variable){
             
             // flag for blink effect
             $scope.timeRemaining = true;
@@ -17,13 +45,13 @@ angular.module('starter')
             }
 
             // update localstorage
-            measurementService.updateTrackingFactorLocally(tracking_factor).then(function () {
+            measurementService.updatePrimaryOutcomeVariableLocally(primary_outcome_variable).then(function () {
                 
                 // try to send the data to server
-                measurementService.updateTrackingFactor(tracking_factor);
+                measurementService.updatePrimaryOutcomeVariable(primary_outcome_variable);
 
                 // calculate charts data
-                measurementService.calculateAverageTrackingFactorValue().then(function(){
+                measurementService.calculateAveragePrimaryOutcomeVariableValue().then(function(){
                     
                     setTimeout(function(){
                         $scope.timeRemaining = false;
@@ -38,11 +66,11 @@ angular.module('starter')
         };
 
         // Update Trackng Factor images via an integer
-        var updateTrackingFactorView = function(tracking_factor){
-            var val = config.appSettings.conversion_dataset[tracking_factor];
+        var updatePrimaryOutcomeVariableView = function(primary_outcome_variable){
+            var val = config.appSettings.conversion_dataset[primary_outcome_variable];
             if(val){
-                $scope.averageTrackingFactorImage = config.getImageForTrackingFactorByValue(val);
-                $scope.averageTrackingFactorValue = val;
+                $scope.averagePrimaryOutcomeVariableImage = config.getImageForPrimaryOutcomeVariableByValue(val);
+                $scope.averagePrimaryOutcomeVariableValue = val;
             }
             console.log("updated");
             
@@ -86,9 +114,9 @@ angular.module('starter')
 
         // updates all the visual elements on the page
         var draw = function(){
-            localStorageService.getItem('averageTrackingFactorValue',function(averageTrackingFactorValue){
-                if(averageTrackingFactorValue){
-                    updateTrackingFactorView(averageTrackingFactorValue);
+            localStorageService.getItem('averagePrimaryOutcomeVariableValue',function(averagePrimaryOutcomeVariableValue){
+                if(averagePrimaryOutcomeVariableValue){
+                    updatePrimaryOutcomeVariableView(averagePrimaryOutcomeVariableValue);
                 }
 
                 // update line chart
@@ -124,8 +152,8 @@ angular.module('starter')
 
             // flags
             $scope.timeRemaining = false;
-            $scope.averageTrackingFactorImage = false;
-            $scope.averageTrackingFactorValue = false;
+            $scope.averagePrimaryOutcomeVariableImage = false;
+            $scope.averagePrimaryOutcomeVariableValue = false;
 
             // chart flags
             $scope.lineChartConfig = false; 
