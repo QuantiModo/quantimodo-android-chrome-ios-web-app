@@ -16,8 +16,8 @@
             <div class="list">
 				
 				<div class="row" ng-if="state.selectedReminder.abbreviatedUnitName == '/5' " >
-					<div class="tracking_factors col">
-						<img ng-repeat="option in tracking_factor_numbers" ng-click="select_tracking_factor($event, option.value)" ng-src="{{option.img}}">
+					<div class="primary_outcome_variables col">
+						<img ng-repeat="option in primary_outcome_variable_numbers" ng-click="select_primary_outcome_variable($event, option.value)" ng-src="{{option.img}}">
 					</div>
 				</div>
 				<div ng-if="state.selectedReminder.abbreviatedUnitName != '/5' ">

@@ -9,11 +9,11 @@ angular.module('starter')
 			// measurements set
 			var measurements = [
 				{					
-                    name: config.appSettings.primary_tracking_factor_details.name,
+                    name: config.appSettings.primary_outcome_variable_details.name,
                     source: config.get('client_source_name'),
-                    category: config.appSettings.primary_tracking_factor_details.category,
-                    combinationOperation: config.appSettings.primary_tracking_factor_details.combinationOperation,
-                    unit: config.appSettings.primary_tracking_factor_details.unit,
+                    category: config.appSettings.primary_outcome_variable_details.category,
+                    combinationOperation: config.appSettings.primary_outcome_variable_details.combinationOperation,
+                    unit: config.appSettings.primary_outcome_variable_details.unit,
                     measurements : measurementsQueue
 				}
 			];
@@ -133,17 +133,17 @@ angular.module('starter')
 			},
 
 			// update tracking factor in local storage
-			updateTrackingFactorLocally : function(tracking_factor){
-                console.log("reported", tracking_factor);
+			updatePrimaryOutcomeVariableLocally : function(primary_outcome_variable){
+                console.log("reported", primary_outcome_variable);
                 var deferred = $q.defer();
 
 				var report_time = Math.floor(new Date().getTime()/1000);
-                var val = tracking_factor;
+                var val = primary_outcome_variable;
 
                 // if val is string (needs conversion)
-                if(isNaN(parseFloat(tracking_factor))){
-                    val = config.appSettings.conversion_dataset_reversed[tracking_factor] ? 
-                        config.appSettings.conversion_dataset_reversed[tracking_factor] : false;
+                if(isNaN(parseFloat(primary_outcome_variable))){
+                    val = config.appSettings.conversion_dataset_reversed[primary_outcome_variable] ?
+                        config.appSettings.conversion_dataset_reversed[primary_outcome_variable] : false;
                 } 
 
                 function checkSync(){
@@ -164,7 +164,7 @@ angular.module('starter')
                     if(val){
 
                         // update localStorage
-                        localStorageService.setItem('lastReportedTrackingFactorValue', val);
+                        localStorageService.setItem('lastReportedPrimaryOutcomeVariableValue', val);
 
                         // update full data
                         localStorageService.getItem('allData',function(allData){
@@ -177,7 +177,7 @@ angular.module('starter')
                                     humanTime : {
                                         date : new Date().toISOString()
                                     },
-                                    unit: config.appSettings.primary_tracking_factor_details.unit
+                                    unit: config.appSettings.primary_outcome_variable_details.unit
                                 };
 
                                 allData = JSON.parse(allData);
@@ -216,20 +216,20 @@ angular.module('starter')
 			},
 
 			// update tracking factor request to QuantiModo API
-			updateTrackingFactor : function(tracking_factor){
+			updatePrimaryOutcomeVariable : function(primary_outcome_variable){
 
 				var report_time  = new Date().getTime();
                 
-                var val = tracking_factor;
+                var val = primary_outcome_variable;
 
                 // if val is string (needs conversion)
-                if(isNaN(parseFloat(tracking_factor))){
-                    val = config.appSettings.conversion_dataset_reversed[tracking_factor] ? 
-                    config.appSettings.conversion_dataset_reversed[tracking_factor] : false;
+                if(isNaN(parseFloat(primary_outcome_variable))){
+                    val = config.appSettings.conversion_dataset_reversed[primary_outcome_variable] ?
+                    config.appSettings.conversion_dataset_reversed[primary_outcome_variable] : false;
                 } 
 
                 if(val){
-                    localStorageService.setItem('lastReportedTrackingFactorValue', val);
+                    localStorageService.setItem('lastReportedPrimaryOutcomeVariableValue', val);
                     
                     // check queue
                     localStorageService.getItem('measurementsQueue',function(measurementsQueue){
@@ -325,16 +325,16 @@ angular.module('starter')
 			},
 
 			// edit existing measurement
-			editTrackingFactor : function(timestamp, val, note){
+			editPrimaryOutcomeVariable : function(timestamp, val, note){
 				var deferred = $q.defer();
 				// measurements set
 				var measurements = [
 					{
-					   	name: config.appSettings.primary_tracking_factor_details.name,
+					   	name: config.appSettings.primary_outcome_variable_details.name,
                         source: config.get('client_source_name'),
-                        category: config.appSettings.primary_tracking_factor_details.category,
-                        combinationOperation: config.appSettings.primary_tracking_factor_details.combinationOperation,
-                        unit: config.appSettings.primary_tracking_factor_details.unit,
+                        category: config.appSettings.primary_outcome_variable_details.category,
+                        combinationOperation: config.appSettings.primary_outcome_variable_details.combinationOperation,
+                        unit: config.appSettings.primary_outcome_variable_details.unit,
 					   	measurements : [{
 					   		timestamp:  timestamp,
 					   		value: val,
@@ -393,7 +393,7 @@ angular.module('starter')
                 localStorageService.getItem('lastUpdated',function(val){
                     lastUpdated = val || 0;
                     params = {
-                        variableName : config.appSettings.primary_tracking_factor_details.name,
+                        variableName : config.appSettings.primary_outcome_variable_details.name,
                         // 'lastUpdated':'(ge)'+lastUpdated ,
                         sort : '-updatedTime',
                         limit:200,
@@ -508,7 +508,7 @@ angular.module('starter')
 			},
 
 			// calculate average from local data
-			calculateAverageTrackingFactorValue : function(){
+			calculateAveragePrimaryOutcomeVariableValue : function(){
 				var deferred = $q.defer();
 				var data;
                 getAllData(false,function(allData){
@@ -528,7 +528,7 @@ angular.module('starter')
                         var avgVal = Math.round(sum/(data.length-zeroes));
 
                         // set localstorage values
-                        localStorageService.setItem('averageTrackingFactorValue',avgVal);
+                        localStorageService.setItem('averagePrimaryOutcomeVariableValue',avgVal);
                         deferred.resolve(avgVal);
                     }
                 });
@@ -536,15 +536,15 @@ angular.module('starter')
 			},
 
 			// get average tracking factor from local stroage
-			getTrackingFactorValue : function(){
+			getPrimaryOutcomeVariableValue : function(){
 				var deferred = $q.defer();
 
 				// return from localstorage if present
-                localStorageService.getItem('averageTrackingFactorValue',function(averageTrackingFactorValue){
-                    if(averageTrackingFactorValue) deferred.resolve(averageTrackingFactorValue)
+                localStorageService.getItem('averagePrimaryOutcomeVariableValue',function(averagePrimaryOutcomeVariableValue){
+                    if(averagePrimaryOutcomeVariableValue) deferred.resolve(averagePrimaryOutcomeVariableValue)
                     else {
                         // calculate it again if not found
-                        measurementService.calculateAverageTrackingFactorValue()
+                        measurementService.calculateAveragePrimaryOutcomeVariableValue()
                             .then(function(val){
                                 deferred.resolve(val);
                             }, function(){
@@ -569,7 +569,7 @@ angular.module('starter')
                         var barChartArray = [0,0,0,0,0];
 
                         for(var i = 0; i<data.length; i++){
-                            if(data[i].unit == config.appSettings.primary_tracking_factor_details.unit && ( Math.ceil(data[i].value)-1) <= 4 ){
+                            if(data[i].unit == config.appSettings.primary_outcome_variable_details.unit && ( Math.ceil(data[i].value)-1) <= 4 ){
                                 barChartArray[Math.ceil(data[i].value)-1]++;
                             }
                         }
@@ -610,7 +610,7 @@ angular.module('starter')
                         for(var i = 0; i<data.length; i++)
                         {
                             var current_value = current_value;
-                            if(data[i].unit == config.appSettings.primary_tracking_factor_details.unit && (current_value-1) <= 4 && (current_value-1) >= 0){
+                            if(data[i].unit == config.appSettings.primary_outcome_variable_details.unit && (current_value-1) <= 4 && (current_value-1) >= 0){
                                 lineChartArray.push([moment(data[i].humanTime.date).unix(), (current_value-1)*25] );
                             }
                         }
@@ -651,7 +651,7 @@ angular.module('starter')
 
                         for(var i = 0; i<data.length; i++){
                             var current_value = Math.ceil(data[i].value);
-                            if(data[i].unit == config.appSettings.primary_tracking_factor_details.unit && (current_value-1) <= 4 && (current_value-1) >= 0){
+                            if(data[i].unit == config.appSettings.primary_outcome_variable_details.unit && (current_value-1) <= 4 && (current_value-1) >= 0){
                                 lineArr.push([moment(data[i].humanTime.date).unix()*1000, (current_value-1)*25] );
                                 barArr[current_value-1]++;
                             }

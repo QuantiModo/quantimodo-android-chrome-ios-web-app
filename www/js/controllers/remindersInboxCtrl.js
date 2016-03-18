@@ -26,14 +26,14 @@ angular.module('starter')
 			isDisabled : false
 	    };
 
-	    $scope.select_tracking_factor = function($event, val){
+	    $scope.select_primary_outcome_variable = function($event, val){
 	        // remove any previous tracking factors if present
-	        jQuery('.tracking_factors .active_tracking_factor').removeClass('active_tracking_factor');
+	        jQuery('.primary_outcome_variables .active_primary_outcome_variable').removeClass('active_primary_outcome_variable');
 
 	        // make this tracking factor glow visually
-	        jQuery($event.target).addClass('active_tracking_factor');
+	        jQuery($event.target).addClass('active_primary_outcome_variable');
 
-	        jQuery($event.target).parent().removeClass('tracking_factor_history').addClass('tracking_factor_history');
+	        jQuery($event.target).parent().removeClass('primary_outcome_variable_history').addClass('primary_outcome_variable_history');
 
 	        $scope.state.selected1to5Value = val;
 
@@ -358,9 +358,9 @@ angular.module('starter')
 
 	    	if($scope.state.selectedReminder.abbreviatedUnitName === '/5'){
 	    		setTimeout(function(){
-	    			jQuery('.tracking_factors .active_tracking_factor').removeClass('active_tracking_factor');
-	    			jQuery('.tracking_factors img:nth-child('+ reminder.defaultValue +')').addClass('active_tracking_factor');
-	    			jQuery('.tracking_factors img:nth-child('+ reminder.defaultValue +')').parent().removeClass('tracking_factor_history').addClass('tracking_factor_history');
+	    			jQuery('.primary_outcome_variables .active_primary_outcome_variable').removeClass('active_primary_outcome_variable');
+	    			jQuery('.primary_outcome_variables img:nth-child('+ reminder.defaultValue +')').addClass('active_primary_outcome_variable');
+	    			jQuery('.primary_outcome_variables img:nth-child('+ reminder.defaultValue +')').parent().removeClass('primary_outcome_variable_history').addClass('primary_outcome_variable_history');
 	    		}, 500);
 
 	    		$scope.state.selected1to5Value = reminder.defaultValue;

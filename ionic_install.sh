@@ -113,8 +113,11 @@ if [ "$JAVA_HOME" != "" ]; then
 fi
 
 # Install Apache Cordova and Ionic Framework
-npm install -g cordova
-npm install -g ionic
+npm install -g cordova ionic gulp bower
+npm install
+
+sudo apt-get install npm
+sudo npm install gulp --no-bin-links
 
 cd "$INSTALL_PATH" && chmod 777 "node" -R
 cd "$INSTALL_PATH" && chmod 777 "gradle" -R
@@ -125,17 +128,22 @@ cd ~/Desktop && rm "nodejs.tgz"
 cd ~/Desktop && rm "gradle.zip"
 
 android list sdk --all
-# 6- Android SDK Build-tools, revision 23.0.2
+
+# Android SDK Build-tools, revision 23.0.2
 android update sdk -u -a -t 6
 
-#109- Google APIs, Android API 23, revision 1
+# Google APIs, Android API 23, revision 1
 android update sdk -u -a -t 109
 
-# 28- SDK Platform Android 6.0, API 23, revision 2
+# SDK Platform Android 6.0, API 23, revision 2
 android update sdk -u -a -t 28
 
-# 142- Sources for Android SDK, API 23, revision 1
+# Sources for Android SDK, API 23, revision 1
 android update sdk -u -a -t 142
+
+# Android Support Libraries
+android update sdk -u -a -t 153
+android update sdk -u -a -t 154
 
 
 echo "----------------------------------"
