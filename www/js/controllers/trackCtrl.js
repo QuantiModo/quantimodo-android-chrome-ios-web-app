@@ -31,38 +31,39 @@ angular.module('starter')
 
         
         // when a tracking_factor is reported
-        $scope.report_tracking_factor = function(tracking_factor){
-        // when a primary_outcome_variable is reported
-        $scope.report_primary_outcome_variable = function(primary_outcome_variable){
-            
-            // flag for blink effect
-            $scope.timeRemaining = true;
+        $scope.report_tracking_factor = function(tracking_factor) {
+            // when a primary_outcome_variable is reported
+            $scope.report_primary_outcome_variable = function (primary_outcome_variable) {
 
-            if(window.chrome && window.chrome.browserAction){
-                chrome.browserAction.setBadgeText({
-                    text: ""
+                // flag for blink effect
+                $scope.timeRemaining = true;
+
+                if (window.chrome && window.chrome.browserAction) {
+                    chrome.browserAction.setBadgeText({
+                        text: ""
+                    });
+                }
+
+                // update localstorage
+                measurementService.updatePrimaryOutcomeVariableLocally(primary_outcome_variable).then(function () {
+
+                    // try to send the data to server
+                    measurementService.updatePrimaryOutcomeVariable(primary_outcome_variable);
+
+                    // calculate charts data
+                    measurementService.calculateAveragePrimaryOutcomeVariableValue().then(function () {
+
+                        setTimeout(function () {
+                            $scope.timeRemaining = false;
+                            $scope.$apply();
+                        }, 500);
+
+                        draw();
+                    });
+
                 });
-            }
 
-            // update localstorage
-            measurementService.updatePrimaryOutcomeVariableLocally(primary_outcome_variable).then(function () {
-                
-                // try to send the data to server
-                measurementService.updatePrimaryOutcomeVariable(primary_outcome_variable);
-
-                // calculate charts data
-                measurementService.calculateAveragePrimaryOutcomeVariableValue().then(function(){
-                    
-                    setTimeout(function(){
-                        $scope.timeRemaining = false;
-                        $scope.$apply();
-                    },500);
-                    
-                    draw();
-                });
-
-            });
-            
+            };
         };
 
         // Update Trackng Factor images via an integer
@@ -157,7 +158,7 @@ angular.module('starter')
 
             // chart flags
             $scope.lineChartConfig = false; 
-            $scope.barChartConfig = false
+            $scope.barChartConfig = false;
             $scope.redrawLineChart = true;
             $scope.redrawBarChart = true;
 
