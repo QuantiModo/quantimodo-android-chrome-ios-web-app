@@ -28,10 +28,13 @@ config.appSettings  = {
 
     storage_identifier: 'MedTLCData*',
 
+    headline : 'Medication Tracking, Learning, Communication',
     features: [
-        ' - Automatically backup and sync your data across devices',
-        ' - Track diet, treatments, symptoms, and anything else',
-        ' - Analyze your data to see the top predictors for your Mood'
+        'Record your medications, set up reminders, and, a bonus: Track your responses to find links between medicines, doses, and their impact on how you feel.',
+        '',
+        'Privacy',
+        'It\'s your account. You decide what you share with your family and healthcare providers.',
+        'By using MedTLC, you agree with the Terms of Use and Privacy statement.'
     ],
 
     primary_tracking_factor_details : {

@@ -28,6 +28,7 @@ config.appSettings  = {
 
     storage_identifier: 'MoodiModoData*',
 
+    headline : 'Sync and Analyze Your Data',
     features: [
         ' - Automatically backup and sync your data across devices',
         ' - Track diet, treatments, symptoms, and anything else',

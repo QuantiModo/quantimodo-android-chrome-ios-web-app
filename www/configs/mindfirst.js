@@ -27,6 +27,13 @@ config.appSettings  = {
     primary_outcome_variable : 'Mood',
 
     storage_identifier: 'MindFirstData*',
+
+    headline : 'Sync and Analyze Your Data',
+    features: [
+        ' - Automatically backup and sync your data across devices',
+        ' - Track diet, treatments, symptoms, and anything else',
+        ' - Analyze your data to see the top predictors for your Mood'
+    ],
       
     primary_outcome_variable_details : {
         id : 1398,

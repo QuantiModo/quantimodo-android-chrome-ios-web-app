@@ -9,6 +9,7 @@ angular.module('starter')
         $scope.isChrome = window.chrome ? true : false;
         $rootScope.hideMenu = true;
         $scope.reportedVariableValue = false;
+        $scope.headline = config.appSettings.headline;
         $scope.features = config.appSettings.features;
         console.log('hide menu');
 
