@@ -2,9 +2,9 @@ angular.module('starter')
 .controller('IntroCtrl', function($scope, $state, localStorageService, $ionicSlideBoxDelegate, $ionicLoading) {
     
     $scope.view_title = config.appSettings.app_name;
-    $scope.tracking_factor = config.appSettings.tracking_factor;
-    $scope.tracking_factor_options = config.getTrackingFactorOptions();
-    $scope.tracking_factor_numbers = config.getTrackingFactorOptions(true);
+    $scope.primary_outcome_variable = config.appSettings.primary_outcome_variable;
+    $scope.primary_outcome_variable_options = config.getPrimaryOutcomeVariableOptions();
+    $scope.primary_outcome_variable_numbers = config.getPrimaryOutcomeVariableOptions(true);
     $scope.intro_config = config.appSettings.intro;
     
     $scope.intro = {

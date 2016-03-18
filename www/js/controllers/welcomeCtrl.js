@@ -13,8 +13,8 @@ angular.module('starter')
 
 
         // flags
-        localStorageService.getItem('trackingFactorReportedWelcomeScreen', function (trackingFactorReportedWelcomeScreen) {
-            $scope.show_tracking_factor_card = trackingFactorReportedWelcomeScreen ? false : true;
+        localStorageService.getItem('primaryOutcomeVariableReportedWelcomeScreen', function (primaryOutcomeVariableReportedWelcomeScreen) {
+            $scope.show_primary_outcome_variable_card = primaryOutcomeVariableReportedWelcomeScreen ? false : true;
 
         });
 
@@ -50,13 +50,13 @@ angular.module('starter')
                 };
 
                 $rootScope.reminderToSchedule = {
-                    id: config.appSettings.primary_tracking_factor_details.id,
+                    id: config.appSettings.primary_outcome_variable_details.id,
                     reportedVariableValue: $scope.reportedVariableValue,
                     interval: intervals[$scope.notification_interval], 
-                    name: config.appSettings.primary_tracking_factor_details.name,
-                    category: config.appSettings.primary_tracking_factor_details.category,
-                    unit: config.appSettings.primary_tracking_factor_details.unit,
-                    combinationOperation : config.appSettings.primary_tracking_factor_details.combinationOperation
+                    name: config.appSettings.primary_outcome_variable_details.name,
+                    category: config.appSettings.primary_outcome_variable_details.category,
+                    unit: config.appSettings.primary_outcome_variable_details.unit,
+                    combinationOperation : config.appSettings.primary_outcome_variable_details.combinationOperation
                 };
 
                 localStorageService.setItem('askForRating', $scope.notification_interval);
@@ -71,23 +71,23 @@ angular.module('starter')
         };
 
         // factorValue is reported
-        $scope.report_tracking_factor = function(factorValue){
+        $scope.report_primary_outcome_variable = function(factorValue){
 
             $scope.reportedVariableValue = config.appSettings.conversion_dataset_reversed[factorValue] ? 
                 config.appSettings.conversion_dataset_reversed[factorValue] : false;
             
-            localStorageService.setItem('trackingFactorReportedWelcomeScreen',true);
+            localStorageService.setItem('primaryOutcomeVariableReportedWelcomeScreen',true);
             localStorageService.setItem('allData', JSON.stringify([]));
             
             // update localstorage
-            measurementService.updateTrackingFactorLocally(factorValue).then(function () {
+            measurementService.updatePrimaryOutcomeVariableLocally(factorValue).then(function () {
                 // try to send the data to server
-                measurementService.updateTrackingFactor(factorValue);
+                measurementService.updatePrimaryOutcomeVariable(factorValue);
 
                 // calculate charts data
-                measurementService.calculateAverageTrackingFactorValue().then(function(){
+                measurementService.calculateAveragePrimaryOutcomeVariableValue().then(function(){
                     measurementService.calculateBothChart();
-                    $scope.show_tracking_factor_card = false;
+                    $scope.show_primary_outcome_variable_card = false;
                 });
             });
         };

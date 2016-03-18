@@ -1,7 +1,8 @@
 angular.module('starter')
 
 	// Controls the History Page of the App.
-	.controller('HistoryCtrl', function($scope, $ionicModal, $timeout, $ionicLoading, authService, $ionicPopover, measurementService, $ionicPopup, localStorageService, utilsService){
+	.controller('HistoryCtrl', function($scope, $ionicModal, $timeout, $ionicLoading, authService, $ionicPopover,
+										measurementService, $ionicPopup, localStorageService, utilsService){
 
 	    $scope.controller_name = "HistoryCtrl";
 	    
@@ -61,13 +62,13 @@ angular.module('starter')
 	        // open popover
 	        $scope.history_popover.show();
 	        
-	        $scope.selected_tracking_factor = history.value;
+	        $scope.selected_primary_outcome_variable = history.value;
 
 	        // remove any previous factors if present
-	        jQuery('.tracking_factors .active_tracking_factor').removeClass('active_tracking_factor');
+	        jQuery('.primary_outcome_variables .active_primary_outcome_variable').removeClass('active_primary_outcome_variable');
 	        
 	        // highlight the approporiate factor for the history item.
-	        jQuery('.'+config.appSettings.conversion_dataset[Math.ceil(history.value)]).addClass('active_tracking_factor');
+	        jQuery('.'+config.appSettings.conversion_dataset[Math.ceil(history.value)]).addClass('active_primary_outcome_variable');
 	    };
 
 	    // when a value is edited
@@ -76,18 +77,18 @@ angular.module('starter')
 			var note = $scope.selected_item.note? $scope.selected_item.note : null;
 
 	        // update on the server
-	        measurementService.editTrackingFactor($scope.selected_item.timestamp, $scope.selected_tracking_factor, note)
+	        measurementService.editPrimaryOutcomeVariable($scope.selected_item.timestamp, $scope.selected_primary_outcome_variable, note)
 	        .then(function(){
 	        	// do nothing user would have safely navigated away
 	        	console.log("edit complete");
 	        }, function(){
 
 	        	// show alert
-	            $scope.showAlert('Failed to edit tracking_factor !');
+	            $scope.showAlert('Failed to edit primary_outcome_variable !');
 	        });
 	        
 	        // update the main list for the recently updated value
-	        $scope.selected_item.value = $scope.selected_tracking_factor;
+	        $scope.selected_item.value = $scope.selected_primary_outcome_variable;
 	        
 	        // hide the popover
 	        $scope.history_popover.hide();
@@ -99,15 +100,15 @@ angular.module('starter')
 	    };
 
 	    // select a mod manually on popover
-	    $scope.select_tracking_factor = function($event, option){
+	    $scope.select_primary_outcome_variable = function($event, option){
 	    	// remove any previous tracking factors if present
-	        jQuery('.tracking_factors .active_tracking_factor').removeClass('active_tracking_factor');
+	        jQuery('.primary_outcome_variables .active_primary_outcome_variable').removeClass('active_primary_outcome_variable');
 	        
 	        // make this tracking factor glow visually
-	        jQuery($event.target).addClass('active_tracking_factor');
+	        jQuery($event.target).addClass('active_primary_outcome_variable');
 	        
 	        // update view
-	        $scope.selected_tracking_factor = config.appSettings.conversion_dataset_reversed[option.value];
+	        $scope.selected_primary_outcome_variable = config.appSettings.conversion_dataset_reversed[option.value];
 
 	    };
 

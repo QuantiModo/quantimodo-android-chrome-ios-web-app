@@ -1,4 +1,4 @@
-A generic app that can be easily configured to help the user track and optimize any give outcome variable.
+A generic app that can be easily configured to help the user track and optimize any given outcome variable.
 ---
 
 [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/Abolitionist-Project/QuantiModo-Ionic-Template-App/)
@@ -46,7 +46,7 @@ The main contents of the App are in the `www` folder. The structure is:
 ```
 
 ## Controllers
-  Controllers are located in `www/js/controllers` directory. Each View has a separate controller, or some views share the same controller if the functionality is same.
+  Controllers are located in `www/js/controllers` directory. Each View has a separate controller or some views share the same controller if the functionality is same.
   The main controller for the app is `appCtrl.js` whereas all the other controllers run when their views come to focus.
 ## Services
   Services are the Data layer, which talks to `QuantiModo API`, Provide Chart Data, provides abstractions over the API as well as provide utility functions. 
@@ -98,7 +98,7 @@ So everytime you wish to deploy your app, take for example `app/moodimodo` you s
 
 5. **xmlconfigs**
     
-    Head over to `xmlconfigs` directory. Create a new file `[your_app_code_name_here].xml`. Then copy the contents of `xmlconfigs/moodimodo.xml`. This will give you the boiler plate of the properties required in the xml file. You can make appropriate changes according to your app where necessary.
+    Head over to `xmlconfigs` directory. Create a new file `[your_app_code_name_here].xml`. Then copy the contents of `xmlconfigs/moodimodo.xml`. This will give you the boilerplate of the properties required in the XML file. You can make appropriate changes according to your app where necessary.
 
 > After these steps your app creation is complete. Now you can edit the app in the respective files as mentioned below.
 
@@ -114,7 +114,7 @@ The current App has 3 config files:
 3. www/private_keys/appname.config.js
 
 ##### **`appname.xml`**
-This file is the xml file, which will be used to make your “actual” iOS App project. So the most important variables in this file are:
+This is the XML file, which will be used to make your “actual” iOS App project. So the most important variables in this file are:
 
 1. App Name
   ```
@@ -154,7 +154,7 @@ This is the notification plugin (for using interactive notifications in iOS)
   
   In `TwoButtonLayout`, you can select which of the two buttons you want to show by providing their id’s in `first` and `second` property.
   
-  In `FourButtonLayout`, you can select which of the four buttons you want to show by providing their id’s in `first`,`second`,`third` and `fourth` property.
+  In `FourButtonLayout`, you can select which of the four buttons you want to show by providing their id’s in `first`, `second`, `third` and `fourth` property.
 
 ##### **`private_configs/appname.config.js`**
 As you may have copied from the sample.config.js, you would need to replace all the placeholder values (or delete the one’s you don’t use).
@@ -205,7 +205,7 @@ window.config = {
 
 `protocol` : (http or https) The protocol to use when requesting the api.
 
-`shopping_cart_enabled` : true or false if you wish to keep the shopping cart buttons in postive/negative predictor lists.
+`shopping_cart_enabled` : true or false if you wish to keep the shopping cart buttons in positive/negative predictor lists.
 
 **`config.appSettings` Object **
 
@@ -213,15 +213,15 @@ window.config = {
 config.appSettings  = {
     app_name : 'EnergyModo',
 
-    tracking_factor : 'Energy',
+    primary_outcome_variable : 'Energy',
 
     storage_identifier: 'EnergyModoData*',
       
-    primary_tracking_factor_details : { ... },
+    primary_outcome_variable_details : { ... },
 
-    tracking_factors_options_labels : [ ... ],
+    primary_outcome_variables_options_labels : [ ... ],
 
-    tracking_factor_options : [ ... ],
+    primary_outcome_variable_options : [ ... ],
 
     welcome_text:"Let's start off by reporting your Energy on the card below",
     
@@ -243,14 +243,14 @@ config.appSettings  = {
 
 `app_name` :  The Name of your app.
 
-`tracking_factor` : The primary outcome variable you are tracking (like Mood or Energy etc.)
+`primary_outcome_variable` : The primary outcome variable you are tracking (like Mood or Energy etc.)
 
 `storage_identifier` : a unique to your app string that will be prepended to any key stored in `localStorage`. (no spaces or any characters not allowed in keys)
 
-`primary_tracking_factor_details`
+`primary_outcome_variable_details`
 
 ```
-primary_tracking_factor_details : {
+primary_outcome_variable_details : {
    name : "Overall Energy",
    category : "Energy",
    unit : "/5",
@@ -264,9 +264,9 @@ primary_tracking_factor_details : {
 `combinationOperation` : MEAN or SUM depending upon your tracking factor.
 
 
-`tracking_factors_options_labels`
+`primary_outcome_variables_options_labels`
 ```
-tracking_factors_options_labels : { 
+primary_outcome_variables_options_labels : { 
     'lowest', 
     'low', 
     'average', 
@@ -276,9 +276,9 @@ tracking_factors_options_labels : {
 ```
 These will be used on the charts, to represent the individual bars for the 5 different values. (replace them with values that you want to represent your bars with in the charts).
 
-`tracking_factor_options`
+`primary_outcome_variable_options`
 ```
-tracking_factor_options : [
+primary_outcome_variable_options : [
         {
             value: 'lowest',
             img: 'img/ic_1.png'
@@ -303,13 +303,13 @@ tracking_factor_options : [
 ```
 These are the five options (available on the Trrack page) that the users will rate. Each of the option has an `image` (that will replace the emoji) and `value` (the quantifiable value the image represents).
 
-**Note**: Make sure the values match with the values in the `tracking_factors_options_labels`. 
+**Note**: Make sure the values match with the values in the `primary_outcome_variables_options_labels`. 
 
 `welcome_text` : The text app greets the user with when the app is opened for the first time.
 
-`tracking_question` : The question displayed on screen when user is on the Track Screen.
+`tracking_question` : The question displayed when the user is on the Track Screen.
 
-`factor_average_text` : string that tells user his average tracking factor value.
+`factor_average_text` : a string that tells user his average tracking factor value.
 
 `notification_image` : the logo that gets displayed with the notification in ios
 
@@ -432,13 +432,13 @@ window.notification_callback = function(reported_variable, reporting_time){
   ...
 }
 ```
-More often then not you will end up keeping the existing function and making the changes in `conversion_dataset`'s would work just fine, but if you wish to change something else, you have the option to do it so in this function.
+More often than not you will end up keeping the existing function and making the changes in `conversion_dataset`'s would work just fine, but if you wish to change something else, you have the option to do it so in this function.
 
 #### Running the App
 After you have generated your app, you can run the project through `node app.js`. This will run the project at [http://localhost:5000/](http://localhost:5000/)
 
 #### Generate iOS App
-You should run the following cordova commands to setup your iOS project.
+You should run the following Cordova commands to setup your iOS project.
 
 1. `gulp make`. This will copy your generated xml config file (xmlconfigs/[your_app_code_name_here].xml) into the main config.xml so that the iOS app is generated with your new app as default.
 2. `cordova platforms add iOS`. This would create the iOS app in `platforms/ios` folder
@@ -544,7 +544,7 @@ xcode-select --install
   
 1. Create an app identifier
 2. Create a Provisioning Profile
-3. Since we will use push notifications, We will need an Apple Store Certificate with Push Notifications enabled (so make suenter code herere you have that).
+3. Since we will use push notifications, We will need an Apple Store Certificate with Push Notifications enabled (so make sure to enter the code here once you have that).
 4. Next is to create the app with your identifier in the iTunes Connect.
 
 
@@ -568,44 +568,44 @@ xcode-select --install
             |---manifest.json
 ```
 
-### Building chrome app for webstore
+### Building Chrome app for the Webstore
 
-* For building the app for webstore you first need to have an active chrome app developer account, that you can create here `https://chrome.google.com/webstore/developer/dashboard/`
-* Once you have an active developer account, go to your developer account dashboard and click on add new item.
-* Copy the `www` folder from project directory to /chromeApps/{{appname}} directory, create its zip archive and upload it to the developer dashboard.
+* For building the app for the Chrome Webstore you first need to have an active chrome app developer account, that you can create here `https://chrome.google.com/webstore/developer/dashboard/`
+* Once you have an active developer account, go to your developer account dashboard and click on add a new item.
+* Copy the `www` folder from the project directory to /chromeApps/{{appname}} directory, create its zip archive and upload it to the developer dashboard.
 * Fill the details of the app and hit publish button.
 
 ### chrome app oAuth 
 
 For oAuth authentication, here are the three steps you need to complete:
 
-* Register a quantimodo developer account.
+* Register a QuantiModo developer account at https://app.quantimo.do/api/v2/apps
 * get your client id & client secret & add that in /chromeApps/{{appname}}/private_configs/config.js
-* Speficfy the redirection url in this format https://<extension-id>.chromiumapp.org/<anything-here> For example, if your app ID is abcdefghijklmnopqrstuvwxyzabcdef and you want provider_cb to be the path, to distinguish it with redirect URIs from other providers, you should use: https://abcdefghijklmnopqrstuvwxyzabcdef.chromiumapp.org/provider_cb
+* Specify the redirection URL in this format https://<extension-id>.chromiumapp.org/<anything-here> For example, if your app ID is abcdefghijklmnopqrstuvwxyzabcdef and you want provider_cb to be the path, to distinguish it with redirect URIs from other providers, you should use: https://abcdefghijklmnopqrstuvwxyzabcdef.chromiumapp.org/provider_cb
 
-### Building chrome app for webstore using gulp task
+### Building chrome app for the Webstore using gulp task
 
-You can use gulp task to simplify the process of building and publishing Chrome app. To use the gulp task you must at least publish it once manually and copy its app id in gulpfile.js like this https://github.com/Abolitionist-Project/QuantiModo-Ionic-Template-App/blob/develop/gulpfile.js#L21. 
+You can use gulp task to simplify the process of building and publishing Chrome app. To use the gulp task you must publish it once manually and copy its app id in gulpfile.js like this https://github.com/Abolitionist-Project/QuantiModo-Ionic-Template-App/blob/develop/gulpfile.js#L21. 
 
 Once you have done that, follow these steps to build, upload, and publish the Chrome app to Webstore.
 
 1. run command gulp chrome
 1. Enter the name of the app that you want to release for example `moodimodo`. 
 1. Task will ask you if you have increased the version number in the manifest.json file.
-1. A browser window will open, you need to login with your developer account and give permissions. After that a code will be displayed, copy that and paste it in the console.
-1. After 4th step, app will be uploaded to the chrome developer dashboard, you will be asked if you want to publish it. 
+1. A browser window will open, you need to login with your developer account and give permissions. After that, a code will be displayed, copy that and paste it in the console.
+1. After that, the app will be uploaded to the chrome developer dashboard, you will be asked if you want to publish it. 
 1. Type Yes and press enter to publish it.  
 
 ### Building the chrome app for local testing
 
 To run the chrome app locally, simply follow these steps:
 
-1. Open url chrome://extensions in your chrome browser.
+1. Open the URL chrome://extensions in your chrome browser.
 2. click on load unpacked extension button.
 3. select the path of the chrome app project in the file browser.
 4. That's it, the chrome app will be installed now, you can click on the launch link to launch the app.
 
-# xcode 7 - IOS 9 Updates (Steps to recreate the ios Project)
+# Xcode 7 - IOS 9 Updates (Steps to recreate the ios Project)
 
 1. Remove any existing iOS project from the repo :
 
@@ -623,7 +623,7 @@ To run the chrome app locally, simply follow these steps:
 
   `cordova plugin rm cordova-plugin-google-plus`
   
-5. to remove Facebook plugin, run :
+5. To remove the Facebook plugin, run :
 
   `cordova plugin rm cordova-facebook-plugin` 
 
@@ -631,7 +631,7 @@ To run the chrome app locally, simply follow these steps:
 
   `ionic platform add ios` 
 
-7. Install Google Plus Plugin by running 
+7. Install the Google Plus Plugin by running 
 
   `cordova plugin add cordova-plugin-googleplus --variable REVERSED_CLIENT_ID=com.googleusercontent.apps.1052648855194-djmit92q5bbglkontak0vdc7lafupt0d` 
 
@@ -641,7 +641,7 @@ To run the chrome app locally, simply follow these steps:
 
   `$ git clone https://github.com/Wizcorp/phonegap-facebook-plugin.git`
 
-9. Install the Fbplugin by running 
+9. Install the FB plugin by running 
 
   `cordova -d plugin add ~/Developer/fbplugin/phonegap-facebook-plugin --variable APP_ID="225078261031461" --variable APP_NAME="QuantiModo"` 
 > Replace the app with your appid and name. Also make sure your bundle id is included in the Facebook App Settings.
@@ -674,4 +674,4 @@ To run the chrome app locally, simply follow these steps:
 
 21. Open `Project Settings` > `Build Settings` > (Select All and Combined Filters) > `Add Header Search Paths` (Debug & Release) to `"$(OBJROOT)/UninstalledProducts/$(PLATFORM_NAME)/include"`
 
-22. You should be ready to go,  Archive the project and upload it to the App Store
+22. You should be ready to go, so archive the project and upload it to the App Store.
