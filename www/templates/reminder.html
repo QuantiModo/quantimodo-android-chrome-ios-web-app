@@ -1,12 +1,12 @@
 <ion-view hide-nav-bar="skipMenu" view-title="{{state.title}}">
     <ion-content scroll="true" overflow-scroll="true">
 		
-		<div class="list card" ng-show="state.showType">
+		<div class="list card" ng-show="state.showVariableCategory">
             <!--<div class="item item-divider" style="background-color:#11c1f3; color:white;">Select Variable Category</div>-->
 			<label class="item item-input item-select">
 				<div class="input-label">Select Category</div>
-				<select ng-model="state.selectedType" ng-change="onVariableChange()">
-					<option ng-repeat="type in variables.types" value="{{type.name}}">{{type.name}}</option>
+				<select ng-model="state.selectedVariableCategory" ng-change="onVariableChange()">
+					<option ng-repeat="type in variables.variableCategories" value="{{type.name}}">{{type.name}}</option>
 				</select>
 			</label>
 		</div>
