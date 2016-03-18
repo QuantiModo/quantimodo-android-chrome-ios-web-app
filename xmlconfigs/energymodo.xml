@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <widget id="com.quantimodo.energymodo" version="1.0.0" ios-CFBundleVersion="1.0.10" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
-  <name>MoodiModo</name>
+  <name>EnergyModo</name>
   <description>
-        The Mood Tracking app from QuantiModo
+        The energy-tracking app from QuantiModo
     </description>
-  <author email="help@quantimo.do" href="http://help.quantimo.do/">
-      Team QuantiModo.
+  <author email="info@quantimo.do" href="http://help.quantimo.do/">
+      Team QuantiModo
     </author>
   <content src="index.html"/>
   <access origin="*"/>

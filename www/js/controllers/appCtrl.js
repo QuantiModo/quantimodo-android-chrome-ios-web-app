@@ -1,8 +1,10 @@
 angular.module('starter')
-    
     // Parent Controller
     // This controller runs before every one else
-	.controller('AppCtrl', function($scope, $ionicModal, $timeout, $injector, utilsService, authService, measurementService, $ionicPopover, $ionicLoading, $state, $ionicHistory, QuantiModo, notificationService, $rootScope, localStorageService, reminderService, $ionicPopup) {
+	.controller('AppCtrl', function($scope, $ionicModal, $timeout, $injector, utilsService, authService,
+                                    measurementService, $ionicPopover, $ionicLoading, $state, $ionicHistory,
+                                    QuantiModo, notificationService, $rootScope, localStorageService, reminderService,
+                                    $ionicPopup) {
 
     // flags
     $scope.controller_name = "AppCtrl";
@@ -24,9 +26,9 @@ angular.module('starter')
     
     /*Wrapper Config*/
     $scope.view_title = config.appSettings.app_name;
-    $scope.tracking_factor = config.appSettings.tracking_factor;
-    $scope.tracking_factor_options = config.getTrackingFactorOptions();
-    $scope.tracking_factor_numbers = config.getTrackingFactorOptions(true);
+    $scope.primary_outcome_variable = config.appSettings.primary_outcome_variable;
+    $scope.primary_outcome_variable_options = config.getPrimaryOutcomeVariableOptions();
+    $scope.primary_outcome_variable_numbers = config.getPrimaryOutcomeVariableOptions(true);
     $scope.welcome_text = config.appSettings.welcome_text;
     $scope.tracking_question = config.appSettings.tracking_question;
     $scope.factor_average_text = config.appSettings.factor_average_text;
@@ -116,19 +118,27 @@ angular.module('starter')
     	authService.getAccessTokenFromRequestToken(request_token, withJWT)
     	.then(function(response) {
     		
-            console.log("access token recieved",response);
-            if(typeof withJWT !== "undefined" && withJWT === true) authService.updateAccessToken(response, withJWT);
-            else authService.updateAccessToken(response);
-    		
-            // set flags
-    		$scope.isLoggedIn = true;
-            localStorageService.setItem('isLoggedIn', true);
+            if(response.error){
+                console.error("Error generating access token");
+                console.log('response', response);
+                // set flags
+                $scope.isLoggedIn = false;
+                localStorageService.setItem('isLoggedIn', false);
+            } else {
+                console.log("Access token received",response);
+                if(typeof withJWT !== "undefined" && withJWT === true) authService.updateAccessToken(response, withJWT);
+                else authService.updateAccessToken(response);
+                
+                // set flags
+                $scope.isLoggedIn = true;
+                localStorageService.setItem('isLoggedIn', true);
 
-            // get user details from server
-            getUser();
+                // get user details from server
+                getUser();
 
-            // update app view wrt app state
-            $scope.init();
+                // update app view wrt app state
+                $scope.init();
+            }
     	})
     	.catch(function(err){
             
@@ -194,10 +204,11 @@ angular.module('starter')
 
         var start_logout = function(){
             if(ionic.Platform.platforms[0] != "browser"){
-                // open the auth window via inAppBrowser
+                console.log('start_logout: Open the auth window via inAppBrowser.  Platform is ' + ionic.Platform.platforms[0]);
                 var ref = window.open('https://app.quantimo.do/api/v2/auth/logout','_blank', 'location=no,toolbar=yes');
-                
-                // listen to it's event when the page changes
+
+                console.log('start_logout: listen to its event when the page changes');
+
                 ref.addEventListener('loadstart', function(event) {
                     ref.close();
                     showPopup();                
@@ -237,11 +248,11 @@ angular.module('starter')
             
             //Set out localstorage flag for welcome screen variables
             localStorageService.setItem('interval',true);
-            localStorageService.setItem('trackingFactorReportedWelcomeScreen',true);
+            localStorageService.setItem('primaryOutcomeVariableReportedWelcomeScreen',true);
             localStorageService.setItem('allData',JSON.stringify([]));
 
             // calculate tracking factor and chart data
-            measurementService.calculateAverageTrackingFactorValue().then(function(){
+            measurementService.calculateAveragePrimaryOutcomeVariableValue().then(function(){
                 measurementService.calculateBothChart();
                 measurementService.resetSyncFlag();
                 //hard reload
@@ -268,14 +279,14 @@ angular.module('starter')
             //Set out localstorage flag for welcome screen variables
             localStorageService.setItem('isLoggedIn',false);
             localStorageService.setItem('interval',true);
-            localStorageService.setItem('trackingFactorReportedWelcomeScreen',true);
+            localStorageService.setItem('primaryOutcomeVariableReportedWelcomeScreen',true);
             localStorageService.deleteItem('accessToken');
             localStorageService.deleteItem('refreshToken');
             localStorageService.deleteItem('expiresAt');
             
 
             // calculate tracking factor and chart data
-            measurementService.calculateAverageTrackingFactorValue().then(function(){
+            measurementService.calculateAveragePrimaryOutcomeVariableValue().then(function(){
                 measurementService.calculateBothChart();
                 measurementService.resetSyncFlag();
                 //hard reload
@@ -307,7 +318,7 @@ angular.module('starter')
         if (window.chrome && chrome.runtime && chrome.runtime.id) {
 
             if(chrome.identity){
-                // Code running in a Chrome extension (content script, background page, etc.
+                console.log("login: Code running in a Chrome extension (content script, background page, etc.");
                 url = "http://app.quantimo.do/api/oauth2/authorize?"
                 // add params
                 url += "response_type=code";
@@ -328,7 +339,7 @@ angular.module('starter')
                     $scope.getAuthToken(requestToken);
                 });
             } else {
-                 // if it is an extension
+                console.log("it is an extension");
                 chrome.tabs.create({ url: "http://app.quantimo.do/" });
             }
             
@@ -358,7 +369,7 @@ angular.module('starter')
                         ref.postMessage('isLoggedIn?', 'https://staging.quantimo.do/ionic/Modo/www/callback/');
                     }, 1000);
 
-                    // handler when a message is recieved from a sibling tab
+                    // handler when a message is received from a sibling tab
                     window.onMessageRecieved = function (event) {
                         console.log("message recieved", event.data);
 
@@ -407,7 +418,8 @@ angular.module('starter')
             }
 		} else {
 
-            console.log("Mobile device detected!");
+            console.log("Mobile device detected and ionic platform is " + ionic.Platform.platforms[0]);
+            console.log(JSON.stringify(ionic.Platform.platforms));
 
             url += "response_type=code";
             url += "&client_id="+config.getClientId();
@@ -416,39 +428,38 @@ angular.module('starter')
             url += "&state=testabcd";
             url += "&redirect_uri=https://app.quantimo.do/ionic/Modo/www/callback";
 
-            // open the auth window via inAppBrowser
+            console.log('open the auth window via inAppBrowser.');
 			var ref = window.open(url,'_blank', 'location=no,toolbar=yes');
-			                 
-            // listen to it's event when the page changes
+
+            console.log('listen to its event when the page changes');
 			ref.addEventListener('loadstart', function(event) {
-				
-                console.log('the loadstart url is', event.url);
 
-                // check if changed url is the same as redirection url
+                console.log(JSON.stringify(event));
+                console.log('The event.url is ' + event.url);
+
+                console.log('Checking if changed url is the same as redirection url.');
                 if(utilsService.startsWith(event.url, "https://app.quantimo.do/ionic/Modo/www/callback/")) {
-					
-                    // if there is no error
-                    if(!utilsService.getUrlParameter(event.url,'error')) {
-                        
-                        // extract request token
-						var requestToken = utilsService.getUrlParameter(event.url, 'code');
-                        console.log('code found', requestToken);
 
-                        if(requestToken === false) requestToken = utilsService.getUrlParameter(event.url, 'token');
-                        
-                        console.log('token found', requestToken);
-                        
-                        // close inAppBrowser
+                    console.log('event.url starts with https://app.quantimo.do/ionic/Modo/www/callback/ ');
+                    if(!utilsService.getUrlParameter(event.url,'error')) {
+
+                        console.log('extracting request token.');
+						var authorizationCode = utilsService.getUrlParameter(event.url, 'code');
+                        console.log('Authorization code is ' + authorizationCode);
+
+                        if(authorizationCode === false) authorizationCode = utilsService.getUrlParameter(event.url, 'token');
+
+                        console.log('Closing inAppBrowser.');
                         ref.close();
-						
-                        // get auth token from request token
-                        $scope.getAuthToken(requestToken);
+
+                        console.log('Going to get an access token using authorization code.');
+                        $scope.getAuthToken(authorizationCode);
 
 					} else {
 
-                        console.log("error occoured", utilsService.getUrlParameter(event.url, 'error'));
-                        
-                        // close inAppBrowser
+                        console.log("error occurred", utilsService.getUrlParameter(event.url, 'error'));
+
+                        console.log('close inAppBrowser');
                         ref.close();
                     }
                 }
@@ -466,7 +477,7 @@ angular.module('starter')
         .then(function(responseToken){
             // success
 
-            console.log("Mobile device detected!");
+            console.log("native_login: Mobile device detected and platform is " + platform);
             var url = config.getURL("api/v2/bshaffer/oauth/authorize", true);
 
             url += "response_type=code";
@@ -479,26 +490,26 @@ angular.module('starter')
 
             $ionicLoading.hide();
 
-            // open the auth window via inAppBrowser
+            console.log('open the auth window via inAppBrowser.');
             var ref = window.open(url,'_blank', 'location=no,toolbar=no');
-            
-            // listen to it's event when the page changes
+
+            console.log('listen to event when the page changes.');
             ref.addEventListener('loadstart', function(event) {
                 
                 console.log("loadstart event", event);
-                // check if changed url is the same as redirection url
+                console.log('check if changed url is the same as redirection url.');
                 
-                if(utilsService.startsWith(event.url, "https://app.quantimo.do/ionic/Modo/www/callback/")) {    
-                    
-                    // if there is no error
+                if(utilsService.startsWith(event.url, "https://app.quantimo.do/ionic/Modo/www/callback/")) {
+
+                    console.log('if there is no error');
                     if(!utilsService.getUrlParameter(event.url,'error')) {
                         
                         console.log('the request token that i got is: ' + event.url);
-                        // extract request token
+                        console.log('extract request token');
                         var requestToken = utilsService.getUrlParameter(event.url, 'code');
                         
                         if(requestToken === false) requestToken = utilsService.getUrlParameter(event.url, 'token');
-                        // close inAppBrowser
+                        console.log('close inAppBrowser.');
                         ref.close();
                         
                         var withJWT = true;
@@ -507,7 +518,7 @@ angular.module('starter')
 
                     } else {
 
-                        console.log("error occoured", utilsService.getUrlParameter(event.url, 'error'));
+                        console.log("error occurred", utilsService.getUrlParameter(event.url, 'error'));
                         
                         // close inAppBrowser
                         ref.close();
@@ -519,7 +530,7 @@ angular.module('starter')
             // error
 
             $ionicLoading.hide();
-            console.log("error occured, couldn't generate JWT");
+            console.log("error occurred, couldn't generate JWT");
         });
     };
 
@@ -668,8 +679,8 @@ angular.module('starter')
                     showLoader('Calculating stuff');
                     
                     // calculate tracking factor values
-                    measurementService.calculateAverageTrackingFactorValue().then(function(){
-                        measurementService.getTrackingFactorValue().then(calculateChartValues, calculateChartValues);
+                    measurementService.calculateAveragePrimaryOutcomeVariableValue().then(function(){
+                        measurementService.getPrimaryOutcomeVariableValue().then(calculateChartValues, calculateChartValues);
                     });
 
                 }, hideLoaderMove);
@@ -688,23 +699,23 @@ angular.module('starter')
 
     $scope.toggleTrackingSubMenu = function(){
         $scope.showTrackingSubMenu = !$scope.showTrackingSubMenu;
-    }
+    };
 
     $scope.togglePredictorSearchSubMenu = function(){
         $scope.showPredictorSearchSubMenu = !$scope.showPredictorSearchSubMenu;
-    }
+    };
 
     $scope.toggleOutcomePredictorSubMenu = function(){
         $scope.showOutcomePredictorSubMenu = !$scope.showOutcomePredictorSubMenu;
-    }
+    };
 
     $scope.toggleHistorySubMenu = function(){
         $scope.showHistorySubMenu = !$scope.showHistorySubMenu;
-    }
+    };
 
     $scope.toggleReminderSubMenu = function(){
         $scope.showReminderSubMenu = !$scope.showReminderSubMenu;
-    }
+    };
 
     // call constructor
     $scope.init();

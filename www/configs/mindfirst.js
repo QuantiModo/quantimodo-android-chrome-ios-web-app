@@ -24,11 +24,11 @@ window.config = {
 config.appSettings  = {
     app_name : 'Mind First Mood Tracker',
 
-    tracking_factor : 'Mood',
+    primary_outcome_variable : 'Mood',
 
     storage_identifier: 'MindFirstData*',
       
-    primary_tracking_factor_details : {
+    primary_outcome_variable_details : {
         id : 1398,
         name : "Overall Mood",
         category : "Mood",
@@ -36,7 +36,7 @@ config.appSettings  = {
         combinationOperation: "MEAN"
     },
 
-    tracking_factors_options_labels : [
+    primary_outcome_variables_options_labels : [
         'Depressed',
         'Sad',
         'OK',
@@ -44,7 +44,7 @@ config.appSettings  = {
         'Ecstatic'
     ],
 
-    tracking_factor_options : [
+    primary_outcome_variable_options : [
         {
             value: 'depressed',
             img: 'img/ic_mood_depressed.png'
@@ -164,18 +164,42 @@ config.appSettings  = {
                 url : 'img/ic_mood_ecstatic.png'
             }
         }
+    },
+
+    popup_messages : {
+        "track" : {
+            message : 'Here, you can view your <span class="calm">average Mood</span> as well as charts illustrating how it changes over time'
+        },
+        "history" : {
+            message : 'You can see and edit your past Mood ratings and notes by tapping on any item in the list.  <br/> <br/>You can also Add a note by tapping on a Mood rating in the list.'
+        },
+        "track_foods" : {
+            message : 'You can track your diet on this page. You can also <span class="calm">Add a new Food Variable</span> if you do not find the meal you looked for in the search results.'
+        },
+        "track_symptoms" : {
+            message : 'You can track any symptom on this page. You can also <span class="calm">Add a new Symptom</span> if you don\'t find the symptom you looked for in the search results.'
+        },
+        "track_treatments" : {
+            message : 'You can track any treatment on this page. You can also <span class="calm">Add a new Treatment</span> if you don\'t find the treatment you looked for in the search results.'
+        },
+        "positive_predictors" : {
+            message : 'Positive Predictors are the factors most predictive of <span class="calm">IMPROVING</span> Mood for the average QuantiModo user.'
+        },
+        "negative_predictors" : {
+            message : 'Negative Predictors are the factors most predictive of <span class="calm">DECREASING</span> for the average QuantiModo user.'
+        }
     }
 };
 
 
-config.getTrackingFactorOptionLabels = function(shouldShowNumbers){
-    if(shouldShowNumbers || !config.appSettings.tracking_factors_options_labels){
+config.getPrimaryOutcomeVariableOptionLabels = function(shouldShowNumbers){
+    if(shouldShowNumbers || !config.appSettings.primary_outcome_variables_options_labels){
         return ['1',  '2',  '3',  '4', '5'];
-    } else return config.appSettings.tracking_factors_options_labels;
+    } else return config.appSettings.primary_outcome_variables_options_labels;
 };
 
-config.getTrackingFactorOptions = function(shouldShowNumbers){
-    if(shouldShowNumbers || !config.appSettings.tracking_factor_options){
+config.getPrimaryOutcomeVariableOptions = function(shouldShowNumbers){
+    if(shouldShowNumbers || !config.appSettings.primary_outcome_variable_options){
         return [
             {
                 value: '1',
@@ -198,23 +222,23 @@ config.getTrackingFactorOptions = function(shouldShowNumbers){
                 img: 'img/ic_5.png'
             }
         ];
-    } else return config.appSettings.tracking_factor_options;
+    } else return config.appSettings.primary_outcome_variable_options;
 };
 
-config.getImageForTrackingFactorByValue = function(val){
-    var filtered_list = this.appSettings.tracking_factor_options.filter(function(option){
+config.getImageForPrimaryOutcomeVariableByValue = function(val){
+    var filtered_list = this.appSettings.primary_outcome_variable_options.filter(function(option){
         return option.value === val;
     });
 
     return filtered_list.length? filtered_list[0].img || false : false;
 };
 
-config.getImageForTrackingFactorByNumber = function(num){
-    var tracking_factor = this.appSettings.conversion_dataset[num]? this.appSettings.conversion_dataset[num] : false;
-    return tracking_factor? config.getImageForTrackingFactorByValue(tracking_factor) : false;
+config.getImageForPrimaryOutcomeVariableByNumber = function(num){
+    var primary_outcome_variable = this.appSettings.conversion_dataset[num]? this.appSettings.conversion_dataset[num] : false;
+    return primary_outcome_variable? config.getImageForPrimaryOutcomeVariableByValue(primary_outcome_variable) : false;
 };
 
-config.getTrackingFactorByNumber = function(num){
+config.getPrimaryOutcomeVariableByNumber = function(num){
     return this.appSettings.conversion_dataset[num]? this.appSettings.conversion_dataset[num] : false;
 };
 
@@ -308,8 +332,8 @@ window.notification_callback = function(reported_variable, reporting_time){
 
     // convert values
     if(reported_variable === "repeat_mood"){
-        val = localStorage[key_identifier+'lastReportedTrackingFactorValue']? 
-        JSON.parse(localStorage[key_identifier+'lastReportedTrackingFactorValue']) : false;
+        val = localStorage[key_identifier+'lastReportedPrimaryOutcomeVariableValue']?
+        JSON.parse(localStorage[key_identifier+'lastReportedPrimaryOutcomeVariableValue']) : false;
     } else {
         val = config.appSettings.conversion_dataset_reversed[reported_variable]?
         config.appSettings.conversion_dataset_reversed[reported_variable] : false;
@@ -318,7 +342,7 @@ window.notification_callback = function(reported_variable, reporting_time){
     // report
     if(val){
         // update localstorage
-        localStorage[key_identifier+'lastReportedTrackingFactorValue'] = val;
+        localStorage[key_identifier+'lastReportedPrimaryOutcomeVariableValue'] = val;
         
         var allDataObject = {
             storedValue : val,
