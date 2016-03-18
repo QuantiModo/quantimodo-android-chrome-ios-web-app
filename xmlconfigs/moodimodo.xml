@@ -2,10 +2,10 @@
 <widget id="com.quantimodo.moodimodoapp" version="1.0.0" ios-CFBundleVersion="1.0.12" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
   <name>MoodiModo</name>
   <description>
-        The Mood Tracking app from QuantiModo
+        The mood-tracking app from QuantiModo
     </description>
   <author email="help@quantimo.do" href="http://help.quantimo.do/">
-      Team QuantiModo.
+      Team QuantiModo
     </author>
   <content src="index.html"/>
   <access origin="*"/>
