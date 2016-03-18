@@ -8,6 +8,11 @@ angular.module('starter')
 
         $scope.controller_name = "TrackFactorsCategoryCtrl";
 
+        $scope.not_show_help_popup;
+        localStorageService.getItem('not_show_help_popup',function(val){
+            $scope.not_show_help_popup = val ? JSON.parse(val) : false;
+        });
+
         var categoryConfig = {
             Foods:{
                 default_unit:"serving",
@@ -37,6 +42,34 @@ angular.module('starter')
         };
 
         var category = $stateParams.category;
+        var message;
+
+        if(category == "Foods"){
+            message = config.appSettings.popup_messages.track_foods.message;
+        } else if(category == "Symptoms"){
+            message = config.appSettings.popup_messages.track_symptoms.message;
+        } else if (category == "Treatments"){
+            message = config.appSettings.popup_messages.track_treatments.message;
+        }
+
+        if(message && !$scope.not_show_help_popup){
+            $ionicPopup.show({
+                title: message,
+                subTitle: '',
+                scope:$scope,
+                template:'<label><input type="checkbox" ng-model="$parent.not_show_help_popup" class="show-again-checkbox">Don\'t show help popup\'s again</label>',
+                buttons:[
+                    {   
+                        text: 'OK',
+                        type: 'button-calm',
+                        onTap: function(){
+                            localStorageService.setItem('not_show_help_popup',JSON.stringify($scope.not_show_help_popup));
+                        }
+                    }
+                ]
+            });
+        }
+
 
         // flags
         $scope.flags = {
