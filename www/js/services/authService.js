@@ -128,13 +128,11 @@ angular.module('starter')
 
 			// get access token from request token
 			getAccessTokenFromRequestToken: function (requestToken, withJWT) {
-				console.log("request token : ", requestToken);
+				console.log("Authorization code is " + requestToken);
 
 				var deferred = $q.defer();
 
 				var url = config.getURL("api/oauth2/token");
-
-				console.log('expired token, refreshing!');
 
 				// make request
 				var request = {
@@ -153,12 +151,17 @@ angular.module('starter')
 					}
 				};
 
-				console.log('request is ', request);
+				console.log('getAccessTokenFromRequestToken: request is ', request);
+				console.log(JSON.stringify(request));
 
 				// post
 				$http(request).success(function (response) {
+					console.log('getAccessTokenFromRequestToken: Successful response is ', response);
+					console.log(JSON.stringify(response));
 					deferred.resolve(response);
 				}).error(function (response) {
+					console.log('getAccessTokenFromRequestToken: Error response is ', response);
+					console.log(JSON.stringify(response));
 					deferred.reject(response);
 				});
 
