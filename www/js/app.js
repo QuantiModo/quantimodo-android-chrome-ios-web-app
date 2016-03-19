@@ -101,7 +101,7 @@ angular.module('starter', ['ionic','oc.lazyLoad','highcharts-ng','ngCordova','io
         }
       })
 
-      .state('app.get.started', {
+      .state('app.get_started', {
         url: "/get-started",
         views: {
           'menuContent': {
@@ -116,7 +116,7 @@ angular.module('starter', ['ionic','oc.lazyLoad','highcharts-ng','ngCordova','io
         views: {
           'menuContent': {
             templateUrl: "templates/login_page.html",
-            //controller: 'LoginCtrl'
+            controller: 'LoginCtrl'
           }
         }
       })
