@@ -4,7 +4,7 @@
 <div id="login_iframe">
 </div>
 
-<div ng-show="show_primary_outcome_variable_card" class="card primary_outcome_variable_reporting">
+<div ng-show="show_primary_outcome_variable_card && primary_outcome_variable" class="card primary_outcome_variable_reporting">
 	<div class="item item-text-wrap">
 		<h1>Welcome to <span class="calm">{{view_title}}</span></h1>
 		<ul>
@@ -14,7 +14,7 @@
 	</div>
 </div>
 
-<div ng-show="show_primary_outcome_variable_card" class="card primary_outcome_variable_reporting">
+<div ng-show="show_primary_outcome_variable_card && primary_outcome_variable" class="card primary_outcome_variable_reporting">
 	<div class="item item-text-wrap">
 		<div  class="primary_outcome_variables">
             <img ng-repeat="option in primary_outcome_variable_options"
@@ -25,7 +25,7 @@
 	</div>
 </div>
 
-<div class="card reporting_interval" ng-show="show_interval_card && !show_primary_outcome_variable_card">
+<div class="card reporting_interval" ng-show="show_interval_card && !show_primary_outcome_variable_card && primary_outcome_variable">
 	<div class="item item-text-wrap">
 		<h1 class="calm">Report Interval</h1>      
 		<ul>
@@ -70,7 +70,8 @@
 	</div>
 </div>
 
-<div class="card sign_in" ng-show="!isLoggedIn && !show_primary_outcome_variable_card && !show_interval_card ">
+<div class="card sign_in" ng-show="!isLoggedIn &&
+	((!show_primary_outcome_variable_card && !show_interval_card) || !primary_outcome_variable) ">
         <div class="item item-text-wrap">
             <h1 class="calm">{{headline}}</h1>
             <br/>
