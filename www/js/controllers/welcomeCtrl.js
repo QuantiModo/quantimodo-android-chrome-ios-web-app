@@ -1,7 +1,8 @@
 angular.module('starter')
     
     // Handlers the Welcome Page
-    .controller('WelcomeCtrl', function($scope, $ionicModal, $timeout, utilsService, authService, measurementService, $state, $ionicHistory, notificationService, localStorageService, $rootScope, reminderService) {
+    .controller('WelcomeCtrl', function($scope, $ionicModal, $timeout, utilsService, authService, measurementService,
+                                        $state, $ionicHistory, notificationService, localStorageService, $rootScope) {
         
         $scope.controller_name = "WelcomeCtrl";
         $scope.isIOS = ionic.Platform.isIPad() || ionic.Platform.isIOS();
@@ -11,7 +12,7 @@ angular.module('starter')
         $scope.reportedVariableValue = false;
         $scope.headline = config.appSettings.headline;
         $scope.features = config.appSettings.features;
-        $scope.app_name = config.appSettings.app_name;
+        $scope.appName = config.appSettings.app_name;
         console.log('hide menu');
 
 

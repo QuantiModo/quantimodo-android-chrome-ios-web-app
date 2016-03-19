@@ -24,6 +24,8 @@ window.config = {
 config.appSettings  = {
     app_name : 'MoodiModo',
 
+    default_state : 'app.track',
+
     primary_outcome_variable : 'Mood',
 
     storage_identifier: 'MoodiModoData*',

@@ -28,6 +28,8 @@ config.appSettings  = {
 
     storage_identifier: 'MedTLCData*',
 
+    default_state : 'app.reminders_inbox',
+
     headline : 'Medication Tracking, Learning, Communication',
     features: [
         ' - Track your medication intake',

@@ -23,14 +23,14 @@ angular.module('starter', ['ionic','oc.lazyLoad','highcharts-ng','ngCordova','io
             });
 
             $ionicPlatform.registerBackButtonAction(function (event) {
-                if($ionicHistory.currentStateName() == "app.track"){
+                if($ionicHistory.currentStateName() == config.appSettings.default_state){
                     ionic.Platform.exitApp();
                 }
                 else {
                     if($ionicHistory.backView()){
                         $ionicHistory.goBack();
                     } else if(localStorage.isLoggedIn){
-                        $state.go('app.track');
+                        $state.go(config.appSettings.default_state);
                     } else {
                         $state.go('app.welcome');
                     }

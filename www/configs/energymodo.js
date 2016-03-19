@@ -11,7 +11,7 @@ window.config = {
     bugsnag:{
         notifyReleaseStages:['Production','Staging']
     },
-    client_source_name : "MoodiModo "+getPlatform(),
+    client_source_name : "EnergyModo "+ getPlatform(),
     domain : 'app.quantimo.do',
     environment: "Development",
     permissions : ['readmeasurements', 'writemeasurements'],
@@ -22,6 +22,8 @@ window.config = {
 
 config.appSettings  = {
     app_name : 'EnergyModo',
+
+    default_state : 'app.track',
 
     primary_outcome_variable : 'Energy',
 

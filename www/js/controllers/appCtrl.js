@@ -175,7 +175,7 @@ angular.module('starter')
 
                 // move to tracking page
                 if($state.current.name == "app.welcome" || $state.current.name == "app.login"){
-                    $state.go('app.track');
+                    $state.go(config.appSettings.default_state);
                     $rootScope.hideMenu = false;
                 }
 
@@ -733,7 +733,7 @@ angular.module('starter')
         console.log('isWelcomed ' + isWelcomed);
         if(isWelcomed  === true || isWelcomed === "true" || tokenInGetParams){
             $rootScope.isWelcomed = true;
-            //$state.go('app.track');
+            //$state.go(conf);
         } else {
             console.log("isWelcomed is " + isWelcomed + ". Setting to true and going to welcome now.");
             localStorageService.setItem('isWelcomed', true);
