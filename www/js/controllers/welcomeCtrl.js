@@ -11,6 +11,7 @@ angular.module('starter')
         $scope.reportedVariableValue = false;
         $scope.headline = config.appSettings.headline;
         $scope.features = config.appSettings.features;
+        $scope.app_name = config.appSettings.app_name;
         console.log('hide menu');
 
 

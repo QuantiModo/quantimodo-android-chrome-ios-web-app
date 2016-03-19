@@ -30,11 +30,9 @@ config.appSettings  = {
 
     headline : 'Medication Tracking, Learning, Communication',
     features: [
-        'Record your medications, set up reminders, and, a bonus: Track your responses to find links between medicines, doses, and their impact on how you feel.',
-        '',
-        'Privacy',
-        'It\'s your account. You decide what you share with your family and healthcare providers.',
-        'By using MedTLC, you agree with the Terms of Use and Privacy statement.'
+        ' - Track your medication intake',
+        ' - Set up reminders',
+        ' - Track your responses to find links between treatments and how you feel'
     ],
 
     primary_primary_outcome_variable_details : {

@@ -339,7 +339,7 @@ angular.module('starter')
                     $scope.getAuthToken(requestToken);
                 });
             } else {
-                console.log("it is an extension");
+                console.log("It is an extension, so we use sessions instead of OAuth flow. ");
                 chrome.tabs.create({ url: "http://app.quantimo.do/" });
             }
             
