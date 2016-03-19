@@ -138,17 +138,17 @@ angular.module('starter')
             if($scope.isLoggedIn){
                 correlationService.vote(vote, cause, effect, correlationCoefficient)
                     .then(function(){
-                        $scope.showAlert('Downvoted !');
+                        $scope.showAlert('Downvoted!');
                     }, function(){
                         factor.userVote = prevValue;
-                        $scope.showAlert('Downvote Failed !');
+                        $scope.showAlert('Downvote Failed!');
                         
                     });
             } else {
                 factor.userVote = prevValue;
             	$state.go('app.welcome')
-            	};
-        };
+            	}
+        }
 
         // when upvoted
         $scope.upvote = function(factor){
@@ -192,10 +192,10 @@ angular.module('starter')
                 // call service method for voting
                 correlationService.vote(vote, cause, effect, correlationCoefficient)
                     .then(function(){
-                        $scope.showAlert('Upvoted !');
+                        $scope.showAlert('Upvoted!');
                     }, function(){
                     	factor.userVote = prevValue;
-                        $scope.showAlert('Upvote Failed !');
+                        $scope.showAlert('Upvote Failed!');
                     });
 
             } else {
