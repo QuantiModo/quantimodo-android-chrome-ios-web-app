@@ -14,11 +14,11 @@
 #   Ionic Framework
 #   Gradle
 
-npm uninstall cordova ionic
-npm cache clean -f
-npm uninstall node
+npm uninstall cordova ionic || true
+npm cache clean -f || true
+npm uninstall node || true
 
-rmdir /home/vagrant/Desktop
+rm -rf /home/vagrant/Desktop
 mkdir /home/vagrant/Desktop
 
 HOME_PATH=$(cd ~/ && pwd)
@@ -116,8 +116,10 @@ fi
 npm install -g cordova ionic gulp bower
 npm install
 
-sudo apt-get install npm
-sudo npm install gulp --no-bin-links
+sudo apt-get install -y npm
+sudo npm install -y gulp --no-bin-links
+
+bower install
 
 cd "$INSTALL_PATH" && chmod 777 "node" -R
 cd "$INSTALL_PATH" && chmod 777 "gradle" -R

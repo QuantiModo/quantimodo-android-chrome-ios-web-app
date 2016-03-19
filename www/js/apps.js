@@ -5,9 +5,12 @@ var appsManager = {
 		"mindfirst" : "configs/mindfirst",
 		"medtlc" : "configs/medtlc"
 	},
-	defaultApp : "medtlc",
+	defaultApp : "moodimodo",
 	getDefaultConfig : function(){
 		return appsManager.apps[appsManager.defaultApp] ? appsManager.apps[appsManager.defaultApp]+'.js' : false;
+	},
+	getDefaultApp : function(){
+		return appsManager.defaultApp;
 	},
 	getDefaultPrivateConfig : function(){
 		return appsManager.apps[appsManager.defaultApp] ? './private_'+appsManager.apps[appsManager.defaultApp]+'.config.js' : false;

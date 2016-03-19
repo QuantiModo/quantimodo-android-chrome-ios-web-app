@@ -69,7 +69,7 @@ angular.module('starter', ['ionic','oc.lazyLoad','highcharts-ng','ngCordova','io
             console.log('loading', appsManager.getAppConfig(appName), appsManager.getPrivateConfig(appName));
             return $ocLazyLoad.load([appsManager.getAppConfig(appName), appsManager.getPrivateConfig(appName)]);
         } else{
-            console.log('loading default app', 'MoodiModo');
+            console.log('Loading default app: ' + appsManager.getDefaultApp());
             return $ocLazyLoad.load([appsManager.getDefaultConfig(), appsManager.getDefaultPrivateConfig()]);          
         }
 
