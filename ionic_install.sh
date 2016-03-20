@@ -36,6 +36,8 @@ sudo npm i -g gulp grunt-cli bower yo generator-ionic-gulp
 npm rebuild node-sass --no-bin-links
 npm install --no-bin-links
 
+sudo chown -R vagrant:vagrant /home/vagrant
+
 ionic platform add android
 
 #sudo gem install sass
