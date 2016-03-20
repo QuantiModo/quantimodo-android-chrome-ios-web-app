@@ -11,3 +11,5 @@ chromeApps/zips/*.zip
 .idea/
 hooks
 .vagrant/
+android-sdk-linux/
+android-sdk_r24.2-linux.tgz

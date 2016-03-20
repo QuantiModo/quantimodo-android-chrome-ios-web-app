@@ -6,6 +6,9 @@ A generic app that can be easily configured to help the user track and optimize 
 # Quick Start for OSX
 1. Install [NodeJS](https://nodejs.org/en/download/)
 1. Install [Ionic Lab](http://lab.ionic.io/)
+1. Install [XCode](https://developer.apple.com/xcode/download/)
+1. Download certificates from [developer.apple.com](https://developer.apple.com/account/ios/certificate/)
+1. Add certs to XCode [like so](https://developer.apple.com/library/ios/documentation/IDEs/Conceptual/AppDistributionGuide/MaintainingCertificates/MaintainingCertificates.html)
 
 
 # Quick Start for Ubuntu 14.04
