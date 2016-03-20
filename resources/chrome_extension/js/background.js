@@ -61,7 +61,7 @@ chrome.alarms.onAlarm.addListener(function(alarm)
 			type: "basic",
 			title: "How are you?",
 			message: "It's time to report your mood!",
-			iconUrl: "images/icon_full.png",
+			iconUrl: "images/medtlc_icon_350.png",
 			priority: 2
 		}
 		chrome.notifications.create("moodReportNotification", notificationParams, function(id){});
