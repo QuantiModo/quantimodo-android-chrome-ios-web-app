@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 ANDROID_SDK_FILENAME=android-sdk_r24.2-linux.tgz
 ANDROID_SDK=http://dl.google.com/android/$ANDROID_SDK_FILENAME
@@ -30,6 +31,7 @@ expect {
 }
 '
 
+cd $DIR
 sudo npm i -g gulp grunt-cli bower yo generator-ionic-gulp
 npm rebuild node-sass --no-bin-links
 npm install --no-bin-links
