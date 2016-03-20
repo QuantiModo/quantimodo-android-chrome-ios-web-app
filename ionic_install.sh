@@ -10,9 +10,9 @@ apt-get install -y npm git openjdk-7-jdk ant expect
 npm install -g n
 n stable
 
-curl -O $ANDROID_SDK
-tar -xzvf $ANDROID_SDK_FILENAME
-sudo chown -R vagrant android-sdk-linux/
+cd ~ && curl -O $ANDROID_SDK
+cd ~ && tar -xzvf $ANDROID_SDK_FILENAME
+cd ~ && sudo chown -R vagrant android-sdk-linux/
 
 echo "ANDROID_HOME=~/android-sdk-linux" >> /home/vagrant/.bashrc
 echo "export JAVA_HOME=/usr/lib/jvm/java-7-openjdk-i386" >> /home/vagrant/.bashrc
