@@ -1,9 +1,9 @@
 
 var getPlatform = function(){
-    if(typeof ionic !== "undefined" && 
+    if(typeof ionic !== "undefined" &&
         typeof ionic.Platform !== "undefined" &&
-        typeof ionic.Platform.isIOS !== "undefined" && 
-        typeof ionic.Platform.isAndroid !== "undefined" ) 
+        typeof ionic.Platform.isIOS !== "undefined" &&
+        typeof ionic.Platform.isAndroid !== "undefined" )
         return ionic.Platform.isIOS()? "iOS" : ionic.Platform.isAndroid()? "Android" : "Web";
     else return "Ionic";
 };
@@ -12,9 +12,9 @@ window.config = {
     bugsnag:{
         notifyReleaseStages:['Production','Staging']
     },
-    client_source_name : "Mind First "+getPlatform(),
+    client_source_name : "MedTLC " + getPlatform(),
     domain : 'app.quantimo.do',
-    environment: "Production",
+    environment: "Development",
     permissions : ['readmeasurements', 'writemeasurements'],
     port : '4417',
     protocol : 'https',
@@ -22,22 +22,22 @@ window.config = {
 };
 
 config.appSettings  = {
-    app_name : 'Mind First Mood Tracker',
+    app_name : 'MedTLC',
 
-    default_state : 'app.track',
+    primary_outcome_variable : false,
 
-    primary_outcome_variable : 'Mood',
+    storage_identifier: 'MedTLCData*',
 
-    storage_identifier: 'MindFirstData*',
+    default_state : 'app.reminders_inbox',
 
-    headline : 'Sync and Analyze Your Data',
+    headline : 'Medication Tracking, Learning, Communication',
     features: [
-        ' - Automatically backup and sync your data across devices',
-        ' - Track diet, treatments, symptoms, and anything else',
-        ' - Analyze your data to see the top predictors for your Mood'
+        ' - Track your medication intake',
+        ' - Set up reminders',
+        ' - Track your responses to find links between treatments and how you feel'
     ],
-      
-    primary_outcome_variable_details : {
+
+    primary_primary_outcome_variable_details : {
         id : 1398,
         name : "Overall Mood",
         category : "Mood",
@@ -76,8 +76,8 @@ config.appSettings  = {
         }
     ],
 
-    welcome_text:"Let's start off by reporting your first mood on the card below",
-    tracking_question:"How are you feeling right now?",
+    welcome_text:"Let's start off by adding your first medication!",
+    tracking_question:"What medication are you taking?",
     factor_average_text:"Your average mood is ",
     notification_image : "file://img/logo.png",
     notification_text : "Time to Track",
@@ -86,14 +86,14 @@ config.appSettings  = {
         "2": "sad",
         "3": "ok",
         "4": "happy",
-        "5": "ecstatic" 
+        "5": "ecstatic"
     },
     conversion_dataset_reversed : {
         "depressed" : 1,
         "sad" : 2,
         "ok" : 3,
         "happy" : 4,
-        "ecstatic": 5 
+        "ecstatic": 5
     },
 
     intro : {
@@ -173,212 +173,8 @@ config.appSettings  = {
                 url : 'img/ic_mood_ecstatic.png'
             }
         }
-    },
-
-    popup_messages : {
-        "track" : {
-            message : 'Here, you can view your <span class="calm">average Mood</span> as well as charts illustrating how it changes over time'
-        },
-        "history" : {
-            message : 'You can see and edit your past Mood ratings and notes by tapping on any item in the list.  <br/> <br/>You can also Add a note by tapping on a Mood rating in the list.'
-        },
-        "track_foods" : {
-            message : 'You can track your diet on this page. You can also <span class="calm">Add a new Food Variable</span> if you do not find the meal you looked for in the search results.'
-        },
-        "track_symptoms" : {
-            message : 'You can track any symptom on this page. You can also <span class="calm">Add a new Symptom</span> if you don\'t find the symptom you looked for in the search results.'
-        },
-        "track_treatments" : {
-            message : 'You can track any treatment on this page. You can also <span class="calm">Add a new Treatment</span> if you don\'t find the treatment you looked for in the search results.'
-        },
-        "positive_predictors" : {
-            message : 'Positive Predictors are the factors most predictive of <span class="calm">IMPROVING</span> Mood for the average QuantiModo user.'
-        },
-        "negative_predictors" : {
-            message : 'Negative Predictors are the factors most predictive of <span class="calm">DECREASING</span> for the average QuantiModo user.'
-        }
-    },
-
-    menu : [
-        {
-            title : 'Track Mood',
-            href : '#/app/track',
-            icon : 'ion-happy-outline'
-        },
-        {
-            title : 'Track Factors',
-            click : 'toggleTrackingSubMenu',
-            icon : 'showTrackingSubMenu',
-            subMenuPanel : true
-        },
-        {
-            title : 'Track anything',
-            isSubMenu : true,
-            subMenuVariable : 'showTrackingSubMenu',
-            href : '#/app/track_factors',
-            icon : 'ion-ios-world-outline'   
-        },
-        {
-            title : 'Track foods',
-            isSubMenu : true,
-            subMenuVariable : 'showTrackingSubMenu',
-            href : '#/app/track_factors_category/Foods',
-            icon : 'ion-ios-nutrition-outline'
-        },
-        {
-            title : 'Track emotions',
-            isSubMenu : true,
-            subMenuVariable : 'showTrackingSubMenu',
-            href : '#/app/track_factors_category/Emotions',
-            icon : 'ion-happy-outline'
-        },
-        {
-            title : 'Track symptoms',
-            isSubMenu : true,
-            subMenuVariable : 'showTrackingSubMenu',
-            href : '#/app/track_factors_category/Symptoms',
-            icon : 'ion-ios-pulse'
-        },
-        {
-            title : 'Track treatments',
-            isSubMenu : true,
-            subMenuVariable : 'showTrackingSubMenu',
-            href : '#/app/track_factors_category/Treatments',
-            icon : 'ion-ios-medkit-outline'
-        },
-        {
-            title : 'Track physical activity',
-            isSubMenu : true,
-            subMenuVariable : 'showTrackingSubMenu',
-            href : '#/app/track_factors_category/Physical Activity',
-            icon : 'ion-ios-body-outline'
-        },
-        {
-            title : 'Reminders',
-            click : 'toggleReminderSubMenu',
-            icon : 'showReminderSubMenu',
-            subMenuPanel : true
-        },
-        {
-            title : 'Inbox',
-            isSubMenu : true,
-            subMenuVariable : 'showReminderSubMenu',
-            href : '#/app/reminders-inbox',
-            icon : 'ion-android-notifications-none'
-        },
-        {
-            title : 'Manage',
-            isSubMenu : true,
-            subMenuVariable : 'showReminderSubMenu',
-            href : '#/app/reminders-manage',
-            icon : 'ion-ios-gear-outline'
-        },
-        {
-            title : 'Emotions',
-            isSubMenu : true,
-            subMenuVariable : 'showReminderSubMenu',
-            href : '#/app/reminders/Emotions',
-            icon : 'ion-happy-outline'
-        },
-        {
-            title : 'Symptoms',
-            isSubMenu : true,
-            subMenuVariable : 'showReminderSubMenu',
-            href : '#/app/reminders/Symptoms',
-            icon : 'ion-ios-pulse'
-        },
-        {
-            title : 'Treatments',
-            isSubMenu : true,
-            subMenuVariable : 'showReminderSubMenu',
-            href : '#/app/reminders/Treatments',
-            icon : 'ion-ios-medkit-outline'
-        },
-        {
-            title : 'Foods',
-            isSubMenu : true,
-            subMenuVariable : 'showReminderSubMenu',
-            href : '#/app/reminders/Foods',
-            icon : 'ion-ios-nutrition-outline'
-        },
-        {
-            title : 'History',
-            click : 'toggleHistorySubMenu',
-            icon : 'showHistorySubMenu',
-            subMenuPanel : true
-        },
-        {
-            title : 'Moods',
-            isSubMenu : true,
-            subMenuVariable : 'showHistorySubMenu',
-            href : '#/app/history',
-            icon : 'ion-happy-outline'
-        },
-        {
-            title : 'All Measurements',
-            isSubMenu : true,
-            subMenuVariable : 'showHistorySubMenu',
-            href : '#/app/history-all',
-            icon : 'ion-ios-paper-outline'
-        },
-        {
-            title : 'Import Data',
-            href : '#/app/import',
-            icon : 'ion-ios-cloud-download-outline'
-        },
-        {
-            title : 'Variables',
-            href : '#app/search-variables',
-            icon : 'ion-social-vimeo'
-        },
-        {
-            title : 'Predictor Search',
-            click : 'togglePredictorSearchSubMenu',
-            icon : 'showPredictorSearchSubMenu',
-            subMenuPanel : true
-        },
-        {
-            title : 'Common',
-            isSubMenu : true,
-            subMenuVariable : 'showPredictorSearchSubMenu',
-            href : '#/app/search-common-relationships',
-            icon : 'ion-ios-people'
-        },
-        {
-            title : 'Yours',
-            isSubMenu : true,
-            subMenuVariable : 'showPredictorSearchSubMenu',
-            href : '#/app/search-user-relationships',
-            icon : 'ion-person'
-        },
-        {
-            title : 'Predictors of Mood',
-            click : 'toggleOutcomePredictorSubMenu',
-            icon : 'showOutcomePredictorSubMenu',
-            subMenuPanel : true
-        },
-        {
-            title : 'Positive Mood',
-            isSubMenu : true,
-            subMenuVariable : 'showOutcomePredictorSubMenu',
-            href : '#/app/positive',
-            icon : 'ion-happy-outline'
-        },
-        {
-            title : 'Negative Mood',
-            isSubMenu : true,
-            subMenuVariable : 'showOutcomePredictorSubMenu',
-            href : '#/app/negative',
-            icon : 'ion-sad-outline'
-        },
-        {
-            title : 'Help & Feedback',
-            href : window.chrome ? "mailto:help@quantimo.do" : "#app/feedback",
-            icon : 'ion-ios-help-outline'
-        },
-    ]
+    }
 };
-
 
 config.getPrimaryOutcomeVariableOptionLabels = function(shouldShowNumbers){
     if(shouldShowNumbers || !config.appSettings.primary_outcome_variables_options_labels){
@@ -479,6 +275,7 @@ config.getPermissionString = function(){
 
 };
 
+
 config.getURL = function(path){
     if(typeof path === "undefined") path = "";
     else path+= "?";
@@ -493,13 +290,14 @@ config.getURL = function(path){
         //On localhost or mobile
         url = config.protocol+"://"+config.domain+"/"+path;
     }
-    else if(window.location.origin.indexOf("local.") > -1){
+    else if(window.location.origin.indexOf("local.quantimo.do") > -1){
          //local.quantimodo
-         url = config.protocol+"://"+config.domain;
-         
-         url+= (config.domain.indexOf('app.') === -1 && config.domain.indexOf('staging.') === -1)? ":"+config.port : "";
-         
-         url+="/"+path;
+         url = 'https://local.quantimo.do:4417/' + path;
+
+    // } else if (window.location.origin.indexOf("staging.quantimo.do") > -1){
+    //     //local.quantimodo
+    //     url = 'https://staging.quantimo.do/' + path;
+
     } else {
         url = config.protocol + "://" + config.domain + "/" + path;
         // url = window.location.origin + "/" + path;
@@ -509,7 +307,7 @@ config.getURL = function(path){
 };
 
 config.get = function(key){
-    return config[key]? config[key] : false;
+	return config[key]? config[key] : false;
 };
 
 
@@ -526,12 +324,12 @@ window.notification_callback = function(reported_variable, reporting_time){
         val = config.appSettings.conversion_dataset_reversed[reported_variable]?
         config.appSettings.conversion_dataset_reversed[reported_variable] : false;
     }
-    
+
     // report
     if(val){
         // update localstorage
         localStorage[key_identifier+'lastReportedPrimaryOutcomeVariableValue'] = val;
-        
+
         var allDataObject = {
             storedValue : val,
             value : val,
@@ -550,21 +348,16 @@ window.notification_callback = function(reported_variable, reporting_time){
 
         // update Bar chart data
         if(localStorage[key_identifier+'barChartData']){
-            if(val>0){
-                var barChartData = JSON.parse(localStorage[key_identifier+'barChartData']);
-                barChartData[val-1]++;
-                localStorage[key_identifier+'barChartData'] = JSON.stringify(barChartData);
-            }
+            var barChartData = JSON.parse(localStorage[key_identifier+'barChartData']);
+            barChartData[val-1]++;
+            localStorage[key_identifier+'barChartData'] = JSON.stringify(barChartData);
         }
 
         // update Line chart data
         if(localStorage[key_identifier+'lineChartData']){
-            if(val>0){
-                var lineChartData = JSON.parse(localStorage[key_identifier+'lineChartData']);
-                lineChartData.push([report_time, (val-1)*25]);
-                localStorage[key_identifier+'lineChartData'] = JSON.stringify(lineChartData);    
-            }
-            
+            var lineChartData = JSON.parse(localStorage[key_identifier+'lineChartData']);
+            lineChartData.push([report_time, val]);
+            localStorage[key_identifier+'lineChartData'] = JSON.stringify(lineChartData);
         }
 
         //update measurementsQueue

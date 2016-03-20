@@ -61,7 +61,7 @@ angular.module('starter')
                             text:'Cancel',
                             type:'button-stable',
                             onTap:function(e){
-                                $state.go('app.track');
+                                $state.go(config.appSettings.default_state);
                             }
                         }
                     ],

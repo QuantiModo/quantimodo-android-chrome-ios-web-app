@@ -4,17 +4,31 @@ angular.module('starter')
 	.controller('AppCtrl', function($scope, $ionicModal, $timeout, $injector, utilsService, authService,
                                     measurementService, $ionicPopover, $ionicLoading, $state, $ionicHistory,
                                     QuantiModo, notificationService, $rootScope, localStorageService, reminderService,
-                                    $ionicPopup) {
+                                    $ionicPopup, $ionicSideMenuDelegate) {
 
     // flags
     $scope.controller_name = "AppCtrl";
+    $scope.menu = config.appSettings.menu;
     $scope.isLoggedIn  = false;
     $scope.showTrackingSubMenu = false;
     $scope.showReminderSubMenu = false;
+    $scope.closeMenu = function() {
+        $ionicSideMenuDelegate.toggleLeft(false);
+    };
+    
+    $scope.closeMenuIfNeeded = function(menuItem){
+        if(menuItem.click){
+            $scope[menuItem.click] && $scope[menuItem.click]();
+        }
+        else if(!menuItem.subMenuPanel){
+            $scope.closeMenu();
+        }
+    };
     $scope.showHistorySubMenu = false;
     $scope.shopping_cart_enabled = config.shopping_cart_enabled;
     $rootScope.isSyncing = false;
     var $cordovaFacebook = {};
+         
 
     $scope.isIOS = ionic.Platform.isIPad() || ionic.Platform.isIOS();
     $scope.isAndroid = ionic.Platform.isAndroid();
@@ -175,7 +189,7 @@ angular.module('starter')
 
                 // move to tracking page
                 if($state.current.name == "app.welcome" || $state.current.name == "app.login"){
-                    $state.go('app.track');
+                    $state.go(config.appSettings.default_state);
                     $rootScope.hideMenu = false;
                 }
 
@@ -339,7 +353,7 @@ angular.module('starter')
                     $scope.getAuthToken(requestToken);
                 });
             } else {
-                console.log("it is an extension");
+                console.log("It is an extension, so we use sessions instead of OAuth flow. ");
                 chrome.tabs.create({ url: "http://app.quantimo.do/" });
             }
             
@@ -733,7 +747,7 @@ angular.module('starter')
         console.log('isWelcomed ' + isWelcomed);
         if(isWelcomed  === true || isWelcomed === "true" || tokenInGetParams){
             $rootScope.isWelcomed = true;
-            //$state.go('app.track');
+            //$state.go(config.appSettings.default_state);
         } else {
             console.log("isWelcomed is " + isWelcomed + ". Setting to true and going to welcome now.");
             localStorageService.setItem('isWelcomed', true);

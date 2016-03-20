@@ -24,9 +24,18 @@ window.config = {
 config.appSettings  = {
     app_name : 'MoodiModo',
 
+    default_state : 'app.track',
+
     primary_outcome_variable : 'Mood',
 
     storage_identifier: 'MoodiModoData*',
+
+    headline : 'Sync and Analyze Your Data',
+    features: [
+        ' - Automatically backup and sync your data across devices',
+        ' - Track diet, treatments, symptoms, and anything else',
+        ' - Analyze your data to see the top predictors for your Mood'
+    ],
 
     primary_outcome_variable_details : {
         id : 1398,
@@ -188,7 +197,186 @@ config.appSettings  = {
         "negative_predictors" : {
             message : 'Negative Predictors are the factors most predictive of <span class="calm">DECREASING</span> for the average QuantiModo user.'
         }
-    }
+    },
+
+    menu : [
+        {
+            title : 'Track Mood',
+            href : '#/app/track',
+            icon : 'ion-happy-outline'
+        },
+        {
+            title : 'Track Factors',
+            click : 'toggleTrackingSubMenu',
+            icon : 'showTrackingSubMenu',
+            subMenuPanel : true
+        },
+        {
+            title : 'Track anything',
+            isSubMenu : true,
+            subMenuVariable : 'showTrackingSubMenu',
+            href : '#/app/track_factors',
+            icon : 'ion-ios-world-outline'   
+        },
+        {
+            title : 'Track foods',
+            isSubMenu : true,
+            subMenuVariable : 'showTrackingSubMenu',
+            href : '#/app/track_factors_category/Foods',
+            icon : 'ion-ios-nutrition-outline'
+        },
+        {
+            title : 'Track emotions',
+            isSubMenu : true,
+            subMenuVariable : 'showTrackingSubMenu',
+            href : '#/app/track_factors_category/Emotions',
+            icon : 'ion-happy-outline'
+        },
+        {
+            title : 'Track symptoms',
+            isSubMenu : true,
+            subMenuVariable : 'showTrackingSubMenu',
+            href : '#/app/track_factors_category/Symptoms',
+            icon : 'ion-ios-pulse'
+        },
+        {
+            title : 'Track treatments',
+            isSubMenu : true,
+            subMenuVariable : 'showTrackingSubMenu',
+            href : '#/app/track_factors_category/Treatments',
+            icon : 'ion-ios-medkit-outline'
+        },
+        {
+            title : 'Track physical activity',
+            isSubMenu : true,
+            subMenuVariable : 'showTrackingSubMenu',
+            href : '#/app/track_factors_category/Physical Activity',
+            icon : 'ion-ios-body-outline'
+        },
+        {
+            title : 'Reminders',
+            click : 'toggleReminderSubMenu',
+            icon : 'showReminderSubMenu',
+            subMenuPanel : true
+        },
+        {
+            title : 'Inbox',
+            isSubMenu : true,
+            subMenuVariable : 'showReminderSubMenu',
+            href : '#/app/reminders-inbox',
+            icon : 'ion-android-notifications-none'
+        },
+        {
+            title : 'Manage',
+            isSubMenu : true,
+            subMenuVariable : 'showReminderSubMenu',
+            href : '#/app/reminders-manage',
+            icon : 'ion-ios-gear-outline'
+        },
+        {
+            title : 'Emotions',
+            isSubMenu : true,
+            subMenuVariable : 'showReminderSubMenu',
+            href : '#/app/reminders/Emotions',
+            icon : 'ion-happy-outline'
+        },
+        {
+            title : 'Symptoms',
+            isSubMenu : true,
+            subMenuVariable : 'showReminderSubMenu',
+            href : '#/app/reminders/Symptoms',
+            icon : 'ion-ios-pulse'
+        },
+        {
+            title : 'Treatments',
+            isSubMenu : true,
+            subMenuVariable : 'showReminderSubMenu',
+            href : '#/app/reminders/Treatments',
+            icon : 'ion-ios-medkit-outline'
+        },
+        {
+            title : 'Foods',
+            isSubMenu : true,
+            subMenuVariable : 'showReminderSubMenu',
+            href : '#/app/reminders/Foods',
+            icon : 'ion-ios-nutrition-outline'
+        },
+        {
+            title : 'History',
+            click : 'toggleHistorySubMenu',
+            icon : 'showHistorySubMenu',
+            subMenuPanel : true
+        },
+        {
+            title : 'Moods',
+            isSubMenu : true,
+            subMenuVariable : 'showHistorySubMenu',
+            href : '#/app/history',
+            icon : 'ion-happy-outline'
+        },
+        {
+            title : 'All Measurements',
+            isSubMenu : true,
+            subMenuVariable : 'showHistorySubMenu',
+            href : '#/app/history-all',
+            icon : 'ion-ios-paper-outline'
+        },
+        {
+            title : 'Import Data',
+            href : '#/app/import',
+            icon : 'ion-ios-cloud-download-outline'
+        },
+        {
+            title : 'Variables',
+            href : '#app/search-variables',
+            icon : 'ion-social-vimeo'
+        },
+        {
+            title : 'Predictor Search',
+            click : 'togglePredictorSearchSubMenu',
+            icon : 'showPredictorSearchSubMenu',
+            subMenuPanel : true
+        },
+        {
+            title : 'Common',
+            isSubMenu : true,
+            subMenuVariable : 'showPredictorSearchSubMenu',
+            href : '#/app/search-common-relationships',
+            icon : 'ion-ios-people'
+        },
+        {
+            title : 'Yours',
+            isSubMenu : true,
+            subMenuVariable : 'showPredictorSearchSubMenu',
+            href : '#/app/search-user-relationships',
+            icon : 'ion-person'
+        },
+        {
+            title : 'Predictors of Mood',
+            click : 'toggleOutcomePredictorSubMenu',
+            icon : 'showOutcomePredictorSubMenu',
+            subMenuPanel : true
+        },
+        {
+            title : 'Positive Mood',
+            isSubMenu : true,
+            subMenuVariable : 'showOutcomePredictorSubMenu',
+            href : '#/app/positive',
+            icon : 'ion-happy-outline'
+        },
+        {
+            title : 'Negative Mood',
+            isSubMenu : true,
+            subMenuVariable : 'showOutcomePredictorSubMenu',
+            href : '#/app/negative',
+            icon : 'ion-sad-outline'
+        },
+        {
+            title : 'Help & Feedback',
+            href : window.chrome ? "mailto:help@quantimo.do" : "#app/feedback",
+            icon : 'ion-ios-help-outline'
+        },
+    ]
 };
 
 config.getPrimaryOutcomeVariableOptionLabels = function(shouldShowNumbers){
