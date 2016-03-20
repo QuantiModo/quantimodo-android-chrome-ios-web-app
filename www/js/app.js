@@ -23,14 +23,14 @@ angular.module('starter', ['ionic','oc.lazyLoad','highcharts-ng','ngCordova','io
             });
 
             $ionicPlatform.registerBackButtonAction(function (event) {
-                if($ionicHistory.currentStateName() == "app.track"){
+                if($ionicHistory.currentStateName() == config.appSettings.default_state){
                     ionic.Platform.exitApp();
                 }
                 else {
                     if($ionicHistory.backView()){
                         $ionicHistory.goBack();
                     } else if(localStorage.isLoggedIn){
-                        $state.go('app.track');
+                        $state.go(config.appSettings.default_state);
                     } else {
                         $state.go('app.welcome');
                     }
@@ -66,10 +66,10 @@ angular.module('starter', ['ionic','oc.lazyLoad','highcharts-ng','ngCordova','io
         var appName = getAppNameFromUrl();
 
         if(appName){
-            console.log('loadin', appsManager.getAppConfig(appName), appsManager.getPrivateConfig(appName));
+            console.log('loading', appsManager.getAppConfig(appName), appsManager.getPrivateConfig(appName));
             return $ocLazyLoad.load([appsManager.getAppConfig(appName), appsManager.getPrivateConfig(appName)]);
         } else{
-            console.log('loading default ', 'MoodiModo');
+            console.log('Loading default app: ' + appsManager.getDefaultApp());
             return $ocLazyLoad.load([appsManager.getDefaultConfig(), appsManager.getDefaultPrivateConfig()]);          
         }
 
@@ -101,11 +101,22 @@ angular.module('starter', ['ionic','oc.lazyLoad','highcharts-ng','ngCordova','io
         }
       })
 
+      .state('app.get_started', {
+        url: "/get-started",
+        views: {
+          'menuContent': {
+            templateUrl: "templates/medication_get_started.html",
+            controller: 'MedicationGetStartedCtrl'
+          }
+        }
+      })
+
       .state('app.login', {
         url: "/login",
         views: {
           'menuContent': {
             templateUrl: "templates/login_page.html",
+            controller: 'LoginCtrl'
           }
         }
       })

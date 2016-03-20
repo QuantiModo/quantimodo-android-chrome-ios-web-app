@@ -1,7 +1,15 @@
 #!/usr/bin/env bash
 
-ANDROID_SDK_FILENAME=android-sdk_r24-linux.tgz
+ANDROID_SDK_FILENAME=android-sdk_r24.2-linux.tgz
 ANDROID_SDK=http://dl.google.com/android/$ANDROID_SDK_FILENAME
+
+#npm uninstall cordova ionic
+#npm cache clean -f
+#npm install npm -g
+#npm uninstall node
+#apt-get purge npm
+#apt-get install npm
+#npm install node -g
 
 #sudo apt-get install python-software-properties
 #sudo add-apt-repository ppa:webupd8team/java
@@ -22,11 +30,11 @@ npm install -g cordova
 npm install -g ionic
 expect -c '
 set timeout -1   ;
-spawn /home/vagrant/android-sdk-linux/tools/android update sdk -u --all --filter platform-tool,android-19,build-tools-19.1.0
-expect { 
+spawn /home/vagrant/android-sdk-linux/tools/android update sdk -u --all --filter platform-tool,android-22,build-tools-22.0.1
+expect {
     "Do you accept the license" { exp_send "y\r" ; exp_continue }
     eof
 }
 '
 
-sudo gem install sass
+#sudo gem install sass

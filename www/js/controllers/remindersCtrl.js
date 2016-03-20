@@ -10,13 +10,13 @@ angular.module('starter')
 	    	title : 'Reminders',
 	    	resultsHeaderText : '',
 
-	    	showType : false,
+	    	showVariableCategory : false,
 	    	showSearchBox : false,
 	    	showResults : false,
 	    	showCustomBox : false,
 
 	    	searchQuery : "",
-	    	selectedType : 'Anything',
+	    	selectedVariableCategory : 'Anything',
 	    	selectedUnit : '',
 	    	searching : false,
 	    	selectedFrequency : 'Hourly',
@@ -43,7 +43,7 @@ angular.module('starter')
 
 	    // data
 	    $scope.variables = {
-	    	types : [
+	    	variableCategories : [
 	    		{ id : 1, name : 'Anything' },
 		    	{ id : 2, name : 'Emotions' },
 		    	{ id : 3, name : 'Symptoms' },
@@ -108,8 +108,8 @@ angular.module('starter')
     		utils.startLoading();
 	    	// get user token
 			authService.getAccessToken().then(function(token){
-			   	console.log('$scope.state.selectedType.toLowerCase()', $scope.state.selectedType.toLowerCase());
-				if($scope.state.selectedType.toLowerCase() == 'anything'){
+			   	console.log('$scope.state.selectedVariableCategory.toLowerCase()', $scope.state.selectedVariableCategory.toLowerCase());
+				if($scope.state.selectedVariableCategory.toLowerCase() == 'anything'){
 					// get all variables
 					console.log('anything');
 					measurementService.getVariables().then(function(variables){
@@ -145,8 +145,8 @@ angular.module('starter')
 
 	    // when category is selected
 	    $scope.onVariableChange = function(){
-	    	console.log("Type Selected: ", $scope.state.selectedType);
-	    	$scope.category = $scope.state.selectedType;
+	    	console.log("Type Selected: ", $scope.state.selectedVariableCategory);
+	    	$scope.category = $scope.state.selectedVariableCategory;
 	    	$scope.state.searchQuery = '';
 	    	$scope.state.showResults = false;
 	    	$scope.state.showSearchBox = true;
@@ -155,7 +155,7 @@ angular.module('starter')
 	    var search = function(query){
 	    	// search server for the query
 
-	    	if($scope.state.selectedType.toLowerCase() == 'anything'){
+	    	if($scope.state.selectedVariableCategory.toLowerCase() == 'anything'){
 	    		console.log('anything');
 	    		measurementService.getPublicVariables(query)
 	    		.then(function(variables){
@@ -437,18 +437,18 @@ angular.module('starter')
 
 	    // setup category view
 	    var setupCategory = function(category){
-	    	$scope.state.title = category;
+	    	$scope.state.title = 'Add ' + category + ' Reminder';
 	    	$scope.state.showSearchBox = true;
 	    	$scope.state.showResults = true;
 	    	$scope.state.resultsHeaderText = "Your previously tracked "+category;
-	    	$scope.state.selectedType = category;
+	    	$scope.state.selectedVariableCategory = category;
 	    	populate_recent_tracked(category);
 	    };
 
 	    // setup new reminder view
 	    var setupNewReminder = function(){
 	    	$scope.state.title = "Add New Reminder";
-	    	$scope.state.showType = true;
+	    	$scope.state.showVariableCategory = true;
 	    	$scope.state.showSearchBox = true;
 	    };
 

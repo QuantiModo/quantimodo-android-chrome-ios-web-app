@@ -1,41 +1,48 @@
 <ion-view hide-nav-bar="skipMenu" view-title="{{state.title}}">
 
 	<ion-content scroll="true" overflow-scroll="true"> 
-<!--		<div class="list card">
+		<div class="list card">
 			<div class="item item-divider" style="background-color:#11c1f3; color:white;">Actions</div>
 			<a href="#/app/reminders" class="item item-icon-left">
 				<i class="icon ion-plus calm"></i>
 				Add a new Reminder
 			</a>
-		</div>-->
-
+		</div>
+		
+		
 		<div class="card" ng-show="state.showMeasurementBox" ng-class="{card_disabled : state.isDisabled}" style="overflow: visible">
-            <div class="item item-divider" style="background-color:#11c1f3; color:white;">Track {{state.selectedReminder.variableName}}</div>
+            <div  class="item item-divider" style="background-color:#11c1f3; color:white;">Track {{state.selectedReminder.variableName}}</div>
             
             <div class="list">
 				
-				<div class="row labeled-control">
-	            	<div class="col col-l">
-	            	    <span>
-	            	        Value
-	            	    </span>
-	            	</div>
-	            	<div class="col">
-	            	    <input type="text" ng-model="state.reminderDefaultValue" placeholder="Enter Value Here" class="uptop">
-	            	</div>
+				<div class="row" ng-if="state.selectedReminder.abbreviatedUnitName == '/5' " >
+					<div class="primary_outcome_variables col">
+						<img ng-repeat="option in primary_outcome_variable_numbers" ng-click="select_primary_outcome_variable($event, option.value)" ng-src="{{option.img}}">
+					</div>
 				</div>
-				
-				<div class="row labeled-control">
-	            	<div class="col col-l">
-	            	    <span>
-	            	        Unit
-	            	    </span>
-	            	</div>
-	            	<div class="col">
-	            	    <p style="color:black; padding: 0px 0px;">{{state.selectedReminder.abbreviatedUnitName}}
+				<div ng-if="state.selectedReminder.abbreviatedUnitName != '/5' ">
+					<div class="row labeled-control">
+		            	<div class="col col-l">
+		            	    <span>
+		            	        Value
+		            	    </span>
+		            	</div>
+		            	<div class="col">
+		            	    <input type="text" ng-model="state.reminderDefaultValue" placeholder="Enter Value Here" class="uptop">
+		            	</div>
+					</div>
+					
+					<div class="row labeled-control">
+		            	<div class="col col-l">
+		            	    <span>
+		            	        Unit
+		            	    </span>
+		            	</div>
+		            	<div class="col">
+		            	    <p style="color:black; padding: 0px 0px;">{{state.selectedReminder.abbreviatedUnitName}}
+		            	</div>
 	            	</div>
             	</div>
-            	
                 <div class="row labeled-control">
                     <div class="col col-l">
                         <span>

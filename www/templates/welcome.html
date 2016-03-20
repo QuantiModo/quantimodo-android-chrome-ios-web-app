@@ -4,7 +4,7 @@
 <div id="login_iframe">
 </div>
 
-<div ng-show="show_tracking_factor_card" class="card tracking_factor_reporting">
+<div ng-show="show_primary_outcome_variable_card && primary_outcome_variable" class="card primary_outcome_variable_reporting">
 	<div class="item item-text-wrap">
 		<h1>Welcome to <span class="calm">{{view_title}}</span></h1>
 		<ul>
@@ -14,22 +14,22 @@
 	</div>
 </div>
 
-<div ng-show="show_tracking_factor_card" class="card tracking_factor_reporting">
+<div ng-show="show_primary_outcome_variable_card && primary_outcome_variable" class="card primary_outcome_variable_reporting">
 	<div class="item item-text-wrap">
-		<div  class="tracking_factors">
-            <img ng-repeat="option in tracking_factor_options"
-                 ng-click="report_tracking_factor(option.value)"
+		<div  class="primary_outcome_variables">
+            <img ng-repeat="option in primary_outcome_variable_options"
+                 ng-click="report_primary_outcome_variable(option.value)"
                  ng-src="{{option.img}}"
             >
 		</div>
 	</div>
 </div>
 
-<div class="card reporting_interval" ng-show="show_interval_card && !show_tracking_factor_card">
+<div class="card reporting_interval" ng-show="show_interval_card && !show_primary_outcome_variable_card && primary_outcome_variable">
 	<div class="item item-text-wrap">
 		<h1 class="calm">Report Interval</h1>      
 		<ul>
-			<li>A subtle notification and easy-to-use popup complement each other perfectly, ensuring you'll never forget to report your <span class="lower-text">{{tracking_factor}}<span></li>
+			<li>A subtle notification and easy-to-use popup complement each other perfectly, ensuring you'll never forget to report your <span class="lower-text">{{primary_outcome_variable}}<span></li>
 		</ul>
 		<ul class="list">
 			<li class="item item-input item-select">
@@ -70,15 +70,14 @@
 	</div>
 </div>
 
-<div class="card sign_in" ng-show="!isLoggedIn && !show_tracking_factor_card && !show_interval_card ">
+<div class="card sign_in" ng-show="!isLoggedIn &&
+	((!show_primary_outcome_variable_card && !show_interval_card) || !primary_outcome_variable) ">
         <div class="item item-text-wrap">
-            <h1 class="calm">Sync and Analyze Your Data</h1>
+            <h1 class="calm">{{headline}}</h1>
             <br/>
             <ul>
                 <li>By creating a FREE account you'll be able to:</li>
-                <li> - Automatically backup and sync your data across devices</li>
-                <li> - Track diet, treatments, symptoms, and anything else</li>
-                <li> - Analyze your data to see the top predictors for your {{tracking_factor}}</li>
+                <li ng-repeat="feature in features">{{feature}}</li>
             </ul>
             <button ng-show="isIOS" class="button button-block button-calm" ng-click="facebook_login()">
                 Facebook Sign In
@@ -86,13 +85,19 @@
             <button ng-show="isIOS"  class="button button-block button-calm" ng-click="google_login()">
                 Google Sign In
             </button>
-            <button class="button button-block button-calm" ng-click="login()">
-                QuantiModo Sign In
-            </button>
+			<button class="button button-block button-calm" ng-click="login()">
+				Sign In / Up
+			</button>
             <button class="button button-block button-assertive" ng-click="skipLogin()">
                 <span ng-if="!isWelcomed">Skip</span>
                 <span ng-if="isWelcomed">Cancel</span>
             </button>
+			<h1 class="calm">Privacy</h1>
+			<ul>
+				<li>It's your data. You decide what you share with your family and healthcare providers.</li>
+				<li>By using {{appName}}, you agree with the terms of use and privacy statement.</li>
+			</ul>
+
         </div>
     </div>
 

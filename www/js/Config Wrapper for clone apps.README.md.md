@@ -4,11 +4,11 @@ A configuration object "appSettings" is available in /js/config.js for changing 
 
     ![alt tag](http://res.cloudinary.com/loops-inc/image/upload/v1436306460/header_lcaxwn.png)
 
-2. "tracking_factor" : Tracking factor that the app will track, changing this will  replace the word mood with provided value.
+2. "primary_outcome_variable" : Tracking factor that the app will track, changing this will  replace the word mood with provided value.
 
-3. "tracking_factors_options_labels" : array of tracking factor options, the elements of this array will be displayed on the x-axis of the graph
+3. "primary_outcome_variables_options_labels" : array of tracking factor options, the elements of this array will be displayed on the x-axis of the graph
 
-4. "tracking_factor_options" : Array of objects, this will dynamically generate the reporting card with provided options and images.
+4. "primary_outcome_variable_options" : Array of objects, this will dynamically generate the reporting card with provided options and images.
 
 5. "welcome_text" : This text will be displayed on first line of welcome card on welcome screen 
 
@@ -25,9 +25,9 @@ This is how configuration wrapper for MoodiModo looks like
 ```json
 config.appSettings  = {
     app_name : 'MoodiModo', // This will change the name of the app on Top header
-    tracking_factor : 'Mood', // Tracking factor that the app will track,
-    tracking_factors_options_labels : [ 'Depressed', 'Sad', 'OK', 'Happy', 'Ecstatic' ] , //tracking facotor options, the elements of this array will be displayed on the x-axis of the graph
-    tracking_factor_options : [ //Tracking factor options with images.
+    primary_outcome_variable : 'Mood', // Tracking factor that the app will track,
+    primary_outcome_variables_options_labels : [ 'Depressed', 'Sad', 'OK', 'Happy', 'Ecstatic' ] , //tracking facotor options, the elements of this array will be displayed on the x-axis of the graph
+    primary_outcome_variable_options : [ //Tracking factor options with images.
         {
             value: 'mood_depressed',
             img: 'img/ic_mood_depressed.png'

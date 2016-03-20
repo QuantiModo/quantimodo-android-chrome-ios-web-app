@@ -11,7 +11,7 @@ window.config = {
     bugsnag:{
         notifyReleaseStages:['Production','Staging']
     },
-    client_source_name : "MoodiModo "+getPlatform(),
+    client_source_name : "EnergyModo "+ getPlatform(),
     domain : 'app.quantimo.do',
     environment: "Development",
     permissions : ['readmeasurements', 'writemeasurements'],
@@ -23,11 +23,13 @@ window.config = {
 config.appSettings  = {
     app_name : 'EnergyModo',
 
-    tracking_factor : 'Energy',
+    default_state : 'app.track',
+
+    primary_outcome_variable : 'Energy',
 
     storage_identifier: 'EnergyModoData*',
       
-    primary_tracking_factor_details : {
+    primary_outcome_variable_details : {
         id : 108092,
         name : "Overall Energy",
         category : "Energy",
@@ -35,7 +37,7 @@ config.appSettings  = {
         combinationOperation: "MEAN"
     },
 
-    tracking_factors_options_labels : [ 
+    primary_outcome_variables_options_labels : [
         '1', 
         '2', 
         '3', 
@@ -43,7 +45,7 @@ config.appSettings  = {
         '5' 
     ],
 
-    tracking_factor_options : [
+    primary_outcome_variable_options : [
         {
             value: '1',
             img: 'img/ic_1.png'
@@ -163,17 +165,220 @@ config.appSettings  = {
                 url : 'img/ic_mood_ecstatic.png'
             }
         }
-    }
+    },
+
+    popup_messages : {
+        "track" : {
+            message : 'Here, you can view your <span class="calm">average Energy</span> as well as charts illustrating how it changes over time'
+        },
+        "history" : {
+            message : 'You can see and edit your past Energy ratings and notes by tapping on any item in the list.  <br/> <br/>You can also Add a note by tapping on a Energy rating in the list.'
+        },
+        "track_foods" : {
+            message : 'You can track your diet on this page. You can also <span class="calm">Add a new Food Variable</span> if you do not find the meal you looked for in the search results.'
+        },
+        "track_symptoms" : {
+            message : 'You can track any symptom on this page. You can also <span class="calm">Add a new Symptom</span> if you don\'t find the symptom you looked for in the search results.'
+        },
+        "track_treatments" : {
+            message : 'You can track any treatment on this page. You can also <span class="calm">Add a new Treatment</span> if you don\'t find the treatment you looked for in the search results.'
+        },
+        "positive_predictors" : {
+            message : 'Positive Predictors are the factors most predictive of <span class="calm">IMPROVING</span> Energy for the average QuantiModo user.'
+        },
+        "negative_predictors" : {
+            message : 'Negative Predictors are the factors most predictive of <span class="calm">DECREASING</span>Energy for the average QuantiModo user.'
+        }
+    },
+
+    menu : [
+        {
+            title : 'Track Energy',
+            href : '#/app/track',
+            icon : 'ion-happy-outline'
+        },
+        {
+            title : 'Track Factors',
+            click : 'toggleTrackingSubMenu',
+            icon : 'showTrackingSubMenu',
+            subMenuPanel : true
+        },
+        {
+            title : 'Track anything',
+            isSubMenu : true,
+            subMenuVariable : 'showTrackingSubMenu',
+            href : '#/app/track_factors',
+            icon : 'ion-ios-world-outline'   
+        },
+        {
+            title : 'Track foods',
+            isSubMenu : true,
+            subMenuVariable : 'showTrackingSubMenu',
+            href : '#/app/track_factors_category/Foods',
+            icon : 'ion-ios-nutrition-outline'
+        },
+        {
+            title : 'Track emotions',
+            isSubMenu : true,
+            subMenuVariable : 'showTrackingSubMenu',
+            href : '#/app/track_factors_category/Emotions',
+            icon : 'ion-happy-outline'
+        },
+        {
+            title : 'Track symptoms',
+            isSubMenu : true,
+            subMenuVariable : 'showTrackingSubMenu',
+            href : '#/app/track_factors_category/Symptoms',
+            icon : 'ion-ios-pulse'
+        },
+        {
+            title : 'Track treatments',
+            isSubMenu : true,
+            subMenuVariable : 'showTrackingSubMenu',
+            href : '#/app/track_factors_category/Treatments',
+            icon : 'ion-ios-medkit-outline'
+        },
+        {
+            title : 'Track physical activity',
+            isSubMenu : true,
+            subMenuVariable : 'showTrackingSubMenu',
+            href : '#/app/track_factors_category/Physical Activity',
+            icon : 'ion-ios-body-outline'
+        },
+        {
+            title : 'Reminders',
+            click : 'toggleReminderSubMenu',
+            icon : 'showReminderSubMenu',
+            subMenuPanel : true
+        },
+        {
+            title : 'Inbox',
+            isSubMenu : true,
+            subMenuVariable : 'showReminderSubMenu',
+            href : '#/app/reminders-inbox',
+            icon : 'ion-android-notifications-none'
+        },
+        {
+            title : 'Manage',
+            isSubMenu : true,
+            subMenuVariable : 'showReminderSubMenu',
+            href : '#/app/reminders-manage',
+            icon : 'ion-ios-gear-outline'
+        },
+        {
+            title : 'Emotions',
+            isSubMenu : true,
+            subMenuVariable : 'showReminderSubMenu',
+            href : '#/app/reminders/Emotions',
+            icon : 'ion-happy-outline'
+        },
+        {
+            title : 'Symptoms',
+            isSubMenu : true,
+            subMenuVariable : 'showReminderSubMenu',
+            href : '#/app/reminders/Symptoms',
+            icon : 'ion-ios-pulse'
+        },
+        {
+            title : 'Treatments',
+            isSubMenu : true,
+            subMenuVariable : 'showReminderSubMenu',
+            href : '#/app/reminders/Treatments',
+            icon : 'ion-ios-medkit-outline'
+        },
+        {
+            title : 'Foods',
+            isSubMenu : true,
+            subMenuVariable : 'showReminderSubMenu',
+            href : '#/app/reminders/Foods',
+            icon : 'ion-ios-nutrition-outline'
+        },
+        {
+            title : 'History',
+            click : 'toggleHistorySubMenu',
+            icon : 'showHistorySubMenu',
+            subMenuPanel : true
+        },
+        {
+            title : 'Energy(s)',
+            isSubMenu : true,
+            subMenuVariable : 'showHistorySubMenu',
+            href : '#/app/history',
+            icon : 'ion-happy-outline'
+        },
+        {
+            title : 'All Measurements',
+            isSubMenu : true,
+            subMenuVariable : 'showHistorySubMenu',
+            href : '#/app/history-all',
+            icon : 'ion-ios-paper-outline'
+        },
+        {
+            title : 'Import Data',
+            href : '#/app/import',
+            icon : 'ion-ios-cloud-download-outline'
+        },
+        {
+            title : 'Variables',
+            href : '#app/search-variables',
+            icon : 'ion-social-vimeo'
+        },
+        {
+            title : 'Predictor Search',
+            click : 'togglePredictorSearchSubMenu',
+            icon : 'showPredictorSearchSubMenu',
+            subMenuPanel : true
+        },
+        {
+            title : 'Common',
+            isSubMenu : true,
+            subMenuVariable : 'showPredictorSearchSubMenu',
+            href : '#/app/search-common-relationships',
+            icon : 'ion-ios-people'
+        },
+        {
+            title : 'Yours',
+            isSubMenu : true,
+            subMenuVariable : 'showPredictorSearchSubMenu',
+            href : '#/app/search-user-relationships',
+            icon : 'ion-person'
+        },
+        {
+            title : 'Predictors of Mood',
+            click : 'toggleOutcomePredictorSubMenu',
+            icon : 'showOutcomePredictorSubMenu',
+            subMenuPanel : true
+        },
+        {
+            title : 'Positive Mood',
+            isSubMenu : true,
+            subMenuVariable : 'showOutcomePredictorSubMenu',
+            href : '#/app/positive',
+            icon : 'ion-happy-outline'
+        },
+        {
+            title : 'Negative Mood',
+            isSubMenu : true,
+            subMenuVariable : 'showOutcomePredictorSubMenu',
+            href : '#/app/negative',
+            icon : 'ion-sad-outline'
+        },
+        {
+            title : 'Help & Feedback',
+            href : window.chrome ? "mailto:help@quantimo.do" : "#app/feedback",
+            icon : 'ion-ios-help-outline'
+        },
+    ]
 };
 
-config.getTrackingFactorOptionLabels = function(shouldShowNumbers){
-    if(shouldShowNumbers || !config.appSettings.tracking_factors_options_labels){
+config.getPrimaryOutcomeVariableOptionLabels = function(shouldShowNumbers){
+    if(shouldShowNumbers || !config.appSettings.primary_outcome_variables_options_labels){
         return ['1',  '2',  '3',  '4', '5'];
-    } else return config.appSettings.tracking_factors_options_labels;
+    } else return config.appSettings.primary_outcome_variables_options_labels;
 };
 
-config.getTrackingFactorOptions = function(shouldShowNumbers){
-    if(shouldShowNumbers || !config.appSettings.tracking_factor_options){
+config.getPrimaryOutcomeVariableOptions = function(shouldShowNumbers){
+    if(shouldShowNumbers || !config.appSettings.primary_outcome_variable_options){
         return [
             {
                 value: '1',
@@ -196,23 +401,23 @@ config.getTrackingFactorOptions = function(shouldShowNumbers){
                 img: 'img/ic_5.png'
             }
         ];
-    } else return config.appSettings.tracking_factor_options;
+    } else return config.appSettings.primary_outcome_variable_options;
 };
 
-config.getImageForTrackingFactorByValue = function(val){
-    var filtered_list = this.appSettings.tracking_factor_options.filter(function(option){
+config.getImageForPrimaryOutcomeVariableByValue = function(val){
+    var filtered_list = this.appSettings.primary_outcome_variable_options.filter(function(option){
         return option.value === val;
     });
 
     return filtered_list.length? filtered_list[0].img || false : false;
 };
 
-config.getImageForTrackingFactorByNumber = function(num){
-    var tracking_factor = this.appSettings.conversion_dataset[num]? this.appSettings.conversion_dataset[num] : false;
-    return tracking_factor? config.getImageForTrackingFactorByValue(tracking_factor) : false;
+config.getImageForPrimaryOutcomeVariableByNumber = function(num){
+    var primary_outcome_variable = this.appSettings.conversion_dataset[num]? this.appSettings.conversion_dataset[num] : false;
+    return primary_outcome_variable? config.getImageForPrimaryOutcomeVariableByValue(primary_outcome_variable) : false;
 };
 
-config.getTrackingFactorByNumber = function(num){
+config.getPrimaryOutcomeVariableByNumber = function(num){
     return this.appSettings.conversion_dataset[num]? this.appSettings.conversion_dataset[num] : false;
 };
 
@@ -305,8 +510,8 @@ window.notification_callback = function(reported_variable, reporting_time){
 
     // convert values
     if(reported_variable === "repeat_mood"){
-        val = localStorage[key_identifier+'lastReportedTrackingFactorValue']? 
-        JSON.parse(localStorage[key_identifier+'lastReportedTrackingFactorValue']) : false;
+        val = localStorage[key_identifier+'lastReportedPrimaryOutcomeVariableValue']?
+        JSON.parse(localStorage[key_identifier+'lastReportedPrimaryOutcomeVariableValue']) : false;
     } else {
         val = config.appSettings.conversion_dataset_reversed[reported_variable]?
         config.appSettings.conversion_dataset_reversed[reported_variable] : false;
@@ -315,7 +520,7 @@ window.notification_callback = function(reported_variable, reporting_time){
     // report
     if(val){
         // update localstorage
-        localStorage[key_identifier+'lastReportedTrackingFactorValue'] = val;
+        localStorage[key_identifier+'lastReportedPrimaryOutcomeVariableValue'] = val;
         
         var allDataObject = {
             storedValue : val,

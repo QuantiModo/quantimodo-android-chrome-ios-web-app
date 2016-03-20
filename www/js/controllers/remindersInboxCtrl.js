@@ -9,6 +9,7 @@ angular.module('starter')
 	    	showMeasurementBox : false,
 	    	selectedReminder : false,
 	    	reminderDefaultValue : "",
+	    	selected1to5Value : false,
 	    	allReminders : [
 	    	],
 	    	trackingRemindersNotifications : [
@@ -24,6 +25,19 @@ angular.module('starter')
 			variable : {},
 			isDisabled : false
 	    };
+
+	    $scope.select_primary_outcome_variable = function($event, val){
+	        // remove any previous tracking factors if present
+	        jQuery('.primary_outcome_variables .active_primary_outcome_variable').removeClass('active_primary_outcome_variable');
+
+	        // make this tracking factor glow visually
+	        jQuery($event.target).addClass('active_primary_outcome_variable');
+
+	        jQuery($event.target).parent().removeClass('primary_outcome_variable_history').addClass('primary_outcome_variable_history');
+
+	        $scope.state.selected1to5Value = val;
+
+		};
 
 	    var filterViaDates = function(reminders){
 
@@ -218,7 +232,6 @@ angular.module('starter')
 	    	$scope.state.reminderDefaultValue = value;
 	    	$scope.state.slots.epochTime = moment(dateTime).unix();
 	    	$scope.state.measurementDate = moment(dateTime)._d;
-
 	    	getVariable(variableName);
 	    };
 
@@ -304,6 +317,9 @@ angular.module('starter')
 	    	    isAvg : isAvg
 	    	};
 
+	    	if($scope.state.selectedReminder.abbreviatedUnitName === '/5') 
+	    		params.value = $scope.state.selected1to5Value;
+
 	    	utils.startLoading();
     		var usePromise = true;
     	    // post measurement
@@ -339,6 +355,16 @@ angular.module('starter')
 	    	$scope.state.reminderDefaultValue = reminder.defaultValue;
 	    	$scope.state.slots.epochTime = moment.utc(reminder.trackingReminderNotificationTime).unix();
 	    	$scope.state.measurementDate = new Date(reminder.trackingReminderNotificationTime);
+
+	    	if($scope.state.selectedReminder.abbreviatedUnitName === '/5'){
+	    		setTimeout(function(){
+	    			jQuery('.primary_outcome_variables .active_primary_outcome_variable').removeClass('active_primary_outcome_variable');
+	    			jQuery('.primary_outcome_variables img:nth-child('+ reminder.defaultValue +')').addClass('active_primary_outcome_variable');
+	    			jQuery('.primary_outcome_variables img:nth-child('+ reminder.defaultValue +')').parent().removeClass('primary_outcome_variable_history').addClass('primary_outcome_variable_history');
+	    		}, 500);
+
+	    		$scope.state.selected1to5Value = reminder.defaultValue;
+	    	}
 	    };
 
 	    $scope.edit = function(reminder){

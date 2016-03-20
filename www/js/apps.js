@@ -2,11 +2,15 @@ var appsManager = {
 	apps : {
 		"moodimodo" : "configs/moodimodo",
 		"energymodo" : "configs/energymodo",
-		"mindfirst" : "configs/mindfirst"
+		"mindfirst" : "configs/mindfirst",
+		"medtlc" : "configs/medtlc"
 	},
 	defaultApp : "moodimodo",
 	getDefaultConfig : function(){
 		return appsManager.apps[appsManager.defaultApp] ? appsManager.apps[appsManager.defaultApp]+'.js' : false;
+	},
+	getDefaultApp : function(){
+		return appsManager.defaultApp;
 	},
 	getDefaultPrivateConfig : function(){
 		return appsManager.apps[appsManager.defaultApp] ? './private_'+appsManager.apps[appsManager.defaultApp]+'.config.js' : false;

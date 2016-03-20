@@ -310,7 +310,7 @@ angular.module('starter')
 
                     // hackish way to update category
                     setTimeout(function(){
-                        $scope.state.variable_category = config.appSettings.tracking_factor;
+                        $scope.state.variable_category = config.appSettings.primary_outcome_variable;
                         
                         // redraw everythign
                         $scope.$apply();
