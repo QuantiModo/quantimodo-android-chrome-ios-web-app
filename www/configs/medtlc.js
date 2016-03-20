@@ -173,7 +173,7 @@ config.appSettings  = {
                 url : 'img/ic_mood_ecstatic.png'
             }
         }
-    }
+    },
 
     menu : [
         {
