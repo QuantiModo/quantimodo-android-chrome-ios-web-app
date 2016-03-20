@@ -680,7 +680,7 @@ angular.module('starter')
                 'app.history'
             ];
 
-            if(sync_enabled_states.indexOf($state.current.name) !== -1){
+            if(sync_enabled_states.indexOf($state.current.name) !== -1 && config.appSettings.primary_outcome_variable != false){
                 $rootScope.isSyncing = true;
                 console.log('setting sync true');
                 
