@@ -4,17 +4,31 @@ angular.module('starter')
 	.controller('AppCtrl', function($scope, $ionicModal, $timeout, $injector, utilsService, authService,
                                     measurementService, $ionicPopover, $ionicLoading, $state, $ionicHistory,
                                     QuantiModo, notificationService, $rootScope, localStorageService, reminderService,
-                                    $ionicPopup) {
+                                    $ionicPopup, $ionicSideMenuDelegate) {
 
     // flags
     $scope.controller_name = "AppCtrl";
+    $scope.menu = config.appSettings.menu;
     $scope.isLoggedIn  = false;
     $scope.showTrackingSubMenu = false;
     $scope.showReminderSubMenu = false;
+    $scope.closeMenu = function() {
+        $ionicSideMenuDelegate.toggleLeft(false);
+    };
+    
+    $scope.closeMenuIfNeeded = function(menuItem){
+        if(menuItem.click){
+            $scope[menuItem.click] && $scope[menuItem.click]();
+        }
+        else if(!menuItem.subMenuPanel){
+            $scope.closeMenu();
+        }
+    };
     $scope.showHistorySubMenu = false;
     $scope.shopping_cart_enabled = config.shopping_cart_enabled;
     $rootScope.isSyncing = false;
     var $cordovaFacebook = {};
+         
 
     $scope.isIOS = ionic.Platform.isIPad() || ionic.Platform.isIOS();
     $scope.isAndroid = ionic.Platform.isAndroid();
