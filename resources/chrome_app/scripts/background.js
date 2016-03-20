@@ -1,6 +1,6 @@
 chrome.app.runtime.onLaunched.addListener(function() {
   //window.open('www/index.html?app=mindfirst');
-  chrome.app.window.create('www/index.html?app=moodimodo', {
+  chrome.app.window.create('www/index.html?app=medtlc', {
     innerBounds: {
       width: 476,
       height: 603
