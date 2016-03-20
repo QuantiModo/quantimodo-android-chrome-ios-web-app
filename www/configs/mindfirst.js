@@ -372,6 +372,11 @@ config.appSettings  = {
             icon : 'ion-sad-outline'
         },
         {
+            title : 'Settings',
+            href : '#/app/settings',
+            icon : 'ion-ios-gear-outline'
+        },
+        {
             title : 'Help & Feedback',
             href : window.chrome ? "mailto:help@quantimo.do" : "#app/feedback",
             icon : 'ion-ios-help-outline'
