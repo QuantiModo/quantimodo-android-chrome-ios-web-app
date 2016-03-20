@@ -27,10 +27,10 @@ angular.module('starter')
 	    };
 
 	    $scope.select_primary_outcome_variable = function($event, val){
-	        // remove any previous tracking factors if present
+	        // remove any previous primary outcome variables if present
 	        jQuery('.primary_outcome_variables .active_primary_outcome_variable').removeClass('active_primary_outcome_variable');
 
-	        // make this tracking factor glow visually
+	        // make this primary outcome variable glow visually
 	        jQuery($event.target).addClass('active_primary_outcome_variable');
 
 	        jQuery($event.target).parent().removeClass('primary_outcome_variable_history').addClass('primary_outcome_variable_history');

@@ -6,9 +6,9 @@ A generic app that can be easily configured to help the user track and optimize 
 # Quick Start for OSX
 1. Install [NodeJS](https://nodejs.org/en/download/)
 1. Install [Ionic Lab](http://lab.ionic.io/)
+1. Install [Android Studio](https://livecode.com/how-to-create-a-free-ios-development-provisioning-profile/)
 1. Install [XCode](https://developer.apple.com/xcode/download/)
-1. Download certificates from [developer.apple.com](https://developer.apple.com/account/ios/certificate/)
-1. Add certs to XCode [like so](https://developer.apple.com/library/ios/documentation/IDEs/Conceptual/AppDistributionGuide/MaintainingCertificates/MaintainingCertificates.html)
+1. Add certs to XCode [like so](https://livecode.com/how-to-create-a-free-ios-development-provisioning-profile/)
 
 
 # Quick Start for Ubuntu 14.04
@@ -256,10 +256,10 @@ primary_outcome_variable_details : {
 },
 ```
 
-`name` : The actual tracking factor name in the QM API.
-`category` : The category of the tracking factor.
-`unit` :  the unit symbol for the tracking factor.
-`combinationOperation` : MEAN or SUM depending upon your tracking factor.
+`name` : The actual primary outcome variable name in the QM API.
+`category` : The category of the primary outcome variable.
+`unit` :  the unit symbol for the primary outcome variable.
+`combinationOperation` : MEAN or SUM depending upon your primary outcome variable.
 
 
 `primary_outcome_variables_options_labels`
@@ -307,7 +307,7 @@ These are the five options (available on the Trrack page) that the users will ra
 
 `tracking_question` : The question displayed when the user is on the Track Screen.
 
-`factor_average_text` : a string that tells user his average tracking factor value.
+`factor_average_text` : a string that tells user his average primary outcome variable value.
 
 `notification_image` : the logo that gets displayed with the notification in ios
 

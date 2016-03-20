@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 ANDROID_SDK_FILENAME=android-sdk_r24.2-linux.tgz
 ANDROID_SDK=http://dl.google.com/android/$ANDROID_SDK_FILENAME
@@ -10,9 +11,9 @@ apt-get install -y npm git openjdk-7-jdk ant expect
 npm install -g n
 n stable
 
-curl -O $ANDROID_SDK
-tar -xzvf $ANDROID_SDK_FILENAME
-sudo chown -R vagrant android-sdk-linux/
+cd ~ && curl -O $ANDROID_SDK
+cd ~ && tar -xzvf $ANDROID_SDK_FILENAME
+cd ~ && sudo chown -R vagrant android-sdk-linux/
 
 echo "ANDROID_HOME=~/android-sdk-linux" >> /home/vagrant/.bashrc
 echo "export JAVA_HOME=/usr/lib/jvm/java-7-openjdk-i386" >> /home/vagrant/.bashrc
@@ -30,9 +31,12 @@ expect {
 }
 '
 
+cd $DIR
 sudo npm i -g gulp grunt-cli bower yo generator-ionic-gulp
 npm rebuild node-sass --no-bin-links
 npm install --no-bin-links
+
+sudo chown -R vagrant:vagrant /home/vagrant
 
 ionic platform add android
 

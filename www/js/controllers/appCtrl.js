@@ -265,7 +265,7 @@ angular.module('starter')
             localStorageService.setItem('primaryOutcomeVariableReportedWelcomeScreen',true);
             localStorageService.setItem('allData',JSON.stringify([]));
 
-            // calculate tracking factor and chart data
+            // calculate primary outcome variable and chart data
             measurementService.calculateAveragePrimaryOutcomeVariableValue().then(function(){
                 measurementService.calculateBothChart();
                 measurementService.resetSyncFlag();
@@ -299,7 +299,7 @@ angular.module('starter')
             localStorageService.deleteItem('expiresAt');
             
 
-            // calculate tracking factor and chart data
+            // calculate primary outcome variable and chart data
             measurementService.calculateAveragePrimaryOutcomeVariableValue().then(function(){
                 measurementService.calculateBothChart();
                 measurementService.resetSyncFlag();
@@ -692,7 +692,7 @@ angular.module('starter')
                     $ionicLoading.hide();
                     showLoader('Calculating stuff');
                     
-                    // calculate tracking factor values
+                    // calculate primary outcome variable values
                     measurementService.calculateAveragePrimaryOutcomeVariableValue().then(function(){
                         measurementService.getPrimaryOutcomeVariableValue().then(calculateChartValues, calculateChartValues);
                     });

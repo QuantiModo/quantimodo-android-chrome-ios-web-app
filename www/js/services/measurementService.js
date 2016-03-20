@@ -132,7 +132,7 @@ angular.module('starter')
                 });
 			},
 
-			// update tracking factor in local storage
+			// update primary outcome variable in local storage
 			updatePrimaryOutcomeVariableLocally : function(primary_outcome_variable){
                 console.log("reported", primary_outcome_variable);
                 var deferred = $q.defer();
@@ -205,7 +205,7 @@ angular.module('starter')
                             }
                         });
                     } else {
-                        console.log("trying to report tracking factor: false");
+                        console.log("trying to report primary outcome variable: false");
                         deferred.reject(false);
                     }
                 }
@@ -215,7 +215,7 @@ angular.module('starter')
                 return deferred.promise;
 			},
 
-			// update tracking factor request to QuantiModo API
+			// update primary outcome variable request to QuantiModo API
 			updatePrimaryOutcomeVariable : function(primary_outcome_variable){
 
 				var report_time  = new Date().getTime();
@@ -348,7 +348,7 @@ angular.module('starter')
 			   var data_set;
                localStorageService.getItem('allData',function(allData){
                    data_set = JSON.parse(allData);
-                   // extract the meausrement from localStorage
+                   // extract the measurement from localStorage
                    var selected_dataset_items = data_set.filter(function(x){return x.timestamp == timestamp;});
 
                    // update localstorage data
@@ -446,7 +446,7 @@ angular.module('starter')
                                         });
                                         console.log('new record');
                                         console.log(new_records);
-                                        //Handling case if a tracking factor is updated
+                                        //Handling case if a primary outcome variable is updated
                                         //Extracting Updated Records
                                         var updated_records = response.filter(function(elem){
                                             var updated_at_timestamp =  moment.utc(elem['updatedTime']*1000).unix();
@@ -454,7 +454,7 @@ angular.module('starter')
                                             //Criteria for updated records
                                             return (updated_at_timestamp > lastUpdatedTimestamp && created_at_timestamp != updated_at_timestamp) ;
                                         });
-                                        //Replacing tracking factor object in original allData object
+                                        //Replacing primary outcome variable object in original allData object
                                         allData.map(function(x,index) {
                                             updated_records.forEach(function(elem){
                                                 if (x['timestamp'] === elem['timestamp'] && x.source === config.get('client_source_name')) {
@@ -513,13 +513,13 @@ angular.module('starter')
 				var data;
                 getAllData(false,function(allData){
                     data = allData;
-                    // check if data is present to calculate tracking factor from
+                    // check if data is present to calculate primary outcome variable from
                     if(!data && data.length == 0) deferred.reject(false);
                     else {
                         var sum = 0;
                         var zeroes = 0;
 
-                        // loop through caluclating average
+                        // loop through calculating average
                         for(var i in data){
                             if(data[i].value === 0 || data[i].value === "0") zeroes++;
                             else sum+= data[i].value;
@@ -535,7 +535,7 @@ angular.module('starter')
 			   	return deferred.promise;
 			},
 
-			// get average tracking factor from local stroage
+			// get average primary outcome variable from local stroage
 			getPrimaryOutcomeVariableValue : function(){
 				var deferred = $q.defer();
 
