@@ -8,6 +8,7 @@ A generic app that can be easily configured to help the user track and optimize 
 1. Install [Ionic Lab](http://lab.ionic.io/)
 1. Install [Android Studio](https://livecode.com/how-to-create-a-free-ios-development-provisioning-profile/)
 1. Install [XCode](https://developer.apple.com/xcode/download/)
+1. Run `ionic state reset` in the root of this repository
 1. Add certs to XCode [like so](https://livecode.com/how-to-create-a-free-ios-development-provisioning-profile/)
 
 
