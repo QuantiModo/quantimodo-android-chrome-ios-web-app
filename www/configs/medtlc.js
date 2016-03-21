@@ -182,7 +182,7 @@ config.appSettings  = {
             icon : 'ion-happy-outline'
         },
         {
-            title : 'Track Factors',
+            title : 'Track',
             click : 'toggleTrackingSubMenu',
             icon : 'showTrackingSubMenu',
             subMenuPanel : true
@@ -279,21 +279,6 @@ config.appSettings  = {
         },
         {
             title : 'History',
-            click : 'toggleHistorySubMenu',
-            icon : 'showHistorySubMenu',
-            subMenuPanel : true
-        },
-        {
-            title : 'Moods',
-            isSubMenu : true,
-            subMenuVariable : 'showHistorySubMenu',
-            href : '#/app/history',
-            icon : 'ion-happy-outline'
-        },
-        {
-            title : 'All Measurements',
-            isSubMenu : true,
-            subMenuVariable : 'showHistorySubMenu',
             href : '#/app/history-all',
             icon : 'ion-ios-paper-outline'
         },
@@ -328,24 +313,9 @@ config.appSettings  = {
             icon : 'ion-person'
         },
         {
-            title : 'Predictors of Mood',
-            click : 'toggleOutcomePredictorSubMenu',
-            icon : 'showOutcomePredictorSubMenu',
-            subMenuPanel : true
-        },
-        {
-            title : 'Positive Mood',
-            isSubMenu : true,
-            subMenuVariable : 'showOutcomePredictorSubMenu',
-            href : '#/app/positive',
-            icon : 'ion-happy-outline'
-        },
-        {
-            title : 'Negative Mood',
-            isSubMenu : true,
-            subMenuVariable : 'showOutcomePredictorSubMenu',
-            href : '#/app/negative',
-            icon : 'ion-sad-outline'
+            title : 'Settings',
+            href : '#/app/settings',
+            icon : 'ion-ios-gear-outline'
         },
         {
             title : 'Help & Feedback',
