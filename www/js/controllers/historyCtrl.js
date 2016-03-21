@@ -101,10 +101,10 @@ angular.module('starter')
 
 	    // select a mod manually on popover
 	    $scope.select_primary_outcome_variable = function($event, option){
-	    	// remove any previous tracking factors if present
+	    	// remove any previous primary outcome variables if present
 	        jQuery('.primary_outcome_variables .active_primary_outcome_variable').removeClass('active_primary_outcome_variable');
 	        
-	        // make this tracking factor glow visually
+	        // make this primary outcome variable glow visually
 	        jQuery($event.target).addClass('active_primary_outcome_variable');
 	        
 	        // update view
