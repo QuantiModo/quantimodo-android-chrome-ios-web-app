@@ -177,9 +177,9 @@ config.appSettings  = {
 
     menu : [
         {
-            title : 'Track Mood',
-            href : '#/app/track',
-            icon : 'ion-happy-outline'
+            title : 'Inbox',
+            href : '#/app/reminders-inbox',
+            icon : 'ion-android-notifications-none'
         },
         {
             title : 'Track',
