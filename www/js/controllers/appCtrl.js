@@ -16,6 +16,35 @@ angular.module('starter')
         $ionicSideMenuDelegate.toggleLeft(false);
     };
     
+    $scope.not_show_help_popup;
+    var popup_messages = config.appSettings.popup_messages || false;
+    
+    $scope.$on('$ionicView.enter', function(e) {        
+        if(popup_messages && typeof popup_messages[location.hash] !== "undefined"){
+            localStorageService.getItem('not_show_help_popup',function(val){
+                $scope.not_show_help_popup = val ? JSON.parse(val) : false;
+
+                if(!$scope.not_show_help_popup){
+                    $ionicPopup.show({
+                        title: popup_messages[location.hash],
+                        subTitle: '',
+                        scope:$scope,
+                        template:'<label><input type="checkbox" ng-model="$parent.not_show_help_popup" class="show-again-checkbox">Don\'t show help popup\'s again</label>',
+                        buttons:[
+                            {   
+                                text: 'OK',
+                                type: 'button-calm',
+                                onTap: function(){
+                                    localStorageService.setItem('not_show_help_popup',JSON.stringify($scope.not_show_help_popup));
+                                }
+                            }
+                        ]
+                    });
+                }
+            });    
+        }
+    });
+
     $scope.closeMenuIfNeeded = function(menuItem){
         if(menuItem.click){
             $scope[menuItem.click] && $scope[menuItem.click]();

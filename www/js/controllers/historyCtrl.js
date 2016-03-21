@@ -6,31 +6,6 @@ angular.module('starter')
 
 	    $scope.controller_name = "HistoryCtrl";
 	    
-	    $scope.not_show_help_popup;
-        localStorageService.getItem('not_show_help_popup',function(val){
-            $scope.not_show_help_popup = val ? JSON.parse(val) : false;
-
-            if(!$scope.not_show_help_popup){
-            	$ionicPopup.show({
-            	    title: config.appSettings.popup_messages.history.message,
-            	    subTitle: '',
-            	    scope:$scope,
-            	    template:'<label><input type="checkbox" ng-model="$parent.not_show_help_popup" class="show-again-checkbox">Don\'t show help popup\'s again</label>',
-            	    buttons:[
-            	        {   
-            	            text: 'OK',
-            	            type: 'button-calm',
-            	            onTap: function(){
-            	                localStorageService.setItem('not_show_help_popup',JSON.stringify($scope.not_show_help_popup));
-            	            }
-            	        }
-            	    ]
-
-            	});
-
-            }
-        });
-
 	    // Show alert with a title
 	    $scope.showAlert = function(title, template) {
 	       var alertPopup = $ionicPopup.alert({
