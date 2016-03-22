@@ -42,11 +42,11 @@ deployment:
   production:
     branch: master
     commands:
-#      - git push git@heroku.com:qm-production.git $CIRCLE_SHA1:refs/heads/master --force
+      - git push git@heroku.com:qm-ionic.git $CIRCLE_SHA1:refs/heads/master --force
   staging:
     branch: develop
     commands:
-    #- sh tooling/scripts/build_moodimodo_chrome_extension.sh
+      - echo "Hi!"
 general:
   branches:
     ignore:
