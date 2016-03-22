@@ -88,84 +88,292 @@ config.appSettings  = {
         "5" : 5 
     },
 
-    intro : {
-        "screen1" : {
+    intro : [
+        // screen 1
+        {
             img : {
                 width : '150',
                 height : '150',
                 url : 'img/main_icon.png'
+            },
+            content : {
+
+                firstP : {
+                    visible : true,
+                    content : 'Welcome to EnergyModo',
+                    classes : 'intro_header calm'
+                }, 
+                logoDiv : {
+                    visible : true,
+                    id : 'logo'
+                },
+                finalP : {
+                    visible : true,
+                    content : 'EnergyModo allows you track your <span class="calm">Energy</span> and identify the hidden factors which may most influence it.',
+                    classes : 'intro_para',
+                    buttonBarVisible : true   
+                }
             }
         },
-        "screen2" : {
-            images : {
+        // screen 2
+        {
+            img : {
                 height : '70',
                 width : '70'
+            },
+            content : {
+
+                showOutcomeVariableImages : true,
+                showFirstBr : true,   
+                finalP: {
+                    visible : true,
+                    content : 'Go to the <span class="calm">Track Energy</span> page to report your Energy!',
+                    classes : 'intro_para',
+                    buttonBarVisible : true
+                } 
             }
         },
-        "screen3" : {
+        // screen 3
+        {
             img : {
                 width : '140',
                 height : '220',
                 url : 'img/track_moods.png'
+            },
+            content : {
+
+                firstP : {
+                    visible : true,
+                    content : 'Track Energy',
+                    classes : 'intro_header calm'
+                },                 
+                logoDiv : {
+                    visible : true,
+                    id : ''
+                },
+                showSecondBr : true,
+                finalP: {
+                    visible : true,
+                    content : 'On the <span class="calm">Track Energy</span> page, you can view your <span class="calm">average Energy</span> as well as charts illustrating how it changes over time.',
+                    classes : 'intro_para_small',
+                    buttonBarVisible : true
+                }
             }
         },
-        "screen4" : {
+        // screen 4
+        {
             img : {
                 width : '200',
                 height : '150',
                 url : 'img/history_page.png'
+            },
+            content : {
+                firstP : {
+                    visible : true,
+                    content : 'History',
+                    classes : 'intro_header calm'
+                }, 
+                showFirstBr : true,
+                logoDiv : {
+                    visible : true,
+                    id : 'logo'
+                },
+                showSecondBr : true,
+                finalP: {
+                    visible : true,
+                    content : 'You can see and edit your past Energy ratings and notes by opening the <span class="calm">History</span> page.',
+                    classes : 'intro_para',
+                    buttonBarVisible : true
+                }
             }
         },
-        "screen5" : {
+        // screen 5
+        {
             img : {
                 width : '220',
                 height : '200',
                 url : 'img/mood_note.png'
+            },
+            content : {
+                firstP : {
+                    visible : true,
+                    content : 'Add a Note',
+                    classes : 'intro_header calm'
+                }, 
+                logoDiv : {
+                    visible : true,
+                    id : 'logo'
+                },
+                finalP: {
+                    visible : true,
+                    content : 'Add a note by tapping on a Mood rating in the <span class="calm">History</span> page. You can also <span class="calm">Edit</span> your Energy there too.',
+                    classes : 'intro_para',
+                    buttonBarVisible : true
+                }
             }
         },
-        "screen6" : {
+        // screen 6
+        {
             img : {
                 width : '220',
                 height : '190',
                 url : 'img/track_foods.png'
+            },
+            content : {
+                firstP : {
+                    visible : true,
+                    content : 'Track Foods',
+                    classes : 'intro_header calm'
+                }, 
+                logoDiv : {
+                    visible : true,
+                    id : 'logo'
+                },
+                finalP: {
+                    visible : true,
+                    content : 'Track your diet on the <span class="calm">Track Foods</span> page. You can also <span class="calm">Add a new Food Variable</span> if you don\'t find the meal you looked for in the search results.',
+                    classes : 'intro_para_small',
+                    buttonBarVisible : true
+                }
             }
         },
-        "screen7" : {
+        // screen 7
+        {
             img : {
                 width : '190',
                 height : '180',
                 url : 'img/track_symptoms.png'
+            },
+            content : {
+
+                firstP : {
+                    visible : true,
+                    content : 'Track Symptoms',
+                    classes : 'intro_header calm'
+                }, 
+                
+                logoDiv : {
+                    visible : true,
+                    id : 'logo'
+                },
+                
+                finalP: {
+                    visible : true,
+                    content : 'Track any symptom on the <span class="calm">Track Symptoms</span> page. You can also <span class="calm">Add a new Symptom</span> if you don\'t find the symptom you looked for in the search results.',
+                    classes : 'intro_para_small',
+                    buttonBarVisible : true
+                }   
             }
         },
-        "screen8" : {
+        // screen 8
+        {
             img : {
                 width : '210',
                 height : '180',
                 url : 'img/track_treatments.png'
+            },
+            content : {
+                firstP : {
+                    visible : true,
+                    content : 'Track Treatments',
+                    classes : 'intro_header calm'
+                },                 
+                logoDiv : {
+                    visible : true,
+                    id : 'logo'
+                },
+                finalP: {
+                    visible : true,
+                    content : 'Track your treatments on the <span class="calm">Track Treatments</span> page. You can also <span class="calm">Add a new Treatment</span> if you don\'t find the treatment you looked for in the search results.',
+                    classes : 'intro_para_small',
+                    buttonBarVisible : true
+                }
             }
         },
-        "screen9" : {
+        // screen 9
+        {
             img : {
                 width : '220',
                 height : '200',
                 url : 'img/positive_predictors.png'
+            },
+            content : {
+
+                firstP : {
+                    visible : true,
+                    content : 'Positive Predictors',
+                    classes : 'intro_header calm'
+                }, 
+                
+                logoDiv : {
+                    visible : true,
+                    id : 'logo'
+                },
+                
+                finalP: {
+                    visible : true,
+                    content : 'Positive Predictors are the factors most predictive of <span class="calm">IMPROVING</span> Energy for the average QuantiModo user.',
+                    classes : 'intro_para_small',
+                    buttonBarVisible : true
+                }
             }
         },
-        "screen10" : {
+        // screen 10
+        {
             img : {
                 width : '220',
                 height : '200',
                 url : 'img/negative_predictors.png'
+            },
+            content : {
+
+                firstP : {
+                    visible : true,
+                    content : 'Negative Predictors',
+                    classes : 'intro_header calm'
+                },
+                
+                logoDiv : {
+                    visible : true,
+                    id : 'logo'
+                },
+                
+                finalP: {
+                    visible : true,
+                    content : 'Negative Predictors are the factors most predictive of <span class="calm">DECREASING</span> Energy for the average QuantiModo user.',
+                    classes : 'intro_para_small',
+                    buttonBarVisible : true
+                }  
             }
         },
-        "screen11" : {
+        // screen 11
+        {
             img : {
                 width : '180',
                 height : '180',
                 url : 'img/ic_mood_ecstatic.png'
+            },
+            content : {
+
+                firstP : {
+                    visible : true,
+                    content : 'We are feeling ecstatic that you\'re helping us derive a mathematical equation for happiness!',
+                    classes : 'intro_para calm'
+                }, 
+                
+                logoDiv : {
+                    visible : true,
+                    id : 'logo'
+                },
+                finalP: {
+                    visible : true,
+                    content : 'Now start tracking and optimize your life!',
+                    classes : 'intro_para_small',
+                    buttonBarVisible : true
+                }
             }
         }
-    },
+    ],
 
     popup_messages : {
         "#/app/track": 'Here, you can view your <span class="calm">average Energy</span> as well as charts illustrating how it changes over time',
