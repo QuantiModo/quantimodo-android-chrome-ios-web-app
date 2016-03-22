@@ -38,15 +38,6 @@ test:
     - curl "https://api.ghostinspector.com/v1/suites/56f16ea949faa251569e24da/execute/?apiKey=f5b531ccd55da08abf35fadabd7b7b04f3d64312&commit="$(git rev-parse HEAD) > ghostinspector.json
     - php ghostinspector_parser.php
     
-deployment:
-  production:
-    branch: master
-    commands:
-      - git push git@heroku.com:qm-ionic.git $CIRCLE_SHA1:refs/heads/master --force
-  staging:
-    branch: develop
-    commands:
-      - echo "Hi!"
 general:
   branches:
     ignore:
