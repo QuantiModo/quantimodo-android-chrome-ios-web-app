@@ -128,7 +128,7 @@ angular.module('starter')
 
 	    var getReminders = function(){
 	    	utils.startLoading();
-	    	reminderService.getReminders()
+	    	reminderService.getReminders($stateParams.category)
 	    	.then(function(reminders){
 	    		$scope.state.allReminders = reminders;
 	    		utils.stopLoading();
@@ -143,7 +143,8 @@ angular.module('starter')
 
 	    var getTrackingReminders = function(){
 	    	utils.startLoading();
-	    	reminderService.getTrackingReminderNotifications()
+
+	    	reminderService.getTrackingReminderNotifications($stateParams.category)
 	    	.then(function(reminders){
 	    		$scope.state.trackingRemindersNotifications = reminders;
 	    		$scope.state.filteredReminders = filterViaDates(reminders);
@@ -268,7 +269,7 @@ angular.module('starter')
 	    			utils.showAlert('Missing Parameters, need unit, variableName, dateTime and value!','assertive');
 	    		}
 
-	    	} else if($state.is('app.reminders_manage')){	      		
+	    	} else if($state.is('app.reminders_manage') || $state.is('app.reminders_manage_category')){	      		
 	      		getReminders();
 	      	} else {
 	      		getTrackingReminders();
