@@ -1,4 +1,4 @@
-<ion-view hide-nav-bar="skipMenu" view-title="Welcome!">
+<ion-view class="pane" hide-nav-bar="skipMenu" view-title="Welcome!" >
     <ion-slide-box on-slide-changed="myIntro.slideChanged(index)">
 
         <ion-slide ng-repeat="introConf in intro_config">
@@ -50,7 +50,7 @@
                                 Next
                             </a>
                             <a class="button button-calm" ng-show="myIntro.slideIndex == intro_config.length-1" ng-click="myIntro.startApp()">
-                                Go
+                                Get Started
                             </a>
                         </div>
                     </div>

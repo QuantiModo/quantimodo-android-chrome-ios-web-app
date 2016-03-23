@@ -117,54 +117,9 @@ config.appSettings  = {
                 },
                 finalP : {
                     visible : true,
-                    content : 'MedTLC allows you track your <span class="calm">Mood</span> and identify the hidden factors which may most influence it.',
+                    content : 'Medication tracking, learning, and communication.',
                     classes : 'intro_para',
                     buttonBarVisible : true   
-                }
-            }
-        },
-        // screen 2
-        {
-            img : {
-                height : '70',
-                width : '70'
-            },
-            content : {
-
-                showOutcomeVariableImages : true,
-                showFirstBr : true,   
-                finalP: {
-                    visible : true,
-                    content : 'Go to the <span class="calm">Track Mood</span> page to report your Mood!',
-                    classes : 'intro_para',
-                    buttonBarVisible : true
-                } 
-            }
-        },
-        // screen 3
-        {
-            img : {
-                width : '140',
-                height : '220',
-                url : 'img/track_moods.png'
-            },
-            content : {
-
-                firstP : {
-                    visible : true,
-                    content : 'Track Mood',
-                    classes : 'intro_header calm'
-                },                 
-                logoDiv : {
-                    visible : true,
-                    id : ''
-                },
-                showSecondBr : true,
-                finalP: {
-                    visible : true,
-                    content : 'On the <span class="calm">Track Mood</span> page, you can view your <span class="calm">average Mood</span> as well as charts illustrating how it changes over time.',
-                    classes : 'intro_para_small',
-                    buttonBarVisible : true
                 }
             }
         },
@@ -189,7 +144,7 @@ config.appSettings  = {
                 showSecondBr : true,
                 finalP: {
                     visible : true,
-                    content : 'You can see and edit your past Mood ratings and notes by opening the <span class="calm">History</span> page.',
+                    content : 'You can see and edit your data and notes by opening the <span class="calm">History</span> page.',
                     classes : 'intro_para',
                     buttonBarVisible : true
                 }
@@ -214,7 +169,7 @@ config.appSettings  = {
                 },
                 finalP: {
                     visible : true,
-                    content : 'Add a note by tapping on a Mood rating in the <span class="calm">History</span> page. You can also <span class="calm">Edit</span> your Mood there too.',
+                    content : 'Add a note or change a past value by tapping on a measurement in the <span class="calm">History</span> page.',
                     classes : 'intro_para',
                     buttonBarVisible : true
                 }
@@ -296,62 +251,6 @@ config.appSettings  = {
                     classes : 'intro_para_small',
                     buttonBarVisible : true
                 }
-            }
-        },
-        // screen 9
-        {
-            img : {
-                width : '220',
-                height : '200',
-                url : 'img/positive_predictors.png'
-            },
-            content : {
-
-                firstP : {
-                    visible : true,
-                    content : 'Positive Predictors',
-                    classes : 'intro_header calm'
-                }, 
-                
-                logoDiv : {
-                    visible : true,
-                    id : 'logo'
-                },
-                
-                finalP: {
-                    visible : true,
-                    content : 'Positive Predictors are the factors most predictive of <span class="calm">IMPROVING</span> Mood for the average QuantiModo user.',
-                    classes : 'intro_para_small',
-                    buttonBarVisible : true
-                }
-            }
-        },
-        // screen 10
-        {
-            img : {
-                width : '220',
-                height : '200',
-                url : 'img/negative_predictors.png'
-            },
-            content : {
-
-                firstP : {
-                    visible : true,
-                    content : 'Negative Predictors',
-                    classes : 'intro_header calm'
-                },
-                
-                logoDiv : {
-                    visible : true,
-                    id : 'logo'
-                },
-                
-                finalP: {
-                    visible : true,
-                    content : 'Negative Predictors are the factors most predictive of <span class="calm">DECREASING</span> Mood for the average QuantiModo user.',
-                    classes : 'intro_para_small',
-                    buttonBarVisible : true
-                }  
             }
         },
         // screen 11
