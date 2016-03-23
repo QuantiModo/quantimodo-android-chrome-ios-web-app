@@ -18,3 +18,5 @@ chromeApps/zips/*.zip
 *.ipa
 *.mobileprovision
 !platforms/ios/www/lib/bugsnag/dist
+android-sdk-linux/
+android-sdk_r24.2-linux.tgz
