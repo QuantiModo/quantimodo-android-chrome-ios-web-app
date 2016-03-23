@@ -7,7 +7,7 @@ angular.module('starter')
     $scope.primary_outcome_variable_numbers = config.getPrimaryOutcomeVariableOptions(true);
     $scope.intro_config = config.appSettings.intro;
     
-    $scope.intro = {
+    $scope.myIntro = {
         ready : false,
 
         slideIndex : 0,
@@ -27,7 +27,7 @@ angular.module('starter')
 
         // Called each time the slide changes
         slideChanged : function(index) {
-            $scope.intro.slideIndex = index;
+            $scope.myIntro.slideIndex = index;
         },
     };
 
@@ -42,7 +42,7 @@ angular.module('starter')
             if(introSeen){
                 $state.go('app.welcome');
             } else {
-                $scope.intro.ready = true;
+                $scope.myIntro.ready = true;
             }
             $ionicLoading.hide();
         });

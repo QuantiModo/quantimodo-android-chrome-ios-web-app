@@ -3,18 +3,19 @@ A generic app that can be easily configured to help the user track and optimize 
 
 [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/Abolitionist-Project/QuantiModo-Ionic-Template-App/)
 
-#Quick Start
-1. Create your free app at [admin.quantimo.do](https://admin.quantimo.do) to get your client_id and client_secret. 
-1. Run `git clone https://github.com/Abolitionist-Project/QuantiModo-Ionic-Template-App`
-1. `cd QuantiModo-Ionic-Template-App`
-1. Install NodeJS with `sudo nvm install 0.12.6`
-1. Install Ionic with `sudo npm install -g cordova ionic`
-1. Install Gulp globally with `sudo npm install -g gulp`
-1. Install Gulp locally with `npm install --save-dev gulp`
-1. Install Gulp plugins `sudo npm install jshint gulp-jshint gulp-sass gulp-concat gulp-uglify gulp-rename --save-dev`
-1. Install Bower with `npm install -g bower`
-1. Run `bower install`
-1. Run `npm install express`
+# Quick Start for OSX
+1. Install [NodeJS](https://nodejs.org/en/download/)
+1. Install [Ionic Lab](http://lab.ionic.io/)
+1. Install [Android Studio](https://livecode.com/how-to-create-a-free-ios-development-provisioning-profile/)
+1. Install [XCode](https://developer.apple.com/xcode/download/)
+1. Run `sudo npm install -g ionic cordova` in the terminal
+1. Run `sudo npm i -g gulp grunt-cli bower yo generator-ionic-gulp` in the root of this repository
+1. Run `ionic state reset` in the root of this repository
+1. Add certs to XCode [like so](https://livecode.com/how-to-create-a-free-ios-development-provisioning-profile/)
+
+
+# Quick Start for Ubuntu 14.04
+1. Run `sudo bash ionic_install.sh` in the root of this repository
 1. Run `node app.js`
 1. See project at [http://localhost:5000/](http://localhost:5000/)
 
@@ -258,10 +259,10 @@ primary_outcome_variable_details : {
 },
 ```
 
-`name` : The actual tracking factor name in the QM API.
-`category` : The category of the tracking factor.
-`unit` :  the unit symbol for the tracking factor.
-`combinationOperation` : MEAN or SUM depending upon your tracking factor.
+`name` : The actual primary outcome variable name in the QM API.
+`category` : The category of the primary outcome variable.
+`unit` :  the unit symbol for the primary outcome variable.
+`combinationOperation` : MEAN or SUM depending upon your primary outcome variable.
 
 
 `primary_outcome_variables_options_labels`
@@ -309,7 +310,7 @@ These are the five options (available on the Trrack page) that the users will ra
 
 `tracking_question` : The question displayed when the user is on the Track Screen.
 
-`factor_average_text` : a string that tells user his average tracking factor value.
+`factor_average_text` : a string that tells user his average primary outcome variable value.
 
 `notification_image` : the logo that gets displayed with the notification in ios
 

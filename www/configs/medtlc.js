@@ -1,8 +1,9 @@
+
 var getPlatform = function(){
-    if(typeof ionic !== "undefined" && 
+    if(typeof ionic !== "undefined" &&
         typeof ionic.Platform !== "undefined" &&
-        typeof ionic.Platform.isIOS !== "undefined" && 
-        typeof ionic.Platform.isAndroid !== "undefined" ) 
+        typeof ionic.Platform.isIOS !== "undefined" &&
+        typeof ionic.Platform.isAndroid !== "undefined" )
         return ionic.Platform.isIOS()? "iOS" : ionic.Platform.isAndroid()? "Android" : "Web";
     else return "Ionic";
 };
@@ -11,7 +12,7 @@ window.config = {
     bugsnag:{
         notifyReleaseStages:['Production','Staging']
     },
-    client_source_name : "EnergyModo "+ getPlatform(),
+    client_source_name : "MedTLC " + getPlatform(),
     domain : 'app.quantimo.do',
     environment: "Development",
     permissions : ['readmeasurements', 'writemeasurements'],
@@ -21,71 +22,78 @@ window.config = {
 };
 
 config.appSettings  = {
-    app_name : 'EnergyModo',
+    app_name : 'MedTLC',
 
-    default_state : 'app.track',
+    primary_outcome_variable : false,
 
-    primary_outcome_variable : 'Energy',
+    storage_identifier: 'MedTLCData*',
 
-    storage_identifier: 'EnergyModoData*',
-      
-    primary_outcome_variable_details : {
-        id : 108092,
-        name : "Overall Energy",
-        category : "Energy",
+    default_state : 'app.reminders_inbox',
+
+    headline : 'Medication Tracking, Learning, Communication',
+    features: [
+        ' - Track your medication intake',
+        ' - Set up reminders',
+        ' - Track your responses to find links between treatments and how you feel'
+    ],
+
+    primary_primary_outcome_variable_details : {
+        id : 1398,
+        name : "Overall Mood",
+        category : "Mood",
         unit : "/5",
         combinationOperation: "MEAN"
     },
 
     primary_outcome_variables_options_labels : [
-        '1', 
-        '2', 
-        '3', 
-        '4', 
-        '5' 
+        'Depressed',
+        'Sad',
+        'OK',
+        'Happy',
+        'Ecstatic'
     ],
 
     primary_outcome_variable_options : [
         {
-            value: '1',
-            img: 'img/ic_1.png'
+            value: 'depressed',
+            img: 'img/ic_mood_depressed.png'
         },
         {
-            value: '2',
-            img: 'img/ic_2.png'
+            value: 'sad',
+            img: 'img/ic_mood_sad.png'
         },
         {
-            value: '3',
-            img: 'img/ic_3.png'
+            value: 'ok',
+            img: 'img/ic_mood_ok.png'
         },
         {
-            value: '4',
-            img: 'img/ic_4.png'
+            value: 'happy',
+            img: 'img/ic_mood_happy.png'
         },
         {
-            value: '5',
-            img: 'img/ic_5.png'
+            value: 'ecstatic',
+            img: 'img/ic_mood_ecstatic.png'
         }
     ],
 
-    welcome_text:"Let's start off by reporting your Energy on the card below",
-    tracking_question:"How is your energy level right now?",
-    factor_average_text:"Your average energy level is ",
+    welcome_text:"Let's start off by adding your first medication!",
+    tracking_question:"What medication are you taking?",
+    factor_average_text:"Your average mood is ",
     notification_image : "file://img/logo.png",
     notification_text : "Time to Track",
     conversion_dataset: {
-        "1": "1",
-        "2": "2",
-        "3": "3",
-        "4": "4",
-        "5": "5" 
+        "1": "depressed",
+        "2": "sad",
+        "3": "ok",
+        "4": "happy",
+        "5": "ecstatic"
     },
     conversion_dataset_reversed : {
-        "1" : 1,
-        "2" : 2,
-        "3" : 3,
-        "4" : 4,
-        "5" : 5 
+        "depressed" : 1,
+        "sad" : 2,
+        "ok" : 3,
+        "happy" : 4,
+        "ecstatic": 5
     },
 
     intro : [
@@ -100,7 +108,7 @@ config.appSettings  = {
 
                 firstP : {
                     visible : true,
-                    content : 'Welcome to EnergyModo',
+                    content : 'Welcome to MedTLC',
                     classes : 'intro_header calm'
                 }, 
                 logoDiv : {
@@ -109,7 +117,7 @@ config.appSettings  = {
                 },
                 finalP : {
                     visible : true,
-                    content : 'EnergyModo allows you track your <span class="calm">Energy</span> and identify the hidden factors which may most influence it.',
+                    content : 'MedTLC allows you track your <span class="calm">Mood</span> and identify the hidden factors which may most influence it.',
                     classes : 'intro_para',
                     buttonBarVisible : true   
                 }
@@ -127,7 +135,7 @@ config.appSettings  = {
                 showFirstBr : true,   
                 finalP: {
                     visible : true,
-                    content : 'Go to the <span class="calm">Track Energy</span> page to report your Energy!',
+                    content : 'Go to the <span class="calm">Track Mood</span> page to report your Mood!',
                     classes : 'intro_para',
                     buttonBarVisible : true
                 } 
@@ -144,7 +152,7 @@ config.appSettings  = {
 
                 firstP : {
                     visible : true,
-                    content : 'Track Energy',
+                    content : 'Track Mood',
                     classes : 'intro_header calm'
                 },                 
                 logoDiv : {
@@ -154,7 +162,7 @@ config.appSettings  = {
                 showSecondBr : true,
                 finalP: {
                     visible : true,
-                    content : 'On the <span class="calm">Track Energy</span> page, you can view your <span class="calm">average Energy</span> as well as charts illustrating how it changes over time.',
+                    content : 'On the <span class="calm">Track Mood</span> page, you can view your <span class="calm">average Mood</span> as well as charts illustrating how it changes over time.',
                     classes : 'intro_para_small',
                     buttonBarVisible : true
                 }
@@ -181,7 +189,7 @@ config.appSettings  = {
                 showSecondBr : true,
                 finalP: {
                     visible : true,
-                    content : 'You can see and edit your past Energy ratings and notes by opening the <span class="calm">History</span> page.',
+                    content : 'You can see and edit your past Mood ratings and notes by opening the <span class="calm">History</span> page.',
                     classes : 'intro_para',
                     buttonBarVisible : true
                 }
@@ -206,7 +214,7 @@ config.appSettings  = {
                 },
                 finalP: {
                     visible : true,
-                    content : 'Add a note by tapping on a Mood rating in the <span class="calm">History</span> page. You can also <span class="calm">Edit</span> your Energy there too.',
+                    content : 'Add a note by tapping on a Mood rating in the <span class="calm">History</span> page. You can also <span class="calm">Edit</span> your Mood there too.',
                     classes : 'intro_para',
                     buttonBarVisible : true
                 }
@@ -312,7 +320,7 @@ config.appSettings  = {
                 
                 finalP: {
                     visible : true,
-                    content : 'Positive Predictors are the factors most predictive of <span class="calm">IMPROVING</span> Energy for the average QuantiModo user.',
+                    content : 'Positive Predictors are the factors most predictive of <span class="calm">IMPROVING</span> Mood for the average QuantiModo user.',
                     classes : 'intro_para_small',
                     buttonBarVisible : true
                 }
@@ -340,7 +348,7 @@ config.appSettings  = {
                 
                 finalP: {
                     visible : true,
-                    content : 'Negative Predictors are the factors most predictive of <span class="calm">DECREASING</span> Energy for the average QuantiModo user.',
+                    content : 'Negative Predictors are the factors most predictive of <span class="calm">DECREASING</span> Mood for the average QuantiModo user.',
                     classes : 'intro_para_small',
                     buttonBarVisible : true
                 }  
@@ -375,24 +383,14 @@ config.appSettings  = {
         }
     ],
 
-    popup_messages : {
-        "#/app/track": 'Here, you can view your <span class="calm">average Energy</span> as well as charts illustrating how it changes over time',
-        "#/app/history": 'You can see and edit your past Energy ratings and notes by tapping on any item in the list.  <br/> <br/>You can also Add a note by tapping on a Energy rating in the list.',
-        "#/app/track_factors_category/Foods": 'You can track your diet on this page. You can also <span class="calm">Add a new Food Variable</span> if you do not find the meal you looked for in the search results.',
-        "#/app/track_factors_category/Symptoms": 'You can track any symptom on this page. You can also <span class="calm">Add a new Symptom</span> if you don\'t find the symptom you looked for in the search results.',
-        "#/app/track_factors_category/Treatments": 'You can track any treatment on this page. You can also <span class="calm">Add a new Treatment</span> if you don\'t find the treatment you looked for in the search results.',
-        "#/app/positive": 'Positive Predictors are the factors most predictive of <span class="calm">IMPROVING</span> Energy for the average QuantiModo user.',
-        "#/app/negative": 'Negative Predictors are the factors most predictive of <span class="calm">DECREASING</span>Energy for the average QuantiModo user.'
-    },
-
     menu : [
         {
-            title : 'Track Energy',
-            href : '#/app/track',
-            icon : 'ion-happy-outline'
+            title : 'Inbox',
+            href : '#/app/reminders-inbox',
+            icon : 'ion-android-notifications-none'
         },
         {
-            title : 'Track Factors',
+            title : 'Track',
             click : 'toggleTrackingSubMenu',
             icon : 'showTrackingSubMenu',
             subMenuPanel : true
@@ -402,7 +400,7 @@ config.appSettings  = {
             isSubMenu : true,
             subMenuVariable : 'showTrackingSubMenu',
             href : '#/app/track_factors',
-            icon : 'ion-ios-world-outline'   
+            icon : 'ion-ios-world-outline'
         },
         {
             title : 'Track foods',
@@ -489,21 +487,6 @@ config.appSettings  = {
         },
         {
             title : 'History',
-            click : 'toggleHistorySubMenu',
-            icon : 'showHistorySubMenu',
-            subMenuPanel : true
-        },
-        {
-            title : 'Energy(s)',
-            isSubMenu : true,
-            subMenuVariable : 'showHistorySubMenu',
-            href : '#/app/history',
-            icon : 'ion-happy-outline'
-        },
-        {
-            title : 'All Measurements',
-            isSubMenu : true,
-            subMenuVariable : 'showHistorySubMenu',
             href : '#/app/history-all',
             icon : 'ion-ios-paper-outline'
         },
@@ -538,26 +521,6 @@ config.appSettings  = {
             icon : 'ion-person'
         },
         {
-            title : 'Predictors of Mood',
-            click : 'toggleOutcomePredictorSubMenu',
-            icon : 'showOutcomePredictorSubMenu',
-            subMenuPanel : true
-        },
-        {
-            title : 'Positive Mood',
-            isSubMenu : true,
-            subMenuVariable : 'showOutcomePredictorSubMenu',
-            href : '#/app/positive',
-            icon : 'ion-happy-outline'
-        },
-        {
-            title : 'Negative Mood',
-            isSubMenu : true,
-            subMenuVariable : 'showOutcomePredictorSubMenu',
-            href : '#/app/negative',
-            icon : 'ion-sad-outline'
-        },
-        {
             title : 'Settings',
             href : '#/app/settings',
             icon : 'ion-ios-gear-outline'
@@ -566,8 +529,9 @@ config.appSettings  = {
             title : 'Help & Feedback',
             href : window.chrome ? "mailto:help@quantimo.do" : "#app/feedback",
             icon : 'ion-ios-help-outline'
-        },
+        }
     ]
+
 };
 
 config.getPrimaryOutcomeVariableOptionLabels = function(shouldShowNumbers){
@@ -669,9 +633,11 @@ config.getPermissionString = function(){
 
 };
 
+
 config.getURL = function(path){
     if(typeof path === "undefined") path = "";
     else path+= "?";
+
     var url = "";
 
     if (window.chrome && chrome.runtime && chrome.runtime.id) {
@@ -682,13 +648,14 @@ config.getURL = function(path){
         //On localhost or mobile
         url = config.protocol+"://"+config.domain+"/"+path;
     }
-    else if(window.location.origin.indexOf("local.") > -1){
+    else if(window.location.origin.indexOf("local.quantimo.do") > -1){
          //local.quantimodo
-         url = config.protocol+"://"+config.domain;
-         
-         url+= (config.domain.indexOf('app.') === -1 && config.domain.indexOf('staging.') === -1)? ":"+config.port : "";
-         
-         url+="/"+path;
+         url = 'https://local.quantimo.do:4417/' + path;
+
+    // } else if (window.location.origin.indexOf("staging.quantimo.do") > -1){
+    //     //local.quantimodo
+    //     url = 'https://staging.quantimo.do/' + path;
+
     } else {
         url = config.protocol + "://" + config.domain + "/" + path;
         // url = window.location.origin + "/" + path;
@@ -715,12 +682,12 @@ window.notification_callback = function(reported_variable, reporting_time){
         val = config.appSettings.conversion_dataset_reversed[reported_variable]?
         config.appSettings.conversion_dataset_reversed[reported_variable] : false;
     }
-    
+
     // report
     if(val){
         // update localstorage
         localStorage[key_identifier+'lastReportedPrimaryOutcomeVariableValue'] = val;
-        
+
         var allDataObject = {
             storedValue : val,
             value : val,

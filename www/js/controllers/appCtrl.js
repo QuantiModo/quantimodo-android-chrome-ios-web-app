@@ -4,17 +4,60 @@ angular.module('starter')
 	.controller('AppCtrl', function($scope, $ionicModal, $timeout, $injector, utilsService, authService,
                                     measurementService, $ionicPopover, $ionicLoading, $state, $ionicHistory,
                                     QuantiModo, notificationService, $rootScope, localStorageService, reminderService,
-                                    $ionicPopup) {
+                                    $ionicPopup, $ionicSideMenuDelegate) {
 
     // flags
     $scope.controller_name = "AppCtrl";
+    $scope.menu = config.appSettings.menu;
     $scope.isLoggedIn  = false;
     $scope.showTrackingSubMenu = false;
     $scope.showReminderSubMenu = false;
+    $scope.closeMenu = function() {
+        $ionicSideMenuDelegate.toggleLeft(false);
+    };
+    
+    $scope.not_show_help_popup;
+    var popup_messages = config.appSettings.popup_messages || false;
+    
+    $scope.$on('$ionicView.enter', function(e) {        
+        if(popup_messages && typeof popup_messages[location.hash] !== "undefined"){
+            localStorageService.getItem('not_show_help_popup',function(val){
+                $scope.not_show_help_popup = val ? JSON.parse(val) : false;
+
+                if(!$scope.not_show_help_popup){
+                    $ionicPopup.show({
+                        title: popup_messages[location.hash],
+                        subTitle: '',
+                        scope:$scope,
+                        template:'<label><input type="checkbox" ng-model="$parent.not_show_help_popup" class="show-again-checkbox">Don\'t show help popup\'s again</label>',
+                        buttons:[
+                            {   
+                                text: 'OK',
+                                type: 'button-calm',
+                                onTap: function(){
+                                    localStorageService.setItem('not_show_help_popup',JSON.stringify($scope.not_show_help_popup));
+                                }
+                            }
+                        ]
+                    });
+                }
+            });    
+        }
+    });
+
+    $scope.closeMenuIfNeeded = function(menuItem){
+        if(menuItem.click){
+            $scope[menuItem.click] && $scope[menuItem.click]();
+        }
+        else if(!menuItem.subMenuPanel){
+            $scope.closeMenu();
+        }
+    };
     $scope.showHistorySubMenu = false;
     $scope.shopping_cart_enabled = config.shopping_cart_enabled;
     $rootScope.isSyncing = false;
     var $cordovaFacebook = {};
+         
 
     $scope.isIOS = ionic.Platform.isIPad() || ionic.Platform.isIOS();
     $scope.isAndroid = ionic.Platform.isAndroid();
@@ -175,7 +218,7 @@ angular.module('starter')
 
                 // move to tracking page
                 if($state.current.name == "app.welcome" || $state.current.name == "app.login"){
-                    $state.go('app.track');
+                    $state.go(config.appSettings.default_state);
                     $rootScope.hideMenu = false;
                 }
 
@@ -251,7 +294,7 @@ angular.module('starter')
             localStorageService.setItem('primaryOutcomeVariableReportedWelcomeScreen',true);
             localStorageService.setItem('allData',JSON.stringify([]));
 
-            // calculate tracking factor and chart data
+            // calculate primary outcome variable and chart data
             measurementService.calculateAveragePrimaryOutcomeVariableValue().then(function(){
                 measurementService.calculateBothChart();
                 measurementService.resetSyncFlag();
@@ -285,7 +328,7 @@ angular.module('starter')
             localStorageService.deleteItem('expiresAt');
             
 
-            // calculate tracking factor and chart data
+            // calculate primary outcome variable and chart data
             measurementService.calculateAveragePrimaryOutcomeVariableValue().then(function(){
                 measurementService.calculateBothChart();
                 measurementService.resetSyncFlag();
@@ -339,7 +382,7 @@ angular.module('starter')
                     $scope.getAuthToken(requestToken);
                 });
             } else {
-                console.log("it is an extension");
+                console.log("It is an extension, so we use sessions instead of OAuth flow. ");
                 chrome.tabs.create({ url: "http://app.quantimo.do/" });
             }
             
@@ -666,7 +709,7 @@ angular.module('starter')
                 'app.history'
             ];
 
-            if(sync_enabled_states.indexOf($state.current.name) !== -1){
+            if(sync_enabled_states.indexOf($state.current.name) !== -1 && config.appSettings.primary_outcome_variable != false){
                 $rootScope.isSyncing = true;
                 console.log('setting sync true');
                 
@@ -678,7 +721,7 @@ angular.module('starter')
                     $ionicLoading.hide();
                     showLoader('Calculating stuff');
                     
-                    // calculate tracking factor values
+                    // calculate primary outcome variable values
                     measurementService.calculateAveragePrimaryOutcomeVariableValue().then(function(){
                         measurementService.getPrimaryOutcomeVariableValue().then(calculateChartValues, calculateChartValues);
                     });
@@ -733,7 +776,7 @@ angular.module('starter')
         console.log('isWelcomed ' + isWelcomed);
         if(isWelcomed  === true || isWelcomed === "true" || tokenInGetParams){
             $rootScope.isWelcomed = true;
-            //$state.go('app.track');
+            //$state.go(config.appSettings.default_state);
         } else {
             console.log("isWelcomed is " + isWelcomed + ". Setting to true and going to welcome now.");
             localStorageService.setItem('isWelcomed', true);

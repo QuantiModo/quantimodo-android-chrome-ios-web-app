@@ -30,116 +30,20 @@
             <h1 class="title"></h1>
         </ion-header-bar>
         <ion-content>
+                        
             <ion-list>
-                <ion-item menu-close href="#/app/track">
-                    <i class="ion-happy-outline"> &nbsp; Track {{primary_outcome_variable}} </i>
-                </ion-item>
-
-                <ion-item ng-click="toggleTrackingSubMenu()">
-                    <i class="{{showTrackingSubMenu?'ion-chevron-down':'ion-chevron-right'}}"> &nbsp; Track Factors</i>
-                </ion-item>
-                <ion-item class="sub-menu" ng-show="showTrackingSubMenu" href="#/app/track_factors" menu-close>
-                    <i class="ion-ios-world-outline"> &nbsp; Track anything</i>
-                </ion-item>
-                <ion-item class="sub-menu" ng-show="showTrackingSubMenu" href="#/app/track_factors_category/Foods" menu-close>
-                    <i class="ion-ios-nutrition-outline"> &nbsp;  Track foods </i> 
-                </ion-item>
-                <ion-item class="sub-menu" ng-show="showTrackingSubMenu" href="#/app/track_factors_category/Emotions" menu-close>
-                    <i class="ion-happy-outline"> &nbsp;  Track emotions </i> 
-                </ion-item>
-                <ion-item class="sub-menu" ng-show="showTrackingSubMenu" href="#/app/track_factors_category/Symptoms" menu-close>
-                    <i class="ion-ios-pulse"> &nbsp; Track symptoms</i>
-                </ion-item>
-                
-                <ion-item class="sub-menu" ng-show="showTrackingSubMenu" href="#/app/track_factors_category/Treatments" menu-close>
-                    <i class="ion-ios-medkit-outline"> &nbsp; Track treatments</i>
-                </ion-item>
-
-                <ion-item class="sub-menu" ng-show="showTrackingSubMenu" href="#/app/track_factors_category/Physical Activity" menu-close>
-                    <i class="ion-ios-body-outline"> &nbsp; Track physical activity</i>
-                </ion-item>
-
-                <ion-item ng-click="toggleReminderSubMenu()">
-                    <i class="{{showReminderSubMenu?'ion-chevron-down':'ion-chevron-right'}}"> &nbsp; Reminders</i>
-                </ion-item>
-                
-                <ion-item class="sub-menu" ng-show="showReminderSubMenu" href="#/app/reminders" menu-close>
-                    <i class="ion-ios-plus-outline"> &nbsp; Add new reminder</i>
-                </ion-item>
-                
-                <ion-item class="sub-menu" ng-show="showReminderSubMenu" href="#/app/reminders-inbox" menu-close>
-                    <i class="ion-android-notifications-none"> &nbsp; Inbox</i>
-                </ion-item>
-
-                <ion-item class="sub-menu" ng-show="showReminderSubMenu" href="#/app/reminders-manage" menu-close>
-                    <i class="ion-ios-gear-outline"> &nbsp; Manage</i>
-                </ion-item>
-
-                <ion-item class="sub-menu" ng-show="showReminderSubMenu" href="#/app/reminders/Emotions" menu-close>
-                    <i class="ion-happy-outline"> &nbsp; Emotions</i>
-                </ion-item>
-
-                <ion-item class="sub-menu" ng-show="showReminderSubMenu" href="#/app/reminders/Symptoms" menu-close>
-                    <i class="ion-ios-pulse"> &nbsp; Symptoms</i>
-                </ion-item>
-
-                <ion-item class="sub-menu" ng-show="showReminderSubMenu" href="#/app/reminders/Treatments" menu-close>
-                    <i class="ion-ios-medkit-outline"> &nbsp; Treatments</i>
-                </ion-item>
-
-                <ion-item class="sub-menu" ng-show="showReminderSubMenu" href="#/app/reminders/Foods" menu-close>
-                    <i class="ion-ios-nutrition-outline"> &nbsp;  Foods</i>
-                </ion-item>
-
-                <ion-item ng-click="toggleHistorySubMenu()">
-                    <i class="{{showHistorySubMenu?'ion-chevron-down':'ion-chevron-right'}}"> &nbsp; History</i>
-                </ion-item>
-                
-                <ion-item class="sub-menu" ng-show="showHistorySubMenu" href="#/app/history" menu-close>
-                    <i class="ion-happy-outline"> &nbsp; Moods</i>
-                </ion-item>
-
-                <ion-item class="sub-menu" ng-show="showHistorySubMenu" href="#/app/history-all" menu-close>
-                    <i class="ion-ios-paper-outline"> &nbsp; All Measurements</i>
-                </ion-item>
-
-                <ion-item menu-close href="#/app/import">
-                    <i class="ion-ios-cloud-download-outline"> &nbsp; Import Data</i>
-                </ion-item>
-
-                <ion-item menu-close ng-href="#app/search-variables">
-                    <i class="ion-social-vimeo" > &nbsp; Variables</i>
-                </ion-item>
-
-                <ion-item ng-click="togglePredictorSearchSubMenu()">
-                    <i class="{{showPredictorSearchSubMenu?'ion-chevron-down':'ion-chevron-right'}}"> &nbsp; Predictor Search</i>
-                </ion-item>
-                <ion-item class="sub-menu" ng-show="showPredictorSearchSubMenu" href="#/app/search-common-relationships" menu-close>
-                    <i class="ion-ios-people"> &nbsp; Common</i>
-                </ion-item>
-                <ion-item class="sub-menu" ng-show="showPredictorSearchSubMenu" href="#/app/search-user-relationships" menu-close>
-                    <i class="ion-person"> &nbsp;  Yours </i>
-                </ion-item>
-
-
-                <ion-item ng-click="toggleOutcomePredictorSubMenu()">
-                    <i class="{{showOutcomePredictorSubMenu?'ion-chevron-down':'ion-chevron-right'}}"> &nbsp; Predictors of Mood</i>
-                </ion-item>
-                <ion-item class="sub-menu" ng-show="showOutcomePredictorSubMenu" href="#/app/positive" menu-close>
-                    <i class="ion-happy-outline"> &nbsp; Positive Mood</i>
-                </ion-item>
-                <ion-item class="sub-menu" ng-show="showOutcomePredictorSubMenu" href="#/app/negative" menu-close>
-                    <i class="ion-sad-outline"> &nbsp;  Negative Mood  </i>
-                </ion-item>
-
-                <ion-item menu-close href="#/app/settings">
-                    <i class="ion-ios-gear-outline"> &nbsp; Settings </i>
-                </ion-item>
-
-                <ion-item menu-close ng-href="{{ window.chrome ? 'mailto:help@quantimo.do':'#app/feedback'}}">
-                    <i class="ion-ios-help-outline"> &nbsp; Help & Feedback</i>
+               
+                <ion-item ng-show="menuItem.subMenuPanel || (!menuItem.subMenuPanel && !menuItem.isSubMenu) || this[menuItem.subMenuVariable]" ng-class="{'sub-menu': menuItem.isSubMenu}" ng-repeat="menuItem in menu" ng-click="closeMenuIfNeeded(menuItem)" ng-href="{{menuItem.href}}">
+                    <i ng-if="menuItem.subMenuPanel" 
+                        class="{{this['menuItem.icon']? 'ion-chevron-down' : 'ion-chevron-right'}}"> 
+                        &nbsp; {{menuItem.title}}
+                    </i>
+                    <i ng-if="!menuItem.subMenuPanel" class="{{menuItem.icon}}" menu-close>
+                        &nbsp; {{menuItem.title}}
+                    </i >
                 </ion-item>
             </ion-list>
+
         </ion-content>
     </ion-side-menu>
 </ion-side-menus>

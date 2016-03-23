@@ -24,9 +24,18 @@ window.config = {
 config.appSettings  = {
     app_name : 'MoodiModo',
 
+    default_state : 'app.track',
+
     primary_outcome_variable : 'Mood',
 
     storage_identifier: 'MoodiModoData*',
+
+    headline : 'Sync and Analyze Your Data',
+    features: [
+        ' - Automatically backup and sync your data across devices',
+        ' - Track diet, treatments, symptoms, and anything else',
+        ' - Analyze your data to see the top predictors for your Mood'
+    ],
 
     primary_outcome_variable_details : {
         id : 1398,
@@ -87,108 +96,486 @@ config.appSettings  = {
         "ecstatic": 5
     },
 
-    intro : {
-        "screen1" : {
+    intro : [
+        // screen 1
+        {
             img : {
                 width : '150',
                 height : '150',
                 url : 'img/main_icon.png'
+            },
+            content : {
+
+                firstP : {
+                    visible : true,
+                    content : 'Welcome to MoodiModo',
+                    classes : 'intro_header calm'
+                }, 
+                logoDiv : {
+                    visible : true,
+                    id : 'logo'
+                },
+                finalP : {
+                    visible : true,
+                    content : 'MoodiModo allows you track your <span class="calm">Mood</span> and identify the hidden factors which may most influence it.',
+                    classes : 'intro_para',
+                    buttonBarVisible : true   
+                }
             }
         },
-        "screen2" : {
-            images : {
+        // screen 2
+        {
+            img : {
                 height : '70',
                 width : '70'
+            },
+            content : {
+
+                showOutcomeVariableImages : true,
+                showFirstBr : true,   
+                finalP: {
+                    visible : true,
+                    content : 'Go to the <span class="calm">Track Mood</span> page to report your Mood!',
+                    classes : 'intro_para',
+                    buttonBarVisible : true
+                } 
             }
         },
-        "screen3" : {
+        // screen 3
+        {
             img : {
                 width : '140',
                 height : '220',
                 url : 'img/track_moods.png'
+            },
+            content : {
+
+                firstP : {
+                    visible : true,
+                    content : 'Track Mood',
+                    classes : 'intro_header calm'
+                },                 
+                logoDiv : {
+                    visible : true,
+                    id : ''
+                },
+                showSecondBr : true,
+                finalP: {
+                    visible : true,
+                    content : 'On the <span class="calm">Track Mood</span> page, you can view your <span class="calm">average Mood</span> as well as charts illustrating how it changes over time.',
+                    classes : 'intro_para_small',
+                    buttonBarVisible : true
+                }
             }
         },
-        "screen4" : {
+        // screen 4
+        {
             img : {
                 width : '200',
                 height : '150',
                 url : 'img/history_page.png'
+            },
+            content : {
+                firstP : {
+                    visible : true,
+                    content : 'History',
+                    classes : 'intro_header calm'
+                }, 
+                showFirstBr : true,
+                logoDiv : {
+                    visible : true,
+                    id : 'logo'
+                },
+                showSecondBr : true,
+                finalP: {
+                    visible : true,
+                    content : 'You can see and edit your past Mood ratings and notes by opening the <span class="calm">History</span> page.',
+                    classes : 'intro_para',
+                    buttonBarVisible : true
+                }
             }
         },
-        "screen5" : {
+        // screen 5
+        {
             img : {
                 width : '220',
                 height : '200',
                 url : 'img/mood_note.png'
+            },
+            content : {
+                firstP : {
+                    visible : true,
+                    content : 'Add a Note',
+                    classes : 'intro_header calm'
+                }, 
+                logoDiv : {
+                    visible : true,
+                    id : 'logo'
+                },
+                finalP: {
+                    visible : true,
+                    content : 'Add a note by tapping on a Mood rating in the <span class="calm">History</span> page. You can also <span class="calm">Edit</span> your Mood there too.',
+                    classes : 'intro_para',
+                    buttonBarVisible : true
+                }
             }
         },
-        "screen6" : {
+        // screen 6
+        {
             img : {
                 width : '220',
                 height : '190',
                 url : 'img/track_foods.png'
+            },
+            content : {
+                firstP : {
+                    visible : true,
+                    content : 'Track Foods',
+                    classes : 'intro_header calm'
+                }, 
+                logoDiv : {
+                    visible : true,
+                    id : 'logo'
+                },
+                finalP: {
+                    visible : true,
+                    content : 'Track your diet on the <span class="calm">Track Foods</span> page. You can also <span class="calm">Add a new Food Variable</span> if you don\'t find the meal you looked for in the search results.',
+                    classes : 'intro_para_small',
+                    buttonBarVisible : true
+                }
             }
         },
-        "screen7" : {
+        // screen 7
+        {
             img : {
                 width : '190',
                 height : '180',
                 url : 'img/track_symptoms.png'
+            },
+            content : {
+
+                firstP : {
+                    visible : true,
+                    content : 'Track Symptoms',
+                    classes : 'intro_header calm'
+                }, 
+                
+                logoDiv : {
+                    visible : true,
+                    id : 'logo'
+                },
+                
+                finalP: {
+                    visible : true,
+                    content : 'Track any symptom on the <span class="calm">Track Symptoms</span> page. You can also <span class="calm">Add a new Symptom</span> if you don\'t find the symptom you looked for in the search results.',
+                    classes : 'intro_para_small',
+                    buttonBarVisible : true
+                }   
             }
         },
-        "screen8" : {
+        // screen 8
+        {
             img : {
                 width : '210',
                 height : '180',
                 url : 'img/track_treatments.png'
+            },
+            content : {
+                firstP : {
+                    visible : true,
+                    content : 'Track Treatments',
+                    classes : 'intro_header calm'
+                },                 
+                logoDiv : {
+                    visible : true,
+                    id : 'logo'
+                },
+                finalP: {
+                    visible : true,
+                    content : 'Track your treatments on the <span class="calm">Track Treatments</span> page. You can also <span class="calm">Add a new Treatment</span> if you don\'t find the treatment you looked for in the search results.',
+                    classes : 'intro_para_small',
+                    buttonBarVisible : true
+                }
             }
         },
-        "screen9" : {
+        // screen 9
+        {
             img : {
                 width : '220',
                 height : '200',
                 url : 'img/positive_predictors.png'
+            },
+            content : {
+
+                firstP : {
+                    visible : true,
+                    content : 'Positive Predictors',
+                    classes : 'intro_header calm'
+                }, 
+                
+                logoDiv : {
+                    visible : true,
+                    id : 'logo'
+                },
+                
+                finalP: {
+                    visible : true,
+                    content : 'Positive Predictors are the factors most predictive of <span class="calm">IMPROVING</span> Mood for the average QuantiModo user.',
+                    classes : 'intro_para_small',
+                    buttonBarVisible : true
+                }
             }
         },
-        "screen10" : {
+        // screen 10
+        {
             img : {
                 width : '220',
                 height : '200',
                 url : 'img/negative_predictors.png'
+            },
+            content : {
+
+                firstP : {
+                    visible : true,
+                    content : 'Negative Predictors',
+                    classes : 'intro_header calm'
+                },
+                
+                logoDiv : {
+                    visible : true,
+                    id : 'logo'
+                },
+                
+                finalP: {
+                    visible : true,
+                    content : 'Negative Predictors are the factors most predictive of <span class="calm">DECREASING</span> Mood for the average QuantiModo user.',
+                    classes : 'intro_para_small',
+                    buttonBarVisible : true
+                }  
             }
         },
-        "screen11" : {
+        // screen 11
+        {
             img : {
                 width : '180',
                 height : '180',
                 url : 'img/ic_mood_ecstatic.png'
+            },
+            content : {
+
+                firstP : {
+                    visible : true,
+                    content : 'We are feeling ecstatic that you\'re helping us derive a mathematical equation for happiness!',
+                    classes : 'intro_para calm'
+                }, 
+                
+                logoDiv : {
+                    visible : true,
+                    id : 'logo'
+                },
+                finalP: {
+                    visible : true,
+                    content : 'Now start tracking and optimize your life!',
+                    classes : 'intro_para_small',
+                    buttonBarVisible : true
+                }
             }
         }
-    },
+    ],
 
     popup_messages : {
-        "track" : {
-            message : 'Here, you can view your <span class="calm">average Mood</span> as well as charts illustrating how it changes over time'
-        }, 
-        "history" : {
-            message : 'You can see and edit your past Mood ratings and notes by tapping on any item in the list.  <br/> <br/>You can also Add a note by tapping on a Mood rating in the list.'
+        "#/app/track" :'Here, you can view your <span class="calm">average Mood</span> as well as charts illustrating how it changes over time', 
+        "#/app/history" :'You can see and edit your past Mood ratings and notes by tapping on any item in the list.  <br/> <br/>You can also Add a note by tapping on a Mood rating in the list.',
+        "#/app/track_factors_category/Foods" :'You can track your diet on this page. You can also <span class="calm">Add a new Food Variable</span> if you do not find the meal you looked for in the search results.',
+        "#/app/track_factors_category/Symptoms" :'You can track any symptom on this page. You can also <span class="calm">Add a new Symptom</span> if you don\'t find the symptom you looked for in the search results.',
+        "#/app/track_factors_category/Treatments" :'You can track any treatment on this page. You can also <span class="calm">Add a new Treatment</span> if you don\'t find the treatment you looked for in the search results.',
+        "#/app/positive" :'Positive Predictors are the factors most predictive of <span class="calm">IMPROVING</span> Mood for the average QuantiModo user.',
+        "#/app/negative" :'Negative Predictors are the factors most predictive of <span class="calm">DECREASING</span> for the average QuantiModo user.'
+    },
+
+    menu : [
+        {
+            title : 'Track Mood',
+            href : '#/app/track',
+            icon : 'ion-happy-outline'
         },
-        "track_foods" : {
-            message : 'You can track your diet on this page. You can also <span class="calm">Add a new Food Variable</span> if you do not find the meal you looked for in the search results.'
+        {
+            title : 'Track Factors',
+            click : 'toggleTrackingSubMenu',
+            icon : 'showTrackingSubMenu',
+            subMenuPanel : true
         },
-        "track_symptoms" : {
-            message : 'You can track any symptom on this page. You can also <span class="calm">Add a new Symptom</span> if you don\'t find the symptom you looked for in the search results.'
+        {
+            title : 'Track anything',
+            isSubMenu : true,
+            subMenuVariable : 'showTrackingSubMenu',
+            href : '#/app/track_factors',
+            icon : 'ion-ios-world-outline'   
         },
-        "track_treatments" : {
-            message : 'You can track any treatment on this page. You can also <span class="calm">Add a new Treatment</span> if you don\'t find the treatment you looked for in the search results.'
+        {
+            title : 'Track foods',
+            isSubMenu : true,
+            subMenuVariable : 'showTrackingSubMenu',
+            href : '#/app/track_factors_category/Foods',
+            icon : 'ion-ios-nutrition-outline'
         },
-        "positive_predictors" : {
-            message : 'Positive Predictors are the factors most predictive of <span class="calm">IMPROVING</span> Mood for the average QuantiModo user.'
+        {
+            title : 'Track emotions',
+            isSubMenu : true,
+            subMenuVariable : 'showTrackingSubMenu',
+            href : '#/app/track_factors_category/Emotions',
+            icon : 'ion-happy-outline'
         },
-        "negative_predictors" : {
-            message : 'Negative Predictors are the factors most predictive of <span class="calm">DECREASING</span> for the average QuantiModo user.'
-        }
-    }
+        {
+            title : 'Track symptoms',
+            isSubMenu : true,
+            subMenuVariable : 'showTrackingSubMenu',
+            href : '#/app/track_factors_category/Symptoms',
+            icon : 'ion-ios-pulse'
+        },
+        {
+            title : 'Track treatments',
+            isSubMenu : true,
+            subMenuVariable : 'showTrackingSubMenu',
+            href : '#/app/track_factors_category/Treatments',
+            icon : 'ion-ios-medkit-outline'
+        },
+        {
+            title : 'Track physical activity',
+            isSubMenu : true,
+            subMenuVariable : 'showTrackingSubMenu',
+            href : '#/app/track_factors_category/Physical Activity',
+            icon : 'ion-ios-body-outline'
+        },
+        {
+            title : 'Reminders',
+            click : 'toggleReminderSubMenu',
+            icon : 'showReminderSubMenu',
+            subMenuPanel : true
+        },
+        {
+            title : 'Inbox',
+            isSubMenu : true,
+            subMenuVariable : 'showReminderSubMenu',
+            href : '#/app/reminders-inbox',
+            icon : 'ion-android-notifications-none'
+        },
+        {
+            title : 'Manage',
+            isSubMenu : true,
+            subMenuVariable : 'showReminderSubMenu',
+            href : '#/app/reminders-manage',
+            icon : 'ion-ios-gear-outline'
+        },
+        {
+            title : 'Emotions',
+            isSubMenu : true,
+            subMenuVariable : 'showReminderSubMenu',
+            href : '#/app/reminders/Emotions',
+            icon : 'ion-happy-outline'
+        },
+        {
+            title : 'Symptoms',
+            isSubMenu : true,
+            subMenuVariable : 'showReminderSubMenu',
+            href : '#/app/reminders/Symptoms',
+            icon : 'ion-ios-pulse'
+        },
+        {
+            title : 'Treatments',
+            isSubMenu : true,
+            subMenuVariable : 'showReminderSubMenu',
+            href : '#/app/reminders/Treatments',
+            icon : 'ion-ios-medkit-outline'
+        },
+        {
+            title : 'Foods',
+            isSubMenu : true,
+            subMenuVariable : 'showReminderSubMenu',
+            href : '#/app/reminders/Foods',
+            icon : 'ion-ios-nutrition-outline'
+        },
+        {
+            title : 'History',
+            click : 'toggleHistorySubMenu',
+            icon : 'showHistorySubMenu',
+            subMenuPanel : true
+        },
+        {
+            title : 'Moods',
+            isSubMenu : true,
+            subMenuVariable : 'showHistorySubMenu',
+            href : '#/app/history',
+            icon : 'ion-happy-outline'
+        },
+        {
+            title : 'All Measurements',
+            isSubMenu : true,
+            subMenuVariable : 'showHistorySubMenu',
+            href : '#/app/history-all',
+            icon : 'ion-ios-paper-outline'
+        },
+        {
+            title : 'Import Data',
+            href : '#/app/import',
+            icon : 'ion-ios-cloud-download-outline'
+        },
+        {
+            title : 'Variables',
+            href : '#app/search-variables',
+            icon : 'ion-social-vimeo'
+        },
+        {
+            title : 'Predictor Search',
+            click : 'togglePredictorSearchSubMenu',
+            icon : 'showPredictorSearchSubMenu',
+            subMenuPanel : true
+        },
+        {
+            title : 'Common',
+            isSubMenu : true,
+            subMenuVariable : 'showPredictorSearchSubMenu',
+            href : '#/app/search-common-relationships',
+            icon : 'ion-ios-people'
+        },
+        {
+            title : 'Yours',
+            isSubMenu : true,
+            subMenuVariable : 'showPredictorSearchSubMenu',
+            href : '#/app/search-user-relationships',
+            icon : 'ion-person'
+        },
+        {
+            title : 'Predictors of Mood',
+            click : 'toggleOutcomePredictorSubMenu',
+            icon : 'showOutcomePredictorSubMenu',
+            subMenuPanel : true
+        },
+        {
+            title : 'Positive Mood',
+            isSubMenu : true,
+            subMenuVariable : 'showOutcomePredictorSubMenu',
+            href : '#/app/positive',
+            icon : 'ion-happy-outline'
+        },
+        {
+            title : 'Negative Mood',
+            isSubMenu : true,
+            subMenuVariable : 'showOutcomePredictorSubMenu',
+            href : '#/app/negative',
+            icon : 'ion-sad-outline'
+        },
+        {
+            title : 'Settings',
+            href : '#/app/settings',
+            icon : 'ion-ios-gear-outline'
+        },
+        {
+            title : 'Help & Feedback',
+            href : window.chrome ? "mailto:help@quantimo.do" : "#app/feedback",
+            icon : 'ion-ios-help-outline'
+        },
+    ]
 };
 
 config.getPrimaryOutcomeVariableOptionLabels = function(shouldShowNumbers){

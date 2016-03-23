@@ -46,13 +46,13 @@ angular.module('starter')
 						alert("Please unblock popups and refresh to access the Import Data page.");
 					}
 					
-					$state.go('app.track');
+					$state.go(config.appSettings.default_state);
 	            } else {	            	
 	            	var targetUrl = config.getURL("api/v1/connect/mobile", true);
 	            	targetUrl += "access_token="+token.accessToken;
 	            	var ref = window.open(targetUrl,'_blank', 'location=no,toolbar=yes');
 	            	ref.addEventListener('exit', function(){
-						$state.go('app.track');
+						$state.go(config.appSettings.default_state);
 					});
 	            }	            
 
