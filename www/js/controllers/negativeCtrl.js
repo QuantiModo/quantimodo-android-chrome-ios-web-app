@@ -19,11 +19,6 @@ angular.module('starter')
            $scope.not_show_confirmation_negative_down = not_show_confirmation_negative_down ? JSON.parse(not_show_confirmation_negative_down) : false;
         });
 
-        $scope.not_show_help_popup;
-        localStorageService.getItem('not_show_help_popup',function(val){
-            $scope.not_show_help_popup = val ? JSON.parse(val) : false;
-        });
-
         $scope.controller_name = "NegativeCtrl";
 
         $scope.negatives = false;
@@ -45,24 +40,6 @@ angular.module('starter')
 
 
             if($scope.isLoggedIn){
-                if(!$scope.not_show_help_popup){
-                    $ionicPopup.show({
-                        title: config.appSettings.popup_messages.negative_predictors.message,
-                        subTitle: '',
-                        scope:$scope,
-                        template:'<label><input type="checkbox" ng-model="$parent.not_show_help_popup" class="show-again-checkbox">Don\'t show help popup\'s again</label>',
-                        buttons:[
-                            {   
-                                text: 'OK',
-                                type: 'button-calm',
-                                onTap: function(){
-                                    localStorageService.setItem('not_show_help_popup',JSON.stringify($scope.not_show_help_popup));
-                                }
-                            }
-                        ]
-                    });
-                }
-
                 // show loader
                 $ionicLoading.show({
                     noBackdrop: true,
