@@ -43,7 +43,8 @@
     "cordova-plugin-datepicker",
     "cordova-plugin-file",
     "cordova-plugin-file-opener2",
-    "org.apache.cordova.device"
+    "org.apache.cordova.device",
+    "ionic-plugin-keyboard"
   ],
   "cordovaPlatforms": [
     "android",
