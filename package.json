@@ -36,14 +36,15 @@
     "cordova-plugin-console",
     "cordova-plugin-whitelist",
     "cordova-plugin-splashscreen",
-    "com.ionic.keyboard",
+    "ionic-plugin-keyboard",
     "cordova-plugin-inappbrowser",
     "https://github.com/apache/cordova-plugin-inappbrowser",
     "org.apache.cordova.statusbar",
     "cordova-plugin-datepicker",
     "cordova-plugin-file",
     "cordova-plugin-file-opener2",
-    "org.apache.cordova.device"
+    "org.apache.cordova.device",
+    "ionic-plugin-keyboard"
   ],
   "cordovaPlatforms": [
     "android"

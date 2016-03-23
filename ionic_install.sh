@@ -38,6 +38,6 @@ npm install --no-bin-links
 
 sudo chown -R vagrant:vagrant /home/vagrant
 
-ionic platform add android
+ionic state reset
 
 #sudo gem install sass
