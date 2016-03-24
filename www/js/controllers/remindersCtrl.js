@@ -145,7 +145,7 @@ angular.module('starter')
 
 	    // when category is selected
 	    $scope.onVariableChange = function(){
-	    	console.log("Type Selected: ", $scope.state.selectedVariableCategory);
+	    	console.log("Variable category selected: ", $scope.state.selectedVariableCategory);
 	    	$scope.category = $scope.state.selectedVariableCategory;
 	    	$scope.state.searchQuery = '';
 	    	$scope.state.showResults = false;
