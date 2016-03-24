@@ -87,7 +87,7 @@ angular.module('starter')
 
 	    };
 
-	    // constuctor
+	    // constructor
 	    $scope.init = function(){
 
 
