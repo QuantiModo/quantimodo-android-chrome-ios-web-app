@@ -284,9 +284,19 @@ config.appSettings  = {
 
     menu : [
         {
-            title : 'Inbox',
-            href : '#/app/reminders-inbox',
-            icon : 'ion-android-notifications-none'
+            title : 'Med Schedule',
+            href : '#/app/reminders-inbox/Treatments',
+            icon : 'ion-ios-alarm'
+        },
+        {
+            title : 'Medications',
+            href : '#/app/reminders-manage/Treatments',
+            icon : 'ion-ios-medkit'
+        },
+        {
+            title : 'History',
+            href : '#/app/history-all',
+            icon : 'ion-ios-paper-outline'
         },
         {
             title : 'Track',
@@ -299,14 +309,14 @@ config.appSettings  = {
             isSubMenu : true,
             subMenuVariable : 'showTrackingSubMenu',
             href : '#/app/track_factors',
-            icon : 'ion-ios-world-outline'
+            icon : 'ion-ios-world'
         },
         {
             title : 'Track foods',
             isSubMenu : true,
             subMenuVariable : 'showTrackingSubMenu',
             href : '#/app/track_factors_category/Foods',
-            icon : 'ion-ios-nutrition-outline'
+            icon : 'ion-ios-nutrition'
         },
         {
             title : 'Track emotions',
@@ -334,7 +344,7 @@ config.appSettings  = {
             isSubMenu : true,
             subMenuVariable : 'showTrackingSubMenu',
             href : '#/app/track_factors_category/Physical Activity',
-            icon : 'ion-ios-body-outline'
+            icon : 'ion-ios-body'
         },
         {
             title : 'Reminders',
@@ -383,11 +393,6 @@ config.appSettings  = {
             subMenuVariable : 'showReminderSubMenu',
             href : '#/app/reminders/Foods',
             icon : 'ion-ios-nutrition-outline'
-        },
-        {
-            title : 'History',
-            href : '#/app/history-all',
-            icon : 'ion-ios-paper-outline'
         },
         {
             title : 'Import Data',
