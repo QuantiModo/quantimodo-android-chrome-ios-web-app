@@ -19,7 +19,7 @@
     "*://cdn.rawgit.com/*"
   ],
   "browser_action": {
-    "default_icon": "images/icon.png",
+    "default_icon": "www/img/icon_700.png",
     "default_popup": "app.html"
   },
   "background": {
