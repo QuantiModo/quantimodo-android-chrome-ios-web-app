@@ -286,12 +286,12 @@ config.appSettings  = {
         {
             title : 'Med Schedule',
             href : '#/app/reminders-inbox/Treatments',
-            icon : 'ion-ios-alarm'
+            icon : 'ion-ios-alarm-outline'
         },
         {
             title : 'Medications',
             href : '#/app/reminders-manage/Treatments',
-            icon : 'ion-ios-medkit'
+            icon : 'ion-ios-medkit-outline'
         },
         {
             title : 'History',
