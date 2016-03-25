@@ -1,7 +1,5 @@
 # Customize the test machine
 machine:
-  xcode:
-      version: "7.2"
   node:
     version: 4.1.0
   ruby:
