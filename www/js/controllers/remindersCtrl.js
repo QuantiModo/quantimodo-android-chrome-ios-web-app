@@ -452,7 +452,7 @@ angular.module('starter')
 	    	$scope.state.showSearchBox = true;
 	    };
 
-	    // constuctor
+	    // constructor
 	    $scope.init = function(){
 
 			// get user token
@@ -466,9 +466,9 @@ angular.module('starter')
 				else
 					setupNewReminder();
 			}, function(){
-				console.log("need to log in");
-				utilsService.showLoginRequiredAlert($scope.login);
 				$ionicLoading.hide();
+				console.log("need to log in");
+				//utilsService.showLoginRequiredAlert($scope.login);
 			});
 	    };
 
