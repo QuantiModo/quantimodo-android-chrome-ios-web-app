@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-echo -e "${GREEN}Install imagemagick package if it doesn't exist${NC}"
+echo -e "${GREEN}Installing imagemagick package if it doesn't exist${NC}"
 if ! type "imagemagick" > /dev/null;
   then
   apt-get install imagemagick
