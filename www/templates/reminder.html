@@ -6,7 +6,7 @@
 			<label class="item item-input item-select">
 				<div class="input-label">Select Category</div>
 				<select ng-model="state.selectedVariableCategory" ng-change="onVariableChange()">
-					<option ng-repeat="type in variables.variableCategories" value="{{type.name}}">{{type.name}}</option>
+					<option ng-repeat="variableCategory in variables.variableCategories" value="{{variableCategory.name}}">{{variableCategory.name}}</option>
 				</select>
 			</label>
 		</div>
