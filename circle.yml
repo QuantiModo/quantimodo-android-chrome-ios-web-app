@@ -29,7 +29,7 @@ dependencies:
 test:
   override:
     - echo "This line is to prevent automatic test detection."
-    - curl "https://api.ghostinspector.com/v1/suites/56f16ea949faa251569e24da/execute/?apiKey=f5b531ccd55da08abf35fadabd7b7b04f3d64312&commit="$(git rev-parse HEAD) > ghostinspector.json
+    - curl "https://api.ghostinspector.com/v1/suites/56f5b92519d90d942760ea96/execute/?apiKey=f5b531ccd55da08abf35fadabd7b7b04f3d64312&commit="$(git rev-parse HEAD) > ghostinspector.json
     - php ghostinspector_parser.php
 
 general:
