@@ -82,7 +82,7 @@ chrome.notifications.onClicked.addListener(function(notificationId)
 {
 	if(notificationId == "moodReportNotification")
 	{
-		var windowParams = {url: "popup.html",
+		var windowParams = {url: "mood_popup.html",
 							type: 'panel',
 							top: 0.6 * screen.height,
 							left: screen.width - 371,
