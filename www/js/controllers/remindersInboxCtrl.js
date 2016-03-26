@@ -26,6 +26,10 @@ angular.module('starter')
 			isDisabled : false
 	    };
 
+		if($stateParams.category){
+			$scope.state.title = $stateParams.category + " Reminder Inbox";
+		}
+
 	    $scope.select_primary_outcome_variable = function($event, val){
 	        // remove any previous primary outcome variables if present
 	        jQuery('.primary_outcome_variables .active_primary_outcome_variable').removeClass('active_primary_outcome_variable');

@@ -41,6 +41,13 @@ angular.module('starter')
 			thirdSelectedTime : moment.utc().format('HH:mm:ss')
 	    };
 
+
+		console.log("$stateParams.category  is " + $stateParams.category);
+
+		if($stateParams.category){
+			$scope.state.title = "Manage " + $stateParams.category + " Reminders";
+		}
+
 	    // data
 	    $scope.variables = {
 	    	variableCategories : [
@@ -470,6 +477,7 @@ angular.module('starter')
 			// get user token
 			authService.getAccessToken().then(function(token){
 				if($stateParams.category){
+					$scope.state.title = "Manage " + $stateParams.category + " Reminders";
 					$scope.category = $stateParams.category;
 					setupCategory($scope.category);
 				}
