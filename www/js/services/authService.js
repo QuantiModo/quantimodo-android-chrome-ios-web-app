@@ -79,6 +79,14 @@ angular.module('starter')
 							function (userCredentialsResp) {
 								//if direct API call was successful
 								console.log('User credentials fetched:', userCredentialsResp);
+
+								Bugsnag.metaData = {
+									user: {
+										name: userCredentialsResp.data.displayName,
+										email: userCredentialsResp.data.email
+									}
+								};
+
 								//get token value from response
 								var token = userCredentialsResp.data.token.split("|")[2];
 								//update locally stored token
