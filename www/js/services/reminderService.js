@@ -82,10 +82,12 @@ angular.module('starter')
 
 				QuantiModo.skipTrackingReminder(reminderId, function(response){
 					if(response.success) deferred.resolve();
-					else deferred.reject();
+					else {
+						deferred.reject();
+					}
 				}, function(err){
 					deferred.reject(err);
-				})
+				});
 				
 				return deferred.promise;
 			},
@@ -94,11 +96,15 @@ angular.module('starter')
 				var deferred = $q.defer();
 
 				QuantiModo.trackTrackingReminder(reminderId, function(response){
-					if(response.success) deferred.resolve();
-					else deferred.reject();
+					if(response.success) {
+						deferred.resolve();
+					}
+					else {
+						deferred.reject();
+					}
 				}, function(err){
 					deferred.reject(err);
-				})
+				});
 				
 				return deferred.promise;
 			},
@@ -108,10 +114,12 @@ angular.module('starter')
 
 				QuantiModo.snoozeTrackingReminder(reminderId, function(response){
 					if(response.success) deferred.resolve();
-					else deferred.reject();
+					else {
+						deferred.reject();
+					}
 				}, function(err){
 					deferred.reject(err);
-				})
+				});
 				
 				return deferred.promise;
 			},
@@ -149,10 +157,12 @@ angular.module('starter')
 
 				QuantiModo.deleteTrackingReminder(reminderId, function(response){
 					if(response.success) deferred.resolve();
-					else deferred.reject();
+					else {
+						deferred.reject();
+					}
 				}, function(err){
 					deferred.reject(err);
-				})
+				});
 				
 				return deferred.promise;
 			}

@@ -127,7 +127,7 @@ angular.module('starter')
 	    };
 
 	    var getReminders = function(){
-	    	utils.startLoading();
+	    	//utils.startLoading();
 	    	reminderService.getReminders($stateParams.category)
 	    	.then(function(reminders){
 	    		$scope.state.allReminders = reminders;
@@ -136,8 +136,8 @@ angular.module('starter')
 	    		utils.stopLoading();
 	    		console.log("failed to get reminders");
 				console.log("need to log in");
-				utilsService.showLoginRequiredAlert($scope.login);
 				$ionicLoading.hide();
+				utilsService.showLoginRequiredAlert($scope.login);
 	    	});
 	    };
 
@@ -152,8 +152,8 @@ angular.module('starter')
 	    	}, function(){
 	    		utils.stopLoading();
 	    		console.log("failed to get reminders");
-				utilsService.showLoginRequiredAlert($scope.login);
-				$ionicLoading.hide();
+				//utilsService.showLoginRequiredAlert($scope.login);
+
 	    	});
 	    };
 
@@ -238,42 +238,50 @@ angular.module('starter')
 
 	    // constructor
 	    $scope.init = function(){
-	    	
-	    	var unit = utilsService.getUrlParameter(location.href, 'unit', true);
-	    	var variableName = utilsService.getUrlParameter(location.href, 'variableName', true);
-	    	var dateTime = utilsService.getUrlParameter(location.href, 'dateTime', true);
-	    	var value = utilsService.getUrlParameter(location.href, 'value', true);	    	
 
-	    	if($stateParams.unit !== null && typeof $stateParams.unit !== "undefined"
-	    		&& $stateParams.variableName !== null && typeof $stateParams.variableName !== "undefined"
-	    		&& $stateParams.dateTime !== null && typeof $stateParams.dateTime !== "undefined"
-	    		&& $stateParams.value !== null && typeof $stateParams.value !== "undefined"){
-	    			    		
-	    		setupTracking($stateParams.unit,
-	    			$stateParams.variableName,
-	    			$stateParams.dateTime,
-	    			$stateParams.value);
+			// get user token
+			authService.getAccessToken().then(function(token){
+				var unit = utilsService.getUrlParameter(location.href, 'unit', true);
+				var variableName = utilsService.getUrlParameter(location.href, 'variableName', true);
+				var dateTime = utilsService.getUrlParameter(location.href, 'dateTime', true);
+				var value = utilsService.getUrlParameter(location.href, 'value', true);
 
-	    	} else if(unit || variableName || dateTime || value){
-	    		
-	    		$scope.state.title = "Edit Measurement";
-	    		$scope.state.showMeasurementBox = true;
+				if($stateParams.unit !== null && typeof $stateParams.unit !== "undefined"
+					&& $stateParams.variableName !== null && typeof $stateParams.variableName !== "undefined"
+					&& $stateParams.dateTime !== null && typeof $stateParams.dateTime !== "undefined"
+					&& $stateParams.value !== null && typeof $stateParams.value !== "undefined"){
 
-	    		if(unit && variableName && dateTime && value){
-	    			setupTracking(unit,
-	    				variableName,
-	    				dateTime,
-	    				value);
-	    		} else {
-	    			$scope.state.isDisabled = true;
-	    			utils.showAlert('Missing Parameters, need unit, variableName, dateTime and value!','assertive');
-	    		}
+					setupTracking($stateParams.unit,
+						$stateParams.variableName,
+						$stateParams.dateTime,
+						$stateParams.value);
 
-	    	} else if($state.is('app.reminders_manage') || $state.is('app.reminders_manage_category')){	      		
-	      		getReminders();
-	      	} else {
-	      		getTrackingReminders();
-	      	}
+				} else if(unit || variableName || dateTime || value){
+
+					$scope.state.title = "Edit Measurement";
+					$scope.state.showMeasurementBox = true;
+
+					if(unit && variableName && dateTime && value){
+						setupTracking(unit,
+							variableName,
+							dateTime,
+							value);
+					} else {
+						$scope.state.isDisabled = true;
+						utils.showAlert('Missing Parameters, need unit, variableName, dateTime and value!','assertive');
+					}
+
+				} else if($state.is('app.reminders_manage') || $state.is('app.reminders_manage_category')){
+					getReminders();
+				} else {
+					getTrackingReminders();
+				}
+			}, function(){
+				$ionicLoading.hide();
+				console.log("need to log in");
+				//utilsService.showLoginRequiredAlert($scope.login);
+			});
+			
 	    };
 
 	    $scope.saveMeasurement = function(){
