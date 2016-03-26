@@ -165,8 +165,9 @@ angular.module('starter')
 			}
 	    };
 
-	    $scope.track = function(reminder){
-	    	reminderService.trackReminder(reminder.id)
+	    $scope.track = function(reminder, modifiedReminderValue){
+			console.log('modifiedReminderValue is ' + modifiedReminderValue);
+	    	reminderService.trackReminder(reminder.id, modifiedReminderValue)
 	    	.then(function(){
 	    		$scope.init();
 

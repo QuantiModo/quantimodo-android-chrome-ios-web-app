@@ -92,10 +92,10 @@ angular.module('starter')
 				return deferred.promise;
 			},
 
-			trackReminder : function(reminderId){
+			trackReminder : function(reminderId, modifiedReminderValue){
 				var deferred = $q.defer();
 
-				QuantiModo.trackTrackingReminder(reminderId, function(response){
+				QuantiModo.trackTrackingReminder(reminderId, modifiedReminderValue, function(response){
 					if(response.success) {
 						deferred.resolve();
 					}

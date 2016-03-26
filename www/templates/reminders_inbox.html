@@ -116,7 +116,7 @@
 						</div>
 						<div class="row" ng-if="reminder.abbreviatedUnitName == '/5' " >
 							<div class="primary_outcome_variables col">
-								<img ng-repeat="option in primary_outcome_variable_numbers" ng-click="select_primary_outcome_variable($event, option.value)" ng-src="{{option.img}}">
+								<img ng-repeat="option in primary_outcome_variable_numbers" ng-click="track(reminder, option.value)" ng-src="{{option.img}}">
 							</div>
 						</div>
 					</div>
