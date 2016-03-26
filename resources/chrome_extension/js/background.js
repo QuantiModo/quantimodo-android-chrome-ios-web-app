@@ -43,8 +43,8 @@ chrome.runtime.onInstalled.addListener(function()
 	}
 	else
 	{
-		var alarmInfo = {periodInMinutes: notificationInterval}
-		chrome.alarms.create("moodReportAlarm", alarmInfo)
+		var alarmInfo = {periodInMinutes: notificationInterval};
+		chrome.alarms.create("moodReportAlarm", alarmInfo);
 		console.log("Alarm set, every " + notificationInterval + " minutes");
 	}
 });
@@ -60,11 +60,11 @@ chrome.alarms.onAlarm.addListener(function(alarm)
 		var notificationParams = {
 			type: "basic",
 			title: "How are you?",
-			message: "It's time to report your mood!",
+			message: "It's time to track!",
 			iconUrl: "www/img/icon_700.png",
 			priority: 2
-		}
-		chrome.notifications.create("moodReportNotification", notificationParams, function(id){});
+		};
+		chrome.notifications.create("trackingInboxNotification", notificationParams, function(id){});
 	}
 
 	var showBadge = (localStorage["showBadge"] || "true") == "true" ? true : false;
@@ -80,7 +80,7 @@ chrome.alarms.onAlarm.addListener(function(alarm)
 */
 chrome.notifications.onClicked.addListener(function(notificationId)
 {
-	if(notificationId == "moodReportNotification")
+	if(notificationId === "moodReportNotification")
 	{
 		var windowParams = {url: "mood_popup.html",
 							type: 'panel',
@@ -91,6 +91,20 @@ chrome.notifications.onClicked.addListener(function(notificationId)
 						   };
 		chrome.windows.create(windowParams);
 	}
+
+    if(notificationId === "trackingInboxNotification")
+    {
+        var windowParams = {url: "/www/index.html#/app/reminders-inbox",
+            type: 'panel',
+            top: 0.6 * screen.height,
+            left: screen.width - 371,
+            width: 371,
+            height: 585
+        };
+        chrome.windows.create(windowParams);
+    }
+
+
 });
 
 /*
