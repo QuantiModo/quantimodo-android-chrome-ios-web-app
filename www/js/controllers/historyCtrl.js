@@ -42,7 +42,7 @@ angular.module('starter')
 	        // remove any previous factors if present
 	        jQuery('.primary_outcome_variables .active_primary_outcome_variable').removeClass('active_primary_outcome_variable');
 	        
-	        // highlight the approporiate factor for the history item.
+	        // highlight the appropriate factor for the history item.
 	        jQuery('.'+config.appSettings.conversion_dataset[Math.ceil(history.value)]).addClass('active_primary_outcome_variable');
 	    };
 
@@ -87,7 +87,7 @@ angular.module('starter')
 
 	    };
 
-	    // constuctor
+	    // constructor
 	    $scope.init = function(){
 
 

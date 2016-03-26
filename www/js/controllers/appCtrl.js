@@ -29,7 +29,7 @@ angular.module('starter')
                         title: popup_messages[location.hash],
                         subTitle: '',
                         scope:$scope,
-                        template:'<label><input type="checkbox" ng-model="$parent.not_show_help_popup" class="show-again-checkbox">Don\'t show help popup\'s again</label>',
+                        template:'<label><input type="checkbox" ng-model="$parent.not_show_help_popup" class="show-again-checkbox">Don\'t show these tips</label>',
                         buttons:[
                             {   
                                 text: 'OK',

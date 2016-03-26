@@ -116,11 +116,11 @@ angular.module('starter')
 				return deferred.promise;
 			},
 
-			getReminders : function(){
+			getReminders : function(category){
 
 				var deferred = $q.defer();
-
-				QuantiModo.getTrackingReminders(function(reminders){
+				var params = typeof category != "undefined" && category != "" ? {variableCategoryName : category} : {};
+				QuantiModo.getTrackingReminders(params ,function(reminders){
 					if(reminders.success) deferred.resolve(reminders.data);
 					else deferred.reject("error");
 				}, function(err){
@@ -130,11 +130,11 @@ angular.module('starter')
 				return deferred.promise;
 			},
 
-			getTrackingReminderNotifications : function(){
+			getTrackingReminderNotifications : function(category){
 
 				var deferred = $q.defer();
-
-				QuantiModo.getTrackingReminderNotifications(function(reminders){
+				var params = typeof category != "undefined" && category != "" ?{variableCategoryName : category} : {};
+				QuantiModo.getTrackingReminderNotifications(params, function(reminders){
 					if(reminders.success) deferred.resolve(reminders.data);
 					else deferred.reject("error");
 				}, function(err){

@@ -13,3 +13,9 @@ hooks
 .vagrant/
 android-sdk-linux/
 android-sdk_r24.2-linux.tgz
+scripts/certs/apple.cer
+scripts/certs/dist.cer
+scripts/certs/dist.p12
+scripts/profile/028ab892-9a5e-4004-adac-b8472e760bdb.mobileprovision
+resources/chrome_extension/www/
+resources/chrome_app/www/

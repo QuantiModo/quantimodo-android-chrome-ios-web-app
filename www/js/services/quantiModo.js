@@ -268,19 +268,19 @@ angular.module('starter')
             };
 
             // get reminders
-            QuantiModo.getTrackingReminders = function(successHandler, errorHandler){
+            QuantiModo.getTrackingReminders = function(params, successHandler, errorHandler){
                 QuantiModo.get('api/v1/trackingReminders',
-                    [],
-                    {},
+                    ['variableCategoryName'],
+                    params,
                     successHandler,
                     errorHandler);
             };
 
             // get pending reminders 
-            QuantiModo.getTrackingReminderNotifications = function(successHandler, errorHandler){
+            QuantiModo.getTrackingReminderNotifications = function(params, successHandler, errorHandler){
                 QuantiModo.get('api/v1/trackingReminderNotifications',
-                    [],
-                    {},
+                    ['variableCategoryName'],
+                    params,
                     successHandler,
                     errorHandler);
             };
