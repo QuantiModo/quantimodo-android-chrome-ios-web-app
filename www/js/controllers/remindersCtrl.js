@@ -7,7 +7,7 @@ angular.module('starter')
 
 	    // state
 	    $scope.state = {
-	    	title : 'Reminders',
+	    	title : "Manage Reminders",
 	    	resultsHeaderText : '',
 
 	    	showVariableCategory : false,
