@@ -71,10 +71,10 @@ document.addEventListener('DOMContentLoaded', function ()
 	
 	// Set notification interval select
 	var notificationIntervalSelect = document.getElementById('notificationIntervalSelect');
-	var notificationInterval = localStorage["notificationInterval"] || "180";
+	var notificationInterval = localStorage["notificationInterval"] || "60";
 	for(var i = 0; notificationIntervalSelect.options.length; i++) 
 	{
-		var currentOption = notificationIntervalSelect.options[i]
+		var currentOption = notificationIntervalSelect.options[i];
         if(currentOption.value == notificationInterval) 
 		{
             notificationIntervalSelect.selectedIndex = i;

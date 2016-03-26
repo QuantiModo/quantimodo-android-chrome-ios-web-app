@@ -7,6 +7,7 @@
   "globals": {
     "angular"   : false,
     "moment"    : false,
+    "screen"    : false,
     "console"    : false,
     "chrome"    : false,
     "localStorage" : false,

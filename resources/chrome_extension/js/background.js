@@ -11,15 +11,15 @@ function isUserLoggedIn(resultListener)
 	xhr.open("GET", "https://app.quantimo.do/api/user/me", true);
 	xhr.onreadystatechange = function()
 		{
-			if (xhr.readyState == 4)
+			if (xhr.readyState === 4)
 			{
 				var userObject = JSON.parse(xhr.responseText);
 				/*
 				 * it should hide and show sign in button based upon the cookie set or not
 				 */
-				if(typeof userObject['displayName'] !== "undefined")
+				if(typeof userObject.displayName !== "undefined")
 				{
-						console.log(userObject['displayName'] + " is logged in.  ");
+						console.log(userObject.displayName + " is logged in.  ");
 				} else {
 					var url = "https://app.quantimo.do/api/v2/auth/login";
 					chrome.tabs.create({"url":url, "selected":true});
@@ -34,7 +34,7 @@ function isUserLoggedIn(resultListener)
 */
 chrome.runtime.onInstalled.addListener(function()
 {
-	var notificationInterval = parseInt(localStorage["notificationInterval"] || "60");
+	var notificationInterval = parseInt(localStorage.notificationInterval || "60");
 
 	if(notificationInterval == -1)
 	{
@@ -54,25 +54,11 @@ chrome.runtime.onInstalled.addListener(function()
 */
 chrome.alarms.onAlarm.addListener(function(alarm)
 {
-	var showNotification = (localStorage["showNotification"] || "true") == "true" ? true : false;
-	if(showNotification)
-	{
-		var notificationParams = {
-			type: "basic",
-			title: "How are you?",
-			message: "It's time to track!",
-			iconUrl: "www/img/icon_700.png",
-			priority: 2
-		};
-		chrome.notifications.create("trackingInboxNotification", notificationParams, function(id){});
-	}
+	var showNotification = (localStorage.showNotification || "true") == "true" ? true : false;
 
-	var showBadge = (localStorage["showBadge"] || "true") == "true" ? true : false;
-	if(showBadge)
-	{
-		var badgeParams = {text:"?"};
-		chrome.browserAction.setBadgeText(badgeParams);
-	}
+    if(showNotification){
+        checkForNotifications();
+    }
 });
 
 /*
@@ -80,9 +66,11 @@ chrome.alarms.onAlarm.addListener(function(alarm)
 */
 chrome.notifications.onClicked.addListener(function(notificationId)
 {
+    var windowParams;
+
 	if(notificationId === "moodReportNotification")
 	{
-		var windowParams = {url: "mood_popup.html",
+		windowParams = {url: "mood_popup.html",
 							type: 'panel',
 							top: 0.6 * screen.height,
 							left: screen.width - 371,
@@ -94,17 +82,17 @@ chrome.notifications.onClicked.addListener(function(notificationId)
 
     if(notificationId === "trackingInboxNotification")
     {
-        var windowParams = {url: "/www/index.html#/app/reminders-inbox",
+
+        windowParams = {
+            url: "/www/index.html#/app/reminders-inbox",
             type: 'panel',
-            top: 0.6 * screen.height,
-            left: screen.width - 371,
+            top: 0.2 * screen.height,
+            left: 0.4 * screen.width,
             width: 371,
             height: 585
         };
         chrome.windows.create(windowParams);
     }
-
-
 });
 
 /*
@@ -145,4 +133,55 @@ function pushMeasurements(measurements, onDoneListener)
 			}
 		};
 	xhr.send(JSON.stringify(measurements));
+}
+
+function objectLength(obj) {
+    var result = 0;
+    for(var prop in obj) {
+        if (obj.hasOwnProperty(prop)) {
+            // or Object.prototype.hasOwnProperty.call(obj, prop)
+            result++;
+        }
+    }
+    return result;
+}
+
+function checkForNotifications()
+{
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", "https://app.quantimo.do:443/api/v1/trackingReminderNotifications", false);
+    xhr.onreadystatechange = function()
+    {
+        if (xhr.readyState === 4)
+        {
+            var notificationsObject = JSON.parse(xhr.responseText);
+            var numberOfWaitingNotifications = objectLength(notificationsObject.data);
+            if(numberOfWaitingNotifications > 0) {
+                showTrackingInboxNotification();
+            }
+        }
+    };
+
+    xhr.send();
+}
+
+function showTrackingInboxNotification(){
+
+    var notificationParams = {
+        type: "basic",
+        title: "How are you?",
+        message: "It's time to track!",
+        iconUrl: "www/img/icon_700.png",
+        priority: 2
+    };
+
+    chrome.notifications.create("trackingInboxNotification", notificationParams, function(id){});
+
+    var showBadge = (localStorage["showBadge"] || "true") == "true" ? true : false;
+
+    if(showBadge)
+    {
+        var badgeParams = {text:"?"};
+        chrome.browserAction.setBadgeText(badgeParams);
+    }
 }
