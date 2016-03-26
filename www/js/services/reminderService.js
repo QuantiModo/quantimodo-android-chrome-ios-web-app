@@ -54,6 +54,12 @@ angular.module('starter')
 				
 				var deferred = $q.defer();
 
+                console.log('Reminder frequency is ' + reminderFrequency);
+
+                if(firstDailyReminderTime || secondDailyReminderTime || thirdDailyReminderTime){
+                    reminderFrequency = null;
+                }
+
                 var params = {
                 	id : id,
 					variableId : variableId, 
