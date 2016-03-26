@@ -212,7 +212,7 @@ angular.module('starter')
 	    	$scope.state.showCustomBox = true;
 
 	    	$scope.state.selectedUnit = result.abbreviatedUnitName? result.abbreviatedUnitName : result.lastUnit;
-	    	$scope.state.selectedDefaultValue = result.mostCommonValue? result.mostCommonValue : result.lastValue;
+	    	//$scope.state.selectedDefaultValue = result.mostCommonValue? result.mostCommonValue : result.lastValue;
 	    };
 
 	    var utils = {
