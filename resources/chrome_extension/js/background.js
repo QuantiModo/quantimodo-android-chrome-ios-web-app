@@ -82,14 +82,13 @@ chrome.notifications.onClicked.addListener(function(notificationId)
 
     if(notificationId === "trackingInboxNotification")
     {
-
         windowParams = {
-            url: "/www/index.html#/app/reminders-inbox",
+            url: "/www/index.html#/app/reminders-inbox/Treatments",
             type: 'panel',
             top: 0.2 * screen.height,
             left: 0.4 * screen.width,
-            width: 371,
-            height: 585
+            width: 450,
+            height: 750
         };
         chrome.windows.create(windowParams);
     }

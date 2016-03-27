@@ -289,9 +289,14 @@ config.appSettings  = {
             icon : 'ion-ios-alarm-outline'
         },
         {
-            title : 'Medications',
+            title : 'Your Medications',
             href : '#/app/reminders-manage/Treatments',
             icon : 'ion-ios-medkit-outline'
+        },
+        {
+            title : 'Track Side Effects',
+            href : '#/app/track_factors_category/Symptoms',
+            icon : 'ion-ios-pulse'
         },
         {
             title : 'History',
