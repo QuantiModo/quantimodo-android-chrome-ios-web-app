@@ -7,7 +7,7 @@ angular.module('starter')
 
 	    // state
 	    $scope.state = {
-	    	title : 'Reminders',
+	    	title : "Manage Reminders",
 	    	resultsHeaderText : '',
 
 	    	showVariableCategory : false,
@@ -40,6 +40,13 @@ angular.module('starter')
 			secondSelectedTime : moment.utc().format('HH:mm:ss'),
 			thirdSelectedTime : moment.utc().format('HH:mm:ss')
 	    };
+
+
+		console.log("$stateParams.category  is " + $stateParams.category);
+
+		if($stateParams.category){
+			$scope.state.title = "Manage " + $stateParams.category + " Reminders";
+		}
 
 	    // data
 	    $scope.variables = {
@@ -205,7 +212,7 @@ angular.module('starter')
 	    	$scope.state.showCustomBox = true;
 
 	    	$scope.state.selectedUnit = result.abbreviatedUnitName? result.abbreviatedUnitName : result.lastUnit;
-	    	$scope.state.selectedDefaultValue = result.mostCommonValue? result.mostCommonValue : result.lastValue;
+	    	//$scope.state.selectedDefaultValue = result.mostCommonValue? result.mostCommonValue : result.lastValue;
 	    };
 
 	    var utils = {
@@ -470,6 +477,7 @@ angular.module('starter')
 			// get user token
 			authService.getAccessToken().then(function(token){
 				if($stateParams.category){
+					$scope.state.title = "Manage " + $stateParams.category + " Reminders";
 					$scope.category = $stateParams.category;
 					setupCategory($scope.category);
 				}

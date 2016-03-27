@@ -323,7 +323,7 @@ angular.module('starter', ['ionic','oc.lazyLoad','highcharts-ng','ngCordova','io
           cache:false,
           views: {
               'menuContent': {
-                  templateUrl: "templates/manage_reminders.html",
+                  templateUrl: "templates/reminders_manage.html",
                   controller: 'RemindersInboxCtrl'
               }
           }
@@ -333,7 +333,7 @@ angular.module('starter', ['ionic','oc.lazyLoad','highcharts-ng','ngCordova','io
           cache:false,
           views: {
               'menuContent': {
-                  templateUrl: "templates/manage_reminders.html",
+                  templateUrl: "templates/reminders_manage.html",
                   controller: 'RemindersInboxCtrl'
               }
           }
