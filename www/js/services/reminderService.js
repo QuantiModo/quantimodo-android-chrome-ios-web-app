@@ -54,6 +54,12 @@ angular.module('starter')
 				
 				var deferred = $q.defer();
 
+                console.log('Reminder frequency is ' + reminderFrequency);
+
+                if(firstDailyReminderTime || secondDailyReminderTime || thirdDailyReminderTime){
+                    reminderFrequency = null;
+                }
+
                 var params = {
                 	id : id,
 					variableId : variableId, 
@@ -82,23 +88,29 @@ angular.module('starter')
 
 				QuantiModo.skipTrackingReminder(reminderId, function(response){
 					if(response.success) deferred.resolve();
-					else deferred.reject();
+					else {
+						deferred.reject();
+					}
 				}, function(err){
 					deferred.reject(err);
-				})
+				});
 				
 				return deferred.promise;
 			},
 
-			trackReminder : function(reminderId){
+			trackReminder : function(reminderId, modifiedReminderValue){
 				var deferred = $q.defer();
 
-				QuantiModo.trackTrackingReminder(reminderId, function(response){
-					if(response.success) deferred.resolve();
-					else deferred.reject();
+				QuantiModo.trackTrackingReminder(reminderId, modifiedReminderValue, function(response){
+					if(response.success) {
+						deferred.resolve();
+					}
+					else {
+						deferred.reject();
+					}
 				}, function(err){
 					deferred.reject(err);
-				})
+				});
 				
 				return deferred.promise;
 			},
@@ -108,19 +120,21 @@ angular.module('starter')
 
 				QuantiModo.snoozeTrackingReminder(reminderId, function(response){
 					if(response.success) deferred.resolve();
-					else deferred.reject();
+					else {
+						deferred.reject();
+					}
 				}, function(err){
 					deferred.reject(err);
-				})
+				});
 				
 				return deferred.promise;
 			},
 
-			getReminders : function(){
+			getReminders : function(category){
 
 				var deferred = $q.defer();
-
-				QuantiModo.getTrackingReminders(function(reminders){
+				var params = typeof category != "undefined" && category != "" ? {variableCategoryName : category} : {};
+				QuantiModo.getTrackingReminders(params ,function(reminders){
 					if(reminders.success) deferred.resolve(reminders.data);
 					else deferred.reject("error");
 				}, function(err){
@@ -130,11 +144,11 @@ angular.module('starter')
 				return deferred.promise;
 			},
 
-			getTrackingReminderNotifications : function(){
+			getTrackingReminderNotifications : function(category){
 
 				var deferred = $q.defer();
-
-				QuantiModo.getTrackingReminderNotifications(function(reminders){
+				var params = typeof category != "undefined" && category != "" ?{variableCategoryName : category} : {};
+				QuantiModo.getTrackingReminderNotifications(params, function(reminders){
 					if(reminders.success) deferred.resolve(reminders.data);
 					else deferred.reject("error");
 				}, function(err){
@@ -149,10 +163,12 @@ angular.module('starter')
 
 				QuantiModo.deleteTrackingReminder(reminderId, function(response){
 					if(response.success) deferred.resolve();
-					else deferred.reject();
+					else {
+						deferred.reject();
+					}
 				}, function(err){
 					deferred.reject(err);
-				})
+				});
 				
 				return deferred.promise;
 			}

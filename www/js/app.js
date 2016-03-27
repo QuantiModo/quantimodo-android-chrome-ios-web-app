@@ -302,12 +302,38 @@ angular.module('starter', ['ionic','oc.lazyLoad','highcharts-ng','ngCordova','io
               }
           }
       })
+      .state('app.reminders_inbox_category', {
+          url: "/reminders-inbox/:category",
+          cache:false,
+          params: {
+            unit: null,
+            variableName : null,
+            dateTime : null,
+            value : null
+          },
+          views: {
+              'menuContent': {
+                  templateUrl: "templates/reminders_inbox.html",
+                  controller: 'RemindersInboxCtrl'
+              }
+          }
+      })
       .state('app.reminders_manage', {
           url: "/reminders-manage",
           cache:false,
           views: {
               'menuContent': {
-                  templateUrl: "templates/manage_reminders.html",
+                  templateUrl: "templates/reminders_manage.html",
+                  controller: 'RemindersInboxCtrl'
+              }
+          }
+      })
+      .state('app.reminders_manage_category', {
+          url: "/reminders-manage/:category",
+          cache:false,
+          views: {
+              'menuContent': {
+                  templateUrl: "templates/reminders_manage.html",
                   controller: 'RemindersInboxCtrl'
               }
           }

@@ -4,7 +4,7 @@
           <div collection-repeat="historyItem in state.history" divider-collection-repeat>
               <ion-item  ng-click="editMeasurement(historyItem)">
                   <div style="display:inline-block;float:left;margin-left:10px;margin-right:10px;width:80px;text-align:center">
-                    <i class="ion-speedometer" style="color:#11c1f3;font-size: 75px;"></i>
+                    <i class="{{historyItem.variableCategoryName | ImageByVariableCategoryName }}" style="color:#11c1f3;font-size: 75px;"></i>
                     <p style="font-weight:bold;white-space:normal">{{historyItem.variable}}</p>
                   </div>
                   <div class="history_block" style="margin-left:10px;">

@@ -382,3 +382,12 @@ img.intro_mood {
 .card_disabled input, .card_disabled button {
   background-color: lightgray !important;
 }
+
+/*
+.pane {
+    background-image: url('../img/intro_background.png');
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    background-size: cover;
+}
+*/

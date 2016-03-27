@@ -1,0 +1,20 @@
+{
+  "curly"   : true,
+  "eqeqeq"  : true,
+  "undef"   : true,
+  "jquery"  : true,
+
+  "globals": {
+    "angular"   : false,
+    "moment"    : false,
+    "screen"    : false,
+    "console"    : false,
+    "chrome"    : false,
+    "localStorage" : false,
+    "jasmine"   : false,
+    "$"         : false,
+    "_"         : false,
+    "module"    : false,
+    "require"   : false
+  }
+}

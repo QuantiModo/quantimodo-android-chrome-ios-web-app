@@ -6,7 +6,7 @@
 			<label class="item item-input item-select">
 				<div class="input-label">Select Category</div>
 				<select ng-model="state.selectedVariableCategory" ng-change="onVariableChange()">
-					<option ng-repeat="type in variables.variableCategories" value="{{type.name}}">{{type.name}}</option>
+					<option ng-repeat="variableCategory in variables.variableCategories" value="{{variableCategory.name}}">{{variableCategory.name}}</option>
 				</select>
 			</label>
 		</div>
@@ -32,10 +32,10 @@
         </div>
 
         <div class="list card" ng-show="state.showCustomBox">
-        	<div class="item item-divider" style="background-color:#11c1f3; color:white;">{{state.selectedReminder.variableName}} Reminder Settings</div>
+        	<div class="item item-divider" style="background-color:#11c1f3; color:white;">{{state.selectedReminder.name}} reminder settings</div>
         	<div class="row labeled-control">
         		<div class="col">
-        			<input type="text" style="width:100%;text-align:right;" placeholder="Enter Value Here" ng-model="state.selectedDefaultValue" class="uptop">
+        			<input type="text" style="width:100%;text-align:right;" placeholder="Enter Default Value Here" ng-model="state.selectedDefaultValue" class="uptop">
         		</div>
         		<div class="col col-r">
         			<span>
@@ -46,7 +46,7 @@
 
         	<label class="item item-input item-select">
         		<div class="input-label">
-        			Frequency
+        			Select Frequency
         		</div>
         		<select ng-change="onFrequencyChange()" ng-model="state.selectedFrequency" >
                     <option ng-repeat="frequency in variables.frequencyVariables">{{frequency.name}}</option>

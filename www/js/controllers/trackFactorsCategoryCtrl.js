@@ -12,27 +12,27 @@ angular.module('starter')
             Foods:{
                 default_unit:"serving",
                 help_text:"What did you eat?",
-                display_name: "Foods"
+                variable_category_name: "Foods"
             },
             Emotions:{
                 default_unit: "/5",
                 help_text: "Select an aspect of emotion",
-                display_name: "Emotions"
+                variable_category_name: "Emotions"
             },
             Symptoms:{
                 default_unit: "/5",
                 help_text: "What do you want to track?",
-                display_name: "Symptoms"
+                variable_category_name: "Symptoms"
             },
             Treatments:{
                 default_unit: "count",
                 help_text:"What do you want to track?",
-                display_name: "Treatments"
+                variable_category_name: "Treatments"
             },
             "Physical Activity": {
                 default_unit: "count",
                 help_text:"What do you want to track?",
-                display_name: "Physical Activity"    
+                variable_category_name: "Physical Activity"
             }
         };
 
@@ -66,7 +66,7 @@ angular.module('starter')
             variable_name : "",
             factor : category,
             help_text: categoryConfig[category].help_text,
-            display_name : categoryConfig[category].display_name,
+            variable_category_name : categoryConfig[category].variable_category_name,
             unit_text : '',
             
             // default operation

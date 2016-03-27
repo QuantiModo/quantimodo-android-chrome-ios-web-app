@@ -88,7 +88,7 @@ angular.module('starter')
                 }, errorHandler);
             };
 
-            // get Measuremnets for user
+            // get Measurements for user
             var getMeasurements = function(params, successHandler, errorHandler){
                 QuantiModo.get('api/measurements',
                     ['variableName', 'sort', 'startTime', 'endTime', 'groupingWidth', 'groupingTimezone', 'source', 'unit','limit','offset','lastUpdated'],
@@ -268,19 +268,19 @@ angular.module('starter')
             };
 
             // get reminders
-            QuantiModo.getTrackingReminders = function(successHandler, errorHandler){
+            QuantiModo.getTrackingReminders = function(params, successHandler, errorHandler){
                 QuantiModo.get('api/v1/trackingReminders',
-                    [],
-                    {},
+                    ['variableCategoryName'],
+                    params,
                     successHandler,
                     errorHandler);
             };
 
             // get pending reminders 
-            QuantiModo.getTrackingReminderNotifications = function(successHandler, errorHandler){
+            QuantiModo.getTrackingReminderNotifications = function(params, successHandler, errorHandler){
                 QuantiModo.get('api/v1/trackingReminderNotifications',
-                    [],
-                    {},
+                    ['variableCategoryName'],
+                    params,
                     successHandler,
                     errorHandler);
             };
@@ -307,37 +307,37 @@ angular.module('starter')
             };
 
             // delete tracking reminder
-            QuantiModo.deleteTrackingReminder = function(reminder, successHandler, errorHandler){
+            QuantiModo.deleteTrackingReminder = function(reminderId, successHandler, errorHandler){
                 QuantiModo.post('api/v1/trackingReminders/delete',
                     ['id'],
-                    {id: reminder},
+                    {id: reminderId},
                     successHandler,
                     errorHandler);
             };
 
             // snooze tracking reminder
-            QuantiModo.snoozeTrackingReminder = function(reminder, successHandler, errorHandler){
+            QuantiModo.snoozeTrackingReminder = function(reminderId, successHandler, errorHandler){
                 QuantiModo.post('api/v1/trackingReminderNotifications/snooze',
                     ['id'],
-                    {id: reminder},
+                    {id: reminderId},
                     successHandler,
                     errorHandler);
             };
 
             // skip tracking reminder
-            QuantiModo.skipTrackingReminder = function(reminder, successHandler, errorHandler){
+            QuantiModo.skipTrackingReminder = function(reminderId, successHandler, errorHandler){
                 QuantiModo.post('api/v1/trackingReminderNotifications/skip',
                     ['id'],
-                    {id: reminder},
+                    {id: reminderId},
                     successHandler,
                     errorHandler);
             };
 
             // track tracking reminder with default value
-            QuantiModo.trackTrackingReminder = function(reminder, successHandler, errorHandler){
+            QuantiModo.trackTrackingReminder = function(reminderId, modifiedValue, successHandler, errorHandler){
                 QuantiModo.post('api/v1/trackingReminderNotifications/track',
                     ['id'],
-                    {id: reminder},
+                    {id: reminderId, modifiedValue: modifiedValue},
                     successHandler,
                     errorHandler);
             };
