@@ -39,11 +39,11 @@
     "ionic-plugin-keyboard",
     "cordova-plugin-inappbrowser",
     "https://github.com/apache/cordova-plugin-inappbrowser",
-    "org.apache.cordova.statusbar",
+    "cordova-plugin-statusbar",
     "cordova-plugin-datepicker",
     "cordova-plugin-file",
     "cordova-plugin-file-opener2",
-    "org.apache.cordova.device",
+    "cordova-plugin-device",
     "ionic-plugin-keyboard"
   ],
   "cordovaPlatforms": [
