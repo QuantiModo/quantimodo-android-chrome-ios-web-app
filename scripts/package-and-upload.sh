@@ -7,5 +7,7 @@ xcodebuild -workspace MoodiModo.xcworkspace -scheme MoodiModo -sdk iphoneos -con
 
 xcodebuild -exportArchive -archivePath $PWD/build/MoodiModo.xcarchive -exportPath $PWD/build -exportOptionsPlist $PWD/exportOptions.plist
 
+security delete-keychain ios-build.keychain
+
 pilot upload -u ios@quantimodo.com -i $PWD/build/MoodiModo.ipa -a com.quantimodo.moodimodoapp -p 1046797567 --verbose
 
