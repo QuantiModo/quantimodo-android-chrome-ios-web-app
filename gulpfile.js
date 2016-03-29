@@ -565,10 +565,10 @@ gulp.task('addFacebookPlugin', ['readKeysForCurrentApp'] , function(){
 
 		execute(commands, function(error){
 			if(error !== null){
-				console.log("There was an error detected");
+				console.log("***THERE WAS AN ERROR ADDING THE FACEBOOK PLUGIN***");
 				deferred.reject();
 			} else {
-				console.log("\n***PLUGIN ADDED****")
+				console.log("\n***FACEBOOK PLUGIN SUCCESSFULLY ADDED***")
 				deferred.resolve();
 			}
 		});
@@ -576,10 +576,10 @@ gulp.task('addFacebookPlugin', ['readKeysForCurrentApp'] , function(){
 
 	fs.exists('../fbplugin', function(exists) {
 	    if (exists) {
-	    	console.log("FACEBOOK REPO FOUND");
+	    	console.log("FACEBOOK REPO ALREADY CLONED");
 	        addFacebookPlugin();
 	    } else {
-	    	console.log("FACEBOOK REPO NOT FOUND, Installing it First");
+	    	console.log("FACEBOOK REPO NOT FOUND, CLONING IT NOW");
 	    	var commands = [
 	    		"cd ../",
 	    		"mkdir fbplugin",
@@ -589,10 +589,10 @@ gulp.task('addFacebookPlugin', ['readKeysForCurrentApp'] , function(){
 	    	
 	    	execute(commands, function(error){
 	    		if(error !== null){
-	    			console.log("There was an error detected");
+	    			console.log("***THERE WAS AN ERROR DOWNLOADING THE FACEBOOK PLUGIN***");
 	    			deferred.reject();
 	    		} else {
-	    			console.log("\n***PLUGIN INSTALLED, NOW INSTALLING IT****")
+	    			console.log("\n***FACEBOOK PLUGIN DOWNLOADED, NOW ADDING IT TO IONIC PROJECT***")
 	    			addFacebookPlugin();
 	    		}
 	    	});
@@ -612,10 +612,10 @@ gulp.task('addGooglePlusPlugin', ['readKeysForCurrentApp'] , function(){
 
 	execute(commands, function(error){
 		if(error !== null){
-			console.log("There was an error detected");
+			console.log("***ERROR ADDING THE GOOGLE PLUS PLUGIN***");
 			deferred.reject();
 		} else {
-			console.log("\n***PLUGIN ADDED****")
+			console.log("\n***GOOGLE PLUS PLUGIN ADDED****")
 			deferred.resolve();
 		}
 	});
