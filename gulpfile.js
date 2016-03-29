@@ -408,7 +408,7 @@ var exec = require('child_process').exec;
 function execute(command, callback){
     var my_child_process = exec(command, function(error, stdout, stderr){ 
     	if (error !== null) {
-	      console.log('exec error: ' + error);
+	      console.log('exec ERROR: ' + error);
 	    }
     	callback(error); 
     });
@@ -422,7 +422,7 @@ gulp.task('deleteIOSApp', function () {
   
 	execute("ionic platform rm ios", function(error){
 		if(error !== null){
-			console.log("There was an error detected");
+			console.log("ERROR REMOVING IOS APP: " + error);
 			deferred.reject();
 		} else {
 			console.log("\n***PLATFORM REMOVED****")
@@ -438,7 +438,7 @@ gulp.task('deleteFacebookPlugin', function(){
 	
 	execute("cordova plugin rm phonegap-facebook-plugin", function(error){
 		if(error !== null){
-			console.log("There was an error detected");
+			console.log("ERROR REMOVING FACEBOOK PLUGIN: " + error);
 			deferred.reject();
 		} else {
 			console.log("\n****FACEBOOK PLUGIN REMOVED***");
@@ -454,7 +454,7 @@ gulp.task('deleteGooglePlusPlugin', function(){
 	
 	execute("cordova plugin rm cordova-plugin-googleplus", function(error){
 		if(error !== null){
-			console.log("There was an error detected");
+			console.log("ERROR REMOVING GOOGLE PLUS PLUGIN: " + error);
 			deferred.reject();
 		} else {
 			console.log("\n****GOOGLE PLUS PLUGIN REMOVED***");
@@ -470,7 +470,7 @@ gulp.task('addIOSApp', function(){
 
 	execute("ionic platform add ios", function(error){
 		if(error !== null){
-			console.log("There was an error detected");
+			console.log("ERROR ADDING IOS: " + error);
 			deferred.reject();
 		} else {
 			console.log("\n***PLATFORM ADDED****")
