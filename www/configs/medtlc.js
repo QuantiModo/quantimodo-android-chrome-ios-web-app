@@ -304,7 +304,7 @@ config.appSettings  = {
             icon : 'ion-ios-medkit-outline'
         },
         {
-            title : 'Track Side Effects',
+            title : 'How I Feel',
             href : '#/app/track_factors_category/Symptoms',
             icon : 'ion-ios-pulse'
         },
