@@ -42,6 +42,7 @@
     "cordova-plugin-datepicker",
     "cordova-plugin-file",
     "cordova-plugin-file-opener2",
+  ],
   "cordovaPlatforms": [
     "android"
   ],
