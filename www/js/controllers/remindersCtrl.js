@@ -7,7 +7,7 @@ angular.module('starter')
 
 	    // state
 	    $scope.state = {
-	    	title : 'Reminders',
+	    	title : "Manage Reminders",
 	    	resultsHeaderText : '',
 
 	    	showVariableCategory : false,
@@ -40,6 +40,13 @@ angular.module('starter')
 			secondSelectedTime : moment.utc().format('HH:mm:ss'),
 			thirdSelectedTime : moment.utc().format('HH:mm:ss')
 	    };
+
+
+		console.log("$stateParams.category  is " + $stateParams.category);
+
+		if($stateParams.category){
+			$scope.state.title = "Manage " + $stateParams.category + " Reminders";
+		}
 
 	    // data
 	    $scope.variables = {
@@ -109,7 +116,7 @@ angular.module('starter')
 	    	// get user token
 			authService.getAccessToken().then(function(token){
 			   	console.log('$scope.state.selectedVariableCategory.toLowerCase()', $scope.state.selectedVariableCategory.toLowerCase());
-				if($scope.state.selectedVariableCategory.toLowerCase() == 'anything'){
+				if($scope.state.selectedVariableCategory.toLowerCase() === 'anything'){
 					// get all variables
 					console.log('anything');
 					measurementService.getVariables().then(function(variables){
@@ -139,7 +146,7 @@ angular.module('starter')
 			}, function(){
 			   utilsService.showLoginRequiredAlert($scope.login);
 			   utils.stopLoading();
-			   return;
+			   
 			});
     	};
 
@@ -155,7 +162,7 @@ angular.module('starter')
 	    var search = function(query){
 	    	// search server for the query
 
-	    	if($scope.state.selectedVariableCategory.toLowerCase() == 'anything'){
+	    	if($scope.state.selectedVariableCategory.toLowerCase() === 'anything'){
 	    		console.log('anything');
 	    		measurementService.getPublicVariables(query)
 	    		.then(function(variables){
@@ -180,7 +187,7 @@ angular.module('starter')
 	    	}
 	    };
 
-	    // when a query is searched in the searchbox
+	    // when a query is searched in the search box
 	    $scope.onSearch = function(){
 	    	console.log("Search: ", $scope.state.searchQuery);
 	    	if($scope.state.searchQuery == ""){
@@ -205,7 +212,7 @@ angular.module('starter')
 	    	$scope.state.showCustomBox = true;
 
 	    	$scope.state.selectedUnit = result.abbreviatedUnitName? result.abbreviatedUnitName : result.lastUnit;
-	    	$scope.state.selectedDefaultValue = result.mostCommonValue? result.mostCommonValue : result.lastValue;
+	    	//$scope.state.selectedDefaultValue = result.mostCommonValue? result.mostCommonValue : result.lastValue;
 	    };
 
 	    var utils = {
@@ -230,7 +237,7 @@ angular.module('starter')
 	             title: title
 	           });
 	        }
-	    }
+	    };
 
 	    // when frequency is changed
 	    $scope.onFrequencyChange = function(){
@@ -263,9 +270,13 @@ angular.module('starter')
 	    	if($stateParams.reminder && $stateParams.reminder !== null){
 	    		if($stateParams.reminder.fromState){
 	    			$state.go($stateParams.reminder.fromState);
-	    		} else $state.go('app.reminders_manage');
-	    		return;
-	    	} else $state.reload();
+	    		} else {
+					$state.go('app.reminders_manage');
+                }
+	    		
+	    	} else {
+				$state.reload();
+            }
 	    };
 
 	    $scope.edit = function(){
@@ -307,15 +318,19 @@ angular.module('starter')
 	    		if($stateParams.reminder !== null && typeof $stateParams.reminder !== "undefined"){
 	    			if($stateParams.reminder.fromState){
 	    				$state.go($stateParams.reminder.fromState);
-	    			} else $state.go('app.reminders_manage');
-	    		} else $state.go('app.reminders_manage');
+	    			} else {
+						$state.go('app.reminders_manage');
+                    }
+	    		} else {
+					$state.go('app.reminders_manage');
+                }
 
 	    	}, function(err){
 
 	    		utils.stopLoading();
 	    		utils.showAlert('Failed to add Reminder, Try again!', 'assertive');
 	    	});
-	    }
+	    };
 
 	    var getFrequencyChart = function(){
 	    	return {
@@ -327,7 +342,7 @@ angular.module('starter')
 	    		"Every 30 minutes": 30*60,
 	    		"Never": 0
 	    	};
-	    }
+	    };
 
 	    // when the reminder is saved/edited
 	    $scope.save = function(){
@@ -372,8 +387,12 @@ angular.module('starter')
 	    		if($stateParams.reminder !== null && typeof $stateParams.reminder !== "undefined"){
 	    			if($stateParams.reminder.fromState){
 	    				$state.go($stateParams.reminder.fromState);
-	    			} else $state.go('app.reminders_manage');
-	    		} else $state.go('app.reminders_manage');
+	    			} else {
+						$state.go('app.reminders_manage');
+                    }
+	    		} else {
+					$state.go('app.reminders_manage');
+                }
 
 	    	}, function(err){
 
@@ -411,7 +430,7 @@ angular.module('starter')
 	    		3600: "Hourly",
 	    		10800: "Every three hours",
 	    		1800: "Every 30 minutes",
-	    		0: "Never", 
+	    		0: "Never"
 	    	};
 
 			if(typeof $stateParams.reminder.firstDailyReminderTime !== "undefined" && $stateParams.reminder.firstDailyReminderTime !== null){
@@ -452,23 +471,26 @@ angular.module('starter')
 	    	$scope.state.showSearchBox = true;
 	    };
 
-	    // constuctor
+	    // constructor
 	    $scope.init = function(){
 
 			// get user token
 			authService.getAccessToken().then(function(token){
 				if($stateParams.category){
+					$scope.state.title = "Manage " + $stateParams.category + " Reminders";
 					$scope.category = $stateParams.category;
 					setupCategory($scope.category);
 				}
-				else if($stateParams.reminder && $stateParams.reminder !== null)
+				else if($stateParams.reminder && $stateParams.reminder !== null) {
 					setupEditReminder($stateParams.reminder);
-				else
+                }
+				else {
 					setupNewReminder();
+                }
 			}, function(){
-				console.log("need to log in");
-				utilsService.showLoginRequiredAlert($scope.login);
 				$ionicLoading.hide();
+				console.log("need to log in");
+				//utilsService.showLoginRequiredAlert($scope.login);
 			});
 	    };
 
@@ -486,4 +508,4 @@ angular.module('starter')
 				template: template
 			});
 	    };
-	})
+	});

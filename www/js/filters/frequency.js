@@ -9,7 +9,7 @@ angular.module('starter')
 				3600: "hourly",
 				10800: "every three hours",
 				1800: "every 30 minutes",
-				0: "never", 
+				0: "never"
 			};
 
 			return reverseFrequencyChart[value];
