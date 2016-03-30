@@ -14,7 +14,7 @@ angular.module('starter')
 					// save in localStorage
 					if(accessToken) localStorageService.setItem('accessToken', accessToken);
 					if(refreshToken) localStorageService.setItem('refreshToken', refreshToken);
-					
+
 					console.log("expires in: ", JSON.stringify(expiresIn), parseInt(expiresIn, 10));
 
 					// calculate expires at
@@ -107,11 +107,11 @@ angular.module('starter')
 								console.log('failed to fetch user credentials', errorResp);
 
 								console.log('client id is ' + config.getClientId());
-								
+
 								console.log('Platform is ' + JSON.stringify(ionic.Platform.platforms[0]));
 
 								//Using OAuth on Staging for tests
-								if(ionic.Platform.platforms[0] === "browser" 
+								if(ionic.Platform.platforms[0] === "browser"
 									&& config.getClientId() == 'oAuthDisabled'
 								    && !(window.location.origin.indexOf('staging.quantimo.do') > -1)){
 										console.log("Browser Detected and client id is oAuthDisabled.  ");
@@ -163,7 +163,7 @@ angular.module('starter')
 						client_secret: config.getClientSecret(),
 						grant_type: 'authorization_code',
 						code: requestToken,
-						redirect_uri: 'https://app.quantimo.do/ionic/Modo/www/callback'
+						redirect_uri: 'https://app.quantimo.do/ionic/Modo/www/callback/'
 					}
 				};
 
