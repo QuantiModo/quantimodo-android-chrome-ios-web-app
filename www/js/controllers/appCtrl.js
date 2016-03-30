@@ -306,8 +306,8 @@ angular.module('starter')
             });
 
             if(window.chrome && window.chrome.extension && typeof window.chrome.identity === "undefined"){
-                chrome.tabs.create({ 
-                    url: "http://app.quantimo.do/api/v2/auth/logout" 
+                chrome.tabs.create({
+                    url: "https://app.quantimo.do/api/v2/auth/logout"
                 });
             }
         };
@@ -340,8 +340,8 @@ angular.module('starter')
             });
 
             if(window.chrome && window.chrome.extension && typeof window.chrome.identity === "undefined"){
-                chrome.tabs.create({ 
-                    url: "http://app.quantimo.do/api/v2/auth/logout" 
+                chrome.tabs.create({
+                    url: "https://app.quantimo.do/api/v2/auth/logout"
                 });
             }
         };
@@ -362,7 +362,7 @@ angular.module('starter')
 
             if(chrome.identity){
                 console.log("login: Code running in a Chrome extension (content script, background page, etc.");
-                url = "http://app.quantimo.do/api/oauth2/authorize?"
+                url = "https://app.quantimo.do/api/oauth2/authorize?"
                 // add params
                 url += "response_type=code";
                 url += "&client_id="+config.getClientId();
@@ -383,7 +383,7 @@ angular.module('starter')
                 });
             } else {
                 console.log("It is an extension, so we use sessions instead of OAuth flow. ");
-                chrome.tabs.create({ url: "http://app.quantimo.do/" });
+                chrome.tabs.create({ url: "https://app.quantimo.do/" });
             }
             
         }

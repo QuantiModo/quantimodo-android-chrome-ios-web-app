@@ -16,7 +16,9 @@
   <preference name="BackupWebStorage" value="none"/>
   <preference name="SplashScreen" value="screen"/>
   <preference name="SplashScreenDelay" value="3000"/>
-  
+
+  <allow-navigation href="https://app.quantimo.do/*" />
+
   <notificationplugin interactive="true">
       <button id="repeat_mood" display="Report Last Mood" mode="background"></button>
       <button id="other" display="Other" mode="foreground"></button>
