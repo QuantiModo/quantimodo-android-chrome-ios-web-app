@@ -100,17 +100,6 @@ angular.module('starter', ['ionic','oc.lazyLoad','highcharts-ng','ngCordova','io
           }
         }
       })
-
-      .state('app.get_started', {
-        url: "/get-started",
-        views: {
-          'menuContent': {
-            templateUrl: "templates/medication_get_started.html",
-            controller: 'MedicationGetStartedCtrl'
-          }
-        }
-      })
-
       .state('app.login', {
         url: "/login",
         views: {
