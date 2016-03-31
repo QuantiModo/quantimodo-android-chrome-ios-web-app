@@ -283,13 +283,16 @@ config.appSettings  = {
     ],
 
     popup_messages : {
-        "#/app/track": 'Here, you can view your <span class="calm">average Energy</span> as well as charts illustrating how it changes over time',
-        "#/app/history": 'You can see and edit your past Energy ratings and notes by tapping on any item in the list.  <br/> <br/>You can also Add a note by tapping on a Energy rating in the list.',
-        "#/app/track_factors_category/Foods": 'You can track your diet on this page. You can also <span class="calm">Add a new Food Variable</span> if you do not find the meal you looked for in the search results.',
-        "#/app/track_factors_category/Symptoms": 'You can track any symptom on this page. You can also <span class="calm">Add a new Symptom</span> if you don\'t find the symptom you looked for in the search results.',
-        "#/app/track_factors_category/Treatments": 'You can track any treatment on this page. You can also <span class="calm">Add a new Treatment</span> if you don\'t find the treatment you looked for in the search results.',
-        "#/app/positive": 'Positive Predictors are the factors most predictive of <span class="calm">IMPROVING</span> Energy for the average QuantiModo user.',
-        "#/app/negative": 'Negative Predictors are the factors most predictive of <span class="calm">DECREASING</span>Energy for the average QuantiModo user.'
+        "#/app/reminders-inbox/Treatments": 'If you\'ve already added some medication reminders, here\'s where your medication reminder notifications should appear when it\'s time to take them.  Once you have some notifications, you can use those to track your medication intake.',
+        "#/app/reminders-inbox/Symptoms": 'If you\'ve already added some side effect or symptom tracking reminders, here\'s where your medication reminder notifications should appear when it\'s time to take them.  Once you have some notifications, you can use those to track how you feel.',
+        "#/app/reminders-manage/Treatments": 'Here, you can set up or delete existing medication reminders.',
+        "#/app/reminders-manage/Symptoms": 'Here, you can set up or delete existing side effect tracking or symptom tracking reminders.',
+        "#/app/reminders-manage": 'Here, you can set up or delete existing reminders for .',
+        "#/app/reminders-inbox": 'If you\'ve already added some reminders, here\'s where your tracking reminder notifications should appear.  Once you have some notifications, you can use those to track your medication intake and how you feel.',
+        "#/app/history": 'You can see and edit your past data and add notes by tapping on any item in the list.',
+        "#/app/track_factors_category/Foods": 'Track your diet on this page. <span class="calm">Add a new Food Variable</span> if you do not find the meal you looked for in the search results.',
+        "#/app/track_factors_category/Symptoms": 'You can immediately track any symptom or side effect on this page. You can also <span class="calm">Add a new Symptom</span> if you don\'t find the symptom you looked for in the search results.',
+        "#/app/track_factors_category/Treatments": 'You can immediately track any as-need treatment on this page. You can also <span class="calm">Add a new Treatment</span> if you don\'t find the treatment you looked for in the search results.',
     },
 
     menu : [
