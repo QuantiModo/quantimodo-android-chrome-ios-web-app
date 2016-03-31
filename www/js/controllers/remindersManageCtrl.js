@@ -1,13 +1,13 @@
 angular.module('starter')
 
-	.controller('RemindersInboxCtrl', function($scope, authService, $ionicPopup, localStorageService, $state, reminderService, $ionicLoading, measurementService, utilsService, $stateParams, $location){
+	.controller('RemindersManageCtrl', function($scope, authService, $ionicPopup, localStorageService, $state, reminderService, $ionicLoading, measurementService, utilsService, $stateParams, $location){
 
-	    $scope.controller_name = "RemindersInboxCtrl";
+	    $scope.controller_name = "RemindersManageCtrl";
 
 		console.log('Loading ' + $scope.controller_name);
 	    
 	    $scope.state = {
-	    	title : "Reminder Inbox",
+	    	title : "Manage Reminders",
 	    	showMeasurementBox : false,
 	    	selectedReminder : false,
 	    	reminderDefaultValue : "",
@@ -29,7 +29,7 @@ angular.module('starter')
 	    };
 
 		if($stateParams.category){
-			$scope.state.title = $stateParams.category + " Reminder Inbox";
+			$scope.state.title = "Manage " + $stateParams.category + " Reminders";
 		}
 
 	    $scope.select_primary_outcome_variable = function($event, val){
