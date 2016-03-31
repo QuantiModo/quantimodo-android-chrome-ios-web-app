@@ -169,8 +169,12 @@ angular.module('starter')
                 localStorageService.setItem('isLoggedIn', false);
             } else {
                 console.log("Access token received",response);
-                if(typeof withJWT !== "undefined" && withJWT === true) authService.updateAccessToken(response, withJWT);
-                else authService.updateAccessToken(response);
+                if(typeof withJWT !== "undefined" && withJWT === true) {
+                    authService.updateAccessToken(response, withJWT);
+                }
+                else {
+                    authService.updateAccessToken(response);
+                }
 
                 // set flags
                 $scope.isLoggedIn = true;
@@ -362,7 +366,7 @@ angular.module('starter')
 
             if(chrome.identity){
                 console.log("login: Code running in a Chrome extension (content script, background page, etc.");
-                url = "https://app.quantimo.do/api/oauth2/authorize?"
+                url = "https://app.quantimo.do/api/oauth2/authorize?";
                 // add params
                 url += "response_type=code";
                 url += "&client_id="+config.getClientId();
@@ -377,7 +381,9 @@ angular.module('starter')
                 }, function(redirect_url) {
                     var requestToken = utilsService.getUrlParameter(event.url, 'code');
 
-                    if(requestToken === false) requestToken = utilsService.getUrlParameter(event.url, 'token');
+                    if(requestToken === false) {
+                        requestToken = utilsService.getUrlParameter(event.url, 'token');
+                    }
 
                     $scope.getAuthToken(requestToken);
                 });
@@ -391,7 +397,7 @@ angular.module('starter')
 		else if(ionic.Platform.platforms[0] === "browser"){
 			console.log("Browser Detected");
 
-            if(config.getClientId() != 'oAuthDisabled'){
+            if(config.getClientId() !== 'oAuthDisabled'){
                 // add params
                 url += "response_type=code";
                 url += "&client_id="+config.getClientId();
@@ -601,7 +607,7 @@ angular.module('starter')
       }, function(fail){
           console.log("failed to logout", fail);
       });
-    }
+    };
 
     // login with facebook
     $scope.facebook_login = function(){
@@ -623,11 +629,11 @@ angular.module('starter')
 
     // when user click's skip button
     $scope.skipLogin = function(){
-        localStorageService.setItem('isWelcomed', true)
+        localStorageService.setItem('isWelcomed', true);
         $rootScope.isWelcomed = true;
         // move to the next screen
         $scope.movePage();
-    }
+    };
 
     // show loading spinner
     var showLoader = function(str){
@@ -688,7 +694,7 @@ angular.module('starter')
                         name: user.displayName,
                         email: user.email,
                         user_id:user.id
-                    }
+                    };
                 }
 
             });
@@ -786,4 +792,4 @@ angular.module('starter')
         }
 
     });
-})
+});
