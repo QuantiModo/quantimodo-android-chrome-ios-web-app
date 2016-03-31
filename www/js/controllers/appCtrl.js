@@ -421,8 +421,8 @@ angular.module('starter')
                     }, 1000);
 
                     // handler when a message is received from a sibling tab
-                    window.onMessageRecieved = function (event) {
-                        console.log("message recieved", event.data);
+                    window.onMessageReceived = function (event) {
+                        console.log("message received", event.data);
 
                         // Don't ask login question anymore
                         clearInterval(interval);
@@ -459,7 +459,7 @@ angular.module('starter')
                     };
 
                     // listen to broadcast messages from other tabs within browser
-                    window.addEventListener("message", window.onMessageRecieved, false);
+                    window.addEventListener("message", window.onMessageReceived, false);
                 }
             } else {
                 var loginUrl = config.getURL("api/v2/auth/login");
