@@ -5,6 +5,8 @@
   "jquery"  : true,
 
   "globals": {
+    "alert"   : false,
+    "event"   : false,
     "location"   : false,
     "ionic"   : false,
     "window"   : false,

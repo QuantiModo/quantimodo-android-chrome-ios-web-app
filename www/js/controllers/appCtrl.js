@@ -193,7 +193,7 @@ angular.module('starter')
             // set flags
     		$scope.isLoggedIn = false;
             localStorageService.setItem('isLoggedIn', false);
-    	})
+    	});
     };
 
     //get User
@@ -221,7 +221,7 @@ angular.module('starter')
                 console.log("isWelcomed is true. going");
 
                 // move to tracking page
-                if($state.current.name == "app.welcome" || $state.current.name == "app.login"){
+                if($state.current.name === "app.welcome" || $state.current.name === "app.login"){
                     $state.go(config.appSettings.default_state);
                     $rootScope.hideMenu = false;
                 }
@@ -250,7 +250,7 @@ angular.module('starter')
     $scope.logout = function(){
 
         var start_logout = function(){
-            if(ionic.Platform.platforms[0] != "browser"){
+            if(ionic.Platform.platforms[0] !== "browser"){
                 console.log('start_logout: Open the auth window via inAppBrowser.  Platform is ' + ionic.Platform.platforms[0]);
                 var ref = window.open('https://app.quantimo.do/api/v2/auth/logout','_blank', 'location=no,toolbar=yes');
 
@@ -260,7 +260,9 @@ angular.module('starter')
                     ref.close();
                     showPopup();
                 });
-            } else showPopup();
+            } else {
+                showPopup();
+            }
         };
 
         var showPopup = function(){
@@ -436,7 +438,9 @@ angular.module('starter')
                                 // extract token
                                 var requestToken = utilsService.getUrlParameter(iframe_url, 'code');
 
-                                if (requestToken === false) requestToken = utilsService.getUrlParameter(iframe_url, 'token');
+                                if (requestToken === false) {
+                                    requestToken = utilsService.getUrlParameter(iframe_url, 'token');
+                                }
 
                                 // get auth token from request token
                                 $scope.getAuthToken(requestToken);
@@ -497,7 +501,9 @@ angular.module('starter')
 						var authorizationCode = utilsService.getUrlParameter(event.url, 'code');
                         console.log('Authorization code is ' + authorizationCode);
 
-                        if(authorizationCode === false) authorizationCode = utilsService.getUrlParameter(event.url, 'token');
+                        if(authorizationCode === false) {
+                            authorizationCode = utilsService.getUrlParameter(event.url, 'token');
+                        }
 
                         console.log('Closing inAppBrowser.');
                         ref.close();
@@ -558,7 +564,9 @@ angular.module('starter')
                         console.log('extract request token');
                         var requestToken = utilsService.getUrlParameter(event.url, 'code');
 
-                        if(requestToken === false) requestToken = utilsService.getUrlParameter(event.url, 'token');
+                        if(requestToken === false) {
+                            requestToken = utilsService.getUrlParameter(event.url, 'token');
+                        }
                         console.log('close inAppBrowser.');
                         ref.close();
 
