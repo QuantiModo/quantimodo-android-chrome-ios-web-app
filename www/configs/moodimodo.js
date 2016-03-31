@@ -3,9 +3,12 @@ var getPlatform = function(){
     if(typeof ionic !== "undefined" &&
         typeof ionic.Platform !== "undefined" &&
         typeof ionic.Platform.isIOS !== "undefined" &&
-        typeof ionic.Platform.isAndroid !== "undefined" )
-        return ionic.Platform.isIOS()? "iOS" : ionic.Platform.isAndroid()? "Android" : "Web";
-    else return "Ionic";
+        typeof ionic.Platform.isAndroid !== "undefined" ) {
+        return ionic.Platform.isIOS() ? "iOS" : ionic.Platform.isAndroid() ? "Android" : "Web";
+    }
+    else {
+        return "Ionic";
+    }
 };
 
 window.config = {
@@ -581,7 +584,9 @@ config.appSettings  = {
 config.getPrimaryOutcomeVariableOptionLabels = function(shouldShowNumbers){
     if(shouldShowNumbers || !config.appSettings.primary_outcome_variables_options_labels){
         return ['1',  '2',  '3',  '4', '5'];
-    } else return config.appSettings.primary_outcome_variables_options_labels;
+    } else {
+        return config.appSettings.primary_outcome_variables_options_labels;
+    }
 };
 
 config.getPrimaryOutcomeVariableOptions = function(shouldShowNumbers){
@@ -608,7 +613,9 @@ config.getPrimaryOutcomeVariableOptions = function(shouldShowNumbers){
                 img: 'img/ic_5.png'
             }
         ];
-    } else return config.appSettings.primary_outcome_variable_options;
+    } else {
+        return config.appSettings.primary_outcome_variable_options;
+    }
 };
 
 config.getImageForPrimaryOutcomeVariableByValue = function(val){
@@ -671,16 +678,21 @@ config.getClientSecret = function(){
 config.getPermissionString = function(){
 
     var str = "";
-    for(var i=0; i < config.permissions.length; i++)
-        str+= config.permissions[i]+"%20";
+    for(var i=0; i < config.permissions.length; i++) {
+        str += config.permissions[i] + "%20";
+    }
     return str.replace(/%20([^%20]*)$/,'$1');
 
 };
 
 
 config.getURL = function(path){
-    if(typeof path === "undefined") path = "";
-    else path+= "?";
+    if(typeof path === "undefined") {
+        path = "";
+    }
+    else {
+        path += "?";
+    }
 
     var url = "";
 
@@ -688,7 +700,7 @@ config.getURL = function(path){
         url = config.protocol+"://"+config.domain+"/"+path;
     }
 
-    else if(window.location.origin.indexOf('localhost')> -1 || window.location.origin == "file://" ){
+    else if(window.location.origin.indexOf('localhost')> -1 || window.location.origin === "file://" ){
         //On localhost or mobile
         url = config.protocol+"://"+config.domain+"/"+path;
     }
