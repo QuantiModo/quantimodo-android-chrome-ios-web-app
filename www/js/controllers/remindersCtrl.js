@@ -5,6 +5,8 @@ angular.module('starter')
 
 	    $scope.controller_name = "RemindersCtrl";
 
+		console.log('Loading ' + $scope.controller_name);
+
 	    // state
 	    $scope.state = {
 	    	title : "Manage Reminders",
