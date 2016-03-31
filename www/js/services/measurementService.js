@@ -395,7 +395,7 @@ angular.module('starter')
                     params = {
                         variableName : config.appSettings.primary_outcome_variable_details.name,
                         // 'lastUpdated':'(ge)'+lastUpdated ,
-                        sort : '-updatedTime',
+                        sort : '-startTime',
                         limit:200,
                         offset:0
                     };
