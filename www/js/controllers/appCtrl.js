@@ -357,7 +357,7 @@ angular.module('starter')
     };
 
     // User wants to login
-    $scope.login = function() {
+    $scope.login = function(register) {
 
         localStorageService.setItem('isWelcomed', true);
         $rootScope.isWelcomed = true;
@@ -375,7 +375,11 @@ angular.module('starter')
                 url += "&client_secret="+config.getClientSecret();
                 url += "&scope="+config.getPermissionString();
                 url += "&state=testabcd";
+                if(register === true){
+                    url += "&register=true";
+                }
                 url += "&redirect_uri=https://app.quantimo.do/ionic/Modo/www/callback/";
+
 
                 chrome.identity.launchWebAuthFlow({
                     'url': url,
@@ -406,6 +410,9 @@ angular.module('starter')
                 url += "&client_secret="+config.getClientSecret();
                 url += "&scope="+config.getPermissionString();
                 url += "&state=testabcd";
+                if(register === true){
+                    url += "&register=true";
+                }
                 url += "&redirect_uri=https://app.quantimo.do/ionic/Modo/www/callback/";
 
                 var ref = window.open(url,'_blank');
@@ -463,6 +470,9 @@ angular.module('starter')
                 }
             } else {
                 var loginUrl = config.getURL("api/v2/auth/login");
+                if(register === true){
+                    loginUrl = config.getURL("api/v2/auth/register");
+                }
                 console.log("Client id is oAuthDisabled - will redirect to regular login.");
                 loginUrl += "redirect_uri=" + encodeURIComponent(window.location.href);
                 console.debug('AUTH redirect URL created:', loginUrl);
@@ -479,6 +489,9 @@ angular.module('starter')
             url += "&client_secret="+config.getClientSecret();
             url += "&scope="+config.getPermissionString();
             url += "&state=testabcd";
+            if(register === true){
+                url += "&register=true";
+            }
             url += "&redirect_uri=https://app.quantimo.do/ionic/Modo/www/callback/";
 
             console.log('open the auth window via inAppBrowser.');
@@ -542,6 +555,9 @@ angular.module('starter')
             url += "&scope="+config.getPermissionString();
             url += "&state=testabcd";
             url += "&token="+responseToken;
+            if(register === true){
+                url += "&register=true";
+            }
             url += "&redirect_uri=https://app.quantimo.do/ionic/Modo/www/callback/";
 
             $ionicLoading.hide();
