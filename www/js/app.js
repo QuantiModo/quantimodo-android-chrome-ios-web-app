@@ -332,8 +332,8 @@ angular.module('starter', ['ionic','oc.lazyLoad','highcharts-ng','ngCordova','io
           cache:false,
           views: {
               'menuContent': {
-                  templateUrl: "templates/reminder.html",
-                  controller: 'RemindersCtrl'
+                  templateUrl: "templates/reminder_add.html",
+                  controller: 'RemindersAddCtrl'
               }
           }
       })
@@ -345,8 +345,8 @@ angular.module('starter', ['ionic','oc.lazyLoad','highcharts-ng','ngCordova','io
           },
           views: {
               'menuContent': {
-                  templateUrl: "templates/reminder.html",
-                  controller: 'RemindersCtrl'
+                  templateUrl: "templates/reminder_add.html",
+                  controller: 'RemindersAddCtrl'
               }
           }
       });
