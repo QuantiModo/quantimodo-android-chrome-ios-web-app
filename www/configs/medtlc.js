@@ -282,7 +282,7 @@ config.appSettings  = {
         }
     ],
 
-    popup_messages : {
+    help_popup_messages : {
         "#/app/reminders-inbox/Treatments": 'If you\'ve already added some medication reminders, here\'s where your medication reminder notifications should appear when it\'s time to take them.  Once you have some notifications, you can use those to track your medication intake.',
         "#/app/reminders-inbox/Symptoms": 'If you\'ve already added some side effect or symptom tracking reminders, here\'s where your medication reminder notifications should appear when it\'s time to take them.  Once you have some notifications, you can use those to track how you feel.',
         "#/app/reminders-manage/Treatments": 'Here, you can set up or delete existing medication reminders.',
