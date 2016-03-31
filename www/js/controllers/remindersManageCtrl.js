@@ -58,7 +58,9 @@ angular.module('starter')
 	    		return moment.utc(reminder.trackingReminderNotificationTime).local().isSame(today, 'd') === true;
 	    	});
 
-	    	if(todayResult.length) result.push({ name : "Today", reminders : todayResult });
+	    	if(todayResult.length) {
+				result.push({name: "Today", reminders: todayResult});
+            }
 
 	    	var yesterdayResult = reminders.filter(function(reminder){
 	    		return moment.utc(reminder.trackingReminderNotificationTime).local().isSame(yesterday, 'd') === true;
@@ -305,20 +307,20 @@ angular.module('starter')
 	    	var category = "Emotions";
 
 	    	if($scope.state.selectedReminder.variableCategoryName) {
-	    		category = $scope.state.selectedReminder.variableCategoryName
+	    		category = $scope.state.selectedReminder.variableCategoryName;
 	    	}
 	    	if($scope.state.variable.category) {
-	    		category = $scope.state.variable.category
+	    		category = $scope.state.variable.category;
 	    	}
 
 	    	console.log("selected Category: ", category);
 
 	    	var isAvg = true;
 	    	if($scope.state.selectedReminder.combinationOperation) {
-	    		isAvg = $scope.state.selectedReminder.combinationOperation == "MEAN" ? false : true;
+	    		isAvg = $scope.state.selectedReminder.combinationOperation !== "MEAN";
 	    	}
 	    	if($scope.state.variable.combinationOperation) {
-	    		isAvg = $scope.state.variable.combinationOperation == "MEAN" ? false : true;
+	    		isAvg = $scope.state.variable.combinationOperation !== "MEAN";
 	    	}
 
 	    	console.log("selected combinationOperation is Average?: ", isAvg);
@@ -333,10 +335,11 @@ angular.module('starter')
 	    	    isAvg : isAvg
 	    	};
 
-	    	if($scope.state.selectedReminder.abbreviatedUnitName === '/5') 
-	    		params.value = $scope.state.selected1to5Value;
+	    	if($scope.state.selectedReminder.abbreviatedUnitName === '/5') {
+				params.value = $scope.state.selected1to5Value;
+            }
 
-	    	utils.startLoading();
+			utils.startLoading();
     		var usePromise = true;
     	    // post measurement
     	    measurementService.post_tracking_measurement(params.epoch,
@@ -384,8 +387,8 @@ angular.module('starter')
 	    };
 
 	    $scope.edit = function(reminder){
-	    	reminder["fromState"] = $state.current.name;
-	    	$state.go('app.reminders', {reminder : reminder})
+	    	reminder.fromState = $state.current.name;
+	    	$state.go('app.reminders', {reminder : reminder});
 	    };
 
 	    $scope.deleteReminder = function(reminder){
@@ -409,4 +412,4 @@ angular.module('starter')
     		$scope.init();
     	});
 
-	})
+	});
