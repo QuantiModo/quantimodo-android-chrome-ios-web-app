@@ -1,6 +1,5 @@
 angular.module('starter',
     [
-        'ngRoute',
         'ionic',
         'oc.lazyLoad',
         'highcharts-ng',
