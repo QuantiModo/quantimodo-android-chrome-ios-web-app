@@ -11,7 +11,7 @@ angular.module('starter')
 	    	};
 
 	    	if (reminder.firstDailyReminderTime && reminder.secondDailyReminderTime && reminder.thirdDailyReminderTime){
-	    		return  "at " + parseDate(reminder.firstDailyReminderTime).format("hh:mm A") + " , " + 
+	    		return  "at " + parseDate(reminder.firstDailyReminderTime).format("hh:mm A") + ", " +
 	    		parseDate(reminder.secondDailyReminderTime).format("hh:mm A")+ " and " +
 	    		parseDate(reminder.thirdDailyReminderTime).format("hh:mm A");
 	    	}
