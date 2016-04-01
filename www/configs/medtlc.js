@@ -282,6 +282,19 @@ config.appSettings  = {
         }
     ],
 
+    help_popup_messages : {
+        "#/app/reminders-inbox/Treatments": 'If you\'ve already added some medication reminders, here\'s where your medication reminder notifications should appear when it\'s time to take them.  Once you have some notifications, you can use those to track your medication intake.',
+        "#/app/reminders-inbox/Symptoms": 'If you\'ve already added some side effect or symptom tracking reminders, here\'s where your medication reminder notifications should appear when it\'s time to take them.  Once you have some notifications, you can use those to track how you feel.',
+        "#/app/reminders-manage/Treatments": 'Here, you can set up or delete existing medication reminders.',
+        "#/app/reminders-manage/Symptoms": 'Here, you can set up or delete existing side effect tracking or symptom tracking reminders.',
+        "#/app/reminders-manage": 'Here, you can set up or delete existing reminders for .',
+        "#/app/reminders-inbox": 'If you\'ve already added some reminders, here\'s where your tracking reminder notifications should appear.  Once you have some notifications, you can use those to track your medication intake and how you feel.',
+        "#/app/history": 'You can see and edit your past data and add notes by tapping on any item in the list.',
+        "#/app/track_factors_category/Foods": 'Track your diet on this page. <span class="calm">Add a new Food Variable</span> if you do not find the meal you looked for in the search results.',
+        "#/app/track_factors_category/Symptoms": 'You can immediately track any symptom or side effect on this page. You can also <span class="calm">Add a new Symptom</span> if you don\'t find the symptom you looked for in the search results.',
+        "#/app/track_factors_category/Treatments": 'You can immediately track any as-need treatment on this page. You can also <span class="calm">Add a new Treatment</span> if you don\'t find the treatment you looked for in the search results.',
+    },
+
     menu : [
         {
             title : 'Med Schedule',
@@ -294,7 +307,7 @@ config.appSettings  = {
             icon : 'ion-ios-medkit-outline'
         },
         {
-            title : 'Track Side Effects',
+            title : 'How I Feel',
             href : '#/app/track_factors_category/Symptoms',
             icon : 'ion-ios-pulse'
         },

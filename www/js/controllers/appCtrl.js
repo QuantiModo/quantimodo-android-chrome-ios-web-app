@@ -15,23 +15,23 @@ angular.module('starter')
     $scope.closeMenu = function() {
         $ionicSideMenuDelegate.toggleLeft(false);
     };
-    
+
     $scope.not_show_help_popup;
-    var popup_messages = config.appSettings.popup_messages || false;
-    
-    $scope.$on('$ionicView.enter', function(e) {        
-        if(popup_messages && typeof popup_messages[location.hash] !== "undefined"){
+    var help_popup_messages = config.appSettings.help_popup_messages || false;
+
+    $scope.$on('$ionicView.enter', function(e) {
+        if(help_popup_messages && typeof help_popup_messages[location.hash] !== "undefined"){
             localStorageService.getItem('not_show_help_popup',function(val){
                 $scope.not_show_help_popup = val ? JSON.parse(val) : false;
 
                 if(!$scope.not_show_help_popup){
                     $ionicPopup.show({
-                        title: popup_messages[location.hash],
+                        title: help_popup_messages[location.hash],
                         subTitle: '',
                         scope:$scope,
                         template:'<label><input type="checkbox" ng-model="$parent.not_show_help_popup" class="show-again-checkbox">Don\'t show these tips</label>',
                         buttons:[
-                            {   
+                            {
                                 text: 'OK',
                                 type: 'button-calm',
                                 onTap: function(){
@@ -41,7 +41,7 @@ angular.module('starter')
                         ]
                     });
                 }
-            });    
+            });
         }
     });
 
@@ -57,7 +57,7 @@ angular.module('starter')
     $scope.shopping_cart_enabled = config.shopping_cart_enabled;
     $rootScope.isSyncing = false;
     var $cordovaFacebook = {};
-         
+
 
     $scope.isIOS = ionic.Platform.isIPad() || ionic.Platform.isIOS();
     $scope.isAndroid = ionic.Platform.isAndroid();
@@ -66,7 +66,7 @@ angular.module('starter')
     if($scope.isIOS && $injector.has('$cordovaFacebook')){
         $cordovaFacebook = $injector.get('$cordovaFacebook');
     }
-    
+
     /*Wrapper Config*/
     $scope.view_title = config.appSettings.app_name;
     $scope.primary_outcome_variable = config.appSettings.primary_outcome_variable;
@@ -98,7 +98,7 @@ angular.module('starter')
 
     // when date is updated
     $scope.datePickerFromCallback = function (val) {
-        if(typeof(val)==='undefined'){        
+        if(typeof(val)==='undefined'){
             console.log('Date not selected');
         }else{
             $scope.fromDate = new Date(val);
@@ -107,7 +107,7 @@ angular.module('starter')
     };
 
     $scope.datePickerToCallback = function (val) {
-        if(typeof(val)==='undefined'){        
+        if(typeof(val)==='undefined'){
             console.log('Date not selected');
         } else {
             $scope.toDate = new Date(val);
@@ -119,7 +119,7 @@ angular.module('starter')
 	$scope.saveDates = function(){
 		var to = moment($scope.toDate).unix()*1000;
 		var from = moment($scope.fromDate).unix()*1000;
-		
+
 		measurementService.setDates(to, from);
 		$scope.popover.hide();
         $scope.init();
@@ -138,11 +138,11 @@ angular.module('starter')
 
     scheduleReminder = function(){
         if($rootScope.reminderToSchedule){
-            
+
             reminderService.addNewReminder(
                 $rootScope.reminderToSchedule.id,
                 $rootScope.reminderToSchedule.reportedVariableValue,
-                $rootScope.reminderToSchedule.interval, 
+                $rootScope.reminderToSchedule.interval,
                 $rootScope.reminderToSchedule.name,
                 $rootScope.reminderToSchedule.category,
                 $rootScope.reminderToSchedule.unit,
@@ -160,7 +160,7 @@ angular.module('starter')
     $scope.getAuthToken = function(request_token, withJWT){
     	authService.getAccessTokenFromRequestToken(request_token, withJWT)
     	.then(function(response) {
-    		
+
             if(response.error){
                 console.error("Error generating access token");
                 console.log('response', response);
@@ -171,7 +171,7 @@ angular.module('starter')
                 console.log("Access token received",response);
                 if(typeof withJWT !== "undefined" && withJWT === true) authService.updateAccessToken(response, withJWT);
                 else authService.updateAccessToken(response);
-                
+
                 // set flags
                 $scope.isLoggedIn = true;
                 localStorageService.setItem('isLoggedIn', true);
@@ -184,7 +184,7 @@ angular.module('starter')
             }
     	})
     	.catch(function(err){
-            
+
             console.log("error in generating access token", err);
             // set flags
     		$scope.isLoggedIn = false;
@@ -195,7 +195,7 @@ angular.module('starter')
     //get User
     var getUser = function(){
         QuantiModo.getUser(function(user){
-            
+
             // set user data in local storage
             localStorageService.setItem('user', JSON.stringify(user));
 
@@ -229,14 +229,14 @@ angular.module('starter')
                 });
 
                 if(location.href.toLowerCase().indexOf('hidemenu=true') !== -1) {
-                   $rootScope.skipMenu = true; 
+                   $rootScope.skipMenu = true;
                 }
 
                 // redraw everything according to updated appstate
                 $rootScope.$broadcast('redraw');
             } else {
                 if(location.href.toLowerCase().indexOf('hidemenu=true') !== -1) {
-                   $rootScope.skipMenu = true; 
+                   $rootScope.skipMenu = true;
                 }
             }
         });
@@ -254,7 +254,7 @@ angular.module('starter')
 
                 ref.addEventListener('loadstart', function(event) {
                     ref.close();
-                    showPopup();                
+                    showPopup();
                 });
             } else showPopup();
         };
@@ -263,7 +263,7 @@ angular.module('starter')
             $ionicPopup.show({
                 title:'Clear local storage?',
                 subTitle: 'Do you want do delete all data from local storage?',
-                scope: $scope,            
+                scope: $scope,
                 buttons:[
                     {
                         text: 'No',
@@ -279,8 +279,8 @@ angular.module('starter')
 
             });
         };
-        
-        var after_logout = function(){            
+
+        var after_logout = function(){
 
             // set flags
             $scope.isLoggedIn = false;
@@ -288,7 +288,7 @@ angular.module('starter')
 
             //clear notification
             notificationService.cancelNotifications();
-            
+
             //Set out localstorage flag for welcome screen variables
             localStorageService.setItem('interval',true);
             localStorageService.setItem('primaryOutcomeVariableReportedWelcomeScreen',true);
@@ -318,7 +318,7 @@ angular.module('starter')
 
             //clear notification
             notificationService.cancelNotifications();
-            
+
             //Set out localstorage flag for welcome screen variables
             localStorageService.setItem('isLoggedIn',false);
             localStorageService.setItem('interval',true);
@@ -326,7 +326,7 @@ angular.module('starter')
             localStorageService.deleteItem('accessToken');
             localStorageService.deleteItem('refreshToken');
             localStorageService.deleteItem('expiresAt');
-            
+
 
             // calculate primary outcome variable and chart data
             measurementService.calculateAveragePrimaryOutcomeVariableValue().then(function(){
@@ -369,14 +369,14 @@ angular.module('starter')
                 url += "&client_secret="+config.getClientSecret();
                 url += "&scope="+config.getPermissionString();
                 url += "&state=testabcd";
-                url += "&redirect_uri=https://app.quantimo.do/ionic/Modo/www/callback";
+                url += "&redirect_uri=https://app.quantimo.do/ionic/Modo/www/callback/";
 
                 chrome.identity.launchWebAuthFlow({
-                    'url': url, 
+                    'url': url,
                     'interactive': true
                 }, function(redirect_url) {
                     var requestToken = utilsService.getUrlParameter(event.url, 'code');
-                    
+
                     if(requestToken === false) requestToken = utilsService.getUrlParameter(event.url, 'token');
 
                     $scope.getAuthToken(requestToken);
@@ -385,7 +385,7 @@ angular.module('starter')
                 console.log("It is an extension, so we use sessions instead of OAuth flow. ");
                 chrome.tabs.create({ url: "https://app.quantimo.do/" });
             }
-            
+
         }
 
 		else if(ionic.Platform.platforms[0] === "browser"){
@@ -398,7 +398,7 @@ angular.module('starter')
                 url += "&client_secret="+config.getClientSecret();
                 url += "&scope="+config.getPermissionString();
                 url += "&state=testabcd";
-                url += "&redirect_uri=https://app.quantimo.do/ionic/Modo/www/callback";
+                url += "&redirect_uri=https://app.quantimo.do/ionic/Modo/www/callback/";
 
                 var ref = window.open(url,'_blank');
 
@@ -469,7 +469,7 @@ angular.module('starter')
             url += "&client_secret="+config.getClientSecret();
             url += "&scope="+config.getPermissionString();
             url += "&state=testabcd";
-            url += "&redirect_uri=https://app.quantimo.do/ionic/Modo/www/callback";
+            url += "&redirect_uri=https://app.quantimo.do/ionic/Modo/www/callback/";
 
             console.log('open the auth window via inAppBrowser.');
 			var ref = window.open(url,'_blank', 'location=no,toolbar=yes');
@@ -479,6 +479,7 @@ angular.module('starter')
 
                 console.log(JSON.stringify(event));
                 console.log('The event.url is ' + event.url);
+								console.log('The hard coded redirection url is https://app.quantimo.do/ionic/Modo/www/callback/');
 
                 console.log('Checking if changed url is the same as redirection url.');
                 if(utilsService.startsWith(event.url, "https://app.quantimo.do/ionic/Modo/www/callback/")) {
@@ -529,7 +530,7 @@ angular.module('starter')
             url += "&scope="+config.getPermissionString();
             url += "&state=testabcd";
             url += "&token="+responseToken;
-            url += "&redirect_uri=https://app.quantimo.do/ionic/Modo/www/callback";
+            url += "&redirect_uri=https://app.quantimo.do/ionic/Modo/www/callback/";
 
             $ionicLoading.hide();
 
@@ -538,23 +539,23 @@ angular.module('starter')
 
             console.log('listen to event when the page changes.');
             ref.addEventListener('loadstart', function(event) {
-                
+
                 console.log("loadstart event", event);
                 console.log('check if changed url is the same as redirection url.');
-                
+
                 if(utilsService.startsWith(event.url, "https://app.quantimo.do/ionic/Modo/www/callback/")) {
 
                     console.log('if there is no error');
                     if(!utilsService.getUrlParameter(event.url,'error')) {
-                        
+
                         console.log('the request token that i got is: ' + event.url);
                         console.log('extract request token');
                         var requestToken = utilsService.getUrlParameter(event.url, 'code');
-                        
+
                         if(requestToken === false) requestToken = utilsService.getUrlParameter(event.url, 'token');
                         console.log('close inAppBrowser.');
                         ref.close();
-                        
+
                         var withJWT = true;
                         // get auth token from request token
                         $scope.getAuthToken(requestToken, withJWT);
@@ -562,7 +563,7 @@ angular.module('starter')
                     } else {
 
                         console.log("error occurred", utilsService.getUrlParameter(event.url, 'error'));
-                        
+
                         // close inAppBrowser
                         ref.close();
                     }
@@ -585,7 +586,7 @@ angular.module('starter')
             console.log('successfully logged in');
             console.log('google->', JSON.stringify(user_data));
             var accessToken = user_data.accessToken;
-            
+
             $scope.native_login('google', accessToken);
         },
         function (msg) {
@@ -650,17 +651,17 @@ angular.module('starter')
     // Demonstration of a sample API call
     $scope.init = function () {
         console.log("Main Constructor Start");
-        
+
         showLoader('Logging you in');
-        
+
         scheduleReminder();
 
         // try to get access token
     	authService.getAccessToken().then(function(data) {
-    		
+
             console.log('got the access token');
             var accessToken = data.accessToken;
-            
+
             // set flags
             $scope.isLoggedIn = true;
 
@@ -697,12 +698,12 @@ angular.module('starter')
             // update loader text
             $ionicLoading.hide();
             //showLoader('Syncing data');
-            
+
             app.track, app.welcome, app.history
 
             // sync data
             $scope.movePage();
-            
+
             var sync_enabled_states = [
                 'app.track',
                 'app.welcome',
@@ -712,15 +713,15 @@ angular.module('starter')
             if(sync_enabled_states.indexOf($state.current.name) !== -1 && config.appSettings.primary_outcome_variable != false){
                 $rootScope.isSyncing = true;
                 console.log('setting sync true');
-                
+
                 measurementService.sync_data().then(function(){
                     console.log("sync complete");
                     $rootScope.isSyncing = false;
-                    
+
                     // update loader text
                     $ionicLoading.hide();
                     showLoader('Calculating stuff');
-                    
+
                     // calculate primary outcome variable values
                     measurementService.calculateAveragePrimaryOutcomeVariableValue().then(function(){
                         measurementService.getPrimaryOutcomeVariableValue().then(calculateChartValues, calculateChartValues);
