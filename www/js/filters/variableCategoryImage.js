@@ -3,26 +3,21 @@ angular.module('starter')
 	.filter('ImageByVariableCategoryName', function(){
 	    return function(variableCategoryName){
 			console.log('Look up variable category image');
-			if(variableCategoryName == 'Foods'){
+			if(variableCategoryName === 'Foods'){
 				return 'ion-ios-nutrition';
 			}
-			if(variableCategoryName == 'Emotions'){
+			if(variableCategoryName === 'Emotions'){
 				return 'ion-happy-outline';
 			}
-			if(variableCategoryName == 'Symptoms'){
+			if(variableCategoryName === 'Symptoms'){
 				return 'ion-ios-pulse';
 			}
-			if(variableCategoryName == 'Treatments'){
+			if(variableCategoryName === 'Treatments'){
 				return 'ion-ios-medkit-outline';
 			}
-			if(variableCategoryName == 'Physical Activity'){
+			if(variableCategoryName === 'Physical Activity'){
 				return 'ion-ios-body';
 			}
 			return 'ion-speedometer';
-	    }
-	})
-	.filter('PrimaryOutcomeVariableByNumber', function(){
-		return function(value){
-			return config.getPrimaryOutcomeVariableByNumber(value);
-		}
-	})
+	    };
+	});
