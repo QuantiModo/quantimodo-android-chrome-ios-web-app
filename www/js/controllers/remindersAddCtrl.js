@@ -434,7 +434,7 @@ angular.module('starter')
 	    // setup editing view
 	    var setupEditReminder = function(){
 	    	$scope.state.selectedReminder = $stateParams.reminder;
-	    	$scope.state.title = "Edit Reminder";
+	    	$scope.state.title = "Edit " + $scope.state.selectedReminder.variableName + " Reminder";
 	    	
 	    	console.log("setupEditReminder ran");
 	    	var reverseFrequencyChart = {
