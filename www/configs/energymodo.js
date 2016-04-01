@@ -463,28 +463,28 @@ config.appSettings  = {
             title : 'Emotions',
             isSubMenu : true,
             subMenuVariable : 'showReminderSubMenu',
-            href : '#/app/reminders/Emotions',
+            href : '#/app/reminder_add/Emotions',
             icon : 'ion-happy-outline'
         },
         {
             title : 'Symptoms',
             isSubMenu : true,
             subMenuVariable : 'showReminderSubMenu',
-            href : '#/app/reminders/Symptoms',
+            href : '#/app/reminder_add/Symptoms',
             icon : 'ion-ios-pulse'
         },
         {
             title : 'Treatments',
             isSubMenu : true,
             subMenuVariable : 'showReminderSubMenu',
-            href : '#/app/reminders/Treatments',
+            href : '#/app/reminder_add/Treatments',
             icon : 'ion-ios-medkit-outline'
         },
         {
             title : 'Foods',
             isSubMenu : true,
             subMenuVariable : 'showReminderSubMenu',
-            href : '#/app/reminders/Foods',
+            href : '#/app/reminder_add/Foods',
             icon : 'ion-ios-nutrition-outline'
         },
         {

@@ -338,7 +338,7 @@ angular.module('starter',
           }
       })
       .state('app.reminders_category', {
-          url: "/reminders/:category",
+          url: "/reminder_add/:category",
           cache:false,
           views: {
               'menuContent': {
@@ -348,7 +348,7 @@ angular.module('starter',
           }
       })
       .state('app.reminders', {
-          url: "/reminders",
+          url: "/reminder_add",
           cache:false,
           params: {
             reminder: null
