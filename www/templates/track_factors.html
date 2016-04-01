@@ -14,7 +14,7 @@
             </div>
             <label class="item item-input">
                 <i class="icon ion-search placeholder-icon"></i>
-                <input ng-model="search_term" ng-change="search(search_term)" id="track_search" type="text" placeholder="Search">
+                <input ng-model="search_term" ng-change="search(search_term)" id="track_search" type="text" placeholder={{state.trackFactorsPlaceholderText}}>
 
             </label>
             <p></p>
@@ -35,7 +35,7 @@
 
             <ion-list>
                 <ion-item style="border-top: 1px solid rgb(221, 221, 221);" ng-click="add_variable()">
-                    + Add a new {{state.variable_category_name}} Variable
+                    + Add a new {{state.variable_category_name}} variable
                 </ion-item>
             </ion-list>
         </div>
