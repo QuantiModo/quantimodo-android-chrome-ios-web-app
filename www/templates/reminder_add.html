@@ -15,7 +15,7 @@
           <!--<div class="item item-divider" style="background-color:#11c1f3; color:white;">Enter Variable Name</div>-->
           <label class="item item-input">
             <i class="icon ion-search placeholder-icon"></i>
-            <input type="text" placeholder="Enter reminder variable name..." ng-model="state.searchQuery" ng-change="onSearch()" >
+            <input type="text" placeholder={{state.variablePlaceholderText}} ng-model="state.searchQuery" ng-change="onSearch()" >
           </label>
         </div>
 

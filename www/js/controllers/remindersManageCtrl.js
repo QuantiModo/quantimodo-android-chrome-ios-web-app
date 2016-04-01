@@ -7,6 +7,7 @@ angular.module('starter')
 		console.log('Loading ' + $scope.controller_name);
 	    
 	    $scope.state = {
+			variableCategory : $stateParams.category,
 	    	showMeasurementBox : false,
 	    	selectedReminder : false,
 	    	reminderDefaultValue : "",
@@ -29,7 +30,7 @@ angular.module('starter')
 
 		if($stateParams.category){
 			$scope.state.title = "Manage " + $stateParams.category;
-			$scope.state.addButtonText = "Add new " + $stateParams.category;
+			$scope.state.addButtonText = "Add New " + pluralize($stateParams.category, 1);
 		} else {
 			$scope.state.title = "Manage Reminders";
 			$scope.state.addButtonText = "Add new reminder";

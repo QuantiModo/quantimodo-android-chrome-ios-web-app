@@ -9,9 +9,7 @@ angular.module('starter')
 
 	    // state
 	    $scope.state = {
-	    	title : "Manage Reminders",
 	    	resultsHeaderText : '',
-
 	    	showVariableCategory : false,
 	    	showSearchBox : false,
 	    	showResults : false,
@@ -47,7 +45,11 @@ angular.module('starter')
 		console.log("$stateParams.category  is " + $stateParams.category);
 
 		if($stateParams.category){
-			$scope.state.title = "Manage " + $stateParams.category + " Reminders";
+			$scope.state.title = "Add " + pluralize($stateParams.category, 1) + " Reminder";
+			$scope.state.variablePlaceholderText = "Enter " + pluralize($stateParams.category, 1) + " Name";
+		} else {
+			$scope.state.title = "Add Reminder";
+			$scope.state.variablePlaceholderText = "Enter Variable Name";
 		}
 
 	    // data
