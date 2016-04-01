@@ -24,7 +24,8 @@ angular.module('starter')
             localStorageService.getItem('not_show_help_popup',function(val){
                 $scope.not_show_help_popup = val ? JSON.parse(val) : false;
 
-                if(!$scope.not_show_help_popup){
+                // Had to add "&& e.targetScope !== $scope" to prevent duplicate popups
+                if(!$scope.not_show_help_popup && e.targetScope !== $scope){
                     $ionicPopup.show({
                         title: help_popup_messages[location.hash],
                         subTitle: '',
