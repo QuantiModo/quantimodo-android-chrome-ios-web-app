@@ -1,4 +1,15 @@
-angular.module('starter', ['ionic','oc.lazyLoad','highcharts-ng','ngCordova','ionic-datepicker','ionic-timepicker','ngIOS9UIWebViewPatch'])
+angular.module('starter',
+    [
+        'ngRoute',
+        'ionic',
+        'oc.lazyLoad',
+        'highcharts-ng',
+        'ngCordova',
+        'ionic-datepicker',
+        'ionic-timepicker',
+        'ngIOS9UIWebViewPatch'
+    ]
+)
 
 .run(function($ionicPlatform, $ionicHistory, $state) {
 
