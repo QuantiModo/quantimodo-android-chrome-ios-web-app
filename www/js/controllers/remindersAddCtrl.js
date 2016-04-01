@@ -66,8 +66,11 @@ angular.module('starter')
 		    	{ id : 2, name : 'Emotions' },
 		    	{ id : 3, name : 'Symptoms' },
 		    	{ id : 4, name : 'Treatments' },
-		    	{ id : 5, name : 'Foods' }, 
-		    	{ id : 6, name : 'Misc' }
+		    	{ id : 5, name : 'Foods' },
+                { id : 6, name : 'Vital Signs' },
+                { id : 7, name : 'Physical Activity' },
+                { id : 8, name : 'Sleep' },
+                { id : 9, name : 'Misc' }
 	    	],
 	    	list : [],
 	    	frequencyVariables : [
