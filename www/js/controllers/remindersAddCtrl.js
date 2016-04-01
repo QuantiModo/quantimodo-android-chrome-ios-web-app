@@ -45,6 +45,7 @@ angular.module('starter')
 		console.log("$stateParams.category  is " + $stateParams.category);
 
 		if($stateParams.category){
+            $scope.state.variableCategorySingular = pluralize($stateParams.category, 1);
 			$scope.state.title = "Add " + pluralize($stateParams.category, 1) + " Reminder";
 			$scope.state.variablePlaceholderText = "Enter " + pluralize($stateParams.category, 1) + " Name";
 		} else {
@@ -141,7 +142,7 @@ angular.module('starter')
 				} else {
 					console.log('category');
 					// get all variables by category
-					measurementService.getVariablesByCategory(category).then(function(variables){
+					measurementService.getVariablesByCategoryIncludePublic(category).then(function(variables){
 
 					    $scope.userVariables = variables;
 					    $scope.variables.list = variables;
@@ -466,7 +467,6 @@ angular.module('starter')
 
 	    // setup category view
 	    var setupCategory = function(category){
-	    	$scope.state.title = 'Add ' + category + ' Reminder';
 	    	$scope.state.showSearchBox = true;
 	    	$scope.state.showResults = true;
 	    	$scope.state.resultsHeaderText = "Your previously tracked "+category;
@@ -476,7 +476,6 @@ angular.module('starter')
 
 	    // setup new reminder view
 	    var setupNewReminder = function(){
-	    	$scope.state.title = "Add New Reminder";
 	    	$scope.state.showVariableCategory = true;
 	    	$scope.state.showSearchBox = true;
 	    };
@@ -487,7 +486,6 @@ angular.module('starter')
 			// get user token
 			authService.getAccessToken().then(function(token){
 				if($stateParams.category){
-					$scope.state.title = "Manage " + $stateParams.category + " Reminders";
 					$scope.category = $stateParams.category;
 					setupCategory($scope.category);
 				}

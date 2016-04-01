@@ -206,7 +206,7 @@ angular.module('starter')
             };
 
             // get public variables
-            QuantiModo.getVariablesByCategoryIncludePublic = function(query, variableCategory, successHandler, errorHandler){
+            QuantiModo.getVariablesByCategoryIncludePublic = function(query, category, successHandler, errorHandler){
                 QuantiModo.get('api/v1/variables/search/'+ encodeURIComponent(query),
                     ['limit','categoryName','includePublic'],
                     {'limit' : 5, 'categoryName': category, 'includePublic': true},
