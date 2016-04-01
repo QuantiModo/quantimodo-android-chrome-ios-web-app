@@ -301,12 +301,27 @@ config.appSettings  = {
 
     menu : [
         {
-            title : 'Med Schedule',
-            href : '#/app/reminders-inbox/Treatments',
+            title : 'Add How I Feel Response',
+            href : '#/app/track_factors_category/Symptoms',
+            icon : 'ion-happy-outline'
+        },
+        {
+            title : 'Add Vitals Measurement',
+            href : '#/app/track_factors_category/Vital Signs',
+            icon : 'ion-ios-pulse'
+        },
+        {
+            title : 'Show Reminders',
+            href : '#/app/reminders-inbox',
+            icon : 'ion-android-notifications-none'
+        },
+        {
+            title : 'Add Medications',
+            href : '#/app/reminder_add/Treatments',
             icon : 'ion-ios-alarm-outline'
         },
         {
-            title : 'Your Medications',
+            title : 'Manage Medications',
             href : '#/app/reminders-manage/Treatments',
             icon : 'ion-ios-medkit-outline'
         },

@@ -9,6 +9,11 @@ angular.module('starter')
         $scope.controller_name = "TrackFactorsCategoryCtrl";
 
         var categoryConfig = {
+            "Vital Signs":{
+                default_unit:"units",
+                help_text:"What vital sign do you want to track?",
+                variable_category_name: "Vital Signs"
+            },
             Foods:{
                 default_unit:"serving",
                 help_text:"What did you eat?",
@@ -75,6 +80,13 @@ angular.module('starter')
 
             searchedUnits : []
         };
+
+        if(category.length > 1){
+            $scope.state.trackFactorsPlaceholderText = "Enter " +  pluralize(category, 1).toLowerCase() + " here...";
+        } else {
+            $scope.state.trackFactorsPlaceholderText = "Enter variable name here...";
+        }
+
 
         // alert box
         $scope.showAlert = function(title, template) {
