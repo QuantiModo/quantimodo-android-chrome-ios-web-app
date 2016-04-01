@@ -71,7 +71,7 @@ config.appSettings  = {
     welcome_text:"Let's start off by reporting your Energy on the card below",
     tracking_question:"How is your energy level right now?",
     factor_average_text:"Your average energy level is ",
-    notification_image : "file://img/logo.png",
+    notification_image : "file://img/icon_128.png",
     notification_text : "Time to Track",
     conversion_dataset: {
         "1": "1",

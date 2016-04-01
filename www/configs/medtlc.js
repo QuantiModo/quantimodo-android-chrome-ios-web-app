@@ -79,7 +79,7 @@ config.appSettings  = {
     welcome_text:"Let's start off by adding your first medication!",
     tracking_question:"What medication are you taking?",
     factor_average_text:"Your average mood is ",
-    notification_image : "file://img/logo.png",
+    notification_image : "file://img/icon_128.png",
     notification_text : "Time to Track",
     conversion_dataset: {
         "1": "depressed",

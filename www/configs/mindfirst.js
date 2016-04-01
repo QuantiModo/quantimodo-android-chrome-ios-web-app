@@ -79,7 +79,7 @@ config.appSettings  = {
     welcome_text:"Let's start off by reporting your first mood on the card below",
     tracking_question:"How are you feeling right now?",
     factor_average_text:"Your average mood is ",
-    notification_image : "file://img/logo.png",
+    notification_image : "file://img/icon_128.png",
     notification_text : "Time to Track",
     conversion_dataset: {
         "1": "depressed",
