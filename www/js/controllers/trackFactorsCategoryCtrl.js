@@ -445,7 +445,7 @@ angular.module('starter')
             } else {
 
                 // search server for the query
-                measurementService.getPublicVariablesByCategory(query,category).then(function(variables){
+                measurementService.getVariablesByCategoryIncludePublic(query,category).then(function(variables){
 
                     // populate list with results
                     $scope.lists.searchVariables = variables;
