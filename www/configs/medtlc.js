@@ -326,11 +326,6 @@ config.appSettings  = {
             icon : 'ion-ios-medkit-outline'
         },
         {
-            title : 'How I Feel',
-            href : '#/app/track_factors_category/Symptoms',
-            icon : 'ion-ios-pulse'
-        },
-        {
             title : 'History',
             href : '#/app/history-all',
             icon : 'ion-ios-paper-outline'
