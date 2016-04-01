@@ -52,6 +52,12 @@ angular.module('starter')
 			$scope.state.variablePlaceholderText = "Enter Variable Name";
 		}
 
+		if($stateParams.category === "Treatments") {
+			$scope.state.defaultValuePlaceholderText = "Enter dosage here...";
+		} else {
+			$scope.state.defaultValuePlaceholderText = "Enter most common value here...";
+		}
+
 	    // data
 	    $scope.variables = {
 	    	variableCategories : [

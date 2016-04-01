@@ -35,7 +35,7 @@
         	<div class="item item-divider" style="background-color:#11c1f3; color:white;">{{state.selectedReminder.name}} reminder settings</div>
         	<div class="row labeled-control">
         		<div class="col">
-        			<input type="text" style="width:100%;text-align:right;" placeholder="Enter Default Value Here" ng-model="state.selectedDefaultValue" class="uptop">
+        			<input type="text" style="width:100%;text-align:right;" placeholder={{state.defaultValuePlaceholderText}} ng-model="state.selectedDefaultValue" class="uptop">
         		</div>
         		<div class="col col-r">
         			<span>
