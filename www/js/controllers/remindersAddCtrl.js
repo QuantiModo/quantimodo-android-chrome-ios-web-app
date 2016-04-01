@@ -145,7 +145,7 @@ angular.module('starter')
 				} else {
 					console.log('category');
 					// get all variables by category
-					measurementService.getVariablesByCategoryIncludePublic('*', category).then(function(variables){
+					measurementService.searchVariablesByCategoryIncludePublic('*', category).then(function(variables){
 
 					    $scope.userVariables = variables;
 					    $scope.variables.list = variables;
@@ -178,7 +178,7 @@ angular.module('starter')
 
 	    	if($scope.state.selectedVariableCategory.toLowerCase() === 'anything'){
 	    		console.log('anything');
-	    		measurementService.getVariablesIncludePublic(query)
+	    		measurementService.searchVariablesIncludePublic(query)
 	    		.then(function(variables){
 
 	    		    // populate list with results
@@ -189,7 +189,7 @@ angular.module('starter')
 	    		});
 	    	} else {
 	    		console.log('with category');
-	    		measurementService.getVariablesByCategoryIncludePublic(query, $scope.category)
+	    		measurementService.searchVariablesByCategoryIncludePublic(query, $scope.category)
 	    		.then(function(variables){
 
 	    		    // populate list with results

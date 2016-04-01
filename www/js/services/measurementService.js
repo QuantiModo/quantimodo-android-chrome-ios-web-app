@@ -668,10 +668,10 @@ angular.module('starter')
 			},
 
 			// get public variables
-			getVariablesIncludePublic : function(str){
+			searchVariablesIncludePublic : function(str){
 				var deferred = $q.defer();
 
-				QuantiModo.getVariablesIncludePublic(str, function(vars){
+				QuantiModo.searchVariablesIncludePublic(str, function(vars){
 					deferred.resolve(vars);
 				}, function(){
 					deferred.reject(false);
@@ -680,10 +680,10 @@ angular.module('starter')
 				return deferred.promise;
 			},
 
-            getVariablesByCategoryIncludePublic : function(str,category){
+            searchVariablesByCategoryIncludePublic : function(str,category){
                 var deferred = $q.defer();
 
-                QuantiModo.getVariablesByCategoryIncludePublic(str,category, function(vars){
+                QuantiModo.searchVariablesByCategoryIncludePublic(str,category, function(vars){
                     deferred.resolve(vars);
                 }, function(){
                     deferred.reject(false);
