@@ -145,7 +145,7 @@ angular.module('starter')
 				} else {
 					console.log('category');
 					// get all variables by category
-					measurementService.getVariablesByCategoryIncludePublic(category).then(function(variables){
+					measurementService.getVariablesByCategoryIncludePublic('*', category).then(function(variables){
 
 					    $scope.userVariables = variables;
 					    $scope.variables.list = variables;
