@@ -130,7 +130,7 @@ angular.module('starter')
 				return deferred.promise;
 			},
 
-			getReminders : function(category){
+			getTrackingReminders : function(category){
 
 				var deferred = $q.defer();
 				var params = typeof category != "undefined" && category != "" ? {variableCategoryName : category} : {};

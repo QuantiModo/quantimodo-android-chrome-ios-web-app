@@ -138,9 +138,9 @@ angular.module('starter')
 	    	});
 	    };
 
-	    var getReminders = function(){
+	    var getTrackingReminders = function(){
 	    	//utils.startLoading();
-	    	reminderService.getReminders($stateParams.category)
+	    	reminderService.getTrackingReminders($stateParams.category)
 	    	.then(function(reminders){
 	    		$scope.state.allReminders = reminders;
 	    		utils.stopLoading();
@@ -153,7 +153,7 @@ angular.module('starter')
 	    	});
 	    };
 
-	    var getTrackingReminders = function(){
+	    var getTrackingReminderNotifications = function(){
 	    	utils.startLoading();
 
 	    	reminderService.getTrackingReminderNotifications($stateParams.category)
@@ -163,7 +163,7 @@ angular.module('starter')
 	    		utils.stopLoading();
 	    	}, function(){
 	    		utils.stopLoading();
-	    		console.log("failed to get reminders");
+	    		console.log("failed to get reminder notifications");
 				//utilsService.showLoginRequiredAlert($scope.login);
 
 	    	});
@@ -285,9 +285,9 @@ angular.module('starter')
 					}
 
 				} else if($state.is('app.reminders_manage') || $state.is('app.reminders_manage_category')){
-					getReminders();
-				} else {
 					getTrackingReminders();
+				} else {
+					getTrackingReminderNotifications();
 				}
 			}, function(){
 				$ionicLoading.hide();
