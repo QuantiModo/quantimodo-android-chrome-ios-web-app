@@ -163,7 +163,7 @@ angular.module('starter')
 						client_secret: config.getClientSecret(),
 						grant_type: 'authorization_code',
 						code: requestToken,
-						redirect_uri: 'https://app.quantimo.do/ionic/Modo/www/callback/'
+						redirect_uri: 'https://app.quantimo.do/ionic/Modo/www/callback'
 					}
 				};
 
