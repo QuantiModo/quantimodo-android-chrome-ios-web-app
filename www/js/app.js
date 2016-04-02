@@ -337,7 +337,7 @@ angular.module('starter',
               }
           }
       })
-      .state('app.reminders_category', {
+      .state('app.reminder_add_category', {
           url: "/reminder_add/:category",
           cache:false,
           views: {
@@ -347,7 +347,7 @@ angular.module('starter',
               }
           }
       })
-      .state('app.reminders', {
+      .state('app.reminder_add', {
           url: "/reminder_add",
           cache:false,
           params: {

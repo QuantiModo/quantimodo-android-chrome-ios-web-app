@@ -9,8 +9,6 @@ angular.module('starter')
 
 				var now = new Date();
 				var hourOffsetFromUtc = now.getTimezoneOffset()/60;
-				console.log('Hours from UTC is ' + hourOffsetFromUtc);
-
 	    		var parsedDate = reminderTime.split(':');
 				var minutes = parsedDate[1];
 				var localHour = parsedDate[0] + hourOffsetFromUtc;
