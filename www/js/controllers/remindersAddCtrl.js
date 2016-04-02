@@ -436,7 +436,6 @@ angular.module('starter')
 	    	$scope.state.selectedReminder = $stateParams.reminder;
 	    	$scope.state.title = "Edit " + $scope.state.selectedReminder.variableName + " Reminder";
 	    	
-	    	console.log("setupEditReminder ran");
 	    	var reverseFrequencyChart = {
 	    		86400: "Once a day",
 	    		43200: "Twice a day",
@@ -461,7 +460,17 @@ angular.module('starter')
 
 	    	$scope.state.selectedUnit = $scope.state.selectedReminder.abbreviatedUnitName;
 	    	$scope.state.selectedDefaultValue = $scope.state.selectedReminder.defaultValue;
-	    	$scope.state.selectedFrequency = reverseFrequencyChart[$scope.state.selectedReminder.reminderFrequency];
+	    	
+	    	if($scope.state.selectedReminder.selectedFrequency && $scope.state.selectedReminder.selectedFrequency !== null){	    		
+	    		$scope.state.selectedFrequency = reverseFrequencyChart[$scope.state.selectedReminder.reminderFrequency];
+	    	} else if($scope.state.selectedReminder.thirdDailyReminderTime){
+	    		$scope.state.selectedFrequency = "Three times a day";
+	    	} else if($scope.state.selectedReminder.secondDailyReminderTime){
+	    		$scope.state.selectedFrequency = "Twice a day";
+	    	} else if($scope.state.firstDailyReminderTime){
+	    		$scope.state.selectedFrequency = "Once a day";
+	    	}
+
 	    	
 	    	$scope.state.showCustomBox = true;
 

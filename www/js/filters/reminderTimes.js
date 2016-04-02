@@ -11,14 +11,14 @@ angular.module('starter')
 				var hourOffsetFromUtc = now.getTimezoneOffset()/60;
 	    		var parsedDate = reminderTime.split(':');
 				var minutes = parsedDate[1];
-				var localHour = parsedDate[0] + hourOffsetFromUtc;
+				var localHour = parseInt(parsedDate[0]) + parseInt(hourOffsetFromUtc);
+				
 				if(localHour > 23){
 					localHour = localHour - 24;
 				}
+	    		
 	    		return moment().hours(localHour).minutes(minutes);
 	    	};
-
-
 
 	    	if (reminder.firstDailyReminderTime && reminder.secondDailyReminderTime && reminder.thirdDailyReminderTime){
 	    		return  reminder.frequencyTextDescription + " at " + parseDate(reminder.firstDailyReminderTime).format("hh:mm A") + ", " +
