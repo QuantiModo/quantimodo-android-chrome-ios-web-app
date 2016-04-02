@@ -379,7 +379,7 @@ angular.module('starter')
                 if(register === true){
                     url += "&register=true";
                 }
-                url += "&redirect_uri=https://app.quantimo.do/ionic/Modo/www/callback";
+                url += "&redirect_uri=https://app.quantimo.do/ionic/Modo/www/callback/";
 
 
                 chrome.identity.launchWebAuthFlow({
@@ -414,7 +414,7 @@ angular.module('starter')
                 if(register === true){
                     url += "&register=true";
                 }
-                url += "&redirect_uri=https://app.quantimo.do/ionic/Modo/www/callback";
+                url += "&redirect_uri=https://app.quantimo.do/ionic/Modo/www/callback/";
 
                 var ref = window.open(url,'_blank');
 
@@ -423,9 +423,9 @@ angular.module('starter')
                 } else {
                     // broadcast message question every second to sibling tabs
                     var interval = setInterval(function () {
-                        ref.postMessage('isLoggedIn?', 'https://app.quantimo.do/ionic/Modo/www/callback');
-                        ref.postMessage('isLoggedIn?', 'https://local.quantimo.do:4417/ionic/Modo/www/callback');
-                        ref.postMessage('isLoggedIn?', 'https://staging.quantimo.do/ionic/Modo/www/callback');
+                        ref.postMessage('isLoggedIn?', 'https://app.quantimo.do/ionic/Modo/www/callback/');
+                        ref.postMessage('isLoggedIn?', 'https://local.quantimo.do:4417/ionic/Modo/www/callback/');
+                        ref.postMessage('isLoggedIn?', 'https://staging.quantimo.do/ionic/Modo/www/callback/');
                     }, 1000);
 
                     // handler when a message is received from a sibling tab
@@ -439,7 +439,7 @@ angular.module('starter')
                         var iframe_url = event.data;
 
                         // validate if the url is same as we wanted it to be
-                        if (utilsService.startsWith(iframe_url, "https://app.quantimo.do/ionic/Modo/www/callback")) {
+                        if (utilsService.startsWith(iframe_url, "https://app.quantimo.do/ionic/Modo/www/callback/")) {
                             // if there is no error
                             if (!utilsService.getUrlParameter(iframe_url, 'error')) {
 
@@ -493,7 +493,7 @@ angular.module('starter')
             if(register === true){
                 url += "&register=true";
             }
-            url += "&redirect_uri=https://app.quantimo.do/ionic/Modo/www/callback";
+            url += "&redirect_uri=https://app.quantimo.do/ionic/Modo/www/callback/";
 
             console.log('open the auth window via inAppBrowser.');
 			var ref = window.open(url,'_blank', 'location=no,toolbar=yes');
@@ -503,12 +503,12 @@ angular.module('starter')
 
                 console.log(JSON.stringify(event));
                 console.log('The event.url is ' + event.url);
-								console.log('The hard coded redirection url is https://app.quantimo.do/ionic/Modo/www/callback');
+								console.log('The hard coded redirection url is https://app.quantimo.do/ionic/Modo/www/callback/');
 
                 console.log('Checking if changed url is the same as redirection url.');
-                if(utilsService.startsWith(event.url, "https://app.quantimo.do/ionic/Modo/www/callback")) {
+                if(utilsService.startsWith(event.url, "https://app.quantimo.do/ionic/Modo/www/callback/")) {
 
-                    console.log('event.url starts with https://app.quantimo.do/ionic/Modo/www/callback ');
+                    console.log('event.url starts with https://app.quantimo.do/ionic/Modo/www/callback/ ');
                     if(!utilsService.getUrlParameter(event.url,'error')) {
 
                         console.log('extracting request token.');
@@ -559,7 +559,7 @@ angular.module('starter')
             if(register === true){
                 url += "&register=true";
             }
-            url += "&redirect_uri=https://app.quantimo.do/ionic/Modo/www/callback";
+            url += "&redirect_uri=https://app.quantimo.do/ionic/Modo/www/callback/";
 
             $ionicLoading.hide();
 
@@ -572,7 +572,7 @@ angular.module('starter')
                 console.log("loadstart event", event);
                 console.log('check if changed url is the same as redirection url.');
 
-                if(utilsService.startsWith(event.url, "https://app.quantimo.do/ionic/Modo/www/callback")) {
+                if(utilsService.startsWith(event.url, "https://app.quantimo.do/ionic/Modo/www/callback/")) {
 
                     console.log('if there is no error');
                     if(!utilsService.getUrlParameter(event.url,'error')) {
