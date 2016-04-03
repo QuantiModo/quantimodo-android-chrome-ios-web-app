@@ -694,8 +694,9 @@ config.getAllowOffline = function(){
 config.getPermissionString = function(){
 
     var str = "";
-    for(var i=0; i < config.permissions.length; i++)
-        str+= config.permissions[i]+"%20";
+    for(var i=0; i < config.permissions.length; i++) {
+        str += config.permissions[i] + "%20";
+    }
     return str.replace(/%20([^%20]*)$/,'$1');
 
 };
@@ -713,14 +714,8 @@ config.getURL = function(path){
     if(config.getApiUrl() !== "undefined") {
         url = config.getApiUrl() + "/" + path;
     }
-    else if (window.chrome && chrome.runtime && chrome.runtime.id) {
-        url = config.protocol + "://" + config.domain + "/" + path;
-    }
-    else if (window.location.origin.indexOf('localhost')> -1 || window.location.origin === "file://" ){
-        //On localhost or mobile
-        url = config.protocol + "://" + config.domain + "/" + path;
-    }
-    else {
+    else 
+    {
         url = config.protocol + "://" + config.domain + "/" + path;
     }
 
