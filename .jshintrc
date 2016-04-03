@@ -5,6 +5,10 @@
   "jquery"  : true,
 
   "globals": {
+    "pluralize"   : false,
+    "alert"   : false,
+    "event"   : false,
+    "location"   : false,
     "ionic"   : false,
     "window"   : false,
     "config"   : false,

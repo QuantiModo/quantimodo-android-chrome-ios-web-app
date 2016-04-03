@@ -1,4 +1,14 @@
-angular.module('starter', ['ionic','oc.lazyLoad','highcharts-ng','ngCordova','ionic-datepicker','ionic-timepicker','ngIOS9UIWebViewPatch'])
+angular.module('starter',
+    [
+        'ionic',
+        'oc.lazyLoad',
+        'highcharts-ng',
+        'ngCordova',
+        'ionic-datepicker',
+        'ionic-timepicker',
+        'ngIOS9UIWebViewPatch'
+    ]
+)
 
 .run(function($ionicPlatform, $ionicHistory, $state) {
 
@@ -100,17 +110,6 @@ angular.module('starter', ['ionic','oc.lazyLoad','highcharts-ng','ngCordova','io
           }
         }
       })
-
-      .state('app.get_started', {
-        url: "/get-started",
-        views: {
-          'menuContent': {
-            templateUrl: "templates/medication_get_started.html",
-            controller: 'MedicationGetStartedCtrl'
-          }
-        }
-      })
-
       .state('app.login', {
         url: "/login",
         views: {
@@ -324,7 +323,7 @@ angular.module('starter', ['ionic','oc.lazyLoad','highcharts-ng','ngCordova','io
           views: {
               'menuContent': {
                   templateUrl: "templates/reminders_manage.html",
-                  controller: 'RemindersInboxCtrl'
+                  controller: 'RemindersManageCtrl'
               }
           }
       })
@@ -334,30 +333,30 @@ angular.module('starter', ['ionic','oc.lazyLoad','highcharts-ng','ngCordova','io
           views: {
               'menuContent': {
                   templateUrl: "templates/reminders_manage.html",
-                  controller: 'RemindersInboxCtrl'
+                  controller: 'RemindersManageCtrl'
               }
           }
       })
-      .state('app.reminders_category', {
-          url: "/reminders/:category",
+      .state('app.reminder_add_category', {
+          url: "/reminder_add/:category",
           cache:false,
           views: {
               'menuContent': {
-                  templateUrl: "templates/reminder.html",
-                  controller: 'RemindersCtrl'
+                  templateUrl: "templates/reminder_add.html",
+                  controller: 'RemindersAddCtrl'
               }
           }
       })
-      .state('app.reminders', {
-          url: "/reminders",
+      .state('app.reminder_add', {
+          url: "/reminder_add",
           cache:false,
           params: {
             reminder: null
           },
           views: {
               'menuContent': {
-                  templateUrl: "templates/reminder.html",
-                  controller: 'RemindersCtrl'
+                  templateUrl: "templates/reminder_add.html",
+                  controller: 'RemindersAddCtrl'
               }
           }
       });

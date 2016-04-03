@@ -1,10 +1,10 @@
-<ion-view hide-nav-bar="skipMenu" view-title="Track Factors">
+<ion-view hide-nav-bar="skipMenu" view-title="Track {{state.variable_category_name}}">
     <ion-content>
         <div class="card" ng-show="flags.showTrack">
             <div class="item item-text-wrap">
                 <div>
                     <div>
-                        <span class="heading calm">Track {{state.variable_category_name}}</span>
+                        <!--<span class="heading calm">Track {{state.variable_category_name}}</span>-->
                         <ul class="from_top">
                             <!--<li>What do you want to track?</li>-->
                             <li>{{state.help_text}}</li>
@@ -14,7 +14,7 @@
             </div>
             <label class="item item-input">
                 <i class="icon ion-search placeholder-icon"></i>
-                <input ng-model="search_term" ng-change="search(search_term)" id="track_search" type="text" placeholder="Search">
+                <input ng-model="search_term" ng-change="search(search_term)" id="track_search" type="text" placeholder={{state.trackFactorsPlaceholderText}}>
 
             </label>
             <p></p>
@@ -35,7 +35,7 @@
 
             <ion-list>
                 <ion-item style="border-top: 1px solid rgb(221, 221, 221);" ng-click="add_variable()">
-                    + Add a new {{state.variable_category_name}} Variable
+                    + Add a new {{state.variable_category_name}} variable
                 </ion-item>
             </ion-list>
         </div>
