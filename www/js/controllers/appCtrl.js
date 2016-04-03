@@ -422,6 +422,7 @@ angular.module('starter')
                 } else {
                     // broadcast message question every second to sibling tabs
                     var interval = setInterval(function () {
+                        ref.postMessage('isLoggedIn?', config.getRedirectUri);
                         ref.postMessage('isLoggedIn?', 'https://app.quantimo.do/ionic/Modo/www/callback/');
                         ref.postMessage('isLoggedIn?', 'https://local.quantimo.do:4417/ionic/Modo/www/callback/');
                         ref.postMessage('isLoggedIn?', 'https://staging.quantimo.do/ionic/Modo/www/callback/');
@@ -429,7 +430,7 @@ angular.module('starter')
 
                     // handler when a message is received from a sibling tab
                     window.onMessageReceived = function (event) {
-                        console.log("message received", event.data);
+                        console.log("message received from sibling tab", event.data);
 
                         // Don't ask login question anymore
                         clearInterval(interval);
@@ -457,7 +458,8 @@ angular.module('starter')
 
                             } else {
                                 // TODO : display_error
-                                console.log("error occoured", utilsService.getUrlParameter(iframe_url, 'error'));
+                                console.log("Error occurred validating redirect url. Closing the sibling tab.",
+                                    utilsService.getUrlParameter(iframe_url, 'error'));
 
                                 // close the sibling tab
                                 ref.close();
