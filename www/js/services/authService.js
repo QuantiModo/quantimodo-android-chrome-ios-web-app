@@ -108,11 +108,15 @@ angular.module('starter')
 
 								console.log('client id is ' + config.getClientId());
 
-								console.log('Platform is ' + JSON.stringify(ionic.Platform.platforms[0]));
+								console.log('Platform is browser: ' +ionic.Platform.is('browser'));
+								console.log('Platform is ios: ' +ionic.Platform.is('ios'));
+								console.log('Platform is android: ' +ionic.Platform.is('android'));
+
+								//console.log('Platform is ' + JSON.stringify(ionic.Platform.platforms[0]));
 
 								//Using OAuth on Staging for tests
-								if(ionic.Platform.platforms[0] === "browser"
-									&& config.getClientId() == 'oAuthDisabled'
+								if(!ionic.Platform.is('ios') && !ionic.Platform.is('android')
+									&& config.getClientId() === 'oAuthDisabled'
 								    && !(window.location.origin.indexOf('staging.quantimo.do') > -1)){
 										console.log("Browser Detected and client id is oAuthDisabled.  ");
 									    $ionicLoading.hide();
@@ -237,12 +241,14 @@ angular.module('starter')
 
 				} else if (typeof refreshToken != "undefined") {
 
-					console.log('Refresh token will be used to fetch access token from server');
+					console.log('Refresh token will be used to fetch access token from server with client id ' +
+						config.getClientId());
 
 					var url = config.getURL("api/oauth2/token");
 
 					//expire token, refresh
 					$http.post(url, {
+
 						client_id: config.getClientId(),
 						client_secret: config.getClientSecret(),
 						refresh_token: refreshToken,
@@ -250,6 +256,7 @@ angular.module('starter')
 					}).success(function (data) {
 						// update local storage
 						if (data.error) {
+							console.log('Token refresh failed: ' + data.error);
 							deferred.reject('refresh failed');
 						} else {
 							var accessTokenRefreshed = authSrv.updateAccessToken(data);
