@@ -687,6 +687,9 @@ config.getApiUrl = function(){
     }
 };
 
+config.getAllowOffline = function(){
+    return true;
+};
 
 config.getPermissionString = function(){
 

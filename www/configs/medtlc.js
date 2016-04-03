@@ -578,6 +578,10 @@ config.getApiUrl = function(){
     }
 };
 
+config.getAllowOffline = function(){
+    return false;
+};
+
 config.getPermissionString = function(){
 
     var str = "";
