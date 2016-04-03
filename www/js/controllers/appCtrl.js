@@ -379,7 +379,7 @@ angular.module('starter')
                 if(register === true){
                     url += "&register=true";
                 }
-                url += "&redirect_uri=" + config.getRedirectUri();
+                //url += "&redirect_uri=" + config.getRedirectUri();
 
                 chrome.identity.launchWebAuthFlow({
                     'url': url,
@@ -413,7 +413,7 @@ angular.module('starter')
                 if(register === true){
                     url += "&register=true";
                 }
-                url += "&redirect_uri=" + config.getRedirectUri();
+                //url += "&redirect_uri=" + config.getRedirectUri();
 
                 var ref = window.open(url,'_blank');
 
@@ -492,7 +492,7 @@ angular.module('starter')
             if(register === true){
                 url += "&register=true";
             }
-            url += "&redirect_uri=" + config.getRedirectUri();
+            //url += "&redirect_uri=" + config.getRedirectUri();
 
             console.log('open the auth window via inAppBrowser.');
 			var ref = window.open(url,'_blank', 'location=no,toolbar=yes');
@@ -558,7 +558,7 @@ angular.module('starter')
             if(register === true){
                 url += "&register=true";
             }
-            url += "&redirect_uri=" + config.getRedirectUri();
+            //url += "&redirect_uri=" + config.getRedirectUri();
 
             $ionicLoading.hide();
 
