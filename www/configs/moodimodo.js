@@ -82,7 +82,7 @@ config.appSettings  = {
     welcome_text:"Let's start off by reporting your first mood on the card below",
     tracking_question:"How are you feeling right now?",
     factor_average_text:"Your average mood is ",
-    notification_image : "file://img/logo.png",
+    notification_image : "file://img/icon_128.png",
     notification_text : "Time to Track",
     conversion_dataset: {
         "1": "depressed",
@@ -474,28 +474,28 @@ config.appSettings  = {
             title : 'Emotions',
             isSubMenu : true,
             subMenuVariable : 'showReminderSubMenu',
-            href : '#/app/reminders/Emotions',
+            href : '#/app/reminder_add/Emotions',
             icon : 'ion-happy-outline'
         },
         {
             title : 'Symptoms',
             isSubMenu : true,
             subMenuVariable : 'showReminderSubMenu',
-            href : '#/app/reminders/Symptoms',
+            href : '#/app/reminder_add/Symptoms',
             icon : 'ion-ios-pulse'
         },
         {
             title : 'Treatments',
             isSubMenu : true,
             subMenuVariable : 'showReminderSubMenu',
-            href : '#/app/reminders/Treatments',
+            href : '#/app/reminder_add/Treatments',
             icon : 'ion-ios-medkit-outline'
         },
         {
             title : 'Foods',
             isSubMenu : true,
             subMenuVariable : 'showReminderSubMenu',
-            href : '#/app/reminders/Foods',
+            href : '#/app/reminder_add/Foods',
             icon : 'ion-ios-nutrition-outline'
         },
         {
