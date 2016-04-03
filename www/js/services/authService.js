@@ -147,8 +147,8 @@ angular.module('starter')
 			},
 
 			// get access token from request token
-			getAccessTokenFromRequestToken: function (requestToken, withJWT) {
-				console.log("Authorization code is " + requestToken);
+			getAccessTokenFromAuthorizationCode: function (authorizationCode, withJWT) {
+				console.log("Authorization code is " + authorizationCode);
 
 				var deferred = $q.defer();
 
@@ -166,21 +166,21 @@ angular.module('starter')
 						client_id: config.getClientId(),
 						client_secret: config.getClientSecret(),
 						grant_type: 'authorization_code',
-						code: requestToken,
-						//redirect_uri: config.getRedirectUri()
+						code: authorizationCode,
+						redirect_uri: config.getRedirectUri()
 					}
 				};
 
-				console.log('getAccessTokenFromRequestToken: request is ', request);
+				console.log('getAccessTokenFromAuthorizationCode: request is ', request);
 				console.log(JSON.stringify(request));
 
 				// post
 				$http(request).success(function (response) {
-					console.log('getAccessTokenFromRequestToken: Successful response is ', response);
+					console.log('getAccessTokenFromAuthorizationCode: Successful response is ', response);
 					console.log(JSON.stringify(response));
 					deferred.resolve(response);
 				}).error(function (response) {
-					console.log('getAccessTokenFromRequestToken: Error response is ', response);
+					console.log('getAccessTokenFromAuthorizationCode: Error response is ', response);
 					console.log(JSON.stringify(response));
 					deferred.reject(response);
 				});
