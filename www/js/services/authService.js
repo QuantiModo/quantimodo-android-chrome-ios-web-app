@@ -241,8 +241,8 @@ angular.module('starter')
 
 				} else if (typeof refreshToken != "undefined") {
 
-					console.log('Refresh token will be used to fetch access token from server with client id ' +
-						config.getClientId());
+					console.log('Refresh token will be used to fetch access token from ' +
+						config.getURL("api/oauth2/token") + ' with client id ' + config.getClientId());
 
 					var url = config.getURL("api/oauth2/token");
 
