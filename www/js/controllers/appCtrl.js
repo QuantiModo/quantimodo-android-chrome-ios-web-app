@@ -157,9 +157,9 @@ angular.module('starter')
         }
     };
 
-    // get Authentication Token
-    $scope.getAuthToken = function(request_token, withJWT){
-    	authService.getAccessTokenFromRequestToken(request_token, withJWT)
+    // get Access Token
+    $scope.getAccessToken = function(authorization_code, withJWT){
+    	authService.getAccessTokenFromAuthorizationCode(authorization_code, withJWT)
     	.then(function(response) {
 
             if(response.error){
@@ -385,13 +385,13 @@ angular.module('starter')
                     'url': url,
                     'interactive': true
                 }, function(redirect_url) {
-                    var requestToken = utilsService.getUrlParameter(event.url, 'code');
+                    var authorizationCode = utilsService.getUrlParameter(event.url, 'code');
 
-                    if(requestToken === false) {
-                        requestToken = utilsService.getUrlParameter(event.url, 'token');
+                    if(authorizationCode === false) {
+                        authorizationCode = utilsService.getUrlParameter(event.url, 'token');
                     }
 
-                    $scope.getAuthToken(requestToken);
+                    $scope.getAccessToken(authorizationCode);
                 });
             } else {
                 console.log("It is an extension, so we use sessions instead of OAuth flow. ");
@@ -443,14 +443,14 @@ angular.module('starter')
                             if (!utilsService.getUrlParameter(iframe_url, 'error')) {
 
                                 // extract token
-                                var requestToken = utilsService.getUrlParameter(iframe_url, 'code');
+                                var authorizationCode = utilsService.getUrlParameter(iframe_url, 'code');
 
-                                if (requestToken === false) {
-                                    requestToken = utilsService.getUrlParameter(iframe_url, 'token');
+                                if (authorizationCode === false) {
+                                    authorizationCode = utilsService.getUrlParameter(iframe_url, 'token');
                                 }
 
                                 // get auth token from request token
-                                $scope.getAuthToken(requestToken);
+                                $scope.getAccessToken(authorizationCode);
 
                                 // close the sibling tab
                                 ref.close();
@@ -522,7 +522,7 @@ angular.module('starter')
                         ref.close();
 
                         console.log('Going to get an access token using authorization code.');
-                        $scope.getAuthToken(authorizationCode);
+                        $scope.getAccessToken(authorizationCode);
 
 					} else {
 
@@ -578,17 +578,17 @@ angular.module('starter')
 
                         console.log('the request token that i got is: ' + event.url);
                         console.log('extract request token');
-                        var requestToken = utilsService.getUrlParameter(event.url, 'code');
+                        var authorizationCode = utilsService.getUrlParameter(event.url, 'code');
 
-                        if(requestToken === false) {
-                            requestToken = utilsService.getUrlParameter(event.url, 'token');
+                        if(authorizationCode === false) {
+                            authorizationCode = utilsService.getUrlParameter(event.url, 'token');
                         }
                         console.log('close inAppBrowser.');
                         ref.close();
 
                         var withJWT = true;
                         // get auth token from request token
-                        $scope.getAuthToken(requestToken, withJWT);
+                        $scope.getAccessToken(authorizationCode, withJWT);
 
                     } else {
 
