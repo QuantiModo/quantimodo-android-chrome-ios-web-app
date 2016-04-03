@@ -395,7 +395,7 @@ angular.module('starter')
                     params = {
                         variableName : config.appSettings.primary_outcome_variable_details.name,
                         // 'lastUpdated':'(ge)'+lastUpdated ,
-                        sort : '-updatedTime',
+                        sort : '-startTime',
                         limit:200,
                         offset:0
                     };
@@ -668,10 +668,10 @@ angular.module('starter')
 			},
 
 			// get public variables
-			getPublicVariables : function(str){
+			searchVariablesIncludePublic : function(str){
 				var deferred = $q.defer();
 
-				QuantiModo.getPublicVariables(str, function(vars){
+				QuantiModo.searchVariablesIncludePublic(str, function(vars){
 					deferred.resolve(vars);
 				}, function(){
 					deferred.reject(false);
@@ -680,10 +680,10 @@ angular.module('starter')
 				return deferred.promise;
 			},
 
-            getPublicVariablesByCategory : function(str,category){
+            searchVariablesByCategoryIncludePublic : function(str,category){
                 var deferred = $q.defer();
 
-                QuantiModo.getPublicVariablesByCategory(str,category, function(vars){
+                QuantiModo.searchVariablesByCategoryIncludePublic(str,category, function(vars){
                     deferred.resolve(vars);
                 }, function(){
                     deferred.reject(false);

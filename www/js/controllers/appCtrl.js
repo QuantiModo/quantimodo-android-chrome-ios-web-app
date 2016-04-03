@@ -17,16 +17,17 @@ angular.module('starter')
     };
 
     $scope.not_show_help_popup;
-    var popup_messages = config.appSettings.popup_messages || false;
+    var help_popup_messages = config.appSettings.help_popup_messages || false;
 
     $scope.$on('$ionicView.enter', function(e) {
-        if(popup_messages && typeof popup_messages[location.hash] !== "undefined"){
+        if(help_popup_messages && typeof help_popup_messages[location.hash] !== "undefined"){
             localStorageService.getItem('not_show_help_popup',function(val){
                 $scope.not_show_help_popup = val ? JSON.parse(val) : false;
 
-                if(!$scope.not_show_help_popup){
+                // Had to add "&& e.targetScope !== $scope" to prevent duplicate popups
+                if(!$scope.not_show_help_popup && e.targetScope !== $scope){
                     $ionicPopup.show({
-                        title: popup_messages[location.hash],
+                        title: help_popup_messages[location.hash],
                         subTitle: '',
                         scope:$scope,
                         template:'<label><input type="checkbox" ng-model="$parent.not_show_help_popup" class="show-again-checkbox">Don\'t show these tips</label>',
@@ -156,9 +157,9 @@ angular.module('starter')
         }
     };
 
-    // get Authentication Token
-    $scope.getAuthToken = function(request_token, withJWT){
-    	authService.getAccessTokenFromRequestToken(request_token, withJWT)
+    // get Access Token
+    $scope.getAccessToken = function(authorization_code, withJWT){
+    	authService.getAccessTokenFromAuthorizationCode(authorization_code, withJWT)
     	.then(function(response) {
 
             if(response.error){
@@ -169,8 +170,12 @@ angular.module('starter')
                 localStorageService.setItem('isLoggedIn', false);
             } else {
                 console.log("Access token received",response);
-                if(typeof withJWT !== "undefined" && withJWT === true) authService.updateAccessToken(response, withJWT);
-                else authService.updateAccessToken(response);
+                if(typeof withJWT !== "undefined" && withJWT === true) {
+                    authService.updateAccessToken(response, withJWT);
+                }
+                else {
+                    authService.updateAccessToken(response);
+                }
 
                 // set flags
                 $scope.isLoggedIn = true;
@@ -189,7 +194,7 @@ angular.module('starter')
             // set flags
     		$scope.isLoggedIn = false;
             localStorageService.setItem('isLoggedIn', false);
-    	})
+    	});
     };
 
     //get User
@@ -217,7 +222,7 @@ angular.module('starter')
                 console.log("isWelcomed is true. going");
 
                 // move to tracking page
-                if($state.current.name == "app.welcome" || $state.current.name == "app.login"){
+                if($state.current.name === "app.welcome" || $state.current.name === "app.login"){
                     $state.go(config.appSettings.default_state);
                     $rootScope.hideMenu = false;
                 }
@@ -246,9 +251,9 @@ angular.module('starter')
     $scope.logout = function(){
 
         var start_logout = function(){
-            if(ionic.Platform.platforms[0] != "browser"){
+            if(ionic.Platform.platforms[0] !== "browser"){
                 console.log('start_logout: Open the auth window via inAppBrowser.  Platform is ' + ionic.Platform.platforms[0]);
-                var ref = window.open('https://app.quantimo.do/api/v2/auth/logout','_blank', 'location=no,toolbar=yes');
+                var ref = window.open(config.getApiUrl() + '/api/v2/auth/logout','_blank', 'location=no,toolbar=yes');
 
                 console.log('start_logout: listen to its event when the page changes');
 
@@ -256,7 +261,9 @@ angular.module('starter')
                     ref.close();
                     showPopup();
                 });
-            } else showPopup();
+            } else {
+                showPopup();
+            }
         };
 
         var showPopup = function(){
@@ -307,7 +314,7 @@ angular.module('starter')
 
             if(window.chrome && window.chrome.extension && typeof window.chrome.identity === "undefined"){
                 chrome.tabs.create({
-                    url: "https://app.quantimo.do/api/v2/auth/logout"
+                    url: config.getApiUrl() + "/api/v2/auth/logout"
                 });
             }
         };
@@ -341,7 +348,7 @@ angular.module('starter')
 
             if(window.chrome && window.chrome.extension && typeof window.chrome.identity === "undefined"){
                 chrome.tabs.create({
-                    url: "https://app.quantimo.do/api/v2/auth/logout"
+                    url: config.getApiUrl() + "/api/v2/auth/logout"
                 });
             }
         };
@@ -351,7 +358,7 @@ angular.module('starter')
     };
 
     // User wants to login
-    $scope.login = function() {
+    $scope.login = function(register) {
 
         localStorageService.setItem('isWelcomed', true);
         $rootScope.isWelcomed = true;
@@ -362,28 +369,33 @@ angular.module('starter')
 
             if(chrome.identity){
                 console.log("login: Code running in a Chrome extension (content script, background page, etc.");
-                url = "https://app.quantimo.do/api/oauth2/authorize?"
+                url = config.getApiUrl() + "/api/oauth2/authorize?"
                 // add params
                 url += "response_type=code";
                 url += "&client_id="+config.getClientId();
                 url += "&client_secret="+config.getClientSecret();
                 url += "&scope="+config.getPermissionString();
                 url += "&state=testabcd";
-                url += "&redirect_uri=https://app.quantimo.do/ionic/Modo/www/callback/";
+                if(register === true){
+                    url += "&register=true";
+                }
+                //url += "&redirect_uri=" + config.getRedirectUri();
 
                 chrome.identity.launchWebAuthFlow({
                     'url': url,
                     'interactive': true
                 }, function(redirect_url) {
-                    var requestToken = utilsService.getUrlParameter(event.url, 'code');
+                    var authorizationCode = utilsService.getUrlParameter(event.url, 'code');
 
-                    if(requestToken === false) requestToken = utilsService.getUrlParameter(event.url, 'token');
+                    if(authorizationCode === false) {
+                        authorizationCode = utilsService.getUrlParameter(event.url, 'token');
+                    }
 
-                    $scope.getAuthToken(requestToken);
+                    $scope.getAccessToken(authorizationCode);
                 });
             } else {
                 console.log("It is an extension, so we use sessions instead of OAuth flow. ");
-                chrome.tabs.create({ url: "https://app.quantimo.do/" });
+                chrome.tabs.create({ url: config.getApiUrl() + "/" });
             }
 
         }
@@ -391,14 +403,17 @@ angular.module('starter')
 		else if(ionic.Platform.platforms[0] === "browser"){
 			console.log("Browser Detected");
 
-            if(config.getClientId() != 'oAuthDisabled'){
+            if(config.getClientId() !== 'oAuthDisabled'){
                 // add params
                 url += "response_type=code";
                 url += "&client_id="+config.getClientId();
                 url += "&client_secret="+config.getClientSecret();
                 url += "&scope="+config.getPermissionString();
                 url += "&state=testabcd";
-                url += "&redirect_uri=https://app.quantimo.do/ionic/Modo/www/callback/";
+                if(register === true){
+                    url += "&register=true";
+                }
+                //url += "&redirect_uri=" + config.getRedirectUri();
 
                 var ref = window.open(url,'_blank');
 
@@ -407,14 +422,15 @@ angular.module('starter')
                 } else {
                     // broadcast message question every second to sibling tabs
                     var interval = setInterval(function () {
+                        ref.postMessage('isLoggedIn?', config.getRedirectUri());
                         ref.postMessage('isLoggedIn?', 'https://app.quantimo.do/ionic/Modo/www/callback/');
                         ref.postMessage('isLoggedIn?', 'https://local.quantimo.do:4417/ionic/Modo/www/callback/');
                         ref.postMessage('isLoggedIn?', 'https://staging.quantimo.do/ionic/Modo/www/callback/');
                     }, 1000);
 
                     // handler when a message is received from a sibling tab
-                    window.onMessageRecieved = function (event) {
-                        console.log("message recieved", event.data);
+                    window.onMessageReceived = function (event) {
+                        console.log("message received from sibling tab", event.data);
 
                         // Don't ask login question anymore
                         clearInterval(interval);
@@ -423,24 +439,27 @@ angular.module('starter')
                         var iframe_url = event.data;
 
                         // validate if the url is same as we wanted it to be
-                        if (utilsService.startsWith(iframe_url, "https://app.quantimo.do/ionic/Modo/www/callback/")) {
+                        if (utilsService.startsWith(iframe_url, config.getRedirectUri())) {
                             // if there is no error
                             if (!utilsService.getUrlParameter(iframe_url, 'error')) {
 
                                 // extract token
-                                var requestToken = utilsService.getUrlParameter(iframe_url, 'code');
+                                var authorizationCode = utilsService.getUrlParameter(iframe_url, 'code');
 
-                                if (requestToken === false) requestToken = utilsService.getUrlParameter(iframe_url, 'token');
+                                if (authorizationCode === false) {
+                                    authorizationCode = utilsService.getUrlParameter(iframe_url, 'token');
+                                }
 
                                 // get auth token from request token
-                                $scope.getAuthToken(requestToken);
+                                $scope.getAccessToken(authorizationCode);
 
                                 // close the sibling tab
                                 ref.close();
 
                             } else {
                                 // TODO : display_error
-                                console.log("error occoured", utilsService.getUrlParameter(iframe_url, 'error'));
+                                console.log("Error occurred validating redirect url. Closing the sibling tab.",
+                                    utilsService.getUrlParameter(iframe_url, 'error'));
 
                                 // close the sibling tab
                                 ref.close();
@@ -449,10 +468,13 @@ angular.module('starter')
                     };
 
                     // listen to broadcast messages from other tabs within browser
-                    window.addEventListener("message", window.onMessageRecieved, false);
+                    window.addEventListener("message", window.onMessageReceived, false);
                 }
             } else {
                 var loginUrl = config.getURL("api/v2/auth/login");
+                if(register === true){
+                    loginUrl = config.getURL("api/v2/auth/register");
+                }
                 console.log("Client id is oAuthDisabled - will redirect to regular login.");
                 loginUrl += "redirect_uri=" + encodeURIComponent(window.location.href);
                 console.debug('AUTH redirect URL created:', loginUrl);
@@ -469,7 +491,10 @@ angular.module('starter')
             url += "&client_secret="+config.getClientSecret();
             url += "&scope="+config.getPermissionString();
             url += "&state=testabcd";
-            url += "&redirect_uri=https://app.quantimo.do/ionic/Modo/www/callback/";
+            if(register === true){
+                url += "&register=true";
+            }
+            //url += "&redirect_uri=" + config.getRedirectUri();
 
             console.log('open the auth window via inAppBrowser.');
 			var ref = window.open(url,'_blank', 'location=no,toolbar=yes');
@@ -479,25 +504,27 @@ angular.module('starter')
 
                 console.log(JSON.stringify(event));
                 console.log('The event.url is ' + event.url);
-								console.log('The hard coded redirection url is https://app.quantimo.do/ionic/Modo/www/callback/');
+                console.log('The redirection url is ' + config.getRedirectUri());
 
                 console.log('Checking if changed url is the same as redirection url.');
-                if(utilsService.startsWith(event.url, "https://app.quantimo.do/ionic/Modo/www/callback/")) {
+                if(utilsService.startsWith(event.url, config.getRedirectUri())) {
 
-                    console.log('event.url starts with https://app.quantimo.do/ionic/Modo/www/callback/ ');
+                    console.log('event.url starts with ' + config.getRedirectUri());
                     if(!utilsService.getUrlParameter(event.url,'error')) {
 
                         console.log('extracting request token.');
 						var authorizationCode = utilsService.getUrlParameter(event.url, 'code');
                         console.log('Authorization code is ' + authorizationCode);
 
-                        if(authorizationCode === false) authorizationCode = utilsService.getUrlParameter(event.url, 'token');
+                        if(authorizationCode === false) {
+                            authorizationCode = utilsService.getUrlParameter(event.url, 'token');
+                        }
 
                         console.log('Closing inAppBrowser.');
                         ref.close();
 
                         console.log('Going to get an access token using authorization code.');
-                        $scope.getAuthToken(authorizationCode);
+                        $scope.getAccessToken(authorizationCode);
 
 					} else {
 
@@ -530,7 +557,10 @@ angular.module('starter')
             url += "&scope="+config.getPermissionString();
             url += "&state=testabcd";
             url += "&token="+responseToken;
-            url += "&redirect_uri=https://app.quantimo.do/ionic/Modo/www/callback/";
+            if(register === true){
+                url += "&register=true";
+            }
+            //url += "&redirect_uri=" + config.getRedirectUri();
 
             $ionicLoading.hide();
 
@@ -543,22 +573,24 @@ angular.module('starter')
                 console.log("loadstart event", event);
                 console.log('check if changed url is the same as redirection url.');
 
-                if(utilsService.startsWith(event.url, "https://app.quantimo.do/ionic/Modo/www/callback/")) {
+                if(utilsService.startsWith(event.url, config.getRedirectUri())) {
 
                     console.log('if there is no error');
                     if(!utilsService.getUrlParameter(event.url,'error')) {
 
                         console.log('the request token that i got is: ' + event.url);
                         console.log('extract request token');
-                        var requestToken = utilsService.getUrlParameter(event.url, 'code');
+                        var authorizationCode = utilsService.getUrlParameter(event.url, 'code');
 
-                        if(requestToken === false) requestToken = utilsService.getUrlParameter(event.url, 'token');
+                        if(authorizationCode === false) {
+                            authorizationCode = utilsService.getUrlParameter(event.url, 'token');
+                        }
                         console.log('close inAppBrowser.');
                         ref.close();
 
                         var withJWT = true;
                         // get auth token from request token
-                        $scope.getAuthToken(requestToken, withJWT);
+                        $scope.getAccessToken(authorizationCode, withJWT);
 
                     } else {
 
@@ -601,7 +633,7 @@ angular.module('starter')
       }, function(fail){
           console.log("failed to logout", fail);
       });
-    }
+    };
 
     // login with facebook
     $scope.facebook_login = function(){
@@ -623,11 +655,11 @@ angular.module('starter')
 
     // when user click's skip button
     $scope.skipLogin = function(){
-        localStorageService.setItem('isWelcomed', true)
+        localStorageService.setItem('isWelcomed', true);
         $rootScope.isWelcomed = true;
         // move to the next screen
         $scope.movePage();
-    }
+    };
 
     // show loading spinner
     var showLoader = function(str){
@@ -688,7 +720,7 @@ angular.module('starter')
                         name: user.displayName,
                         email: user.email,
                         user_id:user.id
-                    }
+                    };
                 }
 
             });
@@ -786,4 +818,4 @@ angular.module('starter')
         }
 
     });
-})
+});
