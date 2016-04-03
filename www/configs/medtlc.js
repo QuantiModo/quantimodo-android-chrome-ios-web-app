@@ -587,35 +587,31 @@ config.getPermissionString = function(){
 
 };
 
-
 config.getURL = function(path){
-    if(typeof path === "undefined") path = "";
-    else path+= "?";
+    if(typeof path === "undefined") {
+        path = "";
+    }
+    else {
+        path += "?";
+    }
 
     var url = "";
 
-    if (window.chrome && chrome.runtime && chrome.runtime.id) {
-        url = config.protocol+"://"+config.domain+"/"+path;
+    if(config.getApiUrl() !== "undefined") {
+        url = config.getApiUrl() + "/" + path;
     }
-
-    else if(window.location.origin.indexOf('localhost')> -1 || window.location.origin == "file://" ){
-        //On localhost or mobile
-        url = config.protocol+"://"+config.domain+"/"+path;
-    }
-    else if(window.location.origin.indexOf("local.quantimo.do") > -1){
-         //local.quantimodo
-         url = 'https://local.quantimo.do:4417/' + path;
-
-    // } else if (window.location.origin.indexOf("staging.quantimo.do") > -1){
-    //     //local.quantimodo
-    //     url = 'https://staging.quantimo.do/' + path;
-
-    } else {
+    else if (window.chrome && chrome.runtime && chrome.runtime.id) {
         url = config.protocol + "://" + config.domain + "/" + path;
-        // url = window.location.origin + "/" + path;
+    }
+    else if (window.location.origin.indexOf('localhost')> -1 || window.location.origin === "file://" ){
+        //On localhost or mobile
+        url = config.protocol + "://" + config.domain + "/" + path;
+    }
+    else {
+        url = config.protocol + "://" + config.domain + "/" + path;
     }
 
-   return url;
+    return url;
 };
 
 config.get = function(key){
