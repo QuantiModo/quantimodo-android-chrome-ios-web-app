@@ -86,12 +86,15 @@
                 Google Sign In
             </button>
 			<button class="button button-block button-calm" ng-click="login()">
-				Sign In / Up
+				Sign In
 			</button>
-            <button class="button button-block button-assertive" ng-click="skipLogin()">
+			<button class="button button-block button-calm" ng-click="login(true)">
+				I'm New
+			</button>
+<!--            <button class="button button-block button-assertive" ng-click="skipLogin()">
                 <span ng-if="!isWelcomed">Skip</span>
                 <span ng-if="isWelcomed">Cancel</span>
-            </button>
+            </button>-->
 			<h1 class="calm">Privacy</h1>
 			<ul>
 				<li>It's your data. You decide what you share with your family and healthcare providers.</li>

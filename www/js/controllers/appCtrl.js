@@ -24,7 +24,8 @@ angular.module('starter')
             localStorageService.getItem('not_show_help_popup',function(val){
                 $scope.not_show_help_popup = val ? JSON.parse(val) : false;
 
-                if(!$scope.not_show_help_popup){
+                // Had to add "&& e.targetScope !== $scope" to prevent duplicate popups
+                if(!$scope.not_show_help_popup && e.targetScope !== $scope){
                     $ionicPopup.show({
                         title: help_popup_messages[location.hash],
                         subTitle: '',
@@ -169,8 +170,12 @@ angular.module('starter')
                 localStorageService.setItem('isLoggedIn', false);
             } else {
                 console.log("Access token received",response);
-                if(typeof withJWT !== "undefined" && withJWT === true) authService.updateAccessToken(response, withJWT);
-                else authService.updateAccessToken(response);
+                if(typeof withJWT !== "undefined" && withJWT === true) {
+                    authService.updateAccessToken(response, withJWT);
+                }
+                else {
+                    authService.updateAccessToken(response);
+                }
 
                 // set flags
                 $scope.isLoggedIn = true;
@@ -189,7 +194,7 @@ angular.module('starter')
             // set flags
     		$scope.isLoggedIn = false;
             localStorageService.setItem('isLoggedIn', false);
-    	})
+    	});
     };
 
     //get User
@@ -217,7 +222,7 @@ angular.module('starter')
                 console.log("isWelcomed is true. going");
 
                 // move to tracking page
-                if($state.current.name == "app.welcome" || $state.current.name == "app.login"){
+                if($state.current.name === "app.welcome" || $state.current.name === "app.login"){
                     $state.go(config.appSettings.default_state);
                     $rootScope.hideMenu = false;
                 }
@@ -246,7 +251,7 @@ angular.module('starter')
     $scope.logout = function(){
 
         var start_logout = function(){
-            if(ionic.Platform.platforms[0] != "browser"){
+            if(ionic.Platform.platforms[0] !== "browser"){
                 console.log('start_logout: Open the auth window via inAppBrowser.  Platform is ' + ionic.Platform.platforms[0]);
                 var ref = window.open(config.getApiUrl + '/api/v2/auth/logout','_blank', 'location=no,toolbar=yes');
 
@@ -256,7 +261,9 @@ angular.module('starter')
                     ref.close();
                     showPopup();
                 });
-            } else showPopup();
+            } else {
+                showPopup();
+            }
         };
 
         var showPopup = function(){
@@ -351,7 +358,7 @@ angular.module('starter')
     };
 
     // User wants to login
-    $scope.login = function() {
+    $scope.login = function(register) {
 
         localStorageService.setItem('isWelcomed', true);
         $rootScope.isWelcomed = true;
@@ -369,6 +376,9 @@ angular.module('starter')
                 url += "&client_secret="+config.getClientSecret();
                 url += "&scope="+config.getPermissionString();
                 url += "&state=testabcd";
+                if(register === true){
+                    url += "&register=true";
+                }
                 url += "&redirect_uri=" + config.getRedirectUri();
 
                 chrome.identity.launchWebAuthFlow({
@@ -377,7 +387,9 @@ angular.module('starter')
                 }, function(redirect_url) {
                     var requestToken = utilsService.getUrlParameter(event.url, 'code');
 
-                    if(requestToken === false) requestToken = utilsService.getUrlParameter(event.url, 'token');
+                    if(requestToken === false) {
+                        requestToken = utilsService.getUrlParameter(event.url, 'token');
+                    }
 
                     $scope.getAuthToken(requestToken);
                 });
@@ -391,13 +403,16 @@ angular.module('starter')
 		else if(ionic.Platform.platforms[0] === "browser"){
 			console.log("Browser Detected");
 
-            if(config.getClientId() != 'oAuthDisabled'){
+            if(config.getClientId() !== 'oAuthDisabled'){
                 // add params
                 url += "response_type=code";
                 url += "&client_id="+config.getClientId();
                 url += "&client_secret="+config.getClientSecret();
                 url += "&scope="+config.getPermissionString();
                 url += "&state=testabcd";
+                if(register === true){
+                    url += "&register=true";
+                }
                 url += "&redirect_uri=" + config.getRedirectUri();
 
                 var ref = window.open(url,'_blank');
@@ -413,8 +428,8 @@ angular.module('starter')
                     }, 1000);
 
                     // handler when a message is received from a sibling tab
-                    window.onMessageRecieved = function (event) {
-                        console.log("message recieved", event.data);
+                    window.onMessageReceived = function (event) {
+                        console.log("message received", event.data);
 
                         // Don't ask login question anymore
                         clearInterval(interval);
@@ -423,14 +438,16 @@ angular.module('starter')
                         var iframe_url = event.data;
 
                         // validate if the url is same as we wanted it to be
-                        if (utilsService.startsWith(iframe_url, config.getApiUrl + "/ionic/Modo/www/callback/")) {
+                        if (utilsService.startsWith(iframe_url, config.getRedirectUri)) {
                             // if there is no error
                             if (!utilsService.getUrlParameter(iframe_url, 'error')) {
 
                                 // extract token
                                 var requestToken = utilsService.getUrlParameter(iframe_url, 'code');
 
-                                if (requestToken === false) requestToken = utilsService.getUrlParameter(iframe_url, 'token');
+                                if (requestToken === false) {
+                                    requestToken = utilsService.getUrlParameter(iframe_url, 'token');
+                                }
 
                                 // get auth token from request token
                                 $scope.getAuthToken(requestToken);
@@ -449,10 +466,13 @@ angular.module('starter')
                     };
 
                     // listen to broadcast messages from other tabs within browser
-                    window.addEventListener("message", window.onMessageRecieved, false);
+                    window.addEventListener("message", window.onMessageReceived, false);
                 }
             } else {
                 var loginUrl = config.getURL("api/v2/auth/login");
+                if(register === true){
+                    loginUrl = config.getURL("api/v2/auth/register");
+                }
                 console.log("Client id is oAuthDisabled - will redirect to regular login.");
                 loginUrl += "redirect_uri=" + encodeURIComponent(window.location.href);
                 console.debug('AUTH redirect URL created:', loginUrl);
@@ -469,6 +489,9 @@ angular.module('starter')
             url += "&client_secret="+config.getClientSecret();
             url += "&scope="+config.getPermissionString();
             url += "&state=testabcd";
+            if(register === true){
+                url += "&register=true";
+            }
             url += "&redirect_uri=" + config.getRedirectUri();
 
             console.log('open the auth window via inAppBrowser.');
@@ -479,19 +502,21 @@ angular.module('starter')
 
                 console.log(JSON.stringify(event));
                 console.log('The event.url is ' + event.url);
-								console.log('The hard coded redirection url is https://app.quantimo.do/ionic/Modo/www/callback/');
+                console.log('The redirection url is ' + config.getRedirectUri);
 
                 console.log('Checking if changed url is the same as redirection url.');
-                if(utilsService.startsWith(event.url, config.getApiUrl + "/ionic/Modo/www/callback/")) {
+                if(utilsService.startsWith(event.url, config.getRedirectUri)) {
 
-                    console.log('event.url starts with https://app.quantimo.do/ionic/Modo/www/callback/ ');
+                    console.log('event.url starts with ' + config.getRedirectUri);
                     if(!utilsService.getUrlParameter(event.url,'error')) {
 
                         console.log('extracting request token.');
 						var authorizationCode = utilsService.getUrlParameter(event.url, 'code');
                         console.log('Authorization code is ' + authorizationCode);
 
-                        if(authorizationCode === false) authorizationCode = utilsService.getUrlParameter(event.url, 'token');
+                        if(authorizationCode === false) {
+                            authorizationCode = utilsService.getUrlParameter(event.url, 'token');
+                        }
 
                         console.log('Closing inAppBrowser.');
                         ref.close();
@@ -530,6 +555,9 @@ angular.module('starter')
             url += "&scope="+config.getPermissionString();
             url += "&state=testabcd";
             url += "&token="+responseToken;
+            if(register === true){
+                url += "&register=true";
+            }
             url += "&redirect_uri=" + config.getRedirectUri();
 
             $ionicLoading.hide();
@@ -543,7 +571,7 @@ angular.module('starter')
                 console.log("loadstart event", event);
                 console.log('check if changed url is the same as redirection url.');
 
-                if(utilsService.startsWith(event.url, config.getApiUrl + "/ionic/Modo/www/callback/")) {
+                if(utilsService.startsWith(event.url, config.getRedirectUri)) {
 
                     console.log('if there is no error');
                     if(!utilsService.getUrlParameter(event.url,'error')) {
@@ -552,7 +580,9 @@ angular.module('starter')
                         console.log('extract request token');
                         var requestToken = utilsService.getUrlParameter(event.url, 'code');
 
-                        if(requestToken === false) requestToken = utilsService.getUrlParameter(event.url, 'token');
+                        if(requestToken === false) {
+                            requestToken = utilsService.getUrlParameter(event.url, 'token');
+                        }
                         console.log('close inAppBrowser.');
                         ref.close();
 
@@ -601,7 +631,7 @@ angular.module('starter')
       }, function(fail){
           console.log("failed to logout", fail);
       });
-    }
+    };
 
     // login with facebook
     $scope.facebook_login = function(){
@@ -623,11 +653,11 @@ angular.module('starter')
 
     // when user click's skip button
     $scope.skipLogin = function(){
-        localStorageService.setItem('isWelcomed', true)
+        localStorageService.setItem('isWelcomed', true);
         $rootScope.isWelcomed = true;
         // move to the next screen
         $scope.movePage();
-    }
+    };
 
     // show loading spinner
     var showLoader = function(str){
@@ -688,7 +718,7 @@ angular.module('starter')
                         name: user.displayName,
                         email: user.email,
                         user_id:user.id
-                    }
+                    };
                 }
 
             });
@@ -786,4 +816,4 @@ angular.module('starter')
         }
 
     });
-})
+});
