@@ -1,7 +1,7 @@
 {
   "name": "MoodiModo",
   "version": "1.0.0",
-  "description": "Perfect your life!",
+  "description": "Medication - Track, Learn, Connect",
   "dependencies": {
     "bower": "~1.3.3",
     "express": "^4.13.3",

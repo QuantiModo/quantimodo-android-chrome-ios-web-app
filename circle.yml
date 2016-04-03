@@ -40,3 +40,9 @@ general:
       - /feature\/.*/ # or ignore regexes
   artifacts:
     - "/home/ubuntu/QM-Docker/ghostinspector.json"
+
+deployment:
+  medtlc:
+    branch: medtlc
+    commands:
+      - git push git@heroku.com:medtlc.git $CIRCLE_SHA1:refs/heads/master --force
