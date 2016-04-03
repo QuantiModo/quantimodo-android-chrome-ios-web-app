@@ -560,6 +560,24 @@ config.getClientSecret = function(){
     }
 };
 
+config.getRedirectUri = function(){
+    if (window.chrome && chrome.runtime && chrome.runtime.id) {
+        return window.private_keys.redirect_uris.Chrome;
+    } else {
+        var platform = getPlatform();
+        return platform === "Ionic"? window.private_keys.redirect_uris.Web : platform === "Web"? window.private_keys.redirect_uris.Web : platform === "iOS"? window.private_keys.redirect_uris.iOS : window.private_keys.redirect_uris.Android;
+    }
+};
+
+config.getApiUrl = function(){
+    if (window.chrome && chrome.runtime && chrome.runtime.id) {
+        return window.private_keys.api_urls.Chrome;
+    } else {
+        var platform = getPlatform();
+        return platform === "Ionic"? window.private_keys.api_urls.Web : platform === "Web"? window.private_keys.api_urls.Web : platform === "iOS"? window.private_keys.api_urls.iOS : window.private_keys.api_urls.Android;
+    }
+};
+
 config.getPermissionString = function(){
 
     var str = "";

@@ -253,7 +253,7 @@ angular.module('starter')
         var start_logout = function(){
             if(ionic.Platform.platforms[0] !== "browser"){
                 console.log('start_logout: Open the auth window via inAppBrowser.  Platform is ' + ionic.Platform.platforms[0]);
-                var ref = window.open('https://app.quantimo.do/api/v2/auth/logout','_blank', 'location=no,toolbar=yes');
+                var ref = window.open(config.getApiUrl + '/api/v2/auth/logout','_blank', 'location=no,toolbar=yes');
 
                 console.log('start_logout: listen to its event when the page changes');
 
@@ -314,7 +314,7 @@ angular.module('starter')
 
             if(window.chrome && window.chrome.extension && typeof window.chrome.identity === "undefined"){
                 chrome.tabs.create({
-                    url: "https://app.quantimo.do/api/v2/auth/logout"
+                    url: config.getApiUrl + "/api/v2/auth/logout"
                 });
             }
         };
@@ -348,7 +348,7 @@ angular.module('starter')
 
             if(window.chrome && window.chrome.extension && typeof window.chrome.identity === "undefined"){
                 chrome.tabs.create({
-                    url: "https://app.quantimo.do/api/v2/auth/logout"
+                    url: config.getApiUrl + "/api/v2/auth/logout"
                 });
             }
         };
@@ -369,7 +369,7 @@ angular.module('starter')
 
             if(chrome.identity){
                 console.log("login: Code running in a Chrome extension (content script, background page, etc.");
-                url = "https://app.quantimo.do/api/oauth2/authorize?";
+                url = config.getApiUrl + "/api/oauth2/authorize?"
                 // add params
                 url += "response_type=code";
                 url += "&client_id="+config.getClientId();
@@ -379,8 +379,7 @@ angular.module('starter')
                 if(register === true){
                     url += "&register=true";
                 }
-                url += "&redirect_uri=https://app.quantimo.do/ionic/Modo/www/callback/";
-
+                url += "&redirect_uri=" + config.getRedirectUri();
 
                 chrome.identity.launchWebAuthFlow({
                     'url': url,
@@ -396,7 +395,7 @@ angular.module('starter')
                 });
             } else {
                 console.log("It is an extension, so we use sessions instead of OAuth flow. ");
-                chrome.tabs.create({ url: "https://app.quantimo.do/" });
+                chrome.tabs.create({ url: config.getApiUrl + "/" });
             }
 
         }
@@ -414,7 +413,7 @@ angular.module('starter')
                 if(register === true){
                     url += "&register=true";
                 }
-                url += "&redirect_uri=https://app.quantimo.do/ionic/Modo/www/callback/";
+                url += "&redirect_uri=" + config.getRedirectUri();
 
                 var ref = window.open(url,'_blank');
 
@@ -439,7 +438,7 @@ angular.module('starter')
                         var iframe_url = event.data;
 
                         // validate if the url is same as we wanted it to be
-                        if (utilsService.startsWith(iframe_url, "https://app.quantimo.do/ionic/Modo/www/callback/")) {
+                        if (utilsService.startsWith(iframe_url, config.getRedirectUri)) {
                             // if there is no error
                             if (!utilsService.getUrlParameter(iframe_url, 'error')) {
 
@@ -493,7 +492,7 @@ angular.module('starter')
             if(register === true){
                 url += "&register=true";
             }
-            url += "&redirect_uri=https://app.quantimo.do/ionic/Modo/www/callback/";
+            url += "&redirect_uri=" + config.getRedirectUri();
 
             console.log('open the auth window via inAppBrowser.');
 			var ref = window.open(url,'_blank', 'location=no,toolbar=yes');
@@ -503,12 +502,12 @@ angular.module('starter')
 
                 console.log(JSON.stringify(event));
                 console.log('The event.url is ' + event.url);
-								console.log('The hard coded redirection url is https://app.quantimo.do/ionic/Modo/www/callback/');
+                console.log('The redirection url is ' + config.getRedirectUri);
 
                 console.log('Checking if changed url is the same as redirection url.');
-                if(utilsService.startsWith(event.url, "https://app.quantimo.do/ionic/Modo/www/callback/")) {
+                if(utilsService.startsWith(event.url, config.getRedirectUri)) {
 
-                    console.log('event.url starts with https://app.quantimo.do/ionic/Modo/www/callback/ ');
+                    console.log('event.url starts with ' + config.getRedirectUri);
                     if(!utilsService.getUrlParameter(event.url,'error')) {
 
                         console.log('extracting request token.');
@@ -559,7 +558,7 @@ angular.module('starter')
             if(register === true){
                 url += "&register=true";
             }
-            url += "&redirect_uri=https://app.quantimo.do/ionic/Modo/www/callback/";
+            url += "&redirect_uri=" + config.getRedirectUri();
 
             $ionicLoading.hide();
 
@@ -572,7 +571,7 @@ angular.module('starter')
                 console.log("loadstart event", event);
                 console.log('check if changed url is the same as redirection url.');
 
-                if(utilsService.startsWith(event.url, "https://app.quantimo.do/ionic/Modo/www/callback/")) {
+                if(utilsService.startsWith(event.url, config.getRedirectUri)) {
 
                     console.log('if there is no error');
                     if(!utilsService.getUrlParameter(event.url,'error')) {

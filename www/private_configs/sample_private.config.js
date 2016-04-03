@@ -1,4 +1,5 @@
 window.private_keys = {
+    "bugsnag_key" : "xyz",
     "client_ids": {
         "iOS": "xyz",
         "Android": "xyz",
@@ -11,8 +12,19 @@ window.private_keys = {
         "Web": "xyz",
         "Chrome": "xyz"
     },
+    "redirect_uris": {
+        "iOS": "https://app.quantimo.do/ionic/Modo/www/callback/",
+        "Android": "https://app.quantimo.do/ionic/Modo/www/callback/",
+        "Web": "https://app.quantimo.do/ionic/Modo/www/callback/",
+        "Chrome": "https://app.quantimo.do/ionic/Modo/www/callback/"
+    },
+    "api_urls": {
+        "iOS": "https://app.quantimo.do",
+        "Android": "https://app.quantimo.do",
+        "Web": "https://app.quantimo.do",
+        "Chrome": "https://app.quantimo.do"
+    },
     "FACEBOOK_APP_ID" : "123456789",
     "FACEBOOK_APP_NAME" : "SOMEAPPNAME",
     "GOOGLEPLUS_REVERSED_CLIENT_ID" : "com.google.someappname123345667"
-
 };
