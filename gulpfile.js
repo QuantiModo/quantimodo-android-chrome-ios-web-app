@@ -113,7 +113,7 @@ gulp.task('private', function(){
 
 	// Only run when on heroku
 	if(typeof env_keys['BUILDPACK_URL'] === "undefined" ){
-		console.log("Heroku Not Detected");
+		console.log("BUILDPACK_URL is undefined.  Heroku Not Detected.  Kashif, what is this check for?");
 		deferred.reject();
 	}
 
@@ -146,14 +146,14 @@ gulp.task('private', function(){
 			}
 
 			if(typeof env_keys[appName+'_WEB_API_URL'] !== "undefined"){
-				configkeys.client_secrets.Web = env_keys[appName+'_WEB_API_URL'];
+				configkeys.api_urls.Web = env_keys[appName+'_WEB_API_URL'];
 				console.log(appName+'_WEB_API_URL'+' Detected');
 			} else {
 				console.log(appName+'_WEB_API_URL'+' NOT DETECTED');
 			}
 
 			if(typeof env_keys[appName+'_WEB_REDIRECT_URI'] !== "undefined"){
-				configkeys.client_secrets.Web = env_keys[appName+'_WEB_REDIRECT_URI'];
+				configkeys.redirect_uris.Web = env_keys[appName+'_WEB_REDIRECT_URI'];
 				console.log(appName+'_WEB_REDIRECT_URI'+' Detected');
 			} else {
 				console.log(appName+'_WEB_REDIRECT_URI'+' NOT DETECTED');
