@@ -79,7 +79,7 @@ config.appSettings  = {
     welcome_text:"Let's start off by reporting your first mood on the card below",
     tracking_question:"How are you feeling right now?",
     factor_average_text:"Your average mood is ",
-    notification_image : "file://img/logo.png",
+    notification_image : "file://img/icon_128.png",
     notification_text : "Time to Track",
     conversion_dataset: {
         "1": "depressed",
@@ -471,28 +471,28 @@ config.appSettings  = {
             title : 'Emotions',
             isSubMenu : true,
             subMenuVariable : 'showReminderSubMenu',
-            href : '#/app/reminders/Emotions',
+            href : '#/app/reminder_add/Emotions',
             icon : 'ion-happy-outline'
         },
         {
             title : 'Symptoms',
             isSubMenu : true,
             subMenuVariable : 'showReminderSubMenu',
-            href : '#/app/reminders/Symptoms',
+            href : '#/app/reminder_add/Symptoms',
             icon : 'ion-ios-pulse'
         },
         {
             title : 'Treatments',
             isSubMenu : true,
             subMenuVariable : 'showReminderSubMenu',
-            href : '#/app/reminders/Treatments',
+            href : '#/app/reminder_add/Treatments',
             icon : 'ion-ios-medkit-outline'
         },
         {
             title : 'Foods',
             isSubMenu : true,
             subMenuVariable : 'showReminderSubMenu',
-            href : '#/app/reminders/Foods',
+            href : '#/app/reminder_add/Foods',
             icon : 'ion-ios-nutrition-outline'
         },
         {
@@ -669,42 +669,57 @@ config.getClientSecret = function(){
     }
 };
 
+config.getRedirectUri = function(){
+    if (window.chrome && chrome.runtime && chrome.runtime.id) {
+        return window.private_keys.redirect_uris.Chrome;
+    } else {
+        var platform = getPlatform();
+        return platform === "Ionic"? window.private_keys.redirect_uris.Web : platform === "Web"? window.private_keys.redirect_uris.Web : platform === "iOS"? window.private_keys.redirect_uris.iOS : window.private_keys.redirect_uris.Android;
+    }
+};
+
+config.getApiUrl = function(){
+    if (window.chrome && chrome.runtime && chrome.runtime.id) {
+        return window.private_keys.api_urls.Chrome;
+    } else {
+        var platform = getPlatform();
+        return platform === "Ionic"? window.private_keys.api_urls.Web : platform === "Web"? window.private_keys.api_urls.Web : platform === "iOS"? window.private_keys.api_urls.iOS : window.private_keys.api_urls.Android;
+    }
+};
+
+config.getAllowOffline = function(){
+    return true;
+};
+
 config.getPermissionString = function(){
 
     var str = "";
-    for(var i=0; i < config.permissions.length; i++)
-        str+= config.permissions[i]+"%20";
+    for(var i=0; i < config.permissions.length; i++) {
+        str += config.permissions[i] + "%20";
+    }
     return str.replace(/%20([^%20]*)$/,'$1');
 
 };
 
 config.getURL = function(path){
-    if(typeof path === "undefined") path = "";
-    else path+= "?";
+    if(typeof path === "undefined") {
+        path = "";
+    }
+    else {
+        path += "?";
+    }
 
     var url = "";
 
-    if (window.chrome && chrome.runtime && chrome.runtime.id) {
-        url = config.protocol+"://"+config.domain+"/"+path;
+    if(config.getApiUrl() !== "undefined") {
+        url = config.getApiUrl() + "/" + path;
     }
-
-    else if(window.location.origin.indexOf('localhost')> -1 || window.location.origin == "file://" ){
-        //On localhost or mobile
-        url = config.protocol+"://"+config.domain+"/"+path;
-    }
-    else if(window.location.origin.indexOf("local.") > -1){
-         //local.quantimodo
-         url = config.protocol+"://"+config.domain;
-         
-         url+= (config.domain.indexOf('app.') === -1 && config.domain.indexOf('staging.') === -1)? ":"+config.port : "";
-         
-         url+="/"+path;
-    } else {
+    else 
+    {
         url = config.protocol + "://" + config.domain + "/" + path;
-        // url = window.location.origin + "/" + path;
     }
 
-   return url;
+    return url;
 };
 
 config.get = function(key){

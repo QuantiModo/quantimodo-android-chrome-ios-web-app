@@ -1,13 +1,13 @@
 angular.module('starter')
 
-	.controller('RemindersInboxCtrl', function($scope, authService, $ionicPopup, localStorageService, $state, reminderService, $ionicLoading, measurementService, utilsService, $stateParams, $location){
+	.controller('RemindersManageCtrl', function($scope, authService, $ionicPopup, localStorageService, $state, reminderService, $ionicLoading, measurementService, utilsService, $stateParams, $location){
 
-	    $scope.controller_name = "RemindersInboxCtrl";
+	    $scope.controller_name = "RemindersManageCtrl";
 
 		console.log('Loading ' + $scope.controller_name);
 	    
 	    $scope.state = {
-	    	title : "Reminder Inbox",
+			variableCategory : $stateParams.category,
 	    	showMeasurementBox : false,
 	    	selectedReminder : false,
 	    	reminderDefaultValue : "",
@@ -29,7 +29,11 @@ angular.module('starter')
 	    };
 
 		if($stateParams.category){
-			$scope.state.title = $stateParams.category + " Reminder Inbox";
+			$scope.state.title = "Manage " + $stateParams.category;
+			$scope.state.addButtonText = "Add New " + pluralize($stateParams.category, 1);
+		} else {
+			$scope.state.title = "Manage Reminders";
+			$scope.state.addButtonText = "Add new reminder";
 		}
 
 	    $scope.select_primary_outcome_variable = function($event, val){
@@ -58,7 +62,9 @@ angular.module('starter')
 	    		return moment.utc(reminder.trackingReminderNotificationTime).local().isSame(today, 'd') === true;
 	    	});
 
-	    	if(todayResult.length) result.push({ name : "Today", reminders : todayResult });
+	    	if(todayResult.length) {
+				result.push({name: "Today", reminders: todayResult});
+            }
 
 	    	var yesterdayResult = reminders.filter(function(reminder){
 	    		return moment.utc(reminder.trackingReminderNotificationTime).local().isSame(yesterday, 'd') === true;
@@ -157,7 +163,7 @@ angular.module('starter')
 	    		utils.stopLoading();
 	    	}, function(){
 	    		utils.stopLoading();
-	    		console.log("failed to get reminders");
+	    		console.log("failed to get reminder notifications");
 				//utilsService.showLoginRequiredAlert($scope.login);
 
 	    	});
@@ -305,20 +311,20 @@ angular.module('starter')
 	    	var category = "Emotions";
 
 	    	if($scope.state.selectedReminder.variableCategoryName) {
-	    		category = $scope.state.selectedReminder.variableCategoryName
+	    		category = $scope.state.selectedReminder.variableCategoryName;
 	    	}
 	    	if($scope.state.variable.category) {
-	    		category = $scope.state.variable.category
+	    		category = $scope.state.variable.category;
 	    	}
 
 	    	console.log("selected Category: ", category);
 
 	    	var isAvg = true;
 	    	if($scope.state.selectedReminder.combinationOperation) {
-	    		isAvg = $scope.state.selectedReminder.combinationOperation == "MEAN" ? false : true;
+	    		isAvg = $scope.state.selectedReminder.combinationOperation !== "MEAN";
 	    	}
 	    	if($scope.state.variable.combinationOperation) {
-	    		isAvg = $scope.state.variable.combinationOperation == "MEAN" ? false : true;
+	    		isAvg = $scope.state.variable.combinationOperation !== "MEAN";
 	    	}
 
 	    	console.log("selected combinationOperation is Average?: ", isAvg);
@@ -333,10 +339,11 @@ angular.module('starter')
 	    	    isAvg : isAvg
 	    	};
 
-	    	if($scope.state.selectedReminder.abbreviatedUnitName === '/5') 
-	    		params.value = $scope.state.selected1to5Value;
+	    	if($scope.state.selectedReminder.abbreviatedUnitName === '/5') {
+				params.value = $scope.state.selected1to5Value;
+            }
 
-	    	utils.startLoading();
+			utils.startLoading();
     		var usePromise = true;
     	    // post measurement
     	    measurementService.post_tracking_measurement(params.epoch,
@@ -384,8 +391,8 @@ angular.module('starter')
 	    };
 
 	    $scope.edit = function(reminder){
-	    	reminder["fromState"] = $state.current.name;
-	    	$state.go('app.reminder_add', {reminder : reminder})
+	    	reminder.fromState = $state.current.name;
+	    	$state.go('app.reminder_add', {reminder : reminder});
 	    };
 
 	    $scope.deleteReminder = function(reminder){
@@ -409,4 +416,4 @@ angular.module('starter')
     		$scope.init();
     	});
 
-	})
+	});

@@ -417,7 +417,7 @@ angular.module('starter')
             } else {
 
                 // search server for the query
-                measurementService.getPublicVariables(query).then(function(variables){
+                measurementService.searchVariablesIncludePublic(query).then(function(variables){
                     
                     // populate list with results
                     $scope.lists.searchVariables = variables;

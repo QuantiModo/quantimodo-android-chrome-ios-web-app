@@ -113,7 +113,7 @@ gulp.task('private', function(){
 
 	// Only run when on heroku
 	if(typeof env_keys['BUILDPACK_URL'] === "undefined" ){
-		console.log("Heroku Not Detected");
+		console.log("BUILDPACK_URL is undefined.  Heroku Not Detected.  Kashif, what is this check for?");
 		deferred.reject();
 	}
 
@@ -127,7 +127,9 @@ gulp.task('private', function(){
 			appName = appName.trim();
 			var configkeys = {
 				client_ids : {},
-				client_secrets : {}
+				client_secrets : {},
+				redirect_uris : {},
+				api_urls : {}
 			};
 			if(typeof env_keys[appName+'_WEB_CLIENT_ID'] !== "undefined"){
 				configkeys.client_ids.Web = env_keys[appName+'_WEB_CLIENT_ID'];
@@ -135,11 +137,26 @@ gulp.task('private', function(){
 			} else {
 				console.log(appName+'_WEB_CLIENT_ID'+' NOT DETECTED');
 			}
+			
 			if(typeof env_keys[appName+'_WEB_CLIENT_SECRET'] !== "undefined"){
 				configkeys.client_secrets.Web = env_keys[appName+'_WEB_CLIENT_SECRET'];
 				console.log(appName+'_WEB_CLIENT_SECRET'+' Detected');
 			} else {
 				console.log(appName+'_WEB_CLIENT_SECRET'+' NOT DETECTED');
+			}
+
+			if(typeof env_keys[appName+'_WEB_API_URL'] !== "undefined"){
+				configkeys.api_urls.Web = env_keys[appName+'_WEB_API_URL'];
+				console.log(appName+'_WEB_API_URL'+' Detected');
+			} else {
+				console.log(appName+'_WEB_API_URL'+' NOT DETECTED');
+			}
+
+			if(typeof env_keys[appName+'_WEB_REDIRECT_URI'] !== "undefined"){
+				configkeys.redirect_uris.Web = env_keys[appName+'_WEB_REDIRECT_URI'];
+				console.log(appName+'_WEB_REDIRECT_URI'+' Detected');
+			} else {
+				console.log(appName+'_WEB_REDIRECT_URI'+' NOT DETECTED');
 			}
 			
             if(typeof env_keys['IONIC_BUGSNAG_KEY'] !== "undefined"){

@@ -1,15 +1,15 @@
 angular.module('starter')
 
 	// Controls the History Page of the App.
-	.controller('RemindersCtrl', function($scope, authService, $ionicPopup, localStorageService, $state, $stateParams, measurementService, reminderService, $ionicLoading, utilsService){
+	.controller('RemindersAddCtrl', function($scope, authService, $ionicPopup, localStorageService, $state, $stateParams, measurementService, reminderService, $ionicLoading, utilsService){
 
-	    $scope.controller_name = "RemindersCtrl";
+	    $scope.controller_name = "RemindersAddCtrl";
+
+		console.log('Loading ' + $scope.controller_name);
 
 	    // state
 	    $scope.state = {
-	    	title : "Manage Reminders",
 	    	resultsHeaderText : '',
-
 	    	showVariableCategory : false,
 	    	showSearchBox : false,
 	    	showResults : false,
@@ -45,7 +45,18 @@ angular.module('starter')
 		console.log("$stateParams.category  is " + $stateParams.category);
 
 		if($stateParams.category){
-			$scope.state.title = "Manage " + $stateParams.category + " Reminders";
+            $scope.state.variableCategorySingular = pluralize($stateParams.category, 1);
+			$scope.state.title = "Add " + pluralize($stateParams.category, 1) + " Reminder";
+			$scope.state.variablePlaceholderText = "Enter " + pluralize($stateParams.category, 1) + " Name";
+		} else {
+			$scope.state.title = "Add Reminder";
+			$scope.state.variablePlaceholderText = "Enter Variable Name";
+		}
+
+		if($stateParams.category === "Treatments") {
+			$scope.state.defaultValuePlaceholderText = "Enter dosage here...";
+		} else {
+			$scope.state.defaultValuePlaceholderText = "Enter most common value here...";
 		}
 
 	    // data
@@ -55,8 +66,11 @@ angular.module('starter')
 		    	{ id : 2, name : 'Emotions' },
 		    	{ id : 3, name : 'Symptoms' },
 		    	{ id : 4, name : 'Treatments' },
-		    	{ id : 5, name : 'Foods' }, 
-		    	{ id : 6, name : 'Misc' }
+		    	{ id : 5, name : 'Foods' },
+                { id : 6, name : 'Vital Signs' },
+                { id : 7, name : 'Physical Activity' },
+                { id : 8, name : 'Sleep' },
+                { id : 9, name : 'Misc' }
 	    	],
 	    	list : [],
 	    	frequencyVariables : [
@@ -131,7 +145,7 @@ angular.module('starter')
 				} else {
 					console.log('category');
 					// get all variables by category
-					measurementService.getVariablesByCategory(category).then(function(variables){
+					measurementService.searchVariablesByCategoryIncludePublic('*', category).then(function(variables){
 
 					    $scope.userVariables = variables;
 					    $scope.variables.list = variables;
@@ -151,8 +165,8 @@ angular.module('starter')
     	};
 
 	    // when category is selected
-	    $scope.onVariableChange = function(){
-	    	console.log("Type Selected: ", $scope.state.selectedVariableCategory);
+	    $scope.onVariableCategoryChange = function(){
+	    	console.log("Variable category selected: ", $scope.state.selectedVariableCategory);
 	    	$scope.category = $scope.state.selectedVariableCategory;
 	    	$scope.state.searchQuery = '';
 	    	$scope.state.showResults = false;
@@ -164,7 +178,7 @@ angular.module('starter')
 
 	    	if($scope.state.selectedVariableCategory.toLowerCase() === 'anything'){
 	    		console.log('anything');
-	    		measurementService.getPublicVariables(query)
+	    		measurementService.searchVariablesIncludePublic(query)
 	    		.then(function(variables){
 
 	    		    // populate list with results
@@ -175,7 +189,7 @@ angular.module('starter')
 	    		});
 	    	} else {
 	    		console.log('with category');
-	    		measurementService.getPublicVariablesByCategory(query, $scope.category)
+	    		measurementService.searchVariablesByCategoryIncludePublic(query, $scope.category)
 	    		.then(function(variables){
 
 	    		    // populate list with results
@@ -420,9 +434,8 @@ angular.module('starter')
 	    // setup editing view
 	    var setupEditReminder = function(){
 	    	$scope.state.selectedReminder = $stateParams.reminder;
-	    	$scope.state.title = "Edit Reminder";
+	    	$scope.state.title = "Edit " + $scope.state.selectedReminder.variableName + " Reminder";
 	    	
-	    	console.log("setupEditReminder ran");
 	    	var reverseFrequencyChart = {
 	    		86400: "Once a day",
 	    		43200: "Twice a day",
@@ -447,7 +460,17 @@ angular.module('starter')
 
 	    	$scope.state.selectedUnit = $scope.state.selectedReminder.abbreviatedUnitName;
 	    	$scope.state.selectedDefaultValue = $scope.state.selectedReminder.defaultValue;
-	    	$scope.state.selectedFrequency = reverseFrequencyChart[$scope.state.selectedReminder.reminderFrequency];
+	    	
+	    	if($scope.state.selectedReminder.selectedFrequency && $scope.state.selectedReminder.selectedFrequency !== null){	    		
+	    		$scope.state.selectedFrequency = reverseFrequencyChart[$scope.state.selectedReminder.reminderFrequency];
+	    	} else if($scope.state.selectedReminder.thirdDailyReminderTime){
+	    		$scope.state.selectedFrequency = "Three times a day";
+	    	} else if($scope.state.selectedReminder.secondDailyReminderTime){
+	    		$scope.state.selectedFrequency = "Twice a day";
+	    	} else if($scope.state.firstDailyReminderTime){
+	    		$scope.state.selectedFrequency = "Once a day";
+	    	}
+
 	    	
 	    	$scope.state.showCustomBox = true;
 
@@ -456,7 +479,6 @@ angular.module('starter')
 
 	    // setup category view
 	    var setupCategory = function(category){
-	    	$scope.state.title = 'Add ' + category + ' Reminder';
 	    	$scope.state.showSearchBox = true;
 	    	$scope.state.showResults = true;
 	    	$scope.state.resultsHeaderText = "Your previously tracked "+category;
@@ -466,7 +488,6 @@ angular.module('starter')
 
 	    // setup new reminder view
 	    var setupNewReminder = function(){
-	    	$scope.state.title = "Add New Reminder";
 	    	$scope.state.showVariableCategory = true;
 	    	$scope.state.showSearchBox = true;
 	    };
@@ -477,7 +498,6 @@ angular.module('starter')
 			// get user token
 			authService.getAccessToken().then(function(token){
 				if($stateParams.category){
-					$scope.state.title = "Manage " + $stateParams.category + " Reminders";
 					$scope.category = $stateParams.category;
 					setupCategory($scope.category);
 				}

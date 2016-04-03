@@ -4,9 +4,9 @@
 		<div class="list card" ng-show="state.showVariableCategory">
             <!--<div class="item item-divider" style="background-color:#11c1f3; color:white;">Select Variable Category</div>-->
 			<label class="item item-input item-select">
-				<div class="input-label">Select Category</div>
-				<select ng-model="state.selectedVariableCategory" ng-change="onVariableChange()">
-					<option ng-repeat="type in variables.variableCategories" value="{{type.name}}">{{type.name}}</option>
+				<div class="input-label">Select Variable Category</div>
+				<select ng-model="state.selectedVariableCategory" ng-change="onVariableCategoryChange()">
+					<option ng-repeat="variableCategory in variables.variableCategories" value="{{variableCategory.name}}">{{variableCategory.name}}</option>
 				</select>
 			</label>
 		</div>
@@ -15,7 +15,7 @@
           <!--<div class="item item-divider" style="background-color:#11c1f3; color:white;">Enter Variable Name</div>-->
           <label class="item item-input">
             <i class="icon ion-search placeholder-icon"></i>
-            <input type="text" placeholder="Enter reminder variable name..." ng-model="state.searchQuery" ng-change="onSearch()" >
+            <input type="text" placeholder={{state.variablePlaceholderText}} ng-model="state.searchQuery" ng-change="onSearch()" >
           </label>
         </div>
 
@@ -32,10 +32,10 @@
         </div>
 
         <div class="list card" ng-show="state.showCustomBox">
-        	<div class="item item-divider" style="background-color:#11c1f3; color:white;">{{state.selectedReminder.name}} reminder settings</div>
+        	<div class="item item-divider" style="background-color:#11c1f3; color:white;">{{state.selectedReminder.variableName}} reminder settings</div>
         	<div class="row labeled-control">
         		<div class="col">
-        			<input type="text" style="width:100%;text-align:right;" placeholder="Enter Default Value Here" ng-model="state.selectedDefaultValue" class="uptop">
+        			<input type="text" style="width:100%;text-align:right;" placeholder={{state.defaultValuePlaceholderText}} ng-model="state.selectedDefaultValue" class="uptop">
         		</div>
         		<div class="col col-r">
         			<span>

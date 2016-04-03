@@ -6,8 +6,10 @@
 
     <!-- Very unrestrictive content security policy for development.
     Maybe should be replaced with something more strict.-->
+    <!--  Commented this because it messes up Intercom.  I can't remember why I had to add it the other day. 
     <meta http-equiv="Content-Security-Policy"
           content="default-src * 'unsafe-eval' 'unsafe-inline'">
+    -->
     <title></title>
 
     <title></title>
@@ -41,6 +43,7 @@
     <script src="lib/moment/moment.js"></script>
     <script src="lib/bugsnag/src/bugsnag.js" data-autonotify="false"></script>
     <script src="https://cdn.rawgit.com/QuantiModo/ConnectJS/master/connect.js"></script>
+    <script src="lib/pluralize/pluralize.js"></script>
 
       <!-- your app's js -->
     <script src="js/apps.js"></script>
@@ -83,7 +86,8 @@
     <script src="js/controllers/trackFactorsCtrl.js"></script>
     <script src="js/controllers/trackFactorsCategoryCtrl.js"></script>
     <script src="js/controllers/remindersInboxCtrl.js"></script>
-    <script src="js/controllers/remindersCtrl.js"></script>
+    <script src="js/controllers/remindersManageCtrl.js"></script>
+    <script src="js/controllers/remindersAddCtrl.js"></script>
 
       <script>(function(){var w=window;var ic=w.Intercom;if(typeof ic==="function"){ic('reattach_activator');ic('update',intercomSettings);}else{var d=document;var i=function(){i.c(arguments)};i.q=[];i.c=function(args){i.q.push(args)};w.Intercom=i;function l(){var s=d.createElement('script');s.type='text/javascript';s.async=true;s.src='https://widget.intercom.io/widget/vtynnyja';var x=d.getElementsByTagName('script')[0];x.parentNode.insertBefore(s,x);}if(w.attachEvent){w.attachEvent('onload',l);}else{w.addEventListener('load',l,false);}}})()</script>
 

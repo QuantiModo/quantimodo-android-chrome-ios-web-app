@@ -30,11 +30,15 @@ config.appSettings  = {
 
     default_state : 'app.reminders_inbox',
 
-    headline : 'Medication Tracking, Learning, Communication',
+    headline : 'Medications - Track, Learn, Connect',
     features: [
-        ' - Track your medication intake',
-        ' - Set up reminders',
-        ' - Track your responses to find links between treatments and how you feel'
+        ' Improve your health by remembering to take your medicines on time.',
+        ' Record "How I Feel" responses to provide critical feedback to your doctor. This feedback is one of the strongest features of MedTLC. It gives your doctor the data needed to change medications and adjust dosages when necessary, due to adverse reaction to a single drug, multiple drug interactions, and dosages that cause unwanted effects.',
+        ' Follow These Quick Steps to Improve Your Health',
+        ' 1. Enter Your Medications and Reminders',
+        ' 2. Record "How I Feel" Responses',
+        ' 3. Create Reports of Your Responses and Choose to Connect With Your Doctors',
+        ' (Print Reports To Take To Doctor Appointments or Send by Email)'
     ],
 
     primary_primary_outcome_variable_details : {
@@ -79,7 +83,7 @@ config.appSettings  = {
     welcome_text:"Let's start off by adding your first medication!",
     tracking_question:"What medication are you taking?",
     factor_average_text:"Your average mood is ",
-    notification_image : "file://img/logo.png",
+    notification_image : "file://img/icon_128.png",
     notification_text : "Time to Track",
     conversion_dataset: {
         "1": "depressed",
@@ -297,19 +301,29 @@ config.appSettings  = {
 
     menu : [
         {
-            title : 'Med Schedule',
-            href : '#/app/reminders-inbox/Treatments',
+            title : 'Add How I Feel Response',
+            href : '#/app/track_factors_category/Symptoms',
+            icon : 'ion-happy-outline'
+        },
+        {
+            title : 'Add Vitals Measurement',
+            href : '#/app/track_factors_category/Vital Signs',
+            icon : 'ion-ios-pulse'
+        },
+        {
+            title : 'Show Reminders',
+            href : '#/app/reminders-inbox',
+            icon : 'ion-android-notifications-none'
+        },
+        {
+            title : 'Add Medications',
+            href : '#/app/reminder_add/Treatments',
             icon : 'ion-ios-alarm-outline'
         },
         {
-            title : 'Your Medications',
+            title : 'Manage Medications',
             href : '#/app/reminders-manage/Treatments',
             icon : 'ion-ios-medkit-outline'
-        },
-        {
-            title : 'How I Feel',
-            href : '#/app/track_factors_category/Symptoms',
-            icon : 'ion-ios-pulse'
         },
         {
             title : 'History',
@@ -388,28 +402,28 @@ config.appSettings  = {
             title : 'Emotions',
             isSubMenu : true,
             subMenuVariable : 'showReminderSubMenu',
-            href : '#/app/reminders/Emotions',
+            href : '#/app/reminder_add/Emotions',
             icon : 'ion-happy-outline'
         },
         {
             title : 'Symptoms',
             isSubMenu : true,
             subMenuVariable : 'showReminderSubMenu',
-            href : '#/app/reminders/Symptoms',
+            href : '#/app/reminder_add/Symptoms',
             icon : 'ion-ios-pulse'
         },
         {
             title : 'Treatments',
             isSubMenu : true,
             subMenuVariable : 'showReminderSubMenu',
-            href : '#/app/reminders/Treatments',
+            href : '#/app/reminder_add/Treatments',
             icon : 'ion-ios-medkit-outline'
         },
         {
             title : 'Foods',
             isSubMenu : true,
             subMenuVariable : 'showReminderSubMenu',
-            href : '#/app/reminders/Foods',
+            href : '#/app/reminder_add/Foods',
             icon : 'ion-ios-nutrition-outline'
         },
         {
@@ -546,6 +560,28 @@ config.getClientSecret = function(){
     }
 };
 
+config.getRedirectUri = function(){
+    if (window.chrome && chrome.runtime && chrome.runtime.id) {
+        return window.private_keys.redirect_uris.Chrome;
+    } else {
+        var platform = getPlatform();
+        return platform === "Ionic"? window.private_keys.redirect_uris.Web : platform === "Web"? window.private_keys.redirect_uris.Web : platform === "iOS"? window.private_keys.redirect_uris.iOS : window.private_keys.redirect_uris.Android;
+    }
+};
+
+config.getApiUrl = function(){
+    if (window.chrome && chrome.runtime && chrome.runtime.id) {
+        return window.private_keys.api_urls.Chrome;
+    } else {
+        var platform = getPlatform();
+        return platform === "Ionic"? window.private_keys.api_urls.Web : platform === "Web"? window.private_keys.api_urls.Web : platform === "iOS"? window.private_keys.api_urls.iOS : window.private_keys.api_urls.Android;
+    }
+};
+
+config.getAllowOffline = function(){
+    return false;
+};
+
 config.getPermissionString = function(){
 
     var str = "";
@@ -555,35 +591,25 @@ config.getPermissionString = function(){
 
 };
 
-
 config.getURL = function(path){
-    if(typeof path === "undefined") path = "";
-    else path+= "?";
+    if(typeof path === "undefined") {
+        path = "";
+    }
+    else {
+        path += "?";
+    }
 
     var url = "";
 
-    if (window.chrome && chrome.runtime && chrome.runtime.id) {
-        url = config.protocol+"://"+config.domain+"/"+path;
+    if(config.getApiUrl() !== "undefined") {
+        url = config.getApiUrl() + "/" + path;
     }
-
-    else if(window.location.origin.indexOf('localhost')> -1 || window.location.origin == "file://" ){
-        //On localhost or mobile
-        url = config.protocol+"://"+config.domain+"/"+path;
-    }
-    else if(window.location.origin.indexOf("local.quantimo.do") > -1){
-         //local.quantimodo
-         url = 'https://local.quantimo.do:4417/' + path;
-
-    // } else if (window.location.origin.indexOf("staging.quantimo.do") > -1){
-    //     //local.quantimodo
-    //     url = 'https://staging.quantimo.do/' + path;
-
-    } else {
+    else 
+    {
         url = config.protocol + "://" + config.domain + "/" + path;
-        // url = window.location.origin + "/" + path;
     }
 
-   return url;
+    return url;
 };
 
 config.get = function(key){
