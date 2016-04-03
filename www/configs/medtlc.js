@@ -121,115 +121,10 @@ config.appSettings  = {
                 },
                 finalP : {
                     visible : true,
-                    content : 'Medication tracking, learning, and communication.',
+                    content : 'Medication. Track. Learn. Connect.',
                     classes : 'intro_para',
                     buttonBarVisible : true   
                 }
-            }
-        },
-        // screen 4
-        {
-            img : {
-                width : '200',
-                height : '150',
-                url : 'img/history_page.png'
-            },
-            content : {
-                firstP : {
-                    visible : true,
-                    content : 'History',
-                    classes : 'intro_header calm'
-                }, 
-                showFirstBr : true,
-                logoDiv : {
-                    visible : true,
-                    id : 'logo'
-                },
-                showSecondBr : true,
-                finalP: {
-                    visible : true,
-                    content : 'You can see and edit your data and notes by opening the <span class="calm">History</span> page.',
-                    classes : 'intro_para',
-                    buttonBarVisible : true
-                }
-            }
-        },
-        // screen 5
-        {
-            img : {
-                width : '220',
-                height : '200',
-                url : 'img/mood_note.png'
-            },
-            content : {
-                firstP : {
-                    visible : true,
-                    content : 'Add a Note',
-                    classes : 'intro_header calm'
-                }, 
-                logoDiv : {
-                    visible : true,
-                    id : 'logo'
-                },
-                finalP: {
-                    visible : true,
-                    content : 'Add a note or change a past value by tapping on a measurement in the <span class="calm">History</span> page.',
-                    classes : 'intro_para',
-                    buttonBarVisible : true
-                }
-            }
-        },
-        // screen 6
-        {
-            img : {
-                width : '220',
-                height : '190',
-                url : 'img/track_foods.png'
-            },
-            content : {
-                firstP : {
-                    visible : true,
-                    content : 'Track Foods',
-                    classes : 'intro_header calm'
-                }, 
-                logoDiv : {
-                    visible : true,
-                    id : 'logo'
-                },
-                finalP: {
-                    visible : true,
-                    content : 'Track your diet on the <span class="calm">Track Foods</span> page. You can also <span class="calm">Add a new Food Variable</span> if you don\'t find the meal you looked for in the search results.',
-                    classes : 'intro_para_small',
-                    buttonBarVisible : true
-                }
-            }
-        },
-        // screen 7
-        {
-            img : {
-                width : '190',
-                height : '180',
-                url : 'img/track_symptoms.png'
-            },
-            content : {
-
-                firstP : {
-                    visible : true,
-                    content : 'Track Symptoms',
-                    classes : 'intro_header calm'
-                }, 
-                
-                logoDiv : {
-                    visible : true,
-                    id : 'logo'
-                },
-                
-                finalP: {
-                    visible : true,
-                    content : 'Track any symptom on the <span class="calm">Track Symptoms</span> page. You can also <span class="calm">Add a new Symptom</span> if you don\'t find the symptom you looked for in the search results.',
-                    classes : 'intro_para_small',
-                    buttonBarVisible : true
-                }   
             }
         },
         // screen 8
@@ -242,16 +137,91 @@ config.appSettings  = {
             content : {
                 firstP : {
                     visible : true,
-                    content : 'Track Treatments',
+                    content : 'Medications and Reminders',
                     classes : 'intro_header calm'
-                },                 
+                },
                 logoDiv : {
                     visible : true,
                     id : 'logo'
                 },
                 finalP: {
                     visible : true,
-                    content : 'Track your treatments on the <span class="calm">Track Treatments</span> page. You can also <span class="calm">Add a new Treatment</span> if you don\'t find the treatment you looked for in the search results.',
+                    content : 'Add medications and reminders on the Add Medications page.',
+                    classes : 'intro_para_small',
+                    buttonBarVisible : true
+                }
+            }
+        },
+        {
+            img : {
+                width : '190',
+                height : '180',
+                url : 'img/track_symptoms.png'
+            },
+            content : {
+
+                firstP : {
+                    visible : true,
+                    content : 'Track How You Feel',
+                    classes : 'intro_header calm'
+                },
+
+                logoDiv : {
+                    visible : true,
+                    id : 'logo'
+                },
+
+                finalP: {
+                    visible : true,
+                    content : ' Record "How I Feel" responses to provide critical feedback to your doctor. This feedback is one of the strongest features of MedTLC. It gives your doctor the data needed to change medications and adjust dosages when necessary, due to adverse reaction to a single drug, multiple drug interactions, and dosages that cause unwanted effects.',
+                    classes : 'intro_para_small',
+                    buttonBarVisible : true
+                }
+            }
+        },
+        {
+            img : {
+                width : '220',
+                height : '200',
+                url : 'img/mood_note.png'
+            },
+            content : {
+                firstP : {
+                    visible : true,
+                    content : 'History',
+                    classes : 'intro_header calm'
+                }, 
+                logoDiv : {
+                    visible : true,
+                    id : 'logo'
+                },
+                finalP: {
+                    visible : true,
+                    content : 'See your and edit past data and notes on the <span class="calm">History</span> page.',
+                    classes : 'intro_para',
+                    buttonBarVisible : true
+                }
+            }
+        },
+        {
+            img : {
+                width : '220',
+                height : '190',
+                url : 'img/track_foods.png'
+            },
+            content : {
+                firstP : {
+                    visible : true,
+                    content : 'Track Foods',
+                    classes : 'intro_header calm'
+                },
+                logoDiv : {
+                    visible : true,
+                    id : 'logo'
+                },
+                finalP: {
+                    visible : true,
+                    content : 'Track your diet on the <span class="calm">Track Foods</span> page. You can also <span class="calm">Add a new Food Variable</span> if you don\'t find the meal you looked for in the search results.',
                     classes : 'intro_para_small',
                     buttonBarVisible : true
                 }
