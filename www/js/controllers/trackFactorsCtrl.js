@@ -1,7 +1,9 @@
 angular.module('starter')
     
     // Controls the Track Factors Page
-    .controller('TrackFactorsCtrl', function($scope, $ionicModal, $timeout, $ionicPopup ,$ionicLoading, authService, measurementService, $state, $rootScope, utilsService, localStorageService){
+    .controller('TrackFactorsCtrl', function($scope, $ionicModal, $timeout, $ionicPopup ,$ionicLoading, authService,
+                                             measurementService, $state, $rootScope, utilsService, localStorageService,
+                                                $filter){
 
         $scope.controller_name = "TrackFactorsCtrl";
 
@@ -40,6 +42,9 @@ angular.module('starter')
 
             searchedUnits : []
         };
+
+        $scope.state.title = $filter('wordAliases')('Track');
+        
             
 
         // alert box

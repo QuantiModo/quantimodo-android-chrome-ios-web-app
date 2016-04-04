@@ -92,8 +92,10 @@ angular.module('starter')
 
         if(category.length > 1){
             $scope.state.trackFactorsPlaceholderText = "Search for a " +  $filter('wordAliases')(pluralize(category, 1).toLowerCase()) + " here...";
+            $scope.state.title = $filter('wordAliases')('Track') + " " + $filter('wordAliases')(category);
         } else {
             $scope.state.trackFactorsPlaceholderText = "Search for a variable here...";
+            $scope.state.title = $filter('wordAliases')('Track');
         }
 
 
