@@ -202,57 +202,6 @@ config.appSettings  = {
                     buttonBarVisible : true
                 }
             }
-        },
-        {
-            img : {
-                width : '220',
-                height : '190',
-                url : 'img/track_foods.png'
-            },
-            content : {
-                firstP : {
-                    visible : true,
-                    content : 'Track Foods',
-                    classes : 'intro_header calm'
-                },
-                logoDiv : {
-                    visible : true,
-                    id : 'logo'
-                },
-                finalP: {
-                    visible : true,
-                    content : 'Track your diet on the <span class="calm">Track Foods</span> page. You can also <span class="calm">Add a new Food Variable</span> if you don\'t find the meal you looked for in the search results.',
-                    classes : 'intro_para_small',
-                    buttonBarVisible : true
-                }
-            }
-        },
-        // screen 11
-        {
-            img : {
-                width : '180',
-                height : '180',
-                url : 'img/ic_mood_ecstatic.png'
-            },
-            content : {
-
-                firstP : {
-                    visible : true,
-                    content : 'We are feeling ecstatic that you\'re helping us derive a mathematical equation for happiness!',
-                    classes : 'intro_para calm'
-                }, 
-                
-                logoDiv : {
-                    visible : true,
-                    id : 'logo'
-                },
-                finalP: {
-                    visible : true,
-                    content : 'Now start tracking and optimize your life!',
-                    classes : 'intro_para_small',
-                    buttonBarVisible : true
-                }
-            }
         }
     ],
 
