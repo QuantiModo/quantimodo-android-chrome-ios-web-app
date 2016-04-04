@@ -14,32 +14,38 @@ angular.module('starter')
             "Vital Signs":{
                 default_unit:"units",
                 help_text:"What vital sign do you want to track?",
-                variable_category_name: "Vital Signs"
+                variable_category_name: "Vital Signs",
+                variable_category_name_singular_lowercase : "vital sign"
             },
             Foods:{
                 default_unit:"serving",
                 help_text:"What did you eat?",
-                variable_category_name: "Foods"
+                variable_category_name: "Foods",
+                variable_category_name_singular_lowercase : "food"
             },
             Emotions:{
                 default_unit: "/5",
                 help_text: "Select an aspect of emotion",
-                variable_category_name: "Emotions"
+                variable_category_name: "Emotions",
+                variable_category_name_singular_lowercase : "emotion"
             },
             Symptoms:{
                 default_unit: "/5",
                 help_text: "What do you want to track?",
-                variable_category_name: "Symptoms"
+                variable_category_name: "Symptoms",
+                variable_category_name_singular_lowercase : "symptom"
             },
             Treatments:{
                 default_unit: "count",
                 help_text:"What do you want to track?",
-                variable_category_name: "Treatments"
+                variable_category_name: "Treatments",
+                variable_category_name_singular_lowercase : "treatment"
             },
             "Physical Activity": {
                 default_unit: "count",
                 help_text:"What do you want to track?",
-                variable_category_name: "Physical Activity"
+                variable_category_name: "Physical Activity",
+                variable_category_name_singular_lowercase : "physical activity"
             }
         };
 
@@ -74,6 +80,7 @@ angular.module('starter')
             factor : category,
             help_text: categoryConfig[category].help_text,
             variable_category_name : categoryConfig[category].variable_category_name,
+            variable_category_name_singular_lowercase : categoryConfig[category].variable_category_name_singular_lowercase,
             unit_text : '',
             
             // default operation

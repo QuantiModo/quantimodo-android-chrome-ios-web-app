@@ -35,14 +35,14 @@
 
             <ion-list>
                 <ion-item style="border-top: 1px solid rgb(221, 221, 221);" ng-click="add_variable()">
-                    + Add a new {{state.variable_category_name | wordAliases}} variable
+                    + Add a new {{state.variable_category_name_singular_lowercase | wordAliases}} variable
                 </ion-item>
             </ion-list>
         </div>
 
         <div class="card" ng-show="flags.showAddVariable">
             <div class="list">
-                <p class="heading calm" style="padding:14px;">Add New {{state.variable_category_name | wordAliases}} Variable</p>
+                <p class="heading calm" style="padding:14px;">Add a new {{state.variable_category_name_singular_lowercase | wordAliases}} variable</p>
 
 
                 <label class="item item-input item-select" ng-if="flags.showCategoryAsSelector">
