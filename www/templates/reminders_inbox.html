@@ -3,14 +3,14 @@
 	<ion-content scroll="true" overflow-scroll="true"> 
 		
 		<div ng-hide="state.showMeasurementBox">
-			<div class="list card">
+			<div ng-hide="state.hideAddNewReminderButton" class="list card">
 				<!--<div class="item item-divider" style="background-color:#11c1f3; color:white;">Actions</div>-->
 				<a href="#/app/reminder_add" class="item item-icon-left">
 					<i class="icon ion-plus calm"></i>
 					Add a new Reminder
 				</a>
 			</div>
-			<div class="list card">
+			<div ng-show="state.showAddHowIFeelResponseButton" class="list card">
 				<!--<div class="item item-divider" style="background-color:#11c1f3; color:white;">Actions</div>-->
 				<a href="#/app/track_factors_category/Symptoms" class="item item-icon-left">
 					<i class="icon ion-plus calm"></i>

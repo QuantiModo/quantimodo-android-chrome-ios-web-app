@@ -127,8 +127,6 @@ config.appSettings  = {
                 }
             }
         },
-        // screen 8
-        // TODO: Remove treatments
         {
             img : {
                 width : '210',
@@ -229,6 +227,10 @@ config.appSettings  = {
         "treatment reminder" : "medication"
     },
     
+    remindersInbox : {
+        hideAddNewReminderButton : true,
+        showAddHowIFeelResponseButton : true
+    },
 
     menu : [
         {
@@ -404,7 +406,9 @@ config.appSettings  = {
 config.getPrimaryOutcomeVariableOptionLabels = function(shouldShowNumbers){
     if(shouldShowNumbers || !config.appSettings.primary_outcome_variables_options_labels){
         return ['1',  '2',  '3',  '4', '5'];
-    } else return config.appSettings.primary_outcome_variables_options_labels;
+    } else {
+        return config.appSettings.primary_outcome_variables_options_labels;
+    }
 };
 
 config.getPrimaryOutcomeVariableOptions = function(shouldShowNumbers){
@@ -431,7 +435,9 @@ config.getPrimaryOutcomeVariableOptions = function(shouldShowNumbers){
                 img: 'img/ic_5.png'
             }
         ];
-    } else return config.appSettings.primary_outcome_variable_options;
+    } else {
+        return config.appSettings.primary_outcome_variable_options;
+    }
 };
 
 config.getImageForPrimaryOutcomeVariableByValue = function(val){
@@ -516,8 +522,9 @@ config.getAllowOffline = function(){
 config.getPermissionString = function(){
 
     var str = "";
-    for(var i=0; i < config.permissions.length; i++)
-        str+= config.permissions[i]+"%20";
+    for(var i=0; i < config.permissions.length; i++) {
+        str += config.permissions[i] + "%20";
+    }
     return str.replace(/%20([^%20]*)$/,'$1');
 
 };

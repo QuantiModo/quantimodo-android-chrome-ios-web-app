@@ -5,6 +5,14 @@ angular.module('starter')
 	    $scope.controller_name = "RemindersInboxCtrl";
 
 		console.log('Loading ' + $scope.controller_name);
+
+		if(typeof config.appSettings.remindersInbox.showAddHowIFeelResponseButton !== 'undefined'){
+			$scope.state = config.appSettings.remindersInbox.showAddHowIFeelResponseButton;
+		}
+
+		if(typeof(config.appSettings.remindersInbox.hideAddNewReminderButton) !== 'undefined'){
+			$scope.state = config.appSettings.remindersInbox.hideAddNewReminderButton;
+		}
 	    
 	    $scope.state = {
 	    	title : "Reminder Inbox",
