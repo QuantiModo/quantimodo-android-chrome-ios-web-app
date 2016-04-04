@@ -11,7 +11,7 @@ window.config = {
     bugsnag:{
         notifyReleaseStages:['Production','Staging']
     },
-    client_source_name : "EnergyModo "+ getPlatform(),
+    client_source_name : "EnergyModo " + getPlatform(),
     domain : 'app.quantimo.do',
     environment: "Development",
     permissions : ['readmeasurements', 'writemeasurements'],
@@ -678,6 +678,10 @@ config.getApiUrl = function(){
     }
 };
 
+config.getAllowOffline = function(){
+    return true;
+};
+
 config.getPermissionString = function(){
 
     var str = "";
@@ -688,31 +692,24 @@ config.getPermissionString = function(){
 };
 
 config.getURL = function(path){
-    if(typeof path === "undefined") path = "";
-    else path+= "?";
+    if(typeof path === "undefined") {
+        path = "";
+    }
+    else {
+        path += "?";
+    }
+
     var url = "";
 
-    if (window.chrome && chrome.runtime && chrome.runtime.id) {
-        url = config.protocol+"://"+config.domain+"/"+path;
+    if(config.getApiUrl() !== "undefined") {
+        url = config.getApiUrl() + "/" + path;
     }
-
-    else if(window.location.origin.indexOf('localhost')> -1 || window.location.origin == "file://" ){
-        //On localhost or mobile
-        url = config.protocol+"://"+config.domain+"/"+path;
-    }
-    else if(window.location.origin.indexOf("local.") > -1){
-         //local.quantimodo
-         url = config.protocol+"://"+config.domain;
-         
-         url+= (config.domain.indexOf('app.') === -1 && config.domain.indexOf('staging.') === -1)? ":"+config.port : "";
-         
-         url+="/"+path;
-    } else {
+    else 
+    {
         url = config.protocol + "://" + config.domain + "/" + path;
-        // url = window.location.origin + "/" + path;
     }
 
-   return url;
+    return url;
 };
 
 config.get = function(key){
