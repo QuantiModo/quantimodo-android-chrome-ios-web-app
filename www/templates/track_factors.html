@@ -1,4 +1,4 @@
-<ion-view hide-nav-bar="skipMenu" view-title="Track {{state.variable_category_name}}">
+<ion-view hide-nav-bar="skipMenu" view-title="Track {{state.variable_category_name | wordAliases}}">
     <ion-content>
         <div class="card" ng-show="flags.showTrack">
             <div class="item item-text-wrap">
@@ -35,19 +35,19 @@
 
             <ion-list>
                 <ion-item style="border-top: 1px solid rgb(221, 221, 221);" ng-click="add_variable()">
-                    + Add a new {{state.variable_category_name}} variable
+                    + Add a new {{state.variable_category_name | wordAliases}} variable
                 </ion-item>
             </ion-list>
         </div>
 
         <div class="card" ng-show="flags.showAddVariable">
             <div class="list">
-                <p class="heading calm" style="padding:14px;">Add New Variable</p>
+                <p class="heading calm" style="padding:14px;">Add New {{state.variable_category_name | wordAliases}} Variable</p>
 
 
                 <label class="item item-input item-select" ng-if="flags.showCategoryAsSelector">
                     <div class="input-label">
-                        Category
+                        Variable Category
                     </div>
                     <select ng-model="state.variable_category" ng-change=>
                         <option ng-repeat="i in state.variableCategories track by i.id" value="{{i.name}}">
@@ -57,7 +57,7 @@
                 </label>
 
                 <label class="item item-input item-stacked-label" ng-if="!flags.showCategoryAsSelector">
-                    <span class="input-label">Category</span>
+                    <span class="input-label">Variable Category</span>
                     <input type="text" ng-model="state.variable_category" readonly id="category_name" placeholder="Category name">
                 </label>
 

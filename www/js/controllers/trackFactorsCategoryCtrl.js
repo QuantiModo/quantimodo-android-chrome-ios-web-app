@@ -4,7 +4,9 @@
 angular.module('starter')
 
     // Controls the Track Factors Page
-    .controller('TrackFactorsCategoryCtrl', function($scope, $ionicModal, $timeout, $ionicPopup ,$ionicLoading, authService, measurementService, $state, $rootScope, $stateParams, utilsService, localStorageService){
+    .controller('TrackFactorsCategoryCtrl', function($scope, $ionicModal, $timeout, $ionicPopup ,$ionicLoading,
+                                                     authService, measurementService, $state, $rootScope, $stateParams,
+                                                     utilsService, localStorageService, $filter){
 
         $scope.controller_name = "TrackFactorsCategoryCtrl";
 
@@ -82,9 +84,9 @@ angular.module('starter')
         };
 
         if(category.length > 1){
-            $scope.state.trackFactorsPlaceholderText = "Enter " +  pluralize(category, 1).toLowerCase() + " here...";
+            $scope.state.trackFactorsPlaceholderText = "Search for a " +  $filter('wordAliases')(pluralize(category, 1).toLowerCase()) + " here...";
         } else {
-            $scope.state.trackFactorsPlaceholderText = "Enter variable name here...";
+            $scope.state.trackFactorsPlaceholderText = "Search for a variable here...";
         }
 
 

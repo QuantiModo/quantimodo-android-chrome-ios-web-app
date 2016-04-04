@@ -219,6 +219,16 @@ config.appSettings  = {
         "#/app/track_factors_category/Symptoms": 'You can immediately track any symptom or side effect on this page. You can also <span class="calm">Add a new Symptom</span> if you don\'t find the symptom you looked for in the search results.',
         "#/app/track_factors_category/Treatments": 'You can immediately track any as-need treatment on this page. You can also <span class="calm">Add a new Treatment</span> if you don\'t find the treatment you looked for in the search results.',
     },
+    
+    wordAliases : {
+        "Treatments" : "Medications",
+        "treatments" : "medications",
+        "Treatment" : "Medication",
+        "treatment" : "medication",
+        "Treatment Reminder" : "Medication",
+        "treatment reminder" : "medication"
+    },
+    
 
     menu : [
         {
