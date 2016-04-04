@@ -37,6 +37,14 @@ angular.module('starter')
 			$scope.state.hideAddNewReminderButton = config.appSettings.remindersInbox.hideAddNewReminderButton;
 		}
 
+		if(typeof(config.appSettings.remindersInbox.showAddNewMedicationButton) !== 'undefined'){
+			$scope.state.showAddNewMedicationButton = config.appSettings.remindersInbox.showAddNewMedicationButton;
+		}
+
+		if(typeof(config.appSettings.remindersInbox.showAddVitalSignButton) !== 'undefined'){
+			$scope.state.showAddVitalSignButton = config.appSettings.remindersInbox.showAddVitalSignButton;
+		}
+
 		if(typeof(config.appSettings.remindersInbox.title) !== 'undefined'){
 			$scope.state.title = config.appSettings.remindersInbox.title;
 		}

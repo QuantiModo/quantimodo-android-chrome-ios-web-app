@@ -237,6 +237,7 @@ config.appSettings  = {
         showAddNewMedicationButton : true,
         hideAddNewReminderButton : true,
         showAddHowIFeelResponseButton : true,
+        showAddVitalSignButton : true,
         title : 'Reminders'
     },
 
