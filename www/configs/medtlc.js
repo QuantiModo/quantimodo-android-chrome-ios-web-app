@@ -121,13 +121,14 @@ config.appSettings  = {
                 },
                 finalP : {
                     visible : true,
-                    content : 'Medication. Track. Learn. Connect.',
+                    content : 'Medication - Track. Learn. Connect.',
                     classes : 'intro_para',
                     buttonBarVisible : true   
                 }
             }
         },
         // screen 8
+        // TODO: Remove treatments
         {
             img : {
                 width : '210',
@@ -153,6 +154,7 @@ config.appSettings  = {
             }
         },
         {
+            // Add icons instead of screen-shot
             img : {
                 width : '190',
                 height : '180',
@@ -162,7 +164,7 @@ config.appSettings  = {
 
                 firstP : {
                     visible : true,
-                    content : 'Track How You Feel',
+                    content : 'Record How You Feel',
                     classes : 'intro_header calm'
                 },
 
