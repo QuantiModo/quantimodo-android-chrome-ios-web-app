@@ -224,12 +224,18 @@ config.appSettings  = {
         "Treatment" : "Medication",
         "treatment" : "medication",
         "Treatment Reminder" : "Medication",
-        "treatment reminder" : "medication"
+        "treatment reminder" : "medication",
+        "Reminder Inbox" : "Reminders"
     },
     
     remindersInbox : {
         hideAddNewReminderButton : true,
-        showAddHowIFeelResponseButton : true
+        showAddHowIFeelResponseButton : true,
+        title : 'Reminders'
+    },
+
+    remindersManage : {
+        hideAddNewReminderButton : true
     },
 
     menu : [

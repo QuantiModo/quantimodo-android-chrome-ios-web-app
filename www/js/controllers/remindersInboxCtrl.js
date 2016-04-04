@@ -1,21 +1,14 @@
 angular.module('starter')
 
-	.controller('RemindersInboxCtrl', function($scope, authService, $ionicPopup, localStorageService, $state, reminderService, $ionicLoading, measurementService, utilsService, $stateParams, $location){
+	.controller('RemindersInboxCtrl', function($scope, authService, $ionicPopup, localStorageService, $state, 
+											   reminderService, $ionicLoading, measurementService, utilsService, 
+											   $stateParams, $location, $filter){
 
 	    $scope.controller_name = "RemindersInboxCtrl";
 
 		console.log('Loading ' + $scope.controller_name);
-
-		if(typeof config.appSettings.remindersInbox.showAddHowIFeelResponseButton !== 'undefined'){
-			$scope.state = config.appSettings.remindersInbox.showAddHowIFeelResponseButton;
-		}
-
-		if(typeof(config.appSettings.remindersInbox.hideAddNewReminderButton) !== 'undefined'){
-			$scope.state = config.appSettings.remindersInbox.hideAddNewReminderButton;
-		}
-	    
+		
 	    $scope.state = {
-	    	title : "Reminder Inbox",
 	    	showMeasurementBox : false,
 	    	selectedReminder : false,
 	    	reminderDefaultValue : "",
@@ -36,8 +29,20 @@ angular.module('starter')
 			isDisabled : false
 	    };
 
+		if(typeof config.appSettings.remindersInbox.showAddHowIFeelResponseButton !== 'undefined'){
+			$scope.state.showAddHowIFeelResponseButton = config.appSettings.remindersInbox.showAddHowIFeelResponseButton;
+		}
+
+		if(typeof(config.appSettings.remindersInbox.hideAddNewReminderButton) !== 'undefined'){
+			$scope.state.hideAddNewReminderButton = config.appSettings.remindersInbox.hideAddNewReminderButton;
+		}
+
+		if(typeof(config.appSettings.remindersInbox.title) !== 'undefined'){
+			$scope.state.title = config.appSettings.remindersInbox.title;
+		}
+
 		if($stateParams.category){
-			$scope.state.title = $stateParams.category + " Reminder Inbox";
+			$scope.state.title = $filter('wordAliases')($stateParams.category) + " " + $filter('wordAliases')("Reminder Inbox");
 		}
 
 	    $scope.select_primary_outcome_variable = function($event, val){
