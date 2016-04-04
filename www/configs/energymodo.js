@@ -389,6 +389,11 @@ config.appSettings  = {
 
     },
 
+    wordAliases : {
+
+    },
+
+
     menu : [
         {
             title : 'Track Energy',
