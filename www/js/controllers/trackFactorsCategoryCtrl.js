@@ -176,7 +176,7 @@ angular.module('starter')
             // set default
             $scope.state.variable_name = "";
             $scope.state.variable_value = "";
-            $scope.state.note = "";
+            $scope.state.note = null;
         };
 
         // cancel activity
