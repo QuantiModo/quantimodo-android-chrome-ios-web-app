@@ -1,6 +1,6 @@
 angular.module('starter')
 	// Measurement Service
-	.factory('measurementService', function($http, $q, QuantiModo,localStorageService){
+	.factory('measurementService', function($http, $q, QuantiModo, localStorageService, $rootScope){
 
 		// sync the measurements in queue with QuantiModo API
 		var syncQueue = function(measurementsQueue){
@@ -409,6 +409,14 @@ angular.module('starter')
 				// send request
 				var get_measurements = function(){
 
+                    localStorageService.getItem('isLoggedIn', function(isLoggedIn){
+                        if(!isLoggedIn){
+                            isSyncing = false;
+                            deferred.resolve();
+                            return;
+                        }
+                    });
+
 					// if the data is already synced
 					if(isSynced){
 						isSyncing = false;
@@ -427,6 +435,8 @@ angular.module('starter')
 						}
 						else deferred.reject(false);
 					}, function(response){
+                        isSyncing = false;
+                        $rootScope.isSyncing = false;
                         deferred.reject(false);
                     }, function(response){
                         if(response){
@@ -483,7 +493,15 @@ angular.module('starter')
                                 });
 
                             }
-                        } 
+                        } else {
+                            localStorageService.getItem('isLoggedIn', function(isLoggedIn){
+                                if(isLoggedIn == "false" || isLoggedIn == false){
+                                    isSyncing = false;
+                                    deferred.resolve();
+                                    return;
+                                }
+                            });
+                        }
                     });
 				};
 

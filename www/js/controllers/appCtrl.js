@@ -251,6 +251,7 @@ angular.module('starter')
     $scope.logout = function(){
 
         var start_logout = function(){
+            $rootScope.isSyncing = false;
             if(ionic.Platform.platforms[0] !== "browser"){
                 console.log('start_logout: Open the auth window via inAppBrowser.  Platform is ' + ionic.Platform.platforms[0]);
                 var ref = window.open(config.getApiUrl() + '/api/v2/auth/logout','_blank', 'location=no,toolbar=yes');
