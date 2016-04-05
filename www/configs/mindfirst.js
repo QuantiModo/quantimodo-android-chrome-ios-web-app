@@ -393,6 +393,15 @@ config.appSettings  = {
         "#/app/negative" : 'Negative Predictors are the factors most predictive of <span class="calm">DECREASING</span> for the average QuantiModo user.'
     },
 
+    remindersInbox : {
+
+    },
+
+    wordAliases : {
+
+    },
+
+
     menu : [
         {
             title : 'Track Mood',

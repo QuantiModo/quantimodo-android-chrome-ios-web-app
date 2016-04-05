@@ -121,118 +121,12 @@ config.appSettings  = {
                 },
                 finalP : {
                     visible : true,
-                    content : 'Medication tracking, learning, and communication.',
+                    content : 'Medication - Track. Learn. Connect.',
                     classes : 'intro_para',
                     buttonBarVisible : true   
                 }
             }
         },
-        // screen 4
-        {
-            img : {
-                width : '200',
-                height : '150',
-                url : 'img/history_page.png'
-            },
-            content : {
-                firstP : {
-                    visible : true,
-                    content : 'History',
-                    classes : 'intro_header calm'
-                }, 
-                showFirstBr : true,
-                logoDiv : {
-                    visible : true,
-                    id : 'logo'
-                },
-                showSecondBr : true,
-                finalP: {
-                    visible : true,
-                    content : 'You can see and edit your data and notes by opening the <span class="calm">History</span> page.',
-                    classes : 'intro_para',
-                    buttonBarVisible : true
-                }
-            }
-        },
-        // screen 5
-        {
-            img : {
-                width : '220',
-                height : '200',
-                url : 'img/mood_note.png'
-            },
-            content : {
-                firstP : {
-                    visible : true,
-                    content : 'Add a Note',
-                    classes : 'intro_header calm'
-                }, 
-                logoDiv : {
-                    visible : true,
-                    id : 'logo'
-                },
-                finalP: {
-                    visible : true,
-                    content : 'Add a note or change a past value by tapping on a measurement in the <span class="calm">History</span> page.',
-                    classes : 'intro_para',
-                    buttonBarVisible : true
-                }
-            }
-        },
-        // screen 6
-        {
-            img : {
-                width : '220',
-                height : '190',
-                url : 'img/track_foods.png'
-            },
-            content : {
-                firstP : {
-                    visible : true,
-                    content : 'Track Foods',
-                    classes : 'intro_header calm'
-                }, 
-                logoDiv : {
-                    visible : true,
-                    id : 'logo'
-                },
-                finalP: {
-                    visible : true,
-                    content : 'Track your diet on the <span class="calm">Track Foods</span> page. You can also <span class="calm">Add a new Food Variable</span> if you don\'t find the meal you looked for in the search results.',
-                    classes : 'intro_para_small',
-                    buttonBarVisible : true
-                }
-            }
-        },
-        // screen 7
-        {
-            img : {
-                width : '190',
-                height : '180',
-                url : 'img/track_symptoms.png'
-            },
-            content : {
-
-                firstP : {
-                    visible : true,
-                    content : 'Track Symptoms',
-                    classes : 'intro_header calm'
-                }, 
-                
-                logoDiv : {
-                    visible : true,
-                    id : 'logo'
-                },
-                
-                finalP: {
-                    visible : true,
-                    content : 'Track any symptom on the <span class="calm">Track Symptoms</span> page. You can also <span class="calm">Add a new Symptom</span> if you don\'t find the symptom you looked for in the search results.',
-                    classes : 'intro_para_small',
-                    buttonBarVisible : true
-                }   
-            }
-        },
-        // screen 8
         {
             img : {
                 width : '210',
@@ -242,44 +136,69 @@ config.appSettings  = {
             content : {
                 firstP : {
                     visible : true,
-                    content : 'Track Treatments',
+                    content : 'Medications and Reminders',
                     classes : 'intro_header calm'
-                },                 
+                },
                 logoDiv : {
                     visible : true,
                     id : 'logo'
                 },
                 finalP: {
                     visible : true,
-                    content : 'Track your treatments on the <span class="calm">Track Treatments</span> page. You can also <span class="calm">Add a new Treatment</span> if you don\'t find the treatment you looked for in the search results.',
+                    content : 'Add medications and reminders on the Add Medications page.',
                     classes : 'intro_para_small',
                     buttonBarVisible : true
                 }
             }
         },
-        // screen 11
         {
+            // Add icons instead of screen-shot
             img : {
-                width : '180',
+                width : '190',
                 height : '180',
-                url : 'img/ic_mood_ecstatic.png'
+                url : 'img/track_symptoms.png'
             },
             content : {
 
                 firstP : {
                     visible : true,
-                    content : 'We are feeling ecstatic that you\'re helping us derive a mathematical equation for happiness!',
-                    classes : 'intro_para calm'
+                    content : 'Record How You Feel',
+                    classes : 'intro_header calm'
+                },
+
+                logoDiv : {
+                    visible : true,
+                    id : 'logo'
+                },
+
+                finalP: {
+                    visible : true,
+                    content : ' Record "How I Feel" responses to provide critical feedback to your doctor. This feedback is one of the strongest features of MedTLC. It gives your doctor the data needed to change medications and adjust dosages when necessary, due to adverse reaction to a single drug, multiple drug interactions, and dosages that cause unwanted effects.',
+                    classes : 'intro_para_small',
+                    buttonBarVisible : true
+                }
+            }
+        },
+        {
+            img : {
+                width : '220',
+                height : '200',
+                url : 'img/mood_note.png'
+            },
+            content : {
+                firstP : {
+                    visible : true,
+                    content : 'History',
+                    classes : 'intro_header calm'
                 }, 
-                
                 logoDiv : {
                     visible : true,
                     id : 'logo'
                 },
                 finalP: {
                     visible : true,
-                    content : 'Now start tracking and optimize your life!',
-                    classes : 'intro_para_small',
+                    content : 'See your and edit past data and notes on the <span class="calm">History</span> page.',
+                    classes : 'intro_para',
                     buttonBarVisible : true
                 }
             }
@@ -287,16 +206,43 @@ config.appSettings  = {
     ],
 
     help_popup_messages : {
-        "#/app/reminders-inbox/Treatments": 'If you\'ve already added some medication reminders, here\'s where your medication reminder notifications should appear when it\'s time to take them.  Once you have some notifications, you can use those to track your medication intake.',
-        "#/app/reminders-inbox/Symptoms": 'If you\'ve already added some side effect or symptom tracking reminders, here\'s where your medication reminder notifications should appear when it\'s time to take them.  Once you have some notifications, you can use those to track how you feel.',
+        "#/app/reminders-inbox/Treatments": 'If you\'ve already added some medication reminders, here\'s where your medication reminder notifications should appear when it\'s time to take them.  Once you have some notifications, you can use those to record your medication intake.',
+        "#/app/reminders-inbox/Symptoms": 'If you\'ve already added some side effect or response tracking reminders, here\'s where your medication reminder notifications should appear when it\'s time to take them.  Once you have some notifications, you can use those to record how you feel.',
         "#/app/reminders-manage/Treatments": 'Here, you can set up or delete existing medication reminders.',
-        "#/app/reminders-manage/Symptoms": 'Here, you can set up or delete existing side effect tracking or symptom tracking reminders.',
+        "#/app/reminders-manage/Symptoms": 'Here, you can set up or delete existing side effect tracking or response tracking reminders.',
         "#/app/reminders-manage": 'Here, you can set up or delete existing reminders for .',
-        "#/app/reminders-inbox": 'If you\'ve already added some reminders, here\'s where your tracking reminder notifications should appear.  Once you have some notifications, you can use those to track your medication intake and how you feel.',
+        "#/app/reminders-inbox": 'If you\'ve already added some reminders, here\'s where your tracking reminder notifications should appear.  Once you have some notifications, you can use those to record your medication intake and how you feel.',
         "#/app/history": 'You can see and edit your past data and add notes by tapping on any item in the list.',
-        "#/app/track_factors_category/Foods": 'Track your diet on this page. <span class="calm">Add a new Food Variable</span> if you do not find the meal you looked for in the search results.',
-        "#/app/track_factors_category/Symptoms": 'You can immediately track any symptom or side effect on this page. You can also <span class="calm">Add a new Symptom</span> if you don\'t find the symptom you looked for in the search results.',
-        "#/app/track_factors_category/Treatments": 'You can immediately track any as-need treatment on this page. You can also <span class="calm">Add a new Treatment</span> if you don\'t find the treatment you looked for in the search results.',
+        "#/app/track_factors_category/Foods": 'Record your diet on this page. <span class="calm">Add a new Food Variable</span> if you do not find the meal you looked for in the search results.',
+        "#/app/track_factors_category/Symptoms": 'You can immediately record any response or side effect on this page.',
+        "#/app/track_factors_category/Treatments": 'You can immediately record any as-need treatment on this page. You can also <span class="calm">Add a new Treatment</span> if you don\'t find the treatment you looked for in the search results.',
+    },
+    
+    wordAliases : {
+        "Treatments" : "Medications",
+        "treatments" : "medications",
+        "Treatment" : "Medication",
+        "treatment" : "medication",
+        "Treatment Reminder" : "Medication",
+        "treatment reminder" : "medication",
+        "Reminder Inbox" : "Reminders",
+        "Track" : "Record",
+        "Symptom" : "Response",
+        "Symptoms" : "Responses",
+        "symptom" : "response",
+        "symptoms" : "responses"
+    },
+    
+    remindersInbox : {
+        showAddNewMedicationButton : true,
+        hideAddNewReminderButton : true,
+        showAddHowIFeelResponseButton : true,
+        showAddVitalSignButton : true,
+        title : 'Reminders'
+    },
+
+    remindersManage : {
+        hideAddNewReminderButton : true
     },
 
     menu : [
@@ -337,42 +283,42 @@ config.appSettings  = {
             subMenuPanel : true
         },
         {
-            title : 'Track anything',
+            title : 'Record anything',
             isSubMenu : true,
             subMenuVariable : 'showTrackingSubMenu',
             href : '#/app/track_factors',
             icon : 'ion-ios-world'
         },
         {
-            title : 'Track foods',
+            title : 'Record foods',
             isSubMenu : true,
             subMenuVariable : 'showTrackingSubMenu',
             href : '#/app/track_factors_category/Foods',
             icon : 'ion-ios-nutrition'
         },
         {
-            title : 'Track emotions',
+            title : 'Record emotions',
             isSubMenu : true,
             subMenuVariable : 'showTrackingSubMenu',
             href : '#/app/track_factors_category/Emotions',
             icon : 'ion-happy-outline'
         },
         {
-            title : 'Track symptoms',
+            title : 'Record symptoms',
             isSubMenu : true,
             subMenuVariable : 'showTrackingSubMenu',
             href : '#/app/track_factors_category/Symptoms',
             icon : 'ion-ios-pulse'
         },
         {
-            title : 'Track treatments',
+            title : 'Record treatments',
             isSubMenu : true,
             subMenuVariable : 'showTrackingSubMenu',
             href : '#/app/track_factors_category/Treatments',
             icon : 'ion-ios-medkit-outline'
         },
         {
-            title : 'Track physical activity',
+            title : 'Record physical activity',
             isSubMenu : true,
             subMenuVariable : 'showTrackingSubMenu',
             href : '#/app/track_factors_category/Physical Activity',
@@ -406,7 +352,7 @@ config.appSettings  = {
             icon : 'ion-happy-outline'
         },
         {
-            title : 'Symptoms',
+            title : 'Responses',
             isSubMenu : true,
             subMenuVariable : 'showReminderSubMenu',
             href : '#/app/reminder_add/Symptoms',
@@ -473,7 +419,9 @@ config.appSettings  = {
 config.getPrimaryOutcomeVariableOptionLabels = function(shouldShowNumbers){
     if(shouldShowNumbers || !config.appSettings.primary_outcome_variables_options_labels){
         return ['1',  '2',  '3',  '4', '5'];
-    } else return config.appSettings.primary_outcome_variables_options_labels;
+    } else {
+        return config.appSettings.primary_outcome_variables_options_labels;
+    }
 };
 
 config.getPrimaryOutcomeVariableOptions = function(shouldShowNumbers){
@@ -500,7 +448,9 @@ config.getPrimaryOutcomeVariableOptions = function(shouldShowNumbers){
                 img: 'img/ic_5.png'
             }
         ];
-    } else return config.appSettings.primary_outcome_variable_options;
+    } else {
+        return config.appSettings.primary_outcome_variable_options;
+    }
 };
 
 config.getImageForPrimaryOutcomeVariableByValue = function(val){
@@ -585,8 +535,9 @@ config.getAllowOffline = function(){
 config.getPermissionString = function(){
 
     var str = "";
-    for(var i=0; i < config.permissions.length; i++)
-        str+= config.permissions[i]+"%20";
+    for(var i=0; i < config.permissions.length; i++) {
+        str += config.permissions[i] + "%20";
+    }
     return str.replace(/%20([^%20]*)$/,'$1');
 
 };

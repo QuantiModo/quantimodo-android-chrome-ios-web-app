@@ -1,19 +1,36 @@
 <ion-view hide-nav-bar="skipMenu" view-title="{{state.title}}">
 
 	<ion-content scroll="true" overflow-scroll="true"> 
-		<div class="list card">
-			<!--<div class="item item-divider" style="background-color:#11c1f3; color:white;">Actions</div>-->
-			<a href="#/app/reminder_add" class="item item-icon-left">
-				<i class="icon ion-plus calm"></i>
-				Add a new Reminder
-			</a>
-		</div>
-		<div class="list card">
-			<!--<div class="item item-divider" style="background-color:#11c1f3; color:white;">Actions</div>-->
-			<a href="#/app/track_factors_category/Symptoms" class="item item-icon-left">
-				<i class="icon ion-plus calm"></i>
-				Add "How I Feel" Response
-			</a>
+		
+		<div ng-hide="state.showMeasurementBox">
+			<div ng-hide="state.hideAddNewReminderButton" class="list card">
+				<!--<div class="item item-divider" style="background-color:#11c1f3; color:white;">Actions</div>-->
+				<a href="#/app/reminder_add" class="item item-icon-left">
+					<i class="icon ion-plus calm"></i>
+					Add a new Reminder
+				</a>
+			</div>
+			<div ng-show="state.showAddHowIFeelResponseButton" class="list card">
+				<!--<div class="item item-divider" style="background-color:#11c1f3; color:white;">Actions</div>-->
+				<a href="#/app/track_factors_category/Symptoms" class="item item-icon-left">
+					<i class="icon ion-plus calm"></i>
+					Add "How I Feel" Response
+				</a>
+			</div>
+			<div ng-show="state.showAddNewMedicationButton" class="list card">
+				<!--<div class="item item-divider" style="background-color:#11c1f3; color:white;">Actions</div>-->
+				<a href="#/app/reminders_add/Treatments" class="item item-icon-left">
+					<i class="icon ion-plus calm"></i>
+					Add a new medication
+				</a>
+			</div>
+			<div ng-show="state.showAddVitalSignButton" class="list card">
+				<!--<div class="item item-divider" style="background-color:#11c1f3; color:white;">Actions</div>-->
+				<a href="#/app/track_factors_category/Vital Signs" class="item item-icon-left">
+					<i class="icon ion-plus calm"></i>
+					Add a new vital sign
+				</a>
+			</div>
 		</div>
 		
 		

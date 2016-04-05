@@ -352,7 +352,8 @@ angular.module('starter')
     	        params.unit,
     	        params.isAvg,
     	        params.category,
-    	        usePromise)
+				params.note,
+				usePromise)
     	    .then(function(){
     	    	if($scope.state.title === "Edit Measurement"){
     	    		utils.stopLoading();

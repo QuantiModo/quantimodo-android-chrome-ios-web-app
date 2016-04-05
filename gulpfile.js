@@ -149,14 +149,16 @@ gulp.task('private', function(){
 				configkeys.api_urls.Web = env_keys[appName+'_WEB_API_URL'];
 				console.log(appName+'_WEB_API_URL'+' Detected');
 			} else {
-				console.log(appName+'_WEB_API_URL'+' NOT DETECTED');
+				console.log(appName+'_WEB_API_URL'+' NOT DETECTED. Using https://app.quantimo.do');
+				configkeys.api_urls.Web = 'https://app.quantimo.do';
 			}
 
 			if(typeof env_keys[appName+'_WEB_REDIRECT_URI'] !== "undefined"){
 				configkeys.redirect_uris.Web = env_keys[appName+'_WEB_REDIRECT_URI'];
 				console.log(appName+'_WEB_REDIRECT_URI'+' Detected');
 			} else {
-				console.log(appName+'_WEB_REDIRECT_URI'+' NOT DETECTED');
+				console.log(appName+'_WEB_REDIRECT_URI'+' NOT DETECTED. Using https://app.quantimo.do/ionic/Modo/www/callback/');
+				configkeys.redirect_uris.Web = 'https://app.quantimo.do/ionic/Modo/www/callback/';
 			}
 			
             if(typeof env_keys['IONIC_BUGSNAG_KEY'] !== "undefined"){
