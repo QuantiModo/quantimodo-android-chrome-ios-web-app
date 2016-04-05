@@ -39,10 +39,8 @@ angular.module('starter')
 	    };
 
 	    $scope.editMeasurement = function(measurement){
-	    	console.log(measurement);
-
 	    	$state.go('app.edit', {
-	    		unit: $scope.getUnitFromUnitId(measurement.unit).abbreviatedName,
+	    		unit: measurement.unit,
 	    		variableName : measurement.variable,
 	    		dateTime : measurement.startTime,
 	    		value : measurement.value

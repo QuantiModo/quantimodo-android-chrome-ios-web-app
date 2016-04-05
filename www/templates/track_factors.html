@@ -1,4 +1,4 @@
-<ion-view hide-nav-bar="skipMenu" view-title="Track {{state.variable_category_name}}">
+<ion-view hide-nav-bar="skipMenu" view-title="{{state.title}}">
     <ion-content>
         <div class="card" ng-show="flags.showTrack">
             <div class="item item-text-wrap">
@@ -35,19 +35,19 @@
 
             <ion-list>
                 <ion-item style="border-top: 1px solid rgb(221, 221, 221);" ng-click="add_variable()">
-                    + Add a new {{state.variable_category_name}} variable
+                    + Add a new {{state.variable_category_name_singular_lowercase | wordAliases}} variable
                 </ion-item>
             </ion-list>
         </div>
 
         <div class="card" ng-show="flags.showAddVariable">
             <div class="list">
-                <p class="heading calm" style="padding:14px;">Add New Variable</p>
+                <p class="heading calm" style="padding:14px;">Add a new {{state.variable_category_name_singular_lowercase | wordAliases}} variable</p>
 
 
                 <label class="item item-input item-select" ng-if="flags.showCategoryAsSelector">
                     <div class="input-label">
-                        Category
+                        Variable Category
                     </div>
                     <select ng-model="state.variable_category" ng-change=>
                         <option ng-repeat="i in state.variableCategories track by i.id" value="{{i.name}}">
@@ -57,7 +57,7 @@
                 </label>
 
                 <label class="item item-input item-stacked-label" ng-if="!flags.showCategoryAsSelector">
-                    <span class="input-label">Category</span>
+                    <span class="input-label">Variable Category</span>
                     <input type="text" ng-model="state.variable_category" readonly id="category_name" placeholder="Category name">
                 </label>
 
@@ -99,8 +99,8 @@
                     </div>
                 </div>
 
-                <div class="primary_outcome_variables col" ng-if="flags.category=='Emotions' || flags.category == 'Symptoms'">
-                    <img ng-repeat="option in primary_outcome_variable_numbers" ng-click="select_primary_outcome_variable($event, option.value)" ng-src="{{option.img}}">
+                <div class="primary_outcome_variables primary_outcome_variable_history col" ng-if="flags.category=='Emotions' || flags.category == 'Symptoms'">
+                    <img ng-repeat="option in primary_outcome_variable_numbers" ng-click="select_primary_outcome_variable($event, option.value)" ng-src="{{option.img}}"  ng-class="{'active_primary_outcome_variable' : option.value == state.variable_value}">
                 </div>
 
                 <div class="row labeled-control" ng-if="(flags.category != 'Emotions' && flags.category != 'Symptoms')">
@@ -160,9 +160,21 @@
                         </ionic-timepicker>
                     </div>
                 </div>
+                <div class="row labeled-control">
+                    <div class="col col-l">
+                        <span>
+                            Note
+                        </span>
+                    </div>
+                    <div class="col" style="padding-top: 11px;">
+                        <div class="col">
+                            <input type="text" ng-model="state.note" id="note" placeholder="Enter Note Here" class="uptop">
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>    
-
+ 
         <div class="card" ng-show="flags.showAddMeasurement">
             <button ng-click="cancel()" class="button button-assertive button-block">
                 Cancel
