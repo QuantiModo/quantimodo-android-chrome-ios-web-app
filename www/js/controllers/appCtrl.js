@@ -389,18 +389,7 @@ angular.module('starter')
             // success
 
             console.log("native_login: Mobile device detected and platform is " + platform);
-            var url = config.getURL("api/v2/bshaffer/oauth/authorize", true);
-
-            url += "response_type=code";
-            url += "&client_id="+config.getClientId();
-            url += "&client_secret="+config.getClientSecret();
-            url += "&scope="+config.getPermissionString();
-            url += "&state=testabcd";
-            url += "&token="+responseToken;
-            if(register === true){
-                url += "&register=true";
-            }
-            //url += "&redirect_uri=" + config.getRedirectUri();
+            var url = authService.generateV2OAuthUrl();
 
             $ionicLoading.hide();
 

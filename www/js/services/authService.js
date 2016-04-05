@@ -35,7 +35,9 @@ angular.module('starter')
                 }
 			},
 
-			generateOAuthUrl: function(url, register) {
+			generateV1OAuthUrl: function(register) {
+				var url = config.getApiUrl() + "/api/oauth2/authorize?"
+				// add params
 				url += "response_type=code";
 				url += "&client_id="+config.getClientId();
 				url += "&client_secret="+config.getClientSecret();
@@ -48,11 +50,23 @@ angular.module('starter')
 				return url;
 			},
 
-			nonNativeMobileLogin: function(url, register) {
+			generateV2OAuthUrl: function() {
+				var url = config.getURL("api/v2/bshaffer/oauth/authorize", true);
+				url += "response_type=code";
+				url += "&client_id="+config.getClientId();
+				url += "&client_secret="+config.getClientSecret();
+				url += "&scope="+config.getPermissionString();
+				url += "&state=testabcd";
+				url += "&token="+responseToken;
+				//url += "&redirect_uri=" + config.getRedirectUri();
+				return url;
+			},
+
+			nonNativeMobileLogin: function(register) {
 				console.log("Mobile device detected and ionic platform is " + ionic.Platform.platforms[0]);
 				console.log(JSON.stringify(ionic.Platform.platforms));
 
-				url = authSrv.generateOAuthUrl(url, register);
+				var url = authSrv.generateV1OAuthUrl(register);
 
 				console.log('open the auth window via inAppBrowser.');
 				var ref = window.open(url,'_blank', 'location=no,toolbar=yes');
@@ -97,21 +111,12 @@ angular.module('starter')
 				
 			},
 			
-			chromeLogin: function(url, register) {
+			chromeLogin: function(register) {
 				if(chrome.identity){
 					console.log("login: Code running in a Chrome extension (content script, background page, etc.");
-					url = config.getApiUrl() + "/api/oauth2/authorize?"
-					// add params
-					url += "response_type=code";
-					url += "&client_id="+config.getClientId();
-					url += "&client_secret="+config.getClientSecret();
-					url += "&scope="+config.getPermissionString();
-					url += "&state=testabcd";
-					if(register === true){
-						url += "&register=true";
-					}
-					//url += "&redirect_uri=" + config.getRedirectUri();
 
+					var url = authSrv.generateV1OAuthUrl(register);
+					
 					chrome.identity.launchWebAuthFlow({
 						'url': url,
 						'interactive': true
@@ -132,21 +137,12 @@ angular.module('starter')
 
 			},
 
-			browserLogin: function(url, register) {
+			browserLogin: function(register) {
 
 				console.log("Browser Login");
 
 				if (config.getClientId() !== 'oAuthDisabled') {
-					// add params
-					url += "response_type=code";
-					url += "&client_id=" + config.getClientId();
-					url += "&client_secret=" + config.getClientSecret();
-					url += "&scope=" + config.getPermissionString();
-					url += "&state=testabcd";
-					if (register === true) {
-						url += "&register=true";
-					}
-					//url += "&redirect_uri=" + config.getRedirectUri();
+					var url = authSrv.generateV1OAuthUrl(register);
 	
 					var ref = window.open(url, '_blank');
 	
