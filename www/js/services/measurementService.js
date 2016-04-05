@@ -274,6 +274,10 @@ angular.module('starter')
 
                 var deferred = $q.defer();
 
+                if(note === ""){
+                    note = null;
+                }
+
                 // measurements set
                 var measurements = [
                     {
