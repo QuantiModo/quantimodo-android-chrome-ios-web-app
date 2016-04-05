@@ -329,7 +329,7 @@ angular.module('starter')
             // defaults
             $scope.state.sumAvg = "avg";
             $scope.state.variable_value = "";
-            $scope.state.note = "";
+            $scope.state.note = null;
             $scope.state.unit_text = "";
             $scope.state.selected_sub = "";
 
