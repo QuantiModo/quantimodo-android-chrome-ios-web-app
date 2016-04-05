@@ -1,7 +1,9 @@
 angular.module('starter')
 
 	// Controls the History Page of the App.
-	.controller('RemindersAddCtrl', function($scope, authService, $ionicPopup, localStorageService, $state, $stateParams, measurementService, reminderService, $ionicLoading, utilsService){
+	.controller('RemindersAddCtrl', function($scope, authService, $ionicPopup, localStorageService, $state,
+											 $stateParams, measurementService, reminderService, $ionicLoading,
+											 utilsService, $filter){
 
 	    $scope.controller_name = "RemindersAddCtrl";
 
@@ -46,11 +48,13 @@ angular.module('starter')
 
 		if($stateParams.category){
             $scope.state.variableCategorySingular = pluralize($stateParams.category, 1);
-			$scope.state.title = "Add " + pluralize($stateParams.category, 1) + " Reminder";
-			$scope.state.variablePlaceholderText = "Enter " + pluralize($stateParams.category, 1) + " Name";
+
+			$scope.state.title = "Add a " + $filter('wordAliases')(pluralize($stateParams.category, 1) + " Reminder");
+			$scope.state.variablePlaceholderText =
+				"Search for a " + $filter('wordAliases')(pluralize($stateParams.category.toLowerCase(), 1)) + " here..";
 		} else {
 			$scope.state.title = "Add Reminder";
-			$scope.state.variablePlaceholderText = "Enter Variable Name";
+			$scope.state.variablePlaceholderText = "Search for a variable here...";
 		}
 
 		if($stateParams.category === "Treatments") {

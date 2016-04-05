@@ -4,7 +4,9 @@
 angular.module('starter')
 
     // Controls the Track Factors Page
-    .controller('TrackFactorsCategoryCtrl', function($scope, $ionicModal, $timeout, $ionicPopup ,$ionicLoading, authService, measurementService, $state, $rootScope, $stateParams, utilsService, localStorageService){
+    .controller('TrackFactorsCategoryCtrl', function($scope, $ionicModal, $timeout, $ionicPopup ,$ionicLoading,
+                                                     authService, measurementService, $state, $rootScope, $stateParams,
+                                                     utilsService, localStorageService, $filter){
 
         $scope.controller_name = "TrackFactorsCategoryCtrl";
 
@@ -12,32 +14,38 @@ angular.module('starter')
             "Vital Signs":{
                 default_unit:"units",
                 help_text:"What vital sign do you want to track?",
-                variable_category_name: "Vital Signs"
+                variable_category_name: "Vital Signs",
+                variable_category_name_singular_lowercase : "vital sign"
             },
             Foods:{
                 default_unit:"serving",
                 help_text:"What did you eat?",
-                display_name: "Foods"
+                variable_category_name: "Foods",
+                variable_category_name_singular_lowercase : "food"
             },
             Emotions:{
                 default_unit: "/5",
                 help_text: "Select an aspect of emotion",
-                display_name: "Emotions"
+                variable_category_name: "Emotions",
+                variable_category_name_singular_lowercase : "emotion"
             },
             Symptoms:{
                 default_unit: "/5",
                 help_text: "What do you want to track?",
-                display_name: "Symptoms"
+                variable_category_name: "Symptoms",
+                variable_category_name_singular_lowercase : "symptom"
             },
             Treatments:{
                 default_unit: "count",
                 help_text:"What do you want to track?",
-                display_name: "Treatments"
+                variable_category_name: "Treatments",
+                variable_category_name_singular_lowercase : "treatment"
             },
             "Physical Activity": {
                 default_unit: "count",
                 help_text:"What do you want to track?",
-                display_name: "Physical Activity"    
+                variable_category_name: "Physical Activity",
+                variable_category_name_singular_lowercase : "physical activity"
             }
         };
 
@@ -71,7 +79,8 @@ angular.module('starter')
             variable_name : "",
             factor : category,
             help_text: categoryConfig[category].help_text,
-            display_name : categoryConfig[category].display_name,
+            variable_category_name : categoryConfig[category].variable_category_name,
+            variable_category_name_singular_lowercase : categoryConfig[category].variable_category_name_singular_lowercase,
             unit_text : '',
             
             // default operation
@@ -82,9 +91,11 @@ angular.module('starter')
         };
 
         if(category.length > 1){
-            $scope.state.trackFactorsPlaceholderText = "Enter " +  pluralize(category, 1).toLowerCase() + " here...";
+            $scope.state.trackFactorsPlaceholderText = "Search for a " +  $filter('wordAliases')(pluralize(category, 1).toLowerCase()) + " here...";
+            $scope.state.title = $filter('wordAliases')('Track') + " " + $filter('wordAliases')(category);
         } else {
-            $scope.state.trackFactorsPlaceholderText = "Enter variable name here...";
+            $scope.state.trackFactorsPlaceholderText = "Search for a variable here...";
+            $scope.state.title = $filter('wordAliases')('Track');
         }
 
 
