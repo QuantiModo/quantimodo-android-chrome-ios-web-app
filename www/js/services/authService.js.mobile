@@ -90,9 +90,9 @@ angular.module('starter')
 			   return deferred.promise;
 			},
 
-			// get access token from request token
+			// get access token from authorization code
 			getAccessTokenFromAuthorizationCode : function (authorizationCode, withJWT) {
-				console.log("request token : ",authorizationCode);
+				console.log("authorization code : ",authorizationCode);
 
 				var deferred = $q.defer();
 
