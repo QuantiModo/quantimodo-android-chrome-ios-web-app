@@ -135,6 +135,18 @@ angular.module('starter')
 
 			},
 
+			nonOAuthBrowserLogin : function(register) {
+				var loginUrl = config.getURL("api/v2/auth/login");
+				if (register === true) {
+					loginUrl = config.getURL("api/v2/auth/register");
+				}
+				console.log("Client id is oAuthDisabled - will redirect to regular login.");
+				loginUrl += "redirect_uri=" + encodeURIComponent(window.location.href);
+				console.debug('AUTH redirect URL created:', loginUrl);
+				console.debug('GOOD LUCK!');
+				window.location.replace(loginUrl);
+			},
+
 			browserLogin: function(register) {
 
 				console.log("Browser Login");
@@ -198,15 +210,7 @@ angular.module('starter')
 						window.addEventListener("message", window.onMessageReceived, false);
 					}
 				} else {
-					var loginUrl = config.getURL("api/v2/auth/login");
-					if (register === true) {
-						loginUrl = config.getURL("api/v2/auth/register");
-					}
-					console.log("Client id is oAuthDisabled - will redirect to regular login.");
-					loginUrl += "redirect_uri=" + encodeURIComponent(window.location.href);
-					console.debug('AUTH redirect URL created:', loginUrl);
-					console.debug('GOOD LUCK!');
-					window.location.replace(loginUrl);
+					authSrv.nonOAuthBrowserLogin(register);
 				}
 			},
 		
