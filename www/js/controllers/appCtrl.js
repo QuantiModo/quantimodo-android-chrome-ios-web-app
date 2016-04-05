@@ -539,7 +539,7 @@ angular.module('starter')
         }
     };
 
-    $scope.native_login = function(platform, accessToken){
+    $scope.native_login = function(platform, accessToken, register){
         localStorageService.setItem('isWelcomed', true);
         $rootScope.isWelcomed = true;
 
