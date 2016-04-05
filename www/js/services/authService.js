@@ -181,14 +181,7 @@ angular.module('starter')
 							if (utilsService.startsWith(iframe_url, config.getRedirectUri())) {
 								// if there is no error
 								if (!utilsService.getUrlParameter(iframe_url, 'error')) {
-	
-									// extract token
-									var authorizationCode = utilsService.getUrlParameter(iframe_url, 'code');
-	
-									if (authorizationCode === false) {
-										authorizationCode = utilsService.getUrlParameter(iframe_url, 'token');
-									}
-	
+									var authorizationCode = authSrv.getAuthorizationCodeFromUrl(event);
 									// get access token from authorization code
 									$scope.getAccessToken(authorizationCode);
 	
@@ -327,7 +320,8 @@ angular.module('starter')
 
 								authSrv._defaultGetAccessToken(deferred);
 								}
-							})
+							}
+						);
 
 					}
 
