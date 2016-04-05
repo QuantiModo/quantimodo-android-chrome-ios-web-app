@@ -62,6 +62,17 @@ angular.module('starter')
 				return url;
 			},
 
+			getAuthorizationCodeFromUrl: function(event) {
+				console.log('the authorization code that i got is: ' + event.url);
+				console.log('extract authorization code');
+				var authorizationCode = utilsService.getUrlParameter(event.url, 'code');
+
+				if(authorizationCode === false) {
+					authorizationCode = utilsService.getUrlParameter(event.url, 'token');
+				}
+				return authorizationCode;
+			},
+
 			nonNativeMobileLogin: function(register) {
 				console.log("Mobile device detected and ionic platform is " + ionic.Platform.platforms[0]);
 				console.log(JSON.stringify(ionic.Platform.platforms));
@@ -84,19 +95,11 @@ angular.module('starter')
 						console.log('event.url starts with ' + config.getRedirectUri());
 						if(!utilsService.getUrlParameter(event.url,'error')) {
 
-							console.log('extracting authorization code.');
-							var authorizationCode = utilsService.getUrlParameter(event.url, 'code');
-							console.log('Authorization code is ' + authorizationCode);
-
-							if(authorizationCode === false) {
-								authorizationCode = utilsService.getUrlParameter(event.url, 'token');
-							}
-
+							var authorizationCode = authSrv.getAuthorizationCodeFromUrl(event);
 							console.log('Closing inAppBrowser.');
 							ref.close();
-
 							console.log('Going to get an access token using authorization code.');
-							$scope.getAccessToken(authorizationCode);
+							$scope.getAccessTokenFromAuthorizationCode(authorizationCode);
 
 						} else {
 
@@ -121,13 +124,8 @@ angular.module('starter')
 						'url': url,
 						'interactive': true
 					}, function(redirect_url) {
-						var authorizationCode = utilsService.getUrlParameter(event.url, 'code');
-
-						if(authorizationCode === false) {
-							authorizationCode = utilsService.getUrlParameter(event.url, 'token');
-						}
-
-						$scope.getAccessToken(authorizationCode);
+						var authorizationCode = authSrv.getAuthorizationCodeFromUrl(event);
+						$scope.getAccessTokenFromAuthorizationCode(authorizationCode);
 					});
 				} else {
 					console.log("It is an extension, so we use sessions instead of OAuth flow. ");

@@ -406,14 +406,9 @@ angular.module('starter')
 
                     console.log('if there is no error');
                     if(!utilsService.getUrlParameter(event.url,'error')) {
-
-                        console.log('the authorization code that i got is: ' + event.url);
-                        console.log('extract authorization code');
-                        var authorizationCode = utilsService.getUrlParameter(event.url, 'code');
-
-                        if(authorizationCode === false) {
-                            authorizationCode = utilsService.getUrlParameter(event.url, 'token');
-                        }
+                        
+                        var authorizationCode = authService.getAuthorizationCodeFromUrl(event);
+                        
                         console.log('close inAppBrowser.');
                         ref.close();
 
