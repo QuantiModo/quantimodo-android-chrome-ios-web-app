@@ -451,7 +451,7 @@ angular.module('starter')
                                     authorizationCode = utilsService.getUrlParameter(iframe_url, 'token');
                                 }
 
-                                // get auth token from request token
+                                // get access token from authorization code
                                 $scope.getAccessToken(authorizationCode);
 
                                 // close the sibling tab
@@ -513,7 +513,7 @@ angular.module('starter')
                     console.log('event.url starts with ' + config.getRedirectUri());
                     if(!utilsService.getUrlParameter(event.url,'error')) {
 
-                        console.log('extracting request token.');
+                        console.log('extracting authorization code.');
 						var authorizationCode = utilsService.getUrlParameter(event.url, 'code');
                         console.log('Authorization code is ' + authorizationCode);
 
@@ -540,7 +540,7 @@ angular.module('starter')
         }
     };
 
-    $scope.native_login = function(platform, accessToken){
+    $scope.native_login = function(platform, accessToken, register){
         localStorageService.setItem('isWelcomed', true);
         $rootScope.isWelcomed = true;
 
@@ -579,8 +579,8 @@ angular.module('starter')
                     console.log('if there is no error');
                     if(!utilsService.getUrlParameter(event.url,'error')) {
 
-                        console.log('the request token that i got is: ' + event.url);
-                        console.log('extract request token');
+                        console.log('the authorization code that i got is: ' + event.url);
+                        console.log('extract authorization code');
                         var authorizationCode = utilsService.getUrlParameter(event.url, 'code');
 
                         if(authorizationCode === false) {
@@ -590,7 +590,7 @@ angular.module('starter')
                         ref.close();
 
                         var withJWT = true;
-                        // get auth token from request token
+                        // get access token from authorization code
                         $scope.getAccessToken(authorizationCode, withJWT);
 
                     } else {
