@@ -177,7 +177,7 @@ angular.module('starter')
                     
 
                     // add variable
-                    measurementService.post_tracking_measurement(params.epoch, params.variable, params.value, params.unit, params.isAvg, params.category, true)
+                    measurementService.post_tracking_measurement(params.epoch, params.variable, params.value, params.unit, params.isAvg, params.category, params.note, true)
                     .then(function(){
 
                         $scope.showAlert('Added Variable');
@@ -205,7 +205,7 @@ angular.module('starter')
                     // measurement only
 
                     // post measurement
-                    measurementService.post_tracking_measurement(params.epoch, params.variable, params.value, params.unit, params.isAvg, params.category);
+                    measurementService.post_tracking_measurement(params.epoch, params.variable, params.value, params.unit, params.isAvg, params.category, params.note);
                     $scope.showAlert('Measurement Added');
 
                     // set flags

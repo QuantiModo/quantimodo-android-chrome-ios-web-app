@@ -176,6 +176,7 @@ angular.module('starter')
             // set default
             $scope.state.variable_name = "";
             $scope.state.variable_value = "";
+            $scope.state.note = "";
         };
 
         // cancel activity
@@ -212,6 +213,7 @@ angular.module('starter')
             var params = {
                 variable : $scope.state.variable_name || jQuery('#variable_name').val(),
                 value : $scope.state.variable_value || jQuery('#variable_value').val(),
+                note : $scope.state.note || jQuery('#note').val(),
                 epoch : $scope.slots.epochTime * 1000,
                 unit : $scope.flags.showAddVariable? (typeof $scope.unit_text === "undefined" || $scope.unit_text === "" )? $scope.state.selected_sub : $scope.unit_text : $scope.state.selected_sub,
                 category : $scope.state.variable_category,
@@ -229,7 +231,7 @@ angular.module('starter')
                 } else {
 
                     // add variable
-                    measurementService.post_tracking_measurement(params.epoch, params.variable, params.value, params.unit, params.isAvg, params.category, true)
+                    measurementService.post_tracking_measurement(params.epoch, params.variable, params.value, params.unit, params.isAvg, params.category, params.note, true)
                     .then(function(){
                         $scope.showAlert('Added Variable');
 
@@ -255,7 +257,7 @@ angular.module('starter')
                     // measurement only
 
                     // post measurement
-                    measurementService.post_tracking_measurement(params.epoch, params.variable, params.value, params.unit, params.isAvg, params.category);
+                    measurementService.post_tracking_measurement(params.epoch, params.variable, params.value, params.unit, params.isAvg, params.category, params.note);
                     $scope.showAlert('Measurement Added');
 
                     // set flags
@@ -327,7 +329,7 @@ angular.module('starter')
             // defaults
             $scope.state.sumAvg = "avg";
             $scope.state.variable_value = "";
-            $scope.state.variable_value = "";
+            $scope.state.note = "";
             $scope.state.unit_text = "";
             $scope.state.selected_sub = "";
 

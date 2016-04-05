@@ -270,7 +270,7 @@ angular.module('starter')
             },
 
 			// post a singe measurement
-			post_tracking_measurement : function(epoch, variable, val, unit, isAvg, category, usePromise){
+			post_tracking_measurement : function(epoch, variable, val, unit, isAvg, category, note, usePromise){
 
                 var deferred = $q.defer();
 
@@ -286,7 +286,7 @@ angular.module('starter')
                 		   	{
                 		   		timestamp:  epoch / 1000,
                 		   		value: val,
-                		   		note : ""
+                		   		note : note
                 		   	}
                 	   	]
                     }
