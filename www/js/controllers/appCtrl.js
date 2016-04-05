@@ -385,11 +385,11 @@ angular.module('starter')
 
         showLoader('Talking to QuantiModo');
         authService.getJWTToken(platform, accessToken)
-        .then(function(responseToken){
+        .then(function(JWTToken){
             // success
 
             console.log("native_login: Mobile device detected and platform is " + platform);
-            var url = authService.generateV2OAuthUrl(responseToken);
+            var url = authService.generateV2OAuthUrl(JWTToken);
 
             $ionicLoading.hide();
 
