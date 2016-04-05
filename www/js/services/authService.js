@@ -50,14 +50,14 @@ angular.module('starter')
 				return url;
 			},
 
-			generateV2OAuthUrl: function() {
+			generateV2OAuthUrl: function(responseToken) {
 				var url = config.getURL("api/v2/bshaffer/oauth/authorize", true);
 				url += "response_type=code";
-				url += "&client_id="+config.getClientId();
-				url += "&client_secret="+config.getClientSecret();
-				url += "&scope="+config.getPermissionString();
+				url += "&client_id=" + config.getClientId();
+				url += "&client_secret=" + config.getClientSecret();
+				url += "&scope=" + config.getPermissionString();
 				url += "&state=testabcd";
-				url += "&token="+responseToken;
+				url += "&token=" + responseToken;
 				//url += "&redirect_uri=" + config.getRedirectUri();
 				return url;
 			},

@@ -389,7 +389,7 @@ angular.module('starter')
             // success
 
             console.log("native_login: Mobile device detected and platform is " + platform);
-            var url = authService.generateV2OAuthUrl();
+            var url = authService.generateV2OAuthUrl(responseToken);
 
             $ionicLoading.hide();
 
