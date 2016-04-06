@@ -166,13 +166,8 @@ angular.module('starter')
 						client_id: config.getClientId(),
 						client_secret: config.getClientSecret(),
 						grant_type: 'authorization_code',
-<<<<<<< HEAD
-						code: requestToken,
-						redirect_uri: 'https://app.quantimo.do/ionic/Modo/www/callback'
-=======
 						code: authorizationCode,
 						redirect_uri: config.getRedirectUri()
->>>>>>> develop
 					}
 				};
 
