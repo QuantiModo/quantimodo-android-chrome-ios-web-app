@@ -66,7 +66,7 @@ angular.module('starter')
 
 						} else {
 
-							console.log('starting oauth token fetching flow');
+							console.log('starting access token fetching flow');
 
 							authSrv._defaultGetAccessToken(deferred);
 
@@ -134,7 +134,7 @@ angular.module('starter')
 								authSrv.triedToFetchCredentials = true;
 								authSrv.succesfullyFetchedCredentials = false;
 
-								console.log('starting oauth token fetching flow');
+								console.log('starting access token fetching flow');
 
 								authSrv._defaultGetAccessToken(deferred);
 								}
@@ -146,7 +146,7 @@ angular.module('starter')
 				return deferred.promise;
 			},
 
-			// get access token from request token
+			// get access token from authorization code
 			getAccessTokenFromAuthorizationCode: function (authorizationCode, withJWT) {
 				console.log("Authorization code is " + authorizationCode);
 
@@ -215,7 +215,7 @@ angular.module('starter')
 
 			_defaultGetAccessToken: function (deferred) {
 
-				console.log('oauth token resolving flow');
+				console.log('access token resolving flow');
 
 				var now = new Date().getTime();
 				var expiresAt = localStorageService.getItemSync('expiresAt');
