@@ -3,10 +3,10 @@ angular.module('starter')
 	.filter('ImageByValue', function(){
 	    return function(value){
 	        return config.getImageForPrimaryOutcomeVariableByNumber(value);
-	    }
+	    };
 	})
 	.filter('PrimaryOutcomeVariableByNumber', function(){
 		return function(value){
 			return config.getPrimaryOutcomeVariableByNumber(value);
-		}
-	})
+		};
+	});

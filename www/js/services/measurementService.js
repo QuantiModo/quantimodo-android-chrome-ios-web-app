@@ -270,9 +270,13 @@ angular.module('starter')
             },
 
 			// post a singe measurement
-			post_tracking_measurement : function(epoch, variable, val, unit, isAvg, category, usePromise){
+			post_tracking_measurement : function(epoch, variable, val, unit, isAvg, category, note, usePromise){
 
                 var deferred = $q.defer();
+
+                if(note === ""){
+                    note = null;
+                }
 
                 // measurements set
                 var measurements = [
@@ -286,7 +290,7 @@ angular.module('starter')
                 		   	{
                 		   		timestamp:  epoch / 1000,
                 		   		value: val,
-                		   		note : ""
+                		   		note : note
                 		   	}
                 	   	]
                     }
@@ -668,10 +672,10 @@ angular.module('starter')
 			},
 
 			// get public variables
-			getPublicVariables : function(str){
+			searchVariablesIncludePublic : function(str){
 				var deferred = $q.defer();
 
-				QuantiModo.getPublicVariables(str, function(vars){
+				QuantiModo.searchVariablesIncludePublic(str, function(vars){
 					deferred.resolve(vars);
 				}, function(){
 					deferred.reject(false);
@@ -680,10 +684,10 @@ angular.module('starter')
 				return deferred.promise;
 			},
 
-            getPublicVariablesByCategory : function(str,category){
+            searchVariablesByCategoryIncludePublic : function(str,category){
                 var deferred = $q.defer();
 
-                QuantiModo.getPublicVariablesByCategory(str,category, function(vars){
+                QuantiModo.searchVariablesByCategoryIncludePublic(str,category, function(vars){
                     deferred.resolve(vars);
                 }, function(){
                     deferred.reject(false);

@@ -66,7 +66,7 @@ angular.module('starter')
 
 						} else {
 
-							console.log('starting oauth token fetching flow');
+							console.log('starting access token fetching flow');
 
 							authSrv._defaultGetAccessToken(deferred);
 
@@ -108,11 +108,15 @@ angular.module('starter')
 
 								console.log('client id is ' + config.getClientId());
 
-								console.log('Platform is ' + JSON.stringify(ionic.Platform.platforms[0]));
+								console.log('Platform is browser: ' +ionic.Platform.is('browser'));
+								console.log('Platform is ios: ' +ionic.Platform.is('ios'));
+								console.log('Platform is android: ' +ionic.Platform.is('android'));
+
+								//console.log('Platform is ' + JSON.stringify(ionic.Platform.platforms[0]));
 
 								//Using OAuth on Staging for tests
-								if(ionic.Platform.platforms[0] === "browser"
-									&& config.getClientId() == 'oAuthDisabled'
+								if(!ionic.Platform.is('ios') && !ionic.Platform.is('android')
+									&& config.getClientId() === 'oAuthDisabled'
 								    && !(window.location.origin.indexOf('staging.quantimo.do') > -1)){
 										console.log("Browser Detected and client id is oAuthDisabled.  ");
 									    $ionicLoading.hide();
@@ -130,7 +134,7 @@ angular.module('starter')
 								authSrv.triedToFetchCredentials = true;
 								authSrv.succesfullyFetchedCredentials = false;
 
-								console.log('starting oauth token fetching flow');
+								console.log('starting access token fetching flow');
 
 								authSrv._defaultGetAccessToken(deferred);
 								}
@@ -142,9 +146,9 @@ angular.module('starter')
 				return deferred.promise;
 			},
 
-			// get access token from request token
-			getAccessTokenFromRequestToken: function (requestToken, withJWT) {
-				console.log("Authorization code is " + requestToken);
+			// get access token from authorization code
+			getAccessTokenFromAuthorizationCode: function (authorizationCode, withJWT) {
+				console.log("Authorization code is " + authorizationCode);
 
 				var deferred = $q.defer();
 
@@ -162,21 +166,26 @@ angular.module('starter')
 						client_id: config.getClientId(),
 						client_secret: config.getClientSecret(),
 						grant_type: 'authorization_code',
+<<<<<<< HEAD
 						code: requestToken,
 						redirect_uri: 'https://app.quantimo.do/ionic/Modo/www/callback'
+=======
+						code: authorizationCode,
+						redirect_uri: config.getRedirectUri()
+>>>>>>> develop
 					}
 				};
 
-				console.log('getAccessTokenFromRequestToken: request is ', request);
+				console.log('getAccessTokenFromAuthorizationCode: request is ', request);
 				console.log(JSON.stringify(request));
 
 				// post
 				$http(request).success(function (response) {
-					console.log('getAccessTokenFromRequestToken: Successful response is ', response);
+					console.log('getAccessTokenFromAuthorizationCode: Successful response is ', response);
 					console.log(JSON.stringify(response));
 					deferred.resolve(response);
 				}).error(function (response) {
-					console.log('getAccessTokenFromRequestToken: Error response is ', response);
+					console.log('getAccessTokenFromAuthorizationCode: Error response is ', response);
 					console.log(JSON.stringify(response));
 					deferred.reject(response);
 				});
@@ -211,7 +220,7 @@ angular.module('starter')
 
 			_defaultGetAccessToken: function (deferred) {
 
-				console.log('oauth token resolving flow');
+				console.log('access token resolving flow');
 
 				var now = new Date().getTime();
 				var expiresAt = localStorageService.getItemSync('expiresAt');
@@ -237,12 +246,14 @@ angular.module('starter')
 
 				} else if (typeof refreshToken != "undefined") {
 
-					console.log('Refresh token will be used to fetch access token from server');
+					console.log('Refresh token will be used to fetch access token from ' +
+						config.getURL("api/oauth2/token") + ' with client id ' + config.getClientId());
 
 					var url = config.getURL("api/oauth2/token");
 
 					//expire token, refresh
 					$http.post(url, {
+
 						client_id: config.getClientId(),
 						client_secret: config.getClientSecret(),
 						refresh_token: refreshToken,
@@ -250,6 +261,7 @@ angular.module('starter')
 					}).success(function (data) {
 						// update local storage
 						if (data.error) {
+							console.log('Token refresh failed: ' + data.error);
 							deferred.reject('refresh failed');
 						} else {
 							var accessTokenRefreshed = authSrv.updateAccessToken(data);
