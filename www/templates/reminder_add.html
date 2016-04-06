@@ -49,7 +49,12 @@
         			Select Frequency
         		</div>
         		<select ng-change="onFrequencyChange()" ng-model="state.selectedFrequency" >
-                    <option ng-repeat="frequency in variables.frequencyVariables">{{frequency.name}}</option>
+                    <optgroup label="Intervals">
+                        <option ng-repeat="frequency in variables.frequencyVariables" ng-if="frequency.group==='intervals'">{{frequency.name}}</option>
+                    </optgroup>
+                    <optgroup label="Frequency">
+                        <option ng-repeat="frequency in variables.frequencyVariables" ng-if="frequency.group==='frequency'">{{frequency.name}}</option>
+                    </optgroup>
         		</select>
         	</label>
             

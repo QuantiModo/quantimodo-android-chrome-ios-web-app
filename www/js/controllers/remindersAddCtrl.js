@@ -78,20 +78,21 @@ angular.module('starter')
 	    	],
 	    	list : [],
 	    	frequencyVariables : [
-	    		{ id : 1, name : 'Every 24 hours'},
-	    		{ id : 2, name : 'Every 12 hours'},
-	    		{ id : 3, name : 'Every 8 hours'},
-	    		{ id : 4, name : 'Every 4 hours'},
-	    		{ id : 5, name : 'Every 3 hours'},
-	    		{ id : 6, name : 'Once a day'},
-	    		{ id : 7, name : 'Twice a day'},
-	    		{ id : 8, name : 'Three times a day'},
-	    		{ id : 9, name : 'Hourly'},
-	    		{ id : 10, name : 'Every three hours'},
-	    		{ id : 11, name : 'Every 30 minutes'},
-	    		{ id : 12, name : 'Never'}
+	    		
+	    		{ id : 1, name : 'Every 12 hours' , group : 'intervals'},
+	    		{ id : 2, name : 'Every 8 hours' , group : 'intervals'},
+	    		{ id : 3, name : 'Every 6 hours' , group : 'intervals'},
+	    		{ id : 4, name : 'Every 4 hours' , group : 'intervals'},
+	    		{ id : 5, name : 'Every 3 hours' , group : 'intervals'},
+	    		{ id : 6, name : 'Every 30 minutes' , group : 'intervals'},
+	    		{ id : 7, name : 'Hourly' , group : 'intervals'},
+	    		{ id : 8, name : 'Never' , group : 'intervals'},
+	    		{ id : 9, name : 'Once a day' , group : 'frequency'},
+	    		{ id : 10, name : 'Twice a day' , group : 'frequency'},
+	    		{ id : 11, name : 'Three times a day' , group : 'frequency'}
 	    	]
 	    };
+
 
 	    // when time is changed
 	    $scope.firstTimePickerCallback = function (val) {
@@ -357,18 +358,17 @@ angular.module('starter')
 
 	    var getFrequencyChart = function(){
 	    	return {
-	    		"Every 24 hours" : 24*60*60,
 	    		"Every 12 hours" : 12*60*60,
 	    		"Every 8 hours": 8*60*60,
+	    		"Every 6 hours": 6*60*60,
 	    		"Every 4 hours": 4*60*60,
 	    		"Every 3 hours" : 180*60,
+	    		"Every 30 minutes": 30*60,
+	    		"Hourly":60*60,
+	    		"Never": 0,
 	    		"Once a day": 24*60*60,
 	    		"Twice a day" : 12*60*60,
-	    		"Three times a day": 8*60*60,	
-	    		"Hourly":60*60,
-	    		"Every three hours" : 180*60,
-	    		"Every 30 minutes": 30*60,
-	    		"Never": 0
+	    		"Three times a day": 8*60*60
 	    	};
 	    }
 
@@ -451,19 +451,18 @@ angular.module('starter')
 	    	$scope.state.title = "Edit " + $scope.state.selectedReminder.variableName + " Reminder";
 	    	
 	    	var reverseFrequencyChart = {
-	    		86400: "Every 24 hours",
 	    		43200: "Every 12 hours",
 	    		28800: "Every 8 hours",
 	    		21600: "Every 6 hours",
 	    		14400: "Every 4 hours",
 	    		10800: "Every 3 hours",
+	    		1800: "Every 30 minutes",   			    		
+	    		3600: "Hourly",
+	    		0: "Never", 
 	    		86400: "Once a day",
 	    		43200: "Twice a day",
-	    		28800: "Three times a day",	
-	    		3600: "Hourly",
-	    		10800: "Every three hours",
-	    		1800: "Every 30 minutes",
-	    		0: "Never", 
+	    		28800: "Three times a day",
+
 	    	};
 
 			if(typeof $stateParams.reminder.firstDailyReminderTime !== "undefined" && $stateParams.reminder.firstDailyReminderTime !== null){
