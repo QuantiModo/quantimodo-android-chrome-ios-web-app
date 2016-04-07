@@ -63,12 +63,12 @@ angular.module('starter')
 			},
 
 			getAuthorizationCodeFromUrl: function(event) {
-				console.log('the authorization code that i got is: ' + event.url);
+				console.log('the authorization code that i got is: ' + event.data);
 				console.log('extract authorization code');
-				var authorizationCode = utilsService.getUrlParameter(event.url, 'code');
+				var authorizationCode = utilsService.getUrlParameter(event.data, 'code');
 
 				if(authorizationCode === false) {
-					authorizationCode = utilsService.getUrlParameter(event.url, 'token');
+					authorizationCode = utilsService.getUrlParameter(event.data, 'token');
 				}
 				return authorizationCode;
 			},
@@ -158,9 +158,6 @@ angular.module('starter')
 					// broadcast message question every second to sibling tabs
 					var interval = setInterval(function () {
 						ref.postMessage('isLoggedIn?', config.getRedirectUri());
-						ref.postMessage('isLoggedIn?', 'https://app.quantimo.do/ionic/Modo/www/callback/');
-						ref.postMessage('isLoggedIn?', 'https://local.quantimo.do:4417/ionic/Modo/www/callback/');
-						ref.postMessage('isLoggedIn?', 'https://staging.quantimo.do/ionic/Modo/www/callback/');
 					}, 1000);
 
 					// handler when a message is received from a sibling tab
@@ -179,7 +176,7 @@ angular.module('starter')
 							if (!utilsService.getUrlParameter(iframe_url, 'error')) {
 								var authorizationCode = authSrv.getAuthorizationCodeFromUrl(event);
 								// get access token from authorization code
-								$scope.getAccessToken(authorizationCode);
+								authSrv.fetchAccessToken(authorizationCode);
 
 								// close the sibling tab
 								ref.close();
@@ -208,7 +205,7 @@ angular.module('starter')
 					authSrv.nonOAuthBrowserLogin(register);
 				}
 			},
-		
+
 
 			// retrieves access token.
 			// if expired, renews it
@@ -471,6 +468,96 @@ angular.module('starter')
 
 			},
 
+			// get Access Token
+			fetchAccessToken: function(authorization_code, withJWT) {
+			authSrv.getAccessTokenFromAuthorizationCode(authorization_code, withJWT)
+				.then(function(response) {
+
+					if(response.error){
+						console.error("Error generating access token");
+						console.log('response', response);
+						// set flags
+						authSrv.isLoggedIn = false;
+						localStorageService.setItem('isLoggedIn', false);
+					} else {
+						console.log("Access token received",response);
+						if(typeof withJWT !== "undefined" && withJWT === true) {
+							authSrv.updateAccessToken(response, withJWT);
+						}
+						else {
+							authSrv.updateAccessToken(response);
+						}
+
+						// set flags
+						authSrv.isLoggedIn = true;
+						localStorageService.setItem('isLoggedIn', true);
+
+						// get user details from server
+						authSrv.getUser();
+					}
+				})
+				.catch(function(err){
+
+					console.log("error in generating access token", err);
+					// set flags
+					authSrv.isLoggedIn = false;
+					localStorageService.setItem('isLoggedIn', false);
+				});
+			},
+			getUser: function(){
+				authSrv.apiGet('api/user/me',
+					[],
+					{},
+					function(user){
+
+						// set user data in local storage
+						localStorageService.setItem('user', JSON.stringify(user));
+
+						authSrv.user_name = user.displayName;
+					},function(err){
+
+						// error
+						console.log(err);
+					}
+				);
+			},
+			apiGet: function(baseURL, allowedParams, params, successHandler, errorHandler){
+				authSrv.getAccessToken().then(function(token){
+
+					// configure params
+					var urlParams = [];
+					for (var key in params)
+					{
+						if (jQuery.inArray(key, allowedParams) == -1)
+						{
+							throw 'invalid parameter; allowed parameters: ' + allowedParams.toString();
+						}
+						urlParams.push(encodeURIComponent(key) + '=' + encodeURIComponent(params[key]));
+					}
+
+					// configure request
+					var url = config.getURL(baseURL);
+					var request = {
+						method : 'GET',
+						url: (url + ((urlParams.length == 0) ? '' : urlParams.join('&'))),
+						responseType: 'json',
+						headers : {
+							"Authorization" : "Bearer " + token.accessToken,
+							'Content-Type': "application/json"
+						}
+					};
+
+					console.log("Making request with this token " + token.accessToken);
+
+					$http(request).success(successHandler).error(function(data,status,headers,config){
+						var error = "Error";
+						if (data && data.error && data.error.message) error = data.error.message;
+						Bugsnag.notify("API Request to "+request.url+" Failed",error,{},"error");
+						errorHandler(data,status,headers,config);
+					});
+
+				});
+			},
 			utilsService: utilsService
 		};
 
