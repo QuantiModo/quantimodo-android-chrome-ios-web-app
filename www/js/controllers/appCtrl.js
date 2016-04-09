@@ -423,9 +423,6 @@ angular.module('starter')
                     // broadcast message question every second to sibling tabs
                     var interval = setInterval(function () {
                         ref.postMessage('isLoggedIn?', config.getRedirectUri());
-                        ref.postMessage('isLoggedIn?', 'https://app.quantimo.do/ionic/Modo/www/callback/');
-                        ref.postMessage('isLoggedIn?', 'https://local.quantimo.do:4417/ionic/Modo/www/callback/');
-                        ref.postMessage('isLoggedIn?', 'https://staging.quantimo.do/ionic/Modo/www/callback/');
                     }, 1000);
 
                     // handler when a message is received from a sibling tab
