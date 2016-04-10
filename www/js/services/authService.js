@@ -43,8 +43,10 @@ angular.module('starter')
 				if (tokenInGetParams) {
 
 					localStorageService.setItem('accessToken', tokenInGetParams)
+					
 					//resolving promise using token fetched from get params
 					console.log('resolving token using token fetched from get', tokenInGetParams);
+					
 					deferred.resolve({
 						accessToken: tokenInGetParams
 					});
@@ -228,62 +230,63 @@ angular.module('starter')
 					accessToken: accessToken
 				});
 
-				// get expired time
-				if (now < expiresAt) {
-
-					console.log('Current token should not be expired');
-					// valid token
-					console.log('Resolving token using value from local storage');
-
-					deferred.resolve({
-						accessToken: accessToken
-					});
-
-				} else if (typeof refreshToken != "undefined") {
-
-					console.log('Refresh token will be used to fetch access token from ' +
-						config.getURL("api/oauth2/token") + ' with client id ' + config.getClientId());
-
-					var url = config.getURL("api/oauth2/token");
-
-					//expire token, refresh
-					$http.post(url, {
-
-						client_id: config.getClientId(),
-						client_secret: config.getClientSecret(),
-						refresh_token: refreshToken,
-						grant_type: 'refresh_token'
-					}).success(function (data) {
-						// update local storage
-						if (data.error) {
-							console.log('Token refresh failed: ' + data.error);
-							deferred.reject('refresh failed');
-						} else {
-							var accessTokenRefreshed = authSrv.updateAccessToken(data);
-
-							console.log('access token successfully updated from api server', data);
-							console.log('resolving toke using response value');
-							// respond
-							deferred.resolve({
-								accessToken: accessTokenRefreshed
-							});
-						}
-
-					}).error(function (response) {
-						console.log("failed to refresh token from api server", response);
-						// error refreshing
-						deferred.reject(response);
-					});
-
-				} else {
-					// nothing in cache
-					localStorage.removeItem('accessToken');
+				if(typeof expiresAt == "undefined" || 
+					typeof accessToken == "undefined"  || 
+					expiresAt == null || accessToken == null ){
+					localStorageService.deleteItem('accessToken');
 					console.warn('Refresh token is undefined. Not enough data for oauth flow. rejecting token promise. ' +
 						'Clearing accessToken from local storage.');
 					deferred.reject();
+				} else {
+					// get expired time
+					if (now < expiresAt) {
 
+						console.log('Current token should not be expired');
+						// valid token
+						console.log('Resolving token using value from local storage');
+
+						deferred.resolve({
+							accessToken: accessToken
+						});
+
+					} else {
+
+						console.log('Refresh token will be used to fetch access token from ' +
+							config.getURL("api/oauth2/token") + ' with client id ' + config.getClientId());
+
+						var url = config.getURL("api/oauth2/token");
+
+						//expire token, refresh
+						$http.post(url, {
+
+							client_id: config.getClientId(),
+							client_secret: config.getClientSecret(),
+							refresh_token: refreshToken,
+							grant_type: 'refresh_token'
+						}).success(function (data) {
+							// update local storage
+							if (data.error) {
+								console.log('Token refresh failed: ' + data.error);
+								deferred.reject('refresh failed');
+							} else {
+								var accessTokenRefreshed = authSrv.updateAccessToken(data);
+
+								console.log('access token successfully updated from api server', data);
+								console.log('resolving toke using response value');
+								// respond
+								deferred.resolve({
+									accessToken: accessTokenRefreshed
+								});
+							}
+
+						}).error(function (response) {
+							console.log("failed to refresh token from api server", response);
+							// error refreshing
+							deferred.reject(response);
+						});
+
+					}
 				}
-
 			},
 
 			utilsService: utilsService

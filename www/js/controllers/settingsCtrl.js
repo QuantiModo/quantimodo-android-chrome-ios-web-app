@@ -30,6 +30,13 @@ angular.module('starter')
 	        } else $scope.login();
 	    };
 
+	    // when view is changed
+	    $scope.$on('$ionicView.enter', function(e) {
+	        localStorageService.getItem('user',function(user){
+                $scope.user_name = user ? JSON.parse(user)['displayName'] : "";
+            });
+	    });
+
 
 	    // add other factors to track to a string to show on settings page 
 	    $scope.calculateAddString = function(){
