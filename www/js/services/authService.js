@@ -214,7 +214,7 @@ angular.module('starter')
 			// retrieves access token.
 			// if expired, renews it
 			// if not logged in, returns rejects
-			getAccessToken: function () {
+            getAccessTokenFromAnySource: function () {
 
 				var deferred = $q.defer();
 
@@ -510,7 +510,7 @@ angular.module('starter')
 				);
 			},
 			apiGet: function(baseURL, allowedParams, params, successHandler, errorHandler){
-				authSrv.getAccessToken().then(function(token){
+				authSrv.getAccessTokenFromAnySource().then(function(token){
 
 					// configure params
 					var urlParams = [];

@@ -456,7 +456,7 @@ angular.module('starter')
         scheduleReminder();
 
         // try to get access token
-    	authService.getAccessToken().then(function(data) {
+    	authService.getAccessTokenFromAnySource().then(function(data) {
 
             console.log('got the access token');
             var accessToken = data.accessToken;
