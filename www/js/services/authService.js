@@ -103,7 +103,7 @@ angular.module('starter')
 							console.log('nonNativeMobileLogin: Closing inAppBrowser.');
 							ref.close();
 							console.log('nonNativeMobileLogin: Going to get an access token using authorization code.');
-							authSrv.getAccessTokenFromAuthorizationCode(authorizationCode);
+							authSrv.fetchAccessToken(authorizationCode);
 
 						} else {
 
