@@ -245,14 +245,14 @@ angular.module('starter')
 						}
 
 					} else {
-                        authSrv.getAccessTokenFromUserEndpoint();
+                        authSrv.getAccessTokenFromUserEndpoint(deferred);
                     }
 
 				}
 				return deferred.promise;
 			},
 
-            getAccessTokenFromUserEndpoint: function () {
+            getAccessTokenFromUserEndpoint: function (deferred) {
                 console.log('trying to fetch user credentials with call to /api/user');
                 $http.get(config.getURL("api/user")).then(
                     function (userCredentialsResp) {
