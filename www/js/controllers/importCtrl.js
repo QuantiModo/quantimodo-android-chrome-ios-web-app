@@ -29,7 +29,7 @@ angular.module('starter')
 	        });  
 
 	        // get user's access token
-	        authService.getAccessToken().then(function(token){
+	        authService.getAccessTokenFromAnySource().then(function(token){
 	            
 	            console.log("valid Token", token);
 

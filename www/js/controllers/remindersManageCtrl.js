@@ -253,7 +253,7 @@ angular.module('starter')
 	    $scope.init = function(){
 
 			// get user token
-			authService.getAccessToken().then(function(token){
+			authService.getAccessTokenFromAnySource().then(function(token){
 				var unit = utilsService.getUrlParameter(location.href, 'unit', true);
 				var variableName = utilsService.getUrlParameter(location.href, 'variableName', true);
 				var dateTime = utilsService.getUrlParameter(location.href, 'dateTime', true);

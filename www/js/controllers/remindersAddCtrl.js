@@ -138,7 +138,7 @@ angular.module('starter')
 
     		utils.startLoading();
 	    	// get user token
-			authService.getAccessToken().then(function(token){
+			authService.getAccessTokenFromAnySource().then(function(token){
 			   	console.log('$scope.state.selectedVariableCategory.toLowerCase()', $scope.state.selectedVariableCategory.toLowerCase());
 				if($scope.state.selectedVariableCategory.toLowerCase() === 'anything'){
 					// get all variables
@@ -515,7 +515,7 @@ angular.module('starter')
 	    $scope.init = function(){
 
 			// get user token
-			authService.getAccessToken().then(function(token){
+			authService.getAccessTokenFromAnySource().then(function(token){
 				if($stateParams.category){
 					$scope.category = $stateParams.category;
 					setupCategory($scope.category);

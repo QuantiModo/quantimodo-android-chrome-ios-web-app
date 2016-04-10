@@ -214,7 +214,7 @@ angular.module('starter')
 			// retrieves access token.
 			// if expired, renews it
 			// if not logged in, returns rejects
-			getAccessToken: function () {
+            getAccessTokenFromAnySource: function () {
 
 				var deferred = $q.defer();
 
@@ -405,7 +405,7 @@ angular.module('starter')
 					});
 
 				} else if (refreshToken) {
-                    authSrv.refreshAccessToken(refreshToken);
+                    authSrv.refreshAccessToken(refreshToken, deferred);
 				} else {
 					// nothing in cache
 					localStorage.removeItem('accessToken');
@@ -417,7 +417,7 @@ angular.module('starter')
 
 			},
 
-            refreshAccessToken: function(refreshToken) {
+            refreshAccessToken: function(refreshToken, deferred) {
                 console.log('Refresh token will be used to fetch access token from ' +
                     config.getURL("api/oauth2/token") + ' with client id ' + config.getClientId());
 
@@ -510,7 +510,7 @@ angular.module('starter')
 				);
 			},
 			apiGet: function(baseURL, allowedParams, params, successHandler, errorHandler){
-				authSrv.getAccessToken().then(function(token){
+				authSrv.getAccessTokenFromAnySource().then(function(token){
 
 					// configure params
 					var urlParams = [];
