@@ -63,12 +63,12 @@ angular.module('starter')
 			},
 
 			getAuthorizationCodeFromUrl: function(event) {
-				console.log('the authorization code that i got is: ' + event.data);
+				console.log('event.url is: ' + event.url);
 				console.log('extract authorization code');
-				var authorizationCode = utilsService.getUrlParameter(event.data, 'code');
+				var authorizationCode = utilsService.getUrlParameter(event.url, 'code');
 
 				if(authorizationCode === false) {
-					authorizationCode = utilsService.getUrlParameter(event.data, 'token');
+					authorizationCode = utilsService.getUrlParameter(event.url, 'token');
 				}
 				return authorizationCode;
 			},
@@ -159,7 +159,7 @@ angular.module('starter')
 
 					// handler when a message is received from a sibling tab
 					window.onMessageReceived = function (event) {
-						console.log("message received from sibling tab", event.data);
+						console.log("message received from sibling tab", event.url);
 
 						if(interval !== false){
 							// Don't ask login question anymore
@@ -421,7 +421,7 @@ angular.module('starter')
 						accessToken: accessToken
 					});
 
-				} else if (typeof refreshToken != "undefined") {
+				} else if (typeof refreshToken != "undefined" && refreshToken.length > 1) {
 
 					console.log('Refresh token will be used to fetch access token from ' +
 						config.getURL("api/oauth2/token") + ' with client id ' + config.getClientId());
