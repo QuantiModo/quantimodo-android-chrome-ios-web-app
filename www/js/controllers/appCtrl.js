@@ -358,7 +358,7 @@ angular.module('starter')
 
                         var withJWT = true;
                         // get access token from authorization code
-                        authService.fetchAccessToken(authorizationCode, withJWT);
+                        authService.fetchAccessTokenAndUserDetails(authorizationCode, withJWT);
                     } else {
 
                         console.log("native_login: error occurred", utilsService.getUrlParameter(event.url, 'error'));

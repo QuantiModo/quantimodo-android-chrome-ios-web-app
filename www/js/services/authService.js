@@ -103,7 +103,7 @@ angular.module('starter')
 							console.log('nonNativeMobileLogin: Closing inAppBrowser.');
 							ref.close();
 							console.log('nonNativeMobileLogin: Going to get an access token using authorization code.');
-							authSrv.getAccessTokenFromAuthorizationCode(authorizationCode);
+							authSrv.fetchAccessTokenAndUserDetails(authorizationCode);
 
 						} else {
 
@@ -179,7 +179,7 @@ angular.module('starter')
 								if (!utilsService.getUrlParameter(iframe_url, 'error')) {
 									var authorizationCode = authSrv.getAuthorizationCodeFromUrl(event);
 									// get access token from authorization code
-									authSrv.fetchAccessToken(authorizationCode);
+									authSrv.fetchAccessTokenAndUserDetails(authorizationCode);
 
 									// close the sibling tab
 									ref.close();
@@ -457,7 +457,7 @@ angular.module('starter')
             },
 
 			// get Access Token
-			fetchAccessToken: function(authorization_code, withJWT) {
+			fetchAccessTokenAndUserDetails: function(authorization_code, withJWT) {
 			authSrv.getAccessTokenFromAuthorizationCode(authorization_code, withJWT)
 				.then(function(response) {
 
