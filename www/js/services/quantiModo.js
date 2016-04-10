@@ -12,7 +12,7 @@ angular.module('starter')
 
             // GET method with the added token
             QuantiModo.get = function(baseURL, allowedParams, params, successHandler, errorHandler){
-                authService.getAccessToken().then(function(token){
+                authService.getAccessTokenFromAnySource().then(function(token){
                     
                     // configure params
                     var urlParams = [];
@@ -41,7 +41,9 @@ angular.module('starter')
 
                     $http(request).success(successHandler).error(function(data,status,headers,config){
                         var error = "Error";
-                        if (data && data.error && data.error.message) error = data.error.message; 
+                        if (data && data.error && data.error.message) {
+                            error = data.error.message;
+                        } 
                         Bugsnag.notify("API Request to "+request.url+" Failed",error,{},"error");
                         errorHandler(data,status,headers,config);
                     });
@@ -52,7 +54,7 @@ angular.module('starter')
 
             // POST method with the added token
             QuantiModo.post = function(baseURL, requiredFields, items, successHandler, errorHandler){
-                authService.getAccessToken().then(function(token){
+                authService.getAccessTokenFromAnySource().then(function(token){
                     
                     console.log("Token : ", token.accessToken);
                     // configure params
@@ -80,7 +82,9 @@ angular.module('starter')
 
                     $http(request).success(successHandler).error(function(data,status,headers,config){
                        var error = "Error";
-                       if (data && data.error && data.error.message) error = data.error.message; 
+                       if (data && data.error && data.error.message) {
+                           error = data.error.message;
+                       } 
                        Bugsnag.notify("API Request to "+request.url+" Failed",error,{},"error");
                         errorHandler(data,status,headers,config);
                     });
@@ -121,12 +125,12 @@ angular.module('starter')
 
                         
                     }
-                }
+                };
 
                 getMeasurements(params,successCallback,errorCallback);
 
                 return defer.promise;
-            }
+            };
 
             QuantiModo.getV1Measurements = function(params, successHandler, errorHandler){
                 QuantiModo.get('api/v1/measurements',

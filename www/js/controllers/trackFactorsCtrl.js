@@ -287,7 +287,7 @@ angular.module('starter')
             });  
 
             // get user token
-            authService.getAccessToken().then(function(token){
+            authService.getAccessTokenFromAnySource().then(function(token){
                 
                 // get all variables
                 measurementService.getVariables().then(function(variables){
