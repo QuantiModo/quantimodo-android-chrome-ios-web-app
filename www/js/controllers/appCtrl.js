@@ -338,23 +338,22 @@ angular.module('starter')
 
             $ionicLoading.hide();
 
-            console.log('open the auth window via inAppBrowser.');
+            console.log('native_login: open the auth window via inAppBrowser.');
             var ref = window.open(url,'_blank', 'location=no,toolbar=no');
 
-            console.log('listen to event when the page changes.');
+            console.log('native_login: listen to event when the page changes.');
             ref.addEventListener('loadstart', function(event) {
 
-                console.log("loadstart event", event);
-                console.log('check if changed url is the same as redirection url.');
+                console.log("native_login: loadstart event", event);
+                console.log('native_login: check if changed url is the same as redirection url.');
 
                 if(utilsService.startsWith(event.url, config.getRedirectUri())) {
-
-                    console.log('if there is no error');
+                    
                     if(!utilsService.getUrlParameter(event.url,'error')) {
                         
                         var authorizationCode = authService.getAuthorizationCodeFromUrl(event);
                         
-                        console.log('close inAppBrowser.');
+                        console.log('native_login: Got authorization code: ' + authorizationCode + ' Closing inAppBrowser.');
                         ref.close();
 
                         var withJWT = true;
@@ -363,7 +362,7 @@ angular.module('starter')
 
                     } else {
 
-                        console.log("error occurred", utilsService.getUrlParameter(event.url, 'error'));
+                        console.log("native_login: error occurred", utilsService.getUrlParameter(event.url, 'error'));
 
                         // close inAppBrowser
                         ref.close();

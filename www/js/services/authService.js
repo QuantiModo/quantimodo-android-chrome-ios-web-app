@@ -78,38 +78,38 @@ angular.module('starter')
 			},
 
 			nonNativeMobileLogin: function(register) {
-				console.log("Mobile device detected and ionic platform is " + ionic.Platform.platforms[0]);
+				console.log("nonNativeMobileLogin: Mobile device detected and ionic platform is " + ionic.Platform.platforms[0]);
 				console.log(JSON.stringify(ionic.Platform.platforms));
 
 				var url = authSrv.generateV1OAuthUrl(register);
 
-				console.log('open the auth window via inAppBrowser.');
+				console.log('nonNativeMobileLogin: open the auth window via inAppBrowser.');
 				var ref = window.open(url,'_blank', 'location=no,toolbar=yes');
 
-				console.log('listen to its event when the page changes');
+				console.log('nonNativeMobileLogin: listen to its event when the page changes');
 				ref.addEventListener('loadstart', function(event) {
 
 					console.log(JSON.stringify(event));
-					console.log('The event.url is ' + event.url);
-					console.log('The redirection url is ' + config.getRedirectUri());
+					console.log('nonNativeMobileLogin: The event.url is ' + event.url);
+					console.log('nonNativeMobileLogin: The redirection url is ' + config.getRedirectUri());
 
-					console.log('Checking if changed url is the same as redirection url.');
+					console.log('nonNativeMobileLogin: Checking if changed url is the same as redirection url.');
 					if(utilsService.startsWith(event.url, config.getRedirectUri())) {
 
-						console.log('event.url starts with ' + config.getRedirectUri());
+						console.log('nonNativeMobileLogin: event.url starts with ' + config.getRedirectUri());
 						if(!utilsService.getUrlParameter(event.url,'error')) {
 
 							var authorizationCode = authSrv.getAuthorizationCodeFromUrl(event);
-							console.log('Closing inAppBrowser.');
+							console.log('nonNativeMobileLogin: Closing inAppBrowser.');
 							ref.close();
-							console.log('Going to get an access token using authorization code.');
+							console.log('nonNativeMobileLogin: Going to get an access token using authorization code.');
 							$scope.getAccessTokenFromAuthorizationCode(authorizationCode);
 
 						} else {
 
-							console.log("error occurred", utilsService.getUrlParameter(event.url, 'error'));
+							console.log("nonNativeMobileLogin: error occurred", utilsService.getUrlParameter(event.url, 'error'));
 
-							console.log('close inAppBrowser');
+							console.log('nonNativeMobileLogin: close inAppBrowser');
 							ref.close();
 						}
 					}
