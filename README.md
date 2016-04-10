@@ -12,7 +12,11 @@ A generic app that can be easily configured to help the user track and optimize 
 1. Run `sudo npm i -g gulp grunt-cli bower yo generator-ionic-gulp` in the root of this repository
 1. Run `ionic state reset` in the root of this repository
 1. Add certs to XCode [like so](https://livecode.com/how-to-create-a-free-ios-development-provisioning-profile/)
-
+1. Run `gulp make`
+1. Run `gulp makeApp`
+1. Open MoodiModo.xcworkspace in XCode
+2. Select MoodiModo 2 and target device
+3. Press Play button
 
 # Quick Start for Ubuntu 14.04
 1. Run `sudo bash ionic_install.sh` in the root of this repository
