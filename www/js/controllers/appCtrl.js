@@ -428,41 +428,45 @@ angular.module('starter')
                         ref.postMessage('isLoggedIn?', 'https://staging.quantimo.do/ionic/Modo/www/callback/');
                     }, 1000);
 
+
                     // handler when a message is received from a sibling tab
                     window.onMessageReceived = function (event) {
-                        console.log("message received from sibling tab", event.data);
+                        if(interval !== false){
+                            console.log("message received from sibling tab", event.data, interval);
 
-                        // Don't ask login question anymore
-                        clearInterval(interval);
+                            // Don't ask login question anymore
+                            clearInterval(interval);
+                            interval = false;
+                        
+                            // the url that QuantiModo redirected us to
+                            var iframe_url = event.data;
 
-                        // the url that QuantiModo redirected us to
-                        var iframe_url = event.data;
+                            // validate if the url is same as we wanted it to be
+                            if (utilsService.startsWith(iframe_url, config.getRedirectUri())) {
+                                // if there is no error
+                                if (!utilsService.getUrlParameter(iframe_url, 'error')) {
 
-                        // validate if the url is same as we wanted it to be
-                        if (utilsService.startsWith(iframe_url, config.getRedirectUri())) {
-                            // if there is no error
-                            if (!utilsService.getUrlParameter(iframe_url, 'error')) {
+                                    // extract token
+                                    var authorizationCode = utilsService.getUrlParameter(iframe_url, 'code');
 
-                                // extract token
-                                var authorizationCode = utilsService.getUrlParameter(iframe_url, 'code');
+                                    if (authorizationCode === false) {
+                                        authorizationCode = utilsService.getUrlParameter(iframe_url, 'token');
+                                    }
 
-                                if (authorizationCode === false) {
-                                    authorizationCode = utilsService.getUrlParameter(iframe_url, 'token');
+                                    // get access token from authorization code
+                                    $scope.getAccessToken(authorizationCode);
+
+                                    // close the sibling tab
+                                    ref.close();
+
+                                } else {
+                                    // TODO : display_error
+                                    console.log("Error occurred validating redirect url. Closing the sibling tab.",
+                                        utilsService.getUrlParameter(iframe_url, 'error'));
+
+                                    // close the sibling tab
+                                    ref.close();
                                 }
-
-                                // get access token from authorization code
-                                $scope.getAccessToken(authorizationCode);
-
-                                // close the sibling tab
-                                ref.close();
-
-                            } else {
-                                // TODO : display_error
-                                console.log("Error occurred validating redirect url. Closing the sibling tab.",
-                                    utilsService.getUrlParameter(iframe_url, 'error'));
-
-                                // close the sibling tab
-                                ref.close();
                             }
                         }
                     };
@@ -686,6 +690,7 @@ angular.module('starter')
 
         showLoader('Logging you in');
 
+
         scheduleReminder();
 
         // try to get access token
@@ -722,16 +727,11 @@ angular.module('starter')
                         user_id:user.id
                     };
                 }
-
             });
-
-
 
             // update loader text
             $ionicLoading.hide();
             //showLoader('Syncing data');
-
-            app.track, app.welcome, app.history
 
             // sync data
             $scope.movePage();
@@ -739,13 +739,13 @@ angular.module('starter')
             var sync_enabled_states = [
                 'app.track',
                 'app.welcome',
-                'app.history'
+                'app.history',
+                'app.login'
             ];
 
             if(sync_enabled_states.indexOf($state.current.name) !== -1 && config.appSettings.primary_outcome_variable != false){
                 $rootScope.isSyncing = true;
                 console.log('setting sync true');
-
                 measurementService.sync_data().then(function(){
                     console.log("sync complete");
                     $rootScope.isSyncing = false;
