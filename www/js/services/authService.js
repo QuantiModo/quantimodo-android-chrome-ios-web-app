@@ -230,106 +230,85 @@ angular.module('starter')
 						accessToken: tokenInGetParams
 					});
 				} else {
-
-					//check if previously we already tried to get token from user credentials
-					//this is possible if user logged in with cookie
-					console.log('previously tried to fetch credentials:', authSrv.triedToFetchCredentials);
+					console.log('previously tried to get token from user credentials. ' + ' ' +
+                        'this is possible if user logged in with cookie. triedToFetchCredentials:', authSrv.triedToFetchCredentials);
 					if (authSrv.triedToFetchCredentials) {
-
 						console.log('previous credentials fetch result:', authSrv.succesfullyFetchedCredentials);
 						if (authSrv.succesfullyFetchedCredentials) {
-
 							console.log('resolving token using value from local storage');
-
 							deferred.resolve({
 								accessToken: localStorageService.getItemSync('accessToken')
 							});
-
 						} else {
-
 							console.log('starting access token fetching flow');
-
 							authSrv._defaultGetAccessToken(deferred);
-
 						}
 
 					} else {
-						console.log('trying to fetch user credentials');
-						//try to fetch credentials with call to /api/user
-						$http.get(config.getURL("api/user")).then(
-							function (userCredentialsResp) {
-								//if direct API call was successful
-								console.log('User credentials fetched:', userCredentialsResp);
-
-								Bugsnag.metaData = {
-									user: {
-										name: userCredentialsResp.data.displayName,
-										email: userCredentialsResp.data.email
-									}
-								};
-
-								//get token value from response
-								var token = userCredentialsResp.data.token.split("|")[2];
-								//update locally stored token
-								localStorageService.setItem('accessToken', token);
-
-								//set flags
-								authSrv.triedToFetchCredentials = true;
-								authSrv.succesfullyFetchedCredentials = true;
-
-								//resolve promise
-								deferred.resolve({
-									accessToken: token
-								});
-
-							},
-							function (errorResp) {
-								//if no luck with getting credentials
-								console.log('failed to fetch user credentials', errorResp);
-
-								console.log('client id is ' + config.getClientId());
-
-								console.log('Platform is browser: ' +ionic.Platform.is('browser'));
-								console.log('Platform is ios: ' +ionic.Platform.is('ios'));
-								console.log('Platform is android: ' +ionic.Platform.is('android'));
-
-								//console.log('Platform is ' + JSON.stringify(ionic.Platform.platforms[0]));
-
-								//Using OAuth on Staging for tests
-								if(!ionic.Platform.is('ios') && !ionic.Platform.is('android')
-									&& config.getClientId() === 'oAuthDisabled'
-								    && !(window.location.origin.indexOf('staging.quantimo.do') > -1)){
-										console.log("Browser Detected and client id is oAuthDisabled.  ");
-									    $ionicLoading.hide();
-										$state.go('app.login');
-										// var loginUrl = config.getURL("api/v2/auth/login");
-										// console.log("Client id is oAuthDisabled - will redirect to regular login.");
-										// loginUrl += "redirect_uri=" + encodeURIComponent(window.location.href);
-										// console.debug('AUTH redirect URL created:', loginUrl);
-										// console.debug('GOOD LUCK!');
-										// //window.location.replace(loginUrl);
-										// var win = window.open(loginUrl, '_blank');
-										// win.focus();
-								} else {
-									//set flags
-									authSrv.triedToFetchCredentials = true;
-									authSrv.succesfullyFetchedCredentials = false;
-
-									console.log('starting access token fetching flow');
-
-									authSrv._defaultGetAccessToken(deferred);
-								}
-							}
-						);
-
-					}
+                        authSrv.getAccessTokenFromUserEndpoint();
+                    }
 
 				}
 				return deferred.promise;
 			},
 
+            getAccessTokenFromUserEndpoint: function () {
+                console.log('trying to fetch user credentials with call to /api/user');
+                $http.get(config.getURL("api/user")).then(
+                    function (userCredentialsResp) {
+                        console.log('direct API call was successful. User credentials fetched:', userCredentialsResp);
+                        Bugsnag.metaData = {
+                            user: {
+                                name: userCredentialsResp.data.displayName,
+                                email: userCredentialsResp.data.email
+                            }
+                        };
+
+                        //get token value from response
+                        var token = userCredentialsResp.data.token.split("|")[2];
+                        //update locally stored token
+                        localStorageService.setItem('accessToken', token);
+
+                        //set flags
+                        authSrv.triedToFetchCredentials = true;
+                        authSrv.succesfullyFetchedCredentials = true;
+
+                        //resolve promise
+                        deferred.resolve({
+                            accessToken: token
+                        });
+
+                    },
+                    function (errorResp) {
+
+                        console.log('failed to fetch user credentials', errorResp);
+                        console.log('client id is ' + config.getClientId());
+                        console.log('Platform is browser: ' +ionic.Platform.is('browser'));
+                        console.log('Platform is ios: ' +ionic.Platform.is('ios'));
+                        console.log('Platform is android: ' +ionic.Platform.is('android'));
+
+                        //Using OAuth on Staging for tests
+                        if(!ionic.Platform.is('ios') && !ionic.Platform.is('android')
+                            && config.getClientId() === 'oAuthDisabled'
+                            && !(window.location.origin.indexOf('staging.quantimo.do') > -1)){
+                            console.log("Browser Detected and client id is oAuthDisabled.  ");
+                            $ionicLoading.hide();
+                            $state.go('app.login');
+                        } else {
+                            //set flags
+                            authSrv.triedToFetchCredentials = true;
+                            authSrv.succesfullyFetchedCredentials = false;
+
+                            console.log('starting access token fetching flow');
+
+                            authSrv._defaultGetAccessToken(deferred);
+                        }
+                    }
+                );
+            },
+
 			// get access token from authorization code
-			getAccessTokenFromAuthorizationCode: function (authorizationCode, withJWT) {
+			getAccessTokenFromAuthorizationCode: function (authorizationCode) {
 				console.log("Authorization code is " + authorizationCode);
 
 				var deferred = $q.defer();
@@ -422,41 +401,7 @@ angular.module('starter')
 					});
 
 				} else if (typeof refreshToken != "undefined" && refreshToken.length > 1) {
-
-					console.log('Refresh token will be used to fetch access token from ' +
-						config.getURL("api/oauth2/token") + ' with client id ' + config.getClientId());
-
-					var url = config.getURL("api/oauth2/token");
-
-					//expire token, refresh
-					$http.post(url, {
-
-						client_id: config.getClientId(),
-						client_secret: config.getClientSecret(),
-						refresh_token: refreshToken,
-						grant_type: 'refresh_token'
-					}).success(function (data) {
-						// update local storage
-						if (data.error) {
-							console.log('Token refresh failed: ' + data.error);
-							deferred.reject('refresh failed');
-						} else {
-							var accessTokenRefreshed = authSrv.updateAccessToken(data);
-
-							console.log('access token successfully updated from api server', data);
-							console.log('resolving toke using response value');
-							// respond
-							deferred.resolve({
-								accessToken: accessTokenRefreshed
-							});
-						}
-
-					}).error(function (response) {
-						console.log("failed to refresh token from api server", response);
-						// error refreshing
-						deferred.reject(response);
-					});
-
+                    authSrv.refreshAccessToken(refreshToken);
 				} else {
 					// nothing in cache
 					localStorage.removeItem('accessToken');
@@ -467,6 +412,43 @@ angular.module('starter')
 				}
 
 			},
+
+            refreshAccessToken: function(refreshToken) {
+                console.log('Refresh token will be used to fetch access token from ' +
+                    config.getURL("api/oauth2/token") + ' with client id ' + config.getClientId());
+
+                var url = config.getURL("api/oauth2/token");
+
+                //expire token, refresh
+                $http.post(url, {
+
+                    client_id: config.getClientId(),
+                    client_secret: config.getClientSecret(),
+                    refresh_token: refreshToken,
+                    grant_type: 'refresh_token'
+                }).success(function (data) {
+                    // update local storage
+                    if (data.error) {
+                        console.log('Token refresh failed: ' + data.error);
+                        deferred.reject('refresh failed');
+                    } else {
+                        var accessTokenRefreshed = authSrv.updateAccessToken(data);
+
+                        console.log('access token successfully updated from api server', data);
+                        console.log('resolving toke using response value');
+                        // respond
+                        deferred.resolve({
+                            accessToken: accessTokenRefreshed
+                        });
+                    }
+
+                }).error(function (response) {
+                    console.log("failed to refresh token from api server", response);
+                    // error refreshing
+                    deferred.reject(response);
+                });
+
+            },
 
 			// get Access Token
 			fetchAccessToken: function(authorization_code, withJWT) {
