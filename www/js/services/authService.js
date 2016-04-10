@@ -230,10 +230,8 @@ angular.module('starter')
 						accessToken: tokenInGetParams
 					});
 				} else {
-
-					//check if previously we already tried to get token from user credentials
-					//this is possible if user logged in with cookie
-					console.log('previously tried to fetch credentials:', authSrv.triedToFetchCredentials);
+					console.log('previously tried to get token from user credentials. ' + ' ' +
+                        'this is possible if user logged in with cookie. triedToFetchCredentials:', authSrv.triedToFetchCredentials);
 					if (authSrv.triedToFetchCredentials) {
 
 						console.log('previous credentials fetch result:', authSrv.succesfullyFetchedCredentials);
@@ -246,20 +244,16 @@ angular.module('starter')
 							});
 
 						} else {
-
 							console.log('starting access token fetching flow');
-
 							authSrv._defaultGetAccessToken(deferred);
-
 						}
 
 					} else {
-						console.log('trying to fetch user credentials');
-						//try to fetch credentials with call to /api/user
+						console.log('trying to fetch user credentials with call to /api/user');
 						$http.get(config.getURL("api/user")).then(
 							function (userCredentialsResp) {
-								//if direct API call was successful
-								console.log('User credentials fetched:', userCredentialsResp);
+
+								console.log('direct API call was successful. User credentials fetched:', userCredentialsResp);
 
 								Bugsnag.metaData = {
 									user: {
@@ -284,16 +278,12 @@ angular.module('starter')
 
 							},
 							function (errorResp) {
-								//if no luck with getting credentials
+
 								console.log('failed to fetch user credentials', errorResp);
-
 								console.log('client id is ' + config.getClientId());
-
 								console.log('Platform is browser: ' +ionic.Platform.is('browser'));
 								console.log('Platform is ios: ' +ionic.Platform.is('ios'));
 								console.log('Platform is android: ' +ionic.Platform.is('android'));
-
-								//console.log('Platform is ' + JSON.stringify(ionic.Platform.platforms[0]));
 
 								//Using OAuth on Staging for tests
 								if(!ionic.Platform.is('ios') && !ionic.Platform.is('android')
@@ -302,14 +292,6 @@ angular.module('starter')
 										console.log("Browser Detected and client id is oAuthDisabled.  ");
 									    $ionicLoading.hide();
 										$state.go('app.login');
-										// var loginUrl = config.getURL("api/v2/auth/login");
-										// console.log("Client id is oAuthDisabled - will redirect to regular login.");
-										// loginUrl += "redirect_uri=" + encodeURIComponent(window.location.href);
-										// console.debug('AUTH redirect URL created:', loginUrl);
-										// console.debug('GOOD LUCK!');
-										// //window.location.replace(loginUrl);
-										// var win = window.open(loginUrl, '_blank');
-										// win.focus();
 								} else {
 									//set flags
 									authSrv.triedToFetchCredentials = true;
