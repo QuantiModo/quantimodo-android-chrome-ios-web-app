@@ -359,7 +359,7 @@ angular.module('starter')
 
                         var withJWT = true;
                         // get access token from authorization code
-                        $scope.getAccessToken(authorizationCode, withJWT);
+                        authService.getAccessToken(authorizationCode, withJWT);
 
                     } else {
 
