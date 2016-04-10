@@ -17,6 +17,7 @@ before_script:
 - chmod a+x ./scripts/add-key.sh
 - ./scripts/add-key.sh
 script:
+- ionic state reset
 - npm install
 - echo "npm has installed"
 - gulp -v
