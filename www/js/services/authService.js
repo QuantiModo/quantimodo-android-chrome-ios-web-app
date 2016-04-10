@@ -233,85 +233,82 @@ angular.module('starter')
 					console.log('previously tried to get token from user credentials. ' + ' ' +
                         'this is possible if user logged in with cookie. triedToFetchCredentials:', authSrv.triedToFetchCredentials);
 					if (authSrv.triedToFetchCredentials) {
-
 						console.log('previous credentials fetch result:', authSrv.succesfullyFetchedCredentials);
 						if (authSrv.succesfullyFetchedCredentials) {
-
 							console.log('resolving token using value from local storage');
-
 							deferred.resolve({
 								accessToken: localStorageService.getItemSync('accessToken')
 							});
-
 						} else {
 							console.log('starting access token fetching flow');
 							authSrv._defaultGetAccessToken(deferred);
 						}
 
 					} else {
-						console.log('trying to fetch user credentials with call to /api/user');
-						$http.get(config.getURL("api/user")).then(
-							function (userCredentialsResp) {
-
-								console.log('direct API call was successful. User credentials fetched:', userCredentialsResp);
-
-								Bugsnag.metaData = {
-									user: {
-										name: userCredentialsResp.data.displayName,
-										email: userCredentialsResp.data.email
-									}
-								};
-
-								//get token value from response
-								var token = userCredentialsResp.data.token.split("|")[2];
-								//update locally stored token
-								localStorageService.setItem('accessToken', token);
-
-								//set flags
-								authSrv.triedToFetchCredentials = true;
-								authSrv.succesfullyFetchedCredentials = true;
-
-								//resolve promise
-								deferred.resolve({
-									accessToken: token
-								});
-
-							},
-							function (errorResp) {
-
-								console.log('failed to fetch user credentials', errorResp);
-								console.log('client id is ' + config.getClientId());
-								console.log('Platform is browser: ' +ionic.Platform.is('browser'));
-								console.log('Platform is ios: ' +ionic.Platform.is('ios'));
-								console.log('Platform is android: ' +ionic.Platform.is('android'));
-
-								//Using OAuth on Staging for tests
-								if(!ionic.Platform.is('ios') && !ionic.Platform.is('android')
-									&& config.getClientId() === 'oAuthDisabled'
-								    && !(window.location.origin.indexOf('staging.quantimo.do') > -1)){
-										console.log("Browser Detected and client id is oAuthDisabled.  ");
-									    $ionicLoading.hide();
-										$state.go('app.login');
-								} else {
-									//set flags
-									authSrv.triedToFetchCredentials = true;
-									authSrv.succesfullyFetchedCredentials = false;
-
-									console.log('starting access token fetching flow');
-
-									authSrv._defaultGetAccessToken(deferred);
-								}
-							}
-						);
-
-					}
+                        authSrv.getAccessTokenFromUserEndpoint();
+                    }
 
 				}
 				return deferred.promise;
 			},
 
+            getAccessTokenFromUserEndpoint: function () {
+                console.log('trying to fetch user credentials with call to /api/user');
+                $http.get(config.getURL("api/user")).then(
+                    function (userCredentialsResp) {
+                        console.log('direct API call was successful. User credentials fetched:', userCredentialsResp);
+                        Bugsnag.metaData = {
+                            user: {
+                                name: userCredentialsResp.data.displayName,
+                                email: userCredentialsResp.data.email
+                            }
+                        };
+
+                        //get token value from response
+                        var token = userCredentialsResp.data.token.split("|")[2];
+                        //update locally stored token
+                        localStorageService.setItem('accessToken', token);
+
+                        //set flags
+                        authSrv.triedToFetchCredentials = true;
+                        authSrv.succesfullyFetchedCredentials = true;
+
+                        //resolve promise
+                        deferred.resolve({
+                            accessToken: token
+                        });
+
+                    },
+                    function (errorResp) {
+
+                        console.log('failed to fetch user credentials', errorResp);
+                        console.log('client id is ' + config.getClientId());
+                        console.log('Platform is browser: ' +ionic.Platform.is('browser'));
+                        console.log('Platform is ios: ' +ionic.Platform.is('ios'));
+                        console.log('Platform is android: ' +ionic.Platform.is('android'));
+
+                        //Using OAuth on Staging for tests
+                        if(!ionic.Platform.is('ios') && !ionic.Platform.is('android')
+                            && config.getClientId() === 'oAuthDisabled'
+                            && !(window.location.origin.indexOf('staging.quantimo.do') > -1)){
+                            console.log("Browser Detected and client id is oAuthDisabled.  ");
+                            $ionicLoading.hide();
+                            $state.go('app.login');
+                        } else {
+                            //set flags
+                            authSrv.triedToFetchCredentials = true;
+                            authSrv.succesfullyFetchedCredentials = false;
+
+                            console.log('starting access token fetching flow');
+
+                            authSrv._defaultGetAccessToken(deferred);
+                        }
+                    }
+                );
+            },
+
 			// get access token from authorization code
-			getAccessTokenFromAuthorizationCode: function (authorizationCode, withJWT) {
+			getAccessTokenFromAuthorizationCode: function (authorizationCode) {
 				console.log("Authorization code is " + authorizationCode);
 
 				var deferred = $q.defer();
