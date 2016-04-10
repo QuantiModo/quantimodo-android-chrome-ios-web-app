@@ -41,7 +41,9 @@ angular.module('starter')
 
                     $http(request).success(successHandler).error(function(data,status,headers,config){
                         var error = "Error";
-                        if (data && data.error && data.error.message) error = data.error.message; 
+                        if (data && data.error && data.error.message) {
+                            error = data.error.message;
+                        } 
                         Bugsnag.notify("API Request to "+request.url+" Failed",error,{},"error");
                         errorHandler(data,status,headers,config);
                     });
@@ -80,7 +82,9 @@ angular.module('starter')
 
                     $http(request).success(successHandler).error(function(data,status,headers,config){
                        var error = "Error";
-                       if (data && data.error && data.error.message) error = data.error.message; 
+                       if (data && data.error && data.error.message) {
+                           error = data.error.message;
+                       } 
                        Bugsnag.notify("API Request to "+request.url+" Failed",error,{},"error");
                         errorHandler(data,status,headers,config);
                     });
@@ -113,12 +117,12 @@ angular.module('starter')
                         defer.notify(response);
                         getMeasurements(params,successCallback,errorCallback);
                     }
-                }
+                };
 
                 getMeasurements(params,successCallback,errorCallback);
 
                 return defer.promise;
-            }
+            };
 
             QuantiModo.getV1Measurements = function(params, successHandler, errorHandler){
                 QuantiModo.get('api/v1/measurements',
