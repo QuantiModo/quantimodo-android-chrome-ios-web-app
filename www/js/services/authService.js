@@ -400,8 +400,13 @@ angular.module('starter')
 						accessToken: accessToken
 					});
 
-				} else if (typeof refreshToken != "undefined" && refreshToken.length > 1) {
-                    authSrv.refreshAccessToken(refreshToken);
+				} else if (typeof refreshToken != "undefined") {
+                    if(refreshToken.length > 1) {
+                        authSrv.refreshAccessToken(refreshToken);
+                    } else {
+                        console.warn('Refresh token is defined but has less than 1 character. rejecting token promise.');
+                        deferred.reject();
+                    }
 				} else {
 					// nothing in cache
 					localStorage.removeItem('accessToken');
