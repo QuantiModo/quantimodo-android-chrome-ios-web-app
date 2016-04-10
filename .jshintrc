@@ -5,6 +5,9 @@
   "jquery"  : true,
 
   "globals": {
+    "Bugsnag" : false,
+    "setInterval" : false,
+    "clearInterval" : false,
     "pluralize"   : false,
     "alert"   : false,
     "event"   : false,

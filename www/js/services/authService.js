@@ -36,7 +36,7 @@ angular.module('starter')
 			},
 
 			generateV1OAuthUrl: function(register) {
-				var url = config.getApiUrl() + "/api/oauth2/authorize?"
+				var url = config.getApiUrl() + "/api/oauth2/authorize?";
 				// add params
 				url += "response_type=code";
 				url += "&client_id="+config.getClientId();
@@ -103,7 +103,7 @@ angular.module('starter')
 							console.log('nonNativeMobileLogin: Closing inAppBrowser.');
 							ref.close();
 							console.log('nonNativeMobileLogin: Going to get an access token using authorization code.');
-							$scope.getAccessTokenFromAuthorizationCode(authorizationCode);
+							authSrv.getAccessTokenFromAuthorizationCode(authorizationCode);
 
 						} else {
 
@@ -370,7 +370,9 @@ angular.module('starter')
 				}).then(function (response) {
 					if (response.data.success && response.data.data && response.data.data.token) {
 						deferred.resolve(response.data.data.token);
-					} else deferred.reject(response);
+					} else {
+                        deferred.reject(response);
+                    }
 				}, function (response) {
 					deferred.reject(response);
 				});
@@ -539,7 +541,9 @@ angular.module('starter')
 
 					$http(request).success(successHandler).error(function(data,status,headers,config){
 						var error = "Error";
-						if (data && data.error && data.error.message) error = data.error.message;
+						if (data && data.error && data.error.message) {
+                            error = data.error.message;
+                        }
 						Bugsnag.notify("API Request to "+request.url+" Failed",error,{},"error");
 						errorHandler(data,status,headers,config);
 					});
