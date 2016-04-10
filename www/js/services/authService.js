@@ -1,6 +1,6 @@
 angular.module('starter')
 
-	.factory('authService', function ($http, $q, localStorageService, utilsService, $state, $ionicLoading) {
+	.factory('authService', function ($http, $q, localStorageService, utilsService, $state, $ionicLoading, $rootScope) {
 
 		var authSrv = {
 
@@ -111,7 +111,6 @@ angular.module('starter')
 					}
 
 				});
-				
 			},
 			
 			chromeLogin: function(register) {
@@ -131,8 +130,6 @@ angular.module('starter')
 					console.log("It is an extension, so we use sessions instead of OAuth flow. ");
 					chrome.tabs.create({ url: config.getApiUrl() + "/" });
 				}
-
-
 			},
 
 			nonOAuthBrowserLogin : function(register) {
@@ -164,30 +161,33 @@ angular.module('starter')
 					window.onMessageReceived = function (event) {
 						console.log("message received from sibling tab", event.data);
 
-						// Don't ask login question anymore
-						clearInterval(interval);
+						if(interval !== false){
+							// Don't ask login question anymore
+							clearInterval(interval);
+							interval = false;
 
-						// the url that QuantiModo redirected us to
-						var iframe_url = event.data;
+							// the url that QuantiModo redirected us to
+							var iframe_url = event.data;
 
-						// validate if the url is same as we wanted it to be
-						if (utilsService.startsWith(iframe_url, config.getRedirectUri())) {
-							// if there is no error
-							if (!utilsService.getUrlParameter(iframe_url, 'error')) {
-								var authorizationCode = authSrv.getAuthorizationCodeFromUrl(event);
-								// get access token from authorization code
-								authSrv.fetchAccessToken(authorizationCode);
+							// validate if the url is same as we wanted it to be
+							if (utilsService.startsWith(iframe_url, config.getRedirectUri())) {
+								// if there is no error
+								if (!utilsService.getUrlParameter(iframe_url, 'error')) {
+									var authorizationCode = authSrv.getAuthorizationCodeFromUrl(event);
+									// get access token from authorization code
+									authSrv.fetchAccessToken(authorizationCode);
 
-								// close the sibling tab
-								ref.close();
+									// close the sibling tab
+									ref.close();
 
-							} else {
-								// TODO : display_error
-								console.log("Error occurred validating redirect url. Closing the sibling tab.",
-									utilsService.getUrlParameter(iframe_url, 'error'));
+								} else {
+									// TODO : display_error
+									console.log("Error occurred validating redirect url. Closing the sibling tab.",
+										utilsService.getUrlParameter(iframe_url, 'error'));
 
-								// close the sibling tab
-								ref.close();
+									// close the sibling tab
+									ref.close();
+								}
 							}
 						}
 					};
@@ -494,6 +494,8 @@ angular.module('starter')
 
 						// get user details from server
 						authSrv.getUser();
+
+						$rootScope.$broadcast('callAppCtrlInit');
 					}
 				})
 				.catch(function(err){

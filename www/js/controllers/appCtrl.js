@@ -499,16 +499,14 @@ angular.module('starter')
             // update loader text
             $ionicLoading.hide();
             //showLoader('Syncing data');
-
-            app.track, app.welcome, app.history
-
             // sync data
             $scope.movePage();
 
             var sync_enabled_states = [
                 'app.track',
                 'app.welcome',
-                'app.history'
+                'app.history',
+                'app.login'
             ];
 
             if(sync_enabled_states.indexOf($state.current.name) !== -1 && config.appSettings.primary_outcome_variable != false){
@@ -541,6 +539,14 @@ angular.module('starter')
         });
 
     };
+
+    $scope.$on('callAppCtrlInit', function(){
+        console.log("calling init");
+        
+        // update everything
+        $scope.init();
+    });
+
 
     $scope.toggleTrackingSubMenu = function(){
         $scope.showTrackingSubMenu = !$scope.showTrackingSubMenu;
