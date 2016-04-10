@@ -128,7 +128,7 @@ angular.module('starter')
 						'interactive': true
 					}, function(redirect_url) {
 						var authorizationCode = authSrv.getAuthorizationCodeFromUrl(event);
-						$scope.getAccessTokenFromAuthorizationCode(authorizationCode);
+						authSrv.getAccessTokenFromAuthorizationCode(authorizationCode);
 					});
 				} else {
 					console.log("It is an extension, so we use sessions instead of OAuth flow. ");
