@@ -5,6 +5,7 @@ angular.module('starter')
         
         $scope.controller_name = "LoginCtrl";
         $scope.isIOS = ionic.Platform.isIPad() || ionic.Platform.isIOS();
+        console.log($scope.isIos);
         $scope.isAndroid = ionic.Platform.isAndroid();
         $scope.isChrome = window.chrome ? true : false;
         $rootScope.hideMenu = true;
