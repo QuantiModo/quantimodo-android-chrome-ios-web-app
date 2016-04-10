@@ -157,61 +157,6 @@ angular.module('starter')
         }
     };
 
-    // get Access Token
-    $scope.getAccessToken = function(authorization_code, withJWT){
-    	authService.getAccessTokenFromAuthorizationCode(authorization_code, withJWT)
-    	.then(function(response) {
-
-            if(response.error){
-                console.error("Error generating access token");
-                console.log('response', response);
-                // set flags
-                $scope.isLoggedIn = false;
-                localStorageService.setItem('isLoggedIn', false);
-            } else {
-                console.log("Access token received",response);
-                if(typeof withJWT !== "undefined" && withJWT === true) {
-                    authService.updateAccessToken(response, withJWT);
-                }
-                else {
-                    authService.updateAccessToken(response);
-                }
-
-                // set flags
-                $scope.isLoggedIn = true;
-                localStorageService.setItem('isLoggedIn', true);
-
-                // get user details from server
-                getUser();
-
-                // update app view wrt app state
-                $scope.init();
-            }
-    	})
-    	.catch(function(err){
-
-            console.log("error in generating access token", err);
-            // set flags
-    		$scope.isLoggedIn = false;
-            localStorageService.setItem('isLoggedIn', false);
-    	});
-    };
-
-    //get User
-    var getUser = function(){
-        QuantiModo.getUser(function(user){
-
-            // set user data in local storage
-            localStorageService.setItem('user', JSON.stringify(user));
-
-            $scope.user_name = user.displayName;
-        },function(err){
-
-            // error
-            console.log(err);
-        });
-    };
-
     // when work on this activity is complete
     $scope.movePage = function(){
         // if user has seen the welcome screen before
