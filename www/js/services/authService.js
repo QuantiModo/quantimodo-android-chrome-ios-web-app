@@ -422,41 +422,7 @@ angular.module('starter')
 					});
 
 				} else if (typeof refreshToken != "undefined" && refreshToken.length > 1) {
-
-					console.log('Refresh token will be used to fetch access token from ' +
-						config.getURL("api/oauth2/token") + ' with client id ' + config.getClientId());
-
-					var url = config.getURL("api/oauth2/token");
-
-					//expire token, refresh
-					$http.post(url, {
-
-						client_id: config.getClientId(),
-						client_secret: config.getClientSecret(),
-						refresh_token: refreshToken,
-						grant_type: 'refresh_token'
-					}).success(function (data) {
-						// update local storage
-						if (data.error) {
-							console.log('Token refresh failed: ' + data.error);
-							deferred.reject('refresh failed');
-						} else {
-							var accessTokenRefreshed = authSrv.updateAccessToken(data);
-
-							console.log('access token successfully updated from api server', data);
-							console.log('resolving toke using response value');
-							// respond
-							deferred.resolve({
-								accessToken: accessTokenRefreshed
-							});
-						}
-
-					}).error(function (response) {
-						console.log("failed to refresh token from api server", response);
-						// error refreshing
-						deferred.reject(response);
-					});
-
+                    authSrv.refreshAccessToken(refreshToken);
 				} else {
 					// nothing in cache
 					localStorage.removeItem('accessToken');
@@ -467,6 +433,43 @@ angular.module('starter')
 				}
 
 			},
+
+            refreshAccessToken: function(refreshToken) {
+                console.log('Refresh token will be used to fetch access token from ' +
+                    config.getURL("api/oauth2/token") + ' with client id ' + config.getClientId());
+
+                var url = config.getURL("api/oauth2/token");
+
+                //expire token, refresh
+                $http.post(url, {
+
+                    client_id: config.getClientId(),
+                    client_secret: config.getClientSecret(),
+                    refresh_token: refreshToken,
+                    grant_type: 'refresh_token'
+                }).success(function (data) {
+                    // update local storage
+                    if (data.error) {
+                        console.log('Token refresh failed: ' + data.error);
+                        deferred.reject('refresh failed');
+                    } else {
+                        var accessTokenRefreshed = authSrv.updateAccessToken(data);
+
+                        console.log('access token successfully updated from api server', data);
+                        console.log('resolving toke using response value');
+                        // respond
+                        deferred.resolve({
+                            accessToken: accessTokenRefreshed
+                        });
+                    }
+
+                }).error(function (response) {
+                    console.log("failed to refresh token from api server", response);
+                    // error refreshing
+                    deferred.reject(response);
+                });
+
+            },
 
 			// get Access Token
 			fetchAccessToken: function(authorization_code, withJWT) {
