@@ -63,12 +63,16 @@ angular.module('starter')
 			},
 
 			getAuthorizationCodeFromUrl: function(event) {
-				console.log('event.url is: ' + event.url);
-				console.log('extract authorization code');
-				var authorizationCode = utilsService.getUrlParameter(event.url, 'code');
+				console.log('extracting authorization code from event: ' + JSON.stringify(event));
+                var authorizationUrl = event.url;
+                if(!authorizationUrl) {
+                    authorizationUrl = event.data;
+                }
 
-				if(authorizationCode === false) {
-					authorizationCode = utilsService.getUrlParameter(event.url, 'token');
+				var authorizationCode = utilsService.getUrlParameter(authorizationUrl, 'code');
+
+				if(!authorizationCode) {
+					authorizationCode = utilsService.getUrlParameter(authorizationUrl, 'token');
 				}
 				return authorizationCode;
 			},
@@ -400,13 +404,8 @@ angular.module('starter')
 						accessToken: accessToken
 					});
 
-				} else if (typeof refreshToken != "undefined") {
-                    if(refreshToken.length > 1) {
-                        authSrv.refreshAccessToken(refreshToken);
-                    } else {
-                        console.warn('Refresh token is defined but has less than 1 character. rejecting token promise.');
-                        deferred.reject();
-                    }
+				} else if (refreshToken) {
+                    authSrv.refreshAccessToken(refreshToken);
 				} else {
 					// nothing in cache
 					localStorage.removeItem('accessToken');
