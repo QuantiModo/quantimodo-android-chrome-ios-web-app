@@ -141,11 +141,16 @@ angular.module('starter')
 				if (register === true) {
 					loginUrl = config.getURL("api/v2/auth/register");
 				}
-				console.log("Client id is oAuthDisabled - will redirect to regular login.");
+				console.log("nonOAuthBrowserLogin: Client id is oAuthDisabled - will redirect to regular login.");
 				loginUrl += "redirect_uri=" + encodeURIComponent(window.location.href);
-				console.debug('AUTH redirect URL created:', loginUrl);
-				console.debug('GOOD LUCK!');
-				window.location.replace(loginUrl);
+				console.debug('nonOAuthBrowserLogin: AUTH redirect URL created:', loginUrl);
+				var apiUrl = config.getApiUrl();
+				var apiUrlMatchesHostName = apiUrl.indexOf(window.location.hostname);
+				if(apiUrlMatchesHostName > -1) {
+					window.location.replace(loginUrl);
+				} else {
+					alert("API url doesn't match auth base url.  Please make use the same domain in config file");
+				}
 			},
 
 			oAuthBrowserLogin : function (register) {
@@ -285,17 +290,17 @@ angular.module('starter')
                     },
                     function (errorResp) {
 
-                        console.log('failed to fetch user credentials', errorResp);
-                        console.log('client id is ' + config.getClientId());
-                        console.log('Platform is browser: ' +ionic.Platform.is('browser'));
-                        console.log('Platform is ios: ' +ionic.Platform.is('ios'));
-                        console.log('Platform is android: ' +ionic.Platform.is('android'));
+                        console.log('getAccessTokenFromUserEndpoint: failed to fetch user credentials', errorResp);
+                        console.log('getAccessTokenFromUserEndpoint: client id is ' + config.getClientId());
+                        console.log('getAccessTokenFromUserEndpoint: Platform is browser: ' + ionic.Platform.is('browser'));
+                        console.log('getAccessTokenFromUserEndpoint: Platform is ios: ' + ionic.Platform.is('ios'));
+                        console.log('getAccessTokenFromUserEndpoint: Platform is android: ' + ionic.Platform.is('android'));
 
                         //Using OAuth on Staging for tests
                         if(!ionic.Platform.is('ios') && !ionic.Platform.is('android')
                             && config.getClientId() === 'oAuthDisabled'
                             && !(window.location.origin.indexOf('staging.quantimo.do') > -1)){
-                            console.log("Browser Detected and client id is oAuthDisabled.  ");
+                            console.log("getAccessTokenFromUserEndpoint: Browser Detected and client id is oAuthDisabled.  ");
                             $ionicLoading.hide();
                             $state.go('app.login');
                         } else {

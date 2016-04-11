@@ -311,15 +311,15 @@ angular.module('starter')
     	var url = config.getURL("api/oauth2/authorize", true);
 
         if (window.chrome && chrome.runtime && chrome.runtime.id) {
-            console.log("Chrome Detected");
+            console.log("$scope.login: Chrome Detected");
             authService.chromeLogin(url, register);
         }
 
-		else if(ionic.Platform.platforms[0] === "browser"){
-            console.log("Browser Detected");
+		else if(ionic.Platform.is('browser')){
+            console.log("$scope.login: Browser Detected");
             authService.browserLogin(url, register);
 		} else {
-            console.log("Browser and Chrome Not Detected.  Assuming mobile platform");
+            console.log("$scope.login: Browser and Chrome Not Detected.  Assuming mobile platform");
             authService.nonNativeMobileLogin(url, register);
         }
     };
