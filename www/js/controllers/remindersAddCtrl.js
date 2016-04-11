@@ -84,12 +84,13 @@ angular.module('starter')
 	    		{ id : 3, name : 'Every 6 hours' , group : 'intervals'},
 	    		{ id : 4, name : 'Every 4 hours' , group : 'intervals'},
 	    		{ id : 5, name : 'Every 3 hours' , group : 'intervals'},
-	    		{ id : 6, name : 'Every 30 minutes' , group : 'intervals'},
-	    		{ id : 7, name : 'Hourly' , group : 'intervals'},
-	    		{ id : 8, name : 'Never' , group : 'intervals'},
-	    		{ id : 9, name : 'Once a day' , group : 'frequency'},
-	    		{ id : 10, name : 'Twice a day' , group : 'frequency'},
-	    		{ id : 11, name : 'Three times a day' , group : 'frequency'}
+				{ id : 6, name : 'Every 2 hours' , group : 'intervals'},
+				{ id : 7, name : 'Hourly' , group : 'intervals'},
+	    		{ id : 8, name : 'Every 30 minutes' , group : 'intervals'},
+	    		{ id : 9, name : 'Never' , group : 'intervals'},
+	    		{ id : 10, name : 'Once a day' , group : 'frequency'},
+	    		{ id : 11, name : 'Twice a day' , group : 'frequency'},
+	    		{ id : 12, name : 'Three times a day' , group : 'frequency'}
 	    	]
 	    };
 
@@ -456,13 +457,10 @@ angular.module('starter')
 	    		21600: "Every 6 hours",
 	    		14400: "Every 4 hours",
 	    		10800: "Every 3 hours",
-	    		1800: "Every 30 minutes",   			    		
-	    		3600: "Hourly",
-	    		0: "Never", 
-	    		86400: "Once a day",
-	    		43200: "Twice a day",
-	    		28800: "Three times a day",
-
+				7200: "Every 2 hours",
+				3600: "Hourly",
+				1800: "Every 30 minutes",
+				0: "Never"
 	    	};
 
 			if(typeof $stateParams.reminder.firstDailyReminderTime !== "undefined" && $stateParams.reminder.firstDailyReminderTime !== null){
