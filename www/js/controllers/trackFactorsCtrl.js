@@ -306,7 +306,7 @@ angular.module('starter')
                     $ionicLoading.hide();
                 });
 
-                // get variabls cateogries
+                // get variable categories
                 measurementService.getVariableCategories().then(function(variableCategories){
                     
                     // update viewmodel
@@ -317,7 +317,7 @@ angular.module('starter')
                     setTimeout(function(){
                         $scope.state.variable_category = config.appSettings.primary_outcome_variable;
                         
-                        // redraw everythign
+                        // redraw everything
                         $scope.$apply();
                     },100)
 
