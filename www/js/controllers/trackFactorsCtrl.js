@@ -327,6 +327,7 @@ angular.module('starter')
                 });
 
                 // get units
+                measurementService.refreshUnits();
                 measurementService.getUnits().then(function(units){
                     
                     $scope.state.units = units;
