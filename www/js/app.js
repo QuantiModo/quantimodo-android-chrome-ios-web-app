@@ -119,6 +119,15 @@ angular.module('starter',
           }
         }
       })
+        .state('app.intro', {
+            url: "/intro",
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/intro.html",
+                    controller: 'IntroPageCtrl'
+                }
+            }
+        })
       .state('app.track', {
           url: "/track",
           views: {
