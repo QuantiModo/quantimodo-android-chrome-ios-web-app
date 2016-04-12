@@ -1,6 +1,6 @@
 angular.module('starter')    
     // QuantiModo API implementation
-    .factory('QuantiModo', function($http, $q, authService){
+    .factory('QuantiModo', function($http, $q, authService, localStorageService){
             var QuantiModo = {};
 
 
@@ -112,10 +112,18 @@ angular.module('starter')
                     if(response.length === 0 || typeof response === "string" || params.offset >= 3000){
                         defer.resolve(response_array);
                     }else{
-                        response_array = response_array.concat(response);
-                        params.offset+=200;
-                        defer.notify(response);
-                        getMeasurements(params,successCallback,errorCallback);
+                        localStorageService.getItem('isLoggedIn', function(isLoggedIn){
+                            if(isLoggedIn == "false" || isLoggedIn == false){
+                                defer.reject(false);
+                            } else {
+                                response_array = response_array.concat(response);
+                                params.offset+=200;
+                                defer.notify(response);
+                                getMeasurements(params,successCallback,errorCallback);
+                            }
+                        });
+
+                        
                     }
                 };
 
