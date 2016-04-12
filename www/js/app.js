@@ -155,6 +155,15 @@ angular.module('starter',
               }
           }
       })
+        .state('app.variable_settings', {
+            url: "/variable_settings/:variableName",
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/variable_settings.html",
+                    controller: 'VariableSettingsCtrl'
+                }
+            }
+        })
       .state('app.import', {
           url: "/import",
           cache:"false",
