@@ -445,7 +445,9 @@ angular.module('starter')
                                 var allData;
                                 localStorageService.getItem('allData',function(val){
                                    allData = val ? JSON.parse(val) : [];
-                                    if(lastUpdated == 0) {
+
+                                    if(!lastUpdated || allData.length === 0) {
+                                        
                                         allData = allData.concat(response);
                                     }
                                     else{
