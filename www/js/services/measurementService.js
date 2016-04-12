@@ -88,7 +88,7 @@ angular.module('starter')
             });
 		};
 
-		// flag wether the Service is in a synced state
+		// flag whether the Service is in a synced state
 		var isSynced = false;
 
         //flag to indicate if data syncing is in progress
@@ -314,14 +314,20 @@ angular.module('starter')
                     QuantiModo.postMeasurementsV2(measurements, function(response){
                         if(response.success) {
                             console.log("success", response);
-                            if(usePromise) deferred.resolve();
+                            if(usePromise) {
+                                deferred.resolve();
+                            }
                         } else {
                             console.log("error", response);
-                            if(usePromise) deferred.reject(response.message? response.message.split('.')[0] : "Can't post measurement right now!");
+                            if(usePromise) {
+                                deferred.reject(response.message ? response.message.split('.')[0] : "Can't post measurement right now!");
+                            }
                         }
                     }, function(response){
                         console.log("error", response);
-                        if(usePromise) deferred.reject(response.message? response.message.split('.')[0] : "Can't post measurement right now!");
+                        if(usePromise) {
+                            deferred.reject(response.message ? response.message.split('.')[0] : "Can't post measurement right now!");
+                        }
                     });
                 });
 
@@ -433,7 +439,9 @@ angular.module('starter')
                             isSyncing = false;
 							deferred.resolve(response);
 						}
-						else deferred.reject(false);
+						else {
+                            deferred.reject(false);
+                        }
 					}, function(response){
                         isSyncing = false;
                         $rootScope.isSyncing = false;
@@ -500,7 +508,6 @@ angular.module('starter')
                                 if(isLoggedIn == "false" || isLoggedIn == false){
                                     isSyncing = false;
                                     deferred.resolve();
-                                    return;
                                 }
                             });
                         }
@@ -611,13 +618,15 @@ angular.module('starter')
 				var deferred = $q.defer();
 
                 localStorageService.getItem('barChartData', function(barChartData){
-                    if(barChartData)
-                        deferred.resolve(JSON.parse(barChartData))
-                    else
+                    if(barChartData) {
+                        deferred.resolve(JSON.parse(barChartData));
+                    }
+                    else {
                         deferred.reject(false);
+                    }
                 });
 
-				return deferred.promise;
+                return deferred.promise;
 			},
 
 			// calculate line chart values
@@ -653,13 +662,15 @@ angular.module('starter')
 				var deferred = $q.defer();
 
                 localStorageService.getItem('lineChartData', function(lineChartData){                    
-                    if(lineChartData)
-                        deferred.resolve(JSON.parse(lineChartData))
-                    else
+                    if(lineChartData) {
+                        deferred.resolve(JSON.parse(lineChartData));
+                    }
+                    else {
                         deferred.reject(false);
+                    }
                 });
 
-				return deferred.promise;
+                return deferred.promise;
 			},
 
 			// calculate both charts in same iteration
@@ -667,7 +678,7 @@ angular.module('starter')
 				var deferred = $q.defer();
                 
                 getAllData(false,function(data){
-                    if(!data && data.length == 0){
+                    if(!data && data.length === 0){
                         deferred.reject(false);
                     } else {
                         var lineArr = [];
@@ -782,7 +793,7 @@ angular.module('starter')
                 QuantiModo.getV1Measurements(params, function(response){
                     deferred.resolve(response);
                 }, function(error){
-                    deferred.reject(error)
+                    deferred.reject(error);
                 });
 
                 return deferred.promise;
