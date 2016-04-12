@@ -129,9 +129,9 @@ config.appSettings  = {
         },
         {
             img : {
-                width : '210',
+                width : '180',
                 height : '180',
-                url : 'img/track_treatments.png'
+                url : 'img/pill_icon.png'
             },
             content : {
                 firstP : {
@@ -154,9 +154,9 @@ config.appSettings  = {
         {
             // Add icons instead of screen-shot
             img : {
-                width : '190',
+                width : '180',
                 height : '180',
-                url : 'img/track_symptoms.png'
+                url : 'img/symptoms_icon.png'
             },
             content : {
 
@@ -181,14 +181,14 @@ config.appSettings  = {
         },
         {
             img : {
-                width : '220',
-                height : '200',
-                url : 'img/mood_note.png'
+                width : '180',
+                height : '180',
+                url : 'img/doctor_icon.png'
             },
             content : {
                 firstP : {
                     visible : true,
-                    content : 'History',
+                    content : 'Connect with Your Physician',
                     classes : 'intro_header calm'
                 }, 
                 logoDiv : {
@@ -197,7 +197,7 @@ config.appSettings  = {
                 },
                 finalP: {
                     visible : true,
-                    content : 'See your and edit past data and notes on the <span class="calm">History</span> page.',
+                    content : 'Print or send reports of your responses to your doctors.',
                     classes : 'intro_para',
                     buttonBarVisible : true
                 }
@@ -275,6 +275,11 @@ config.appSettings  = {
             title : 'History',
             href : '#/app/history-all',
             icon : 'ion-ios-paper-outline'
+        },
+        {
+            title : 'Getting Started',
+            href : '#/app/intro',
+            icon : 'ion-information-circled'
         },
         {
             title : 'Track',

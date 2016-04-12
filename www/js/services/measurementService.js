@@ -88,7 +88,7 @@ angular.module('starter')
             });
 		};
 
-		// flag wether the Service is in a synced state
+		// flag whether the Service is in a synced state
 		var isSynced = false;
 
         //flag to indicate if data syncing is in progress
@@ -314,14 +314,20 @@ angular.module('starter')
                     QuantiModo.postMeasurementsV2(measurements, function(response){
                         if(response.success) {
                             console.log("success", response);
-                            if(usePromise) deferred.resolve();
+                            if(usePromise) {
+                                deferred.resolve();
+                            }
                         } else {
                             console.log("error", response);
-                            if(usePromise) deferred.reject(response.message? response.message.split('.')[0] : "Can't post measurement right now!");
+                            if(usePromise) {
+                                deferred.reject(response.message ? response.message.split('.')[0] : "Can't post measurement right now!");
+                            }
                         }
                     }, function(response){
                         console.log("error", response);
-                        if(usePromise) deferred.reject(response.message? response.message.split('.')[0] : "Can't post measurement right now!");
+                        if(usePromise) {
+                            deferred.reject(response.message ? response.message.split('.')[0] : "Can't post measurement right now!");
+                        }
                     });
                 });
 
@@ -392,13 +398,13 @@ angular.module('starter')
 				var deferred = $q.defer();
                 isSyncing = true;
                 var params;
-                var lastUpdated;
+                var lastSyncTime;
 
-                localStorageService.getItem('lastUpdated',function(val){
-                    lastUpdated = val || 0;
+                localStorageService.getItem('lastSyncTime',function(val){
+                    lastSyncTime = val || 0;
                     params = {
                         variableName : config.appSettings.primary_outcome_variable_details.name,
-                        // 'lastUpdated':'(ge)'+lastUpdated ,
+                        'lastUpdated':'(ge)'+ lastSyncTime ,
                         sort : '-startTime',
                         limit:200,
                         offset:0
@@ -413,7 +419,6 @@ angular.module('starter')
                         if(!isLoggedIn){
                             isSyncing = false;
                             deferred.resolve();
-                            return;
                         }
                     });
 
@@ -427,13 +432,15 @@ angular.module('starter')
 					// send request
 					QuantiModo.getMeasurements(params).then(function(response){
 						if(response){
-                            localStorageService.setItem('lastUpdated',moment.utc().format('YYYY-MM-DDTHH:mm:ss'));
+                            localStorageService.setItem('lastSyncTime',moment.utc().format('YYYY-MM-DDTHH:mm:ss'));
                             // set flag
 							isSynced = true;
                             isSyncing = false;
 							deferred.resolve(response);
 						}
-						else deferred.reject(false);
+						else {
+                            deferred.reject(false);
+                        }
 					}, function(response){
                         isSyncing = false;
                         $rootScope.isSyncing = false;
@@ -445,18 +452,20 @@ angular.module('starter')
                                 var allData;
                                 localStorageService.getItem('allData',function(val){
                                    allData = val ? JSON.parse(val) : [];
-                                    if(lastUpdated == 0) {
+
+                                    if(!lastSyncTime || allData.length === 0) {
+                                        
                                         allData = allData.concat(response);
                                     }
                                     else{
                                         //to remove duplicates since the server would also return the records that we already have in allDate
-                                        var lastUpdatedTimestamp = new Date(lastUpdated).getTime()/1000;
+                                        var lastSyncTimeTimestamp = new Date(lastSyncTime).getTime()/1000;
                                         allData = allData.filter(function(x){
-                                            return x.timestamp < lastUpdatedTimestamp;
+                                            return x.timestamp < lastSyncTimeTimestamp;
                                         });
                                         //Extracting New Records
                                         var new_records = response.filter(function (elem) {
-                                            return elem['timestamp'] > lastUpdatedTimestamp;
+                                            return elem['timestamp'] > lastSyncTimeTimestamp;
                                         });
                                         console.log('new record');
                                         console.log(new_records);
@@ -466,7 +475,7 @@ angular.module('starter')
                                             var updated_at_timestamp =  moment.utc(elem['updatedTime']*1000).unix();
                                             var created_at_timestamp =  moment.utc(elem['createdTime']*1000).unix();
                                             //Criteria for updated records
-                                            return (updated_at_timestamp > lastUpdatedTimestamp && created_at_timestamp != updated_at_timestamp) ;
+                                            return (updated_at_timestamp > lastSyncTimeTimestamp && created_at_timestamp != updated_at_timestamp) ;
                                         });
                                         //Replacing primary outcome variable object in original allData object
                                         allData.map(function(x,index) {
@@ -489,7 +498,7 @@ angular.module('starter')
                                     //updating last updated time and data in local storage so that we syncing should continue from this point
                                     //if user restarts the app or refreshes the page.
                                     localStorageService.setItem('allData',JSON.stringify(allData));
-                                    localStorageService.setItem('lastUpdated',moment(allData[allData.length-1].timestamp*1000).utc().format('YYYY-MM-DDTHH:mm:ss'));
+                                    localStorageService.setItem('lastSyncTime',moment(allData[allData.length-1].timestamp*1000).utc().format('YYYY-MM-DDTHH:mm:ss'));
                                 });
 
                             }
@@ -498,7 +507,6 @@ angular.module('starter')
                                 if(isLoggedIn == "false" || isLoggedIn == false){
                                     isSyncing = false;
                                     deferred.resolve();
-                                    return;
                                 }
                             });
                         }
@@ -511,18 +519,29 @@ angular.module('starter')
                         // if measurement queues is present
                         var measurementsQueue = JSON.parse(measurementsQueue);
                         if(measurementsQueue.length > 0)
-                        // synch queues
-                            syncQueue(measurementsQueue).then(function(){
-                                if(lastUpdated == 0){
-                                    //we will get all the data from server
-                                    localStorageService.setItem('allData','[]');
+                        {
+                            syncQueue(measurementsQueue).then(
+                                function(){
+                                    if(!lastSyncTime){
+                                        //we will get all the data from server
+                                        localStorageService.setItem('allData','[]');
+                                    }
+                                    setTimeout(
+                                        function()
+                                        {
+                                            get_measurements();
+                                        },
+                                        100
+                                    );
                                 }
-                                setTimeout(function(){
-                                    get_measurements();
-                                },100);
-                            });
-                        else get_measurements();
-                    } else get_measurements();
+                            );
+                        }
+                        else {
+                            get_measurements();
+                        }
+                    } else {
+                        get_measurements();
+                    }
 
                 });
 
@@ -609,13 +628,15 @@ angular.module('starter')
 				var deferred = $q.defer();
 
                 localStorageService.getItem('barChartData', function(barChartData){
-                    if(barChartData)
-                        deferred.resolve(JSON.parse(barChartData))
-                    else
+                    if(barChartData) {
+                        deferred.resolve(JSON.parse(barChartData));
+                    }
+                    else {
                         deferred.reject(false);
+                    }
                 });
 
-				return deferred.promise;
+                return deferred.promise;
 			},
 
 			// calculate line chart values
@@ -651,13 +672,15 @@ angular.module('starter')
 				var deferred = $q.defer();
 
                 localStorageService.getItem('lineChartData', function(lineChartData){                    
-                    if(lineChartData)
-                        deferred.resolve(JSON.parse(lineChartData))
-                    else
+                    if(lineChartData) {
+                        deferred.resolve(JSON.parse(lineChartData));
+                    }
+                    else {
                         deferred.reject(false);
+                    }
                 });
 
-				return deferred.promise;
+                return deferred.promise;
 			},
 
 			// calculate both charts in same iteration
@@ -665,7 +688,7 @@ angular.module('starter')
 				var deferred = $q.defer();
                 
                 getAllData(false,function(data){
-                    if(!data && data.length == 0){
+                    if(!data && data.length === 0){
                         deferred.reject(false);
                     } else {
                         var lineArr = [];
@@ -780,7 +803,7 @@ angular.module('starter')
                 QuantiModo.getV1Measurements(params, function(response){
                     deferred.resolve(response);
                 }, function(error){
-                    deferred.reject(error)
+                    deferred.reject(error);
                 });
 
                 return deferred.promise;
