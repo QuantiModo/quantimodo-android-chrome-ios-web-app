@@ -268,7 +268,7 @@ angular.module('starter')
 	    $scope.init = function(){
 
 			// get user token
-			authService.getAccessToken().then(function(token){
+			authService.getAccessTokenFromAnySource().then(function(token){
 				var unit = utilsService.getUrlParameter(location.href, 'unit', true);
 				var variableName = utilsService.getUrlParameter(location.href, 'variableName', true);
 				var dateTime = utilsService.getUrlParameter(location.href, 'dateTime', true);
@@ -351,7 +351,8 @@ angular.module('starter')
 	    	    epoch : moment(dateFromDate).valueOf(),
 	    	    unit : $scope.state.selectedReminder.abbreviatedUnitName,
 	    	    category : category,
-	    	    isAvg : isAvg
+				note : null,
+				isAvg : isAvg
 	    	};
 
 	    	if($scope.state.selectedReminder.abbreviatedUnitName === '/5') 
@@ -366,7 +367,8 @@ angular.module('starter')
     	        params.unit,
     	        params.isAvg,
     	        params.category,
-    	        usePromise)
+				params.note,
+				usePromise)
     	    .then(function(){
     	    	if($scope.state.title === "Edit Measurement"){
     	    		utils.stopLoading();

@@ -1,6 +1,6 @@
 angular.module('starter')
 	// Measurement Service
-	.factory('measurementService', function($http, $q, QuantiModo,localStorageService){
+	.factory('measurementService', function($http, $q, QuantiModo, localStorageService, $rootScope){
 
 		// sync the measurements in queue with QuantiModo API
 		var syncQueue = function(measurementsQueue){
@@ -270,9 +270,13 @@ angular.module('starter')
             },
 
 			// post a singe measurement
-			post_tracking_measurement : function(epoch, variable, val, unit, isAvg, category, usePromise){
+			post_tracking_measurement : function(epoch, variable, val, unit, isAvg, category, note, usePromise){
 
                 var deferred = $q.defer();
+
+                if(note === ""){
+                    note = null;
+                }
 
                 // measurements set
                 var measurements = [
@@ -286,7 +290,7 @@ angular.module('starter')
                 		   	{
                 		   		timestamp:  epoch / 1000,
                 		   		value: val,
-                		   		note : ""
+                		   		note : note
                 		   	}
                 	   	]
                     }
@@ -405,6 +409,14 @@ angular.module('starter')
 				// send request
 				var get_measurements = function(){
 
+                    localStorageService.getItem('isLoggedIn', function(isLoggedIn){
+                        if(!isLoggedIn){
+                            isSyncing = false;
+                            deferred.resolve();
+                            return;
+                        }
+                    });
+
 					// if the data is already synced
 					if(isSynced){
 						isSyncing = false;
@@ -423,6 +435,8 @@ angular.module('starter')
 						}
 						else deferred.reject(false);
 					}, function(response){
+                        isSyncing = false;
+                        $rootScope.isSyncing = false;
                         deferred.reject(false);
                     }, function(response){
                         if(response){
@@ -479,7 +493,15 @@ angular.module('starter')
                                 });
 
                             }
-                        } 
+                        } else {
+                            localStorageService.getItem('isLoggedIn', function(isLoggedIn){
+                                if(isLoggedIn == "false" || isLoggedIn == false){
+                                    isSyncing = false;
+                                    deferred.resolve();
+                                    return;
+                                }
+                            });
+                        }
                     });
 				};
 
@@ -822,8 +844,9 @@ angular.module('starter')
 				return deferred.promise;
 			},
 
-			// refresh local untis with QuantiModo API
+			// refresh local units with QuantiModo API
 			refreshUnits : function(){
+                localStorage.removeItem('units');
 				var deferred = $q.defer();
 
 				QuantiModo.getUnits(function(units){

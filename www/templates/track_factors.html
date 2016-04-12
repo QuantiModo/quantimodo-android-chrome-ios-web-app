@@ -111,12 +111,18 @@
                         <div class="row uptop" style="padding-left:0px;">
                             <div class="col" style="padding-top:5px;">
 
-                                <!-- show most common unit when tracking measurement, keep it editable-->
-                                <input type="text" ng-show="flags.showAddVariable" ng-change="unit_search(state.unit_text)" ng-model="state.unit_text" placeholder="Type to search">
+                                <!-- Default to most common unit when tracking measurement, and always keep it editable-->
+                                <input type="text" ng-change="unit_search(state.unit_text)" ng-model="state.unit_text" placeholder="Search for a unit">
 
-                                
-                                <!-- show default unit when tracking measurement-->
+                                <!-- Below replaced by above so that we can always change the unit-->
+                                <!-- Default to most common unit when adding new variable, keep it editable-->
+                                <!--
+                                <input type="text" ng-show="flags.showAddVariable" ng-change="unit_search(state.unit_text)" ng-model="state.unit_text" placeholder="Type to search">
+                                -->
+                                <!-- Lock to default unit when tracking measurement for existing variable-->
+                                <!--
                                 <span ng-show="!flags.showAddVariable">{{state.selected_sub}}</span>
+                                -->
                             </div>
                            
                         </div>
@@ -158,6 +164,18 @@
                                 {{slots.epochTime | toTime}}
                             </button>
                         </ionic-timepicker>
+                    </div>
+                </div>
+                <div class="row labeled-control">
+                    <div class="col col-l">
+                        <span>
+                            Note
+                        </span>
+                    </div>
+                    <div class="col" style="padding-top: 11px;">
+                        <div class="col">
+                            <input type="text" ng-model="state.note" id="note" placeholder="Enter Note Here" class="uptop">
+                        </div>
                     </div>
                 </div>
             </div>

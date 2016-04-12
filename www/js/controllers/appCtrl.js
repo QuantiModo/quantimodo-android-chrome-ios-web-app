@@ -157,61 +157,6 @@ angular.module('starter')
         }
     };
 
-    // get Access Token
-    $scope.getAccessToken = function(authorization_code, withJWT){
-    	authService.getAccessTokenFromAuthorizationCode(authorization_code, withJWT)
-    	.then(function(response) {
-
-            if(response.error){
-                console.error("Error generating access token");
-                console.log('response', response);
-                // set flags
-                $scope.isLoggedIn = false;
-                localStorageService.setItem('isLoggedIn', false);
-            } else {
-                console.log("Access token received",response);
-                if(typeof withJWT !== "undefined" && withJWT === true) {
-                    authService.updateAccessToken(response, withJWT);
-                }
-                else {
-                    authService.updateAccessToken(response);
-                }
-
-                // set flags
-                $scope.isLoggedIn = true;
-                localStorageService.setItem('isLoggedIn', true);
-
-                // get user details from server
-                getUser();
-
-                // update app view wrt app state
-                $scope.init();
-            }
-    	})
-    	.catch(function(err){
-
-            console.log("error in generating access token", err);
-            // set flags
-    		$scope.isLoggedIn = false;
-            localStorageService.setItem('isLoggedIn', false);
-    	});
-    };
-
-    //get User
-    var getUser = function(){
-        QuantiModo.getUser(function(user){
-
-            // set user data in local storage
-            localStorageService.setItem('user', JSON.stringify(user));
-
-            $scope.user_name = user.displayName;
-        },function(err){
-
-            // error
-            console.log(err);
-        });
-    };
-
     // when work on this activity is complete
     $scope.movePage = function(){
         // if user has seen the welcome screen before
@@ -251,6 +196,7 @@ angular.module('starter')
     $scope.logout = function(){
 
         var start_logout = function(){
+            $rootScope.isSyncing = false;
             if(ionic.Platform.platforms[0] !== "browser"){
                 console.log('start_logout: Open the auth window via inAppBrowser.  Platform is ' + ionic.Platform.platforms[0]);
                 var ref = window.open(config.getApiUrl() + '/api/v2/auth/logout','_blank', 'location=no,toolbar=yes');
@@ -366,235 +312,57 @@ angular.module('starter')
     	var url = config.getURL("api/oauth2/authorize", true);
 
         if (window.chrome && chrome.runtime && chrome.runtime.id) {
-
-            if(chrome.identity){
-                console.log("login: Code running in a Chrome extension (content script, background page, etc.");
-                url = config.getApiUrl() + "/api/oauth2/authorize?"
-                // add params
-                url += "response_type=code";
-                url += "&client_id="+config.getClientId();
-                url += "&client_secret="+config.getClientSecret();
-                url += "&scope="+config.getPermissionString();
-                url += "&state=testabcd";
-                if(register === true){
-                    url += "&register=true";
-                }
-                //url += "&redirect_uri=" + config.getRedirectUri();
-
-                chrome.identity.launchWebAuthFlow({
-                    'url': url,
-                    'interactive': true
-                }, function(redirect_url) {
-                    var authorizationCode = utilsService.getUrlParameter(event.url, 'code');
-
-                    if(authorizationCode === false) {
-                        authorizationCode = utilsService.getUrlParameter(event.url, 'token');
-                    }
-
-                    $scope.getAccessToken(authorizationCode);
-                });
-            } else {
-                console.log("It is an extension, so we use sessions instead of OAuth flow. ");
-                chrome.tabs.create({ url: config.getApiUrl() + "/" });
-            }
-
+            console.log("$scope.login: Chrome Detected");
+            authService.chromeLogin(url, register);
         }
 
-		else if(ionic.Platform.platforms[0] === "browser"){
-			console.log("Browser Detected");
-
-            if(config.getClientId() !== 'oAuthDisabled'){
-                // add params
-                url += "response_type=code";
-                url += "&client_id="+config.getClientId();
-                url += "&client_secret="+config.getClientSecret();
-                url += "&scope="+config.getPermissionString();
-                url += "&state=testabcd";
-                if(register === true){
-                    url += "&register=true";
-                }
-                //url += "&redirect_uri=" + config.getRedirectUri();
-
-                var ref = window.open(url,'_blank');
-
-                if(!ref){
-                    alert("You must first unblock popups, and and refresh the page for this to work!");
-                } else {
-                    // broadcast message question every second to sibling tabs
-                    var interval = setInterval(function () {
-                        ref.postMessage('isLoggedIn?', config.getRedirectUri());
-                        ref.postMessage('isLoggedIn?', 'https://app.quantimo.do/ionic/Modo/www/callback/');
-                        ref.postMessage('isLoggedIn?', 'https://local.quantimo.do:4417/ionic/Modo/www/callback/');
-                        ref.postMessage('isLoggedIn?', 'https://staging.quantimo.do/ionic/Modo/www/callback/');
-                    }, 1000);
-
-                    // handler when a message is received from a sibling tab
-                    window.onMessageReceived = function (event) {
-                        console.log("message received from sibling tab", event.data);
-
-                        // Don't ask login question anymore
-                        clearInterval(interval);
-
-                        // the url that QuantiModo redirected us to
-                        var iframe_url = event.data;
-
-                        // validate if the url is same as we wanted it to be
-                        if (utilsService.startsWith(iframe_url, config.getRedirectUri())) {
-                            // if there is no error
-                            if (!utilsService.getUrlParameter(iframe_url, 'error')) {
-
-                                // extract token
-                                var authorizationCode = utilsService.getUrlParameter(iframe_url, 'code');
-
-                                if (authorizationCode === false) {
-                                    authorizationCode = utilsService.getUrlParameter(iframe_url, 'token');
-                                }
-
-                                // get auth token from request token
-                                $scope.getAccessToken(authorizationCode);
-
-                                // close the sibling tab
-                                ref.close();
-
-                            } else {
-                                // TODO : display_error
-                                console.log("Error occurred validating redirect url. Closing the sibling tab.",
-                                    utilsService.getUrlParameter(iframe_url, 'error'));
-
-                                // close the sibling tab
-                                ref.close();
-                            }
-                        }
-                    };
-
-                    // listen to broadcast messages from other tabs within browser
-                    window.addEventListener("message", window.onMessageReceived, false);
-                }
-            } else {
-                var loginUrl = config.getURL("api/v2/auth/login");
-                if(register === true){
-                    loginUrl = config.getURL("api/v2/auth/register");
-                }
-                console.log("Client id is oAuthDisabled - will redirect to regular login.");
-                loginUrl += "redirect_uri=" + encodeURIComponent(window.location.href);
-                console.debug('AUTH redirect URL created:', loginUrl);
-                console.debug('GOOD LUCK!');
-                window.location.replace(loginUrl);
-            }
+		else if(ionic.Platform.is('browser')){
+            console.log("$scope.login: Browser Detected");
+            authService.browserLogin(url, register);
 		} else {
-
-            console.log("Mobile device detected and ionic platform is " + ionic.Platform.platforms[0]);
-            console.log(JSON.stringify(ionic.Platform.platforms));
-
-            url += "response_type=code";
-            url += "&client_id="+config.getClientId();
-            url += "&client_secret="+config.getClientSecret();
-            url += "&scope="+config.getPermissionString();
-            url += "&state=testabcd";
-            if(register === true){
-                url += "&register=true";
-            }
-            //url += "&redirect_uri=" + config.getRedirectUri();
-
-            console.log('open the auth window via inAppBrowser.');
-			var ref = window.open(url,'_blank', 'location=no,toolbar=yes');
-
-            console.log('listen to its event when the page changes');
-			ref.addEventListener('loadstart', function(event) {
-
-                console.log(JSON.stringify(event));
-                console.log('The event.url is ' + event.url);
-                console.log('The redirection url is ' + config.getRedirectUri());
-
-                console.log('Checking if changed url is the same as redirection url.');
-                if(utilsService.startsWith(event.url, config.getRedirectUri())) {
-
-                    console.log('event.url starts with ' + config.getRedirectUri());
-                    if(!utilsService.getUrlParameter(event.url,'error')) {
-
-                        console.log('extracting request token.');
-						var authorizationCode = utilsService.getUrlParameter(event.url, 'code');
-                        console.log('Authorization code is ' + authorizationCode);
-
-                        if(authorizationCode === false) {
-                            authorizationCode = utilsService.getUrlParameter(event.url, 'token');
-                        }
-
-                        console.log('Closing inAppBrowser.');
-                        ref.close();
-
-                        console.log('Going to get an access token using authorization code.');
-                        $scope.getAccessToken(authorizationCode);
-
-					} else {
-
-                        console.log("error occurred", utilsService.getUrlParameter(event.url, 'error'));
-
-                        console.log('close inAppBrowser');
-                        ref.close();
-                    }
-                }
-
-            });
+            console.log("$scope.login: Browser and Chrome Not Detected.  Assuming mobile platform");
+            authService.nonNativeMobileLogin(url, register);
         }
     };
 
-    $scope.native_login = function(platform, accessToken){
+    $scope.native_login = function(platform, accessToken, register){
         localStorageService.setItem('isWelcomed', true);
         $rootScope.isWelcomed = true;
 
         showLoader('Talking to QuantiModo');
         authService.getJWTToken(platform, accessToken)
-        .then(function(responseToken){
+        .then(function(JWTToken){
             // success
 
             console.log("native_login: Mobile device detected and platform is " + platform);
-            var url = config.getURL("api/v2/bshaffer/oauth/authorize", true);
-
-            url += "response_type=code";
-            url += "&client_id="+config.getClientId();
-            url += "&client_secret="+config.getClientSecret();
-            url += "&scope="+config.getPermissionString();
-            url += "&state=testabcd";
-            url += "&token="+responseToken;
-            if(register === true){
-                url += "&register=true";
-            }
-            //url += "&redirect_uri=" + config.getRedirectUri();
+            var url = authService.generateV2OAuthUrl(JWTToken);
 
             $ionicLoading.hide();
 
-            console.log('open the auth window via inAppBrowser.');
+            console.log('native_login: open the auth window via inAppBrowser.');
             var ref = window.open(url,'_blank', 'location=no,toolbar=no');
 
-            console.log('listen to event when the page changes.');
+            console.log('native_login: listen to event when the page changes.');
             ref.addEventListener('loadstart', function(event) {
 
-                console.log("loadstart event", event);
-                console.log('check if changed url is the same as redirection url.');
+                console.log("native_login: loadstart event", event);
+                console.log('native_login: check if changed url is the same as redirection url.');
 
                 if(utilsService.startsWith(event.url, config.getRedirectUri())) {
-
-                    console.log('if there is no error');
+                    
                     if(!utilsService.getUrlParameter(event.url,'error')) {
-
-                        console.log('the request token that i got is: ' + event.url);
-                        console.log('extract request token');
-                        var authorizationCode = utilsService.getUrlParameter(event.url, 'code');
-
-                        if(authorizationCode === false) {
-                            authorizationCode = utilsService.getUrlParameter(event.url, 'token');
-                        }
-                        console.log('close inAppBrowser.');
+                        
+                        var authorizationCode = authService.getAuthorizationCodeFromUrl(event);
+                        
+                        console.log('native_login: Got authorization code: ' + authorizationCode + ' Closing inAppBrowser.');
                         ref.close();
 
                         var withJWT = true;
-                        // get auth token from request token
-                        $scope.getAccessToken(authorizationCode, withJWT);
-
+                        // get access token from authorization code
+                        authService.fetchAccessTokenAndUserDetails(authorizationCode, withJWT);
                     } else {
 
-                        console.log("error occurred", utilsService.getUrlParameter(event.url, 'error'));
+                        console.log("native_login: error occurred", utilsService.getUrlParameter(event.url, 'error'));
 
                         // close inAppBrowser
                         ref.close();
@@ -689,7 +457,7 @@ angular.module('starter')
         scheduleReminder();
 
         // try to get access token
-    	authService.getAccessToken().then(function(data) {
+    	authService.getAccessTokenFromAnySource().then(function(data) {
 
             console.log('got the access token');
             var accessToken = data.accessToken;
@@ -730,19 +498,17 @@ angular.module('starter')
             // update loader text
             $ionicLoading.hide();
             //showLoader('Syncing data');
-
-            app.track, app.welcome, app.history
-
             // sync data
             $scope.movePage();
 
             var sync_enabled_states = [
                 'app.track',
                 'app.welcome',
-                'app.history'
+                'app.history',
+                'app.login'
             ];
 
-            if(sync_enabled_states.indexOf($state.current.name) !== -1 && config.appSettings.primary_outcome_variable != false){
+            if(sync_enabled_states.indexOf($state.current.name) !== -1 && config.appSettings.primary_outcome_variable){
                 $rootScope.isSyncing = true;
                 console.log('setting sync true');
 
@@ -772,6 +538,14 @@ angular.module('starter')
         });
 
     };
+
+    $scope.$on('callAppCtrlInit', function(){
+        console.log("calling init");
+        
+        // update everything
+        $scope.init();
+    });
+
 
     $scope.toggleTrackingSubMenu = function(){
         $scope.showTrackingSubMenu = !$scope.showTrackingSubMenu;

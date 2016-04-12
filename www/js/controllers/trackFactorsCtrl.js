@@ -177,7 +177,7 @@ angular.module('starter')
                     
 
                     // add variable
-                    measurementService.post_tracking_measurement(params.epoch, params.variable, params.value, params.unit, params.isAvg, params.category, true)
+                    measurementService.post_tracking_measurement(params.epoch, params.variable, params.value, params.unit, params.isAvg, params.category, params.note, true)
                     .then(function(){
 
                         $scope.showAlert('Added Variable');
@@ -205,7 +205,7 @@ angular.module('starter')
                     // measurement only
 
                     // post measurement
-                    measurementService.post_tracking_measurement(params.epoch, params.variable, params.value, params.unit, params.isAvg, params.category);
+                    measurementService.post_tracking_measurement(params.epoch, params.variable, params.value, params.unit, params.isAvg, params.category, params.note);
                     $scope.showAlert('Measurement Added');
 
                     // set flags
@@ -287,7 +287,7 @@ angular.module('starter')
             });  
 
             // get user token
-            authService.getAccessToken().then(function(token){
+            authService.getAccessTokenFromAnySource().then(function(token){
                 
                 // get all variables
                 measurementService.getVariables().then(function(variables){
@@ -306,7 +306,7 @@ angular.module('starter')
                     $ionicLoading.hide();
                 });
 
-                // get variabls cateogries
+                // get variable categories
                 measurementService.getVariableCategories().then(function(variableCategories){
                     
                     // update viewmodel
@@ -317,7 +317,7 @@ angular.module('starter')
                     setTimeout(function(){
                         $scope.state.variable_category = config.appSettings.primary_outcome_variable;
                         
-                        // redraw everythign
+                        // redraw everything
                         $scope.$apply();
                     },100)
 
@@ -327,6 +327,7 @@ angular.module('starter')
                 });
 
                 // get units
+                measurementService.refreshUnits();
                 measurementService.getUnits().then(function(units){
                     
                     $scope.state.units = units;

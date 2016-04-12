@@ -1,6 +1,6 @@
 angular.module('starter')    
     // QuantiModo API implementation
-    .factory('QuantiModo', function($http, $q, authService){
+    .factory('QuantiModo', function($http, $q, authService, localStorageService){
             var QuantiModo = {};
 
 
@@ -12,7 +12,7 @@ angular.module('starter')
 
             // GET method with the added token
             QuantiModo.get = function(baseURL, allowedParams, params, successHandler, errorHandler){
-                authService.getAccessToken().then(function(token){
+                authService.getAccessTokenFromAnySource().then(function(token){
                     
                     // configure params
                     var urlParams = [];
@@ -41,7 +41,9 @@ angular.module('starter')
 
                     $http(request).success(successHandler).error(function(data,status,headers,config){
                         var error = "Error";
-                        if (data && data.error && data.error.message) error = data.error.message; 
+                        if (data && data.error && data.error.message) {
+                            error = data.error.message;
+                        } 
                         Bugsnag.notify("API Request to "+request.url+" Failed",error,{},"error");
                         errorHandler(data,status,headers,config);
                     });
@@ -52,7 +54,7 @@ angular.module('starter')
 
             // POST method with the added token
             QuantiModo.post = function(baseURL, requiredFields, items, successHandler, errorHandler){
-                authService.getAccessToken().then(function(token){
+                authService.getAccessTokenFromAnySource().then(function(token){
                     
                     console.log("Token : ", token.accessToken);
                     // configure params
@@ -80,7 +82,9 @@ angular.module('starter')
 
                     $http(request).success(successHandler).error(function(data,status,headers,config){
                        var error = "Error";
-                       if (data && data.error && data.error.message) error = data.error.message; 
+                       if (data && data.error && data.error.message) {
+                           error = data.error.message;
+                       } 
                        Bugsnag.notify("API Request to "+request.url+" Failed",error,{},"error");
                         errorHandler(data,status,headers,config);
                     });
@@ -108,17 +112,25 @@ angular.module('starter')
                     if(response.length === 0 || typeof response === "string" || params.offset >= 3000){
                         defer.resolve(response_array);
                     }else{
-                        response_array = response_array.concat(response);
-                        params.offset+=200;
-                        defer.notify(response);
-                        getMeasurements(params,successCallback,errorCallback);
+                        localStorageService.getItem('isLoggedIn', function(isLoggedIn){
+                            if(isLoggedIn == "false" || isLoggedIn == false){
+                                defer.reject(false);
+                            } else {
+                                response_array = response_array.concat(response);
+                                params.offset+=200;
+                                defer.notify(response);
+                                getMeasurements(params,successCallback,errorCallback);
+                            }
+                        });
+
+                        
                     }
-                }
+                };
 
                 getMeasurements(params,successCallback,errorCallback);
 
                 return defer.promise;
-            }
+            };
 
             QuantiModo.getV1Measurements = function(params, successHandler, errorHandler){
                 QuantiModo.get('api/v1/measurements',
