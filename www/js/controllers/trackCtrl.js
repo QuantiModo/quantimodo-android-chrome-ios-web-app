@@ -96,8 +96,9 @@ angular.module('starter')
 
                 // update line chart
                 localStorageService.getItem('lineChartData',function(lineChartData){
-                    if(lineChartData)
+                    if(lineChartData) {
                         updateLineChart(JSON.parse(lineChartData));
+                    }
 
                     // update bar chart
                     localStorageService.getItem('barChartData',function(barChartData){
