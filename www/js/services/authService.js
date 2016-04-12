@@ -231,34 +231,33 @@ angular.module('starter')
 
 				//check if token in get params
 				if (tokenInGetParams) {
-
 					localStorageService.setItem('accessToken', tokenInGetParams);
 					//resolving promise using token fetched from get params
-					console.log('resolving token using token fetched from get', tokenInGetParams);
+					console.log('resolving token using token url parameter', tokenInGetParams);
 					deferred.resolve({
 						accessToken: tokenInGetParams
 					});
-				} else {
-					console.log('previously tried to get token from user credentials. ' + ' ' +
-                        'this is possible if user logged in with cookie. triedToFetchCredentials:', authSrv.triedToFetchCredentials);
-					if (authSrv.triedToFetchCredentials) {
-						console.log('previous credentials fetch result:', authSrv.succesfullyFetchedCredentials);
-						if (authSrv.succesfullyFetchedCredentials) {
-							console.log('resolving token using value from local storage');
-							deferred.resolve({
-								accessToken: localStorageService.getItemSync('accessToken')
-							});
-						} else {
-							console.log('starting access token fetching flow');
-							authSrv._defaultGetAccessToken(deferred);
-						}
-
-					} else {
-                        authSrv.getAccessTokenFromUserEndpoint(deferred);
-                    }
-
+					return deferred.promise;
 				}
-				return deferred.promise;
+
+				if (localStorageService.getItemSync('accessToken')) {
+					console.log('resolving token using value from local storage');
+					deferred.resolve({
+						accessToken: localStorageService.getItemSync('accessToken')
+					});
+					return deferred.promise;
+				}
+
+				if(config.getClientId() !== 'oAuthDisabled') {
+					authSrv._defaultGetAccessToken(deferred);
+					return deferred.promise;
+				}
+
+				if(config.getClientId() === 'oAuthDisabled') {
+					authSrv.getAccessTokenFromUserEndpoint(deferred);
+					return deferred.promise;
+				}
+
 			},
 
             getAccessTokenFromUserEndpoint: function (deferred) {
@@ -277,10 +276,6 @@ angular.module('starter')
                         var token = userCredentialsResp.data.token.split("|")[2];
                         //update locally stored token
                         localStorageService.setItem('accessToken', token);
-
-                        //set flags
-                        authSrv.triedToFetchCredentials = true;
-                        authSrv.succesfullyFetchedCredentials = true;
 
                         //resolve promise
                         deferred.resolve({
@@ -304,12 +299,6 @@ angular.module('starter')
                             $ionicLoading.hide();
                             $state.go('app.login');
                         } else {
-                            //set flags
-                            authSrv.triedToFetchCredentials = true;
-                            authSrv.succesfullyFetchedCredentials = false;
-
-                            console.log('starting access token fetching flow');
-
                             authSrv._defaultGetAccessToken(deferred);
                         }
                     }
