@@ -329,7 +329,7 @@ angular.module('starter')
         localStorageService.setItem('isWelcomed', true);
         $rootScope.isWelcomed = true;
 
-        showLoader('Talking to QuantiModo');
+        showLoader('Talking to QuantiModo', 3000);
         authService.getJWTToken(platform, accessToken)
         .then(function(JWTToken){
             // success
@@ -380,7 +380,7 @@ angular.module('starter')
 
     // log in with google
     $scope.google_login = function(){
-        showLoader('Logging you in');
+        showLoader('Logging you in', 2000);
         window.plugins.googleplus.login({}, function (user_data) {
             $ionicLoading.hide();
             console.log('successfully logged in');
@@ -390,9 +390,9 @@ angular.module('starter')
             $scope.native_login('google', accessToken);
         },
         function (msg) {
+            $ionicLoading.hide();
             console.log("google login error", msg);
         });
-
     };
 
     $scope.google_logout = function(){
@@ -405,7 +405,7 @@ angular.module('starter')
 
     // login with facebook
     $scope.facebook_login = function(){
-        showLoader('Logging you in');
+        showLoader('Logging you in', 2000);
         $cordovaFacebook.login(["public_profile", "email", "user_friends"])
         .then(function(success) {
             // success
@@ -430,11 +430,16 @@ angular.module('starter')
     };
 
     // show loading spinner
-    var showLoader = function(str){
+    var showLoader = function(str, hideAfter){
+
         $ionicLoading.show({
             noBackdrop: true,
             template: '<p class="item-icon-left">'+str+'...<ion-spinner icon="lines"/></p>'
         });
+
+        setTimeout(function(){
+            $ionicLoading.hide();
+        }, hideAfter);
     };
 
     // hide loader and move to next page
@@ -452,7 +457,7 @@ angular.module('starter')
     $scope.init = function () {
         console.log("Main Constructor Start");
 
-        showLoader('Logging you in');
+        showLoader('Logging you in', 2000);
 
         scheduleReminder();
 
@@ -518,7 +523,7 @@ angular.module('starter')
 
                     // update loader text
                     $ionicLoading.hide();
-                    showLoader('Calculating stuff');
+                    showLoader('Calculating stuff', 2000);
 
                     // calculate primary outcome variable values
                     measurementService.calculateAveragePrimaryOutcomeVariableValue().then(function(){
