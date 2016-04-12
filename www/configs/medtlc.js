@@ -277,6 +277,11 @@ config.appSettings  = {
             icon : 'ion-ios-paper-outline'
         },
         {
+            title : 'Getting Started',
+            href : '#/app/intro',
+            icon : 'ion-information-circled'
+        },
+        {
             title : 'Track',
             click : 'toggleTrackingSubMenu',
             icon : 'showTrackingSubMenu',
