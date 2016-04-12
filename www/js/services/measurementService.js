@@ -844,8 +844,9 @@ angular.module('starter')
 				return deferred.promise;
 			},
 
-			// refresh local untis with QuantiModo API
+			// refresh local units with QuantiModo API
 			refreshUnits : function(){
+                localStorage.removeItem('units');
 				var deferred = $q.defer();
 
 				QuantiModo.getUnits(function(units){

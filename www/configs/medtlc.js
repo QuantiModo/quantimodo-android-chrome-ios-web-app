@@ -511,6 +511,9 @@ config.getClientSecret = function(){
 };
 
 config.getRedirectUri = function(){
+    if(!window.private_keys.redirect_uris){
+        return 'https://app.quantimo.do/ionic/Modo/www/callback/'
+    }
     if (window.chrome && chrome.runtime && chrome.runtime.id) {
         return window.private_keys.redirect_uris.Chrome;
     } else {
@@ -520,6 +523,9 @@ config.getRedirectUri = function(){
 };
 
 config.getApiUrl = function(){
+    if(!window.private_keys.api_urls){
+        return 'https://app.quantimo.do';
+    }
     if (window.chrome && chrome.runtime && chrome.runtime.id) {
         return window.private_keys.api_urls.Chrome;
     } else {

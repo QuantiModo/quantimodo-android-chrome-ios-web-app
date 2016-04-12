@@ -8,12 +8,10 @@ angular.module('starter')
 				21600: "every 6 hours",
 				14400: "every 4 hours",
 				10800: "every 3 hours",
+				7200: "every 2 hours",
 				3600: "hourly",
 				1800: "every 30 minutes",
-				0: "never",
-				86400: "once a day",
-				43200: "twice a day",
-				28800: "three times a day"
+				0: "never"
 			};
 
 			return reverseFrequencyChart[value];
