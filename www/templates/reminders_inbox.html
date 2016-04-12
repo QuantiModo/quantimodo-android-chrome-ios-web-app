@@ -17,13 +17,6 @@
 					Add "How I Feel" Response
 				</a>
 			</div>
-			<div ng-show="state.showAddNewMedicationButton" class="list card">
-				<!--<div class="item item-divider" style="background-color:#11c1f3; color:white;">Actions</div>-->
-				<a href="#/app/reminders_add/Treatments" class="item item-icon-left">
-					<i class="icon ion-plus calm"></i>
-					Add a new medication
-				</a>
-			</div>
 			<div ng-show="state.showAddVitalSignButton" class="list card">
 				<!--<div class="item item-divider" style="background-color:#11c1f3; color:white;">Actions</div>-->
 				<a href="#/app/track_factors_category/Vital Signs" class="item item-icon-left">
@@ -31,9 +24,14 @@
 					Add a new vital sign
 				</a>
 			</div>
+			<div ng-show="state.showAddNewMedicationButton" class="list card">
+				<!--<div class="item item-divider" style="background-color:#11c1f3; color:white;">Actions</div>-->
+				<a href="#/app/reminders_add/Treatments" class="item item-icon-left">
+					<i class="icon ion-plus calm"></i>
+					Add a new medication
+				</a>
+			</div>
 		</div>
-		
-		
 		<div class="card" ng-show="state.showMeasurementBox" ng-class="{card_disabled : state.isDisabled}" style="overflow: visible">
             <div  class="item item-divider" style="background-color:#11c1f3; color:white;">Track {{state.selectedReminder.variableName}}</div>
             
