@@ -53,7 +53,7 @@ angular.module('starter')
 
         // flags
         $scope.flags = {
-            showTrack: true,
+            showTrackingHelpQuestion: true,
             showAddVariable: false,
             showAddMeasurement: false,
             showCategoryAsSelector: false,
@@ -154,7 +154,7 @@ angular.module('starter')
             set_unit(item.abbreviatedUnitName);
 
             // set flags
-            $scope.flags.showTrack = false;
+            $scope.flags.showTrackingHelpQuestion = false;
             $scope.flags.showAddVariable = false;
             $scope.flags.showAddMeasurement = true;
 
@@ -169,7 +169,7 @@ angular.module('starter')
             console.log("add variable");
 
             // set flags
-            $scope.flags.showTrack = false;
+            $scope.flags.showTrackingHelpQuestion = false;
             $scope.flags.showAddVariable = true;
             $scope.flags.showAddMeasurement = true;
 
@@ -185,7 +185,7 @@ angular.module('starter')
             // show list again
             $scope.flags.showAddVariable = false;
             $scope.flags.showAddMeasurement = false;
-            $scope.flags.showTrack = true;
+            $scope.flags.showTrackingHelpQuestion = true;
         };
 
         $scope.onMeasurementStart = function(){
@@ -238,7 +238,7 @@ angular.module('starter')
                         // set flags
                         $scope.flags.showAddVariable = false;
                         $scope.flags.showAddMeasurement = false;
-                        $scope.flags.showTrack = true;
+                        $scope.flags.showTrackingHelpQuestion = true;
 
                         // refresh the last updated at from api
                         setTimeout($scope.init, 200);
@@ -263,7 +263,7 @@ angular.module('starter')
                     // set flags
                     $scope.flags.showAddVariable = false;
                     $scope.flags.showAddMeasurement = false;
-                    $scope.flags.showTrack = true;
+                    $scope.flags.showTrackingHelpQuestion = true;
 
                     // refresh data
                     setTimeout($scope.init, 200);

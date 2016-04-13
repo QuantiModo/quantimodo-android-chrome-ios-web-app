@@ -279,7 +279,7 @@ config.appSettings  = {
             icon : 'ion-information-circled'
         },
         {
-            title : 'Track',
+            title : 'Add Measurement',
             click : 'toggleTrackingSubMenu',
             icon : 'showTrackingSubMenu',
             subMenuPanel : true

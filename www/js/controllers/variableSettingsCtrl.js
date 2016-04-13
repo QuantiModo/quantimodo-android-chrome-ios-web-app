@@ -61,7 +61,7 @@ angular.module('starter')
                         // set flags
                         $scope.flags.showAddVariable = false;
                         $scope.flags.showAddMeasurement = false;
-                        $scope.flags.showTrack = true;
+                        $scope.flags.showTrackingHelpQuestion = true;
                         // refresh the last updated at from api
                         setTimeout($scope.init, 200);
                     }, function (err) {
