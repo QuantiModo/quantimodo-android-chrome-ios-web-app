@@ -9,7 +9,8 @@ angular.module('starter')
 
         // flags
         $scope.flags = {
-            showTrackingHelpQuestion : true,
+            showTrackingHelpQuestion : false,
+            showVariableSearchCard : true,
             showAddVariable : false,
             showAddMeasurement : false,
             showCategoryAsSelector : true,
@@ -120,7 +121,7 @@ angular.module('starter')
             set_unit(item.abbreviatedUnitName);
 
             // set flags
-            $scope.flags.showTrackingHelpQuestion = false;
+            $scope.flags.showVariableSearchCard = false;
             $scope.flags.showAddVariable = false;
             $scope.flags.showAddMeasurement = true;
             
@@ -135,7 +136,7 @@ angular.module('starter')
             console.log("add variable");
 
             // set flags
-            $scope.flags.showTrackingHelpQuestion = false;
+            $scope.flags.showVariableSearchCard = false;
             $scope.flags.showAddVariable = true;
             $scope.flags.showAddMeasurement = true;
 
@@ -149,7 +150,7 @@ angular.module('starter')
             // show list again
             $scope.flags.showAddVariable = false;
             $scope.flags.showAddMeasurement = false;
-            $scope.flags.showTrackingHelpQuestion = true;
+            $scope.flags.showVariableSearchCard = true;
         };
 
         // completed adding and/or measuring
@@ -185,7 +186,7 @@ angular.module('starter')
                         // set flags
                         $scope.flags.showAddVariable = false;
                         $scope.flags.showAddMeasurement = false;
-                        $scope.flags.showTrackingHelpQuestion = true;
+                        $scope.flags.showVariableSearchCard = true;
 
                         // refresh the last updated at from api
                         setTimeout($scope.init, 200);
@@ -211,7 +212,7 @@ angular.module('starter')
                     // set flags
                     $scope.flags.showAddVariable = false;
                     $scope.flags.showAddMeasurement = false;
-                    $scope.flags.showTrackingHelpQuestion = true;
+                    $scope.flags.showVariableSearchCard = true;
                     
                     // refresh data
                     setTimeout($scope.init, 200);
