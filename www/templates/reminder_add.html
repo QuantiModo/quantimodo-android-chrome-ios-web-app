@@ -70,7 +70,7 @@
                         
                         <ionic-timepicker style="width: 80%;margin-right: 39px;" etime="state.slotsFirst.epochTime" format="state.slotsFirst.format" step="state.slotsFirst.step" callback="firstTimePickerCallback">
                             <button class="button button-block uptop" style="text-align:right;font-size:14px;border:none;color:black;background-color: white;margin-bottom: 0px;margin-top: 0px;padding-left: 0px;">
-                                {{state.slotsFirst.epochTime | fromUnixtimestampToLocalTimeOfDay}}
+                                {{state.slotsFirst.epochTime | fromUnixTimestampToLocalTimeOfDay}}
                             </button>
                         </ionic-timepicker>
 
@@ -82,7 +82,7 @@
                         </div>
                         <ionic-timepicker style="width: 80%;margin-right: 61px;" etime="state.slotsSecond.epochTime" format="state.slotsSecond.format" step="state.slotsSecond.step" callback="secondTimePickerCallback">
                             <button class="button button-block uptop" style="text-align:right;font-size:14px;border:none;color:black;background-color: white;margin-bottom: 0px;margin-top: 0px;padding-left: 0px;">
-                                {{state.slotsSecond.epochTime | fromUnixtimestampToLocalTimeOfDay}}
+                                {{state.slotsSecond.epochTime | fromUnixTimestampToLocalTimeOfDay}}
                             </button>
                         </ionic-timepicker>
 
@@ -94,7 +94,7 @@
                         </div>
                          <ionic-timepicker style="width: 80%;margin-right: 42px;" etime="state.slotsThird.epochTime" format="state.slotsThird.format" step="state.slotsThird.step" callback="thirdTimePickerCallback">
                             <button class="button button-block uptop" style="text-align:right;font-size:14px;border:none;color:black;background-color: white;margin-bottom: 0px;margin-top: 0px;padding-left: 0px;">
-                                {{state.slotsThird.epochTime | fromUnixtimestampToLocalTimeOfDay}}
+                                {{state.slotsThird.epochTime | fromUnixTimestampToLocalTimeOfDay}}
                             </button>
                         </ionic-timepicker>
                     </label>
