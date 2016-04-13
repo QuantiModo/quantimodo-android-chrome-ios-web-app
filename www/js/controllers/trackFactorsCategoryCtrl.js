@@ -12,7 +12,7 @@ angular.module('starter')
 
         var categoryConfig = {
             "Vital Signs":{
-                default_unit:"units",
+                default_unit: false,
                 help_text:"What vital sign do you want to record?",
                 variable_category_name: "Vital Signs",
                 variable_category_name_singular_lowercase : "vital sign"
@@ -36,13 +36,13 @@ angular.module('starter')
                 variable_category_name_singular_lowercase : "symptom"
             },
             Treatments:{
-                default_unit: "count",
+                default_unit: "mg",
                 help_text:"What treatment do you want to record?",
                 variable_category_name: "Treatments",
                 variable_category_name_singular_lowercase : "treatment"
             },
             "Physical Activity": {
-                default_unit: "count",
+                default_unit: false,
                 help_text:"What physical activity do you want to record?",
                 variable_category_name: "Physical Activity",
                 variable_category_name_singular_lowercase : "physical activity"
@@ -403,7 +403,9 @@ angular.module('starter')
 
                     console.log("got units", units);
 
-                    set_unit(categoryConfig[category].default_unit);
+                    if(categoryConfig[category].default_unit) {
+                        set_unit(categoryConfig[category].default_unit);
+                    }
 
                     // hide spinenr
                     $ionicLoading.hide();

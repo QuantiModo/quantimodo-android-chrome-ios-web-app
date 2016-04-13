@@ -109,7 +109,7 @@ angular.module('starter')
             });
         };
 
-        // when an old measurement is tapped to remeasure
+        // when an existing variable is tapped to remeasure
         $scope.measure = function(item){
             console.log(item);
             $scope.item = item;
