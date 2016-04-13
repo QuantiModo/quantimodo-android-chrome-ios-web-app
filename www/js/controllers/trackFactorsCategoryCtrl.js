@@ -373,7 +373,7 @@ angular.module('starter')
 
                         // redraw everythign
                         $scope.$apply();
-                    },100)
+                    },100);
 
                     // hide spinner
                     $ionicLoading.hide();
@@ -458,7 +458,7 @@ angular.module('starter')
         $scope.search = function(query){
             console.log(query);
 
-            $scope.state.loading = true
+            $scope.state.loading = true;
 
             if(query == ''){
                 // if search is cleared
