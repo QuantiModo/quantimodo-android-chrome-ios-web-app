@@ -1,6 +1,6 @@
 angular.module('starter')    
     // QuantiModo API implementation
-    .factory('QuantiModo', function($http, $q, authService, localStorageService){
+    .factory('QuantiModo', function($http, $q, authService, localStorageService, $state){
             var QuantiModo = {};
 
 
@@ -45,6 +45,10 @@ angular.module('starter')
                             error = data.error.message;
                         } 
                         Bugsnag.notify("API Request to "+request.url+" Failed",error,{},"error");
+                        if(status = 401){
+                            localStorageService.deleteItem('accessToken');
+                            $state.go('app.login');
+                        }
                         errorHandler(data,status,headers,config);
                     });
 
@@ -86,6 +90,10 @@ angular.module('starter')
                            error = data.error.message;
                        } 
                        Bugsnag.notify("API Request to "+request.url+" Failed",error,{},"error");
+                        if(status = 401){
+                            localStorageService.deleteItem('accessToken');
+                            $state.go('app.login');
+                        }
                         errorHandler(data,status,headers,config);
                     });
 
