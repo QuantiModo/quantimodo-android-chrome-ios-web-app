@@ -122,7 +122,7 @@
 							</div>
 							<div class="col col-75">
 								<h2 style="white-space: normal;">{{reminder.variableName}}</h2>
-								<p style="white-space: normal;">{{ reminder.trackingReminderNotificationTime}} </p>
+								<p style="white-space: normal;">{{ reminder.trackingReminderNotificationTime | fromUtcToLocalDateAndTime}} </p>
 							</div>
 						</div>
 						<div class="button-bar">
