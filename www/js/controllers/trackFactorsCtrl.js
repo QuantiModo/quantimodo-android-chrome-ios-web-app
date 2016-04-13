@@ -320,7 +320,7 @@ angular.module('starter')
                         
                         // redraw everything
                         $scope.$apply();
-                    },100)
+                    },100);
 
                     // hide spinner
                     $ionicLoading.hide();

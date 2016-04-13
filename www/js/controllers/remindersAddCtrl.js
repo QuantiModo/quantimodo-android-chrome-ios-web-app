@@ -391,7 +391,7 @@ angular.module('starter')
 	    		"Twice a day" : 12*60*60,
 	    		"Three times a day": 8*60*60
 	    	};
-	    }
+	    };
 
 	    // when the reminder is saved/edited
 	    $scope.save = function(){

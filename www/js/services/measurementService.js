@@ -24,7 +24,7 @@ angular.module('starter')
 
 				// clear queue
 				localStorageService.setItem('measurementsQueue',JSON.stringify([]));
-				defer.resolve()
+				defer.resolve();
 				console.log("success", response);
 
 			}, function(response){
@@ -148,12 +148,12 @@ angular.module('starter')
 
                 function checkSync(){
                     if(!isSyncing){
-                        console.log('isSync false')
+                        console.log('isSync false');
                         report();
                     }else{
-                        console.log('isSync true')
+                        console.log('isSync true');
                         setTimeout(function(){
-                            console.log('checking sync')
+                            console.log('checking sync');
                             checkSync();
                         },1000)
                     }
@@ -582,7 +582,7 @@ angular.module('starter')
 
 				// return from localstorage if present
                 localStorageService.getItem('averagePrimaryOutcomeVariableValue',function(averagePrimaryOutcomeVariableValue){
-                    if(averagePrimaryOutcomeVariableValue) deferred.resolve(averagePrimaryOutcomeVariableValue)
+                    if(averagePrimaryOutcomeVariableValue) deferred.resolve(averagePrimaryOutcomeVariableValue);
                     else {
                         // calculate it again if not found
                         measurementService.calculateAveragePrimaryOutcomeVariableValue()

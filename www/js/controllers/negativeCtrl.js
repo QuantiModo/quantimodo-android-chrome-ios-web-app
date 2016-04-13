@@ -176,7 +176,7 @@ angular.module('starter')
                     });
 
             } else {
-				factor.userVote = prevValue
+				factor.userVote = prevValue;
             	$state.go('app.welcome')
             	};
         };
@@ -195,4 +195,4 @@ angular.module('starter')
 
         // call constructor
         $scope.init();
-    })
+    });
