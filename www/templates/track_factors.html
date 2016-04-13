@@ -61,10 +61,17 @@
                     <input type="text" ng-model="state.variable_name" id="variable_name" placeholder="Enter the new variable name...">
                 </label>
 
+            </div>
+
+        </div>
+
+        <div class="card" ng-show="flags.showAddVariable">
+                <p style="padding:14px;">How should we combine data over multiple days?</p>
+
                 <label class="item item-radio">
                     <input type="radio" ng-model="state.sumAvg" value="sum" name="group">
                     <div class="item-content">
-                        Sum
+                        Sum (i.e. Apples eaten)
                     </div>
                     <i class="radio-icon ion-checkmark"></i>
                 </label>
@@ -72,12 +79,12 @@
                 <label class="item item-radio">
                     <input type="radio" ng-model="state.sumAvg" value="avg" name="group">
                     <div class="item-content">
-                        Average
+                        Average (i.e. Your weight)
                     </div>
                     <i class="radio-icon ion-checkmark"></i>
                 </label>
             </div>
-        </div>
+
 
         <div class="card" ng-show="flags.showAddMeasurement" style="overflow: visible">
             <p class="heading calm" style="padding:14px;">Track {{state.variable_name}}</p>
@@ -107,7 +114,7 @@
                             <div class="col" style="padding-top:5px;">
 
                                 <!-- Default to most common unit when tracking measurement, and always keep it editable-->
-                                <input type="text" ng-change="unit_search(state.unit_text)" ng-model="state.unit_text" placeholder="Search for a unit">
+                                <input type="text" ng-change="unit_search(state.unit_text)" ng-model="state.unit_text" placeholder="Search for a unit...">
 
                                 <!-- Below replaced by above so that we can always change the unit-->
                                 <!-- Default to most common unit when adding new variable, keep it editable-->
