@@ -195,7 +195,7 @@ angular.module('starter')
         $scope.changePage = function(){
             $state.go('app.negative');
             $state.reload();
-        }
+        };
 
 	    // run constructor
 	    $scope.init();

@@ -71,4 +71,4 @@ angular.module('starter')
 	    $scope.$on('$ionicView.enter', function(e) {
 			$scope.init();
 	    });
-	})
+	});
