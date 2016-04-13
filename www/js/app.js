@@ -15,10 +15,15 @@ angular.module('starter',
     var intervalChecker = setInterval(function(){
         if(typeof config !== "undefined"){
             clearInterval(intervalChecker);
-            //Set Bugsnag Release Stage
-            Bugsnag.apiKey = private_keys.bugsnag_key;
-            Bugsnag.releaseStage = config.getEnv();
-            Bugsnag.notifyReleaseStages = config.bugsnag.notifyReleaseStages;
+
+            if(window.private_keys.bugsnag_key) {
+                //Set Bugsnag Release Stage
+                Bugsnag.apiKey = window.private_keys.bugsnag_key;
+                Bugsnag.releaseStage = config.getEnv();
+                Bugsnag.notifyReleaseStages = config.bugsnag.notifyReleaseStages;
+            } else {
+                console.warn('No bugsnag_key found in private config!')
+            }
 
             $ionicPlatform.ready(function() {
                 // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
@@ -155,6 +160,15 @@ angular.module('starter',
               }
           }
       })
+        .state('app.variable_settings', {
+            url: "/variable_settings/:variableName",
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/variable_settings.html",
+                    controller: 'VariableSettingsCtrl'
+                }
+            }
+        })
       .state('app.import', {
           url: "/import",
           cache:"false",

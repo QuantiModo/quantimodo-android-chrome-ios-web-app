@@ -383,6 +383,17 @@ img.intro_mood {
   background-color: lightgray !important;
 }
 
+@media (max-width: 400px) {
+    #rem-set-left {
+        width: 80%;
+        flex:none;
+    }
+    #rem-set-right {
+        width: 20%;
+        flex:none;
+    }
+}
+
 /*
 .pane {
     background-image: url('../img/intro_background.png');
