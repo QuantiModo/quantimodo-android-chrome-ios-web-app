@@ -126,4 +126,4 @@ angular.module('starter')
     		$scope.init();
     	});
 
-	})
+	});

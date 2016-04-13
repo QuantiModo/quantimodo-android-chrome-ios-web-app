@@ -80,7 +80,7 @@ angular.module('starter')
             localStorageService.getItem('additional_ratings',function(additional_ratings){
                  localAdditonalRatings = additional_ratings? JSON.parse(additional_ratings): {};
 
-            })
+            });
 
 	        // populate previously selected additional variables
 	        // TODO: Refactor
@@ -134,7 +134,7 @@ angular.module('starter')
 	        for (var i = 0; i < array.length; i++) {
 	            var line = '';
 	            for (var index in array[i]) {
-	                if (line != '') line += ','
+	                if (line != '') line += ',';
 	                line += array[i][index];
 	            }
 	            str += line + '\r\n';

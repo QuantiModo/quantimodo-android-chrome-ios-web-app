@@ -53,8 +53,8 @@ angular.module('starter')
                 }
                 else if(window.chrome && chrome.runtime && chrome.runtime.id){
                     chrome.alarms.clear("trackReportAlarm");
-                    var alarmInfo = {periodInMinutes: intervals[interval]}
-                    chrome.alarms.create("trackReportAlarm", alarmInfo)
+                    var alarmInfo = {periodInMinutes: intervals[interval]};
+                    chrome.alarms.create("trackReportAlarm", alarmInfo);
                     console.log("Alarm set, every " + intervals[interval] + " minutes");
                 }
             },

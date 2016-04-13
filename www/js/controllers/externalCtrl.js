@@ -21,4 +21,4 @@ angular.module('starter')
 
 	    // call constructor
 	    $scope.init();
-	})
+	});
