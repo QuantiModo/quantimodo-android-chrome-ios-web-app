@@ -32,13 +32,10 @@ config.appSettings  = {
 
     headline : 'Medications - Track, Learn, Connect',
     features: [
-        ' Improve your health by remembering to take your medicines on time.',
-        ' Record "How I Feel" responses to provide critical feedback to your doctor. This feedback is one of the strongest features of MedTLC. It gives your doctor the data needed to change medications and adjust dosages when necessary, due to adverse reaction to a single drug, multiple drug interactions, and dosages that cause unwanted effects.',
         ' Follow These Quick Steps to Improve Your Health',
         ' 1. Enter Your Medications and Reminders',
         ' 2. Record "How I Feel" Responses',
-        ' 3. Create Reports of Your Responses and Choose to Connect With Your Doctors',
-        ' (Print Reports To Take To Doctor Appointments or Send by Email)'
+        ' 3. Create Reports of Your Responses and Choose to Connect With Your Doctors'
     ],
 
     primary_primary_outcome_variable_details : {
