@@ -3,8 +3,7 @@ angular.module('starter')
     // Controls the Track Factors Page
     .controller('TrackFactorsCtrl', function($scope, $ionicModal, $timeout, $ionicPopup ,$ionicLoading, authService,
                                              measurementService, $state, $rootScope, utilsService, localStorageService,
-                                             $ionicScrollDelegate){
-
+                                             $ionicScrollDelegate, ionicTimePicker) {
         $scope.controller_name = "TrackFactorsCtrl";
 
         // flags
@@ -126,7 +125,7 @@ angular.module('starter')
             $scope.flags.showAddMeasurement = true;
             
             // update time in the datepicker
-            $scope.slots = {epochTime: new Date().getTime()/1000, format: 24, step: 1};
+            $scope.slots = {epochTime: new Date().getTime()/1000};
 
             $scope.onMeasurementStart();
         };
@@ -386,23 +385,23 @@ angular.module('starter')
           }
         };
 
-        // time picker defaults
-        $scope.slots = {
-            epochTime: new Date().getTime()/1000,
-            format: 24,
-            step: 1
+        var timePicker = {
+            callback: function (val) {
+                if (typeof (val) === 'undefined') {
+                    console.log('Time not selected');
+                } else {
+                    var a = new Date();
+                    var selectedTime = new Date(val * 1000);
+                    a.setHours(selectedTime.getUTCHours());
+                    a.setMinutes(selectedTime.getUTCMinutes());
+
+                    $scope.slots.epochTime = a.getTime()/1000;
+                }
+            }
         };
 
-        // when time is changed
-        $scope.timePickerCallback = function (val) {
-          if (typeof (val) === 'undefined') {
-            console.log('Time not selected');
-          } else {
-            var a = new Date();
-            a.setHours(val.hours);
-            a.setMinutes(val.minutes);
-            $scope.slots.epochTime = a.getTime()/1000;
-          }
+        $scope.timePicker = function() {
+            ionicTimePicker.openTimePicker(timePicker);
         };
 
         // search a variable

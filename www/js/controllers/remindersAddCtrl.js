@@ -3,7 +3,7 @@ angular.module('starter')
 	// Controls the History Page of the App.
 	.controller('RemindersAddCtrl', function($scope, authService, $ionicPopup, localStorageService, $state,
 											 $stateParams, measurementService, reminderService, $ionicLoading,
-											 utilsService, $filter){
+											 utilsService, $filter, ionicTimePicker){
 
 	    $scope.controller_name = "RemindersAddCtrl";
 
@@ -94,45 +94,65 @@ angular.module('starter')
 	    	]
 	    };
 
+		var firstTimePicker = {
+			callback: function (val) {
+				if (typeof (val) === 'undefined') {
+					console.log('Time not selected');
+				} else {
+					var a = new Date();
+					var selectedTime = new Date(val * 1000);
+					a.setHours(selectedTime.getUTCHours());
+					a.setMinutes(selectedTime.getUTCMinutes());
 
-	    // when time is changed
-	    $scope.firstTimePickerCallback = function (val) {
-	    	if (typeof (val) === 'undefined') {
-	    		console.log('Time not selected');
-	    	} else {
-	    		var a = new Date();
-	    		a.setHours(val.hours);
-	    		a.setMinutes(val.minutes);
-	    		$scope.state.slotsFirst.epochTime = a.getTime()/1000;
-	    		$scope.state.firstSelectedTime = moment.utc(a).format('HH:mm:ss');
-	    	}
-	    };
+					$scope.state.slotsFirst.epochTime = a.getTime() / 1000;
+					$scope.state.firstSelectedTime = moment.utc(a).format('HH:mm:ss');
+				}
+			}
+		};
 
-	    // when time is changed
-	    $scope.secondTimePickerCallback = function (val) {
-	    	if (typeof (val) === 'undefined') {
-	    		console.log('Time not selected');
-	    	} else {
-	    		var a = new Date();
-	    		a.setHours(val.hours);
-	    		a.setMinutes(val.minutes);
-	    		$scope.state.slotsSecond.epochTime = a.getTime()/1000;
-	    		$scope.state.secondSelectedTime = moment.utc(a).format('HH:mm:ss');
-	    	}
-	    };
+		$scope.firstTimePicker = function() {
+			ionicTimePicker.openTimePicker(firstTimePicker);
+		};
 
-	    // when time is changed
-	    $scope.thirdTimePickerCallback = function (val) {
-	    	if (typeof (val) === 'undefined') {
-	    		console.log('Time not selected');
-	    	} else {
-	    		var a = new Date();
-	    		a.setHours(val.hours);
-	    		a.setMinutes(val.minutes);
-	    		$scope.state.slotsThird.epochTime = a.getTime()/1000;
-	    		$scope.state.thirdSelectedTime = moment.utc(a).format('HH:mm:ss');
-	    	}
-	    };
+		var secondTimePicker = {
+			callback: function (val) {
+				if (typeof (val) === 'undefined') {
+					console.log('Time not selected');
+				} else {
+					var a = new Date();
+					var selectedTime = new Date(val * 1000);
+					a.setHours(selectedTime.getUTCHours());
+					a.setMinutes(selectedTime.getUTCMinutes());
+
+					$scope.state.slotsSecond.epochTime = a.getTime() / 1000;
+					$scope.state.secondSelectedTime = moment.utc(a).format('HH:mm:ss');
+				}
+			}
+		};
+
+		$scope.secondTimePicker = function() {
+			ionicTimePicker.openTimePicker(secondTimePicker);
+		};
+
+		var thirdTimePicker = {
+			callback: function (val) {
+				if (typeof (val) === 'undefined') {
+					console.log('Time not selected');
+				} else {
+					var a = new Date();
+					var selectedTime = new Date(val * 1000);
+					a.setHours(selectedTime.getUTCHours());
+					a.setMinutes(selectedTime.getUTCMinutes());
+
+					$scope.state.slotsThird.epochTime = a.getTime() / 1000;
+					$scope.state.thirdSelectedTime = moment.utc(a).format('HH:mm:ss');
+				}
+			}
+		};
+
+		$scope.thirdTimePicker = function() {
+			ionicTimePicker.openTimePicker(thirdTimePicker);
+		};
 
 		// populate list with recently tracked category variables
     	var populate_recent_tracked = function(category){
