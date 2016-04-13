@@ -13,7 +13,7 @@ angular.module('starter')
         var categoryConfig = {
             "Vital Signs":{
                 default_unit:"units",
-                help_text:"What vital sign do you want to track?",
+                help_text:"What vital sign do you want to record?",
                 variable_category_name: "Vital Signs",
                 variable_category_name_singular_lowercase : "vital sign"
             },
@@ -25,25 +25,25 @@ angular.module('starter')
             },
             Emotions:{
                 default_unit: "/5",
-                help_text: "Select an aspect of emotion",
+                help_text: "What emotion do you want to rate?",
                 variable_category_name: "Emotions",
                 variable_category_name_singular_lowercase : "emotion"
             },
             Symptoms:{
                 default_unit: "/5",
-                help_text: "What do you want to track?",
+                help_text: "What symptom do you want to record?",
                 variable_category_name: "Symptoms",
                 variable_category_name_singular_lowercase : "symptom"
             },
             Treatments:{
                 default_unit: "count",
-                help_text:"What do you want to track?",
+                help_text:"What treatment do you want to record?",
                 variable_category_name: "Treatments",
                 variable_category_name_singular_lowercase : "treatment"
             },
             "Physical Activity": {
                 default_unit: "count",
-                help_text:"What do you want to track?",
+                help_text:"What physical activity do you want to record?",
                 variable_category_name: "Physical Activity",
                 variable_category_name_singular_lowercase : "physical activity"
             }
