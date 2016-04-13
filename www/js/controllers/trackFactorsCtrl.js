@@ -3,7 +3,7 @@ angular.module('starter')
     // Controls the Track Factors Page
     .controller('TrackFactorsCtrl', function($scope, $ionicModal, $timeout, $ionicPopup ,$ionicLoading, authService,
                                              measurementService, $state, $rootScope, utilsService, localStorageService,
-                                                $filter){
+                                             $ionicScrollDelegate){
 
         $scope.controller_name = "TrackFactorsCtrl";
 
@@ -151,6 +151,7 @@ angular.module('starter')
             $scope.flags.showAddVariable = false;
             $scope.flags.showAddMeasurement = false;
             $scope.flags.showVariableSearchCard = true;
+            $ionicScrollDelegate.scrollTop();
         };
 
         // completed adding and/or measuring
