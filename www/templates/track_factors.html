@@ -45,9 +45,9 @@
                 <p class="heading calm" style="padding:14px;">Add a new {{state.variable_category_name_singular_lowercase | wordAliases}} variable</p>
 
 
-                <label class="item item-input item-select" ng-if="flags.showCategoryAsSelector">
+                <label class="item item-input item-select" ng-show="flags.showCategoryAsSelector">
                     <div class="input-label">
-                        Variable Category
+                        Select category
                     </div>
                     <select ng-model="state.variable_category" ng-change=>
                         <option ng-repeat="i in state.variableCategories track by i.id" value="{{i.name}}">
