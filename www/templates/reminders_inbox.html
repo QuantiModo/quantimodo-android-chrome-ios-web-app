@@ -89,7 +89,7 @@
                     <div class="col" style="padding-top: 11px;">
                         <ionic-timepicker style="width:54%" etime="state.slots.epochTime" format="state.slots.format" step="state.slots.step" callback="currentTimePickerCallback">
                             <button class="button button-block uptop" style="text-align:left;font-size:14px;border:none;color:black;background-color: white;margin-bottom: 0px;margin-top: 0px;padding-left: 0px;">
-                                {{state.slots.epochTime | toTime}}
+                                {{state.slots.epochTime | fromUnixtimestampToLocalTimeOfDay}}
                             </button>
                         </ionic-timepicker>
                     </div>
@@ -122,7 +122,7 @@
 							</div>
 							<div class="col col-75">
 								<h2 style="white-space: normal;">{{reminder.variableName}}</h2>
-								<p style="white-space: normal;">{{ reminder.trackingReminderNotificationTime | reminderTime}} </p>
+								<p style="white-space: normal;">{{ reminder.trackingReminderNotificationTime}} </p>
 							</div>
 						</div>
 						<div class="button-bar">

@@ -163,7 +163,7 @@
                     <div class="col" style="padding-top: 11px;">
                         <ionic-timepicker style="width:54%" etime="slots.epochTime" format="slots.format" step="slots.step" callback="timePickerCallback">
                             <button class="button button-block uptop" style="text-align:left;font-size:14px;border:none;color:black;background-color: white;margin-bottom: 0px;margin-top: 0px;padding-left: 0px;">
-                                {{slots.epochTime | toTime}}
+                                {{slots.epochTime | fromUnixtimestampToLocalTimeOfDay}}
                             </button>
                         </ionic-timepicker>
                     </div>
