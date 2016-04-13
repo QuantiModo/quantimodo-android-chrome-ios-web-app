@@ -123,7 +123,7 @@ angular.module('starter')
     	    	// show spinner
     			$ionicLoading.show({
     				noBackdrop: true,
-    				template: '<p class="item-icon-left">Making stuff happen...<ion-spinner icon="lines"/></p>'
+    				template: '<p class="item-icon-left">Fetching your reminders...<ion-spinner icon="lines"/></p>'
     		    });
     	    },
 
