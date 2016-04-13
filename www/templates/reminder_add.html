@@ -4,7 +4,7 @@
 		<div class="list card" ng-show="state.showVariableCategory">
             <!--<div class="item item-divider" style="background-color:#11c1f3; color:white;">Select Variable Category</div>-->
 			<label class="item item-input item-select">
-				<div class="input-label">Select Variable Category</div>
+				<div class="input-label" style="white-space:normal; width: 60%">Select Variable Category</div>
 				<select ng-model="state.selectedVariableCategory" ng-change="onVariableCategoryChange()">
 					<option ng-repeat="variableCategory in variables.variableCategories" value="{{variableCategory.name}}">{{variableCategory.name}}</option>
 				</select>
@@ -15,7 +15,11 @@
           <!--<div class="item item-divider" style="background-color:#11c1f3; color:white;">Enter Variable Name</div>-->
           <label class="item item-input">
             <i class="icon ion-search placeholder-icon"></i>
-            <input type="text" placeholder={{state.variablePlaceholderText}} ng-model="state.searchQuery" ng-change="onSearch()" >
+            <input type="text"
+                   placeholder={{state.variablePlaceholderText}}
+                   ng-model="state.searchQuery"
+                   ng-change="onSearch()"
+                   ng-model-options='{ debounce: 500 }'>
           </label>
         </div>
 
@@ -34,10 +38,10 @@
         <div class="list card" ng-show="state.showCustomBox">
         	<div class="item item-divider" style="background-color:#11c1f3; color:white;">{{state.selectedReminder.variableName}} reminder settings</div>
         	<div class="row labeled-control">
-        		<div class="col">
-        			<input type="text" style="width:100%;text-align:right;" placeholder={{state.defaultValuePlaceholderText}} ng-model="state.selectedDefaultValue" class="uptop">
+        		<div id="rem-set-left" class="col">
+        			<input type="number" style="width:100%;text-align:right;" placeholder={{state.defaultValuePlaceholderText}} ng-model="state.selectedDefaultValue" class="uptop">
         		</div>
-        		<div class="col col-r">
+        		<div id="rem-set-right" class="col col-r">
         			<span>
         				{{state.selectedUnit}}
         			</span>
@@ -45,10 +49,10 @@
         	</div>
 
         	<label class="item item-input item-select">
-        		<div class="input-label">
+        		<div class="input-label" style="white-space:normal; width: 60%">
         			Select Frequency
         		</div>
-        		<select ng-change="onFrequencyChange()" ng-model="state.selectedFrequency" >
+        		<select ng-change="onFrequencyChange()" ng-model="state.selectedFrequency" style="width: 40%">
                     <optgroup label="Intervals">
                         <option ng-repeat="frequency in variables.frequencyVariables" ng-if="frequency.group==='intervals'">{{frequency.name}}</option>
                     </optgroup>
