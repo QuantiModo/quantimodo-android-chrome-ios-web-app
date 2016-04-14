@@ -14,8 +14,8 @@ A generic app that can be easily configured to help the user track and optimize 
 1. Add certs to XCode [like so](https://livecode.com/how-to-create-a-free-ios-development-provisioning-profile/)
 1. Run `gulp make`
 1. Run `gulp makeApp`
-1. Open MoodiModo.xcworkspace in XCode
-2. Select MoodiModo 2 and target device
+1. Open MedTLC.xcworkspace in XCode
+2. Select MedTLC 2 and target device
 3. Press Play button
 
 # Quick Start for Ubuntu 14.04
@@ -64,22 +64,22 @@ The repository follows `Git-Flow` pattern, that means `develop` is the main `dev
 
 The notable exceptions are the `app/[your_app_code_name_here]` branches. These are like `develop` never ending branches representing each app.
 
-So everytime you wish to deploy your app, take for example `app/moodimodo` you should `checkout app/moodimodo` then merge `develop` into the current `HEAD` branch. This will add all the changes to the app and you will be good to go for deployment.
+So everytime you wish to deploy your app, take for example `app/medtlc` you should `checkout app/medtlc` then merge `develop` into the current `HEAD` branch. This will add all the changes to the app and you will be good to go for deployment.
 
 #### Adding a New App
 
 1. **Git**
 
-    To add a new app, you should choose a code name for it (anything without spaces and in lowercase letters) For example `Mind First Mood Tracker` became `mind first`.
+    To add a new app, you should choose a code name for it (anything without spaces and in lowercase letters) For example `MedTLC Mood Tracker` became `mind first`.
     
-    You should then create a new branch `app/[your_app_code_name_here]`. You can see other existing apps like `moodimodo` and `mind first`.
+    You should then create a new branch `app/[your_app_code_name_here]`. You can see other existing apps like `medtlc` and `mind first`.
 
 2. **apps.json**
     
     Head over to `www/js/apps.json`. Add your app to the `apps object` on line 2.
     ```
     apps : {
-    “moodimodo” : “configs/moodimodo”,
+    “medtlc” : “configs/medtlc”,
     “energymodo” : “configs/energymodo”,
     “mind first” : “configs/mindfirst”,
     “[your_app_code_here]” : “configs/[your_app_code_here]”
@@ -93,7 +93,7 @@ So everytime you wish to deploy your app, take for example `app/moodimodo` you s
 3.  **config.js**
     
     Head over to `www/js/configs` directory. Create a new file `[your_app_code_name_here].js`.
-    Then copy the contents of `www/js/configs/moodimodo.js` and paste them into your new file. This will give you the placeholder values and structure of how a config.js should look like, Then you can go forward and make appropriate changes according to your app by editing the file.
+    Then copy the contents of `www/js/configs/medtlc.js` and paste them into your new file. This will give you the placeholder values and structure of how a config.js should look like, Then you can go forward and make appropriate changes according to your app by editing the file.
 
 4. **private_configs**
     
@@ -103,7 +103,7 @@ So everytime you wish to deploy your app, take for example `app/moodimodo` you s
 
 5. **xmlconfigs**
     
-    Head over to `xmlconfigs` directory. Create a new file `[your_app_code_name_here].xml`. Then copy the contents of `xmlconfigs/moodimodo.xml`. This will give you the boilerplate of the properties required in the XML file. You can make appropriate changes according to your app where necessary.
+    Head over to `xmlconfigs` directory. Create a new file `[your_app_code_name_here].xml`. Then copy the contents of `xmlconfigs/medtlc.xml`. This will give you the boilerplate of the properties required in the XML file. You can make appropriate changes according to your app where necessary.
 
 > After these steps your app creation is complete. Now you can edit the app in the respective files as mentioned below.
 
@@ -184,7 +184,7 @@ window.config = {
       'Staging'
       ]
     },
-    client_source_name : "MoodiModo "+getPlatform(),
+    client_source_name : "MedTLC "+getPlatform(),
     domain : 'app.quantimo.do',
     environment: "Development",
     permissions : [
@@ -198,7 +198,7 @@ window.config = {
 ```
 ### Explanation
 
-`client_source_name` : Replace MoodiModo with your app name (The one you requested from hello@quantimodo.com while generating your app).
+`client_source_name` : Replace MedTLC with your app name (The one you requested from hello@quantimodo.com while generating your app).
 
 `domain` : This is the domain used for making api requests
 
@@ -561,7 +561,7 @@ xcode-select --install
 ```
 | Modo
 |---chromeApps
-     |----moodimodo
+     |----medtlc
             |---private_configs
                 |---{{appname}}.config.js // contains your client id & client secret
                 |---sample_private_config.js // a sample configuration file
@@ -595,7 +595,7 @@ You can use gulp task to simplify the process of building and publishing Chrome 
 Once you have done that, follow these steps to build, upload, and publish the Chrome app to Webstore.
 
 1. run command gulp chrome
-1. Enter the name of the app that you want to release for example `moodimodo`. 
+1. Enter the name of the app that you want to release for example `medtlc`. 
 1. Task will ask you if you have increased the version number in the manifest.json file.
 1. A browser window will open, you need to login with your developer account and give permissions. After that, a code will be displayed, copy that and paste it in the console.
 1. After that, the app will be uploaded to the chrome developer dashboard, you will be asked if you want to publish it. 

@@ -1,6 +1,6 @@
 {
-	"name": "QuantiModo Template App",
-	"description": "Track any variable with Quantimodo Ionic App",
+	"name": "MedTLC",
+	"description": "Medication - Track. Learn. Connect.",
 	"repository": "https://github.com/heroku/node-js-sample",
 	"logo": "https://github.com/Abolitionist-Project/QuantiModo-Ionic-Template-App",
 	"keywords": ["tracking", "health", "mood", "quantified self"],
@@ -8,14 +8,14 @@
 	"env": {
 		"APPS": {
 			"description": "An uppercase csv of apps currently hosted",
-			"value": "MOODIMODO"
+			"value": "MEDTLC"
 		},
-		"MOODIMODO_WEB_CLIENT_ID": {
-			"description": "The client ID generated from QuantiModo (for the app MOODIMODO)",
+		"MEDTLC_WEB_CLIENT_ID": {
+			"description": "The client ID generated from QuantiModo (for the app MEDTLC)",
 			"value": "xyz"
 		},
-		"MOODIMODO_WEB_CLIENT_SECRET": {
-			"description": "The client Secret generated from QuantiModo (for the app MOODIMODO).",
+		"MEDTLC_WEB_CLIENT_SECRET": {
+			"description": "The client Secret generated from QuantiModo (for the app MEDTLC).",
 			"value": "xyz"
 		}
 	}

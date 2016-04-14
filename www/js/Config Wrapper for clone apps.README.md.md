@@ -20,11 +20,11 @@ A configuration object "appSettings" is available in /js/config.js for changing 
 
     ![alt tag](http://res.cloudinary.com/loops-inc/image/upload/v1436308086/average_rqvqb7.png)
 
-This is how configuration wrapper for MoodiModo looks like
+This is how configuration wrapper for MedTLC looks like
 
 ```json
 config.appSettings  = {
-    app_name : 'MoodiModo', // This will change the name of the app on Top header
+    app_name : 'MedTLC', // This will change the name of the app on Top header
     primary_outcome_variable : 'Mood', // Tracking factor that the app will track,
     primary_outcome_variables_options_labels : [ 'Depressed', 'Sad', 'OK', 'Happy', 'Ecstatic' ] , //tracking facotor options, the elements of this array will be displayed on the x-axis of the graph
     primary_outcome_variable_options : [ //Tracking factor options with images.
