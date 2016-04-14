@@ -59,7 +59,7 @@ gulp.task('install', ['git-check'], function() {
 		});
 });
 
-gulp.task('make', ['getAppName'], function(){
+gulp.task('generateXmlConfig', ['getAppName'], function(){
 	
 	var deferred = q.defer();
 
@@ -873,7 +873,7 @@ gulp.task('enableBitCode', [ 'getIOSAppFolderName' ] ,function(){
 	.pipe(gulp.dest('./platforms/ios/'+IOS_FOLDER_NAME+'.xcodeproj/'));
 });
 
-gulp.task('makeApp', function(callback){
+gulp.task('makeIosApp', function(callback){
 	runSequence('deleteIOSApp',
 	'deleteFacebookPlugin',
 	'deleteGooglePlusPlugin',
