@@ -22,8 +22,8 @@ script:
 - echo "npm has installed"
 - gulp -v
 - echo "ran through gulp"
-- gulp make
-- gulp makeApp
+- gulp generateXmlConfig
+- gulp makeIosApp
 - chmod a+x ./scripts/package-and-upload.sh
 - ./scripts/package-and-upload.sh
 env:
