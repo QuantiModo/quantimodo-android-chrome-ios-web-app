@@ -141,11 +141,16 @@ angular.module('starter')
 				if (register === true) {
 					loginUrl = config.getURL("api/v2/auth/register");
 				}
-				console.log("Client id is oAuthDisabled - will redirect to regular login.");
+				console.log("nonOAuthBrowserLogin: Client id is oAuthDisabled - will redirect to regular login.");
 				loginUrl += "redirect_uri=" + encodeURIComponent(window.location.href);
-				console.debug('AUTH redirect URL created:', loginUrl);
-				console.debug('GOOD LUCK!');
-				window.location.replace(loginUrl);
+				console.debug('nonOAuthBrowserLogin: AUTH redirect URL created:', loginUrl);
+				var apiUrl = config.getApiUrl();
+				var apiUrlMatchesHostName = apiUrl.indexOf(window.location.hostname);
+				if(apiUrlMatchesHostName > -1) {
+					window.location.replace(loginUrl);
+				} else {
+					alert("API url doesn't match auth base url.  Please make use the same domain in config file");
+				}
 			},
 
 			oAuthBrowserLogin : function (register) {
@@ -226,34 +231,33 @@ angular.module('starter')
 
 				//check if token in get params
 				if (tokenInGetParams) {
-
 					localStorageService.setItem('accessToken', tokenInGetParams);
 					//resolving promise using token fetched from get params
-					console.log('resolving token using token fetched from get', tokenInGetParams);
+					console.log('resolving token using token url parameter', tokenInGetParams);
 					deferred.resolve({
 						accessToken: tokenInGetParams
 					});
-				} else {
-					console.log('previously tried to get token from user credentials. ' + ' ' +
-                        'this is possible if user logged in with cookie. triedToFetchCredentials:', authSrv.triedToFetchCredentials);
-					if (authSrv.triedToFetchCredentials) {
-						console.log('previous credentials fetch result:', authSrv.succesfullyFetchedCredentials);
-						if (authSrv.succesfullyFetchedCredentials) {
-							console.log('resolving token using value from local storage');
-							deferred.resolve({
-								accessToken: localStorageService.getItemSync('accessToken')
-							});
-						} else {
-							console.log('starting access token fetching flow');
-							authSrv._defaultGetAccessToken(deferred);
-						}
-
-					} else {
-                        authSrv.getAccessTokenFromUserEndpoint(deferred);
-                    }
-
+					return deferred.promise;
 				}
-				return deferred.promise;
+
+				if (localStorageService.getItemSync('accessToken')) {
+					console.log('resolving token using value from local storage');
+					deferred.resolve({
+						accessToken: localStorageService.getItemSync('accessToken')
+					});
+					return deferred.promise;
+				}
+
+				if(config.getClientId() !== 'oAuthDisabled') {
+					authSrv._defaultGetAccessToken(deferred);
+					return deferred.promise;
+				}
+
+				if(config.getClientId() === 'oAuthDisabled') {
+					authSrv.getAccessTokenFromUserEndpoint(deferred);
+					return deferred.promise;
+				}
+
 			},
 
             getAccessTokenFromUserEndpoint: function (deferred) {
@@ -273,10 +277,6 @@ angular.module('starter')
                         //update locally stored token
                         localStorageService.setItem('accessToken', token);
 
-                        //set flags
-                        authSrv.triedToFetchCredentials = true;
-                        authSrv.succesfullyFetchedCredentials = true;
-
                         //resolve promise
                         deferred.resolve({
                             accessToken: token
@@ -285,26 +285,20 @@ angular.module('starter')
                     },
                     function (errorResp) {
 
-                        console.log('failed to fetch user credentials', errorResp);
-                        console.log('client id is ' + config.getClientId());
-                        console.log('Platform is browser: ' +ionic.Platform.is('browser'));
-                        console.log('Platform is ios: ' +ionic.Platform.is('ios'));
-                        console.log('Platform is android: ' +ionic.Platform.is('android'));
+                        console.log('getAccessTokenFromUserEndpoint: failed to fetch user credentials', errorResp);
+                        console.log('getAccessTokenFromUserEndpoint: client id is ' + config.getClientId());
+                        console.log('getAccessTokenFromUserEndpoint: Platform is browser: ' + ionic.Platform.is('browser'));
+                        console.log('getAccessTokenFromUserEndpoint: Platform is ios: ' + ionic.Platform.is('ios'));
+                        console.log('getAccessTokenFromUserEndpoint: Platform is android: ' + ionic.Platform.is('android'));
 
                         //Using OAuth on Staging for tests
                         if(!ionic.Platform.is('ios') && !ionic.Platform.is('android')
                             && config.getClientId() === 'oAuthDisabled'
                             && !(window.location.origin.indexOf('staging.quantimo.do') > -1)){
-                            console.log("Browser Detected and client id is oAuthDisabled.  ");
+                            console.log("getAccessTokenFromUserEndpoint: Browser Detected and client id is oAuthDisabled.  ");
                             $ionicLoading.hide();
                             $state.go('app.login');
                         } else {
-                            //set flags
-                            authSrv.triedToFetchCredentials = true;
-                            authSrv.succesfullyFetchedCredentials = false;
-
-                            console.log('starting access token fetching flow');
-
                             authSrv._defaultGetAccessToken(deferred);
                         }
                     }

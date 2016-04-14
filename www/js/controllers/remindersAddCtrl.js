@@ -3,7 +3,7 @@ angular.module('starter')
 	// Controls the History Page of the App.
 	.controller('RemindersAddCtrl', function($scope, authService, $ionicPopup, localStorageService, $state,
 											 $stateParams, measurementService, reminderService, $ionicLoading,
-											 utilsService, $filter){
+											 utilsService, $filter, ionicTimePicker){
 
 	    $scope.controller_name = "RemindersAddCtrl";
 
@@ -84,54 +84,75 @@ angular.module('starter')
 	    		{ id : 3, name : 'Every 6 hours' , group : 'intervals'},
 	    		{ id : 4, name : 'Every 4 hours' , group : 'intervals'},
 	    		{ id : 5, name : 'Every 3 hours' , group : 'intervals'},
-	    		{ id : 6, name : 'Every 30 minutes' , group : 'intervals'},
-	    		{ id : 7, name : 'Hourly' , group : 'intervals'},
-	    		{ id : 8, name : 'Never' , group : 'intervals'},
-	    		{ id : 9, name : 'Once a day' , group : 'frequency'},
-	    		{ id : 10, name : 'Twice a day' , group : 'frequency'},
-	    		{ id : 11, name : 'Three times a day' , group : 'frequency'}
+				{ id : 6, name : 'Every 2 hours' , group : 'intervals'},
+				{ id : 7, name : 'Hourly' , group : 'intervals'},
+	    		{ id : 8, name : 'Every 30 minutes' , group : 'intervals'},
+	    		{ id : 9, name : 'Never' , group : 'intervals'},
+	    		{ id : 10, name : 'Once a day' , group : 'frequency'},
+	    		{ id : 11, name : 'Twice a day' , group : 'frequency'},
+	    		{ id : 12, name : 'Three times a day' , group : 'frequency'}
 	    	]
 	    };
 
+		var firstTimePicker = {
+			callback: function (val) {
+				if (typeof (val) === 'undefined') {
+					console.log('Time not selected');
+				} else {
+					var a = new Date();
+					var selectedTime = new Date(val * 1000);
+					a.setHours(selectedTime.getUTCHours());
+					a.setMinutes(selectedTime.getUTCMinutes());
 
-	    // when time is changed
-	    $scope.firstTimePickerCallback = function (val) {
-	    	if (typeof (val) === 'undefined') {
-	    		console.log('Time not selected');
-	    	} else {
-	    		var a = new Date();
-	    		a.setHours(val.hours);
-	    		a.setMinutes(val.minutes);
-	    		$scope.state.slotsFirst.epochTime = a.getTime()/1000;
-	    		$scope.state.firstSelectedTime = moment.utc(a).format('HH:mm:ss');
-	    	}
-	    };
+					$scope.state.slotsFirst.epochTime = a.getTime() / 1000;
+					$scope.state.firstSelectedTime = moment.utc(a).format('HH:mm:ss');
+				}
+			}
+		};
 
-	    // when time is changed
-	    $scope.secondTimePickerCallback = function (val) {
-	    	if (typeof (val) === 'undefined') {
-	    		console.log('Time not selected');
-	    	} else {
-	    		var a = new Date();
-	    		a.setHours(val.hours);
-	    		a.setMinutes(val.minutes);
-	    		$scope.state.slotsSecond.epochTime = a.getTime()/1000;
-	    		$scope.state.secondSelectedTime = moment.utc(a).format('HH:mm:ss');
-	    	}
-	    };
+		$scope.firstTimePicker = function() {
+			ionicTimePicker.openTimePicker(firstTimePicker);
+		};
 
-	    // when time is changed
-	    $scope.thirdTimePickerCallback = function (val) {
-	    	if (typeof (val) === 'undefined') {
-	    		console.log('Time not selected');
-	    	} else {
-	    		var a = new Date();
-	    		a.setHours(val.hours);
-	    		a.setMinutes(val.minutes);
-	    		$scope.state.slotsThird.epochTime = a.getTime()/1000;
-	    		$scope.state.thirdSelectedTime = moment.utc(a).format('HH:mm:ss');
-	    	}
-	    };
+		var secondTimePicker = {
+			callback: function (val) {
+				if (typeof (val) === 'undefined') {
+					console.log('Time not selected');
+				} else {
+					var a = new Date();
+					var selectedTime = new Date(val * 1000);
+					a.setHours(selectedTime.getUTCHours());
+					a.setMinutes(selectedTime.getUTCMinutes());
+
+					$scope.state.slotsSecond.epochTime = a.getTime() / 1000;
+					$scope.state.secondSelectedTime = moment.utc(a).format('HH:mm:ss');
+				}
+			}
+		};
+
+		$scope.secondTimePicker = function() {
+			ionicTimePicker.openTimePicker(secondTimePicker);
+		};
+
+		var thirdTimePicker = {
+			callback: function (val) {
+				if (typeof (val) === 'undefined') {
+					console.log('Time not selected');
+				} else {
+					var a = new Date();
+					var selectedTime = new Date(val * 1000);
+					a.setHours(selectedTime.getUTCHours());
+					a.setMinutes(selectedTime.getUTCMinutes());
+
+					$scope.state.slotsThird.epochTime = a.getTime() / 1000;
+					$scope.state.thirdSelectedTime = moment.utc(a).format('HH:mm:ss');
+				}
+			}
+		};
+
+		$scope.thirdTimePicker = function() {
+			ionicTimePicker.openTimePicker(thirdTimePicker);
+		};
 
 		// populate list with recently tracked category variables
     	var populate_recent_tracked = function(category){
@@ -370,7 +391,7 @@ angular.module('starter')
 	    		"Twice a day" : 12*60*60,
 	    		"Three times a day": 8*60*60
 	    	};
-	    }
+	    };
 
 	    // when the reminder is saved/edited
 	    $scope.save = function(){
@@ -456,13 +477,10 @@ angular.module('starter')
 	    		21600: "Every 6 hours",
 	    		14400: "Every 4 hours",
 	    		10800: "Every 3 hours",
-	    		1800: "Every 30 minutes",   			    		
-	    		3600: "Hourly",
-	    		0: "Never", 
-	    		86400: "Once a day",
-	    		43200: "Twice a day",
-	    		28800: "Three times a day",
-
+				7200: "Every 2 hours",
+				3600: "Hourly",
+				1800: "Every 30 minutes",
+				0: "Never"
 	    	};
 
 			if(typeof $stateParams.reminder.firstDailyReminderTime !== "undefined" && $stateParams.reminder.firstDailyReminderTime !== null){

@@ -3,13 +3,13 @@ angular.module('starter')
     // Controls the Track Factors Page
     .controller('TrackFactorsCtrl', function($scope, $ionicModal, $timeout, $ionicPopup ,$ionicLoading, authService,
                                              measurementService, $state, $rootScope, utilsService, localStorageService,
-                                                $filter){
-
+                                             $ionicScrollDelegate, ionicTimePicker) {
         $scope.controller_name = "TrackFactorsCtrl";
 
         // flags
         $scope.flags = {
-            showTrack : true,
+            showTrackingHelpQuestion : false,
+            showVariableSearchCard : true,
             showAddVariable : false,
             showAddMeasurement : false,
             showCategoryAsSelector : true,
@@ -35,7 +35,7 @@ angular.module('starter')
             variable_name : "",
             factor : "factors",
             help_text: "What do you want to track?",
-            
+            trackFactorsPlaceholderText: "Search for a variable here...",
             // default operation
             sumAvg : "avg",
             variable_value : "",
@@ -43,7 +43,7 @@ angular.module('starter')
             searchedUnits : []
         };
 
-        $scope.state.title = $filter('wordAliases')('Track');
+        $scope.state.title = 'Add Measurement';
         
             
 
@@ -108,7 +108,7 @@ angular.module('starter')
             });
         };
 
-        // when an old measurement is tapped to remeasure
+        // when an existing variable is tapped to remeasure
         $scope.measure = function(item){
             console.log(item);
             $scope.item = item;
@@ -120,12 +120,12 @@ angular.module('starter')
             set_unit(item.abbreviatedUnitName);
 
             // set flags
-            $scope.flags.showTrack = false;
+            $scope.flags.showVariableSearchCard = false;
             $scope.flags.showAddVariable = false;
             $scope.flags.showAddMeasurement = true;
             
             // update time in the datepicker
-            $scope.slots = {epochTime: new Date().getTime()/1000, format: 24, step: 1};
+            $scope.slots = {epochTime: new Date().getTime()/1000};
 
             $scope.onMeasurementStart();
         };
@@ -135,7 +135,7 @@ angular.module('starter')
             console.log("add variable");
 
             // set flags
-            $scope.flags.showTrack = false;
+            $scope.flags.showVariableSearchCard = false;
             $scope.flags.showAddVariable = true;
             $scope.flags.showAddMeasurement = true;
 
@@ -149,7 +149,8 @@ angular.module('starter')
             // show list again
             $scope.flags.showAddVariable = false;
             $scope.flags.showAddMeasurement = false;
-            $scope.flags.showTrack = true;
+            $scope.flags.showVariableSearchCard = true;
+            $ionicScrollDelegate.scrollTop();
         };
 
         // completed adding and/or measuring
@@ -185,7 +186,7 @@ angular.module('starter')
                         // set flags
                         $scope.flags.showAddVariable = false;
                         $scope.flags.showAddMeasurement = false;
-                        $scope.flags.showTrack = true;
+                        $scope.flags.showVariableSearchCard = true;
 
                         // refresh the last updated at from api
                         setTimeout($scope.init, 200);
@@ -206,12 +207,12 @@ angular.module('starter')
 
                     // post measurement
                     measurementService.post_tracking_measurement(params.epoch, params.variable, params.value, params.unit, params.isAvg, params.category, params.note);
-                    $scope.showAlert('Measurement Added');
+                    $scope.showAlert(params.variable + ' measurement added!');
 
                     // set flags
                     $scope.flags.showAddVariable = false;
                     $scope.flags.showAddMeasurement = false;
-                    $scope.flags.showTrack = true;
+                    $scope.flags.showVariableSearchCard = true;
                     
                     // refresh data
                     setTimeout($scope.init, 200);
@@ -306,7 +307,7 @@ angular.module('starter')
                     $ionicLoading.hide();
                 });
 
-                // get variabls cateogries
+                // get variable categories
                 measurementService.getVariableCategories().then(function(variableCategories){
                     
                     // update viewmodel
@@ -317,9 +318,9 @@ angular.module('starter')
                     setTimeout(function(){
                         $scope.state.variable_category = config.appSettings.primary_outcome_variable;
                         
-                        // redraw everythign
+                        // redraw everything
                         $scope.$apply();
-                    },100)
+                    },100);
 
                     // hide spinner
                     $ionicLoading.hide();
@@ -327,6 +328,7 @@ angular.module('starter')
                 });
 
                 // get units
+                measurementService.refreshUnits();
                 measurementService.getUnits().then(function(units){
                     
                     $scope.state.units = units;
@@ -383,23 +385,23 @@ angular.module('starter')
           }
         };
 
-        // time picker defaults
-        $scope.slots = {
-            epochTime: new Date().getTime()/1000,
-            format: 24,
-            step: 1
+        var timePicker = {
+            callback: function (val) {
+                if (typeof (val) === 'undefined') {
+                    console.log('Time not selected');
+                } else {
+                    var a = new Date();
+                    var selectedTime = new Date(val * 1000);
+                    a.setHours(selectedTime.getUTCHours());
+                    a.setMinutes(selectedTime.getUTCMinutes());
+
+                    $scope.slots.epochTime = a.getTime()/1000;
+                }
+            }
         };
 
-        // when time is changed
-        $scope.timePickerCallback = function (val) {
-          if (typeof (val) === 'undefined') {
-            console.log('Time not selected');
-          } else {
-            var a = new Date();
-            a.setHours(val.hours);
-            a.setMinutes(val.minutes);
-            $scope.slots.epochTime = a.getTime()/1000;
-          }
+        $scope.timePicker = function() {
+            ionicTimePicker.openTimePicker(timePicker);
         };
 
         // search a variable

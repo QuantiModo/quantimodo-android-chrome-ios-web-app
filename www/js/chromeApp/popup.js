@@ -142,7 +142,7 @@ var updateMood = function(mood,moodVal,report_time,done){
 
     });
 
-}
+};
 
 document.addEventListener('DOMContentLoaded', function ()
 {

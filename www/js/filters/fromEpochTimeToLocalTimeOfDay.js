@@ -1,6 +1,6 @@
 angular.module('starter')
 	// Returns time in HH:MM format
-	.filter('toTime', function(){
+	.filter('fromUnixTimestampToLocalTimeOfDay', function(){
 	    return function(value){
 	    	if (value){
 	    		return moment(value*1000).format('hh:mm A')
