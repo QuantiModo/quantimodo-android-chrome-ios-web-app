@@ -56,7 +56,7 @@ angular.module('starter',
 
 })
 
-.config(function($stateProvider, $urlRouterProvider,$compileProvider) {
+.config(function($stateProvider, $urlRouterProvider, $compileProvider, ionicTimePickerProvider) {
     $compileProvider.imgSrcSanitizationWhitelist(/^\s*(https?|ftp|file|mailto|chrome-extension):/);
     $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|file|ftp|mailto|chrome-extension):/);
 
@@ -90,6 +90,13 @@ angular.module('starter',
 
       }]
     };
+
+    var timePickerObj = {
+        format: 12,
+        step: 1
+    };
+
+    ionicTimePickerProvider.configTimePicker(timePickerObj);
 
     $stateProvider
       .state('intro', {
