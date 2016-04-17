@@ -140,13 +140,13 @@ This will be the name for your App, and will be the name of the .xcodeproj file,
 4. Notification Plugin
   ```
   <notificationplugin interactive=“true”>
-      <button id=“repeat_mood” display=“Report Last Mood” mode=“background”></button>
+      <button id=“repeat_rating” display=“Same As Last Time” mode=“background”></button>
       <button id=“other” display=“Other” mode=“foreground”></button>
       <button id=“sad”  display=“Sad” mode=“background”></button>
       <button id=“happy”  display=“Happy” mode=“background”></button>
       <button id=“depressed” display=“Depressed” mode=“background”></button>
       <button id=“ok” display=“OK” mode=“background”></button>
-      <TwoButtonLayout first=“repeat_mood” second=“other”></TwoButtonLayout>
+      <TwoButtonLayout first=“repeat_rating” second=“other”></TwoButtonLayout>
       <FourButtonLayout first=“sad” second=“happy” third=“ok” fourth=“depressed”>
       </FourButtonLayout>
 </notificationplugin>
@@ -379,7 +379,7 @@ intro : {
      img : {
          width : '220',
          height : '200',
-         url : 'img/mood_note.png'
+         url : 'img/rating_note.png'
      }
  },
  "screen6" : {
@@ -421,7 +421,7 @@ intro : {
       img : {
           width : '180',
           height : '180',
-          url : 'img/ic_mood_ecstatic.png'
+          url : 'img/ic_face_ecstatic.png'
       }
   }
 }
