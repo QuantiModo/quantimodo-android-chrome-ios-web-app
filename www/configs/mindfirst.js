@@ -56,30 +56,30 @@ config.appSettings  = {
     primary_outcome_variable_options : [
         {
             value: 'depressed',
-            img: 'img/ic_mood_depressed.png'
+            img: 'img/ic_face_depressed.png'
         },
         {
             value: 'sad',
-            img: 'img/ic_mood_sad.png'
+            img: 'img/ic_face_sad.png'
         },
         {
             value: 'ok',
-            img: 'img/ic_mood_ok.png'
+            img: 'img/ic_face_ok.png'
         },
         {
             value: 'happy',
-            img: 'img/ic_mood_happy.png'
+            img: 'img/ic_face_happy.png'
         },
         {
             value: 'ecstatic',
-            img: 'img/ic_mood_ecstatic.png'
+            img: 'img/ic_face_ecstatic.png'
         }
     ],
 
     welcome_text:"Let's start off by reporting your first mood on the card below",
     tracking_question:"How are you feeling right now?",
     factor_average_text:"Your average mood is ",
-    notification_image : "file://img/logo.png",
+    notification_image : "file://img/icon_128.png",
     notification_text : "Time to Track",
     conversion_dataset: {
         "1": "depressed",
@@ -200,7 +200,7 @@ config.appSettings  = {
             img : {
                 width : '220',
                 height : '200',
-                url : 'img/mood_note.png'
+                url : 'img/rating_note.png'
             },
             content : {
                 firstP : {
@@ -359,7 +359,7 @@ config.appSettings  = {
             img : {
                 width : '180',
                 height : '180',
-                url : 'img/ic_mood_ecstatic.png'
+                url : 'img/ic_face_ecstatic.png'
             },
             content : {
 
@@ -383,7 +383,7 @@ config.appSettings  = {
         }
     ],
 
-    popup_messages : {
+    help_popup_messages : {
         "#/app/track" : 'Here, you can view your <span class="calm">average Mood</span> as well as charts illustrating how it changes over time',
         "#/app/history" : 'You can see and edit your past Mood ratings and notes by tapping on any item in the list.  <br/> <br/>You can also Add a note by tapping on a Mood rating in the list.',
         "#/app/track_factors_category/Foods" : 'You can track your diet on this page. You can also <span class="calm">Add a new Food Variable</span> if you do not find the meal you looked for in the search results.',
@@ -392,6 +392,15 @@ config.appSettings  = {
         "#/app/positive" : 'Positive Predictors are the factors most predictive of <span class="calm">IMPROVING</span> Mood for the average QuantiModo user.',
         "#/app/negative" : 'Negative Predictors are the factors most predictive of <span class="calm">DECREASING</span> for the average QuantiModo user.'
     },
+
+    remindersInbox : {
+
+    },
+
+    wordAliases : {
+
+    },
+
 
     menu : [
         {
@@ -471,28 +480,28 @@ config.appSettings  = {
             title : 'Emotions',
             isSubMenu : true,
             subMenuVariable : 'showReminderSubMenu',
-            href : '#/app/reminders/Emotions',
+            href : '#/app/reminder_add/Emotions',
             icon : 'ion-happy-outline'
         },
         {
             title : 'Symptoms',
             isSubMenu : true,
             subMenuVariable : 'showReminderSubMenu',
-            href : '#/app/reminders/Symptoms',
+            href : '#/app/reminder_add/Symptoms',
             icon : 'ion-ios-pulse'
         },
         {
             title : 'Treatments',
             isSubMenu : true,
             subMenuVariable : 'showReminderSubMenu',
-            href : '#/app/reminders/Treatments',
+            href : '#/app/reminder_add/Treatments',
             icon : 'ion-ios-medkit-outline'
         },
         {
             title : 'Foods',
             isSubMenu : true,
             subMenuVariable : 'showReminderSubMenu',
-            href : '#/app/reminders/Foods',
+            href : '#/app/reminder_add/Foods',
             icon : 'ion-ios-nutrition-outline'
         },
         {
@@ -669,42 +678,66 @@ config.getClientSecret = function(){
     }
 };
 
+config.getRedirectUri = function(){
+    if(!window.private_keys.redirect_uris){
+        return 'https://app.quantimo.do/ionic/Modo/www/callback/'
+    }
+    if (window.chrome && chrome.runtime && chrome.runtime.id) {
+        return window.private_keys.redirect_uris.Chrome;
+    } else {
+        var platform = getPlatform();
+        return platform === "Ionic"? window.private_keys.redirect_uris.Web : platform === "Web"? window.private_keys.redirect_uris.Web : platform === "iOS"? window.private_keys.redirect_uris.iOS : window.private_keys.redirect_uris.Android;
+    }
+};
+
+config.getApiUrl = function(){
+    if(!window.private_keys.api_urls){
+        return 'https://app.quantimo.do';
+    }
+    var platform = getPlatform();
+    if(platform === 'Web' && window.private_keys.client_ids.Web === 'oAuthDisabled'){
+        return window.location.origin;
+    }
+    if (window.chrome && chrome.runtime && chrome.runtime.id) {
+        return window.private_keys.api_urls.Chrome;
+    } else {
+        return platform === "Ionic"? window.private_keys.api_urls.Web : platform === "Web"? window.private_keys.api_urls.Web : platform === "iOS"? window.private_keys.api_urls.iOS : window.private_keys.api_urls.Android;
+    }
+};
+
+config.getAllowOffline = function(){
+    return true;
+};
+
 config.getPermissionString = function(){
 
     var str = "";
-    for(var i=0; i < config.permissions.length; i++)
-        str+= config.permissions[i]+"%20";
+    for(var i=0; i < config.permissions.length; i++) {
+        str += config.permissions[i] + "%20";
+    }
     return str.replace(/%20([^%20]*)$/,'$1');
 
 };
 
 config.getURL = function(path){
-    if(typeof path === "undefined") path = "";
-    else path+= "?";
+    if(typeof path === "undefined") {
+        path = "";
+    }
+    else {
+        path += "?";
+    }
 
     var url = "";
 
-    if (window.chrome && chrome.runtime && chrome.runtime.id) {
-        url = config.protocol+"://"+config.domain+"/"+path;
+    if(config.getApiUrl() !== "undefined") {
+        url = config.getApiUrl() + "/" + path;
     }
-
-    else if(window.location.origin.indexOf('localhost')> -1 || window.location.origin == "file://" ){
-        //On localhost or mobile
-        url = config.protocol+"://"+config.domain+"/"+path;
-    }
-    else if(window.location.origin.indexOf("local.") > -1){
-         //local.quantimodo
-         url = config.protocol+"://"+config.domain;
-         
-         url+= (config.domain.indexOf('app.') === -1 && config.domain.indexOf('staging.') === -1)? ":"+config.port : "";
-         
-         url+="/"+path;
-    } else {
+    else 
+    {
         url = config.protocol + "://" + config.domain + "/" + path;
-        // url = window.location.origin + "/" + path;
     }
 
-   return url;
+    return url;
 };
 
 config.get = function(key){
@@ -718,7 +751,7 @@ window.notification_callback = function(reported_variable, reporting_time){
     var val = false;
 
     // convert values
-    if(reported_variable === "repeat_mood"){
+    if(reported_variable === "repeat_rating"){
         val = localStorage[key_identifier+'lastReportedPrimaryOutcomeVariableValue']?
         JSON.parse(localStorage[key_identifier+'lastReportedPrimaryOutcomeVariableValue']) : false;
     } else {

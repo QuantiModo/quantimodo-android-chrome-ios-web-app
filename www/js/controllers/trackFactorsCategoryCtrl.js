@@ -4,35 +4,48 @@
 angular.module('starter')
 
     // Controls the Track Factors Page
-    .controller('TrackFactorsCategoryCtrl', function($scope, $ionicModal, $timeout, $ionicPopup ,$ionicLoading, authService, measurementService, $state, $rootScope, $stateParams, utilsService, localStorageService){
+    .controller('TrackFactorsCategoryCtrl', function($scope, $ionicModal, $timeout, $ionicPopup ,$ionicLoading,
+                                                     authService, measurementService, $state, $rootScope, $stateParams,
+                                                     utilsService, localStorageService, $filter, $ionicScrollDelegate){
 
         $scope.controller_name = "TrackFactorsCategoryCtrl";
 
         var categoryConfig = {
+            "Vital Signs":{
+                default_unit: false,
+                help_text:"What vital sign do you want to record?",
+                variable_category_name: "Vital Signs",
+                variable_category_name_singular_lowercase : "vital sign"
+            },
             Foods:{
                 default_unit:"serving",
                 help_text:"What did you eat?",
-                variable_category_name: "Foods"
+                variable_category_name: "Foods",
+                variable_category_name_singular_lowercase : "food"
             },
             Emotions:{
                 default_unit: "/5",
-                help_text: "Select an aspect of emotion",
-                variable_category_name: "Emotions"
+                help_text: "What emotion do you want to rate?",
+                variable_category_name: "Emotions",
+                variable_category_name_singular_lowercase : "emotion"
             },
             Symptoms:{
                 default_unit: "/5",
-                help_text: "What do you want to track?",
-                variable_category_name: "Symptoms"
+                help_text: "What symptom do you want to record?",
+                variable_category_name: "Symptoms",
+                variable_category_name_singular_lowercase : "symptom"
             },
             Treatments:{
-                default_unit: "count",
-                help_text:"What do you want to track?",
-                variable_category_name: "Treatments"
+                default_unit: "mg",
+                help_text:"What treatment do you want to record?",
+                variable_category_name: "Treatments",
+                variable_category_name_singular_lowercase : "treatment"
             },
             "Physical Activity": {
-                default_unit: "count",
-                help_text:"What do you want to track?",
-                variable_category_name: "Physical Activity"
+                default_unit: false,
+                help_text:"What physical activity do you want to record?",
+                variable_category_name: "Physical Activity",
+                variable_category_name_singular_lowercase : "physical activity"
             }
         };
 
@@ -40,7 +53,7 @@ angular.module('starter')
 
         // flags
         $scope.flags = {
-            showTrack: true,
+            showVariableSearchCard: true,
             showAddVariable: false,
             showAddMeasurement: false,
             showCategoryAsSelector: false,
@@ -67,6 +80,7 @@ angular.module('starter')
             factor : category,
             help_text: categoryConfig[category].help_text,
             variable_category_name : categoryConfig[category].variable_category_name,
+            variable_category_name_singular_lowercase : categoryConfig[category].variable_category_name_singular_lowercase,
             unit_text : '',
             
             // default operation
@@ -75,6 +89,15 @@ angular.module('starter')
 
             searchedUnits : []
         };
+
+        if(category.length > 1){
+            $scope.state.trackFactorsPlaceholderText = "Search for a " +  $filter('wordAliases')(pluralize(category, 1).toLowerCase()) + " here...";
+            $scope.state.title = $filter('wordAliases')('Track') + " " + $filter('wordAliases')(category);
+        } else {
+            $scope.state.trackFactorsPlaceholderText = "Search for a variable here...";
+            $scope.state.title = $filter('wordAliases')('Track');
+        }
+
 
         // alert box
         $scope.showAlert = function(title, template) {
@@ -131,7 +154,7 @@ angular.module('starter')
             set_unit(item.abbreviatedUnitName);
 
             // set flags
-            $scope.flags.showTrack = false;
+            $scope.flags.showVariableSearchCard = false;
             $scope.flags.showAddVariable = false;
             $scope.flags.showAddMeasurement = true;
 
@@ -146,13 +169,14 @@ angular.module('starter')
             console.log("add variable");
 
             // set flags
-            $scope.flags.showTrack = false;
+            $scope.flags.showVariableSearchCard = false;
             $scope.flags.showAddVariable = true;
             $scope.flags.showAddMeasurement = true;
 
             // set default
             $scope.state.variable_name = "";
             $scope.state.variable_value = "";
+            $scope.state.note = null;
         };
 
         // cancel activity
@@ -161,7 +185,8 @@ angular.module('starter')
             // show list again
             $scope.flags.showAddVariable = false;
             $scope.flags.showAddMeasurement = false;
-            $scope.flags.showTrack = true;
+            $scope.flags.showVariableSearchCard = true;
+            $ionicScrollDelegate.scrollTop();
         };
 
         $scope.onMeasurementStart = function(){
@@ -189,6 +214,7 @@ angular.module('starter')
             var params = {
                 variable : $scope.state.variable_name || jQuery('#variable_name').val(),
                 value : $scope.state.variable_value || jQuery('#variable_value').val(),
+                note : $scope.state.note || jQuery('#note').val(),
                 epoch : $scope.slots.epochTime * 1000,
                 unit : $scope.flags.showAddVariable? (typeof $scope.unit_text === "undefined" || $scope.unit_text === "" )? $scope.state.selected_sub : $scope.unit_text : $scope.state.selected_sub,
                 category : $scope.state.variable_category,
@@ -206,14 +232,14 @@ angular.module('starter')
                 } else {
 
                     // add variable
-                    measurementService.post_tracking_measurement(params.epoch, params.variable, params.value, params.unit, params.isAvg, params.category, true)
+                    measurementService.post_tracking_measurement(params.epoch, params.variable, params.value, params.unit, params.isAvg, params.category, params.note, true)
                     .then(function(){
                         $scope.showAlert('Added Variable');
 
                         // set flags
                         $scope.flags.showAddVariable = false;
                         $scope.flags.showAddMeasurement = false;
-                        $scope.flags.showTrack = true;
+                        $scope.flags.showVariableSearchCard = true;
 
                         // refresh the last updated at from api
                         setTimeout($scope.init, 200);
@@ -232,13 +258,13 @@ angular.module('starter')
                     // measurement only
 
                     // post measurement
-                    measurementService.post_tracking_measurement(params.epoch, params.variable, params.value, params.unit, params.isAvg, params.category);
-                    $scope.showAlert('Measurement Added');
+                    measurementService.post_tracking_measurement(params.epoch, params.variable, params.value, params.unit, params.isAvg, params.category, params.note);
+                    $scope.showAlert(params.variable + ' measurement added!');
 
                     // set flags
                     $scope.flags.showAddVariable = false;
                     $scope.flags.showAddMeasurement = false;
-                    $scope.flags.showTrack = true;
+                    $scope.flags.showVariableSearchCard = true;
 
                     // refresh data
                     setTimeout($scope.init, 200);
@@ -304,7 +330,7 @@ angular.module('starter')
             // defaults
             $scope.state.sumAvg = "avg";
             $scope.state.variable_value = "";
-            $scope.state.variable_value = "";
+            $scope.state.note = null;
             $scope.state.unit_text = "";
             $scope.state.selected_sub = "";
 
@@ -315,7 +341,7 @@ angular.module('starter')
             });
 
             // get user token
-            authService.getAccessToken().then(function(token){
+            authService.getAccessTokenFromAnySource().then(function(token){
 
                 // get all variables
                 measurementService.getVariablesByCategory(category).then(function(variables){
@@ -347,7 +373,7 @@ angular.module('starter')
 
                         // redraw everythign
                         $scope.$apply();
-                    },100)
+                    },100);
 
                     // hide spinner
                     $ionicLoading.hide();
@@ -355,6 +381,7 @@ angular.module('starter')
                 });
 
                 // get units
+                measurementService.refreshUnits();
                 measurementService.getUnits().then(function(units){
 
                     $scope.state.units = units;
@@ -377,7 +404,9 @@ angular.module('starter')
 
                     console.log("got units", units);
 
-                    set_unit(categoryConfig[category].default_unit);
+                    if(categoryConfig[category].default_unit) {
+                        set_unit(categoryConfig[category].default_unit);
+                    }
 
                     // hide spinenr
                     $ionicLoading.hide();
@@ -429,7 +458,7 @@ angular.module('starter')
         $scope.search = function(query){
             console.log(query);
 
-            $scope.state.loading = true
+            $scope.state.loading = true;
 
             if(query == ''){
                 // if search is cleared
@@ -445,7 +474,7 @@ angular.module('starter')
             } else {
 
                 // search server for the query
-                measurementService.getPublicVariablesByCategory(query,category).then(function(variables){
+                measurementService.searchVariablesByCategoryIncludePublic(query,category).then(function(variables){
 
                     // populate list with results
                     $scope.lists.searchVariables = variables;

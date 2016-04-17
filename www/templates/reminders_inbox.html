@@ -1,15 +1,37 @@
 <ion-view hide-nav-bar="skipMenu" view-title="{{state.title}}">
 
 	<ion-content scroll="true" overflow-scroll="true"> 
-		<div class="list card">
-			<!--<div class="item item-divider" style="background-color:#11c1f3; color:white;">Actions</div>-->
-			<a href="#/app/reminders" class="item item-icon-left">
-				<i class="icon ion-plus calm"></i>
-				Add a new Reminder
-			</a>
+		
+		<div ng-hide="state.showMeasurementBox">
+			<div ng-hide="state.hideAddNewReminderButton" class="list card">
+				<!--<div class="item item-divider" style="background-color:#11c1f3; color:white;">Actions</div>-->
+				<a href="#/app/reminder_add" class="item item-icon-left">
+					<i class="icon ion-plus calm"></i>
+					Add a new Reminder
+				</a>
+			</div>
+			<div ng-show="state.showAddHowIFeelResponseButton" class="list card">
+				<!--<div class="item item-divider" style="background-color:#11c1f3; color:white;">Actions</div>-->
+				<a href="#/app/track_factors_category/Symptoms" class="item item-icon-left">
+					<i class="icon ion-plus calm"></i>
+					Add "How I Feel" Response
+				</a>
+			</div>
+			<div ng-show="state.showAddVitalSignButton" class="list card">
+				<!--<div class="item item-divider" style="background-color:#11c1f3; color:white;">Actions</div>-->
+				<a href="#/app/track_factors_category/Vital Signs" class="item item-icon-left">
+					<i class="icon ion-plus calm"></i>
+					Add a new vital sign
+				</a>
+			</div>
+			<div ng-show="state.showAddNewMedicationButton" class="list card">
+				<!--<div class="item item-divider" style="background-color:#11c1f3; color:white;">Actions</div>-->
+				<a href="#/app/reminder_add/Treatments" class="item item-icon-left">
+					<i class="icon ion-plus calm"></i>
+					Add a new medication
+				</a>
+			</div>
 		</div>
-		
-		
 		<div class="card" ng-show="state.showMeasurementBox" ng-class="{card_disabled : state.isDisabled}" style="overflow: visible">
             <div  class="item item-divider" style="background-color:#11c1f3; color:white;">Track {{state.selectedReminder.variableName}}</div>
             
@@ -67,7 +89,7 @@
                     <div class="col" style="padding-top: 11px;">
                         <ionic-timepicker style="width:54%" etime="state.slots.epochTime" format="state.slots.format" step="state.slots.step" callback="currentTimePickerCallback">
                             <button class="button button-block uptop" style="text-align:left;font-size:14px;border:none;color:black;background-color: white;margin-bottom: 0px;margin-top: 0px;padding-left: 0px;">
-                                {{state.slots.epochTime | toTime}}
+                                {{state.slots.epochTime | fromUnixTimestampToLocalTimeOfDay}}
                             </button>
                         </ionic-timepicker>
                     </div>
@@ -83,7 +105,7 @@
 		<div class="list card" ng-show="!state.showMeasurementBox">
 	
 			<div class="item item-divider" style="background-color:#11c1f3; color:white;">
-				Reminder Notifications
+				Reminders
 			</div>
 			<div ng-repeat="divider in state.filteredReminders">
 
@@ -100,7 +122,7 @@
 							</div>
 							<div class="col col-75">
 								<h2 style="white-space: normal;">{{reminder.variableName}}</h2>
-								<p style="white-space: normal;">{{ reminder.trackingReminderNotificationTime | reminderTime}} </p>
+								<p style="white-space: normal;">{{ reminder.trackingReminderNotificationTime | fromUtcToLocalDateAndTime}} </p>
 							</div>
 						</div>
 						<div class="button-bar">

@@ -111,7 +111,7 @@ angular.module('starter')
                 });
             });
 	        // try to access user token to check if the user is logged in
-	        authService.getAccessToken().then(function(token){
+	        authService.getAccessTokenFromAnySource().then(function(token){
 	            $ionicLoading.hide();
 	        }, function(){
 	            console.log("need to log in");
@@ -126,4 +126,4 @@ angular.module('starter')
     		$scope.init();
     	});
 
-	})
+	});

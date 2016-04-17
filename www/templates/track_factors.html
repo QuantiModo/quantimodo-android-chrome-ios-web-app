@@ -1,12 +1,11 @@
-<ion-view hide-nav-bar="skipMenu" view-title="Track Factors">
+<ion-view hide-nav-bar="skipMenu" view-title="{{state.title}}">
     <ion-content>
-        <div class="card" ng-show="flags.showTrack">
-            <div class="item item-text-wrap">
+        <div class="card" ng-show="flags.showVariableSearchCard">
+            <div ng-show="flags.showTrackingHelpQuestion" class="item item-text-wrap">
                 <div>
                     <div>
-                        <span class="heading calm">Track {{state.variable_category_name}}</span>
+                        <!--<span class="heading calm">Track {{state.variable_category_name}}</span>-->
                         <ul class="from_top">
-                            <!--<li>What do you want to track?</li>-->
                             <li>{{state.help_text}}</li>
                         </ul>
                     </div>
@@ -14,8 +13,12 @@
             </div>
             <label class="item item-input">
                 <i class="icon ion-search placeholder-icon"></i>
-                <input ng-model="search_term" ng-change="search(search_term)" id="track_search" type="text" placeholder="Search">
-
+                <input ng-model="search_term"
+                       ng-model-options="{ debounce: 500 }"
+                       ng-change="search(search_term)"
+                       id="track_search"
+                       type="text"
+                       placeholder={{state.trackFactorsPlaceholderText}}>
             </label>
             <p></p>
             <ion-list>
@@ -35,19 +38,19 @@
 
             <ion-list>
                 <ion-item style="border-top: 1px solid rgb(221, 221, 221);" ng-click="add_variable()">
-                    + Add a new {{state.variable_category_name}} Variable
+                    + Add a new {{state.variable_category_name_singular_lowercase | wordAliases}} variable
                 </ion-item>
             </ion-list>
         </div>
 
         <div class="card" ng-show="flags.showAddVariable">
             <div class="list">
-                <p class="heading calm" style="padding:14px;">Add New Variable</p>
+                <p class="heading calm" style="padding:14px;">Add new {{state.variable_category_name_singular_lowercase | wordAliases}} variable</p>
 
 
-                <label class="item item-input item-select" ng-if="flags.showCategoryAsSelector">
+                <label class="item item-input item-select" ng-show="flags.showCategoryAsSelector">
                     <div class="input-label">
-                        Category
+                        Select category
                     </div>
                     <select ng-model="state.variable_category" ng-change=>
                         <option ng-repeat="i in state.variableCategories track by i.id" value="{{i.name}}">
@@ -56,20 +59,19 @@
                     </select>
                 </label>
 
-                <label class="item item-input item-stacked-label" ng-if="!flags.showCategoryAsSelector">
-                    <span class="input-label">Category</span>
-                    <input type="text" ng-model="state.variable_category" readonly id="category_name" placeholder="Category name">
-                </label>
-
                 <label class="item item-input item-stacked-label">
-                    <span class="input-label">Variable</span>
-                    <input type="text" ng-model="state.variable_name" id="variable_name" placeholder="Variable name">
+                    <span class="input-label">Name</span>
+                    <input type="text" ng-model="state.variable_name" id="variable_name" placeholder="Enter the new variable name here...">
                 </label>
+            </div>
+
+            <div class="card" ng-show="flags.showAddVariable">
+                <p style="padding:14px;">How should we combine data over multiple days?</p>
 
                 <label class="item item-radio">
                     <input type="radio" ng-model="state.sumAvg" value="sum" name="group">
                     <div class="item-content">
-                        Sum
+                        Sum (i.e. Apples eaten)
                     </div>
                     <i class="radio-icon ion-checkmark"></i>
                 </label>
@@ -77,7 +79,7 @@
                 <label class="item item-radio">
                     <input type="radio" ng-model="state.sumAvg" value="avg" name="group">
                     <div class="item-content">
-                        Average
+                        Average (i.e. Your weight)
                     </div>
                     <i class="radio-icon ion-checkmark"></i>
                 </label>
@@ -85,7 +87,7 @@
         </div>
 
         <div class="card" ng-show="flags.showAddMeasurement" style="overflow: visible">
-            <p class="heading calm" style="padding:14px;">Track {{state.variable_name}}</p>
+            <p class="heading calm" style="padding:14px;">Record {{state.variable_name}} measurement</p>
             <div class="list">
 
                 <div ng-if="(flags.category != 'Emotions' && flags.category != 'Symptoms')" class="row labeled-control">
@@ -99,8 +101,8 @@
                     </div>
                 </div>
 
-                <div class="primary_outcome_variables col" ng-if="flags.category=='Emotions' || flags.category == 'Symptoms'">
-                    <img ng-repeat="option in primary_outcome_variable_numbers" ng-click="select_primary_outcome_variable($event, option.value)" ng-src="{{option.img}}">
+                <div class="primary_outcome_variables primary_outcome_variable_history col" ng-if="flags.category=='Emotions' || flags.category == 'Symptoms'">
+                    <img ng-repeat="option in primary_outcome_variable_numbers" ng-click="select_primary_outcome_variable($event, option.value)" ng-src="{{option.img}}"  ng-class="{'active_primary_outcome_variable' : option.value == state.variable_value}">
                 </div>
 
                 <div class="row labeled-control" ng-if="(flags.category != 'Emotions' && flags.category != 'Symptoms')">
@@ -111,12 +113,18 @@
                         <div class="row uptop" style="padding-left:0px;">
                             <div class="col" style="padding-top:5px;">
 
-                                <!-- show most common unit when tracking measurement, keep it editable-->
-                                <input type="text" ng-show="flags.showAddVariable" ng-change="unit_search(state.unit_text)" ng-model="state.unit_text" placeholder="Type to search">
+                                <!-- Default to most common unit when tracking measurement, and always keep it editable-->
+                                <input type="text" ng-change="unit_search(state.unit_text)" ng-model="state.unit_text" placeholder="Search for a unit...">
 
-                                
-                                <!-- show default unit when tracking measurement-->
+                                <!-- Below replaced by above so that we can always change the unit-->
+                                <!-- Default to most common unit when adding new variable, keep it editable-->
+                                <!--
+                                <input type="text" ng-show="flags.showAddVariable" ng-change="unit_search(state.unit_text)" ng-model="state.unit_text" placeholder="Type to search">
+                                -->
+                                <!-- Lock to default unit when tracking measurement for existing variable-->
+                                <!--
                                 <span ng-show="!flags.showAddVariable">{{state.selected_sub}}</span>
+                                -->
                             </div>
                            
                         </div>
@@ -153,16 +161,28 @@
                         </span>
                     </div>
                     <div class="col" style="padding-top: 11px;">
-                        <ionic-timepicker style="width:54%" etime="slots.epochTime" format="slots.format" step="slots.step" callback="timePickerCallback">
-                            <button class="button button-block uptop" style="text-align:left;font-size:14px;border:none;color:black;background-color: white;margin-bottom: 0px;margin-top: 0px;padding-left: 0px;">
-                                {{slots.epochTime | toTime}}
-                            </button>
-                        </ionic-timepicker>
+                        <button class="button button-block uptop"
+                                style="text-align:left;font-size:14px;border:none;color:black;background-color: white;margin-bottom: 0px;margin-top: 0px;padding-left: 0px;"
+                                ng-click="timePicker()">
+                            {{slots.epochTime | fromUnixTimestampToLocalTimeOfDay}}
+                        </button>
+                    </div>
+                </div>
+                <div class="row labeled-control">
+                    <div class="col col-l">
+                        <span>
+                            Note
+                        </span>
+                    </div>
+                    <div class="col" style="padding-top: 11px;">
+                        <div class="col">
+                            <input type="text" ng-model="state.note" id="note" placeholder="Enter Note Here" class="uptop">
+                        </div>
                     </div>
                 </div>
             </div>
         </div>    
-
+ 
         <div class="card" ng-show="flags.showAddMeasurement">
             <button ng-click="cancel()" class="button button-assertive button-block">
                 Cancel

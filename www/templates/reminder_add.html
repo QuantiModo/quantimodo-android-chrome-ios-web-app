@@ -1,0 +1,111 @@
+<ion-view hide-nav-bar="skipMenu" view-title="{{state.title}}">
+    <ion-content scroll="true" overflow-scroll="true">
+		
+		<div class="list card" ng-show="state.showVariableCategory">
+            <!--<div class="item item-divider" style="background-color:#11c1f3; color:white;">Select Variable Category</div>-->
+			<label class="item item-input item-select">
+				<div class="input-label" style="white-space:normal; width: 60%">Select Variable Category</div>
+				<select ng-model="state.selectedVariableCategory" ng-change="onVariableCategoryChange()">
+					<option ng-repeat="variableCategory in variables.variableCategories" value="{{variableCategory.name}}">{{variableCategory.name}}</option>
+				</select>
+			</label>
+		</div>
+
+        <div class="list list-inset" ng-show="state.showSearchBox">
+          <!--<div class="item item-divider" style="background-color:#11c1f3; color:white;">Enter Variable Name</div>-->
+          <label class="item item-input">
+            <i class="icon ion-search placeholder-icon"></i>
+            <input type="text"
+                   placeholder={{state.variablePlaceholderText}}
+                   ng-model="state.searchQuery"
+                   ng-change="onSearch()"
+                   ng-model-options='{ debounce: 500 }'>
+          </label>
+        </div>
+
+
+        <div class="list card" ng-show="state.showResults" >
+            <!--<div class="item item-divider" style="background-color:#11c1f3; color:white;">{{state.resultsHeaderText}}</div>-->
+            <p ng-show="state.searching"></p>
+            <ion-list>
+                <ion-item style="text-align:center;border-bottom: 1px solid rgb(221, 221, 221);" ng-show="state.searching">
+                    <img src="img/loader.gif">
+                </ion-item>
+            </ion-list>
+        	<a class="item" ng-repeat="result in variables.list | unique:'id' " ng-click="onReminderSelect(result)">{{result.name}}</a>
+        </div>
+
+        <div class="list card" ng-show="state.showCustomBox">
+        	<div class="item item-divider" style="background-color:#11c1f3; color:white;">{{state.selectedReminder.variableName}} reminder settings</div>
+        	<div class="row labeled-control">
+        		<div id="rem-set-left" class="col">
+        			<input type="number" style="width:100%;text-align:right;" placeholder={{state.defaultValuePlaceholderText}} ng-model="state.selectedDefaultValue" class="uptop">
+        		</div>
+        		<div id="rem-set-right" class="col col-r">
+        			<span>
+        				{{state.selectedUnit}}
+        			</span>
+        		</div>
+        	</div>
+
+        	<label class="item item-input item-select">
+        		<div class="input-label" style="white-space:normal; width: 60%">
+        			Select Frequency
+        		</div>
+        		<select ng-change="onFrequencyChange()" ng-model="state.selectedFrequency" style="width: 40%">
+                    <optgroup label="Intervals">
+                        <option ng-repeat="frequency in variables.frequencyVariables" ng-if="frequency.group==='intervals'">{{frequency.name}}</option>
+                    </optgroup>
+                    <optgroup label="Frequency">
+                        <option ng-repeat="frequency in variables.frequencyVariables" ng-if="frequency.group==='frequency'">{{frequency.name}}</option>
+                    </optgroup>
+        		</select>
+        	</label>
+            
+            <div class="list card" ng-show="state.selectedFrequency === 'Once a day' || state.selectedFrequency === 'Twice a day' || state.selectedFrequency === 'Three times a day' ">
+                    <label class="item item-input">
+                        <div class="input-label" >
+                            First reminder time
+                        </div>
+                        <button class="button button-block uptop"
+                                style="text-align:right;font-size:14px;border:none;color:black;background-color: white;margin-bottom: 0px;margin-top: 0px;padding-left: 0px;"
+                                ng-click="firstTimePicker()">
+                            {{state.slotsFirst.epochTime | fromUnixTimestampToLocalTimeOfDay}}
+                        </button>
+                    </label>
+
+                    <label class="item item-input" ng-show="state.selectedFrequency === 'Twice a day' || state.selectedFrequency === 'Three times a day' " >
+                        <div class="input-label">
+                            Second reminder time
+                        </div>
+                        <button class="button button-block uptop"
+                                style="text-align:right;font-size:14px;border:none;color:black;background-color: white;margin-bottom: 0px;margin-top: 0px;padding-left: 0px;"
+                                ng-click="secondTimePicker()">
+                            {{state.slotsSecond.epochTime | fromUnixTimestampToLocalTimeOfDay}}
+                        </button>
+
+                    </label>
+
+                    <label class="item item-input" ng-show="state.selectedFrequency === 'Three times a day' ">
+                        <div class="input-label">
+                            Third reminder time
+                        </div>
+                        <button class="button button-block uptop"
+                                style="text-align:right;font-size:14px;border:none;color:black;background-color: white;margin-bottom: 0px;margin-top: 0px;padding-left: 0px;"
+                                ng-click="thirdTimePicker()">
+                            {{state.slotsThird.epochTime | fromUnixTimestampToLocalTimeOfDay}}
+                        </button>
+                    </label>
+            </div>
+
+			<div class="row">
+				<div class="col col-50">
+					<button class="button button-block button-assertive" ng-click="cancel()">Cancel</button>
+				</div>
+				<div class="col col-50">
+					<button class="button button-block button-calm" ng-click="save()">Save</button>
+				</div>
+			</div>
+        </div>
+    </ion-content>
+</ion-view>

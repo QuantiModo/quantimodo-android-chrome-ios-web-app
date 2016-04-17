@@ -1,14 +1,29 @@
-angular.module('starter', ['ionic','oc.lazyLoad','highcharts-ng','ngCordova','ionic-datepicker','ionic-timepicker','ngIOS9UIWebViewPatch'])
+angular.module('starter',
+    [
+        'ionic',
+        'oc.lazyLoad',
+        'highcharts-ng',
+        'ngCordova',
+        'ionic-datepicker',
+        'ionic-timepicker',
+        'ngIOS9UIWebViewPatch'
+    ]
+)
 
 .run(function($ionicPlatform, $ionicHistory, $state) {
 
     var intervalChecker = setInterval(function(){
         if(typeof config !== "undefined"){
             clearInterval(intervalChecker);
-            //Set Bugsnag Release Stage
-            Bugsnag.apiKey = private_keys.bugsnag_key;
-            Bugsnag.releaseStage = config.getEnv();
-            Bugsnag.notifyReleaseStages = config.bugsnag.notifyReleaseStages;
+
+            if(window.private_keys.bugsnag_key) {
+                //Set Bugsnag Release Stage
+                Bugsnag.apiKey = window.private_keys.bugsnag_key;
+                Bugsnag.releaseStage = config.getEnv();
+                Bugsnag.notifyReleaseStages = config.bugsnag.notifyReleaseStages;
+            } else {
+                console.warn('No bugsnag_key found in private config!')
+            }
 
             $ionicPlatform.ready(function() {
                 // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
@@ -41,7 +56,7 @@ angular.module('starter', ['ionic','oc.lazyLoad','highcharts-ng','ngCordova','io
 
 })
 
-.config(function($stateProvider, $urlRouterProvider,$compileProvider) {
+.config(function($stateProvider, $urlRouterProvider, $compileProvider, ionicTimePickerProvider) {
     $compileProvider.imgSrcSanitizationWhitelist(/^\s*(https?|ftp|file|mailto|chrome-extension):/);
     $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|file|ftp|mailto|chrome-extension):/);
 
@@ -76,6 +91,13 @@ angular.module('starter', ['ionic','oc.lazyLoad','highcharts-ng','ngCordova','io
       }]
     };
 
+    var timePickerObj = {
+        format: 12,
+        step: 1
+    };
+
+    ionicTimePickerProvider.configTimePicker(timePickerObj);
+
     $stateProvider
       .state('intro', {
           url: '/',
@@ -100,17 +122,6 @@ angular.module('starter', ['ionic','oc.lazyLoad','highcharts-ng','ngCordova','io
           }
         }
       })
-
-      .state('app.get_started', {
-        url: "/get-started",
-        views: {
-          'menuContent': {
-            templateUrl: "templates/medication_get_started.html",
-            controller: 'MedicationGetStartedCtrl'
-          }
-        }
-      })
-
       .state('app.login', {
         url: "/login",
         views: {
@@ -120,6 +131,15 @@ angular.module('starter', ['ionic','oc.lazyLoad','highcharts-ng','ngCordova','io
           }
         }
       })
+        .state('app.intro', {
+            url: "/intro",
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/intro.html",
+                    controller: 'IntroPageCtrl'
+                }
+            }
+        })
       .state('app.track', {
           url: "/track",
           views: {
@@ -147,6 +167,15 @@ angular.module('starter', ['ionic','oc.lazyLoad','highcharts-ng','ngCordova','io
               }
           }
       })
+        .state('app.variable_settings', {
+            url: "/variable_settings/:variableName",
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/variable_settings.html",
+                    controller: 'VariableSettingsCtrl'
+                }
+            }
+        })
       .state('app.import', {
           url: "/import",
           cache:"false",
@@ -162,7 +191,7 @@ angular.module('starter', ['ionic','oc.lazyLoad','highcharts-ng','ngCordova','io
           cache:false,
           views: {
               'menuContent': {
-                  templateUrl: "templates/search-variables.html",
+                  templateUrl: "templates/iFrame.html",
                   controller: 'IframeScreenCtrl'
               }
           }
@@ -172,7 +201,7 @@ angular.module('starter', ['ionic','oc.lazyLoad','highcharts-ng','ngCordova','io
           cache:false,
           views: {
               'menuContent': {
-                  templateUrl: "templates/search-common-relationships.html",
+                  templateUrl: "templates/iFrame.html",
                   controller: 'IframeScreenCtrl'
               }
           }
@@ -182,7 +211,7 @@ angular.module('starter', ['ionic','oc.lazyLoad','highcharts-ng','ngCordova','io
           cache:false,
           views: {
               'menuContent': {
-                  templateUrl: "templates/search-user-relationships.html",
+                  templateUrl: "templates/iFrame.html",
                   controller: 'IframeScreenCtrl'
               }
           }
@@ -324,7 +353,7 @@ angular.module('starter', ['ionic','oc.lazyLoad','highcharts-ng','ngCordova','io
           views: {
               'menuContent': {
                   templateUrl: "templates/reminders_manage.html",
-                  controller: 'RemindersInboxCtrl'
+                  controller: 'RemindersManageCtrl'
               }
           }
       })
@@ -334,30 +363,30 @@ angular.module('starter', ['ionic','oc.lazyLoad','highcharts-ng','ngCordova','io
           views: {
               'menuContent': {
                   templateUrl: "templates/reminders_manage.html",
-                  controller: 'RemindersInboxCtrl'
+                  controller: 'RemindersManageCtrl'
               }
           }
       })
-      .state('app.reminders_category', {
-          url: "/reminders/:category",
+      .state('app.reminder_add_category', {
+          url: "/reminder_add/:category",
           cache:false,
           views: {
               'menuContent': {
-                  templateUrl: "templates/reminder.html",
-                  controller: 'RemindersCtrl'
+                  templateUrl: "templates/reminder_add.html",
+                  controller: 'RemindersAddCtrl'
               }
           }
       })
-      .state('app.reminders', {
-          url: "/reminders",
+      .state('app.reminder_add', {
+          url: "/reminder_add",
           cache:false,
           params: {
             reminder: null
           },
           views: {
               'menuContent': {
-                  templateUrl: "templates/reminder.html",
-                  controller: 'RemindersCtrl'
+                  templateUrl: "templates/reminder_add.html",
+                  controller: 'RemindersAddCtrl'
               }
           }
       });

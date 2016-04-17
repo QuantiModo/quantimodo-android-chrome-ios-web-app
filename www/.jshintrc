@@ -1,0 +1,30 @@
+{
+  "curly"   : true,
+  "eqeqeq"  : true,
+  "undef"   : true,
+  "jquery"  : true,
+
+  "globals": {
+    "Bugsnag" : false,
+    "setInterval" : false,
+    "clearInterval" : false,
+    "pluralize"   : false,
+    "alert"   : false,
+    "event"   : false,
+    "location"   : false,
+    "ionic"   : false,
+    "window"   : false,
+    "config"   : false,
+    "angular"   : false,
+    "moment"    : false,
+    "screen"    : false,
+    "console"    : false,
+    "chrome"    : false,
+    "localStorage" : false,
+    "jasmine"   : false,
+    "$"         : false,
+    "_"         : false,
+    "module"    : false,
+    "require"   : false
+  }
+}

@@ -28,7 +28,7 @@ angular.module('starter')
 		    	    template: '<p class="item-icon-left">Loading stuff...<ion-spinner icon="lines"/></p>'
 		    	});	 
 		    }
-	    }
+	    };
 
 	    $scope.state = {
 	    	offset : 0,
@@ -39,10 +39,8 @@ angular.module('starter')
 	    };
 
 	    $scope.editMeasurement = function(measurement){
-	    	console.log(measurement);
-
 	    	$state.go('app.edit', {
-	    		unit: $scope.getUnitFromUnitId(measurement.unit).abbreviatedName,
+	    		unit: measurement.unit,
 	    		variableName : measurement.variable,
 	    		dateTime : measurement.startTime,
 	    		value : measurement.value
@@ -81,11 +79,11 @@ angular.module('starter')
     			$scope.state.history = $scope.state.history.concat(history);
     			utils.stopLoading();
 	    	}, function(error){
-	    		console.log('error getting measurements', error)
+	    		console.log('error getting measurements', error);
 	    		utils.stopLoading();
 	    	});
 
-	    }
+	    };
 
 	    $scope.getNext = function(){
 	    	$scope.state.offset += $scope.state.limit;
@@ -118,4 +116,4 @@ angular.module('starter')
     		$scope.init();
     	});
 
-	})
+	});

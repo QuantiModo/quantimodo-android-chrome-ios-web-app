@@ -1,7 +1,8 @@
 angular.module('starter')
 	
 	// controls the Import Data page of the app
-	.controller('ImportCtrl', function($scope, $ionicModal, $timeout, $ionicLoading, authService, $state, $rootScope,utilsService){
+	.controller('ImportCtrl', function($scope, $ionicModal, $timeout, $ionicLoading, authService, $state, $rootScope,
+									   utilsService){
 		
 		$state.go('app');
 		$scope.controller_name = "ImportCtrl";
@@ -25,13 +26,13 @@ angular.module('starter')
 	        // show spinner
 	        $ionicLoading.show({
 	            noBackdrop: true,
-	            template: '<p class="item-icon-left">Loading stuff...<ion-spinner icon="lines"/></p>'
+	            template: '<p class="item-icon-left">One moment please...<ion-spinner icon="lines"/></p>'
 	        });  
 
 	        // get user's access token
-	        authService.getAccessToken().then(function(token){
+	        authService.getAccessTokenFromAnySource().then(function(token){
 	            
-	            console.log("valid Token", token);
+	            console.log("Valid token", token);
 
 	            $ionicLoading.hide();
 
@@ -40,9 +41,9 @@ angular.module('starter')
 					
 					var url = config.getURL("api/v1/connect/mobile", true);
 					url += "access_token=" + token.accessToken;
-					ref = window.open(url,'_blank');
+					var newTab = window.open(url,'_blank');
 
-					if(!ref){
+					if(!newTab){
 						alert("Please unblock popups and refresh to access the Import Data page.");
 					}
 					
@@ -71,4 +72,4 @@ angular.module('starter')
 	    $scope.$on('$ionicView.enter', function(e) {
 			$scope.init();
 	    });
-	})
+	});

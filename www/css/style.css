@@ -340,7 +340,7 @@ p.intro_header {
   line-height:initial
 }
 
-img.intro_mood {
+img.intro_primary_outcome_variable {
   margin-left: 3px;
   margin-right: 3px;
 }
@@ -381,6 +381,46 @@ img.intro_mood {
 
 .card_disabled input, .card_disabled button {
   background-color: lightgray !important;
+}
+
+@media (max-width: 400px) {
+    #rem-set-left {
+        width: 80%;
+        flex:none;
+    }
+    #rem-set-right {
+        width: 20%;
+        flex:none;
+    }
+}
+
+/* Time picker */
+.ionic_timepicker_popup .heading {
+    background-color: #11c1f3 !important;
+}
+
+.ionic_timepicker_popup .button_set {
+    border-color: #0a9ec7 !important;
+    background-color: #11c1f3 !important;
+    color: #fff !important;
+}
+
+.ionic_timepicker_popup .button_close {
+    border-color: #b2b2b2 !important;
+    background-color: #f8f8f8 !important;
+    color: #444 !important;
+}
+
+.ionic_timepicker_popup .button_set.active, .ionic_timepicker_popup .button_set.activated {
+    border-color: #0a9ec7 !important;
+    background-color: #0a9ec7 !important;
+    box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.1) !important;
+}
+
+.ionic_timepicker_popup .button_close.active, .ionic_timepicker_popup .button_close.activated {
+    border-color: #a2a2a2 !important;
+    background-color: #e5e5e5 !important;
+    box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.1) !important;
 }
 
 /*

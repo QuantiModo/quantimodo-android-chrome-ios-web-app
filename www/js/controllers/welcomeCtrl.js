@@ -13,6 +13,7 @@ angular.module('starter')
         $scope.headline = config.appSettings.headline;
         $scope.features = config.appSettings.features;
         $scope.appName = config.appSettings.app_name;
+        $scope.allowOffline = config.getAllowOffline();
         console.log('hide menu');
 
 

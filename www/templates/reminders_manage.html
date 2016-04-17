@@ -3,16 +3,16 @@
 		
 		<div class="list card">
 			<!--<div class="item item-divider" style="background-color:#11c1f3; color:white;">Actions</div>-->
-			<a href="#/app/reminders" class="item item-icon-left">
+			<a href="#/app/reminder_add/{{state.variableCategory}}" class="item item-icon-left">
 				<i class="icon ion-plus calm"></i>
-				Add a new Reminder
+				{{state.addButtonText}}
 			</a>
 		</div>
 
 		<div class="list card">
-			<div class="item item-divider" style="background-color:#11c1f3; color:white;">
+<!--			<div class="item item-divider" style="background-color:#11c1f3; color:white;">
 				All Reminders
-			</div>
+			</div>-->
 
 			<div class="list card" ng-repeat="reminder in state.allReminders" >
 				<div class="item" style="padding-bottom:0px;">
@@ -22,7 +22,7 @@
 						</div>
 						<div class="col col-75">
 							<h2 style="white-space: normal;">{{reminder.variableName}}</h2>
-							<p style="white-space: normal;">{{reminder.defaultValue}}&nbsp;{{reminder.abbreviatedUnitName}} {{reminder.reminderFrequency | frequency}} {{reminder | reminderTimes}}</p>
+							<p style="white-space: normal;">{{reminder.defaultValue}}&nbsp;{{reminder.abbreviatedUnitName}} {{reminder | reminderTimes}}</p>
 						</div>							
 					</div>
 					<div class="row">
