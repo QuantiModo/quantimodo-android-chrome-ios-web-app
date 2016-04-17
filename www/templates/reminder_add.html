@@ -36,7 +36,7 @@
         </div>
 
         <div class="list card" ng-show="state.showCustomBox">
-        	<div class="item item-divider" style="background-color:#11c1f3; color:white;">{{state.selectedReminder.variableName}} reminder settings</div>
+        	<div class="item item-divider" style="background-color:#11c1f3; color:white;">{{state.selectedReminder.name}} reminder settings</div>
         	<div class="row labeled-control">
         		<div id="rem-set-left" class="col">
         			<input type="number" style="width:100%;text-align:right;" placeholder={{state.defaultValuePlaceholderText}} ng-model="state.selectedDefaultValue" class="uptop">
@@ -68,7 +68,7 @@
                             First reminder time
                         </div>
                         <button class="button button-block uptop"
-                                style="text-align:right;font-size:14px;border:none;color:black;background-color: white;margin-bottom: 0px;margin-top: 0px;padding-left: 0px;"
+                                style="text-align:left;font-size:14px;border:none;color:black;background-color: white;margin-bottom: 0px;margin-top: 0px;padding-left: 0px;"
                                 ng-click="firstTimePicker()">
                             {{state.slotsFirst.epochTime | fromUnixTimestampToLocalTimeOfDay}}
                         </button>
@@ -79,7 +79,7 @@
                             Second reminder time
                         </div>
                         <button class="button button-block uptop"
-                                style="text-align:right;font-size:14px;border:none;color:black;background-color: white;margin-bottom: 0px;margin-top: 0px;padding-left: 0px;"
+                                style="text-align:left;font-size:14px;border:none;color:black;background-color: white;margin-bottom: 0px;margin-top: 0px;padding-left: 0px;"
                                 ng-click="secondTimePicker()">
                             {{state.slotsSecond.epochTime | fromUnixTimestampToLocalTimeOfDay}}
                         </button>
@@ -91,7 +91,7 @@
                             Third reminder time
                         </div>
                         <button class="button button-block uptop"
-                                style="text-align:right;font-size:14px;border:none;color:black;background-color: white;margin-bottom: 0px;margin-top: 0px;padding-left: 0px;"
+                                style="text-align:left;font-size:14px;border:none;color:black;background-color: white;margin-bottom: 0px;margin-top: 0px;padding-left: 0px;"
                                 ng-click="thirdTimePicker()">
                             {{state.slotsThird.epochTime | fromUnixTimestampToLocalTimeOfDay}}
                         </button>
