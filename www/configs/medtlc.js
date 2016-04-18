@@ -279,54 +279,6 @@ config.appSettings  = {
             icon : 'ion-information-circled'
         },
         {
-            title : 'Add Measurement',
-            click : 'toggleTrackingSubMenu',
-            icon : 'showTrackingSubMenu',
-            subMenuPanel : true
-        },
-        {
-            title : 'Record anything',
-            isSubMenu : true,
-            subMenuVariable : 'showTrackingSubMenu',
-            href : '#/app/track_factors',
-            icon : 'ion-ios-world'
-        },
-        {
-            title : 'Record foods',
-            isSubMenu : true,
-            subMenuVariable : 'showTrackingSubMenu',
-            href : '#/app/track_factors_category/Foods',
-            icon : 'ion-ios-nutrition'
-        },
-        {
-            title : 'Record emotions',
-            isSubMenu : true,
-            subMenuVariable : 'showTrackingSubMenu',
-            href : '#/app/track_factors_category/Emotions',
-            icon : 'ion-happy-outline'
-        },
-        {
-            title : 'Record symptoms',
-            isSubMenu : true,
-            subMenuVariable : 'showTrackingSubMenu',
-            href : '#/app/track_factors_category/Symptoms',
-            icon : 'ion-ios-pulse'
-        },
-        {
-            title : 'Record treatments',
-            isSubMenu : true,
-            subMenuVariable : 'showTrackingSubMenu',
-            href : '#/app/track_factors_category/Treatments',
-            icon : 'ion-ios-medkit-outline'
-        },
-        {
-            title : 'Record physical activity',
-            isSubMenu : true,
-            subMenuVariable : 'showTrackingSubMenu',
-            href : '#/app/track_factors_category/Physical Activity',
-            icon : 'ion-ios-body'
-        },
-        {
             title : 'Reminders',
             click : 'toggleReminderSubMenu',
             icon : 'showReminderSubMenu',
@@ -375,44 +327,9 @@ config.appSettings  = {
             icon : 'ion-ios-nutrition-outline'
         },
         {
-            title : 'Import Data',
-            href : '#/app/import',
-            icon : 'ion-ios-cloud-download-outline'
-        },
-        {
-            title : 'Variables',
-            href : '#app/search-variables',
-            icon : 'ion-social-vimeo'
-        },
-        {
-            title : 'Predictor Search',
-            click : 'togglePredictorSearchSubMenu',
-            icon : 'showPredictorSearchSubMenu',
-            subMenuPanel : true
-        },
-        {
-            title : 'Common',
-            isSubMenu : true,
-            subMenuVariable : 'showPredictorSearchSubMenu',
-            href : '#/app/search-common-relationships',
-            icon : 'ion-ios-people'
-        },
-        {
-            title : 'Yours',
-            isSubMenu : true,
-            subMenuVariable : 'showPredictorSearchSubMenu',
-            href : '#/app/search-user-relationships',
-            icon : 'ion-person'
-        },
-        {
             title : 'Settings',
             href : '#/app/settings',
             icon : 'ion-ios-gear-outline'
-        },
-        {
-            title : 'Help & Feedback',
-            href : window.chrome ? "mailto:help@quantimo.do" : "#app/feedback",
-            icon : 'ion-ios-help-outline'
         }
     ]
 
