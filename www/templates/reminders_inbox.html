@@ -2,7 +2,7 @@
 
 	<ion-content scroll="true" overflow-scroll="true"> 
 		
-		<div ng-hide="state.showMeasurementBox">
+		<div ng-show="state.showButtons">
 			<div ng-hide="state.hideAddNewReminderButton" class="list card">
 				<!--<div class="item item-divider" style="background-color:#11c1f3; color:white;">Actions</div>-->
 				<a href="#/app/reminder_add" class="item item-icon-left">
@@ -104,9 +104,9 @@
 
 		<div class="list card" ng-show="!state.showMeasurementBox">
 	
-			<div class="item item-divider" style="background-color:#11c1f3; color:white;">
+<!--			<div class="item item-divider" style="background-color:#11c1f3; color:white;">
 				Reminders
-			</div>
+			</div>-->
 			<div ng-repeat="divider in state.filteredReminders">
 
 				<div class="item item-divider" style="">
@@ -121,7 +121,7 @@
 								<i style="font-size: 60px;" class="icon calm ion-ios-alarm-outline"></i>
 							</div>
 							<div class="col col-75">
-								<h2 style="white-space: normal;">{{reminder.variableName}}</h2>
+								<h2 style="white-space: normal;">{{reminder.defaultValue}}&nbsp;{{reminder.abbreviatedUnitName}} {{reminder.variableName}}</h2>
 								<p style="white-space: normal;">{{ reminder.trackingReminderNotificationTime | fromUtcToLocalDateAndTime}} </p>
 							</div>
 						</div>
@@ -132,8 +132,12 @@
 						</div>
 						<div class="row" ng-if="reminder.abbreviatedUnitName != '/5' " >
 							<div class="button-bar">
-								<a class="button button-clear button-calm" style="text-overflow: clip; font-size: 12px;" ng-click="editMeasurement(reminder)"><i class="ion-edit"> &nbsp; Change Value</i></a>
-								<a class="button button-clear button-balanced" style="text-overflow: clip; font-size: 12px;" ng-click="track(reminder)"><i class="ion-android-done"> &nbsp; Track {{reminder.defaultValue}}&nbsp;{{reminder.abbreviatedUnitName}}</i></a>
+								<a class="button button-clear button-balanced" style="text-overflow: clip; font-size: 12px;" ng-click="track(reminder)"><i class="ion-android-done"> &nbsp; Record {{reminder.defaultValue}}&nbsp;{{reminder.abbreviatedUnitName}}</i></a>
+							</div>
+						</div>
+						<div class="row" ng-if="reminder.abbreviatedUnitName != '/5' " >
+							<div class="button-bar">
+								<a class="button button-clear button-calm" style="text-overflow: clip; font-size: 12px;" ng-click="editMeasurement(reminder)"><i class="ion-edit"> &nbsp; Record Different Value/Time</i></a>
 							</div>
 						</div>
 						<div class="row" ng-if="reminder.abbreviatedUnitName == '/5' " >
