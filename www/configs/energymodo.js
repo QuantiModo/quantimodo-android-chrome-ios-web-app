@@ -192,7 +192,7 @@ config.appSettings  = {
             img : {
                 width : '220',
                 height : '200',
-                url : 'img/mood_note.png'
+                url : 'img/rating_note.png'
             },
             content : {
                 firstP : {
@@ -206,7 +206,7 @@ config.appSettings  = {
                 },
                 finalP: {
                     visible : true,
-                    content : 'Add a note by tapping on a Mood rating in the <span class="calm">History</span> page. You can also <span class="calm">Edit</span> your Energy there too.',
+                    content : 'Add a note by tapping on a Energy rating in the <span class="calm">History</span> page. You can also <span class="calm">Edit</span> your Energy there too.',
                     classes : 'intro_para',
                     buttonBarVisible : true
                 }
@@ -351,7 +351,7 @@ config.appSettings  = {
             img : {
                 width : '180',
                 height : '180',
-                url : 'img/ic_mood_ecstatic.png'
+                url : 'img/ic_face_ecstatic.png'
             },
             content : {
 
@@ -547,20 +547,20 @@ config.appSettings  = {
             icon : 'ion-person'
         },
         {
-            title : 'Predictors of Mood',
+            title : 'Predictors of Energy',
             click : 'toggleOutcomePredictorSubMenu',
             icon : 'showOutcomePredictorSubMenu',
             subMenuPanel : true
         },
         {
-            title : 'Positive Mood',
+            title : 'Positive Energy',
             isSubMenu : true,
             subMenuVariable : 'showOutcomePredictorSubMenu',
             href : '#/app/positive',
             icon : 'ion-happy-outline'
         },
         {
-            title : 'Negative Mood',
+            title : 'Negative Energy',
             isSubMenu : true,
             subMenuVariable : 'showOutcomePredictorSubMenu',
             href : '#/app/negative',
@@ -741,7 +741,7 @@ window.notification_callback = function(reported_variable, reporting_time){
     var val = false;
 
     // convert values
-    if(reported_variable === "repeat_mood"){
+    if(reported_variable === "repeat_rating"){
         val = localStorage[key_identifier+'lastReportedPrimaryOutcomeVariableValue']?
         JSON.parse(localStorage[key_identifier+'lastReportedPrimaryOutcomeVariableValue']) : false;
     } else {

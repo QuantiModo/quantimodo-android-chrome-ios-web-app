@@ -59,29 +59,29 @@ config.appSettings  = {
     primary_outcome_variable_options : [
         {
             value: 'depressed',
-            img: 'img/ic_mood_depressed.png'
+            img: 'img/ic_face_depressed.png'
         },
         {
             value: 'sad',
-            img: 'img/ic_mood_sad.png'
+            img: 'img/ic_face_sad.png'
         },
         {
             value: 'ok',
-            img: 'img/ic_mood_ok.png'
+            img: 'img/ic_face_ok.png'
         },
         {
             value: 'happy',
-            img: 'img/ic_mood_happy.png'
+            img: 'img/ic_face_happy.png'
         },
         {
             value: 'ecstatic',
-            img: 'img/ic_mood_ecstatic.png'
+            img: 'img/ic_face_ecstatic.png'
         }
     ],
 
-    welcome_text:"Let's start off by reporting your first mood on the card below",
-    tracking_question:"How are you feeling right now?",
-    factor_average_text:"Your average mood is ",
+    welcome_text : "Let's start off by reporting your first mood on the card below",
+    tracking_question : "How are you feeling right now?",
+    factor_average_text : "Your average mood is ",
     notification_image : "file://img/icon_128.png",
     notification_text : "Time to Track",
     conversion_dataset: {
@@ -203,7 +203,7 @@ config.appSettings  = {
             img : {
                 width : '220',
                 height : '200',
-                url : 'img/mood_note.png'
+                url : 'img/rating_note.png'
             },
             content : {
                 firstP : {
@@ -362,7 +362,7 @@ config.appSettings  = {
             img : {
                 width : '180',
                 height : '180',
-                url : 'img/ic_mood_ecstatic.png'
+                url : 'img/ic_face_ecstatic.png'
             },
             content : {
 
@@ -757,7 +757,7 @@ window.notification_callback = function(reported_variable, reporting_time){
     var val = false;
 
     // convert values
-    if(reported_variable === "repeat_mood"){
+    if(reported_variable === "repeat_rating"){
         val = localStorage[key_identifier+'lastReportedPrimaryOutcomeVariableValue']?
         JSON.parse(localStorage[key_identifier+'lastReportedPrimaryOutcomeVariableValue']) : false;
     } else {

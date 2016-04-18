@@ -9,6 +9,7 @@ angular.module('starter')
 		console.log('Loading ' + $scope.controller_name);
 		
 	    $scope.state = {
+			showButtons : true,
 	    	showMeasurementBox : false,
 	    	selectedReminder : false,
 	    	reminderDefaultValue : "",
@@ -173,6 +174,9 @@ angular.module('starter')
 
 	    	reminderService.getTrackingReminderNotifications($stateParams.category)
 	    	.then(function(reminders){
+				if(reminders.length > 1){
+					$scope.state.showButtons = false;
+				}
 	    		$scope.state.trackingRemindersNotifications = reminders;
 	    		$scope.state.filteredReminders = filterViaDates(reminders);
 	    		utils.stopLoading();

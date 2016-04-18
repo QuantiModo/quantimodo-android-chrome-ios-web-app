@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
 <head>
-    <title>MoodiModo - Rate your mood!</title>
+    <title>Rate your mood!</title>
     <style>
         body{
             width: 376px;
@@ -9,7 +9,7 @@
             margin: 0px;
         }
 
-        #sectionRateMood{
+        #sectionRate{
             opacity: 1;
             height: 52px;
             padding-top: 4px;
@@ -17,7 +17,7 @@
             overflow: hidden;
         }
 
-        #sectionRateMood img
+        #sectionRate img
         {
             height: 100%;
             display: inline-block;
@@ -26,11 +26,11 @@
             background-color: #FFFFFF;
             transition: all 200ms linear;
         }
-        #sectionRateMood img:hover
+        #sectionRate img:hover
         {
             -webkit-filter: blur(1px) brightness(110%) saturate(150%);
         }
-        #sectionRateMood div
+        #sectionRate div
         {
             width: 1px;
             position: relative;
@@ -93,27 +93,27 @@
         }
     </style>
 
-    <section id="sectionRateMood">
-        <img src="../img/ic_mood_depressed.png" id="mood_depressed">
+    <section id="sectionRate">
+        <img src="../img/ic_face_depressed.png" id="face_depressed">
         </img>
         <div>&nbsp;</div>
-        <img src="../img/ic_mood_sad.png" id="mood_sad">
+        <img src="../img/ic_face_sad.png" id="face_sad">
         </img>
         <div>&nbsp;</div>
-        <img src="../img/ic_mood_ok.png" id="mood_ok">
+        <img src="../img/ic_face_ok.png" id="face_ok">
         </img>
         <div>&nbsp;</div>
-        <img src="../img/ic_mood_happy.png" id="mood_happy">
+        <img src="../img/ic_face_happy.png" id="face_happy">
         </img>
         <div>&nbsp;</div>
-        <img src="../img/ic_mood_ecstatic.png" id="mood_ecstatic">
+        <img src="../img/ic_face_ecstatic.png" id="face_ecstatic">
         </img>
     </section>
     <section id="sectionSendingMood">
 
     </section>
     <script src="../js/config.js"></script>
-    <script src="../js/chromeApp/popup.js"></script>
+    <script src="../js/chrome/popup.js"></script>
 </head>
 <body>
 </body>

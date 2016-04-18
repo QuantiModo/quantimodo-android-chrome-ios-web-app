@@ -59,7 +59,7 @@ gulp.task('install', ['git-check'], function() {
 		});
 });
 
-gulp.task('make', ['getAppName'], function(){
+gulp.task('generateXmlConfig', ['getAppName'], function(){
 	
 	var deferred = q.defer();
 
@@ -72,7 +72,7 @@ gulp.task('make', ['getAppName'], function(){
 		deferred.resolve();
 		return content.replace(/defaultApp\s?:\s?("|')\w+("|'),/g, 'defaultApp : "'+APP_NAME+'",');
 	}))
-	.pipe(gulp.dest('./www/js/'))
+	.pipe(gulp.dest('./www/js/'));
 	
 	return deferred.promise;
 });
@@ -118,10 +118,10 @@ gulp.task('private', function(){
 	}
 
 	if(typeof env_keys['APPS'] === "undefined" || env_keys['APPS'].trim() === ''){
-		console.error('No Apps Found')
+		console.error('No Apps Found');
 		deferred.reject();
 	} else {
-		var apps = env_keys['APPS'].split(',')
+		var apps = env_keys['APPS'].split(',');
 
 		apps.forEach(function(appName){
 			appName = appName.trim();
@@ -434,8 +434,7 @@ function execute(command, callback){
 
     my_child_process.stdout.pipe(process.stdout);
     my_child_process.stderr.pipe(process.stderr);
-};
- 
+}
 gulp.task('deleteIOSApp', function () {
 	var deferred = q.defer();
   
@@ -444,7 +443,7 @@ gulp.task('deleteIOSApp', function () {
 			console.log("ERROR REMOVING IOS APP: " + error);
 			deferred.reject();
 		} else {
-			console.log("\n***PLATFORM REMOVED****")
+			console.log("\n***PLATFORM REMOVED****");
 			deferred.resolve();
 		}
 	});
@@ -492,7 +491,7 @@ gulp.task('addIOSApp', function(){
 			console.log("ERROR ADDING IOS: " + error);
 			deferred.reject();
 		} else {
-			console.log("\n***PLATFORM ADDED****")
+			console.log("\n***PLATFORM ADDED****");
 			deferred.resolve();
 		}
 	});
@@ -610,7 +609,7 @@ gulp.task('addFacebookPlugin', ['readKeysForCurrentApp'] , function(){
 				console.log("***THERE WAS AN ERROR ADDING THE FACEBOOK PLUGIN***");
 				deferred.reject();
 			} else {
-				console.log("\n***FACEBOOK PLUGIN SUCCESSFULLY ADDED***")
+				console.log("\n***FACEBOOK PLUGIN SUCCESSFULLY ADDED***");
 				deferred.resolve();
 			}
 		});
@@ -634,7 +633,7 @@ gulp.task('addFacebookPlugin', ['readKeysForCurrentApp'] , function(){
 	    			console.log("***THERE WAS AN ERROR DOWNLOADING THE FACEBOOK PLUGIN***");
 	    			deferred.reject();
 	    		} else {
-	    			console.log("\n***FACEBOOK PLUGIN DOWNLOADED, NOW ADDING IT TO IONIC PROJECT***")
+	    			console.log("\n***FACEBOOK PLUGIN DOWNLOADED, NOW ADDING IT TO IONIC PROJECT***");
 	    			addFacebookPlugin();
 	    		}
 	    	});
@@ -657,7 +656,7 @@ gulp.task('addGooglePlusPlugin', ['readKeysForCurrentApp'] , function(){
 			console.log("***ERROR ADDING THE GOOGLE PLUS PLUGIN***");
 			deferred.reject();
 		} else {
-			console.log("\n***GOOGLE PLUS PLUGIN ADDED****")
+			console.log("\n***GOOGLE PLUS PLUGIN ADDED****");
 			deferred.resolve();
 		}
 	});
@@ -732,7 +731,7 @@ gulp.task('fixResourcesPlist', ['getIOSAppFolderName'] , function(){
 
 		myPlist.NSAppTransportSecurity.NSExceptionDomains["facebook.com"] = facebookDotCom;
 
-		console.log("Updated facebook.com")
+		console.log("Updated facebook.com");
 
 		// fbcdn.net
 		var fbcdnDotNet = {};
@@ -751,7 +750,7 @@ gulp.task('fixResourcesPlist', ['getIOSAppFolderName'] , function(){
 
 		myPlist.NSAppTransportSecurity.NSExceptionDomains["fbcdn.net"] = fbcdnDotNet;
 
-		console.log("Updated fbcdn.net")
+		console.log("Updated fbcdn.net");
 
 		// akamaihd.net
 		var akamaihdDotNet = {};
@@ -831,7 +830,7 @@ gulp.task('addPodfile', [ 'getIOSAppFolderName' ], function(){
 	    			console.log("There was an error detected");
 	    			deferred.reject();
 	    		} else {
-	    			console.log("\n***Podfile Added****")
+	    			console.log("\n***Podfile Added****");
 	    			addBugsnagToPodfile();
 	    		}
 	    	});
@@ -875,7 +874,7 @@ gulp.task('installPods', [ 'addPodfile' ] , function(){
 			console.log("There was an error detected");
 			deferred.reject();
 		} else {
-			console.log("\n***Pods Installed****")
+			console.log("\n***Pods Installed****");
 			deferred.resolve();
 		}
 	});
@@ -909,7 +908,7 @@ gulp.task('enableBitCode', [ 'getIOSAppFolderName' ] ,function(){
 	.pipe(gulp.dest('./platforms/ios/'+IOS_FOLDER_NAME+'.xcodeproj/'));
 });
 
-gulp.task('makeApp', function(callback){
+gulp.task('makeIosApp', function(callback){
 	runSequence('deleteIOSApp',
 	'deleteFacebookPlugin',
 	'deleteGooglePlusPlugin',

@@ -12,8 +12,8 @@ A generic app that can be easily configured to help the user track and optimize 
 1. Run `sudo npm i -g gulp grunt-cli bower yo generator-ionic-gulp` in the root of this repository
 1. Run `ionic state reset` in the root of this repository
 1. Add certs to XCode [like so](https://livecode.com/how-to-create-a-free-ios-development-provisioning-profile/)
-1. Run `gulp make`
-1. Run `gulp makeApp`
+1. Run `gulp generateXmlConfig`
+1. Run `gulp generateXmlConfigIosApp`
 1. Open MoodiModo.xcworkspace in XCode
 2. Select MoodiModo 2 and target device
 3. Press Play button
@@ -140,13 +140,13 @@ This will be the name for your App, and will be the name of the .xcodeproj file,
 4. Notification Plugin
   ```
   <notificationplugin interactive=“true”>
-      <button id=“repeat_mood” display=“Report Last Mood” mode=“background”></button>
+      <button id=“repeat_rating” display=“Same As Last Time” mode=“background”></button>
       <button id=“other” display=“Other” mode=“foreground”></button>
       <button id=“sad”  display=“Sad” mode=“background”></button>
       <button id=“happy”  display=“Happy” mode=“background”></button>
       <button id=“depressed” display=“Depressed” mode=“background”></button>
       <button id=“ok” display=“OK” mode=“background”></button>
-      <TwoButtonLayout first=“repeat_mood” second=“other”></TwoButtonLayout>
+      <TwoButtonLayout first=“repeat_rating” second=“other”></TwoButtonLayout>
       <FourButtonLayout first=“sad” second=“happy” third=“ok” fourth=“depressed”>
       </FourButtonLayout>
 </notificationplugin>
@@ -379,7 +379,7 @@ intro : {
      img : {
          width : '220',
          height : '200',
-         url : 'img/mood_note.png'
+         url : 'img/rating_note.png'
      }
  },
  "screen6" : {
@@ -421,7 +421,7 @@ intro : {
       img : {
           width : '180',
           height : '180',
-          url : 'img/ic_mood_ecstatic.png'
+          url : 'img/ic_face_ecstatic.png'
       }
   }
 }
@@ -445,7 +445,7 @@ After you have generated your app, you can run the project through `node app.js`
 #### Generate iOS App
 You should run the following Cordova commands to setup your iOS project.
 
-1. `gulp make`. This will copy your generated xml config file (xmlconfigs/[your_app_code_name_here].xml) into the main config.xml so that the iOS app is generated with your new app as default.
+1. `gulp generateXmlConfig`. This will copy your generated xml config file (xmlconfigs/[your_app_code_name_here].xml) into the main config.xml so that the iOS app is generated with your new app as default.
 2. `cordova platforms add iOS`. This would create the iOS app in `platforms/ios` folder
 
 This should generate the app and you should be good to go!
@@ -502,7 +502,7 @@ After you have generated your app, you can run the project through `node app.js`
 #### Generate iOS App
 You should run the following cordova commands to setup your iOS project.
 
-1. `gulp make`. This will copy your generated xml config file (xmlconfigs/[your_app_code_name_here].xml) into the main config.xml so that the iOS app is generated with your new app as default.
+1. `gulp generateXmlConfig`. This will copy your generated xml config file (xmlconfigs/[your_app_code_name_here].xml) into the main config.xml so that the iOS app is generated with your new app as default.
 2. `cordova platforms add iOS`. This would create the iOS app in `platforms/ios` folder
 
 This should generate the app and you should be good to go!

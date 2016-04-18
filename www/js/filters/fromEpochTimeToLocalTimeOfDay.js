@@ -3,7 +3,9 @@ angular.module('starter')
 	.filter('fromUnixTimestampToLocalTimeOfDay', function(){
 	    return function(value){
 	    	if (value){
-	    		return moment(value*1000).format('hh:mm A')
-	    	} else return "";
-        }
+	    		return moment(value*1000).format('h:mm A');
+	    	} else {
+				return "";
+            }
+        };
 	});

@@ -1,6 +1,8 @@
 angular.module('starter')
 
-	.controller('RemindersManageCtrl', function($scope, authService, $ionicPopup, localStorageService, $state, reminderService, $ionicLoading, measurementService, utilsService, $stateParams, $location){
+	.controller('RemindersManageCtrl', function($scope, authService, $ionicPopup, localStorageService, $state,
+												reminderService, $ionicLoading, measurementService, utilsService,
+												$stateParams, $filter){
 
 	    $scope.controller_name = "RemindersManageCtrl";
 
@@ -29,8 +31,8 @@ angular.module('starter')
 	    };
 
 		if($stateParams.category){
-			$scope.state.title = "Manage " + $stateParams.category;
-			$scope.state.addButtonText = "Add New " + pluralize($stateParams.category, 1);
+			$scope.state.title = "Manage " + $filter('wordAliases')($stateParams.category);
+			$scope.state.addButtonText = "Add New " + pluralize($filter('wordAliases')($stateParams.category), 1);
 		} else {
 			$scope.state.title = "Manage Reminders";
 			$scope.state.addButtonText = "Add new reminder";

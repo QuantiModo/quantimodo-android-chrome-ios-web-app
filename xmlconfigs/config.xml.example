@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<widget id="com.quantimodo.moodimodoapp" version="1.0.20" ios-CFBundleVersion="1.0.20.9" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
-  <name>MoodiModo</name>
+<widget id="com.quantimodo.QUANTIMODO_TEMPLATE_APP_PACKAGE_NAME" version="QUANTIMODO_TEMPLATE_APP_VERSION" ios-CFBundleVersion="QUANTIMODO_TEMPLATE_APP_IOS_VERSION" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+  <name>QUANTIMODO_TEMPLATE_APP_NAME</name>
   <description>
-        The mood-tracking app from QuantiModo
+        QUANTIMODO_TEMPLATE_APP_DESCRIPTION
     </description>
-  <author email="help@quantimo.do" href="http://help.quantimo.do/">
-      Team QuantiModo
+  <author email="info@quantimo.do" href="http://help.quantimo.do/">
+      QuantiModo
     </author>
   <content src="index.html"/>
   <access origin="*"/>

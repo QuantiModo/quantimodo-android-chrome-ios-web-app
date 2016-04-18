@@ -191,7 +191,7 @@ angular.module('starter',
           cache:false,
           views: {
               'menuContent': {
-                  templateUrl: "templates/search-variables.html",
+                  templateUrl: "templates/iFrame.html",
                   controller: 'IframeScreenCtrl'
               }
           }
@@ -201,7 +201,7 @@ angular.module('starter',
           cache:false,
           views: {
               'menuContent': {
-                  templateUrl: "templates/search-common-relationships.html",
+                  templateUrl: "templates/iFrame.html",
                   controller: 'IframeScreenCtrl'
               }
           }
@@ -211,7 +211,7 @@ angular.module('starter',
           cache:false,
           views: {
               'menuContent': {
-                  templateUrl: "templates/search-user-relationships.html",
+                  templateUrl: "templates/iFrame.html",
                   controller: 'IframeScreenCtrl'
               }
           }

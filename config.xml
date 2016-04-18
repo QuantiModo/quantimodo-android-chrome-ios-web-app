@@ -4,8 +4,8 @@
   <description>
         The mood-tracking app from QuantiModo
     </description>
-  <author email="help@quantimo.do" href="http://help.quantimo.do/">
-      Team QuantiModo
+  <author email="info@quantimo.do" href="http://help.quantimo.do/">
+     QuantiModo
     </author>
   <content src="index.html"/>
   <access origin="*"/>
@@ -20,13 +20,13 @@
   <allow-navigation href="https://app.quantimo.do/*" />
   
   <notificationplugin interactive="true">
-      <button id="repeat_mood" display="Report Last Mood" mode="background"></button>
+      <button id="repeat_rating" display="Same As Last Time" mode="background"></button>
       <button id="other" display="Other" mode="foreground"></button>
       <button id="sad"  display="Sad" mode="background"></button>
       <button id="happy"  display="Happy" mode="background"></button>
       <button id="depressed" display="Depressed" mode="background"></button>
       <button id="ok" display="OK" mode="background"></button>
-      <TwoButtonLayout first="repeat_mood" second="other"></TwoButtonLayout>
+      <TwoButtonLayout first="repeat_rating" second="other"></TwoButtonLayout>
       <FourButtonLayout first="sad" second="happy" third="ok" fourth="depressed" ></FourButtonLayout>
   </notificationplugin>
   
