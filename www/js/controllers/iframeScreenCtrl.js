@@ -34,6 +34,7 @@ angular.module('starter')
             $scope.iframeUrl = $sce.trustAsResourceUrl(
                 config.getApiUrl() + '/embeddable/?plugin=' + embedPlugin + urlParameters + '&access_token=' + token.accessToken
             );
+            $ionicLoading.hide();
         }, function(){
             console.log("No access token. Need to log in.");
             utilsService.showLoginRequiredAlert($scope.login);

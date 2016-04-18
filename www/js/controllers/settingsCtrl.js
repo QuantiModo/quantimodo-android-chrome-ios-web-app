@@ -1,7 +1,9 @@
 angular.module('starter')
 	
 	// Controls the settings page
-	.controller('SettingsCtrl', function($scope,localStorageService, $ionicModal, $timeout, utilsService, authService, measurementService, chartService, $ionicPopover, $cordovaFile, $cordovaFileOpener2, $ionicPopup, $state,notificationService) {
+	.controller('SettingsCtrl', function($scope,localStorageService, $ionicModal, $timeout, utilsService, authService,
+										 measurementService, chartService, $ionicPopover, $cordovaFile,
+										 $cordovaFileOpener2, $ionicPopup, $state,notificationService, QuantiModo) {
 		$scope.controller_name = "SettingsCtrl";
 		
 		// populate ratings interval
@@ -151,6 +153,54 @@ angular.module('starter')
 				template: template
 	        });
 	    };
+
+		// When Export is tapped
+		$scope.exportCsv = function(){
+
+			QuantiModo.postMeasurementsCsvExport(function(response){
+				if(response.success) {
+					alert("Your measurements will be emailed to you.");
+				} else {
+					alert("Could not export measurements.");
+					console.log("error", response);
+				}
+			}, function(response){
+				alert("Could not export measurements.");
+				console.log("error", response);
+			});
+		};
+
+		// When Export is tapped
+		$scope.exportPdf = function(){
+
+			QuantiModo.postMeasurementsPdfExport(function(response){
+				if(response.success) {
+					alert("Your measurements will be emailed to you.");
+				} else {
+					alert("Could not export measurements.");
+					console.log("error", response);
+				}
+			}, function(response){
+				alert("Could not export measurements.");
+				console.log("error", response);
+			});
+		};
+
+		// When Export is tapped
+		$scope.exportXls = function(){
+
+			QuantiModo.postMeasurementsXlsExport(function(response){
+				if(response.success) {
+					alert("Your measurements will be emailed to you.");
+				} else {
+					alert("Could not export measurements.");
+					console.log("error", response);
+				}
+			}, function(response){
+				alert("Could not export measurements.");
+				console.log("error", response);
+			});
+		};
 
 	    // When Export is tapped
 	    $scope.export = function(){

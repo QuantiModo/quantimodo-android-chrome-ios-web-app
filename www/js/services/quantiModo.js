@@ -3,6 +3,35 @@ angular.module('starter')
     .factory('QuantiModo', function($http, $q, authService, localStorageService, $state){
             var QuantiModo = {};
 
+            QuantiModo.successHandler = function(data){
+                if(!data.success){
+                    return;
+                }
+                if(data.message){
+                    alert(data.message);
+                }
+            };
+
+            QuantiModo.errorHandler = function(data, status, headers, config, request){
+                if(data.success){
+                    return;
+                }
+                var error = "Error";
+                if (data && data.error) {
+                    error = data.error;
+                }
+                if (data && data.error && data.error.message) {
+                    error = data.error.message;
+                }
+                if(request) {
+                    Bugsnag.notify("API Request to " + request.url + " Failed", error, {}, "error");
+                }
+                if(status === 401){
+                    localStorageService.deleteItem('accessToken');
+                    $state.go('app.login');
+                }
+                alert(error);
+            };
 
             // Handler when request is failed
             var onRequestFailed = function(error){
@@ -40,16 +69,8 @@ angular.module('starter')
                     console.log("Making request with this token " + token.accessToken);
 
                     $http(request).success(successHandler).error(function(data,status,headers,config){
-                        var error = "Error";
-                        if (data && data.error && data.error.message) {
-                            error = data.error.message;
-                        } 
-                        Bugsnag.notify("API Request to "+request.url+" Failed",error,{},"error");
-                        if(status = 401){
-                            localStorageService.deleteItem('accessToken');
-                            $state.go('app.login');
-                        }
-                        errorHandler(data,status,headers,config);
+                        QuantiModo.errorHandler(data, status, headers, config, request);
+                        errorHandler(data);
                     });
 
                 }, onRequestFailed);
@@ -85,16 +106,7 @@ angular.module('starter')
                     };
 
                     $http(request).success(successHandler).error(function(data,status,headers,config){
-                       var error = "Error";
-                       if (data && data.error && data.error.message) {
-                           error = data.error.message;
-                       } 
-                       Bugsnag.notify("API Request to "+request.url+" Failed",error,{},"error");
-                        if(status = 401){
-                            localStorageService.deleteItem('accessToken');
-                            $state.go('app.login');
-                        }
-                        errorHandler(data,status,headers,config);
+                        QuantiModo.errorHandler(data,status,headers,config);
                     });
 
                 }, errorHandler);
@@ -148,6 +160,8 @@ angular.module('starter')
                     errorHandler);
             };
 
+
+
             // post measurements old method
             QuantiModo.postMeasurements= function(measurements, successHandler ,errorHandler) { 
                 QuantiModo.post('api/measurements',
@@ -155,6 +169,33 @@ angular.module('starter')
                     measurements,
                     successHandler,
                     errorHandler);
+            };
+
+            // Request measurements to be emailed as a csv
+            QuantiModo.postMeasurementsCsvExport = function() {
+                QuantiModo.post('api/v2/measurements/request_csv',
+                    [],
+                    [],
+                    QuantiModo.successHandler,
+                    QuantiModo.errorHandler);
+            };
+
+            // Request measurements to be emailed as a xls
+            QuantiModo.postMeasurementsXlsExport = function() {
+                QuantiModo.post('api/v2/measurements/request_xls',
+                    [],
+                    [],
+                    QuantiModo.successHandler,
+                    QuantiModo.errorHandler);
+            };
+
+            // Request measurements to be emailed as a pdf
+            QuantiModo.postMeasurementsPdfExport = function() {
+                QuantiModo.post('api/v2/measurements/request_pdf',
+                    [],
+                    [],
+                    QuantiModo.successHandler,
+                    QuantiModo.errorHandler);
             };
 
             // post new Measurements for user
