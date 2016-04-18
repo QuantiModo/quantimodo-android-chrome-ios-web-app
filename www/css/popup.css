@@ -4,7 +4,7 @@ body{
     margin: 0px;
 }
 
-#sectionRateMood{
+#sectionRate{
     opacity: 1;
     height: 52px;
     padding-top: 4px;
@@ -12,7 +12,7 @@ body{
     overflow: hidden;
 }
 
-#sectionRateMood img
+#sectionRate img
 {
     height: 100%;
     display: inline-block;
@@ -21,11 +21,11 @@ body{
     background-color: #FFFFFF;
     transition: all 200ms linear;
 }
-#sectionRateMood img:hover
+#sectionRate img:hover
 {
     -webkit-filter: blur(1px) brightness(110%) saturate(150%);
 }
-#sectionRateMood div
+#sectionRate div
 {
     width: 1px;
     position: relative;

@@ -6,27 +6,27 @@ function clearNotifications() {
     chrome.notifications.clear("moodReportNotification", function() {});
 }
 
-function setMoodButtonListeners() {
-    document.getElementById('buttonMoodDepressed').onclick = onMoodButtonClicked;
-    document.getElementById('buttonMoodSad').onclick = onMoodButtonClicked;
-    document.getElementById('buttonMoodOk').onclick = onMoodButtonClicked;
-    document.getElementById('buttonMoodHappy').onclick = onMoodButtonClicked;
-    document.getElementById('buttonMoodEcstatic').onclick = onMoodButtonClicked;
+function setFaceButtonListeners() {
+    document.getElementById('buttonMoodDepressed').onclick = onFaceButtonClicked;
+    document.getElementById('buttonMoodSad').onclick = onFaceButtonClicked;
+    document.getElementById('buttonMoodOk').onclick = onFaceButtonClicked;
+    document.getElementById('buttonMoodHappy').onclick = onFaceButtonClicked;
+    document.getElementById('buttonMoodEcstatic').onclick = onFaceButtonClicked;
 }
 
-var onMoodButtonClicked = function() {
+var onFaceButtonClicked = function() {
     // Figure out what rating was selected
     var buttonId = this.id;
     if (buttonId == "buttonMoodDepressed") {
-        var moodValue = 1;
+        var ratingValue = 1;
     } else if (buttonId == "buttonMoodSad") {
-        var moodValue = 2;
+        var ratingValue = 2;
     } else if (buttonId == "buttonMoodOk") {
-        var moodValue = 3;
+        var ratingValue = 3;
     } else if (buttonId == "buttonMoodHappy") {
-        var moodValue = 4;
+        var ratingValue = 4;
     } else if (buttonId == "buttonMoodEcstatic") {
-        var moodValue = 5;
+        var ratingValue = 5;
     } else {
         console.log("How did I get here...");
         return;
@@ -35,7 +35,7 @@ var onMoodButtonClicked = function() {
     // Create an array of measurements
     var measurements = [{
         timestamp: Math.floor(Date.now() / 1000),
-        value: moodValue
+        value: ratingValue
     }];
     // Add it to a request, payload is what we'll send to QuantiModo
     var request = {
@@ -56,13 +56,13 @@ var onMoodButtonClicked = function() {
     clearNotifications();
     window.close();
 
-    /*var sectionRateMood = document.getElementById("sectionRateMood");
+    /*var sectionRate = document.getElementById("sectionRate");
     var sectionSendingMood = document.getElementById("sectionSendingMood");
 
-    sectionRateMood.className = "invisible";
+    sectionRate.className = "invisible";
     setTimeout(function()
     {
-    		sectionRateMood.style.display = "none";
+    		sectionRate.style.display = "none";
 
     		sectionSendingMood.innerText = "Sending mood";
     		sectionSendingMood.style.display = "block";
@@ -108,7 +108,7 @@ document.addEventListener('DOMContentLoaded', function() {
     };
     xhr.send();
 
-    setMoodButtonListeners();
+    setFaceButtonListeners();
 });
 
 /*

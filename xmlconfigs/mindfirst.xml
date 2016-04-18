@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<widget id="com.quantimodo.medtlcapp" version="1.0.0" ios-CFBundleVersion="1.0.12" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
-  <name>MedTLC</name>
+<widget id="com.quantimodo.moodimodo"  version="1.0.0" ios-CFBundleVersion="1.0.10" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+  <name>Mind First Mood Tracker</name>
   <description>
-        The medication-tracker app from MedSocket
+        The Mind First Mood Tracking app from QuantiModo
     </description>
   <author email="help@quantimo.do" href="http://help.quantimo.do/">
-      MedSocket
+      Team QuantiModo.
     </author>
   <content src="index.html"/>
   <access origin="*"/>
@@ -20,15 +20,16 @@
   <allow-navigation href="https://app.quantimo.do/*" />
 
   <notificationplugin interactive="true">
-    <button id="repeat_rating" display="Same As Last Time" mode="background"/>
-    <button id="other" display="Other" mode="foreground"/>
-    <button id="sad" display="Sad" mode="background"/>
-    <button id="happy" display="Happy" mode="background"/>
-    <button id="depressed" display="Depressed" mode="background"/>
-    <button id="ok" display="OK" mode="background"/>
-    <TwoButtonLayout first="repeat_rating" second="other"/>
-    <FourButtonLayout first="sad" second="happy" third="ok" fourth="depressed"/>
+      <button id="repeat_rating" display="Same As Last Time" mode="background"></button>
+      <button id="other" display="Other" mode="foreground"></button>
+      <button id="sad"  display="Sad" mode="background"></button>
+      <button id="happy"  display="Happy" mode="background"></button>
+      <button id="depressed" display="Depressed" mode="background"></button>
+      <button id="ok" display="OK" mode="background"></button>
+      <TwoButtonLayout first="repeat_rating" second="other"></TwoButtonLayout>
+      <FourButtonLayout first="sad" second="happy" third="ok" fourth="depressed" ></FourButtonLayout>
   </notificationplugin>
+  
   <feature name="StatusBar">
     <param name="ios-package" value="CDVStatusBar" onload="true"/>
   </feature>

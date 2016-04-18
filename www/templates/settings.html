@@ -1,6 +1,6 @@
 <ion-view hide-nav-bar="skipMenu" view-title="Settings">
     <ion-content>
-        <div class="list card">
+        <div ng-show='config.appSettings.primary_outcome_variable' class="list card">
             <div class="item item-text-wrap">
                 <p>RATING</p>
             </div>
@@ -26,10 +26,6 @@
 
 
         <div class="list card">
-            <div class="item item-text-wrap">
-                <p>Quantimodo</p>
-            </div>
-
             <a href="" ng-show="!isLoggedIn" ng-click="login_from_settings()" class="item ">
               Account
               <p>Not Logged In, Tap to Sign in.</p>

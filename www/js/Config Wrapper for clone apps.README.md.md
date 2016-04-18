@@ -29,24 +29,24 @@ config.appSettings  = {
     primary_outcome_variables_options_labels : [ 'Depressed', 'Sad', 'OK', 'Happy', 'Ecstatic' ] , //tracking facotor options, the elements of this array will be displayed on the x-axis of the graph
     primary_outcome_variable_options : [ //Tracking factor options with images.
         {
-            value: 'mood_depressed',
-            img: 'img/ic_mood_depressed.png'
+            value: 'face_depressed',
+            img: 'img/ic_face_depressed.png'
         },
         {
-            value: 'mood_sad',
-            img: 'img/ic_mood_sad.png'
+            value: 'face_sad',
+            img: 'img/ic_face_sad.png'
         },
         {
-            value: 'mood_ok',
-            img: 'img/ic_mood_ok.png'
+            value: 'face_ok',
+            img: 'img/ic_face_ok.png'
         },
         {
-            value: 'mood_happy',
-            img: 'img/ic_mood_happy.png'
+            value: 'face_happy',
+            img: 'img/ic_face_happy.png'
         },
         {
-            value: 'mood_ecstatic',
-            img: 'img/ic_mood_ecstatic.png'
+            value: 'face_ecstatic',
+            img: 'img/ic_face_ecstatic.png'
         }
 
 

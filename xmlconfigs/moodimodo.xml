@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<widget id="com.quantimodo.medtlcapp" version="1.0.0" ios-CFBundleVersion="1.0.12" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
-  <name>MedTLC</name>
+<widget id="com.quantimodo.moodimodoapp" version="1.0.0" ios-CFBundleVersion="1.0.12" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+  <name>MoodiModo</name>
   <description>
-        The medication-tracker app from MedSocket
+        The mood-tracking app from QuantiModo
     </description>
   <author email="help@quantimo.do" href="http://help.quantimo.do/">
-      MedSocket
+      Team QuantiModo
     </author>
   <content src="index.html"/>
   <access origin="*"/>

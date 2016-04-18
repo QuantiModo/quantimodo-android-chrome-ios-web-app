@@ -1,9 +1,9 @@
 
 var getPlatform = function(){
-    if(typeof ionic !== "undefined" &&
+    if(typeof ionic !== "undefined" && 
         typeof ionic.Platform !== "undefined" &&
-        typeof ionic.Platform.isIOS !== "undefined" &&
-        typeof ionic.Platform.isAndroid !== "undefined" )
+        typeof ionic.Platform.isIOS !== "undefined" && 
+        typeof ionic.Platform.isAndroid !== "undefined" ) 
         return ionic.Platform.isIOS()? "iOS" : ionic.Platform.isAndroid()? "Android" : "Web";
     else return "Ionic";
 };
@@ -12,9 +12,9 @@ window.config = {
     bugsnag:{
         notifyReleaseStages:['Production','Staging']
     },
-    client_source_name : "MedTLC " + getPlatform(),
+    client_source_name : "Mind First "+getPlatform(),
     domain : 'app.quantimo.do',
-    environment: "Development",
+    environment: "Production",
     permissions : ['readmeasurements', 'writemeasurements'],
     port : '4417',
     protocol : 'https',
@@ -22,23 +22,22 @@ window.config = {
 };
 
 config.appSettings  = {
-    app_name : 'MedTLC',
+    app_name : 'Mind First Mood Tracker',
 
-    primary_outcome_variable : false,
+    default_state : 'app.track',
 
-    storage_identifier: 'MedTLCData*',
+    primary_outcome_variable : 'Mood',
 
-    default_state : 'app.reminders_inbox',
+    storage_identifier: 'MindFirstData*',
 
-    headline : 'Medications - Track, Learn, Connect',
+    headline : 'Sync and Analyze Your Data',
     features: [
-        ' Follow These Quick Steps to Improve Your Health',
-        ' 1. Enter Your Medications and Reminders',
-        ' 2. Record "How I Feel" Responses',
-        ' 3. Create Reports of Your Responses and Choose to Connect With Your Doctors'
+        ' - Automatically backup and sync your data across devices',
+        ' - Track diet, treatments, symptoms, and anything else',
+        ' - Analyze your data to see the top predictors for your Mood'
     ],
-
-    primary_primary_outcome_variable_details : {
+      
+    primary_outcome_variable_details : {
         id : 1398,
         name : "Overall Mood",
         category : "Mood",
@@ -77,8 +76,8 @@ config.appSettings  = {
         }
     ],
 
-    welcome_text:"Let's start off by adding your first medication!",
-    tracking_question:"What medication are you taking?",
+    welcome_text:"Let's start off by reporting your first mood on the card below",
+    tracking_question:"How are you feeling right now?",
     factor_average_text:"Your average mood is ",
     notification_image : "file://img/icon_128.png",
     notification_text : "Time to Track",
@@ -87,14 +86,14 @@ config.appSettings  = {
         "2": "sad",
         "3": "ok",
         "4": "happy",
-        "5": "ecstatic"
+        "5": "ecstatic" 
     },
     conversion_dataset_reversed : {
         "depressed" : 1,
         "sad" : 2,
         "ok" : 3,
         "happy" : 4,
-        "ecstatic": 5
+        "ecstatic": 5 
     },
 
     intro : [
@@ -109,7 +108,7 @@ config.appSettings  = {
 
                 firstP : {
                     visible : true,
-                    content : 'Welcome to MedTLC',
+                    content : 'Welcome to Mind First Mood Tracker',
                     classes : 'intro_header calm'
                 }, 
                 logoDiv : {
@@ -118,74 +117,95 @@ config.appSettings  = {
                 },
                 finalP : {
                     visible : true,
-                    content : 'Medication - Track. Learn. Connect.',
+                    content : 'Mind First Mood Tracker allows you track your <span class="calm">Mood</span> and identify the hidden factors which may most influence it.',
                     classes : 'intro_para',
                     buttonBarVisible : true   
                 }
             }
         },
+        // screen 2
         {
             img : {
-                width : '180',
-                height : '180',
-                url : 'img/pill_icon.png'
+                height : '70',
+                width : '70'
             },
             content : {
-                firstP : {
-                    visible : true,
-                    content : 'Medications and Reminders',
-                    classes : 'intro_header calm'
-                },
-                logoDiv : {
-                    visible : true,
-                    id : 'logo'
-                },
+
+                showOutcomeVariableImages : true,
+                showFirstBr : true,   
                 finalP: {
                     visible : true,
-                    content : 'Add medications and reminders on the Add Medications page.',
+                    content : 'Go to the <span class="calm">Track Mood</span> page to report your Mood!',
+                    classes : 'intro_para',
+                    buttonBarVisible : true
+                } 
+            }
+        },
+        // screen 3
+        {
+            img : {
+                width : '140',
+                height : '220',
+                url : 'img/track_moods.png'
+            },
+            content : {
+
+                firstP : {
+                    visible : true,
+                    content : 'Track Mood',
+                    classes : 'intro_header calm'
+                },                 
+                logoDiv : {
+                    visible : true,
+                    id : ''
+                },
+                showSecondBr : true,
+                finalP: {
+                    visible : true,
+                    content : 'On the <span class="calm">Track Mood</span> page, you can view your <span class="calm">average Mood</span> as well as charts illustrating how it changes over time.',
                     classes : 'intro_para_small',
                     buttonBarVisible : true
                 }
             }
         },
+        // screen 4
         {
-            // Add icons instead of screen-shot
             img : {
-                width : '180',
-                height : '180',
-                url : 'img/symptoms_icon.png'
+                width : '200',
+                height : '150',
+                url : 'img/history_page.png'
             },
             content : {
-
                 firstP : {
                     visible : true,
-                    content : 'Record How You Feel',
+                    content : 'History',
                     classes : 'intro_header calm'
-                },
-
+                }, 
+                showFirstBr : true,
                 logoDiv : {
                     visible : true,
                     id : 'logo'
                 },
-
+                showSecondBr : true,
                 finalP: {
                     visible : true,
-                    content : ' Record "How I Feel" responses to provide critical feedback to your doctor. This feedback is one of the strongest features of MedTLC. It gives your doctor the data needed to change medications and adjust dosages when necessary, due to adverse reaction to a single drug, multiple drug interactions, and dosages that cause unwanted effects.',
-                    classes : 'intro_para_small',
+                    content : 'You can see and edit your past Mood ratings and notes by opening the <span class="calm">History</span> page.',
+                    classes : 'intro_para',
                     buttonBarVisible : true
                 }
             }
         },
+        // screen 5
         {
             img : {
-                width : '180',
-                height : '180',
-                url : 'img/doctor_icon.png'
+                width : '220',
+                height : '200',
+                url : 'img/rating_note.png'
             },
             content : {
                 firstP : {
                     visible : true,
-                    content : 'Connect with Your Physician',
+                    content : 'Add a Note',
                     classes : 'intro_header calm'
                 }, 
                 logoDiv : {
@@ -194,8 +214,169 @@ config.appSettings  = {
                 },
                 finalP: {
                     visible : true,
-                    content : 'Print or send reports of your responses to your doctors.',
+                    content : 'Add a note by tapping on a Mood rating in the <span class="calm">History</span> page. You can also <span class="calm">Edit</span> your Mood there too.',
                     classes : 'intro_para',
+                    buttonBarVisible : true
+                }
+            }
+        },
+        // screen 6
+        {
+            img : {
+                width : '220',
+                height : '190',
+                url : 'img/track_foods.png'
+            },
+            content : {
+                firstP : {
+                    visible : true,
+                    content : 'Track Foods',
+                    classes : 'intro_header calm'
+                }, 
+                logoDiv : {
+                    visible : true,
+                    id : 'logo'
+                },
+                finalP: {
+                    visible : true,
+                    content : 'Track your diet on the <span class="calm">Track Foods</span> page. You can also <span class="calm">Add a new Food Variable</span> if you don\'t find the meal you looked for in the search results.',
+                    classes : 'intro_para_small',
+                    buttonBarVisible : true
+                }
+            }
+        },
+        // screen 7
+        {
+            img : {
+                width : '190',
+                height : '180',
+                url : 'img/track_symptoms.png'
+            },
+            content : {
+
+                firstP : {
+                    visible : true,
+                    content : 'Track Symptoms',
+                    classes : 'intro_header calm'
+                }, 
+                
+                logoDiv : {
+                    visible : true,
+                    id : 'logo'
+                },
+                
+                finalP: {
+                    visible : true,
+                    content : 'Track any symptom on the <span class="calm">Track Symptoms</span> page. You can also <span class="calm">Add a new Symptom</span> if you don\'t find the symptom you looked for in the search results.',
+                    classes : 'intro_para_small',
+                    buttonBarVisible : true
+                }   
+            }
+        },
+        // screen 8
+        {
+            img : {
+                width : '210',
+                height : '180',
+                url : 'img/track_treatments.png'
+            },
+            content : {
+                firstP : {
+                    visible : true,
+                    content : 'Track Treatments',
+                    classes : 'intro_header calm'
+                },                 
+                logoDiv : {
+                    visible : true,
+                    id : 'logo'
+                },
+                finalP: {
+                    visible : true,
+                    content : 'Track your treatments on the <span class="calm">Track Treatments</span> page. You can also <span class="calm">Add a new Treatment</span> if you don\'t find the treatment you looked for in the search results.',
+                    classes : 'intro_para_small',
+                    buttonBarVisible : true
+                }
+            }
+        },
+        // screen 9
+        {
+            img : {
+                width : '220',
+                height : '200',
+                url : 'img/positive_predictors.png'
+            },
+            content : {
+
+                firstP : {
+                    visible : true,
+                    content : 'Positive Predictors',
+                    classes : 'intro_header calm'
+                }, 
+                
+                logoDiv : {
+                    visible : true,
+                    id : 'logo'
+                },
+                
+                finalP: {
+                    visible : true,
+                    content : 'Positive Predictors are the factors most predictive of <span class="calm">IMPROVING</span> Mood for the average QuantiModo user.',
+                    classes : 'intro_para_small',
+                    buttonBarVisible : true
+                }
+            }
+        },
+        // screen 10
+        {
+            img : {
+                width : '220',
+                height : '200',
+                url : 'img/negative_predictors.png'
+            },
+            content : {
+
+                firstP : {
+                    visible : true,
+                    content : 'Negative Predictors',
+                    classes : 'intro_header calm'
+                },
+                
+                logoDiv : {
+                    visible : true,
+                    id : 'logo'
+                },
+                
+                finalP: {
+                    visible : true,
+                    content : 'Negative Predictors are the factors most predictive of <span class="calm">DECREASING</span> Mood for the average QuantiModo user.',
+                    classes : 'intro_para_small',
+                    buttonBarVisible : true
+                }  
+            }
+        },
+        // screen 11
+        {
+            img : {
+                width : '180',
+                height : '180',
+                url : 'img/ic_face_ecstatic.png'
+            },
+            content : {
+
+                firstP : {
+                    visible : true,
+                    content : 'We are feeling ecstatic that you\'re helping us derive a mathematical equation for happiness!',
+                    classes : 'intro_para calm'
+                }, 
+                
+                logoDiv : {
+                    visible : true,
+                    id : 'logo'
+                },
+                finalP: {
+                    visible : true,
+                    content : 'Now start tracking and optimize your life!',
+                    classes : 'intro_para_small',
                     buttonBarVisible : true
                 }
             }
@@ -203,128 +384,77 @@ config.appSettings  = {
     ],
 
     help_popup_messages : {
-        "#/app/reminders-inbox/Treatments": 'Be sure to add your "How I feel" responses throughout the day so you can monitor the effects of your medications and dosages.',
-        "#/app/reminders-inbox/Symptoms": 'If you\'ve already added some side effect or response tracking reminders, here\'s where your medication reminder notifications should appear when it\'s time to take them.  Once you have some notifications, you can use those to record how you feel.',
-        "#/app/reminders-manage/Treatments": 'Here, you can set up or delete existing medication reminders.',
-        "#/app/reminders-manage/Symptoms": 'Here, you can set up or delete existing side effect tracking or response tracking reminders.',
-        "#/app/reminders-manage": 'Here, you can set up or delete existing reminders for .',
-        "#/app/reminders-inbox": 'Be sure to add your "How I feel" responses throughout the day so you can monitor the effects of your medications and dosages.',
-        "#/app/history": 'You can see and edit your past data and add notes by tapping on any item in the list.',
-        "#/app/track_factors_category/Foods": 'Record your diet on this page. <span class="calm">Add a new Food Variable</span> if you do not find the meal you looked for in the search results.',
-        "#/app/track_factors_category/Symptoms": 'You can immediately record any response or side effect on this page.',
-        "#/app/track_factors_category/Treatments": 'You can immediately record any as-need treatment on this page. You can also <span class="calm">Add a new Treatment</span> if you don\'t find the treatment you looked for in the search results.',
-    },
-    
-    wordAliases : {
-        "Treatments" : "Medications",
-        "treatments" : "medications",
-        "Treatment" : "Medication",
-        "treatment" : "medication",
-        "Treatment Reminder" : "Medication",
-        "treatment reminder" : "medication",
-        "Reminder Inbox" : "Reminders",
-        "Track" : "Record",
-        "Symptom" : "Response",
-        "Symptoms" : "Responses",
-        "symptom" : "response",
-        "symptoms" : "responses"
-    },
-    
-    remindersInbox : {
-        showAddNewMedicationButton : true,
-        hideAddNewReminderButton : true,
-        showAddHowIFeelResponseButton : true,
-        showAddVitalSignButton : true,
-        title : 'Reminders'
+        "#/app/track" : 'Here, you can view your <span class="calm">average Mood</span> as well as charts illustrating how it changes over time',
+        "#/app/history" : 'You can see and edit your past Mood ratings and notes by tapping on any item in the list.  <br/> <br/>You can also Add a note by tapping on a Mood rating in the list.',
+        "#/app/track_factors_category/Foods" : 'You can track your diet on this page. You can also <span class="calm">Add a new Food Variable</span> if you do not find the meal you looked for in the search results.',
+        "#/app/track_factors_category/Symptoms" : 'You can track any symptom on this page. You can also <span class="calm">Add a new Symptom</span> if you don\'t find the symptom you looked for in the search results.',
+        "#/app/track_factors_category/Treatments" : 'You can track any treatment on this page. You can also <span class="calm">Add a new Treatment</span> if you don\'t find the treatment you looked for in the search results.',
+        "#/app/positive" : 'Positive Predictors are the factors most predictive of <span class="calm">IMPROVING</span> Mood for the average QuantiModo user.',
+        "#/app/negative" : 'Negative Predictors are the factors most predictive of <span class="calm">DECREASING</span> for the average QuantiModo user.'
     },
 
-    remindersManage : {
-        hideAddNewReminderButton : true
+    remindersInbox : {
+
     },
+
+    wordAliases : {
+
+    },
+
 
     menu : [
         {
-            title : 'Add How I Feel Response',
-            href : '#/app/track_factors_category/Symptoms',
+            title : 'Track Mood',
+            href : '#/app/track',
             icon : 'ion-happy-outline'
         },
         {
-            title : 'Add Vitals Measurement',
-            href : '#/app/track_factors_category/Vital Signs',
-            icon : 'ion-ios-pulse'
-        },
-        {
-            title : 'Show Reminders',
-            href : '#/app/reminders-inbox',
-            icon : 'ion-android-notifications-none'
-        },
-        {
-            title : 'Add Medications',
-            href : '#/app/reminder_add/Treatments',
-            icon : 'ion-ios-alarm-outline'
-        },
-        {
-            title : 'Manage Medications',
-            href : '#/app/reminders-manage/Treatments',
-            icon : 'ion-ios-medkit-outline'
-        },
-        {
-            title : 'History',
-            href : '#/app/history-all',
-            icon : 'ion-ios-paper-outline'
-        },
-        {
-            title : 'Getting Started',
-            href : '#/app/intro',
-            icon : 'ion-information-circled'
-        },
-        {
-            title : 'Add Measurement',
+            title : 'Track Factors',
             click : 'toggleTrackingSubMenu',
             icon : 'showTrackingSubMenu',
             subMenuPanel : true
         },
         {
-            title : 'Record anything',
+            title : 'Track anything',
             isSubMenu : true,
             subMenuVariable : 'showTrackingSubMenu',
             href : '#/app/track_factors',
-            icon : 'ion-ios-world'
+            icon : 'ion-ios-world-outline'   
         },
         {
-            title : 'Record foods',
+            title : 'Track foods',
             isSubMenu : true,
             subMenuVariable : 'showTrackingSubMenu',
             href : '#/app/track_factors_category/Foods',
-            icon : 'ion-ios-nutrition'
+            icon : 'ion-ios-nutrition-outline'
         },
         {
-            title : 'Record emotions',
+            title : 'Track emotions',
             isSubMenu : true,
             subMenuVariable : 'showTrackingSubMenu',
             href : '#/app/track_factors_category/Emotions',
             icon : 'ion-happy-outline'
         },
         {
-            title : 'Record symptoms',
+            title : 'Track symptoms',
             isSubMenu : true,
             subMenuVariable : 'showTrackingSubMenu',
             href : '#/app/track_factors_category/Symptoms',
             icon : 'ion-ios-pulse'
         },
         {
-            title : 'Record treatments',
+            title : 'Track treatments',
             isSubMenu : true,
             subMenuVariable : 'showTrackingSubMenu',
             href : '#/app/track_factors_category/Treatments',
             icon : 'ion-ios-medkit-outline'
         },
         {
-            title : 'Record physical activity',
+            title : 'Track physical activity',
             isSubMenu : true,
             subMenuVariable : 'showTrackingSubMenu',
             href : '#/app/track_factors_category/Physical Activity',
-            icon : 'ion-ios-body'
+            icon : 'ion-ios-body-outline'
         },
         {
             title : 'Reminders',
@@ -354,7 +484,7 @@ config.appSettings  = {
             icon : 'ion-happy-outline'
         },
         {
-            title : 'Responses',
+            title : 'Symptoms',
             isSubMenu : true,
             subMenuVariable : 'showReminderSubMenu',
             href : '#/app/reminder_add/Symptoms',
@@ -373,6 +503,26 @@ config.appSettings  = {
             subMenuVariable : 'showReminderSubMenu',
             href : '#/app/reminder_add/Foods',
             icon : 'ion-ios-nutrition-outline'
+        },
+        {
+            title : 'History',
+            click : 'toggleHistorySubMenu',
+            icon : 'showHistorySubMenu',
+            subMenuPanel : true
+        },
+        {
+            title : 'Moods',
+            isSubMenu : true,
+            subMenuVariable : 'showHistorySubMenu',
+            href : '#/app/history',
+            icon : 'ion-happy-outline'
+        },
+        {
+            title : 'All Measurements',
+            isSubMenu : true,
+            subMenuVariable : 'showHistorySubMenu',
+            href : '#/app/history-all',
+            icon : 'ion-ios-paper-outline'
         },
         {
             title : 'Import Data',
@@ -405,6 +555,26 @@ config.appSettings  = {
             icon : 'ion-person'
         },
         {
+            title : 'Predictors of Mood',
+            click : 'toggleOutcomePredictorSubMenu',
+            icon : 'showOutcomePredictorSubMenu',
+            subMenuPanel : true
+        },
+        {
+            title : 'Positive Mood',
+            isSubMenu : true,
+            subMenuVariable : 'showOutcomePredictorSubMenu',
+            href : '#/app/positive',
+            icon : 'ion-happy-outline'
+        },
+        {
+            title : 'Negative Mood',
+            isSubMenu : true,
+            subMenuVariable : 'showOutcomePredictorSubMenu',
+            href : '#/app/negative',
+            icon : 'ion-sad-outline'
+        },
+        {
             title : 'Settings',
             href : '#/app/settings',
             icon : 'ion-ios-gear-outline'
@@ -413,17 +583,15 @@ config.appSettings  = {
             title : 'Help & Feedback',
             href : window.chrome ? "mailto:help@quantimo.do" : "#app/feedback",
             icon : 'ion-ios-help-outline'
-        }
+        },
     ]
-
 };
+
 
 config.getPrimaryOutcomeVariableOptionLabels = function(shouldShowNumbers){
     if(shouldShowNumbers || !config.appSettings.primary_outcome_variables_options_labels){
         return ['1',  '2',  '3',  '4', '5'];
-    } else {
-        return config.appSettings.primary_outcome_variables_options_labels;
-    }
+    } else return config.appSettings.primary_outcome_variables_options_labels;
 };
 
 config.getPrimaryOutcomeVariableOptions = function(shouldShowNumbers){
@@ -450,9 +618,7 @@ config.getPrimaryOutcomeVariableOptions = function(shouldShowNumbers){
                 img: 'img/ic_5.png'
             }
         ];
-    } else {
-        return config.appSettings.primary_outcome_variable_options;
-    }
+    } else return config.appSettings.primary_outcome_variable_options;
 };
 
 config.getImageForPrimaryOutcomeVariableByValue = function(val){
@@ -540,7 +706,7 @@ config.getApiUrl = function(){
 };
 
 config.getAllowOffline = function(){
-    return false;
+    return true;
 };
 
 config.getPermissionString = function(){
@@ -575,7 +741,7 @@ config.getURL = function(path){
 };
 
 config.get = function(key){
-	return config[key]? config[key] : false;
+    return config[key]? config[key] : false;
 };
 
 
@@ -592,12 +758,12 @@ window.notification_callback = function(reported_variable, reporting_time){
         val = config.appSettings.conversion_dataset_reversed[reported_variable]?
         config.appSettings.conversion_dataset_reversed[reported_variable] : false;
     }
-
+    
     // report
     if(val){
         // update localstorage
         localStorage[key_identifier+'lastReportedPrimaryOutcomeVariableValue'] = val;
-
+        
         var allDataObject = {
             storedValue : val,
             value : val,
@@ -616,16 +782,21 @@ window.notification_callback = function(reported_variable, reporting_time){
 
         // update Bar chart data
         if(localStorage[key_identifier+'barChartData']){
-            var barChartData = JSON.parse(localStorage[key_identifier+'barChartData']);
-            barChartData[val-1]++;
-            localStorage[key_identifier+'barChartData'] = JSON.stringify(barChartData);
+            if(val>0){
+                var barChartData = JSON.parse(localStorage[key_identifier+'barChartData']);
+                barChartData[val-1]++;
+                localStorage[key_identifier+'barChartData'] = JSON.stringify(barChartData);
+            }
         }
 
         // update Line chart data
         if(localStorage[key_identifier+'lineChartData']){
-            var lineChartData = JSON.parse(localStorage[key_identifier+'lineChartData']);
-            lineChartData.push([report_time, val]);
-            localStorage[key_identifier+'lineChartData'] = JSON.stringify(lineChartData);
+            if(val>0){
+                var lineChartData = JSON.parse(localStorage[key_identifier+'lineChartData']);
+                lineChartData.push([report_time, (val-1)*25]);
+                localStorage[key_identifier+'lineChartData'] = JSON.stringify(lineChartData);    
+            }
+            
         }
 
         //update measurementsQueue
