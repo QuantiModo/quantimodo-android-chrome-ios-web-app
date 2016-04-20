@@ -67,7 +67,7 @@ angular.module('starter')
             list : [],
             userVariables : [],
             searchVariables : [],
-            categories : []
+            unitCategories : []
         };
 
         $scope.state = {
@@ -320,7 +320,7 @@ angular.module('starter')
             $scope.lists.searchVariables = [];
 
             // data default
-            $scope.lists.categories = [];
+            $scope.lists.unitCategories = [];
             $scope.state.unitCategories = {};
 
             // variable
@@ -388,8 +388,8 @@ angular.module('starter')
 
                     // populate unitCategories
                     for(var i in units){
-                        if($scope.lists.categories.indexOf(units[i].category) === -1){
-                            $scope.lists.categories.push(units[i].category);
+                        if($scope.lists.unitCategories.indexOf(units[i].category) === -1){
+                            $scope.lists.unitCategories.push(units[i].category);
                             $scope.state.unitCategories[units[i].category] = [{name : units[i].name, abbreviatedName: units[i].abbreviatedName}];
                         } else {
                             $scope.state.unitCategories[units[i].category].push({name: units[i].name, abbreviatedName: units[i].abbreviatedName});
