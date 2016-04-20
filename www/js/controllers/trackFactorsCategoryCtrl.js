@@ -10,7 +10,7 @@ angular.module('starter')
 
         $scope.controller_name = "TrackFactorsCategoryCtrl";
 
-        var categoryConfig = {
+        var variableCategoryConfig = {
             "Vital Signs":{
                 default_unit: false,
                 help_text:"What vital sign do you want to record?",
@@ -404,8 +404,8 @@ angular.module('starter')
 
                     console.log("got units", units);
 
-                    if(categoryConfig[category].default_unit) {
-                        set_unit(categoryConfig[category].default_unit);
+                    if(variableCategoryConfig[category].default_unit) {
+                        set_unit(variableCategoryConfig[category].default_unit);
                     }
 
                     // hide spinenr
