@@ -286,21 +286,27 @@ angular.module('starter')
         };
 
         $scope.unit_search = function(){
-            var query = $scope.state.unit_text;
-            if(query !== ""){
-                $scope.flags.show_units = true;
-                var matches = $scope.state.units.filter(function(unit) {
-                    return unit.abbreviatedName.toLowerCase().indexOf(query.toLowerCase()) !== -1;
+
+            var unitSearchQuery = $scope.state.unit_text;
+            if(unitSearchQuery !== ""){
+                $scope.state.show_units = true;
+                var unitMatches = $scope.state.units.filter(function(unit) {
+                    return unit.abbreviatedName.toLowerCase().indexOf(unitSearchQuery.toLowerCase()) !== -1;
                 });
 
+                if(unitMatches.length < 1){
+                    unitMatches = $scope.state.units.filter(function(unit) {
+                        return unit.name.toLowerCase().indexOf(unitSearchQuery.toLowerCase()) !== -1;
+                    });
+                }
+
                 $timeout(function() {
-                    $scope.state.searchedUnits = matches;
+                    $scope.state.searchedUnits = unitMatches;
                 }, 100);
 
-
-            } else $scope.flags.show_units = false;
+            } else $scope.state.show_units = false;
         };
-
+        
         // when a unit is selected
         $scope.unit_selected = function(unit){
             console.log("selecting_unit",unit);
