@@ -30,7 +30,7 @@ angular.module('starter')
                     localStorageService.deleteItem('accessToken');
                     $state.go('app.login');
                 }
-                alert(error);
+                console.log(error);
             };
 
             // Handler when request is failed
