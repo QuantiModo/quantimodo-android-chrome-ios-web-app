@@ -60,7 +60,7 @@ angular.module('starter')
 	    	showReminderFrequencyCard : false,
             showAddVariableButton : false,
             show_units: false,
-	    	variableName : "",
+            variableSearchQuery : "",
 	    	selectedVariableCategory : 'Anything',
 	    	selectedUnit : '',
 	    	searching : false,
@@ -242,7 +242,7 @@ angular.module('starter')
 	    $scope.onVariableCategoryChange = function(){
 	    	console.log("Variable category selected: ", $scope.state.selectedVariableCategory);
 	    	$scope.category = $scope.state.selectedVariableCategory;
-	    	$scope.state.variableName = '';
+	    	$scope.state.variableSearchQuery = '';
 	    	$scope.state.showResults = false;
 	    	$scope.state.showSearchBox = true;
 	    };
@@ -277,8 +277,8 @@ angular.module('starter')
 
 	    // when a query is searched in the search box
 	    $scope.onSearch = function(){
-	    	console.log("Search: ", $scope.state.variableName);
-	    	if($scope.state.variableName == ""){
+	    	console.log("Search: ", $scope.state.variableSearchQuery);
+	    	if($scope.state.variableSearchQuery == ""){
 	    		$scope.state.resultsHeaderText = "Your previously tracked "+ $scope.category;
 	    		$scope.state.showResults = $stateParams.category? true : false;
 	    		$scope.state.searching = false;	    		
@@ -286,7 +286,7 @@ angular.module('starter')
 	    		$scope.state.resultsHeaderText = "Search Results";
 	    		$scope.state.showResults = true;
 	    		$scope.state.searching = true;
-	    		search($scope.state.variableName);
+	    		search($scope.state.variableSearchQuery);
 	    	}
 	    };
 
