@@ -40,7 +40,7 @@ angular.module('starter')
 				return deferred.promise;
 			},
 
-			editReminder: function(id,
+			postTrackingReminder: function(id,
 				variableId, 
 				defaultValue, 
 				reminderFrequency, 

@@ -388,7 +388,7 @@ angular.module('starter')
 
 	    	utils.startLoading();
 
-	    	reminderService.editReminder(
+	    	reminderService.postTrackingReminder(
 	    		$scope.state.selectedReminder.id,
 				$scope.state.selectedReminder.variableId,
                 $scope.state.selectedDefaultValue,
