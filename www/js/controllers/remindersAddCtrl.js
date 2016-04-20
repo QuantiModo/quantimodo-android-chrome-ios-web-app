@@ -3,21 +3,64 @@ angular.module('starter')
 	// Controls the History Page of the App.
 	.controller('RemindersAddCtrl', function($scope, authService, $ionicPopup, localStorageService, $state,
 											 $stateParams, measurementService, reminderService, $ionicLoading,
-											 utilsService, $filter, ionicTimePicker){
+											 utilsService, $filter, ionicTimePicker, $timeout){
 
 	    $scope.controller_name = "RemindersAddCtrl";
 
 		console.log('Loading ' + $scope.controller_name);
 
-	    // state
+        var variableCategoryConfig = {
+            "Vital Signs":{
+                default_unit: false,
+                help_text:"What vital sign do you want to record?",
+                variable_category_name: "Vital Signs",
+                variable_category_name_singular_lowercase : "vital sign"
+            },
+            Foods:{
+                default_unit:"serving",
+                help_text:"What did you eat?",
+                variable_category_name: "Foods",
+                variable_category_name_singular_lowercase : "food"
+            },
+            Emotions:{
+                default_unit: "/5",
+                help_text: "What emotion do you want to rate?",
+                variable_category_name: "Emotions",
+                variable_category_name_singular_lowercase : "emotion"
+            },
+            Symptoms:{
+                default_unit: "/5",
+                help_text: "What symptom do you want to record?",
+                variable_category_name: "Symptoms",
+                variable_category_name_singular_lowercase : "symptom"
+            },
+            Treatments:{
+                default_unit: "mg",
+                help_text:"What treatment do you want to record?",
+                variable_category_name: "Treatments",
+                variable_category_name_singular_lowercase : "treatment"
+            },
+            "Physical Activity": {
+                default_unit: false,
+                help_text:"What physical activity do you want to record?",
+                variable_category_name: "Physical Activity",
+                variable_category_name_singular_lowercase : "physical activity"
+            }
+        };
+
+
+        // state
 	    $scope.state = {
-	    	resultsHeaderText : '',
+            // category object,
+            unitCategories : {},
+            resultsHeaderText : '',
 	    	showVariableCategory : false,
 	    	showSearchBox : false,
 	    	showResults : false,
-	    	showCustomBox : false,
-
-	    	searchQuery : "",
+	    	showReminderFrequencyCard : false,
+            showAddVariableButton : false,
+            show_units: false,
+	    	variableName : "",
 	    	selectedVariableCategory : 'Anything',
 	    	selectedUnit : '',
 	    	searching : false,
@@ -199,7 +242,7 @@ angular.module('starter')
 	    $scope.onVariableCategoryChange = function(){
 	    	console.log("Variable category selected: ", $scope.state.selectedVariableCategory);
 	    	$scope.category = $scope.state.selectedVariableCategory;
-	    	$scope.state.searchQuery = '';
+	    	$scope.state.variableName = '';
 	    	$scope.state.showResults = false;
 	    	$scope.state.showSearchBox = true;
 	    };
@@ -234,16 +277,16 @@ angular.module('starter')
 
 	    // when a query is searched in the search box
 	    $scope.onSearch = function(){
-	    	console.log("Search: ", $scope.state.searchQuery);
-	    	if($scope.state.searchQuery == ""){
-	    		$scope.state.resultsHeaderText = "Your previously tracked "+$scope.category;
+	    	console.log("Search: ", $scope.state.variableName);
+	    	if($scope.state.variableName == ""){
+	    		$scope.state.resultsHeaderText = "Your previously tracked "+ $scope.category;
 	    		$scope.state.showResults = $stateParams.category? true : false;
 	    		$scope.state.searching = false;	    		
 	    	} else {
 	    		$scope.state.resultsHeaderText = "Search Results";
 	    		$scope.state.showResults = true;
 	    		$scope.state.searching = true;
-	    		search($scope.state.searchQuery);
+	    		search($scope.state.variableName);
 	    	}
 	    };
 
@@ -254,7 +297,7 @@ angular.module('starter')
 
 	    	$scope.state.showResults = false;
 	    	$scope.state.showSearchBox = false;
-	    	$scope.state.showCustomBox = true;
+	    	$scope.state.showReminderFrequencyCard = true;
 
 	    	$scope.state.selectedUnit = result.abbreviatedUnitName? result.abbreviatedUnitName : result.lastUnit;
 	    	//$scope.state.selectedDefaultValue = result.mostCommonValue? result.mostCommonValue : result.lastValue;
@@ -509,7 +552,7 @@ angular.module('starter')
 	    	}
 
 	    	
-	    	$scope.state.showCustomBox = true;
+	    	$scope.state.showReminderFrequencyCard = true;
 
 	    	setSelectedTimeInDatePicker();
 	    };
