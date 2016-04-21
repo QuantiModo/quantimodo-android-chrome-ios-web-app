@@ -9,7 +9,7 @@ angular.module('starter')
 		console.log('Loading ' + $scope.controller_name);
 	    
 	    $scope.state = {
-			variableCategory : $stateParams.category,
+			variableCategory : $stateParams.variableCategoryName,
 	    	showMeasurementBox : false,
 	    	selectedReminder : false,
 	    	reminderDefaultValue : "",
@@ -30,9 +30,9 @@ angular.module('starter')
 			isDisabled : false
 	    };
 
-		if($stateParams.category){
-			$scope.state.title = "Manage " + $filter('wordAliases')($stateParams.category);
-			$scope.state.addButtonText = "Add New " + pluralize($filter('wordAliases')($stateParams.category), 1);
+		if($stateParams.variableCategoryName){
+			$scope.state.title = "Manage " + $filter('wordAliases')($stateParams.variableCategoryName);
+			$scope.state.addButtonText = "Add New " + pluralize($filter('wordAliases')($stateParams.variableCategoryName), 1);
 		} else {
 			$scope.state.title = "Manage Reminders";
 			$scope.state.addButtonText = "Add new reminder";
@@ -142,7 +142,7 @@ angular.module('starter')
 
 	    var getTrackingReminders = function(){
 	    	//utils.startLoading();
-	    	reminderService.getTrackingReminders($stateParams.category)
+	    	reminderService.getTrackingReminders($stateParams.variableCategoryName)
 	    	.then(function(reminders){
 	    		$scope.state.allReminders = reminders;
 	    		utils.stopLoading();
@@ -158,7 +158,7 @@ angular.module('starter')
 	    var getTrackingReminderNotifications = function(){
 	    	utils.startLoading();
 
-	    	reminderService.getTrackingReminderNotifications($stateParams.category)
+	    	reminderService.getTrackingReminderNotifications($stateParams.variableCategoryName)
 	    	.then(function(reminders){
 	    		$scope.state.trackingRemindersNotifications = reminders;
 	    		$scope.state.filteredReminders = filterViaDates(reminders);

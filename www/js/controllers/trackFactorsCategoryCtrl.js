@@ -49,7 +49,7 @@ angular.module('starter')
             }
         };
 
-        var category = $stateParams.category;
+        var category = $stateParams.variableCategoryName;
 
         // flags
         $scope.flags = {

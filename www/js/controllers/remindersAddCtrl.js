@@ -101,14 +101,14 @@ angular.module('starter')
 
         $scope.state.addNewVariableButtonText = '+ Add a new variable';
         $scope.state.addNewVariableCardText = 'Add a new variable';
-		console.log("$stateParams.category  is " + $stateParams.category);
+		console.log("$stateParams.variableCategoryName  is " + $stateParams.variableCategoryName);
 
-		if($stateParams.category){
-            $scope.state.variableCategorySingular = pluralize($stateParams.category, 1);
-			$scope.state.variableCategoryNameSingularLowercase = $filter('wordAliases')(pluralize($stateParams.category.toLowerCase()), 1);
-			$scope.state.title = "Add a " + $filter('wordAliases')(pluralize($stateParams.category, 1) + " Reminder");
-            $scope.state.addNewVariableButtonText = "+ Add a new " + $filter('wordAliases')(pluralize($stateParams.category.toLowerCase(), 1));
-            $scope.state.addNewVariableCardText = "Add a new " + $filter('wordAliases')(pluralize($stateParams.category.toLowerCase(), 1));
+		if($stateParams.variableCategoryName){
+            $scope.state.variableCategorySingular = pluralize($stateParams.variableCategoryName, 1);
+			$scope.state.variableCategoryNameSingularLowercase = $filter('wordAliases')(pluralize($stateParams.variableCategoryName.toLowerCase()), 1);
+			$scope.state.title = "Add a " + $filter('wordAliases')(pluralize($stateParams.variableCategoryName, 1) + " Reminder");
+            $scope.state.addNewVariableButtonText = "+ Add a new " + $filter('wordAliases')(pluralize($stateParams.variableCategoryName.toLowerCase(), 1));
+            $scope.state.addNewVariableCardText = "Add a new " + $filter('wordAliases')(pluralize($stateParams.variableCategoryName.toLowerCase(), 1));
 			$scope.state.variablePlaceholderText =
 				"Search for a " + $scope.state.variableCategoryNameSingularLowercase + " here..";
 		} else {
@@ -116,7 +116,7 @@ angular.module('starter')
 			$scope.state.variablePlaceholderText = "Search for a variable here...";
 		}
 
-		if($stateParams.category === "Treatments") {
+		if($stateParams.variableCategoryName === "Treatments") {
 			$scope.state.defaultValuePlaceholderText = "Enter dosage here...";
 		} else {
 			$scope.state.defaultValuePlaceholderText = "Enter most common value here...";
