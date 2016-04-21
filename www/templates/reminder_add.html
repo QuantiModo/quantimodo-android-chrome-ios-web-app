@@ -1,11 +1,11 @@
 <ion-view hide-nav-bar="skipMenu" view-title="{{state.title}}">
     <ion-content scroll="true" overflow-scroll="true">
 		
-		<div class="list card" ng-show="state.showVariableCategory">
+		<div class="list card" ng-show="state.showVariableCategorySelector">
             <!--<div class="item item-divider" style="background-color:#11c1f3; color:white;">Select Variable Category</div>-->
 			<label class="item item-input item-select">
 				<div class="input-label" style="white-space:normal; width: 60%">Select Variable Category</div>
-				<select ng-model="state.selectedVariableCategory" ng-change="onVariableCategoryChange()">
+				<select ng-model="state.variableCategoryName" ng-change="onVariableCategoryChange()">
 					<option ng-repeat="variableCategory in variables.variableCategories" value="{{variableCategory.name}}">{{variableCategory.name}}</option>
 				</select>
 			</label>
@@ -90,7 +90,7 @@
 <!--
             <div class="row labeled-control">
         		<div id="rem-set-left" class="col">
-        			<input type="number" style="width:100%;text-align:right;" placeholder={{state.defaultValuePlaceholderText}} ng-model="state.variable_value" class="uptop">
+        			<input type="number" style="width:100%;text-align:right;" placeholder={{state.defaultValuePlaceholderText}} ng-model="state.defaultValue" class="uptop">
         		</div>
         		<div id="rem-set-right" class="col col-r">
         			<span>
@@ -100,19 +100,19 @@
         	</div>
 -->
 
-            <div ng-if="(flags.category != 'Emotions' && flags.category != 'Symptoms')" class="row labeled-control">
+            <div ng-if="(state.variableCategoryName != 'Emotions' && state.variableCategoryName != 'Symptoms')" class="row labeled-control">
                 <div class="col col-l">
                         <span>
                             Value
                         </span>
                 </div>
                 <div class="col">
-                    <input type="text" ng-model="state.variable_value" id="variable_value" placeholder={{state.defaultValuePlaceholderText}} class="uptop">
+                    <input type="text" ng-model="state.defaultValue" id="defaultValue" placeholder={{state.defaultValuePlaceholderText}} class="uptop">
                 </div>
             </div>
 
 
-            <div class="row labeled-control" ng-if="(state.category != 'Emotions' && state.category != 'Symptoms')">
+            <div class="row labeled-control" ng-if="(state.variableCategoryName != 'Emotions' && state.variableCategoryName != 'Symptoms')">
                 <div class="col col-l">
                     <span class="input-label">Unit</span>
                 </div>

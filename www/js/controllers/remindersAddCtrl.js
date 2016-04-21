@@ -52,6 +52,15 @@ angular.module('starter')
         // state
 	    $scope.state = {
             // category object,
+            title : "Add Reminder",
+            variablePlaceholderText : "Search for a variable here...",
+            defaultValuePlaceholderText : "Enter most common value here...",
+            showAddVariable : false,
+            addNewVariableButtonText : '+ Add a new variable',
+            addNewVariableCardText : 'Add a new variable',
+            variableId : null,
+            variableName : null,
+            combinationOperation : null,
             unitCategories : {},
             resultsHeaderText : '',
 	    	showVariableCategory : false,
@@ -61,8 +70,8 @@ angular.module('starter')
             showAddVariableButton : false,
             show_units: false,
             variableSearchQuery : "",
-	    	selectedVariableCategory : 'Anything',
-	    	selectedUnit : '',
+	    	variableCategoryName : 'Anything',
+	    	abbreviatedUnitName : '',
 	    	searching : false,
 	    	selectedFrequency : 'Hourly',
 	    	selectedReminder : false,
@@ -84,8 +93,8 @@ angular.module('starter')
 			firstSelectedTime : moment.utc().format('HH:mm:ss'),
 			secondSelectedTime : moment.utc().format('HH:mm:ss'),
 			thirdSelectedTime : moment.utc().format('HH:mm:ss'),
-
-            variable_value : ""
+            defaultValue : ""
+            
 	    };
 
         // lists
@@ -96,31 +105,6 @@ angular.module('starter')
             unitCategories : []
         };
 
-
-		$scope.state.showAddVariable = false;
-
-        $scope.state.addNewVariableButtonText = '+ Add a new variable';
-        $scope.state.addNewVariableCardText = 'Add a new variable';
-		console.log("$stateParams.variableCategoryName  is " + $stateParams.variableCategoryName);
-
-		if($stateParams.variableCategoryName){
-            $scope.state.variableCategorySingular = pluralize($stateParams.variableCategoryName, 1);
-			$scope.state.variableCategoryNameSingularLowercase = $filter('wordAliases')(pluralize($stateParams.variableCategoryName.toLowerCase()), 1);
-			$scope.state.title = "Add a " + $filter('wordAliases')(pluralize($stateParams.variableCategoryName, 1) + " Reminder");
-            $scope.state.addNewVariableButtonText = "+ Add a new " + $filter('wordAliases')(pluralize($stateParams.variableCategoryName.toLowerCase(), 1));
-            $scope.state.addNewVariableCardText = "Add a new " + $filter('wordAliases')(pluralize($stateParams.variableCategoryName.toLowerCase(), 1));
-			$scope.state.variablePlaceholderText =
-				"Search for a " + $scope.state.variableCategoryNameSingularLowercase + " here..";
-		} else {
-			$scope.state.title = "Add Reminder";
-			$scope.state.variablePlaceholderText = "Search for a variable here...";
-		}
-
-		if($stateParams.variableCategoryName === "Treatments") {
-			$scope.state.defaultValuePlaceholderText = "Enter dosage here...";
-		} else {
-			$scope.state.defaultValuePlaceholderText = "Enter most common value here...";
-		}
 
 	    // data
 	    $scope.variables = {
@@ -178,9 +162,9 @@ angular.module('starter')
 			$scope.state.showResults = false;
 			$scope.state.showAddVariable = true;
             $scope.state.showReminderFrequencyCard = true;
-            $scope.state.variableName = $scope.state.variableSearchQuery;
+			$scope.state.variableName = $scope.state.variableSearchQuery;
 
-            $scope.state.variable_value = "";
+            $scope.state.defaultValue = "";
             $scope.getUnits();
 
 		};
@@ -236,8 +220,8 @@ angular.module('starter')
     		utils.startLoading();
 	    	// get user token
 			authService.getAccessTokenFromAnySource().then(function(token){
-			   	console.log('$scope.state.selectedVariableCategory.toLowerCase()', $scope.state.selectedVariableCategory.toLowerCase());
-				if($scope.state.selectedVariableCategory.toLowerCase() === 'anything'){
+			   	console.log('$scope.state.variableCategoryName.toLowerCase()', $scope.state.variableCategoryName.toLowerCase());
+				if($scope.state.variableCategoryName.toLowerCase() === 'anything'){
 					// get all variables
 					console.log('anything');
 					measurementService.getVariables().then(function(variables){
@@ -273,17 +257,17 @@ angular.module('starter')
 
 	    // when category is selected
 	    $scope.onVariableCategoryChange = function(){
-	    	console.log("Variable category selected: ", $scope.state.selectedVariableCategory);
-	    	$scope.category = $scope.state.selectedVariableCategory;
+	    	console.log("Variable category selected: ", $scope.state.variableCategoryName);
 	    	$scope.state.variableSearchQuery = '';
 	    	$scope.state.showResults = false;
 	    	$scope.state.showSearchBox = true;
+            setupVariableCategory($scope.state.variableCategoryName);
 	    };
 
 	    var search = function(query){
 	    	// search server for the query
 
-	    	if($scope.state.selectedVariableCategory.toLowerCase() === 'anything'){
+	    	if($scope.state.variableCategoryName.toLowerCase() === 'anything'){
 	    		console.log('anything');
 	    		measurementService.searchVariablesIncludePublic(query)
 	    		.then(function(variables){
@@ -299,7 +283,7 @@ angular.module('starter')
 	    		});
 	    	} else {
 	    		console.log('with category');
-	    		measurementService.searchVariablesByCategoryIncludePublic(query, $scope.category)
+	    		measurementService.searchVariablesByCategoryIncludePublic(query, $scope.variableCategoryName)
 	    		.then(function(variables){
 
 	    		    // populate list with results
@@ -310,7 +294,7 @@ angular.module('starter')
                     if(variables.length < 1){
                         $scope.state.showAddVariableButton = true;
 						$scope.state.addNewVariableButtonText = '+ Add new ' + $scope.state.variableSearchQuery + ' variable';
-						$scope.state.addNewVariableCardText = '';
+						$scope.state.addNewVariableCardText = 'Add new ' + $scope.state.variableSearchQuery + ' variable';
                     }
 	    		});
 	    	}
@@ -319,9 +303,9 @@ angular.module('starter')
 	    // when a query is searched in the search box
 	    $scope.onSearch = function(){
 	    	console.log("Search: ", $scope.state.variableSearchQuery);
-	    	if($scope.state.variableSearchQuery == ""){
-	    		$scope.state.resultsHeaderText = "Your previously tracked "+ $scope.category;
-	    		$scope.state.showResults = $stateParams.category? true : false;
+	    	if($scope.state.variableSearchQuery === ""){
+	    		$scope.state.resultsHeaderText = "Your previously tracked "+ $scope.variableCategoryName;
+	    		$scope.state.showResults = $stateParams.variableCategoryName? true : false;
 	    		$scope.state.searching = false;	    		
 	    	} else {
 	    		$scope.state.resultsHeaderText = "Search Results";
@@ -334,14 +318,20 @@ angular.module('starter')
 	    // when a search result is selected
 	    $scope.onReminderSelect = function(result){
 	    	console.log("Reminder Selected: ", result);
-	    	$scope.state.selectedReminder = result;
+            $scope.state.variableName = result.variableName;
+            $scope.state.variableCategoryName = result.variableCategoryName;
+            $scope.state.variableCategoryId = result.variableCategoryId;
+            $scope.state.abbreviatedUnitName = result.abbreviatedUnitName;
+            $scope.state.combinationOperation = result.combinationOperation;
+            $scope.state.id = result.id;
+            $scope.state.variableId = result.variableId;
 
 	    	$scope.state.showResults = false;
 	    	$scope.state.showSearchBox = false;
 	    	$scope.state.showReminderFrequencyCard = true;
 
-	    	$scope.state.selectedUnit = result.abbreviatedUnitName;
-	    	//$scope.state.selectedDefaultValue = result.mostCommonValue? result.mostCommonValue : result.lastValue;
+	    	$scope.state.abbreviatedUnitName = result.abbreviatedUnitName;
+	    	//$scope.state.defaultValue = result.mostCommonValue? result.mostCommonValue : result.lastValue;
 	    };
 
 	    var utils = {
@@ -410,35 +400,35 @@ angular.module('starter')
 
 	    $scope.edit = function(){
 
+
 	    	console.log("Editing \n the reminder is ", $scope.state.selectedReminder);
 	    	console.log("frequency is ", $scope.state.selectedFrequency);
-	    	console.log("default Value is ", $scope.state.selectedDefaultValue);
-	    	console.log("default Unit is ", $scope.state.selectedUnit);
+	    	console.log("default Value is ", $scope.state.defaultValue);
+	    	console.log("default Unit is ", $scope.state.abbreviatedUnitName);
 
-	    	console.log($scope.state.selectedReminder.id,
-	    		$scope.state.selectedReminder.variableId,
-                $scope.state.selectedDefaultValue,
-                getFrequencyChart()[$scope.state.selectedFrequency], 
-                $scope.state.selectedReminder.variableName,
-                $scope.state.selectedReminder.variableCategoryName,
-                $scope.state.selectedReminder.abbreviatedUnitName,
-                $scope.state.selectedReminder.combinationOperation,
+	    	console.log($scope.state.id,
+	    		$scope.state.variableId,
+                $scope.state.defaultValue,
+                getFrequencyChart()[$scope.state.selectedFrequency],
+                $scope.state.variableName,
+                $scope.state.variableCategoryName,
+                $scope.state.abbreviatedUnitName,
+                $scope.state.combinationOperation,
                 ($scope.state.selectedFrequency.indexOf("a day") !== -1)? $scope.state.firstSelectedTime : null,
                 ($scope.state.selectedFrequency === "Three times a day" || $scope.state.selectedFrequency === "Twice a day")? $scope.state.secondSelectedTime : null,
                 ($scope.state.selectedFrequency === "Three times a day")? $scope.state.thirdSelectedTime : null);
 
 	    	utils.startLoading();
-            $scope.state.variableName = $scope.state.selectedReminder.variableName;
 
 	    	reminderService.postTrackingReminder(
-	    		$scope.state.selectedReminder.id,
-				$scope.state.selectedReminder.variableId,
-                $scope.state.selectedDefaultValue,
-                getFrequencyChart()[$scope.state.selectedFrequency], 
+	    		$scope.state.id,
+				$scope.state.variableId,
+                $scope.state.defaultValue,
+                getFrequencyChart()[$scope.state.selectedFrequency],
                 $scope.state.variableName,
-                $scope.state.selectedReminder.variableCategoryName,
-                $scope.state.selectedReminder.abbreviatedUnitName,
-                $scope.state.selectedReminder.combinationOperation,
+                $scope.state.variableCategoryName,
+                $scope.state.abbreviatedUnitName,
+                $scope.state.combinationOperation,
                 ($scope.state.selectedFrequency.indexOf("a day") !== -1)? $scope.state.firstSelectedTime : null,
                 ($scope.state.selectedFrequency === "Three times a day" || $scope.state.selectedFrequency === "Twice a day")? $scope.state.secondSelectedTime : null,
                 ($scope.state.selectedFrequency === "Three times a day")? $scope.state.thirdSelectedTime : null)
@@ -488,16 +478,16 @@ angular.module('starter')
 
 	    	console.log("Saving \n the reminder is ", $scope.state.selectedReminder);
 	    	console.log("frequency is ", $scope.state.selectedFrequency);
-	    	console.log("default Value is ", $scope.state.selectedDefaultValue);
-	    	console.log("default Unit is ", $scope.state.selectedUnit);
+	    	console.log("default Value is ", $scope.state.defaultValue);
+	    	console.log("default Unit is ", $scope.state.abbreviatedUnitName);
 
-	    	console.log($scope.state.selectedReminder.id,
-                $scope.state.selectedDefaultValue,
+	    	console.log($scope.state.id,
+                $scope.state.defaultValue,
                 getFrequencyChart()[$scope.state.selectedFrequency], 
-                $scope.state.selectedReminder.name,
-                $scope.state.selectedReminder.category,
-                $scope.state.selectedReminder.abbreviatedUnitName,
-                $scope.state.selectedReminder.combinationOperation,
+                $scope.state.variableName,
+                $scope.state.variableCategoryName,
+                $scope.state.abbreviatedUnitName,
+                $scope.state.combinationOperation,
                 ($scope.state.selectedFrequency.indexOf("a day") !== -1)? $scope.state.firstSelectedTime : null,
                 ($scope.state.selectedFrequency === "Three times a day" || $scope.state.selectedFrequency === "Twice a day")? $scope.state.secondSelectedTime : null,
                 ($scope.state.selectedFrequency === "Three times a day")? $scope.state.thirdSelectedTime : null);
@@ -505,13 +495,13 @@ angular.module('starter')
 	    	utils.startLoading();
 
 	    	reminderService.addNewReminder(
-	    		$scope.state.selectedReminder.id,
-                $scope.state.selectedDefaultValue,
+	    		$scope.state.id,
+                $scope.state.defaultValue,
                 getFrequencyChart()[$scope.state.selectedFrequency], 
-                $scope.state.selectedReminder.name,
-                $scope.state.selectedReminder.category,
-                $scope.state.selectedReminder.abbreviatedUnitName,
-                $scope.state.selectedReminder.combinationOperation,
+                $scope.state.variableName,
+                $scope.state.variableCategoryName,
+                $scope.state.abbreviatedUnitName,
+                $scope.state.combinationOperation,
                 ($scope.state.selectedFrequency.indexOf("a day") !== -1)? $scope.state.firstSelectedTime : null,
                 ($scope.state.selectedFrequency === "Three times a day" || $scope.state.selectedFrequency === "Twice a day")? $scope.state.secondSelectedTime : null,
                 ($scope.state.selectedFrequency === "Three times a day")? $scope.state.thirdSelectedTime : null)
@@ -554,7 +544,6 @@ angular.module('starter')
 	    // setup editing view
 	    var setupEditReminder = function(){
 	    	$scope.state.selectedReminder = $stateParams.reminder;
-            $scope.state.variableName = $scope.state.selectedReminder.variableName;
 	    	$scope.state.title = "Edit " + $scope.state.variableName + " Reminder";
 	    	
 	    	var reverseFrequencyChart = {
@@ -581,16 +570,15 @@ angular.module('starter')
 				$scope.state.thirdSelectedTime = $stateParams.reminder.thirdDailyReminderTime;
 			}
 
-	    	$scope.state.selectedUnit = $scope.state.selectedReminder.abbreviatedUnitName;
-	    	$scope.state.selectedDefaultValue = $scope.state.selectedReminder.defaultValue;
+	    	$scope.state.defaultValue = $scope.state.defaultValue;
 	    	
-	    	if($scope.state.selectedReminder.reminderFrequency && $scope.state.selectedReminder.reminderFrequency !== null){	    		
-	    		$scope.state.selectedFrequency = reverseFrequencyChart[$scope.state.selectedReminder.reminderFrequency];
-	    	} else if($scope.state.selectedReminder.thirdDailyReminderTime){
+	    	if($scope.state.reminderFrequency && $scope.state.reminderFrequency !== null){	    		
+	    		$scope.state.selectedFrequency = reverseFrequencyChart[$scope.state.reminderFrequency];
+	    	} else if($scope.state.thirdDailyReminderTime){
 	    		$scope.state.selectedFrequency = "Three times a day";
-	    	} else if($scope.state.selectedReminder.secondDailyReminderTime){
+	    	} else if($scope.state.secondDailyReminderTime){
 	    		$scope.state.selectedFrequency = "Twice a day";
-	    	} else if($scope.state.selectedReminder.firstDailyReminderTime){
+	    	} else if($scope.state.firstDailyReminderTime){
 	    		$scope.state.selectedFrequency = "Once a day";
 	    	}
 
@@ -601,30 +589,46 @@ angular.module('starter')
 	    };
 
 	    // setup category view
-	    var setupCategory = function(category){
+	    var setupVariableCategory = function(variableCategoryName){
+            $scope.state.variableCategorySingular = pluralize(variableCategoryName, 1);
+            $scope.state.variableCategoryNameSingularLowercase = $filter('wordAliases')(pluralize(variableCategoryName.toLowerCase()), 1);
+            $scope.state.title = "Add a " + $filter('wordAliases')(pluralize(variableCategoryName, 1) + " Reminder");
+            $scope.state.addNewVariableButtonText = "+ Add a new " + $filter('wordAliases')(pluralize(variableCategoryName.toLowerCase(), 1));
+            $scope.state.addNewVariableCardText = "Add a new " + $filter('wordAliases')(pluralize(variableCategoryName.toLowerCase(), 1));
+            $scope.state.variablePlaceholderText =
+                "Search for a " + $scope.state.variableCategoryNameSingularLowercase + " here..";
+            $scope.state.showVariableCategorySelector = false;
 	    	$scope.state.showSearchBox = true;
 	    	$scope.state.showResults = true;
-	    	$scope.state.resultsHeaderText = "Your previously tracked "+category;
-	    	$scope.state.selectedVariableCategory = category;
-			$scope.state.variableCategoryNameSingularLowercase = $filter('wordAliases')(pluralize($stateParams.category.toLowerCase()), 1);
-			populate_recent_tracked(category);
+	    	$scope.state.resultsHeaderText = "Your previously tracked "+ variableCategoryName;
+	    	$scope.state.variableCategoryName = variableCategoryName;
+			$scope.state.variableCategoryNameSingularLowercase = $filter('wordAliases')(pluralize(variableCategoryName.toLowerCase()), 1);
+            if(variableCategoryName === "Treatments") {
+                $scope.state.defaultValuePlaceholderText = "Enter dosage here...";
+            }
+			populate_recent_tracked(variableCategoryName);
 	    };
 
 	    // setup new reminder view
 	    var setupNewReminder = function(){
-	    	$scope.state.showVariableCategory = true;
+	    	$scope.state.showVariableCategorySelector = true;
 	    	$scope.state.showSearchBox = true;
 	    };
 
 	    // constructor
 	    $scope.init = function(){
+            
+            if($stateParams.variableCategoryName){
+                console.log("$stateParams.variableCategoryName  is " + $stateParams.variableCategoryName);
+                setupVariableCategory($stateParams.variableCategoryName);
+            }
 
-            $scope.state.variable_value = "";
+            $scope.state.defaultValue = "";
 			// get user token
 			authService.getAccessTokenFromAnySource().then(function(token){
-				if($stateParams.category){
-					$scope.category = $stateParams.category;
-					setupCategory($scope.category);
+				if($stateParams.variableCategoryName){
+					$scope.variableCategoryName = $stateParams.variableCategoryName;
+					setupVariableCategory($scope.variableCategoryName);
 				}
 				else if($stateParams.reminder && $stateParams.reminder !== null) {
 					setupEditReminder($stateParams.reminder);
@@ -673,7 +677,9 @@ angular.module('starter')
                     $scope.state.searchedUnits = unitMatches;
                 }, 100);
 
-            } else $scope.state.show_units = false;
+            } else {
+                $scope.state.show_units = false;
+            }
         };
 
         // when a unit is selected
@@ -681,13 +687,14 @@ angular.module('starter')
             console.log("selecting_unit",unit);
 
             // update viewmodel
+            $scope.state.abbreviatedUnitName = unit.abbreviatedName;
             $scope.state.unit_text = unit.abbreviatedName;
             $scope.state.show_units = false;
             $scope.state.selected_sub = unit.abbreviatedName;
         };
 
         $scope.toggleShowUnits = function(){
-            $scope.flags.show_units=!$scope.flags.show_units;
+            $scope.state.show_units=!$scope.state.show_units;
         };
 
         $scope.showUnitsDropDown = function(){
@@ -735,5 +742,5 @@ angular.module('starter')
             });
 
 
-        }
+        };
 	});
