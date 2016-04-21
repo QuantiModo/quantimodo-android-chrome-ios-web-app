@@ -33,13 +33,64 @@
                 </ion-item>
             </ion-list>
         	<a class="item" ng-repeat="result in variables.list | unique:'id' " ng-click="onReminderSelect(result)">{{result.name}}</a>
+            <ion-list ng-show="state.showAddVariableButton">
+                <ion-item style="border-top: 1px solid rgb(221, 221, 221);" ng-click="add_variable()">
+                    {{state.addNewVariableButtonText}}
+                </ion-item>
+            </ion-list>
         </div>
 
-        <div class="list card" ng-show="state.showCustomBox">
-        	<div class="item item-divider" style="background-color:#11c1f3; color:white;">{{state.selectedReminder.name}} reminder settings</div>
-        	<div class="row labeled-control">
+        <div class="card" ng-show="state.showAddVariable">
+            <div class="list">
+                <p class="heading calm" style="padding:14px;">{{state.addNewVariableCardText}}</p>
+
+
+                <label class="item item-input item-select" ng-show="state.showCategoryAsSelector">
+                    <div class="input-label">
+                        Select category
+                    </div>
+                    <select ng-model="state.variable_category" ng-change=>
+                        <option ng-repeat="i in state.variableCategories track by i.id" value="{{i.name}}">
+                            {{i.name}}
+                        </option>
+                    </select>
+                </label>
+
+                <label class="item item-input item-stacked-label">
+                    <span class="input-label">{{state.variableCategoryName | singularize}}Name</span>
+                    <input type="text" ng-model="state.variableName" id="variable_name" placeholder="Enter the new variable name here...">
+                </label>
+            </div>
+
+<!--            <div class="card" ng-show="state.showAddVariable">
+                <p style="padding:14px;">How should we combine data over multiple days?</p>
+
+                <label class="item item-radio">
+                    <input type="radio" ng-model="state.sumAvg" value="sum" name="group">
+                    <div class="item-content">
+                        Sum (i.e. Apples eaten)
+                    </div>
+                    <i class="radio-icon ion-checkmark"></i>
+                </label>
+
+                <label class="item item-radio">
+                    <input type="radio" ng-model="state.sumAvg" value="avg" name="group">
+                    <div class="item-content">
+                        Average (i.e. Your weight)
+                    </div>
+                    <i class="radio-icon ion-checkmark"></i>
+                </label>
+            </div>-->
+        </div>
+
+
+        <div class="list card" ng-show="state.showReminderFrequencyCard">
+        	<div class="item item-divider" style="background-color:#11c1f3; color:white;">{{state.variableName}} reminder settings</div>
+
+<!--
+            <div class="row labeled-control">
         		<div id="rem-set-left" class="col">
-        			<input type="number" style="width:100%;text-align:right;" placeholder={{state.defaultValuePlaceholderText}} ng-model="state.selectedDefaultValue" class="uptop">
+        			<input type="number" style="width:100%;text-align:right;" placeholder={{state.defaultValuePlaceholderText}} ng-model="state.variable_value" class="uptop">
         		</div>
         		<div id="rem-set-right" class="col col-r">
         			<span>
@@ -47,6 +98,54 @@
         			</span>
         		</div>
         	</div>
+-->
+
+            <div ng-if="(flags.category != 'Emotions' && flags.category != 'Symptoms')" class="row labeled-control">
+                <div class="col col-l">
+                        <span>
+                            Value
+                        </span>
+                </div>
+                <div class="col">
+                    <input type="text" ng-model="state.variable_value" id="variable_value" placeholder={{state.defaultValuePlaceholderText}} class="uptop">
+                </div>
+            </div>
+
+
+            <div class="row labeled-control" ng-if="(state.category != 'Emotions' && state.category != 'Symptoms')">
+                <div class="col col-l">
+                    <span class="input-label">Unit</span>
+                </div>
+                <div class="col">
+                    <div class="row uptop" style="padding-left:0px;">
+                        <div class="col" style="padding-top:5px;">
+
+                            <!-- Default to most common unit when tracking measurement, and always keep it editable-->
+                            <input type="text" ng-change="unit_search(state.unit_text)" ng-model="state.unit_text" placeholder="Search for a unit...">
+
+                            <!-- Below replaced by above so that we can always change the unit-->
+                            <!-- Default to most common unit when adding new variable, keep it editable-->
+                            <!--
+                            <input type="text" ng-show="state.showAddVariable" ng-change="unit_search(state.unit_text)" ng-model="state.unit_text" placeholder="Type to search">
+                            -->
+                            <!-- Lock to default unit when tracking measurement for existing variable-->
+                            <!--
+                            <span ng-show="!state.showAddVariable">{{state.selected_sub}}</span>
+                            -->
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <div class="card" ng-show="state.show_units && state.searchedUnits.length">
+                <div class="list">
+                    <ion-list>
+                        <ion-item ng-repeat="unit in state.searchedUnits" on-tap="unit_selected(unit)">
+                            {{unit.name}} ({{unit.abbreviatedName}})
+                        </ion-item>
+                    </ion-list>
+                </div>
+            </div>
 
         	<label class="item item-input item-select">
         		<div class="input-label" style="white-space:normal; width: 60%">

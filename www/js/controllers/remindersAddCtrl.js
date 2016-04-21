@@ -83,18 +83,34 @@ angular.module('starter')
 			},
 			firstSelectedTime : moment.utc().format('HH:mm:ss'),
 			secondSelectedTime : moment.utc().format('HH:mm:ss'),
-			thirdSelectedTime : moment.utc().format('HH:mm:ss')
+			thirdSelectedTime : moment.utc().format('HH:mm:ss'),
+
+            variable_value : ""
 	    };
 
+        // lists
+        $scope.lists = {
+            list : [],
+            userVariables : [],
+            searchVariables : [],
+            unitCategories : []
+        };
 
+
+		$scope.state.showAddVariable = false;
+
+        $scope.state.addNewVariableButtonText = '+ Add a new variable';
+        $scope.state.addNewVariableCardText = 'Add a new variable';
 		console.log("$stateParams.category  is " + $stateParams.category);
 
 		if($stateParams.category){
             $scope.state.variableCategorySingular = pluralize($stateParams.category, 1);
-
+			$scope.state.variableCategoryNameSingularLowercase = $filter('wordAliases')(pluralize($stateParams.category.toLowerCase()), 1);
 			$scope.state.title = "Add a " + $filter('wordAliases')(pluralize($stateParams.category, 1) + " Reminder");
+            $scope.state.addNewVariableButtonText = "+ Add a new " + $filter('wordAliases')(pluralize($stateParams.category.toLowerCase(), 1));
+            $scope.state.addNewVariableCardText = "Add a new " + $filter('wordAliases')(pluralize($stateParams.category.toLowerCase(), 1));
 			$scope.state.variablePlaceholderText =
-				"Search for a " + $filter('wordAliases')(pluralize($stateParams.category.toLowerCase(), 1)) + " here..";
+				"Search for a " + $scope.state.variableCategoryNameSingularLowercase + " here..";
 		} else {
 			$scope.state.title = "Add Reminder";
 			$scope.state.variablePlaceholderText = "Search for a variable here...";
@@ -152,6 +168,23 @@ angular.module('starter')
 				}
 			}
 		};
+
+		// when add new variable is tapped
+		$scope.add_variable = function(){
+			console.log("add variable");
+
+
+			$scope.state.showSearchBox = false;
+			$scope.state.showResults = false;
+			$scope.state.showAddVariable = true;
+            $scope.state.showReminderFrequencyCard = true;
+            $scope.state.variableName = $scope.state.variableSearchQuery;
+
+            $scope.state.variable_value = "";
+            $scope.getUnits();
+
+		};
+
 
 		$scope.firstTimePicker = function() {
 			ionicTimePicker.openTimePicker(firstTimePicker);
@@ -260,6 +293,9 @@ angular.module('starter')
 	    		    $scope.searchVariables = variables;
 	    		    $scope.variables.list = $scope.searchVariables;
 	    		    $scope.state.searching = false;
+                    if(variables.length < 5){
+                        $scope.state.showAddVariableButton = true;
+                    }
 	    		});
 	    	} else {
 	    		console.log('with category');
@@ -271,6 +307,11 @@ angular.module('starter')
 	    		    $scope.searchVariables = variables;
 	    		    $scope.variables.list = $scope.searchVariables;
 	    		    $scope.state.searching = false;
+                    if(variables.length < 1){
+                        $scope.state.showAddVariableButton = true;
+						$scope.state.addNewVariableButtonText = '+ Add new ' + $scope.state.variableSearchQuery + ' variable';
+						$scope.state.addNewVariableCardText = '';
+                    }
 	    		});
 	    	}
 	    };
@@ -299,7 +340,7 @@ angular.module('starter')
 	    	$scope.state.showSearchBox = false;
 	    	$scope.state.showReminderFrequencyCard = true;
 
-	    	$scope.state.selectedUnit = result.abbreviatedUnitName? result.abbreviatedUnitName : result.lastUnit;
+	    	$scope.state.selectedUnit = result.abbreviatedUnitName;
 	    	//$scope.state.selectedDefaultValue = result.mostCommonValue? result.mostCommonValue : result.lastValue;
 	    };
 
@@ -308,7 +349,7 @@ angular.module('starter')
     	    	// show spinner
     			$ionicLoading.show({
     				noBackdrop: true,
-    				template: '<p class="item-icon-left">Making stuff happen...<ion-spinner icon="lines"/></p>'
+    				template: '<p class="item-icon-left">Thank you for your patience.  Your call is very important to us...<ion-spinner icon="lines"/></p>'
     		    });
     	    },
 
@@ -387,13 +428,14 @@ angular.module('starter')
                 ($scope.state.selectedFrequency === "Three times a day")? $scope.state.thirdSelectedTime : null);
 
 	    	utils.startLoading();
+            $scope.state.variableName = $scope.state.selectedReminder.variableName;
 
 	    	reminderService.postTrackingReminder(
 	    		$scope.state.selectedReminder.id,
 				$scope.state.selectedReminder.variableId,
                 $scope.state.selectedDefaultValue,
                 getFrequencyChart()[$scope.state.selectedFrequency], 
-                $scope.state.selectedReminder.variableName,
+                $scope.state.variableName,
                 $scope.state.selectedReminder.variableCategoryName,
                 $scope.state.selectedReminder.abbreviatedUnitName,
                 $scope.state.selectedReminder.combinationOperation,
@@ -512,7 +554,8 @@ angular.module('starter')
 	    // setup editing view
 	    var setupEditReminder = function(){
 	    	$scope.state.selectedReminder = $stateParams.reminder;
-	    	$scope.state.title = "Edit " + $scope.state.selectedReminder.variableName + " Reminder";
+            $scope.state.variableName = $scope.state.selectedReminder.variableName;
+	    	$scope.state.title = "Edit " + $scope.state.variableName + " Reminder";
 	    	
 	    	var reverseFrequencyChart = {
 	    		43200: "Every 12 hours",
@@ -563,7 +606,8 @@ angular.module('starter')
 	    	$scope.state.showResults = true;
 	    	$scope.state.resultsHeaderText = "Your previously tracked "+category;
 	    	$scope.state.selectedVariableCategory = category;
-	    	populate_recent_tracked(category);
+			$scope.state.variableCategoryNameSingularLowercase = $filter('wordAliases')(pluralize($stateParams.category.toLowerCase()), 1);
+			populate_recent_tracked(category);
 	    };
 
 	    // setup new reminder view
@@ -575,6 +619,7 @@ angular.module('starter')
 	    // constructor
 	    $scope.init = function(){
 
+            $scope.state.variable_value = "";
 			// get user token
 			authService.getAccessTokenFromAnySource().then(function(token){
 				if($stateParams.category){
@@ -608,4 +653,87 @@ angular.module('starter')
 				template: template
 			});
 	    };
+
+        $scope.unit_search = function(){
+
+            var unitSearchQuery = $scope.state.unit_text;
+            if(unitSearchQuery !== ""){
+                $scope.state.show_units = true;
+                var unitMatches = $scope.state.units.filter(function(unit) {
+                    return unit.abbreviatedName.toLowerCase().indexOf(unitSearchQuery.toLowerCase()) !== -1;
+                });
+
+                if(unitMatches.length < 1){
+                    unitMatches = $scope.state.units.filter(function(unit) {
+                        return unit.name.toLowerCase().indexOf(unitSearchQuery.toLowerCase()) !== -1;
+                    });
+                }
+
+                $timeout(function() {
+                    $scope.state.searchedUnits = unitMatches;
+                }, 100);
+
+            } else $scope.state.show_units = false;
+        };
+
+        // when a unit is selected
+        $scope.unit_selected = function(unit){
+            console.log("selecting_unit",unit);
+
+            // update viewmodel
+            $scope.state.unit_text = unit.abbreviatedName;
+            $scope.state.show_units = false;
+            $scope.state.selected_sub = unit.abbreviatedName;
+        };
+
+        $scope.toggleShowUnits = function(){
+            $scope.flags.show_units=!$scope.flags.show_units;
+        };
+
+        $scope.showUnitsDropDown = function(){
+            $scope.showUnitsDropDown = true;
+        };
+
+        $scope.getUnits = function () {
+            // get units
+            measurementService.refreshUnits();
+            measurementService.getUnits().then(function (units) {
+
+                $scope.state.units = units;
+
+                // populate unitCategories
+                for (var i in units) {
+                    if ($scope.lists.unitCategories.indexOf(units[i].category) === -1) {
+                        $scope.lists.unitCategories.push(units[i].category);
+                        $scope.state.unitCategories[units[i].category] = [{
+                            name: units[i].name,
+                            abbreviatedName: units[i].abbreviatedName
+                        }];
+                    } else {
+                        $scope.state.unitCategories[units[i].category].push({
+                            name: units[i].name,
+                            abbreviatedName: units[i].abbreviatedName
+                        });
+                    }
+                }
+
+                // set default unit category
+                $scope.selected_unit_category = 'Duration';
+
+                // set first sub unit of selected category
+                $scope.state.selected_sub = $scope.state.unitCategories[$scope.selected_unit_category][0].abbreviatedName;
+
+                console.log("got units", units);
+
+                // if (variableCategoryConfig[category].default_unit) {
+                //     set_unit(variableCategoryConfig[category].default_unit);
+                // }
+
+                // hide spinner
+                $ionicLoading.hide();
+
+            });
+
+
+        }
 	});
