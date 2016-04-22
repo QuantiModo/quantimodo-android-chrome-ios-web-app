@@ -304,33 +304,41 @@ angular.module('starter')
 	    $scope.onSearch = function(){
 	    	console.log("Search: ", $scope.state.variableSearchQuery);
 	    	if($scope.state.variableSearchQuery === ""){
-	    		$scope.state.resultsHeaderText = "Your previously tracked "+ $scope.variableCategoryName;
-	    		$scope.state.showResults = $stateParams.variableCategoryName? true : false;
-	    		$scope.state.searching = false;	    		
-	    	} else {
-	    		$scope.state.resultsHeaderText = "Search Results";
-	    		$scope.state.showResults = true;
-	    		$scope.state.searching = true;
-	    		search($scope.state.variableSearchQuery);
+	    		$scope.state = 
+                    {
+                        resultsHeaderText : "Your previously tracked " + $scope.variableCategoryName,
+                        showResults : $stateParams.variableCategoryName? true : false,
+                        searching : false
+                    }
+            } else {
+                $scope.state =
+                {
+                    resultsHeaderText : "Search Results",
+                    showResults : true,
+                    searching : true,
+                    addNewVariableButtonText : 'Add a new "' + $scope.state.variableSearchQuery + '"'
+                        + pluralize($stateParams.variableCategoryName.toLocaleLowerCase(), 1) + ' variable'
+                };
+                search($scope.state.variableSearchQuery);
+
 	    	}
 	    };
 
 	    // when a search result is selected
 	    $scope.onReminderSelect = function(result){
 	    	console.log("Reminder Selected: ", result);
-            $scope.state.variableName = result.variableName;
-            $scope.state.variableCategoryName = result.variableCategoryName;
-            $scope.state.variableCategoryId = result.variableCategoryId;
-            $scope.state.abbreviatedUnitName = result.abbreviatedUnitName;
-            $scope.state.combinationOperation = result.combinationOperation;
-            $scope.state.id = result.id;
-            $scope.state.variableId = result.variableId;
-
-	    	$scope.state.showResults = false;
-	    	$scope.state.showSearchBox = false;
-	    	$scope.state.showReminderFrequencyCard = true;
-
-	    	$scope.state.abbreviatedUnitName = result.abbreviatedUnitName;
+            $scope.state = {
+                variableCategoryName : result.variableCategoryName,
+                variableCategoryId : result.variableCategoryId,
+                abbreviatedUnitName : result.abbreviatedUnitName,
+                combinationOperation : result.combinationOperation,
+                id : result.id,
+                variableId : result.variableId,
+                variableName : result.variableName,
+                showResults : false,
+                showSearchBox : false,
+                showReminderFrequencyCard : true
+            };
 	    	//$scope.state.defaultValue = result.mostCommonValue? result.mostCommonValue : result.lastValue;
 	    };
 
@@ -569,8 +577,6 @@ angular.module('starter')
 			if(typeof $stateParams.reminder.thirdDailyReminderTime !== "undefined" && $stateParams.reminder.thirdDailyReminderTime !== null){
 				$scope.state.thirdSelectedTime = $stateParams.reminder.thirdDailyReminderTime;
 			}
-
-	    	$scope.state.defaultValue = $scope.state.defaultValue;
 	    	
 	    	if($scope.state.reminderFrequency && $scope.state.reminderFrequency !== null){	    		
 	    		$scope.state.selectedFrequency = reverseFrequencyChart[$scope.state.reminderFrequency];
@@ -590,21 +596,28 @@ angular.module('starter')
 
 	    // setup category view
 	    var setupVariableCategory = function(variableCategoryName){
-            $scope.state.variableCategorySingular = pluralize(variableCategoryName, 1);
-            $scope.state.variableCategoryNameSingularLowercase = $filter('wordAliases')(pluralize(variableCategoryName.toLowerCase()), 1);
-            $scope.state.title = "Add a " + $filter('wordAliases')(pluralize(variableCategoryName, 1) + " Reminder");
-            $scope.state.addNewVariableButtonText = "+ Add a new " + $filter('wordAliases')(pluralize(variableCategoryName.toLowerCase(), 1));
-            $scope.state.addNewVariableCardText = "Add a new " + $filter('wordAliases')(pluralize(variableCategoryName.toLowerCase(), 1));
-            $scope.state.variablePlaceholderText =
-                "Search for a " + $scope.state.variableCategoryNameSingularLowercase + " here..";
-            $scope.state.showVariableCategorySelector = false;
-	    	$scope.state.showSearchBox = true;
-	    	$scope.state.showResults = true;
-	    	$scope.state.resultsHeaderText = "Your previously tracked "+ variableCategoryName;
-	    	$scope.state.variableCategoryName = variableCategoryName;
-			$scope.state.variableCategoryNameSingularLowercase = $filter('wordAliases')(pluralize(variableCategoryName.toLowerCase()), 1);
+            $scope.state = 
+            {
+                variableCategorySingular : pluralize(variableCategoryName, 1),
+                title : "Add a " + $filter('wordAliases')(pluralize(variableCategoryName, 1) + " Reminder"),
+                addNewVariableButtonText : "+ Add a new " + $filter('wordAliases')(pluralize(variableCategoryName.toLowerCase(), 1)),
+                addNewVariableCardText : "Add a new " + $filter('wordAliases')(pluralize(variableCategoryName.toLowerCase(), 1)),
+                variablePlaceholderText :
+                    "Search for a " + $filter('wordAliases')(pluralize(variableCategoryName.toLowerCase(), 1)) + " here..",
+                showVariableCategorySelector : false,
+                showSearchBox : true,
+                showResults : true,
+                resultsHeaderText : "Your previously tracked "+ variableCategoryName,
+                variableCategoryNameSingularLowercase : $filter('wordAliases')(pluralize(variableCategoryName.toLowerCase()), 1),
+            };
+            
             if(variableCategoryName === "Treatments") {
-                $scope.state.defaultValuePlaceholderText = "Enter dosage here...";
+                $scope.state =
+                    {
+                        defaultValuePlaceholderText : "Enter dosage here...",
+                        defaultValueLabel : "Dosage",
+                        
+                    };
             }
 			populate_recent_tracked(variableCategoryName);
 	    };
