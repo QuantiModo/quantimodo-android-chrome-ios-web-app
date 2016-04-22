@@ -203,7 +203,7 @@ config.appSettings  = {
             img : {
                 width : '220',
                 height : '200',
-                url : 'img/rating_note.png'
+                url : 'img/mood_note.png'
             },
             content : {
                 firstP : {
