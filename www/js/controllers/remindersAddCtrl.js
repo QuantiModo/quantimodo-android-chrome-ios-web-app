@@ -3,55 +3,14 @@ angular.module('starter')
 	// Controls the History Page of the App.
 	.controller('RemindersAddCtrl', function($scope, authService, $ionicPopup, localStorageService, $state,
 											 $stateParams, measurementService, reminderService, $ionicLoading,
-											 utilsService, $filter, ionicTimePicker, $timeout){
+											 utilsService, $filter, ionicTimePicker, $timeout, variableCategoryService){
 
 	    $scope.controller_name = "RemindersAddCtrl";
 
 		console.log('Loading ' + $scope.controller_name);
 
-        var variableCategoryConfig = {
-            "Vital Signs":{
-                default_unit: false,
-                help_text:"What vital sign do you want to record?",
-                variable_category_name: "Vital Signs",
-                variable_category_name_singular_lowercase : "vital sign"
-            },
-            Foods:{
-                default_unit:"serving",
-                help_text:"What did you eat?",
-                variable_category_name: "Foods",
-                variable_category_name_singular_lowercase : "food"
-            },
-            Emotions:{
-                default_unit: "/5",
-                help_text: "What emotion do you want to rate?",
-                variable_category_name: "Emotions",
-                variable_category_name_singular_lowercase : "emotion"
-            },
-            Symptoms:{
-                default_unit: "/5",
-                help_text: "What symptom do you want to record?",
-                variable_category_name: "Symptoms",
-                variable_category_name_singular_lowercase : "symptom"
-            },
-            Treatments:{
-                default_unit: "mg",
-                help_text:"What treatment do you want to record?",
-                variable_category_name: "Treatments",
-                variable_category_name_singular_lowercase : "treatment"
-            },
-            "Physical Activity": {
-                default_unit: false,
-                help_text:"What physical activity do you want to record?",
-                variable_category_name: "Physical Activity",
-                variable_category_name_singular_lowercase : "physical activity"
-            }
-        };
-
-
         // state
 	    $scope.state = {
-            // category object,
             title : "Add Reminder",
             variablePlaceholderText : "Search for a variable here...",
             defaultValuePlaceholderText : "Enter most common value here...",
@@ -220,7 +179,7 @@ angular.module('starter')
     		utils.startLoading();
 	    	// get user token
 			authService.getAccessTokenFromAnySource().then(function(token){
-			   	console.log('$scope.state.variableCategoryName.toLowerCase()', $scope.state.variableCategoryName.toLowerCase());
+
 				if($scope.state.variableCategoryName.toLowerCase() === 'anything'){
 					// get all variables
 					console.log('anything');
@@ -282,7 +241,6 @@ angular.module('starter')
                     }
 	    		});
 	    	} else {
-	    		console.log('with category');
 	    		measurementService.searchVariablesByCategoryIncludePublic(query, $scope.variableCategoryName)
 	    		.then(function(variables){
 
@@ -596,28 +554,23 @@ angular.module('starter')
 
 	    // setup category view
 	    var setupVariableCategory = function(variableCategoryName){
-            $scope.state = 
-            {
-                variableCategorySingular : pluralize(variableCategoryName, 1),
-                title : "Add a " + $filter('wordAliases')(pluralize(variableCategoryName, 1) + " Reminder"),
-                addNewVariableButtonText : "+ Add a new " + $filter('wordAliases')(pluralize(variableCategoryName.toLowerCase(), 1)),
-                addNewVariableCardText : "Add a new " + $filter('wordAliases')(pluralize(variableCategoryName.toLowerCase(), 1)),
-                variablePlaceholderText :
-                    "Search for a " + $filter('wordAliases')(pluralize(variableCategoryName.toLowerCase(), 1)) + " here..",
-                showVariableCategorySelector : false,
-                showSearchBox : true,
-                showResults : true,
-                resultsHeaderText : "Your previously tracked "+ variableCategoryName,
-                variableCategoryNameSingularLowercase : $filter('wordAliases')(pluralize(variableCategoryName.toLowerCase()), 1),
-            };
+            
+            var variableCategoryObject = variableCategoryService.getVariableCategoryInfo(variableCategoryName);
+            $scope.state.variableCategorySingular = pluralize(variableCategoryName, 1);
+                $scope.state.title = "Add a " + $filter('wordAliases')(pluralize(variableCategoryName, 1) + " Reminder");
+                $scope.state.addNewVariableButtonText = "+ Add a new " + $filter('wordAliases')(pluralize(variableCategoryName.toLowerCase(), 1));
+                $scope.state.addNewVariableCardText = "Add a new " + $filter('wordAliases')(pluralize(variableCategoryName.toLowerCase(), 1));
+                $scope.state.variablePlaceholderText =
+            "Search for a " + $filter('wordAliases')(pluralize(variableCategoryName.toLowerCase(), 1)) + " here..";
+                $scope.state.showVariableCategorySelector = false;
+                $scope.state.showSearchBox = true;
+                $scope.state.showResults = true;
+                $scope.state.resultsHeaderText = "Your previously tracked "+ variableCategoryName;
+                $scope.state.variableCategoryNameSingularLowercase = $filter('wordAliases')(pluralize(variableCategoryName.toLowerCase()), 1);
             
             if(variableCategoryName === "Treatments") {
-                $scope.state =
-                    {
-                        defaultValuePlaceholderText : "Enter dosage here...",
-                        defaultValueLabel : "Dosage",
-                        
-                    };
+                $scope.state.defaultValuePlaceholderText = "Enter dosage here...";
+                $scope.state.defaultValueLabel = variableCategoryObject.defaultValueLabel;
             }
 			populate_recent_tracked(variableCategoryName);
 	    };
@@ -745,8 +698,8 @@ angular.module('starter')
 
                 console.log("got units", units);
 
-                // if (variableCategoryConfig[category].default_unit) {
-                //     set_unit(variableCategoryConfig[category].default_unit);
+                // if (variableCategoryConfig[category].defaultUnitAbbreviatedName) {
+                //     set_unit(variableCategoryConfig[category].defaultUnitAbbreviatedName);
                 // }
 
                 // hide spinner
