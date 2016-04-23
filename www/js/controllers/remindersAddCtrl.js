@@ -182,7 +182,7 @@ angular.module('starter')
 
 				if($scope.state.variableCategoryName.toLowerCase() === 'anything'){
 					// get all variables
-					console.log('anything');
+					console.log('Get most recent anything variables');
 					measurementService.getVariables().then(function(variables){
 
 					    $scope.userVariables = variables;
@@ -585,11 +585,11 @@ angular.module('starter')
 	    $scope.init = function(){
             
             if($stateParams.variableCategoryName){
+                $scope.state.variableCategoryName = $stateParams.variableCategoryName;
                 console.log("$stateParams.variableCategoryName  is " + $stateParams.variableCategoryName);
                 setupVariableCategory($stateParams.variableCategoryName);
             }
 
-            $scope.state.defaultValue = "";
 			// get user token
 			authService.getAccessTokenFromAnySource().then(function(token){
 				if($stateParams.variableCategoryName){
