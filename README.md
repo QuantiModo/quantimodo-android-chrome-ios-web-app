@@ -1,6 +1,8 @@
 A generic app that can be easily configured to help the user track and optimize any given outcome variable.
 ---
 
+[![Code Climate](https://codeclimate.com/github/Abolitionist-Project/QuantiModo-Ionic-Template-App/badges/gpa.svg)](https://codeclimate.com/github/Abolitionist-Project/QuantiModo-Ionic-Template-App)
+
 [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/Abolitionist-Project/QuantiModo-Ionic-Template-App/)
 
 # Quick Start for OSX
