@@ -23,7 +23,13 @@ angular.module('starter')
 	    		return moment().hours(localHour).minutes(minutes);
 	    	};
 
-	    	if (reminder.firstDailyReminderTime && reminder.secondDailyReminderTime && reminder.thirdDailyReminderTime){
+			if(reminder.reminderFrequency === 86400){
+				return 'daily at ' + parseDate(reminder.secondDailyReminderTime).format("hh:mm A")
+			}
+
+			return reminder.frequencyTextDescription;
+
+/*	    	if (reminder.firstDailyReminderTime && reminder.secondDailyReminderTime && reminder.thirdDailyReminderTime){
 	    		return  reminder.frequencyTextDescription + " at " + parseDate(reminder.firstDailyReminderTime).format("hh:mm A") + ", " +
 	    		parseDate(reminder.secondDailyReminderTime).format("hh:mm A")+ " and " +
 	    		parseDate(reminder.thirdDailyReminderTime).format("hh:mm A");
@@ -38,6 +44,6 @@ angular.module('starter')
 	    		return "at " + parseDate(reminder.firstDailyReminderTime).format("hh:mm A");
 	    	}
 
-			return reminder.frequencyTextDescription;
+			return reminder.frequencyTextDescription;*/
 	    };
 	});
