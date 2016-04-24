@@ -12,30 +12,23 @@ angular.module('starter')
         // state
 	    $scope.state = {
             title : "Add Reminder",
-            variablePlaceholderText : "Search for a variable here...",
-            defaultValuePlaceholderText : "Enter most common value here...",
-            defaultValueLabel : 'Value',
-            showAddVariable : false,
-            addNewVariableButtonText : '+ Add a new variable',
-            addNewVariableCardText : 'Add a new variable',
+            showAddVariableCard : false,
             variableId : null,
             variableName : null,
             combinationOperation : null,
             unitCategories : {},
             resultsHeaderText : '',
-	    	showVariableCategory : false,
+	    	showVariableCategorySelector : false,
 	    	showSearchBox : false,
 	    	showResults : false,
 	    	showReminderFrequencyCard : false,
             showAddVariableButton : false,
             show_units: false,
             variableSearchQuery : "",
-	    	variableCategoryName : 'Anything',
-	    	abbreviatedUnitName : '',
 	    	searching : false,
 	    	selectedFrequency : 'Hourly',
 	    	selectedReminder : false,
-	    	slotsFirst : {
+	    	reminderStartTimeObject : {
 				epochTime: new Date().getTime()/1000,
 				format: 24,
 				step: 1
@@ -43,6 +36,8 @@ angular.module('starter')
 			reminderStartTimeUtcHourMinuteSecond : moment.utc().format('HH:mm:ss')
 
 	    };
+
+        $scope.state.variableCategoryObject = variableCategoryService.getVariableCategoryInfo();
 
         // lists
         $scope.lists = {
@@ -122,7 +117,7 @@ angular.module('starter')
 	    	// get user token
 			authService.getAccessTokenFromAnySource().then(function(token){
 
-				if($scope.state.variableCategoryName.toLowerCase() === 'anything'){
+				if(!variableCategoryName){
 					// get all variables
 					console.log('Get most recent anything variables');
 					measurementService.getVariables().then(function(variables){
@@ -167,8 +162,7 @@ angular.module('starter')
 	    var variableSearch = function(variableSearchQuery){
 	    	// search server for the query
 
-	    	if($scope.state.variableCategoryName.toLowerCase() === 'anything'){
-	    		console.log('anything');
+	    	if(!$scope.state.variableCategoryName){
 	    		measurementService.searchVariablesIncludePublic(variableSearchQuery)
 	    		.then(function(variables){
 
@@ -177,7 +171,7 @@ angular.module('starter')
 	    		    $scope.searchVariables = variables;
 	    		    $scope.variables.list = $scope.searchVariables;
 	    		    $scope.state.searching = false;
-                    if(variables.length < 5){
+                    if(variables.length < 1){
                         $scope.state.showAddVariableButton = true;
                     }
 	    		});
@@ -192,8 +186,6 @@ angular.module('starter')
 	    		    $scope.state.searching = false;
                     if(variables.length < 1){
                         $scope.state.showAddVariableButton = true;
-						$scope.state.addNewVariableButtonText = '+ Add new ' + $scope.state.variableSearchQuery + ' variable';
-						$scope.state.addNewVariableCardText = 'Add new ' + $scope.state.variableSearchQuery + ' variable';
                     }
 	    		});
 	    	}
@@ -203,38 +195,33 @@ angular.module('starter')
 	    $scope.onSearch = function(){
 	    	console.log("Search: ", $scope.state.variableSearchQuery);
 	    	if($scope.state.variableSearchQuery === ""){
-                $scope.state.resultsHeaderText = "Your previously tracked " + $scope.variableCategoryName;
-                $scope.state.showResults = $stateParams.variableCategoryName? true : false;
-                $scope.state.searching = false;
+                $scope.state.showResults = true;
+                $scope.state.searching = true;
+                variableSearch($scope.state.variableSearchQuery);
             } else {
 
                 $scope.state.resultsHeaderText = "Search Results";
                 $scope.state.showResults = true;
                 $scope.state.searching = true;
-                $scope.state.addNewVariableButtonText = 'Add a new "' + $scope.state.variableSearchQuery + '"'
-                    + pluralize($stateParams.variableCategoryName.toLocaleLowerCase(), 1) + ' variable';
-
                 variableSearch($scope.state.variableSearchQuery);
-
 	    	}
 	    };
 
 	    // when a search result is selected
-	    $scope.onReminderSelect = function(result){
-	    	console.log("Reminder Selected: ", result);
+	    $scope.onVariableSelect = function(selectedVariable){
+	    	console.log("Variable Selected: ", selectedVariable);
 
-                $scope.state.variableCategoryName = result.variableCategoryName;
-                $scope.state.variableCategoryId = result.variableCategoryId;
-                $scope.state.abbreviatedUnitName = result.abbreviatedUnitName;
-                $scope.state.combinationOperation = result.combinationOperation;
-                $scope.state.id = result.id;
-                $scope.state.variableId = result.variableId;
-                $scope.state.variableName = result.variableName;
-                $scope.state.showResults = false;
-                $scope.state.showSearchBox = false;
-                $scope.state.showReminderFrequencyCard = true;
+            setupVariableCategory(selectedVariable.variableCategoryName);
+            $scope.state.abbreviatedUnitName = selectedVariable.abbreviatedUnitName;
+            $scope.state.combinationOperation = selectedVariable.combinationOperation;
+            $scope.state.id = selectedVariable.id;
+            $scope.state.variableId = selectedVariable.variableId;
+            $scope.state.variableName = selectedVariable.variableName;
+            $scope.state.showResults = false;
+            $scope.state.showSearchBox = false;
+            $scope.state.showReminderFrequencyCard = true;
 
-	    	//$scope.state.defaultValue = result.mostCommonValue? result.mostCommonValue : result.lastValue;
+	    	//$scope.state.defaultValue = selectedVariable.mostCommonValue? selectedVariable.mostCommonValue : selectedVariable.lastValue;
 	    };
 
 	    var utils = {
@@ -278,7 +265,7 @@ angular.module('starter')
 	    		} else {
 					$state.go('app.reminders_manage');
                 }
-	    		
+
 	    	} else {
 				$state.reload();
             }
@@ -444,24 +431,15 @@ angular.module('starter')
 
 	    // setup category view
 	    var setupVariableCategory = function(variableCategoryName){
-            
-            var variableCategoryObject = variableCategoryService.getVariableCategoryInfo(variableCategoryName);
-            $scope.state.variableCategorySingular = pluralize(variableCategoryName, 1);
-                $scope.state.title = "Add a " + $filter('wordAliases')(pluralize(variableCategoryName, 1) + " Reminder");
-                $scope.state.addNewVariableButtonText = "+ Add a new " + $filter('wordAliases')(pluralize(variableCategoryName.toLowerCase(), 1));
-                $scope.state.addNewVariableCardText = "Add a new " + $filter('wordAliases')(pluralize(variableCategoryName.toLowerCase(), 1));
-                $scope.state.variablePlaceholderText =
-            "Search for a " + $filter('wordAliases')(pluralize(variableCategoryName.toLowerCase(), 1)) + " here..";
-                $scope.state.showVariableCategorySelector = false;
-                $scope.state.showSearchBox = true;
-                $scope.state.showResults = true;
-                $scope.state.resultsHeaderText = "Your previously tracked "+ variableCategoryName;
-                $scope.state.variableCategoryNameSingularLowercase = $filter('wordAliases')(pluralize(variableCategoryName.toLowerCase()), 1);
-            
-            if(variableCategoryName === "Treatments") {
-                $scope.state.defaultValuePlaceholderText = "Enter dosage here...";
-                $scope.state.defaultValueLabel = variableCategoryObject.defaultValueLabel;
-            }
+
+            $scope.state.variableCategoryName = $stateParams.variableCategoryName;
+            $scope.state.variableCategoryObject = variableCategoryService.getVariableCategoryInfo(variableCategoryName);
+            $scope.state.title = "Add a " + $filter('wordAliases')(pluralize(variableCategoryName, 1) + " Reminder");
+            $scope.state.showVariableCategorySelector = false;
+            $scope.state.showSearchBox = true;
+            $scope.state.showResults = true;
+            $scope.state.resultsHeaderText = "Your previously tracked "+ variableCategoryName;
+
 			populate_recent_tracked(variableCategoryName);
 	    };
 
@@ -473,11 +451,15 @@ angular.module('starter')
 
 	    // constructor
 	    $scope.init = function(){
-            
+
             if($stateParams.variableCategoryName){
-                $scope.state.variableCategoryName = $stateParams.variableCategoryName;
                 console.log("$stateParams.variableCategoryName  is " + $stateParams.variableCategoryName);
                 setupVariableCategory($stateParams.variableCategoryName);
+                $scope.state.variableCategoryObject = variableCategoryService.getVariableCategoryInfo($stateParams.variableCategoryName)
+                $scope.state.showSearchBox = true;
+                $scope.state.showResults = true;
+                $scope.state.showVariableCategorySelector = false;
+                $scope.state.title = "Add a " + $filter('wordAliases')(pluralize(variableCategoryName, 1) + " Reminder");
             }
 
 			// get user token
@@ -516,7 +498,7 @@ angular.module('starter')
 
         $scope.unit_search = function(){
 
-            var unitSearchQuery = $scope.state.unit_text;
+            var unitSearchQuery = $scope.state.abbreviatedUnitName;
             if(unitSearchQuery !== ""){
                 $scope.state.show_units = true;
                 var unitMatches = $scope.state.units.filter(function(unit) {
@@ -544,7 +526,6 @@ angular.module('starter')
 
             // update viewmodel
             $scope.state.abbreviatedUnitName = unit.abbreviatedName;
-            $scope.state.unit_text = unit.abbreviatedName;
             $scope.state.show_units = false;
             $scope.state.selected_sub = unit.abbreviatedName;
         };

@@ -16,7 +16,7 @@
           <label class="item item-input">
             <i class="icon ion-search placeholder-icon"></i>
             <input type="text"
-                   placeholder={{state.variablePlaceholderText}}
+                   placeholder={{state.variableSearchPlaceholderText}}
                    ng-model="state.variableSearchQuery"
                    ng-change="onSearch()"
                    ng-model-options='{ debounce: 500 }'>
@@ -25,29 +25,29 @@
 
 
         <div class="list card" ng-show="state.showResults" >
-            <!--<div class="item item-divider" style="background-color:#11c1f3; color:white;">{{state.resultsHeaderText}}</div>-->
+
             <p ng-show="state.searching"></p>
             <ion-list>
                 <ion-item style="text-align:center;border-bottom: 1px solid rgb(221, 221, 221);" ng-show="state.searching">
                     <img src="img/loader.gif">
                 </ion-item>
             </ion-list>
-        	<a class="item" ng-repeat="result in variables.list | unique:'id' " ng-click="onReminderSelect(result)">{{result.name}}</a>
+        	<a class="item" ng-repeat="result in variables.list | unique:'id' " ng-click="onVariableSelect(result)">{{result.name}}</a>
             <ion-list ng-show="state.showAddVariableButton">
                 <ion-item style="border-top: 1px solid rgb(221, 221, 221);" ng-click="add_variable()">
-                    {{state.addNewVariableButtonText}}
+                    {{state.variableCategoryObject.addNewVariableButtonText}}
                 </ion-item>
             </ion-list>
         </div>
 
         <div class="card" ng-show="state.showAddVariable">
             <div class="list">
-                <p class="heading calm" style="padding:14px;">{{state.addNewVariableCardText}}</p>
+                <p class="heading calm" style="padding:14px;">{{state.variableCategoryObject.addNewVariableCardText}}</p>
 
 
-                <label class="item item-input item-select" ng-show="state.showCategoryAsSelector">
+                <label class="item item-input item-select" ng-show="state.showVariableCategorySelector">
                     <div class="input-label">
-                        Select category
+                        Select variable category
                     </div>
                     <select ng-model="state.variable_category" ng-change=>
                         <option ng-repeat="i in state.variableCategories track by i.id" value="{{i.name}}">
@@ -85,12 +85,12 @@
 
 
         <div class="list card" ng-show="state.showReminderFrequencyCard">
-        	<div class="item item-divider" style="background-color:#11c1f3; color:white;">{{state.selectedReminder.variableName}} reminder settings</div>
+        	<div class="item item-divider" style="background-color:#11c1f3; color:white;">{{state.variableName}} reminder settings</div>
 
 <!--
             <div class="row labeled-control">
         		<div id="rem-set-left" class="col">
-        			<input type="number" style="width:100%;text-align:right;" placeholder={{state.defaultValuePlaceholderText}} ng-model="state.defaultValue" class="uptop">
+        			<input type="number" style="width:100%;text-align:right;" placeholder={{state.variableCategoryObject.defaultValuePlaceholderText}} ng-model="state.defaultValue" class="uptop">
         		</div>
         		<div id="rem-set-right" class="col col-r">
         			<span>
@@ -103,11 +103,11 @@
             <div ng-if="(state.variableCategoryName != 'Emotions' && state.variableCategoryName != 'Symptoms')" class="row labeled-control">
                 <div class="col col-l">
                         <span>
-                            {{state.defaultValueLabel}}
+                            {{state.variableCategoryObject.defaultValueLabel}}
                         </span>
                 </div>
                 <div class="col">
-                    <input type="text" ng-model="state.defaultValue" id="defaultValue" placeholder={{state.defaultValuePlaceholderText}} class="uptop">
+                    <input type="text" ng-model="state.defaultValue" id="defaultValue" placeholder={{state.variableCategoryObject.defaultValuePlaceholderText}} class="uptop">
                 </div>
             </div>
 
@@ -121,12 +121,12 @@
                         <div class="col" style="padding-top:5px;">
 
                             <!-- Default to most common unit when tracking measurement, and always keep it editable-->
-                            <input type="text" ng-change="unit_search(state.unit_text)" ng-model="state.unit_text" placeholder="Search for a unit...">
+                            <input type="text" ng-change="unit_search(state.abbreviatedUnitName)" ng-model="state.abbreviatedUnitName" placeholder="Search for a unit...">
 
                             <!-- Below replaced by above so that we can always change the unit-->
                             <!-- Default to most common unit when adding new variable, keep it editable-->
                             <!--
-                            <input type="text" ng-show="state.showAddVariable" ng-change="unit_search(state.unit_text)" ng-model="state.unit_text" placeholder="Type to search">
+                            <input type="text" ng-show="state.showAddVariable" ng-change="unit_search(state.abbreviatedUnitName)" ng-model="state.abbreviatedUnitName" placeholder="Type to search">
                             -->
                             <!-- Lock to default unit when tracking measurement for existing variable-->
                             <!--

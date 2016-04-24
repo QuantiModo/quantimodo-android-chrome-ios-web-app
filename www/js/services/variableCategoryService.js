@@ -8,13 +8,21 @@ angular.module('starter')
                 var variableCategoryInfo =
                 {
                     "Anything": {
-                        defaultUnitAbbreviatedName: false,
+                        defaultUnitAbbreviatedName: '',
                         help_text: "What do you want to record?",
                         variable_category_name: "Anything",
-                        variable_category_name_singular_lowercase: "anything"
+                        variable_category_name_singular_lowercase: "anything",
+                        variableSearchPlaceholderText : "Search for a variable here...",
+                        defaultValuePlaceholderText : "Enter most common value here...",
+                        defaultValueLabel : 'Value',
+                        addNewVariableButtonText : '+ Add a new variable',
+                        addNewVariableCardText : 'Add a new variable',
+                        variableCategoryName : '',
+                        abbreviatedUnitName : '',
+                        defaultValue : ''
                     },
                     "Vital Signs": {
-                        defaultUnitAbbreviatedName: false,
+                        defaultUnitAbbreviatedName: '',
                         help_text: "What vital sign do you want to record?",
                         variable_category_name: "Vital Signs",
                         variable_category_name_singular_lowercase: "vital sign"
@@ -47,18 +55,46 @@ angular.module('starter')
 
                     },
                     "Physical Activity": {
-                        defaultUnitAbbreviatedName: false,
+                        defaultUnitAbbreviatedName: '',
                         help_text: "What physical activity do you want to record?",
                         variable_category_name: "Physical Activity",
                         variable_category_name_singular_lowercase: "physical activity"
                     }
                 };
 
-                if(variableCategoryName){
-                    return variableCategoryInfo[variableCategoryName];
-                }
 
-                return variableCategoryInfo['Anything'];
+                if(variableCategoryName){
+                    var selectedVariableCategoryObject =  variableCategoryInfo[variableCategoryName];
+
+                    if(!selectedVariableCategoryObject.addNewVariableButtonText){
+                        selectedVariableCategoryObject.addNewVariableButtonText =
+                            "+ Add a new " + $filter('wordAliases')(pluralize(variableCategoryName.toLowerCase(), 1));
+                    }
+
+                    if(!selectedVariableCategoryObject.nameSingularLowercase){
+                        selectedVariableCategoryObject.nameSingularLowercase =
+                            $filter('wordAliases')(pluralize(selectedVariableCategoryObject.variable_category_name.toLowerCase()), 1);
+                    }
+
+                    if(!selectedVariableCategoryObject.addNewVariableCardText){
+                        selectedVariableCategoryObject.addNewVariableCardText = "Add a new "
+                            + $filter('wordAliases')(pluralize(selectedVariableCategoryObject.variable_category_name.toLowerCase(), 1));
+                    }
+
+                    if(!selectedVariableCategoryObject.variableSearchPlaceholderText){
+                        if(variableCategoryName){
+                            selectedVariableCategoryObject.variableSearchPlaceholderText =
+                                "Search for a "
+                                + $filter('wordAliases')(pluralize(selectedVariableCategoryObject.variable_category_name.toLowerCase(), 1))
+                                + " here..";
+                        }
+                    }
+
+                } else {
+                    selectedVariableCategoryObject = variableCategoryInfo['Anything'];
+                }
+                
+                return selectedVariableCategoryObject;
             }
         };
     });
