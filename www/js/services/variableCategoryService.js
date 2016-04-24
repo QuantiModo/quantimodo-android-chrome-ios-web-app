@@ -42,7 +42,8 @@ angular.module('starter')
                         help_text: "What treatment do you want to record?",
                         variable_category_name: "Treatments",
                         variable_category_name_singular_lowercase: "treatment",
-                        defaultValueLabel: "Dosage"
+                        defaultValueLabel: "Dosage",
+                        defaultValuePlaceholderText: "Enter dose value here..."
 
                     },
                     "Physical Activity": {

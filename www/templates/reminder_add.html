@@ -85,7 +85,7 @@
 
 
         <div class="list card" ng-show="state.showReminderFrequencyCard">
-        	<div class="item item-divider" style="background-color:#11c1f3; color:white;">{{state.variableName}} reminder settings</div>
+        	<div class="item item-divider" style="background-color:#11c1f3; color:white;">{{state.selectedReminder.variableName}} reminder settings</div>
 
 <!--
             <div class="row labeled-control">
@@ -103,7 +103,7 @@
             <div ng-if="(state.variableCategoryName != 'Emotions' && state.variableCategoryName != 'Symptoms')" class="row labeled-control">
                 <div class="col col-l">
                         <span>
-                            Value
+                            {{state.defaultValueLabel}}
                         </span>
                 </div>
                 <div class="col">
