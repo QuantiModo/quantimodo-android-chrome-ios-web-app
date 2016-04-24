@@ -24,7 +24,10 @@ angular.module('starter')
 	    	};
 
 			if(reminder.reminderFrequency === 86400){
-				return 'daily at ' + parseDate(reminder.secondDailyReminderTime).format("hh:mm A")
+				if(!reminder.reminderStartTime){
+                    reminder.reminderStartTime = '00:00:00';
+				}
+				return 'daily at ' + parseDate(reminder.reminderStartTime).format("hh:mm A")
 			}
 
 			return reminder.frequencyTextDescription;
