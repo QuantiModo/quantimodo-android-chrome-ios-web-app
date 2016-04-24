@@ -31,22 +31,5 @@ angular.module('starter')
 			}
 
 			return reminder.frequencyTextDescription;
-
-/*	    	if (reminder.firstDailyReminderTime && reminder.secondDailyReminderTime && reminder.thirdDailyReminderTime){
-	    		return  reminder.frequencyTextDescription + " at " + parseDate(reminder.firstDailyReminderTime).format("hh:mm A") + ", " +
-	    		parseDate(reminder.secondDailyReminderTime).format("hh:mm A")+ " and " +
-	    		parseDate(reminder.thirdDailyReminderTime).format("hh:mm A");
-	    	}
-
-			if (reminder.firstDailyReminderTime && reminder.secondDailyReminderTime){
-	    		return reminder.frequencyTextDescription + " at " + parseDate(reminder.firstDailyReminderTime).format('hh:mm A') + " and " +
-	    		parseDate(reminder.secondDailyReminderTime).format("hh:mm A");
-	    	}
-
-			if (reminder.firstDailyReminderTime){
-	    		return "at " + parseDate(reminder.firstDailyReminderTime).format("hh:mm A");
-	    	}
-
-			return reminder.frequencyTextDescription;*/
 	    };
 	});

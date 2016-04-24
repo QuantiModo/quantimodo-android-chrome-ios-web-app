@@ -12,9 +12,7 @@ angular.module('starter')
 				variableCategoryName, 
 				abbreviatedUnitName, 
 				combinationOperation,
-				firstDailyReminderTime,
-				secondDailyReminderTime,
-				thirdDailyReminderTime){
+				reminderStartTime){
 				
 				var deferred = $q.defer();
 
@@ -26,9 +24,7 @@ angular.module('starter')
                     variableCategoryName : variableCategoryName,
                     abbreviatedUnitName : abbreviatedUnitName,
                     combinationOperation : combinationOperation,
-                    firstDailyReminderTime : firstDailyReminderTime,
-                    secondDailyReminderTime : secondDailyReminderTime,
-                    thirdDailyReminderTime : thirdDailyReminderTime
+                    reminderStartTime : reminderStartTime
                 };
 
                 QuantiModo.postTrackingReminder(params, function(){
@@ -48,17 +44,11 @@ angular.module('starter')
 				variableCategoryName, 
 				abbreviatedUnitName, 
 				combinationOperation,
-				firstDailyReminderTime,
-				secondDailyReminderTime,
-				thirdDailyReminderTime){
+				reminderStartTime){
 				
 				var deferred = $q.defer();
 
                 console.log('Reminder frequency is ' + reminderFrequency);
-
-                if(firstDailyReminderTime || secondDailyReminderTime || thirdDailyReminderTime){
-                    reminderFrequency = null;
-                }
 
                 var params = {
                 	id : id,
@@ -69,9 +59,7 @@ angular.module('starter')
                     variableCategoryName : variableCategoryName,
                     abbreviatedUnitName : abbreviatedUnitName,
                     combinationOperation : combinationOperation,
-                    firstDailyReminderTime : firstDailyReminderTime,
-                    secondDailyReminderTime : secondDailyReminderTime,
-                    thirdDailyReminderTime : thirdDailyReminderTime
+                    reminderStartTime : reminderStartTime
                 };
 
                 QuantiModo.postTrackingReminder(params, function(){

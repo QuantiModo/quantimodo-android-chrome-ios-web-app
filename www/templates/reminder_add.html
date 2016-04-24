@@ -164,35 +164,12 @@
             <div class="list card" ng-show="state.selectedFrequency === 'Once a day' || state.selectedFrequency === 'Twice a day' || state.selectedFrequency === 'Three times a day' ">
                     <label class="item item-input">
                         <div class="input-label" >
-                            First reminder time
+                            Reminder time
                         </div>
                         <button class="button button-block uptop"
                                 style="text-align:left;font-size:14px;border:none;color:black;background-color: white;margin-bottom: 0px;margin-top: 0px;padding-left: 0px;"
-                                ng-click="firstTimePicker()">
-                            {{state.slotsFirst.epochTime | fromUnixTimestampToLocalTimeOfDay}}
-                        </button>
-                    </label>
-
-                    <label class="item item-input" ng-show="state.selectedFrequency === 'Twice a day' || state.selectedFrequency === 'Three times a day' " >
-                        <div class="input-label">
-                            Second reminder time
-                        </div>
-                        <button class="button button-block uptop"
-                                style="text-align:left;font-size:14px;border:none;color:black;background-color: white;margin-bottom: 0px;margin-top: 0px;padding-left: 0px;"
-                                ng-click="secondTimePicker()">
-                            {{state.slotsSecond.epochTime | fromUnixTimestampToLocalTimeOfDay}}
-                        </button>
-
-                    </label>
-
-                    <label class="item item-input" ng-show="state.selectedFrequency === 'Three times a day' ">
-                        <div class="input-label">
-                            Third reminder time
-                        </div>
-                        <button class="button button-block uptop"
-                                style="text-align:left;font-size:14px;border:none;color:black;background-color: white;margin-bottom: 0px;margin-top: 0px;padding-left: 0px;"
-                                ng-click="thirdTimePicker()">
-                            {{state.slotsThird.epochTime | fromUnixTimestampToLocalTimeOfDay}}
+                                ng-click="reminderStartTimePicker()">
+                            {{state.reminderStartTime.epochTime | fromUnixTimestampToLocalTimeOfDay}}
                         </button>
                     </label>
             </div>

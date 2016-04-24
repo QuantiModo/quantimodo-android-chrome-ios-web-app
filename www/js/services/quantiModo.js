@@ -364,9 +364,7 @@ angular.module('starter')
                         'variableCategoryName',
                         'abbreviatedUnitName',
                         'combinationOperation',
-                        'firstDailyReminderTime',
-                        'secondDailyReminderTime',
-                        'thirdDailyReminderTime'
+                        'reminderStartTime'
                     ],
                     reminder,
                     successHandler,
