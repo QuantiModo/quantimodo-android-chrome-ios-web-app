@@ -9,7 +9,6 @@ angular.module('starter')
 
 		console.log('Loading ' + $scope.controller_name);
 
-        // state
 	    $scope.state = {
             title : "Add Reminder",
             variablePlaceholderText : "Search for a variable here...",
@@ -174,7 +173,7 @@ angular.module('starter')
 		};
 
 		// populate list with recently tracked category variables
-    	var populate_recent_tracked = function(category){
+    	var populate_recent_tracked = function(variableCategoryName){
 
     		utils.startLoading();
 	    	// get user token
@@ -193,9 +192,8 @@ angular.module('starter')
 						utils.stopLoading();
 					});
 				} else {
-					console.log('category');
-					// get all variables by category
-					measurementService.searchVariablesByCategoryIncludePublic('*', category).then(function(variables){
+					console.log('get all variables by category');
+					measurementService.searchVariablesByCategoryIncludePublic('*', $scope.state.variableCategoryName).then(function(variables){
 
 					    $scope.userVariables = variables;
 					    $scope.variables.list = variables;
@@ -223,12 +221,11 @@ angular.module('starter')
             setupVariableCategory($scope.state.variableCategoryName);
 	    };
 
-	    var search = function(query){
-	    	// search server for the query
+	    var search = function(){
 
 	    	if($scope.state.variableCategoryName.toLowerCase() === 'anything'){
 	    		console.log('anything');
-	    		measurementService.searchVariablesIncludePublic(query)
+	    		measurementService.searchVariablesIncludePublic($scope.state.variableSearchQuery)
 	    		.then(function(variables){
 
 	    		    // populate list with results
@@ -241,7 +238,8 @@ angular.module('starter')
                     }
 	    		});
 	    	} else {
-	    		measurementService.searchVariablesByCategoryIncludePublic(query, $scope.variableCategoryName)
+	    		console.log('with category');
+	    		measurementService.searchVariablesByCategoryIncludePublic($scope.state.variableSearchQuery, $scope.variableCategoryName)
 	    		.then(function(variables){
 
 	    		    // populate list with results
