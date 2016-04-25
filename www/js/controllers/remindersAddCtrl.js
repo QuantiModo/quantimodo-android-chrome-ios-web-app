@@ -452,15 +452,20 @@ angular.module('starter')
 	    // constructor
 	    $scope.init = function(){
 
+
+
             if($stateParams.variableCategoryName){
                 console.log("$stateParams.variableCategoryName  is " + $stateParams.variableCategoryName);
                 setupVariableCategory($stateParams.variableCategoryName);
-                $scope.state.variableCategoryObject = variableCategoryService.getVariableCategoryInfo($stateParams.variableCategoryName)
+                $scope.state.variableCategoryObject 
+                    = variableCategoryService.getVariableCategoryInfo($stateParams.variableCategoryName);
                 $scope.state.showSearchBox = true;
                 $scope.state.showResults = true;
                 $scope.state.showVariableCategorySelector = false;
                 $scope.state.title = "Add a " + $filter('wordAliases')(pluralize(variableCategoryName, 1) + " Reminder");
             }
+
+            var reminderIdUrlParameter = utilsService.getUrlParameter(window.location.href, 'reminderId');
 
 			// get user token
 			authService.getAccessTokenFromAnySource().then(function(token){
@@ -470,6 +475,21 @@ angular.module('starter')
 				}
 				else if($stateParams.reminder && $stateParams.reminder !== null) {
 					setupEditReminder($stateParams.reminder);
+                }
+                else if(reminderIdUrlParameter) {
+                    reminderService.getTrackingReminders(null, reminderIdUrlParameter)
+                        .then(function(reminders){
+                            $scope.state.allReminders = reminders;
+                            $stateParams.reminder = $scope.state.allReminders[0];
+                            setupEditReminder($stateParams.reminder);
+                            utils.stopLoading();
+                        }, function(){
+                            utils.stopLoading();
+                            console.log("failed to get reminders");
+                            console.log("need to log in");
+                            $ionicLoading.hide();
+                            utilsService.showLoginRequiredAlert($scope.login);
+                        });
                 }
 				else {
 					setupNewReminder();
