@@ -28,7 +28,7 @@ angular.module('starter')
 	    	selectedFrequency : 'Hourly',
 	    	selectedReminder : false,
 	    	reminderStartTimeObject : {
-                epochTimeLocal: new Date().getTime()/1000,
+                epochTime: new Date().getTime()/1000,
                 inputTime: 0,
 				format: 12,
 				step: 1
@@ -94,7 +94,7 @@ angular.module('starter')
                         a.setHours(selectedTime.getUTCHours());
                         a.setMinutes(selectedTime.getUTCMinutes());
 
-                        $scope.state.reminderStartTimeObject.epochTimeLocal = a.getTime() / 1000;
+                        $scope.state.reminderStartTimeObject.epochTime = a.getTime() / 1000;
                         $scope.state.reminderStartTimeUtcHourMinuteSecond = moment.utc(a).format('HH:mm:ss');
                         console.log('Selected epoch is : ', val, 'and the time is ',
                             selectedTime.getUTCHours(), 'H :', selectedTime.getUTCMinutes(), 'M');
@@ -264,7 +264,7 @@ angular.module('starter')
 	    $scope.onFrequencyChange = function(){
 	    	console.log("onFrequencyChange ran");
 
-	    	var reminderStartTimeMoment = moment.utc($scope.state.reminderStartTimeObject.epochTimeLocal*1000);
+	    	var reminderStartTimeMoment = moment.utc($scope.state.reminderStartTimeObject.epochTime*1000);
 	    	$scope.state.reminderStartTimeUtcHourMinuteSecond = moment.utc(reminderStartTimeMoment).format("HH:mm:ss");
 
 	    };
@@ -390,25 +390,30 @@ angular.module('starter')
 
 	    var setSelectedTimeInDatePicker = function(){
 
+			var reminderStartTimeLocal = moment($scope.state.reminderStartTimeObject.epochTime*1000).format('H:m');
+			var reminderStartTimeComponentsLocal = reminderStartTimeLocal.split(':');
+
 			var reminderStartTimeComponentsUtc = $scope.state.reminderStartTime.split(':');
 
-			var date = moment.utc($scope.state.reminderStartTimeObject.epochTimeLocal*1000);
+			var date = moment.utc($scope.state.reminderStartTimeObject.epochTime*1000);
 
             date.hours(reminderStartTimeComponentsUtc[0]);
             date.minutes(reminderStartTimeComponentsUtc[1]);
             date.seconds(reminderStartTimeComponentsUtc[2]);
 
-			$scope.state.reminderStartTimeObject.epochTimeLocal = date.local().unix();
-            $scope.state.reminderStartTimeObject.secondsSinceMidnightLocal = $scope.state.reminderStartTimeObject.epochTimeLocal % 86400;
+			$scope.state.reminderStartTimeObject.epochTime = date.local().unix();
+            $scope.state.reminderStartTimeObject.secondsSinceMidnightLocal = $scope.state.reminderStartTimeObject.epochTime % 86400;
 
-            var localReminderStartTimeHours
-                = moment($scope.state.reminderStartTimeObject.epochTimeLocal*1000).format('h');
-            var localReminderStartTimeMinutes
-                = moment($scope.state.reminderStartTimeObject.epochTimeLocal*1000).format('m');
+            var localReminderStartTimeHours = reminderStartTimeComponentsLocal[0];
+            var localReminderStartTimeMinutes = reminderStartTimeComponentsLocal[1];
             $scope.state.reminderStartTimeObject.secondsSinceMidnightLocal =
                 localReminderStartTimeHours * 60 * 60 + localReminderStartTimeMinutes * 60;
 
             configureTimePickerSettingsObject($scope.state.reminderStartTimeObject.secondsSinceMidnightLocal);
+
+        };
+
+        var getLocalReminderStartTimeSecondsSinceMidnightFromUtcTime = function (reminderStartTimeIsoFormat) {
 
         };
 
