@@ -337,7 +337,7 @@ angular.module('starter')
             // get reminders
             QuantiModo.getTrackingReminders = function(params, successHandler, errorHandler){
                 QuantiModo.get('api/v1/trackingReminders',
-                    ['variableCategoryName'],
+                    ['variableCategoryName', 'id'],
                     params,
                     successHandler,
                     errorHandler);

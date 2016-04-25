@@ -406,7 +406,7 @@ angular.module('starter')
         // time picker defaults
         $scope.slots = {
             epochTime: new Date().getTime()/1000, 
-            format: 24, 
+            format: 12, 
             step: 1
         };
 
@@ -442,7 +442,7 @@ angular.module('starter')
             } else {
 
                 // search server for the query
-                measurementService.searchVariablesByCategoryIncludePublic(query,category).then(function(variables){
+                measurementService.searchVariablesIncludePublic(query,category).then(function(variables){
 
                     // populate list with results
                     $scope.lists.searchVariables = variables;

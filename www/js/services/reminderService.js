@@ -118,10 +118,13 @@ angular.module('starter')
 				return deferred.promise;
 			},
 
-			getTrackingReminders : function(category){
+			getTrackingReminders : function(category, reminderId){
 
 				var deferred = $q.defer();
 				var params = typeof category != "undefined" && category != "" ? {variableCategoryName : category} : {};
+				if(reminderId){
+					params = {id : reminderId};
+				}
 				QuantiModo.getTrackingReminders(params ,function(reminders){
 					if(reminders.success) deferred.resolve(reminders.data);
 					else deferred.reject("error");

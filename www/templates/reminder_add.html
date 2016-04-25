@@ -16,7 +16,7 @@
           <label class="item item-input">
             <i class="icon ion-search placeholder-icon"></i>
             <input type="text"
-                   placeholder={{state.variableSearchPlaceholderText}}
+                   placeholder={{state.variableCategoryObject.variableSearchPlaceholderText}}
                    ng-model="state.variableSearchQuery"
                    ng-change="onSearch()"
                    ng-model-options='{ debounce: 500 }'>
@@ -49,7 +49,7 @@
                     <div class="input-label">
                         Select variable category
                     </div>
-                    <select ng-model="state.variable_category" ng-change=>
+                    <select ng-model="state.variableCategoryName" ng-change=>
                         <option ng-repeat="i in state.variableCategories track by i.id" value="{{i.name}}">
                             {{i.name}}
                         </option>
@@ -161,7 +161,7 @@
         		</select>
         	</label>
             
-            <div class="list card" ng-show="state.selectedFrequency === 'Once a day' || state.selectedFrequency === 'Twice a day' || state.selectedFrequency === 'Three times a day' ">
+            <div class="list card" ng-show="state.selectedFrequency === 'Daily'">
                     <label class="item item-input">
                         <div class="input-label" >
                             Reminder time
@@ -169,7 +169,7 @@
                         <button class="button button-block uptop"
                                 style="text-align:left;font-size:14px;border:none;color:black;background-color: white;margin-bottom: 0px;margin-top: 0px;padding-left: 0px;"
                                 ng-click="reminderStartTimePicker()">
-                            {{state.reminderStartTime.epochTime | fromUnixTimestampToLocalTimeOfDay}}
+                            {{state.reminderStartTimeObject.epochTime | fromUnixTimestampToLocalTimeOfDay}}
                         </button>
                     </label>
             </div>

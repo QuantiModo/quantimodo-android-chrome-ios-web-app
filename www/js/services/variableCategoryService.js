@@ -1,6 +1,6 @@
 angular.module('starter')
     // Variable Category Service
-    .factory('variableCategoryService', function(){
+    .factory('variableCategoryService', function($filter){
 
         return {
             getVariableCategoryInfo: function (variableCategoryName) {
@@ -86,7 +86,7 @@ angular.module('starter')
                             selectedVariableCategoryObject.variableSearchPlaceholderText =
                                 "Search for a "
                                 + $filter('wordAliases')(pluralize(selectedVariableCategoryObject.variable_category_name.toLowerCase(), 1))
-                                + " here..";
+                                + " here...";
                         }
                     }
 

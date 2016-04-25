@@ -23,7 +23,7 @@ angular.module('starter')
 	    	measurementDate : new Date(),
 	    	slots : {
 				epochTime: new Date().getTime()/1000,
-				format: 24,
+				format: 12,
 				step: 1
 			},
 			variable : {},
