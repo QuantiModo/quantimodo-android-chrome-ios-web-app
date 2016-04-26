@@ -430,6 +430,10 @@ angular.module('starter')
             $scope.state.defaultValue = $scope.state.selectedReminder.defaultValue;
             $scope.state.reminderFrequency = $scope.state.selectedReminder.reminderFrequency;
             $scope.state.reminderStartTime = $scope.state.selectedReminder.reminderStartTime;
+			
+			var midnightUtcEpochTime = Math.floor((new Date()).getTime() / 1000);
+			
+			$scope.state.reminderStartTimeObject.epochTime = moment($scope.state.selectedReminder.reminderStartTime).unix();
 
 	    	var reverseFrequencyChart = {
 
@@ -486,16 +490,14 @@ angular.module('starter')
 	    $scope.init = function(){
 
 
-
             if($stateParams.variableCategoryName){
                 console.log("$stateParams.variableCategoryName  is " + $stateParams.variableCategoryName);
                 setupVariableCategory($stateParams.variableCategoryName);
-                $scope.state.variableCategoryObject 
-                    = variableCategoryService.getVariableCategoryInfo($stateParams.variableCategoryName);
+                $scope.state.variableCategoryObject = variableCategoryService.getVariableCategoryInfo($stateParams.variableCategoryName);
                 $scope.state.showSearchBox = true;
                 $scope.state.showResults = true;
                 $scope.state.showVariableCategorySelector = false;
-                $scope.state.title = "Add a " + $filter('wordAliases')(pluralize(variableCategoryName, 1) + " Reminder");
+                $scope.state.title = "Add a " + $filter('wordAliases')(pluralize($stateParams.variableCategoryName, 1) + " Reminder");
             }
 
             var reminderIdUrlParameter = utilsService.getUrlParameter(window.location.href, 'reminderId');
