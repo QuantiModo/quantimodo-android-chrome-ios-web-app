@@ -63,11 +63,11 @@ angular.module('starter')
             // flag to recreate barchart
             $scope.redrawBarChart = false;
             console.log("updatedBar");
-            
-            // load config object
+
+            console.log("load config object chartService.getBarChartStub");
             $scope.barChartConfig = chartService.getBarChartStub(arr);
-            
-            // redraw chart with new data
+
+            console.log("redraw chart with new data");
             $scope.redrawBarChart = true;
 
         };

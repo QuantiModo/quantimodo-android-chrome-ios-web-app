@@ -15,9 +15,22 @@ angular.module('starter')
 	.filter('reminderTime', function(){
 	    return function(time){
 	    	if(time){
-	    		return moment.utc(time).local().calendar();
+				var reminderTime = moment.utc(time).local().calendar();
+	    		return reminderTime;
 	    	} else {
 				return "";
             }
 	    };
+	})
+	.filter('reminderStartTimeUtcToLocal', function(){
+		return function(reminderStartTime){
+			if(reminderStartTime){
+				var reminderStartTimeStringUtc = reminderStartTime + " +0000";
+				var reminderStartTimeFormat = "HH:mm:ss Z";
+				var localStartTimeString = moment(reminderStartTimeStringUtc, reminderStartTimeFormat).format("hh:mm a");
+				return localStartTimeString;
+			} else {
+				return "";
+			}
+		};
 	});

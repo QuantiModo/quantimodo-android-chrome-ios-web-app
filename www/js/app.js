@@ -159,7 +159,7 @@ angular.module('starter',
           }
       })
       .state('app.track_factors_category', {
-          url: "/track_factors_category/:category",
+          url: "/track_factors_category/:variableCategoryName",
           views: {
               'menuContent': {
                   templateUrl: "templates/track_factors.html",
@@ -332,7 +332,7 @@ angular.module('starter',
           }
       })
       .state('app.reminders_inbox_category', {
-          url: "/reminders-inbox/:category",
+          url: "/reminders-inbox/:variableCategoryName",
           cache:false,
           params: {
             unit: null,
@@ -358,7 +358,7 @@ angular.module('starter',
           }
       })
       .state('app.reminders_manage_category', {
-          url: "/reminders-manage/:category",
+          url: "/reminders-manage/:variableCategoryName",
           cache:false,
           views: {
               'menuContent': {
@@ -368,7 +368,7 @@ angular.module('starter',
           }
       })
       .state('app.reminder_add_category', {
-          url: "/reminder_add/:category",
+          url: "/reminder_add/:variableCategoryName",
           cache:false,
           views: {
               'menuContent': {

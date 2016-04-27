@@ -1,55 +1,14 @@
-/**
- * Created by Abdullah on 8/27/2015.
- */
 angular.module('starter')
 
     // Controls the Track Factors Page
     .controller('TrackFactorsCategoryCtrl', function($scope, $ionicModal, $timeout, $ionicPopup ,$ionicLoading,
                                                      authService, measurementService, $state, $rootScope, $stateParams,
-                                                     utilsService, localStorageService, $filter, $ionicScrollDelegate){
+                                                     utilsService, localStorageService, $filter, $ionicScrollDelegate,
+                                                        variableCategoryService){
 
         $scope.controller_name = "TrackFactorsCategoryCtrl";
 
-        var categoryConfig = {
-            "Vital Signs":{
-                default_unit: false,
-                help_text:"What vital sign do you want to record?",
-                variable_category_name: "Vital Signs",
-                variable_category_name_singular_lowercase : "vital sign"
-            },
-            Foods:{
-                default_unit:"serving",
-                help_text:"What did you eat?",
-                variable_category_name: "Foods",
-                variable_category_name_singular_lowercase : "food"
-            },
-            Emotions:{
-                default_unit: "/5",
-                help_text: "What emotion do you want to rate?",
-                variable_category_name: "Emotions",
-                variable_category_name_singular_lowercase : "emotion"
-            },
-            Symptoms:{
-                default_unit: "/5",
-                help_text: "What symptom do you want to record?",
-                variable_category_name: "Symptoms",
-                variable_category_name_singular_lowercase : "symptom"
-            },
-            Treatments:{
-                default_unit: "mg",
-                help_text:"What treatment do you want to record?",
-                variable_category_name: "Treatments",
-                variable_category_name_singular_lowercase : "treatment"
-            },
-            "Physical Activity": {
-                default_unit: false,
-                help_text:"What physical activity do you want to record?",
-                variable_category_name: "Physical Activity",
-                variable_category_name_singular_lowercase : "physical activity"
-            }
-        };
-
-        var category = $stateParams.category;
+        var category = $stateParams.variableCategoryName;
 
         // flags
         $scope.flags = {
@@ -58,8 +17,10 @@ angular.module('starter')
             showAddMeasurement: false,
             showCategoryAsSelector: false,
             category: category,
-            show_units: false
+            showUnits: false
         };
+
+        var variableCategoryObject = variableCategoryService.getVariableCategoryInfo(category);
 
 
         // lists
@@ -67,20 +28,20 @@ angular.module('starter')
             list : [],
             userVariables : [],
             searchVariables : [],
-            categories : []
+            unitCategories : []
         };
 
         $scope.state = {
             // category object,
-            categoryValues : {}, 
+            unitCategories : {}, 
 
             // variables
             variable_category : "",
             variable_name : "",
             factor : category,
-            help_text: categoryConfig[category].help_text,
-            variable_category_name : categoryConfig[category].variable_category_name,
-            variable_category_name_singular_lowercase : categoryConfig[category].variable_category_name_singular_lowercase,
+            help_text: variableCategoryObject.help_text,
+            variable_category_name : variableCategoryObject.variable_category_name,
+            variable_category_name_singular_lowercase : variableCategoryObject.variable_category_name_singular_lowercase,
             unit_text : '',
             
             // default operation
@@ -279,35 +240,41 @@ angular.module('starter')
 
             // update the sub unit
             setTimeout(function(){
-                console.log('changed to ', $scope.state.categoryValues[$scope.selected_unit_category][0].abbreviatedName);
-                $scope.state.selected_sub = $scope.state.categoryValues[$scope.selected_unit_category][0].abbreviatedName;
+                console.log('changed to ', $scope.state.unitCategories[$scope.selected_unit_category][0].abbreviatedName);
+                $scope.state.selected_sub = $scope.state.unitCategories[$scope.selected_unit_category][0].abbreviatedName;
                 $scope.$apply();
             }, 100);
         };
 
         $scope.unit_search = function(){
-            var query = $scope.state.unit_text;
-            if(query !== ""){
-                $scope.flags.show_units = true;
-                var matches = $scope.state.units.filter(function(unit) {
-                    return unit.abbreviatedName.toLowerCase().indexOf(query.toLowerCase()) !== -1;
+
+            var unitSearchQuery = $scope.state.unit_text;
+            if(unitSearchQuery !== ""){
+                $scope.state.showUnits = true;
+                var unitMatches = $scope.state.units.filter(function(unit) {
+                    return unit.abbreviatedName.toLowerCase().indexOf(unitSearchQuery.toLowerCase()) !== -1;
                 });
 
+                if(unitMatches.length < 1){
+                    unitMatches = $scope.state.units.filter(function(unit) {
+                        return unit.name.toLowerCase().indexOf(unitSearchQuery.toLowerCase()) !== -1;
+                    });
+                }
+
                 $timeout(function() {
-                    $scope.state.searchedUnits = matches;
+                    $scope.state.searchedUnits = unitMatches;
                 }, 100);
 
-
-            } else $scope.flags.show_units = false;
+            } else $scope.state.showUnits = false;
         };
-
+        
         // when a unit is selected
         $scope.unit_selected = function(unit){
             console.log("selecting_unit",unit);
 
             // update viewmodel
             $scope.state.unit_text = unit.abbreviatedName;
-            $scope.flags.show_units = false;
+            $scope.flags.showUnits = false;
             $scope.state.selected_sub = unit.abbreviatedName;
         };
 
@@ -320,8 +287,8 @@ angular.module('starter')
             $scope.lists.searchVariables = [];
 
             // data default
-            $scope.lists.categories = [];
-            $scope.state.categoryValues = {};
+            $scope.lists.unitCategories = [];
+            $scope.state.unitCategories = {};
 
             // variable
             $scope.state.variable_category = "";
@@ -386,13 +353,13 @@ angular.module('starter')
 
                     $scope.state.units = units;
 
-                    // populate categoryValues
+                    // populate unitCategories
                     for(var i in units){
-                        if($scope.lists.categories.indexOf(units[i].category) === -1){
-                            $scope.lists.categories.push(units[i].category);
-                            $scope.state.categoryValues[units[i].category] = [{name : units[i].name, abbreviatedName: units[i].abbreviatedName}];
+                        if($scope.lists.unitCategories.indexOf(units[i].category) === -1){
+                            $scope.lists.unitCategories.push(units[i].category);
+                            $scope.state.unitCategories[units[i].category] = [{name : units[i].name, abbreviatedName: units[i].abbreviatedName}];
                         } else {
-                            $scope.state.categoryValues[units[i].category].push({name: units[i].name, abbreviatedName: units[i].abbreviatedName});
+                            $scope.state.unitCategories[units[i].category].push({name: units[i].name, abbreviatedName: units[i].abbreviatedName});
                         }
                     }
 
@@ -400,12 +367,14 @@ angular.module('starter')
                     $scope.selected_unit_category = 'Duration';
 
                     // set first sub unit of selected category
-                    $scope.state.selected_sub = $scope.state.categoryValues[$scope.selected_unit_category][0].abbreviatedName;
+                    $scope.state.selected_sub = $scope.state.unitCategories[$scope.selected_unit_category][0].abbreviatedName;
 
                     console.log("got units", units);
+                    
+                    var variableCategoryObject = variableCategoryService.getVariableCategoryInfo(category);
 
-                    if(categoryConfig[category].default_unit) {
-                        set_unit(categoryConfig[category].default_unit);
+                    if(variableCategoryObject.defaultUnitAbbreviatedName) {
+                        set_unit(variableCategoryObject.defaultUnitAbbreviatedName);
                     }
 
                     // hide spinenr
@@ -438,7 +407,7 @@ angular.module('starter')
         // time picker defaults
         $scope.slots = {
             epochTime: new Date().getTime()/1000, 
-            format: 24, 
+            format: 12, 
             step: 1
         };
 
@@ -474,7 +443,7 @@ angular.module('starter')
             } else {
 
                 // search server for the query
-                measurementService.searchVariablesByCategoryIncludePublic(query,category).then(function(variables){
+                measurementService.searchVariablesIncludePublic(query,category).then(function(variables){
 
                     // populate list with results
                     $scope.lists.searchVariables = variables;
@@ -498,7 +467,7 @@ angular.module('starter')
         };
 
         $scope.toggleShowUnits = function(){
-            $scope.flags.show_units=!$scope.flags.show_units;
+            $scope.flags.showUnits=!$scope.flags.showUnits;
         };
 
         $scope.showUnitsDropDown = function(){

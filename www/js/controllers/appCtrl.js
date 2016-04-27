@@ -16,7 +16,6 @@ angular.module('starter')
         $ionicSideMenuDelegate.toggleLeft(false);
     };
 
-    $scope.not_show_help_popup;
     var help_popup_messages = config.appSettings.help_popup_messages || false;
 
     $scope.$on('$ionicView.enter', function(e) {
