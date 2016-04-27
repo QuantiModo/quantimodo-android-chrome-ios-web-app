@@ -16,7 +16,7 @@ angular.module('starter')
             showAddMeasurement: false,
             showCategoryAsSelector: false,
             category: category,
-            show_units: false
+            showUnits: false
         };
 
         var variableCategoryObject = variableCategoryService.getVariableCategoryInfo(category);
@@ -249,7 +249,7 @@ angular.module('starter')
 
             var unitSearchQuery = $scope.state.unit_text;
             if(unitSearchQuery !== ""){
-                $scope.state.show_units = true;
+                $scope.state.showUnits = true;
                 var unitMatches = $scope.state.units.filter(function(unit) {
                     return unit.abbreviatedName.toLowerCase().indexOf(unitSearchQuery.toLowerCase()) !== -1;
                 });
@@ -264,7 +264,7 @@ angular.module('starter')
                     $scope.state.searchedUnits = unitMatches;
                 }, 100);
 
-            } else $scope.state.show_units = false;
+            } else $scope.state.showUnits = false;
         };
         
         // when a unit is selected
@@ -273,7 +273,7 @@ angular.module('starter')
 
             // update viewmodel
             $scope.state.unit_text = unit.abbreviatedName;
-            $scope.flags.show_units = false;
+            $scope.flags.showUnits = false;
             $scope.state.selected_sub = unit.abbreviatedName;
         };
 
@@ -466,7 +466,7 @@ angular.module('starter')
         };
 
         $scope.toggleShowUnits = function(){
-            $scope.flags.show_units=!$scope.flags.show_units;
+            $scope.flags.showUnits=!$scope.flags.showUnits;
         };
 
         $scope.showUnitsDropDown = function(){

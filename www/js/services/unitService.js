@@ -45,7 +45,7 @@ angular.module('starter')
             searchUnits:function(){
                 var query = $scope.state.unit_text;
                 if(query !== ""){
-                    $scope.flags.show_units = true;
+                    $scope.flags.showUnits = true;
                     var matches = $scope.state.units.filter(function(unit) {
                         return unit.abbreviatedName.toLowerCase().indexOf(query.toLowerCase()) !== -1;
                     });
@@ -55,7 +55,7 @@ angular.module('starter')
                     }, 100);
 
 
-                } else $scope.state.show_units = false;
+                } else $scope.state.showUnits = false;
             }
         };
 

@@ -22,7 +22,7 @@ angular.module('starter')
             showResults : false,
             showReminderFrequencyCard : false,
             showAddVariableButton : false,
-            show_units: false,
+            showUnits: false,
             variableSearchQuery : "",
             searching : false,
             selectedFrequency : 'Hourly',
@@ -536,7 +536,7 @@ angular.module('starter')
 
             var unitSearchQuery = $scope.state.abbreviatedUnitName;
             if(unitSearchQuery !== ""){
-                $scope.state.show_units = true;
+                $scope.state.showUnits = true;
                 var unitMatches = $scope.state.units.filter(function(unit) {
                     return unit.abbreviatedName.toLowerCase().indexOf(unitSearchQuery.toLowerCase()) !== -1;
                 });
@@ -552,7 +552,7 @@ angular.module('starter')
                 }, 100);
 
             } else {
-                $scope.state.show_units = false;
+                $scope.state.showUnits = false;
             }
         };
 
@@ -562,12 +562,12 @@ angular.module('starter')
 
             // update viewmodel
             $scope.state.abbreviatedUnitName = unit.abbreviatedName;
-            $scope.state.show_units = false;
+            $scope.state.showUnits = false;
             $scope.state.selected_sub = unit.abbreviatedName;
         };
 
         $scope.toggleShowUnits = function(){
-            $scope.state.show_units=!$scope.state.show_units;
+            $scope.state.showUnits=!$scope.state.showUnits;
         };
 
         $scope.showUnitsDropDown = function(){
