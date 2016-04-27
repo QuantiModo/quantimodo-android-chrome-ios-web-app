@@ -3,7 +3,8 @@ angular.module('starter')
     // Controls the Track Factors Page
     .controller('TrackFactorsCategoryCtrl', function($scope, $ionicModal, $timeout, $ionicPopup ,$ionicLoading,
                                                      authService, measurementService, $state, $rootScope, $stateParams,
-                                                     utilsService, localStorageService, $filter, $ionicScrollDelegate){
+                                                     utilsService, localStorageService, $filter, $ionicScrollDelegate,
+                                                        variableCategoryService){
 
         $scope.controller_name = "TrackFactorsCategoryCtrl";
 
