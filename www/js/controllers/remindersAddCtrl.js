@@ -467,6 +467,7 @@ angular.module('starter')
 
 			// get user token
 			authService.getAccessTokenFromAnySource().then(function(token){
+				$scope.getUnits();
 				if($stateParams.variableCategoryName){
 					$scope.variableCategoryName = $stateParams.variableCategoryName;
 					setupVariableCategory($scope.variableCategoryName);
@@ -567,22 +568,22 @@ angular.module('starter')
         $scope.getUnits = function () {
             // get units
             measurementService.refreshUnits();
-            measurementService.getUnits().then(function (units) {
+            measurementService.getUnits().then(function (unitObjects) {
 
-                $scope.state.unitObjects = units;
+                $scope.state.unitObjects = unitObjects;
 
                 // populate unitCategories
-                for (var i in units) {
-                    if ($scope.state.unitCategories.indexOf(units[i].category) === -1) {
-                        $scope.state.unitCategories.push(units[i].category);
-                        $scope.state.unitCategories[units[i].category] = [{
-                            name: units[i].name,
-                            abbreviatedName: units[i].abbreviatedName
+                for (var i in unitObjects) {
+                    if ($scope.state.unitCategories.indexOf(unitObjects[i].category) === -1) {
+                        $scope.state.unitCategories.push(unitObjects[i].category);
+                        $scope.state.unitCategories[unitObjects[i].category] = [{
+                            name: unitObjects[i].name,
+                            abbreviatedName: unitObjects[i].abbreviatedName
                         }];
                     } else {
-                        $scope.state.unitCategories[units[i].category].push({
-                            name: units[i].name,
-                            abbreviatedName: units[i].abbreviatedName
+                        $scope.state.unitCategories[unitObjects[i].category].push({
+                            name: unitObjects[i].name,
+                            abbreviatedName: unitObjects[i].abbreviatedName
                         });
                     }
                 }
@@ -593,7 +594,7 @@ angular.module('starter')
                 // set first sub unit of selected category
                 $scope.state.selectedUnitAbbreviatedName = $scope.state.unitCategories[$scope.selectedUnitCategoryName][0].abbreviatedName;
 
-                console.log("got units", units);
+                console.log("got units", unitObjects);
 
                 // if (variableCategoryConfig[category].defaultUnitAbbreviatedName) {
                 //     setUnit(variableCategoryConfig[category].defaultUnitAbbreviatedName);
