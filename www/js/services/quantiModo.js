@@ -20,6 +20,7 @@ angular.module('starter')
                     return;
                 }
                 if(request) {
+                    error = data.error.message;
                     Bugsnag.notify("API Request to " + request.url + " Failed", error, {}, "error");
                 }
                 if(!data){
