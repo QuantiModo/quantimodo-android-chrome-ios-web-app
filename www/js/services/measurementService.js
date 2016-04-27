@@ -716,6 +716,10 @@ angular.module('starter')
 			searchVariablesIncludePublic : function(variableSearchQuery, variableCategoryName){
 				var deferred = $q.defer();
 
+                if(!variableSearchQuery){
+                    variableSearchQuery = '*';
+                }
+
                 if(variableCategoryName){
                     QuantiModo.searchVariablesByCategoryIncludePublic(variableSearchQuery, variableCategoryName, function(vars){
                         deferred.resolve(vars);

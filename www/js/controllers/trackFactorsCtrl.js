@@ -6,39 +6,28 @@ angular.module('starter')
                                              $ionicScrollDelegate, ionicTimePicker) {
         $scope.controller_name = "TrackFactorsCtrl";
 
-        // flags
-        $scope.flags = {
+        // state
+        $scope.state = {
             showTrackingHelpQuestion : false,
             showVariableSearchCard : true,
             showAddVariable : false,
             showAddMeasurement : false,
             showCategoryAsSelector : true,
-            showUnits: false
-        };
-
-        // lists
-        $scope.lists = {
-            list : [],
-            userVariables : [],
-            searchVariables : [],
-            unitCategories : []
-        };
-
-        // state
-        $scope.state = {
+            showUnits: false,
             
-            // category object,
+            variableSearchResults : [],
+            
             unitCategories : {}, 
 
             // variables
-            variable_category : "",
-            variable_name : "",
+            variableCategory : "",
+            variableName : "",
             factor : "factors",
-            help_text: "What do you want to track?",
+            helpText: "What do you want to track?",
             trackFactorsPlaceholderText: "Search for a variable here...",
             // default operation
             sumAvg : "avg",
-            variable_value : "",
+            measurementValue : "",
 
             searchedUnits : []
         };
@@ -58,30 +47,30 @@ angular.module('starter')
         };
 
         // when a unit is changed
-        var set_unit = function(unit){
+        var setUnit = function(unit){
             console.log(unit);
             
             // filter the unit object from all units
-            var unit_obj = $scope.state.units.filter(function(x){return x.abbreviatedName === unit})[0];
-            console.log("unit_obj", unit_obj);
+            var unitObject = $scope.state.unitObjects.filter(function(x){return x.abbreviatedName === unit})[0];
+            console.log("unitObject", unitObject);
             
             // hackish timeout for view to update itself
             setTimeout(function(){
-                console.log("unit_obj.category = ",unit_obj.category);
+                console.log("unitObject.category = ",unitObject.category);
 
                 // update viewmodel
-                $scope.selected_unit_category = unit_obj.category;
-                $scope.unit_selected(unit_obj);
+                $scope.selectedUnitCategoryName = unitObject.category;
+                $scope.unitSelected(unitObject);
                 
                 // redraw view
                 $scope.$apply();
 
                 // hackish timeout for view to update itself
                 setTimeout(function(){
-                    console.log("unit_obj.abbreviatedName == ",unit_obj.abbreviatedName);
+                    console.log("unitObject.abbreviatedName == ",unitObject.abbreviatedName);
                     
                     // update viewmodel
-                    $scope.state.selected_sub = unit_obj.abbreviatedName;
+                    $scope.state.selectedUnitAbbreviatedName = unitObject.abbreviatedName;
                     
                     // redraw view
                     $scope.$apply();
@@ -96,12 +85,14 @@ angular.module('starter')
                 
                 var current = '';
                 var matched = allTrackingData.filter(function(x){
-                    return x.unit === $scope.state.selected_sub;
+                    return x.unit === $scope.state.selectedUnitAbbreviatedName;
                 });
                 
                 setTimeout(function(){
                     var value = matched[matched.length-1]? matched[matched.length-1].value : $scope.item.mostCommonValue;
-                    if(value) $scope.state.variable_value = value;
+                    if(value) {
+                        $scope.state.measurementValue = value;
+                    }
                     // redraw view
                     $scope.$apply();
                 }, 500);
@@ -115,14 +106,14 @@ angular.module('starter')
 
             // set values in form
             $scope.state.sumAvg = item.combinationOperation == "MEAN"? "avg" : "sum";
-            $scope.state.variable_category = item.category;
-            $scope.state.variable_name = item.name;
-            set_unit(item.abbreviatedUnitName);
+            $scope.state.variableCategory = item.category;
+            $scope.state.variableName = item.name;
+            setUnit(item.abbreviatedUnitName);
 
             // set flags
-            $scope.flags.showVariableSearchCard = false;
-            $scope.flags.showAddVariable = false;
-            $scope.flags.showAddMeasurement = true;
+            $scope.state.showVariableSearchCard = false;
+            $scope.state.showAddVariable = false;
+            $scope.state.showAddMeasurement = true;
             
             // update time in the datepicker
             $scope.slots = {epochTime: new Date().getTime()/1000};
@@ -135,21 +126,21 @@ angular.module('starter')
             console.log("add variable");
 
             // set flags
-            $scope.flags.showVariableSearchCard = false;
-            $scope.flags.showAddVariable = true;
-            $scope.flags.showAddMeasurement = true;
+            $scope.state.showVariableSearchCard = false;
+            $scope.state.showAddVariable = true;
+            $scope.state.showAddMeasurement = true;
 
             // set default
-            $scope.state.variable_name = "";
+            $scope.state.variableName = "";
         };
 
         // cancel activity
         $scope.cancel = function(){
             
             // show list again
-            $scope.flags.showAddVariable = false;
-            $scope.flags.showAddMeasurement = false;
-            $scope.flags.showVariableSearchCard = true;
+            $scope.state.showAddVariable = false;
+            $scope.state.showAddMeasurement = false;
+            $scope.state.showVariableSearchCard = true;
             $ionicScrollDelegate.scrollTop();
         };
 
@@ -158,21 +149,21 @@ angular.module('starter')
 
             // populate params
             var params = {
-                variable : $scope.state.variable_name || jQuery('#variable_name').val(),
-                value : $scope.state.variable_value || jQuery('#variable_value').val(),
+                variable : $scope.state.variableName || jQuery('#variableName').val(),
+                value : $scope.state.measurementValue || jQuery('#measurementValue').val(),
                 epoch : $scope.slots.epochTime * 1000,
-                unit : $scope.flags.showAddVariable? $scope.state.unit_text : $scope.state.selected_sub,
-                category : $scope.state.variable_category,
+                unit : $scope.state.showAddVariable? $scope.state.abbreviatedUnitName : $scope.state.selectedUnitAbbreviatedName,
+                category : $scope.state.variableCategory,
                 isAvg : $scope.state.sumAvg === "avg"? true : false
             };
 
             console.log(params);
 
             // check if it is a new variable
-            if($scope.flags.showAddVariable){
+            if($scope.state.showAddVariable){
 
                 // validation
-                if(params.variable_name === ""){
+                if(params.variableName === ""){
                     $scope.showAlert('Variable Name missing');
                 } else {
                     
@@ -184,9 +175,9 @@ angular.module('starter')
                         $scope.showAlert('Added Variable');
 
                         // set flags
-                        $scope.flags.showAddVariable = false;
-                        $scope.flags.showAddMeasurement = false;
-                        $scope.flags.showVariableSearchCard = true;
+                        $scope.state.showAddVariable = false;
+                        $scope.state.showAddMeasurement = false;
+                        $scope.state.showVariableSearchCard = true;
 
                         // refresh the last updated at from api
                         setTimeout($scope.init, 200);
@@ -199,7 +190,7 @@ angular.module('starter')
             } else {
 
                 // validation
-                if(params.variable_value === ""){
+                if(params.measurementValue === ""){
                     $scope.showAlert('Enter a Value');
 
                 } else {
@@ -210,9 +201,9 @@ angular.module('starter')
                     $scope.showAlert(params.variable + ' measurement added!');
 
                     // set flags
-                    $scope.flags.showAddVariable = false;
-                    $scope.flags.showAddMeasurement = false;
-                    $scope.flags.showVariableSearchCard = true;
+                    $scope.state.showAddVariable = false;
+                    $scope.state.showAddMeasurement = false;
+                    $scope.state.showVariableSearchCard = true;
                     
                     // refresh data
                     setTimeout($scope.init, 200);
@@ -221,29 +212,29 @@ angular.module('starter')
         };
 
         // when a unit category is changed
-        $scope.change_unit_category = function(x){
-            $scope.selected_unit_category = x;
-            console.log('changed', $scope.selected_unit_category);
+        $scope.changeUnitCategory = function(x){
+            $scope.selectedUnitCategoryName = x;
+            console.log('changed', $scope.selectedUnitCategoryName);
 
             // update the sub unit
             setTimeout(function(){
-                console.log('changed to ', $scope.state.unitCategories[$scope.selected_unit_category][0].abbreviatedName);
-                $scope.state.selected_sub = $scope.state.unitCategories[$scope.selected_unit_category][0].abbreviatedName;
+                console.log('changed to ', $scope.state.unitCategories[$scope.selectedUnitCategoryName][0].abbreviatedName);
+                $scope.state.selectedUnitAbbreviatedName = $scope.state.unitCategories[$scope.selectedUnitCategoryName][0].abbreviatedName;
                 $scope.$apply();
             }, 100);
         };
 
-        $scope.unit_search = function(){
+        $scope.unitSearch = function(){
 
-            var unitSearchQuery = $scope.state.unit_text;
+            var unitSearchQuery = $scope.state.abbreviatedUnitName;
             if(unitSearchQuery !== ""){
                 $scope.state.showUnits = true;
-                var unitMatches = $scope.state.units.filter(function(unit) {
+                var unitMatches = $scope.state.unitObjects.filter(function(unit) {
                     return unit.abbreviatedName.toLowerCase().indexOf(unitSearchQuery.toLowerCase()) !== -1;
                 });
 
                 if(unitMatches.length < 1){
-                    unitMatches = $scope.state.units.filter(function(unit) {
+                    unitMatches = $scope.state.unitObjects.filter(function(unit) {
                         return unit.name.toLowerCase().indexOf(unitSearchQuery.toLowerCase()) !== -1;
                     });
                 }
@@ -256,13 +247,13 @@ angular.module('starter')
         };
 
         // when a unit is selected
-        $scope.unit_selected = function(unit){
+        $scope.unitSelected = function(unit){
             console.log("selecting_unit",unit);
 
             // update viewmodel
-            $scope.state.unit_text = unit.abbreviatedName;
-            $scope.flags.showUnits = false;
-            $scope.state.selected_sub = unit.abbreviatedName;
+            $scope.state.abbreviatedUnitName = unit.abbreviatedName;
+            $scope.state.showUnits = false;
+            $scope.state.selectedUnitAbbreviatedName = unit.abbreviatedName;
         };
 
         // constructor
@@ -270,22 +261,21 @@ angular.module('starter')
             
             // $ionicLoading.hide();
             $scope.state.loading = true;
-            $scope.lists.userVariables = [];
-            $scope.lists.searchVariables = [];
+            $scope.state.variableSearchResults = [];
 
             // data default
-            $scope.lists.unitCategories = [];
+            $scope.state.unitCategories = [];
             $scope.state.unitCategories = {};
             
             // variable
-            $scope.state.variable_category = "";
-            $scope.state.variable_name = "";
+            $scope.state.variableCategory = "";
+            $scope.state.variableName = "";
 
             // defaults
             $scope.state.sumAvg = "avg";
-            $scope.state.variable_value = "";
-            $scope.unit_text = "";
-            $scope.state.selected_sub = "";
+            $scope.state.measurementValue = "";
+            $scope.abbreviatedUnitName = "";
+            $scope.state.selectedUnitAbbreviatedName = "";
 
             // show spinner
             $ionicLoading.show({
@@ -303,11 +293,9 @@ angular.module('starter')
                     
                     // update flags
                     $scope.state.loading = false;
-                    $scope.lists.userVariables = variables;
-                    $scope.lists.list = [];
                     
                     // populate list
-                    $scope.lists.list = $scope.lists.list.concat(variables);
+                    $scope.state.variableSearchResults = $scope.state.variableSearchResults.concat(variables);
                     
                     // show list
                     $ionicLoading.hide();
@@ -322,7 +310,7 @@ angular.module('starter')
 
                     // hackish way to update category
                     setTimeout(function(){
-                        $scope.state.variable_category = config.appSettings.primary_outcome_variable;
+                        //$scope.state.variableCategory = config.appSettings.primary_outcome_variable;
                         
                         // redraw everything
                         $scope.$apply();
@@ -335,35 +323,35 @@ angular.module('starter')
 
                 // get units
                 measurementService.refreshUnits();
-                measurementService.getUnits().then(function(units){
+                measurementService.getUnits().then(function(unitObjects){
                     
-                    $scope.state.units = units;
-                    console.log('got units', units);
+                    $scope.state.unitObjects = unitObjects;
+                    console.log('got units', unitObjects);
                     // populate unitCategories
                     for(var i in units){
-                        if($scope.lists.unitCategories.indexOf(units[i].category) === -1){
-                            $scope.lists.unitCategories.push(units[i].category);
-                            $scope.state.unitCategories[units[i].category] = [{
-                                name : units[i].name,
-                                abbreviatedName: units[i].abbreviatedName
+                        if($scope.state.unitCategories.indexOf(unitObjects[i].category) === -1){
+                            $scope.state.unitCategories.push(unitObjects[i].category);
+                            $scope.state.unitCategories[unitObjects[i].category] = [{
+                                name : unitObjects[i].name,
+                                abbreviatedName: unitObjects[i].abbreviatedName
                             }];
                         } else {
-                            $scope.state.unitCategories[units[i].category].push({
-                                name: units[i].name,
-                                abbreviatedName: units[i].abbreviatedName
+                            $scope.state.unitCategories[unitObjects[i].category].push({
+                                name: unitObjects[i].name,
+                                abbreviatedName: unitObjects[i].abbreviatedName
                             });
                         }
                     }
 
                     // set default unit category
-                    $scope.selected_unit_category = 'Duration';
+                    $scope.selectedUnitCategoryName = 'Duration';
                     
                     // set first sub unit of selected category
-                    $scope.state.selected_sub = $scope.state.unitCategories[$scope.selected_unit_category][0].abbreviatedName;
+                    $scope.state.selectedUnitAbbreviatedName = $scope.state.unitCategories[$scope.selectedUnitCategoryName][0].abbreviatedName;
                     
                     console.log("got units", units);
                     
-                    // hide spinenr
+                    // hide spinner
                     $ionicLoading.hide();
 
                 });
@@ -372,7 +360,6 @@ angular.module('starter')
                 console.log("need to log in");
                 utilsService.showLoginRequiredAlert($scope.login);
                 $ionicLoading.hide();
-                return;
             });
         };
 
@@ -411,33 +398,19 @@ angular.module('starter')
         };
 
         // search a variable
-        $scope.search = function(query){
-            console.log(query);
+        $scope.search = function(variableSearchQuery){
+            console.log(variableSearchQuery);
 
             $scope.state.loading = true;
-
-            if(query == ''){
-                // if search is cleared 
+            
+            // search server for the variableSearchQuery
+            measurementService.searchVariablesIncludePublic(variableSearchQuery).then(function(variables){
                 
-                console.log('yay');
-
-                // repopulate to last reported variables
-                $scope.lists.list = $scope.lists.userVariables;
-
-                // update view
-                $scope.state.loading = false;
-                $scope.$apply();
-            } else {
-
-                // search server for the query
-                measurementService.searchVariablesIncludePublic(query).then(function(variables){
-                    
-                    // populate list with results
-                    $scope.lists.searchVariables = variables;
-                    $scope.lists.list = $scope.lists.searchVariables;  
-                    $scope.state.loading = false;           
-                });
-            }
+                // populate list with results
+                $scope.state.variableSearchResults = variables;
+                $scope.state.loading = false;           
+            });
+            
         };
 
     });

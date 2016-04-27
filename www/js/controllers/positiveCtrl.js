@@ -159,15 +159,15 @@ angular.module('starter')
 		    }); 
 
 	        if($scope.isLoggedIn){
-	        	// get list
+	        	// get correlationObjects
                 correlationService.getPositiveFactors()
-	            .then(function(list){
+	            .then(function(correlationObjects){
                         // update view model
-                        $scope.positives = list;
+                        $scope.positives = correlationObjects;
                         $ionicLoading.hide();
 
-                        correlationService.getUsersPositiveFactors().then(function(list){
-                            $scope.users_positive_factors = list;
+                        correlationService.getUsersPositiveFactors().then(function(correlationObjects){
+                            $scope.users_positive_factors = correlationObjects;
                         })
 
 

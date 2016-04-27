@@ -32,7 +32,7 @@
                     <img src="img/loader.gif">
                 </ion-item>
             </ion-list>
-        	<a class="item" ng-repeat="result in variables.list | unique:'id' " ng-click="onVariableSelect(result)">{{result.name}}</a>
+        	<a class="item" ng-repeat="result in variableSearchResults | unique:'id' " ng-click="onVariableSelect(result)">{{result.name}}</a>
             <ion-list ng-show="state.showAddVariableButton">
                 <ion-item style="border-top: 1px solid rgb(221, 221, 221);" ng-click="add_variable()">
                     {{state.variableCategoryObject.addNewVariableButtonText}}
@@ -58,7 +58,7 @@
 
                 <label class="item item-input item-stacked-label">
                     <span class="input-label">{{state.variableCategoryName | singularize}} Name</span>
-                    <input type="text" ng-model="state.variableName" id="variable_name" placeholder="Enter the new variable name here...">
+                    <input type="text" ng-model="state.variableName" id="variableName" placeholder="Enter the new variable name here...">
                 </label>
             </div>
 
@@ -121,16 +121,16 @@
                         <div class="col" style="padding-top:5px;">
 
                             <!-- Default to most common unit when tracking measurement, and always keep it editable-->
-                            <input type="text" ng-change="unit_search(state.abbreviatedUnitName)" ng-model="state.abbreviatedUnitName" placeholder="Search for a unit...">
+                            <input type="text" ng-change="unitSearch(state.abbreviatedUnitName)" ng-model="state.abbreviatedUnitName" placeholder="Search for a unit...">
 
                             <!-- Below replaced by above so that we can always change the unit-->
                             <!-- Default to most common unit when adding new variable, keep it editable-->
                             <!--
-                            <input type="text" ng-show="state.showAddVariable" ng-change="unit_search(state.abbreviatedUnitName)" ng-model="state.abbreviatedUnitName" placeholder="Type to search">
+                            <input type="text" ng-show="state.showAddVariable" ng-change="unitSearch(state.abbreviatedUnitName)" ng-model="state.abbreviatedUnitName" placeholder="Type to search">
                             -->
                             <!-- Lock to default unit when tracking measurement for existing variable-->
                             <!--
-                            <span ng-show="!state.showAddVariable">{{state.selected_sub}}</span>
+                            <span ng-show="!state.showAddVariable">{{state.selectedUnitAbbreviatedName}}</span>
                             -->
                         </div>
 
@@ -140,7 +140,7 @@
             <div class="card" ng-show="state.showUnits && state.searchedUnits.length">
                 <div class="list">
                     <ion-list>
-                        <ion-item ng-repeat="unit in state.searchedUnits" on-tap="unit_selected(unit)">
+                        <ion-item ng-repeat="unit in state.searchedUnits" on-tap="unitSelected(unit)">
                             {{unit.name}} ({{unit.abbreviatedName}})
                         </ion-item>
                     </ion-list>

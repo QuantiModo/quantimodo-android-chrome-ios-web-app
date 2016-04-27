@@ -11,12 +11,13 @@ angular.module('starter')
 
         // state
 	    $scope.state = {
+			variableSearchResults : [],
+			unitCategories : [],
             title : "Add Reminder",
             showAddVariableCard : false,
             variableId : null,
             variableName : null,
             combinationOperation : null,
-            unitCategories : {},
             showVariableCategorySelector : false,
             showSearchBox : false,
             showResults : false,
@@ -40,16 +41,7 @@ angular.module('starter')
         console.log('Input time is ' + $scope.state.reminderStartTimeObject.inputTime);
 
         $scope.state.variableCategoryObject = variableCategoryService.getVariableCategoryInfo();
-
-        // lists
-        $scope.lists = {
-            list : [],
-            userVariables : [],
-            searchVariables : [],
-            unitCategories : []
-        };
-
-
+		
 	    // data
 	    $scope.variables = {
 	    	variableCategories : [
@@ -63,7 +55,6 @@ angular.module('starter')
                 { id : 8, name : 'Sleep' },
                 { id : 9, name : 'Misc' }
 	    	],
-	    	list : [],
 	    	frequencyVariables : [
 	    		
 	    		{ id : 1, name : 'Every 12 hours' , group : 'intervals'},
@@ -117,7 +108,7 @@ angular.module('starter')
 		};
 
 		// populate list with recently tracked category variables
-    	var populate_recent_tracked = function(variableCategoryName){
+    	var populateRecentlyTrackedVariables = function(variableCategoryName){
 
     		utils.startLoading();
 	    	// get user token
@@ -128,19 +119,17 @@ angular.module('starter')
 					console.log('Get most recent anything variables');
 					measurementService.getVariables().then(function(variables){
 
-					    $scope.userVariables = variables;
-					    $scope.variables.list = variables;
+					    $scope.variableSearchResults = variables;
 					    utils.stopLoading();
 
 					}, function(){
 						utils.stopLoading();
 					});
 				} else {
-					console.log('get all variables by category');
+					console.log('get all variables by variableCategoryName');
 					measurementService.searchVariablesIncludePublic('*', $scope.state.variableCategoryName).then(function(variables){
 
-					    $scope.userVariables = variables;
-					    $scope.variables.list = variables;
+					    $scope.variableSearchResults = variables;
 
 					    utils.stopLoading();
 
@@ -156,7 +145,7 @@ angular.module('starter')
 			});
     	};
 
-	    // when category is selected
+	    // when variableCategoryName is selected
 	    $scope.onVariableCategoryChange = function(){
 	    	console.log("Variable category selected: ", $scope.state.variableCategoryName);
 	    	$scope.state.variableSearchQuery = '';
@@ -174,8 +163,8 @@ angular.module('starter')
 
 	    		    // populate list with results
 	    		    $scope.state.showResults = true;
-	    		    $scope.searchVariables = variables;
-	    		    $scope.variables.list = $scope.searchVariables;
+	    		    $scope.variableSearchResults = variables;
+	    		    $scope.variableSearchResults = $scope.variableSearchResults;
 	    		    $scope.state.searching = false;
                     if(variables.length < 1){
                         $scope.state.showAddVariableButton = true;
@@ -187,8 +176,8 @@ angular.module('starter')
 
 	    		    // populate list with results
 	    		    $scope.state.showResults = true;
-	    		    $scope.searchVariables = variables;
-	    		    $scope.variables.list = $scope.searchVariables;
+	    		    $scope.variableSearchResults = variables;
+	    		    $scope.variableSearchResults = $scope.variableSearchResults;
 	    		    $scope.state.searching = false;
                     if(variables.length < 1){
                         $scope.state.showAddVariableButton = true;
@@ -308,6 +297,7 @@ angular.module('starter')
 
 	    		utils.stopLoading();
 	    		utils.showAlert('Failed to add Reminder, Try again!', 'assertive');
+				console.log(err);
 	    	});
 	    };
 
@@ -402,9 +392,9 @@ angular.module('starter')
             $scope.state.reminderStartTimeMoment = moment(reminderStartTimeStringUtc, reminderStartTimeFormat);
 
             var hoursSinceMidnightLocal = moment(reminderStartTimeStringUtc, reminderStartTimeFormat).format("HH");
-            var minutsSinceMidnightLocal = moment(reminderStartTimeStringUtc, reminderStartTimeFormat).format("mm");
+            var minutesSinceMidnightLocal = moment(reminderStartTimeStringUtc, reminderStartTimeFormat).format("mm");
 			var secondsSinceMidnightLocal =
-				hoursSinceMidnightLocal * 60 *60 + minutsSinceMidnightLocal * 60;
+				hoursSinceMidnightLocal * 60 *60 + minutesSinceMidnightLocal * 60;
 
 			$scope.state.reminderStartTimeSecondsSinceMidnightLocal = secondsSinceMidnightLocal;
 
@@ -450,7 +440,7 @@ angular.module('starter')
             $scope.state.showSearchBox = true;
             $scope.state.showResults = true;
 
-			populate_recent_tracked(variableCategoryName);
+			populateRecentlyTrackedVariables(variableCategoryName);
 	    };
 
 	    // setup new reminder view
@@ -532,17 +522,17 @@ angular.module('starter')
 			});
 	    };
 
-        $scope.unit_search = function(){
+        $scope.unitSearch = function(){
 
             var unitSearchQuery = $scope.state.abbreviatedUnitName;
             if(unitSearchQuery !== ""){
                 $scope.state.showUnits = true;
-                var unitMatches = $scope.state.units.filter(function(unit) {
+                var unitMatches = $scope.state.unitObjects.filter(function(unit) {
                     return unit.abbreviatedName.toLowerCase().indexOf(unitSearchQuery.toLowerCase()) !== -1;
                 });
 
                 if(unitMatches.length < 1){
-                    unitMatches = $scope.state.units.filter(function(unit) {
+                    unitMatches = $scope.state.unitObjects.filter(function(unit) {
                         return unit.name.toLowerCase().indexOf(unitSearchQuery.toLowerCase()) !== -1;
                     });
                 }
@@ -557,13 +547,13 @@ angular.module('starter')
         };
 
         // when a unit is selected
-        $scope.unit_selected = function(unit){
+        $scope.unitSelected = function(unit){
             console.log("selecting_unit",unit);
 
             // update viewmodel
             $scope.state.abbreviatedUnitName = unit.abbreviatedName;
             $scope.state.showUnits = false;
-            $scope.state.selected_sub = unit.abbreviatedName;
+            $scope.state.selectedUnitAbbreviatedName = unit.abbreviatedName;
         };
 
         $scope.toggleShowUnits = function(){
@@ -579,12 +569,12 @@ angular.module('starter')
             measurementService.refreshUnits();
             measurementService.getUnits().then(function (units) {
 
-                $scope.state.units = units;
+                $scope.state.unitObjects = units;
 
                 // populate unitCategories
                 for (var i in units) {
-                    if ($scope.lists.unitCategories.indexOf(units[i].category) === -1) {
-                        $scope.lists.unitCategories.push(units[i].category);
+                    if ($scope.state.unitCategories.indexOf(units[i].category) === -1) {
+                        $scope.state.unitCategories.push(units[i].category);
                         $scope.state.unitCategories[units[i].category] = [{
                             name: units[i].name,
                             abbreviatedName: units[i].abbreviatedName
@@ -598,15 +588,15 @@ angular.module('starter')
                 }
 
                 // set default unit category
-                $scope.selected_unit_category = 'Duration';
+                $scope.selectedUnitCategoryName = 'Duration';
 
                 // set first sub unit of selected category
-                $scope.state.selected_sub = $scope.state.unitCategories[$scope.selected_unit_category][0].abbreviatedName;
+                $scope.state.selectedUnitAbbreviatedName = $scope.state.unitCategories[$scope.selectedUnitCategoryName][0].abbreviatedName;
 
                 console.log("got units", units);
 
                 // if (variableCategoryConfig[category].defaultUnitAbbreviatedName) {
-                //     set_unit(variableCategoryConfig[category].defaultUnitAbbreviatedName);
+                //     setUnit(variableCategoryConfig[category].defaultUnitAbbreviatedName);
                 // }
 
                 // hide spinner

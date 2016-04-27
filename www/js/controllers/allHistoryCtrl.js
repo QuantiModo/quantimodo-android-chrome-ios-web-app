@@ -50,7 +50,7 @@ angular.module('starter')
 	    $scope.getUnitFromUnitId = function(id){
 	    	if(!id) return false;
 
-	    	var unit = $scope.state.units.filter(function(u){
+	    	var unit = $scope.state.unitObjects.filter(function(u){
 	    		return u.id === id;
 	    	})[0];
 
@@ -90,7 +90,7 @@ angular.module('starter')
 	    	getHistory();
 	    };
 	    
-	    // constuctor
+	    // constructor
 	    $scope.init = function(){
 	    	utils.startLoading();
 	    	measurementService.getVariableCategories()
@@ -102,7 +102,7 @@ angular.module('starter')
 
 	    	measurementService.getUnits()
 	    	.then(function(units){
-	    		$scope.state.units = units;
+	    		$scope.state.unitObjects = units;
 	    	}, function(err){
 	    		console.log("error getting units", err);
 	    	});
