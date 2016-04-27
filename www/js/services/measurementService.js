@@ -713,26 +713,30 @@ angular.module('starter')
 			},
 
 			// get public variables
-			searchVariablesIncludePublic : function(str){
+			searchVariablesIncludePublic : function(variableSearchQuery, variableCategoryName){
 				var deferred = $q.defer();
 
-				QuantiModo.searchVariablesIncludePublic(str, function(vars){
-					deferred.resolve(vars);
-				}, function(){
-					deferred.reject(false);
-				});
-
+                if(variableCategoryName){
+                    QuantiModo.searchVariablesByCategoryIncludePublic(variableSearchQuery, variableCategoryName, function(vars){
+                        deferred.resolve(vars);
+                    }, function(){
+                        deferred.reject(false);
+                    });
+                } else {
+                    QuantiModo.searchVariablesIncludePublic(variableSearchQuery, function(vars){
+                        deferred.resolve(vars);
+                    }, function(){
+                        deferred.reject(false);
+                    });
+                }
+                
 				return deferred.promise;
 			},
 
-            searchVariablesByCategoryIncludePublic : function(str,category){
+            searchVariablesByCategoryIncludePublic : function(variableSearchQuery, category){
                 var deferred = $q.defer();
 
-                QuantiModo.searchVariablesByCategoryIncludePublic(str,category, function(vars){
-                    deferred.resolve(vars);
-                }, function(){
-                    deferred.reject(false);
-                });
+
 
                 return deferred.promise;
             },

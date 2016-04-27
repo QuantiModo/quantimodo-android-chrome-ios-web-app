@@ -1,6 +1,10 @@
 A generic app that can be easily configured to help the user track and optimize any given outcome variable.
 ---
 
+[![Codacy Badge](https://api.codacy.com/project/badge/grade/0a7979bc18bd4975bd861b1747b4d6b5)](https://www.codacy.com/app/m_2/QuantiModo-Ionic-Template-App)
+
+[![Code Climate](https://codeclimate.com/github/Abolitionist-Project/QuantiModo-Ionic-Template-App/badges/gpa.svg)](https://codeclimate.com/github/Abolitionist-Project/QuantiModo-Ionic-Template-App)
+
 [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/Abolitionist-Project/QuantiModo-Ionic-Template-App/)
 
 # Quick Start for OSX

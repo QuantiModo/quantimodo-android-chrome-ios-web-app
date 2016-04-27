@@ -94,7 +94,7 @@ config.appSettings  = {
             img : {
                 width : '150',
                 height : '150',
-                url : 'img/main_icon.png'
+                url : 'img/icon.png'
             },
             content : {
 
@@ -192,7 +192,7 @@ config.appSettings  = {
             img : {
                 width : '220',
                 height : '200',
-                url : 'img/rating_note.png'
+                url : 'img/mood_note.png'
             },
             content : {
                 firstP : {
