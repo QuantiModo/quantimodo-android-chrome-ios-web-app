@@ -168,8 +168,8 @@
                         </div>
                         <button class="button button-block uptop"
                                 style="text-align:left;font-size:14px;border:none;color:black;background-color: white;margin-bottom: 0px;margin-top: 0px;padding-left: 0px;"
-                                ng-click="reminderStartTimePicker()">
-                            {{state.reminderStartTimeObject.epochTime | fromUnixTimestampToLocalTimeOfDay}}
+                                ng-click="openReminderStartTimePicker()">
+                            {{state.reminderStartTimeUtc | reminderStartTimeUtcToLocal}}
                         </button>
                     </label>
             </div>

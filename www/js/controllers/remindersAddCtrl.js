@@ -27,6 +27,7 @@ angular.module('starter')
 	    	searching : false,
 	    	selectedFrequency : 'Hourly',
 	    	selectedReminder : false,
+            reminderStartTimeSecondsSinceMidnightLocal : new Date().getTime()/1000,
 	    	reminderStartTimeObject : {
                 epochTime: new Date().getTime()/1000,
                 inputTime: 0,
@@ -79,31 +80,6 @@ angular.module('starter')
 	    	]
 	    };
 
-        var configureTimePickerSettingsObject = function (secondsSinceMidnightLocal) {
-
-            if(!secondsSinceMidnightLocal){
-                secondsSinceMidnightLocal = 0;
-            }
-            $scope.state.timePickerConfiguration = {
-                callback: function (val) {
-                    if (typeof (val) === 'undefined') {
-                        console.log('Time not selected');
-                    } else {
-                        var a = new Date();
-                        var selectedTime = new Date(val * 1000);
-                        a.setHours(selectedTime.getUTCHours());
-                        a.setMinutes(selectedTime.getUTCMinutes());
-
-                        $scope.state.reminderStartTimeObject.epochTime = a.getTime() / 1000;
-                        $scope.state.reminderStartTimeUtcHourMinuteSecond = moment.utc(a).format('HH:mm:ss');
-                        console.log('Selected epoch is : ', val, 'and the time is ',
-                            selectedTime.getUTCHours(), 'H :', selectedTime.getUTCMinutes(), 'M');
-                    }
-                },
-                inputTime: secondsSinceMidnightLocal
-            };
-        };
-
 		// when add new variable is tapped
 		$scope.add_variable = function(){
 			console.log("add variable");
@@ -117,8 +93,27 @@ angular.module('starter')
 
 		};
 
-		$scope.reminderStartTimePicker = function() {
-			setSelectedTimeInDatePicker();
+		$scope.openReminderStartTimePicker = function() {
+            $scope.state.timePickerConfiguration = {
+                callback: function (val) {
+                    if (typeof (val) === 'undefined') {
+                        console.log('Time not selected');
+                    } else {
+                        var a = new Date();
+                        var selectedTime = new Date(val * 1000);
+                        a.setHours(selectedTime.getUTCHours());
+                        a.setMinutes(selectedTime.getUTCMinutes());
+
+                        console.log('Selected epoch is : ', val, 'and the time is ',
+                            selectedTime.getUTCHours(), 'H :', selectedTime.getUTCMinutes(), 'M');
+
+                        $scope.state.reminderStartTimeEpochTime = a.getTime() / 1000;
+                        $scope.state.reminderStartTimeUtc = moment.utc(a).format('HH:mm:ss');
+                    }
+                },
+                inputTime: $scope.state.reminderStartTimeSecondsSinceMidnightLocal
+            };
+
 			ionicTimePicker.openTimePicker($scope.state.timePickerConfiguration);
 		};
 
@@ -264,8 +259,8 @@ angular.module('starter')
 	    $scope.onFrequencyChange = function(){
 	    	console.log("onFrequencyChange ran");
 
-	    	var reminderStartTimeMoment = moment.utc($scope.state.reminderStartTimeObject.epochTime*1000);
-	    	$scope.state.reminderStartTimeUtcHourMinuteSecond = moment.utc(reminderStartTimeMoment).format("HH:mm:ss");
+	    	//var reminderStartTimeMoment = moment.utc($scope.state.reminderStartTimeObject.epochTime*1000);
+	    	//$scope.state.reminderStartTimeSecondsSinceMidnightLocal = moment.utc(reminderStartTimeMoment).format("HH:mm:ss");
 
 	    };
 
@@ -296,7 +291,7 @@ angular.module('starter')
                 $scope.state.variableCategoryName,
                 $scope.state.abbreviatedUnitName,
                 $scope.state.combinationOperation,
-                ($scope.state.selectedFrequency.indexOf("a day") !== -1)? $scope.state.reminderStartTimeUtcHourMinuteSecond : null)
+                $scope.state.reminderStartTimeUtc)
 	    	.then(function(){
 
 	    		utils.stopLoading();
@@ -367,7 +362,7 @@ angular.module('starter')
                 $scope.state.variableCategoryName,
                 $scope.state.abbreviatedUnitName,
                 $scope.state.combinationOperation,
-                ($scope.state.selectedFrequency.indexOf("a day") !== -1)? $scope.state.reminderStartTimeUtcHourMinuteSecond : null)
+                $scope.state.reminderStartTimeUtc)
 	    	.then(function(){
 
 	    		utils.stopLoading();
@@ -388,34 +383,6 @@ angular.module('starter')
 	    	});
 	    };
 
-	    var setSelectedTimeInDatePicker = function(){
-
-			var reminderStartTimeLocal = moment($scope.state.reminderStartTimeObject.epochTime*1000).format('H:m');
-			var reminderStartTimeComponentsLocal = reminderStartTimeLocal.split(':');
-
-			var reminderStartTimeComponentsUtc = $scope.state.reminderStartTime.split(':');
-
-			var date = moment.utc($scope.state.reminderStartTimeObject.epochTime*1000);
-
-            date.hours(reminderStartTimeComponentsUtc[0]);
-            date.minutes(reminderStartTimeComponentsUtc[1]);
-            date.seconds(reminderStartTimeComponentsUtc[2]);
-
-			$scope.state.reminderStartTimeObject.epochTime = date.local().unix();
-            $scope.state.reminderStartTimeObject.secondsSinceMidnightLocal = $scope.state.reminderStartTimeObject.epochTime % 86400;
-
-            var localReminderStartTimeHours = reminderStartTimeComponentsLocal[0];
-            var localReminderStartTimeMinutes = reminderStartTimeComponentsLocal[1];
-            $scope.state.reminderStartTimeObject.secondsSinceMidnightLocal =
-                localReminderStartTimeHours * 60 * 60 + localReminderStartTimeMinutes * 60;
-
-            configureTimePickerSettingsObject($scope.state.reminderStartTimeObject.secondsSinceMidnightLocal);
-
-        };
-
-        var getLocalReminderStartTimeSecondsSinceMidnightFromUtcTime = function (reminderStartTimeIsoFormat) {
-
-        };
 
 	    // setup editing view
 	    var setupEditReminder = function(){
@@ -429,11 +396,19 @@ angular.module('starter')
 	    	$scope.state.abbreviatedUnitName = $scope.state.selectedReminder.abbreviatedUnitName;
             $scope.state.defaultValue = $scope.state.selectedReminder.defaultValue;
             $scope.state.reminderFrequency = $scope.state.selectedReminder.reminderFrequency;
-            $scope.state.reminderStartTime = $scope.state.selectedReminder.reminderStartTime;
-			
-			var midnightUtcEpochTime = Math.floor((new Date()).getTime() / 1000);
-			
-			$scope.state.reminderStartTimeObject.epochTime = moment($scope.state.selectedReminder.reminderStartTime).unix();
+            $scope.state.reminderStartTimeUtc = $scope.state.selectedReminder.reminderStartTime;
+            var reminderStartTimeStringUtc = $scope.state.selectedReminder.reminderStartTime + " +0000";
+            var reminderStartTimeFormat = "HH:mm:ss Z";
+
+            $scope.state.reminderStartTimeMoment = moment(reminderStartTimeStringUtc, reminderStartTimeFormat);
+
+            var hoursSinceMidnightLocal = moment(reminderStartTimeStringUtc, reminderStartTimeFormat).format("HH");
+            var minutsSinceMidnightLocal = moment(reminderStartTimeStringUtc, reminderStartTimeFormat).format("mm");
+			var secondsSinceMidnightLocal =
+				hoursSinceMidnightLocal * 60 *60 + minutsSinceMidnightLocal * 60;
+
+			$scope.state.reminderStartTimeSecondsSinceMidnightLocal = secondsSinceMidnightLocal;
+
 
 	    	var reverseFrequencyChart = {
 
@@ -461,7 +436,6 @@ angular.module('starter')
 
 	    	$scope.state.showReminderFrequencyCard = true;
 
-	    	setSelectedTimeInDatePicker();
 	    };
 
 	    // setup category view
@@ -515,6 +489,14 @@ angular.module('starter')
                     reminderService.getTrackingReminders(null, reminderIdUrlParameter)
                         .then(function(reminders){
                             $scope.state.allReminders = reminders;
+                            if (reminders.length !== 1){
+                                utils.showAlert("Reminder id " + reminderIdUrlParameter + " not found!", 'assertive');
+                                if($stateParams.reminder.fromState){
+                                    $state.go($stateParams.reminder.fromState);
+                                } else {
+                                    $state.go('app.reminders_manage');
+                                }
+                            }
                             $stateParams.reminder = $scope.state.allReminders[0];
                             setupEditReminder($stateParams.reminder);
                             utils.stopLoading();
