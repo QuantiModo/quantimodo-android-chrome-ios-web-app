@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+# Usage: Run `bash scripts/create_icons` from the root of repo with icon and splash in resources folder
 echo -e "${GREEN}Installing imagemagick package if it doesn't exist${NC}"
 if ! type "imagemagick" > /dev/null;
   then
