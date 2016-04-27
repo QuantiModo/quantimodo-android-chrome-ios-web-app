@@ -17,25 +17,24 @@ angular.module('starter')
             variableName : null,
             combinationOperation : null,
             unitCategories : {},
-	    	showVariableCategorySelector : false,
-	    	showSearchBox : false,
-	    	showResults : false,
-	    	showReminderFrequencyCard : false,
+            showVariableCategorySelector : false,
+            showSearchBox : false,
+            showResults : false,
+            showReminderFrequencyCard : false,
             showAddVariableButton : false,
             show_units: false,
             variableSearchQuery : "",
-	    	searching : false,
-	    	selectedFrequency : 'Hourly',
-	    	selectedReminder : false,
+            searching : false,
+            selectedFrequency : 'Hourly',
+            selectedReminder : false,
             reminderStartTimeSecondsSinceMidnightLocal : new Date().getTime()/1000,
-	    	reminderStartTimeObject : {
+            reminderStartTimeObject : {
                 epochTime: new Date().getTime()/1000,
                 inputTime: 0,
-				format: 12,
-				step: 1
-			},
-			reminderStartTimeUtcHourMinuteSecond : moment.utc().format('HH:mm:ss')
-
+                format: 12,
+                step: 1
+            },
+            reminderStartTimeUtcHourMinuteSecond : moment.utc().format('HH:mm:ss')
 	    };
 
         console.log('Input time is ' + $scope.state.reminderStartTimeObject.inputTime);
