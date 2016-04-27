@@ -1,6 +1,6 @@
 angular.module('starter')    
     // QuantiModo API implementation
-    .factory('QuantiModo', function($http, $q, authService, localStorageService, $state){
+    .factory('QuantiModo', function($http, $q, authService, localStorageService, $state, $ionicLoading){
             var QuantiModo = {};
 
             QuantiModo.successHandler = function(data){
@@ -13,6 +13,20 @@ angular.module('starter')
             };
 
             QuantiModo.errorHandler = function(data, status, headers, config, request){
+                $ionicLoading.hide();
+                if(status === 401){
+                    localStorageService.deleteItem('accessToken');
+                    $state.go('app.login');
+                    return;
+                }
+                if(request) {
+                    error = data.error.message;
+                    Bugsnag.notify("API Request to " + request.url + " Failed", error, {}, "error");
+                }
+                if(!data){
+                    console.log('No data property returned from QM API request');
+                    return;
+                }
                 if(data.success){
                     return;
                 }
@@ -23,14 +37,7 @@ angular.module('starter')
                 if (data && data.error && data.error.message) {
                     error = data.error.message;
                 }
-                if(request) {
-                    Bugsnag.notify("API Request to " + request.url + " Failed", error, {}, "error");
-                }
-                if(status === 401){
-                    localStorageService.deleteItem('accessToken');
-                    $state.go('app.login');
-                }
-                alert(error);
+                console.log(error);
             };
 
             // Handler when request is failed
@@ -331,7 +338,7 @@ angular.module('starter')
             // get reminders
             QuantiModo.getTrackingReminders = function(params, successHandler, errorHandler){
                 QuantiModo.get('api/v1/trackingReminders',
-                    ['variableCategoryName'],
+                    ['variableCategoryName', 'id'],
                     params,
                     successHandler,
                     errorHandler);
@@ -358,9 +365,7 @@ angular.module('starter')
                         'variableCategoryName',
                         'abbreviatedUnitName',
                         'combinationOperation',
-                        'firstDailyReminderTime',
-                        'secondDailyReminderTime',
-                        'thirdDailyReminderTime'
+                        'reminderStartTime'
                     ],
                     reminder,
                     successHandler,

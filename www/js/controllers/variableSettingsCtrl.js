@@ -11,7 +11,7 @@ angular.module('starter')
         // state
         $scope.state = {
             // category object,
-            categoryValues : {},
+            unitCategories : {},
             searchedUnits : []
         };
         $scope.state.title = $stateParams.variableName + ' Variable Settings';

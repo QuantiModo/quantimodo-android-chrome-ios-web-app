@@ -13,7 +13,7 @@ angular.module('starter')
             showAddVariable : false,
             showAddMeasurement : false,
             showCategoryAsSelector : true,
-            show_units: false
+            showUnits: false
         };
 
         // lists
@@ -21,14 +21,14 @@ angular.module('starter')
             list : [],
             userVariables : [],
             searchVariables : [],
-            categories : []
+            unitCategories : []
         };
 
         // state
         $scope.state = {
             
             // category object,
-            categoryValues : {}, 
+            unitCategories : {}, 
 
             // variables
             variable_category : "",
@@ -227,26 +227,32 @@ angular.module('starter')
 
             // update the sub unit
             setTimeout(function(){
-                console.log('changed to ', $scope.state.categoryValues[$scope.selected_unit_category][0].abbreviatedName);
-                $scope.state.selected_sub = $scope.state.categoryValues[$scope.selected_unit_category][0].abbreviatedName;
+                console.log('changed to ', $scope.state.unitCategories[$scope.selected_unit_category][0].abbreviatedName);
+                $scope.state.selected_sub = $scope.state.unitCategories[$scope.selected_unit_category][0].abbreviatedName;
                 $scope.$apply();
             }, 100);
         };
 
         $scope.unit_search = function(){
-            var query = $scope.state.unit_text;
-            if(query !== ""){
-                $scope.flags.show_units = true;
-                var matches = $scope.state.units.filter(function(unit) {
-                    return unit.abbreviatedName.toLowerCase().indexOf(query.toLowerCase()) !== -1;
+
+            var unitSearchQuery = $scope.state.unit_text;
+            if(unitSearchQuery !== ""){
+                $scope.state.showUnits = true;
+                var unitMatches = $scope.state.units.filter(function(unit) {
+                    return unit.abbreviatedName.toLowerCase().indexOf(unitSearchQuery.toLowerCase()) !== -1;
                 });
 
+                if(unitMatches.length < 1){
+                    unitMatches = $scope.state.units.filter(function(unit) {
+                        return unit.name.toLowerCase().indexOf(unitSearchQuery.toLowerCase()) !== -1;
+                    });
+                }
+
                 $timeout(function() {
-                    $scope.state.searchedUnits = matches;
+                    $scope.state.searchedUnits = unitMatches;
                 }, 100);
 
-
-            } else $scope.flags.show_units = false;
+            } else $scope.state.showUnits = false;
         };
 
         // when a unit is selected
@@ -255,7 +261,7 @@ angular.module('starter')
 
             // update viewmodel
             $scope.state.unit_text = unit.abbreviatedName;
-            $scope.flags.show_units = false;
+            $scope.flags.showUnits = false;
             $scope.state.selected_sub = unit.abbreviatedName;
         };
 
@@ -268,8 +274,8 @@ angular.module('starter')
             $scope.lists.searchVariables = [];
 
             // data default
-            $scope.lists.categories = [];
-            $scope.state.categoryValues = {};
+            $scope.lists.unitCategories = [];
+            $scope.state.unitCategories = {};
             
             // variable
             $scope.state.variable_category = "";
@@ -333,16 +339,16 @@ angular.module('starter')
                     
                     $scope.state.units = units;
                     console.log('got units', units);
-                    // populate categoryValues
+                    // populate unitCategories
                     for(var i in units){
-                        if($scope.lists.categories.indexOf(units[i].category) === -1){
-                            $scope.lists.categories.push(units[i].category);
-                            $scope.state.categoryValues[units[i].category] = [{
+                        if($scope.lists.unitCategories.indexOf(units[i].category) === -1){
+                            $scope.lists.unitCategories.push(units[i].category);
+                            $scope.state.unitCategories[units[i].category] = [{
                                 name : units[i].name,
                                 abbreviatedName: units[i].abbreviatedName
                             }];
                         } else {
-                            $scope.state.categoryValues[units[i].category].push({
+                            $scope.state.unitCategories[units[i].category].push({
                                 name: units[i].name,
                                 abbreviatedName: units[i].abbreviatedName
                             });
@@ -353,7 +359,7 @@ angular.module('starter')
                     $scope.selected_unit_category = 'Duration';
                     
                     // set first sub unit of selected category
-                    $scope.state.selected_sub = $scope.state.categoryValues[$scope.selected_unit_category][0].abbreviatedName;
+                    $scope.state.selected_sub = $scope.state.unitCategories[$scope.selected_unit_category][0].abbreviatedName;
                     
                     console.log("got units", units);
                     

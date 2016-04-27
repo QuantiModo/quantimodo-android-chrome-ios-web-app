@@ -23,7 +23,7 @@ angular.module('starter')
 	    	measurementDate : new Date(),
 	    	slots : {
 				epochTime: new Date().getTime()/1000,
-				format: 24,
+				format: 12,
 				step: 1
 			},
 			variable : {},
@@ -50,8 +50,8 @@ angular.module('starter')
 			$scope.state.title = config.appSettings.remindersInbox.title;
 		}
 
-		if($stateParams.category){
-			$scope.state.title = $filter('wordAliases')($stateParams.category) + " " + $filter('wordAliases')("Reminder Inbox");
+		if($stateParams.variableCategoryName){
+			$scope.state.title = $filter('wordAliases')($stateParams.variableCategoryName) + " " + $filter('wordAliases')("Reminder Inbox");
 		}
 
 	    $scope.select_primary_outcome_variable = function($event, val){
@@ -156,7 +156,7 @@ angular.module('starter')
 
 	    var getTrackingReminders = function(){
 	    	//utils.startLoading();
-	    	reminderService.getTrackingReminders($stateParams.category)
+	    	reminderService.getTrackingReminders($stateParams.variableCategoryName)
 	    	.then(function(reminders){
 	    		$scope.state.allReminders = reminders;
 	    		utils.stopLoading();
@@ -172,7 +172,7 @@ angular.module('starter')
 	    var getTrackingReminderNotifications = function(){
 	    	utils.startLoading();
 
-	    	reminderService.getTrackingReminderNotifications($stateParams.category)
+	    	reminderService.getTrackingReminderNotifications($stateParams.variableCategoryName)
 	    	.then(function(reminders){
 				if(reminders.length > 1){
 					$scope.state.showButtons = false;
