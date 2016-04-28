@@ -1,6 +1,6 @@
 angular.module('starter')
     // Variable Category Service
-    .factory('variableCategoryService', function($filter){
+    .factory('variableCategoryService', function($filter, $q, QuantiModo, localStorageService){
 
         // service methods
         var variableCategoryService = {
