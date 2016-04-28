@@ -1,7 +1,9 @@
 angular.module('starter')
 
 	// Controls the History Page of the App.
-	.controller('AllHistoryCtrl', function($scope, $state, $ionicModal, $timeout, $ionicLoading, authService, $ionicPopover, measurementService, $ionicPopup, localStorageService, QuantiModo){
+	.controller('AllHistoryCtrl', function($scope, $state, $ionicModal, $timeout, $ionicLoading,
+										   authService, $ionicPopover, measurementService,
+										   $ionicPopup, variableCategoryService){
 
 	    $scope.controller_name = "AllHistoryCtrl";
 
@@ -93,7 +95,7 @@ angular.module('starter')
 	    // constructor
 	    $scope.init = function(){
 	    	utils.startLoading();
-	    	measurementService.getVariableCategories()
+			variableCategoryService.getVariableCategories()
 	    	.then(function(variableCategories){
 	    		$scope.state.variableCategories = variableCategories;
 	    	}, function(err){

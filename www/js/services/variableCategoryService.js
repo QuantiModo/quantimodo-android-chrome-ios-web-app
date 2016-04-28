@@ -2,7 +2,9 @@ angular.module('starter')
     // Variable Category Service
     .factory('variableCategoryService', function($filter){
 
-        return {
+        // service methods
+        var variableCategoryService = {
+
             getVariableCategoryInfo: function (variableCategoryName) {
 
                 var variableCategoryInfo =
@@ -10,7 +12,6 @@ angular.module('starter')
                     "Anything": {
                         defaultUnitAbbreviatedName: '',
                         helpText: "What do you want to record?",
-                        variableCategoryName: "Anything",
                         variableCategoryNameSingularLowercase: "anything",
                         variableSearchPlaceholderText : "Search for a variable here...",
                         defaultValuePlaceholderText : "Enter most common value here...",
@@ -95,6 +96,42 @@ angular.module('starter')
                 }
                 
                 return selectedVariableCategoryObject;
+            },
+
+            // refresh local variable categroies with QuantiModo API
+            refreshVariableCategories : function(){
+                var deferred = $q.defer();
+
+                QuantiModo.getVariableCategories(function(vars){
+                    localStorageService.setItem('variableCategories',JSON.stringify(vars));
+                    deferred.resolve(vars);
+                }, function(){
+                    deferred.reject(false);
+                });
+
+                return deferred.promise;
+            },
+
+            // get variable categories
+            getVariableCategories : function(){
+                var deferred = $q.defer();
+
+                localStorageService.getItem('variableCategories',function(variableCategories){
+                    if(variableCategories){
+                        deferred.resolve(JSON.parse(variableCategories));
+                    } else {
+                        QuantiModo.getVariableCategories(function(vars){
+                            localStorageService.setItem('variableCategories', JSON.stringify(vars));
+                            deferred.resolve(vars);
+                        }, function(){
+                            deferred.reject(false);
+                        });
+                    }
+                });
+
+                return deferred.promise;
             }
         };
+        
+        return variableCategoryService;
     });

@@ -2,98 +2,6 @@ angular.module('starter')
 	// Measurement Service
 	.factory('variableService', function($http, $q, QuantiModo, localStorageService, $rootScope){
 
-		// sync the measurements in queue with QuantiModo API
-		var syncQueue = function(measurementsQueue){
-			var defer = $q.defer();
-
-			// measurements set
-			var measurements = [
-				{					
-                    name: config.appSettings.primary_outcome_variable_details.name,
-                    source: config.get('client_source_name'),
-                    category: config.appSettings.primary_outcome_variable_details.category,
-                    combinationOperation: config.appSettings.primary_outcome_variable_details.combinationOperation,
-                    unit: config.appSettings.primary_outcome_variable_details.unit,
-                    measurements : measurementsQueue
-				}
-			];
-
-			// send request
-			QuantiModo.postMeasurementsV2(measurements, function(response){
-					// success
-
-				// clear queue
-				localStorageService.setItem('measurementsQueue',JSON.stringify([]));
-				defer.resolve();
-				console.log("success", response);
-
-			}, function(response){
-					// error
-
-				// resave queue
-                localStorageService.setItem('measurementsQueue',JSON.stringify(measurementsQueue));
-				console.log("error", response);
-				defer.resolve();
-			});
-
-			return defer.promise;
-		};
-
-		// get all data from date range to date range
-		var getAllData = function(tillNow, callback){
-
-            var allData;
-
-            localStorageService.getItem('allData',function(val){
-
-                allData=val;
-
-                // filtered measurements
-                var returnFiltered = function(start,end){
-                    
-                    allData = allData.sort(function(a, b){
-                        return a.timestamp - b.timestamp;
-                    });
-
-                    var filtered = allData.filter(function(x){
-                        return x.timestamp >= start && x.timestamp <= end;
-                    });
-                    
-                    return callback(filtered);
-                };
-
-                if(!allData){
-                    return callback(false);
-                }
-
-                allData = JSON.parse(allData);
-
-                // params
-                variableService.getFromDate(function(start){
-                    start = start / 1000;
-
-                    var end;
-
-                    if(tillNow){
-                        end = Date.now()/1000;
-                        returnFiltered(start,end);
-                    }else{
-                        variableService.getToDate(function(end){
-                           end = end / 1000;
-                           returnFiltered(start,end);
-                        });
-                    }
-                });
-
-            });
-		};
-
-		// flag whether the Service is in a synced state
-		var isSynced = false;
-
-        //flag to indicate if data syncing is in progress
-        var isSyncing = false;
-
 		// service methods
 		var variableService = {
 
@@ -188,6 +96,44 @@ angular.module('starter')
                 });
 
                 return deferred.promise;
+            },
+
+            populateVariableSearchResults: function (variableCategoryName) {
+
+                utils.startLoading();
+                // get user token
+                authService.getAccessTokenFromAnySource().then(function(token){
+
+                    if(!variableCategoryName){
+                        // get all variables
+                        console.log('Get most recent anything variables');
+                        variableService.searchVariablesIncludePublic('*').then(function(variables){
+
+                            $scope.variableSearchResults = variables;
+                            utils.stopLoading();
+
+                        }, function(){
+                            utils.stopLoading();
+                        });
+                    } else {
+                        console.log('get all variables by category');
+                        variableService.searchVariablesIncludePublic('*', $scope.state.variableCategoryName).then(function(variables){
+
+                            $scope.variableSearchResults = variables;
+
+                            utils.stopLoading();
+
+                        }, function(){
+                            utils.stopLoading();
+                        });
+                    }
+
+                }, function(){
+                    utilsService.showLoginRequiredAlert($scope.login);
+                    utils.stopLoading();
+
+                });
+
             }
 		};
 

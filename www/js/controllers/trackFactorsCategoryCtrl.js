@@ -341,7 +341,7 @@ angular.module('starter')
                 });
 
                 // get variable categories
-                measurementService.getVariableCategories().then(function(variableCategories){
+                variableCategoryService.getVariableCategories().then(function(variableCategories){
 
                     // update viewmodel
                     $scope.state.variableCategories = variableCategories;

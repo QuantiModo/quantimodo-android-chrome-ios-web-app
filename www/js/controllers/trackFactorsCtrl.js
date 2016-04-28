@@ -1,9 +1,22 @@
 angular.module('starter')
     
     // Controls the Track Factors Page
-    .controller('TrackFactorsCtrl', function($scope, $ionicModal, $timeout, $ionicPopup ,$ionicLoading, authService,
-                                             measurementService, $state, $rootScope, utilsService, localStorageService,
-                                             $ionicScrollDelegate, ionicTimePicker, variableService, unitService) {
+    .controller('TrackFactorsCtrl', function($scope, 
+                                                 $ionicModal, 
+                                                 $timeout, 
+                                                 $ionicPopup,
+                                                 $ionicLoading,
+                                                 $state, 
+                                                 $rootScope, 
+                                                 utilsService, 
+                                                 localStorageService,
+                                                 $ionicScrollDelegate, 
+                                                 ionicTimePicker,
+                                                 authService,
+                                                 measurementService,
+                                                 variableService, 
+                                                 unitService, 
+                                                variableCategoryService) {
         $scope.controller_name = "TrackFactorsCtrl";
 
         // state
@@ -302,7 +315,7 @@ angular.module('starter')
                 });
 
                 // get variable categories
-                measurementService.getVariableCategories().then(function(variableCategories){
+                variableCategoryService.getVariableCategories().then(function(variableCategories){
                     
                     // update viewmodel
                     $scope.state.variableCategories = variableCategories;
