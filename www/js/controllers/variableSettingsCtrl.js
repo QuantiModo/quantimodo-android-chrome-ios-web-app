@@ -89,7 +89,7 @@ angular.module('starter')
             authService.getAccessTokenFromAnySource().then(function(){
                 
                 // get all variables
-                measurementService.getVariablesByName($stateParams.variableName).then(function(variableObject){
+                variableService.getVariablesByName($stateParams.variableName).then(function(variableObject){
                     $scope.state.variableObject = variableObject;
                     console.log(variableObject);
                     $scope.item = variableObject;

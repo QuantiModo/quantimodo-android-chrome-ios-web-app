@@ -3,7 +3,7 @@ angular.module('starter')
     // Controls the Track Factors Page
     .controller('TrackFactorsCtrl', function($scope, $ionicModal, $timeout, $ionicPopup ,$ionicLoading, authService,
                                              measurementService, $state, $rootScope, utilsService, localStorageService,
-                                             $ionicScrollDelegate, ionicTimePicker) {
+                                             $ionicScrollDelegate, ionicTimePicker, variableService, unitService) {
         $scope.controller_name = "TrackFactorsCtrl";
 
         // state
@@ -287,7 +287,7 @@ angular.module('starter')
             authService.getAccessTokenFromAnySource().then(function(token){
                 
                 // get all variables
-                measurementService.getVariables().then(function(variables){
+                variableService.getVariables().then(function(variables){
 
                     console.log("got variables", variables);
                     
@@ -322,8 +322,8 @@ angular.module('starter')
                 });
 
                 // get units
-                measurementService.refreshUnits();
-                measurementService.getUnits().then(function(unitObjects){
+                unitService.refreshUnits();
+                unitService.getUnits().then(function(unitObjects){
                     
                     $scope.state.unitObjects = unitObjects;
                     console.log('got units', unitObjects);
@@ -404,7 +404,7 @@ angular.module('starter')
             $scope.state.loading = true;
             
             // search server for the variableSearchQuery
-            measurementService.searchVariablesIncludePublic(variableSearchQuery).then(function(variables){
+            variableService.searchVariablesIncludePublic(variableSearchQuery).then(function(variables){
                 
                 // populate list with results
                 $scope.state.variableSearchResults = variables;

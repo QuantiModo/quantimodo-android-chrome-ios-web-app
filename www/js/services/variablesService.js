@@ -12,7 +12,7 @@ angular.module('starter')
                     if(!variableCategoryName){
                         // get all variables
                         console.log('Get most recent anything variables');
-                        measurementService.searchVariablesIncludePublic('*').then(function(variables){
+                        variableService.searchVariablesIncludePublic('*').then(function(variables){
                             
                             $scope.variableSearchResults = variables;
                             utils.stopLoading();
@@ -22,7 +22,7 @@ angular.module('starter')
                         });
                     } else {
                         console.log('get all variables by category');
-                        measurementService.searchVariablesIncludePublic('*', $scope.state.variableCategoryName).then(function(variables){
+                        variableService.searchVariablesIncludePublic('*', $scope.state.variableCategoryName).then(function(variables){
                             
                             $scope.variableSearchResults = variables;
 

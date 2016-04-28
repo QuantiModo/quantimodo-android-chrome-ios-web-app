@@ -3,7 +3,8 @@ angular.module('starter')
 	// Controls the History Page of the App.
 	.controller('RemindersAddCtrl', function($scope, authService, $ionicPopup, localStorageService, $state,
 											 $stateParams, measurementService, reminderService, $ionicLoading,
-											 utilsService, $filter, ionicTimePicker, $timeout, variableCategoryService){
+											 utilsService, $filter, ionicTimePicker, $timeout, 
+											 variableCategoryService, variableService, unitService){
 
 	    $scope.controller_name = "RemindersAddCtrl";
 
@@ -117,7 +118,7 @@ angular.module('starter')
 				if(!variableCategoryName){
 					// get all variables
 					console.log('Get most recent anything variables');
-					measurementService.getVariables().then(function(variables){
+					variableService.getVariables().then(function(variables){
 
 					    $scope.variableSearchResults = variables;
 					    utils.stopLoading();
@@ -127,7 +128,7 @@ angular.module('starter')
 					});
 				} else {
 					console.log('get all variables by variableCategoryName');
-					measurementService.searchVariablesIncludePublic('*', $scope.state.variableCategoryName).then(function(variables){
+					variableService.searchVariablesIncludePublic('*', $scope.state.variableCategoryName).then(function(variables){
 
 					    $scope.variableSearchResults = variables;
 
@@ -158,7 +159,7 @@ angular.module('starter')
 	    	// search server for the query
 
 	    	if(!$scope.state.variableCategoryName){
-	    		measurementService.searchVariablesIncludePublic(variableSearchQuery)
+				variableService.searchVariablesIncludePublic(variableSearchQuery)
 	    		.then(function(variables){
 
 	    		    // populate list with results
@@ -171,7 +172,7 @@ angular.module('starter')
                     }
 	    		});
 	    	} else {
-	    		measurementService.searchVariablesIncludePublic(variableSearchQuery, $scope.variableCategoryName)
+				variableService.searchVariablesIncludePublic(variableSearchQuery, $scope.variableCategoryName)
 	    		.then(function(variables){
 
 	    		    // populate list with results
@@ -567,8 +568,8 @@ angular.module('starter')
 
         $scope.getUnits = function () {
             // get units
-            measurementService.refreshUnits();
-            measurementService.getUnits().then(function (unitObjects) {
+            unitService.refreshUnits();
+			unitService.getUnits().then(function (unitObjects) {
 
                 $scope.state.unitObjects = unitObjects;
 

@@ -4,7 +4,8 @@ angular.module('starter')
     .controller('TrackFactorsCategoryCtrl', function($scope, $ionicModal, $timeout, $ionicPopup ,$ionicLoading,
                                                      authService, measurementService, $state, $rootScope, $stateParams,
                                                      utilsService, localStorageService, $filter, $ionicScrollDelegate,
-                                                        variableCategoryService, ionicTimePicker){
+                                                        variableCategoryService, ionicTimePicker, variableService,
+                                                        unitService){
 
         $scope.controller_name = "TrackFactorsCategoryCtrl";
 
@@ -322,7 +323,7 @@ angular.module('starter')
             authService.getAccessTokenFromAnySource().then(function(token){
 
                 // get all variables
-                measurementService.searchVariablesIncludePublic('*', $scope.state.variableCategoryName).then(function(variables){
+                variableService.searchVariablesIncludePublic('*', $scope.state.variableCategoryName).then(function(variables){
 
                     // populate list with results
                     $scope.state.variableSearchResults = variables;
@@ -360,8 +361,8 @@ angular.module('starter')
                 });
 
                 // get units
-                measurementService.refreshUnits();
-                measurementService.getUnits().then(function(unitObjects){
+                unitService.refreshUnits();
+                unitService.getUnits().then(function(unitObjects){
 
                     $scope.state.unitObjects = unitObjects;
 
@@ -423,7 +424,7 @@ angular.module('starter')
             $scope.state.loading = true;
 
             // search server for the query
-            measurementService.searchVariablesIncludePublic(variableSearchQuery, variableCategoryName).then(function(variables){
+            variableService.searchVariablesIncludePublic(variableSearchQuery, variableCategoryName).then(function(variables){
 
                 // populate list with results
                 $scope.state.variableSearchResults = variables;

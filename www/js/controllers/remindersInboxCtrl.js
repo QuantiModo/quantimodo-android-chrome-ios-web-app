@@ -144,7 +144,7 @@ angular.module('starter')
 	    };
 
 	    var getVariable = function(variableName){
-	    	measurementService.getVariablesByName(variableName)
+			variableService.getVariablesByName(variableName)
 	    	.then(function(variable){
 	    		$scope.state.variable = variable;
 	    	}, function(){
