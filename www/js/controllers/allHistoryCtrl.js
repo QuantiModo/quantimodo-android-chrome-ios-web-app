@@ -41,16 +41,15 @@ angular.module('starter')
 	    };
 
 	    $scope.editMeasurement = function(measurement){
-	    	$state.go('app.measurementEdit', {
-	    		unit: measurement.unit,
-	    		variableName : measurement.variable,
-	    		dateTime : measurement.startTime,
-	    		value : measurement.value
+	    	$state.go('app.track_factors_category', {
+	    		measurement: measurement
 	    	});
 	    };
 
 	    $scope.getUnitFromUnitId = function(id){
-	    	if(!id) return false;
+	    	if(!id) {
+				return false;
+			}
 
 	    	var unit = $scope.state.unitObjects.filter(function(u){
 	    		return u.id === id;

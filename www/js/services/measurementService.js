@@ -724,6 +724,23 @@ angular.module('starter')
                 return deferred.promise;
             },
 
+            getMeasurementById : function(measurementId){
+                var params = {id : measurementId};
+                QuantiModo.getV1Measurements(params, function(response){
+                    var measurementArray = response.data;
+                    if(!measurementArray[0]){
+                        console.log('Could not get measurement with id: ' + measurementId);
+                        return;
+                    }
+                    var measurementObject = measurementArray[0];
+                    return measurementObject;
+                }, function(error){
+                    console.log(error);
+                });
+
+
+            },
+
             resetSyncFlag:function(){
               isSynced = false;
             }

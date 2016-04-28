@@ -154,12 +154,16 @@ angular.module('starter',
           views: {
               'menuContent': {
                   templateUrl: "templates/track_factors.html",
-                  controller: 'TrackFactorsCtrl'
+                  controller: 'TrackFactorsCategoryCtrl'
               }
           }
       })
       .state('app.track_factors_category', {
           url: "/track_factors_category/:variableCategoryName",
+          cache:false,
+          params: {
+              measurement: null
+          },
           views: {
               'menuContent': {
                   templateUrl: "templates/track_factors.html",
@@ -296,22 +300,6 @@ angular.module('starter',
               'menuContent': {
                   templateUrl: "templates/history_all.html",
                   controller: 'AllHistoryCtrl'
-              }
-          }
-      })
-      .state('app.measurementEdit', {
-          url: "/measurement-edit/:measurementId",
-          cache:false,
-          params: {
-            unit: null,
-            variableName : null,
-            dateTime : null,
-            value : null
-          },
-          views: {
-              'menuContent': {
-                  templateUrl: "templates/measurement_edit.html",
-                  controller: 'MeasurementEditCtrl'
               }
           }
       })
