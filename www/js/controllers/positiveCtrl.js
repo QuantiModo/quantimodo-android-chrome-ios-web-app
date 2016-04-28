@@ -1,7 +1,9 @@
 angular.module('starter')
 	
 	// Controlls the Positive Factors page
-	.controller('PositiveCtrl', function($scope, $ionicModal, $timeout, measurementService, $ionicLoading, $ionicPopup, $state, $ionicPopup, correlationService, $rootScope,localStorageService,utilsService) {
+	.controller('PositiveCtrl', function($scope, $ionicModal, $timeout, measurementService, $ionicLoading, 
+                                         $state, $ionicPopup, correlationService, $rootScope,
+                                         localStorageService, utilsService) {
 
         /*// redirect if not logged in
         if(!$scope.isLoggedIn){

@@ -386,7 +386,7 @@ angular.module('starter')
     	    	}
     	    }, function(){
     	    	utils.stopLoading();
-    	    	utils.showAlert('Failed to post measuement, Try again!','assertive');
+    	    	utils.showAlert('Failed to post measurement, Try again!','assertive');
     	    });
 
 	    };

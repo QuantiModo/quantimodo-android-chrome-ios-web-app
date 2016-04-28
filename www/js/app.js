@@ -299,8 +299,8 @@ angular.module('starter',
               }
           }
       })
-      .state('app.edit', {
-          url: "/edit",
+      .state('app.measurementEdit', {
+          url: "/measurement-edit/:measurementId",
           cache:false,
           params: {
             unit: null,
@@ -310,8 +310,8 @@ angular.module('starter',
           },
           views: {
               'menuContent': {
-                  templateUrl: "templates/reminders_inbox.html",
-                  controller: 'RemindersInboxCtrl'
+                  templateUrl: "templates/measurement_edit.html",
+                  controller: 'MeasurementEditCtrl'
               }
           }
       })

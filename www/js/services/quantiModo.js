@@ -161,7 +161,7 @@ angular.module('starter')
 
             QuantiModo.getV1Measurements = function(params, successHandler, errorHandler){
                 QuantiModo.get('api/v1/measurements',
-                    ['source', 'limit', 'offset', 'sort'],
+                    ['source', 'limit', 'offset', 'sort', 'id'],
                     params,
                     successHandler,
                     errorHandler);

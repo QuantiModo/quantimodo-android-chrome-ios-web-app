@@ -90,8 +90,6 @@ angular.module('starter')
 	            Guilty : localAdditonalRatings && localAdditonalRatings.Guilty? localAdditonalRatings.Guilty : false,
 	            Alert : localAdditonalRatings && localAdditonalRatings.Alert? localAdditonalRatings.Alert : false,
 	            Excited : localAdditonalRatings && localAdditonalRatings.Excited? localAdditonalRatings.Excited : false,
-	            Guilty : localAdditonalRatings && localAdditonalRatings.Guilty? localAdditonalRatings.Guilty : false,
-	            Irritable : localAdditonalRatings && localAdditonalRatings.Irritable? localAdditonalRatings.Irritable : false,
 	            Ashamed : localAdditonalRatings && localAdditonalRatings.Ashamed? localAdditonalRatings.Ashamed : false,
 	            Attentive : localAdditonalRatings && localAdditonalRatings.Attentive? localAdditonalRatings.Attentive : false,
 	            Hostile : localAdditonalRatings && localAdditonalRatings.Hostile? localAdditonalRatings.Hostile : false,

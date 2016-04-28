@@ -3,7 +3,7 @@ angular.module('starter')
 	// Controls the History Page of the App.
 	.controller('AllHistoryCtrl', function($scope, $state, $ionicModal, $timeout, $ionicLoading,
 										   authService, $ionicPopover, measurementService,
-										   $ionicPopup, variableCategoryService){
+										   $ionicPopup, variableCategoryService, unitService){
 
 	    $scope.controller_name = "AllHistoryCtrl";
 
@@ -41,7 +41,7 @@ angular.module('starter')
 	    };
 
 	    $scope.editMeasurement = function(measurement){
-	    	$state.go('app.edit', {
+	    	$state.go('app.measurementEdit', {
 	    		unit: measurement.unit,
 	    		variableName : measurement.variable,
 	    		dateTime : measurement.startTime,
@@ -102,7 +102,7 @@ angular.module('starter')
 	    		console.log("error getting variable categories", err);
 	    	});
 
-	    	measurementService.getUnits()
+	    	unitService.getUnits()
 	    	.then(function(units){
 	    		$scope.state.unitObjects = units;
 	    	}, function(err){
