@@ -69,6 +69,44 @@ angular.module('starter')
                     chrome.alarms.clear("trackReportAlarm");
                 }
 
+            },
+
+            scheduleReminder:function(params){
+                var text = "Reminder " + params['variableName'];
+                if (params['frequency'] != "Daily") {
+                    if(typeof cordova != "undefined"){
+                        //Android and iOS
+                        cordova.plugins.notification.local.clearAll(function(){
+                            if(params['frequency'] != "Never"){
+                                cordova.plugins.notification.local.schedule({
+                                    text: text,
+                                    every: intervals[interval],
+                                    icon: config.appSettings.notification_image,
+                                    id : 1
+                                }, function(){
+                                    console.log('notification scheduled');
+                                });
+                                cordova.plugins.notification.local.on("click", function (notification) {
+                                });
+                            }
+                        });
+                    }
+                    else if(window.chrome && chrome.runtime && chrome.runtime.id){
+                        chrome.alarms.clear("trackReportAlarm");
+                        var alarmInfo = {periodInMinutes: intervals[interval]};
+                        chrome.alarms.create("trackReportAlarm", alarmInfo);
+                        console.log("Alarm set, every " + intervals[interval] + " minutes");
+                    }
+                } else {
+                    // var d = new Date();
+                    // d.setHours(14);
+                    // cordova.plugins.notification.local.schedule({
+                    //     id:      1,
+                    //     text:   text,
+                    //     every:  'day',
+                    //     at:    d
+                    // });
+                }
             }
         }
     });

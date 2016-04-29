@@ -3,7 +3,8 @@ angular.module('starter')
 	// Controls the History Page of the App.
 	.controller('RemindersAddCtrl', function($scope, authService, $ionicPopup, localStorageService, $state,
 											 $stateParams, measurementService, reminderService, $ionicLoading,
-											 utilsService, $filter, ionicTimePicker, $timeout, variableCategoryService){
+											 utilsService, $filter, ionicTimePicker, $timeout, variableCategoryService,
+											 notificationService){
 
 	    $scope.controller_name = "RemindersAddCtrl";
 
@@ -362,19 +363,24 @@ angular.module('starter')
                 $scope.state.abbreviatedUnitName,
                 $scope.state.combinationOperation,
                 $scope.state.reminderStartTimeUtc)
-	    	.then(function(){
+	    	.then(function() {
+                utils.stopLoading();
+                var notificationParams = {
+					variableName: $scope.state.variableName,
+					frequency: $scope.state.selectedFrequency,
+					interval: getFrequencyChart()[$scope.state.selectedFrequency]/60
+                };
 
-	    		utils.stopLoading();
-	    		if($stateParams.reminder !== null && typeof $stateParams.reminder !== "undefined"){
+                notificationService.scheduleReminder(notificationParams);
+                if($stateParams.reminder !== null && typeof $stateParams.reminder !== "undefined"){
 	    			if($stateParams.reminder.fromState){
 	    				$state.go($stateParams.reminder.fromState);
 	    			} else {
 						$state.go('app.reminders_manage');
                     }
-	    		} else {
+                } else {
 					$state.go('app.reminders_manage');
                 }
-
 	    	}, function(err){
                 console.log(err);
 	    		utils.stopLoading();
