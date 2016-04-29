@@ -1,0 +1,156 @@
+<ion-view hide-nav-bar="skipMenu" view-title="{{state.title}}">
+    <ion-content>
+
+        <div class="card" ng-show="state.showAddVariable">
+            <div class="list">
+                <p class="heading calm" style="padding:14px;">Add new {{state.variableCategoryObject.variableCategoryNameSingularLowercase | wordAliases}} variable</p>
+
+
+                <label class="item item-input item-select" ng-show="state.showCategoryAsSelector">
+                    <div class="input-label">
+                        Select category
+                    </div>
+                    <select ng-model="state.variableCategory" ng-change=>
+                        <option ng-repeat="i in state.variableCategories track by i.id" value="{{i.name}}">
+                            {{i.name}}
+                        </option>
+                    </select>
+                </label>
+
+                <label class="item item-input item-stacked-label">
+                    <span class="input-label">Name</span>
+                    <input type="text" ng-model="state.measurement.variable" id="variableName" placeholder="Enter the new variable name here...">
+                </label>
+            </div>
+
+            <div class="card" ng-show="state.showAddVariable">
+                <p style="padding:14px;">How should we combine data over multiple days?</p>
+
+                <label class="item item-radio">
+                    <input type="radio" ng-model="state.sumAvg" value="sum" name="group">
+                    <div class="item-content">
+                        Sum (i.e. Apples eaten)
+                    </div>
+                    <i class="radio-icon ion-checkmark"></i>
+                </label>
+
+                <label class="item item-radio">
+                    <input type="radio" ng-model="state.sumAvg" value="avg" name="group">
+                    <div class="item-content">
+                        Average (i.e. Your weight)
+                    </div>
+                    <i class="radio-icon ion-checkmark"></i>
+                </label>
+            </div>
+        </div>
+
+        <div class="card"style="overflow: visible">
+            <p class="heading calm" style="padding:14px;">{{state.measurement.variable}} measurement</p>
+            <div class="list">
+
+                <div ng-if="(state.measurement.abbreviatedUnitName !== '/5')" class="row labeled-control">
+                    <div class="col col-l">
+                        <span>
+                            Value
+                        </span>
+                    </div>
+                    <div class="col">
+                        <input type="text" ng-model="state.measurement.value" id="measurementValue" placeholder="Enter Value Here" class="uptop">
+                    </div>
+                </div>
+
+                <div class="primary_outcome_variables primary_outcome_variable_history col" ng-if="(state.measurement.abbreviatedUnitName === '/5')">
+                    <img ng-repeat="option in primary_outcome_variable_numbers" ng-click="select_primary_outcome_variable($event, option.value)" ng-src="{{option.img}}"  ng-class="{'active_primary_outcome_variable' : option.value == state.measurement.value}">
+                </div>
+
+                <div class="row labeled-control" ng-if="(state.measurement.abbreviatedUnitName !== '/5')">
+                    <div class="col col-l">
+                        <span class="input-label">Unit</span>
+                    </div>
+                    <div class="col">
+                        <div class="row uptop" style="padding-left:0px;">
+                            <div class="col" style="padding-top:5px;">
+
+                                <!-- Default to most common unit when tracking measurement, and always keep it editable-->
+                                <input type="text" ng-change="unitSearch(state.measurement.abbreviatedUnitName)" ng-model="state.measurement.abbreviatedUnitName" placeholder="Search for a unit...">
+
+                                <!-- Below replaced by above so that we can always change the unit-->
+                                <!-- Default to most common unit when adding new variable, keep it editable-->
+                                <!--
+                                <input type="text" ng-show="state.showAddVariable" ng-change="unitSearch(state.measurement.abbreviatedUnitName)" ng-model="state.measurement.abbreviatedUnitName" placeholder="Type to search">
+                                -->
+                                <!-- Lock to default unit when tracking measurement for existing variable-->
+                                <!--
+                                <span ng-show="!state.showAddVariable">{{state.selectedUnitAbbreviatedName}}</span>
+                                -->
+                            </div>
+                           
+                        </div>
+                    </div>
+                </div>
+                <div class="card" ng-show="state.showUnits && state.searchedUnits.length">
+                    <div class="list">
+                        <ion-list>
+                            <ion-item ng-repeat="unit in state.searchedUnits" on-tap="unitSelected(unit)">
+                                {{unit.abbreviatedName}}
+                            </ion-item>
+                        </ion-list>
+                    </div>
+                </div>
+                <div class="row labeled-control">
+                    <div class="col col-l">
+                        <span>
+                            Date
+                        </span>
+                    </div>
+                    <div class="col" style="padding-top: 15px;">
+                        <ionic-datepicker style="width:100%" idate="currentDate" disablepreviousdates="false" callback="datePickerCallback">
+                            <button class="button button-block measure_date uptop" style="font-size:14px;border:none;color:black;background-color: white;margin-bottom: 0px;margin-top: 0px;padding-left: 0px; text-align:left;">
+                                {{ currentDate | date:'dd - MMMM - yyyy' }}
+                            </button>
+                        </ionic-datepicker>
+                    </div>
+                </div>
+
+                <div class="row labeled-control">
+                    <div class="col col-l">
+                        <span>
+                            Time
+                        </span>
+                    </div>
+                    <div class="col" style="padding-top: 11px;">
+                        <button class="button button-block uptop"
+                                style="text-align:left;font-size:14px;border:none;color:black;background-color: white;margin-bottom: 0px;margin-top: 0px;padding-left: 0px;"
+                                ng-click="openMeasurementStartTimePicker()">
+                            {{state.measurement.startTime | fromUnixTimestampToLocalTimeOfDay}}
+                        </button>
+                    </div>
+                </div>
+                <div class="row labeled-control">
+                    <div class="col col-l">
+                        <span>
+                            Note
+                        </span>
+                    </div>
+                    <div class="col" style="padding-top: 11px;">
+                        <div class="col">
+                            <input type="text" ng-model="state.measurement.note" id="note" placeholder="Enter note here..." class="uptop">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>    
+ 
+        <div class="card" >
+            <button ng-click="done()" class="button button-calm button-block">
+                Save Measurement
+            </button>
+            <button ng-show="state.measurement.id" ng-click="deleteMeasurement()" class="button button-assertive button-block">
+                Delete Measurement
+            </button>
+            <button ng-click="cancel()" class="button button-assertive button-block">
+                Cancel
+            </button>
+        </div>
+    </ion-content>
+</ion-view>

@@ -162,7 +162,8 @@ angular.module('starter',
           url: "/track_factors_category/:variableCategoryName",
           cache:false,
           params: {
-              measurement: null
+              fromState : null,
+              measurement : null
           },
           views: {
               'menuContent': {
@@ -171,6 +172,21 @@ angular.module('starter',
               }
           }
       })
+        .state('app.measurementAdd', {
+            url: "/measurement-add/:variableName",
+            cache:false,
+            params: {
+                fromState : null,
+                measurement : null,
+                variableObject : null
+            },
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/measurement_add.html",
+                    controller: 'MeasurementAddCtrl'
+                }
+            }
+        })
         .state('app.variable_settings', {
             url: "/variable_settings/:variableName",
             views: {
