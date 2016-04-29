@@ -37,12 +37,14 @@ angular.module('starter')
 	    	limit : 50,
 	    	history : [],
 			units : [],
-			variableCategories : []
+			variableCategories : [],
+			showLoadMoreButton: false
 	    };
 
 	    $scope.editMeasurement = function(measurement){
-	    	$state.go('app.track_factors_category', {
-	    		measurement: measurement
+	    	$state.go('app.measurementAdd', {
+	    		measurement: measurement,
+				fromState: $state.current.name
 	    	});
 	    };
 
@@ -78,6 +80,9 @@ angular.module('starter')
     		    sort: "-startTime"
 	    	}).then(function(history){
     			$scope.state.history = $scope.state.history.concat(history);
+				if($scope.state.history.length > 49){
+					$scope.state.showLoadMoreButton = true;
+				}
     			utils.stopLoading();
 	    	}, function(error){
 	    		console.log('error getting measurements', error);

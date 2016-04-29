@@ -23,7 +23,7 @@ angular.module('starter')
 	    
 	    // load editing popover
 	    $ionicPopover.fromTemplateUrl('templates/history_popup.html', {
-	        scope: $scope,
+	        scope: $scope
 	    }).then(function(popover) {
 	        $scope.history_popover = popover;
 	    });
@@ -106,8 +106,8 @@ angular.module('starter')
                     if(a.timestamp < b.timestamp){
                         return 1;}
                     if(a.timestamp> b.timestamp)
-                    {return -1}
-                    return 0
+                    {return -1;}
+                    return 0;
                 });
             });
 	        // try to access user token to check if the user is logged in
