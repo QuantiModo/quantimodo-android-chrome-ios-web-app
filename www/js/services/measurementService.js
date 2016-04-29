@@ -737,8 +737,14 @@ angular.module('starter')
                 }, function(error){
                     console.log(error);
                 });
+            },
 
-
+            deleteMeasurement : function(measurement){
+                QuantiModo.deleteV1Measurements(measurement, function(response){
+                    console.log("success", response);
+                }, function(response){
+                    console.log("error", response);
+                });
             },
 
             resetSyncFlag:function(){

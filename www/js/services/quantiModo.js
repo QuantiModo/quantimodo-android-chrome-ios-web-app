@@ -167,6 +167,13 @@ angular.module('starter')
                     errorHandler);
             };
 
+            QuantiModo.deleteV1Measurements = function(measurements, successHandler, errorHandler){
+                QuantiModo.post('api/v1/measurements/delete',
+                    ['variableId', 'variableName', 'startTime', 'id'],
+                    measurements,
+                    successHandler,
+                    errorHandler);
+            };
 
 
             // post measurements old method

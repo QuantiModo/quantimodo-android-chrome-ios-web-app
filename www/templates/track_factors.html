@@ -61,7 +61,7 @@
 
                 <label class="item item-input item-stacked-label">
                     <span class="input-label">Name</span>
-                    <input type="text" ng-model="state.variableName" id="variableName" placeholder="Enter the new variable name here...">
+                    <input type="text" ng-model="state.measurement.variable" id="variableName" placeholder="Enter the new variable name here...">
                 </label>
             </div>
 
@@ -87,7 +87,7 @@
         </div>
 
         <div class="card" ng-show="state.showAddMeasurementCard" style="overflow: visible">
-            <p class="heading calm" style="padding:14px;">Record {{state.variableName}} measurement</p>
+            <p class="heading calm" style="padding:14px;">Record {{state.measurement.variable}} measurement</p>
             <div class="list">
 
                 <div ng-if="(state.variableCategoryName != 'Emotions' && state.variableCategoryName != 'Symptoms')" class="row labeled-control">
@@ -97,12 +97,12 @@
                         </span>
                     </div>
                     <div class="col">
-                        <input type="text" ng-model="state.measurementValue" id="measurementValue" placeholder="Enter Value Here" class="uptop">
+                        <input type="text" ng-model="state.measurement.value" id="measurementValue" placeholder="Enter Value Here" class="uptop">
                     </div>
                 </div>
 
                 <div class="primary_outcome_variables primary_outcome_variable_history col" ng-if="state.variableCategoryName =='Emotions' || state.variableCategoryName == 'Symptoms'">
-                    <img ng-repeat="option in primary_outcome_variable_numbers" ng-click="select_primary_outcome_variable($event, option.value)" ng-src="{{option.img}}"  ng-class="{'active_primary_outcome_variable' : option.value == state.measurementValue}">
+                    <img ng-repeat="option in primary_outcome_variable_numbers" ng-click="select_primary_outcome_variable($event, option.value)" ng-src="{{option.img}}"  ng-class="{'active_primary_outcome_variable' : option.value == state.measurement.value}">
                 </div>
 
                 <div class="row labeled-control" ng-if="(state.variableCategoryName != 'Emotions' && state.variableCategoryName != 'Symptoms')">
@@ -114,12 +114,12 @@
                             <div class="col" style="padding-top:5px;">
 
                                 <!-- Default to most common unit when tracking measurement, and always keep it editable-->
-                                <input type="text" ng-change="unitSearch(state.abbreviatedUnitName)" ng-model="state.abbreviatedUnitName" placeholder="Search for a unit...">
+                                <input type="text" ng-change="unitSearch(state.measurement.abbreviatedUnitName)" ng-model="state.measurement.abbreviatedUnitName" placeholder="Search for a unit...">
 
                                 <!-- Below replaced by above so that we can always change the unit-->
                                 <!-- Default to most common unit when adding new variable, keep it editable-->
                                 <!--
-                                <input type="text" ng-show="state.showAddVariable" ng-change="unitSearch(state.abbreviatedUnitName)" ng-model="state.abbreviatedUnitName" placeholder="Type to search">
+                                <input type="text" ng-show="state.showAddVariable" ng-change="unitSearch(state.measurement.abbreviatedUnitName)" ng-model="state.measurement.abbreviatedUnitName" placeholder="Type to search">
                                 -->
                                 <!-- Lock to default unit when tracking measurement for existing variable-->
                                 <!--
@@ -164,7 +164,7 @@
                         <button class="button button-block uptop"
                                 style="text-align:left;font-size:14px;border:none;color:black;background-color: white;margin-bottom: 0px;margin-top: 0px;padding-left: 0px;"
                                 ng-click="openMeasurementStartTimePicker()">
-                            {{state.measurementStartTimeEpochTime | fromUnixTimestampToLocalTimeOfDay}}
+                            {{state.measurement.startTime | fromUnixTimestampToLocalTimeOfDay}}
                         </button>
                     </div>
                 </div>
@@ -183,12 +183,15 @@
             </div>
         </div>    
  
-        <div class="card" ng-show="state.showAddMeasurement">
+        <div class="card" ng-show="state.showAddMeasurementCard">
+            <button ng-click="done()" class="button button-calm button-block">
+                Save Measurement
+            </button>
+            <button ng-show="state.measurement.id" ng-click="deleteMeasurement()" class="button button-assertive button-block">
+                Delete Measurement
+            </button>
             <button ng-click="cancel()" class="button button-assertive button-block">
                 Cancel
-            </button>
-            <button ng-click="done()" class="button button-calm button-block">
-                Submit Measurement
             </button>
         </div>
     </ion-content>
