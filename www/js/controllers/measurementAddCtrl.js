@@ -5,7 +5,7 @@ angular.module('starter')
                                                      authService, measurementService, $state, $rootScope, $stateParams,
                                                      utilsService, localStorageService, $filter, $ionicScrollDelegate,
                                                         variableCategoryService, ionicTimePicker, variableService,
-                                                        unitService){
+                                                        unitService, timeService){
 
         $scope.controller_name = "MeasurementAddCtrl";
 
