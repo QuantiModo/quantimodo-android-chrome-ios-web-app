@@ -14,6 +14,7 @@ angular.module('starter')
         var currentTime = new Date();
 
         $scope.state = {
+            measurementIsSetup : false,
             showVariableSearchCard: true,
             showAddVariable: false,
             showAddVariableButton: false,
@@ -22,9 +23,9 @@ angular.module('starter')
             showUnits: false,
             variableSearchResults : [],
             unitCategories : [],
+            variableCategoryName: variableCategoryName,
             variableCategoryObject : variableCategoryObject,
             // variables
-            variableCategoryName : variableCategoryName,
             variableName : "",
             measurementStartTimeEpochTime : currentTime.getTime() / 1000,
             helpText: variableCategoryObject.helpText,
@@ -129,7 +130,7 @@ angular.module('starter')
 
             // set values in form
             $scope.state.sumAvg = variableObject.combinationOperation === "MEAN"? "avg" : "sum";
-            $scope.state.variableCategoryName = variableObject.category;
+            $scope.state.measurement.variableCategoryName = variableObject.category;
             $scope.state.measurement.variable = variableObject.name;
             setUnit(variableObject.abbreviatedUnitName);
 
@@ -153,7 +154,7 @@ angular.module('starter')
             // set default
             $scope.state.measurement.variable = "";
             $scope.state.measurement.value = "";
-            $scope.state.note = null;
+            $scope.state.measurement.note = null;
         };
 
         // cancel activity
@@ -206,10 +207,10 @@ angular.module('starter')
             var params = {
                 variableName : $scope.state.measurement.variable || jQuery('#variableName').val(),
                 value : $scope.state.measurement.value || jQuery('#measurementValue').val(),
-                note : $scope.state.note || jQuery('#note').val(),
+                note : $scope.state.measurement.note || jQuery('#note').val(),
                 startTime : $scope.state.measurement.startTime * 1000,
                 abbreviatedUnitName : $scope.state.showAddVariable? (typeof $scope.abbreviatedUnitName === "undefined" || $scope.abbreviatedUnitName === "" )? $scope.state.measurement.abbreviatedUnitName : $scope.abbreviatedUnitName : $scope.state.measurement.abbreviatedUnitName,
-                variableCategoryName : $scope.state.variableCategoryName,
+                variableCategoryName : $scope.state.measurement.variableCategoryName,
                 isAvg : $scope.state.sumAvg === "avg"? true : false
             };
 
@@ -265,7 +266,7 @@ angular.module('starter')
                         params.isAvg,
                         params.variableCategoryName,
                         params.note);
-                    $scope.showAlert(params.variableName + ' measurement added!');
+                    $scope.showAlert(params.variableName + ' measurement saved!');
 
                     // set flags
                     $scope.state.showAddVariable = false;
@@ -276,6 +277,7 @@ angular.module('starter')
                     setTimeout($scope.init, 200);
                 }
             }
+
         };
 
         // when a unit category is changed
@@ -411,7 +413,7 @@ angular.module('starter')
 
                 // hackish way to update variableCategoryName
                 setTimeout(function(){
-                    $scope.state.variableCategoryName = variableCategoryName;
+                    $scope.state.measurement.variableCategoryName = variableCategoryName;
 
                     // redraw everything
                     $scope.$apply();
@@ -536,24 +538,15 @@ angular.module('starter')
 
             $scope.state.title = "Edit Measurement";
             $scope.state.measurement = measurementObject;
+            if(!$scope.state.measurement.variableCategoryName){
+                $scope.state.measurement.variableCategoryName = measurementObject.variableCategoryName;
+            }
             $scope.state.measurement.startTime = moment(measurementObject.startTime).unix();
             $scope.state.measurementDate = moment(measurementObject.startTime)._d;
             $scope.state.measurementIsSetup = true;
             $scope.state.showVariableSearchCard = false;
             $scope.state.showAddMeasurementCard = true;
         };
-
-        var getVariable = function(variableName){
-            variableService.getVariablesByName(variableName)
-                .then(function(variable){
-                    $scope.state.measurement.variable = variable;
-                }, function(){
-                    utils.showAlert('Can\'t find variable. Try again!', 'assertive').then(function(){
-                        $state.go('app.historyAll');
-                    });
-                });
-        };
-
 
         var utils = {
             startLoading : function(){

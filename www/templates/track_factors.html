@@ -4,7 +4,7 @@
             <div ng-show="state.showTrackingHelpQuestion" class="item item-text-wrap">
                 <div>
                     <div>
-                        <!--<span class="heading calm">Track {{state.variableCategoryName}}</span>-->
+                        <!--<span class="heading calm">Track {{state.measurement.variableCategoryName}}</span>-->
                         <ul class="from_top">
                             <li>{{state.helpText}}</li>
                         </ul>
@@ -176,7 +176,7 @@
                     </div>
                     <div class="col" style="padding-top: 11px;">
                         <div class="col">
-                            <input type="text" ng-model="state.note" id="note" placeholder="Enter Note Here" class="uptop">
+                            <input type="text" ng-model="state.measurement.note" id="note" placeholder="Enter note here..." class="uptop">
                         </div>
                     </div>
                 </div>
