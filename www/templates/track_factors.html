@@ -90,7 +90,7 @@
             <p class="heading calm" style="padding:14px;">Record {{state.measurement.variable}} measurement</p>
             <div class="list">
 
-                <div ng-if="(state.variableCategoryName != 'Emotions' && state.variableCategoryName != 'Symptoms')" class="row labeled-control">
+                <div ng-if="(state.measurement.abbreviatedUnitName !== '/5')" class="row labeled-control">
                     <div class="col col-l">
                         <span>
                             Value
@@ -101,11 +101,11 @@
                     </div>
                 </div>
 
-                <div class="primary_outcome_variables primary_outcome_variable_history col" ng-if="state.variableCategoryName =='Emotions' || state.variableCategoryName == 'Symptoms'">
+                <div class="primary_outcome_variables primary_outcome_variable_history col" ng-if="(state.measurement.abbreviatedUnitName === '/5')">
                     <img ng-repeat="option in primary_outcome_variable_numbers" ng-click="select_primary_outcome_variable($event, option.value)" ng-src="{{option.img}}"  ng-class="{'active_primary_outcome_variable' : option.value == state.measurement.value}">
                 </div>
 
-                <div class="row labeled-control" ng-if="(state.variableCategoryName != 'Emotions' && state.variableCategoryName != 'Symptoms')">
+                <div class="row labeled-control" ng-if="(state.measurement.abbreviatedUnitName !== '/5')">
                     <div class="col col-l">
                         <span class="input-label">Unit</span>
                     </div>
