@@ -108,7 +108,7 @@ angular.module('starter')
 		// populate list with recently tracked category variables
     	var populateRecentlyTrackedVariables = function(variableCategoryName){
 
-    		utils.startLoading();
+    		utilsService.startLoading();
 	    	// get user token
 			authService.getAccessTokenFromAnySource().then(function(token){
 
@@ -118,10 +118,10 @@ angular.module('starter')
 					variableService.getVariables().then(function(variables){
 
 					    $scope.variableSearchResults = variables;
-					    utils.stopLoading();
+					    utilsService.stopLoading();
 
 					}, function(){
-						utils.stopLoading();
+						utilsService.stopLoading();
 					});
 				} else {
 					console.log('get all variables by variableCategoryName');
@@ -129,16 +129,16 @@ angular.module('starter')
 
 					    $scope.variableSearchResults = variables;
 
-					    utils.stopLoading();
+					    utilsService.stopLoading();
 
 					}, function(){
-						utils.stopLoading();
+						utilsService.stopLoading();
 					});
 				}
 
 			}, function(){
 			   utilsService.showLoginRequiredAlert($scope.login);
-			   utils.stopLoading();
+			   utilsService.stopLoading();
 
 			});
     	};
@@ -215,30 +215,6 @@ angular.module('starter')
 	    	//$scope.state.defaultValue = selectedVariable.mostCommonValue? selectedVariable.mostCommonValue : selectedVariable.lastValue;
 	    };
 
-	    var utils = {
-    	    startLoading : function(){
-    	    	// show spinner
-    			$ionicLoading.show({
-    				noBackdrop: true,
-    				template: '<p class="item-icon-left">Thank you for your patience.  Your call is very important to us...<ion-spinner icon="lines"/></p>'
-    		    });
-    	    },
-
-    	    stopLoading : function(){
-    	    	// hide spinner
-    	    	$ionicLoading.hide();
-    	    },
-
-    	    // alert box
-	        showAlert : function(title, cssClass) {
-	           var alertPopup = $ionicPopup.alert({
-	             cssClass : cssClass? cssClass : 'calm',
-	             okType : cssClass? 'button-'+cssClass : 'button-calm',
-	             title: title
-	           });
-	        }
-	    };
-
 	    // when frequency is changed
 	    $scope.onFrequencyChange = function(){
 	    	console.log("onFrequencyChange ran");
@@ -261,7 +237,7 @@ angular.module('starter')
 
 	    $scope.edit = function(){
 
-	    	utils.startLoading();
+	    	utilsService.startLoading();
 
 	    	reminderService.postTrackingReminder(
 	    		$scope.state.id,
@@ -275,7 +251,7 @@ angular.module('starter')
                 $scope.state.reminderStartTimeStringUtc)
 	    	.then(function(){
 
-	    		utils.stopLoading();
+	    		utilsService.stopLoading();
 	    		if($stateParams.reminder !== null && typeof $stateParams.reminder !== "undefined"){
 	    			if($stateParams.reminder.fromState){
 	    				$state.go($stateParams.reminder.fromState);
@@ -288,8 +264,8 @@ angular.module('starter')
 
 	    	}, function(err){
 
-	    		utils.stopLoading();
-	    		utils.showAlert('Failed to add Reminder, Try again!', 'assertive');
+	    		utilsService.stopLoading();
+	    		utilsService.showAlert('Failed to add Reminder, Try again!', 'assertive');
 				console.log(err);
 	    	});
 	    };
@@ -334,7 +310,7 @@ angular.module('starter')
             }
 
 
-	    	utils.startLoading();
+	    	utilsService.startLoading();
 
 	    	reminderService.addNewReminder(
 	    		$scope.state.id,
@@ -347,7 +323,7 @@ angular.module('starter')
                 $scope.state.reminderStartTimeStringUtc)
 	    	.then(function(){
 
-	    		utils.stopLoading();
+	    		utilsService.stopLoading();
 	    		if($stateParams.reminder !== null && typeof $stateParams.reminder !== "undefined"){
 	    			if($stateParams.reminder.fromState){
 	    				$state.go($stateParams.reminder.fromState);
@@ -360,8 +336,8 @@ angular.module('starter')
 
 	    	}, function(err){
                 console.log(err);
-	    		utils.stopLoading();
-	    		utils.showAlert('Failed to add Reminder, Try again!', 'assertive');
+	    		utilsService.stopLoading();
+	    		utilsService.showAlert('Failed to add Reminder, Try again!', 'assertive');
 	    	});
 	    };
 
@@ -462,7 +438,7 @@ angular.module('starter')
                         .then(function(reminders){
                             $scope.state.allReminders = reminders;
                             if (reminders.length !== 1){
-                                utils.showAlert("Reminder id " + reminderIdUrlParameter + " not found!", 'assertive');
+                                utilsService.showAlert("Reminder id " + reminderIdUrlParameter + " not found!", 'assertive');
                                 if($stateParams.reminder.fromState){
                                     $state.go($stateParams.reminder.fromState);
                                 } else {
@@ -471,9 +447,9 @@ angular.module('starter')
                             }
                             $stateParams.reminder = $scope.state.allReminders[0];
                             setupEditReminder($stateParams.reminder);
-                            utils.stopLoading();
+                            utilsService.stopLoading();
                         }, function(){
-                            utils.stopLoading();
+                            utilsService.stopLoading();
                             console.log("failed to get reminders");
                             console.log("need to log in");
                             $ionicLoading.hide();

@@ -2,36 +2,15 @@ angular.module('starter')
 
 	// Controls the History Page of the App.
 	.controller('AllHistoryCtrl', function($scope, $state, $ionicModal, $timeout, $ionicLoading,
-										   authService, $ionicPopover, measurementService,
-										   $ionicPopup, variableCategoryService, unitService){
+										   authService, $ionicPopover, 
+                                           measurementService,
+										   $ionicPopup, 
+                                           variableCategoryService, 
+                                           unitService,
+                                            utilsService){
 
 	    $scope.controller_name = "AllHistoryCtrl";
-
-	    var utils = {
-		    showAlert : function(title, template) {
-		       var alertPopup = $ionicPopup.alert({
-		         cssClass : 'calm',
-	             okType : 'button-calm',
-		         title: title,
-		         template: template
-		       });
-		    },
-
-		    // Hide spinner
-		    stopLoading : function(){
-		        $ionicLoading.hide();
-		    },
-
-		    // show spinner
-		    startLoading : function(){
-		    	// show loading spinner
-		    	$ionicLoading.show({
-		    	    noBackdrop: true,
-		    	    template: '<p class="item-icon-left">Loading stuff...<ion-spinner icon="lines"/></p>'
-		    	});	 
-		    }
-	    };
-
+        
 	    $scope.state = {
 	    	offset : 0,
 	    	limit : 50,
@@ -81,7 +60,7 @@ angular.module('starter')
 
 
 	    var getHistory = function(){
-	    	utils.startLoading();
+	    	utilsService.startLoading();
 	    	measurementService.getHistoryMeasurements({
     		    offset: $scope.state.offset,
     		    limit: $scope.state.limit,
@@ -91,10 +70,10 @@ angular.module('starter')
 				if($scope.state.history.length > 49){
 					$scope.state.showLoadMoreButton = true;
 				}
-    			utils.stopLoading();
+    			utilsService.stopLoading();
 	    	}, function(error){
 	    		console.log('error getting measurements', error);
-	    		utils.stopLoading();
+	    		utilsService.stopLoading();
 	    	});
 
 	    };
@@ -106,7 +85,7 @@ angular.module('starter')
 	    
 	    // constructor
 	    $scope.init = function(){
-	    	utils.startLoading();
+	    	utilsService.startLoading();
 			variableCategoryService.getVariableCategories()
 	    	.then(function(variableCategories){
 	    		$scope.state.variableCategories = variableCategories;

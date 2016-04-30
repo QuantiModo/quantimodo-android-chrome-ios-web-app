@@ -119,49 +119,25 @@ angular.module('starter')
 	    	return result;
 	    };
 
-	    var utils = {
-    	    startLoading : function(){
-    	    	// show spinner
-    			$ionicLoading.show({
-    				noBackdrop: true,
-    				template: '<p class="item-icon-left">Fetching your reminders...<ion-spinner icon="lines"/></p>'
-    		    });
-    	    },
-
-    	    stopLoading : function(){
-    	    	// hide spinner
-    	    	$ionicLoading.hide();
-    	    },
-
-    	    // alert box
-	        showAlert : function(title, cssClass) {
-				return $ionicPopup.alert({
-					cssClass : cssClass? cssClass : 'calm',
-					okType : cssClass? 'button-'+cssClass : 'button-calm',
-					title: title
-				});
-	        }
-	    };
-
 	    var getVariable = function(variableName){
 			variableService.getVariablesByName(variableName)
 	    	.then(function(variable){
 	    		$scope.state.variable = variable;
 	    	}, function(){
-	    		utils.showAlert('Can\'t find variable. Try again!', 'assertive').then(function(){
+	    		utilsService.showAlert('Can\'t find variable. Try again!', 'assertive').then(function(){
 	    			$state.go('app.historyAll');
 	    		});
 	    	});
 	    };
 
 	    var getTrackingReminders = function(){
-	    	//utils.startLoading();
+	    	//utilsService.startLoading();
 	    	reminderService.getTrackingReminders($stateParams.variableCategoryName)
 	    	.then(function(reminders){
 	    		$scope.state.allReminders = reminders;
-	    		utils.stopLoading();
+	    		utilsService.stopLoading();
 	    	}, function(){
-	    		utils.stopLoading();
+	    		utilsService.stopLoading();
 	    		console.log("failed to get reminders");
 				console.log("need to log in");
 				$ionicLoading.hide();
@@ -170,7 +146,7 @@ angular.module('starter')
 	    };
 
 	    var getTrackingReminderNotifications = function(){
-	    	utils.startLoading();
+	    	utilsService.startLoading();
 
 	    	reminderService.getTrackingReminderNotifications($stateParams.variableCategoryName)
 	    	.then(function(reminders){
@@ -179,9 +155,9 @@ angular.module('starter')
 				}
 	    		$scope.state.trackingRemindersNotifications = reminders;
 	    		$scope.state.filteredReminders = filterViaDates(reminders);
-	    		utils.stopLoading();
+	    		utilsService.stopLoading();
 	    	}, function(){
-	    		utils.stopLoading();
+	    		utilsService.stopLoading();
 	    		console.log("failed to get reminders");
 				//utilsService.showLoginRequiredAlert($scope.login);
 
@@ -203,7 +179,7 @@ angular.module('starter')
 	    		$scope.init();
 
 	    	}, function(err){
-	    		utils.showAlert('Failed to Track Reminder, Try again!', 'assertive');
+	    		utilsService.showAlert('Failed to Track Reminder, Try again!', 'assertive');
 	    	});
 	    };
 
@@ -214,7 +190,7 @@ angular.module('starter')
 	    		$scope.init();
 
 	    	}, function(err){
-	    		utils.showAlert('Failed to Skip Reminder, Try again!', 'assertive');
+	    		utilsService.showAlert('Failed to Skip Reminder, Try again!', 'assertive');
 	    	});
 	    };
 
@@ -245,7 +221,7 @@ angular.module('starter')
 	    		$scope.init();
 
 	    	}, function(err){
-	    		utils.showAlert('Failed to Snooze Reminder, Try again!', 'assertive');
+	    		utilsService.showAlert('Failed to Snooze Reminder, Try again!', 'assertive');
 	    	});
 	    };
 
@@ -300,7 +276,7 @@ angular.module('starter')
 							value);
 					} else {
 						$scope.state.isDisabled = true;
-						utils.showAlert('Missing Parameters, need unit, variableName, dateTime and value!','assertive');
+						utilsService.showAlert('Missing Parameters, need unit, variableName, dateTime and value!','assertive');
 					}
 
 				} else if($state.is('app.reminders_manage') || $state.is('app.reminders_manage_category')){
@@ -362,7 +338,7 @@ angular.module('starter')
 	    	if($scope.state.selectedReminder.abbreviatedUnitName === '/5') 
 	    		params.value = $scope.state.selected1to5Value;
 
-	    	utils.startLoading();
+	    	utilsService.startLoading();
     		var usePromise = true;
     	    // post measurement
     	    measurementService.post_tracking_measurement(params.epoch,
@@ -375,8 +351,8 @@ angular.module('starter')
 				usePromise)
     	    .then(function(){
     	    	if($scope.state.title === "Edit Measurement"){
-    	    		utils.stopLoading();
-    	    		utils.showAlert('Measurement Updated!').then(function(){
+    	    		utilsService.stopLoading();
+    	    		utilsService.showAlert('Measurement Updated!').then(function(){
     	    			$state.go('app.historyAll');
     	    		});
     	    	} else {
@@ -385,8 +361,8 @@ angular.module('starter')
     	    		$scope.init();
     	    	}
     	    }, function(){
-    	    	utils.stopLoading();
-    	    	utils.showAlert('Failed to post measurement, Try again!','assertive');
+    	    	utilsService.stopLoading();
+    	    	utilsService.showAlert('Failed to post measurement, Try again!','assertive');
     	    });
 
 	    };
@@ -416,18 +392,18 @@ angular.module('starter')
 	    };
 
 	    $scope.deleteReminder = function(reminder){
-	    	utils.startLoading();
+	    	utilsService.startLoading();
 	    	reminderService.deleteReminder(reminder.id)
 	    	.then(function(){
 
-	    		utils.stopLoading();
-	    		utils.showAlert('Reminder Deleted.');
+	    		utilsService.stopLoading();
+	    		utilsService.showAlert('Reminder Deleted.');
 	    		$scope.init();
 
 	    	}, function(err){
 
-	    		utils.stopLoading();
-	    		utils.showAlert('Failed to Delete Reminder, Try again!', 'assertive');
+	    		utilsService.stopLoading();
+	    		utilsService.showAlert('Failed to Delete Reminder, Try again!', 'assertive');
 	    	});
 	    };
 
