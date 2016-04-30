@@ -18,6 +18,10 @@
     <link href="css/style.css" rel="stylesheet">
     <link href="lib/ionic-datepicker/dist/style.css" rel="stylesheet">
 
+
+    <link href="lib/ng-material-floating-button/mfb/dist/mfb.css" rel="stylesheet"/>
+
+
     <link rel="shortcut icon" href="img/icon_16.png"/>
     <!-- IF using Sass (run gulp sass first), then uncomment below and remove the CSS includes above
     <link href="css/ionic.app.css" rel="stylesheet">
@@ -43,6 +47,7 @@
     <script src="lib/bugsnag/src/bugsnag.js" data-autonotify="false"></script>
     <script src="https://cdn.rawgit.com/quantimodo/import-data/master/connect.js"></script>
     <script src="lib/pluralize/pluralize.js"></script>
+    <script src="lib/ng-material-floating-button/src/mfb-directive.js"></script>
 
       <!-- your app's js -->
     <script src="js/apps.js"></script>
@@ -117,7 +122,17 @@
   </head>
 
   <body ng-app="starter">
-    <ion-nav-view></ion-nav-view>
+    <ion-nav-view>
+
+    </ion-nav-view>
+    <nav mfb-menu position="bl" effect="slidein-spring"
+         active-icon="ion-minus-round" resting-icon="ion-plus-round"
+         toggling-method="click">
+      <button mfb-button icon="ion-happy-outline" label="How are you?" ng-click="goToState('app.import')"></button>
+      <button mfb-button icon="ion-ios-medkit-outline" label="Add a medication" ng-click="goToState('app.reminder_add_category', {variableCategoryName : 'Treatments'})"></button>
+      <button mfb-button icon="ion-ios-pulse" label="Add Vital Sign" ng-click="goToState('app.track_factors_category', {variableCategoryName : 'Vital Signs'})"></button>
+      <button mfb-button icon="paper-airplane" label="menu item"></button>
+    </nav>
   </body>
 
 </html>

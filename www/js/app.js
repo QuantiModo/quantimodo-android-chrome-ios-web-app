@@ -6,11 +6,16 @@ angular.module('starter',
         'ngCordova',
         'ionic-datepicker',
         'ionic-timepicker',
-        'ngIOS9UIWebViewPatch'
+        'ngIOS9UIWebViewPatch',
+        'ng-mfb'
     ]
 )
 
-.run(function($ionicPlatform, $ionicHistory, $state) {
+.run(function($ionicPlatform, $ionicHistory, $state, $rootScope) {
+
+    $rootScope.goToState = function(state, params){
+        $state.go(state, params);
+    };
 
     var intervalChecker = setInterval(function(){
         if(typeof config !== "undefined"){
@@ -22,7 +27,7 @@ angular.module('starter',
                 Bugsnag.releaseStage = config.getEnv();
                 Bugsnag.notifyReleaseStages = config.bugsnag.notifyReleaseStages;
             } else {
-                console.warn('No bugsnag_key found in private config!')
+                console.warn('No bugsnag_key found in private config!');
             }
 
             $ionicPlatform.ready(function() {
@@ -38,7 +43,7 @@ angular.module('starter',
             });
 
             $ionicPlatform.registerBackButtonAction(function (event) {
-                if($ionicHistory.currentStateName() == config.appSettings.default_state){
+                if($ionicHistory.currentStateName() === config.appSettings.default_state){
                     ionic.Platform.exitApp();
                 }
                 else {
@@ -64,13 +69,17 @@ angular.module('starter',
       loadMyService: ['$ocLazyLoad', function($ocLazyLoad) {
         var getAppNameFromUrl = function () {
             var sPageURL = document.location.toString().split('?')[1];
-            if(!sPageURL) return false;
+            if(!sPageURL) {
+                return false;
+            }
             var sURLVariables = sPageURL.split('&');
-            if(!sURLVariables) return false;
+            if(!sURLVariables) {
+                return false;
+            }
             for (var i = 0; i < sURLVariables.length; i++)
             {
                 var sParameterName = sURLVariables[i].split('=');
-                if (sParameterName[0] == 'app')
+                if (sParameterName[0] === 'app')
                 {
                     return sParameterName[1].split('#')[0];
                 }
@@ -162,6 +171,7 @@ angular.module('starter',
           url: "/track_factors_category/:variableCategoryName",
           cache:false,
           params: {
+              variableCategoryName : null,
               fromState : null,
               measurement : null
           },
