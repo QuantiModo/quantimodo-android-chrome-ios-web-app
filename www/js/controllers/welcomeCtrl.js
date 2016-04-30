@@ -55,13 +55,13 @@ angular.module('starter')
                 };
 
                 $rootScope.reminderToSchedule = {
-                    id: config.appSettings.primary_outcome_variable_details.id,
+                    id: config.appSettings.primaryOutcomeVariableDetails.id,
                     reportedVariableValue: $scope.reportedVariableValue,
                     interval: intervals[$scope.notification_interval], 
-                    name: config.appSettings.primary_outcome_variable_details.name,
-                    category: config.appSettings.primary_outcome_variable_details.category,
-                    unit: config.appSettings.primary_outcome_variable_details.unit,
-                    combinationOperation : config.appSettings.primary_outcome_variable_details.combinationOperation
+                    name: config.appSettings.primaryOutcomeVariableDetails.name,
+                    category: config.appSettings.primaryOutcomeVariableDetails.category,
+                    unit: config.appSettings.primaryOutcomeVariableDetails.unit,
+                    combinationOperation : config.appSettings.primaryOutcomeVariableDetails.combinationOperation
                 };
 
                 localStorageService.setItem('askForRating', $scope.notification_interval);

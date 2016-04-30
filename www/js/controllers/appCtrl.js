@@ -74,7 +74,7 @@ angular.module('starter')
     $scope.primary_outcome_variable_numbers = config.getPrimaryOutcomeVariableOptions(true);
     $scope.welcome_text = config.appSettings.welcome_text;
     $scope.tracking_question = config.appSettings.tracking_question;
-    $scope.factor_average_text = config.appSettings.factor_average_text;
+    $scope.primaryOutcomeVariableAverageText = config.appSettings.primaryOutcomeVariableAverageText;
     /*Wrapper Config End*/
 
     // when view is changed
@@ -167,7 +167,7 @@ angular.module('starter')
 
                 // move to tracking page
                 if($state.current.name === "app.welcome" || $state.current.name === "app.login"){
-                    $state.go(config.appSettings.default_state);
+                    $state.go(config.appSettings.defaultState);
                     $rootScope.hideMenu = false;
                 }
 
@@ -587,7 +587,7 @@ angular.module('starter')
         console.log('isWelcomed ' + isWelcomed);
         if(isWelcomed  === true || isWelcomed === "true" || tokenInGetParams){
             $rootScope.isWelcomed = true;
-            //$state.go(config.appSettings.default_state);
+            //$state.go(config.appSettings.defaultState);
         } else {
             console.log("isWelcomed is " + isWelcomed + ". Setting to true and going to welcome now.");
             localStorageService.setItem('isWelcomed', true);

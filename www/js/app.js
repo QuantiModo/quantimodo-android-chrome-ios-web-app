@@ -43,14 +43,14 @@ angular.module('starter',
             });
 
             $ionicPlatform.registerBackButtonAction(function (event) {
-                if($ionicHistory.currentStateName() === config.appSettings.default_state){
+                if($ionicHistory.currentStateName() === config.appSettings.defaultState){
                     ionic.Platform.exitApp();
                 }
                 else {
                     if($ionicHistory.backView()){
                         $ionicHistory.goBack();
                     } else if(localStorage.isLoggedIn){
-                        $state.go(config.appSettings.default_state);
+                        $state.go(config.appSettings.defaultState);
                     } else {
                         $state.go('app.welcome');
                     }

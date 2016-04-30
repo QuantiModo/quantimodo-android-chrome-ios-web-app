@@ -26,17 +26,9 @@ config.appSettings  = {
 
     primary_outcome_variable : 'Mood',
 
-    primary_outcome_variable_details : {
-        id : 1398,
-        name : "Overall Mood",
-        category : "Mood",
-        unit : "/5",
-        combinationOperation: "MEAN"
-    },
-
     storage_identifier: 'MedTLCData*',
 
-    default_state : 'app.reminders_inbox',
+    defaultState : 'app.reminders_inbox',
 
     headline : 'Medications - Track, Learn, Connect',
     features: [
@@ -46,15 +38,16 @@ config.appSettings  = {
         ' 3. Create Reports of Your Responses and Choose to Connect With Your Doctors'
     ],
 
-    primary_primary_outcome_variable_details : {
+    primaryOutcomeVariableDetails : {
         id : 1398,
         name : "Overall Mood",
         category : "Mood",
         unit : "/5",
+        unitId : 10,
         combinationOperation: "MEAN"
     },
 
-    primary_outcome_variables_options_labels : [
+    primaryOutcomeVariableOptionsLabels : [
         'Depressed',
         'Sad',
         'OK',
@@ -87,7 +80,7 @@ config.appSettings  = {
 
     welcome_text:"Let's start off by adding your first medication!",
     tracking_question:"How are you?",
-    factor_average_text:"Your average mood is ",
+    primaryOutcomeVariableAverageText:"Your average mood is ",
     notification_image : "file://img/icon_128.png",
     notification_text : "Time to Track",
     conversion_dataset: {
@@ -344,10 +337,10 @@ config.appSettings  = {
 };
 
 config.getPrimaryOutcomeVariableOptionLabels = function(shouldShowNumbers){
-    if(shouldShowNumbers || !config.appSettings.primary_outcome_variables_options_labels){
+    if(shouldShowNumbers || !config.appSettings.primaryOutcomeVariableOptionsLabels){
         return ['1',  '2',  '3',  '4', '5'];
     } else {
-        return config.appSettings.primary_outcome_variables_options_labels;
+        return config.appSettings.primaryOutcomeVariableOptionsLabels;
     }
 };
 

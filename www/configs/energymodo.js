@@ -23,13 +23,13 @@ window.config = {
 config.appSettings  = {
     app_name : 'EnergyModo',
 
-    default_state : 'app.track',
+    defaultState : 'app.track',
 
     primary_outcome_variable : 'Energy',
 
     storage_identifier: 'EnergyModoData*',
       
-    primary_outcome_variable_details : {
+    primaryOutcomeVariableDetails : {
         id : 108092,
         name : "Overall Energy",
         category : "Energy",
@@ -37,7 +37,7 @@ config.appSettings  = {
         combinationOperation: "MEAN"
     },
 
-    primary_outcome_variables_options_labels : [
+    primaryOutcomeVariableOptionsLabels : [
         '1', 
         '2', 
         '3', 
@@ -70,7 +70,7 @@ config.appSettings  = {
 
     welcome_text:"Let's start off by reporting your Energy on the card below",
     tracking_question:"How is your energy level right now?",
-    factor_average_text:"Your average energy level is ",
+    primaryOutcomeVariableAverageText:"Your average energy level is ",
     notification_image : "file://img/icon_128.png",
     notification_text : "Time to Track",
     conversion_dataset: {
@@ -580,9 +580,9 @@ config.appSettings  = {
 };
 
 config.getPrimaryOutcomeVariableOptionLabels = function(shouldShowNumbers){
-    if(shouldShowNumbers || !config.appSettings.primary_outcome_variables_options_labels){
+    if(shouldShowNumbers || !config.appSettings.primaryOutcomeVariableOptionsLabels){
         return ['1',  '2',  '3',  '4', '5'];
-    } else return config.appSettings.primary_outcome_variables_options_labels;
+    } else return config.appSettings.primaryOutcomeVariableOptionsLabels;
 };
 
 config.getPrimaryOutcomeVariableOptions = function(shouldShowNumbers){

@@ -223,7 +223,7 @@ angular.module('starter')
 
             // get positive list
             QuantiModo.getCauses = function(successHandler, errorHandler){
-                var primary_outcome_variable = config.appSettings.primary_outcome_variable_details.name.replace(' ','%20');
+                var primary_outcome_variable = config.appSettings.primaryOutcomeVariableDetails.name.replace(' ','%20');
                 QuantiModo.get('api/v1/variables/'+primary_outcome_variable+'/public/causes',
                     [],
                     {},
@@ -233,7 +233,7 @@ angular.module('starter')
 
             //get User's causes
             QuantiModo.getUsersCauses = function (successHandler,errorHandler) {
-                var primary_outcome_variable = config.appSettings.primary_outcome_variable_details.name.replace(' ','%20');
+                var primary_outcome_variable = config.appSettings.primaryOutcomeVariableDetails.name.replace(' ','%20');
                 QuantiModo.get('api/v1/variables/'+primary_outcome_variable+'/causes',
                     [],
                     {},
@@ -245,7 +245,7 @@ angular.module('starter')
 
             // get negative list
             QuantiModo.getNegativeList = function(successHandler, errorHandler){
-                var primary_outcome_variable = config.appSettings.primary_outcome_variable_details.name.replace(' ','%20');
+                var primary_outcome_variable = config.appSettings.primaryOutcomeVariableDetails.name.replace(' ','%20');
                 QuantiModo.get('api/v1/variables/'+primary_outcome_variable+'/public/effects',
                     [],
                     {},

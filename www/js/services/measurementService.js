@@ -9,11 +9,11 @@ angular.module('starter')
 			// measurements set
 			var measurements = [
 				{					
-                    name: config.appSettings.primary_outcome_variable_details.name,
+                    name: config.appSettings.primaryOutcomeVariableDetails.name,
                     source: config.get('client_source_name'),
-                    category: config.appSettings.primary_outcome_variable_details.category,
-                    combinationOperation: config.appSettings.primary_outcome_variable_details.combinationOperation,
-                    unit: config.appSettings.primary_outcome_variable_details.unit,
+                    category: config.appSettings.primaryOutcomeVariableDetails.category,
+                    combinationOperation: config.appSettings.primaryOutcomeVariableDetails.combinationOperation,
+                    unit: config.appSettings.primaryOutcomeVariableDetails.unit,
                     measurements : measurementsQueue
 				}
 			];
@@ -40,16 +40,16 @@ angular.module('starter')
 		};
 
 		// get all data from date range to date range
-		var getAllData = function(tillNow, callback){
+		var getAllLocalMeasurements = function(tillNow, callback){
 
             var allLocalMeasurements;
 
-            localStorageService.getItem('allLocalMeasurements',function(val){
+            localStorageService.getItem('allLocalMeasurements',function(measurementsFromLocalStorage){
 
-                allLocalMeasurements=val;
+                allLocalMeasurements = measurementsFromLocalStorage;
 
                 // filtered measurements
-                var returnFiltered = function(start,end){
+                var returnFiltered = function(start, end){
                     
                     allLocalMeasurements = allLocalMeasurements.sort(function(a, b){
                         return a.timestamp - b.timestamp;
@@ -165,42 +165,45 @@ angular.module('starter')
                         localStorageService.setItem('lastReportedPrimaryOutcomeVariableValue', ratingValue);
 
                         // update full data
-                        localStorageService.getItem('allLocalMeasurements',function(allLocalMeasurements){
-                            if(allLocalMeasurements){
+                        localStorageService.getItem('allLocalMeasurements',function(allMeasurementsInLocalStorage){
 
-                                var allLocalMeasurementsObject = {
-                                    storedValue : ratingValue,
-                                    value : ratingValue,
-                                    timestamp : report_time,
-                                    humanTime : {
-                                        date : new Date().toISOString()
-                                    },
-                                    unit: config.appSettings.primary_outcome_variable_details.unit
-                                };
+                            var newMeasurementObject = {
+                                variableId : config.appSettings.primaryOutcomeVariableDetails.id,
+                                value : ratingValue,
+                                timestamp : report_time,
+                                humanTime : {
+                                    date : new Date().toISOString()
+                                },
+                                unitId: config.appSettings.primaryOutcomeVariableDetails.unit
+                            };
 
-                                allLocalMeasurements = JSON.parse(allLocalMeasurements);
-                                allLocalMeasurements.push(allLocalMeasurementsObject);
-                                localStorageService.setItem('allLocalMeasurements', JSON.stringify(allLocalMeasurements));
-
-                                // update Bar chart data
-                                localStorageService.getItem('barChartData',function(barChartData){
-                                    if(barChartData){
-                                        barChartData = JSON.parse(barChartData);
-                                        barChartData[val-1]++;
-                                        localStorageService.setItem('barChartData',JSON.stringify(barChartData));
-                                    }
-                                });
-
-                                // update Line chart data
-                                localStorageService.getItem('lineChartData',function(lineChartData){
-                                    if(lineChartData){
-                                        lineChartData = JSON.parse(lineChartData);
-                                        lineChartData.push([report_time*1000, (val-1)*25]);
-                                        localStorageService.setItem('lineChartData',JSON.stringify(lineChartData));
-                                    }
-                                    deferred.resolve();
-                                });
+                            if(!allMeasurementsInLocalStorage){
+                                allMeasurementsInLocalStorage = "[]";
                             }
+                            var measurementsToSaveInLocalStorage = JSON.parse(allMeasurementsInLocalStorage);
+                            measurementsToSaveInLocalStorage.push(newMeasurementObject);
+
+                            localStorageService.setItem('allLocalMeasurements', JSON.stringify(measurementsToSaveInLocalStorage));
+
+                            // update Bar chart data
+                            localStorageService.getItem('barChartData',function(barChartData){
+                                if(barChartData){
+                                    barChartData = JSON.parse(barChartData);
+                                    barChartData[val-1]++;
+                                    localStorageService.setItem('barChartData',JSON.stringify(barChartData));
+                                }
+                            });
+
+                            // update Line chart data
+                            localStorageService.getItem('lineChartData',function(lineChartData){
+                                if(lineChartData){
+                                    lineChartData = JSON.parse(lineChartData);
+                                    lineChartData.push([report_time*1000, (val-1)*25]);
+                                    localStorageService.setItem('lineChartData',JSON.stringify(lineChartData));
+                                }
+                                deferred.resolve();
+                            });
+
                         });
                     } else {
                         console.log("trying to report primary outcome variable: false");
@@ -338,11 +341,11 @@ angular.module('starter')
 				// measurements set
 				var measurements = [
 					{
-					   	name: config.appSettings.primary_outcome_variable_details.name,
+					   	name: config.appSettings.primaryOutcomeVariableDetails.name,
                         source: config.get('client_source_name'),
-                        category: config.appSettings.primary_outcome_variable_details.category,
-                        combinationOperation: config.appSettings.primary_outcome_variable_details.combinationOperation,
-                        unit: config.appSettings.primary_outcome_variable_details.unit,
+                        category: config.appSettings.primaryOutcomeVariableDetails.category,
+                        combinationOperation: config.appSettings.primaryOutcomeVariableDetails.combinationOperation,
+                        unit: config.appSettings.primaryOutcomeVariableDetails.unit,
 					   	measurements : [{
 					   		timestamp:  timestamp,
 					   		value: val,
@@ -401,7 +404,7 @@ angular.module('starter')
                 localStorageService.getItem('lastSyncTime',function(val){
                     lastSyncTime = val || 0;
                     params = {
-                        variableName : config.appSettings.primary_outcome_variable_details.name,
+                        variableName : config.appSettings.primaryOutcomeVariableDetails.name,
                         'lastUpdated':'(ge)'+ lastSyncTime ,
                         sort : '-startTime',
                         limit:200,
@@ -550,7 +553,7 @@ angular.module('starter')
 			calculateAveragePrimaryOutcomeVariableValue : function(){
 				var deferred = $q.defer();
 				var data;
-                getAllData(false,function(allLocalMeasurements){
+                getAllLocalMeasurements(false,function(allLocalMeasurements){
                     data = allLocalMeasurements;
                     // check if data is present to calculate primary outcome variable from
                     if(!data && data.length == 0) deferred.reject(false);
@@ -608,7 +611,7 @@ angular.module('starter')
                         var barChartArray = [0,0,0,0,0];
 
                         for(var i = 0; i<data.length; i++){
-                            if(data[i].unit == config.appSettings.primary_outcome_variable_details.unit && ( Math.ceil(data[i].value)-1) <= 4 ){
+                            if(data[i].unit == config.appSettings.primaryOutcomeVariableDetails.unit && ( Math.ceil(data[i].value)-1) <= 4 ){
                                 barChartArray[Math.ceil(data[i].value)-1]++;
                             }
                         }
@@ -651,7 +654,7 @@ angular.module('starter')
                         for(var i = 0; i<data.length; i++)
                         {
                             var current_value = current_value;
-                            if(data[i].unit == config.appSettings.primary_outcome_variable_details.unit && (current_value-1) <= 4 && (current_value-1) >= 0){
+                            if(data[i].unit == config.appSettings.primaryOutcomeVariableDetails.unit && (current_value-1) <= 4 && (current_value-1) >= 0){
                                 lineChartArray.push([moment(data[i].humanTime.date).unix(), (current_value-1)*25] );
                             }
                         }
@@ -685,7 +688,7 @@ angular.module('starter')
 			calculateBothChart : function(){
 				var deferred = $q.defer();
                 
-                getAllData(false,function(data){
+                getAllLocalMeasurements(false,function(data){
                     if(!data && data.length === 0){
                         deferred.reject(false);
                     } else {
@@ -694,7 +697,7 @@ angular.module('starter')
 
                         for(var i = 0; i<data.length; i++){
                             var current_value = Math.ceil(data[i].value);
-                            if(data[i].unit == config.appSettings.primary_outcome_variable_details.unit && (current_value-1) <= 4 && (current_value-1) >= 0){
+                            if(data[i].unit == config.appSettings.primaryOutcomeVariableDetails.unit && (current_value-1) <= 4 && (current_value-1) >= 0){
                                 lineArr.push([moment(data[i].humanTime.date).unix()*1000, (current_value-1)*25] );
                                 barArr[current_value-1]++;
                             }

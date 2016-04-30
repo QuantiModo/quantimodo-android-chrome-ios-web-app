@@ -27,7 +27,7 @@ window.config = {
 config.appSettings  = {
     app_name : 'MoodiModo',
 
-    default_state : 'app.track',
+    defaultState : 'app.track',
 
     primary_outcome_variable : 'Mood',
 
@@ -40,7 +40,7 @@ config.appSettings  = {
         ' - Analyze your data to see the top predictors for your Mood'
     ],
 
-    primary_outcome_variable_details : {
+    primaryOutcomeVariableDetails : {
         id : 1398,
         name : "Overall Mood",
         category : "Mood",
@@ -48,7 +48,7 @@ config.appSettings  = {
         combinationOperation: "MEAN"
     },
 
-    primary_outcome_variables_options_labels : [
+    primaryOutcomeVariableOptionsLabels : [
         'Depressed',
         'Sad',
         'OK',
@@ -81,7 +81,7 @@ config.appSettings  = {
 
     welcome_text : "Let's start off by reporting your first mood on the card below",
     tracking_question : "How are you feeling right now?",
-    factor_average_text : "Your average mood is ",
+    primaryOutcomeVariableAverageText : "Your average mood is ",
     notification_image : "file://img/icon_128.png",
     notification_text : "Time to Track",
     conversion_dataset: {
@@ -590,10 +590,10 @@ config.appSettings  = {
 };
 
 config.getPrimaryOutcomeVariableOptionLabels = function(shouldShowNumbers){
-    if(shouldShowNumbers || !config.appSettings.primary_outcome_variables_options_labels){
+    if(shouldShowNumbers || !config.appSettings.primaryOutcomeVariableOptionsLabels){
         return ['1',  '2',  '3',  '4', '5'];
     } else {
-        return config.appSettings.primary_outcome_variables_options_labels;
+        return config.appSettings.primaryOutcomeVariableOptionsLabels;
     }
 };
 

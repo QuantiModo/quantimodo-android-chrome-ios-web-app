@@ -126,7 +126,7 @@ angular.module('starter')
             if($stateParams.fromState){
                 $state.go($stateParams.fromState);
             } else {
-                $state.go(config.appSettings.default_state);
+                $state.go(config.appSettings.defaultState);
             }
         };
 
@@ -141,7 +141,7 @@ angular.module('starter')
             if($stateParams.fromState){
                 $state.go($stateParams.fromState);
             } else {
-                $state.go(config.appSettings.default_state);
+                $state.go(config.appSettings.defaultState);
             }
         };
 
@@ -203,7 +203,7 @@ angular.module('starter')
                         if($stateParams.fromState){
                             $state.go($stateParams.fromState);
                         } else {
-                            $state.go(config.appSettings.default_state);
+                            $state.go(config.appSettings.defaultState);
                         }
 
                         // refresh the last updated at from api
@@ -236,7 +236,7 @@ angular.module('starter')
                     if($stateParams.fromState){
                         $state.go($stateParams.fromState);
                     } else {
-                        $state.go(config.appSettings.default_state);
+                        $state.go(config.appSettings.defaultState);
                     }
 
                     // refresh data
@@ -247,7 +247,7 @@ angular.module('starter')
             if($stateParams.fromState){
                 $state.go($stateParams.fromState);
             } else {
-                $state.go(config.appSettings.default_state);
+                $state.go(config.appSettings.defaultState);
             }
 
         };
@@ -332,7 +332,7 @@ angular.module('starter')
                 if($stateParams.fromState){
                     $state.go($stateParams.fromState);
                 } else {
-                    $state.go(config.appSettings.default_state);
+                    $state.go(config.appSettings.defaultState);
                 }
             }
 
