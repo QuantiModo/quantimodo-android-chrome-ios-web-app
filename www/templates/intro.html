@@ -1,18 +1,18 @@
-<ion-view class="pane" hide-nav-bar="skipMenu" view-title="Welcome!" >
+<ion-view hide-nav-bar="skipMenu" view-title="Welcome!">
     <ion-slide-box on-slide-changed="myIntro.slideChanged(index)">
 
         <ion-slide ng-repeat="introConf in intro_config">
 
             <div ng-click="myIntro.previous()" ng-show="myIntro.slideIndex > 0" class="previous">
-                <span class="ion-chevron-left calm" data-pack="default" data-tags="talk"></span>
+                <span class="ion-chevron-left positive" data-pack="default" data-tags="talk"></span>
             </div>
             
             <div ng-click="myIntro.next()" ng-show="myIntro.slideIndex != intro_config.length-1" class="next">
-                <span class="ion-chevron-right calm" data-pack="default" data-tags="talk"></span>
+                <span class="ion-chevron-right positive" data-pack="default" data-tags="talk"></span>
             </div>
             
             <div ng-click="myIntro.startApp()" ng-show="myIntro.slideIndex == intro_config.length-1" class="next">
-                <span class="ion-chevron-right calm" data-pack="default" data-tags="talk"></span>
+                <span class="ion-chevron-right positive" data-pack="default" data-tags="talk"></span>
             </div>
 
             <div class="content intro_content" ng-show="myIntro.ready === true">
@@ -21,7 +21,7 @@
                 </p>
                 
                 <div ng-if="introConf.content.showOutcomeVariableImages" >
-                    <div class="ponka" style="display:inline-block" ng-repeat="option in primary_outcome_variable_options">
+                    <div class="ponka" style="display:inline-block" ng-repeat="option in primaryOutcomeVariableRatingOptions">
                         <img style="width:{{introConf.img.width}}px; height:{{introConf.img.height}}px;" class="intro_primary_outcome_variable" ng-src="{{option.img}}">
                         <p>{{option.value}}</p>
                     </div>
@@ -40,17 +40,17 @@
                     
                     <div ng-if="introConf.content.finalP && introConf.content.finalP.buttonBarVisible">
                         <div class="button-bar">
-                            <a class="button button-calm" ng-show="myIntro.slideIndex != intro_config.length-1 " ng-click="myIntro.startApp()">
+                            <a class="button button-positive" ng-show="myIntro.slideIndex != intro_config.length-1 " ng-click="myIntro.startApp()">
                                 Skip
                             </a>
-                            <a class="button button-calm" ng-show="myIntro.slideIndex > 0 && myIntro.slideIndex < intro_config.length-1" ng-click="myIntro.previous()">
+                            <a class="button button-positive" ng-show="myIntro.slideIndex > 0 && myIntro.slideIndex < intro_config.length-1" ng-click="myIntro.previous()">
                                 Back
                             </a>
-                            <a class="button button-calm" ng-show="myIntro.slideIndex != intro_config.length-1 && myIntro.slideIndex != intro_config.length-1" ng-click="myIntro.next()">
+                            <a class="button button-positive" ng-show="myIntro.slideIndex != intro_config.length-1 && myIntro.slideIndex != intro_config.length-1" ng-click="myIntro.next()">
                                 Next
                             </a>
-                            <a class="button button-calm" ng-show="myIntro.slideIndex == intro_config.length-1" ng-click="myIntro.startApp()">
-                                Get Started
+                            <a class="button button-positive" ng-show="myIntro.slideIndex == intro_config.length-1" ng-click="myIntro.startApp()">
+                                Go
                             </a>
                         </div>
                     </div>

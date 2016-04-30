@@ -27,8 +27,8 @@ angular.module('starter')
         // show alert for upvoted/failure
         $scope.showAlert = function(title, template) {
             $ionicPopup.alert({
-                cssClass : 'calm',
-                okType : 'button-calm',
+                cssClass : 'positive',
+                okType : 'button-positive',
                 title: title,
                 template: template
             });
@@ -46,18 +46,18 @@ angular.module('starter')
                     template: '<p class="item-icon-left">Loading stuff...<ion-spinner icon="lines"/></p>'
                 });
 
-                // get negative list
+                // get negative correlationObjects
                 correlationService.getNegativeFactors()
-                .then(function(list){
+                .then(function(correlationObjects){
                     
                     // update view model
-                    $scope.negatives = list;
+                    $scope.negatives = correlationObjects;
                     
                     // hide spinner
                     $ionicLoading.hide();
 
-                    correlationService.getUsersPositiveFactors().then(function(list){
-                        $scope.users_negative_factors = list;
+                    correlationService.getUsersPositiveFactors().then(function(correlationObjects){
+                        $scope.users_negative_factors = correlationObjects;
                      });
 
                 }, function(){

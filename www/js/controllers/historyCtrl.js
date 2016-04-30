@@ -9,8 +9,8 @@ angular.module('starter')
 	    // Show alert with a title
 	    $scope.showAlert = function(title, template) {
 	       var alertPopup = $ionicPopup.alert({
-	         cssClass : 'calm',
-             okType : 'button-calm',
+	         cssClass : 'positive',
+             okType : 'button-positive',
 	         title: title,
 	         template: template
 	       });
@@ -23,7 +23,7 @@ angular.module('starter')
 	    
 	    // load editing popover
 	    $ionicPopover.fromTemplateUrl('templates/history_popup.html', {
-	        scope: $scope,
+	        scope: $scope
 	    }).then(function(popover) {
 	        $scope.history_popover = popover;
 	    });
@@ -75,7 +75,7 @@ angular.module('starter')
 	    };
 
 	    // select a mod manually on popover
-	    $scope.select_primary_outcome_variable = function($event, option){
+	    $scope.selectRatingValue = function($event, option){
 	    	// remove any previous primary outcome variables if present
 	        jQuery('.primary_outcome_variables .active_primary_outcome_variable').removeClass('active_primary_outcome_variable');
 	        
@@ -100,14 +100,14 @@ angular.module('starter')
 	        // get the history data
 
             var history;
-            localStorageService.getItem('allData',function(allData){
-                history = allData? JSON.parse(allData) : [];
+            localStorageService.getItem('allLocalMeasurements',function(allLocalMeasurements){
+                history = allLocalMeasurements? JSON.parse(allLocalMeasurements) : [];
                 $scope.history = history.sort(function(a,b){
                     if(a.timestamp < b.timestamp){
                         return 1;}
                     if(a.timestamp> b.timestamp)
-                    {return -1}
-                    return 0
+                    {return -1;}
+                    return 0;
                 });
             });
 	        // try to access user token to check if the user is logged in

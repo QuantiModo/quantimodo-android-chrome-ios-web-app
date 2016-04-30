@@ -3,41 +3,37 @@ angular.module('starter')
     // Controls the Track Page of the App
     .controller('TrackCtrl', function($scope, $ionicModal, $state, $timeout, utilsService, authService, measurementService, chartService, $ionicPopup, localStorageService) {
         $scope.controller_name = "TrackCtrl";
-        
-        // when a primary_outcome_variable is reported
-        $scope.report_primary_outcome_variable = function(primary_outcome_variable) {
-            // when a primary_outcome_variable is reported
-            $scope.report_primary_outcome_variable = function (primary_outcome_variable) {
 
-                // flag for blink effect
-                $scope.timeRemaining = true;
+        $scope.showCharts = false;
 
-                if (window.chrome && window.chrome.browserAction) {
-                    chrome.browserAction.setBadgeText({
-                        text: ""
-                    });
-                }
+        $scope.recordPrimaryOutcomeVariableRating = function (primaryOutcomeRatingValue) {
 
-                // update localstorage
-                measurementService.updatePrimaryOutcomeVariableLocally(primary_outcome_variable).then(function () {
+            // flag for blink effect
+            $scope.timeRemaining = true;
 
-                    // try to send the data to server
-                    measurementService.updatePrimaryOutcomeVariable(primary_outcome_variable);
-
-                    // calculate charts data
-                    measurementService.calculateAveragePrimaryOutcomeVariableValue().then(function () {
-
-                        setTimeout(function () {
-                            $scope.timeRemaining = false;
-                            $scope.$apply();
-                        }, 500);
-
-                        draw();
-                    });
-
+            if (window.chrome && window.chrome.browserAction) {
+                chrome.browserAction.setBadgeText({
+                    text: ""
                 });
+            }
 
-            };
+            // update localstorage
+            measurementService.updatePrimaryOutcomeVariableLocally(primaryOutcomeRatingValue).then(function () {
+
+                // try to send the data to server
+                measurementService.updatePrimaryOutcomeVariable(primaryOutcomeRatingValue);
+
+                // calculate charts data
+                measurementService.calculateAveragePrimaryOutcomeVariableValue().then(function () {
+
+                    setTimeout(function () {
+                        $scope.timeRemaining = false;
+                        $scope.$apply();
+                    }, 500);
+
+                    draw();
+                });
+            });
         };
 
         // Update Trackng Factor images via an integer
@@ -96,17 +92,19 @@ angular.module('starter')
 
                 // update line chart
                 localStorageService.getItem('lineChartData',function(lineChartData){
-                    if(lineChartData) {
+                    if(lineChartData !== "[]") {
                         updateLineChart(JSON.parse(lineChartData));
+                        $scope.showCharts = true;
                     }
 
                     // update bar chart
                     localStorageService.getItem('barChartData',function(barChartData){
-                        if(barChartData){
+                        if(barChartData !== "[0,0,0,0,0]"){
                             updateBarChart(JSON.parse(barChartData));
                             if(!$scope.$$phase) {
                                 $scope.$apply();
                             }
+                            $scope.showCharts = true;
                         }
                     });
                 });
@@ -116,8 +114,8 @@ angular.module('starter')
         // show alert box
         $scope.showAlert = function(title, template) {
            var alertPopup = $ionicPopup.alert({
-                cssClass : 'calm',
-                okType : 'button-calm',
+                cssClass : 'positive',
+                okType : 'button-positive',
                 title: title,
                 template: template
            });

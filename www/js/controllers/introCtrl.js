@@ -3,7 +3,7 @@ angular.module('starter')
     
     $scope.view_title = config.appSettings.app_name;
     $scope.primary_outcome_variable = config.appSettings.primary_outcome_variable;
-    $scope.primary_outcome_variable_options = config.getPrimaryOutcomeVariableOptions();
+    $scope.primaryOutcomeVariableRatingOptions = config.getPrimaryOutcomeVariableOptions();
     $scope.primary_outcome_variable_numbers = config.getPrimaryOutcomeVariableOptions(true);
     $scope.intro_config = config.appSettings.intro;
     

@@ -15,13 +15,13 @@ angular.module('starter')
             searchedUnits : []
         };
         $scope.state.title = $stateParams.variableName + ' Variable Settings';
-        $scope.state.variable_name = $stateParams.variableName;
+        $scope.state.variableName = $stateParams.variableName;
 
         // alert box
         $scope.showAlert = function(title, template) {
             var alertPopup = $ionicPopup.alert({
-                cssClass : 'calm',
-                okType : 'button-calm',
+                cssClass : 'positive',
+                okType : 'button-positive',
                 title: title,
                 template: template
             });
@@ -41,16 +41,16 @@ angular.module('starter')
 
             // populate params
             var params = {
-                variable : $scope.state.variable_name || jQuery('#variable_name').val(),
-                unit : $scope.state.unit_text,
-                category : $scope.state.variable_category,
+                variable : $scope.state.variableName || jQuery('#variableName').val(),
+                unit : $scope.state.abbreviatedUnitName,
+                category : $scope.state.variableCategory,
                 isAvg : $scope.state.sumAvg === "avg"
             };
 
             console.log(params);
 
             // validation
-            if (params.variable_name === "") {
+            if (params.variableName === "") {
                 $scope.showAlert('Variable Name missing');
             } else {
                 // add variable
@@ -59,9 +59,9 @@ angular.module('starter')
                     {
                         $scope.showAlert('Added Variable');
                         // set flags
-                        $scope.flags.showAddVariable = false;
-                        $scope.flags.showAddMeasurement = false;
-                        $scope.flags.showVariableSearchCard = true;
+                        $scope.state.showAddVariable = false;
+                        $scope.state.showAddMeasurement = false;
+                        $scope.state.showVariableSearchCard = true;
                         // refresh the last updated at from api
                         setTimeout($scope.init, 200);
                     }, function (err) {
@@ -89,15 +89,15 @@ angular.module('starter')
             authService.getAccessTokenFromAnySource().then(function(){
                 
                 // get all variables
-                measurementService.getVariablesByName($stateParams.variableName).then(function(variableObject){
+                variableService.getVariablesByName($stateParams.variableName).then(function(variableObject){
                     $scope.state.variableObject = variableObject;
                     console.log(variableObject);
                     $scope.item = variableObject;
 
                     // set values in form
                     $scope.state.sumAvg = variableObject.combinationOperation == "MEAN"? "avg" : "sum";
-                    $scope.state.variable_category = variableObject.category;
-                    $scope.state.selected_sub = variableObject.abbreviatedUnitName;
+                    $scope.state.variableCategory = variableObject.category;
+                    $scope.state.selectedUnitAbbreviatedName = variableObject.abbreviatedUnitName;
                 });
 
 

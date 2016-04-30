@@ -1,7 +1,9 @@
 angular.module('starter')
 	
 	// Controlls the Positive Factors page
-	.controller('PositiveCtrl', function($scope, $ionicModal, $timeout, measurementService, $ionicLoading, $ionicPopup, $state, $ionicPopup, correlationService, $rootScope,localStorageService,utilsService) {
+	.controller('PositiveCtrl', function($scope, $ionicModal, $timeout, measurementService, $ionicLoading, 
+                                         $state, $ionicPopup, correlationService, $rootScope,
+                                         localStorageService, utilsService) {
 
         /*// redirect if not logged in
         if(!$scope.isLoggedIn){
@@ -36,8 +38,8 @@ angular.module('starter')
 	        $ionicPopup.alert({
 	          title: title,
 	          template: template,
-              cssClass : 'calm',
-              okType : 'button-calm'
+              cssClass : 'positive',
+              okType : 'button-positive'
 	        });
 	    };
         
@@ -159,15 +161,15 @@ angular.module('starter')
 		    }); 
 
 	        if($scope.isLoggedIn){
-	        	// get list
+	        	// get correlationObjects
                 correlationService.getPositiveFactors()
-	            .then(function(list){
+	            .then(function(correlationObjects){
                         // update view model
-                        $scope.positives = list;
+                        $scope.positives = correlationObjects;
                         $ionicLoading.hide();
 
-                        correlationService.getUsersPositiveFactors().then(function(list){
-                            $scope.users_positive_factors = list;
+                        correlationService.getUsersPositiveFactors().then(function(correlationObjects){
+                            $scope.users_positive_factors = correlationObjects;
                         })
 
 

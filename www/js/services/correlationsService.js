@@ -9,18 +9,18 @@ angular.module('starter')
         var users_positive_factors = [];
         var users_negative_factors = [];
         return {
-            // get Positive List
+            // get Positive correlationObjects
             getCauses : function(){
                 var deferred = $q.defer();
-                    QuantiModo.getCauses(function(list){
+                    QuantiModo.getCauses(function(correlationObjects){
 
                         // populate positives & Negatives
-                        for(var i in list){
-                            if(list[i].correlationCoefficient > 0){
-                                positive_factors.push(list[i]);
+                        for(var i in correlationObjects){
+                            if(correlationObjects[i].correlationCoefficient > 0){
+                                positive_factors.push(correlationObjects[i]);
                             }
-                            else if(list[i].correlationCoefficient < 0){
-                                negative_factors.push(list[i]);
+                            else if(correlationObjects[i].correlationCoefficient < 0){
+                                negative_factors.push(correlationObjects[i]);
                             }
                         }
 
@@ -33,15 +33,15 @@ angular.module('starter')
 
             getUserCauses: function () {
                 var deferred = $q.defer();
-                QuantiModo.getUsersCauses(function(list){
+                QuantiModo.getUsersCauses(function(correlationObjects){
 
                     // populate positives & Negatives
-                    for(var i in list){
-                        if(list[i].correlationCoefficient > 0){
-                            users_positive_factors.push(list[i]);
+                    for(var i in correlationObjects){
+                        if(correlationObjects[i].correlationCoefficient > 0){
+                            users_positive_factors.push(correlationObjects[i]);
                         }
-                        else if(list[i].correlationCoefficient < 0){
-                            users_negative_factors.push(list[i]);
+                        else if(correlationObjects[i].correlationCoefficient < 0){
+                            users_negative_factors.push(correlationObjects[i]);
                         }
                     }
 

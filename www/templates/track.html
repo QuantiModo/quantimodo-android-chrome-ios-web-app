@@ -2,19 +2,10 @@
     <ion-content>
     	<div class="card primary_outcome_variable_reporting">
     		<div class="item item-text-wrap">
-                <div>
-                    <img ng-show="averagePrimaryOutcomeVariableImage" ng-src="{{averagePrimaryOutcomeVariableImage}}" class="top-left" alt="Depressed">
-                    <div class="to_right">
-                        <span ng-show="averagePrimaryOutcomeVariableValue" class="heading">{{factor_average_text}} {{averagePrimaryOutcomeVariableValue}}.</span>
-                        <ul class="from_top">
-                            <li>We hope you feel great!</li>
-                            <li>{{tracking_question}}</li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="primary_outcome_variables" ng-show="!timeRemaining">
-                    <img ng-repeat="option in primary_outcome_variable_options"
-                         ng-click="report_primary_outcome_variable(option.value)"
+                <div class="primary_outcome_variables" >
+                    <p class="heading positive" style="padding:14px; text-align: center;">{{tracking_question}}</p>
+                    <img ng-repeat="option in primaryOutcomeVariableRatingOptions"
+                         ng-click="recordPrimaryOutcomeVariableRating(option.value)"
                          ng-src="{{option.img}}"
                             >
                 </div>
@@ -28,8 +19,23 @@
     		</div>
     	</div>
 
+        <div class="card primary_outcome_variable_reporting">
+            <div class="item item-text-wrap">
+                <div>
+                    <img ng-show="averagePrimaryOutcomeVariableImage" ng-src="{{averagePrimaryOutcomeVariableImage}}" class="top-left" alt="Depressed">
+                    <div class="to_right">
+                        <br>
+                        <span ng-show="averagePrimaryOutcomeVariableValue" class="heading">{{primaryOutcomeVariableAverageText}} {{averagePrimaryOutcomeVariableValue}}.</span>
+                        <ul class="from_top">
+                            <!--                           <li>We hope you feel great!</li>-->
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-    	<div  class="card primary_outcome_variable_reporting_chart">
+
+        <div ng-show="showCharts" class="card primary_outcome_variable_reporting_chart">
     		<div class="item item-text-wrap">
                 <div style="height: 460px;" ng-show="isSyncing">
                     <div style="position: absolute;top:45%;text-align: center;width: 100%"><span>Still retrieving data. Check back soon.</span></div>

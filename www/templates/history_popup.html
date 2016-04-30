@@ -1,8 +1,8 @@
 <div hide-nav-bar="skipMenu" class="card history_edit_card">
 	<div class="item item-text-wrap">
 	  	<div class="primary_outcome_variables primary_outcome_variable_history">
-	  		<img ng-repeat="option in primary_outcome_variable_options"
-                 ng-click="select_primary_outcome_variable($event, option)"
+	  		<img ng-repeat="option in primaryOutcomeVariableRatingOptions"
+                 ng-click="selectRatingValue($event, option)"
                  ng-src="{{option.img}}"
                  class="{{option.value}}"
             >
@@ -12,7 +12,7 @@
 		<br/>
 
 		<div class="buttons center">
-			<button class="button button-calm" ng-click="save_value();">
+			<button class="button button-positive" ng-click="save_value();">
 				Save
 			</button>
 			<button class="button button-assertive" ng-click="close_popover();">

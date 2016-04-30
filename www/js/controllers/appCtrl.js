@@ -33,7 +33,7 @@ angular.module('starter')
                         buttons:[
                             {
                                 text: 'OK',
-                                type: 'button-calm',
+                                type: 'button-positive',
                                 onTap: function(){
                                     localStorageService.setItem('not_show_help_popup',JSON.stringify($scope.not_show_help_popup));
                                 }
@@ -70,11 +70,11 @@ angular.module('starter')
     /*Wrapper Config*/
     $scope.view_title = config.appSettings.app_name;
     $scope.primary_outcome_variable = config.appSettings.primary_outcome_variable;
-    $scope.primary_outcome_variable_options = config.getPrimaryOutcomeVariableOptions();
+    $scope.primaryOutcomeVariableRatingOptions = config.getPrimaryOutcomeVariableOptions();
     $scope.primary_outcome_variable_numbers = config.getPrimaryOutcomeVariableOptions(true);
     $scope.welcome_text = config.appSettings.welcome_text;
     $scope.tracking_question = config.appSettings.tracking_question;
-    $scope.factor_average_text = config.appSettings.factor_average_text;
+    $scope.primaryOutcomeVariableAverageText = config.appSettings.primaryOutcomeVariableAverageText;
     /*Wrapper Config End*/
 
     // when view is changed
@@ -167,7 +167,7 @@ angular.module('starter')
 
                 // move to tracking page
                 if($state.current.name === "app.welcome" || $state.current.name === "app.login"){
-                    $state.go(config.appSettings.default_state);
+                    $state.go(config.appSettings.defaultState);
                     $rootScope.hideMenu = false;
                 }
 
@@ -244,7 +244,7 @@ angular.module('starter')
             //Set out localstorage flag for welcome screen variables
             localStorageService.setItem('interval',true);
             localStorageService.setItem('primaryOutcomeVariableReportedWelcomeScreen',true);
-            localStorageService.setItem('allData',JSON.stringify([]));
+            localStorageService.setItem('allLocalMeasurements',JSON.stringify([]));
 
             // calculate primary outcome variable and chart data
             measurementService.calculateAveragePrimaryOutcomeVariableValue().then(function(){
@@ -587,7 +587,7 @@ angular.module('starter')
         console.log('isWelcomed ' + isWelcomed);
         if(isWelcomed  === true || isWelcomed === "true" || tokenInGetParams){
             $rootScope.isWelcomed = true;
-            //$state.go(config.appSettings.default_state);
+            //$state.go(config.appSettings.defaultState);
         } else {
             console.log("isWelcomed is " + isWelcomed + ". Setting to true and going to welcome now.");
             localStorageService.setItem('isWelcomed', true);

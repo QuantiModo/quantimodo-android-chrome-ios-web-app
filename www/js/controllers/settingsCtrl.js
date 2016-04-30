@@ -90,8 +90,6 @@ angular.module('starter')
 	            Guilty : localAdditonalRatings && localAdditonalRatings.Guilty? localAdditonalRatings.Guilty : false,
 	            Alert : localAdditonalRatings && localAdditonalRatings.Alert? localAdditonalRatings.Alert : false,
 	            Excited : localAdditonalRatings && localAdditonalRatings.Excited? localAdditonalRatings.Excited : false,
-	            Guilty : localAdditonalRatings && localAdditonalRatings.Guilty? localAdditonalRatings.Guilty : false,
-	            Irritable : localAdditonalRatings && localAdditonalRatings.Irritable? localAdditonalRatings.Irritable : false,
 	            Ashamed : localAdditonalRatings && localAdditonalRatings.Ashamed? localAdditonalRatings.Ashamed : false,
 	            Attentive : localAdditonalRatings && localAdditonalRatings.Attentive? localAdditonalRatings.Attentive : false,
 	            Hostile : localAdditonalRatings && localAdditonalRatings.Hostile? localAdditonalRatings.Hostile : false,
@@ -147,8 +145,8 @@ angular.module('starter')
 	    // show alert box
 	    $scope.showAlert = function(title, template) {
 	        var alertPopup = $ionicPopup.alert({
-				cssClass : 'calm',
-				okType : 'button-calm',
+				cssClass : 'positive',
+				okType : 'button-positive',
 				title: title,
 				template: template
 	        });
@@ -205,9 +203,9 @@ angular.module('starter')
 	    // When Export is tapped
 	    $scope.export = function(){
 
-	    	localStorageService.getItem('allData', function(allData){
+	    	localStorageService.getItem('allLocalMeasurements', function(allLocalMeasurements){
 		    	// get all data 
-		        var arr = allData? JSON.parse(allData) : [];
+		        var arr = allLocalMeasurements? JSON.parse(allLocalMeasurements) : [];
 		        
 		        // convert JSon to CSV
 		        var csv = convertToCSV(arr);

@@ -24,7 +24,7 @@ window.config = {
 config.appSettings  = {
     app_name : 'Mind First Mood Tracker',
 
-    default_state : 'app.track',
+    defaultState : 'app.track',
 
     primary_outcome_variable : 'Mood',
 
@@ -37,7 +37,7 @@ config.appSettings  = {
         ' - Analyze your data to see the top predictors for your Mood'
     ],
       
-    primary_outcome_variable_details : {
+    primaryOutcomeVariableDetails : {
         id : 1398,
         name : "Overall Mood",
         category : "Mood",
@@ -45,7 +45,7 @@ config.appSettings  = {
         combinationOperation: "MEAN"
     },
 
-    primary_outcome_variables_options_labels : [
+    primaryOutcomeVariableOptionsLabels : [
         'Depressed',
         'Sad',
         'OK',
@@ -53,7 +53,7 @@ config.appSettings  = {
         'Ecstatic'
     ],
 
-    primary_outcome_variable_options : [
+    primaryOutcomeVariableRatingOptions : [
         {
             value: 'depressed',
             img: 'img/ic_face_depressed.png'
@@ -78,7 +78,7 @@ config.appSettings  = {
 
     welcome_text:"Let's start off by reporting your first mood on the card below",
     tracking_question:"How are you feeling right now?",
-    factor_average_text:"Your average mood is ",
+    primaryOutcomeVariableAverageText:"Your average mood is ",
     notification_image : "file://img/icon_128.png",
     notification_text : "Time to Track",
     conversion_dataset: {
@@ -589,13 +589,13 @@ config.appSettings  = {
 
 
 config.getPrimaryOutcomeVariableOptionLabels = function(shouldShowNumbers){
-    if(shouldShowNumbers || !config.appSettings.primary_outcome_variables_options_labels){
+    if(shouldShowNumbers || !config.appSettings.primaryOutcomeVariableOptionsLabels){
         return ['1',  '2',  '3',  '4', '5'];
-    } else return config.appSettings.primary_outcome_variables_options_labels;
+    } else return config.appSettings.primaryOutcomeVariableOptionsLabels;
 };
 
 config.getPrimaryOutcomeVariableOptions = function(shouldShowNumbers){
-    if(shouldShowNumbers || !config.appSettings.primary_outcome_variable_options){
+    if(shouldShowNumbers || !config.appSettings.primaryOutcomeVariableRatingOptions){
         return [
             {
                 value: '1',
@@ -618,11 +618,11 @@ config.getPrimaryOutcomeVariableOptions = function(shouldShowNumbers){
                 img: 'img/ic_5.png'
             }
         ];
-    } else return config.appSettings.primary_outcome_variable_options;
+    } else return config.appSettings.primaryOutcomeVariableRatingOptions;
 };
 
 config.getImageForPrimaryOutcomeVariableByValue = function(val){
-    var filtered_list = this.appSettings.primary_outcome_variable_options.filter(function(option){
+    var filtered_list = this.appSettings.primaryOutcomeVariableRatingOptions.filter(function(option){
         return option.value === val;
     });
 
@@ -764,7 +764,7 @@ window.notification_callback = function(reported_variable, reporting_time){
         // update localstorage
         localStorage[key_identifier+'lastReportedPrimaryOutcomeVariableValue'] = val;
         
-        var allDataObject = {
+        var allLocalMeasurementsObject = {
             storedValue : val,
             value : val,
             timestamp : report_time,
@@ -774,10 +774,10 @@ window.notification_callback = function(reported_variable, reporting_time){
         };
 
         // update full data
-        if(localStorage[key_identifier+'allData']){
-            var allData = JSON.parse(localStorage[key_identifier+'allData']);
-            allData.push(allDataObject);
-            localStorage[key_identifier+'allData'] = JSON.stringify(allData);
+        if(localStorage[key_identifier+'allLocalMeasurements']){
+            var allLocalMeasurements = JSON.parse(localStorage[key_identifier+'allLocalMeasurements']);
+            allLocalMeasurements.push(allLocalMeasurementsObject);
+            localStorage[key_identifier+'allLocalMeasurements'] = JSON.stringify(allLocalMeasurements);
         }
 
         // update Bar chart data
@@ -804,7 +804,7 @@ window.notification_callback = function(reported_variable, reporting_time){
             localStorage[key_identifier+'measurementsQueue'] = '[]';
         } else {
             var measurementsQueue = JSON.parse(localStorage[key_identifier+'measurementsQueue']);
-            measurementsQueue.push(allDataObject);
+            measurementsQueue.push(allLocalMeasurementsObject);
             localStorage[key_identifier+'measurementsQueue'] = JSON.stringify(measurementsQueue);
         }
     }
