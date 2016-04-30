@@ -60,7 +60,7 @@
                 </div>
 
                 <div class="primary_outcome_variables primary_outcome_variable_history col" ng-if="(state.measurement.abbreviatedUnitName === '/5')">
-                    <img ng-repeat="option in primary_outcome_variable_numbers" ng-click="select_primary_outcome_variable($event, option.value)" ng-src="{{option.img}}"  ng-class="{'active_primary_outcome_variable' : option.value == state.measurement.value}">
+                    <img ng-repeat="option in primary_outcome_variable_numbers" ng-click="selectRatingValue($event, option.value)" ng-src="{{option.img}}"  ng-class="{'active_primary_outcome_variable' : option.value == state.measurement.value}">
                 </div>
 
                 <div class="row labeled-control" ng-if="(state.measurement.abbreviatedUnitName !== '/5')">

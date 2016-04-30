@@ -54,7 +54,7 @@ angular.module('starter')
 			$scope.state.title = $filter('wordAliases')($stateParams.variableCategoryName) + " " + $filter('wordAliases')("Reminder Inbox");
 		}
 
-	    $scope.select_primary_outcome_variable = function($event, val){
+	    $scope.selectRatingValue = function($event, val){
 	        // remove any previous primary outcome variables if present
 	        jQuery('.primary_outcome_variables .active_primary_outcome_variable').removeClass('active_primary_outcome_variable');
 
@@ -228,45 +228,10 @@ angular.module('starter')
 	    	$scope.state.measurementDate = moment(dateTime)._d;
 	    	getVariable(variableName);
 	    };
-
-	    // constructor
+		
 	    $scope.init = function(){
-
-			// get user token
 			authService.getAccessTokenFromAnySource().then(function(token){
-				var unit = utilsService.getUrlParameter(location.href, 'unit', true);
-				var variableName = utilsService.getUrlParameter(location.href, 'variableName', true);
-				var dateTime = utilsService.getUrlParameter(location.href, 'dateTime', true);
-				var value = utilsService.getUrlParameter(location.href, 'value', true);
-
-				if($stateParams.unit !== null && typeof $stateParams.unit !== "undefined"
-					&& $stateParams.variableName !== null && typeof $stateParams.variableName !== "undefined"
-					&& $stateParams.dateTime !== null && typeof $stateParams.dateTime !== "undefined"
-					&& $stateParams.value !== null && typeof $stateParams.value !== "undefined"){
-
-					setupTracking($stateParams.unit,
-						$stateParams.variableName,
-						$stateParams.dateTime,
-						$stateParams.value);
-
-				} else if(unit || variableName || dateTime || value){
-
-					$scope.state.title = "Edit Measurement";
-					$scope.state.showMeasurementBox = true;
-
-					if(unit && variableName && dateTime && value){
-						setupTracking(unit,
-							variableName,
-							dateTime,
-							value);
-					} else {
-						$scope.state.isDisabled = true;
-						utilsService.showAlert('Missing Parameters, need unit, variableName, dateTime and value!','assertive');
-					}
-
-				} else {
-					getTrackingReminderNotifications();
-				}
+				getTrackingReminderNotifications();
 			}, function(){
 				$ionicLoading.hide();
 				console.log("need to log in");
@@ -369,7 +334,7 @@ angular.module('starter')
 	    	}
 	    };
 
-	    $scope.edit = function(reminder){
+	    $scope.editReminderSettings = function(reminder){
 	    	reminder["fromState"] = $state.current.name;
 	    	$state.go('app.reminder_add', {reminder : reminder})
 	    };

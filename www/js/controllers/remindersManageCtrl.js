@@ -36,7 +36,7 @@ angular.module('starter')
 			$scope.state.addButtonText = "Add new reminder";
 		}
 
-	    $scope.select_primary_outcome_variable = function($event, val){
+	    $scope.selectRatingValue = function($event, val){
 	        // remove any previous primary outcome variables if present
 	        jQuery('.primary_outcome_variables .active_primary_outcome_variable').removeClass('active_primary_outcome_variable');
 

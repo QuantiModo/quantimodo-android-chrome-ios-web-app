@@ -75,7 +75,7 @@ angular.module('starter')
 	    };
 
 	    // select a mod manually on popover
-	    $scope.select_primary_outcome_variable = function($event, option){
+	    $scope.selectRatingValue = function($event, option){
 	    	// remove any previous primary outcome variables if present
 	        jQuery('.primary_outcome_variables .active_primary_outcome_variable').removeClass('active_primary_outcome_variable');
 	        
