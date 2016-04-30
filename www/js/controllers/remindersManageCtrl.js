@@ -49,52 +49,28 @@ angular.module('starter')
 
 		};
 
-	    var utils = {
-    	    startLoading : function(){
-    	    	// show spinner
-    			$ionicLoading.show({
-    				noBackdrop: true,
-    				template: '<p class="item-icon-left">Fetching your reminders...<ion-spinner icon="lines"/></p>'
-    		    });
-    	    },
-
-    	    stopLoading : function(){
-    	    	// hide spinner
-    	    	$ionicLoading.hide();
-    	    },
-
-    	    // alert box
-	        showAlert : function(title, cssClass) {
-				return $ionicPopup.alert({
-					cssClass : cssClass? cssClass : 'calm',
-					okType : cssClass? 'button-'+cssClass : 'button-calm',
-					title: title
-				});
-	        }
-	    };
-
 	    var getVariable = function(variableName){
 			variableService.getVariablesByName(variableName)
 	    	.then(function(variable){
 	    		$scope.state.variable = variable;
 	    	}, function(){
-	    		utils.showAlert('Can\'t find variable. Try again!', 'assertive').then(function(){
+	    		utilsService.showAlert('Can\'t find variable. Try again!', 'assertive').then(function(){
 	    			$state.go('app.historyAll');
 	    		});
 	    	});
 	    };
 
 	    var getTrackingReminders = function(){
-	    	utils.startLoading();
+	    	utilsService.startLoading();
 	    	reminderService.getTrackingReminders($stateParams.variableCategoryName)
 	    	.then(function(reminders){
 	    		$scope.state.allReminders = reminders;
-	    		utils.stopLoading();
+	    		//utilsService.stopLoading();
 	    	}, function(){
-	    		utils.stopLoading();
+	    		//utilsService.stopLoading();
 	    		console.log("failed to get reminders");
 				console.log("need to log in");
-				$ionicLoading.hide();
+				//$ionicLoading.hide();
 				utilsService.showLoginRequiredAlert($scope.login);
 	    	});
 	    };
@@ -133,7 +109,7 @@ angular.module('starter')
 			authService.getAccessTokenFromAnySource().then(function(token){
 				getTrackingReminders();
 			}, function(){
-				$ionicLoading.hide();
+				//$ionicLoading.hide();
 				console.log("need to log in");
 				//utilsService.showLoginRequiredAlert($scope.login);
 			});
@@ -147,18 +123,18 @@ angular.module('starter')
 	    };
 
 	    $scope.deleteReminder = function(reminder){
-	    	utils.startLoading();
+	    	utilsService.startLoading();
 	    	reminderService.deleteReminder(reminder.id)
 	    	.then(function(){
 
-	    		utils.stopLoading();
-	    		utils.showAlert('Reminder Deleted.');
+	    		//utilsService.stopLoading();
+	    		utilsService.showAlert('Reminder Deleted.');
 	    		$scope.init();
 
 	    	}, function(err){
 
-	    		utils.stopLoading();
-	    		utils.showAlert('Failed to Delete Reminder, Try again!', 'assertive');
+	    		//utilsService.stopLoading();
+	    		utilsService.showAlert('Failed to Delete Reminder, Try again!', 'assertive');
 	    	});
 	    };
 
