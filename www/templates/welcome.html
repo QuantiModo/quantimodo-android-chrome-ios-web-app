@@ -6,7 +6,7 @@
 
 <div ng-show="show_primary_outcome_variable_card && primary_outcome_variable" class="card primary_outcome_variable_reporting">
 	<div class="item item-text-wrap">
-		<h1>Welcome to <span class="calm">{{view_title}}</span></h1>
+		<h1>Welcome to <span class="positive">{{view_title}}</span></h1>
 		<ul>
 			<li>{{welcome_text}}</li>
 			<li>{{tracking_question}}</li>
@@ -27,7 +27,7 @@
 
 <div class="card reporting_interval" ng-show="show_interval_card && !show_primary_outcome_variable_card && primary_outcome_variable">
 	<div class="item item-text-wrap">
-		<h1 class="calm">Report Interval</h1>      
+		<h1 class="positive">Report Interval</h1>
 		<ul>
 			<li>A subtle notification and easy-to-use popup complement each other perfectly, ensuring you'll never forget to report your <span class="lower-text">{{primary_outcome_variable}}<span></li>
 		</ul>
@@ -54,14 +54,14 @@
 					</select>
 				</div>
 			</li>
-			<li class="item item-checkbox checkbox-calm">
+			<li class="item item-checkbox checkbox-positive">
 				<label class="checkbox">
 					<input ng-model="$parent.subscribe_notification" type="checkbox">
 				</label>
 				Show Notifications
 			</li>
 		</ul>
-		<button class="button button-block button-calm" ng-click="save_interval(notification_interval)">
+		<button class="button button-block button-positive" ng-click="save_interval(notification_interval)">
 			Schedule
 		</button>
         <button class="button button-block button-assertive" ng-click="skip_interval()">
@@ -73,29 +73,29 @@
 <div class="card sign_in" ng-show="!isLoggedIn &&
 	((!show_primary_outcome_variable_card && !show_interval_card) || !primary_outcome_variable) ">
         <div class="item item-text-wrap">
-            <h1 class="calm">{{headline}}</h1>
+            <h1 class="positive">{{headline}}</h1>
             <br/>
             <ul>
                 <li>By creating a FREE account you'll be able to:</li>
                 <li ng-repeat="feature in features">{{feature}}</li>
             </ul>
-            <button ng-show="isIOS" class="button button-block button-calm" ng-click="facebook_login()">
+            <button ng-show="isIOS" class="button button-block button-positive" ng-click="facebook_login()">
                 Facebook Sign In
             </button>
-            <button ng-show="isIOS"  class="button button-block button-calm" ng-click="google_login()">
+            <button ng-show="isIOS"  class="button button-block button-positive" ng-click="google_login()">
                 Google Sign In
             </button>
-			<button class="button button-block button-calm" ng-click="login()">
+			<button class="button button-block button-positive" ng-click="login()">
 				Sign In
 			</button>
-			<button class="button button-block button-calm" ng-click="login(true)">
+			<button class="button button-block button-positive" ng-click="login(true)">
 				I'm New
 			</button>
             <button ng-show="allowOffline" class="button button-block button-assertive" ng-click="skipLogin()">
                 <span ng-if="!isWelcomed">Skip Login</span>
                 <span ng-if="isWelcomed">Skip Login</span>
             </button>
-			<h1 class="calm">Privacy</h1>
+			<h1 class="positive">Privacy</h1>
 			<ul>
 				<li>It's your data. You decide what you share with your family and healthcare providers.</li>
 				<li>By using {{appName}}, you agree with the terms of use and privacy statement.</li>

@@ -38,8 +38,8 @@ angular.module('starter')
 	        $ionicPopup.alert({
 	          title: title,
 	          template: template,
-              cssClass : 'calm',
-              okType : 'button-calm'
+              cssClass : 'positive',
+              okType : 'button-positive'
 	        });
 	    };
         

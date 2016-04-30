@@ -33,7 +33,7 @@ angular.module('starter')
                         buttons:[
                             {
                                 text: 'OK',
-                                type: 'button-calm',
+                                type: 'button-positive',
                                 onTap: function(){
                                     localStorageService.setItem('not_show_help_popup',JSON.stringify($scope.not_show_help_popup));
                                 }

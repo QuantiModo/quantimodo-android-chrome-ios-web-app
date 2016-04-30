@@ -27,8 +27,8 @@ angular.module('starter')
         // show alert for upvoted/failure
         $scope.showAlert = function(title, template) {
             $ionicPopup.alert({
-                cssClass : 'calm',
-                okType : 'button-calm',
+                cssClass : 'positive',
+                okType : 'button-positive',
                 title: title,
                 template: template
             });

@@ -36,8 +36,8 @@ angular.module('starter')
         // alert box
         $scope.showAlert = function(title, template) {
             var alertPopup = $ionicPopup.alert({
-                cssClass : 'calm',
-                okType : 'button-calm',
+                cssClass : 'positive',
+                okType : 'button-positive',
                 title: title,
                 template: template
             });
@@ -447,7 +447,7 @@ angular.module('starter')
 
         var setupFromVariableStateParameter = function(){
             if($stateParams.variableObject !== null && typeof $stateParams.variableObject !== "undefined"){
-                $scope.state.title = "Record " + $stateParams.variableObject.name;
+                $scope.state.title = "Record Measurement";
                 $scope.state.measurement.variable = $stateParams.variableObject.name;
                 $scope.state.measurement.abbreviatedUnitName = $stateParams.variableObject.abbreviatedUnitName;
                 $scope.state.measurement.variableCategoryName = $stateParams.variableObject.category;
@@ -480,28 +480,6 @@ angular.module('starter')
             $scope.state.measurement.startTime = moment(measurementObject.startTime).unix();
             $scope.state.measurementDate = moment(measurementObject.startTime)._d;
             $scope.state.measurementIsSetup = true;
-        };
-
-        var populateVariableCategories = function(){
-            // get variable categories
-            variableCategoryService.getVariableCategories().then(function(variableCategories){
-
-                // update viewmodel
-                $scope.state.variableCategories = variableCategories;
-                console.log("got variable categories", variableCategories);
-
-                // hackish way to update variableCategoryName
-                setTimeout(function(){
-                    $scope.state.measurement.variableCategoryName = variableCategoryName;
-
-                    // redraw everything
-                    $scope.$apply();
-                },100);
-
-                // hide spinner
-                $ionicLoading.hide();
-
-            });
         };
 
     });

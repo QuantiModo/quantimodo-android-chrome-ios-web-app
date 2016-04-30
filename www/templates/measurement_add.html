@@ -3,7 +3,7 @@
 
         <div class="card" ng-show="state.showAddVariable">
             <div class="list">
-                <p class="heading calm" style="padding:14px;">Add new {{state.variableCategoryObject.variableCategoryNameSingularLowercase | wordAliases}} variable</p>
+                <p class="heading positive" style="padding:14px;">Add new {{state.variableCategoryObject.variableCategoryNameSingularLowercase | wordAliases}} variable</p>
 
 
                 <label class="item item-input item-select" ng-show="state.showCategoryAsSelector">
@@ -45,9 +45,10 @@
         </div>
 
         <div class="card"style="overflow: visible">
-            <p class="heading calm" style="padding:14px;">{{state.measurement.variable}} measurement</p>
+            <div class="item item-divider">
+                {{state.measurement.variable}}
+            </div>
             <div class="list">
-
                 <div ng-if="(state.measurement.abbreviatedUnitName !== '/5')" class="row labeled-control">
                     <div class="col col-l">
                         <span>
@@ -142,7 +143,7 @@
         </div>    
  
         <div class="card" >
-            <button ng-click="done()" class="button button-calm button-block">
+            <button ng-click="done()" class="button button-positive button-block">
                 Save Measurement
             </button>
             <button ng-show="state.measurement.id" ng-click="deleteMeasurement()" class="button button-assertive button-block">
