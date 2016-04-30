@@ -130,21 +130,6 @@ angular.module('starter')
 	    	});
 	    };
 
-	    var getTrackingReminders = function(){
-	    	//utilsService.startLoading();
-	    	reminderService.getTrackingReminders($stateParams.variableCategoryName)
-	    	.then(function(reminders){
-	    		$scope.state.allReminders = reminders;
-	    		utilsService.stopLoading();
-	    	}, function(){
-	    		utilsService.stopLoading();
-	    		console.log("failed to get reminders");
-				console.log("need to log in");
-				$ionicLoading.hide();
-				utilsService.showLoginRequiredAlert($scope.login);
-	    	});
-	    };
-
 	    var getTrackingReminderNotifications = function(){
 	    	utilsService.startLoading();
 
@@ -279,8 +264,6 @@ angular.module('starter')
 						utilsService.showAlert('Missing Parameters, need unit, variableName, dateTime and value!','assertive');
 					}
 
-				} else if($state.is('app.reminders_manage') || $state.is('app.reminders_manage_category')){
-					getTrackingReminders();
 				} else {
 					getTrackingReminderNotifications();
 				}
