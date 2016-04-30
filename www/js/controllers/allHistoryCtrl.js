@@ -41,6 +41,12 @@ angular.module('starter')
 			showLoadMoreButton: false
 	    };
 
+        $scope.goToState = function(state){
+            $state.go(state, {
+                fromState: $state.current.name
+            });
+        };
+
 	    $scope.editMeasurement = function(measurement){
 	    	$state.go('app.measurementAdd', {
 	    		measurement: measurement,
@@ -62,7 +68,9 @@ angular.module('starter')
 
 	    $scope.getVariableCategoryByUnit = function(unit){
 	    	
-	    	if(!unit) return false;
+	    	if(!unit) {
+                return false;
+            }
 	    	
 	    	var variableCategory = $scope.state.variableCategories.filter(function(vc){
 	    		return vc.name === unit.category;

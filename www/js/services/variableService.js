@@ -1,7 +1,8 @@
 angular.module('starter')
 	// Measurement Service
-	.factory('variableService', function($http, $q, QuantiModo, localStorageService){
+	.factory('variableService', function($http, $q, QuantiModo, localStorageService, authService, utilsService){
 
+        
 		// service methods
 		var variableService = {
 
@@ -100,7 +101,7 @@ angular.module('starter')
 
             populateVariableSearchResults: function (variableCategoryName) {
 
-                utils.startLoading();
+                utilsService.startLoading();
                 // get user token
                 authService.getAccessTokenFromAnySource().then(function(token){
 
@@ -110,10 +111,10 @@ angular.module('starter')
                         variableService.searchVariablesIncludePublic('*').then(function(variables){
 
                             $scope.variableSearchResults = variables;
-                            utils.stopLoading();
+                            utilsService.stopLoading();
 
                         }, function(){
-                            utils.stopLoading();
+                            utilsService.stopLoading();
                         });
                     } else {
                         console.log('get all variables by category');
@@ -121,16 +122,16 @@ angular.module('starter')
 
                             $scope.variableSearchResults = variables;
 
-                            utils.stopLoading();
+                            utilsService.stopLoading();
 
                         }, function(){
-                            utils.stopLoading();
+                            utilsService.stopLoading();
                         });
                     }
 
                 }, function(){
                     utilsService.showLoginRequiredAlert($scope.login);
-                    utils.stopLoading();
+                    utilsService.stopLoading();
 
                 });
 
