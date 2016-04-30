@@ -70,7 +70,7 @@ angular.module('starter')
 	    		//utilsService.stopLoading();
 	    		console.log("failed to get reminders");
 				console.log("need to log in");
-				//$ionicLoading.hide();
+				$ionicLoading.hide();
 				utilsService.showLoginRequiredAlert($scope.login);
 	    	});
 	    };
@@ -109,7 +109,7 @@ angular.module('starter')
 			authService.getAccessTokenFromAnySource().then(function(token){
 				getTrackingReminders();
 			}, function(){
-				//$ionicLoading.hide();
+				$ionicLoading.hide();
 				console.log("need to log in");
 				//utilsService.showLoginRequiredAlert($scope.login);
 			});

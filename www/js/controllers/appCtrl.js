@@ -70,7 +70,7 @@ angular.module('starter')
     /*Wrapper Config*/
     $scope.view_title = config.appSettings.app_name;
     $scope.primary_outcome_variable = config.appSettings.primary_outcome_variable;
-    $scope.primary_outcome_variable_options = config.getPrimaryOutcomeVariableOptions();
+    $scope.primaryOutcomeVariableRatingOptions = config.getPrimaryOutcomeVariableOptions();
     $scope.primary_outcome_variable_numbers = config.getPrimaryOutcomeVariableOptions(true);
     $scope.welcome_text = config.appSettings.welcome_text;
     $scope.tracking_question = config.appSettings.tracking_question;
@@ -244,7 +244,7 @@ angular.module('starter')
             //Set out localstorage flag for welcome screen variables
             localStorageService.setItem('interval',true);
             localStorageService.setItem('primaryOutcomeVariableReportedWelcomeScreen',true);
-            localStorageService.setItem('allData',JSON.stringify([]));
+            localStorageService.setItem('allLocalMeasurements',JSON.stringify([]));
 
             // calculate primary outcome variable and chart data
             measurementService.calculateAveragePrimaryOutcomeVariableValue().then(function(){

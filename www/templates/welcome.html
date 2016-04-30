@@ -17,8 +17,8 @@
 <div ng-show="show_primary_outcome_variable_card && primary_outcome_variable" class="card primary_outcome_variable_reporting">
 	<div class="item item-text-wrap">
 		<div  class="primary_outcome_variables">
-            <img ng-repeat="option in primary_outcome_variable_options"
-                 ng-click="report_primary_outcome_variable(option.value)"
+            <img ng-repeat="option in primaryOutcomeVariableRatingOptions"
+                 ng-click="recordPrimaryOutcomeVariableMeasurement(option.value)"
                  ng-src="{{option.img}}"
             >
 		</div>

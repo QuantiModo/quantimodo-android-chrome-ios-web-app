@@ -119,17 +119,6 @@ angular.module('starter')
 	    	return result;
 	    };
 
-	    var getVariable = function(variableName){
-			variableService.getVariablesByName(variableName)
-	    	.then(function(variable){
-	    		$scope.state.variable = variable;
-	    	}, function(){
-	    		utilsService.showAlert('Can\'t find variable. Try again!', 'assertive').then(function(){
-	    			$state.go('app.historyAll');
-	    		});
-	    	});
-	    };
-
 	    var getTrackingReminderNotifications = function(){
 	    	utilsService.startLoading();
 
@@ -147,14 +136,6 @@ angular.module('starter')
 				//utilsService.showLoginRequiredAlert($scope.login);
 
 	    	});
-	    };
-
-	    $scope.cancel = function(){
-	    	$scope.state.showMeasurementBox = !$scope.state.showMeasurementBox;
-	    	
-	    	if($scope.state.title === "Edit Measurement"){
-				$state.go('app.historyAll');
-			}
 	    };
 
 	    $scope.track = function(reminder, modifiedReminderValue){
@@ -179,56 +160,16 @@ angular.module('starter')
 	    	});
 	    };
 
-	    // when date is updated
-	    $scope.currentDatePickerCallback = function (val) {
-	    	if(typeof(val)==='undefined'){
-	    		console.log('Date not selected');
-	    	} else {
-	    		$scope.state.measurementDate = new Date(val);
-	    	}
-	    };
-
-		// when time is changed
-		$scope.currentTimePickerCallback = function (val) {
-			if (typeof (val) === 'undefined') {
-				console.log('Time not selected');
-			} else {
-				var a = new Date();
-				a.setHours(val.hours);
-				a.setMinutes(val.minutes);
-				$scope.state.slots.epochTime = a.getTime()/1000;
-			}
-		};
-
 	    $scope.snooze = function(reminder){
 	    	reminderService.snoozeReminder(reminder.id)
 	    	.then(function(){
 	    		$scope.init();
-
 	    	}, function(err){
+				console.log(err);
 	    		utilsService.showAlert('Failed to Snooze Reminder, Try again!', 'assertive');
 	    	});
 	    };
 
-	    var setupTracking = function(unit, variableName, dateTime, value){
-	    	console.log('track : ' , unit, variableName, dateTime, value);
-
-	    	if(dateTime.indexOf(" ") !== -1) 
-	    		dateTime = dateTime.replace(/\ /g,'+');
-
-	    	$scope.state.title = "Edit Measurement";
-	    	$scope.state.showMeasurementBox = true;
-
-	    	$scope.state.selectedReminder = {
-	    		variableName : variableName,
-	    		abbreviatedUnitName : unit
-	    	};
-	    	$scope.state.reminderDefaultValue = value;
-	    	$scope.state.slots.epochTime = moment(dateTime).unix();
-	    	$scope.state.measurementDate = moment(dateTime)._d;
-	    	getVariable(variableName);
-	    };
-		
 	    $scope.init = function(){
 			authService.getAccessTokenFromAnySource().then(function(token){
 				getTrackingReminderNotifications();
@@ -240,98 +181,8 @@ angular.module('starter')
 			
 	    };
 
-	    $scope.saveMeasurement = function(){
-
-	    	var dateFromDate = $scope.state.measurementDate;
-	    	var timeFromDate = new Date($scope.state.slots.epochTime * 1000);
-
-	    	dateFromDate.setHours(timeFromDate.getHours());
-	    	dateFromDate.setMinutes(timeFromDate.getMinutes());
-	    	dateFromDate.setSeconds(timeFromDate.getSeconds());
-
-	    	console.log("reported time: ", moment(dateFromDate).unix());
-
-	    	var category = "Emotions";
-
-	    	if($scope.state.selectedReminder.variableCategoryName) {
-	    		category = $scope.state.selectedReminder.variableCategoryName
-	    	}
-	    	if($scope.state.variable.category) {
-	    		category = $scope.state.variable.category
-	    	}
-
-	    	console.log("selected Category: ", category);
-
-	    	var isAvg = true;
-	    	if($scope.state.selectedReminder.combinationOperation) {
-	    		isAvg = $scope.state.selectedReminder.combinationOperation == "MEAN" ? false : true;
-	    	}
-	    	if($scope.state.variable.combinationOperation) {
-	    		isAvg = $scope.state.variable.combinationOperation == "MEAN" ? false : true;
-	    	}
-
-	    	console.log("selected combinationOperation is Average?: ", isAvg);
-	    	
-	    	// populate params
-	    	var params = {
-	    	    variable : $scope.state.selectedReminder.variableName,
-	    	    value : $scope.state.reminderDefaultValue,
-	    	    epoch : moment(dateFromDate).valueOf(),
-	    	    unit : $scope.state.selectedReminder.abbreviatedUnitName,
-	    	    category : category,
-				note : null,
-				isAvg : isAvg
-	    	};
-
-	    	if($scope.state.selectedReminder.abbreviatedUnitName === '/5') 
-	    		params.value = $scope.state.selected1to5Value;
-
-	    	utilsService.startLoading();
-    		var usePromise = true;
-    	    // post measurement
-    	    measurementService.post_tracking_measurement(params.epoch,
-    	        params.variable,
-    	        params.value,
-    	        params.unit,
-    	        params.isAvg,
-    	        params.category,
-				params.note,
-				usePromise)
-    	    .then(function(){
-    	    	if($scope.state.title === "Edit Measurement"){
-    	    		utilsService.stopLoading();
-    	    		utilsService.showAlert('Measurement Updated!').then(function(){
-    	    			$state.go('app.historyAll');
-    	    		});
-    	    	} else {
-    	    		$scope.state.showMeasurementBox = false;
-    	    		$scope.skip($scope.state.selectedReminder);
-    	    		$scope.init();
-    	    	}
-    	    }, function(){
-    	    	utilsService.stopLoading();
-    	    	utilsService.showAlert('Failed to post measurement, Try again!','assertive');
-    	    });
-
-	    };
-
 	    $scope.editMeasurement = function(reminder){
-
-	    	$scope.state.showMeasurementBox = true;
-	    	$scope.state.selectedReminder = reminder;
-	    	$scope.state.reminderDefaultValue = reminder.defaultValue;
-	    	$scope.state.slots.epochTime = moment.utc(reminder.trackingReminderNotificationTime).unix();
-	    	$scope.state.measurementDate = new Date(reminder.trackingReminderNotificationTime);
-
-	    	if($scope.state.selectedReminder.abbreviatedUnitName === '/5'){
-	    		setTimeout(function(){
-	    			jQuery('.primary_outcome_variables .active_primary_outcome_variable').removeClass('active_primary_outcome_variable');
-	    			jQuery('.primary_outcome_variables img:nth-child('+ reminder.defaultValue +')').addClass('active_primary_outcome_variable');
-	    			jQuery('.primary_outcome_variables img:nth-child('+ reminder.defaultValue +')').parent().removeClass('primary_outcome_variable_history').addClass('primary_outcome_variable_history');
-	    		}, 500);
-
-	    		$scope.state.selected1to5Value = reminder.defaultValue;
-	    	}
+			$state.go('app.measurementAdd', {reminder: reminder});
 	    };
 
 	    $scope.editReminderSettings = function(reminder){
@@ -349,7 +200,7 @@ angular.module('starter')
 	    		$scope.init();
 
 	    	}, function(err){
-
+				console.log(err);
 	    		utilsService.stopLoading();
 	    		utilsService.showAlert('Failed to Delete Reminder, Try again!', 'assertive');
 	    	});

@@ -146,10 +146,10 @@ angular.module('starter')
         };
 
         $scope.onMeasurementStart = function(){
-            localStorageService.getItem('allTrackingData', function(allTrackingData){
-                allTrackingData = allTrackingData? JSON.parse(allTrackingData) : [];
+            localStorageService.getItem('allLocalMeasurements', function(allLocalMeasurements){
+                allLocalMeasurements = allLocalMeasurements? JSON.parse(allLocalMeasurements) : [];
 
-                var matched = allTrackingData.filter(function(x){
+                var matched = allLocalMeasurements.filter(function(x){
                     return x.unit === $scope.state.measurement.abbreviatedUnitName;
                 });
 

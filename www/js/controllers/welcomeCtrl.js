@@ -76,13 +76,13 @@ angular.module('starter')
         };
 
         // factorValue is reported
-        $scope.report_primary_outcome_variable = function(factorValue){
+        $scope.recordPrimaryOutcomeVariableMeasurement = function(factorValue){
 
             $scope.reportedVariableValue = config.appSettings.conversion_dataset_reversed[factorValue] ? 
                 config.appSettings.conversion_dataset_reversed[factorValue] : false;
             
             localStorageService.setItem('primaryOutcomeVariableReportedWelcomeScreen',true);
-            localStorageService.setItem('allData', JSON.stringify([]));
+            localStorageService.setItem('allLocalMeasurements', JSON.stringify([]));
             
             // update localstorage
             measurementService.updatePrimaryOutcomeVariableLocally(factorValue).then(function () {

@@ -8,7 +8,7 @@ A configuration object "appSettings" is available in /js/config.js for changing 
 
 3. "primary_outcome_variables_options_labels" : array of primary outcome variable options, the elements of this array will be displayed on the x-axis of the graph
 
-4. "primary_outcome_variable_options" : Array of objects, this will dynamically generate the reporting card with provided options and images.
+4. "primaryOutcomeVariableRatingOptions" : Array of objects, this will dynamically generate the reporting card with provided options and images.
 
 5. "welcome_text" : This text will be displayed on first line of welcome card on welcome screen 
 
@@ -27,7 +27,7 @@ config.appSettings  = {
     app_name : 'MoodiModo', // This will change the name of the app on Top header
     primary_outcome_variable : 'Mood', // Tracking factor that the app will track,
     primary_outcome_variables_options_labels : [ 'Depressed', 'Sad', 'OK', 'Happy', 'Ecstatic' ] , //tracking facotor options, the elements of this array will be displayed on the x-axis of the graph
-    primary_outcome_variable_options : [ //Tracking factor options with images.
+    primaryOutcomeVariableRatingOptions : [ //Tracking factor options with images.
         {
             value: 'face_depressed',
             img: 'img/ic_face_depressed.png'
