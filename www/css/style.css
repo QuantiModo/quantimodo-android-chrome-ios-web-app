@@ -30,6 +30,8 @@ li.item-select {
 	float:left;
 	top:0px;
 	height:80px;
+	/* max-height: 200px; */
+	padding-bottom: 15px;
 }
 
 .heading {
