@@ -11,21 +11,19 @@ angular.module('starter')
             // app wide signal to sibling controllers that the state has changed
             $rootScope.$broadcast('transition');
         }*/
-
-        $scope.not_show_confirmation_positive;
-         localStorageService.getItem('not_show_confirmation_positive',function(val){
-             $scope.not_show_confirmation_positive = val ? JSON.parse(val) : false;
+        
+         localStorageService.getItem('notShowConfirmationPositive',function(val){
+             $scope.notShowConfirmationPositive = val ? JSON.parse(val) : false;
          });
 
-        $scope.not_show_confirmation_positive_down;
-        localStorageService.getItem('not_show_confirmation_positive',function(val){
-            $scope.not_show_confirmation_positive_down = val ? JSON.parse(val) : false;
+        localStorageService.getItem('notShowConfirmationPositive',function(val){
+            $scope.notShowConfirmationPositiveDown = val ? JSON.parse(val) : false;
         });        
 
 		$scope.controller_name = "PositiveCtrl";
 
         $scope.positives = false;
-        $scope.users_positive_factors = false;
+        $scope.usersPositiveFactors = false;
 
 		// show spinner
 		$ionicLoading.show({
@@ -43,22 +41,22 @@ angular.module('starter')
 	        });
 	    };
         
-	    // downvote
-	    $scope.downvote = function(factor){
+	    // downVote
+	    $scope.downVote = function(factor){
 
-            if(!$scope.not_show_confirmation_positive_down){
+            if(!$scope.notShowConfirmationPositiveDown){
                 $ionicPopup.show({
                     title:'Voting thumbs down indicates',
                     subTitle: 'you disagree that '+factor.cause+' increases your '+factor.effect+'.',
                     scope:$scope,
-                    template:'<label><input type="checkbox" ng-model="$parent.not_show_confirmation_positive_down" class="show-again-checkbox">Don\'t show this again</label>',
+                    template:'<label><input type="checkbox" ng-model="$parent.notShowConfirmationPositiveDown" class="show-again-checkbox">Don\'t show this again</label>',
                     buttons:[
                         {text: 'Cancel'},
                         {text: 'Disagree',
                             type: 'button-positive',
                             onTap: function(){
-                                localStorageService.setItem('not_show_confirmation_positive_down',JSON.stringify($scope.not_show_confirmation_positive_down));
-                                downvote(factor);
+                                localStorageService.setItem('notShowConfirmationPositiveDown',JSON.stringify($scope.notShowConfirmationPositiveDown));
+                                downVote(factor);
                             }
                         }
                     ]
@@ -66,13 +64,13 @@ angular.module('starter')
                 });
 
             }else{
-                downvote(factor);
+                downVote(factor);
             }
 
 
         };
 
-        function downvote(factor){
+        function downVote(factor){
             var prevValue = factor.userVote;
             factor.userVote = 0;
             // params
@@ -86,9 +84,9 @@ angular.module('starter')
                 // call vote method
                 correlationService.vote(vote, cause, effect, correlationCoefficient)
                     .then(function(){
-                        $scope.showAlert('Downvoted !');
+                        $scope.showAlert('Down voted!');
                     }, function(){
-                        $scope.showAlert('Downvote Failed !');
+                        $scope.showAlert('Down vote failed !');
                     });
             } else {
                 $ionicLoading.hide();
@@ -101,18 +99,18 @@ angular.module('starter')
 	    $scope.upvote = function(factor){
 
 	    
-            if(!$scope.not_show_confirmation_positive){
+            if(!$scope.notShowConfirmationPositive){
                 $ionicPopup.show({
                     title:'Voting thumbs up indicates',
                     subTitle: 'it seems likely that '+factor.cause+' increases your '+factor.effect+'.',
                     scope:$scope,
-                    template:'<label><input type="checkbox" ng-model="$parent.not_show_confirmation_positive" class="show-again-checkbox">Don\'t show this again</label>',
+                    template:'<label><input type="checkbox" ng-model="$parent.notShowConfirmationPositive" class="show-again-checkbox">Don\'t show this again</label>',
                     buttons:[
                         {text: 'Cancel'},
                         {text: 'Agree',
                             type: 'button-positive',
                             onTap: function(){
-                                localStorageService.setItem('not_show_confirmation_positive',JSON.stringify($scope.not_show_confirmation_positive));
+                                localStorageService.setItem('notShowConfirmationPositive',JSON.stringify($scope.notShowConfirmationPositive));
                                 upvote(factor);
                             }
                         }
@@ -169,7 +167,7 @@ angular.module('starter')
                         $ionicLoading.hide();
 
                         correlationService.getUsersPositiveFactors().then(function(correlationObjects){
-                            $scope.users_positive_factors = correlationObjects;
+                            $scope.usersPositiveFactors = correlationObjects;
                         })
 
 
@@ -185,7 +183,7 @@ angular.module('starter')
 
 	    };
 
-	    $scope.open_store = function(name){
+	    $scope.openStore = function(name){
 
 	    	// make url
 	    	name = name.split(' ').join('+');

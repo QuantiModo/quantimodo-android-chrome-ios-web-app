@@ -8,17 +8,17 @@ ul > li {
 	font-size: 16px;
 }
 
-.primary_outcome_variables {
+.primary-outcome-variable {
 	text-align: center;
 }
 
-.primary_outcome_variables > img {
+.primary-outcome-variable > img {
 	width: 18%;
 	padding:5px;
     max-width: 100px;
 }
 
-.primary_outcome_variable_history > img{
+.primary-outcome-variable-history > img{
     opacity: 0.5;
 }
 
@@ -38,15 +38,15 @@ li.item-select {
 	font-size: 30px;
 }
 
-.from_top {
+.from-top {
 	margin-top: 20px;
 }
 
-.to_right {
+.to-right {
 	padding-left: 100px;
 }
 
-.placeholder_chart {
+.placeholder-chart {
 	height : 240px;
 	width: 320px;
 }
@@ -65,12 +65,12 @@ div.dateDiv > input {
 	font-size: 20px;
 }
 
-.like_dislike_buttons {
+.like-dislike-buttons {
 	display:inline-block;
 	float:right;
 }
 
-.showinline{
+.show-inline{
 	display:inline-block;
 }
 
@@ -80,13 +80,13 @@ div.dateDiv > input {
 	max-width: 130px;
 }
 
-.history_block {
+.history-block {
 	display:inline-block;
 	padding-top: 10px;
 	padding-left: 10px;
 }
 
-.calmicon {
+.calm-icon {
 	font-size: 40px;
 	margin-left: 15px;	
 	display:inline-block;
@@ -133,7 +133,7 @@ iframe {
 	height:auto !important;
 }
 
-.active_primary_outcome_variable {
+.active-primary-outcome-variable {
     opacity: 1.0 !important;
 }
 
@@ -141,14 +141,14 @@ iframe {
 	border-radius: 30px;
 }
 
-.history_edit_card {
+.history-edit-card {
     margin-top: 10%;
     max-width: 500px;
     margin-left: auto;
     margin-right: auto;
 }
 
-.history_edit_card input {
+.history-edit-card input {
 	border: 1px solid rgb(18, 193, 243);
 	width: 100%;
 	padding: 20px;
@@ -199,7 +199,7 @@ label.item.item-input.item-text > input[type="text"] {
     font-size: 15px;
 }
 
-.card_item {
+.card-item {
 	padding-top: 8px;
 	padding-bottom: 8px;
 }
@@ -208,7 +208,7 @@ label.item.item-input.item-text > input[type="text"] {
 	font-weight: bold;
 }
 
-.card_calm {
+.card-calm {
 	margin : 0;
 	padding-bottom: 0;
 	padding-top: 0;
@@ -316,7 +316,7 @@ div.next{
 }
 
 
-div.intro_content{
+div.intro-content{
   margin: -40px 40px 0px 40px;
   position: relative;
   top: 50%;
@@ -327,22 +327,22 @@ div.intro_content{
   -o-transform: translateY(-50%);
 }
 
-p.intro_para {
+p.intro-paragraph {
   font-size: 18px; 
   line-height: initial;
 }
 
-p.intro_para_small {
+p.intro-paragraph-small {
   font-size: 16px; 
   line-height: initial;
 }
 
-p.intro_header {
+p.intro-header {
   font-size:26px; 
   line-height:initial
 }
 
-img.intro_primary_outcome_variable {
+img.intro-primary-outcome-variable {
   margin-left: 3px;
   margin-right: 3px;
 }
@@ -351,7 +351,7 @@ img.intro_primary_outcome_variable {
   margin-right: -100px;
 }
 
-.uptop {
+.up-top {
   margin-top: -8px;
 }
 
@@ -372,16 +372,16 @@ img.intro_primary_outcome_variable {
   left: 45% !important;
 }
 
-#import_iframe {
+#import-iframe {
   padding: 10px;
 }
 
-.card_disabled {
+.card-disabled {
   background-color: lightgray;
   pointer-events : none;
 }
 
-.card_disabled input, .card_disabled button {
+.card-disabled input, .card-disabled button {
   background-color: lightgray !important;
 }
 
@@ -397,29 +397,29 @@ img.intro_primary_outcome_variable {
 }
 
 /* Time picker */
-.ionic_timepicker_popup .heading {
+.ionic-time-picker-popup .heading {
     background-color: #11c1f3 !important;
 }
 
-.ionic_timepicker_popup .button_set {
+.ionic-time-picker-popup .button_set {
     border-color: #0a9ec7 !important;
     background-color: #11c1f3 !important;
     color: #fff !important;
 }
 
-.ionic_timepicker_popup .button_close {
+.ionic-time-picker-popup .button_close {
     border-color: #b2b2b2 !important;
     background-color: #f8f8f8 !important;
     color: #444 !important;
 }
 
-.ionic_timepicker_popup .button_set.active, .ionic_timepicker_popup .button_set.activated {
+.ionic-time-picker-popup .button_set.active, .ionic-time-picker-popup .button_set.activated {
     border-color: #0a9ec7 !important;
     background-color: #0a9ec7 !important;
     box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.1) !important;
 }
 
-.ionic_timepicker_popup .button_close.active, .ionic_timepicker_popup .button_close.activated {
+.ionic-time-picker-popup .button_close.active, .ionic-time-picker-popup .button_close.activated {
     border-color: #a2a2a2 !important;
     background-color: #e5e5e5 !important;
     box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.1) !important;

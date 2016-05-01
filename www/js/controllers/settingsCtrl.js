@@ -15,11 +15,11 @@ angular.module('starter')
         $scope.isChrome = window.chrome ? true : false;
 	    // populate user data
         localStorageService.getItem('user',function(user){
-            $scope.user_name = user ? JSON.parse(user)['displayName'] : "";
+            $scope.userName = user ? JSON.parse(user)['displayName'] : "";
         });
 
         // when login is tapped
-	    $scope.login_from_settings = function(){
+	    $scope.loginFromSettings = function(){
 	        if(ionic.Platform.platforms[0] === "browser"){
 	        	// if on browser
 	            $state.go('app.welcome');
@@ -35,34 +35,34 @@ angular.module('starter')
 
 	    // add other factors to track to a string to show on settings page 
 	    $scope.calculateAddString = function(){
-	        var localAdditonalRatings;
-	        localStorageService.getItem('additional_ratings',function(additional_ratings){
-                localAdditonalRatings = additional_ratings? JSON.parse(additional_ratings): {};
+	        var localAdditionalRatings;
+	        localStorageService.getItem('additionalRatings',function(additionalRatings){
+                localAdditionalRatings = additionalRatings? JSON.parse(additionalRatings): {};
             });
-            var str = "";
-	        for(var rat in localAdditonalRatings){
-	            if(localAdditonalRatings[rat])
-	                str+= rat+",";
+            var string = "";
+	        for(var rat in localAdditionalRatings){
+	            if(localAdditionalRatings[rating])
+	                string += rating + ",";
 	        }
-	        str = str.replace(/,$/, '');
-	        $scope.addString = str;
+			string = string.replace(/,$/, '');
+	        $scope.addString = string;
 	    };
 
 	    // save what other things to track
-	    $scope.save_add_ratings = function(){
-	    	localStorageService.setItem('additional_ratings', JSON.stringify($scope.additional_ratings));
+	    $scope.saveAddRatings = function(){
+	    	localStorageService.setItem('additionalRatings', JSON.stringify($scope.additionalRatings));
 	        
-	        console.log($scope.additional_ratings);
+	        console.log($scope.additionalRatings);
 	        
 	        // hide popover
-	        $scope.additional_rating_popover.hide();
+	        $scope.additionalRatingPopover.hide();
 	        
-	        // calulcate and show the string on settings page
+	        // calculate and show the string on settings page
 	        $scope.calculateAddString();
 	    };
 
 	    // when interval is updated
-	    $scope.save_rating_interval = function(interval){
+	    $scope.saveRatingInterval = function(interval){
 	        //schedule notification
 	        //TODO we can pass callback function to check the status of scheduling
 	        notificationService.scheduleNotification(interval);
@@ -71,41 +71,41 @@ angular.module('starter')
 	        $scope.ratings = interval;
 	        
 	        // hide popover
-	        $scope.rating_popover.hide();
+	        $scope.ratingPopover.hide();
 	    };
 
 
 	    // constructor
 	    $scope.init = function(){
-	         var localAdditonalRatings;
+	         var localAdditionalRatings;
 
-            localStorageService.getItem('additional_ratings',function(additional_ratings){
-                 localAdditonalRatings = additional_ratings? JSON.parse(additional_ratings): {};
+            localStorageService.getItem('additionalRatings',function(additionalRatings){
+                 localAdditionalRatings = additionalRatings? JSON.parse(additionalRatings): {};
 
             });
 
 	        // populate previously selected additional variables
 	        // TODO: Refactor
-	        $scope.additional_ratings = {
-	            Guilty : localAdditonalRatings && localAdditonalRatings.Guilty? localAdditonalRatings.Guilty : false,
-	            Alert : localAdditonalRatings && localAdditonalRatings.Alert? localAdditonalRatings.Alert : false,
-	            Excited : localAdditonalRatings && localAdditonalRatings.Excited? localAdditonalRatings.Excited : false,
-	            Ashamed : localAdditonalRatings && localAdditonalRatings.Ashamed? localAdditonalRatings.Ashamed : false,
-	            Attentive : localAdditonalRatings && localAdditonalRatings.Attentive? localAdditonalRatings.Attentive : false,
-	            Hostile : localAdditonalRatings && localAdditonalRatings.Hostile? localAdditonalRatings.Hostile : false,
-	            Active : localAdditonalRatings && localAdditonalRatings.Active? localAdditonalRatings.Active : false,
-	            Nervous : localAdditonalRatings && localAdditonalRatings.Nervous? localAdditonalRatings.Nervous : false,
-	            Interested : localAdditonalRatings && localAdditonalRatings.Interested? localAdditonalRatings.Interested : false,
-	            Irritable : localAdditonalRatings && localAdditonalRatings.Irritable? localAdditonalRatings.Irritable : false,
-	            Enthusiastic : localAdditonalRatings && localAdditonalRatings.Enthusiastic? localAdditonalRatings.Enthusiastic : false,
-	            Jittery : localAdditonalRatings && localAdditonalRatings.Jittery? localAdditonalRatings.Jittery : false,
-	            Strong : localAdditonalRatings && localAdditonalRatings.Strong? localAdditonalRatings.Strong : false,
-	            Distressed : localAdditonalRatings && localAdditonalRatings.Distressed? localAdditonalRatings.Distressed : false,
-	            Determined : localAdditonalRatings && localAdditonalRatings.Determined? localAdditonalRatings.Determined : false,
-	            Upset : localAdditonalRatings && localAdditonalRatings.Upset? localAdditonalRatings.Upset : false,
-	            Proud : localAdditonalRatings && localAdditonalRatings.Proud? localAdditonalRatings.Proud : false,
-	            Scared : localAdditonalRatings && localAdditonalRatings.Scared? localAdditonalRatings.Scared : false,
-	            Inspired: localAdditonalRatings && localAdditonalRatings.Inspired? localAdditonalRatings.Inspired: false
+	        $scope.additionalRatings = {
+	            Guilty : localAdditionalRatings && localAdditionalRatings.Guilty? localAdditionalRatings.Guilty : false,
+	            Alert : localAdditionalRatings && localAdditionalRatings.Alert? localAdditionalRatings.Alert : false,
+	            Excited : localAdditionalRatings && localAdditionalRatings.Excited? localAdditionalRatings.Excited : false,
+	            Ashamed : localAdditionalRatings && localAdditionalRatings.Ashamed? localAdditionalRatings.Ashamed : false,
+	            Attentive : localAdditionalRatings && localAdditionalRatings.Attentive? localAdditionalRatings.Attentive : false,
+	            Hostile : localAdditionalRatings && localAdditionalRatings.Hostile? localAdditionalRatings.Hostile : false,
+	            Active : localAdditionalRatings && localAdditionalRatings.Active? localAdditionalRatings.Active : false,
+	            Nervous : localAdditionalRatings && localAdditionalRatings.Nervous? localAdditionalRatings.Nervous : false,
+	            Interested : localAdditionalRatings && localAdditionalRatings.Interested? localAdditionalRatings.Interested : false,
+	            Irritable : localAdditionalRatings && localAdditionalRatings.Irritable? localAdditionalRatings.Irritable : false,
+	            Enthusiastic : localAdditionalRatings && localAdditionalRatings.Enthusiastic? localAdditionalRatings.Enthusiastic : false,
+	            Jittery : localAdditionalRatings && localAdditionalRatings.Jittery? localAdditionalRatings.Jittery : false,
+	            Strong : localAdditionalRatings && localAdditionalRatings.Strong? localAdditionalRatings.Strong : false,
+	            Distressed : localAdditionalRatings && localAdditionalRatings.Distressed? localAdditionalRatings.Distressed : false,
+	            Determined : localAdditionalRatings && localAdditionalRatings.Determined? localAdditionalRatings.Determined : false,
+	            Upset : localAdditionalRatings && localAdditionalRatings.Upset? localAdditionalRatings.Upset : false,
+	            Proud : localAdditionalRatings && localAdditionalRatings.Proud? localAdditionalRatings.Proud : false,
+	            Scared : localAdditionalRatings && localAdditionalRatings.Scared? localAdditionalRatings.Scared : false,
+	            Inspired: localAdditionalRatings && localAdditionalRatings.Inspired? localAdditionalRatings.Inspired: false
 	        };
 
 	        // update string
@@ -116,14 +116,14 @@ angular.module('starter')
 	    $ionicPopover.fromTemplateUrl('templates/settings/ask_for_a_rating.html', {
 	    	scope: $scope
 	    }).then(function(popover) {
-	    	$scope.rating_popover = popover;
+	    	$scope.ratingPopover = popover;
 	    });
 
 	    // load additional variables popover
-	    $ionicPopover.fromTemplateUrl('templates/settings/additional_ratings_required.html', {
+	    $ionicPopover.fromTemplateUrl('templates/settings/additionalRatings_required.html', {
 	    	scope: $scope
 	    }).then(function(popover) {
-	    	$scope.additional_rating_popover = popover;
+	    	$scope.additionalRatingPopover = popover;
 	    });
 
 

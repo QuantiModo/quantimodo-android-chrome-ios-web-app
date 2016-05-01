@@ -110,7 +110,7 @@ angular.module('starter')
         };
 
         // when add new variable is tapped
-        $scope.add_variable = function(){
+        $scope.addVariable = function(){
             console.log("add variable");
 
             $scope.state.showAddVariable = true;
@@ -146,10 +146,10 @@ angular.module('starter')
         };
 
         $scope.onMeasurementStart = function(){
-            localStorageService.getItem('allLocalMeasurements', function(allLocalMeasurements){
-                allLocalMeasurements = allLocalMeasurements? JSON.parse(allLocalMeasurements) : [];
+            localStorageService.getItem('allTrackingData', function(allTrackingData){
+                allTrackingData = allTrackingData? JSON.parse(allTrackingData) : [];
 
-                var matched = allLocalMeasurements.filter(function(x){
+                var matched = allTrackingData.filter(function(x){
                     return x.unit === $scope.state.measurement.abbreviatedUnitName;
                 });
 
@@ -189,7 +189,7 @@ angular.module('starter')
                 } else {
 
                     // add variable
-                    measurementService.post_tracking_measurement(
+                    measurementService.postTrackingMeasurement(
                         params.startTime,
                         params.variableName,
                         params.value,
@@ -223,7 +223,7 @@ angular.module('starter')
                     // measurement only
 
                     // post measurement
-                    measurementService.post_tracking_measurement(
+                    measurementService.postTrackingMeasurement(
                         params.startTime,
                         params.variableName,
                         params.value,
@@ -291,7 +291,7 @@ angular.module('starter')
 
         // when a unit is selected
         $scope.unitSelected = function(unit){
-            console.log("selecting_unit",unit);
+            console.log("selecting unit",unit);
 
             // update view model
             $scope.state.measurement.abbreviatedUnitName = unit.abbreviatedName;
@@ -402,14 +402,14 @@ angular.module('starter')
             }
         };
 
-        $scope.selectRatingValue = function($event, val){
+        $scope.selectPrimaryOutcomeVariableValue = function($event, val){
             // remove any previous primary outcome variables if present
-            jQuery('.primary_outcome_variables .active_primary_outcome_variable').removeClass('active_primary_outcome_variable');
+            jQuery('.primary-outcome-variable .active-primary-outcome-variable').removeClass('active-primary-outcome-variable');
 
             // make this primary outcome variable glow visually
-            jQuery($event.target).addClass('active_primary_outcome_variable');
+            jQuery($event.target).addClass('active-primary-outcome-variable');
 
-            jQuery($event.target).parent().removeClass('primary_outcome_variable_history').addClass('primary_outcome_variable_history');
+            jQuery($event.target).parent().removeClass('primary-outcome-variable-history').addClass('primary-outcome-variable-history');
 
             // update view
             $scope.state.measurement.value = val;

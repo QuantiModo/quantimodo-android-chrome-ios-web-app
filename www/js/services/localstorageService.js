@@ -9,52 +9,52 @@ angular.module('starter')
 
         return{
             deleteItem : function(key){
-                var key_identifier = config.appSettings.storage_identifier;
+                var keyIdentifier = config.appSettings.appStorageIdentifier;
                 if (window.chrome && chrome.runtime && chrome.runtime.id) {
 
                     // Code running in a Chrome extension (content script, background page, etc.)
-                    chrome.storage.local.remove(key_identifier+key);
+                    chrome.storage.local.remove(keyIdentifier+key);
 
                 } else {
-                    localStorage.removeItem(key_identifier+key);
+                    localStorage.removeItem(keyIdentifier+key);
                 }
             },
 
             setItem:function(key, value){
-                var key_identifier = config.appSettings.storage_identifier;
+                var keyIdentifier = config.appSettings.appStorageIdentifier;
                 if (window.chrome && chrome.runtime && chrome.runtime.id) {
                     // Code running in a Chrome extension (content script, background page, etc.)
                     var obj = {};
-                    obj[key_identifier+key] = value;
+                    obj[keyIdentifier+key] = value;
                     chrome.storage.local.set(obj);
 
                 } else {
-                    localStorage.setItem(key_identifier+key,value);
+                    localStorage.setItem(keyIdentifier+key,value);
                 }
             },
 
             getItem:function(key,callback){
-                var key_identifier = config.appSettings.storage_identifier;
+                var keyIdentifier = config.appSettings.appStorageIdentifier;
                 if (window.chrome && chrome.runtime && chrome.runtime.id) {
                     // Code running in a Chrome extension (content script, background page, etc.)
-                    chrome.storage.local.get(key_identifier+key,function(val){
-                        callback(val[key_identifier+key]);
+                    chrome.storage.local.get(keyIdentifier+key,function(val){
+                        callback(val[keyIdentifier+key]);
                     });
                 } else {
-                    var val = localStorage.getItem(key_identifier+key);
+                    var val = localStorage.getItem(keyIdentifier+key);
                     callback(val);
                 }
             },
 
             getItemSync: function (key) {
-                var key_identifier = config.appSettings.storage_identifier;
+                var keyIdentifier = config.appSettings.appStorageIdentifier;
                 if (window.chrome && chrome.runtime && chrome.runtime.id) {
                     // Code running in a Chrome extension (content script, background page, etc.)
-                    chrome.storage.local.get(key_identifier+key,function(val){
-                        return val[key_identifier+key];
+                    chrome.storage.local.get(keyIdentifier+key,function(val){
+                        return val[keyIdentifier+key];
                     });
                 } else {
-                    return localStorage.getItem(key_identifier+key);
+                    return localStorage.getItem(keyIdentifier+key);
                 }
             },
 

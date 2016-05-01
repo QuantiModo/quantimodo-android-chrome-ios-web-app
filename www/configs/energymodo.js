@@ -11,23 +11,23 @@ window.config = {
     bugsnag:{
         notifyReleaseStages:['Production','Staging']
     },
-    client_source_name : "EnergyModo " + getPlatform(),
+    clientSourceName : "EnergyModo " + getPlatform(),
     domain : 'app.quantimo.do',
     environment: "Development",
     permissions : ['readmeasurements', 'writemeasurements'],
     port : '4417',
     protocol : 'https',
-    shopping_cart_enabled : true
+    shoppingCarEnabled : true
 };
 
 config.appSettings  = {
-    app_name : 'EnergyModo',
+    appName : 'EnergyModo',
 
     defaultState : 'app.track',
 
-    primary_outcome_variable : 'Energy',
+    primaryOutcomeVariable : 'Energy',
 
-    storage_identifier: 'EnergyModoData*',
+    appStorageIdentifier: 'EnergyModoData*',
       
     primaryOutcomeVariableDetails : {
         id : 108092,
@@ -37,7 +37,7 @@ config.appSettings  = {
         combinationOperation: "MEAN"
     },
 
-    primaryOutcomeVariableOptionsLabels : [
+    primaryOutcomeVariableRatingOptionLabels : [
         '1', 
         '2', 
         '3', 
@@ -68,19 +68,19 @@ config.appSettings  = {
         }
     ],
 
-    welcome_text:"Let's start off by reporting your Energy on the card below",
-    tracking_question:"How is your energy level right now?",
+    welcomeText:"Let's start off by reporting your Energy on the card below",
+    primaryOutcomeVariableTrackingQuestion:"How is your energy level right now?",
     primaryOutcomeVariableAverageText:"Your average energy level is ",
-    notification_image : "file://img/icon_128.png",
-    notification_text : "Time to Track",
-    conversion_dataset: {
+    mobileNotificationImage : "file://img/icon_128.png",
+    mobileNotificationText : "Time to Track",
+    primaryOutcomeValueConversionDataSet: {
         "1": "1",
         "2": "2",
         "3": "3",
         "4": "4",
         "5": "5" 
     },
-    conversion_dataset_reversed : {
+    primaryOutcomeValueConversionDataSetReversed : {
         "1" : 1,
         "2" : 2,
         "3" : 3,
@@ -101,7 +101,7 @@ config.appSettings  = {
                 firstP : {
                     visible : true,
                     content : 'Welcome to EnergyModo',
-                    classes : 'intro_header calm'
+                    classes : 'intro-header positive'
                 }, 
                 logoDiv : {
                     visible : true,
@@ -109,8 +109,8 @@ config.appSettings  = {
                 },
                 finalP : {
                     visible : true,
-                    content : 'EnergyModo allows you track your <span class="calm">Energy</span> and identify the hidden factors which may most influence it.',
-                    classes : 'intro_para',
+                    content : 'EnergyModo allows you track your <span class="positive">Energy</span> and identify the hidden factors which may most influence it.',
+                    classes : 'intro-paragraph',
                     buttonBarVisible : true   
                 }
             }
@@ -127,8 +127,8 @@ config.appSettings  = {
                 showFirstBr : true,   
                 finalP: {
                     visible : true,
-                    content : 'Go to the <span class="calm">Track Energy</span> page to report your Energy!',
-                    classes : 'intro_para',
+                    content : 'Go to the <span class="positive">Track Energy</span> page to report your Energy!',
+                    classes : 'intro-paragraph',
                     buttonBarVisible : true
                 } 
             }
@@ -145,7 +145,7 @@ config.appSettings  = {
                 firstP : {
                     visible : true,
                     content : 'Track Energy',
-                    classes : 'intro_header calm'
+                    classes : 'intro-header positive'
                 },                 
                 logoDiv : {
                     visible : true,
@@ -154,8 +154,8 @@ config.appSettings  = {
                 showSecondBr : true,
                 finalP: {
                     visible : true,
-                    content : 'On the <span class="calm">Track Energy</span> page, you can view your <span class="calm">average Energy</span> as well as charts illustrating how it changes over time.',
-                    classes : 'intro_para_small',
+                    content : 'On the <span class="positive">Track Energy</span> page, you can view your <span class="positive">average Energy</span> as well as charts illustrating how it changes over time.',
+                    classes : 'intro-paragraph-small',
                     buttonBarVisible : true
                 }
             }
@@ -171,7 +171,7 @@ config.appSettings  = {
                 firstP : {
                     visible : true,
                     content : 'History',
-                    classes : 'intro_header calm'
+                    classes : 'intro-header positive'
                 }, 
                 showFirstBr : true,
                 logoDiv : {
@@ -181,8 +181,8 @@ config.appSettings  = {
                 showSecondBr : true,
                 finalP: {
                     visible : true,
-                    content : 'You can see and edit your past Energy ratings and notes by opening the <span class="calm">History</span> page.',
-                    classes : 'intro_para',
+                    content : 'You can see and edit your past Energy ratings and notes by opening the <span class="positive">History</span> page.',
+                    classes : 'intro-paragraph',
                     buttonBarVisible : true
                 }
             }
@@ -198,7 +198,7 @@ config.appSettings  = {
                 firstP : {
                     visible : true,
                     content : 'Add a Note',
-                    classes : 'intro_header calm'
+                    classes : 'intro-header positive'
                 }, 
                 logoDiv : {
                     visible : true,
@@ -206,8 +206,8 @@ config.appSettings  = {
                 },
                 finalP: {
                     visible : true,
-                    content : 'Add a note by tapping on a Energy rating in the <span class="calm">History</span> page. You can also <span class="calm">Edit</span> your Energy there too.',
-                    classes : 'intro_para',
+                    content : 'Add a note by tapping on a Energy rating in the <span class="positive">History</span> page. You can also <span class="positive">Edit</span> your Energy there too.',
+                    classes : 'intro-paragraph',
                     buttonBarVisible : true
                 }
             }
@@ -223,7 +223,7 @@ config.appSettings  = {
                 firstP : {
                     visible : true,
                     content : 'Track Foods',
-                    classes : 'intro_header calm'
+                    classes : 'intro-header positive'
                 }, 
                 logoDiv : {
                     visible : true,
@@ -231,8 +231,8 @@ config.appSettings  = {
                 },
                 finalP: {
                     visible : true,
-                    content : 'Track your diet on the <span class="calm">Track Foods</span> page. You can also <span class="calm">Add a new Food Variable</span> if you don\'t find the meal you looked for in the search results.',
-                    classes : 'intro_para_small',
+                    content : 'Track your diet on the <span class="positive">Track Foods</span> page. You can also <span class="positive">Add a new Food Variable</span> if you don\'t find the meal you looked for in the search results.',
+                    classes : 'intro-paragraph-small',
                     buttonBarVisible : true
                 }
             }
@@ -249,7 +249,7 @@ config.appSettings  = {
                 firstP : {
                     visible : true,
                     content : 'Track Symptoms',
-                    classes : 'intro_header calm'
+                    classes : 'intro-header positive'
                 }, 
                 
                 logoDiv : {
@@ -259,8 +259,8 @@ config.appSettings  = {
                 
                 finalP: {
                     visible : true,
-                    content : 'Track any symptom on the <span class="calm">Track Symptoms</span> page. You can also <span class="calm">Add a new Symptom</span> if you don\'t find the symptom you looked for in the search results.',
-                    classes : 'intro_para_small',
+                    content : 'Track any symptom on the <span class="positive">Track Symptoms</span> page. You can also <span class="positive">Add a new Symptom</span> if you don\'t find the symptom you looked for in the search results.',
+                    classes : 'intro-paragraph-small',
                     buttonBarVisible : true
                 }   
             }
@@ -276,7 +276,7 @@ config.appSettings  = {
                 firstP : {
                     visible : true,
                     content : 'Track Treatments',
-                    classes : 'intro_header calm'
+                    classes : 'intro-header positive'
                 },                 
                 logoDiv : {
                     visible : true,
@@ -284,8 +284,8 @@ config.appSettings  = {
                 },
                 finalP: {
                     visible : true,
-                    content : 'Track your treatments on the <span class="calm">Track Treatments</span> page. You can also <span class="calm">Add a new Treatment</span> if you don\'t find the treatment you looked for in the search results.',
-                    classes : 'intro_para_small',
+                    content : 'Track your treatments on the <span class="positive">Track Treatments</span> page. You can also <span class="positive">Add a new Treatment</span> if you don\'t find the treatment you looked for in the search results.',
+                    classes : 'intro-paragraph-small',
                     buttonBarVisible : true
                 }
             }
@@ -302,7 +302,7 @@ config.appSettings  = {
                 firstP : {
                     visible : true,
                     content : 'Positive Predictors',
-                    classes : 'intro_header calm'
+                    classes : 'intro-header positive'
                 }, 
                 
                 logoDiv : {
@@ -312,8 +312,8 @@ config.appSettings  = {
                 
                 finalP: {
                     visible : true,
-                    content : 'Positive Predictors are the factors most predictive of <span class="calm">IMPROVING</span> Energy for the average QuantiModo user.',
-                    classes : 'intro_para_small',
+                    content : 'Positive Predictors are the factors most predictive of <span class="positive">IMPROVING</span> Energy for the average QuantiModo user.',
+                    classes : 'intro-paragraph-small',
                     buttonBarVisible : true
                 }
             }
@@ -330,7 +330,7 @@ config.appSettings  = {
                 firstP : {
                     visible : true,
                     content : 'Negative Predictors',
-                    classes : 'intro_header calm'
+                    classes : 'intro-header positive'
                 },
                 
                 logoDiv : {
@@ -340,8 +340,8 @@ config.appSettings  = {
                 
                 finalP: {
                     visible : true,
-                    content : 'Negative Predictors are the factors most predictive of <span class="calm">DECREASING</span> Energy for the average QuantiModo user.',
-                    classes : 'intro_para_small',
+                    content : 'Negative Predictors are the factors most predictive of <span class="positive">DECREASING</span> Energy for the average QuantiModo user.',
+                    classes : 'intro-paragraph-small',
                     buttonBarVisible : true
                 }  
             }
@@ -358,7 +358,7 @@ config.appSettings  = {
                 firstP : {
                     visible : true,
                     content : 'We are feeling ecstatic that you\'re helping us derive a mathematical equation for happiness!',
-                    classes : 'intro_para calm'
+                    classes : 'intro-paragraph positive'
                 }, 
                 
                 logoDiv : {
@@ -368,21 +368,21 @@ config.appSettings  = {
                 finalP: {
                     visible : true,
                     content : 'Now start tracking and optimize your life!',
-                    classes : 'intro_para_small',
+                    classes : 'intro-paragraph-small',
                     buttonBarVisible : true
                 }
             }
         }
     ],
 
-    help_popup_messages : {
-        "#/app/track": 'Here, you can view your <span class="calm">average Energy</span> as well as charts illustrating how it changes over time',
+    helpPopupMessages : {
+        "#/app/track": 'Here, you can view your <span class="positive">average Energy</span> as well as charts illustrating how it changes over time',
         "#/app/history": 'You can see and edit your past Energy ratings and notes by tapping on any item in the list.  <br/> <br/>You can also Add a note by tapping on a Energy rating in the list.',
-        "#/app/track_factors_category/Foods": 'You can track your diet on this page. You can also <span class="calm">Add a new Food Variable</span> if you do not find the meal you looked for in the search results.',
-        "#/app/track_factors_category/Symptoms": 'You can track any symptom on this page. You can also <span class="calm">Add a new Symptom</span> if you don\'t find the symptom you looked for in the search results.',
-        "#/app/track_factors_category/Treatments": 'You can track any treatment on this page. You can also <span class="calm">Add a new Treatment</span> if you don\'t find the treatment you looked for in the search results.',
-        "#/app/positive": 'Positive Predictors are the factors most predictive of <span class="calm">IMPROVING</span> Energy for the average QuantiModo user.',
-        "#/app/negative": 'Negative Predictors are the factors most predictive of <span class="calm">DECREASING</span>Energy for the average QuantiModo user.'
+        "#/app/track_factors_category/Foods": 'You can track your diet on this page. You can also <span class="positive">Add a new Food Variable</span> if you do not find the meal you looked for in the search results.',
+        "#/app/track_factors_category/Symptoms": 'You can track any symptom on this page. You can also <span class="positive">Add a new Symptom</span> if you don\'t find the symptom you looked for in the search results.',
+        "#/app/track_factors_category/Treatments": 'You can track any treatment on this page. You can also <span class="positive">Add a new Treatment</span> if you don\'t find the treatment you looked for in the search results.',
+        "#/app/positive": 'Positive Predictors are the factors most predictive of <span class="positive">IMPROVING</span> Energy for the average QuantiModo user.',
+        "#/app/negative": 'Negative Predictors are the factors most predictive of <span class="positive">DECREASING</span>Energy for the average QuantiModo user.'
     },
 
     remindersInbox : {
@@ -580,9 +580,9 @@ config.appSettings  = {
 };
 
 config.getPrimaryOutcomeVariableOptionLabels = function(shouldShowNumbers){
-    if(shouldShowNumbers || !config.appSettings.primaryOutcomeVariableOptionsLabels){
+    if(shouldShowNumbers || !config.appSettings.primaryOutcomeVariableRatingOptionLabels){
         return ['1',  '2',  '3',  '4', '5'];
-    } else return config.appSettings.primaryOutcomeVariableOptionsLabels;
+    } else return config.appSettings.primaryOutcomeVariableRatingOptionLabels;
 };
 
 config.getPrimaryOutcomeVariableOptions = function(shouldShowNumbers){
@@ -621,12 +621,12 @@ config.getImageForPrimaryOutcomeVariableByValue = function(val){
 };
 
 config.getImageForPrimaryOutcomeVariableByNumber = function(num){
-    var primary_outcome_variable = this.appSettings.conversion_dataset[num]? this.appSettings.conversion_dataset[num] : false;
-    return primary_outcome_variable? config.getImageForPrimaryOutcomeVariableByValue(primary_outcome_variable) : false;
+    var primaryOutcomeVariable = this.appSettings.primaryOutcomeValueConversionDataSet[num]? this.appSettings.primaryOutcomeValueConversionDataSet[num] : false;
+    return primaryOutcomeVariable? config.getImageForPrimaryOutcomeVariableByValue(primaryOutcomeVariable) : false;
 };
 
 config.getPrimaryOutcomeVariableByNumber = function(num){
-    return this.appSettings.conversion_dataset[num]? this.appSettings.conversion_dataset[num] : false;
+    return this.appSettings.primaryOutcomeValueConversionDataSet[num]? this.appSettings.primaryOutcomeValueConversionDataSet[num] : false;
 };
 
 config.getEnv = function(){
@@ -735,62 +735,62 @@ config.get = function(key){
 };
 
 
-window.notification_callback = function(reported_variable, reporting_time){
-    var report_time  = Math.floor(reporting_time/1000) || Math.floor(new Date().getTime()/1000);
-    var key_identifier = config.appSettings.storage_identifier;
+window.notification_callback = function(reportedVariable, reportingTime){
+    var reportTime  = Math.floor(reportingTime/1000) || Math.floor(new Date().getTime()/1000);
+    var keyIdentifier = config.appSettings.appStorageIdentifier;
     var val = false;
 
     // convert values
-    if(reported_variable === "repeat_rating"){
-        val = localStorage[key_identifier+'lastReportedPrimaryOutcomeVariableValue']?
-        JSON.parse(localStorage[key_identifier+'lastReportedPrimaryOutcomeVariableValue']) : false;
+    if(reportedVariable === "repeat_rating"){
+        val = localStorage[keyIdentifier+'lastReportedPrimaryOutcomeVariableValue']?
+        JSON.parse(localStorage[keyIdentifier+'lastReportedPrimaryOutcomeVariableValue']) : false;
     } else {
-        val = config.appSettings.conversion_dataset_reversed[reported_variable]?
-        config.appSettings.conversion_dataset_reversed[reported_variable] : false;
+        val = config.appSettings.primaryOutcomeValueConversionDataSetReversed[reportedVariable]?
+        config.appSettings.primaryOutcomeValueConversionDataSetReversed[reportedVariable] : false;
     }
     
     // report
     if(val){
         // update localstorage
-        localStorage[key_identifier+'lastReportedPrimaryOutcomeVariableValue'] = val;
+        localStorage[keyIdentifier+'lastReportedPrimaryOutcomeVariableValue'] = val;
         
-        var allLocalMeasurementsObject = {
+        var allDataObject = {
             storedValue : val,
             value : val,
-            timestamp : report_time,
+            timestamp : reportTime,
             humanTime : {
                 date : new Date().toISOString()
             }
         };
 
         // update full data
-        if(localStorage[key_identifier+'allLocalMeasurements']){
-            var allLocalMeasurements = JSON.parse(localStorage[key_identifier+'allLocalMeasurements']);
-            allLocalMeasurements.push(allLocalMeasurementsObject);
-            localStorage[key_identifier+'allLocalMeasurements'] = JSON.stringify(allLocalMeasurements);
+        if(localStorage[keyIdentifier+'allData']){
+            var allData = JSON.parse(localStorage[keyIdentifier+'allData']);
+            allData.push(allDataObject);
+            localStorage[keyIdentifier+'allData'] = JSON.stringify(allData);
         }
 
         // update Bar chart data
-        if(localStorage[key_identifier+'barChartData']){
-            var barChartData = JSON.parse(localStorage[key_identifier+'barChartData']);
+        if(localStorage[keyIdentifier+'barChartData']){
+            var barChartData = JSON.parse(localStorage[keyIdentifier+'barChartData']);
             barChartData[val-1]++;
-            localStorage[key_identifier+'barChartData'] = JSON.stringify(barChartData);
+            localStorage[keyIdentifier+'barChartData'] = JSON.stringify(barChartData);
         }
 
         // update Line chart data
-        if(localStorage[key_identifier+'lineChartData']){
-            var lineChartData = JSON.parse(localStorage[key_identifier+'lineChartData']);
-            lineChartData.push([report_time, val]);
-            localStorage[key_identifier+'lineChartData'] = JSON.stringify(lineChartData);
+        if(localStorage[keyIdentifier+'lineChartData']){
+            var lineChartData = JSON.parse(localStorage[keyIdentifier+'lineChartData']);
+            lineChartData.push([reportTime, val]);
+            localStorage[keyIdentifier+'lineChartData'] = JSON.stringify(lineChartData);
         }
 
         //update measurementsQueue
-        if(!localStorage[key_identifier+'measurementsQueue']){
-            localStorage[key_identifier+'measurementsQueue'] = '[]';
+        if(!localStorage[keyIdentifier+'measurementsQueue']){
+            localStorage[keyIdentifier+'measurementsQueue'] = '[]';
         } else {
-            var measurementsQueue = JSON.parse(localStorage[key_identifier+'measurementsQueue']);
-            measurementsQueue.push(allLocalMeasurementsObject);
-            localStorage[key_identifier+'measurementsQueue'] = JSON.stringify(measurementsQueue);
+            var measurementsQueue = JSON.parse(localStorage[keyIdentifier+'measurementsQueue']);
+            measurementsQueue.push(allDataObject);
+            localStorage[keyIdentifier+'measurementsQueue'] = JSON.stringify(measurementsQueue);
         }
     }
 };

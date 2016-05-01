@@ -22,9 +22,9 @@ angular.module('starter')
                         cordova.plugins.notification.local.cancelAll(function(){
                             if(interval!="never"){
                                 cordova.plugins.notification.local.schedule({
-                                    text: config.appSettings.notification_text,
+                                    text: config.appSettings.mobileNotificationText,
                                     every: intervals[interval],
-                                    icon: config.appSettings.notification_image,
+                                    icon: config.appSettings.mobileNotificationImage,
                                     id : 1
                                 }, function(){
                                     console.log('notification scheduled');
@@ -37,9 +37,9 @@ angular.module('starter')
                         cordova.plugins.notification.local.cancelAll(function(){
                             if(interval!="never"){
                                 cordova.plugins.notification.local.schedule({
-                                    text: config.appSettings.notification_text,
+                                    text: config.appSettings.mobileNotificationText,
                                     every: interval,
-                                    icon: config.appSettings.notification_image,
+                                    icon: config.appSettings.mobileNotificationImage,
                                     id : 1
                                 }, function(){
                                     console.log('notification scheduled');

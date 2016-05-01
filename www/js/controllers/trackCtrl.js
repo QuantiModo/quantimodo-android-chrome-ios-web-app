@@ -37,8 +37,8 @@ angular.module('starter')
         };
 
         // Update Trackng Factor images via an integer
-        var updatePrimaryOutcomeVariableView = function(primary_outcome_variable){
-            var val = config.appSettings.conversion_dataset[primary_outcome_variable];
+        var updatePrimaryOutcomeVariableView = function(primaryOutcomeVariable){
+            var val = config.appSettings.primaryOutcomeValueConversionDataSet[primaryOutcomeVariable];
             if(val){
                 $scope.averagePrimaryOutcomeVariableImage = config.getImageForPrimaryOutcomeVariableByValue(val);
                 $scope.averagePrimaryOutcomeVariableValue = val;

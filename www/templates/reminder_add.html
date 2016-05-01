@@ -34,7 +34,7 @@
             </ion-list>
         	<a class="item" ng-repeat="result in variableSearchResults | unique:'id' " ng-click="onVariableSelect(result)">{{result.name}}</a>
             <ion-list ng-show="state.showAddVariableButton">
-                <ion-item style="border-top: 1px solid rgb(221, 221, 221);" ng-click="add_variable()">
+                <ion-item style="border-top: 1px solid rgb(221, 221, 221);" ng-click="addVariable()">
                     {{state.variableCategoryObject.addNewVariableButtonText}}
                 </ion-item>
             </ion-list>
@@ -90,7 +90,7 @@
 <!--
             <div class="row labeled-control">
         		<div id="rem-set-left" class="col">
-        			<input type="number" style="width:100%;text-align:right;" placeholder={{state.variableCategoryObject.defaultValuePlaceholderText}} ng-model="state.defaultValue" class="uptop">
+        			<input type="number" style="width:100%;text-align:right;" placeholder={{state.variableCategoryObject.defaultValuePlaceholderText}} ng-model="state.defaultValue" class="up-top">
         		</div>
         		<div id="rem-set-right" class="col col-r">
         			<span>
@@ -107,7 +107,7 @@
                         </span>
                 </div>
                 <div class="col">
-                    <input type="text" ng-model="state.defaultValue" id="defaultValue" placeholder={{state.variableCategoryObject.defaultValuePlaceholderText}} class="uptop">
+                    <input type="text" ng-model="state.defaultValue" id="defaultValue" placeholder={{state.variableCategoryObject.defaultValuePlaceholderText}} class="up-top">
                 </div>
             </div>
 
@@ -117,7 +117,7 @@
                     <span class="input-label">Unit</span>
                 </div>
                 <div class="col">
-                    <div class="row uptop" style="padding-left:0px;">
+                    <div class="row up-top" style="padding-left:0px;">
                         <div class="col" style="padding-top:5px;">
 
                             <!-- Default to most common unit when tracking measurement, and always keep it editable-->
@@ -166,7 +166,7 @@
                         <div class="input-label" >
                             Reminder time
                         </div>
-                        <button class="button button-block uptop"
+                        <button class="button button-block up-top"
                                 style="text-align:left;font-size:14px;border:none;color:black;background-color: white;margin-bottom: 0px;margin-top: 0px;padding-left: 0px;"
                                 ng-click="openReminderStartTimePicker()">
                             {{state.reminderStartTimeEpochTime | fromUnixTimestampToLocalTimeOfDay}}
