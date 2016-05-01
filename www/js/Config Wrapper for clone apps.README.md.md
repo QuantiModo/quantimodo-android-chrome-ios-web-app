@@ -52,7 +52,7 @@ config.appSettings  = {
 
     ],
     welcomeText:"Let's start off by reporting your first mood on the card below", // This text will be displayed on first line of welcome card on welcome screen
-    primaryOutcomeVariableTrackingQuestion:"How are you feeling right now?", // will be displayed above primary outcome variable reporting card
+    primaryOutcomeVariableTrackingQuestion:"How are you?", // will be displayed above primary outcome variable reporting card
     primaryOutcomeVariableAverageText:"Your average mood is "
 
 }

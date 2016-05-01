@@ -77,7 +77,7 @@ config.appSettings  = {
     ],
 
     welcomeText:"Let's start off by reporting your first mood on the card below",
-    primaryOutcomeVariableTrackingQuestion:"How are you feeling right now?",
+    primaryOutcomeVariableTrackingQuestion:"How are you?",
     primaryOutcomeVariableAverageText:"Your average mood is ",
     mobileNotificationImage : "file://img/icon_128.png",
     mobileNotificationText : "Time to Track",

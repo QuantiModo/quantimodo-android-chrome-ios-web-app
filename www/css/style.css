@@ -8,11 +8,11 @@ ul > li {
 	font-size: 16px;
 }
 
-.primary-outcome-variable {
+.primary-outcome-variable-rating-buttons {
 	text-align: center;
 }
 
-.primary-outcome-variable > img {
+.primary-outcome-variable-rating-buttons > img {
 	width: 18%;
 	padding:5px;
     max-width: 100px;
@@ -133,7 +133,7 @@ iframe {
 	height:auto !important;
 }
 
-.active-primary-outcome-variable {
+.active-primary-outcome-variable-rating-buttons {
     opacity: 1.0 !important;
 }
 
@@ -342,7 +342,7 @@ p.intro-header {
   line-height:initial
 }
 
-img.intro-primary-outcome-variable {
+img.intro-primary-outcome-variable-rating-buttons {
   margin-left: 3px;
   margin-right: 3px;
 }
