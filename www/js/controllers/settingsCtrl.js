@@ -120,7 +120,7 @@ angular.module('starter')
 	    });
 
 	    // load additional variables popover
-	    $ionicPopover.fromTemplateUrl('templates/settings/additionalRatings_required.html', {
+	    $ionicPopover.fromTemplateUrl('templates/settings/additional_ratings_required.html', {
 	    	scope: $scope
 	    }).then(function(popover) {
 	    	$scope.additionalRatingPopover = popover;
