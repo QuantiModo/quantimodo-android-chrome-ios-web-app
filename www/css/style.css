@@ -193,6 +193,8 @@ label.item.item-input.item-text > input[type="text"] {
     border-color: #3369E8 !important;
     background-color: #3369E8 !important;
     color: #fff;
+    max-width: 150px;
+    margin: auto;
 }
 
 .button.button-assertive {
