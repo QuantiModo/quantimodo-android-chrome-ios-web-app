@@ -17,7 +17,7 @@ angular.module('starter')
 	    };
 
 	    // Hide spinner
-	    window.closeloading = function(){
+	    window.closeLoading = function(){
 	        $ionicLoading.hide();
 	    };
 	    
@@ -25,65 +25,65 @@ angular.module('starter')
 	    $ionicPopover.fromTemplateUrl('templates/history_popup.html', {
 	        scope: $scope
 	    }).then(function(popover) {
-	        $scope.history_popover = popover;
+	        $scope.historyPopover = popover;
 	    });
 
 	    // open popover when a history item is tapped
-	    $scope.open_popover = function(history){
+	    $scope.openPopover = function(history){
 	        
 	        // update scope
-	        $scope.selected_item  = history;
+	        $scope.selectedItem  = history;
 	        
 	        // open popover
-	        $scope.history_popover.show();
+	        $scope.historyPopover.show();
 	        
-	        $scope.selected_primary_outcome_variable = history.value;
+	        $scope.selectedPrimaryOutcomeVariableValue = history.value;
 
 	        // remove any previous factors if present
-	        jQuery('.primary_outcome_variables .active_primary_outcome_variable').removeClass('active_primary_outcome_variable');
+	        jQuery('.primary-outcome-variable .active-primary-outcome-variable').removeClass('active-primary-outcome-variable');
 	        
 	        // highlight the appropriate factor for the history item.
-	        jQuery('.'+config.appSettings.conversion_dataset[Math.ceil(history.value)]).addClass('active_primary_outcome_variable');
+	        jQuery('.'+config.appSettings.primaryOutcomeValueConversionDataSet[Math.ceil(history.value)]).addClass('active-primary-outcome-variable');
 	    };
 
 	    // when a value is edited
-	    $scope.save_value = function(){
+	    $scope.saveValue = function(){
 
-			var note = $scope.selected_item.note? $scope.selected_item.note : null;
+			var note = $scope.selectedItem.note? $scope.selectedItem.note : null;
 
 	        // update on the server
-	        measurementService.editPrimaryOutcomeVariable($scope.selected_item.timestamp, $scope.selected_primary_outcome_variable, note)
+	        measurementService.editPrimaryOutcomeVariable($scope.selectedItem.timestamp, $scope.selectedPrimaryOutcomeVariableValue, note)
 	        .then(function(){
 	        	// do nothing user would have safely navigated away
 	        	console.log("edit complete");
 	        }, function(){
 
 	        	// show alert
-	            $scope.showAlert('Failed to edit primary_outcome_variable !');
+	            $scope.showAlert('Failed to edit primaryOutcomeVariable !');
 	        });
 	        
 	        // update the main list for the recently updated value
-	        $scope.selected_item.value = $scope.selected_primary_outcome_variable;
+	        $scope.selectedItem.value = $scope.selectedPrimaryOutcomeVariableValue;
 	        
 	        // hide the popover
-	        $scope.history_popover.hide();
+	        $scope.historyPopover.hide();
 	    };
 
 	    // manually close the popover
-	    $scope.close_popover = function(){
-	        $scope.history_popover.hide();
+	    $scope.closePopover = function(){
+	        $scope.historyPopover.hide();
 	    };
 
 	    // select a mod manually on popover
-	    $scope.selectRatingValue = function($event, option){
+	    $scope.selectPrimaryOutcomeVariableValue = function($event, option){
 	    	// remove any previous primary outcome variables if present
-	        jQuery('.primary_outcome_variables .active_primary_outcome_variable').removeClass('active_primary_outcome_variable');
+	        jQuery('.primary-outcome-variable .active-primary-outcome-variable').removeClass('active-primary-outcome-variable');
 	        
 	        // make this primary outcome variable glow visually
-	        jQuery($event.target).addClass('active_primary_outcome_variable');
+	        jQuery($event.target).addClass('active-primary-outcome-variable');
 	        
 	        // update view
-	        $scope.selected_primary_outcome_variable = config.appSettings.conversion_dataset_reversed[option.value];
+	        $scope.selectedPrimaryOutcomeVariableValue = config.appSettings.primaryOutcomeValueConversionDataSetReversed[option.value];
 
 	    };
 
@@ -100,8 +100,8 @@ angular.module('starter')
 	        // get the history data
 
             var history;
-            localStorageService.getItem('allLocalMeasurements',function(allLocalMeasurements){
-                history = allLocalMeasurements? JSON.parse(allLocalMeasurements) : [];
+            localStorageService.getItem('allData',function(allData){
+                history = allData? JSON.parse(allData) : [];
                 $scope.history = history.sort(function(a,b){
                     if(a.timestamp < b.timestamp){
                         return 1;}

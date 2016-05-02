@@ -6,8 +6,8 @@ angular.module('starter')
     .factory('correlationService', function(QuantiModo,$q) {
         var positive_factors = [];
         var negative_factors = [];
-        var users_positive_factors = [];
-        var users_negative_factors = [];
+        var usersPositiveFactors = [];
+        var usersNegativeFactors = [];
         return {
             // get Positive correlationObjects
             getCauses : function(){
@@ -38,10 +38,10 @@ angular.module('starter')
                     // populate positives & Negatives
                     for(var i in correlationObjects){
                         if(correlationObjects[i].correlationCoefficient > 0){
-                            users_positive_factors.push(correlationObjects[i]);
+                            usersPositiveFactors.push(correlationObjects[i]);
                         }
                         else if(correlationObjects[i].correlationCoefficient < 0){
-                            users_negative_factors.push(correlationObjects[i]);
+                            usersNegativeFactors.push(correlationObjects[i]);
                         }
                     }
 
@@ -66,12 +66,12 @@ angular.module('starter')
 
             getUsersPositiveFactors: function(){
                 var deferred = $q.defer();
-                if(users_positive_factors.length===0){
+                if(usersPositiveFactors.length===0){
                     this.getUserCauses().then(function () {
-                        deferred.resolve(users_positive_factors);
+                        deferred.resolve(usersPositiveFactors);
                     });
                 }else{
-                    deferred.resolve(users_positive_factors);
+                    deferred.resolve(usersPositiveFactors);
                 }
                 return deferred.promise;
             },
@@ -90,12 +90,12 @@ angular.module('starter')
 
             getUsersNegativeFactors: function(){
                 var deferred = $q.defer();
-                if(users_negative_factors.length===0){
+                if(usersNegativeFactors.length===0){
                     this.getUserCauses().then(function () {
-                        deferred.resolve(users_negative_factors);
+                        deferred.resolve(usersNegativeFactors);
                     });
                 }else{
-                    deferred.resolve(users_negative_factors);
+                    deferred.resolve(usersNegativeFactors);
                 }
                 return deferred.promise;
             },

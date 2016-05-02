@@ -36,29 +36,25 @@ angular.module('starter')
             });
         };
 
-        // Update Trackng Factor images via an integer
-        var updatePrimaryOutcomeVariableView = function(primary_outcome_variable){
-            var val = config.appSettings.conversion_dataset[primary_outcome_variable];
-            if(val){
-                $scope.averagePrimaryOutcomeVariableImage = config.getImageForPrimaryOutcomeVariableByValue(val);
-                $scope.averagePrimaryOutcomeVariableValue = val;
+        // Update primary outcome variable images via an integer
+        var updateAveragePrimaryOutcomeRatingView = function(averagePrimaryOutcomeVariableRating){
+            var averageRatingValue = config.appSettings.primaryOutcomeValueConversionDataSet[averagePrimaryOutcomeVariableRating];
+            if(averageRatingValue){
+                $scope.averagePrimaryOutcomeVariableImage = config.getImageForPrimaryOutcomeVariableByValue(averageRatingValue);
+                $scope.averagePrimaryOutcomeVariableValue = averageRatingValue;
+                console.log("updated averagePrimaryOutcomeVariableRating view");
             }
-            console.log("updated");
-            
-            // if not in the middle of digest cycle
-            if(!$scope.$$phase) {
 
-                // redraw everything
+            if(!$scope.$$phase) {
+                console.log("Not in the middle of digest cycle, so redrawing everything...");
                 $scope.$apply();
             }
         };
 
-        // re/draw bar chart
+
         var updateBarChart = function(arr){
-            
-            // flag to recreate barchart
             $scope.redrawBarChart = false;
-            console.log("updatedBar");
+            console.log("re-drawing bar chart");
 
             console.log("load config object chartService.getBarChartStub");
             $scope.barChartConfig = chartService.getBarChartStub(arr);
@@ -68,15 +64,11 @@ angular.module('starter')
 
         };
 
-        // re/draw line chart
-        var updateLineChart = function(arr){
+        var updateLineChart = function(lineChartData){
 
-            // flag to recreate linechart
             $scope.redrawLineChart = false;
-            console.log("updatedLine");
-
-            // load config object
-            $scope.lineChartConfig = chartService.getLineChartStub(arr);
+            console.log("Configuring line chart...");
+            $scope.lineChartConfig = chartService.getLineChartStub(lineChartData);
 
             // redraw chart with new data
             $scope.redrawLineChart = true;
@@ -87,7 +79,7 @@ angular.module('starter')
         var draw = function(){
             localStorageService.getItem('averagePrimaryOutcomeVariableValue',function(averagePrimaryOutcomeVariableValue){
                 if(averagePrimaryOutcomeVariableValue){
-                    updatePrimaryOutcomeVariableView(averagePrimaryOutcomeVariableValue);
+                    updateAveragePrimaryOutcomeRatingView(averagePrimaryOutcomeVariableValue);
                 }
 
                 // update line chart

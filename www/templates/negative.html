@@ -4,26 +4,26 @@
 
         <ion-tab title="Common" icon-on="ion-ios-pulse" icon-off="ion-ios-pulse-strong">
             <ion-content style="padding-top: 45px">
-                <div class="card card_positive">
-                    <div class="item item-text-wrap card_item" >
-                        <p>These are the factors most predictive of <span class="bold">DECREASING</span> {{primary_outcome_variable}} for the average QuantiModo user.</p>
+                <div class="card card-positive">
+                    <div class="item item-text-wrap card-item" >
+                        <p>These are the factors most predictive of <span class="bold">DECREASING</span> {{primaryOutcomeVariable}} for the average QuantiModo user.</p>
                     </div>
                 </div>
                 <ion-list>
                     <div item-width="100%" item-height="100px" collection-repeat="negative in negatives" divider-collection-repeat>
                         <ion-item style="border-style:hidden;">
                             <h2 class="block" style="white-space: normal">{{negative.cause}}</h2>
-                            <p class="like_dislike_buttons"></p>
+                            <p class="like-dislike-buttons"></p>
                             <div class="allbuttons">
-                                <div ng-click="upvote(negative)" class="showinline">
+                                <div ng-click="upvote(negative)" class="show-inline">
                                     <img ng-if="negative.userVote == null || negative.userVote == 0" src="img/thumb_up_white.png" height="32px" width="32px" />
                                     <img ng-if="negative.userVote == 1" src="img/thumb_up_black.png" height="32px" width="32px" />
                                 </div>
-                                <div ng-click="downvote(negative)" class="showinline">
+                                <div ng-click="downVote(negative)" class="show-inline">
                                     <img ng-if="negative.userVote == null || negative.userVote == 1" src="img/thumb_down_white.png" height="32px" width="32px" />
                                     <img ng-if="negative.userVote == 0" src="img/thumb_down_black.png" height="32px" width="32px" />
                                 </div>
-                                <div class="showinline" ng-show="shopping_cart_enabled" ng-click="open_store(negative.effect)" ><img src="img/ic_shopping_cart.png" width="32px" height="32px" ></div>
+                                <div class="show-inline" ng-show="shoppingCarEnabled" ng-click="openStore(negative.effect)" ><img src="img/ic_shopping_cart.png" width="32px" height="32px" ></div>
                             </div>
                         </ion-item>
                     </div>
@@ -33,26 +33,26 @@
 
         <ion-tab item-width="100%" item-height="100px" title="Yours" icon-on="ion-ios-person" icon-off="ion-ios-person-outline">
             <ion-content style="padding-top: 45px">
-                <div class="card card_positive">
-                    <div class="item item-text-wrap card_item" >
-                        <p>Our analysis suggests that these are the factors most predictive of <b>DECREASING</b> your {{primary_outcome_variable}} based on your own data. Want more accurate results? Start <a ui-sref="app.track_factors">tracking!</a></p>
+                <div class="card card-positive">
+                    <div class="item item-text-wrap card-item" >
+                        <p>Our analysis suggests that these are the factors most predictive of <b>DECREASING</b> your {{primaryOutcomeVariable}} based on your own data. Want more accurate results? Start <a ui-sref="app.track_factors">tracking!</a></p>
                     </div>
                 </div>
                 <ion-list>
-                    <div collection-repeat="negative in users_negative_factors" divider-collection-repeat>
+                    <div collection-repeat="negative in usersNegativeFactors" divider-collection-repeat>
                         <ion-item style="border-style:hidden;">
                             <h2 class="block"  style="white-space: normal">{{negative.cause}}</h2>
-                            <p class="like_dislike_buttons"></p>
+                            <p class="like-dislike-buttons"></p>
                             <div class="allbuttons">
-                                <div ng-click="upvote(negative)" class="showinline">
+                                <div ng-click="upvote(negative)" class="show-inline">
                                     <img ng-if="negative.userVote == null || negative.userVote == 0" src="img/thumb_up_white.png" height="32px" width="32px" />
                                     <img ng-if="negative.userVote == 1" src="img/thumb_up_black.png" height="32px" width="32px" />
                                 </div>
-                                <div ng-click="downvote(negative)" class="showinline">
+                                <div ng-click="downVote(negative)" class="show-inline">
                                     <img ng-if="negative.userVote == null || negative.userVote == 1" src="img/thumb_down_white.png" height="32px" width="32px" />
                                     <img ng-if="negative.userVote == 0" src="img/thumb_down_black.png" height="32px" width="32px" />
                                 </div>
-                                <div class="showinline" ng-show="shopping_cart_enabled" ng-click="open_store(negative.effect)" ><img src="img/ic_shopping_cart.png" width="32px" height="32px" ></div>
+                                <div class="show-inline" ng-show="shoppingCarEnabled" ng-click="openStore(negative.effect)" ><img src="img/ic_shopping_cart.png" width="32px" height="32px" ></div>
                             </div>
                         </ion-item>
                     </div>

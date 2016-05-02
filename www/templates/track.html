@@ -1,9 +1,9 @@
-<ion-view hide-nav-bar="skipMenu" view-title="Track your {{primary_outcome_variable}}">
+<ion-view hide-nav-bar="skipMenu" view-title="Track your {{primaryOutcomeVariable}}">
     <ion-content>
-    	<div class="card primary_outcome_variable_reporting">
+    	<div class="card primary-outcome-variable-reporting">
     		<div class="item item-text-wrap">
-                <div class="primary_outcome_variables" >
-                    <p class="heading positive" style="padding:14px; text-align: center;">{{tracking_question}}</p>
+                <div class="primary-outcome-variable-rating-buttons" >
+                    <p class="heading positive" style="padding:14px; text-align: center;">{{primaryOutcomeVariableTrackingQuestion}}</p>
                     <img ng-repeat="option in primaryOutcomeVariableRatingOptions"
                          ng-click="recordPrimaryOutcomeVariableRating(option.value)"
                          ng-src="{{option.img}}"
@@ -12,21 +12,21 @@
                 <div ng-show="timeRemaining">
                     <br/>
                     <ul>
-                        <li>Thanks for reporting your {{primary_outcome_variable}}!</li>
-                        <li ng-show="secondsLeft">You can report your {{primary_outcome_variable}} back in {{secondsLeft}} seconds</li>
+                        <li>Thanks for reporting your {{primaryOutcomeVariable}}!</li>
+                        <li ng-show="secondsLeft">You can report your {{primaryOutcomeVariable}} back in {{secondsLeft}} seconds</li>
                     </ul>
                 </div>
     		</div>
     	</div>
 
-        <div class="card primary_outcome_variable_reporting">
+        <div ng-show="averagePrimaryOutcomeVariableImage" class="card primary-outcome-variable-average">
             <div class="item item-text-wrap">
                 <div>
-                    <img ng-show="averagePrimaryOutcomeVariableImage" ng-src="{{averagePrimaryOutcomeVariableImage}}" class="top-left" alt="Depressed">
-                    <div class="to_right">
+                    <img ng-src="{{averagePrimaryOutcomeVariableImage}}" class="top-left" alt="Depressed">
+                    <div class="to-right">
                         <br>
                         <span ng-show="averagePrimaryOutcomeVariableValue" class="heading">{{primaryOutcomeVariableAverageText}} {{averagePrimaryOutcomeVariableValue}}.</span>
-                        <ul class="from_top">
+                        <ul class="from-top">
                             <!--                           <li>We hope you feel great!</li>-->
                         </ul>
                     </div>
@@ -35,7 +35,7 @@
         </div>
 
 
-        <div ng-show="showCharts" class="card primary_outcome_variable_reporting_chart">
+        <div ng-show="showCharts" class="card primary-outcome-variable-reporting-chart">
     		<div class="item item-text-wrap">
                 <div style="height: 460px;" ng-show="isSyncing">
                     <div style="position: absolute;top:45%;text-align: center;width: 100%"><span>Still retrieving data. Check back soon.</span></div>

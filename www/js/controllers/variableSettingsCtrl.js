@@ -54,7 +54,7 @@ angular.module('starter')
                 $scope.showAlert('Variable Name missing');
             } else {
                 // add variable
-                measurementService.post_tracking_measurement(params.epoch, params.variable, params.value, params.unit, params.isAvg, params.category, params.note, true)
+                measurementService.postTrackingMeasurement(params.epoch, params.variable, params.value, params.unit, params.isAvg, params.category, params.note, true)
                     .then(function ()
                     {
                         $scope.showAlert('Added Variable');

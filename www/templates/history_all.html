@@ -7,7 +7,7 @@
                     <i class="{{historyItem.variableCategoryName | ImageByVariableCategoryName }}" style="color:#11c1f3;font-size: 75px;"></i>
                     <p style="font-weight:bold;white-space:normal">{{historyItem.variable}}</p>
                   </div>
-                  <div class="history_block" style="margin-left:10px;">
+                  <div class="history-block" style="margin-left:10px;">
                       <h2 style="font-weight:bold;white-space:normal"> {{historyItem.value}} {{getUnitFromUnitId(historyItem.unit).abbreviatedName}} {{historyItem.variable}}</h2>
                     <h2 class="history_time" ng-repeat="line in (historyItem.startTime | time) track by $index">
                       {{line}}

@@ -56,12 +56,12 @@
                         </span>
                     </div>
                     <div class="col">
-                        <input type="text" ng-model="state.measurement.value" id="measurementValue" placeholder="Enter Value Here" class="uptop">
+                        <input type="text" ng-model="state.measurement.value" id="measurementValue" placeholder="Enter Value Here" class="up-top">
                     </div>
                 </div>
 
-                <div class="primary_outcome_variables primary_outcome_variable_history col" ng-if="(state.measurement.abbreviatedUnitName === '/5')">
-                    <img ng-repeat="option in primary_outcome_variable_numbers" ng-click="selectRatingValue($event, option.value)" ng-src="{{option.img}}"  ng-class="{'active_primary_outcome_variable' : option.value == state.measurement.value}">
+                <div class="primary-outcome-variable-rating-buttons primary-outcome-variable-history col" ng-if="(state.measurement.abbreviatedUnitName === '/5')">
+                    <img ng-repeat="option in primaryOutcomeVariableNumbers" ng-click="selectPrimaryOutcomeVariableValue($event, option.value)" ng-src="{{option.img}}"  ng-class="{'active-primary-outcome-variable' : option.value == state.measurement.value}">
                 </div>
 
                 <div class="row labeled-control" ng-if="(state.measurement.abbreviatedUnitName !== '/5')">
@@ -69,7 +69,7 @@
                         <span class="input-label">Unit</span>
                     </div>
                     <div class="col">
-                        <div class="row uptop" style="padding-left:0px;">
+                        <div class="row up-top" style="padding-left:0px;">
                             <div class="col" style="padding-top:5px;">
 
                                 <!-- Default to most common unit when tracking measurement, and always keep it editable-->
@@ -106,7 +106,7 @@
                     </div>
                     <div class="col" style="padding-top: 15px;">
                         <ionic-datepicker style="width:100%" idate="currentDate" disablepreviousdates="false" callback="datePickerCallback">
-                            <button class="button button-block measure_date uptop" style="font-size:14px;border:none;color:black;background-color: white;margin-bottom: 0px;margin-top: 0px;padding-left: 0px; text-align:left;">
+                            <button class="button button-block measure-date up-top" style="font-size:14px;border:none;color:black;background-color: white;margin-bottom: 0px;margin-top: 0px;padding-left: 0px; text-align:left;">
                                 {{ currentDate | date:'dd - MMMM - yyyy' }}
                             </button>
                         </ionic-datepicker>
@@ -120,7 +120,7 @@
                         </span>
                     </div>
                     <div class="col" style="padding-top: 11px;">
-                        <button class="button button-block uptop"
+                        <button class="button button-block up-top"
                                 style="text-align:left;font-size:14px;border:none;color:black;background-color: white;margin-bottom: 0px;margin-top: 0px;padding-left: 0px;"
                                 ng-click="openMeasurementStartTimePicker()">
                             {{state.measurement.startTime | fromUnixTimestampToLocalTimeOfDay}}
@@ -135,7 +135,7 @@
                     </div>
                     <div class="col" style="padding-top: 11px;">
                         <div class="col">
-                            <input type="text" ng-model="state.measurement.note" id="note" placeholder="Enter note here..." class="uptop">
+                            <input type="text" ng-model="state.measurement.note" id="note" placeholder="Enter note here..." class="up-top">
                         </div>
                     </div>
                 </div>

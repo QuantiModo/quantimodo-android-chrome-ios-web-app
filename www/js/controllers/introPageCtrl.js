@@ -6,11 +6,11 @@ angular.module('starter')
                                           $ionicSlideBoxDelegate) {
         $scope.controller_name = "IntroPageCtrl";
 
-            $scope.view_title = config.appSettings.app_name;
-            $scope.primary_outcome_variable = config.appSettings.primary_outcome_variable;
+            $scope.viewTitle = config.appSettings.appName;
+            $scope.primaryOutcomeVariable = config.appSettings.primaryOutcomeVariable;
             $scope.primaryOutcomeVariableRatingOptions = config.getPrimaryOutcomeVariableOptions();
-            $scope.primary_outcome_variable_numbers = config.getPrimaryOutcomeVariableOptions(true);
-            $scope.intro_config = config.appSettings.intro;
+            $scope.primaryOutcomeVariableNumbers = config.getPrimaryOutcomeVariableOptions(true);
+            $scope.introConfiguration = config.appSettings.intro;
 
             $scope.myIntro = {
                 ready : false,

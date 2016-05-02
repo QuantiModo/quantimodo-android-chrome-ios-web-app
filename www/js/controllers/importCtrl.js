@@ -16,7 +16,7 @@ angular.module('starter')
 	    }*/
 
 	    // close the loader
-	    window.closeloading = function(){
+	    window.closeLoading = function(){
 	        $ionicLoading.hide();
 	    };
 

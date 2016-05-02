@@ -127,7 +127,7 @@ This is the XML file, which will be used to make your “actual” iOS App proje
 
 1. App Name
   ```
-  <name>{{write_your_app_name_here}}</name>
+  <name>{{appName}}</name>
   ```
 This will be the name for your App, and will be the name of the .xcodeproj file, So remember to name your app here.
 
@@ -197,7 +197,7 @@ window.config = {
   ],
     port : '4417',
     protocol : 'https',
-    shopping_cart_enabled : true,
+    shoppingCarEnabled : true,
 };
 ```
 ### Explanation
@@ -214,35 +214,35 @@ window.config = {
 
 `protocol` : (http or https) The protocol to use when requesting the api.
 
-`shopping_cart_enabled` : true or false if you wish to keep the shopping cart buttons in positive/negative predictor lists.
+`shoppingCarEnabled` : true or false if you wish to keep the shopping cart buttons in positive/negative predictor lists.
 
 **`config.appSettings` Object **
 
 ```
 config.appSettings  = {
-    app_name : 'EnergyModo',
+    appName : 'EnergyModo',
 
-    primary_outcome_variable : 'Energy',
+    primaryOutcomeVariable : 'Energy',
 
-    storage_identifier: 'EnergyModoData*',
+    appStorageIdentifier: 'EnergyModoData*',
       
-    primary_outcome_variable_details : { ... },
+    primaryOutcomeVariableDetails : { ... },
 
-    primary_outcome_variables_options_labels : [ ... ],
+    primaryOutcomeVariableOptionLabels : [ ... ],
 
-    primary_outcome_variable_options : [ ... ],
+    primaryOutcomeVariableOptions : [ ... ],
 
-    welcome_text:"Let's start off by reporting your Energy on the card below",
+    welcomeText:"Let's start off by reporting your Energy on the card below",
     
-    factor_average_text:"Your average energy level is ",
+    primaryOutcomeVariableAverageText:"Your average energy level is ",
     
-    notification_image : "file://img/logo.png",
+    mobileNotificationImage : "file://img/logo.png",
     
-    notification_text : "Rate your Energy",
+    mobileNotificationText : "Rate your Energy",
     
-    conversion_dataset: { ... },
+    primaryOutcomeValueConversionDataSet: { ... },
     
-    conversion_dataset_reversed : { ... },
+    primaryOutcomeValueConversionDataSetReversed : { ... },
     
     intro : { ... }
 };
@@ -250,16 +250,16 @@ config.appSettings  = {
 ```
 ### Explanation
 
-`app_name` :  The Name of your app.
+`appName` :  The Name of your app.
 
-`primary_outcome_variable` : The primary outcome variable you are tracking (like Mood or Energy etc.)
+`primaryOutcomeVariable` : The primary outcome variable you are tracking (like Mood or Energy etc.)
 
-`storage_identifier` : a unique to your app string that will be prepended to any key stored in `localStorage`. (no spaces or any characters not allowed in keys)
+`appStorageIdentifier` : a unique to your app string that will be prepended to any key stored in `localStorage`. (no spaces or any characters not allowed in keys)
 
-`primary_outcome_variable_details`
+`primaryOutcomeVariableDetails`
 
 ```
-primary_outcome_variable_details : {
+primaryOutcomeVariableDetails : {
    name : "Overall Energy",
    category : "Energy",
    unit : "/5",
@@ -273,9 +273,9 @@ primary_outcome_variable_details : {
 `combinationOperation` : MEAN or SUM depending upon your primary outcome variable.
 
 
-`primary_outcome_variables_options_labels`
+`primaryOutcomeVariableOptionLabels`
 ```
-primary_outcome_variables_options_labels : { 
+primaryOutcomeVariableOptionLabels : {
     'lowest', 
     'low', 
     'average', 
@@ -285,9 +285,9 @@ primary_outcome_variables_options_labels : {
 ```
 These will be used on the charts, to represent the individual bars for the 5 different values. (replace them with values that you want to represent your bars with in the charts).
 
-`primary_outcome_variable_options`
+`primaryOutcomeVariableOptions`
 ```
-primary_outcome_variable_options : [
+primaryOutcomeVariableOptions : [
         {
             value: 'lowest',
             img: 'img/ic_1.png'
@@ -312,21 +312,21 @@ primary_outcome_variable_options : [
 ```
 These are the five options (available on the Trrack page) that the users will rate. Each of the option has an `image` (that will replace the emoji) and `value` (the quantifiable value the image represents).
 
-**Note**: Make sure the values match with the values in the `primary_outcome_variables_options_labels`. 
+**Note**: Make sure the values match with the values in the `primaryOutcomeVariableOptionLabels`.
 
-`welcome_text` : The text app greets the user with when the app is opened for the first time.
+`welcomeText` : The text app greets the user with when the app is opened for the first time.
 
-`tracking_question` : The question displayed when the user is on the Track Screen.
+`primaryOutcomeVariableTrackingQuestion` : The question displayed when the user is on the Track Screen.
 
-`factor_average_text` : a string that tells user his average primary outcome variable value.
+`primaryOutcomeVariableAverageText` : a string that tells user his average primary outcome variable value.
 
-`notification_image` : the logo that gets displayed with the notification in ios
+`mobileNotificationImage` : the logo that gets displayed with the notification in ios
 
-`notification_text` : the text that appears in the notification on ios
+`mobileNotificationText` : the text that appears in the notification on ios
 
-`conversion_dataset`
+`primaryOutcomeValueConversionDataSet`
 ```
-conversion_dataset: {
+primaryOutcomeValueConversionDataSet: {
     "1": "lowest",
     "2": "low",
     "3": "average",
@@ -336,9 +336,9 @@ conversion_dataset: {
 ```
 This is the data set where the keys are the mapped with the buttons. For example, `button 1` will represent `lowest`.
 
-`conversion_dataset_reversed`
+`primaryOutcomeValueConversionDataSetReversed`
 ```
-conversion_dataset_reversed : {
+primaryOutcomeValueConversionDataSetReversed : {
    "lowest" : 1,
     "sad" : 2,
     "ok" : 3,
@@ -435,13 +435,13 @@ This is the dataset for intro, you can edit the images that get displayed accord
 
 **notification_callback**
 ```
-window.notification_callback = function(reported_variable, reporting_time){
+window.notification_callback = function(reportedVariable, reportingTime){
   // implement the notification function here.
   // use reported variable and the reported time.
   ...
 }
 ```
-More often than not you will end up keeping the existing function and making the changes in `conversion_dataset`'s would work just fine, but if you wish to change something else, you have the option to do it so in this function.
+More often than not you will end up keeping the existing function and making the changes in `primaryOutcomeValueConversionDataSet`'s would work just fine, but if you wish to change something else, you have the option to do it so in this function.
 
 #### Running the App
 After you have generated your app, you can run the project through `node app.js`. This will run the project at [http://localhost:5000/](http://localhost:5000/)

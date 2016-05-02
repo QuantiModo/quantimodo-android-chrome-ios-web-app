@@ -66,7 +66,7 @@ angular.module('starter')
 	    };
 
 		// when add new variable is tapped
-		$scope.add_variable = function(){
+		$scope.addVariable = function(){
 			console.log("add variable");
 			$scope.state.showSearchBox = false;
 			$scope.state.showResults = false;

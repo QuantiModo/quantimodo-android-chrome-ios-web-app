@@ -36,14 +36,14 @@ angular.module('starter')
 			$scope.state.addButtonText = "Add new reminder";
 		}
 
-	    $scope.selectRatingValue = function($event, val){
+	    $scope.selectPrimaryOutcomeVariableValue = function($event, val){
 	        // remove any previous primary outcome variables if present
-	        jQuery('.primary_outcome_variables .active_primary_outcome_variable').removeClass('active_primary_outcome_variable');
+	        jQuery('.primary-outcome-variable .active-primary-outcome-variable').removeClass('active-primary-outcome-variable');
 
 	        // make this primary outcome variable glow visually
-	        jQuery($event.target).addClass('active_primary_outcome_variable');
+	        jQuery($event.target).addClass('active-primary-outcome-variable');
 
-	        jQuery($event.target).parent().removeClass('primary_outcome_variable_history').addClass('primary_outcome_variable_history');
+	        jQuery($event.target).parent().removeClass('primary-outcome-variable-history').addClass('primary-outcome-variable-history');
 
 	        $scope.state.selected1to5Value = val;
 
