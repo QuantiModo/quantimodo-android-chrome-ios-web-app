@@ -5,7 +5,7 @@ angular.module('starter')
     $scope.primaryOutcomeVariable = config.appSettings.primaryOutcomeVariable;
     $scope.primaryOutcomeVariableRatingOptions = config.getPrimaryOutcomeVariableOptions();
     $scope.primaryOutcomeVariableNumbers = config.getPrimaryOutcomeVariableOptions(true);
-    $scope.introTourConfiguration = config.appSettings.intro;
+    $scope.introConfiguration = config.appSettings.intro;
     
     $scope.myIntro = {
         ready : false,

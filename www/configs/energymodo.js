@@ -99,7 +99,7 @@ config.appSettings  = {
             },
             content : {
 
-                firstParagraph : {
+                firstP : {
                     visible : true,
                     content : 'Welcome to EnergyModo',
                     classes : 'intro-header positive'
@@ -108,7 +108,7 @@ config.appSettings  = {
                     visible : true,
                     id : 'logo'
                 },
-                finalParagraph : {
+                finalP : {
                     visible : true,
                     content : 'EnergyModo allows you track your <span class="positive">Energy</span> and identify the hidden factors which may most influence it.',
                     classes : 'intro-paragraph',
@@ -126,7 +126,7 @@ config.appSettings  = {
 
                 showOutcomeVariableImages : true,
                 showFirstBr : true,   
-                finalParagraph: {
+                finalP: {
                     visible : true,
                     content : 'Go to the <span class="positive">Track Energy</span> page to report your Energy!',
                     classes : 'intro-paragraph',
@@ -143,7 +143,7 @@ config.appSettings  = {
             },
             content : {
 
-                firstParagraph : {
+                firstP : {
                     visible : true,
                     content : 'Track Energy',
                     classes : 'intro-header positive'
@@ -152,8 +152,8 @@ config.appSettings  = {
                     visible : true,
                     id : ''
                 },
-                showBreakAboveFinalParagraph : true,
-                finalParagraph: {
+                showSecondBr : true,
+                finalP: {
                     visible : true,
                     content : 'On the <span class="positive">Track Energy</span> page, you can view your <span class="positive">average Energy</span> as well as charts illustrating how it changes over time.',
                     classes : 'intro-paragraph-small',
@@ -169,7 +169,7 @@ config.appSettings  = {
                 url : 'img/history_page.png'
             },
             content : {
-                firstParagraph : {
+                firstP : {
                     visible : true,
                     content : 'History',
                     classes : 'intro-header positive'
@@ -179,8 +179,8 @@ config.appSettings  = {
                     visible : true,
                     id : 'logo'
                 },
-                showBreakAboveFinalParagraph : true,
-                finalParagraph: {
+                showSecondBr : true,
+                finalP: {
                     visible : true,
                     content : 'You can see and edit your past Energy ratings and notes by opening the <span class="positive">History</span> page.',
                     classes : 'intro-paragraph',
@@ -196,7 +196,7 @@ config.appSettings  = {
                 url : 'img/mood_note.png'
             },
             content : {
-                firstParagraph : {
+                firstP : {
                     visible : true,
                     content : 'Add a Note',
                     classes : 'intro-header positive'
@@ -205,7 +205,7 @@ config.appSettings  = {
                     visible : true,
                     id : 'logo'
                 },
-                finalParagraph: {
+                finalP: {
                     visible : true,
                     content : 'Add a note by tapping on a Energy rating in the <span class="positive">History</span> page. You can also <span class="positive">Edit</span> your Energy there too.',
                     classes : 'intro-paragraph',
@@ -221,7 +221,7 @@ config.appSettings  = {
                 url : 'img/track_foods.png'
             },
             content : {
-                firstParagraph : {
+                firstP : {
                     visible : true,
                     content : 'Track Foods',
                     classes : 'intro-header positive'
@@ -230,7 +230,7 @@ config.appSettings  = {
                     visible : true,
                     id : 'logo'
                 },
-                finalParagraph: {
+                finalP: {
                     visible : true,
                     content : 'Track your diet on the <span class="positive">Track Foods</span> page. You can also <span class="positive">Add a new Food Variable</span> if you don\'t find the meal you looked for in the search results.',
                     classes : 'intro-paragraph-small',
@@ -247,7 +247,7 @@ config.appSettings  = {
             },
             content : {
 
-                firstParagraph : {
+                firstP : {
                     visible : true,
                     content : 'Track Symptoms',
                     classes : 'intro-header positive'
@@ -258,7 +258,7 @@ config.appSettings  = {
                     id : 'logo'
                 },
                 
-                finalParagraph: {
+                finalP: {
                     visible : true,
                     content : 'Track any symptom on the <span class="positive">Track Symptoms</span> page. You can also <span class="positive">Add a new Symptom</span> if you don\'t find the symptom you looked for in the search results.',
                     classes : 'intro-paragraph-small',
@@ -274,7 +274,7 @@ config.appSettings  = {
                 url : 'img/track_treatments.png'
             },
             content : {
-                firstParagraph : {
+                firstP : {
                     visible : true,
                     content : 'Track Treatments',
                     classes : 'intro-header positive'
@@ -283,7 +283,7 @@ config.appSettings  = {
                     visible : true,
                     id : 'logo'
                 },
-                finalParagraph: {
+                finalP: {
                     visible : true,
                     content : 'Track your treatments on the <span class="positive">Track Treatments</span> page. You can also <span class="positive">Add a new Treatment</span> if you don\'t find the treatment you looked for in the search results.',
                     classes : 'intro-paragraph-small',
@@ -300,7 +300,7 @@ config.appSettings  = {
             },
             content : {
 
-                firstParagraph : {
+                firstP : {
                     visible : true,
                     content : 'Positive Predictors',
                     classes : 'intro-header positive'
@@ -311,7 +311,7 @@ config.appSettings  = {
                     id : 'logo'
                 },
                 
-                finalParagraph: {
+                finalP: {
                     visible : true,
                     content : 'Positive Predictors are the factors most predictive of <span class="positive">IMPROVING</span> Energy for the average QuantiModo user.',
                     classes : 'intro-paragraph-small',
@@ -328,7 +328,7 @@ config.appSettings  = {
             },
             content : {
 
-                firstParagraph : {
+                firstP : {
                     visible : true,
                     content : 'Negative Predictors',
                     classes : 'intro-header positive'
@@ -339,7 +339,7 @@ config.appSettings  = {
                     id : 'logo'
                 },
                 
-                finalParagraph: {
+                finalP: {
                     visible : true,
                     content : 'Negative Predictors are the factors most predictive of <span class="positive">DECREASING</span> Energy for the average QuantiModo user.',
                     classes : 'intro-paragraph-small',
@@ -356,7 +356,7 @@ config.appSettings  = {
             },
             content : {
 
-                firstParagraph : {
+                firstP : {
                     visible : true,
                     content : 'We are feeling ecstatic that you\'re helping us derive a mathematical equation for happiness!',
                     classes : 'intro-paragraph positive'
@@ -366,7 +366,7 @@ config.appSettings  = {
                     visible : true,
                     id : 'logo'
                 },
-                finalParagraph: {
+                finalP: {
                     visible : true,
                     content : 'Now start tracking and optimize your life!',
                     classes : 'intro-paragraph-small',
