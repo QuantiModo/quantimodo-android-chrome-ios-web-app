@@ -19,10 +19,10 @@
     		</div>
     	</div>
 
-        <div class="card primary-outcome-variable-reporting">
+        <div ng-show="averagePrimaryOutcomeVariableImage" class="card primary-outcome-variable-average">
             <div class="item item-text-wrap">
                 <div>
-                    <img ng-show="averagePrimaryOutcomeVariableImage" ng-src="{{averagePrimaryOutcomeVariableImage}}" class="top-left" alt="Depressed">
+                    <img ng-src="{{averagePrimaryOutcomeVariableImage}}" class="top-left" alt="Depressed">
                     <div class="to-right">
                         <br>
                         <span ng-show="averagePrimaryOutcomeVariableValue" class="heading">{{primaryOutcomeVariableAverageText}} {{averagePrimaryOutcomeVariableValue}}.</span>

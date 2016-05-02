@@ -189,7 +189,7 @@ angular.module('starter')
                             localStorageService.getItem('barChartData',function(barChartData){
                                 if(barChartData){
                                     barChartData = JSON.parse(barChartData);
-                                    barChartData[val-1]++;
+                                    barChartData[ratingValue-1]++;
                                     localStorageService.setItem('barChartData',JSON.stringify(barChartData));
                                 }
                             });
@@ -198,7 +198,7 @@ angular.module('starter')
                             localStorageService.getItem('lineChartData',function(lineChartData){
                                 if(lineChartData){
                                     lineChartData = JSON.parse(lineChartData);
-                                    lineChartData.push([reportTime*1000, (val-1)*25]);
+                                    lineChartData.push([reportTime*1000, (ratingValue-1)*25]);
                                     localStorageService.setItem('lineChartData',JSON.stringify(lineChartData));
                                 }
                                 deferred.resolve();
