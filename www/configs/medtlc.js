@@ -111,7 +111,7 @@ config.appSettings  = {
             },
             content : {
 
-                firstP : {
+                firstParagraph : {
                     visible : true,
                     content : 'Welcome to MedTLC',
                     classes : 'intro-header positive'
@@ -120,7 +120,7 @@ config.appSettings  = {
                     visible : true,
                     id : 'logo'
                 },
-                finalP : {
+                finalParagraph : {
                     visible : true,
                     content : 'Medication - Track. Learn. Connect.',
                     classes : 'intro-paragraph',
@@ -135,7 +135,7 @@ config.appSettings  = {
                 url : 'img/pill_icon.png'
             },
             content : {
-                firstP : {
+                firstParagraph : {
                     visible : true,
                     content : 'Medications and Reminders',
                     classes : 'intro-header positive'
@@ -144,7 +144,7 @@ config.appSettings  = {
                     visible : true,
                     id : 'logo'
                 },
-                finalP: {
+                finalParagraph: {
                     visible : true,
                     content : 'Add medications and reminders on the Add Medications page.',
                     classes : 'intro-paragraph-small',
@@ -161,7 +161,7 @@ config.appSettings  = {
             },
             content : {
 
-                firstP : {
+                firstParagraph : {
                     visible : true,
                     content : 'Record How You Feel',
                     classes : 'intro-header positive'
@@ -172,7 +172,7 @@ config.appSettings  = {
                     id : 'logo'
                 },
 
-                finalP: {
+                finalParagraph: {
                     visible : true,
                     content : ' Record "How I Feel" responses to provide critical feedback to your doctor. This feedback is one of the strongest features of MedTLC. It gives your doctor the data needed to change medications and adjust dosages when necessary, due to adverse reaction to a single drug, multiple drug interactions, and dosages that cause unwanted effects.',
                     classes : 'intro-paragraph-small',
@@ -187,7 +187,7 @@ config.appSettings  = {
                 url : 'img/doctor_icon.png'
             },
             content : {
-                firstP : {
+                firstParagraph : {
                     visible : true,
                     content : 'Connect with Your Physician',
                     classes : 'intro-header positive'
@@ -196,7 +196,7 @@ config.appSettings  = {
                     visible : true,
                     id : 'logo'
                 },
-                finalP: {
+                finalParagraph: {
                     visible : true,
                     content : 'Print or send reports of your responses to your doctors.',
                     classes : 'intro-paragraph',
