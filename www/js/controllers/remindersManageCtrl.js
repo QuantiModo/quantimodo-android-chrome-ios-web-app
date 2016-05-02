@@ -65,9 +65,9 @@ angular.module('starter')
 	    	reminderService.getTrackingReminders($stateParams.variableCategoryName)
 	    	.then(function(reminders){
 	    		$scope.state.allReminders = reminders;
-	    		//utilsService.stopLoading();
+	    		utilsService.stopLoading();
 	    	}, function(){
-	    		//utilsService.stopLoading();
+	    		utilsService.stopLoading();
 	    		console.log("failed to get reminders");
 				console.log("need to log in");
 				$ionicLoading.hide();
@@ -127,13 +127,13 @@ angular.module('starter')
 	    	reminderService.deleteReminder(reminder.id)
 	    	.then(function(){
 
-	    		//utilsService.stopLoading();
+	    		utilsService.stopLoading();
 	    		utilsService.showAlert('Reminder Deleted.');
 	    		$scope.init();
 
 	    	}, function(err){
 
-	    		//utilsService.stopLoading();
+	    		utilsService.stopLoading();
 	    		utilsService.showAlert('Failed to Delete Reminder, Try again!', 'assertive');
 	    	});
 	    };
