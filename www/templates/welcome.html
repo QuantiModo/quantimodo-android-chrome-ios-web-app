@@ -1,7 +1,7 @@
 <ion-view hide-nav-bar="skipMenu" view-title="{{viewTitle}}">
 <ion-content>
 
-<div id="login_iframe">
+<div id="login-iframe">
 </div>
 
 <div ng-show="showPrimaryOutcomeVariableCard && primaryOutcomeVariable" class="card primary-outcome-variable-reporting">
@@ -25,7 +25,7 @@
 	</div>
 </div>
 
-<div class="card reporting_interval" ng-show="showIntervalCard && !showPrimaryOutcomeVariableCard && primaryOutcomeVariable">
+<div class="card reporting-interval" ng-show="showIntervalCard && !showPrimaryOutcomeVariableCard && primaryOutcomeVariable">
 	<div class="item item-text-wrap">
 		<h1 class="positive">Report Interval</h1>
 		<ul>
@@ -70,7 +70,7 @@
 	</div>
 </div>
 
-<div class="card sign_in" ng-show="!isLoggedIn &&
+<div class="card sign-in" ng-show="!isLoggedIn &&
 	((!showPrimaryOutcomeVariableCard && !showIntervalCard) || !primaryOutcomeVariable) ">
         <div class="item item-text-wrap">
             <h1 class="positive">{{headline}}</h1>
