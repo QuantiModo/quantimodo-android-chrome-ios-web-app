@@ -28,6 +28,7 @@ config.appSettings  = {
     appName : 'MoodiModo',
 
     defaultState : 'app.track',
+    welcomeState : 'app.welcome',
 
     primaryOutcomeVariable : 'Mood',
 
