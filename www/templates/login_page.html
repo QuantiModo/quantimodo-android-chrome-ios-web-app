@@ -1,22 +1,22 @@
-<ion-view hide-nav-bar="skipMenu" view-title="{{view_title}}">
+<ion-view hide-nav-bar="skipMenu" view-title="{{viewTitle}}">
 	<ion-content>
-		<div class="card sign_in" >
+		<div class="card sign-in" >
 	        <div class="item item-text-wrap">
-	            <h1 class="calm">{{headline}}</h1>
+	            <h1 class="positive">{{headline}}</h1>
 	            <br/>
 	            <ul>
 					<li ng-repeat="feature in features">{{feature}}</li>
 	            </ul>
-	            <button ng-show="isIOS" class="button button-block button-calm" ng-click="facebook_login()">
+	            <button ng-show="isIOS" class="button button-block button-positive" ng-click="facebookLogin()">
 	                Facebook Sign In
 	            </button>
-	            <button ng-show="isIOS"  class="button button-block button-calm" ng-click="google_login()">
+	            <button ng-show="isIOS"  class="button button-block button-positive" ng-click="googleLogin()">
 	                Google Sign In
 	            </button>
-	            <button class="button button-block button-calm" ng-click="login()">
+	            <button class="button button-block button-positive" ng-click="login()">
 	                Sign In
 	            </button>
-				<button class="button button-block button-calm" ng-click="login(true)">
+				<button class="button button-block button-positive" ng-click="login(true)">
 					I'm New
 				</button>
 	        </div>

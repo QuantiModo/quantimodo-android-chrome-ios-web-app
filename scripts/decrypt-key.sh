@@ -47,8 +47,8 @@ openssl aes-256-cbc \
 
 openssl aes-256-cbc \
 -k "$ENCRYPTION_SECRET" \
--in "./scripts/private_configs/moodimodo.config.js.enc" -d -a \
--out "./www/private_configs/moodimodo.config.js"
+-in "./scripts/private_configs/medtlc.config.js.enc" -d -a \
+-out "./www/private_configs/medtlc.config.js"
 
 find ./hooks -type f -exec chmod 644 {} \;
 find ./hooks -type d -exec chmod 755 {} \;

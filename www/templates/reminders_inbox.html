@@ -1,108 +1,38 @@
 <ion-view hide-nav-bar="skipMenu" view-title="{{state.title}}">
 
-	<ion-content scroll="true" overflow-scroll="true"> 
-		
-		<div ng-show="state.showButtons">
-			<div ng-hide="state.hideAddNewReminderButton" class="list card">
-				<!--<div class="item item-divider" style="background-color:#11c1f3; color:white;">Actions</div>-->
-				<a href="#/app/reminder_add" class="item item-icon-left">
-					<i class="icon ion-plus calm"></i>
-					Add a new Reminder
-				</a>
-			</div>
-			<div ng-show="state.showAddHowIFeelResponseButton" class="list card">
-				<!--<div class="item item-divider" style="background-color:#11c1f3; color:white;">Actions</div>-->
-				<a href="#/app/track_factors_category/Symptoms" class="item item-icon-left">
-					<i class="icon ion-plus calm"></i>
-					Add "How I Feel" Response
-				</a>
-			</div>
-			<div ng-show="state.showAddVitalSignButton" class="list card">
-				<!--<div class="item item-divider" style="background-color:#11c1f3; color:white;">Actions</div>-->
-				<a href="#/app/track_factors_category/Vital Signs" class="item item-icon-left">
-					<i class="icon ion-plus calm"></i>
-					Add a new vital sign
-				</a>
-			</div>
-			<div ng-show="state.showAddNewMedicationButton" class="list card">
-				<!--<div class="item item-divider" style="background-color:#11c1f3; color:white;">Actions</div>-->
-				<a href="#/app/reminder_add/Treatments" class="item item-icon-left">
-					<i class="icon ion-plus calm"></i>
-					Add a new medication
-				</a>
-			</div>
-		</div>
-		<div class="card" ng-show="state.showMeasurementBox" ng-class="{card_disabled : state.isDisabled}" style="overflow: visible">
-            <div  class="item item-divider" style="background-color:#11c1f3; color:white;">Track {{state.selectedReminder.variableName}}</div>
-            
-            <div class="list">
-				
-				<div class="row" ng-if="state.selectedReminder.abbreviatedUnitName == '/5' " >
-					<div class="primary_outcome_variables col">
-						<img ng-repeat="option in primary_outcome_variable_numbers" ng-click="select_primary_outcome_variable($event, option.value)" ng-src="{{option.img}}">
-					</div>
+	<ion-content scroll="true" overflow-scroll="true">
+
+		<div class="list card">
+			<div ng-show="state.showButtons">
+				<div ng-hide="state.hideAddNewReminderButton" class="list card">
+					<!--<div class="item item-divider" style="background-color:#11c1f3; color:white;">Actions</div>-->
+					<a href="#/app/reminder_add" class="item item-icon-left">
+						<i class="icon ion-plus positive"></i>
+						Add a new Reminder
+					</a>
 				</div>
-				<div ng-if="state.selectedReminder.abbreviatedUnitName != '/5' ">
-					<div class="row labeled-control">
-		            	<div class="col col-l">
-		            	    <span>
-		            	        Value
-		            	    </span>
-		            	</div>
-		            	<div class="col">
-		            	    <input type="text" ng-model="state.reminderDefaultValue" placeholder="Enter Value Here" class="uptop">
-		            	</div>
-					</div>
-					
-					<div class="row labeled-control">
-		            	<div class="col col-l">
-		            	    <span>
-		            	        Unit
-		            	    </span>
-		            	</div>
-		            	<div class="col">
-		            	    <p style="color:black; padding: 0px 0px;">{{state.selectedReminder.abbreviatedUnitName}}
-		            	</div>
-	            	</div>
-            	</div>
-                <div class="row labeled-control">
-                    <div class="col col-l">
-                        <span>
-                            Date
-                        </span>
-                    </div>
-                    <div class="col" style="padding-top: 15px;">
-                        <ionic-datepicker style="width:100%" idate="state.measurementDate" disablepreviousdates="false" callback="currentDatePickerCallback">
-                            <button class="button button-block measure_date uptop" style="font-size:14px;border:none;color:black;background-color: white;margin-bottom: 0px;margin-top: 0px;padding-left: 0px; text-align:left;">
-                                {{ state.measurementDate | date:'dd - MMMM - yyyy' }}
-                            </button>
-                        </ionic-datepicker>
-                    </div>
-                </div>
-
-                <div class="row labeled-control">
-                    <div class="col col-l">
-                        <span> 
-                            Time
-                        </span>
-                    </div>
-                    <div class="col" style="padding-top: 11px;">
-                        <ionic-timepicker style="width:54%" etime="state.slots.epochTime" format="state.slots.format" step="state.slots.step" callback="currentTimePickerCallback">
-                            <button class="button button-block uptop" style="text-align:left;font-size:14px;border:none;color:black;background-color: white;margin-bottom: 0px;margin-top: 0px;padding-left: 0px;">
-                                {{state.slots.epochTime | fromUnixTimestampToLocalTimeOfDay}}
-                            </button>
-                        </ionic-timepicker>
-                    </div>
-                </div>
-
-                <div class="button-bar" style="    padding-top: 10px;">
-                	<a class="button button-clear button-assertive" style="text-overflow: clip;" ng-click="cancel()">Cancel</a>
-                	<a class="button button-clear button-calm" style="text-overflow: clip;" ng-click="saveMeasurement()">Save</a>
-                </div>
-            </div>
-        </div>    
-
-		<div class="list card" ng-show="!state.showMeasurementBox">
+<!--				<div ng-show="state.showAddHowIFeelResponseButton" class="list card">
+					&lt;!&ndash;<div class="item item-divider" style="background-color:#11c1f3; color:white;">Actions</div>&ndash;&gt;
+					<a href="#/app/track_factors_category/Symptoms" class="item item-icon-left">
+						<i class="icon ion-plus positive"></i>
+						Add "How I Feel" Response
+					</a>
+				</div>
+				<div ng-show="state.showAddVitalSignButton" class="list card">
+					&lt;!&ndash;<div class="item item-divider" style="background-color:#11c1f3; color:white;">Actions</div>&ndash;&gt;
+					<a href="#/app/track_factors_category/Vital Signs" class="item item-icon-left">
+						<i class="icon ion-plus positive"></i>
+						Add a new vital sign
+					</a>
+				</div>-->
+				<div ng-show="state.showAddNewMedicationButton" class="list card">
+					<!--<div class="item item-divider" style="background-color:#11c1f3; color:white;">Actions</div>-->
+					<a href="#/app/reminder_add/Treatments" class="item item-icon-left">
+						<i class="icon ion-plus positive"></i>
+						Add a new medication
+					</a>
+				</div>
+			</div>
 	
 <!--			<div class="item item-divider" style="background-color:#11c1f3; color:white;">
 				Reminders
@@ -118,7 +48,7 @@
 					<div class="item" style="padding-bottom:0px;">
 						<div class="row">
 							<div class="col" style="padding-top: 0px;">
-								<i style="font-size: 60px;" class="icon calm ion-ios-alarm-outline"></i>
+								<i style="font-size: 60px;" class="icon positive ion-ios-alarm-outline"></i>
 							</div>
 							<div class="col col-75">
 								<h2 style="white-space: normal;">{{reminder.defaultValue}}&nbsp;{{reminder.abbreviatedUnitName}} {{reminder.variableName}}</h2>
@@ -128,7 +58,7 @@
 						<div class="button-bar">
 							<a class="button button-clear button-assertive" style="text-overflow: clip; font-size: 12px;" ng-click="skip(reminder)"><i class="ion-android-cancel"> &nbsp; Skip</i></a>
 							<a class="button button-clear button-royal" style="text-overflow: clip; font-size: 12px;" ng-click="snooze(reminder)"><i class="ion-android-notifications-off"> &nbsp; Snooze</i></a>
-							<a class="button button-clear button-calm" ng-click="edit(reminder)" style="text-overflow: clip;  font-size: 12px;"><i class="ion-settings"> &nbsp; Settings</i></a>
+							<a class="button button-clear button-positive" ng-click="edit(reminder)" style="text-overflow: clip;  font-size: 12px;"><i class="ion-settings"> &nbsp; Settings</i></a>
 						</div>
 						<div class="row" ng-if="reminder.abbreviatedUnitName != '/5' " >
 							<div class="button-bar">
@@ -137,21 +67,21 @@
 						</div>
 						<div class="row" ng-if="reminder.abbreviatedUnitName != '/5' " >
 							<div class="button-bar">
-								<a class="button button-clear button-calm" style="text-overflow: clip; font-size: 12px;" ng-click="editMeasurement(reminder)"><i class="ion-edit"> &nbsp; Record Different Value/Time</i></a>
+								<a class="button button-clear button-positive" style="text-overflow: clip; font-size: 12px;" ng-click="editMeasurement(reminder)"><i class="ion-edit"> &nbsp; Record Different Value/Time</i></a>
 							</div>
 						</div>
 						<div class="row" ng-if="reminder.abbreviatedUnitName == '/5' " >
-							<div class="primary_outcome_variables col">
-								<img ng-repeat="option in primary_outcome_variable_numbers" ng-click="track(reminder, option.value)" ng-src="{{option.img}}">
+							<div class="primary-outcome-variable col">
+								<img ng-repeat="option in primaryOutcomeVariableNumbers" ng-click="track(reminder, option.value)" ng-src="{{option.img}}">
 							</div>
 						</div>
 					</div>
 				</div>
 			</div>
 			
-			<div class="button-bar">
-				<a class="button button-clear button-calm" ng-click="init()" style="text-overflow: clip;"><i class="ion-refresh">  Refresh</i></a>
-			</div>
+<!--			<div class="button-bar">
+				<a class="button button-clear button-positive" ng-click="init()" style="text-overflow: clip;"><i class="ion-refresh">  Refresh</i></a>
+			</div>-->
 		</div>
 
 	</ion-content>

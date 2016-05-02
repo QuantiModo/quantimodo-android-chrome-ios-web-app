@@ -43,7 +43,7 @@ var onFaceButtonClicked = function() {
         payload: [{
             measurements: measurements,
             name: "Overall Mood",
-            source: "MoodiModo",
+            source: "MedTLC",
             category: "Mood",
             combinationOperation: "MEAN",
             unit: "/5"

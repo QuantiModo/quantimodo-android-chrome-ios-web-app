@@ -6,11 +6,16 @@ angular.module('starter',
         'ngCordova',
         'ionic-datepicker',
         'ionic-timepicker',
-        'ngIOS9UIWebViewPatch'
+        'ngIOS9UIWebViewPatch',
+        'ng-mfb'
     ]
 )
 
-.run(function($ionicPlatform, $ionicHistory, $state) {
+.run(function($ionicPlatform, $ionicHistory, $state, $rootScope) {
+
+    $rootScope.goToState = function(state, params){
+        $state.go(state, params);
+    };
 
     var intervalChecker = setInterval(function(){
         if(typeof config !== "undefined"){
@@ -22,7 +27,7 @@ angular.module('starter',
                 Bugsnag.releaseStage = config.getEnv();
                 Bugsnag.notifyReleaseStages = config.bugsnag.notifyReleaseStages;
             } else {
-                console.warn('No bugsnag_key found in private config!')
+                console.warn('No bugsnag_key found in private config!');
             }
 
             $ionicPlatform.ready(function() {
@@ -38,14 +43,14 @@ angular.module('starter',
             });
 
             $ionicPlatform.registerBackButtonAction(function (event) {
-                if($ionicHistory.currentStateName() == config.appSettings.default_state){
+                if($ionicHistory.currentStateName() === config.appSettings.defaultState){
                     ionic.Platform.exitApp();
                 }
                 else {
                     if($ionicHistory.backView()){
                         $ionicHistory.goBack();
                     } else if(localStorage.isLoggedIn){
-                        $state.go(config.appSettings.default_state);
+                        $state.go(config.appSettings.defaultState);
                     } else {
                         $state.go('app.welcome');
                     }
@@ -64,13 +69,17 @@ angular.module('starter',
       loadMyService: ['$ocLazyLoad', function($ocLazyLoad) {
         var getAppNameFromUrl = function () {
             var sPageURL = document.location.toString().split('?')[1];
-            if(!sPageURL) return false;
+            if(!sPageURL) {
+                return false;
+            }
             var sURLVariables = sPageURL.split('&');
-            if(!sURLVariables) return false;
+            if(!sURLVariables) {
+                return false;
+            }
             for (var i = 0; i < sURLVariables.length; i++)
             {
                 var sParameterName = sURLVariables[i].split('=');
-                if (sParameterName[0] == 'app')
+                if (sParameterName[0] === 'app')
                 {
                     return sParameterName[1].split('#')[0];
                 }
@@ -154,12 +163,18 @@ angular.module('starter',
           views: {
               'menuContent': {
                   templateUrl: "templates/track_factors.html",
-                  controller: 'TrackFactorsCtrl'
+                  controller: 'TrackFactorsCategoryCtrl'
               }
           }
       })
       .state('app.track_factors_category', {
           url: "/track_factors_category/:variableCategoryName",
+          cache:false,
+          params: {
+              variableCategoryName : null,
+              fromState : null,
+              measurement : null
+          },
           views: {
               'menuContent': {
                   templateUrl: "templates/track_factors.html",
@@ -167,6 +182,21 @@ angular.module('starter',
               }
           }
       })
+        .state('app.measurementAdd', {
+            url: "/measurement-add/:variableName",
+            cache:false,
+            params: {
+                fromState : null,
+                measurement : null,
+                variableObject : null
+            },
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/measurement_add.html",
+                    controller: 'MeasurementAddCtrl'
+                }
+            }
+        })
         .state('app.variable_settings', {
             url: "/variable_settings/:variableName",
             views: {
@@ -296,22 +326,6 @@ angular.module('starter',
               'menuContent': {
                   templateUrl: "templates/history_all.html",
                   controller: 'AllHistoryCtrl'
-              }
-          }
-      })
-      .state('app.edit', {
-          url: "/edit",
-          cache:false,
-          params: {
-            unit: null,
-            variableName : null,
-            dateTime : null,
-            value : null
-          },
-          views: {
-              'menuContent': {
-                  templateUrl: "templates/reminders_inbox.html",
-                  controller: 'RemindersInboxCtrl'
               }
           }
       })

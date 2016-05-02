@@ -1,17 +1,18 @@
 angular.module('starter')
     // Variable Category Service
-    .factory('variableCategoryService', function($filter){
+    .factory('variableCategoryService', function($filter, $q, QuantiModo, localStorageService){
 
-        return {
+        // service methods
+        var variableCategoryService = {
+
             getVariableCategoryInfo: function (variableCategoryName) {
 
                 var variableCategoryInfo =
                 {
                     "Anything": {
                         defaultUnitAbbreviatedName: '',
-                        help_text: "What do you want to record?",
-                        variable_category_name: "Anything",
-                        variable_category_name_singular_lowercase: "anything",
+                        helpText: "What do you want to record?",
+                        variableCategoryNameSingularLowercase: "anything",
                         variableSearchPlaceholderText : "Search for a variable here...",
                         defaultValuePlaceholderText : "Enter most common value here...",
                         defaultValueLabel : 'Value',
@@ -23,42 +24,42 @@ angular.module('starter')
                     },
                     "Vital Signs": {
                         defaultUnitAbbreviatedName: '',
-                        help_text: "What vital sign do you want to record?",
-                        variable_category_name: "Vital Signs",
-                        variable_category_name_singular_lowercase: "vital sign"
+                        helpText: "What vital sign do you want to record?",
+                        variableCategoryName: "Vital Signs",
+                        variableCategoryNameSingularLowercase: "vital sign"
                     },
                     Foods: {
                         defaultUnitAbbreviatedName: "serving",
-                        help_text: "What did you eat?",
-                        variable_category_name: "Foods",
-                        variable_category_name_singular_lowercase: "food"
+                        helpText: "What did you eat?",
+                        variableCategoryName: "Foods",
+                        variableCategoryNameSingularLowercase: "food"
                     },
                     Emotions: {
                         defaultUnitAbbreviatedName: "/5",
-                        help_text: "What emotion do you want to rate?",
-                        variable_category_name: "Emotions",
-                        variable_category_name_singular_lowercase: "emotion"
+                        helpText: "What emotion do you want to rate?",
+                        variableCategoryName: "Emotions",
+                        variableCategoryNameSingularLowercase: "emotion"
                     },
                     Symptoms: {
                         defaultUnitAbbreviatedName: "/5",
-                        help_text: "What symptom do you want to record?",
-                        variable_category_name: "Symptoms",
-                        variable_category_name_singular_lowercase: "symptom"
+                        helpText: "What symptom do you want to record?",
+                        variableCategoryName: "Symptoms",
+                        variableCategoryNameSingularLowercase: "symptom"
                     },
                     Treatments: {
                         defaultUnitAbbreviatedName: "mg",
-                        help_text: "What treatment do you want to record?",
-                        variable_category_name: "Treatments",
-                        variable_category_name_singular_lowercase: "treatment",
+                        helpText: "What treatment do you want to record?",
+                        variableCategoryName: "Treatments",
+                        variableCategoryNameSingularLowercase: "treatment",
                         defaultValueLabel: "Dosage",
                         defaultValuePlaceholderText: "Enter dose value here..."
 
                     },
                     "Physical Activity": {
                         defaultUnitAbbreviatedName: '',
-                        help_text: "What physical activity do you want to record?",
-                        variable_category_name: "Physical Activity",
-                        variable_category_name_singular_lowercase: "physical activity"
+                        helpText: "What physical activity do you want to record?",
+                        variableCategoryName: "Physical Activity",
+                        variableCategoryNameSingularLowercase: "physical activity"
                     }
                 };
 
@@ -73,19 +74,19 @@ angular.module('starter')
 
                     if(!selectedVariableCategoryObject.nameSingularLowercase){
                         selectedVariableCategoryObject.nameSingularLowercase =
-                            $filter('wordAliases')(pluralize(selectedVariableCategoryObject.variable_category_name.toLowerCase()), 1);
+                            $filter('wordAliases')(pluralize(selectedVariableCategoryObject.variableCategoryName.toLowerCase()), 1);
                     }
 
                     if(!selectedVariableCategoryObject.addNewVariableCardText){
                         selectedVariableCategoryObject.addNewVariableCardText = "Add a new "
-                            + $filter('wordAliases')(pluralize(selectedVariableCategoryObject.variable_category_name.toLowerCase(), 1));
+                            + $filter('wordAliases')(pluralize(selectedVariableCategoryObject.variableCategoryName.toLowerCase(), 1));
                     }
 
                     if(!selectedVariableCategoryObject.variableSearchPlaceholderText){
                         if(variableCategoryName){
                             selectedVariableCategoryObject.variableSearchPlaceholderText =
                                 "Search for a "
-                                + $filter('wordAliases')(pluralize(selectedVariableCategoryObject.variable_category_name.toLowerCase(), 1))
+                                + $filter('wordAliases')(pluralize(selectedVariableCategoryObject.variableCategoryName.toLowerCase(), 1))
                                 + " here...";
                         }
                     }
@@ -95,6 +96,42 @@ angular.module('starter')
                 }
                 
                 return selectedVariableCategoryObject;
+            },
+
+            // refresh local variable categroies with QuantiModo API
+            refreshVariableCategories : function(){
+                var deferred = $q.defer();
+
+                QuantiModo.getVariableCategories(function(vars){
+                    localStorageService.setItem('variableCategories',JSON.stringify(vars));
+                    deferred.resolve(vars);
+                }, function(){
+                    deferred.reject(false);
+                });
+
+                return deferred.promise;
+            },
+
+            // get variable categories
+            getVariableCategories : function(){
+                var deferred = $q.defer();
+
+                localStorageService.getItem('variableCategories',function(variableCategories){
+                    if(variableCategories){
+                        deferred.resolve(JSON.parse(variableCategories));
+                    } else {
+                        QuantiModo.getVariableCategories(function(vars){
+                            localStorageService.setItem('variableCategories', JSON.stringify(vars));
+                            deferred.resolve(vars);
+                        }, function(){
+                            deferred.reject(false);
+                        });
+                    }
+                });
+
+                return deferred.promise;
             }
         };
+        
+        return variableCategoryService;
     });
