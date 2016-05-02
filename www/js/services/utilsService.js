@@ -1,11 +1,35 @@
 angular.module('starter')
 
     // utility methods
-    .factory('utilsService', function($ionicPopup,$state) {
+    .factory('utilsService', function($ionicPopup,$state, $ionicLoading) {
 
         var loginAlert;
 
         return {
+            
+                showAlert : function(title, template) {
+                    var alertPopup = $ionicPopup.alert({
+                        cssClass : 'positive',
+                        okType : 'button-positive',
+                        title: title,
+                        template: template
+                    });
+                },
+
+                // Hide spinner
+                stopLoading : function(){
+                    $ionicLoading.hide();
+                },
+
+                // show spinner
+                startLoading : function(){
+                    // show loading spinner
+                    $ionicLoading.show({
+                        noBackdrop: true,
+                        template: '<img src="img/pop-tart-cat.gif"><!--<br><p class="item-icon-left">Loading stuff...<ion-spinner icon="lines"/></p>-->'
+                    });
+                },
+
             // returns bool
             // if a string starts with substring
             startsWith : function (fullString, search) {
@@ -61,7 +85,7 @@ angular.module('starter')
                             text:'Cancel',
                             type:'button-stable',
                             onTap:function(e){
-                                $state.go(config.appSettings.default_state);
+                                $state.go(config.appSettings.defaultState);
                             }
                         }
                     ],
