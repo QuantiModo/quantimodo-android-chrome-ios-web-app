@@ -37,7 +37,9 @@
                 <br ng-if="introConf.content.showSecondBr" />
                 <p ng-if="introConf.content.finalP" class="{{introConf.content.finalP.classes}}">
                     <span ng-bind-html="introConf.content.finalP.content"></span>
-                    
+                    <br>
+                    <br>
+                    <br>
                     <div ng-if="introConf.content.finalP && introConf.content.finalP.buttonBarVisible">
                         <div class="button-bar">
                             <a class="button button-positive" ng-show="myIntro.slideIndex != introConfiguration.length-1 " ng-click="myIntro.startApp()">

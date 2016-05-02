@@ -119,7 +119,7 @@ angular.module('starter')
 
 	    $scope.edit = function(reminder){
 	    	reminder.fromState = $state.current.name;
-	    	$state.go('app.reminder_add', {reminder : reminder});
+	    	$state.go('app.reminderAdd', {reminder : reminder});
 	    };
 
 	    $scope.deleteReminder = function(reminder){

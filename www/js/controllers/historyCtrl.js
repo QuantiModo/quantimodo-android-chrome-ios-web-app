@@ -22,7 +22,7 @@ angular.module('starter')
 	    };
 	    
 	    // load editing popover
-	    $ionicPopover.fromTemplateUrl('templates/history_popup.html', {
+	    $ionicPopover.fromTemplateUrl('templates/history-popup.html', {
 	        scope: $scope
 	    }).then(function(popover) {
 	        $scope.historyPopover = popover;

@@ -28,9 +28,9 @@ config.appSettings  = {
 
     appStorageIdentifier: 'MedTLCData*',
 
-    defaultState : 'app.reminders_inbox',
+    defaultState : 'app.remindersInbox',
 
-    welcomeState : 'app.reminders_inbox',
+    welcomeState : 'app.remindersInbox',
 
 
     headline : 'Medications - Track, Learn, Connect',

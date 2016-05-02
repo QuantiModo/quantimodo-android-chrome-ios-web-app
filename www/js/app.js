@@ -110,7 +110,7 @@ angular.module('starter',
     $stateProvider
       .state('intro', {
           url: '/',
-          templateUrl: 'templates/intro.html',
+          templateUrl: 'templates/intro-tour.html',
           controller: 'IntroCtrl',
           resolve : config_resolver
       })
@@ -135,7 +135,7 @@ angular.module('starter',
         url: "/login",
         views: {
           'menuContent': {
-            templateUrl: "templates/login_page.html",
+            templateUrl: "templates/login-page.html",
             controller: 'LoginCtrl'
           }
         }
@@ -144,7 +144,7 @@ angular.module('starter',
             url: "/intro",
             views: {
                 'menuContent': {
-                    templateUrl: "templates/intro.html",
+                    templateUrl: "templates/intro-tour.html",
                     controller: 'IntroPageCtrl'
                 }
             }
@@ -153,7 +153,7 @@ angular.module('starter',
           url: "/track",
           views: {
               'menuContent': {
-                  templateUrl: "templates/track.html",
+                  templateUrl: "templates/track-primary-outcome-variable.html",
                   controller: 'TrackCtrl'
               }
           }
@@ -162,7 +162,7 @@ angular.module('starter',
           url: "/track_factors",
           views: {
               'menuContent': {
-                  templateUrl: "templates/track_factors.html",
+                  templateUrl: "templates/variable-search.html",
                   controller: 'TrackFactorsCategoryCtrl'
               }
           }
@@ -177,7 +177,7 @@ angular.module('starter',
           },
           views: {
               'menuContent': {
-                  templateUrl: "templates/track_factors.html",
+                  templateUrl: "templates/variable-search.html",
                   controller: 'TrackFactorsCategoryCtrl'
               }
           }
@@ -192,7 +192,7 @@ angular.module('starter',
             },
             views: {
                 'menuContent': {
-                    templateUrl: "templates/measurement_add.html",
+                    templateUrl: "templates/measurement-add.html",
                     controller: 'MeasurementAddCtrl'
                 }
             }
@@ -201,7 +201,7 @@ angular.module('starter',
             url: "/variable_settings/:variableName",
             views: {
                 'menuContent': {
-                    templateUrl: "templates/variable_settings.html",
+                    templateUrl: "templates/variable-settings.html",
                     controller: 'VariableSettingsCtrl'
                 }
             }
@@ -211,27 +211,27 @@ angular.module('starter',
           cache:"false",
           views: {
               'menuContent': {
-                  templateUrl: "templates/import.html",
+                  templateUrl: "templates/import-data.html",
                   controller: 'ImportCtrl'
               }
           }
       })
-      .state('app.search-variables', {
+      .state('app.searchVariablesEmbed', {
           url: "/search-variables",
           cache:false,
           views: {
               'menuContent': {
-                  templateUrl: "templates/iFrame.html",
+                  templateUrl: "templates/iframe-embed.html",
                   controller: 'IframeScreenCtrl'
               }
           }
       })
-      .state('app.search-common-relationships', {
+      .state('app.searchCommonRelationships', {
           url: "/search-common-relationships",
           cache:false,
           views: {
               'menuContent': {
-                  templateUrl: "templates/iFrame.html",
+                  templateUrl: "templates/iframe-embed.html",
                   controller: 'IframeScreenCtrl'
               }
           }
@@ -241,7 +241,7 @@ angular.module('starter',
           cache:false,
           views: {
               'menuContent': {
-                  templateUrl: "templates/iFrame.html",
+                  templateUrl: "templates/iframe-embed.html",
                   controller: 'IframeScreenCtrl'
               }
           }
@@ -306,7 +306,7 @@ angular.module('starter',
           url: "/postidea",
           views: {
               'menuContent': {
-                  templateUrl: "templates/postidea.html",
+                  templateUrl: "templates/post-idea.html",
                   controller: 'ExternalCtrl'
               }
           }
@@ -315,7 +315,7 @@ angular.module('starter',
           url: "/history",
           views: {
               'menuContent': {
-                  templateUrl: "templates/history.html",
+                  templateUrl: "templates/history-primary-outcome-variable.html",
                   controller: 'HistoryCtrl'
               }
           }
@@ -324,12 +324,12 @@ angular.module('starter',
           url: "/history-all",
           views: {
               'menuContent': {
-                  templateUrl: "templates/history_all.html",
+                  templateUrl: "templates/history-all.html",
                   controller: 'AllHistoryCtrl'
               }
           }
       })
-      .state('app.reminders_inbox', {
+      .state('app.remindersInbox', {
           url: "/reminders-inbox",
           cache:false,
           params: {
@@ -340,12 +340,12 @@ angular.module('starter',
           },
           views: {
               'menuContent': {
-                  templateUrl: "templates/reminders_inbox.html",
+                  templateUrl: "templates/reminders-inbox.html",
                   controller: 'RemindersInboxCtrl'
               }
           }
       })
-      .state('app.reminders_inbox_category', {
+      .state('app.remindersInboxCategory', {
           url: "/reminders-inbox/:variableCategoryName",
           cache:false,
           params: {
@@ -356,42 +356,42 @@ angular.module('starter',
           },
           views: {
               'menuContent': {
-                  templateUrl: "templates/reminders_inbox.html",
+                  templateUrl: "templates/reminders-inbox.html",
                   controller: 'RemindersInboxCtrl'
               }
           }
       })
-      .state('app.reminders_manage', {
+      .state('app.remindersManage', {
           url: "/reminders-manage",
           cache:false,
           views: {
               'menuContent': {
-                  templateUrl: "templates/reminders_manage.html",
+                  templateUrl: "templates/reminders-manage.html",
                   controller: 'RemindersManageCtrl'
               }
           }
       })
-      .state('app.reminders_manage_category', {
+      .state('app.remindersManageCategory', {
           url: "/reminders-manage/:variableCategoryName",
           cache:false,
           views: {
               'menuContent': {
-                  templateUrl: "templates/reminders_manage.html",
+                  templateUrl: "templates/reminders-manage.html",
                   controller: 'RemindersManageCtrl'
               }
           }
       })
-      .state('app.reminder_add_category', {
+      .state('app.reminderAddCategory', {
           url: "/reminder_add/:variableCategoryName",
           cache:false,
           views: {
               'menuContent': {
-                  templateUrl: "templates/reminder_add.html",
+                  templateUrl: "templates/reminder-add.html",
                   controller: 'RemindersAddCtrl'
               }
           }
       })
-      .state('app.reminder_add', {
+      .state('app.reminderAdd', {
           url: "/reminder_add",
           cache:false,
           params: {
@@ -399,7 +399,7 @@ angular.module('starter',
           },
           views: {
               'menuContent': {
-                  templateUrl: "templates/reminder_add.html",
+                  templateUrl: "templates/reminder-add.html",
                   controller: 'RemindersAddCtrl'
               }
           }

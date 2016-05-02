@@ -227,7 +227,7 @@ angular.module('starter')
 	    		if($stateParams.reminder.fromState){
 	    			$state.go($stateParams.reminder.fromState);
 	    		} else {
-					$state.go('app.reminders_manage');
+					$state.go('app.remindersManage');
                 }
 
 	    	} else {
@@ -256,10 +256,10 @@ angular.module('starter')
 	    			if($stateParams.reminder.fromState){
 	    				$state.go($stateParams.reminder.fromState);
 	    			} else {
-						$state.go('app.reminders_manage');
+						$state.go('app.remindersManage');
                     }
 	    		} else {
-					$state.go('app.reminders_manage');
+					$state.go('app.remindersManage');
                 }
 
 	    	}, function(err){
@@ -328,10 +328,10 @@ angular.module('starter')
 	    			if($stateParams.reminder.fromState){
 	    				$state.go($stateParams.reminder.fromState);
 	    			} else {
-						$state.go('app.reminders_manage');
+						$state.go('app.remindersManage');
                     }
 	    		} else {
-					$state.go('app.reminders_manage');
+					$state.go('app.remindersManage');
                 }
 
 	    	}, function(err){
@@ -442,7 +442,7 @@ angular.module('starter')
                                 if($stateParams.reminder.fromState){
                                     $state.go($stateParams.reminder.fromState);
                                 } else {
-                                    $state.go('app.reminders_manage');
+                                    $state.go('app.remindersManage');
                                 }
                             }
                             $stateParams.reminder = $scope.state.allReminders[0];
