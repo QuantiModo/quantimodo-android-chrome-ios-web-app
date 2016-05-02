@@ -30,6 +30,9 @@ config.appSettings  = {
 
     defaultState : 'app.reminders_inbox',
 
+    welcomeState : 'app.reminders_inbox',
+
+
     headline : 'Medications - Track, Learn, Connect',
     features: [
         ' Follow These Quick Steps to Improve Your Health',

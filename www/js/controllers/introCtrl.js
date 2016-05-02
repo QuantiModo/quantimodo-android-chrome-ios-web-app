@@ -14,7 +14,7 @@ angular.module('starter')
         // Called to navigate to the main app
         startApp : function() {
             localStorageService.setItem('introSeen', true);
-            $state.go('app.welcome');
+            $state.go(config.appSettings.welcomeState);
         },
 
         next : function() {

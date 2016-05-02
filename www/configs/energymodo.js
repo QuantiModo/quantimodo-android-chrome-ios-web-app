@@ -24,6 +24,7 @@ config.appSettings  = {
     appName : 'EnergyModo',
 
     defaultState : 'app.track',
+    welcomeState : 'app.welcome',
 
     primaryOutcomeVariable : 'Energy',
 

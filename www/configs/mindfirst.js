@@ -26,6 +26,8 @@ config.appSettings  = {
 
     defaultState : 'app.track',
 
+    welcomeState : 'app.welcome',
+
     primaryOutcomeVariable : 'Mood',
 
     appStorageIdentifier: 'MindFirstData*',
