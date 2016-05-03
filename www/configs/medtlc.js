@@ -23,6 +23,7 @@ window.config = {
 
 config.appSettings  = {
     appName : 'MedTLC',
+    alwaysRequireLogin : true,
 
     primaryOutcomeVariable : 'Mood',
 
