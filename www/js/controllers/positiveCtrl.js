@@ -5,12 +5,12 @@ angular.module('starter')
                                          $state, $ionicPopup, correlationService, $rootScope,
                                          localStorageService, utilsService) {
 
-        /*// redirect if not logged in
+
         if(!$scope.isLoggedIn){
             $state.go('app.welcome');
             // app wide signal to sibling controllers that the state has changed
             $rootScope.$broadcast('transition');
-        }*/
+        }
         
          localStorageService.getItem('notShowConfirmationPositive',function(val){
              $scope.notShowConfirmationPositive = val ? JSON.parse(val) : false;
@@ -79,21 +79,14 @@ angular.module('starter')
             var vote = 0;
             var correlationCoefficient = factor.correlationCoefficient;
 
-            if($scope.isLoggedIn){
-
-                // call vote method
-                correlationService.vote(vote, cause, effect, correlationCoefficient)
-                    .then(function(){
-                        $scope.showAlert('Down voted!');
-                    }, function(){
-                        $scope.showAlert('Down vote failed !');
-                    });
-            } else {
-                $ionicLoading.hide();
-                utilsService.showLoginRequiredAlert($scope.login);
-                factor.userVote = prevValue;
-            }
-        };
+            // call vote method
+            correlationService.vote(vote, cause, effect, correlationCoefficient)
+                .then(function(){
+                    $scope.showAlert('Down voted!');
+                }, function(){
+                    $scope.showAlert('Down vote failed !');
+                });
+        }
 
 	    // when upvoted
 	    $scope.upvote = function(factor){
@@ -133,21 +126,15 @@ angular.module('starter')
             var effect = factor.effect;
             var vote = 1;
             var correlationCoefficient = factor.correlationCoefficient;
-
-            if($scope.isLoggedIn){
-                // call vote method
-                correlationService.vote(vote, cause, effect, correlationCoefficient)
-                    .then(function(){
-                        $scope.showAlert('Upvoted !');
-                    }, function(){
-                        $scope.showAlert('Upvote Failed !');
-                        factor.userVote = prevValue;
-                    });
-            } else {
-                utilsService.showLoginRequiredAlert($scope.login);
-                factor.userVote = prevValue;
-            }
-        };
+            
+            correlationService.vote(vote, cause, effect, correlationCoefficient)
+                .then(function(){
+                    $scope.showAlert('Upvoted !');
+                }, function(){
+                    $scope.showAlert('Upvote Failed !');
+                    factor.userVote = prevValue;
+                });
+        }
 
 	    // constructor
 	    $scope.init = function(){
@@ -162,25 +149,19 @@ angular.module('starter')
 	        	// get correlationObjects
                 correlationService.getPositiveFactors()
 	            .then(function(correlationObjects){
-                        // update view model
-                        $scope.positives = correlationObjects;
-                        $ionicLoading.hide();
-
-                        correlationService.getUsersPositiveFactors().then(function(correlationObjects){
-                            $scope.usersPositiveFactors = correlationObjects;
-                        })
-
-
-
+                    // update view model
+                    $scope.positives = correlationObjects;
+                    $ionicLoading.hide();
+                    correlationService.getUsersPositiveFactors().then(function(correlationObjects){
+                        $scope.usersPositiveFactors = correlationObjects;
+                    });
 	            }, function(){
 	                $ionicLoading.hide();
 	            });    
 	        } else {
-
 	            $ionicLoading.hide();
                 utilsService.showLoginRequiredAlert($scope.login);
             }
-
 	    };
 
 	    $scope.openStore = function(name){

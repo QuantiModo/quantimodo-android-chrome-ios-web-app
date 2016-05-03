@@ -79,10 +79,7 @@ angular.module('starter')
 		};
 
 		$scope.openReminderStartTimePicker = function() {
-
-            var secondsSinceMidnightLocal =
-                timeService.getSecondsSinceMidnightLocal($scope.state.reminderStartTimeStringUtc);
-
+            
             $scope.state.timePickerConfiguration = {
                 callback: function (val) {
                     if (typeof (val) === 'undefined') {
@@ -387,7 +384,7 @@ angular.module('starter')
 
 	    // setup category view
 	    var setupVariableCategory = function(variableCategoryName){
-
+            console.log("$stateParams.variableCategoryName  is " + variableCategoryName);
             if(!variableCategoryName){
                 variableCategoryName = '';
             }
@@ -408,62 +405,51 @@ angular.module('starter')
 	    };
 
 	    // constructor
-	    $scope.init = function(){
+        function setupReminderEditingFromUrlParameter(reminderIdUrlParameter) {
+            reminderService.getTrackingReminders(null, reminderIdUrlParameter)
+                .then(function (reminders) {
+                    $scope.state.allReminders = reminders;
+                    if (reminders.length !== 1) {
+                        utilsService.showAlert("Reminder id " + reminderIdUrlParameter + " not found!", 'assertive');
+                        if ($stateParams.reminder.fromState) {
+                            $state.go($stateParams.reminder.fromState);
+                        } else {
+                            $state.go('app.remindersManage');
+                        }
+                    }
+                    $stateParams.reminder = $scope.state.allReminders[0];
+                    setupEditReminder($stateParams.reminder);
+                    utilsService.stopLoading();
+                }, function () {
+                    utilsService.stopLoading();
+                    console.log("failed to get reminders");
+                });
+        }
 
+        $scope.init = function(){
+            authService.checkIfLoggedInAndRedirectToLoginIfNecessary();
 
             if($stateParams.variableCategoryName){
-                console.log("$stateParams.variableCategoryName  is " + $stateParams.variableCategoryName);
                 setupVariableCategory($stateParams.variableCategoryName);
-                $scope.state.variableCategoryObject = variableCategoryService.getVariableCategoryInfo($stateParams.variableCategoryName);
-                $scope.state.showSearchBox = true;
-                $scope.state.showResults = true;
-                $scope.state.showVariableCategorySelector = false;
-                $scope.state.title = "Add a " + $filter('wordAliases')(pluralize($stateParams.variableCategoryName, 1) + " Reminder");
             }
 
             var reminderIdUrlParameter = utilsService.getUrlParameter(window.location.href, 'reminderId');
-
-			// get user token
-			authService.getAccessTokenFromAnySource().then(function(token){
-				$scope.getUnits();
-				if($stateParams.variableCategoryName){
-					$scope.variableCategoryName = $stateParams.variableCategoryName;
-					setupVariableCategory($scope.variableCategoryName);
-				}
-				else if($stateParams.reminder && $stateParams.reminder !== null) {
-					setupEditReminder($stateParams.reminder);
-                }
-                else if(reminderIdUrlParameter) {
-                    reminderService.getTrackingReminders(null, reminderIdUrlParameter)
-                        .then(function(reminders){
-                            $scope.state.allReminders = reminders;
-                            if (reminders.length !== 1){
-                                utilsService.showAlert("Reminder id " + reminderIdUrlParameter + " not found!", 'assertive');
-                                if($stateParams.reminder.fromState){
-                                    $state.go($stateParams.reminder.fromState);
-                                } else {
-                                    $state.go('app.remindersManage');
-                                }
-                            }
-                            $stateParams.reminder = $scope.state.allReminders[0];
-                            setupEditReminder($stateParams.reminder);
-                            utilsService.stopLoading();
-                        }, function(){
-                            utilsService.stopLoading();
-                            console.log("failed to get reminders");
-                            console.log("need to log in");
-                            $ionicLoading.hide();
-                            utilsService.showLoginRequiredAlert($scope.login);
-                        });
-                }
-				else {
-					setupNewReminder();
-                }
-			}, function(){
-				$ionicLoading.hide();
-				console.log("need to log in");
-				//utilsService.showLoginRequiredAlert($scope.login);
-			});
+            $scope.getUnits();
+        
+            if($stateParams.variableCategoryName){
+                $scope.variableCategoryName = $stateParams.variableCategoryName;
+                setupVariableCategory($scope.variableCategoryName);
+            }
+            else if($stateParams.reminder && $stateParams.reminder !== null) {
+                setupEditReminder($stateParams.reminder);
+            }
+            else if(reminderIdUrlParameter) {
+                setupReminderEditingFromUrlParameter(reminderIdUrlParameter);
+            }
+            else {
+                setupNewReminder();
+            }
+			
 	    };
 
         // when view is changed

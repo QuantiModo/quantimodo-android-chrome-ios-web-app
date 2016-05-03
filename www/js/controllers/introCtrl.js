@@ -28,7 +28,7 @@ angular.module('starter')
         // Called each time the slide changes
         slideChanged : function(index) {
             $scope.myIntro.slideIndex = index;
-        },
+        }
     };
 
     var init = function(){

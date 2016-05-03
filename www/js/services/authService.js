@@ -1,7 +1,6 @@
 angular.module('starter')
 
-	.factory('authService', function ($http, $q, localStorageService, utilsService, $state, $ionicLoading, $rootScope, 
-                                      $scope) {
+	.factory('authService', function ($http, $q, localStorageService, utilsService, $state, $ionicLoading, $rootScope) {
 
 		var authSrv = {
 
@@ -461,7 +460,6 @@ angular.module('starter')
                 {
                 }, function () {
                     //set flags
-                    $scope.isLoggedIn = false;
                     $ionicLoading.hide();
                     if(config.appSettings.alwaysRequireLogin){
                         console.log('need to login again');

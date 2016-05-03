@@ -103,16 +103,6 @@ angular.module('starter')
             });
         };
 
-        // show alert box
-        $scope.showAlert = function(title, template) {
-           var alertPopup = $ionicPopup.alert({
-                cssClass : 'positive',
-                okType : 'button-positive',
-                title: title,
-                template: template
-           });
-        };
-
         // constructor
         $scope.init = function(){
 
