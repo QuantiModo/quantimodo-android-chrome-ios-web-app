@@ -157,37 +157,41 @@ angular.module('starter')
     };
 
     // when work on this activity is complete
-    $scope.movePage = function(){
+        function hideMenuIfSetInUrlParameter() {
+            if (location.href.toLowerCase().indexOf('hidemenu=true') !== -1) {
+                $rootScope.skipMenu = true;
+            }
+        }
+
+        function goToDefaultStateShowMenuClearIntroHistoryAndRedraw() {
+            
+            if ($state.current.name === "app.welcome" || $state.current.name === "app.login") {
+                $state.go(config.appSettings.defaultState);
+                $rootScope.hideMenu = false;
+            }
+
+            // don't animate, clear back history
+            $ionicHistory.nextViewOptions({
+                disableAnimate: false,
+                disableBack: true
+            });
+
+            // redraw everything according to updated appstate
+            $rootScope.$broadcast('redraw');
+        }
+
+        $scope.movePage = function(){
+            hideMenuIfSetInUrlParameter();
+        
         // if user has seen the welcome screen before
         localStorageService.getItem('isWelcomed',function(isWelcomed) {
 
             if(isWelcomed  === true || isWelcomed === "true"){
                 $rootScope.isWelcomed = true;
-                console.log("isWelcomed is true. going");
+                goToDefaultStateShowMenuClearIntroHistoryAndRedraw();
 
-                // move to tracking page
-                if($state.current.name === "app.welcome" || $state.current.name === "app.login"){
-                    $state.go(config.appSettings.defaultState);
-                    $rootScope.hideMenu = false;
-                }
 
-                // don't animate, clear back history
-                $ionicHistory.nextViewOptions({
-                    disableAnimate: false,
-                    disableBack: true
-                });
-
-                if(location.href.toLowerCase().indexOf('hidemenu=true') !== -1) {
-                   $rootScope.skipMenu = true;
-                }
-
-                // redraw everything according to updated appstate
-                $rootScope.$broadcast('redraw');
-            } else {
-                if(location.href.toLowerCase().indexOf('hidemenu=true') !== -1) {
-                   $rootScope.skipMenu = true;
-                }
-            }
+            } 
         });
     };
 
@@ -452,92 +456,97 @@ angular.module('starter')
         measurementService.calculateBothChart().then(hideLoaderMove, hideLoaderMove);
     };
 
+    // calculate values for both of the charts
+    var syncPrimaryOutcomeVariableMeasurementsIfInSyncEnabledState = function(){
+        var syncEnabledStates = [
+            'app.track',
+            'app.welcome',
+            'app.history',
+            'app.login'
+        ];
+
+        if(syncEnabledStates.indexOf($state.current.name) !== -1 && config.appSettings.primaryOutcomeVariable){
+            $rootScope.isSyncing = true;
+            console.log('setting sync true');
+
+            measurementService.syncData().then(function(){
+                console.log("sync complete");
+                $rootScope.isSyncing = false;
+
+                // update loader text
+                $ionicLoading.hide();
+                showLoader('Calculating stuff', 2000);
+
+                // calculate primary outcome variable values
+                measurementService.calculateAveragePrimaryOutcomeVariableValue().then(function(){
+                    measurementService.getPrimaryOutcomeVariableValue().then(calculateChartValues, calculateChartValues);
+                });
+
+            }, hideLoaderMove);
+        }
+    }; 
+
     // Demonstration of a sample API call
+    function setUserForIntercom(user) {
+        user = JSON.parse(user);
+        console.log('user:' + user);
+        window.intercomSettings = {
+            app_id: "uwtx2m33",
+            name: user.displayName,
+            email: user.email,
+            user_id: user.id
+        };
+        return user;
+    }
+
+    function setUserInLocalStorage() {
+        console.log("Don't have a user.");
+        QuantiModo.getUser(function (user) {
+
+            // set user data in local storage
+            localStorageService.setItem('user', JSON.stringify(user));
+
+            $scope.userName = user.displayName;
+        }, function (err) {
+
+            // error
+            console.log(err);
+        });
+    }
+
     $scope.init = function () {
+            
         console.log("Main Constructor Start");
-
-        showLoader('Logging you in', 2000);
-
         scheduleReminder();
 
         // try to get access token
     	authService.getAccessTokenFromAnySource().then(function(data) {
 
             console.log('got the access token');
-            var accessToken = data.accessToken;
-
             // set flags
             $scope.isLoggedIn = true;
 
             localStorageService.getItem('user',function(user){
                 if(!user){
-                    console.log("Don't have a user.");
-                    QuantiModo.getUser(function(user){
-
-                        // set user data in local storage
-                        localStorageService.setItem('user', JSON.stringify(user));
-
-                        $scope.userName = user.displayName;
-                    },function(err){
-
-                        // error
-                        console.log(err);
-                    });
+                    setUserInLocalStorage();
                 }
                 if(user){
-                    user = JSON.parse(user);
-                    console.log('user:' + user);
-                    window.intercomSettings = {
-                        app_id: "uwtx2m33",
-                        name: user.displayName,
-                        email: user.email,
-                        user_id: user.id
-                    };
+                    setUserForIntercom(user);
                 }
-
             });
-
-
-
-            // update loader text
+            
             $ionicLoading.hide();
             //showLoader('Syncing data');
             // sync data
             $scope.movePage();
-
-            var syncEnabledStates = [
-                'app.track',
-                'app.welcome',
-                'app.history',
-                'app.login'
-            ];
-
-            if(syncEnabledStates.indexOf($state.current.name) !== -1 && config.appSettings.primaryOutcomeVariable){
-                $rootScope.isSyncing = true;
-                console.log('setting sync true');
-
-                measurementService.syncData().then(function(){
-                    console.log("sync complete");
-                    $rootScope.isSyncing = false;
-
-                    // update loader text
-                    $ionicLoading.hide();
-                    showLoader('Calculating stuff', 2000);
-
-                    // calculate primary outcome variable values
-                    measurementService.calculateAveragePrimaryOutcomeVariableValue().then(function(){
-                        measurementService.getPrimaryOutcomeVariableValue().then(calculateChartValues, calculateChartValues);
-                    });
-
-                }, hideLoaderMove);
-            }
+            
+            syncPrimaryOutcomeVariableMeasurementsIfInSyncEnabledState();
 
         }, function () {
 
             //set flags
 			$scope.isLoggedIn = false;
             $ionicLoading.hide();
-
             console.log('need to login again');
         });
 
@@ -545,8 +554,6 @@ angular.module('starter')
 
     $scope.$on('callAppCtrlInit', function(){
         console.log("calling init");
-        
-        // update everything
         $scope.init();
     });
 
