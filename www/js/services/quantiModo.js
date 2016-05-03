@@ -19,13 +19,13 @@ angular.module('starter')
                     $state.go('app.login');
                     return;
                 }
-                if(request) {
-                    error = data.error.message;
-                    Bugsnag.notify("API Request to " + request.url + " Failed", error, {}, "error");
-                }
                 if(!data){
                     console.log('No data property returned from QM API request');
                     return;
+                }
+                if(request) {
+                    error = data.error.message;
+                    Bugsnag.notify("API Request to " + request.url + " Failed", error, {}, "error");
                 }
                 if(data.success){
                     return;
@@ -54,7 +54,7 @@ angular.module('starter')
                     var urlParams = [];
                     for (var key in params) 
                     {
-                        if (jQuery.inArray(key, allowedParams) == -1) 
+                        if (jQuery.inArray(key, allowedParams) === -1)
                         { 
                             throw 'invalid parameter; allowed parameters: ' + allowedParams.toString(); 
                         }
@@ -65,7 +65,7 @@ angular.module('starter')
                     var url = config.getURL(baseURL);
                     var request = {   
                         method : 'GET', 
-                        url: (url + ((urlParams.length == 0) ? '' : urlParams.join('&'))), 
+                        url: (url + ((urlParams.length === 0) ? '' : urlParams.join('&'))),
                         responseType: 'json', 
                         headers : {
                             "Authorization" : "Bearer " + token.accessToken,
@@ -140,7 +140,7 @@ angular.module('starter')
                         defer.resolve(response_array);
                     }else{
                         localStorageService.getItem('isLoggedIn', function(isLoggedIn){
-                            if(isLoggedIn == "false" || isLoggedIn == false){
+                            if(isLoggedIn === "false" || isLoggedIn === false){
                                 defer.reject(false);
                             } else {
                                 response_array = response_array.concat(response);
@@ -161,12 +161,19 @@ angular.module('starter')
 
             QuantiModo.getV1Measurements = function(params, successHandler, errorHandler){
                 QuantiModo.get('api/v1/measurements',
-                    ['source', 'limit', 'offset', 'sort'],
+                    ['source', 'limit', 'offset', 'sort', 'id'],
                     params,
                     successHandler,
                     errorHandler);
             };
 
+            QuantiModo.deleteV1Measurements = function(measurements, successHandler, errorHandler){
+                QuantiModo.post('api/v1/measurements/delete',
+                    ['variableId', 'variableName', 'startTime', 'id'],
+                    measurements,
+                    successHandler,
+                    errorHandler);
+            };
 
 
             // post measurements old method
@@ -216,8 +223,8 @@ angular.module('starter')
 
             // get positive list
             QuantiModo.getCauses = function(successHandler, errorHandler){
-                var primary_outcome_variable = config.appSettings.primary_outcome_variable_details.name.replace(' ','%20');
-                QuantiModo.get('api/v1/variables/'+primary_outcome_variable+'/public/causes',
+                var primaryOutcomeVariable = config.appSettings.primaryOutcomeVariableDetails.name.replace(' ','%20');
+                QuantiModo.get('api/v1/variables/'+primaryOutcomeVariable+'/public/causes',
                     [],
                     {},
                     successHandler,
@@ -226,8 +233,8 @@ angular.module('starter')
 
             //get User's causes
             QuantiModo.getUsersCauses = function (successHandler,errorHandler) {
-                var primary_outcome_variable = config.appSettings.primary_outcome_variable_details.name.replace(' ','%20');
-                QuantiModo.get('api/v1/variables/'+primary_outcome_variable+'/causes',
+                var primaryOutcomeVariable = config.appSettings.primaryOutcomeVariableDetails.name.replace(' ','%20');
+                QuantiModo.get('api/v1/variables/'+primaryOutcomeVariable+'/causes',
                     [],
                     {},
                     successHandler,
@@ -238,8 +245,8 @@ angular.module('starter')
 
             // get negative list
             QuantiModo.getNegativeList = function(successHandler, errorHandler){
-                var primary_outcome_variable = config.appSettings.primary_outcome_variable_details.name.replace(' ','%20');
-                QuantiModo.get('api/v1/variables/'+primary_outcome_variable+'/public/effects',
+                var primaryOutcomeVariable = config.appSettings.primaryOutcomeVariableDetails.name.replace(' ','%20');
+                QuantiModo.get('api/v1/variables/'+primaryOutcomeVariable+'/public/effects',
                     [],
                     {},
                     successHandler,

@@ -5,6 +5,11 @@
   "jquery"  : true,
 
   "globals": {
+    "StatusBar" : false,
+    "cordova" : false,
+    "document" : false,
+    "appsManager" : false,
+    "setTimeout" : false,
     "Bugsnag" : false,
     "setInterval" : false,
     "clearInterval" : false,
