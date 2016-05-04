@@ -9,6 +9,7 @@ angular.module('starter')
 		console.log('Loading ' + $scope.controller_name);
 	    
 	    $scope.state = {
+			showButtons : false,
 			variableCategory : $stateParams.variableCategoryName,
 	    	showMeasurementBox : false,
 	    	selectedReminder : false,
@@ -104,17 +105,18 @@ angular.module('starter')
 
 	    // constructor
 	    $scope.init = function(){
+			$scope.state.loading = true;
 			utilsService.loadingStart();
-			authService.getAccessTokenFromAnySource().then(function(accessToken)
-			{
+			var user = authService.getUserFromLocalStorage();
+			if(user){
+				$scope.state.showButtons = true;
 				$scope.showHelpInfoPopupIfNecessary();
 				getTrackingReminders();
 				$ionicLoading.hide();
-			}, function () {
+			} else {
 				$ionicLoading.hide();
-				console.log('need to login again');
 				$state.go('app.login');
-			});
+			}
 	    };
 
 

@@ -413,9 +413,10 @@ angular.module('starter')
         }
 
         $scope.init = function(){
+            $scope.state.loading = true;
             utilsService.loadingStart();
-            authService.getAccessTokenFromAnySource().then(function(accessToken)
-            {
+            var user = authService.getUserFromLocalStorage();
+            if(user){
                 if($stateParams.variableCategoryName){
                     setupVariableCategory($stateParams.variableCategoryName);
                 }
@@ -434,11 +435,10 @@ angular.module('starter')
                 else {
                     setupNewReminder();
                 }
-            }, function () {
+            } else {
                 $ionicLoading.hide();
-                console.log('need to login again');
                 $state.go('app.login');
-            });
+            }
 	    };
 
         // when view is changed

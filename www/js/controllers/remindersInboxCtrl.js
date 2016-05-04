@@ -9,7 +9,7 @@ angular.module('starter')
 		console.log('Loading ' + $scope.controller_name);
 		
 	    $scope.state = {
-			showButtons : true,
+			showButtons : false,
 	    	showMeasurementBox : false,
 	    	selectedReminder : false,
 	    	reminderDefaultValue : "",
@@ -174,17 +174,18 @@ angular.module('starter')
 	    };
 
 	    $scope.init = function(){
+			$scope.state.loading = true;
 			utilsService.loadingStart();
-			authService.getAccessTokenFromAnySource().then(function(accessToken)
-			{
+			var user = authService.getUserFromLocalStorage();
+			if(user){
+				$scope.state.showButtons = true;
 				$scope.showHelpInfoPopupIfNecessary();
 				getTrackingReminderNotifications();
 				$ionicLoading.hide();
-			}, function () {
+			} else {
 				$ionicLoading.hide();
-				console.log('need to login again');
 				$state.go('app.login');
-			});
+			}
 	    };
 
 	    $scope.editMeasurement = function(reminder){
