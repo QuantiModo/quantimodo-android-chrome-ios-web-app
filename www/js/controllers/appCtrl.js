@@ -16,27 +16,26 @@ angular.module('starter')
         $ionicSideMenuDelegate.toggleLeft(false);
     };
 
-    $scope.not_show_help_popup;
-    var help_popup_messages = config.appSettings.help_popup_messages || false;
+    var helpPopupMessages = config.appSettings.helpPopupMessages || false;
 
     $scope.$on('$ionicView.enter', function(e) {
-        if(help_popup_messages && typeof help_popup_messages[location.hash] !== "undefined"){
-            localStorageService.getItem('not_show_help_popup',function(val){
-                $scope.not_show_help_popup = val ? JSON.parse(val) : false;
+        if(helpPopupMessages && typeof helpPopupMessages[location.hash] !== "undefined"){
+            localStorageService.getItem('notShowHelpPopup',function(val){
+                $scope.notShowHelpPopup = val ? JSON.parse(val) : false;
 
                 // Had to add "&& e.targetScope !== $scope" to prevent duplicate popups
-                if(!$scope.not_show_help_popup && e.targetScope !== $scope){
+                if(!$scope.notShowHelpPopup && e.targetScope !== $scope){
                     $ionicPopup.show({
-                        title: help_popup_messages[location.hash],
+                        title: helpPopupMessages[location.hash],
                         subTitle: '',
                         scope:$scope,
-                        template:'<label><input type="checkbox" ng-model="$parent.not_show_help_popup" class="show-again-checkbox">Don\'t show these tips</label>',
+                        template:'<label><input type="checkbox" ng-model="$parent.notShowHelpPopup" class="show-again-checkbox">Don\'t show these tips</label>',
                         buttons:[
                             {
                                 text: 'OK',
-                                type: 'button-calm',
+                                type: 'button-positive',
                                 onTap: function(){
-                                    localStorageService.setItem('not_show_help_popup',JSON.stringify($scope.not_show_help_popup));
+                                    localStorageService.setItem('notShowHelpPopup',JSON.stringify($scope.notShowHelpPopup));
                                 }
                             }
                         ]
@@ -55,7 +54,7 @@ angular.module('starter')
         }
     };
     $scope.showHistorySubMenu = false;
-    $scope.shopping_cart_enabled = config.shopping_cart_enabled;
+    $scope.shoppingCarEnabled = config.shoppingCarEnabled;
     $rootScope.isSyncing = false;
     var $cordovaFacebook = {};
 
@@ -69,13 +68,13 @@ angular.module('starter')
     }
 
     /*Wrapper Config*/
-    $scope.view_title = config.appSettings.app_name;
-    $scope.primary_outcome_variable = config.appSettings.primary_outcome_variable;
-    $scope.primary_outcome_variable_options = config.getPrimaryOutcomeVariableOptions();
-    $scope.primary_outcome_variable_numbers = config.getPrimaryOutcomeVariableOptions(true);
-    $scope.welcome_text = config.appSettings.welcome_text;
-    $scope.tracking_question = config.appSettings.tracking_question;
-    $scope.factor_average_text = config.appSettings.factor_average_text;
+    $scope.viewTitle = config.appSettings.appName;
+    $scope.primaryOutcomeVariable = config.appSettings.primaryOutcomeVariable;
+    $scope.primaryOutcomeVariableRatingOptions = config.getPrimaryOutcomeVariableOptions();
+    $scope.primaryOutcomeVariableNumbers = config.getPrimaryOutcomeVariableOptions(true);
+    $scope.welcomeText = config.appSettings.welcomeText;
+    $scope.primaryOutcomeVariableTrackingQuestion = config.appSettings.primaryOutcomeVariableTrackingQuestion;
+    $scope.primaryOutcomeVariableAverageText = config.appSettings.primaryOutcomeVariableAverageText;
     /*Wrapper Config End*/
 
     // when view is changed
@@ -89,7 +88,7 @@ angular.module('starter')
 
     // load the calender popup
 	$ionicPopover.fromTemplateUrl('templates/popover.html', {
-		scope: $scope,
+		scope: $scope
 	}).then(function(popover) {
 		$scope.popover = popover;
 	});
@@ -129,15 +128,15 @@ angular.module('starter')
     // show calender popup
 	$scope.showCalenderF = function($event){
         $scope.popover.show($event);
-        measurementService.getToDate(function(end_date){
-            $scope.toDate = new Date(end_date);
-            measurementService.getFromDate(function(from_date){
-                $scope.fromDate = new Date(from_date);
+        measurementService.getToDate(function(endDate){
+            $scope.toDate = new Date(endDate);
+            measurementService.getFromDate(function(fromDate){
+                $scope.fromDate = new Date(fromDate);
             });
         });
 	};
 
-    scheduleReminder = function(){
+    var scheduleReminder = function(){
         if($rootScope.reminderToSchedule){
 
             reminderService.addNewReminder(
@@ -168,7 +167,7 @@ angular.module('starter')
 
                 // move to tracking page
                 if($state.current.name === "app.welcome" || $state.current.name === "app.login"){
-                    $state.go(config.appSettings.default_state);
+                    $state.go(config.appSettings.defaultState);
                     $rootScope.hideMenu = false;
                 }
 
@@ -195,13 +194,13 @@ angular.module('starter')
     // when user is logging out
     $scope.logout = function(){
 
-        var start_logout = function(){
+        var startLogout = function(){
             $rootScope.isSyncing = false;
             if(ionic.Platform.platforms[0] !== "browser"){
-                console.log('start_logout: Open the auth window via inAppBrowser.  Platform is ' + ionic.Platform.platforms[0]);
+                console.log('startLogout: Open the auth window via inAppBrowser.  Platform is ' + ionic.Platform.platforms[0]);
                 var ref = window.open(config.getApiUrl() + '/api/v2/auth/logout','_blank', 'location=no,toolbar=yes');
 
-                console.log('start_logout: listen to its event when the page changes');
+                console.log('startLogout: listen to its event when the page changes');
 
                 ref.addEventListener('loadstart', function(event) {
                     ref.close();
@@ -221,19 +220,19 @@ angular.module('starter')
                     {
                         text: 'No',
                         type: 'button-assertive',
-                        onTap : after_logout_no_local
+                        onTap : afterLogoutNoLocal
                     },
                     {
                         text: 'Yes',
                         type: 'button-positive',
-                        onTap: after_logout
+                        onTap: afterLogout
                     }
                 ]
 
             });
         };
 
-        var after_logout = function(){
+        var afterLogout = function(){
 
             // set flags
             $scope.isLoggedIn = false;
@@ -265,7 +264,7 @@ angular.module('starter')
             }
         };
 
-        var after_logout_no_local = function(){
+        var afterLogoutNoLocal = function(){
             // set flags
             $scope.isLoggedIn = false;
 
@@ -299,7 +298,7 @@ angular.module('starter')
             }
         };
 
-        start_logout();
+        startLogout();
 
     };
 
@@ -325,7 +324,7 @@ angular.module('starter')
         }
     };
 
-    $scope.native_login = function(platform, accessToken, register){
+    $scope.nativeLogin = function(platform, accessToken, register){
         localStorageService.setItem('isWelcomed', true);
         $rootScope.isWelcomed = true;
 
@@ -334,19 +333,19 @@ angular.module('starter')
         .then(function(JWTToken){
             // success
 
-            console.log("native_login: Mobile device detected and platform is " + platform);
+            console.log("nativeLogin: Mobile device detected and platform is " + platform);
             var url = authService.generateV2OAuthUrl(JWTToken);
 
             $ionicLoading.hide();
 
-            console.log('native_login: open the auth window via inAppBrowser.');
+            console.log('nativeLogin: open the auth window via inAppBrowser.');
             var ref = window.open(url,'_blank', 'location=no,toolbar=no');
 
-            console.log('native_login: listen to event when the page changes.');
+            console.log('nativeLogin: listen to event when the page changes.');
             ref.addEventListener('loadstart', function(event) {
 
-                console.log("native_login: loadstart event", event);
-                console.log('native_login: check if changed url is the same as redirection url.');
+                console.log("nativeLogin: loadstart event", event);
+                console.log('nativeLogin: check if changed url is the same as redirection url.');
 
                 if(utilsService.startsWith(event.url, config.getRedirectUri())) {
                     
@@ -354,7 +353,7 @@ angular.module('starter')
                         
                         var authorizationCode = authService.getAuthorizationCodeFromUrl(event);
                         
-                        console.log('native_login: Got authorization code: ' + authorizationCode + ' Closing inAppBrowser.');
+                        console.log('nativeLogin: Got authorization code: ' + authorizationCode + ' Closing inAppBrowser.');
                         ref.close();
 
                         var withJWT = true;
@@ -362,7 +361,7 @@ angular.module('starter')
                         authService.fetchAccessTokenAndUserDetails(authorizationCode, withJWT);
                     } else {
 
-                        console.log("native_login: error occurred", utilsService.getUrlParameter(event.url, 'error'));
+                        console.log("nativeLogin: error occurred", utilsService.getUrlParameter(event.url, 'error'));
 
                         // close inAppBrowser
                         ref.close();
@@ -379,15 +378,15 @@ angular.module('starter')
     };
 
     // log in with google
-    $scope.google_login = function(){
+    $scope.googleLogin = function(){
         showLoader('Logging you in', 2000);
-        window.plugins.googleplus.login({}, function (user_data) {
+        window.plugins.googleplus.login({}, function (userData) {
             $ionicLoading.hide();
             console.log('successfully logged in');
-            console.log('google->', JSON.stringify(user_data));
-            var accessToken = user_data.accessToken;
+            console.log('google->', JSON.stringify(userData));
+            var accessToken = userData.accessToken;
 
-            $scope.native_login('google', accessToken);
+            $scope.nativeLogin('google', accessToken);
         },
         function (msg) {
             $ionicLoading.hide();
@@ -395,7 +394,7 @@ angular.module('starter')
         });
     };
 
-    $scope.google_logout = function(){
+    $scope.googleLogout = function(){
         window.plugins.googleplus.logout(function (msg) {
           console.log("logged out of google!");
       }, function(fail){
@@ -404,17 +403,17 @@ angular.module('starter')
     };
 
     // login with facebook
-    $scope.facebook_login = function(){
+    $scope.facebookLogin = function(){
         showLoader('Logging you in', 2000);
         $cordovaFacebook.login(["public_profile", "email", "user_friends"])
         .then(function(success) {
             // success
             $ionicLoading.hide();
-            console.log("facebook_login_success");
+            console.log("facebookLogin_success");
             console.log("facebook->", JSON.stringify(success));
             var accessToken = success.authResponse.accessToken;
 
-            $scope.native_login('facebook', accessToken);
+            $scope.nativeLogin('facebook', accessToken);
         }, function (error) {
             // error
             console.log("facebook login error", error);
@@ -478,7 +477,7 @@ angular.module('starter')
                         // set user data in local storage
                         localStorageService.setItem('user', JSON.stringify(user));
 
-                        $scope.user_name = user.displayName;
+                        $scope.userName = user.displayName;
                     },function(err){
 
                         // error
@@ -492,7 +491,7 @@ angular.module('starter')
                         app_id: "uwtx2m33",
                         name: user.displayName,
                         email: user.email,
-                        user_id:user.id
+                        user_id: user.id
                     };
                 }
 
@@ -506,18 +505,18 @@ angular.module('starter')
             // sync data
             $scope.movePage();
 
-            var sync_enabled_states = [
+            var syncEnabledStates = [
                 'app.track',
                 'app.welcome',
                 'app.history',
                 'app.login'
             ];
 
-            if(sync_enabled_states.indexOf($state.current.name) !== -1 && config.appSettings.primary_outcome_variable){
+            if(syncEnabledStates.indexOf($state.current.name) !== -1 && config.appSettings.primaryOutcomeVariable){
                 $rootScope.isSyncing = true;
                 console.log('setting sync true');
 
-                measurementService.sync_data().then(function(){
+                measurementService.syncData().then(function(){
                     console.log("sync complete");
                     $rootScope.isSyncing = false;
 
@@ -588,7 +587,7 @@ angular.module('starter')
         console.log('isWelcomed ' + isWelcomed);
         if(isWelcomed  === true || isWelcomed === "true" || tokenInGetParams){
             $rootScope.isWelcomed = true;
-            //$state.go(config.appSettings.default_state);
+            //$state.go(config.appSettings.defaultState);
         } else {
             console.log("isWelcomed is " + isWelcomed + ". Setting to true and going to welcome now.");
             localStorageService.setItem('isWelcomed', true);

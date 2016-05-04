@@ -5,7 +5,7 @@ angular.module('starter')
 		$scope.controller_name = "ExternalCtrl";
 	    
 	    // when page load completes
-	    window.closeloading = function(){
+	    window.closeLoading = function(){
 	    	$ionicLoading.hide();
 	    };
 	    

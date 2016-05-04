@@ -16,7 +16,7 @@ angular.module('starter')
 	                        }
 	                    },
 	                    title : {
-	                        text : config.appSettings.primary_outcome_variable+ ' Distribution'
+	                        text : config.appSettings.primaryOutcomeVariable+ ' Distribution'
 	                    },
 	                    xAxis : {
 	                        categories : config.getPrimaryOutcomeVariableOptionLabels()
@@ -57,7 +57,7 @@ angular.module('starter')
 	                    colors : [ "#55000000", "#5D83FF", "#68B107", "#ffbd40", "#CB0000" ]
 	                },
 	                series: [{
-	                    name : config.appSettings.primary_outcome_variable,
+	                    name : config.appSettings.primaryOutcomeVariable,
 	                    data: data
 	                }]
 	            };
@@ -72,7 +72,7 @@ angular.module('starter')
 	        			    enabled : false
 	        			},
 	        			title: {
-	        			    text: config.appSettings.primary_outcome_variable+' Over Time'
+	        			    text: config.appSettings.primaryOutcomeVariable+' Over Time'
 	        			},
 	        			xAxis : {
 	        				type: 'datetime',
@@ -111,7 +111,7 @@ angular.module('starter')
                         }
 	        		},
 	        		series :[{
-			            name : config.appSettings.primary_outcome_variable,
+			            name : config.appSettings.primaryOutcomeVariable,
 			            data : data,
 			            tooltip: {
 			                valueDecimals: 2

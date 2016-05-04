@@ -1,8 +1,44 @@
 angular.module('starter')    
     // QuantiModo API implementation
-    .factory('QuantiModo', function($http, $q, authService, localStorageService, $state){
+    .factory('QuantiModo', function($http, $q, authService, localStorageService, $state, $ionicLoading){
             var QuantiModo = {};
 
+            QuantiModo.successHandler = function(data){
+                if(!data.success){
+                    return;
+                }
+                if(data.message){
+                    alert(data.message);
+                }
+            };
+
+            QuantiModo.errorHandler = function(data, status, headers, config, request){
+                $ionicLoading.hide();
+                if(status === 401){
+                    localStorageService.deleteItem('accessToken');
+                    $state.go('app.login');
+                    return;
+                }
+                if(!data){
+                    console.log('No data property returned from QM API request');
+                    return;
+                }
+                if(request) {
+                    error = data.error.message;
+                    Bugsnag.notify("API Request to " + request.url + " Failed", error, {}, "error");
+                }
+                if(data.success){
+                    return;
+                }
+                var error = "Error";
+                if (data && data.error) {
+                    error = data.error;
+                }
+                if (data && data.error && data.error.message) {
+                    error = data.error.message;
+                }
+                console.log(error);
+            };
 
             // Handler when request is failed
             var onRequestFailed = function(error){
@@ -18,7 +54,7 @@ angular.module('starter')
                     var urlParams = [];
                     for (var key in params) 
                     {
-                        if (jQuery.inArray(key, allowedParams) == -1) 
+                        if (jQuery.inArray(key, allowedParams) === -1)
                         { 
                             throw 'invalid parameter; allowed parameters: ' + allowedParams.toString(); 
                         }
@@ -29,7 +65,7 @@ angular.module('starter')
                     var url = config.getURL(baseURL);
                     var request = {   
                         method : 'GET', 
-                        url: (url + ((urlParams.length == 0) ? '' : urlParams.join('&'))), 
+                        url: (url + ((urlParams.length === 0) ? '' : urlParams.join('&'))),
                         responseType: 'json', 
                         headers : {
                             "Authorization" : "Bearer " + token.accessToken,
@@ -40,16 +76,8 @@ angular.module('starter')
                     console.log("Making request with this token " + token.accessToken);
 
                     $http(request).success(successHandler).error(function(data,status,headers,config){
-                        var error = "Error";
-                        if (data && data.error && data.error.message) {
-                            error = data.error.message;
-                        } 
-                        Bugsnag.notify("API Request to "+request.url+" Failed",error,{},"error");
-                        if(status = 401){
-                            localStorageService.deleteItem('accessToken');
-                            $state.go('app.login');
-                        }
-                        errorHandler(data,status,headers,config);
+                        QuantiModo.errorHandler(data, status, headers, config, request);
+                        errorHandler(data);
                     });
 
                 }, onRequestFailed);
@@ -85,16 +113,7 @@ angular.module('starter')
                     };
 
                     $http(request).success(successHandler).error(function(data,status,headers,config){
-                       var error = "Error";
-                       if (data && data.error && data.error.message) {
-                           error = data.error.message;
-                       } 
-                       Bugsnag.notify("API Request to "+request.url+" Failed",error,{},"error");
-                        if(status = 401){
-                            localStorageService.deleteItem('accessToken');
-                            $state.go('app.login');
-                        }
-                        errorHandler(data,status,headers,config);
+                        QuantiModo.errorHandler(data,status,headers,config);
                     });
 
                 }, errorHandler);
@@ -121,7 +140,7 @@ angular.module('starter')
                         defer.resolve(response_array);
                     }else{
                         localStorageService.getItem('isLoggedIn', function(isLoggedIn){
-                            if(isLoggedIn == "false" || isLoggedIn == false){
+                            if(isLoggedIn === "false" || isLoggedIn === false){
                                 defer.reject(false);
                             } else {
                                 response_array = response_array.concat(response);
@@ -142,11 +161,20 @@ angular.module('starter')
 
             QuantiModo.getV1Measurements = function(params, successHandler, errorHandler){
                 QuantiModo.get('api/v1/measurements',
-                    ['source', 'limit', 'offset', 'sort'],
+                    ['source', 'limit', 'offset', 'sort', 'id'],
                     params,
                     successHandler,
                     errorHandler);
             };
+
+            QuantiModo.deleteV1Measurements = function(measurements, successHandler, errorHandler){
+                QuantiModo.post('api/v1/measurements/delete',
+                    ['variableId', 'variableName', 'startTime', 'id'],
+                    measurements,
+                    successHandler,
+                    errorHandler);
+            };
+
 
             // post measurements old method
             QuantiModo.postMeasurements= function(measurements, successHandler ,errorHandler) { 
@@ -155,6 +183,33 @@ angular.module('starter')
                     measurements,
                     successHandler,
                     errorHandler);
+            };
+
+            // Request measurements to be emailed as a csv
+            QuantiModo.postMeasurementsCsvExport = function() {
+                QuantiModo.post('api/v2/measurements/request_csv',
+                    [],
+                    [],
+                    QuantiModo.successHandler,
+                    QuantiModo.errorHandler);
+            };
+
+            // Request measurements to be emailed as a xls
+            QuantiModo.postMeasurementsXlsExport = function() {
+                QuantiModo.post('api/v2/measurements/request_xls',
+                    [],
+                    [],
+                    QuantiModo.successHandler,
+                    QuantiModo.errorHandler);
+            };
+
+            // Request measurements to be emailed as a pdf
+            QuantiModo.postMeasurementsPdfExport = function() {
+                QuantiModo.post('api/v2/measurements/request_pdf',
+                    [],
+                    [],
+                    QuantiModo.successHandler,
+                    QuantiModo.errorHandler);
             };
 
             // post new Measurements for user
@@ -168,8 +223,8 @@ angular.module('starter')
 
             // get positive list
             QuantiModo.getCauses = function(successHandler, errorHandler){
-                var primary_outcome_variable = config.appSettings.primary_outcome_variable_details.name.replace(' ','%20');
-                QuantiModo.get('api/v1/variables/'+primary_outcome_variable+'/public/causes',
+                var primaryOutcomeVariable = config.appSettings.primaryOutcomeVariableDetails.name.replace(' ','%20');
+                QuantiModo.get('api/v1/variables/'+primaryOutcomeVariable+'/public/causes',
                     [],
                     {},
                     successHandler,
@@ -178,8 +233,8 @@ angular.module('starter')
 
             //get User's causes
             QuantiModo.getUsersCauses = function (successHandler,errorHandler) {
-                var primary_outcome_variable = config.appSettings.primary_outcome_variable_details.name.replace(' ','%20');
-                QuantiModo.get('api/v1/variables/'+primary_outcome_variable+'/causes',
+                var primaryOutcomeVariable = config.appSettings.primaryOutcomeVariableDetails.name.replace(' ','%20');
+                QuantiModo.get('api/v1/variables/'+primaryOutcomeVariable+'/causes',
                     [],
                     {},
                     successHandler,
@@ -190,8 +245,8 @@ angular.module('starter')
 
             // get negative list
             QuantiModo.getNegativeList = function(successHandler, errorHandler){
-                var primary_outcome_variable = config.appSettings.primary_outcome_variable_details.name.replace(' ','%20');
-                QuantiModo.get('api/v1/variables/'+primary_outcome_variable+'/public/effects',
+                var primaryOutcomeVariable = config.appSettings.primaryOutcomeVariableDetails.name.replace(' ','%20');
+                QuantiModo.get('api/v1/variables/'+primaryOutcomeVariable+'/public/effects',
                     [],
                     {},
                     successHandler,
@@ -290,7 +345,7 @@ angular.module('starter')
             // get reminders
             QuantiModo.getTrackingReminders = function(params, successHandler, errorHandler){
                 QuantiModo.get('api/v1/trackingReminders',
-                    ['variableCategoryName'],
+                    ['variableCategoryName', 'id'],
                     params,
                     successHandler,
                     errorHandler);
@@ -317,9 +372,7 @@ angular.module('starter')
                         'variableCategoryName',
                         'abbreviatedUnitName',
                         'combinationOperation',
-                        'firstDailyReminderTime',
-                        'secondDailyReminderTime',
-                        'thirdDailyReminderTime'
+                        'reminderStartTime'
                     ],
                     reminder,
                     successHandler,

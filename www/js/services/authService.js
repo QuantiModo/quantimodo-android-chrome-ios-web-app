@@ -497,7 +497,7 @@ angular.module('starter')
 						// set user data in local storage
 						localStorageService.setItem('user', JSON.stringify(user));
 
-						authSrv.user_name = user.displayName;
+						authSrv.userName = user.displayName;
 					},function(err){
 
 						// error

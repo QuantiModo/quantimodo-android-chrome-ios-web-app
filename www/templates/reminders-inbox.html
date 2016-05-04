@@ -1,0 +1,89 @@
+<ion-view hide-nav-bar="skipMenu" view-title="{{state.title}}">
+
+	<ion-content scroll="true" overflow-scroll="true">
+
+		<div class="list card">
+			<div ng-show="state.showButtons">
+				<div ng-hide="state.hideAddNewReminderButton" class="list card">
+					<!--<div class="item item-divider" style="background-color:#11c1f3; color:white;">Actions</div>-->
+					<a href="#/app/reminder_add" class="item item-icon-left">
+						<i class="icon ion-plus positive"></i>
+						Add a new Reminder
+					</a>
+				</div>
+<!--				<div ng-show="state.showAddHowIFeelResponseButton" class="list card">
+					&lt;!&ndash;<div class="item item-divider" style="background-color:#11c1f3; color:white;">Actions</div>&ndash;&gt;
+					<a href="#/app/track_factors_category/Symptoms" class="item item-icon-left">
+						<i class="icon ion-plus positive"></i>
+						Add "How I Feel" Response
+					</a>
+				</div>
+				<div ng-show="state.showAddVitalSignButton" class="list card">
+					&lt;!&ndash;<div class="item item-divider" style="background-color:#11c1f3; color:white;">Actions</div>&ndash;&gt;
+					<a href="#/app/track_factors_category/Vital Signs" class="item item-icon-left">
+						<i class="icon ion-plus positive"></i>
+						Add a new vital sign
+					</a>
+				</div>-->
+				<div ng-show="state.showAddNewMedicationButton" class="list card">
+					<!--<div class="item item-divider" style="background-color:#11c1f3; color:white;">Actions</div>-->
+					<a href="#/app/reminder_add/Treatments" class="item item-icon-left">
+						<i class="icon ion-plus positive"></i>
+						Add a new medication
+					</a>
+				</div>
+			</div>
+	
+<!--			<div class="item item-divider" style="background-color:#11c1f3; color:white;">
+				Reminders
+			</div>-->
+			<div ng-repeat="divider in state.filteredReminders">
+
+				<div class="item item-divider" style="">
+				  {{divider.name}}
+				</div>
+
+				
+				<div class="list card" ng-repeat="reminder in divider.reminders" >
+					<div class="item" style="padding-bottom:0px;">
+						<div class="row">
+							<div class="col" style="padding-top: 0px;">
+								<i style="font-size: 60px;" class="icon positive ion-ios-alarm-outline"></i>
+							</div>
+							<div class="col col-75">
+								<h2 style="white-space: normal;">{{reminder.defaultValue}}&nbsp;{{reminder.abbreviatedUnitName}} {{reminder.variableName}}</h2>
+								<p style="white-space: normal;">{{ reminder.trackingReminderNotificationTime | fromUtcToLocalDateAndTime}} </p>
+							</div>
+						</div>
+						<div class="button-bar">
+							<a class="button button-clear button-assertive" style="text-overflow: clip; font-size: 12px;" ng-click="skip(reminder)"><i class="ion-android-cancel"> &nbsp; Skip</i></a>
+							<a class="button button-clear button-royal" style="text-overflow: clip; font-size: 12px;" ng-click="snooze(reminder)"><i class="ion-android-notifications-off"> &nbsp; Snooze</i></a>
+							<a class="button button-clear button-positive" ng-click="edit(reminder)" style="text-overflow: clip;  font-size: 12px;"><i class="ion-settings"> &nbsp; Settings</i></a>
+						</div>
+						<div class="row" ng-if="reminder.abbreviatedUnitName != '/5' " >
+							<div class="button-bar">
+								<a class="button button-clear button-balanced" style="text-overflow: clip; font-size: 12px;" ng-click="track(reminder)"><i class="ion-android-done"> &nbsp; Record {{reminder.defaultValue}}&nbsp;{{reminder.abbreviatedUnitName}}</i></a>
+							</div>
+						</div>
+						<div class="row" ng-if="reminder.abbreviatedUnitName != '/5' " >
+							<div class="button-bar">
+								<a class="button button-clear button-positive" style="text-overflow: clip; font-size: 12px;" ng-click="editMeasurement(reminder)"><i class="ion-edit"> &nbsp; Record Different Value/Time</i></a>
+							</div>
+						</div>
+						<div class="row" ng-if="reminder.abbreviatedUnitName == '/5' " >
+							<div class="primary-outcome-variable col">
+								<img ng-repeat="option in primaryOutcomeVariableNumbers" ng-click="track(reminder, option.value)" ng-src="{{option.img}}">
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			
+<!--			<div class="button-bar">
+				<a class="button button-clear button-positive" ng-click="init()" style="text-overflow: clip;"><i class="ion-refresh">  Refresh</i></a>
+			</div>-->
+		</div>
+
+	</ion-content>
+
+</ion-view>

@@ -12,23 +12,26 @@ window.config = {
     bugsnag:{
         notifyReleaseStages:['Production','Staging']
     },
-    client_source_name : "MedTLC " + getPlatform(),
+    clientSourceName : "MedTLC " + getPlatform(),
     domain : 'app.quantimo.do',
     environment: "Development",
     permissions : ['readmeasurements', 'writemeasurements'],
     port : '4417',
     protocol : 'https',
-    shopping_cart_enabled : true
+    shoppingCarEnabled : true
 };
 
 config.appSettings  = {
-    app_name : 'MedTLC',
+    appName : 'MedTLC',
 
-    primary_outcome_variable : false,
+    primaryOutcomeVariable : 'Mood',
 
-    storage_identifier: 'MedTLCData*',
+    appStorageIdentifier: 'MedTLCData*',
 
-    default_state : 'app.reminders_inbox',
+    defaultState : 'app.remindersInbox',
+
+    welcomeState : 'app.remindersInbox',
+
 
     headline : 'Medications - Track, Learn, Connect',
     features: [
@@ -38,15 +41,16 @@ config.appSettings  = {
         ' 3. Create Reports of Your Responses and Choose to Connect With Your Doctors'
     ],
 
-    primary_primary_outcome_variable_details : {
+    primaryOutcomeVariableDetails : {
         id : 1398,
         name : "Overall Mood",
         category : "Mood",
         unit : "/5",
+        unitId : 10,
         combinationOperation: "MEAN"
     },
 
-    primary_outcome_variables_options_labels : [
+    primaryOutcomeVariableRatingOptionLabels : [
         'Depressed',
         'Sad',
         'OK',
@@ -54,7 +58,7 @@ config.appSettings  = {
         'Ecstatic'
     ],
 
-    primary_outcome_variable_options : [
+    primaryOutcomeVariableRatingOptions : [
         {
             value: 'depressed',
             img: 'img/ic_face_depressed.png'
@@ -77,19 +81,19 @@ config.appSettings  = {
         }
     ],
 
-    welcome_text:"Let's start off by adding your first medication!",
-    tracking_question:"What medication are you taking?",
-    factor_average_text:"Your average mood is ",
-    notification_image : "file://img/icon_128.png",
-    notification_text : "Time to Track",
-    conversion_dataset: {
+    welcomeText:"Let's start off by adding your first medication!",
+    primaryOutcomeVariableTrackingQuestion:"What medication are you taking?",
+    primaryOutcomeVariableAverageText:"Your average mood is ",
+    mobileNotificationImage : "file://img/icon_128.png",
+    mobileNotificationText : "Time to Track",
+    primaryOutcomeValueConversionDataSet: {
         "1": "depressed",
         "2": "sad",
         "3": "ok",
         "4": "happy",
         "5": "ecstatic"
     },
-    conversion_dataset_reversed : {
+    primaryOutcomeValueConversionDataSetReversed : {
         "depressed" : 1,
         "sad" : 2,
         "ok" : 3,
@@ -103,14 +107,14 @@ config.appSettings  = {
             img : {
                 width : '150',
                 height : '150',
-                url : 'img/main_icon.png'
+                url : 'img/medtlc/icon.png'
             },
             content : {
 
                 firstP : {
                     visible : true,
                     content : 'Welcome to MedTLC',
-                    classes : 'intro_header calm'
+                    classes : 'intro-header positive'
                 }, 
                 logoDiv : {
                     visible : true,
@@ -119,7 +123,7 @@ config.appSettings  = {
                 finalP : {
                     visible : true,
                     content : 'Medication - Track. Learn. Connect.',
-                    classes : 'intro_para',
+                    classes : 'intro-paragraph',
                     buttonBarVisible : true   
                 }
             }
@@ -134,7 +138,7 @@ config.appSettings  = {
                 firstP : {
                     visible : true,
                     content : 'Medications and Reminders',
-                    classes : 'intro_header calm'
+                    classes : 'intro-header positive'
                 },
                 logoDiv : {
                     visible : true,
@@ -143,7 +147,7 @@ config.appSettings  = {
                 finalP: {
                     visible : true,
                     content : 'Add medications and reminders on the Add Medications page.',
-                    classes : 'intro_para_small',
+                    classes : 'intro-paragraph-small',
                     buttonBarVisible : true
                 }
             }
@@ -160,7 +164,7 @@ config.appSettings  = {
                 firstP : {
                     visible : true,
                     content : 'Record How You Feel',
-                    classes : 'intro_header calm'
+                    classes : 'intro-header positive'
                 },
 
                 logoDiv : {
@@ -171,7 +175,7 @@ config.appSettings  = {
                 finalP: {
                     visible : true,
                     content : ' Record "How I Feel" responses to provide critical feedback to your doctor. This feedback is one of the strongest features of MedTLC. It gives your doctor the data needed to change medications and adjust dosages when necessary, due to adverse reaction to a single drug, multiple drug interactions, and dosages that cause unwanted effects.',
-                    classes : 'intro_para_small',
+                    classes : 'intro-paragraph-small',
                     buttonBarVisible : true
                 }
             }
@@ -186,7 +190,7 @@ config.appSettings  = {
                 firstP : {
                     visible : true,
                     content : 'Connect with Your Physician',
-                    classes : 'intro_header calm'
+                    classes : 'intro-header positive'
                 }, 
                 logoDiv : {
                     visible : true,
@@ -195,14 +199,14 @@ config.appSettings  = {
                 finalP: {
                     visible : true,
                     content : 'Print or send reports of your responses to your doctors.',
-                    classes : 'intro_para',
+                    classes : 'intro-paragraph',
                     buttonBarVisible : true
                 }
             }
         }
     ],
 
-    help_popup_messages : {
+    helpPopupMessages : {
         "#/app/reminders-inbox/Treatments": 'Be sure to add your "How I feel" responses throughout the day so you can monitor the effects of your medications and dosages.',
         "#/app/reminders-inbox/Symptoms": 'If you\'ve already added some side effect or response tracking reminders, here\'s where your medication reminder notifications should appear when it\'s time to take them.  Once you have some notifications, you can use those to record how you feel.',
         "#/app/reminders-manage/Treatments": 'Here, you can set up or delete existing medication reminders.',
@@ -210,9 +214,9 @@ config.appSettings  = {
         "#/app/reminders-manage": 'Here, you can set up or delete existing reminders for .',
         "#/app/reminders-inbox": 'Be sure to add your "How I feel" responses throughout the day so you can monitor the effects of your medications and dosages.',
         "#/app/history": 'You can see and edit your past data and add notes by tapping on any item in the list.',
-        "#/app/track_factors_category/Foods": 'Record your diet on this page. <span class="calm">Add a new Food Variable</span> if you do not find the meal you looked for in the search results.',
+        "#/app/track_factors_category/Foods": 'Record your diet on this page. <span class="positive">Add a new Food Variable</span> if you do not find the meal you looked for in the search results.',
         "#/app/track_factors_category/Symptoms": 'You can immediately record any response or side effect on this page.',
-        "#/app/track_factors_category/Treatments": 'You can immediately record any as-need treatment on this page. You can also <span class="calm">Add a new Treatment</span> if you don\'t find the treatment you looked for in the search results.',
+        "#/app/track_factors_category/Treatments": 'You can immediately record any as-need treatment on this page. You can also <span class="positive">Add a new Treatment</span> if you don\'t find the treatment you looked for in the search results.',
     },
     
     wordAliases : {
@@ -279,54 +283,6 @@ config.appSettings  = {
             icon : 'ion-information-circled'
         },
         {
-            title : 'Add Measurement',
-            click : 'toggleTrackingSubMenu',
-            icon : 'showTrackingSubMenu',
-            subMenuPanel : true
-        },
-        {
-            title : 'Record anything',
-            isSubMenu : true,
-            subMenuVariable : 'showTrackingSubMenu',
-            href : '#/app/track_factors',
-            icon : 'ion-ios-world'
-        },
-        {
-            title : 'Record foods',
-            isSubMenu : true,
-            subMenuVariable : 'showTrackingSubMenu',
-            href : '#/app/track_factors_category/Foods',
-            icon : 'ion-ios-nutrition'
-        },
-        {
-            title : 'Record emotions',
-            isSubMenu : true,
-            subMenuVariable : 'showTrackingSubMenu',
-            href : '#/app/track_factors_category/Emotions',
-            icon : 'ion-happy-outline'
-        },
-        {
-            title : 'Record symptoms',
-            isSubMenu : true,
-            subMenuVariable : 'showTrackingSubMenu',
-            href : '#/app/track_factors_category/Symptoms',
-            icon : 'ion-ios-pulse'
-        },
-        {
-            title : 'Record treatments',
-            isSubMenu : true,
-            subMenuVariable : 'showTrackingSubMenu',
-            href : '#/app/track_factors_category/Treatments',
-            icon : 'ion-ios-medkit-outline'
-        },
-        {
-            title : 'Record physical activity',
-            isSubMenu : true,
-            subMenuVariable : 'showTrackingSubMenu',
-            href : '#/app/track_factors_category/Physical Activity',
-            icon : 'ion-ios-body'
-        },
-        {
             title : 'Reminders',
             click : 'toggleReminderSubMenu',
             icon : 'showReminderSubMenu',
@@ -380,54 +336,24 @@ config.appSettings  = {
             icon : 'ion-ios-cloud-download-outline'
         },
         {
-            title : 'Variables',
-            href : '#app/search-variables',
-            icon : 'ion-social-vimeo'
-        },
-        {
-            title : 'Predictor Search',
-            click : 'togglePredictorSearchSubMenu',
-            icon : 'showPredictorSearchSubMenu',
-            subMenuPanel : true
-        },
-        {
-            title : 'Common',
-            isSubMenu : true,
-            subMenuVariable : 'showPredictorSearchSubMenu',
-            href : '#/app/search-common-relationships',
-            icon : 'ion-ios-people'
-        },
-        {
-            title : 'Yours',
-            isSubMenu : true,
-            subMenuVariable : 'showPredictorSearchSubMenu',
-            href : '#/app/search-user-relationships',
-            icon : 'ion-person'
-        },
-        {
             title : 'Settings',
             href : '#/app/settings',
             icon : 'ion-ios-gear-outline'
-        },
-        {
-            title : 'Help & Feedback',
-            href : window.chrome ? "mailto:help@quantimo.do" : "#app/feedback",
-            icon : 'ion-ios-help-outline'
         }
     ]
 
 };
 
 config.getPrimaryOutcomeVariableOptionLabels = function(shouldShowNumbers){
-    if(shouldShowNumbers || !config.appSettings.primary_outcome_variables_options_labels){
+    if(shouldShowNumbers || !config.appSettings.primaryOutcomeVariableRatingOptionLabels){
         return ['1',  '2',  '3',  '4', '5'];
     } else {
-        return config.appSettings.primary_outcome_variables_options_labels;
+        return config.appSettings.primaryOutcomeVariableRatingOptionLabels;
     }
 };
 
 config.getPrimaryOutcomeVariableOptions = function(shouldShowNumbers){
-    if(shouldShowNumbers || !config.appSettings.primary_outcome_variable_options){
+    if(shouldShowNumbers || !config.appSettings.primaryOutcomeVariableRatingOptions){
         return [
             {
                 value: '1',
@@ -451,12 +377,12 @@ config.getPrimaryOutcomeVariableOptions = function(shouldShowNumbers){
             }
         ];
     } else {
-        return config.appSettings.primary_outcome_variable_options;
+        return config.appSettings.primaryOutcomeVariableRatingOptions;
     }
 };
 
 config.getImageForPrimaryOutcomeVariableByValue = function(val){
-    var filtered_list = this.appSettings.primary_outcome_variable_options.filter(function(option){
+    var filtered_list = this.appSettings.primaryOutcomeVariableRatingOptions.filter(function(option){
         return option.value === val;
     });
 
@@ -464,12 +390,12 @@ config.getImageForPrimaryOutcomeVariableByValue = function(val){
 };
 
 config.getImageForPrimaryOutcomeVariableByNumber = function(num){
-    var primary_outcome_variable = this.appSettings.conversion_dataset[num]? this.appSettings.conversion_dataset[num] : false;
-    return primary_outcome_variable? config.getImageForPrimaryOutcomeVariableByValue(primary_outcome_variable) : false;
+    var primaryOutcomeVariable = this.appSettings.primaryOutcomeValueConversionDataSet[num]? this.appSettings.primaryOutcomeValueConversionDataSet[num] : false;
+    return primaryOutcomeVariable? config.getImageForPrimaryOutcomeVariableByValue(primaryOutcomeVariable) : false;
 };
 
 config.getPrimaryOutcomeVariableByNumber = function(num){
-    return this.appSettings.conversion_dataset[num]? this.appSettings.conversion_dataset[num] : false;
+    return this.appSettings.primaryOutcomeValueConversionDataSet[num]? this.appSettings.primaryOutcomeValueConversionDataSet[num] : false;
 };
 
 config.getEnv = function(){
@@ -579,62 +505,62 @@ config.get = function(key){
 };
 
 
-window.notification_callback = function(reported_variable, reporting_time){
-    var report_time  = Math.floor(reporting_time/1000) || Math.floor(new Date().getTime()/1000);
-    var key_identifier = config.appSettings.storage_identifier;
+window.notification_callback = function(reportedVariable, reportingTime){
+    var reportTime  = Math.floor(reportingTime/1000) || Math.floor(new Date().getTime()/1000);
+    var keyIdentifier = config.appSettings.appStorageIdentifier;
     var val = false;
 
     // convert values
-    if(reported_variable === "repeat_rating"){
-        val = localStorage[key_identifier+'lastReportedPrimaryOutcomeVariableValue']?
-        JSON.parse(localStorage[key_identifier+'lastReportedPrimaryOutcomeVariableValue']) : false;
+    if(reportedVariable === "repeat_rating"){
+        val = localStorage[keyIdentifier+'lastReportedPrimaryOutcomeVariableValue']?
+        JSON.parse(localStorage[keyIdentifier+'lastReportedPrimaryOutcomeVariableValue']) : false;
     } else {
-        val = config.appSettings.conversion_dataset_reversed[reported_variable]?
-        config.appSettings.conversion_dataset_reversed[reported_variable] : false;
+        val = config.appSettings.primaryOutcomeValueConversionDataSetReversed[reportedVariable]?
+        config.appSettings.primaryOutcomeValueConversionDataSetReversed[reportedVariable] : false;
     }
 
     // report
     if(val){
         // update localstorage
-        localStorage[key_identifier+'lastReportedPrimaryOutcomeVariableValue'] = val;
+        localStorage[keyIdentifier+'lastReportedPrimaryOutcomeVariableValue'] = val;
 
         var allDataObject = {
             storedValue : val,
             value : val,
-            timestamp : report_time,
+            timestamp : reportTime,
             humanTime : {
                 date : new Date().toISOString()
             }
         };
 
         // update full data
-        if(localStorage[key_identifier+'allData']){
-            var allData = JSON.parse(localStorage[key_identifier+'allData']);
+        if(localStorage[keyIdentifier+'allData']){
+            var allData = JSON.parse(localStorage[keyIdentifier+'allData']);
             allData.push(allDataObject);
-            localStorage[key_identifier+'allData'] = JSON.stringify(allData);
+            localStorage[keyIdentifier+'allData'] = JSON.stringify(allData);
         }
 
         // update Bar chart data
-        if(localStorage[key_identifier+'barChartData']){
-            var barChartData = JSON.parse(localStorage[key_identifier+'barChartData']);
+        if(localStorage[keyIdentifier+'barChartData']){
+            var barChartData = JSON.parse(localStorage[keyIdentifier+'barChartData']);
             barChartData[val-1]++;
-            localStorage[key_identifier+'barChartData'] = JSON.stringify(barChartData);
+            localStorage[keyIdentifier+'barChartData'] = JSON.stringify(barChartData);
         }
 
         // update Line chart data
-        if(localStorage[key_identifier+'lineChartData']){
-            var lineChartData = JSON.parse(localStorage[key_identifier+'lineChartData']);
-            lineChartData.push([report_time, val]);
-            localStorage[key_identifier+'lineChartData'] = JSON.stringify(lineChartData);
+        if(localStorage[keyIdentifier+'lineChartData']){
+            var lineChartData = JSON.parse(localStorage[keyIdentifier+'lineChartData']);
+            lineChartData.push([reportTime, val]);
+            localStorage[keyIdentifier+'lineChartData'] = JSON.stringify(lineChartData);
         }
 
         //update measurementsQueue
-        if(!localStorage[key_identifier+'measurementsQueue']){
-            localStorage[key_identifier+'measurementsQueue'] = '[]';
+        if(!localStorage[keyIdentifier+'measurementsQueue']){
+            localStorage[keyIdentifier+'measurementsQueue'] = '[]';
         } else {
-            var measurementsQueue = JSON.parse(localStorage[key_identifier+'measurementsQueue']);
+            var measurementsQueue = JSON.parse(localStorage[keyIdentifier+'measurementsQueue']);
             measurementsQueue.push(allDataObject);
-            localStorage[key_identifier+'measurementsQueue'] = JSON.stringify(measurementsQueue);
+            localStorage[keyIdentifier+'measurementsQueue'] = JSON.stringify(measurementsQueue);
         }
     }
 };
