@@ -20,11 +20,14 @@ angular.module('starter')
                 });
             }
 
-            // update localstorage
+            // update local storage
             measurementService.updatePrimaryOutcomeVariableLocally(primaryOutcomeRatingValue).then(function () {
 
-                // try to send the data to server
-                measurementService.updatePrimaryOutcomeVariable(primaryOutcomeRatingValue);
+                var user = authService.getUserFromLocalStorage();
+                if(user.id){
+                    // try to send the data to server if we have a user
+                    measurementService.updatePrimaryOutcomeVariable(primaryOutcomeRatingValue);
+                }
 
                 // calculate charts data
                 measurementService.calculateAveragePrimaryOutcomeVariableValue().then(function () {
@@ -61,7 +64,7 @@ angular.module('starter')
 
             console.log("load config object chartService.getBarChartStub");
             $scope.barChartConfig = chartService.getBarChartStub(arr);
-
+            $scope.$broadcast('highchartsng.reflow');
             console.log("redraw chart with new data");
             $scope.redrawBarChart = true;
 
@@ -72,6 +75,7 @@ angular.module('starter')
             $scope.redrawLineChart = false;
             console.log("Configuring line chart...");
             $scope.lineChartConfig = chartService.getLineChartStub(lineChartData);
+            $scope.$broadcast('highchartsng.reflow');
 
             // redraw chart with new data
             $scope.redrawLineChart = true;
