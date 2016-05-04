@@ -5,22 +5,7 @@ angular.module('starter')
 										measurementService, $ionicPopup, localStorageService, utilsService){
 
 	    $scope.controller_name = "HistoryCtrl";
-	    
-	    // Show alert with a title
-	    $scope.showAlert = function(title, template) {
-	       var alertPopup = $ionicPopup.alert({
-	         cssClass : 'positive',
-             okType : 'button-positive',
-	         title: title,
-	         template: template
-	       });
-	    };
-
-	    // Hide spinner
-	    window.closeLoading = function(){
-	        $ionicLoading.hide();
-	    };
-	    
+        
 	    // load editing popover
 	    $ionicPopover.fromTemplateUrl('templates/history-popup.html', {
 	        scope: $scope
@@ -59,7 +44,7 @@ angular.module('starter')
 	        }, function(){
 
 	        	// show alert
-	            $scope.showAlert('Failed to edit primaryOutcomeVariable !');
+	            utilsService.showAlert('Failed to edit primaryOutcomeVariable !');
 	        });
 	        
 	        // update the main list for the recently updated value
@@ -90,15 +75,6 @@ angular.module('starter')
 	    // constructor
 	    $scope.init = function(){
 
-
-	        // show loading spinner
-	        $ionicLoading.show({
-	            noBackdrop: true,
-	            template: '<p class="item-icon-left">Loading stuff...<ion-spinner icon="lines"/></p>'
-	        });  
-
-	        // get the history data
-
             var history;
             localStorageService.getItem('allData',function(allData){
                 history = allData? JSON.parse(allData) : [];
@@ -110,15 +86,9 @@ angular.module('starter')
                     return 0;
                 });
             });
-	        // try to access user token to check if the user is logged in
-	        authService.getAccessTokenFromAnySource().then(function(token){
-	            $ionicLoading.hide();
-	        }, function(){
-	            console.log("need to log in");
-	            $ionicLoading.hide();
-	            utilsService.showLoginRequiredAlert($scope.login);
-	        });
 
+			$ionicLoading.hide();
+			
 	    };
 
         // when view is changed

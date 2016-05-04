@@ -101,7 +101,7 @@ angular.module('starter')
 
             populateVariableSearchResults: function (variableCategoryName) {
 
-                utilsService.startLoading();
+                utilsService.loadingStart();
                 // get user token
                 authService.getAccessTokenFromAnySource().then(function(token){
 
@@ -111,10 +111,10 @@ angular.module('starter')
                         variableService.searchVariablesIncludePublic('*').then(function(variables){
 
                             $scope.variableSearchResults = variables;
-                            utilsService.stopLoading();
+                            utilsService.loadingStop();
 
                         }, function(){
-                            utilsService.stopLoading();
+                            utilsService.loadingStop();
                         });
                     } else {
                         console.log('get all variables by category');
@@ -122,16 +122,16 @@ angular.module('starter')
 
                             $scope.variableSearchResults = variables;
 
-                            utilsService.stopLoading();
+                            utilsService.loadingStop();
 
                         }, function(){
-                            utilsService.stopLoading();
+                            utilsService.loadingStop();
                         });
                     }
 
                 }, function(){
                     utilsService.showLoginRequiredAlert($scope.login);
-                    utilsService.stopLoading();
+                    utilsService.loadingStop();
 
                 });
 

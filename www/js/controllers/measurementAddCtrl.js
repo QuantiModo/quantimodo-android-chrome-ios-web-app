@@ -33,16 +33,6 @@ angular.module('starter')
             searchedUnits : []
         };
 
-        // alert box
-        $scope.showAlert = function(title, template) {
-            var alertPopup = $ionicPopup.alert({
-                cssClass : 'positive',
-                okType : 'button-positive',
-                title: title,
-                template: template
-            });
-        };
-
         // when a unit is changed
         var setUnit = function(abbreviatedUnitName){
             console.log(abbreviatedUnitName);
@@ -185,7 +175,7 @@ angular.module('starter')
 
                 // validation
                 if(params.variableName === ""){
-                    $scope.showAlert('Variable Name missing');
+                    utilsService.showAlert('Variable Name missing');
                 } else {
 
                     // add variable
@@ -198,7 +188,7 @@ angular.module('starter')
                         params.variableCategoryName,
                         params.note, true)
                     .then(function(){
-                        $scope.showAlert('Added Variable');
+                        utilsService.showAlert('Added Variable');
 
                         if($stateParams.fromState){
                             $state.go($stateParams.fromState);
@@ -209,7 +199,7 @@ angular.module('starter')
                         // refresh the last updated at from api
                         setTimeout($scope.init, 200);
                     }, function(err){
-                        $scope.showAlert(err);
+                        utilsService.showAlert(err);
                     });
                 }
 
@@ -217,7 +207,7 @@ angular.module('starter')
 
                 // validation
                 if(params.value === ""){
-                    $scope.showAlert('Enter a Value');
+                    utilsService.showAlert('Enter a Value');
 
                 } else {
                     // measurement only
@@ -231,7 +221,7 @@ angular.module('starter')
                         params.isAvg,
                         params.variableCategoryName,
                         params.note);
-                    $scope.showAlert(params.variableName + ' measurement saved!');
+                    utilsService.showAlert(params.variableName + ' measurement saved!');
 
                     if($stateParams.fromState){
                         $state.go($stateParams.fromState);
@@ -304,12 +294,7 @@ angular.module('starter')
 
             // $ionicLoading.hide();
             $scope.state.loading = true;
-
-            // show spinner
-            $ionicLoading.show({
-                noBackdrop: true,
-                template: '<p class="item-icon-left">One moment, please...<ion-spinner icon="lines"/></p>'
-            });
+            utilsService.loadStart();
 
             if(!$scope.state.measurementIsSetup){
                 setupFromUrlParameters();
@@ -336,16 +321,7 @@ angular.module('starter')
                 }
             }
 
-            if(!$scope.state.measurementIsSetup){
-                // get user token
-                authService.getAccessTokenFromAnySource().then(function(token){
-                    populateUnits();
-                }, function(){
-                    console.log("need to log in");
-                    utilsService.showLoginRequiredAlert($scope.login);
-                });
-            }
-
+            populateUnits();
             $ionicLoading.hide();
         };
 

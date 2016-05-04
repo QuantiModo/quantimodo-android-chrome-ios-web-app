@@ -30,16 +30,6 @@ angular.module('starter')
 			noBackdrop: true,
 			template: '<p class="item-icon-left">Loading stuff...<ion-spinner icon="lines"/></p>'
 	    });
-
-		// show alert box
-	    $scope.showAlert = function(title, template) {
-	        $ionicPopup.alert({
-	          title: title,
-	          template: template,
-              cssClass : 'positive',
-              okType : 'button-positive'
-	        });
-	    };
         
 	    // downVote
 	    $scope.downVote = function(factor){
@@ -82,9 +72,9 @@ angular.module('starter')
             // call vote method
             correlationService.vote(vote, cause, effect, correlationCoefficient)
                 .then(function(){
-                    $scope.showAlert('Down voted!');
+                    utilsService.showAlert('Down voted!');
                 }, function(){
-                    $scope.showAlert('Down vote failed !');
+                    utilsService.showAlert('Down vote failed !');
                 });
         }
 
@@ -129,9 +119,9 @@ angular.module('starter')
             
             correlationService.vote(vote, cause, effect, correlationCoefficient)
                 .then(function(){
-                    $scope.showAlert('Upvoted !');
+                    utilsService.showAlert('Upvoted !');
                 }, function(){
-                    $scope.showAlert('Upvote Failed !');
+                    utilsService.showAlert('Upvote Failed !');
                     factor.userVote = prevValue;
                 });
         }

@@ -105,7 +105,7 @@ angular.module('starter')
 		// populate list with recently tracked category variables
     	var populateRecentlyTrackedVariables = function(variableCategoryName){
 
-    		utilsService.startLoading();
+    		utilsService.loadingStart();
 	    	// get user token
 			authService.getAccessTokenFromAnySource().then(function(token){
 
@@ -115,10 +115,10 @@ angular.module('starter')
 					variableService.getVariables().then(function(variables){
 
 					    $scope.variableSearchResults = variables;
-					    utilsService.stopLoading();
+					    utilsService.loadingStop();
 
 					}, function(){
-						utilsService.stopLoading();
+						utilsService.loadingStop();
 					});
 				} else {
 					console.log('get all variables by variableCategoryName');
@@ -126,16 +126,16 @@ angular.module('starter')
 
 					    $scope.variableSearchResults = variables;
 
-					    utilsService.stopLoading();
+					    utilsService.loadingStop();
 
 					}, function(){
-						utilsService.stopLoading();
+						utilsService.loadingStop();
 					});
 				}
 
 			}, function(){
 			   utilsService.showLoginRequiredAlert($scope.login);
-			   utilsService.stopLoading();
+			   utilsService.loadingStop();
 
 			});
     	};
@@ -234,7 +234,7 @@ angular.module('starter')
 
 	    $scope.edit = function(){
 
-	    	utilsService.startLoading();
+	    	utilsService.loadingStart();
 
 	    	reminderService.postTrackingReminder(
 	    		$scope.state.id,
@@ -248,7 +248,7 @@ angular.module('starter')
                 $scope.state.reminderStartTimeStringUtc)
 	    	.then(function(){
 
-	    		utilsService.stopLoading();
+	    		utilsService.loadingStop();
 	    		if($stateParams.reminder !== null && typeof $stateParams.reminder !== "undefined"){
 	    			if($stateParams.reminder.fromState){
 	    				$state.go($stateParams.reminder.fromState);
@@ -261,7 +261,7 @@ angular.module('starter')
 
 	    	}, function(err){
 
-	    		utilsService.stopLoading();
+	    		utilsService.loadingStop();
 	    		utilsService.showAlert('Failed to add Reminder, Try again!', 'assertive');
 				console.log(err);
 	    	});
@@ -292,22 +292,22 @@ angular.module('starter')
 	    	}
 
             if(!$scope.state.variableName) {
-                $scope.showAlert('Variable Name missing!');
+                utilsService.showAlert('Variable Name missing!');
                 return;
             }
 
             if(!$scope.state.abbreviatedUnitName) {
-                $scope.showAlert('Unit is missing!');
+                utilsService.showAlert('Unit is missing!');
                 return;
             }
 
             if(!$scope.state.defaultValue) {
-                $scope.showAlert('Default value is missing!');
+                utilsService.showAlert('Default value is missing!');
                 return;
             }
 
 
-	    	utilsService.startLoading();
+	    	utilsService.loadingStart();
 
 	    	reminderService.addNewReminder(
 	    		$scope.state.id,
@@ -320,7 +320,7 @@ angular.module('starter')
                 $scope.state.reminderStartTimeStringUtc)
 	    	.then(function(){
 
-	    		utilsService.stopLoading();
+	    		utilsService.loadingStop();
 	    		if($stateParams.reminder !== null && typeof $stateParams.reminder !== "undefined"){
 	    			if($stateParams.reminder.fromState){
 	    				$state.go($stateParams.reminder.fromState);
@@ -333,7 +333,7 @@ angular.module('starter')
 
 	    	}, function(err){
                 console.log(err);
-	    		utilsService.stopLoading();
+	    		utilsService.loadingStop();
 	    		utilsService.showAlert('Failed to add Reminder, Try again!', 'assertive');
 	    	});
 	    };
@@ -419,9 +419,9 @@ angular.module('starter')
                     }
                     $stateParams.reminder = $scope.state.allReminders[0];
                     setupEditReminder($stateParams.reminder);
-                    utilsService.stopLoading();
+                    utilsService.loadingStop();
                 }, function () {
-                    utilsService.stopLoading();
+                    utilsService.loadingStop();
                     console.log("failed to get reminders");
                 });
         }
@@ -456,17 +456,7 @@ angular.module('starter')
     	$scope.$on('$ionicView.enter', function(e){
     		$scope.init();
     	});
-
-	    // Show alert with a title
-	    $scope.showAlert = function(title, template){
-			var alertPopup = $ionicPopup.alert({
-				cssClass : 'positive',
-				okType : 'button-positive',
-				title: title,
-				template: template
-			});
-	    };
-
+        
         $scope.unitSearch = function(){
 
             var unitSearchQuery = $scope.state.abbreviatedUnitName;

@@ -23,21 +23,9 @@ angular.module('starter')
         $scope.negatives = false;
         $scope.usersNegativeFactors = false;
 
-        // show alert for upvoted/failure
-        $scope.showAlert = function(title, template) {
-            $ionicPopup.alert({
-                cssClass : 'positive',
-                okType : 'button-positive',
-                title: title,
-                template: template
-            });
-        };
 
-        // constructor
         $scope.init = function(){
-
-
-
+            
             if($scope.isLoggedIn){
                 // show loader
                 $ionicLoading.show({
@@ -114,10 +102,10 @@ angular.module('starter')
             if($scope.isLoggedIn){
                 correlationService.vote(vote, cause, effect, correlationCoefficient)
                     .then(function(){
-                        $scope.showAlert('Downvoted!');
+                        utilsService.showAlert('Downvoted!');
                     }, function(){
                         factor.userVote = prevValue;
-                        $scope.showAlert('Downvote Failed!');
+                        utilsService.showAlert('Downvote Failed!');
                         
                     });
             } else {
@@ -168,10 +156,10 @@ angular.module('starter')
                 // call service method for voting
                 correlationService.vote(vote, cause, effect, correlationCoefficient)
                     .then(function(){
-                        $scope.showAlert('Upvoted!');
+                        utilsService.showAlert('Upvoted!');
                     }, function(){
                     	factor.userVote = prevValue;
-                        $scope.showAlert('Upvote Failed!');
+                        utilsService.showAlert('Upvote Failed!');
                     });
 
             } else {

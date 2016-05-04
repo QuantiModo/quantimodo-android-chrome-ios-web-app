@@ -146,16 +146,7 @@ angular.module('starter')
 	        }
 	        return str;
 	    };
-
-	    // show alert box
-	    $scope.showAlert = function(title, template) {
-	        var alertPopup = $ionicPopup.alert({
-				cssClass : 'positive',
-				okType : 'button-positive',
-				title: title,
-				template: template
-	        });
-	    };
+		
 
 		// When Export is tapped
 		$scope.exportCsv = function(){
@@ -223,7 +214,7 @@ angular.module('starter')
 					$cordovaFileOpener2.open(cordova.file.dataDirectory+'csv.csv','application/csv');
 
 		        }, function (error) {
-					$scope.showAlert('Please generate CSV later!');
+					utilsService.showAlert('Please generate CSV later!');
 				});
 	    	});
 	    };

@@ -60,7 +60,7 @@ angular.module('starter')
 
 
 	    var getHistory = function(){
-	    	utilsService.startLoading();
+	    	utilsService.loadingStart();
 	    	measurementService.getHistoryMeasurements({
     		    offset: $scope.state.offset,
     		    limit: $scope.state.limit,
@@ -70,10 +70,10 @@ angular.module('starter')
 				if($scope.state.history.length > 49){
 					$scope.state.showLoadMoreButton = true;
 				}
-    			utilsService.stopLoading();
+    			utilsService.loadingStop();
 	    	}, function(error){
 	    		console.log('error getting measurements', error);
-	    		utilsService.stopLoading();
+	    		utilsService.loadingStop();
 	    	});
 
 	    };
@@ -85,7 +85,7 @@ angular.module('starter')
 	    
 	    // constructor
 	    $scope.init = function(){
-            authService.checkIfLoggedInAndRedirectToLoginIfNecessary();
+
 			variableCategoryService.getVariableCategories()
 	    	.then(function(variableCategories){
 	    		$scope.state.variableCategories = variableCategories;

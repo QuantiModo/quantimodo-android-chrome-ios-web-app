@@ -30,17 +30,6 @@ angular.module('starter')
             $scope.state.trackFactorsPlaceholderText = "Search for a variable here...";
             $scope.state.title = $filter('wordAliases')('Track');
         }
-
-
-        // alert box
-        $scope.showAlert = function(title, template) {
-            var alertPopup = $ionicPopup.alert({
-                cssClass : 'positive',
-                okType : 'button-positive',
-                title: title,
-                template: template
-            });
-        };
         
         // when an old measurement is tapped to remeasure
         $scope.selectVariable = function(variableObject){
@@ -52,51 +41,13 @@ angular.module('starter')
             );
         };
         
-        
-        // constructor
         $scope.init = function(){
-
-            // $ionicLoading.hide();
             $scope.state.loading = true;
-
-            // show spinner
-            $ionicLoading.show({
-                noBackdrop: true,
-                template: '<p class="item-icon-left">One moment, please...<ion-spinner icon="lines"/></p>'
-            });
-            
-            // get user token
-            authService.getAccessTokenFromAnySource().then(function(token){
-                populateVariableSearchList();
-            }, function(){
-                console.log("need to log in");
-                utilsService.showLoginRequiredAlert($scope.login);
-            });
-
+            utilsService.loadingStart();
+            populateVariableSearchList();
+            console.log("need to log in");
+            utilsService.showLoginRequiredAlert($scope.login);
             $ionicLoading.hide();
-        };
-
-        
-        var populateVariableCategories = function(){
-            // get variable categories
-            variableCategoryService.getVariableCategories().then(function(variableCategories){
-
-                // update viewmodel
-                $scope.state.variableCategories = variableCategories;
-                console.log("got variable categories", variableCategories);
-
-                // hackish way to update variableCategoryName
-                setTimeout(function(){
-                    $scope.state.measurement.variableCategoryName = variableCategoryName;
-
-                    // redraw everything
-                    $scope.$apply();
-                },100);
-
-                // hide spinner
-                $ionicLoading.hide();
-
-            });
         };
         
         var populateVariableSearchList = function(){

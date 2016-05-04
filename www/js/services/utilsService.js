@@ -17,12 +17,12 @@ angular.module('starter')
                 },
 
                 // Hide spinner
-                stopLoading : function(){
+                loadingStop : function(){
                     $ionicLoading.hide();
                 },
 
                 // show spinner
-                startLoading : function(){
+                loadingStart : function(){
                     // show loading spinner
                     $ionicLoading.show({
                         noBackdrop: true,

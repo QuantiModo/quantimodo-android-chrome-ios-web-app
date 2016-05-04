@@ -41,7 +41,7 @@ angular.module('starter')
 
             // validation
             if (params.variableName === "") {
-                $scope.showAlert('Variable Name missing');
+                utilsService.showAlert('Variable Name missing');
             } else {
                 // add variable
                 $ionicHistory.goBack();
@@ -55,33 +55,19 @@ angular.module('starter')
             $scope.state.loading = true;
 
             $scope.state.sumAvg = "avg";
-            // show spinner
-            $ionicLoading.show({
-                noBackdrop: true,
-                template: '<p class="item-icon-left">Loading stuff...<ion-spinner icon="lines"/></p>'
-            });  
 
-            // get user token
-            authService.getAccessTokenFromAnySource().then(function(){
-                
-                // get all variables
-                variableService.getVariablesByName($stateParams.variableName).then(function(variableObject){
-                    $scope.state.variableObject = variableObject;
-                    console.log(variableObject);
-                    $scope.item = variableObject;
+            utilsService.loadingStart();
 
-                    // set values in form
-                    $scope.state.sumAvg = variableObject.combinationOperation === "MEAN"? "avg" : "sum";
-                    $scope.state.variableCategory = variableObject.category;
-                    $scope.state.selectedUnitAbbreviatedName = variableObject.abbreviatedUnitName;
-                });
+            // get all variables
+            variableService.getVariablesByName($stateParams.variableName).then(function(variableObject){
+                $scope.state.variableObject = variableObject;
+                console.log(variableObject);
+                $scope.item = variableObject;
 
-
-
-            }, function(){
-                console.log("need to log in");
-                utilsService.showLoginRequiredAlert($scope.login);
-                $ionicLoading.hide();
+                // set values in form
+                $scope.state.sumAvg = variableObject.combinationOperation === "MEAN"? "avg" : "sum";
+                $scope.state.variableCategory = variableObject.category;
+                $scope.state.selectedUnitAbbreviatedName = variableObject.abbreviatedUnitName;
             });
 
             $ionicLoading.hide();

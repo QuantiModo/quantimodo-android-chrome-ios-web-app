@@ -454,7 +454,7 @@ angular.module('starter')
             },
 			
 			checkIfLoggedInAndRedirectToLoginIfNecessary : function(){
-                utilsService.startLoading();
+                utilsService.loadingStart();
                 // try to get access token
                 authSrv.getAccessTokenFromAnySource().then(function(data) 
                 {

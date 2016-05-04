@@ -123,7 +123,7 @@ angular.module('starter')
 	    };
 
 	    var getTrackingReminderNotifications = function(){
-	    	utilsService.startLoading();
+	    	utilsService.loadingStart();
 
 	    	reminderService.getTrackingReminderNotifications($stateParams.variableCategoryName)
 	    	.then(function(reminders){
@@ -132,9 +132,9 @@ angular.module('starter')
 				}
 	    		$scope.state.trackingRemindersNotifications = reminders;
 	    		$scope.state.filteredReminders = filterViaDates(reminders);
-	    		utilsService.stopLoading();
+	    		utilsService.loadingStop();
 	    	}, function(){
-	    		utilsService.stopLoading();
+	    		utilsService.loadingStop();
 	    		console.log("failed to get reminders");
 				//utilsService.showLoginRequiredAlert($scope.login);
 
@@ -190,17 +190,17 @@ angular.module('starter')
 	    };
 
 	    $scope.deleteReminder = function(reminder){
-	    	utilsService.startLoading();
+	    	utilsService.loadingStart();
 	    	reminderService.deleteReminder(reminder.id)
 	    	.then(function(){
 
-	    		utilsService.stopLoading();
+	    		utilsService.loadingStop();
 	    		utilsService.showAlert('Reminder Deleted.');
 	    		$scope.init();
 
 	    	}, function(err){
 				console.log(err);
-	    		utilsService.stopLoading();
+	    		utilsService.loadingStop();
 	    		utilsService.showAlert('Failed to Delete Reminder, Try again!', 'assertive');
 	    	});
 	    };
