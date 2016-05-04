@@ -24,7 +24,7 @@ angular.module('starter')
             measurementService.updatePrimaryOutcomeVariableLocally(primaryOutcomeRatingValue).then(function () {
 
                 var user = authService.getUserFromLocalStorage();
-                if(user.id){
+                if(user){
                     // try to send the data to server if we have a user
                     measurementService.updatePrimaryOutcomeVariable(primaryOutcomeRatingValue);
                 }
@@ -93,41 +93,49 @@ angular.module('starter')
                     updateAveragePrimaryOutcomeRatingView(averagePrimaryOutcomeVariableValue);
                 }
 
-                // update line chart
-                localStorageService.getItem('lineChartData',function(lineChartData){
-                    if(lineChartData !== "[]" && lineChartData !== null) {
-                        updateLineChart(JSON.parse(lineChartData));
-                        $scope.showCharts = true;
-                    }
+                generateLineAndBarChartData();
 
-                    // update bar chart
-                    localStorageService.getItem('barChartData',function(barChartData){
-                        if(barChartData !== "[0,0,0,0,0]" && barChartData !== null){
-                            updateBarChart(JSON.parse(barChartData));
-                            if(!$scope.$$phase) {
-                                $scope.$apply();
-                            }
-                            $scope.showCharts = true;
-                        }
-                    });
-                });
+                // update line chart
+                if($scope.lineChartData !== "[]" && $scope.lineChartData !== null) {
+                    updateLineChart($scope.lineChartData);
+                    $scope.showCharts = true;
+                }
+
+                // update bar chart
+                if($scope.barChartData !== "[0,0,0,0,0]" && $scope.barChartData !== null){
+                    updateBarChart($scope.barChartData);
+                    if(!$scope.$$phase) {
+                        $scope.$apply();
+                    }
+                    $scope.showCharts = true;
+                }
             });
         };
 
         // constructor
+        function generateLineAndBarChartData() {
+            var __ret = measurementService.getLineAndBarChartData();
+            if(__ret){
+                $scope.lineChartData = __ret.lineArr;
+                $scope.barChartData = __ret.barArr;
+            }
+        }
+
         $scope.init = function(){
 
             // flags
             $scope.timeRemaining = false;
             $scope.averagePrimaryOutcomeVariableImage = false;
             $scope.averagePrimaryOutcomeVariableValue = false;
+            $scope.lineChartData = null;
+            $scope.barChartData = null;
 
             // chart flags
             $scope.lineChartConfig = false; 
             $scope.barChartConfig = false;
             $scope.redrawLineChart = true;
             $scope.redrawBarChart = true;
-
+            generateLineAndBarChartData();
         };
 
         $scope.init();
