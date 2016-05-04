@@ -69,19 +69,19 @@ angular.module('starter')
             $scope.showIntervalCard = false;
         };
 
-        // factorValue is reported
-        $scope.reportPrimaryOutcomeVariable = function(factorValue){
+        // ratingValue is reported
+        $scope.reportPrimaryOutcomeVariable = function(ratingValue){
 
-            $scope.reportedVariableValue = config.appSettings.primaryOutcomeValueConversionDataSetReversed[factorValue] ? 
-                config.appSettings.primaryOutcomeValueConversionDataSetReversed[factorValue] : false;
+            $scope.reportedVariableValue = config.appSettings.primaryOutcomeValueConversionDataSetReversed[ratingValue] ?
+                config.appSettings.primaryOutcomeValueConversionDataSetReversed[ratingValue] : false;
             
             localStorageService.setItem('primaryOutcomeVariableReportedWelcomeScreen',true);
             localStorageService.setItem('allMeasurements', JSON.stringify([]));
             
             // update localstorage
-            measurementService.updatePrimaryOutcomeVariableLocally(factorValue).then(function () {
+            measurementService.updatePrimaryOutcomeVariableLocally(ratingValue).then(function () {
                 // try to send the data to server
-                measurementService.updatePrimaryOutcomeVariable(factorValue);
+                measurementService.updatePrimaryOutcomeVariable(ratingValue);
 
                 // calculate charts data
                 measurementService.calculateAveragePrimaryOutcomeVariableValue().then(function(){
