@@ -204,7 +204,7 @@ angular.module('starter')
         function clearLocalStorage() {
 //Set out localstorage flag for welcome screen variables
             localStorageService.setItem('isLoggedIn', false);
-            localStorageService.setItem('interval', true);
+            
             localStorageService.setItem('primaryOutcomeVariableReportedWelcomeScreen', true);
             localStorageService.deleteItem('accessToken');
             localStorageService.deleteItem('refreshToken');
@@ -280,8 +280,8 @@ angular.module('starter')
                 //clear notification
                 notificationService.cancelNotifications();
 
-                //Set out localstorage flag for welcome screen variables
-                localStorageService.setItem('interval',true);
+                //Set out local storage flag for welcome screen variables
+                
                 localStorageService.setItem('primaryOutcomeVariableReportedWelcomeScreen',true);
                 localStorageService.setItem('allMeasurements',JSON.stringify([]));
 

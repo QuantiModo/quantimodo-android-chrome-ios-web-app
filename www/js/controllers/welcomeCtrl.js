@@ -23,11 +23,6 @@ angular.module('starter')
 
         });
 
-        localStorageService.getItem('interval',function(interval){
-            $scope.showIntervalCard = interval ? false : true;
-
-        });
-        
         localStorageService.getItem('askForRating',function(askForRating){
             $scope.notificationInterval = askForRating || $scope.isIOS? "hour" : "hourly";
         });
@@ -38,7 +33,7 @@ angular.module('starter')
 
         // when interval is set 
         $scope.saveInterval = function(){
-            localStorageService.setItem('interval',true);
+
             /*TODO schedule notification*/
             if($scope.subscribeNotification){
 
@@ -71,7 +66,6 @@ angular.module('starter')
 
         // skip interval reporting is tapped
         $scope.skipInterval = function(){
-            localStorageService.setItem('interval',true);
             $scope.showIntervalCard = false;
         };
 
