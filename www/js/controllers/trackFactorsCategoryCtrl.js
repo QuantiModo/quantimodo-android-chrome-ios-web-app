@@ -12,7 +12,7 @@ angular.module('starter')
         var variableCategoryObject = variableCategoryService.getVariableCategoryInfo(variableCategoryName);
 
         $scope.state = {
-            showVariableSearchCard: true,
+            showVariableSearchCard: false,
             showAddVariableButton: false,
             showCategoryAsSelector: false,
             variableSearchResults : [],
@@ -42,18 +42,18 @@ angular.module('starter')
         };
         
         $scope.init = function(){
-            authService.getAccessTokenFromAnySource().then(function(accessToken)
-            {
+            $scope.state.loading = true;
+            utilsService.loadingStart();
+            var user = authService.getUserFromLocalStorage();
+            if(user){
                 $scope.showHelpInfoPopupIfNecessary();
-                $scope.state.loading = true;
-                utilsService.loadingStart();
+                $scope.state.showVariableSearchCard = true;
                 populateVariableSearchList();
                 $ionicLoading.hide();
-            }, function () {
+            } else {
                 $ionicLoading.hide();
-                console.log('need to login again');
                 $state.go('app.login');
-            });
+            }
         };
         
         var populateVariableSearchList = function(){
