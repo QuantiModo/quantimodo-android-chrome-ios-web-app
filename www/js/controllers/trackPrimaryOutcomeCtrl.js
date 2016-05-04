@@ -6,11 +6,13 @@ angular.module('starter')
         $scope.controller_name = "TrackPrimaryOutcomeCtrl";
 
         $scope.showCharts = false;
+        $scope.showRatingFaces = true;
 
         $scope.recordPrimaryOutcomeVariableRating = function (primaryOutcomeRatingValue) {
 
             // flag for blink effect
             $scope.timeRemaining = true;
+            $scope.showRatingFaces = false;
 
             if (window.chrome && window.chrome.browserAction) {
                 chrome.browserAction.setBadgeText({
