@@ -95,14 +95,14 @@ angular.module('starter')
 
                 // update line chart
                 localStorageService.getItem('lineChartData',function(lineChartData){
-                    if(lineChartData !== "[]") {
+                    if(lineChartData !== "[]" && lineChartData !== null) {
                         updateLineChart(JSON.parse(lineChartData));
                         $scope.showCharts = true;
                     }
 
                     // update bar chart
                     localStorageService.getItem('barChartData',function(barChartData){
-                        if(barChartData !== "[0,0,0,0,0]"){
+                        if(barChartData !== "[0,0,0,0,0]" && barChartData !== null){
                             updateBarChart(JSON.parse(barChartData));
                             if(!$scope.$$phase) {
                                 $scope.$apply();
