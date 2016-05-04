@@ -28,10 +28,7 @@ angular.module('starter')
         });
 
         $scope.subscribeNotification = true;
-        
-        console.log("$scope", $scope.showIntervalCard);
 
-        // when interval is set 
         $scope.saveInterval = function(){
 
             /*TODO schedule notification*/
@@ -78,7 +75,7 @@ angular.module('starter')
             localStorageService.setItem('primaryOutcomeVariableReportedWelcomeScreen',true);
             localStorageService.setItem('allMeasurements', JSON.stringify([]));
             
-            // update localstorage
+            // update local storage
             measurementService.updatePrimaryOutcomeVariableLocally(ratingValue).then(function () {
                 // try to send the data to server
                 measurementService.updatePrimaryOutcomeVariable(ratingValue);
@@ -91,12 +88,9 @@ angular.module('starter')
             });
         };
 
-        // constructor
+
         $scope.init = function(){
-            console.log("welcome init");
-            
-            // for setting intervals
-            $scope.timeRemaining = false;
+            console.log("welcome initialization...");
             
         };
 
