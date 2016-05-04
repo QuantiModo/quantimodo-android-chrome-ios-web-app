@@ -201,7 +201,7 @@ angular.module('starter')
         };
 
         // when user is logging out
-        function clearLocalStorage() {
+        function clearTokensFromLocalStorage() {
 //Set out localstorage flag for welcome screen variables
             localStorageService.setItem('isLoggedIn', false);
             
@@ -251,12 +251,12 @@ angular.module('starter')
                         {
                             text: 'No',
                             type: 'button-assertive',
-                            onTap : afterLogoutNoLocal
+                            onTap : afterLogoutDoNotDeleteMeasurements
                         },
                         {
                             text: 'Yes',
                             type: 'button-positive',
-                            onTap: afterLogout
+                            onTap: completelyResetAppState
                         }
                     ]
 
@@ -271,29 +271,18 @@ angular.module('starter')
                 }
             }
 
-            var afterLogout = function(){
-
-                // set flags
+            var completelyResetAppState = function(){
                 $scope.isLoggedIn = false;
                 localStorageService.clear();
-
-                //clear notification
                 notificationService.cancelNotifications();
-
-                //Set out local storage flag for welcome screen variables
-                
-                localStorageService.setItem('primaryOutcomeVariableReportedWelcomeScreen',true);
-                localStorageService.setItem('allMeasurements',JSON.stringify([]));
-
                 refreshTrackingPageAndGoToWelcome();
                 logOutOfApi();
             };
 
 
-            var afterLogoutNoLocal = function(){
+            var afterLogoutDoNotDeleteMeasurements = function(){
                 $scope.isLoggedIn = false;
-                notificationService.cancelNotifications();
-                clearLocalStorage();
+                clearTokensFromLocalStorage();
                 refreshTrackingPageAndGoToWelcome();
                 logOutOfApi();
             };
