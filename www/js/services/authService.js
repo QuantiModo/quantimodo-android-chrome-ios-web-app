@@ -23,6 +23,11 @@ angular.module('starter')
 				}
 				return user;
 			},
+            
+            getUserFromLocalStorage : function () {
+                var user = localStorageService.getItem('user', JSON.stringify(user));
+                return user;
+            },
 
 			setUserInLocalStorage : function() {
 				QuantiModo.getUser(function (user) {

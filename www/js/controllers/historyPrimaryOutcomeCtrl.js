@@ -74,19 +74,27 @@ angular.module('starter')
 
 	    // constructor
 	    $scope.init = function(){
-			$scope.showHelpInfoPopupIfNecessary();
+			
 			utilsService.loadingStart();
 			var history;
 			localStorageService.getItem('allMeasurements',function(allMeasurements){
 				history = allMeasurements? JSON.parse(allMeasurements) : [];
-				$scope.history = history.sort(function(a,b){
-					if(a.timestamp < b.timestamp){
-						return 1;}
-					if(a.timestamp> b.timestamp)
-					{return -1;}
-					return 0;
-				});
+				if(history.length < 1){
+					console.log('No measurements for history!  Going to default state. ')
+					$state.go(config.appSettings.defaultState);
+				}
+				if(history.length > 0){
+					$scope.showHelpInfoPopupIfNecessary();
+					$scope.history = history.sort(function(a,b){
+						if(a.timestamp < b.timestamp){
+							return 1;}
+						if(a.timestamp> b.timestamp)
+						{return -1;}
+						return 0;
+					});
+				}
 			});
+
 			$ionicLoading.hide();
 	    };
 

@@ -432,10 +432,12 @@ angular.module('starter')
                 'app.login'
             ];
 
-            var user = localStorageService.getItem('user', JSON.stringify(user));
+            var user = localStorageService.getItem('user', function (user) {
+                return user;
+            });
 
             if(!user){
-                console.warning('Cannot sync because we do not have a user in local storage!');
+                console.log('Cannot sync because we do not have a user in local storage!');
                 return;
             }
 
@@ -469,7 +471,7 @@ angular.module('starter')
                 'app.login'
             ];
 
-            if(authOptionalStates.indexOf($state.current.name) !== -1) {
+            if(authOptionalStates.indexOf($state.current.name) === -1) {
                 // try to get access token
                 authService.getAccessTokenFromAnySource().then(function (data) {
                     $scope.isLoggedIn = true;
@@ -487,6 +489,7 @@ angular.module('starter')
         $scope.init = function () {
             console.log("Main Constructor Start");
             hideMenuIfSetInUrlParameter();
+            redirectToWelcomeStateIfNecessary();
             scheduleReminder();
             syncPrimaryOutcomeVariableMeasurementsIfInSyncEnabledState();
             checkAuthIfInAuthRequiredState();
@@ -523,26 +526,27 @@ angular.module('starter')
         // call constructor
         $scope.init();
 
-        var tokenInGetParams = utilsService.getUrlParameter(location.href, 'accessToken');
+        function redirectToWelcomeStateIfNecessary() {
+            var tokenInGetParams = utilsService.getUrlParameter(location.href, 'accessToken');
 
-        if(!tokenInGetParams){
-            tokenInGetParams = utilsService.getUrlParameter(location.href, 'access_token');
-        }
-
-        // redirection if already welcomed before
-        var isWelcomed;
-        localStorageService.getItem('isWelcomed',function(val){
-            isWelcomed = val;
-            console.log('isWelcomed ' + isWelcomed);
-            if(isWelcomed  === true || isWelcomed === "true" || tokenInGetParams){
-                $rootScope.isWelcomed = true;
-                //$state.go(config.appSettings.defaultState);
-            } else {
-                console.log("isWelcomed is " + isWelcomed + ". Setting to true and going to welcome now.");
-                localStorageService.setItem('isWelcomed', true);
-                $rootScope.isWelcomed = true;
-                $state.go('app.welcome');
+            if (!tokenInGetParams) {
+                tokenInGetParams = utilsService.getUrlParameter(location.href, 'access_token');
             }
 
-        });
+            // redirection if already welcomed before
+            var isWelcomed;
+            localStorageService.getItem('isWelcomed', function (val) {
+                isWelcomed = val;
+                console.log('isWelcomed ' + isWelcomed);
+                if (isWelcomed === true || isWelcomed === "true" || tokenInGetParams) {
+                    $rootScope.isWelcomed = true;
+                } else {
+                    console.log("isWelcomed is " + isWelcomed + ". Setting to true and going to welcome now.");
+                    localStorageService.setItem('isWelcomed', true);
+                    $rootScope.isWelcomed = true;
+                    $state.go('app.welcome');
+                }
+            });
+        }
+
     });
