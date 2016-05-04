@@ -75,7 +75,6 @@ angular.module('starter')
 	    // constructor
 	    $scope.init = function(){
 			$scope.showHelpInfoPopupIfNecessary();
-			$scope.state.loading = true;
 			utilsService.loadingStart();
 			var history;
 			localStorageService.getItem('allMeasurements',function(allMeasurements){

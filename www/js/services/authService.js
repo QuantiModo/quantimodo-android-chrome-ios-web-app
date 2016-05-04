@@ -16,7 +16,7 @@ angular.module('starter')
 				return user;
 			},
 
-			getUserFromLocalStorage : function() {
+			getOrSetUserInLocalStorage : function() {
 				var user = localStorageService.getItem('user', JSON.stringify(user));
 				if(!user){
 					user = authSrv.setUserInLocalStorage();

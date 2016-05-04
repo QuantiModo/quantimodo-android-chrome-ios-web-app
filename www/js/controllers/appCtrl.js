@@ -432,6 +432,13 @@ angular.module('starter')
                 'app.login'
             ];
 
+            var user = localStorageService.getItem('user', JSON.stringify(user));
+
+            if(!user){
+                console.warning('Cannot sync because we do not have a user in local storage!');
+                return;
+            }
+
             if(syncEnabledStates.indexOf($state.current.name) !== -1 && config.appSettings.primaryOutcomeVariable){
                 $rootScope.isSyncing = true;
                 console.log('setting sync true');
@@ -466,7 +473,7 @@ angular.module('starter')
                 // try to get access token
                 authService.getAccessTokenFromAnySource().then(function (data) {
                     $scope.isLoggedIn = true;
-                    var user = authService.getUserFromLocalStorage();
+                    var user = authService.getOrSetUserInLocalStorage();
                     $scope.userName = user.displayName;
                 }, function () {
                     $scope.isLoggedIn = false;
