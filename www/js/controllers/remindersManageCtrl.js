@@ -104,16 +104,8 @@ angular.module('starter')
 
 	    // constructor
 	    $scope.init = function(){
-
-			// get user token
-			authService.getAccessTokenFromAnySource().then(function(token){
-				getTrackingReminders();
-			}, function(){
-				$ionicLoading.hide();
-				console.log("need to log in");
-				//utilsService.showLoginRequiredAlert($scope.login);
-			});
-			
+			authService.checkIfLoggedInAndRedirectToLoginIfNecessary();
+			getTrackingReminders();
 	    };
 
 

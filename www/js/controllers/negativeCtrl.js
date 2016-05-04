@@ -122,7 +122,7 @@ angular.module('starter')
                     });
             } else {
                 factor.userVote = prevValue;
-            	$state.go('app.welcome')
+            	$state.go('app.welcome');
             	}
         }
 
@@ -176,7 +176,7 @@ angular.module('starter')
 
             } else {
 				factor.userVote = prevValue;
-            	$state.go('app.welcome')
+            	$state.go('app.welcome');
             	}
         }
 

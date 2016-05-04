@@ -22,6 +22,7 @@ window.config = {
 
 config.appSettings  = {
     appName : 'EnergyModo',
+    alwaysRequireLogin : false,
 
     defaultState : 'app.track',
     welcomeState : 'app.welcome',

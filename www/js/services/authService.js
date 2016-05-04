@@ -218,16 +218,19 @@ angular.module('starter')
 
 			// retrieves access token.
 			// if expired, renews it
-			// if not logged in, returns rejects
+            getAccessTokenFromUrlParameter: function () {
+                var tokenInGetParams = authSrv.utilsService.getUrlParameter(location.href, 'accessToken');
+
+                if (!tokenInGetParams) {
+                    tokenInGetParams = authSrv.utilsService.getUrlParameter(location.href, 'access_token');
+                }
+                return tokenInGetParams;
+            },
+            // if not logged in, returns rejects
             getAccessTokenFromAnySource: function () {
 
 				var deferred = $q.defer();
-
-				var tokenInGetParams = authSrv.utilsService.getUrlParameter(location.href, 'accessToken');
-
-				if(!tokenInGetParams) {
-					tokenInGetParams = authSrv.utilsService.getUrlParameter(location.href, 'access_token');
-                }
+                var tokenInGetParams = this.getAccessTokenFromUrlParameter();
 
 				//check if token in get params
 				if (tokenInGetParams) {
@@ -292,9 +295,9 @@ angular.module('starter')
                         console.log('getAccessTokenFromUserEndpoint: Platform is android: ' + ionic.Platform.is('android'));
 
                         //Using OAuth on Staging for tests
-                        if(!ionic.Platform.is('ios') && !ionic.Platform.is('android')
-                            && config.getClientId() === 'oAuthDisabled'
-                            && !(window.location.origin.indexOf('staging.quantimo.do') > -1)){
+                        if(!ionic.Platform.is('ios') && !ionic.Platform.is('android') &&
+                            config.getClientId() === 'oAuthDisabled' &&
+                            !(window.location.origin.indexOf('staging.quantimo.do') > -1)){
                             console.log("getAccessTokenFromUserEndpoint: Browser Detected and client id is oAuthDisabled.  ");
                             $ionicLoading.hide();
                             $state.go('app.login');
@@ -449,6 +452,21 @@ angular.module('starter')
                 });
 
             },
+			
+			checkIfLoggedInAndRedirectToLoginIfNecessary : function(){
+                utilsService.startLoading();
+                // try to get access token
+                authSrv.getAccessTokenFromAnySource().then(function(data) 
+                {
+                }, function () {
+                    //set flags
+                    $ionicLoading.hide();
+                    if(config.appSettings.alwaysRequireLogin){
+                        console.log('need to login again');
+                        $state.go('app.login');
+                    }
+                });
+			},
 
 			// get Access Token
 			fetchAccessTokenAndUserDetails: function(authorization_code, withJWT) {

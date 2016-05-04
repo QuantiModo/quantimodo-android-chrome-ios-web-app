@@ -85,7 +85,7 @@ angular.module('starter')
 	    
 	    // constructor
 	    $scope.init = function(){
-	    	utilsService.startLoading();
+            authService.checkIfLoggedInAndRedirectToLoginIfNecessary();
 			variableCategoryService.getVariableCategories()
 	    	.then(function(variableCategories){
 	    		$scope.state.variableCategories = variableCategories;

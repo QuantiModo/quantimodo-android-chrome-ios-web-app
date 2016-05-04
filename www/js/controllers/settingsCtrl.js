@@ -8,7 +8,7 @@ angular.module('starter')
 		
 		// populate ratings interval
         localStorageService.getItem('askForRating', function (askForRating) {
-                $scope.ratings = askForRating ? askForRating : "hourly"
+                $scope.ratings = askForRating ? askForRating : "hourly";
         });
 		$scope.isIOS = ionic.Platform.isIPad() || ionic.Platform.isIOS();
 		$scope.isAndroid = ionic.Platform.isAndroid();
@@ -29,7 +29,9 @@ angular.module('starter')
 	                $scope.login();
 	            },100);
 
-	        } else $scope.login();
+	        } else {
+				$scope.login();
+			}
 	    };
 
 
@@ -40,9 +42,10 @@ angular.module('starter')
                 localAdditionalRatings = additionalRatings? JSON.parse(additionalRatings): {};
             });
             var string = "";
-	        for(var rat in localAdditionalRatings){
-	            if(localAdditionalRatings[rating])
-	                string += rating + ",";
+	        for(var rating in localAdditionalRatings){
+	            if(localAdditionalRatings[rating]) {
+					string += rating + ",";
+				}
 	        }
 			string = string.replace(/,$/, '');
 	        $scope.addString = string;
@@ -129,12 +132,14 @@ angular.module('starter')
 
 	    // Convert all data Array to a CSV object
 	    var convertToCSV = function(objArray) {
-	        var array = typeof objArray != 'object' ? JSON.parse(objArray) : objArray;
+	        var array = typeof objArray !== 'object' ? JSON.parse(objArray) : objArray;
 	        var str = '';
 	        for (var i = 0; i < array.length; i++) {
 	            var line = '';
 	            for (var index in array[i]) {
-	                if (line != '') line += ',';
+	                if (line != '') {
+						line += ',';
+					}
 	                line += array[i][index];
 	            }
 	            str += line + '\r\n';

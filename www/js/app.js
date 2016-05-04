@@ -302,7 +302,7 @@ angular.module('starter',
               }
           }
       })
-      .state('app.postidea', {
+      .state('app.postIdea', {
           url: "/postidea",
           views: {
               'menuContent': {
