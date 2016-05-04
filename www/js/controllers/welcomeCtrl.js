@@ -82,7 +82,7 @@ angular.module('starter')
                 config.appSettings.primaryOutcomeValueConversionDataSetReversed[factorValue] : false;
             
             localStorageService.setItem('primaryOutcomeVariableReportedWelcomeScreen',true);
-            localStorageService.setItem('allData', JSON.stringify([]));
+            localStorageService.setItem('allMeasurements', JSON.stringify([]));
             
             // update localstorage
             measurementService.updatePrimaryOutcomeVariableLocally(factorValue).then(function () {

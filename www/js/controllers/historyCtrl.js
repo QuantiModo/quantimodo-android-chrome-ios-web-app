@@ -81,8 +81,8 @@ angular.module('starter')
                 $scope.state.loading = true;
                 utilsService.loadingStart();
                 var history;
-                localStorageService.getItem('allData',function(allData){
-                    history = allData? JSON.parse(allData) : [];
+                localStorageService.getItem('allMeasurements',function(allMeasurements){
+                    history = allMeasurements? JSON.parse(allMeasurements) : [];
                     $scope.history = history.sort(function(a,b){
                         if(a.timestamp < b.timestamp){
                             return 1;}

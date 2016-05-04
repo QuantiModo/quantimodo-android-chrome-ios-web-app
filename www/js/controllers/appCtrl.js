@@ -201,6 +201,16 @@ angular.module('starter')
         };
 
         // when user is logging out
+        function clearLocalStorage() {
+//Set out localstorage flag for welcome screen variables
+            localStorageService.setItem('isLoggedIn', false);
+            localStorageService.setItem('interval', true);
+            localStorageService.setItem('primaryOutcomeVariableReportedWelcomeScreen', true);
+            localStorageService.deleteItem('accessToken');
+            localStorageService.deleteItem('refreshToken');
+            localStorageService.deleteItem('expiresAt');
+        }
+
         $scope.logout = function(){
 
             var startLogout = function(){
@@ -220,6 +230,18 @@ angular.module('starter')
                 }
             };
 
+            function refreshTrackingPageAndGoToWelcome() {
+                // calculate primary outcome variable and chart data
+                measurementService.calculateAveragePrimaryOutcomeVariableValue().then(function () {
+                    measurementService.calculateBothChart();
+                    measurementService.resetSyncFlag();
+                    //hard reload
+                    $state.go('app.welcome', {}, {
+                        reload: true
+                    });
+                });
+            }
+            
             var showDataClearPopup = function(){
                 $ionicPopup.show({
                     title:'Clear local storage?',
@@ -241,6 +263,14 @@ angular.module('starter')
                 });
             };
 
+            function logOutOfApi() {
+                if (window.chrome && window.chrome.extension && typeof window.chrome.identity === "undefined") {
+                    chrome.tabs.create({
+                        url: config.getApiUrl() + "/api/v2/auth/logout"
+                    });
+                }
+            }
+
             var afterLogout = function(){
 
                 // set flags
@@ -253,58 +283,19 @@ angular.module('starter')
                 //Set out localstorage flag for welcome screen variables
                 localStorageService.setItem('interval',true);
                 localStorageService.setItem('primaryOutcomeVariableReportedWelcomeScreen',true);
-                localStorageService.setItem('allData',JSON.stringify([]));
+                localStorageService.setItem('allMeasurements',JSON.stringify([]));
 
-                // calculate primary outcome variable and chart data
-                measurementService.calculateAveragePrimaryOutcomeVariableValue().then(function(){
-                    measurementService.calculateBothChart();
-                    measurementService.resetSyncFlag();
-                    //hard reload
-                    $state.go('app.welcome',{
-                    },{
-                        reload:true
-                    });
-                });
-
-                if(window.chrome && window.chrome.extension && typeof window.chrome.identity === "undefined"){
-                    chrome.tabs.create({
-                        url: config.getApiUrl() + "/api/v2/auth/logout"
-                    });
-                }
+                refreshTrackingPageAndGoToWelcome();
+                logOutOfApi();
             };
 
+
             var afterLogoutNoLocal = function(){
-                // set flags
                 $scope.isLoggedIn = false;
-
-                //clear notification
                 notificationService.cancelNotifications();
-
-                //Set out localstorage flag for welcome screen variables
-                localStorageService.setItem('isLoggedIn',false);
-                localStorageService.setItem('interval',true);
-                localStorageService.setItem('primaryOutcomeVariableReportedWelcomeScreen',true);
-                localStorageService.deleteItem('accessToken');
-                localStorageService.deleteItem('refreshToken');
-                localStorageService.deleteItem('expiresAt');
-
-
-                // calculate primary outcome variable and chart data
-                measurementService.calculateAveragePrimaryOutcomeVariableValue().then(function(){
-                    measurementService.calculateBothChart();
-                    measurementService.resetSyncFlag();
-                    //hard reload
-                    $state.go('app.welcome',{
-                    },{
-                        reload:true
-                    });
-                });
-
-                if(window.chrome && window.chrome.extension && typeof window.chrome.identity === "undefined"){
-                    chrome.tabs.create({
-                        url: config.getApiUrl() + "/api/v2/auth/logout"
-                    });
-                }
+                clearLocalStorage();
+                refreshTrackingPageAndGoToWelcome();
+                logOutOfApi();
             };
 
             startLogout();
