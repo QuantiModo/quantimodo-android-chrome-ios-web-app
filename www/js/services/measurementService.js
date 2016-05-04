@@ -42,31 +42,31 @@ angular.module('starter')
 		// get all data from date range to date range
 		var getAllLocalMeasurements = function(tillNow, callback){
 
-            var allLocalMeasurements;
+            var allMeasurements;
 
-            localStorageService.getItem('allLocalMeasurements',function(measurementsFromLocalStorage){
+            localStorageService.getItem('allMeasurements',function(measurementsFromLocalStorage){
 
-                allLocalMeasurements = measurementsFromLocalStorage;
+                allMeasurements = measurementsFromLocalStorage;
 
                 // filtered measurements
                 var returnFiltered = function(start, end){
                     
-                    allLocalMeasurements = allLocalMeasurements.sort(function(a, b){
+                    allMeasurements = allMeasurements.sort(function(a, b){
                         return a.timestamp - b.timestamp;
                     });
 
-                    var filtered = allLocalMeasurements.filter(function(x){
+                    var filtered = allMeasurements.filter(function(x){
                         return x.timestamp >= start && x.timestamp <= end;
                     });
                     
                     return callback(filtered);
                 };
 
-                if(!allLocalMeasurements){
+                if(!allMeasurements){
                     return callback(false);
                 }
 
-                allLocalMeasurements = JSON.parse(allLocalMeasurements);
+                allMeasurements = JSON.parse(allMeasurements);
 
                 // params
                 measurementService.getFromDate(function(start){
@@ -165,7 +165,7 @@ angular.module('starter')
                         localStorageService.setItem('lastReportedPrimaryOutcomeVariableValue', ratingValue);
 
                         // update full data
-                        localStorageService.getItem('allLocalMeasurements',function(allMeasurementsInLocalStorage){
+                        localStorageService.getItem('allMeasurements',function(allMeasurementsInLocalStorage){
 
                             var newMeasurementObject = {
                                 variableId : config.appSettings.primaryOutcomeVariableDetails.id,
@@ -183,7 +183,7 @@ angular.module('starter')
                             var measurementsToSaveInLocalStorage = JSON.parse(allMeasurementsInLocalStorage);
                             measurementsToSaveInLocalStorage.push(newMeasurementObject);
 
-                            localStorageService.setItem('allLocalMeasurements', JSON.stringify(measurementsToSaveInLocalStorage));
+                            localStorageService.setItem('allMeasurements', JSON.stringify(measurementsToSaveInLocalStorage));
 
                             // update Bar chart data
                             localStorageService.getItem('barChartData',function(barChartData){
@@ -255,14 +255,14 @@ angular.module('starter')
             postTrackingMeasurementLocally : function(measurementObject){
                 var deferred = $q.defer();
 
-                localStorageService.getItem('allLocalMeasurements', function(allLocalMeasurements){
-                    allLocalMeasurements = allLocalMeasurements? JSON.parse(allLocalMeasurements) : [];
+                localStorageService.getItem('allMeasurements', function(allMeasurements){
+                    allMeasurements = allMeasurements? JSON.parse(allMeasurements) : [];
 
                     // add to queue
-                    allLocalMeasurements.push(measurementObject);
+                    allMeasurements.push(measurementObject);
 
                     //resave queue
-                    localStorageService.setItem('allLocalMeasurements', JSON.stringify(allLocalMeasurements));
+                    localStorageService.setItem('allMeasurements', JSON.stringify(allMeasurements));
 
                     deferred.resolve();
                 });
@@ -357,8 +357,8 @@ angular.module('starter')
 			   console.log(measurements);
 
 			   var measurementDataSet;
-               localStorageService.getItem('allLocalMeasurements',function(allLocalMeasurements){
-                   measurementDataSet = JSON.parse(allLocalMeasurements);
+               localStorageService.getItem('allMeasurements',function(allMeasurements){
+                   measurementDataSet = JSON.parse(allMeasurements);
                    // extract the measurement from localStorage
                    var selectedMeasurementDataSetItems = measurementDataSet.filter(function(x){return x.timestamp == timestamp;});
 
@@ -370,7 +370,7 @@ angular.module('starter')
                    selectedMeasurementItem.note = (selectedMeasurementItem.note && selectedMeasurementItem.note !== null)? selectedMeasurementItem.note : null;
 
                    // update localstorage
-                   localStorageService.setItem('allLocalMeasurements',JSON.stringify(measurementDataSet));
+                   localStorageService.setItem('allMeasurements',JSON.stringify(measurementDataSet));
 
                    // send request
                    QuantiModo.postMeasurementsV2(measurements, function(response){
@@ -450,18 +450,18 @@ angular.module('starter')
                         if(response){
                             if(response.length > 0){
                                 // update local data
-                                var allLocalMeasurements;
-                                localStorageService.getItem('allLocalMeasurements',function(val){
-                                   allLocalMeasurements = val ? JSON.parse(val) : [];
+                                var allMeasurements;
+                                localStorageService.getItem('allMeasurements',function(val){
+                                   allMeasurements = val ? JSON.parse(val) : [];
 
-                                    if(!lastSyncTime || allLocalMeasurements.length === 0) {
+                                    if(!lastSyncTime || allMeasurements.length === 0) {
                                         
-                                        allLocalMeasurements = allLocalMeasurements.concat(response);
+                                        allMeasurements = allMeasurements.concat(response);
                                     }
                                     else{
                                         //to remove duplicates since the server would also return the records that we already have in allDate
                                         var lastSyncTimeTimestamp = new Date(lastSyncTime).getTime()/1000;
-                                        allLocalMeasurements = allLocalMeasurements.filter(function(x){
+                                        allMeasurements = allMeasurements.filter(function(x){
                                             return x.timestamp < lastSyncTimeTimestamp;
                                         });
                                         //Extracting New Records
@@ -478,8 +478,8 @@ angular.module('starter')
                                             //Criteria for updated records
                                             return (updatedAtTimestamp > lastSyncTimeTimestamp && createdAtTimestamp != updatedAtTimestamp) ;
                                         });
-                                        //Replacing primary outcome variable object in original allLocalMeasurements object
-                                        allLocalMeasurements.map(function(x,index) {
+                                        //Replacing primary outcome variable object in original allMeasurements object
+                                        allMeasurements.map(function(x,index) {
                                             updatedRecords.forEach(function(elem){
                                                 if (x['timestamp'] === elem['timestamp'] && x.source === config.get('clientSourceName')) {
                                                     console.log('found at ' + index);
@@ -489,17 +489,17 @@ angular.module('starter')
                                         });
                                         console.log('updated records');
                                         console.log(updatedRecords);
-                                        allLocalMeasurements = allLocalMeasurements.concat(newRecords);
+                                        allMeasurements = allMeasurements.concat(newRecords);
                                     }
 
                                     var s  = 9999999999999; 
-                                    allLocalMeasurements.forEach(function(x){if(x.timestamp <= s){s = x.timestamp;}});
+                                    allMeasurements.forEach(function(x){if(x.timestamp <= s){s = x.timestamp;}});
 
                                     measurementService.setDates(new Date().getTime(),s*1000);
                                     //updating last updated time and data in local storage so that we syncing should continue from this point
                                     //if user restarts the app or refreshes the page.
-                                    localStorageService.setItem('allLocalMeasurements',JSON.stringify(allLocalMeasurements));
-                                    localStorageService.setItem('lastSyncTime',moment(allLocalMeasurements[allLocalMeasurements.length-1].timestamp*1000).utc().format('YYYY-MM-DDTHH:mm:ss'));
+                                    localStorageService.setItem('allMeasurements',JSON.stringify(allMeasurements));
+                                    localStorageService.setItem('lastSyncTime',moment(allMeasurements[allMeasurements.length-1].timestamp*1000).utc().format('YYYY-MM-DDTHH:mm:ss'));
                                 });
 
                             }
@@ -525,7 +525,7 @@ angular.module('starter')
                                 function(){
                                     if(!lastSyncTime){
                                         //we will get all the data from server
-                                        localStorageService.setItem('allLocalMeasurements','[]');
+                                        localStorageService.setItem('allMeasurements','[]');
                                     }
                                     setTimeout(
                                         function()
@@ -553,8 +553,8 @@ angular.module('starter')
 			calculateAveragePrimaryOutcomeVariableValue : function(){
 				var deferred = $q.defer();
 				var data;
-                getAllLocalMeasurements(false,function(allLocalMeasurements){
-                    data = allLocalMeasurements;
+                getAllLocalMeasurements(false,function(allMeasurements){
+                    data = allMeasurements;
                     // check if data is present to calculate primary outcome variable from
                     if(!data && data.length == 0) deferred.reject(false);
                     else {
@@ -603,11 +603,11 @@ angular.module('starter')
 			calculateBarChart : function(){
 				var deferred = $q.defer();
 
-                localStorageService.getItem('allLocalMeasurements', function(allLocalMeasurements){
-                    if(!allLocalMeasurements){
+                localStorageService.getItem('allMeasurements', function(allMeasurements){
+                    if(!allMeasurements){
                         deferred.reject(false);
                     } else {
-                        var data = JSON.parse(allLocalMeasurements);
+                        var data = JSON.parse(allMeasurements);
                         var barChartArray = [0,0,0,0,0];
 
                         for(var i = 0; i<data.length; i++){
@@ -644,11 +644,11 @@ angular.module('starter')
 			calculateLineChart : function(){
 				var deferred = $q.defer();
 
-                localStorageService.getItem('allLocalMeasurements', function(allLocalMeasurements){
-                    if(!allLocalMeasurements){
+                localStorageService.getItem('allMeasurements', function(allMeasurements){
+                    if(!allMeasurements){
                         deferred.reject(false);
                     } else {
-                        var data = JSON.parse(allLocalMeasurements);
+                        var data = JSON.parse(allMeasurements);
                         var lineChartArray = [];
 
                         for(var i = 0; i<data.length; i++)

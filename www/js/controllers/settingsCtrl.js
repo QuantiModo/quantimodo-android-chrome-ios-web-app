@@ -199,9 +199,9 @@ angular.module('starter')
 	    // When Export is tapped
 	    $scope.export = function(){
 
-	    	localStorageService.getItem('allLocalMeasurements', function(allLocalMeasurements){
+	    	localStorageService.getItem('allMeasurements', function(allMeasurements){
 		    	// get all data 
-		        var arr = allLocalMeasurements? JSON.parse(allLocalMeasurements) : [];
+		        var arr = allMeasurements? JSON.parse(allMeasurements) : [];
 		        
 		        // convert JSon to CSV
 		        var csv = convertToCSV(arr);
