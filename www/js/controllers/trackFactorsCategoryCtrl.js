@@ -42,12 +42,18 @@ angular.module('starter')
         };
         
         $scope.init = function(){
-            $scope.state.loading = true;
-            utilsService.loadingStart();
-            populateVariableSearchList();
-            console.log("need to log in");
-            utilsService.showLoginRequiredAlert($scope.login);
-            $ionicLoading.hide();
+            authService.getAccessTokenFromAnySource().then(function(accessToken)
+            {
+                $scope.showHelpInfoPopupIfNecessary();
+                $scope.state.loading = true;
+                utilsService.loadingStart();
+                populateVariableSearchList();
+                $ionicLoading.hide();
+            }, function () {
+                $ionicLoading.hide();
+                console.log('need to login again');
+                $state.go('app.login');
+            });
         };
         
         var populateVariableSearchList = function(){

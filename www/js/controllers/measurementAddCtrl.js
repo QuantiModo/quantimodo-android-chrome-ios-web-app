@@ -291,38 +291,37 @@ angular.module('starter')
 
         // constructor
         $scope.init = function(){
-
-            // $ionicLoading.hide();
-            $scope.state.loading = true;
-            utilsService.loadStart();
-
-            if(!$scope.state.measurementIsSetup){
-                setupFromUrlParameters();
-            }
-
-            if(!$scope.state.measurementIsSetup) {
-                setupFromMeasurementStateParameter();
-            }
-
-            if(!$scope.state.measurementIsSetup) {
-                setupFromVariableStateParameter();
-            }
-
-            if(!$scope.state.measurementIsSetup){
-                setMeasurementVariablesByMeasurementId();
-            }
-
-
-            if(!$scope.state.measurementIsSetup){
-                if($stateParams.fromState){
-                    $state.go($stateParams.fromState);
-                } else {
-                    $state.go(config.appSettings.defaultState);
+            authService.getAccessTokenFromAnySource().then(function(accessToken)
+            {
+                $scope.state.loading = true;
+                utilsService.loadingStart();
+                if(!$scope.state.measurementIsSetup){
+                    setupFromUrlParameters();
                 }
-            }
+                if(!$scope.state.measurementIsSetup) {
+                    setupFromMeasurementStateParameter();
+                }
+                if(!$scope.state.measurementIsSetup) {
+                    setupFromVariableStateParameter();
+                }
 
-            populateUnits();
-            $ionicLoading.hide();
+                if(!$scope.state.measurementIsSetup){
+                    setMeasurementVariablesByMeasurementId();
+                }
+                if(!$scope.state.measurementIsSetup){
+                    if($stateParams.fromState){
+                        $state.go($stateParams.fromState);
+                    } else {
+                        $state.go(config.appSettings.defaultState);
+                    }
+                }
+                populateUnits();
+                $ionicLoading.hide();
+            }, function () {
+                $ionicLoading.hide();
+                console.log('need to login again');
+                $state.go('app.login');
+            });
         };
 
         var populateUnits = function () {

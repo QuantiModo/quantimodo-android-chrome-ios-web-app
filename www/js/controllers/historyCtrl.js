@@ -2,7 +2,7 @@ angular.module('starter')
 
 	// Controls the History Page of the App.
 	.controller('HistoryCtrl', function($scope, $ionicModal, $timeout, $ionicLoading, authService, $ionicPopover,
-										measurementService, $ionicPopup, localStorageService, utilsService){
+										measurementService, $ionicPopup, localStorageService, utilsService, $state){
 
 	    $scope.controller_name = "HistoryCtrl";
         
@@ -75,20 +75,28 @@ angular.module('starter')
 	    // constructor
 	    $scope.init = function(){
 
-            var history;
-            localStorageService.getItem('allData',function(allData){
-                history = allData? JSON.parse(allData) : [];
-                $scope.history = history.sort(function(a,b){
-                    if(a.timestamp < b.timestamp){
-                        return 1;}
-                    if(a.timestamp> b.timestamp)
-                    {return -1;}
-                    return 0;
+            authService.getAccessTokenFromAnySource().then(function(accessToken)
+            {
+                $scope.showHelpInfoPopupIfNecessary();
+                $scope.state.loading = true;
+                utilsService.loadingStart();
+                var history;
+                localStorageService.getItem('allData',function(allData){
+                    history = allData? JSON.parse(allData) : [];
+                    $scope.history = history.sort(function(a,b){
+                        if(a.timestamp < b.timestamp){
+                            return 1;}
+                        if(a.timestamp> b.timestamp)
+                        {return -1;}
+                        return 0;
+                    });
                 });
+                $ionicLoading.hide();
+            }, function () {
+                $ionicLoading.hide();
+                console.log('need to login again');
+                $state.go('app.login');
             });
-
-			$ionicLoading.hide();
-			
 	    };
 
         // when view is changed

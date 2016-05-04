@@ -85,22 +85,30 @@ angular.module('starter')
 	    
 	    // constructor
 	    $scope.init = function(){
-
-			variableCategoryService.getVariableCategories()
-	    	.then(function(variableCategories){
-	    		$scope.state.variableCategories = variableCategories;
-	    	}, function(err){
-	    		console.log("error getting variable categories", err);
-	    	});
-
-	    	unitService.getUnits()
-	    	.then(function(units){
-	    		$scope.state.unitObjects = units;
-	    	}, function(err){
-	    		console.log("error getting units", err);
-	    	});
-
-	    	getHistory();
+            $scope.state.loading = true;
+            utilsService.loadingStart();
+            authService.getAccessTokenFromAnySource().then(function(accessToken)
+            {
+                $scope.showHelpInfoPopupIfNecessary();
+                variableCategoryService.getVariableCategories()
+                    .then(function(variableCategories){
+                        $scope.state.variableCategories = variableCategories;
+                    }, function(err){
+                        console.log("error getting variable categories", err);
+                    });
+                unitService.getUnits()
+                    .then(function(units){
+                        $scope.state.unitObjects = units;
+                    }, function(err){
+                        console.log("error getting units", err);
+                    });
+                getHistory();
+                $ionicLoading.hide();
+            }, function () {
+                $ionicLoading.hide();
+                console.log('need to login again');
+                $state.go('app.login');
+            });
 	    };
 
         // when view is changed

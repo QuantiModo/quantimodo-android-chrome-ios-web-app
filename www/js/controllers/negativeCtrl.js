@@ -1,7 +1,9 @@
 angular.module('starter')
 
     // Controls the Negative Factors page
-    .controller('NegativeCtrl', function($scope,localStorageService, $ionicModal, $timeout, measurementService, $ionicLoading, $ionicPopup,$state, correlationService, $rootScope,utilsService) {
+    .controller('NegativeCtrl', function($scope,localStorageService, $ionicModal, $timeout, measurementService, 
+                                         $ionicLoading, $ionicPopup, $state, correlationService, $rootScope,
+                                         utilsService, authService) {
 
         /*// redirect if not logged in
         if(!$scope.isLoggedIn){
@@ -25,39 +27,27 @@ angular.module('starter')
 
 
         $scope.init = function(){
-            
-            if($scope.isLoggedIn){
-                // show loader
-                $ionicLoading.show({
-                    noBackdrop: true,
-                    template: '<p class="item-icon-left">Loading stuff...<ion-spinner icon="lines"/></p>'
-                });
-
-                // get negative correlationObjects
+            authService.getAccessTokenFromAnySource().then(function(accessToken)
+            {
+                utilsService.loadingStart();
                 correlationService.getNegativeFactors()
-                .then(function(correlationObjects){
-                    
-                    // update view model
-                    $scope.negatives = correlationObjects;
-                    
-                    // hide spinner
-                    $ionicLoading.hide();
-
-                    correlationService.getUsersPositiveFactors().then(function(correlationObjects){
-                        $scope.usersNegativeFactors = correlationObjects;
-                     });
-
-                }, function(){
-                    
-                    // hide spinner
-                    $ionicLoading.hide();
-                    utilsService.showLoginRequiredAlert($scope.login);
-
+                    .then(function(correlationObjects){
+                        $scope.negatives = correlationObjects;
+                        correlationService.getUsersPositiveFactors().then(function(correlationObjects){
+                            $scope.usersNegativeFactors = correlationObjects;
+                        });
+                        $ionicLoading.hide();
+                    }, function(){
+                        $ionicLoading.hide();
+                        $state.go('app.login', {
+                            fromUrl : window.location.href
+                        });
                     });
-            } else {
-                utilsService.showLoginRequiredAlert($scope.login);
-            }
-
+            }, function () {
+                $ionicLoading.hide();
+                console.log('need to login again');
+                $state.go('app.login');
+            });
         };
 
         // when downVoted
@@ -114,8 +104,8 @@ angular.module('starter')
             	}
         }
 
-        // when upvoted
-        $scope.upvote = function(factor){
+        // when upVoted
+        $scope.upVote = function(factor){
             if(!$scope.notShowConfirmationNegative){
                 $ionicPopup.show({
                     title:'Voting thumbs up indicates',
@@ -128,19 +118,19 @@ angular.module('starter')
                             type: 'button-positive',
                             onTap: function(){
                                 localStorageService.setItem('notShowConfirmationNegative',$scope.notShowConfirmationNegative);
-                                upvote(factor);
+                                upVote(factor);
                             }
                         }
                     ]
 
                 });
             }else{
-                upvote(factor);
+                upVote(factor);
             }
 
         };
 
-        function upvote(factor){
+        function upVote(factor){
 
         	var prevValue = factor.userVote;
             factor.userVote =1;

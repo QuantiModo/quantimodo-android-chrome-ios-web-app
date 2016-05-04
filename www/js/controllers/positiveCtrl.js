@@ -3,7 +3,7 @@ angular.module('starter')
 	// Controlls the Positive Factors page
 	.controller('PositiveCtrl', function($scope, $ionicModal, $timeout, measurementService, $ionicLoading, 
                                          $state, $ionicPopup, correlationService, $rootScope,
-                                         localStorageService, utilsService) {
+                                         localStorageService, utilsService, authService) {
 
 
         if(!$scope.isLoggedIn){
@@ -21,17 +21,11 @@ angular.module('starter')
         });        
 
 		$scope.controller_name = "PositiveCtrl";
-
         $scope.positives = false;
         $scope.usersPositiveFactors = false;
-
-		// show spinner
-		$ionicLoading.show({
-			noBackdrop: true,
-			template: '<p class="item-icon-left">Loading stuff...<ion-spinner icon="lines"/></p>'
-	    });
         
-	    // downVote
+        utilsService.loadingStart();
+        
 	    $scope.downVote = function(factor){
 
             if(!$scope.notShowConfirmationPositiveDown){
@@ -53,7 +47,7 @@ angular.module('starter')
 
                 });
 
-            }else{
+            } else {
                 downVote(factor);
             }
 
@@ -78,8 +72,8 @@ angular.module('starter')
                 });
         }
 
-	    // when upvoted
-	    $scope.upvote = function(factor){
+	    // when upVoted
+	    $scope.upVote = function(factor){
 
 	    
             if(!$scope.notShowConfirmationPositive){
@@ -94,7 +88,7 @@ angular.module('starter')
                             type: 'button-positive',
                             onTap: function(){
                                 localStorageService.setItem('notShowConfirmationPositive',JSON.stringify($scope.notShowConfirmationPositive));
-                                upvote(factor);
+                                upVote(factor);
                             }
                         }
                     ]
@@ -102,12 +96,12 @@ angular.module('starter')
                 });
 
             }else{
-                upvote(factor);
+                upVote(factor);
             }
 
 	    };
 
-        function upvote(factor){
+        function upVote(factor){
 
         	var prevValue = factor.userVote;
             factor.userVote = 1;
@@ -125,33 +119,26 @@ angular.module('starter')
                     factor.userVote = prevValue;
                 });
         }
-
-	    // constructor
+        
 	    $scope.init = function(){
-
-	    	// show spinenr
-	    	$ionicLoading.show({
-				noBackdrop: true,
-				template: '<p class="item-icon-left">Loading stuff...<ion-spinner icon="lines"/></p>'
-		    }); 
-
-	        if($scope.isLoggedIn){
-	        	// get correlationObjects
+            utilsService.loadingStart();
+            authService.getAccessTokenFromAnySource().then(function(accessToken)
+            {
                 correlationService.getPositiveFactors()
-	            .then(function(correlationObjects){
-                    // update view model
-                    $scope.positives = correlationObjects;
-                    $ionicLoading.hide();
-                    correlationService.getUsersPositiveFactors().then(function(correlationObjects){
-                        $scope.usersPositiveFactors = correlationObjects;
+                    .then(function(correlationObjects){
+                        $scope.positives = correlationObjects;
+                        $ionicLoading.hide();
+                        correlationService.getUsersPositiveFactors().then(function(correlationObjects){
+                            $scope.usersPositiveFactors = correlationObjects;
+                        });
+                    }, function(){
+                        $ionicLoading.hide();
                     });
-	            }, function(){
-	                $ionicLoading.hide();
-	            });    
-	        } else {
-	            $ionicLoading.hide();
-                utilsService.showLoginRequiredAlert($scope.login);
-            }
+            }, function () {
+                $ionicLoading.hide();
+                console.log('need to login again');
+                $state.go('app.login');
+            });
 	    };
 
 	    $scope.openStore = function(name){

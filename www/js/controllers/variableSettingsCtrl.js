@@ -50,28 +50,26 @@ angular.module('starter')
 
         // constructor
         $scope.init = function(){
-            
-            // $ionicLoading.hide();
-            $scope.state.loading = true;
-
-            $scope.state.sumAvg = "avg";
-
             utilsService.loadingStart();
-
-            // get all variables
-            variableService.getVariablesByName($stateParams.variableName).then(function(variableObject){
-                $scope.state.variableObject = variableObject;
-                console.log(variableObject);
-                $scope.item = variableObject;
-
-                // set values in form
-                $scope.state.sumAvg = variableObject.combinationOperation === "MEAN"? "avg" : "sum";
-                $scope.state.variableCategory = variableObject.category;
-                $scope.state.selectedUnitAbbreviatedName = variableObject.abbreviatedUnitName;
+            authService.getAccessTokenFromAnySource().then(function(accessToken)
+            {
+                $scope.showHelpInfoPopupIfNecessary();
+                $scope.state.loading = true;
+                $scope.state.sumAvg = "avg";
+                variableService.getVariablesByName($stateParams.variableName).then(function(variableObject){
+                    $scope.state.variableObject = variableObject;
+                    console.log(variableObject);
+                    $scope.item = variableObject;
+                    $scope.state.sumAvg = variableObject.combinationOperation === "MEAN"? "avg" : "sum";
+                    $scope.state.variableCategory = variableObject.category;
+                    $scope.state.selectedUnitAbbreviatedName = variableObject.abbreviatedUnitName;
+                });
+                $ionicLoading.hide();
+            }, function () {
+                $ionicLoading.hide();
+                console.log('need to login again');
+                $state.go('app.login');
             });
-
-            $ionicLoading.hide();
-
         };
         
         // update data when view is navigated to

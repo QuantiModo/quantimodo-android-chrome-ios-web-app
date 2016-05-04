@@ -406,12 +406,11 @@ angular.module('starter')
 				} else if (refreshToken) {
                     authSrv.refreshAccessToken(refreshToken, deferred);
 				} else {
-					// nothing in cache
 					localStorage.removeItem('accessToken');
 					console.warn('Refresh token is undefined. Not enough data for oauth flow. rejecting token promise. ' +
-						'Clearing accessToken from local storage.');
+						'Clearing accessToken from local storage if it exists and sending to login page...');
+                    $state.go('app.login');
 					deferred.reject();
-
 				}
 
 			},
@@ -455,16 +454,13 @@ angular.module('starter')
 			
 			checkIfLoggedInAndRedirectToLoginIfNecessary : function(){
                 utilsService.loadingStart();
-                // try to get access token
                 authSrv.getAccessTokenFromAnySource().then(function(data) 
                 {
-                }, function () {
-                    //set flags
                     $ionicLoading.hide();
-                    if(config.appSettings.alwaysRequireLogin){
-                        console.log('need to login again');
-                        $state.go('app.login');
-                    }
+                }, function () {
+                    $ionicLoading.hide();
+                    console.log('need to login again');
+                    $state.go('app.login');
                 });
 			},
 

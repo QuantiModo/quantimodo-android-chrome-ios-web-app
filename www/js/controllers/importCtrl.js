@@ -22,20 +22,10 @@ angular.module('starter')
 
 	    // constructor
 	    $scope.init = function(){
-	        
-	        // show spinner
-	        $ionicLoading.show({
-	            noBackdrop: true,
-	            template: '<p class="item-icon-left">One moment please...<ion-spinner icon="lines"/></p>'
-	        });  
-
+			utilsService.loadingStart();
 	        // get user's access token
 	        authService.getAccessTokenFromAnySource().then(function(token){
-	            
-	            console.log("Valid token", token);
-
 	            $ionicLoading.hide();
-
 	            if(ionic.Platform.platforms[0] === "browser"){
 					console.log("Browser Detected");
 					
@@ -55,14 +45,12 @@ angular.module('starter')
 	            	ref.addEventListener('exit', function(){
 						$state.go(config.appSettings.defaultState);
 					});
-	            }	            
-
+	            }
 	        }, function(){
-
-	            console.log("need to log in");
-                utilsService.showLoginRequiredAlert($scope.login);
-                $ionicLoading.hide();
-
+				$ionicLoading.hide();
+				$state.go('app.login', {
+					fromUrl : window.location.href
+				});
 	        });
 	       
 	    };

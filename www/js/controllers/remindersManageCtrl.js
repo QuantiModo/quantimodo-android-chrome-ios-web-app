@@ -104,8 +104,17 @@ angular.module('starter')
 
 	    // constructor
 	    $scope.init = function(){
-			authService.checkIfLoggedInAndRedirectToLoginIfNecessary();
-			getTrackingReminders();
+			utilsService.loadingStart();
+			authService.getAccessTokenFromAnySource().then(function(accessToken)
+			{
+				$scope.showHelpInfoPopupIfNecessary();
+				getTrackingReminders();
+				$ionicLoading.hide();
+			}, function () {
+				$ionicLoading.hide();
+				console.log('need to login again');
+				$state.go('app.login');
+			});
 	    };
 
 

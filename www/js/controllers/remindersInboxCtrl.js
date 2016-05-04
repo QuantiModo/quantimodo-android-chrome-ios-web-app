@@ -174,10 +174,17 @@ angular.module('starter')
 	    };
 
 	    $scope.init = function(){
-
-			authService.checkIfLoggedInAndRedirectToLoginIfNecessary();
-			getTrackingReminderNotifications();
-			
+			utilsService.loadingStart();
+			authService.getAccessTokenFromAnySource().then(function(accessToken)
+			{
+				$scope.showHelpInfoPopupIfNecessary();
+				getTrackingReminderNotifications();
+				$ionicLoading.hide();
+			}, function () {
+				$ionicLoading.hide();
+				console.log('need to login again');
+				$state.go('app.login');
+			});
 	    };
 
 	    $scope.editMeasurement = function(reminder){

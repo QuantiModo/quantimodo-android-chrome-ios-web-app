@@ -1,8 +1,9 @@
 angular.module('starter')
 
     // Controls the Track Page of the App
-    .controller('TrackCtrl', function($scope, $ionicModal, $state, $timeout, utilsService, authService, measurementService, chartService, $ionicPopup, localStorageService) {
-        $scope.controller_name = "TrackCtrl";
+    .controller('TrackPrimaryOutcomeCtrl', function($scope, $ionicModal, $state, $timeout, utilsService, authService, 
+                                                    measurementService, chartService, $ionicPopup, localStorageService) {
+        $scope.controller_name = "TrackPrimaryOutcomeCtrl";
 
         $scope.showCharts = false;
 

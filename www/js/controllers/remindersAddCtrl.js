@@ -104,40 +104,26 @@ angular.module('starter')
 
 		// populate list with recently tracked category variables
     	var populateRecentlyTrackedVariables = function(variableCategoryName){
-
     		utilsService.loadingStart();
-	    	// get user token
-			authService.getAccessTokenFromAnySource().then(function(token){
+            if(!variableCategoryName){
+                // get all variables
+                console.log('Get most recent anything variables');
+                variableService.getVariables().then(function(variables){
+                    $scope.variableSearchResults = variables;
+                    utilsService.loadingStop();
+                }, function(){
+                    utilsService.loadingStop();
+                });
+            } else {
+                variableService.searchVariablesIncludePublic('*', $scope.state.variableCategoryName).then(function(variables){
+                    $scope.variableSearchResults = variables;
+                    utilsService.loadingStop();
+                }, function(){
+                    console.log('Could not get variables');
+                    utilsService.loadingStop();
+                });
+            }
 
-				if(!variableCategoryName){
-					// get all variables
-					console.log('Get most recent anything variables');
-					variableService.getVariables().then(function(variables){
-
-					    $scope.variableSearchResults = variables;
-					    utilsService.loadingStop();
-
-					}, function(){
-						utilsService.loadingStop();
-					});
-				} else {
-					console.log('get all variables by variableCategoryName');
-					variableService.searchVariablesIncludePublic('*', $scope.state.variableCategoryName).then(function(variables){
-
-					    $scope.variableSearchResults = variables;
-
-					    utilsService.loadingStop();
-
-					}, function(){
-						utilsService.loadingStop();
-					});
-				}
-
-			}, function(){
-			   utilsService.showLoginRequiredAlert($scope.login);
-			   utilsService.loadingStop();
-
-			});
     	};
 
 	    // when variableCategoryName is selected
@@ -427,29 +413,32 @@ angular.module('starter')
         }
 
         $scope.init = function(){
-            authService.checkIfLoggedInAndRedirectToLoginIfNecessary();
-
-            if($stateParams.variableCategoryName){
-                setupVariableCategory($stateParams.variableCategoryName);
-            }
-
-            var reminderIdUrlParameter = utilsService.getUrlParameter(window.location.href, 'reminderId');
-            $scope.getUnits();
-        
-            if($stateParams.variableCategoryName){
-                $scope.variableCategoryName = $stateParams.variableCategoryName;
-                setupVariableCategory($scope.variableCategoryName);
-            }
-            else if($stateParams.reminder && $stateParams.reminder !== null) {
-                setupEditReminder($stateParams.reminder);
-            }
-            else if(reminderIdUrlParameter) {
-                setupReminderEditingFromUrlParameter(reminderIdUrlParameter);
-            }
-            else {
-                setupNewReminder();
-            }
-			
+            utilsService.loadingStart();
+            authService.getAccessTokenFromAnySource().then(function(accessToken)
+            {
+                if($stateParams.variableCategoryName){
+                    setupVariableCategory($stateParams.variableCategoryName);
+                }
+                var reminderIdUrlParameter = utilsService.getUrlParameter(window.location.href, 'reminderId');
+                $scope.getUnits();
+                if($stateParams.variableCategoryName){
+                    $scope.variableCategoryName = $stateParams.variableCategoryName;
+                    setupVariableCategory($scope.variableCategoryName);
+                }
+                else if($stateParams.reminder && $stateParams.reminder !== null) {
+                    setupEditReminder($stateParams.reminder);
+                }
+                else if(reminderIdUrlParameter) {
+                    setupReminderEditingFromUrlParameter(reminderIdUrlParameter);
+                }
+                else {
+                    setupNewReminder();
+                }
+            }, function () {
+                $ionicLoading.hide();
+                console.log('need to login again');
+                $state.go('app.login');
+            });
 	    };
 
         // when view is changed

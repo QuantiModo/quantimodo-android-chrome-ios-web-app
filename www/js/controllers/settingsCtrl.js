@@ -116,14 +116,14 @@ angular.module('starter')
 	    };
 
 	    // load rating popover
-	    $ionicPopover.fromTemplateUrl('templates/settings/ask_for_a_rating.html', {
+	    $ionicPopover.fromTemplateUrl('templates/settings/ask-for-a-rating.html', {
 	    	scope: $scope
 	    }).then(function(popover) {
 	    	$scope.ratingPopover = popover;
 	    });
 
 	    // load additional variables popover
-	    $ionicPopover.fromTemplateUrl('templates/settings/additional_ratings_required.html', {
+	    $ionicPopover.fromTemplateUrl('templates/settings/additional-ratings-required.html', {
 	    	scope: $scope
 	    }).then(function(popover) {
 	    	$scope.additionalRatingPopover = popover;
