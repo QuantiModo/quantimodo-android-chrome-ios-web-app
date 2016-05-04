@@ -185,24 +185,19 @@ angular.module('starter')
             $rootScope.$broadcast('redraw');
         }
 
-        $scope.movePage = function(){
-            hideMenuIfSetInUrlParameter();
-
+        $scope.goToDefaultStateIfWelcomed = function(){
             // if user has seen the welcome screen before
             localStorageService.getItem('isWelcomed',function(isWelcomed) {
-
                 if(isWelcomed  === true || isWelcomed === "true"){
                     $rootScope.isWelcomed = true;
                     goToDefaultStateShowMenuClearIntroHistoryAndRedraw();
-
-
                 }
             });
         };
 
         // when user is logging out
         function clearTokensFromLocalStorage() {
-//Set out localstorage flag for welcome screen variables
+            //Set out local storage flag for welcome screen variables
             localStorageService.setItem('isLoggedIn', false);
             
             localStorageService.setItem('primaryOutcomeVariableReportedWelcomeScreen', true);
@@ -414,13 +409,13 @@ angular.module('starter')
             localStorageService.setItem('isWelcomed', true);
             $rootScope.isWelcomed = true;
             // move to the next screen
-            $scope.movePage();
+            $scope.goToDefaultStateIfWelcomed();
         };
 
         // hide loader and move to next page
         var hideLoaderMove = function(){
             $ionicLoading.hide();
-            $scope.movePage();
+            $scope.goToDefaultStateIfWelcomed();
         };
 
         // calculate values for both of the charts
@@ -458,60 +453,38 @@ angular.module('starter')
             }
         };
 
-        // Demonstration of a sample API call
-        function setUserForIntercom(user) {
-            user = JSON.parse(user);
-            console.log('user:' + user);
-            window.intercomSettings = {
-                app_id: "uwtx2m33",
-                name: user.displayName,
-                email: user.email,
-                user_id: user.id
-            };
-            return user;
-        }
+        function checkAuthIfInAuthRequiredState() {
 
-        function setUserInLocalStorage() {
-            console.log("Don't have a user.");
-            QuantiModo.getUser(function (user) {
+            var authOptionalStates = [
+                'app.track',
+                'app.welcome',
+                'app.history',
+                'app.login'
+            ];
 
-                // set user data in local storage
-                localStorageService.setItem('user', JSON.stringify(user));
-
-                $scope.userName = user.displayName;
-            }, function (err) {
-
-                // error
-                console.log(err);
-            });
+            if(authOptionalStates.indexOf($state.current.name) !== -1) {
+                // try to get access token
+                authService.getAccessTokenFromAnySource().then(function (data) {
+                    $scope.isLoggedIn = true;
+                    var user = authService.getUserFromLocalStorage();
+                    $scope.userName = user.displayName;
+                }, function () {
+                    $scope.isLoggedIn = false;
+                    $ionicLoading.hide();
+                    $state.go('app.login');
+                    console.log('need to login again');
+                });
+            }
         }
 
         $scope.init = function () {
-
             console.log("Main Constructor Start");
+            hideMenuIfSetInUrlParameter();
             scheduleReminder();
-            
-            // try to get access token
-            authService.getAccessTokenFromAnySource().then(function(data) {
-                $scope.isLoggedIn = true;
-                localStorageService.getItem('user',function(user){
-                    if(!user){
-                        setUserInLocalStorage();
-                    }
-                    if(user){
-                        setUserForIntercom(user);
-                    }
-                });
-                $ionicLoading.hide();
-                $scope.movePage();
-                syncPrimaryOutcomeVariableMeasurementsIfInSyncEnabledState();
-
-            }, function () {
-                $scope.isLoggedIn = false;
-                $ionicLoading.hide();
-                console.log('need to login again');
-            });
-
+            syncPrimaryOutcomeVariableMeasurementsIfInSyncEnabledState();
+            checkAuthIfInAuthRequiredState();
+            $ionicLoading.hide();
+            $scope.goToDefaultStateIfWelcomed();
         };
 
         $scope.$on('callAppCtrlInit', function(){

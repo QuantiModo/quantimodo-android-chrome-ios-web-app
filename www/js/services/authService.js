@@ -4,6 +4,37 @@ angular.module('starter')
 
 		var authSrv = {
 
+			setUserForIntercom :	function(user) {
+				user = JSON.parse(user);
+				console.log('user:' + user);
+				window.intercomSettings = {
+					app_id: "uwtx2m33",
+					name: user.displayName,
+					email: user.email,
+					user_id: user.id
+				};
+				return user;
+			},
+
+			getUserFromLocalStorage : function() {
+				var user = localStorageService.getItem('user', JSON.stringify(user));
+				if(!user){
+					user = authSrv.setUserInLocalStorage();
+				}
+				return user;
+			},
+
+			setUserInLocalStorage : function() {
+				QuantiModo.getUser(function (user) {
+					console.log('set user data in local storage..');
+					localStorageService.setItem('user', JSON.stringify(user));
+					authSrv.setUserForIntercom();
+					return user;
+				}, function (err) {
+					console.log(err);
+				});
+			},
+
 			// extract values from token response and saves in localstorage
 			updateAccessToken: function (accessResponse) {
 				if(accessResponse){
@@ -14,6 +45,7 @@ angular.module('starter')
 					// save in localStorage
 					if(accessToken) {
 						localStorageService.setItem('accessToken', accessToken);
+						authSrv.setUserInLocalStorage();
                     }
 					if(refreshToken) {
 						localStorageService.setItem('refreshToken', refreshToken);

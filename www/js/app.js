@@ -320,7 +320,7 @@ angular.module('starter',
           views: {
               'menuContent': {
                   templateUrl: "templates/history-primary-outcome-variable.html",
-                  controller: 'HistoryCtrl'
+                  controller: 'HistoryPrimaryOutcomeCtrl'
               }
           }
       })

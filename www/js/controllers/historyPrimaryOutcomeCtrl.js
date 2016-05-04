@@ -1,10 +1,10 @@
 angular.module('starter')
 
 	// Controls the History Page of the App.
-	.controller('HistoryCtrl', function($scope, $ionicModal, $timeout, $ionicLoading, authService, $ionicPopover,
+	.controller('HistoryPrimaryOutcomeCtrl', function($scope, $ionicModal, $timeout, $ionicLoading, authService, $ionicPopover,
 										measurementService, $ionicPopup, localStorageService, utilsService, $state){
 
-	    $scope.controller_name = "HistoryCtrl";
+	    $scope.controller_name = "HistoryPrimaryOutcomeCtrl";
         
 	    // load editing popover
 	    $ionicPopover.fromTemplateUrl('templates/history-popup.html', {
@@ -74,29 +74,21 @@ angular.module('starter')
 
 	    // constructor
 	    $scope.init = function(){
-
-            authService.getAccessTokenFromAnySource().then(function(accessToken)
-            {
-                $scope.showHelpInfoPopupIfNecessary();
-                $scope.state.loading = true;
-                utilsService.loadingStart();
-                var history;
-                localStorageService.getItem('allMeasurements',function(allMeasurements){
-                    history = allMeasurements? JSON.parse(allMeasurements) : [];
-                    $scope.history = history.sort(function(a,b){
-                        if(a.timestamp < b.timestamp){
-                            return 1;}
-                        if(a.timestamp> b.timestamp)
-                        {return -1;}
-                        return 0;
-                    });
-                });
-                $ionicLoading.hide();
-            }, function () {
-                $ionicLoading.hide();
-                console.log('need to login again');
-                $state.go('app.login');
-            });
+			$scope.showHelpInfoPopupIfNecessary();
+			$scope.state.loading = true;
+			utilsService.loadingStart();
+			var history;
+			localStorageService.getItem('allMeasurements',function(allMeasurements){
+				history = allMeasurements? JSON.parse(allMeasurements) : [];
+				$scope.history = history.sort(function(a,b){
+					if(a.timestamp < b.timestamp){
+						return 1;}
+					if(a.timestamp> b.timestamp)
+					{return -1;}
+					return 0;
+				});
+			});
+			$ionicLoading.hide();
 	    };
 
         // when view is changed
