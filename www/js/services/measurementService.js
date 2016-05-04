@@ -13,7 +13,7 @@ angular.module('starter')
                     source: config.get('clientSourceName'),
                     category: config.appSettings.primaryOutcomeVariableDetails.category,
                     combinationOperation: config.appSettings.primaryOutcomeVariableDetails.combinationOperation,
-                    unit: config.appSettings.primaryOutcomeVariableDetails.unit,
+                    unit: config.appSettings.primaryOutcomeVariableDetails.unitAbbreviatedName,
                     measurements : measurementsQueue
 				}
 			];
@@ -153,7 +153,7 @@ angular.module('starter')
                         setTimeout(function(){
                             console.log('checking sync');
                             checkSync();
-                        },1000)
+                        },1000);
                     }
                 }
 
@@ -174,7 +174,7 @@ angular.module('starter')
                                 humanTime : {
                                     date : new Date().toISOString()
                                 },
-                                unitId: config.appSettings.primaryOutcomeVariableDetails.unit
+                                unitAbbreviatedName: config.appSettings.primaryOutcomeVariableDetails.unitAbbreviatedName
                             };
 
                             if(!allMeasurementsInLocalStorage){
@@ -220,8 +220,6 @@ angular.module('starter')
 			updatePrimaryOutcomeVariable : function(ratingValue){
 
 				var reportTime  = new Date().getTime();
-                
-                var ratingValue = ratingValue;
 
                 // if val is string (needs conversion)
                 if(isNaN(parseFloat(ratingValue))){
@@ -345,7 +343,7 @@ angular.module('starter')
                         source: config.get('clientSourceName'),
                         category: config.appSettings.primaryOutcomeVariableDetails.category,
                         combinationOperation: config.appSettings.primaryOutcomeVariableDetails.combinationOperation,
-                        unit: config.appSettings.primaryOutcomeVariableDetails.unit,
+                        unit: config.appSettings.primaryOutcomeVariableDetails.unitAbbreviatedName,
 					   	measurements : [{
 					   		timestamp:  timestamp,
 					   		value: val,
@@ -611,7 +609,7 @@ angular.module('starter')
                         var barChartArray = [0,0,0,0,0];
 
                         for(var i = 0; i<data.length; i++){
-                            if(data[i].unit == config.appSettings.primaryOutcomeVariableDetails.unit && ( Math.ceil(data[i].value)-1) <= 4 ){
+                            if(data[i].unitAbbreviatedName == config.appSettings.primaryOutcomeVariableDetails.unitAbbreviatedName && ( Math.ceil(data[i].value)-1) <= 4 ){
                                 barChartArray[Math.ceil(data[i].value)-1]++;
                             }
                         }
@@ -654,7 +652,7 @@ angular.module('starter')
                         for(var i = 0; i<data.length; i++)
                         {
                             var currentValue = currentValue;
-                            if(data[i].unit == config.appSettings.primaryOutcomeVariableDetails.unit && (currentValue-1) <= 4 && (currentValue-1) >= 0){
+                            if(data[i].unitAbbreviatedName == config.appSettings.primaryOutcomeVariableDetails.unitAbbreviatedName && (currentValue-1) <= 4 && (currentValue-1) >= 0){
                                 lineChartArray.push([moment(data[i].humanTime.date).unix(), (currentValue-1)*25] );
                             }
                         }

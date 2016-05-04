@@ -35,7 +35,7 @@ config.appSettings  = {
         id : 108092,
         name : "Overall Energy",
         category : "Energy",
-        unit : "/5",
+        unitAbbreviatedName : "/5",
         combinationOperation: "MEAN"
     },
 
