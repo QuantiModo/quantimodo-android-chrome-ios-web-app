@@ -1,5 +1,5 @@
 angular.module('starter')
-.controller('IntroCtrl', function($scope, $state, localStorageService, $ionicSlideBoxDelegate, $ionicLoading) {
+.controller('IntroCtrl', function($scope, $state, localStorageService, $ionicSlideBoxDelegate, utilsService) {
     
     $scope.viewTitle = config.appSettings.appName;
     $scope.primaryOutcomeVariable = config.appSettings.primaryOutcomeVariable;
@@ -32,11 +32,7 @@ angular.module('starter')
     };
 
     var init = function(){
-        // show loader
-        $ionicLoading.show({
-            noBackdrop: true,
-            template: '<p class="item-icon-left">Loading stuff...<ion-spinner icon="lines"/></p>'
-        });
+        utilsService.loadingStart();
 
         localStorageService.getItem('introSeen', function(introSeen){
             if(introSeen){
@@ -44,7 +40,7 @@ angular.module('starter')
             } else {
                 $scope.myIntro.ready = true;
             }
-            $ionicLoading.hide();
+            utilsService.loadingStop();
         });
     };
 

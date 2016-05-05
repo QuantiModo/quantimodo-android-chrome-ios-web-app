@@ -1,7 +1,7 @@
 <ion-view hide-nav-bar="skipMenu" view-title="{{state.title}}">
 	<ion-content scroll="true" overflow-scroll="true"> 
 		
-		<div class="list card">
+		<div ng-show="state.showButtons" class="list card">
 			<!--<div class="item item-divider" style="background-color:#11c1f3; color:white;">Actions</div>-->
 			<a href="#/app/reminder_add/{{state.variableCategory}}" class="item item-icon-left">
 				<i class="icon ion-plus positive"></i>
@@ -9,7 +9,7 @@
 			</a>
 		</div>
 
-		<div class="list card">
+		<div ng-show="state.showButtons" class="list card">
 <!--			<div class="item item-divider" style="background-color:#11c1f3; color:white;">
 				All Reminders
 			</div>-->

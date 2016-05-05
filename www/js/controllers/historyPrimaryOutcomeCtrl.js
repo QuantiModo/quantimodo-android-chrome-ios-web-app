@@ -1,26 +1,11 @@
 angular.module('starter')
 
 	// Controls the History Page of the App.
-	.controller('HistoryCtrl', function($scope, $ionicModal, $timeout, $ionicLoading, authService, $ionicPopover,
-										measurementService, $ionicPopup, localStorageService, utilsService){
+	.controller('HistoryPrimaryOutcomeCtrl', function($scope, $ionicModal, $timeout, $ionicLoading, authService, $ionicPopover,
+										measurementService, $ionicPopup, localStorageService, utilsService, $state){
 
-	    $scope.controller_name = "HistoryCtrl";
-	    
-	    // Show alert with a title
-	    $scope.showAlert = function(title, template) {
-	       var alertPopup = $ionicPopup.alert({
-	         cssClass : 'positive',
-             okType : 'button-positive',
-	         title: title,
-	         template: template
-	       });
-	    };
-
-	    // Hide spinner
-	    window.closeLoading = function(){
-	        $ionicLoading.hide();
-	    };
-	    
+	    $scope.controller_name = "HistoryPrimaryOutcomeCtrl";
+        
 	    // load editing popover
 	    $ionicPopover.fromTemplateUrl('templates/history-popup.html', {
 	        scope: $scope
@@ -59,7 +44,7 @@ angular.module('starter')
 	        }, function(){
 
 	        	// show alert
-	            $scope.showAlert('Failed to edit primaryOutcomeVariable !');
+	            utilsService.showAlert('Failed to edit primaryOutcomeVariable !');
 	        });
 	        
 	        // update the main list for the recently updated value
@@ -89,36 +74,28 @@ angular.module('starter')
 
 	    // constructor
 	    $scope.init = function(){
+			
+			utilsService.loadingStart();
+			var history;
+			localStorageService.getItem('allMeasurements',function(allMeasurements){
+				history = allMeasurements? JSON.parse(allMeasurements) : [];
+				if(history.length < 1){
+					console.log('No measurements for history!  Going to default state. ')
+					$state.go(config.appSettings.defaultState);
+				}
+				if(history.length > 0){
+					$scope.showHelpInfoPopupIfNecessary();
+					$scope.history = history.sort(function(a,b){
+						if(a.timestamp < b.timestamp){
+							return 1;}
+						if(a.timestamp> b.timestamp)
+						{return -1;}
+						return 0;
+					});
+				}
+			});
 
-
-	        // show loading spinner
-	        $ionicLoading.show({
-	            noBackdrop: true,
-	            template: '<p class="item-icon-left">Loading stuff...<ion-spinner icon="lines"/></p>'
-	        });  
-
-	        // get the history data
-
-            var history;
-            localStorageService.getItem('allData',function(allData){
-                history = allData? JSON.parse(allData) : [];
-                $scope.history = history.sort(function(a,b){
-                    if(a.timestamp < b.timestamp){
-                        return 1;}
-                    if(a.timestamp> b.timestamp)
-                    {return -1;}
-                    return 0;
-                });
-            });
-	        // try to access user token to check if the user is logged in
-	        authService.getAccessTokenFromAnySource().then(function(token){
-	            $ionicLoading.hide();
-	        }, function(){
-	            console.log("need to log in");
-	            $ionicLoading.hide();
-	            utilsService.showLoginRequiredAlert($scope.login);
-	        });
-
+			$ionicLoading.hide();
 	    };
 
         // when view is changed
