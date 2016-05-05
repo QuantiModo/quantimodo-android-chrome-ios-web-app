@@ -434,7 +434,6 @@ angular.module('starter')
                 }
             }
 
-            if(!user){
             if(!$scope.user){
                 console.log('Cannot sync because we do not have a user in local storage!');
                 return;
@@ -493,8 +492,8 @@ angular.module('starter')
 
         $scope.init = function () {
             console.log("Main Constructor Start");
-            user = authService.getUserFromLocalStorage();
-            $scope.user = JSON.parse(user);
+            var userJson = authService.getUserFromLocalStorage();
+            $scope.user = JSON.parse(userJson);
             hideMenuIfSetInUrlParameter();
             redirectToWelcomeStateIfNecessary();
             scheduleReminder();
