@@ -427,6 +427,10 @@ angular.module('starter')
             });
 
             if(!user){
+                user = authService.setUserInLocalStorageIfWeHaveAccessToken();
+            }
+
+            if(!user){
                 console.log('Cannot sync because we do not have a user in local storage!');
                 return;
             }

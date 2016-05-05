@@ -15,12 +15,7 @@ angular.module('starter')
 		$scope.isAndroid = ionic.Platform.isAndroid();
         $scope.isChrome = window.chrome ? true : false;
 	    // populate user data
-        localStorageService.getItem('user',function(user){
-			if(user){
-				$scope.isLoggedIn = true;
-				$scope.userName = user ? JSON.parse(user)['displayName'] : "";
-			}
-        });
+
 
         // when login is tapped
 	    $scope.loginFromSettings = function(){
@@ -41,7 +36,17 @@ angular.module('starter')
 	    };
         
 		$scope.init = function(){
+            localStorageService.getItem('user',function(user){
+                if(!user){
+                    authService.setUserInLocalStorageIfWeHaveAccessToken();
+                    user = localStorageService.getItemSync('user');
+                }
 
+                if(user){
+                    $scope.isLoggedIn = true;
+                    $scope.userName = JSON.parse(user)['displayName'];
+                }
+            });
 	    };
 
 	    // load rating popover

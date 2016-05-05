@@ -21,6 +21,7 @@ angular.module('starter')
 				if(!user){
 					user = authSrv.getUserAndSetInLocalStorage();
 				}
+				authSrv.setUserForIntercom(user);
 				return user;
 			},
             
@@ -547,15 +548,24 @@ angular.module('starter')
 
 						// set user data in local storage
 						localStorageService.setItem('user', JSON.stringify(user));
+						authSrv.setUserForIntercom(user);
                         authSrv.isLoggedIn = true;
                         localStorageService.setItem('isLoggedIn', true);
 						authSrv.userName = user.displayName;
+						return user;
 					},function(err){
 
 						// error
 						console.log(err);
 					}
 				);
+			},
+			setUserInLocalStorageIfWeHaveAccessToken: function(){
+				localStorageService.getItem('accessToken',function(accessToken){
+					if(accessToken) {
+						authSrv.getUserAndSetInLocalStorage();
+					}
+				});
 			},
 			apiGet: function(baseURL, allowedParams, params, successHandler, errorHandler){
 				authSrv.getAccessTokenFromAnySource().then(function(token){
