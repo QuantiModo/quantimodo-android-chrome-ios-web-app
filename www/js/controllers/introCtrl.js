@@ -36,7 +36,7 @@ angular.module('starter')
 
         localStorageService.getItem('introSeen', function(introSeen){
             if(introSeen){
-                $state.go('app.welcome');
+                $state.go(config.appSettings.welcomeState);
             } else {
                 $scope.myIntro.ready = true;
             }

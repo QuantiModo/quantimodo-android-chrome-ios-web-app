@@ -221,7 +221,7 @@ angular.module('starter')
                     measurementService.calculateBothChart();
                     measurementService.resetSyncFlag();
                     //hard reload
-                    $state.go('app.welcome', {}, {
+                    $state.go(config.appSettings.welcomeState, {}, {
                         reload: true
                     });
                 });
@@ -415,7 +415,7 @@ angular.module('starter')
         var syncPrimaryOutcomeVariableMeasurementsIfInSyncEnabledState = function(){
             var syncEnabledStates = [
                 'app.track',
-                'app.welcome',
+                config.appSettings.welcomeState,
                 'app.history',
                 'app.login'
             ];
@@ -464,7 +464,7 @@ angular.module('starter')
 
             var authOptionalStates = [
                 'app.track',
-                'app.welcome',
+                config.appSettings.welcomeState,
                 'app.history',
                 'app.login'
             ];
@@ -550,7 +550,7 @@ angular.module('starter')
                     console.log("isWelcomed is " + isWelcomed + ". Setting to true and going to welcome now.");
                     localStorageService.setItem('isWelcomed', true);
                     $rootScope.isWelcomed = true;
-                    $state.go('app.welcome');
+                    $state.go(config.appSettings.welcomeState);
                 }
             });
         }

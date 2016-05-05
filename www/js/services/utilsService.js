@@ -89,7 +89,7 @@ angular.module('starter')
                             type:'button-assertive',
                             onTap: function(e){
                                 var ref = window.open(config.getURL('register'),'_blank');
-                                $state.go('app.welcome');
+                                $state.go(config.appSettings.welcomeState);
 
                          }
                         },

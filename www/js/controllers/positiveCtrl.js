@@ -7,7 +7,7 @@ angular.module('starter')
 
 
         if(!$scope.isLoggedIn){
-            $state.go('app.welcome');
+            $state.go(config.appSettings.welcomeState);
             // app wide signal to sibling controllers that the state has changed
             $rootScope.$broadcast('transition');
         }

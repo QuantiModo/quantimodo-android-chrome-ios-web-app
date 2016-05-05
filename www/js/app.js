@@ -52,7 +52,7 @@ angular.module('starter',
                     } else if(localStorage.isLoggedIn){
                         $state.go(config.appSettings.defaultState);
                     } else {
-                        $state.go('app.welcome');
+                        $state.go(config.appSettings.welcomeState);
                     }
                 }
             }, 100);  
@@ -122,7 +122,7 @@ angular.module('starter',
         resolve : config_resolver
       })
 
-      .state('app.welcome', {
+      .state(config.appSettings.welcomeState, {
         url: "/welcome",
         views: {
           'menuContent': {
