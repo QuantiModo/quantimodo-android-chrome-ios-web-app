@@ -414,8 +414,8 @@ angular.module('starter')
 				// send request
 				var getMeasurements = function(){
 
-                    localStorageService.getItem('isLoggedIn', function(isLoggedIn){
-                        if(!isLoggedIn){
+                    localStorageService.getItem('user', function(user){
+                        if(!user){
                             isSyncing = false;
                             deferred.resolve();
                         }
@@ -502,8 +502,8 @@ angular.module('starter')
 
                             }
                         } else {
-                            localStorageService.getItem('isLoggedIn', function(isLoggedIn){
-                                if(isLoggedIn == "false" || isLoggedIn == false){
+                            localStorageService.getItem('user', function(user){
+                                if(!user){
                                     isSyncing = false;
                                     deferred.resolve();
                                 }

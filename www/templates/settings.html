@@ -26,13 +26,13 @@
 
 
         <div class="list card">
-            <a href="" ng-show="!isLoggedIn" ng-click="loginFromSettings()" class="item ">
+            <a href="" ng-show="!user" ng-click="loginFromSettings()" class="item ">
               Account
               <p>Tap to sign in</p>
             </a>
 
 
-            <a href="" ng-show="isLoggedIn" ng-click="logout()" class="item ">
+            <a href="" ng-show="user" ng-click="logout()" class="item ">
               Signed in as {{user.displayName}}
               <p>Tap to sign out</p>
             </a>

@@ -307,11 +307,7 @@ angular.module('starter')
                             }
                         };
                         localStorageService.setItem('user', JSON.stringify(userCredentialsResp));
-                        authSrv.isLoggedIn = true;
-
-                        localStorageService.setItem('isLoggedIn', true);
-
-
+                        
                         //get token value from response
                         var token = userCredentialsResp.data.token.split("|")[2];
                         //update locally stored token
@@ -509,9 +505,7 @@ angular.module('starter')
 					if(response.error){
 						console.error("Error generating access token");
 						console.log('response', response);
-						// set flags
-						authSrv.isLoggedIn = false;
-						localStorageService.setItem('isLoggedIn', false);
+						localStorageService.setItem('user', null);
 					} else {
 						console.log("Access token received",response);
 						if(typeof withJWT !== "undefined" && withJWT === true) {
@@ -520,10 +514,7 @@ angular.module('starter')
 						else {
 							authSrv.updateAccessToken(response);
 						}
-
-						// set flags
-						authSrv.isLoggedIn = true;
-						localStorageService.setItem('isLoggedIn', true);
+                        
 
 						// get user details from server
 						authSrv.getUserAndSetInLocalStorage();
@@ -535,8 +526,7 @@ angular.module('starter')
 
 					console.log("error in generating access token", err);
 					// set flags
-					authSrv.isLoggedIn = false;
-					localStorageService.setItem('isLoggedIn', false);
+					localStorageService.setItem('user', null);
 				});
 			},
 			getUserAndSetInLocalStorage: function(){
@@ -548,8 +538,6 @@ angular.module('starter')
 						// set user data in local storage
 						localStorageService.setItem('user', JSON.stringify(userObject));
 						authSrv.setUserForIntercom(userObject);
-                        authSrv.isLoggedIn = true;
-                        localStorageService.setItem('isLoggedIn', true);
 						authSrv.userName = userObject.displayName;
 						return userObject;
 					},function(err){

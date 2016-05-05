@@ -139,8 +139,8 @@ angular.module('starter')
                     if(response.length === 0 || typeof response === "string" || params.offset >= 3000){
                         defer.resolve(response_array);
                     }else{
-                        localStorageService.getItem('isLoggedIn', function(isLoggedIn){
-                            if(isLoggedIn === "false" || isLoggedIn === false){
+                        localStorageService.getItem('user', function(user){
+                            if(!user){
                                 defer.reject(false);
                             } else {
                                 response_array = response_array.concat(response);
