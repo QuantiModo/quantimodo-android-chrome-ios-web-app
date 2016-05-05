@@ -9,7 +9,6 @@ angular.module('starter')
         // flags
         $scope.controller_name = "AppCtrl";
         $scope.menu = config.appSettings.menu;
-        $scope.isLoggedIn  = false;
         $scope.showTrackingSubMenu = false;
         $scope.showReminderSubMenu = false;
         $scope.closeMenu = function() {
@@ -160,7 +159,12 @@ angular.module('starter')
 
         function goToDefaultStateShowMenuClearIntroHistoryAndRedraw() {
 
-            if ($state.current.name === "app.welcome" || $state.current.name === "app.login") {
+            if ($state.current.name === "app.welcome") {
+                $state.go(config.appSettings.defaultState);
+                $rootScope.hideMenu = false;
+            }
+
+            if ($state.current.name === "app.login" && $scope.user) {
                 $state.go(config.appSettings.defaultState);
                 $rootScope.hideMenu = false;
             }
@@ -257,7 +261,7 @@ angular.module('starter')
             }
 
             var completelyResetAppState = function(){
-                $scope.isLoggedIn = false;
+                $scope.user = null;
                 localStorageService.clear();
                 notificationService.cancelNotifications();
                 refreshTrackingPageAndGoToWelcome();
@@ -266,7 +270,7 @@ angular.module('starter')
 
 
             var afterLogoutDoNotDeleteMeasurements = function(){
-                $scope.isLoggedIn = false;
+                $scope.user = null;
                 clearTokensFromLocalStorage();
                 refreshTrackingPageAndGoToWelcome();
                 logOutOfApi();
@@ -472,17 +476,15 @@ angular.module('starter')
             if(authOptionalStates.indexOf($state.current.name) === -1) {
                 // try to get access token
                 authService.getAccessTokenFromAnySource().then(function (data) {
-                    $scope.isLoggedIn = true;
                     var user = authService.getOrSetUserInLocalStorage();
                     if(user){
                         $scope.user = JSON.parse(user);
-                        $scope.isLoggedIn = true;
                     }
                     if(!user){
-                       $scope.isLoggedIn = false;
+                       $scope.user = null;
                     }
                 }, function () {
-                    $scope.isLoggedIn = false;
+                    $scope.user = null;
                     $ionicLoading.hide();
                     $state.go('app.login');
                     console.log('need to login again');

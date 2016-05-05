@@ -5,8 +5,6 @@ angular.module('starter')
 										 measurementService, chartService, $ionicPopover, $cordovaFile,
 										 $cordovaFileOpener2, $ionicPopup, $state,notificationService, QuantiModo) {
 		$scope.controller_name = "SettingsCtrl";
-		$scope.isLoggedIn = false;
-		
 		// populate ratings interval
         localStorageService.getItem('askForRating', function (askForRating) {
                 $scope.ratings = askForRating ? askForRating : "hourly";
@@ -43,7 +41,6 @@ angular.module('starter')
                 }
 
                 if(user){
-                    $scope.isLoggedIn = true;
                     $scope.user = JSON.parse(user);
                 }
             });
