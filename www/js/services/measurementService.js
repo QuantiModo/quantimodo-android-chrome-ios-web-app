@@ -707,7 +707,7 @@ angular.module('starter')
                     if(!data && data.length === 0){
                         deferred.reject(false);
                     } else {
-                        var __ret = this.generateLineAndBarChartArrays(data);
+                        var __ret = measurementService.generateLineAndBarChartArrays(data);
                         var lineArr = __ret.lineArr;
                         var barArr = __ret.barArr;
                         deferred.resolve([lineArr, barArr]);
@@ -721,19 +721,21 @@ angular.module('starter')
                 var lineArr = [];
                 var barArr = [0, 0, 0, 0, 0];
                 var allMeasurements = localStorageService.getItemSync('allMeasurements');
-                allMeasurements = JSON.parse(allMeasurements);
-                for (var i = 0; i < allMeasurements.length; i++) {
-                    var currentValue = Math.ceil(allMeasurements[i].value);
-                    if (allMeasurements[i].unitAbbreviatedName === config.appSettings.primaryOutcomeVariableDetails.unitAbbreviatedName &&
-                        (currentValue - 1) <= 4 && (currentValue - 1) >= 0) {
-                        var timestamp = moment(allMeasurements[i].humanTime.date).unix() * 1000;
-                        var percentValue = (currentValue - 1) * 25;
-                        var lineChartItem = [timestamp, percentValue];
-                        lineArr.push(lineChartItem);
-                        barArr[currentValue - 1]++;
-                    }
+                if(allMeasurements){
+					allMeasurements = JSON.parse(allMeasurements);
+					for (var i = 0; i < allMeasurements.length; i++) {
+						var currentValue = Math.ceil(allMeasurements[i].value);
+						if (allMeasurements[i].unitAbbreviatedName === config.appSettings.primaryOutcomeVariableDetails.unitAbbreviatedName &&
+							(currentValue - 1) <= 4 && (currentValue - 1) >= 0) {
+							var timestamp = moment(allMeasurements[i].humanTime.date).unix() * 1000;
+							var percentValue = (currentValue - 1) * 25;
+							var lineChartItem = [timestamp, percentValue];
+							lineArr.push(lineChartItem);
+							barArr[currentValue - 1]++;
+						}
+					}
+					return {lineArr: lineArr, barArr: barArr};
                 }
-                return {lineArr: lineArr, barArr: barArr};
             },
 
             getHistoryMeasurements : function(params){
