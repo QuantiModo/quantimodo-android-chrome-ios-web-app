@@ -40,7 +40,6 @@ angular.module('starter')
 					// save in localStorage
 					if(accessToken) {
 						localStorageService.setItem('accessToken', accessToken);
-						authSrv.getUserAndSetInLocalStorage();
                     }
 					if(refreshToken) {
 						localStorageService.setItem('refreshToken', refreshToken);
@@ -55,7 +54,7 @@ angular.module('starter')
 					if(expiresAt) {
 						localStorageService.setItem('expiresAt', expiresAt);
                     }
-
+					authSrv.getUserAndSetInLocalStorage();
 					return accessToken;
 				} else {
 					return "";
@@ -309,7 +308,7 @@ angular.module('starter')
                         };
                         localStorageService.setItem('user', JSON.stringify(userCredentialsResp));
                         authSrv.isLoggedIn = true;
-                        authSrv.isLoggedIn = true;
+
                         localStorageService.setItem('isLoggedIn', true);
 
 

@@ -287,9 +287,7 @@ angular.module('starter')
             if (window.chrome && chrome.runtime && chrome.runtime.id) {
                 console.log("$scope.login: Chrome Detected");
                 authService.chromeLogin(url, register);
-            }
-
-            else if(ionic.Platform.is('browser')){
+            } else if(ionic.Platform.is('browser')){
                 console.log("$scope.login: Browser Detected");
                 authService.browserLogin(url, register);
             } else {
@@ -423,11 +421,13 @@ angular.module('starter')
             ];
 
             var user = localStorageService.getItem('user', function (user) {
+                $scope.user = user;
                 return user;
             });
 
             if(!user){
                 user = authService.setUserInLocalStorageIfWeHaveAccessToken();
+                $scope.user = user;
             }
 
             if(!user){
@@ -471,7 +471,9 @@ angular.module('starter')
                     $scope.isLoggedIn = true;
                     var user = authService.getOrSetUserInLocalStorage();
                     if(user){
-                       $scope.userName = user.displayName;     
+                        $scope.user = user;
+                       $scope.userName = user.displayName;
+                        $scope.isLoggedIn = true;
                     }
                     if(!user){
                        $scope.isLoggedIn = false;
@@ -487,6 +489,7 @@ angular.module('starter')
 
         $scope.init = function () {
             console.log("Main Constructor Start");
+            $scope.user = authService.getUserFromLocalStorage();
             hideMenuIfSetInUrlParameter();
             redirectToWelcomeStateIfNecessary();
             scheduleReminder();
