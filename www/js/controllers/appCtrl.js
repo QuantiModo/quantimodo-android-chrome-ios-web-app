@@ -420,14 +420,18 @@ angular.module('starter')
                 'app.login'
             ];
 
-            var user = localStorageService.getItem('user', function (user) {
-                $scope.user = user;
-                return user;
+            var user = localStorageService.getItem('user', function (userJson) {
+                userObject = JSON.parse(userJson);
+                $scope.user = userObject;
+                return userObject;
             });
 
-            if(!user){
-                user = authService.setUserInLocalStorageIfWeHaveAccessToken();
-                $scope.user = user;
+            if(!userObject){
+                userObject = authService.setUserInLocalStorageIfWeHaveAccessToken();
+                if(userObject){
+                     //userObject = JSON.parse(userJson);
+                     $scope.user = userObject;
+                }
             }
 
             if(!user){
@@ -471,8 +475,7 @@ angular.module('starter')
                     $scope.isLoggedIn = true;
                     var user = authService.getOrSetUserInLocalStorage();
                     if(user){
-                        $scope.user = user;
-                       $scope.userName = user.displayName;
+                        $scope.user = JSON.parse(user);
                         $scope.isLoggedIn = true;
                     }
                     if(!user){
@@ -489,7 +492,8 @@ angular.module('starter')
 
         $scope.init = function () {
             console.log("Main Constructor Start");
-            $scope.user = authService.getUserFromLocalStorage();
+            user = authService.getUserFromLocalStorage();
+            $scope.user = JSON.parse(user);
             hideMenuIfSetInUrlParameter();
             redirectToWelcomeStateIfNecessary();
             scheduleReminder();

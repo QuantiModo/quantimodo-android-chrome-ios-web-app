@@ -44,7 +44,7 @@ angular.module('starter')
 
                 if(user){
                     $scope.isLoggedIn = true;
-                    $scope.userName = JSON.parse(user)['displayName'];
+                    $scope.user = JSON.parse(user);
                 }
             });
 	    };

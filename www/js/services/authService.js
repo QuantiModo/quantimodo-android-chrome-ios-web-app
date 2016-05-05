@@ -4,25 +4,25 @@ angular.module('starter')
 
 		var authSrv = {
 
-			setUserForIntercom :	function(user) {
-				user = JSON.parse(user);
-				console.log('user:' + user);
-				window.intercomSettings = {
-					app_id: "uwtx2m33",
-					name: user.displayName,
-					email: user.email,
-					user_id: user.id
-				};
-				return user;
+			setUserForIntercom :	function(userObject) {
+				if(userObject){
+					window.intercomSettings = {
+						app_id: "uwtx2m33",
+						name: userObject.displayName,
+						email: userObject.email,
+						user_id: userObject.id
+					};
+				}
+				return userObject;
 			},
 
 			getOrSetUserInLocalStorage : function() {
-				var user = localStorageService.getItemSync('user');
-				if(!user){
-					user = authSrv.getUserAndSetInLocalStorage();
+				var userObject = localStorageService.getItemSync('user');
+				if(!userObject){
+					userObject = authSrv.getUserAndSetInLocalStorage();
 				}
-				authSrv.setUserForIntercom(user);
-				return user;
+				authSrv.setUserForIntercom(userObject);
+				return userObject;
 			},
             
             getUserFromLocalStorage : function () {
@@ -543,15 +543,15 @@ angular.module('starter')
 				authSrv.apiGet('api/user/me',
 					[],
 					{},
-					function(user){
+					function(userObject){
 
 						// set user data in local storage
-						localStorageService.setItem('user', JSON.stringify(user));
-						authSrv.setUserForIntercom(user);
+						localStorageService.setItem('user', JSON.stringify(userObject));
+						authSrv.setUserForIntercom(userObject);
                         authSrv.isLoggedIn = true;
                         localStorageService.setItem('isLoggedIn', true);
-						authSrv.userName = user.displayName;
-						return user;
+						authSrv.userName = userObject.displayName;
+						return userObject;
 					},function(err){
 
 						// error
