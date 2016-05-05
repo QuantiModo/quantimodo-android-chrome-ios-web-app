@@ -19,7 +19,7 @@ angular.module('starter')
 			getOrSetUserInLocalStorage : function() {
 				var user = localStorageService.getItemSync('user');
 				if(!user){
-					user = authSrv.setUserInLocalStorage();
+					user = authSrv.getUserAndSetInLocalStorage();
 				}
 				return user;
 			},
@@ -28,17 +28,6 @@ angular.module('starter')
                 var user = localStorageService.getItemSync('user');
                 return user;
             },
-
-			setUserInLocalStorage : function() {
-				QuantiModo.getUser(function (user) {
-					console.log('set user data in local storage..');
-					localStorageService.setItem('user', JSON.stringify(user));
-					authSrv.setUserForIntercom();
-					return user;
-				}, function (err) {
-					console.log(err);
-				});
-			},
 
 			// extract values from token response and saves in localstorage
 			updateAccessToken: function (accessResponse) {
@@ -50,7 +39,7 @@ angular.module('starter')
 					// save in localStorage
 					if(accessToken) {
 						localStorageService.setItem('accessToken', accessToken);
-						authSrv.setUserInLocalStorage();
+						authSrv.getUserAndSetInLocalStorage();
                     }
 					if(refreshToken) {
 						localStorageService.setItem('refreshToken', refreshToken);
@@ -174,20 +163,26 @@ angular.module('starter')
 			},
 
 			nonOAuthBrowserLogin : function(register) {
-				var loginUrl = config.getURL("api/v2/auth/login");
-				if (register === true) {
-					loginUrl = config.getURL("api/v2/auth/register");
-				}
-				console.log("nonOAuthBrowserLogin: Client id is oAuthDisabled - will redirect to regular login.");
-				loginUrl += "redirect_uri=" + encodeURIComponent(window.location.href);
-				console.debug('nonOAuthBrowserLogin: AUTH redirect URL created:', loginUrl);
-				var apiUrl = config.getApiUrl();
-				var apiUrlMatchesHostName = apiUrl.indexOf(window.location.hostname);
-				if(apiUrlMatchesHostName > -1) {
-					window.location.replace(loginUrl);
-				} else {
-					alert("API url doesn't match auth base url.  Please make use the same domain in config file");
-				}
+                var user = authSrv.getOrSetUserInLocalStorage();
+                if(user){
+                    $state.go(config.appSettings.defaultState);
+                }
+                if(!user){
+                    var loginUrl = config.getURL("api/v2/auth/login");
+                    if (register === true) {
+                        loginUrl = config.getURL("api/v2/auth/register");
+                    }
+                    console.log("nonOAuthBrowserLogin: Client id is oAuthDisabled - will redirect to regular login.");
+                    loginUrl += "redirect_uri=" + encodeURIComponent(window.location.href);
+                    console.debug('nonOAuthBrowserLogin: AUTH redirect URL created:', loginUrl);
+                    var apiUrl = config.getApiUrl();
+                    var apiUrlMatchesHostName = apiUrl.indexOf(window.location.hostname);
+                    if(apiUrlMatchesHostName > -1) {
+                        window.location.replace(loginUrl);
+                    } else {
+                        alert("API url doesn't match auth base url.  Please make use the same domain in config file");
+                    }
+                }
 			},
 
 			oAuthBrowserLogin : function (register) {
@@ -311,6 +306,11 @@ angular.module('starter')
                                 email: userCredentialsResp.data.email
                             }
                         };
+                        localStorageService.setItem('user', JSON.stringify(userCredentialsResp));
+                        authSrv.isLoggedIn = true;
+                        authSrv.isLoggedIn = true;
+                        localStorageService.setItem('isLoggedIn', true);
+
 
                         //get token value from response
                         var token = userCredentialsResp.data.token.split("|")[2];
@@ -526,7 +526,7 @@ angular.module('starter')
 						localStorageService.setItem('isLoggedIn', true);
 
 						// get user details from server
-						authSrv.getUser();
+						authSrv.getUserAndSetInLocalStorage();
 
 						$rootScope.$broadcast('callAppCtrlInit');
 					}
@@ -539,7 +539,7 @@ angular.module('starter')
 					localStorageService.setItem('isLoggedIn', false);
 				});
 			},
-			getUser: function(){
+			getUserAndSetInLocalStorage: function(){
 				authSrv.apiGet('api/user/me',
 					[],
 					{},
@@ -547,7 +547,8 @@ angular.module('starter')
 
 						// set user data in local storage
 						localStorageService.setItem('user', JSON.stringify(user));
-
+                        authSrv.isLoggedIn = true;
+                        localStorageService.setItem('isLoggedIn', true);
 						authSrv.userName = user.displayName;
 					},function(err){
 
@@ -563,7 +564,7 @@ angular.module('starter')
 					var urlParams = [];
 					for (var key in params)
 					{
-						if (jQuery.inArray(key, allowedParams) == -1)
+						if (jQuery.inArray(key, allowedParams) === -1)
 						{
 							throw 'invalid parameter; allowed parameters: ' + allowedParams.toString();
 						}
