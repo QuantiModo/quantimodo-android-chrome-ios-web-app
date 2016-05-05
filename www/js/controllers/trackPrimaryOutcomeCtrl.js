@@ -135,6 +135,7 @@ angular.module('starter')
             $scope.barChartConfig = false;
             $scope.redrawLineChart = true;
             $scope.redrawBarChart = true;
+            $scope.showHelpInfoPopupIfNecessary();
             generateLineAndBarChartData();
         };
 
