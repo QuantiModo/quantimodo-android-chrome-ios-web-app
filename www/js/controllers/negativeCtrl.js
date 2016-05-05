@@ -27,8 +27,10 @@ angular.module('starter')
 
 
         $scope.init = function(){
-            authService.getAccessTokenFromAnySource().then(function(accessToken)
-            {
+            $scope.state.loading = true;
+            utilsService.loadingStart();
+            var user = authService.getUserFromLocalStorage();
+            if(user){
                 utilsService.loadingStart();
                 correlationService.getNegativeFactors()
                     .then(function(correlationObjects){
@@ -43,11 +45,10 @@ angular.module('starter')
                             fromUrl : window.location.href
                         });
                     });
-            }, function () {
+            } else {
                 $ionicLoading.hide();
-                console.log('need to login again');
                 $state.go('app.login');
-            });
+            }
         };
 
         // when downVoted

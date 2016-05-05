@@ -121,9 +121,10 @@ angular.module('starter')
         }
         
 	    $scope.init = function(){
+            $scope.state.loading = true;
             utilsService.loadingStart();
-            authService.getAccessTokenFromAnySource().then(function(accessToken)
-            {
+            var user = authService.getUserFromLocalStorage();
+            if(user){
                 correlationService.getPositiveFactors()
                     .then(function(correlationObjects){
                         $scope.positives = correlationObjects;
@@ -134,11 +135,10 @@ angular.module('starter')
                     }, function(){
                         $ionicLoading.hide();
                     });
-            }, function () {
+            } else {
                 $ionicLoading.hide();
-                console.log('need to login again');
                 $state.go('app.login');
-            });
+            }
 	    };
 
 	    $scope.openStore = function(name){

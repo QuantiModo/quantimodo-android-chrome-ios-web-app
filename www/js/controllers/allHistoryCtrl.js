@@ -85,10 +85,10 @@ angular.module('starter')
 	    
 	    // constructor
 	    $scope.init = function(){
-            $scope.state.loading = true;
-            utilsService.loadingStart();
-            authService.getAccessTokenFromAnySource().then(function(accessToken)
-            {
+			$scope.state.loading = true;
+			utilsService.loadingStart();
+			var user = authService.getUserFromLocalStorage();
+			if(user){
                 $scope.showHelpInfoPopupIfNecessary();
                 variableCategoryService.getVariableCategories()
                     .then(function(variableCategories){
@@ -104,11 +104,10 @@ angular.module('starter')
                     });
                 getHistory();
                 $ionicLoading.hide();
-            }, function () {
-                $ionicLoading.hide();
-                console.log('need to login again');
-                $state.go('app.login');
-            });
+			} else {
+				$ionicLoading.hide();
+				$state.go('app.login');
+			}
 	    };
 
         // when view is changed

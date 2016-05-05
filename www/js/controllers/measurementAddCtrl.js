@@ -291,8 +291,10 @@ angular.module('starter')
 
         // constructor
         $scope.init = function(){
-            authService.getAccessTokenFromAnySource().then(function(accessToken)
-            {
+            $scope.state.loading = true;
+            utilsService.loadingStart();
+            var user = authService.getUserFromLocalStorage();
+            if(user){
                 $scope.state.loading = true;
                 utilsService.loadingStart();
                 if(!$scope.state.measurementIsSetup){
@@ -317,11 +319,10 @@ angular.module('starter')
                 }
                 populateUnits();
                 $ionicLoading.hide();
-            }, function () {
+            } else {
                 $ionicLoading.hide();
-                console.log('need to login again');
                 $state.go('app.login');
-            });
+            }
         };
 
         var populateUnits = function () {

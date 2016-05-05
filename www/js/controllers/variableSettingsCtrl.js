@@ -50,9 +50,10 @@ angular.module('starter')
 
         // constructor
         $scope.init = function(){
+            $scope.state.loading = true;
             utilsService.loadingStart();
-            authService.getAccessTokenFromAnySource().then(function(accessToken)
-            {
+            var user = authService.getUserFromLocalStorage();
+            if(user){
                 $scope.showHelpInfoPopupIfNecessary();
                 $scope.state.loading = true;
                 $scope.state.sumAvg = "avg";
@@ -65,11 +66,10 @@ angular.module('starter')
                     $scope.state.selectedUnitAbbreviatedName = variableObject.abbreviatedUnitName;
                 });
                 $ionicLoading.hide();
-            }, function () {
+            } else {
                 $ionicLoading.hide();
-                console.log('need to login again');
                 $state.go('app.login');
-            });
+            }
         };
         
         // update data when view is navigated to
