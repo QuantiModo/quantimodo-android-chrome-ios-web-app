@@ -1,34 +1,51 @@
 angular.module('starter')
 
     // utility methods
-    .factory('utilsService', function($ionicPopup,$state, $ionicLoading) {
+    .factory('utilsService', function($ionicPopup, $state, $ionicLoading) {
 
         var loginAlert;
 
         return {
             
-                showAlert : function(title, template) {
-                    var alertPopup = $ionicPopup.alert({
-                        cssClass : 'positive',
-                        okType : 'button-positive',
-                        title: title,
-                        template: template
-                    });
-                },
+            showAlert : function(title, template) {
+                var alertPopup = $ionicPopup.alert({
+                    cssClass : 'positive',
+                    okType : 'button-positive',
+                    title: title,
+                    template: template
+                });
+            },
 
-                // Hide spinner
-                stopLoading : function(){
-                    $ionicLoading.hide();
-                },
+            // Hide spinner
+            loadingStop : function(){
+                $ionicLoading.hide();
+            },
 
-                // show spinner
-                startLoading : function(){
-                    // show loading spinner
+            // show spinner
+            loadingStart : function(loadingMessage, hideAfter){
+                
+                if(!hideAfter){
+                    hideAfter = 10;
+                }
+                
+                if(!loadingMessage) {
                     $ionicLoading.show({
                         noBackdrop: true,
-                        template: '<img src="img/pop-tart-cat.gif"><!--<br><p class="item-icon-left">Loading stuff...<ion-spinner icon="lines"/></p>-->'
+                        template: '<img src="www/img/pop-tart-cat.gif"><!--<br><p class="item-icon-left">Loading stuff...<ion-spinner icon="lines"/></p>-->'
                     });
-                },
+                }
+                
+                if(loadingMessage) {
+                    $ionicLoading.show({
+                        noBackdrop: true,
+                        template: '<p class="item-icon-left">' + loadingMessage + '...<ion-spinner icon="lines"/></p>'
+                    });
+                }
+
+                setTimeout(function(){
+                    $ionicLoading.hide();
+                }, hideAfter);
+            },
 
             // returns bool
             // if a string starts with substring
@@ -58,7 +75,9 @@ angular.module('starter')
                         }
                     }
                     return false;
-                } else return false;
+                } else {
+                    return false;
+                }
             },
 
             showLoginRequiredAlert: function(login){
@@ -70,7 +89,7 @@ angular.module('starter')
                             type:'button-assertive',
                             onTap: function(e){
                                 var ref = window.open(config.getURL('register'),'_blank');
-                                $state.go('app.welcome');
+                                $state.go(config.appSettings.welcomeState);
 
                          }
                         },
@@ -90,7 +109,7 @@ angular.module('starter')
                         }
                     ],
                     cssClass:'alert-popup'
-                })
+                });
             }
         };
     });

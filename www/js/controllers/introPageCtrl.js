@@ -36,18 +36,9 @@ angular.module('starter')
             };
 
             var init = function(){
-                // show loader
-                $ionicLoading.show(
-                    {
-                        noBackdrop: true,
-                        template: '<p class="item-icon-left">Loading stuff...<ion-spinner icon="lines"/></p>'
-                    }
-                );
-
+                utilsService.loadingStart();
                 $scope.myIntro.ready = true;
-
                 $ionicLoading.hide();
-
             };
 
             // when view is changed

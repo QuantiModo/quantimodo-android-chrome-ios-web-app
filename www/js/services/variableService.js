@@ -97,44 +97,6 @@ angular.module('starter')
                 });
 
                 return deferred.promise;
-            },
-
-            populateVariableSearchResults: function (variableCategoryName) {
-
-                utilsService.startLoading();
-                // get user token
-                authService.getAccessTokenFromAnySource().then(function(token){
-
-                    if(!variableCategoryName){
-                        // get all variables
-                        console.log('Get most recent anything variables');
-                        variableService.searchVariablesIncludePublic('*').then(function(variables){
-
-                            $scope.variableSearchResults = variables;
-                            utilsService.stopLoading();
-
-                        }, function(){
-                            utilsService.stopLoading();
-                        });
-                    } else {
-                        console.log('get all variables by category');
-                        variableService.searchVariablesIncludePublic('*', $scope.state.variableCategoryName).then(function(variables){
-
-                            $scope.variableSearchResults = variables;
-
-                            utilsService.stopLoading();
-
-                        }, function(){
-                            utilsService.stopLoading();
-                        });
-                    }
-
-                }, function(){
-                    utilsService.showLoginRequiredAlert($scope.login);
-                    utilsService.stopLoading();
-
-                });
-
             }
 		};
 

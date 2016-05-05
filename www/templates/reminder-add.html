@@ -21,6 +21,12 @@
                    ng-change="onSearch()"
                    ng-model-options='{ debounce: 500 }'>
           </label>
+            <p></p>
+            <ion-list>
+                <ion-item style="text-align:center;border-bottom: 1px solid rgb(221, 221, 221);" ng-show="state.loading">
+                    <img src="../www/img/pop-tart-cat.gif">
+                </ion-item>
+            </ion-list>
         </div>
 
 
@@ -29,7 +35,7 @@
             <p ng-show="state.searching"></p>
             <ion-list>
                 <ion-item style="text-align:center;border-bottom: 1px solid rgb(221, 221, 221);" ng-show="state.searching">
-                    <img src="../img/pop-tart-cat.gif">
+                    <img src="../www/img/loader.gif">
                 </ion-item>
             </ion-list>
         	<a class="item" ng-repeat="result in variableSearchResults | unique:'id' " ng-click="onVariableSelect(result)">{{result.name}}</a>

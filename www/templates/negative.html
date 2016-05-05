@@ -14,8 +14,8 @@
                         <ion-item style="border-style:hidden;">
                             <h2 class="block" style="white-space: normal">{{negative.cause}}</h2>
                             <p class="like-dislike-buttons"></p>
-                            <div class="allbuttons">
-                                <div ng-click="upvote(negative)" class="show-inline">
+                            <div class="all-buttons">
+                                <div ng-click="upVote(negative)" class="show-inline">
                                     <img ng-if="negative.userVote == null || negative.userVote == 0" src="img/thumb_up_white.png" height="32px" width="32px" />
                                     <img ng-if="negative.userVote == 1" src="img/thumb_up_black.png" height="32px" width="32px" />
                                 </div>
@@ -43,8 +43,8 @@
                         <ion-item style="border-style:hidden;">
                             <h2 class="block"  style="white-space: normal">{{negative.cause}}</h2>
                             <p class="like-dislike-buttons"></p>
-                            <div class="allbuttons">
-                                <div ng-click="upvote(negative)" class="show-inline">
+                            <div class="all-buttons">
+                                <div ng-click="upVote(negative)" class="show-inline">
                                     <img ng-if="negative.userVote == null || negative.userVote == 0" src="img/thumb_up_white.png" height="32px" width="32px" />
                                     <img ng-if="negative.userVote == 1" src="img/thumb_up_black.png" height="32px" width="32px" />
                                 </div>

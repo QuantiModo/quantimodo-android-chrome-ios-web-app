@@ -1,15 +1,18 @@
 angular.module('starter')
 
     // Controls the Track Page of the App
-    .controller('TrackCtrl', function($scope, $ionicModal, $state, $timeout, utilsService, authService, measurementService, chartService, $ionicPopup, localStorageService) {
-        $scope.controller_name = "TrackCtrl";
+    .controller('TrackPrimaryOutcomeCtrl', function($scope, $ionicModal, $state, $timeout, utilsService, authService, 
+                                                    measurementService, chartService, $ionicPopup, localStorageService) {
+        $scope.controller_name = "TrackPrimaryOutcomeCtrl";
 
         $scope.showCharts = false;
+        $scope.showRatingFaces = true;
 
         $scope.recordPrimaryOutcomeVariableRating = function (primaryOutcomeRatingValue) {
 
             // flag for blink effect
             $scope.timeRemaining = true;
+            $scope.showRatingFaces = false;
 
             if (window.chrome && window.chrome.browserAction) {
                 chrome.browserAction.setBadgeText({
@@ -17,11 +20,14 @@ angular.module('starter')
                 });
             }
 
-            // update localstorage
+            // update local storage
             measurementService.updatePrimaryOutcomeVariableLocally(primaryOutcomeRatingValue).then(function () {
 
-                // try to send the data to server
-                measurementService.updatePrimaryOutcomeVariable(primaryOutcomeRatingValue);
+                var user = authService.getUserFromLocalStorage();
+                if(user){
+                    // try to send the data to server if we have a user
+                    measurementService.updatePrimaryOutcomeVariable(primaryOutcomeRatingValue);
+                }
 
                 // calculate charts data
                 measurementService.calculateAveragePrimaryOutcomeVariableValue().then(function () {
@@ -59,6 +65,8 @@ angular.module('starter')
             console.log("load config object chartService.getBarChartStub");
             $scope.barChartConfig = chartService.getBarChartStub(arr);
 
+            // Fixes chart width
+            $scope.$broadcast('highchartsng.reflow');
             console.log("redraw chart with new data");
             $scope.redrawBarChart = true;
 
@@ -69,6 +77,9 @@ angular.module('starter')
             $scope.redrawLineChart = false;
             console.log("Configuring line chart...");
             $scope.lineChartConfig = chartService.getLineChartStub(lineChartData);
+
+            // Fixes chart width
+            $scope.$broadcast('highchartsng.reflow');
 
             // redraw chart with new data
             $scope.redrawLineChart = true;
@@ -82,51 +93,50 @@ angular.module('starter')
                     updateAveragePrimaryOutcomeRatingView(averagePrimaryOutcomeVariableValue);
                 }
 
-                // update line chart
-                localStorageService.getItem('lineChartData',function(lineChartData){
-                    if(lineChartData !== "[]") {
-                        updateLineChart(JSON.parse(lineChartData));
-                        $scope.showCharts = true;
-                    }
+                generateLineAndBarChartData();
 
-                    // update bar chart
-                    localStorageService.getItem('barChartData',function(barChartData){
-                        if(barChartData !== "[0,0,0,0,0]"){
-                            updateBarChart(JSON.parse(barChartData));
-                            if(!$scope.$$phase) {
-                                $scope.$apply();
-                            }
-                            $scope.showCharts = true;
-                        }
-                    });
-                });
+                // update line chart
+                if($scope.lineChartData !== "[]" && $scope.lineChartData !== null) {
+                    updateLineChart($scope.lineChartData);
+                    $scope.showCharts = true;
+                }
+
+                // update bar chart
+                if($scope.barChartData !== "[0,0,0,0,0]" && $scope.barChartData !== null){
+                    updateBarChart($scope.barChartData);
+                    if(!$scope.$$phase) {
+                        $scope.$apply();
+                    }
+                    $scope.showCharts = true;
+                }
             });
         };
 
-        // show alert box
-        $scope.showAlert = function(title, template) {
-           var alertPopup = $ionicPopup.alert({
-                cssClass : 'positive',
-                okType : 'button-positive',
-                title: title,
-                template: template
-           });
-        };
-
         // constructor
+        function generateLineAndBarChartData() {
+            var __ret = measurementService.getLineAndBarChartData();
+            if(__ret){
+                $scope.lineChartData = __ret.lineArr;
+                $scope.barChartData = __ret.barArr;
+            }
+        }
+
         $scope.init = function(){
 
             // flags
             $scope.timeRemaining = false;
             $scope.averagePrimaryOutcomeVariableImage = false;
             $scope.averagePrimaryOutcomeVariableValue = false;
+            $scope.lineChartData = null;
+            $scope.barChartData = null;
 
             // chart flags
             $scope.lineChartConfig = false; 
             $scope.barChartConfig = false;
             $scope.redrawLineChart = true;
             $scope.redrawBarChart = true;
-
+            $scope.showHelpInfoPopupIfNecessary();
+            generateLineAndBarChartData();
         };
 
         $scope.init();

@@ -4,7 +4,7 @@ angular.module('starter')
     .controller('VariableSettingsCtrl',
         function($scope, $ionicModal, $timeout, $ionicPopup ,$ionicLoading, authService,
                                              measurementService, $state, $rootScope, utilsService, localStorageService,
-                                                $filter, $stateParams, $ionicHistory){
+                                                $filter, $stateParams, $ionicHistory, variableService){
 
         $scope.controller_name = "VariableSettingsCtrl";
 
@@ -16,17 +16,7 @@ angular.module('starter')
         };
         $scope.state.title = $stateParams.variableName + ' Variable Settings';
         $scope.state.variableName = $stateParams.variableName;
-
-        // alert box
-        $scope.showAlert = function(title, template) {
-            var alertPopup = $ionicPopup.alert({
-                cssClass : 'positive',
-                okType : 'button-positive',
-                title: title,
-                template: template
-            });
-        };
-
+            
         $scope.updateDisplayedVariableSettings = function(selectedVariable){
 
         };
@@ -51,65 +41,35 @@ angular.module('starter')
 
             // validation
             if (params.variableName === "") {
-                $scope.showAlert('Variable Name missing');
+                utilsService.showAlert('Variable Name missing');
             } else {
                 // add variable
-                measurementService.postTrackingMeasurement(params.epoch, params.variable, params.value, params.unit, params.isAvg, params.category, params.note, true)
-                    .then(function ()
-                    {
-                        $scope.showAlert('Added Variable');
-                        // set flags
-                        $scope.state.showAddVariable = false;
-                        $scope.state.showAddMeasurement = false;
-                        $scope.state.showVariableSearchCard = true;
-                        // refresh the last updated at from api
-                        setTimeout($scope.init, 200);
-                    }, function (err) {
-                        $scope.showAlert(err);
-                    }
-                    );
                 $ionicHistory.goBack();
             }
         };
 
         // constructor
         $scope.init = function(){
-            
-            // $ionicLoading.hide();
             $scope.state.loading = true;
-
-            $scope.state.sumAvg = "avg";
-            // show spinner
-            $ionicLoading.show({
-                noBackdrop: true,
-                template: '<p class="item-icon-left">Loading stuff...<ion-spinner icon="lines"/></p>'
-            });  
-
-            // get user token
-            authService.getAccessTokenFromAnySource().then(function(){
-                
-                // get all variables
+            utilsService.loadingStart();
+            var user = authService.getUserFromLocalStorage();
+            if(user){
+                $scope.showHelpInfoPopupIfNecessary();
+                $scope.state.loading = true;
+                $scope.state.sumAvg = "avg";
                 variableService.getVariablesByName($stateParams.variableName).then(function(variableObject){
                     $scope.state.variableObject = variableObject;
                     console.log(variableObject);
                     $scope.item = variableObject;
-
-                    // set values in form
-                    $scope.state.sumAvg = variableObject.combinationOperation == "MEAN"? "avg" : "sum";
+                    $scope.state.sumAvg = variableObject.combinationOperation === "MEAN"? "avg" : "sum";
                     $scope.state.variableCategory = variableObject.category;
                     $scope.state.selectedUnitAbbreviatedName = variableObject.abbreviatedUnitName;
                 });
-
-
-
-            }, function(){
-                console.log("need to log in");
-                utilsService.showLoginRequiredAlert($scope.login);
                 $ionicLoading.hide();
-            });
-
-            $ionicLoading.hide();
-
+            } else {
+                $ionicLoading.hide();
+                $state.go('app.login');
+            }
         };
         
         // update data when view is navigated to

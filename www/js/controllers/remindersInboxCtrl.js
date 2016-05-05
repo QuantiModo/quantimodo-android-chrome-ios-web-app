@@ -9,7 +9,7 @@ angular.module('starter')
 		console.log('Loading ' + $scope.controller_name);
 		
 	    $scope.state = {
-			showButtons : true,
+			showButtons : false,
 	    	showMeasurementBox : false,
 	    	selectedReminder : false,
 	    	reminderDefaultValue : "",
@@ -67,45 +67,48 @@ angular.module('starter')
 
 		};
 
-	    var filterViaDates = function(reminders){
+	    var filterViaDates = function(reminders) {
 
-	    	var result = [];
-	    	var reference = moment().local();
-	    	var today = reference.clone().startOf('day');
-	    	var yesterday = reference.clone().subtract(1, 'days').startOf('day');
-	    	var weekold = reference.clone().subtract(7, 'days').startOf('day');
-	    	var monthold = reference.clone().subtract(30, 'days').startOf('day');
+			var result = [];
+			var reference = moment().local();
+			var today = reference.clone().startOf('day');
+			var yesterday = reference.clone().subtract(1, 'days').startOf('day');
+			var weekold = reference.clone().subtract(7, 'days').startOf('day');
+			var monthold = reference.clone().subtract(30, 'days').startOf('day');
 
-	    	var todayResult = reminders.filter(function(reminder){
-	    		return moment.utc(reminder.trackingReminderNotificationTime).local().isSame(today, 'd') === true;
-	    	});
+			var todayResult = reminders.filter(function (reminder) {
+				return moment.utc(reminder.trackingReminderNotificationTime).local().isSame(today, 'd') === true;
+			});
 
-	    	if(todayResult.length) result.push({ name : "Today", reminders : todayResult });
+			if (todayResult.length) {
+				result.push({name: "Today", reminders: todayResult});
+			}
 
 	    	var yesterdayResult = reminders.filter(function(reminder){
 	    		return moment.utc(reminder.trackingReminderNotificationTime).local().isSame(yesterday, 'd') === true;
 	    	});
 
-	    	if(yesterdayResult.length) result.push({ name : "Yesterday", reminders : yesterdayResult });
+	    	if(yesterdayResult.length) {
+				result.push({ name : "Yesterday", reminders : yesterdayResult });
+			}
 
 	    	var last7DayResult = reminders.filter(function(reminder){
 	    		var date = moment.utc(reminder.trackingReminderNotificationTime).local();
 
-	    		return date.isAfter(weekold) === true
-	    		&& date.isSame(yesterday, 'd') !== true
-	    		&& date.isSame(today, 'd') !== true;
+	    		return date.isAfter(weekold) === true && date.isSame(yesterday, 'd') !== true && 
+					date.isSame(today, 'd') !== true;
 	    	});
 
-	    	if(last7DayResult.length) result.push({ name : "Last 7 Days", reminders : last7DayResult });
+	    	if(last7DayResult.length) {
+				result.push({ name : "Last 7 Days", reminders : last7DayResult });
+			}
 
 	    	var last30DayResult = reminders.filter(function(reminder){
 
 	    		var date = moment.utc(reminder.trackingReminderNotificationTime).local();
 
-	    		return date.isAfter(monthold) === true
-	    		&& date.isBefore(weekold) === true
-	    		&& date.isSame(yesterday, 'd') !== true
-	    		&& date.isSame(today, 'd') !== true;
+	    		return date.isAfter(monthold) === true && date.isBefore(weekold) === true &&
+					date.isSame(yesterday, 'd') !== true && date.isSame(today, 'd') !== true;
 	    	});
 
 	    	if(last30DayResult.length) result.push({ name : "Last 30 Days", reminders : last30DayResult });
@@ -120,7 +123,7 @@ angular.module('starter')
 	    };
 
 	    var getTrackingReminderNotifications = function(){
-	    	utilsService.startLoading();
+	    	utilsService.loadingStart();
 
 	    	reminderService.getTrackingReminderNotifications($stateParams.variableCategoryName)
 	    	.then(function(reminders){
@@ -129,9 +132,9 @@ angular.module('starter')
 				}
 	    		$scope.state.trackingRemindersNotifications = reminders;
 	    		$scope.state.filteredReminders = filterViaDates(reminders);
-	    		utilsService.stopLoading();
+	    		utilsService.loadingStop();
 	    	}, function(){
-	    		utilsService.stopLoading();
+	    		utilsService.loadingStop();
 	    		console.log("failed to get reminders");
 				//utilsService.showLoginRequiredAlert($scope.login);
 
@@ -171,14 +174,18 @@ angular.module('starter')
 	    };
 
 	    $scope.init = function(){
-			authService.getAccessTokenFromAnySource().then(function(token){
+			$scope.state.loading = true;
+			utilsService.loadingStart();
+			var user = authService.getUserFromLocalStorage();
+			if(user){
+				$scope.state.showButtons = true;
+				$scope.showHelpInfoPopupIfNecessary();
 				getTrackingReminderNotifications();
-			}, function(){
 				$ionicLoading.hide();
-				console.log("need to log in");
-				//utilsService.showLoginRequiredAlert($scope.login);
-			});
-			
+			} else {
+				$ionicLoading.hide();
+				$state.go('app.login');
+			}
 	    };
 
 	    $scope.editMeasurement = function(reminder){
@@ -187,21 +194,21 @@ angular.module('starter')
 
 	    $scope.editReminderSettings = function(reminder){
 	    	reminder["fromState"] = $state.current.name;
-	    	$state.go('app.reminderAdd', {reminder : reminder})
+	    	$state.go('app.reminderAdd', {reminder : reminder});
 	    };
 
 	    $scope.deleteReminder = function(reminder){
-	    	utilsService.startLoading();
+	    	utilsService.loadingStart();
 	    	reminderService.deleteReminder(reminder.id)
 	    	.then(function(){
 
-	    		utilsService.stopLoading();
+	    		utilsService.loadingStop();
 	    		utilsService.showAlert('Reminder Deleted.');
 	    		$scope.init();
 
 	    	}, function(err){
 				console.log(err);
-	    		utilsService.stopLoading();
+	    		utilsService.loadingStop();
 	    		utilsService.showAlert('Failed to Delete Reminder, Try again!', 'assertive');
 	    	});
 	    };
