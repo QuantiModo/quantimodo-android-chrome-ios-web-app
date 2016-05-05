@@ -437,8 +437,10 @@ angular.module('starter')
                 }
             } else {
                 $ionicLoading.hide();
+                $scope.state.loading = false;
                 $state.go('app.login');
             }
+            $scope.state.loading = false;
 	    };
 
         // when view is changed

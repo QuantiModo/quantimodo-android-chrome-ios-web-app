@@ -15,26 +15,15 @@ angular.module('starter')
         $scope.isChrome = window.chrome ? true : false;
 	    // populate user data
         localStorageService.getItem('user',function(user){
+			$scope.isLoggedIn = true;
             $scope.userName = user ? JSON.parse(user)['displayName'] : "";
         });
 
         // when login is tapped
 	    $scope.loginFromSettings = function(){
-	        if(ionic.Platform.platforms[0] === "browser"){
-	        	// if on browser
-	            $state.go('app.welcome');
-	            
-	            // let it login
-	            setTimeout(function(){
-	                $scope.login();
-	            },100);
-
-	        } else {
-				$scope.login();
-			}
+			$state.go('app.login');
 	    };
-
-
+		
 	    // add other factors to track to a string to show on settings page 
 	    $scope.calculateAddString = function(){
 	        var localAdditionalRatings;
