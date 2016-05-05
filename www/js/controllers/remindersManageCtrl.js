@@ -50,17 +50,6 @@ angular.module('starter')
 
 		};
 
-	    var getVariable = function(variableName){
-			variableService.getVariablesByName(variableName)
-	    	.then(function(variable){
-	    		$scope.state.variable = variable;
-	    	}, function(){
-	    		utilsService.showAlert('Can\'t find variable. Try again!', 'assertive').then(function(){
-	    			$state.go('app.historyAll');
-	    		});
-	    	});
-	    };
-
 	    var getTrackingReminders = function(){
 	    	utilsService.loadingStart();
 	    	reminderService.getTrackingReminders($stateParams.variableCategoryName)
@@ -68,11 +57,8 @@ angular.module('starter')
 	    		$scope.state.allReminders = reminders;
 	    		utilsService.loadingStop();
 	    	}, function(){
-	    		utilsService.loadingStop();
-	    		console.log("failed to get reminders");
-				console.log("need to log in");
 				$ionicLoading.hide();
-				utilsService.showLoginRequiredAlert($scope.login);
+				$state.go('app.login');
 	    	});
 	    };
 

@@ -4,23 +4,35 @@
 	        <div class="item item-text-wrap">
 	            <h1 class="positive">{{headline}}</h1>
 	            <br/>
-	            <ul>
+				<ul>
+					<li>By creating a FREE account you'll be able to:</li>
 					<li ng-repeat="feature in features">{{feature}}</li>
-	            </ul>
+				</ul>
 	            <button ng-show="isIOS" class="button button-block button-positive" ng-click="facebookLogin()">
+					<i class="icon logo-facebook"></i>
 	                Facebook Sign In
 	            </button>
 	            <button ng-show="isIOS"  class="button button-block button-positive" ng-click="googleLogin()">
+					<i class="icon logo-google"></i>
 	                Google Sign In
 	            </button>
 	            <button class="button button-block button-positive" ng-click="login()">
+					<i class="icon md-log-in"></i>
 	                Sign In
 	            </button>
 				<button class="button button-block button-positive" ng-click="login(true)">
 					I'm New
 				</button>
+				<button ng-show="allowOffline" class="button button-block button-assertive" ng-click="skipLogin()">
+					<span>Skip Login</span>
+				</button>
 	        </div>
 	    </div>
+		<h1 class="positive">Privacy</h1>
+		<ul>
+			<li>It's your data. You decide what you share with your family and healthcare providers.</li>
+			<li>By using {{appName}}, you agree with the terms of use and privacy statement.</li>
+		</ul>
 
 	</ion-content>
 </ion-view>
