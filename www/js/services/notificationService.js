@@ -82,7 +82,7 @@ angular.module('starter')
                                     text: text,
                                     every: intervals[interval],
                                     icon: config.appSettings.notification_image,
-                                    id : 1
+                                    id : Math.floor((Math.random() * 10000) + 1)
                                 }, function(){
                                     console.log('notification scheduled');
                                 });
@@ -97,15 +97,17 @@ angular.module('starter')
                         chrome.alarms.create("trackReportAlarm", alarmInfo);
                         console.log("Alarm set, every " + intervals[interval] + " minutes");
                     }
-                } else {
-                    // var d = new Date();
-                    // d.setHours(14);
-                    // cordova.plugins.notification.local.schedule({
-                    //     id:      1,
-                    //     text:   text,
-                    //     every:  'day',
-                    //     at:    d
-                    // });
+                } else if(typeof cordova != "undefined") {
+                    var time = params['reminderTime'].match(/(\d+)(?::(\d\d))?\s*(p?)/);
+                    var d = new Date();
+                    d.setHours( parseInt(time[1]) + (time[3] ? 12 : 0) );
+                    d.setMinutes( parseInt(time[2]) || 0 );
+                    cordova.plugins.notification.local.schedule({
+                        id: Math.floor((Math.random() * 10000) + 1),
+                        text: text,
+                        every: 'day',
+                        at: d
+                    });
                 }
             }
         }

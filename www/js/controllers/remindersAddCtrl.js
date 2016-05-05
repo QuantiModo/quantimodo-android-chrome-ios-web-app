@@ -327,17 +327,18 @@ angular.module('starter')
 				var notificationParams = {
 					variableName: $scope.state.variableName,
 					frequency: $scope.state.selectedFrequency,
-					interval: getFrequencyChart()[$scope.state.selectedFrequency]/60
+					interval: getFrequencyChart()[$scope.state.selectedFrequency]/60,
+					reminderTime: $scope.state.reminderStartTimeStringUtc
 				};
-
+				console.log("state", $scope.state);
 				notificationService.scheduleReminder(notificationParams);
-	    		if($stateParams.reminder !== null && typeof $stateParams.reminder !== "undefined"){
+                if($stateParams.reminder !== null && typeof $stateParams.reminder !== "undefined"){
 	    			if($stateParams.reminder.fromState){
 	    				$state.go($stateParams.reminder.fromState);
 	    			} else {
 						$state.go('app.remindersManage');
                     }
-	    		} else {
+                } else {
 					$state.go('app.remindersManage');
                 }
 	    	}, function(err){
