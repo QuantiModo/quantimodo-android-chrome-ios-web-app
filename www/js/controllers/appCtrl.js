@@ -420,8 +420,8 @@ angular.module('starter')
                 'app.login'
             ];
 
-            var user = localStorageService.getItem('user', function (userJson) {
-                userObject = JSON.parse(userJson);
+            var userObject = localStorageService.getItem('user', function (userJson) {
+                var userObject = JSON.parse(userJson);
                 $scope.user = userObject;
                 return userObject;
             });
@@ -435,6 +435,7 @@ angular.module('starter')
             }
 
             if(!user){
+            if(!$scope.user){
                 console.log('Cannot sync because we do not have a user in local storage!');
                 return;
             }
