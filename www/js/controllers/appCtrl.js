@@ -84,10 +84,10 @@ angular.module('starter')
 
         // when view is changed
         $scope.$on('$ionicView.enter', function(e) {
-            if(e.targetScope && e.targetScope.controller_name && e.targetScope.controller_name === "TrackPrimaryOutcomeCtrl" && $scope.isLoggedIn){
-                $scope.showCalender = true;
+            if(e.targetScope && e.targetScope.controller_name && e.targetScope.controller_name === "TrackPrimaryOutcomeCtrl"){
+                $scope.showCalenderButton = true;
             } else {
-                $scope.showCalender = false;
+                $scope.showCalenderButton = false;
             }
         });
 
@@ -110,16 +110,6 @@ angular.module('starter')
                 $scope.saveDates();
             }
         };
-
-        $scope.datePickerToCallback = function (val) {
-            if(typeof(val)==='undefined'){
-                console.log('Date not selected');
-            } else {
-                $scope.toDate = new Date(val);
-                $scope.saveDates();
-            }
-        };
-
         // update dates selected from calender
         $scope.saveDates = function(){
             var to = moment($scope.toDate).unix()*1000;
@@ -131,7 +121,7 @@ angular.module('starter')
         };
 
         // show calender popup
-        $scope.showCalenderF = function($event){
+        $scope.showCalenderPopup = function($event){
             $scope.popover.show($event);
             measurementService.getToDate(function(endDate){
                 $scope.toDate = new Date(endDate);
@@ -476,7 +466,12 @@ angular.module('starter')
                 authService.getAccessTokenFromAnySource().then(function (data) {
                     $scope.isLoggedIn = true;
                     var user = authService.getOrSetUserInLocalStorage();
-                    $scope.userName = user.displayName;
+                    if(user){
+                       $scope.userName = user.displayName;     
+                    }
+                    if(!user){
+                       $scope.isLoggedIn = false;
+                    }
                 }, function () {
                     $scope.isLoggedIn = false;
                     $ionicLoading.hide();
