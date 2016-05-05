@@ -30,7 +30,7 @@ angular.module('starter')
             showUnits: false,
             variableSearchQuery : "",
             searching : false,
-            selectedFrequency : 'Hourly',
+            selectedFrequency : 'Daily',
             selectedReminder : false,
             reminderStartTimeEpochTime : currentTime.getTime() / 1000
     };
