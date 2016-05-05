@@ -122,7 +122,7 @@ angular.module('starter',
         resolve : config_resolver
       })
 
-      .state(config.appSettings.welcomeState, {
+      .state('app.welcome', {
         url: "/welcome",
         views: {
           'menuContent': {
