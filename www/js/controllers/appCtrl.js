@@ -470,7 +470,8 @@ angular.module('starter')
                 'app.track',
                 config.appSettings.welcomeState,
                 'app.history',
-                'app.login'
+                'app.login',
+                'app.settings'
             ];
 
             if(authOptionalStates.indexOf($state.current.name) === -1) {

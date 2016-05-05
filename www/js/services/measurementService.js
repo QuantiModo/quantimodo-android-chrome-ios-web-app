@@ -330,7 +330,9 @@ angular.module('starter')
                     });
                 });
 
-                if(usePromise) return deferred.promise;
+                if(usePromise) {
+                    return deferred.promise;
+                }
 			},
 
 			// edit existing measurement
@@ -358,7 +360,7 @@ angular.module('starter')
                localStorageService.getItem('allMeasurements',function(allMeasurements){
                    measurementDataSet = JSON.parse(allMeasurements);
                    // extract the measurement from localStorage
-                   var selectedMeasurementDataSetItems = measurementDataSet.filter(function(x){return x.timestamp == timestamp;});
+                   var selectedMeasurementDataSetItems = measurementDataSet.filter(function(x){return x.timestamp === timestamp;});
 
                    // update localstorage data
                    var selectedMeasurementItem = selectedMeasurementDataSetItems[0];
@@ -459,22 +461,22 @@ angular.module('starter')
                                     else{
                                         //to remove duplicates since the server would also return the records that we already have in allDate
                                         var lastSyncTimeTimestamp = new Date(lastSyncTime).getTime()/1000;
-                                        allMeasurements = allMeasurements.filter(function(x){
-                                            return x.timestamp < lastSyncTimeTimestamp;
+                                        allMeasurements = allMeasurements.filter(function(measurement){
+                                            return measurement.timestamp < lastSyncTimeTimestamp;
                                         });
                                         //Extracting New Records
-                                        var newRecords = response.filter(function (elem) {
-                                            return elem['timestamp'] > lastSyncTimeTimestamp;
+                                        var newRecords = response.filter(function (measurement) {
+                                            return measurement.timestamp > lastSyncTimeTimestamp;
                                         });
                                         console.log('new record');
                                         console.log(newRecords);
                                         //Handling case if a primary outcome variable is updated
                                         //Extracting Updated Records
-                                        var updatedRecords = response.filter(function(elem){
-                                            var updatedAtTimestamp =  moment.utc(elem['updatedTime']*1000).unix();
-                                            var createdAtTimestamp =  moment.utc(elem['createdTime']*1000).unix();
+                                        var updatedRecords = response.filter(function(measurement){
+                                            var updatedAtTimestamp =  moment.utc(measurement.updatedTime * 1000).unix();
+                                            var createdAtTimestamp =  moment.utc(measurement.createdTime * 1000).unix();
                                             //Criteria for updated records
-                                            return (updatedAtTimestamp > lastSyncTimeTimestamp && createdAtTimestamp != updatedAtTimestamp) ;
+                                            return (updatedAtTimestamp > lastSyncTimeTimestamp && createdAtTimestamp !== updatedAtTimestamp) ;
                                         });
                                         //Replacing primary outcome variable object in original allMeasurements object
                                         allMeasurements.map(function(x,index) {
@@ -516,7 +518,7 @@ angular.module('starter')
                 localStorageService.getItem('measurementsQueue',function(measurementsQueue){
                     if(measurementsQueue){
                         // if measurement queues is present
-                        var measurementsQueue = JSON.parse(measurementsQueue);
+                        measurementsQueue = JSON.parse(measurementsQueue);
                         if(measurementsQueue.length > 0)
                         {
                             syncQueue(measurementsQueue).then(
@@ -554,15 +556,21 @@ angular.module('starter')
                 getAllLocalMeasurements(false,function(allMeasurements){
                     data = allMeasurements;
                     // check if data is present to calculate primary outcome variable from
-                    if(!data && data.length == 0) deferred.reject(false);
+                    if(!data && data.length === 0) {
+                        deferred.reject(false);
+                    }
                     else {
                         var sum = 0;
                         var zeroes = 0;
 
                         // loop through calculating average
                         for(var i in data){
-                            if(data[i].value === 0 || data[i].value === "0") zeroes++;
-                            else sum+= data[i].value;
+                            if(data[i].value === 0 || data[i].value === "0") {
+                                zeroes++;
+                            }
+                            else {
+                                sum+= data[i].value;
+                            }
                         }
 
                         var avgVal = Math.round(sum/(data.length-zeroes));
@@ -581,7 +589,9 @@ angular.module('starter')
 
 				// return from localstorage if present
                 localStorageService.getItem('averagePrimaryOutcomeVariableValue',function(averagePrimaryOutcomeVariableValue){
-                    if(averagePrimaryOutcomeVariableValue) deferred.resolve(averagePrimaryOutcomeVariableValue);
+                    if(averagePrimaryOutcomeVariableValue) {
+                        deferred.resolve(averagePrimaryOutcomeVariableValue);
+                    }
                     else {
                         // calculate it again if not found
                         measurementService.calculateAveragePrimaryOutcomeVariableValue()
@@ -609,7 +619,7 @@ angular.module('starter')
                         var barChartArray = [0,0,0,0,0];
 
                         for(var i = 0; i<data.length; i++){
-                            if(data[i].unitAbbreviatedName == config.appSettings.primaryOutcomeVariableDetails.unitAbbreviatedName && ( Math.ceil(data[i].value)-1) <= 4 ){
+                            if(data[i].unitAbbreviatedName === config.appSettings.primaryOutcomeVariableDetails.unitAbbreviatedName && ( Math.ceil(data[i].value)-1) <= 4 ){
                                 barChartArray[Math.ceil(data[i].value)-1]++;
                             }
                         }
@@ -652,7 +662,7 @@ angular.module('starter')
                         for(var i = 0; i<data.length; i++)
                         {
                             var currentValue = currentValue;
-                            if(data[i].unitAbbreviatedName == config.appSettings.primaryOutcomeVariableDetails.unitAbbreviatedName && (currentValue-1) <= 4 && (currentValue-1) >= 0){
+                            if(data[i].unitAbbreviatedName === config.appSettings.primaryOutcomeVariableDetails.unitAbbreviatedName && (currentValue-1) <= 4 && (currentValue-1) >= 0){
                                 lineChartArray.push([moment(data[i].humanTime.date).unix(), (currentValue-1)*25] );
                             }
                         }
