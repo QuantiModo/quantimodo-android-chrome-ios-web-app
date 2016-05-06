@@ -3,7 +3,8 @@ angular.module('starter')
 	// Controls the settings page
 	.controller('SettingsCtrl', function($scope,localStorageService, $ionicModal, $timeout, utilsService, authService,
 										 measurementService, chartService, $ionicPopover, $cordovaFile,
-										 $cordovaFileOpener2, $ionicPopup, $state,notificationService, QuantiModo) {
+										 $cordovaFileOpener2, $ionicPopup, $state,notificationService, QuantiModo,
+                                         $rootScope) {
 		$scope.controller_name = "SettingsCtrl";
 		// populate ratings interval
         localStorageService.getItem('askForRating', function (askForRating) {
@@ -36,17 +37,107 @@ angular.module('starter')
 		$scope.init = function(){
             localStorageService.getItem('user',function(user){
                 if(!user){
-                    authService.setUserInLocalStorageIfWeHaveAccessToken();
                     user = localStorageService.getItemSync('user');
                 }
 
                 if(user){
-                    $scope.user = JSON.parse(user);
+                    $rootScope.user = JSON.parse(user);
                 }
             });
 	    };
 
-	    // load rating popover
+        $scope.logout = function(){
+
+            var startLogout = function(){
+                $rootScope.isSyncing = false;
+                if(ionic.Platform.platforms[0] !== "browser"){
+                    console.log('startLogout: Open the auth window via inAppBrowser.  Platform is ' + ionic.Platform.platforms[0]);
+                    var ref = window.open(config.getApiUrl() + '/api/v2/auth/logout','_blank', 'location=no,toolbar=yes');
+
+                    console.log('startLogout: listen to its event when the page changes');
+
+                    ref.addEventListener('loadstart', function(event) {
+                        ref.close();
+                        $scope.showDataClearPopup();
+                    });
+                } else {
+                    $scope.showDataClearPopup();
+                }
+            };
+
+            function refreshTrackingPageAndGoToWelcome() {
+                // calculate primary outcome variable and chart data
+                measurementService.calculateAveragePrimaryOutcomeVariableValue().then(function () {
+                    measurementService.calculateBothChart();
+                    measurementService.resetSyncFlag();
+                    //hard reload
+                    $state.go(config.appSettings.welcomeState, {}, {
+                        reload: true
+                    });
+                });
+            }
+
+            $scope.showDataClearPopup = function(){
+                $ionicPopup.show({
+                    title:'Clear local storage?',
+                    subTitle: 'Do you want do delete all data from local storage?',
+                    scope: $scope,
+                    buttons:[
+                        {
+                            text: 'No',
+                            type: 'button-assertive',
+                            onTap : afterLogoutDoNotDeleteMeasurements
+                        },
+                        {
+                            text: 'Yes',
+                            type: 'button-positive',
+                            onTap: completelyResetAppState
+                        }
+                    ]
+
+                });
+            };
+
+            function logOutOfApi() {
+                if (window.chrome && window.chrome.extension && typeof window.chrome.identity === "undefined") {
+                    chrome.tabs.create({
+                        url: config.getApiUrl() + "/api/v2/auth/logout"
+                    });
+                }
+            }
+
+            var completelyResetAppState = function(){
+                $rootScope.user = null;
+                localStorageService.clear();
+                notificationService.cancelNotifications();
+                refreshTrackingPageAndGoToWelcome();
+                logOutOfApi();
+            };
+
+
+            var afterLogoutDoNotDeleteMeasurements = function(){
+                $rootScope.user = null;
+                clearTokensFromLocalStorage();
+                refreshTrackingPageAndGoToWelcome();
+                logOutOfApi();
+            };
+
+            startLogout();
+        };
+
+        // when user is logging out
+        function clearTokensFromLocalStorage() {
+            //Set out local storage flag for welcome screen variables
+            localStorageService.setItem('isLoggedIn', false);
+
+            localStorageService.setItem('primaryOutcomeVariableReportedWelcomeScreen', true);
+            localStorageService.deleteItem('accessToken');
+            localStorageService.deleteItem('refreshToken');
+            localStorageService.deleteItem('expiresAt');
+        }
+
+
+        // load rating popover
 	    $ionicPopover.fromTemplateUrl('templates/settings/ask-for-a-rating.html', {
 	    	scope: $scope
 	    }).then(function(popover) {

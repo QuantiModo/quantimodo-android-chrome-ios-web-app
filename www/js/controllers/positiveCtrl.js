@@ -6,7 +6,7 @@ angular.module('starter')
                                          localStorageService, utilsService, authService) {
 
 
-        if(!$scope.user){
+        if(!$rootScope.user){
             $state.go(config.appSettings.welcomeState);
             // app wide signal to sibling controllers that the state has changed
             $rootScope.$broadcast('transition');
