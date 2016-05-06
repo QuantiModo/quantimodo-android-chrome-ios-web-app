@@ -1,7 +1,7 @@
 angular.module('starter')
 
 	// Controls the History Page of the App.
-	.controller('AllHistoryCtrl', function($scope, $state, $ionicModal, $timeout, $ionicLoading,
+	.controller('historyAllMeasurementsCtrl', function($scope, $state, $ionicModal, $timeout, $ionicLoading,
 										   authService, $ionicPopover, 
                                            measurementService,
 										   $ionicPopup, 
@@ -9,7 +9,7 @@ angular.module('starter')
                                            unitService,
                                             utilsService){
 
-	    $scope.controller_name = "AllHistoryCtrl";
+	    $scope.controller_name = "historyAllMeasurementsCtrl";
         
 	    $scope.state = {
 	    	offset : 0,
