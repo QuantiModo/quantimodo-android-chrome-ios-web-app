@@ -293,8 +293,8 @@ angular.module('starter')
         $scope.init = function(){
             $scope.state.loading = true;
             utilsService.loadingStart();
-            var user = authService.getUserFromLocalStorage();
-            if(user){
+            var isAuthorized = authService.checkAuthOrSendToLogin();
+            if(isAuthorized){
                 $scope.state.loading = true;
                 utilsService.loadingStart();
                 if(!$scope.state.measurementIsSetup){
@@ -319,9 +319,6 @@ angular.module('starter')
                 }
                 populateUnits();
                 $ionicLoading.hide();
-            } else {
-                $ionicLoading.hide();
-                $state.go('app.login');
             }
         };
 

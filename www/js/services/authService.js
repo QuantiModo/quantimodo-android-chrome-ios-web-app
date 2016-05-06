@@ -247,6 +247,20 @@ angular.module('starter')
 				}
 			},
 
+            checkAuthOrSendToLogin: function() {
+                var user = authSrv.getUserFromLocalStorage();
+                if(user){
+                    return true;
+                }
+                var accessTokenInUrl = authSrv.getAccessTokenFromUrlParameter;
+                if(accessTokenInUrl){
+                    return true;
+                }
+                if(!user && !accessTokenInUrl){
+                    $ionicLoading.hide();
+                    $state.go('app.login');
+                }
+            },
 
 			// retrieves access token.
 			// if expired, renews it

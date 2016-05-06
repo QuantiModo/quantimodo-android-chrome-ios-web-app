@@ -44,16 +44,13 @@ angular.module('starter')
         $scope.init = function(){
             $scope.state.loading = true;
             utilsService.loadingStart();
-            var user = authService.getUserFromLocalStorage();
-            if(user){
+            var isAuthorized = authService.checkAuthOrSendToLogin();
+            if(isAuthorized){
                 $scope.showHelpInfoPopupIfNecessary();
                 $scope.state.showVariableSearchCard = true;
                 populateVariableSearchList();
                 $ionicLoading.hide();
-            } else {
-                $ionicLoading.hide();
-                $state.go('app.login');
-            }
+            } 
         };
         
         var populateVariableSearchList = function(){

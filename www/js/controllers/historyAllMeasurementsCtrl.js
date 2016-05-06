@@ -87,8 +87,8 @@ angular.module('starter')
 	    $scope.init = function(){
 			$scope.state.loading = true;
 			utilsService.loadingStart();
-			var user = authService.getUserFromLocalStorage();
-			if(user){
+            var isAuthorized = authService.checkAuthOrSendToLogin();
+			if(isAuthorized){
                 $scope.showHelpInfoPopupIfNecessary();
                 variableCategoryService.getVariableCategories()
                     .then(function(variableCategories){
@@ -104,9 +104,6 @@ angular.module('starter')
                     });
                 getHistory();
                 $ionicLoading.hide();
-			} else {
-				$ionicLoading.hide();
-				$state.go('app.login');
 			}
 	    };
 
