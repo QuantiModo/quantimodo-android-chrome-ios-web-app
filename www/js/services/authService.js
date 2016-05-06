@@ -217,6 +217,21 @@ angular.module('starter')
 				return deferred.promise;
 			},
 
+            getOrSetUserInLocalStorage : function() {
+                var userObject = localStorageService.getItemSync('user');
+                if(!userObject){
+                    userObject = getUserAndSetInLocalStorage();
+                }
+                if(userObject){
+                    $rootScope.user = userObject;
+                    setUserForIntercom(userObject);
+                    //$rootScope.$broadcast('callAppCtrlInit');
+                    $rootScope.$apply();
+                    return userObject;
+                }
+
+            },
+
 			getJWTToken: function (provider, accessToken) {
 				var deferred = $q.defer();
 
