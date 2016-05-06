@@ -26,13 +26,13 @@
 
 
         <div class="list card">
-            <a href="" ng-show="!isLoggedIn" ng-click="loginFromSettings()" class="item ">
+            <a href="" ng-show="!user" ng-click="loginFromSettings()" class="item ">
               Account
               <p>Tap to sign in</p>
             </a>
 
 
-            <a href="" ng-show="isLoggedIn" ng-click="logout()" class="item ">
+            <a href="" ng-show="user" ng-click="logout()" class="item ">
               Signed in as {{user.displayName}}
               <p>Tap to sign out</p>
             </a>
@@ -55,16 +55,8 @@
         </div>
 
         <div class="list card">
-            <div class="item item-text-wrap">
-                <p>Feedback</p>
-            </div>
-			
             <a ng-href="{{ window.chrome ? 'mailto:help@quantimo.do':'#app/feedback'}}" class="item ">
-              Help & Feedback
-            </a>
-
-            <a href="#app/contact" class="item ">
-              Contact Us
+                Contact Us
             </a>
 
             <a href="#app/postidea" class="item ">
@@ -72,5 +64,12 @@
             </a>
         </div>
 
+        <div class="card sign-in" >
+            <div class="item item-text-wrap">
+                <button class="button button-block icon-left ion-trash-a button-assertive" ng-click="logout()">
+                    Clear all user data
+                </button>
+            </div>
+        </div>
     </ion-content>
 </ion-view>

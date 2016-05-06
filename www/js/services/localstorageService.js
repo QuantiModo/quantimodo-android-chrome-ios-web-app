@@ -65,5 +65,5 @@ angular.module('starter')
                     localStorage.clear();
                 }
             }
-        }
+        };
     });

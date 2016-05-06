@@ -8,7 +8,7 @@ angular.module('starter')
 		$scope.controller_name = "ImportCtrl";
 		
 		/*// redirect if not logged in
-	    if(!$scope.isLoggedIn){
+	    if(!$rootScope.user){
 
 	        $state.go(config.appSettings.welcomeState);
 	        // app wide signal to sibling controllers that the state has changed

@@ -6,7 +6,7 @@ angular.module('starter')
                                          utilsService, authService) {
 
         /*// redirect if not logged in
-        if(!$scope.isLoggedIn){
+        if(!$rootScope.user){
             $state.go(config.appSettings.welcomeState);
             // app wide signal to sibling controllers that the state has changed
             $rootScope.$broadcast('transition');
@@ -88,7 +88,7 @@ angular.module('starter')
             var correlationCoefficient = factor.correlationCoefficient;
 
             // call service method for voting
-            if($scope.isLoggedIn){
+            if($rootScope.user){
                 correlationService.vote(vote, cause, effect, correlationCoefficient)
                     .then(function(){
                         utilsService.showAlert('Downvoted!');
@@ -140,7 +140,7 @@ angular.module('starter')
             var vote = 1;
             var correlationCoefficient = factor.correlationCoefficient;
 
-            if($scope.isLoggedIn){
+            if($rootScope.user){
 
                 // call service method for voting
                 correlationService.vote(vote, cause, effect, correlationCoefficient)

@@ -49,7 +49,7 @@ angular.module('starter',
                 else {
                     if($ionicHistory.backView()){
                         $ionicHistory.goBack();
-                    } else if(localStorage.isLoggedIn){
+                    } else if(localStorage.user){
                         $state.go(config.appSettings.defaultState);
                     } else {
                         $state.go(config.appSettings.welcomeState);

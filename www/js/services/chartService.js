@@ -122,7 +122,7 @@ angular.module('starter')
 			                valueDecimals: 2
 			            }
 			        }]
-	        	}
+	        	};
 	        }
 	    };
 

@@ -58,12 +58,14 @@ angular.module('starter')
 
                 localStorageService.setItem('askForRating', $scope.notificationInterval);
                 $scope.showIntervalCard = false;
+                $state.go('app.login');
             }            
         };
 
         // skip interval reporting is tapped
         $scope.skipInterval = function(){
             $scope.showIntervalCard = false;
+            $state.go('app.login');
         };
 
         // ratingValue is reported

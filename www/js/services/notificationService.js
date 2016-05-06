@@ -70,5 +70,5 @@ angular.module('starter')
                 }
 
             }
-        }
+        };
     });

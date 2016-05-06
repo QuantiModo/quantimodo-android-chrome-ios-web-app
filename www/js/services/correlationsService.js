@@ -124,5 +124,5 @@ angular.module('starter')
 
                 return deferred.promise;
             }
-        }
+        };
     });

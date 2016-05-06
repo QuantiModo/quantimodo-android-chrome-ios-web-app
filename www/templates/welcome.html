@@ -70,39 +70,5 @@
 	</div>
 </div>
 
-<div class="card sign-in" ng-show="!isLoggedIn &&
-	((!showPrimaryOutcomeVariableCard && !showIntervalCard) || !primaryOutcomeVariable) ">
-        <div class="item item-text-wrap">
-            <h1 class="positive">{{headline}}</h1>
-            <br/>
-            <ul>
-                <li>By creating a FREE account you'll be able to:</li>
-                <li ng-repeat="feature in features">{{feature}}</li>
-            </ul>
-            <button ng-show="isIOS" class="button button-block button-positive" ng-click="facebookLogin()">
-                Facebook Sign In
-            </button>
-            <button ng-show="isIOS"  class="button button-block button-positive" ng-click="googleLogin()">
-                Google Sign In
-            </button>
-			<button class="button button-block button-positive" ng-click="login()">
-				Sign In
-			</button>
-			<button class="button button-block button-positive" ng-click="login(true)">
-				I'm New
-			</button>
-            <button ng-show="allowOffline" class="button button-block button-assertive" ng-click="skipLogin()">
-                <span ng-if="!isWelcomed">Skip Login</span>
-                <span ng-if="isWelcomed">Skip Login</span>
-            </button>
-			<h1 class="positive">Privacy</h1>
-			<ul>
-				<li>It's your data. You decide what you share with your family and healthcare providers.</li>
-				<li>By using {{appName}}, you agree with the terms of use and privacy statement.</li>
-			</ul>
-
-        </div>
-    </div>
-
 </ion-content>
 </ion-view>

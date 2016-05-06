@@ -1,12 +1,12 @@
 angular.module('starter')
 	
-	// Controlls the Positive Factors page
+	// Controls the Positive Factors page
 	.controller('PositiveCtrl', function($scope, $ionicModal, $timeout, measurementService, $ionicLoading, 
                                          $state, $ionicPopup, correlationService, $rootScope,
                                          localStorageService, utilsService, authService) {
 
 
-        if(!$scope.isLoggedIn){
+        if(!$rootScope.user){
             $state.go(config.appSettings.welcomeState);
             // app wide signal to sibling controllers that the state has changed
             $rootScope.$broadcast('transition');

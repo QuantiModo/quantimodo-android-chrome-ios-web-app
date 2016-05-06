@@ -416,8 +416,8 @@ angular.module('starter')
 				// send request
 				var getMeasurements = function(){
 
-                    localStorageService.getItem('isLoggedIn', function(isLoggedIn){
-                        if(!isLoggedIn){
+                    localStorageService.getItem('user', function(user){
+                        if(!user){
                             isSyncing = false;
                             deferred.resolve();
                         }
@@ -461,20 +461,20 @@ angular.module('starter')
                                     else{
                                         //to remove duplicates since the server would also return the records that we already have in allDate
                                         var lastSyncTimeTimestamp = new Date(lastSyncTime).getTime()/1000;
-                                        allMeasurements = allMeasurements.filter(function(x){
-                                            return x.timestamp < lastSyncTimeTimestamp;
+                                        allMeasurements = allMeasurements.filter(function(measurement){
+                                            return measurement.timestamp < lastSyncTimeTimestamp;
                                         });
                                         //Extracting New Records
-                                        var newRecords = response.filter(function (elem) {
-                                            return elem.timestamp > lastSyncTimeTimestamp;
+                                        var newRecords = response.filter(function (measurement) {
+                                            return measurement.timestamp > lastSyncTimeTimestamp;
                                         });
                                         console.log('new record');
                                         console.log(newRecords);
                                         //Handling case if a primary outcome variable is updated
                                         //Extracting Updated Records
-                                        var updatedRecords = response.filter(function(elem){
-                                            var updatedAtTimestamp =  moment.utc(elem.updatedTime* 1000).unix();
-                                            var createdAtTimestamp =  moment.utc(elem.createdTime *1000).unix();
+                                        var updatedRecords = response.filter(function(measurement){
+                                            var updatedAtTimestamp =  moment.utc(measurement.updatedTime * 1000).unix();
+                                            var createdAtTimestamp =  moment.utc(measurement.createdTime * 1000).unix();
                                             //Criteria for updated records
                                             return (updatedAtTimestamp > lastSyncTimeTimestamp && createdAtTimestamp !== updatedAtTimestamp) ;
                                         });
@@ -504,8 +504,8 @@ angular.module('starter')
 
                             }
                         } else {
-                            localStorageService.getItem('isLoggedIn', function(isLoggedIn){
-                                if(isLoggedIn == "false" || isLoggedIn == false){
+                            localStorageService.getItem('user', function(user){
+                                if(!user){
                                     isSyncing = false;
                                     deferred.resolve();
                                 }
@@ -556,7 +556,7 @@ angular.module('starter')
                 getAllLocalMeasurements(false,function(allMeasurements){
                     data = allMeasurements;
                     // check if data is present to calculate primary outcome variable from
-                    if(!data && data.length == 0) {
+                    if(!data && data.length === 0) {
                         deferred.reject(false);
                     }
                     else {
@@ -565,9 +565,11 @@ angular.module('starter')
 
                         // loop through calculating average
                         for(var i in data){
-                            if(data[i].value === 0 || data[i].value === "0") zeroes++;
+                            if(data[i].value === 0 || data[i].value === "0") {
+                                zeroes++;
+                            }
                             else {
-                                sum += data[i].value;
+                                sum+= data[i].value;
                             }
                         }
 
