@@ -1,5 +1,10 @@
 <ion-view hide-nav-bar="skipMenu" view-title="History">
      <ion-content>
+     <ion-list>
+         <ion-item style="text-align:center;border-bottom: 1px solid rgb(221, 221, 221);" ng-show="state.loading">
+             <img src="../www/img/pop-tart-cat.gif">
+         </ion-item>
+     </ion-list>
       <ion-list>
           <div collection-repeat="historyItem in state.history" divider-collection-repeat>
               <ion-item  ng-click="editMeasurement(historyItem)">

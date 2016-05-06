@@ -86,6 +86,10 @@ angular.module('starter')
 	    // constructor
 	    $scope.init = function(){
 			$scope.state.loading = true;
+            $ionicLoading.show({
+                noBackdrop: true,
+                template: '<p class="item-icon-left">' + 'Loading Stuff' + '<ion-spinner icon="lines"/></p>'
+            });
 			utilsService.loadingStart();
             var isAuthorized = authService.checkAuthOrSendToLogin();
 			if(isAuthorized){
@@ -103,8 +107,9 @@ angular.module('starter')
                         console.log("error getting units", err);
                     });
                 getHistory();
-                $ionicLoading.hide();
+                //$ionicLoading.hide();
 			}
+            $scope.state.loading = false;
 	    };
 
         // when view is changed
