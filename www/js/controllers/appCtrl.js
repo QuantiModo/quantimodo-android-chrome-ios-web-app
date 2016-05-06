@@ -257,7 +257,7 @@ angular.module('starter')
 
             if(authOptionalStates.indexOf($state.current.name) === -1) {
                 // try to get access token
-                authService.getAccessTokenFromAnySource().then(function (data) {
+                authService.getAccessTokenFromAnySource().then(function (tokenObject) {
                     var user = authService.getOrSetUserInLocalStorage();
                     if(user){
                         $rootScope.user = JSON.parse(user);
@@ -268,8 +268,8 @@ angular.module('starter')
                 }, function () {
                     $rootScope.user = null;
                     $ionicLoading.hide();
+                    console.log('appCtrl: checkAuthIfInAuthRequiredState: Could not get a token. Sending to login state...');
                     $state.go('app.login');
-                    console.log('need to login again');
                 });
             }
         }
