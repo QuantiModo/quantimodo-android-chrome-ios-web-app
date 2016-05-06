@@ -19,6 +19,8 @@ angular.module('starter')
                     console.log('QuantiModo.errorHandler: Sending to login because we got 401 with request ' +
                         JSON.stringify(request));
                     console.log('data: ' + JSON.stringify(data));
+                    console.log('headers: ' + JSON.stringify(headers));
+                    console.log('config: ' + JSON.stringify(config));
                     $state.go('app.login');
                     return;
                 }
@@ -78,7 +80,7 @@ angular.module('starter')
                         }
                     };
 
-                    console.log("Making request with this token " + tokenObject.accessToken);
+                    console.log("Making this request: " + JSON.stringify(request));
 
                     $http(request).success(successHandler).error(function(data,status,headers,config){
                         QuantiModo.errorHandler(data, status, headers, config, request);
