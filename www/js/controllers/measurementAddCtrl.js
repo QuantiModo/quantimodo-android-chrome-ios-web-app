@@ -140,7 +140,7 @@ angular.module('starter')
                 allTrackingData = allTrackingData? JSON.parse(allTrackingData) : [];
 
                 var matched = allTrackingData.filter(function(x){
-                    return x.unitAbbreviatedName === $scope.state.measurement.abbreviatedUnitName;
+                    return x.abbreviatedUnitName === $scope.state.measurement.abbreviatedUnitName;
                 });
 
                 setTimeout(function(){

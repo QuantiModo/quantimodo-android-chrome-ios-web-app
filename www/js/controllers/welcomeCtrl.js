@@ -52,7 +52,7 @@ angular.module('starter')
                     interval: intervals[$scope.notificationInterval], 
                     name: config.appSettings.primaryOutcomeVariableDetails.name,
                     category: config.appSettings.primaryOutcomeVariableDetails.category,
-                    unit: config.appSettings.primaryOutcomeVariableDetails.unitAbbreviatedName,
+                    unit: config.appSettings.primaryOutcomeVariableDetails.abbreviatedUnitName,
                     combinationOperation : config.appSettings.primaryOutcomeVariableDetails.combinationOperation
                 };
 

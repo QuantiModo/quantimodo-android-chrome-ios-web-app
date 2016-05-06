@@ -46,7 +46,7 @@ config.appSettings  = {
         id : 1398,
         name : "Overall Mood",
         category : "Mood",
-        unitAbbreviatedName : "/5",
+        abbreviatedUnitName : "/5",
         unitId : 10,
         combinationOperation: "MEAN"
     },
