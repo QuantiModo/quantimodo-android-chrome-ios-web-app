@@ -185,6 +185,13 @@ angular.module('starter')
             });
         };
 
+        var goToDefaultStateIfLoggedInOnLoginState = function(){
+            var loginState = 'app.login';
+            if(loginState.indexOf($state.current.name) !== -1 && $rootScope.user){
+                $state.go(config.appSettings.defaultState);
+            }
+        };
+
         // hide loader and move to next page
         var hideLoaderMove = function(){
             $ionicLoading.hide();
@@ -205,16 +212,9 @@ angular.module('starter')
                 'app.login'
             ];
 
-            var userObject = localStorageService.getItem('user', function (userJson) {
-                var userObject = JSON.parse(userJson);
-                $rootScope.user = userObject;
-                return userObject;
-            });
-
-            if(!userObject){
-                userObject = authService.getUserFromLocalStorage();
+            if(!$rootScope.user){
+                var userObject = localStorageService.getItemAsObject('user');
                 if(userObject){
-                     //userObject = JSON.parse(userJson);
                      $rootScope.user = userObject;
                 }
             }
@@ -245,45 +245,17 @@ angular.module('starter')
             }
         };
 
-        function checkAuthIfInAuthRequiredState() {
-
-            var authOptionalStates = [
-                'app.track',
-                config.appSettings.welcomeState,
-                'app.history',
-                'app.login',
-                'app.settings'
-            ];
-
-            if(authOptionalStates.indexOf($state.current.name) === -1) {
-                // try to get access token
-                authService.getAccessTokenFromAnySource().then(function (tokenObject) {
-                    var user = authService.getOrSetUserInLocalStorage();
-                    if(user){
-                        $rootScope.user = JSON.parse(user);
-                    }
-                    if(!user){
-                       $rootScope.user = null;
-                    }
-                }, function () {
-                    $rootScope.user = null;
-                    $ionicLoading.hide();
-                    console.log('appCtrl: checkAuthIfInAuthRequiredState: Could not get a token. Sending to login state...');
-                    $state.go('app.login');
-                });
-            }
-        }
-
         $scope.init = function () {
             console.log("Main Constructor Start");
-            var userJson = authService.getUserFromLocalStorage();
-            $rootScope.user = JSON.parse(userJson);
             hideMenuIfSetInUrlParameter();
-            redirectToWelcomeStateIfNecessary();
+            if(!$rootScope.user){
+                $rootScope.user = localStorageService.getItemAsObject('user');
+            }
             scheduleReminder();
             syncPrimaryOutcomeVariableMeasurementsIfInSyncEnabledState();
-            checkAuthIfInAuthRequiredState();
             $ionicLoading.hide();
+            goToDefaultStateIfLoggedInOnLoginState();
+            redirectToWelcomeStateIfNecessary();
             $scope.goToDefaultStateIfWelcomed();
         };
 

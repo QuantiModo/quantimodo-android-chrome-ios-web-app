@@ -8,6 +8,17 @@ angular.module('starter')
     .factory('localStorageService',function(){
 
         return{
+
+            convertToObjectIfJsonString : function (stringOrObject) {
+                try {
+                    stringOrObject = JSON.parse(stringOrObject);
+                } catch (e) {
+                    return stringOrObject;
+                }
+                return stringOrObject;
+            },
+
+
             deleteItem : function(key){
                 var keyIdentifier = config.appSettings.appStorageIdentifier;
                 if (window.chrome && chrome.runtime && chrome.runtime.id) {
@@ -32,7 +43,7 @@ angular.module('starter')
                     localStorage.setItem(keyIdentifier+key,value);
                 }
             },
-
+            
             getItem:function(key,callback){
                 var keyIdentifier = config.appSettings.appStorageIdentifier;
                 if (window.chrome && chrome.runtime && chrome.runtime.id) {
@@ -55,6 +66,22 @@ angular.module('starter')
                     });
                 } else {
                     return localStorage.getItem(keyIdentifier+key);
+                }
+            },
+
+            getItemAsObject: function (key) {
+                var keyIdentifier = config.appSettings.appStorageIdentifier;
+                if (window.chrome && chrome.runtime && chrome.runtime.id) {
+                    // Code running in a Chrome extension (content script, background page, etc.)
+                    chrome.storage.local.get(keyIdentifier+key,function(val){
+                        var item = val[keyIdentifier+key];
+                        item = this.convertToObjectIfJsonString(item);
+                        return item;
+                    });
+                } else {
+                    var item = localStorage.getItem(keyIdentifier+key);
+                    item = this.convertToObjectIfJsonString(item);
+                    return item;
                 }
             },
 

@@ -3,10 +3,14 @@ angular.module('starter')
 	.factory('authService', function ($http, $q, localStorageService, utilsService, $state, $ionicLoading, $rootScope) {
 
 		var authService = {
-            
-            getUserFromLocalStorage : function () {
-                var user = localStorageService.getItemSync('user');
-                return user;
+
+            convertToObjectIfJsonString : function (stringOrObject) {
+                try {
+                    stringOrObject = JSON.parse(stringOrObject);
+                } catch (e) {
+                    return stringOrObject;
+                }
+                return stringOrObject;
             },
 
 			// extract values from token response and saves in localstorage
@@ -217,22 +221,23 @@ angular.module('starter')
 				return deferred.promise;
 			},
 
-            getOrSetUserInLocalStorage : function() {
-                var userObject = localStorageService.getItemSync('user');
-                if(!userObject){
-                    userObject = getUserAndSetInLocalStorage();
-                }
-                if(userObject){
-                    $rootScope.user = userObject;
-                    setUserForIntercom(userObject);
-                    //$rootScope.$broadcast('callAppCtrlInit');
-                    $rootScope.$apply();
-                    return userObject;
-                }
+        checkAuthOrSendToLogin: function() {
+            var user = localStorageService.getItemAsObject('user');
+            if(user){
+                   return true;
+               }
+            var accessTokenInUrl = authService.getAccessTokenFromUrlParameter;
+            if(accessTokenInUrl){
+                   return true;
+               }
+            if(!user && !accessTokenInUrl){
+                   $ionicLoading.hide();
+                   console.log('checkAuthOrSendToLogin: Could not get user or access token from url. Going to login page...');
+                   $state.go('app.login');
+               }
+        },
 
-            },
-
-			getJWTToken: function (provider, accessToken) {
+        getJWTToken: function (provider, accessToken) {
 				var deferred = $q.defer();
 
 				var url = config.getURL('api/v2/auth/social/authorizeToken');

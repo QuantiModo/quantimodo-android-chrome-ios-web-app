@@ -46,26 +46,32 @@ angular.module('starter')
                 nonNativeMobileLogin(url, register);
             }
 
-            $rootScope.user = localStorageService.getItemSync('user');
-            if($rootScope.user){
-                console.log("$rootScope.user " + $rootScope.user);
-                $rootScope.$apply();   
-            }
-
+            var userObject = localStorageService.getItemAsObject('user');
             
+            $rootScope.user = userObject;
+            
+            if($rootScope.user){
+                console.log('Settings user in login');
+                setUserForIntercom($rootScope.user);
+                setUserForBugsnag($rootScope.user);
+                $state.go(config.appSettings.defaultState);
+            }
         };
 
         var getOrSetUserInLocalStorage = function() {
-            var userObject = localStorageService.getItemSync('user');
-            if(!userObject){
-                userObject = getUserAndSetInLocalStorage();
+            var userJson = localStorageService.getItemAsObject('user');
+            if(!userJson){
+                var userObject = getUserAndSetInLocalStorage();
             }
-        if(userObject){
-                    $rootScope.user = userObject;
-                    setUserForIntercom(userObject);
-                    //$rootScope.$broadcast('callAppCtrlInit');
-                    $rootScope.$apply();
-                    return userObject;    
+            if(userObject){
+                console.log('Settings user in getOrSetUserInLocalStorage');
+                $rootScope.user = userObject;
+                setUserForIntercom(userObject);
+                setUserForBugsnag(userObject);
+                $state.go(config.appSettings.defaultState);
+                //$rootScope.$broadcast('callAppCtrlInit');
+                //$rootScope.$apply();
+                return userObject;
             }
 
         };
@@ -107,20 +113,18 @@ angular.module('starter')
                 [],
                 {},
                 function(userObject){
-
-                    // set user data in local storage
-                    localStorageService.setItem('user', JSON.stringify(userObject));
-                    setUserForIntercom(userObject);
                     if(userObject){
-                            $rootScope.user = userObject;
-                            $rootScope.$broadcast('callAppCtrlInit');
-                            $rootScope.$apply();
-                            return userObject;    
+                        // set user data in local storage
+                        console.log('Settings user in getUserAndSetInLocalStorage');
+                        localStorageService.setItem('user', JSON.stringify(userObject));
+                        $rootScope.user = userObject;
+                        setUserForIntercom($rootScope.user);
+                        setUserForBugsnag($rootScope.user);
+                        $state.go(config.appSettings.defaultState);
+                        return userObject;
                     }
 
                 },function(err){
-
-                    // error
                     console.log(err);
                 }
             );
@@ -136,6 +140,16 @@ angular.module('starter')
             }
             return userObject;
         };
+
+        var setUserForBugsnag = function(userObject) {
+            Bugsnag.metaData = {
+                user: {
+                    name: userObject.displayName,
+                    email: userObject.email
+                }
+            };
+            return userObject;
+        };
         
         var setUserInLocalStorageIfWeHaveAccessToken = function(){
             localStorageService.getItem('accessToken',function(accessToken){
@@ -144,8 +158,6 @@ angular.module('starter')
                 }
             });
         };
-
-
 
         var nonNativeMobileLogin = function(register) {
             console.log("nonNativeMobileLogin: Mobile device detected and ionic platform is " + ionic.Platform.platforms[0]);

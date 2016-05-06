@@ -2,7 +2,8 @@ angular.module('starter')
 
     // Controls the Track Page of the App
     .controller('TrackPrimaryOutcomeCtrl', function($scope, $ionicModal, $state, $timeout, utilsService, authService, 
-                                                    measurementService, chartService, $ionicPopup, localStorageService) {
+                                                    measurementService, chartService, $ionicPopup, localStorageService,
+                                                    $rootScope) {
         $scope.controller_name = "TrackPrimaryOutcomeCtrl";
 
         $scope.showCharts = false;
@@ -23,8 +24,10 @@ angular.module('starter')
             // update local storage
             measurementService.updatePrimaryOutcomeVariableLocally(primaryOutcomeRatingValue).then(function () {
 
-                var user = authService.getUserFromLocalStorage();
-                if(user){
+                if(!$rootScope.user){
+                    $rootScope.user = localStorageService.getItemAsObject('user');
+                }
+                if($rootScope.user){
                     // try to send the data to server if we have a user
                     measurementService.updatePrimaryOutcomeVariable(primaryOutcomeRatingValue);
                 }

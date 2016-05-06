@@ -35,22 +35,21 @@ angular.module('starter')
 	    };
         
 		$scope.init = function(){
-            localStorageService.getItem('user',function(user){
-                if(!user){
-                    user = localStorageService.getItemSync('user');
-                }
 
-                if(user){
-                    $rootScope.user = JSON.parse(user);
-                }
-            });
+            if(!$rootScope.user){
+                $rootScope.user = localStorageService.getItemAsObject('user');
+            }
+
 	    };
 
         $scope.logout = function(){
 
             var startLogout = function(){
                 $rootScope.isSyncing = false;
-                if(ionic.Platform.platforms[0] !== "browser"){
+                $rootScope.user = null;
+                $rootScope.isMobile = window.cordova;
+                $rootScope.isBrowser = ionic.Platform.platforms[0] === "browser";
+                if($rootScope.isMobile || !$rootScope.isBrowser){
                     console.log('startLogout: Open the auth window via inAppBrowser.  Platform is ' + ionic.Platform.platforms[0]);
                     var ref = window.open(config.getApiUrl() + '/api/v2/auth/logout','_blank', 'location=no,toolbar=yes');
 
@@ -112,6 +111,7 @@ angular.module('starter')
                 notificationService.cancelNotifications();
                 refreshTrackingPageAndGoToWelcome();
                 logOutOfApi();
+                $state.go(config.appSettings.welcomeState);
             };
 
 
@@ -120,6 +120,7 @@ angular.module('starter')
                 clearTokensFromLocalStorage();
                 refreshTrackingPageAndGoToWelcome();
                 logOutOfApi();
+                $state.go(config.appSettings.welcomeState);
             };
 
             startLogout();
