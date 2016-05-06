@@ -38,7 +38,7 @@ angular.module('starter')
                 if(loadingMessage) {
                     $ionicLoading.show({
                         noBackdrop: true,
-                        template: '<p class="item-icon-left">' + loadingMessage + '...<ion-spinner icon="lines"/></p>'
+                        template: '<p class="item-icon-left">' + loadingMessage + '<ion-spinner icon="lines"/></p>'
                     });
                 }
 

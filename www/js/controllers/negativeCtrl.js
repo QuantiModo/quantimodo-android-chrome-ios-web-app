@@ -29,8 +29,8 @@ angular.module('starter')
         $scope.init = function(){
             $scope.state.loading = true;
             utilsService.loadingStart();
-            var user = authService.getUserFromLocalStorage();
-            if(user){
+            var isAuthorized = authService.checkAuthOrSendToLogin();
+            if(isAuthorized){
                 utilsService.loadingStart();
                 correlationService.getNegativeFactors()
                     .then(function(correlationObjects){
@@ -41,14 +41,12 @@ angular.module('starter')
                         $ionicLoading.hide();
                     }, function(){
                         $ionicLoading.hide();
+                        console.log('negativeCtrl: Could not get correlations.  Going to login page...');
                         $state.go('app.login', {
                             fromUrl : window.location.href
                         });
                     });
-            } else {
-                $ionicLoading.hide();
-                $state.go('app.login');
-            }
+            } 
         };
 
         // when downVoted

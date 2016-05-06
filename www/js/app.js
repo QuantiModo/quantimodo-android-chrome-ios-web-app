@@ -329,7 +329,7 @@ angular.module('starter',
           views: {
               'menuContent': {
                   templateUrl: "templates/history-all.html",
-                  controller: 'AllHistoryCtrl'
+                  controller: 'historyAllMeasurementsCtrl'
               }
           }
       })

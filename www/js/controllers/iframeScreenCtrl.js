@@ -33,7 +33,7 @@ angular.module('starter')
             );
             $ionicLoading.hide();
         }, function(){
-            console.log("No access token. Need to log in.");
+            console.log("getAccessTokenFromAnySource: No access token. Need to log in.");
             $state.go('app.login', {
                 fromUrl : window.location.href
             });
