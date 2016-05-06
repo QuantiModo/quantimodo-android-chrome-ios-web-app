@@ -252,10 +252,14 @@ angular.module('starter')
                 $rootScope.user = localStorageService.getItemAsObject('user');
             }
             scheduleReminder();
-            syncPrimaryOutcomeVariableMeasurementsIfInSyncEnabledState();
+            if($rootScope.user){
+                syncPrimaryOutcomeVariableMeasurementsIfInSyncEnabledState();
+            }
             $ionicLoading.hide();
             goToDefaultStateIfLoggedInOnLoginState();
-            redirectToWelcomeStateIfNecessary();
+            if(!$rootScope.user){
+                redirectToWelcomeStateIfNecessary();
+            }
             $scope.goToDefaultStateIfWelcomed();
         };
 
