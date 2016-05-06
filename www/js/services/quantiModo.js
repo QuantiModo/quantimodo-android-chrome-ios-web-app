@@ -51,7 +51,7 @@ angular.module('starter')
 
             // GET method with the added token
             QuantiModo.get = function(baseURL, allowedParams, params, successHandler, errorHandler){
-                authService.getAccessTokenFromAnySource().then(function(token){
+                authService.getAccessTokenFromAnySource().then(function(tokenObject){
                     
                     // configure params
                     var urlParams = [];
@@ -63,7 +63,7 @@ angular.module('starter')
                         }
                         urlParams.push(encodeURIComponent(key) + '=' + encodeURIComponent(params[key]));
                     }
-                    urlParams.push(encodeURIComponent('access_token') + '=' + encodeURIComponent(token));
+                    urlParams.push(encodeURIComponent('access_token') + '=' + encodeURIComponent(tokenObject.accessToken));
 
                     // configure request
                     var url = config.getURL(baseURL);
@@ -77,7 +77,7 @@ angular.module('starter')
                         }
                     };
 
-                    console.log("Making request with this token " + token.accessToken);
+                    console.log("Making request with this token " + tokenObject.accessToken);
 
                     $http(request).success(successHandler).error(function(data,status,headers,config){
                         QuantiModo.errorHandler(data, status, headers, config, request);
