@@ -63,6 +63,7 @@ angular.module('starter')
                         }
                         urlParams.push(encodeURIComponent(key) + '=' + encodeURIComponent(params[key]));
                     }
+                    urlParams.push(encodeURIComponent('access_token') + '=' + encodeURIComponent(token));
 
                     // configure request
                     var url = config.getURL(baseURL);
