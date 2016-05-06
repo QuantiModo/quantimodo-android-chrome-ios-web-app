@@ -109,6 +109,9 @@ angular.module('starter')
             $scope.state.measurement.variable = "";
             $scope.state.measurement.value = "";
             $scope.state.measurement.note = null;
+            if($scope.state.variableCategoryObject) {
+                setUnit(variableCategoryObject.defaultUnitAbbreviatedName);
+            }
         };
 
         // cancel activity
@@ -140,7 +143,7 @@ angular.module('starter')
                 allTrackingData = allTrackingData? JSON.parse(allTrackingData) : [];
 
                 var matched = allTrackingData.filter(function(x){
-                    return x.unitAbbreviatedName === $scope.state.measurement.abbreviatedUnitName;
+                    return x.abbreviatedUnitName === $scope.state.measurement.abbreviatedUnitName;
                 });
 
                 setTimeout(function(){
@@ -286,15 +289,14 @@ angular.module('starter')
             // update view model
             $scope.state.measurement.abbreviatedUnitName = unit.abbreviatedName;
             $scope.state.showUnits = false;
-            $scope.state.measurement.abbreviatedUnitName = unit.abbreviatedName;
         };
 
         // constructor
         $scope.init = function(){
             $scope.state.loading = true;
             utilsService.loadingStart();
-            var user = authService.getUserFromLocalStorage();
-            if(user){
+            var isAuthorized = authService.checkAuthOrSendToLogin();
+            if(isAuthorized){
                 $scope.state.loading = true;
                 utilsService.loadingStart();
                 if(!$scope.state.measurementIsSetup){
@@ -319,9 +321,6 @@ angular.module('starter')
                 }
                 populateUnits();
                 $ionicLoading.hide();
-            } else {
-                $ionicLoading.hide();
-                $state.go('app.login');
             }
         };
 
@@ -343,18 +342,14 @@ angular.module('starter')
                 }
 
                 // set default unit category
-                $scope.selectedUnitCategoryName = 'Duration';
+                // Don't know why we need this
+                //$scope.selectedUnitCategoryName = 'Duration';
 
                 // set first sub unit of selected category
-                $scope.state.measurement.abbreviatedUnitName = $scope.state.unitCategories[$scope.selectedUnitCategoryName][0].abbreviatedName;
+                // Not sure what this is for but it overwrites the existing unit for measurements
+                //$scope.state.measurement.abbreviatedUnitName = $scope.state.unitCategories[$scope.selectedUnitCategoryName][0].abbreviatedName;
 
-                console.log("got units", unitObjects);
-
-                var variableCategoryObject = variableCategoryService.getVariableCategoryInfo(variableCategoryName);
-
-                if(variableCategoryObject.defaultUnitAbbreviatedName) {
-                    setUnit(variableCategoryObject.defaultUnitAbbreviatedName);
-                }
+                //console.log("got units", unitObjects);
 
                 // hide spinner
                 $ionicLoading.hide();
@@ -380,10 +375,10 @@ angular.module('starter')
 
         $scope.selectPrimaryOutcomeVariableValue = function($event, val){
             // remove any previous primary outcome variables if present
-            jQuery('.primary-outcome-variable .active-primary-outcome-variable').removeClass('active-primary-outcome-variable');
+            jQuery('.primary-outcome-variable .active-primary-outcome-variable-rating-button').removeClass('active-primary-outcome-variable-rating-button');
 
             // make this primary outcome variable glow visually
-            jQuery($event.target).addClass('active-primary-outcome-variable');
+            jQuery($event.target).addClass('active-primary-outcome-variable-rating-button');
 
             jQuery($event.target).parent().removeClass('primary-outcome-variable-history').addClass('primary-outcome-variable-history');
 
