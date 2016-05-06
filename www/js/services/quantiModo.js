@@ -16,7 +16,9 @@ angular.module('starter')
                 $ionicLoading.hide();
                 if(status === 401){
                     localStorageService.deleteItem('accessToken');
-                    console.log('QuantiModo.errorHandler: Sending to login because we got 401 with request ' + JSON.stringify(request));
+                    console.log('QuantiModo.errorHandler: Sending to login because we got 401 with request ' +
+                        JSON.stringify(request));
+                    console.log('data: ' + JSON.stringify(data));
                     $state.go('app.login');
                     return;
                 }
