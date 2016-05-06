@@ -70,7 +70,7 @@
 								<a class="button button-clear button-calm" style="text-overflow: clip; font-size: 12px;" ng-click="editMeasurement(reminder)"><i class="ion-edit"> &nbsp; Record Different Value/Time</i></a>
 							</div>
 						</div>
-						<div class="row" ng-if="reminder.abbreviatedUnitName == '/5' " >
+						<div class="primary-outcome-variable-reporting" ng-if="reminder.abbreviatedUnitName == '/5' " >
 							<div class="primary-outcome-variable-rating-buttons" >
 								<img ng-repeat="option in primaryOutcomeVariableNumbers" ng-click="track(reminder, option.value)" ng-src="{{option.img}}">
 							</div>
