@@ -72,7 +72,7 @@ angular.module('starter')
                         url: (url + ((urlParams.length === 0) ? '' : urlParams.join('&'))),
                         responseType: 'json', 
                         headers : {
-                            "Authorization" : "Bearer " + token.accessToken,
+                            "Authorization" : "Bearer " + tokenObject.accessToken,
                             'Content-Type': "application/json"
                         }
                     };
