@@ -62,8 +62,8 @@ angular.module('starter')
             $scope.redrawBarChart = false;
             console.log("re-drawing bar chart");
 
-            console.log("load config object chartService.getBarChartStub");
-            $scope.barChartConfig = chartService.getBarChartStub(arr);
+            console.log("load config object chartService.configureBarChart");
+            $scope.barChartConfig = chartService.configureBarChart(arr);
 
             // Fixes chart width
             $scope.$broadcast('highchartsng.reflow');
@@ -76,7 +76,7 @@ angular.module('starter')
 
             $scope.redrawLineChart = false;
             console.log("Configuring line chart...");
-            $scope.lineChartConfig = chartService.getLineChartStub(lineChartData);
+            $scope.lineChartConfig = chartService.configureLineChart(lineChartData);
 
             // Fixes chart width
             $scope.$broadcast('highchartsng.reflow');
