@@ -258,6 +258,7 @@ angular.module('starter')
                 }
                 if(!user && !accessTokenInUrl){
                     $ionicLoading.hide();
+                    console.log('checkAuthOrSendToLogin: Could not get user or access token from url. Going to login page...');
                     $state.go('app.login');
                 }
             },
@@ -446,9 +447,9 @@ angular.module('starter')
 				// get expired time
 				if (now < expiresAt) {
 
-					console.log('Current token should not be expired');
+					console.log('_defaultGetAccessToken: Current token should not be expired');
 					// valid token
-					console.log('Resolving token using value from local storage');
+					console.log('_defaultGetAccessToken: Resolving token using value from local storage');
 
 					deferred.resolve({
 						accessToken: accessToken
@@ -458,7 +459,7 @@ angular.module('starter')
                     authSrv.refreshAccessToken(refreshToken, deferred);
 				} else {
 					localStorage.removeItem('accessToken');
-					console.warn('Refresh token is undefined. Not enough data for oauth flow. rejecting token promise. ' +
+					console.warn('_defaultGetAccessToken: Refresh token is undefined. Not enough data for oauth flow. rejecting token promise. ' +
 						'Clearing accessToken from local storage if it exists and sending to login page...');
                     $state.go('app.login');
 					deferred.reject();

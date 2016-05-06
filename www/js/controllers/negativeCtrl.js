@@ -41,6 +41,7 @@ angular.module('starter')
                         $ionicLoading.hide();
                     }, function(){
                         $ionicLoading.hide();
+                        console.log('negativeCtrl: Could not get correlations.  Going to login page...');
                         $state.go('app.login', {
                             fromUrl : window.location.href
                         });
