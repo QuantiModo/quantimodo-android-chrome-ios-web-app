@@ -63,7 +63,8 @@ angular.module('starter')
                         }
                         urlParams.push(encodeURIComponent(key) + '=' + encodeURIComponent(params[key]));
                     }
-                    urlParams.push(encodeURIComponent('access_token') + '=' + encodeURIComponent(tokenObject.accessToken));
+                    //We can't append access token to Ionic requests for some reason
+                    //urlParams.push(encodeURIComponent('access_token') + '=' + encodeURIComponent(tokenObject.accessToken));
 
                     // configure request
                     var url = config.getURL(baseURL);
