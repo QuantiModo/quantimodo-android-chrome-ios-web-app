@@ -619,7 +619,7 @@ angular.module('starter')
                         barArr[currentValue - 1]++;
                     }
                 }
-                localStorageService.setItem('lineChartData', JSON.stringify(lineArr));
+                //localStorageService.setItem('lineChartData', JSON.stringify(lineArr));
                 localStorageService.setItem('barChartData', JSON.stringify(barArr));
                 return {lineArr: lineArr, barArr: barArr};
             },
