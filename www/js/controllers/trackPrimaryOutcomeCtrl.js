@@ -154,6 +154,10 @@ angular.module('starter')
 
         // when this view is brought in focus
         $scope.$on('$ionicView.enter', function(e) {
+
+            $timeout(function() {
+                $scope.$broadcast('highchartsng.reflow');
+            }, 10);
             
             // update everything
             draw();
