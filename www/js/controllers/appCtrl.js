@@ -204,53 +204,7 @@ angular.module('starter')
             $ionicLoading.hide();
             $scope.goToDefaultStateIfWelcomed();
         };
-
-        // calculate values for both of the charts
-        var calculateChartValues = function(){
-            measurementService.calculateBothChart().then(hideLoaderMove, hideLoaderMove);
-        };
-
-        // calculate values for both of the charts
-        var syncPrimaryOutcomeVariableMeasurementsIfInSyncEnabledState = function(){
-            var syncEnabledStates = [
-                'app.track',
-                config.appSettings.welcomeState,
-                'app.history',
-                'app.login'
-            ];
-
-            if(!$rootScope.user){
-                var userObject = localStorageService.getItemAsObject('user');
-                if(userObject){
-                     $rootScope.user = userObject;
-                }
-            }
-
-            if(!$rootScope.user){
-                console.log('Cannot sync because we do not have a user in local storage!');
-                return;
-            }
-
-            if(syncEnabledStates.indexOf($state.current.name) !== -1 && config.appSettings.primaryOutcomeVariable){
-                $rootScope.isSyncing = true;
-                console.log('setting sync true');
-
-                measurementService.syncData().then(function(){
-                    console.log("sync complete");
-                    $rootScope.isSyncing = false;
-
-                    // update loader text
-                    $ionicLoading.hide();
-                    utilsService.loadingStart('Calculating stuff', 2000);
-
-                    // calculate primary outcome variable values
-                    measurementService.calculateAveragePrimaryOutcomeVariableValue().then(function(){
-                        measurementService.getPrimaryOutcomeVariableValue().then(calculateChartValues, calculateChartValues);
-                    });
-
-                }, hideLoaderMove);
-            }
-        };
+        
 
         $scope.init = function () {
             console.log("Main Constructor Start");
@@ -259,15 +213,9 @@ angular.module('starter')
                 $rootScope.user = localStorageService.getItemAsObject('user');
             }
             scheduleReminder();
-            if($rootScope.user){
-                syncPrimaryOutcomeVariableMeasurementsIfInSyncEnabledState();
-            }
+
             $ionicLoading.hide();
             goToDefaultStateIfLoggedInOnLoginState();
-            // if(!$rootScope.user){
-            //     redirectToWelcomeStateIfNecessary();
-            // }
-            //$scope.goToDefaultStateIfWelcomed();
         };
 
         $scope.$on('callAppCtrlInit', function(){
@@ -298,29 +246,6 @@ angular.module('starter')
 
         // call constructor
         $scope.init();
-
-        function redirectToWelcomeStateIfNecessary() {
-            var tokenInGetParams = utilsService.getUrlParameter(location.href, 'accessToken');
-
-            if (!tokenInGetParams) {
-                tokenInGetParams = utilsService.getUrlParameter(location.href, 'access_token');
-            }
-
-            // redirection if already welcomed before
-            var isWelcomed;
-            localStorageService.getItem('isWelcomed', function (isWelcomed) {
-                $rootScope.isWelcomed = isWelcomed;
-                console.log('isWelcomed ' + isWelcomed);
-                if (tokenInGetParams) {
-                    $rootScope.isWelcomed = true;
-                    localStorageService.setItem('isWelcomed', true);
-                }
-
-                if(!$rootScope.isWelcomed) {
-                    console.log('isWelcomed is false.  Going to welcome state from appCtrl...');
-                   $state.go(config.appSettings.welcomeState);
-                }
-            });
-        }
+        
 
     });

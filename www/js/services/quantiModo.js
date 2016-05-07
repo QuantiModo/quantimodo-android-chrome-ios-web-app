@@ -305,15 +305,24 @@ angular.module('starter')
                     errorHandler);
             };
 
-            QuantiModo.getVariable = function(variable, successHandler, errorHandler){
-                QuantiModo.get('api/v1/variables/' + encodeURIComponent(variable),
+            QuantiModo.getVariablesByName = function(variableName, successHandler, errorHandler){
+                QuantiModo.get('api/v1/variables/' + encodeURIComponent(variableName),
                     [],
                     {},
                     successHandler,
                     errorHandler);
             };
 
-            // get user variables
+            QuantiModo.getVariableById = function(variableId, successHandler, errorHandler){
+                QuantiModo.get('api/v1/variables' ,
+                    ['id'],
+                    {id: variableId},
+                    successHandler,
+                    errorHandler);
+            };
+
+
+        // get user variables
             QuantiModo.getVariablesByCategory = function(category,successHandler, errorHandler){
                 QuantiModo.get('api/v1/variables',
                     ['category', 'limit'],
