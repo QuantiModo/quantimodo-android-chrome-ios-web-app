@@ -23,7 +23,7 @@ window.config = {
 
 config.appSettings  = {
     appName : 'Mind First Mood Tracker',
-    alwaysRequireLogin : false,
+    allowOffline : true,
 
     defaultState : 'app.track',
 

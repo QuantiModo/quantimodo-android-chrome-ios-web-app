@@ -10,6 +10,7 @@ angular.module('starter')
         $scope.controller_name = "AppCtrl";
         $scope.menu = config.appSettings.menu;
         $scope.showTrackingSubMenu = false;
+        $rootScope.allowOffline = config.appSettings.allowOffline;
         $scope.showReminderSubMenu = false;
         $scope.closeMenu = function() {
             $ionicSideMenuDelegate.toggleLeft(false);
@@ -164,6 +165,12 @@ angular.module('starter')
                 $state.go(config.appSettings.defaultState);
                 $rootScope.hideMenu = false;
             }
+
+            if (config.appSettings.allowOffline) {
+                $state.go(config.appSettings.defaultState);
+                $rootScope.hideMenu = false;
+            }
+
 
             // don't animate, clear back history
             $ionicHistory.nextViewOptions({

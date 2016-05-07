@@ -26,7 +26,7 @@ window.config = {
 
 config.appSettings  = {
     appName : 'MoodiModo',
-    alwaysRequireLogin : false,
+    allowOffline : true,
 
     defaultState : 'app.track',
     welcomeState : 'app.welcome',
