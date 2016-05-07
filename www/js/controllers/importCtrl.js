@@ -8,9 +8,9 @@ angular.module('starter')
 		$scope.controller_name = "ImportCtrl";
 		
 		/*// redirect if not logged in
-	    if(!$scope.isLoggedIn){
+	    if(!$rootScope.user){
 
-	        $state.go('app.welcome');
+	        $state.go(config.appSettings.welcomeState);
 	        // app wide signal to sibling controllers that the state has changed
 	        $rootScope.$broadcast('transition');
 	    }*/
@@ -48,6 +48,7 @@ angular.module('starter')
 	            }
 	        }, function(){
 				$ionicLoading.hide();
+				console.log('importCtrl: Could not get getAccessTokenFromAnySource.  Going to login page...');
 				$state.go('app.login', {
 					fromUrl : window.location.href
 				});

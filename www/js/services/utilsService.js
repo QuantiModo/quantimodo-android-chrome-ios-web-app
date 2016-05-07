@@ -31,14 +31,14 @@ angular.module('starter')
                 if(!loadingMessage) {
                     $ionicLoading.show({
                         noBackdrop: true,
-                        template: '<img src="www/img/pop-tart-cat.gif"><!--<br><p class="item-icon-left">Loading stuff...<ion-spinner icon="lines"/></p>-->'
+                        template: '<img src="img/pop-tart-cat.gif"><!--<br><p class="item-icon-left">Loading stuff...<ion-spinner icon="lines"/></p>-->'
                     });
                 }
                 
                 if(loadingMessage) {
                     $ionicLoading.show({
                         noBackdrop: true,
-                        template: '<p class="item-icon-left">' + loadingMessage + '...<ion-spinner icon="lines"/></p>'
+                        template: '<p class="item-icon-left">' + loadingMessage + '<ion-spinner icon="lines"/></p>'
                     });
                 }
 
@@ -89,7 +89,7 @@ angular.module('starter')
                             type:'button-assertive',
                             onTap: function(e){
                                 var ref = window.open(config.getURL('register'),'_blank');
-                                $state.go('app.welcome');
+                                $state.go(config.appSettings.welcomeState);
 
                          }
                         },

@@ -2,7 +2,7 @@ angular.module('starter')
 	// returns the Image string against value
 	.filter('ImageByVariableCategoryName', function(){
 	    return function(variableCategoryName){
-			console.log('Look up variable category image');
+			//console.log('Look up variable category image');
 			if(variableCategoryName === 'Foods'){
 				return 'ion-ios-nutrition';
 			}

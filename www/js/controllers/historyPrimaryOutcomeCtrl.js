@@ -80,7 +80,7 @@ angular.module('starter')
 			localStorageService.getItem('allMeasurements',function(allMeasurements){
 				history = allMeasurements? JSON.parse(allMeasurements) : [];
 				if(history.length < 1){
-					console.log('No measurements for history!  Going to default state. ')
+					console.log('No measurements for history!  Going to default state. ');
 					$state.go(config.appSettings.defaultState);
 				}
 				if(history.length > 0){

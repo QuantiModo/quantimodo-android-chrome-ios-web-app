@@ -111,16 +111,5 @@ document.addEventListener('DOMContentLoaded', function() {
     setFaceButtonListeners();
 });
 
-/*
-var backgroundPage = chrome.extension.getBackgroundPage();
-backgroundPage.isUserLoggedIn(function(isLoggedIn)
-{
-	if(!isLoggedIn)
-	{
-
-	}
-});
-*/
-
 
 

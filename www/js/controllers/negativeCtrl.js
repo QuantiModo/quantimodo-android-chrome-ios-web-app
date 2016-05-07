@@ -6,8 +6,8 @@ angular.module('starter')
                                          utilsService, authService) {
 
         /*// redirect if not logged in
-        if(!$scope.isLoggedIn){
-            $state.go('app.welcome');
+        if(!$rootScope.user){
+            $state.go(config.appSettings.welcomeState);
             // app wide signal to sibling controllers that the state has changed
             $rootScope.$broadcast('transition');
         }*/
@@ -29,8 +29,8 @@ angular.module('starter')
         $scope.init = function(){
             $scope.state.loading = true;
             utilsService.loadingStart();
-            var user = authService.getUserFromLocalStorage();
-            if(user){
+            var isAuthorized = authService.checkAuthOrSendToLogin();
+            if(isAuthorized){
                 utilsService.loadingStart();
                 correlationService.getNegativeFactors()
                     .then(function(correlationObjects){
@@ -41,14 +41,12 @@ angular.module('starter')
                         $ionicLoading.hide();
                     }, function(){
                         $ionicLoading.hide();
+                        console.log('negativeCtrl: Could not get correlations.  Going to login page...');
                         $state.go('app.login', {
                             fromUrl : window.location.href
                         });
                     });
-            } else {
-                $ionicLoading.hide();
-                $state.go('app.login');
-            }
+            } 
         };
 
         // when downVoted
@@ -90,7 +88,7 @@ angular.module('starter')
             var correlationCoefficient = factor.correlationCoefficient;
 
             // call service method for voting
-            if($scope.isLoggedIn){
+            if($rootScope.user){
                 correlationService.vote(vote, cause, effect, correlationCoefficient)
                     .then(function(){
                         utilsService.showAlert('Downvoted!');
@@ -101,7 +99,7 @@ angular.module('starter')
                     });
             } else {
                 factor.userVote = prevValue;
-            	$state.go('app.welcome');
+            	$state.go(config.appSettings.welcomeState);
             	}
         }
 
@@ -142,7 +140,7 @@ angular.module('starter')
             var vote = 1;
             var correlationCoefficient = factor.correlationCoefficient;
 
-            if($scope.isLoggedIn){
+            if($rootScope.user){
 
                 // call service method for voting
                 correlationService.vote(vote, cause, effect, correlationCoefficient)
@@ -155,7 +153,7 @@ angular.module('starter')
 
             } else {
 				factor.userVote = prevValue;
-            	$state.go('app.welcome');
+            	$state.go(config.appSettings.welcomeState);
             	}
         }
 

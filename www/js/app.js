@@ -49,10 +49,10 @@ angular.module('starter',
                 else {
                     if($ionicHistory.backView()){
                         $ionicHistory.goBack();
-                    } else if(localStorage.isLoggedIn){
+                    } else if(localStorage.user){
                         $state.go(config.appSettings.defaultState);
                     } else {
-                        $state.go('app.welcome');
+                        $state.go(config.appSettings.welcomeState);
                     }
                 }
             }, 100);  
@@ -329,7 +329,7 @@ angular.module('starter',
           views: {
               'menuContent': {
                   templateUrl: "templates/history-all.html",
-                  controller: 'AllHistoryCtrl'
+                  controller: 'historyAllMeasurementsCtrl'
               }
           }
       })

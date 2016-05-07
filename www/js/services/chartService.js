@@ -4,7 +4,7 @@ angular.module('starter')
 	    var chartService = {
 
 	    	// generate bar chart stub with data
-	        getBarChartStub : function(data){
+	        configureBarChart : function(data){
 	            return {
 	                options: {
 	                    chart: {
@@ -64,7 +64,12 @@ angular.module('starter')
 	        },
 
 	        // generate stock chart
-	        getLineChartStub : function(data){
+	        configureLineChart : function(data){
+
+				data = data.sort(function(a, b){
+					return a[0] - b[0];
+				});
+
 	        	return {
 	        		useHighStocks: true,
 	        		options : {
@@ -72,7 +77,7 @@ angular.module('starter')
 	        			    enabled : false
 	        			},
 	        			title: {
-	        			    text: config.appSettings.primaryOutcomeVariable+' Over Time'
+	        			    text: config.appSettings.primaryOutcomeVariable + ' Over Time'
 	        			},
 	        			xAxis : {
 	        				type: 'datetime',
@@ -117,7 +122,7 @@ angular.module('starter')
 			                valueDecimals: 2
 			            }
 			        }]
-	        	}
+	        	};
 	        }
 	    };
 

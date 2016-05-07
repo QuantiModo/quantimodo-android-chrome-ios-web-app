@@ -110,5 +110,5 @@ angular.module('starter')
                     });
                 }
             }
-        }
+        };
     });

@@ -30,7 +30,7 @@ angular.module('starter')
             showUnits: false,
             variableSearchQuery : "",
             searching : false,
-            selectedFrequency : 'Hourly',
+            selectedFrequency : 'Daily',
             selectedReminder : false,
             reminderStartTimeEpochTime : currentTime.getTime() / 1000
     };
@@ -421,8 +421,8 @@ angular.module('starter')
         $scope.init = function(){
             $scope.state.loading = true;
             utilsService.loadingStart();
-            var user = authService.getUserFromLocalStorage();
-            if(user){
+            var isAuthorized = authService.checkAuthOrSendToLogin();
+            if(isAuthorized){
                 if($stateParams.variableCategoryName){
                     setupVariableCategory($stateParams.variableCategoryName);
                 }
@@ -441,10 +441,6 @@ angular.module('starter')
                 else {
                     setupNewReminder();
                 }
-            } else {
-                $ionicLoading.hide();
-                $scope.state.loading = false;
-                $state.go('app.login');
             }
             $scope.state.loading = false;
 	    };

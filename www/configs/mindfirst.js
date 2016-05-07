@@ -23,7 +23,7 @@ window.config = {
 
 config.appSettings  = {
     appName : 'Mind First Mood Tracker',
-    alwaysRequireLogin : false,
+    allowOffline : true,
 
     defaultState : 'app.track',
 
@@ -44,7 +44,7 @@ config.appSettings  = {
         id : 1398,
         name : "Overall Mood",
         category : "Mood",
-        unitAbbreviatedName : "/5",
+        abbreviatedUnitName : "/5",
         combinationOperation: "MEAN"
     },
 
