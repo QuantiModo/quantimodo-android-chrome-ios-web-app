@@ -33,18 +33,6 @@ angular.module('starter')
 	    	});
 	    };
 
-	    $scope.getUnitFromUnitId = function(id){
-	    	if(!id) {
-				return false;
-			}
-
-	    	var unit = $scope.state.unitObjects.filter(function(u){
-	    		return u.id === id;
-	    	})[0];
-
-	    	return unit? unit : false;
-	    };
-
 	    $scope.getVariableCategoryByUnit = function(unit){
 	    	
 	    	if(!unit) {

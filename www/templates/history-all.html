@@ -13,7 +13,7 @@
                     <p style="font-weight:bold;white-space:normal">{{historyItem.variable}}</p>
                   </div>
                   <div class="history-block" style="margin-left:10px;">
-                      <h2 style="font-weight:bold;white-space:normal"> {{historyItem.value}} {{getUnitFromUnitId(historyItem.unit).abbreviatedName}} {{historyItem.variable}}</h2>
+                      <h2 style="font-weight:bold;white-space:normal"> {{historyItem.value}} {{historyItem.abbreviatedUnitName}} {{historyItem.variable}}</h2>
                     <h2 class="history_time" ng-repeat="line in (historyItem.startTime | time) track by $index">
                       {{line}}
                     </h2>
