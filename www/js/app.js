@@ -123,6 +123,7 @@ angular.module('starter',
       })
 
       .state('app.welcome', {
+          cache: false,
         url: "/welcome",
         views: {
           'menuContent': {

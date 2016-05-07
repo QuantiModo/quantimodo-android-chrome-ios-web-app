@@ -71,7 +71,7 @@ angular.module('starter')
                 measurementService.calculateAveragePrimaryOutcomeVariableValue().then(function () {
                     measurementService.calculateBothChart();
                     measurementService.resetSyncFlag();
-                    $rootScope.$broadcast('callWelcomeCtrlInit');
+
                     //hard reload
                     $state.go(config.appSettings.welcomeState, {}, {
                         reload: true

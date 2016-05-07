@@ -85,10 +85,6 @@ angular.module('starter')
             $scope.showIntervalCard = true;
         };
 
-        $scope.$on('callWelcomeCtrlInit', function(){
-            console.log("calling init");
-            $scope.init();
-        });
 
         $scope.init = function(){
             console.log("welcome initialization...");
