@@ -187,15 +187,15 @@ angular.module('starter')
 
         $scope.init();
 
-        // to handle redrawing event's triggered through sibling controllers.
         $scope.$on('redraw', function(){
-            console.log("redrawing");
+            console.log('track state redrawing event triggered through sibling controllers. Updating charts and syncing..');
+            updateCharts();
             syncPrimaryOutcomeVariableMeasurements();
-            // update everything
         });
 
-        // when this view is brought in focus
         $scope.$on('$ionicView.enter', function(e) {
+            console.log('track state brought in focus. Updating charts and syncing..');
+            updateCharts();
             syncPrimaryOutcomeVariableMeasurements();
             $timeout(function() {
                 $scope.$broadcast('highchartsng.reflow');
