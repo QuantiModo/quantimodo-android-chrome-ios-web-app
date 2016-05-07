@@ -1,12 +1,12 @@
 angular.module('starter')
 	
-	// Controlls the Positive Factors page
+	// Controls the Positive Factors page
 	.controller('PositiveCtrl', function($scope, $ionicModal, $timeout, measurementService, $ionicLoading, 
                                          $state, $ionicPopup, correlationService, $rootScope,
                                          localStorageService, utilsService, authService) {
 
 
-        if(!$scope.isLoggedIn){
+        if(!$rootScope.user){
             $state.go(config.appSettings.welcomeState);
             // app wide signal to sibling controllers that the state has changed
             $rootScope.$broadcast('transition');
@@ -123,8 +123,8 @@ angular.module('starter')
 	    $scope.init = function(){
             $scope.state.loading = true;
             utilsService.loadingStart();
-            var user = authService.getUserFromLocalStorage();
-            if(user){
+            var isAuthorized = authService.checkAuthOrSendToLogin();
+            if(isAuthorized){
                 correlationService.getPositiveFactors()
                     .then(function(correlationObjects){
                         $scope.positives = correlationObjects;
@@ -135,9 +135,6 @@ angular.module('starter')
                     }, function(){
                         $ionicLoading.hide();
                     });
-            } else {
-                $ionicLoading.hide();
-                $state.go('app.login');
             }
 	    };
 

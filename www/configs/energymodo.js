@@ -22,7 +22,7 @@ window.config = {
 
 config.appSettings  = {
     appName : 'EnergyModo',
-    alwaysRequireLogin : false,
+    allowOffline : true,
 
     defaultState : 'app.track',
     welcomeState : 'app.welcome',
@@ -35,7 +35,7 @@ config.appSettings  = {
         id : 108092,
         name : "Overall Energy",
         category : "Energy",
-        unitAbbreviatedName : "/5",
+        abbreviatedUnitName : "/5",
         combinationOperation: "MEAN"
     },
 

@@ -22,6 +22,8 @@ ul > li {
     opacity: 0.5;
 }
 
+.highcharts-container{width:100% !important; height:100% !important;}
+
 li.item-select {
 	height: 50px;
 }
@@ -133,7 +135,7 @@ iframe {
 	height:auto !important;
 }
 
-.active-primary-outcome-variable-rating-buttons {
+.active-primary-outcome-variable-rating-button {
     opacity: 1.0 !important;
 }
 

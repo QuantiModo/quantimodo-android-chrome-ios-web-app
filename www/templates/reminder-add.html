@@ -1,4 +1,4 @@
-<ion-view hide-nav-bar="skipMenu" view-title="{{state.title}}">
+<ion-view hide-nav-bar="hideNavigationMenu" view-title="{{state.title}}">
     <ion-content scroll="true" overflow-scroll="true">
 		
 		<div class="list card" ng-show="state.showVariableCategorySelector">
@@ -24,7 +24,7 @@
             <p></p>
             <ion-list>
                 <ion-item style="text-align:center;border-bottom: 1px solid rgb(221, 221, 221);" ng-show="state.loading">
-                    <img src="../www/img/pop-tart-cat.gif">
+                    <img src="img/pop-tart-cat.gif">
                 </ion-item>
             </ion-list>
         </div>
@@ -91,7 +91,7 @@
 
 
         <div class="list card" ng-show="state.showReminderFrequencyCard">
-        	<div class="item item-divider" style="background-color:#11c1f3; color:white;">{{state.variableName}} reminder settings</div>
+        	<div class="item item-divider">{{state.variableName}} reminder settings</div>
 
 <!--
             <div class="row labeled-control">

@@ -16,11 +16,16 @@ angular.module('starter')
                 $ionicLoading.hide();
                 if(status === 401){
                     localStorageService.deleteItem('accessToken');
+                    console.log('QuantiModo.errorHandler: Sending to login because we got 401 with request ' +
+                        JSON.stringify(request));
+                    console.log('data: ' + JSON.stringify(data));
+                    console.log('headers: ' + JSON.stringify(headers));
+                    console.log('config: ' + JSON.stringify(config));
                     $state.go('app.login');
                     return;
                 }
                 if(!data){
-                    console.log('No data property returned from QM API request');
+                    console.log('QuantiModo.errorHandler: No data property returned from QM API request');
                     return;
                 }
                 if(request) {
@@ -48,7 +53,7 @@ angular.module('starter')
 
             // GET method with the added token
             QuantiModo.get = function(baseURL, allowedParams, params, successHandler, errorHandler){
-                authService.getAccessTokenFromAnySource().then(function(token){
+                authService.getAccessTokenFromAnySource().then(function(tokenObject){
                     
                     // configure params
                     var urlParams = [];
@@ -60,6 +65,8 @@ angular.module('starter')
                         }
                         urlParams.push(encodeURIComponent(key) + '=' + encodeURIComponent(params[key]));
                     }
+                    //We can't append access token to Ionic requests for some reason
+                    //urlParams.push(encodeURIComponent('access_token') + '=' + encodeURIComponent(tokenObject.accessToken));
 
                     // configure request
                     var url = config.getURL(baseURL);
@@ -68,12 +75,12 @@ angular.module('starter')
                         url: (url + ((urlParams.length === 0) ? '' : urlParams.join('&'))),
                         responseType: 'json', 
                         headers : {
-                            "Authorization" : "Bearer " + token.accessToken,
+                            "Authorization" : "Bearer " + tokenObject.accessToken,
                             'Content-Type': "application/json"
                         }
                     };
 
-                    console.log("Making request with this token " + token.accessToken);
+                    console.log("Making this request: " + JSON.stringify(request));
 
                     $http(request).success(successHandler).error(function(data,status,headers,config){
                         QuantiModo.errorHandler(data, status, headers, config, request);
@@ -139,8 +146,8 @@ angular.module('starter')
                     if(response.length === 0 || typeof response === "string" || params.offset >= 3000){
                         defer.resolve(response_array);
                     }else{
-                        localStorageService.getItem('isLoggedIn', function(isLoggedIn){
-                            if(isLoggedIn === "false" || isLoggedIn === false){
+                        localStorageService.getItem('user', function(user){
+                            if(!user){
                                 defer.reject(false);
                             } else {
                                 response_array = response_array.concat(response);

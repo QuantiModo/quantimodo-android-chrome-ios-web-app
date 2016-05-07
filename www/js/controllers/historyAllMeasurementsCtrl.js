@@ -1,7 +1,7 @@
 angular.module('starter')
 
 	// Controls the History Page of the App.
-	.controller('AllHistoryCtrl', function($scope, $state, $ionicModal, $timeout, $ionicLoading,
+	.controller('historyAllMeasurementsCtrl', function($scope, $state, $ionicModal, $timeout, $ionicLoading,
 										   authService, $ionicPopover, 
                                            measurementService,
 										   $ionicPopup, 
@@ -9,7 +9,7 @@ angular.module('starter')
                                            unitService,
                                             utilsService){
 
-	    $scope.controller_name = "AllHistoryCtrl";
+	    $scope.controller_name = "historyAllMeasurementsCtrl";
         
 	    $scope.state = {
 	    	offset : 0,
@@ -31,18 +31,6 @@ angular.module('starter')
 	    		measurement: measurement,
 				fromState: $state.current.name
 	    	});
-	    };
-
-	    $scope.getUnitFromUnitId = function(id){
-	    	if(!id) {
-				return false;
-			}
-
-	    	var unit = $scope.state.unitObjects.filter(function(u){
-	    		return u.id === id;
-	    	})[0];
-
-	    	return unit? unit : false;
 	    };
 
 	    $scope.getVariableCategoryByUnit = function(unit){
@@ -86,9 +74,13 @@ angular.module('starter')
 	    // constructor
 	    $scope.init = function(){
 			$scope.state.loading = true;
+            $ionicLoading.show({
+                noBackdrop: true,
+                template: '<p class="item-icon-left">' + 'Loading Stuff' + '<ion-spinner icon="lines"/></p>'
+            });
 			utilsService.loadingStart();
-			var user = authService.getUserFromLocalStorage();
-			if(user){
+            var isAuthorized = authService.checkAuthOrSendToLogin();
+			if(isAuthorized){
                 $scope.showHelpInfoPopupIfNecessary();
                 variableCategoryService.getVariableCategories()
                     .then(function(variableCategories){
@@ -103,11 +95,9 @@ angular.module('starter')
                         console.log("error getting units", err);
                     });
                 getHistory();
-                $ionicLoading.hide();
-			} else {
-				$ionicLoading.hide();
-				$state.go('app.login');
+                //$ionicLoading.hide();
 			}
+            $scope.state.loading = false;
 	    };
 
         // when view is changed
