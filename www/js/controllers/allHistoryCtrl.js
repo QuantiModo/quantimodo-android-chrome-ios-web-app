@@ -60,7 +60,7 @@ angular.module('starter')
 
 
 	    var getHistory = function(){
-	    	utilsService.startLoading();
+	    	utilsService.loadingStart();
 	    	measurementService.getHistoryMeasurements({
     		    offset: $scope.state.offset,
     		    limit: $scope.state.limit,
@@ -70,10 +70,10 @@ angular.module('starter')
 				if($scope.state.history.length > 49){
 					$scope.state.showLoadMoreButton = true;
 				}
-    			utilsService.stopLoading();
+    			utilsService.loadingStop();
 	    	}, function(error){
 	    		console.log('error getting measurements', error);
-	    		utilsService.stopLoading();
+	    		utilsService.loadingStop();
 	    	});
 
 	    };
@@ -85,22 +85,29 @@ angular.module('starter')
 	    
 	    // constructor
 	    $scope.init = function(){
-	    	utilsService.startLoading();
-			variableCategoryService.getVariableCategories()
-	    	.then(function(variableCategories){
-	    		$scope.state.variableCategories = variableCategories;
-	    	}, function(err){
-	    		console.log("error getting variable categories", err);
-	    	});
-
-	    	unitService.getUnits()
-	    	.then(function(units){
-	    		$scope.state.unitObjects = units;
-	    	}, function(err){
-	    		console.log("error getting units", err);
-	    	});
-
-	    	getHistory();
+			$scope.state.loading = true;
+			utilsService.loadingStart();
+			var user = authService.getUserFromLocalStorage();
+			if(user){
+                $scope.showHelpInfoPopupIfNecessary();
+                variableCategoryService.getVariableCategories()
+                    .then(function(variableCategories){
+                        $scope.state.variableCategories = variableCategories;
+                    }, function(err){
+                        console.log("error getting variable categories", err);
+                    });
+                unitService.getUnits()
+                    .then(function(units){
+                        $scope.state.unitObjects = units;
+                    }, function(err){
+                        console.log("error getting units", err);
+                    });
+                getHistory();
+                $ionicLoading.hide();
+			} else {
+				$ionicLoading.hide();
+				$state.go('app.login');
+			}
 	    };
 
         // when view is changed

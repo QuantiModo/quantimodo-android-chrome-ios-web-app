@@ -1,7 +1,8 @@
 angular.module('starter')
     
     // Handlers the Welcome Page
-    .controller('LoginCtrl', function($scope, $ionicModal, $timeout, utilsService, authService, measurementService, $state, $ionicHistory, notificationService, localStorageService, $rootScope, reminderService) {
+    .controller('LoginCtrl', function($scope, $ionicModal, $timeout, utilsService, authService, measurementService, 
+                                      $state, $ionicHistory, notificationService, localStorageService, $rootScope) {
         
         $scope.controller_name = "LoginCtrl";
         $scope.isIOS = ionic.Platform.isIPad() || ionic.Platform.isIOS();
@@ -11,10 +12,13 @@ angular.module('starter')
         $rootScope.hideMenu = true;
         $scope.headline = config.appSettings.headline;
         $scope.features = config.appSettings.features;
-
-        // constructor
+        
         $scope.init = function(){
-            console.log("login init");
+            if($rootScope.helpPopup){
+                console.log('Closing help popup!');
+                $rootScope.helpPopup.close();
+            }
+            console.log("login initialized");
         };
 
         $scope.init();

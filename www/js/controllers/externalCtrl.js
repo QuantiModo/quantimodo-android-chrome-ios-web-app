@@ -1,22 +1,17 @@
 angular.module('starter')
 
 	// Handles All the Views that have an iframe
-	.controller('ExternalCtrl', function($scope, $ionicModal, $timeout, $ionicLoading) {
+	.controller('ExternalCtrl', function($scope, $ionicModal, $timeout, utilsService) {
 		$scope.controller_name = "ExternalCtrl";
 	    
 	    // when page load completes
 	    window.closeLoading = function(){
-	    	$ionicLoading.hide();
+			utilsService.loadingStop();
 	    };
 	    
 	    // constructor
 	    $scope.init = function(){
-			
-	    	// show loader
-			$ionicLoading.show({
-				noBackdrop: true,
-				template: '<p class="item-icon-left">Loading stuff...<ion-spinner icon="lines"/></p>'
-		    });    	
+			utilsService.loadingStart();
 	    };
 
 	    // call constructor

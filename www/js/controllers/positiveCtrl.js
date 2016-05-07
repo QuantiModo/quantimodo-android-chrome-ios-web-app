@@ -3,14 +3,14 @@ angular.module('starter')
 	// Controlls the Positive Factors page
 	.controller('PositiveCtrl', function($scope, $ionicModal, $timeout, measurementService, $ionicLoading, 
                                          $state, $ionicPopup, correlationService, $rootScope,
-                                         localStorageService, utilsService) {
+                                         localStorageService, utilsService, authService) {
 
-        /*// redirect if not logged in
+
         if(!$scope.isLoggedIn){
             $state.go('app.welcome');
             // app wide signal to sibling controllers that the state has changed
             $rootScope.$broadcast('transition');
-        }*/
+        }
         
          localStorageService.getItem('notShowConfirmationPositive',function(val){
              $scope.notShowConfirmationPositive = val ? JSON.parse(val) : false;
@@ -21,27 +21,11 @@ angular.module('starter')
         });        
 
 		$scope.controller_name = "PositiveCtrl";
-
         $scope.positives = false;
         $scope.usersPositiveFactors = false;
-
-		// show spinner
-		$ionicLoading.show({
-			noBackdrop: true,
-			template: '<p class="item-icon-left">Loading stuff...<ion-spinner icon="lines"/></p>'
-	    });
-
-		// show alert box
-	    $scope.showAlert = function(title, template) {
-	        $ionicPopup.alert({
-	          title: title,
-	          template: template,
-              cssClass : 'positive',
-              okType : 'button-positive'
-	        });
-	    };
         
-	    // downVote
+        utilsService.loadingStart();
+        
 	    $scope.downVote = function(factor){
 
             if(!$scope.notShowConfirmationPositiveDown){
@@ -63,7 +47,7 @@ angular.module('starter')
 
                 });
 
-            }else{
+            } else {
                 downVote(factor);
             }
 
@@ -79,24 +63,17 @@ angular.module('starter')
             var vote = 0;
             var correlationCoefficient = factor.correlationCoefficient;
 
-            if($scope.isLoggedIn){
+            // call vote method
+            correlationService.vote(vote, cause, effect, correlationCoefficient)
+                .then(function(){
+                    utilsService.showAlert('Down voted!');
+                }, function(){
+                    utilsService.showAlert('Down vote failed !');
+                });
+        }
 
-                // call vote method
-                correlationService.vote(vote, cause, effect, correlationCoefficient)
-                    .then(function(){
-                        $scope.showAlert('Down voted!');
-                    }, function(){
-                        $scope.showAlert('Down vote failed !');
-                    });
-            } else {
-                $ionicLoading.hide();
-                utilsService.showLoginRequiredAlert($scope.login);
-                factor.userVote = prevValue;
-            }
-        };
-
-	    // when upvoted
-	    $scope.upvote = function(factor){
+	    // when upVoted
+	    $scope.upVote = function(factor){
 
 	    
             if(!$scope.notShowConfirmationPositive){
@@ -111,7 +88,7 @@ angular.module('starter')
                             type: 'button-positive',
                             onTap: function(){
                                 localStorageService.setItem('notShowConfirmationPositive',JSON.stringify($scope.notShowConfirmationPositive));
-                                upvote(factor);
+                                upVote(factor);
                             }
                         }
                     ]
@@ -119,12 +96,12 @@ angular.module('starter')
                 });
 
             }else{
-                upvote(factor);
+                upVote(factor);
             }
 
 	    };
 
-        function upvote(factor){
+        function upVote(factor){
 
         	var prevValue = factor.userVote;
             factor.userVote = 1;
@@ -133,54 +110,35 @@ angular.module('starter')
             var effect = factor.effect;
             var vote = 1;
             var correlationCoefficient = factor.correlationCoefficient;
-
-            if($scope.isLoggedIn){
-                // call vote method
-                correlationService.vote(vote, cause, effect, correlationCoefficient)
-                    .then(function(){
-                        $scope.showAlert('Upvoted !');
-                    }, function(){
-                        $scope.showAlert('Upvote Failed !');
-                        factor.userVote = prevValue;
-                    });
-            } else {
-                utilsService.showLoginRequiredAlert($scope.login);
-                factor.userVote = prevValue;
-            }
-        };
-
-	    // constructor
+            
+            correlationService.vote(vote, cause, effect, correlationCoefficient)
+                .then(function(){
+                    utilsService.showAlert('Upvoted !');
+                }, function(){
+                    utilsService.showAlert('Upvote Failed !');
+                    factor.userVote = prevValue;
+                });
+        }
+        
 	    $scope.init = function(){
-
-	    	// show spinenr
-	    	$ionicLoading.show({
-				noBackdrop: true,
-				template: '<p class="item-icon-left">Loading stuff...<ion-spinner icon="lines"/></p>'
-		    }); 
-
-	        if($scope.isLoggedIn){
-	        	// get correlationObjects
+            $scope.state.loading = true;
+            utilsService.loadingStart();
+            var user = authService.getUserFromLocalStorage();
+            if(user){
                 correlationService.getPositiveFactors()
-	            .then(function(correlationObjects){
-                        // update view model
+                    .then(function(correlationObjects){
                         $scope.positives = correlationObjects;
                         $ionicLoading.hide();
-
                         correlationService.getUsersPositiveFactors().then(function(correlationObjects){
                             $scope.usersPositiveFactors = correlationObjects;
-                        })
-
-
-
-	            }, function(){
-	                $ionicLoading.hide();
-	            });    
-	        } else {
-
-	            $ionicLoading.hide();
-                utilsService.showLoginRequiredAlert($scope.login);
+                        });
+                    }, function(){
+                        $ionicLoading.hide();
+                    });
+            } else {
+                $ionicLoading.hide();
+                $state.go('app.login');
             }
-
 	    };
 
 	    $scope.openStore = function(name){

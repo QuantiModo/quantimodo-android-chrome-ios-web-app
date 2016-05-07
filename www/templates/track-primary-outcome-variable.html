@@ -1,6 +1,6 @@
 <ion-view hide-nav-bar="skipMenu" view-title="Track your {{primaryOutcomeVariable}}">
     <ion-content>
-    	<div class="card primary-outcome-variable-reporting">
+    	<div ng-show="showRatingFaces" class="card primary-outcome-variable-reporting">
     		<div class="item item-text-wrap">
                 <div class="primary-outcome-variable-rating-buttons" >
                     <p class="heading positive" style="padding:14px; text-align: center;">{{primaryOutcomeVariableTrackingQuestion}}</p>
@@ -12,7 +12,7 @@
                 <div ng-show="timeRemaining">
                     <br/>
                     <ul>
-                        <li>Thanks for reporting your {{primaryOutcomeVariable}}!</li>
+                        <li style="padding:14px; text-align: center;">Thanks for reporting your {{primaryOutcomeVariable}}!</li>
                         <li ng-show="secondsLeft">You can report your {{primaryOutcomeVariable}} back in {{secondsLeft}} seconds</li>
                     </ul>
                 </div>

@@ -22,6 +22,7 @@ window.config = {
 
 config.appSettings  = {
     appName : 'EnergyModo',
+    alwaysRequireLogin : false,
 
     defaultState : 'app.track',
     welcomeState : 'app.welcome',
@@ -34,7 +35,7 @@ config.appSettings  = {
         id : 108092,
         name : "Overall Energy",
         category : "Energy",
-        unit : "/5",
+        unitAbbreviatedName : "/5",
         combinationOperation: "MEAN"
     },
 
@@ -755,7 +756,7 @@ window.notification_callback = function(reportedVariable, reportingTime){
         // update localstorage
         localStorage[keyIdentifier+'lastReportedPrimaryOutcomeVariableValue'] = val;
         
-        var allDataObject = {
+        var allMeasurementsObject = {
             storedValue : val,
             value : val,
             timestamp : reportTime,
@@ -765,10 +766,10 @@ window.notification_callback = function(reportedVariable, reportingTime){
         };
 
         // update full data
-        if(localStorage[keyIdentifier+'allData']){
-            var allData = JSON.parse(localStorage[keyIdentifier+'allData']);
-            allData.push(allDataObject);
-            localStorage[keyIdentifier+'allData'] = JSON.stringify(allData);
+        if(localStorage[keyIdentifier+'allMeasurements']){
+            var allMeasurements = JSON.parse(localStorage[keyIdentifier+'allMeasurements']);
+            allMeasurements.push(allMeasurementsObject);
+            localStorage[keyIdentifier+'allMeasurements'] = JSON.stringify(allMeasurements);
         }
 
         // update Bar chart data
@@ -790,7 +791,7 @@ window.notification_callback = function(reportedVariable, reportingTime){
             localStorage[keyIdentifier+'measurementsQueue'] = '[]';
         } else {
             var measurementsQueue = JSON.parse(localStorage[keyIdentifier+'measurementsQueue']);
-            measurementsQueue.push(allDataObject);
+            measurementsQueue.push(allMeasurementsObject);
             localStorage[keyIdentifier+'measurementsQueue'] = JSON.stringify(measurementsQueue);
         }
     }

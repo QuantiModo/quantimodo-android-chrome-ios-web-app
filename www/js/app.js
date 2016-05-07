@@ -133,6 +133,10 @@ angular.module('starter',
       })
       .state('app.login', {
         url: "/login",
+        params: {
+          fromState : null,
+            fromUrl : null
+        },
         views: {
           'menuContent': {
             templateUrl: "templates/login-page.html",
@@ -154,7 +158,7 @@ angular.module('starter',
           views: {
               'menuContent': {
                   templateUrl: "templates/track-primary-outcome-variable.html",
-                  controller: 'TrackCtrl'
+                  controller: 'TrackPrimaryOutcomeCtrl'
               }
           }
       })
@@ -302,7 +306,7 @@ angular.module('starter',
               }
           }
       })
-      .state('app.postidea', {
+      .state('app.postIdea', {
           url: "/postidea",
           views: {
               'menuContent': {
@@ -316,7 +320,7 @@ angular.module('starter',
           views: {
               'menuContent': {
                   templateUrl: "templates/history-primary-outcome-variable.html",
-                  controller: 'HistoryCtrl'
+                  controller: 'HistoryPrimaryOutcomeCtrl'
               }
           }
       })

@@ -9,6 +9,7 @@ angular.module('starter')
 		console.log('Loading ' + $scope.controller_name);
 	    
 	    $scope.state = {
+			showButtons : false,
 			variableCategory : $stateParams.variableCategoryName,
 	    	showMeasurementBox : false,
 	    	selectedReminder : false,
@@ -61,13 +62,13 @@ angular.module('starter')
 	    };
 
 	    var getTrackingReminders = function(){
-	    	utilsService.startLoading();
+	    	utilsService.loadingStart();
 	    	reminderService.getTrackingReminders($stateParams.variableCategoryName)
 	    	.then(function(reminders){
 	    		$scope.state.allReminders = reminders;
-	    		utilsService.stopLoading();
+	    		utilsService.loadingStop();
 	    	}, function(){
-	    		utilsService.stopLoading();
+	    		utilsService.loadingStop();
 	    		console.log("failed to get reminders");
 				console.log("need to log in");
 				$ionicLoading.hide();
@@ -104,16 +105,18 @@ angular.module('starter')
 
 	    // constructor
 	    $scope.init = function(){
-
-			// get user token
-			authService.getAccessTokenFromAnySource().then(function(token){
+			$scope.state.loading = true;
+			utilsService.loadingStart();
+			var user = authService.getUserFromLocalStorage();
+			if(user){
+				$scope.state.showButtons = true;
+				$scope.showHelpInfoPopupIfNecessary();
 				getTrackingReminders();
-			}, function(){
 				$ionicLoading.hide();
-				console.log("need to log in");
-				//utilsService.showLoginRequiredAlert($scope.login);
-			});
-			
+			} else {
+				$ionicLoading.hide();
+				$state.go('app.login');
+			}
 	    };
 
 
@@ -123,17 +126,17 @@ angular.module('starter')
 	    };
 
 	    $scope.deleteReminder = function(reminder){
-	    	utilsService.startLoading();
+	    	utilsService.loadingStart();
 	    	reminderService.deleteReminder(reminder.id)
 	    	.then(function(){
 
-	    		utilsService.stopLoading();
+	    		utilsService.loadingStop();
 	    		utilsService.showAlert('Reminder Deleted.');
 	    		$scope.init();
 
 	    	}, function(err){
 
-	    		utilsService.stopLoading();
+	    		utilsService.loadingStop();
 	    		utilsService.showAlert('Failed to Delete Reminder, Try again!', 'assertive');
 	    	});
 	    };
