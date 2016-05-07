@@ -37,14 +37,14 @@
 
         <div ng-show="showCharts" class="card primary-outcome-variable-reporting-chart">
     		<div class="item item-text-wrap">
-                <div style="height: 460px;" ng-show="isSyncing">
+<!--                <div style="height: 460px;" ng-show="isSyncing">
                     <div style="position: absolute;top:45%;text-align: center;width: 100%"><span>Still retrieving data. Check back soon.</span></div>
-                </div>
-                <div ng-if="redrawBarChart && !isSyncing">
+                </div>-->
+                <div ng-if="redrawBarChart">
                     <highchart id="chart1" config="barChartConfig"></highchart>    
                 </div>
     
-                <div ng-if="redrawLineChart && !isSyncing">
+                <div ng-if="redrawLineChart">
                     <highchart id="chart2" config="lineChartConfig"></highchart>    
                 </div>
                 

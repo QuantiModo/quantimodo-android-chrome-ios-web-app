@@ -3,15 +3,15 @@ angular.module('starter')
 	// Controls the History Page of the App.
 	.controller('RemindersAddCtrl', function($scope, authService, $ionicPopup, localStorageService, $state,
 											 $stateParams, measurementService, reminderService, $ionicLoading,
-											 utilsService, $filter, ionicTimePicker, $timeout, variableCategoryService,
-											 variableService, unitService, timeService, notificationService){
+											 utilsService, $filter, ionicTimePicker, $timeout, 
+											 variableCategoryService, variableService, unitService, timeService,
+                                             QuantiModo){
 
 	    $scope.controller_name = "RemindersAddCtrl";
 
 		console.log('Loading ' + $scope.controller_name);
 
         var currentTime = new Date();
-        var startTimeFormat = "HH:mm:ss";
 
         // state
 	    $scope.state = {
@@ -135,7 +135,15 @@ angular.module('starter')
             setupVariableCategory($scope.state.variableCategoryName);
 	    };
 
-	    var variableSearch = function(variableSearchQuery){
+        $scope.goToAddMeasurement = function(){
+            $state.go('app.measurementAdd', {
+                variableObject: $scope.variableObject,
+                fromState: $state.current.name
+            });
+        };
+
+
+        var variableSearch = function(variableSearchQuery){
 	    	// search server for the query
 
 	    	if(!$scope.state.variableCategoryName){
@@ -305,24 +313,18 @@ angular.module('starter')
                 $scope.state.combinationOperation,
                 $scope.state.reminderStartTimeStringUtc)
 	    	.then(function(){
+
 	    		utilsService.loadingStop();
-				var notificationParams = {
-					variableName: $scope.state.variableName,
-					frequency: $scope.state.selectedFrequency,
-					interval: getFrequencyChart()[$scope.state.selectedFrequency]/60,
-					reminderTime: $scope.state.reminderStartTimeStringUtc
-				};
-				console.log("state", $scope.state);
-				notificationService.scheduleReminder(notificationParams);
-                if($stateParams.reminder !== null && typeof $stateParams.reminder !== "undefined"){
+	    		if($stateParams.reminder !== null && typeof $stateParams.reminder !== "undefined"){
 	    			if($stateParams.reminder.fromState){
 	    				$state.go($stateParams.reminder.fromState);
 	    			} else {
 						$state.go('app.remindersManage');
                     }
-                } else {
+	    		} else {
 					$state.go('app.remindersManage');
                 }
+
 	    	}, function(err){
                 console.log(err);
 	    		utilsService.loadingStop();
@@ -391,12 +393,27 @@ angular.module('starter')
 	    };
 
 	    // setup new reminder view
-	    var setupNewReminder = function(){
+	    var setupNewReminderSearch = function(){
 	    	$scope.state.showVariableCategorySelector = true;
 	    	$scope.state.showSearchBox = true;
 	    };
 
-	    // constructor
+        function setupReminderEditingFromVariableId(variableId) {
+            if(variableId){
+                variableService.getVariableById(variableId)
+                    .then(function (variables) {
+                        $scope.variableObject = variables[0];
+                        console.log($scope.variableObject);
+                        $scope.onVariableSelect($scope.variableObject);
+                        utilsService.loadingStop();
+                    }, function () {
+                        utilsService.loadingStop();
+                        console.log("failed to get variable");
+                    });
+
+            }
+        }
+
         function setupReminderEditingFromUrlParameter(reminderIdUrlParameter) {
             reminderService.getTrackingReminders(null, reminderIdUrlParameter)
                 .then(function (reminders) {
@@ -427,6 +444,7 @@ angular.module('starter')
                     setupVariableCategory($stateParams.variableCategoryName);
                 }
                 var reminderIdUrlParameter = utilsService.getUrlParameter(window.location.href, 'reminderId');
+                var variableIdUrlParameter = utilsService.getUrlParameter(window.location.href, 'variableId');
                 $scope.getUnits();
                 if($stateParams.variableCategoryName){
                     $scope.variableCategoryName = $stateParams.variableCategoryName;
@@ -437,9 +455,11 @@ angular.module('starter')
                 }
                 else if(reminderIdUrlParameter) {
                     setupReminderEditingFromUrlParameter(reminderIdUrlParameter);
+                } else if(variableIdUrlParameter){
+                    setupReminderEditingFromVariableId(variableIdUrlParameter);
                 }
                 else {
-                    setupNewReminder();
+                    setupNewReminderSearch();
                 }
             }
             $scope.state.loading = false;
