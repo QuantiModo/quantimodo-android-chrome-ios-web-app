@@ -149,7 +149,7 @@ angular.module('starter')
         // when work on this activity is complete
         function hideMenuIfSetInUrlParameter() {
             if (location.href.toLowerCase().indexOf('hidemenu=true') !== -1) {
-                $rootScope.skipMenu = true;
+                $rootScope.hideNavigationMenu = true;
             }
         }
 
