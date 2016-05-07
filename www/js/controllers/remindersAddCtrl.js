@@ -135,7 +135,15 @@ angular.module('starter')
             setupVariableCategory($scope.state.variableCategoryName);
 	    };
 
-	    var variableSearch = function(variableSearchQuery){
+        $scope.goToAddMeasurement = function(){
+            $state.go('app.measurementAdd', {
+                variableObject: $scope.variableObject,
+                fromState: $state.current.name
+            });
+        };
+
+
+        var variableSearch = function(variableSearchQuery){
 	    	// search server for the query
 
 	    	if(!$scope.state.variableCategoryName){
