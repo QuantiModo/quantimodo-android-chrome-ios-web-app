@@ -267,7 +267,7 @@ angular.module('starter')
             if(!$rootScope.user){
                 redirectToWelcomeStateIfNecessary();
             }
-            $scope.goToDefaultStateIfWelcomed();
+            //$scope.goToDefaultStateIfWelcomed();
         };
 
         $scope.$on('callAppCtrlInit', function(){
