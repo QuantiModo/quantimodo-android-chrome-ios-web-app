@@ -55,6 +55,7 @@ angular.module('starter')
             }
 
             if(!$scope.$$phase) {
+                $scope.showRatingFaces = true;
                 console.log("Not in the middle of digest cycle, so redrawing everything...");
                 $scope.$apply();
             }
