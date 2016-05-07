@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "MoodiModo Mood-Tracking Extension",
   "description": "Track and find out what influences your mood!",
-  "version": "1.1.6",
+  "version": "QUANTIMODO_TEMPLATE_APP_VERSION",
   "options_page": "options/options.html",
   "icons": {
     "16"	: "www/img/icon_16.png",
