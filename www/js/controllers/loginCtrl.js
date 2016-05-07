@@ -25,6 +25,10 @@ angular.module('starter')
                 $rootScope.helpPopup.close();
             }
             console.log("login initialized");
+            if($rootScope.user){
+                console.log("Already logged in on login page.  Going to default state...");
+                $state.go(config.appSettings.defaultState);
+            }
         };
 
         // User wants to login
