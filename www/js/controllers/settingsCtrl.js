@@ -66,10 +66,12 @@ angular.module('starter')
             };
 
             function refreshTrackingPageAndGoToWelcome() {
+                localStorageService.setItem('isWelcomed', false);
                 // calculate primary outcome variable and chart data
                 measurementService.calculateAveragePrimaryOutcomeVariableValue().then(function () {
                     measurementService.calculateBothChart();
                     measurementService.resetSyncFlag();
+                    $rootScope.$broadcast('callWelcomeCtrlInit');
                     //hard reload
                     $state.go(config.appSettings.welcomeState, {}, {
                         reload: true
@@ -110,25 +112,19 @@ angular.module('starter')
                 $rootScope.user = null;
                 localStorageService.clear();
                 notificationService.cancelNotifications();
-                refreshTrackingPageAndGoToWelcome();
                 logOutOfApi();
-                
-                localStorageService.setItem('isWelcomed', false);
-                $state.go(config.appSettings.welcomeState, {}, {
-                    reload: true
-                });
+
+                refreshTrackingPageAndGoToWelcome();
             };
 
 
             var afterLogoutDoNotDeleteMeasurements = function(){
                 $rootScope.user = null;
                 clearTokensFromLocalStorage();
-                refreshTrackingPageAndGoToWelcome();
+             
                 logOutOfApi();
-                localStorageService.setItem('isWelcomed', false);
-                $state.go(config.appSettings.welcomeState, {}, {
-                    reload: true
-                });
+
+                refreshTrackingPageAndGoToWelcome();
             };
 
             startLogout();
