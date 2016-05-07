@@ -264,9 +264,9 @@ angular.module('starter')
             }
             $ionicLoading.hide();
             goToDefaultStateIfLoggedInOnLoginState();
-            if(!$rootScope.user){
-                redirectToWelcomeStateIfNecessary();
-            }
+            // if(!$rootScope.user){
+            //     redirectToWelcomeStateIfNecessary();
+            // }
             //$scope.goToDefaultStateIfWelcomed();
         };
 
