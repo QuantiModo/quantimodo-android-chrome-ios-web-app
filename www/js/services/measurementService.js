@@ -395,7 +395,7 @@ angular.module('starter')
 			},
 
 			// sync local data to QuantiModo API
-			syncData : function(){
+			syncPrimaryOutcomeVariableMeasurements : function(){
 				var deferred = $q.defer();
                 isSyncing = true;
                 var params;
@@ -410,7 +410,7 @@ angular.module('starter')
                         limit:200,
                         offset:0
                     };
-                    console.log("syncData",params);
+                    console.log("syncPrimaryOutcomeVariableMeasurements",params);
                 });
 
 				// send request

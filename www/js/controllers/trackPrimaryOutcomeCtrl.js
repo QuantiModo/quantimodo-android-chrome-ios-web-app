@@ -3,7 +3,7 @@ angular.module('starter')
     // Controls the Track Page of the App
     .controller('TrackPrimaryOutcomeCtrl', function($scope, $ionicModal, $state, $timeout, utilsService, authService, 
                                                     measurementService, chartService, $ionicPopup, localStorageService,
-                                                    $rootScope) {
+                                                    $rootScope, $ionicLoading) {
         $scope.controller_name = "TrackPrimaryOutcomeCtrl";
 
         $scope.showCharts = false;
@@ -40,7 +40,7 @@ angular.module('starter')
                         $scope.$apply();
                     }, 500);
 
-                    draw();
+                    updateCharts();
                 });
             });
         };
@@ -73,11 +73,9 @@ angular.module('starter')
             $scope.$broadcast('highchartsng.reflow');
             console.log("redraw chart with new data");
             $scope.redrawBarChart = true;
-
         };
 
         var updateLineChart = function(lineChartData){
-
             $scope.redrawLineChart = false;
             console.log("Configuring line chart...");
             $scope.lineChartConfig = chartService.configureLineChart(lineChartData);
@@ -91,7 +89,7 @@ angular.module('starter')
         };
 
         // updates all the visual elements on the page
-        var draw = function(){
+        var updateCharts = function(){
             localStorageService.getItem('averagePrimaryOutcomeVariableValue',function(averagePrimaryOutcomeVariableValue){
                 if(averagePrimaryOutcomeVariableValue){
                     updateAveragePrimaryOutcomeRatingView(averagePrimaryOutcomeVariableValue);
@@ -125,6 +123,49 @@ angular.module('starter')
             }
         }
 
+        // calculate values for both of the charts
+        var calculateChartValues = function(){
+            measurementService.calculateBothChart().then($ionicLoading.hide());
+        };
+
+        // calculate values for both of the charts
+        var syncPrimaryOutcomeVariableMeasurements = function(){
+
+            if(!$rootScope.user){
+                var userObject = localStorageService.getItemAsObject('user');
+                if(userObject){
+                    $rootScope.user = userObject;
+                }
+            }
+
+            if(!$rootScope.user){
+                console.log('Cannot sync because we do not have a user in local storage!');
+                return;
+            }
+
+            if($rootScope.user){
+                $rootScope.isSyncing = true;
+                console.log('Syncing primary outcome measurements...');
+
+                measurementService.syncPrimaryOutcomeVariableMeasurements().then(function(){
+                    console.log("Measurement sync complete!");
+                    $rootScope.isSyncing = false;
+
+                    // update loader text
+                    $ionicLoading.hide();
+                    utilsService.loadingStart('Calculating stuff', 2000);
+
+                    // calculate primary outcome variable values
+                    measurementService.calculateAveragePrimaryOutcomeVariableValue().then(function(){
+                        measurementService.getPrimaryOutcomeVariableValue().then(calculateChartValues, calculateChartValues);
+                        updateCharts();
+                    });
+
+
+                });
+            }
+        };
+
         $scope.init = function(){
 
             // flags
@@ -140,6 +181,7 @@ angular.module('starter')
             $scope.redrawLineChart = true;
             $scope.redrawBarChart = true;
             $scope.showHelpInfoPopupIfNecessary();
+            syncPrimaryOutcomeVariableMeasurements();
             generateLineAndBarChartData();
         };
 
@@ -148,19 +190,15 @@ angular.module('starter')
         // to handle redrawing event's triggered through sibling controllers.
         $scope.$on('redraw', function(){
             console.log("redrawing");
-            
+            syncPrimaryOutcomeVariableMeasurements();
             // update everything
-            draw();
         });
 
         // when this view is brought in focus
         $scope.$on('$ionicView.enter', function(e) {
-
+            syncPrimaryOutcomeVariableMeasurements();
             $timeout(function() {
                 $scope.$broadcast('highchartsng.reflow');
             }, 10);
-            
-            // update everything
-            draw();
         });
     });
