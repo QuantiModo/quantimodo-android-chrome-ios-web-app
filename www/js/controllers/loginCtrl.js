@@ -59,18 +59,15 @@ angular.module('starter')
         };
 
         var getOrSetUserInLocalStorage = function() {
-            var userJson = localStorageService.getItemAsObject('user');
-            if(!userJson){
-                var userObject = getUserAndSetInLocalStorage();
+            var userObject = localStorageService.getItemAsObject('user');
+            if(!userObject){
+                userObject = getUserAndSetInLocalStorage();
             }
             if(userObject){
                 console.log('Settings user in getOrSetUserInLocalStorage');
                 $rootScope.user = userObject;
                 setUserForIntercom(userObject);
                 setUserForBugsnag(userObject);
-                $state.go(config.appSettings.defaultState);
-                //$rootScope.$broadcast('callAppCtrlInit');
-                //$rootScope.$apply();
                 return userObject;
             }
 
