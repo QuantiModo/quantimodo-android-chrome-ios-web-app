@@ -63,7 +63,7 @@ gulp.task('generateXmlConfig', ['getAppName'], function(){
 	
 	var deferred = q.defer();
 
-	gulp.src('./xmlconfigs/'+APP_NAME+'.xml')
+	gulp.src('./apps/'+APP_NAME+'/config.xml')
 	.pipe(rename('config.xml'))
 	.pipe(gulp.dest('./'));
 
@@ -648,7 +648,7 @@ gulp.task('getIOSAppFolderName', ['getAppName'] , function(){
 
 	if(IOS_FOLDER_NAME) deferred.resolve();
 	else {
-		var xml = fs.readFileSync('./xmlconfigs/'+APP_NAME+'.xml', 'utf8');
+		var xml = fs.readFileSync('./apps/'+APP_NAME+'/config.xml', 'utf8');
 		parseString(xml, function (err, result) {
 		    if(err){
 		    	console.log("failed to read xml file");
@@ -892,7 +892,7 @@ gulp.task('makeIosApp', function(callback){
 gulp.task('bumpVersion', function(){
 	var deferred = q.defer();
 
-	var xml = fs.readFileSync('./xmlconfigs/'+APP_NAME+'.xml', 'utf8');
+	var xml = fs.readFileSync('./apps/'+APP_NAME+'/config.xml'+APP_NAME+'.xml', 'utf8');
 	
 	parseString(xml, function (err, result) {
 		if(err){
@@ -922,7 +922,7 @@ gulp.task('bumpVersion', function(){
 	    	var builder = new xml2js.Builder();
 	    	var updatedXml = builder.buildObject(result);
 
-	    	fs.writeFile('./xmlconfigs/'+APP_NAME+'.xml', updatedXml, 'utf8', function (err) {
+	    	fs.writeFile('./apps/'+APP_NAME+'/config.xml', updatedXml, 'utf8', function (err) {
 	    		if (err) {
 	    			console.log("error writing to xml file", err);
 	    			deferred.reject();

@@ -1,0 +1,29 @@
+{
+  "manifest_version": 2,
+  "name": "MoodiModo Mood-Tracking Extension",
+  "description": "Track and find out what influences your mood!",
+  "version": "QUANTIMODO_TEMPLATE_APP_VERSION",
+  "options_page": "options/options.html",
+  "icons": {
+    "16"	: "www/img/icon_16.png",
+    "48"	: "www/img/icon_48.png",
+    "128"	: "www/img/icon_128.png"
+  },
+  "permissions": [
+    "alarms",
+    "notifications",
+    "storage",
+    "cookies",
+    "tabs",
+    "https://app.quantimo.do/*",
+    "*://cdn.rawgit.com/*"
+  ],
+  "browser_action": {
+    "default_icon": "www/img/icon_700.png",
+    "default_popup": "www/templates/chrome/iframe.html"
+  },
+  "background": {
+    "scripts": ["www/js/background.js"],
+    "persistent": false
+  }
+} 

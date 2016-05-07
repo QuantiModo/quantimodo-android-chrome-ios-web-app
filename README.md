@@ -105,9 +105,9 @@ So everytime you wish to deploy your app, take for example `app/moodimodo` you s
 `[your_app_code_name_here].config.js`
     Then copy the contents of `www/private_configs/sample_private.config.js`. This will give you the placeholder structure and data required by the app in the private_config file. You should replace all the values with your own values or keys with respect to the new app you are building.
 
-5. **xmlconfigs**
+5. **xml configs**
     
-    Head over to `xmlconfigs` directory. Create a new file `[your_app_code_name_here].xml`. Then copy the contents of `xmlconfigs/moodimodo.xml`. This will give you the boilerplate of the properties required in the XML file. You can make appropriate changes according to your app where necessary.
+    Head over to `apps` directory. Create a new file `[your_app_code_name_here]/config.xml`. Then copy the contents of `apps/moodimodo/config.xml`. This will give you the boilerplate of the properties required in the XML file. You can make appropriate changes according to your app where necessary.
 
 > After these steps your app creation is complete. Now you can edit the app in the respective files as mentioned below.
 
@@ -118,11 +118,11 @@ Now Editing an app would mean understanding the structure of the app a little bi
 
 The current App has 3 config files:
 
-1. xmlconfigs/appname.xml
-2. www/configs/appname.js
-3. www/private_keys/appname.config.js
+1. config.xml
+2. www/configs/{{appname}}.js
+3. www/private_configs/{{appname}}.config.js
 
-##### **`appname.xml`**
+##### **`config.xml`**
 This is the XML file, which will be used to make your “actual” iOS App project. So the most important variables in this file are:
 
 1. App Name
@@ -449,7 +449,7 @@ After you have generated your app, you can run the project through `node app.js`
 #### Generate iOS App
 You should run the following Cordova commands to setup your iOS project.
 
-1. `gulp generateXmlConfig`. This will copy your generated xml config file (xmlconfigs/[your_app_code_name_here].xml) into the main config.xml so that the iOS app is generated with your new app as default.
+1. `gulp generateXmlConfig`. This will copy your generated xml config file (apps/[your_app_code_name_here]/config.xml) into the main config.xml so that the iOS app is generated with your new app as default.
 2. `cordova platforms add iOS`. This would create the iOS app in `platforms/ios` folder
 
 This should generate the app and you should be good to go!
@@ -506,7 +506,7 @@ After you have generated your app, you can run the project through `node app.js`
 #### Generate iOS App
 You should run the following cordova commands to setup your iOS project.
 
-1. `gulp generateXmlConfig`. This will copy your generated xml config file (xmlconfigs/[your_app_code_name_here].xml) into the main config.xml so that the iOS app is generated with your new app as default.
+1. `gulp generateXmlConfig`. This will copy your generated xml config file (apps/[your_app_code_name_here]/config.xml) into the main config.xml so that the iOS app is generated with your new app as default.
 2. `cordova platforms add iOS`. This would create the iOS app in `platforms/ios` folder
 
 This should generate the app and you should be good to go!

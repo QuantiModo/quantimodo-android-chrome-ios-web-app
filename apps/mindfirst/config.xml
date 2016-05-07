@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<widget id="com.quantimodo.moodimodoapp" version="1.0.0" ios-CFBundleVersion="1.0.12" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
-  <name>MoodiModo</name>
+<widget id="com.quantimodo.moodimodo"  version="QUANTIMODO_TEMPLATE_APP_VERSION" ios-CFBundleVersion="QUANTIMODO_TEMPLATE_APP_VERSION" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+  <name>Mind First Mood Tracker</name>
   <description>
-        The mood-tracking app from QuantiModo
+        The Mind First Mood Tracking app from QuantiModo
     </description>
-  <author email="info@quantimo.do" href="http://help.quantimo.do/">
-     QuantiModo
+  <author email="help@quantimo.do" href="http://help.quantimo.do/">
+      Team QuantiModo.
     </author>
   <content src="index.html"/>
   <access origin="*"/>
@@ -16,23 +16,22 @@
   <preference name="BackupWebStorage" value="none"/>
   <preference name="SplashScreen" value="screen"/>
   <preference name="SplashScreenDelay" value="3000"/>
-  <allow-navigation href="https://app.quantimo.do/*"/>
+
+  <allow-navigation href="https://app.quantimo.do/*" />
+
   <notificationplugin interactive="true">
-    <button id="repeat_rating" display="Same As Last Time" mode="background"/>
-    <button id="other" display="Other" mode="foreground"/>
-    <button id="sad" display="Sad" mode="background"/>
-    <button id="happy" display="Happy" mode="background"/>
-    <button id="depressed" display="Depressed" mode="background"/>
-    <button id="ok" display="OK" mode="background"/>
-    <TwoButtonLayout first="repeat_rating" second="other"/>
-    <FourButtonLayout first="sad" second="happy" third="ok" fourth="depressed"/>
+      <button id="repeat_rating" display="Same As Last Time" mode="background"></button>
+      <button id="other" display="Other" mode="foreground"></button>
+      <button id="sad"  display="Sad" mode="background"></button>
+      <button id="happy"  display="Happy" mode="background"></button>
+      <button id="depressed" display="Depressed" mode="background"></button>
+      <button id="ok" display="OK" mode="background"></button>
+      <TwoButtonLayout first="repeat_rating" second="other"></TwoButtonLayout>
+      <FourButtonLayout first="sad" second="happy" third="ok" fourth="depressed" ></FourButtonLayout>
   </notificationplugin>
+  
   <feature name="StatusBar">
     <param name="ios-package" value="CDVStatusBar" onload="true"/>
-  </feature>
-  <feature name="InAppBrowser">
-    <param name="ios-package" value="CDVInAppBrowser"/>
-    <param name="android-package" value="org.apache.cordova.inappbrowser.InAppBrowser"/>
   </feature>
   <platform name="ios">
     <splash src="resources/ios/splash/Default-568h@2x~iphone.png" width="640" height="1136"/>
