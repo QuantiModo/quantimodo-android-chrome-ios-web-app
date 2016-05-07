@@ -217,7 +217,7 @@ angular.module('starter')
 			},
 
 			// update primary outcome variable request to QuantiModo API
-			updatePrimaryOutcomeVariable : function(ratingValue){
+			updatePrimaryOutcomeVariableOnServer : function(ratingValue){
 
 				var reportTime  = new Date().getTime();
 

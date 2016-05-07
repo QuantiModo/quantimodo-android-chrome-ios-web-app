@@ -29,7 +29,7 @@ angular.module('starter')
                 }
                 if($rootScope.user){
                     // try to send the data to server if we have a user
-                    measurementService.updatePrimaryOutcomeVariable(primaryOutcomeRatingValue);
+                    measurementService.updatePrimaryOutcomeVariableOnServer(primaryOutcomeRatingValue);
                 }
 
                 // calculate charts data

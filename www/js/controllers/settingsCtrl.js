@@ -45,6 +45,7 @@ angular.module('starter')
         $scope.logout = function(){
 
             var startLogout = function(){
+                console.log('Logging out...')
                 $rootScope.isSyncing = false;
                 $rootScope.user = null;
                 $rootScope.isMobile = window.cordova;
@@ -111,7 +112,11 @@ angular.module('starter')
                 notificationService.cancelNotifications();
                 refreshTrackingPageAndGoToWelcome();
                 logOutOfApi();
-                $state.go(config.appSettings.welcomeState);
+                
+                localStorageService.setItem('isWelcomed', false);
+                $state.go(config.appSettings.welcomeState, {}, {
+                    reload: true
+                });
             };
 
 
@@ -120,7 +125,10 @@ angular.module('starter')
                 clearTokensFromLocalStorage();
                 refreshTrackingPageAndGoToWelcome();
                 logOutOfApi();
-                $state.go(config.appSettings.welcomeState);
+                localStorageService.setItem('isWelcomed', false);
+                $state.go(config.appSettings.welcomeState, {}, {
+                    reload: true
+                });
             };
 
             startLogout();

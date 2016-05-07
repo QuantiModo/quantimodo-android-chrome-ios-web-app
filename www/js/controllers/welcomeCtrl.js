@@ -13,15 +13,6 @@ angular.module('starter')
         $scope.headline = config.appSettings.headline;
         $scope.features = config.appSettings.features;
         $scope.appName = config.appSettings.appName;
-        $scope.allowOffline = config.getAllowOffline();
-        console.log('hide menu');
-
-
-        // flags
-        localStorageService.getItem('primaryOutcomeVariableReportedWelcomeScreen', function (primaryOutcomeVariableReportedWelcomeScreen) {
-            $scope.showPrimaryOutcomeVariableCard = primaryOutcomeVariableReportedWelcomeScreen ? false : true;
-
-        });
 
         localStorageService.getItem('askForRating',function(askForRating){
             $scope.notificationInterval = askForRating || $scope.isIOS? "hour" : "hourly";
@@ -80,7 +71,9 @@ angular.module('starter')
             // update local storage
             measurementService.updatePrimaryOutcomeVariableLocally(ratingValue).then(function () {
                 // try to send the data to server
-                measurementService.updatePrimaryOutcomeVariable(ratingValue);
+                if($rootScope.user){
+                    measurementService.updatePrimaryOutcomeVariableOnServer(ratingValue);
+                }
 
                 // calculate charts data
                 measurementService.calculateAveragePrimaryOutcomeVariableValue().then(function(){
@@ -88,6 +81,8 @@ angular.module('starter')
                     $scope.showPrimaryOutcomeVariableCard = false;
                 });
             });
+            $scope.hidePrimaryOutcomeVariableCard = true;
+            $scope.showIntervalCard = true;
         };
 
 

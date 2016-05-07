@@ -4,7 +4,7 @@
 <div id="login-iframe">
 </div>
 
-<div ng-show="showPrimaryOutcomeVariableCard" class="card primary-outcome-variable-reporting">
+<div ng-hide="hidePrimaryOutcomeVariableCard" class="card primary-outcome-variable-reporting">
 	<div class="item item-text-wrap">
 		<h1>Welcome to <span class="positive">{{viewTitle}}</span></h1>
 		<ul>
@@ -14,7 +14,7 @@
 	</div>
 </div>
 
-<div ng-show="showPrimaryOutcomeVariableCard" class="card primary-outcome-variable-reporting">
+<div ng-hide="hidePrimaryOutcomeVariableCard" class="card primary-outcome-variable-reporting">
 	<div class="item item-text-wrap">
 		<div  class="primary-outcome-variable-rating-buttons">
             <img ng-repeat="option in primaryOutcomeVariableRatingOptions"

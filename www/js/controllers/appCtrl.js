@@ -308,16 +308,17 @@ angular.module('starter')
 
             // redirection if already welcomed before
             var isWelcomed;
-            localStorageService.getItem('isWelcomed', function (val) {
-                isWelcomed = val;
+            localStorageService.getItem('isWelcomed', function (isWelcomed) {
+                $rootScope.isWelcomed = isWelcomed;
                 console.log('isWelcomed ' + isWelcomed);
-                if (isWelcomed === true || isWelcomed === "true" || tokenInGetParams) {
+                if (tokenInGetParams) {
                     $rootScope.isWelcomed = true;
-                } else {
-                    console.log("isWelcomed is " + isWelcomed + ". Setting to true and going to welcome now.");
                     localStorageService.setItem('isWelcomed', true);
-                    $rootScope.isWelcomed = true;
-                    $state.go(config.appSettings.welcomeState);
+                }
+
+                if(!$rootScope.isWelcomed) {
+                    console.log('isWelcomed is false.  Going to welcome state from appCtrl...');
+                   $state.go(config.appSettings.welcomeState);
                 }
             });
         }
