@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
 
 # Usage: Run `bash scripts/create_icons` from the root of repo with icon and splash in resources folder
-echo -e "${GREEN}Installing imagemagick package if it doesn't exist${NC}"
+echo -e "${GREEN}Installing imagemagick package if it doesn't exist. If you are using OSX, install https://www.macports.org/install.php${NC}"
 if ! type "imagemagick" > /dev/null;
   then
-  apt-get install imagemagick
+  apt-get install imagemagick # For Linux
+  sudo port install ImageMagick # For OSX
 fi
 
 ionic resources
