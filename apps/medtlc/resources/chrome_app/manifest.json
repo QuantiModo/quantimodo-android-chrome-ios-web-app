@@ -11,7 +11,7 @@
   },
   "app": {
     "background": {
-      "scripts": ["www/scripts/background.js"]
+      "scripts": ["www/js/chrome/background.js"]
     }
   },
   "permissions": [

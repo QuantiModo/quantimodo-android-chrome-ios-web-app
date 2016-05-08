@@ -23,7 +23,7 @@
     "default_popup": "www/templates/chrome/iframe.html"
   },
   "background": {
-    "scripts": ["www/js/background.js"],
+    "scripts": ["www/js/chrome/background.js"],
     "persistent": false
   }
-} 
+}
