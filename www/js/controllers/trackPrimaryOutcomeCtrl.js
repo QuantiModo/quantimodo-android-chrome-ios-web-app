@@ -106,10 +106,11 @@ angular.module('starter')
                 // update bar chart
                 if($scope.barChartData !== "[0,0,0,0,0]" && $scope.barChartData !== null){
                     updateBarChart($scope.barChartData);
-                    if(!$scope.$$phase) {
-                        $scope.$apply();
-                    }
                     $scope.showCharts = true;
+                }
+
+                if(!$scope.$$phase) {
+                    $scope.$apply();
                 }
             });
         };
@@ -187,7 +188,7 @@ angular.module('starter')
 
         $scope.init();
 
-        $scope.$on('redraw', function(){
+        $scope.$on('updateChartsAndSyncMeasurements', function(){
             console.log('track state redrawing event triggered through sibling controllers. Updating charts and syncing..');
             updateCharts();
             syncPrimaryOutcomeVariableMeasurements();

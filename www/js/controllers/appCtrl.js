@@ -175,7 +175,7 @@ angular.module('starter')
             });
 
             // redraw everything according to updated appstate
-            $rootScope.$broadcast('redraw');
+            $rootScope.$broadcast('updateChartsAndSyncMeasurements');
         }
 
         $scope.goToDefaultStateIfWelcomed = function(){
@@ -273,6 +273,7 @@ angular.module('starter')
                         $rootScope.user = userObject;
                         $rootScope.setUserForIntercom($rootScope.user);
                         $rootScope.setUserForBugsnag($rootScope.user);
+                        $rootScope.$broadcast('updateChartsAndSyncMeasurements');
                         //$state.go(config.appSettings.defaultState);
                         return userObject;
                     }
