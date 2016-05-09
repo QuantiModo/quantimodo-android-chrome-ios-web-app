@@ -5,7 +5,7 @@ angular.module('starter')
 											 $stateParams, measurementService, reminderService, $ionicLoading,
 											 utilsService, $filter, ionicTimePicker, $timeout, 
 											 variableCategoryService, variableService, unitService, timeService,
-                                             QuantiModo){
+                                             QuantiModo, notificationService){
 
 	    $scope.controller_name = "RemindersAddCtrl";
 
@@ -243,6 +243,14 @@ angular.module('starter')
 	    	.then(function(){
 
 	    		utilsService.loadingStop();
+                var notificationParams = {
+                    variableName: $scope.state.variableName,
+                    frequency: $scope.state.selectedFrequency,
+                    interval: getFrequencyChart()[$scope.state.selectedFrequency]/60,
+                    reminderTime: $scope.state.reminderStartTimeStringUtc
+                };
+
+                notificationService.scheduleReminder(notificationParams);
 	    		if($stateParams.reminder !== null && typeof $stateParams.reminder !== "undefined"){
 	    			if($stateParams.reminder.fromState){
 	    				$state.go($stateParams.reminder.fromState);
@@ -313,8 +321,15 @@ angular.module('starter')
                 $scope.state.combinationOperation,
                 $scope.state.reminderStartTimeStringUtc)
 	    	.then(function(){
-
 	    		utilsService.loadingStop();
+                var notificationParams = {
+                    variableName: $scope.state.variableName,
+                    frequency: $scope.state.selectedFrequency,
+                    interval: getFrequencyChart()[$scope.state.selectedFrequency]/60,
+                    reminderTime: $scope.state.reminderStartTimeStringUtc
+                };
+
+                notificationService.scheduleReminder(notificationParams);
 	    		if($stateParams.reminder !== null && typeof $stateParams.reminder !== "undefined"){
 	    			if($stateParams.reminder.fromState){
 	    				$state.go($stateParams.reminder.fromState);

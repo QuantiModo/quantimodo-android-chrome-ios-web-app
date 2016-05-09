@@ -117,8 +117,9 @@ angular.module('starter')
                     console.log("Alarm set, every day on", reminderTime);
                 } else {
                     // chrome daily notifications
-                    var alarmInfo = {when: when};
-                    chrome.alarms.create("when", alarmInfo);
+                    var alarmInfo = {when: reminderTime.getTime(), periodInMinutes: 24*60};
+                    console.log('alarminfo', alarmInfo);
+                    chrome.alarms.create("reminderNotification", alarmInfo);
                     console.log("Alarm set, every day on", reminderTime);
                 }
             }
