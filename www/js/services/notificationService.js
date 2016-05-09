@@ -16,7 +16,7 @@ angular.module('starter')
             // schedule new notifications
             scheduleNotification:function(interval){
 
-                console.log(interval);
+                console.log('Reminder notification interval is ' + interval);
                 if(typeof cordova != "undefined"){
                     if(ionic.Platform.isAndroid()){
                         cordova.plugins.notification.local.cancelAll(function(){

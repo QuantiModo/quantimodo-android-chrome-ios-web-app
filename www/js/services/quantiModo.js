@@ -21,7 +21,7 @@ angular.module('starter')
                     console.log('data: ' + JSON.stringify(data));
                     console.log('headers: ' + JSON.stringify(headers));
                     console.log('config: ' + JSON.stringify(config));
-                    $state.go('app.login');
+                    //$state.go('app.login');
                     return;
                 }
                 if(!data){

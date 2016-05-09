@@ -36,16 +36,12 @@ angular.module('starter')
         
 		$scope.init = function(){
 
-            if(!$rootScope.user){
-                $rootScope.user = localStorageService.getItemAsObject('user');
-            }
-
 	    };
 
         $scope.logout = function(){
 
             var startLogout = function(){
-                console.log('Logging out...')
+                console.log('Logging out...');
                 $rootScope.isSyncing = false;
                 $rootScope.user = null;
                 $rootScope.isMobile = window.cordova;

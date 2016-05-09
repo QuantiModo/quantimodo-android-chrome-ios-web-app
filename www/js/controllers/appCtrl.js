@@ -208,8 +208,13 @@ angular.module('starter')
             if(!$rootScope.user){
                 $rootScope.user = localStorageService.getItemAsObject('user');
             }
+            if(!$rootScope.user && $rootScope.isChromeExtension){
+                $rootScope.getUserAndSetInLocalStorage();
+            }
+            if($rootScope.user){
+                $rootScope.getUserAndSetInLocalStorage();
+            }
             scheduleReminder();
-
             $ionicLoading.hide();
             goToDefaultStateIfLoggedInOnLoginState();
         };
@@ -255,6 +260,51 @@ angular.module('starter')
                 $rootScope.isChromeApp = false;
             }
         }
+
+        $rootScope.getUserAndSetInLocalStorage = function(){
+            authService.apiGet('api/user/me',
+                [],
+                {},
+                function(userObject){
+                    if(userObject){
+                       // set user data in local storage
+                        console.log('Settings user in getUserAndSetInLocalStorage');
+                        localStorageService.setItem('user', JSON.stringify(userObject));
+                        $rootScope.user = userObject;
+                        $rootScope.setUserForIntercom($rootScope.user);
+                        $rootScope.setUserForBugsnag($rootScope.user);
+                        //$state.go(config.appSettings.defaultState);
+                        return userObject;
+                    }
+
+                },function(err){
+                    console.log(err);
+                }
+            );
+        };
+
+        $rootScope.setUserForIntercom = function(userObject) {
+            if(userObject){
+                window.intercomSettings = {
+                    app_id: "uwtx2m33",
+                    name: userObject.displayName,
+                    email: userObject.email,
+                    user_id: userObject.id
+                };
+            }
+            return userObject;
+        };
+
+        $rootScope.setUserForBugsnag = function(userObject) {
+            Bugsnag.metaData = {
+                user: {
+                    name: userObject.displayName,
+                    email: userObject.email
+                }
+            };
+            return userObject;
+        };
+
 
         // call constructor
         $scope.init();

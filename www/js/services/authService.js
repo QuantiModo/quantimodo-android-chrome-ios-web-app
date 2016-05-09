@@ -171,7 +171,7 @@ angular.module('starter')
                             !(window.location.origin.indexOf('staging.quantimo.do') > -1)){
                             console.log("getAccessTokenFromUserEndpoint: Browser Detected and client id is oAuthDisabled.  ");
                             $ionicLoading.hide();
-                            $state.go('app.login');
+                            //$state.go('app.login');
                         } else {
                             authService._defaultGetAccessToken(deferred);
                         }
