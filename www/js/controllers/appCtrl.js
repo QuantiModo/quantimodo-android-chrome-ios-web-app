@@ -59,7 +59,7 @@ angular.module('starter')
             }
         };
         $scope.showHistorySubMenu = false;
-        $scope.shoppingCarEnabled = config.shoppingCarEnabled;
+        $scope.shoppingCartEnabled = config.shoppingCarEnabled;
         $rootScope.isSyncing = false;
 
 

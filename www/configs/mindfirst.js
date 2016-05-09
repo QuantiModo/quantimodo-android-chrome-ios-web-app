@@ -18,7 +18,7 @@ window.config = {
     permissions : ['readmeasurements', 'writemeasurements'],
     port : '4417',
     protocol : 'https',
-    shoppingCarEnabled : true
+    shoppingCartEnabled : true
 };
 
 config.appSettings  = {
