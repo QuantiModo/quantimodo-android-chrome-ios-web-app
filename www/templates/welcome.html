@@ -37,7 +37,7 @@
 					Interval
 				</div>
 
-				<div ng-show="isAndroid || isChrome">
+				<div ng-hide="isIOS">
 					<select ng-model="$parent.notificationInterval">
 						<option value="never">Never</option>
 						<option value="hourly">Hourly</option>
@@ -46,7 +46,7 @@
 						<option value="daily">Daily</option>
 					</select>
 				</div>
-				<div ng-show="isIOS || (!isAndroid && !isChrome)  ">
+				<div ng-show="isIOS">
 					<select ng-model="$parent.notificationInterval">
 						<option value="never">Never</option>
 						<option value="hour">Hourly</option>

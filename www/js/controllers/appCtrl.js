@@ -59,14 +59,10 @@ angular.module('starter')
             }
         };
         $scope.showHistorySubMenu = false;
-        $scope.shoppingCartEnabled = config.shoppingCarEnabled;
+        $scope.shoppingCartEnabled = config.shoppingCartEnabled;
         $rootScope.isSyncing = false;
 
-
-        $scope.isIOS = ionic.Platform.isIPad() || ionic.Platform.isIOS();
-        $scope.isAndroid = ionic.Platform.isAndroid();
-        $scope.isChrome = window.chrome ? true : false;
-
+        setPlatformVariables();
 
         /*Wrapper Config*/
         $scope.viewTitle = config.appSettings.appName;
@@ -243,6 +239,22 @@ angular.module('starter')
         $scope.toggleReminderSubMenu = function(){
             $scope.showReminderSubMenu = !$scope.showReminderSubMenu;
         };
+
+        function setPlatformVariables() {
+            $rootScope.isIOS = ionic.Platform.isIPad() || ionic.Platform.isIOS();
+            $rootScope.isAndroid = ionic.Platform.isAndroid();
+            $rootScope.isChrome = window.chrome ? true : false;
+
+            if ($rootScope.isChrome && chrome.identity) {
+                $rootScope.isChromeExtension = false;
+                $rootScope.isChromeApp = true;
+            }
+
+            if ($rootScope.isChrome && !chrome.identity) {
+                $rootScope.isChromeExtension = true;
+                $rootScope.isChromeApp = false;
+            }
+        }
 
         // call constructor
         $scope.init();

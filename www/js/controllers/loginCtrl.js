@@ -6,15 +6,15 @@ angular.module('starter')
                                       $ionicLoading, $injector) {
 
         $scope.controller_name = "LoginCtrl";
-        $scope.isIOS = ionic.Platform.isIPad() || ionic.Platform.isIOS();
+        $rootScope.isIOS = ionic.Platform.isIPad() || ionic.Platform.isIOS();
         console.log("isIos is" + $scope.isIos);
-        $scope.isAndroid = ionic.Platform.isAndroid();
-        $scope.isChrome = window.chrome ? true : false;
+        $rootScope.isAndroid = ionic.Platform.isAndroid();
+        $rootScope.isChrome = window.chrome ? true : false;
         $rootScope.hideMenu = true;
         $scope.headline = config.appSettings.headline;
         $scope.features = config.appSettings.features;
         var $cordovaFacebook = {};
-        if($scope.isIOS && $injector.has('$cordovaFacebook')){
+        if($rootScope.isIOS && $injector.has('$cordovaFacebook')){
             $cordovaFacebook = $injector.get('$cordovaFacebook');
         }
 
@@ -39,9 +39,10 @@ angular.module('starter')
 
             var url = config.getURL("api/oauth2/authorize", true);
 
-            if (window.chrome && chrome.runtime && chrome.runtime.id) {
-                console.log("$scope.login: Chrome Detected");
-                chromeLogin(url, register);
+            if($rootScope.isChromeApp){
+                chromeAppLogin(register);
+            } else if ($rootScope.isChromeExtension) {
+                chromeExtensionLogin(register);
             } else if(ionic.Platform.is('browser')){
                 console.log("$scope.login: Browser Detected");
                 browserLogin(url, register);
@@ -198,14 +199,6 @@ angular.module('starter')
             });
         };
 
-        var chromeLogin = function(register) {
-            if(chrome.identity){
-                chromeAppLogin(register);
-            } else {
-                chromeExtensionLogin(register);
-            }
-        };
-
         var chromeAppLogin = function(register){
           console.log("login: Use Chrome app (content script, background page, etc.");
           var url = authService.generateV1OAuthUrl(register);
@@ -220,7 +213,8 @@ angular.module('starter')
 
         var chromeExtensionLogin = function(register) {
               console.log("Using Chrome extension, so we use sessions instead of OAuth flow. ");
-              chrome.tabs.create({ url: config.getApiUrl() + "/" });
+              //chrome.tabs.create({ url: config.getApiUrl() + "/" });
+              sendToNonOAuthBrowserLoginUrl(register);
         };
 
         $scope.nativeLogin = function(platform, accessToken, register){
@@ -351,7 +345,7 @@ angular.module('starter')
                 console.debug('sendToNonOAuthBrowserLoginUrl: AUTH redirect URL created:', loginUrl);
                 var apiUrl = config.getApiUrl();
                 var apiUrlMatchesHostName = apiUrl.indexOf(window.location.hostname);
-                if(apiUrlMatchesHostName > -1) {
+                if(apiUrlMatchesHostName > -1 || $rootScope.isChromeExtension) {
                     window.location.replace(loginUrl);
                 } else {
                     alert("API url doesn't match auth base url.  Please make use the same domain in config file");

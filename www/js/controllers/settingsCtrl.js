@@ -10,9 +10,9 @@ angular.module('starter')
         localStorageService.getItem('askForRating', function (askForRating) {
                 $scope.ratings = askForRating ? askForRating : "hourly";
         });
-		$scope.isIOS = ionic.Platform.isIPad() || ionic.Platform.isIOS();
-		$scope.isAndroid = ionic.Platform.isAndroid();
-        $scope.isChrome = window.chrome ? true : false;
+		$rootScope.isIOS = ionic.Platform.isIPad() || ionic.Platform.isIOS();
+		$rootScope.isAndroid = ionic.Platform.isAndroid();
+        $rootScope.isChrome = window.chrome ? true : false;
 	    // populate user data
 
 
@@ -101,7 +101,7 @@ angular.module('starter')
             };
 
             function logOutOfApi() {
-                if (window.chrome && window.chrome.extension && typeof window.chrome.identity === "undefined") {
+                if ($rootScope.isChrome) {
                     chrome.tabs.create({
                         url: config.getApiUrl() + "/api/v2/auth/logout"
                     });

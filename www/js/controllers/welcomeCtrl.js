@@ -5,9 +5,9 @@ angular.module('starter')
                                         $state, $ionicHistory, notificationService, localStorageService, $rootScope) {
         
         $scope.controller_name = "WelcomeCtrl";
-        $scope.isIOS = ionic.Platform.isIPad() || ionic.Platform.isIOS();
-        $scope.isAndroid = ionic.Platform.isAndroid();
-        $scope.isChrome = window.chrome ? true : false;
+        $rootScope.isIOS = ionic.Platform.isIPad() || ionic.Platform.isIOS();
+        $rootScope.isAndroid = ionic.Platform.isAndroid();
+        $rootScope.isChrome = window.chrome ? true : false;
         $rootScope.hideMenu = true;
         $scope.reportedVariableValue = false;
         $scope.headline = config.appSettings.headline;
@@ -15,7 +15,7 @@ angular.module('starter')
         $scope.appName = config.appSettings.appName;
 
         localStorageService.getItem('askForRating',function(askForRating){
-            $scope.notificationInterval = askForRating || $scope.isIOS? "hour" : "hourly";
+            $scope.notificationInterval = askForRating || $rootScope.isIOS? "hour" : "hourly";
         });
 
         $scope.subscribeNotification = true;
