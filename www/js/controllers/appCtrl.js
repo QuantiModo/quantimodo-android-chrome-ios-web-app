@@ -253,14 +253,16 @@ angular.module('starter')
             $rootScope.isAndroid = ionic.Platform.isAndroid();
             $rootScope.isChrome = window.chrome ? true : false;
 
+            var currentUrl =  window.location.href;
+            console.log('currentUrl is ' + currentUrl );
+            if (currentUrl.indexOf('chrome-extension') !== -1) {
+                $rootScope.isChromeExtension = true;
+                $rootScope.isChromeApp = false;
+            } 
+
             if ($rootScope.isChrome && chrome.identity) {
                 $rootScope.isChromeExtension = false;
                 $rootScope.isChromeApp = true;
-            }
-
-            if ($rootScope.isChrome && !chrome.identity) {
-                $rootScope.isChromeExtension = true;
-                $rootScope.isChromeApp = false;
             }
         }
 
