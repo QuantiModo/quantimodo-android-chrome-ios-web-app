@@ -90,10 +90,11 @@ angular.module('starter')
                             authService.updateAccessToken(response);
                         }
 
-                        // get user details from server
+                        console.log('get user details from server...');
                         $rootScope.getUserAndSetInLocalStorage();
-
                         $rootScope.$broadcast('callAppCtrlInit');
+                        $state.go(config.appSettings.defaultState);
+
                     }
                 })
                 .catch(function(err){

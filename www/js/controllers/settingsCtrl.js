@@ -95,31 +95,21 @@ angular.module('starter')
 
                 });
             };
-
-            function logOutOfApi() {
-                if ($rootScope.isChrome) {
-                    chrome.tabs.create({
-                        url: config.getApiUrl() + "/api/v2/auth/logout"
-                    });
-                }
-            }
-
+            
             var completelyResetAppState = function(){
                 $rootScope.user = null;
                 localStorageService.clear();
                 notificationService.cancelNotifications();
-                logOutOfApi();
-
+                //TODO: Fix this
+                //QuantiModo.logoutOfApi();
                 refreshTrackingPageAndGoToWelcome();
             };
-
-
+            
             var afterLogoutDoNotDeleteMeasurements = function(){
                 $rootScope.user = null;
                 clearTokensFromLocalStorage();
-             
-                logOutOfApi();
-
+                //TODO: Fix this
+                //QuantiModo.logoutOfApi();
                 refreshTrackingPageAndGoToWelcome();
             };
 
