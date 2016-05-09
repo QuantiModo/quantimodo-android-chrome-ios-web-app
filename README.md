@@ -27,6 +27,14 @@ A generic app that can be easily configured to help the user track and optimize 
 1. Run `node app.js`
 1. See project at [http://localhost:5000/](http://localhost:5000/)
 
+
+# Chrome Development Tips
+1. Install [Chrome Apps & Extensions Developer Tool](https://chrome.google.com/webstore/detail/chrome-apps-extensions-de/ohmmkhmmmpcnpikjeljgnaoabkaalbgc?utm_source=chrome-ntp-icon)
+1. You can load the whole repo as an unpacked extension
+1. [Add the www folder to your workspace](https://developer.chrome.com/devtools/docs/workspaces)
+1. To be able to edit and save files within the Chrome dev console, map the browser's index.html file to the workspace www/index.html
+1. To avoid debugging libraries, go to Chrome Dev Console -> Settings -> Blackboxing and add `\.min\.js$`, `/backbone\.js$`, `jquery.js` and `/angular\.js$`
+
 #QuantiModo Ionic App
 
 ## File Structure
