@@ -21,6 +21,9 @@ angular.module('starter')
                 $rootScope.helpPopup.close();
             }
             console.log("login initialized");
+            if(!$rootScope.user && $rootScope.isChromeExtension){
+                $rootScope.getUserAndSetInLocalStorage();
+            }
             if($rootScope.user){
                 console.log("Already logged in on login page.  Going to default state...");
                 $state.go(config.appSettings.defaultState);
@@ -90,10 +93,11 @@ angular.module('starter')
                             authService.updateAccessToken(response);
                         }
 
-                        // get user details from server
+                        console.log('get user details from server...');
                         $rootScope.getUserAndSetInLocalStorage();
-
                         $rootScope.$broadcast('callAppCtrlInit');
+                        $state.go(config.appSettings.defaultState);
+
                     }
                 })
                 .catch(function(err){
@@ -155,8 +159,12 @@ angular.module('starter')
         };
 
         var chromeExtensionLogin = function(register) {
-              console.log("Using Chrome extension, so we use sessions instead of OAuth flow. ");
-              chrome.tabs.create({ url: config.getApiUrl() + "/" });
+            var loginUrl = config.getURL("api/v2/auth/login");
+            if (register === true) {
+            loginUrl = config.getURL("api/v2/auth/register");
+            }
+            console.log("Using Chrome extension, so we use sessions instead of OAuth flow. ");
+            chrome.tabs.create({ url: loginUrl });
         };
 
         $scope.nativeLogin = function(platform, accessToken){

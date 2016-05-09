@@ -4,8 +4,12 @@ var getPlatform = function(){
         typeof ionic.Platform !== "undefined" &&
         typeof ionic.Platform.isIOS !== "undefined" &&
         typeof ionic.Platform.isAndroid !== "undefined" )
+    {
         return ionic.Platform.isIOS()? "iOS" : ionic.Platform.isAndroid()? "Android" : "Web";
-    else return "Ionic";
+    }
+    else {
+        return "Ionic";
+    }
 };
 
 window.config = {
@@ -441,7 +445,7 @@ config.getClientSecret = function(){
 
 config.getRedirectUri = function(){
     if(!window.private_keys.redirect_uris){
-        return 'https://app.quantimo.do/ionic/Modo/www/callback/'
+        return 'https://app.quantimo.do/ionic/Modo/www/callback/';
     }
     if (window.chrome && chrome.runtime && chrome.runtime.id) {
         return window.private_keys.redirect_uris.Chrome;

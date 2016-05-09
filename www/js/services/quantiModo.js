@@ -227,6 +227,16 @@ angular.module('starter')
                     successHandler,
                     errorHandler);
             };
+        
+            QuantiModo.logoutOfApi = function(successHandler, errorHandler){
+                //TODO: Fix this
+                console.log('Logging out of api does not work yet.  Fix it!');        
+                QuantiModo.get('api/v2/auth/logout',
+                    [],
+                    {},
+                    successHandler,
+                    errorHandler);
+            };
 
             // get positive list
             QuantiModo.getCauses = function(successHandler, errorHandler){

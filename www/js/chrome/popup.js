@@ -17,15 +17,15 @@ function setFaceButtonListeners() {
 var onFaceButtonClicked = function() {
     // Figure out what rating was selected
     var buttonId = this.id;
-    if (buttonId == "buttonMoodDepressed") {
+    if (buttonId === "buttonMoodDepressed") {
         var ratingValue = 1;
-    } else if (buttonId == "buttonMoodSad") {
+    } else if (buttonId === "buttonMoodSad") {
         var ratingValue = 2;
-    } else if (buttonId == "buttonMoodOk") {
+    } else if (buttonId === "buttonMoodOk") {
         var ratingValue = 3;
-    } else if (buttonId == "buttonMoodHappy") {
+    } else if (buttonId === "buttonMoodHappy") {
         var ratingValue = 4;
-    } else if (buttonId == "buttonMoodEcstatic") {
+    } else if (buttonId === "buttonMoodEcstatic") {
         var ratingValue = 5;
     } else {
         console.log("How did I get here...");

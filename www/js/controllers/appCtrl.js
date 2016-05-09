@@ -6,7 +6,10 @@ angular.module('starter')
                                     QuantiModo, notificationService, $rootScope, localStorageService, reminderService,
                                     $ionicPopup, $ionicSideMenuDelegate) {
 
-        // flags
+        $rootScope.loaderImagePath = config.appSettings.loaderImagePath;
+        if(!$rootScope.loaderImagePath){
+            $rootScope.loaderImagePath = 'img/loader.gif';
+        }
         $scope.controller_name = "AppCtrl";
         $scope.menu = config.appSettings.menu;
         $scope.showTrackingSubMenu = false;
@@ -19,31 +22,35 @@ angular.module('starter')
         var helpPopupMessages = config.appSettings.helpPopupMessages || false;
 
         $scope.showHelpInfoPopupIfNecessary = function(e) {
-            if (helpPopupMessages && typeof helpPopupMessages[location.hash] !== "undefined") {
-                localStorageService.getItem('notShowHelpPopup', function (val) {
-                    $scope.notShowHelpPopup = val ? JSON.parse(val) : false;
+            localStorageService.getItem('isWelcomed',function(isWelcomed) {
+                if(isWelcomed  === true || isWelcomed === "true"){
+                    if (helpPopupMessages && typeof helpPopupMessages[location.hash] !== "undefined") {
+                        localStorageService.getItem('notShowHelpPopup', function (val) {
+                            $scope.notShowHelpPopup = val ? JSON.parse(val) : false;
 
-                    // Had to add "&& e.targetScope !== $scope" to prevent duplicate popups
-                    //if (!$scope.notShowHelpPopup && e.targetScope !== $scope) {
-                    if (!$scope.notShowHelpPopup) {
-                        $rootScope.helpPopup = $ionicPopup.show({
-                            title: helpPopupMessages[location.hash],
-                            subTitle: '',
-                            scope: $scope,
-                            template: '<label><input type="checkbox" ng-model="$parent.notShowHelpPopup" class="show-again-checkbox">Don\'t show these tips</label>',
-                            buttons: [
-                                {
-                                    text: 'OK',
-                                    type: 'button-positive',
-                                    onTap: function () {
-                                        localStorageService.setItem('notShowHelpPopup', JSON.stringify($scope.notShowHelpPopup));
-                                    }
-                                }
-                            ]
+                            // Had to add "&& e.targetScope !== $scope" to prevent duplicate popups
+                            //if (!$scope.notShowHelpPopup && e.targetScope !== $scope) {
+                            if (!$scope.notShowHelpPopup) {
+                                $rootScope.helpPopup = $ionicPopup.show({
+                                    title: helpPopupMessages[location.hash],
+                                    subTitle: '',
+                                    scope: $scope,
+                                    template: '<label><input type="checkbox" ng-model="$parent.notShowHelpPopup" class="show-again-checkbox">Don\'t show these tips</label>',
+                                    buttons: [
+                                        {
+                                            text: 'OK',
+                                            type: 'button-positive',
+                                            onTap: function () {
+                                                localStorageService.setItem('notShowHelpPopup', JSON.stringify($scope.notShowHelpPopup));
+                                            }
+                                        }
+                                    ]
+                                });
+                            }
                         });
                     }
-                });
-            }
+                }
+            });
         };
 
         $scope.$on('$ionicView.enter', function(e) {
@@ -191,7 +198,25 @@ angular.module('starter')
         var goToDefaultStateIfLoggedInOnLoginState = function(){
             var loginState = 'app.login';
             if(loginState.indexOf($state.current.name) !== -1 && $rootScope.user){
+                $rootScope.hideNavigationMenu = false;
                 $state.go(config.appSettings.defaultState);
+            }
+        };
+
+        var goToWelcomeStateIfNotWelcomed = function(){
+            var accessTokenInUrl = authService.getAccessTokenFromUrlParameter();
+            if (!$rootScope.user && !accessTokenInUrl) {
+                localStorageService.getItem('isWelcomed',function(isWelcomed) {
+                    if(!isWelcomed || isWelcomed === false || isWelcomed === "false"){
+                        console.log('going to welcome state...');
+                        //$rootScope.hideNavigationMenu = true;
+                        $state.go(config.appSettings.welcomeState);
+                    } else {
+                        console.log('Not welcoming because isWelcomed is ' + isWelcomed);
+                    }
+                });
+            } else {
+                console.log('Not going to welcome state...');
             }
         };
 
@@ -204,16 +229,14 @@ angular.module('starter')
 
         $scope.init = function () {
             console.log("Main Constructor Start");
-            hideMenuIfSetInUrlParameter();
             if(!$rootScope.user){
                 $rootScope.user = localStorageService.getItemAsObject('user');
             }
-            if(!$rootScope.user && $rootScope.isChromeExtension){
+            if(!$rootScope.user && config.getClientId() === 'oAuthDisabled'){
                 $rootScope.getUserAndSetInLocalStorage();
             }
-            if($rootScope.user){
-                $rootScope.getUserAndSetInLocalStorage();
-            }
+            hideMenuIfSetInUrlParameter();
+            goToWelcomeStateIfNotWelcomed();
             scheduleReminder();
             $ionicLoading.hide();
             goToDefaultStateIfLoggedInOnLoginState();
@@ -250,14 +273,16 @@ angular.module('starter')
             $rootScope.isAndroid = ionic.Platform.isAndroid();
             $rootScope.isChrome = window.chrome ? true : false;
 
+            var currentUrl =  window.location.href;
+            console.log('currentUrl is ' + currentUrl );
+            if (currentUrl.indexOf('chrome-extension') !== -1) {
+                $rootScope.isChromeExtension = true;
+                $rootScope.isChromeApp = false;
+            } 
+
             if ($rootScope.isChrome && chrome.identity) {
                 $rootScope.isChromeExtension = false;
                 $rootScope.isChromeApp = true;
-            }
-
-            if ($rootScope.isChrome && !chrome.identity) {
-                $rootScope.isChromeExtension = true;
-                $rootScope.isChromeApp = false;
             }
         }
 
@@ -274,7 +299,11 @@ angular.module('starter')
                         $rootScope.setUserForIntercom($rootScope.user);
                         $rootScope.setUserForBugsnag($rootScope.user);
                         $rootScope.$broadcast('updateChartsAndSyncMeasurements');
-                        //$state.go(config.appSettings.defaultState);
+                        var currentStateName = $state.current.name;
+                        console.log('Current state is  ' + currentStateName);
+                        if(currentStateName === 'app.login'){
+                            goToDefaultStateShowMenuClearIntroHistoryAndRedraw();
+                        }
                         return userObject;
                     }
 
