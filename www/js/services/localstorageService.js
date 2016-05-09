@@ -5,19 +5,9 @@
 
 angular.module('starter')
 
-    .factory('localStorageService',function(){
+    .factory('localStorageService',function(utilsService){
 
         return{
-
-            convertToObjectIfJsonString : function (stringOrObject) {
-                try {
-                    stringOrObject = JSON.parse(stringOrObject);
-                } catch (e) {
-                    return stringOrObject;
-                }
-                return stringOrObject;
-            },
-
 
             deleteItem : function(key){
                 var keyIdentifier = config.appSettings.appStorageIdentifier;
@@ -75,12 +65,12 @@ angular.module('starter')
                     // Code running in a Chrome extension (content script, background page, etc.)
                     chrome.storage.local.get(keyIdentifier+key,function(val){
                         var item = val[keyIdentifier+key];
-                        item = this.convertToObjectIfJsonString(item);
+                        item = utilsService.convertToObjectIfJsonString(item);
                         return item;
                     });
                 } else {
                     var item = localStorage.getItem(keyIdentifier+key);
-                    item = this.convertToObjectIfJsonString(item);
+                    item = utilsService.convertToObjectIfJsonString(item);
                     return item;
                 }
             },
