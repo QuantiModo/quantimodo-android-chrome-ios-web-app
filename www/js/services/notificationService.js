@@ -1,6 +1,6 @@
 angular.module('starter')
     // Handles the Notifications (inapp, push)
-    .factory('notificationService',function($state){
+    .factory('notificationService',function($rootScope){
 
         //Notification intervals in minutes
         var intervals = {
@@ -51,7 +51,7 @@ angular.module('starter')
                     }
                    
                 }
-                else if(window.chrome && chrome.runtime && chrome.runtime.id){
+                else if($rootScope.isChrome){
                     chrome.alarms.clear("trackReportAlarm");
                     var alarmInfo = {periodInMinutes: intervals[interval]};
                     chrome.alarms.create("trackReportAlarm", alarmInfo);
@@ -100,7 +100,7 @@ angular.module('starter')
                             }
                         });
                     }
-                    else if(window.chrome && chrome.runtime && chrome.runtime.id){
+                    else if($rootScope.isChrome){
                         // chrome frequency reminders
                         var alarmInfo = {periodInMinutes: intervals[interval]};
                         chrome.alarms.create("trackReportAlarm", alarmInfo);
