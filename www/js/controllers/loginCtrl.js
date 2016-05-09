@@ -1,10 +1,10 @@
 angular.module('starter')
-    
+
     // Handlers the Welcome Page
-    .controller('LoginCtrl', function($scope, $ionicModal, $timeout, utilsService, authService, measurementService, 
+    .controller('LoginCtrl', function($scope, $ionicModal, $timeout, utilsService, authService, measurementService,
                                       $state, $ionicHistory, notificationService, localStorageService, $rootScope,
                                       $ionicLoading, $injector) {
-        
+
         $scope.controller_name = "LoginCtrl";
         $scope.isIOS = ionic.Platform.isIPad() || ionic.Platform.isIOS();
         console.log("isIos is" + $scope.isIos);
@@ -51,9 +51,9 @@ angular.module('starter')
             }
 
             var userObject = localStorageService.getItemAsObject('user');
-            
+
             $rootScope.user = userObject;
-            
+
             if($rootScope.user){
                 console.log('Settings user in login');
                 setUserForIntercom($rootScope.user);
@@ -108,7 +108,7 @@ angular.module('starter')
                     // set flags
                     localStorageService.setItem('user', null);
                 });
-        }; 
+        };
         var getUserAndSetInLocalStorage = function(){
             authService.apiGet('api/user/me',
                 [],
@@ -151,7 +151,7 @@ angular.module('starter')
             };
             return userObject;
         };
-        
+
         var setUserInLocalStorageIfWeHaveAccessToken = function(){
             localStorageService.getItem('accessToken',function(accessToken){
                 if(accessToken) {
@@ -200,23 +200,29 @@ angular.module('starter')
 
         var chromeLogin = function(register) {
             if(chrome.identity){
-                console.log("login: Code running in a Chrome extension (content script, background page, etc.");
-
-                var url = authService.generateV1OAuthUrl(register);
-
-                chrome.identity.launchWebAuthFlow({
-                    'url': url,
-                    'interactive': true
-                }, function(redirect_url) {
-                    var authorizationCode = authService.getAuthorizationCodeFromUrl(event);
-                    authService.getAccessTokenFromAuthorizationCode(authorizationCode);
-                });
+                chromeAppLogin(register);
             } else {
-                console.log("It is an extension, so we use sessions instead of OAuth flow. ");
-                chrome.tabs.create({ url: config.getApiUrl() + "/" });
+                chromeExtensionLogin(register);
             }
         };
-        
+
+        var chromeAppLogin = function(register){
+          console.log("login: Use Chrome app (content script, background page, etc.");
+          var url = authService.generateV1OAuthUrl(register);
+          chrome.identity.launchWebAuthFlow({
+              'url': url,
+              'interactive': true
+          }, function(redirect_url) {
+              var authorizationCode = authService.getAuthorizationCodeFromUrl(event);
+              authService.getAccessTokenFromAuthorizationCode(authorizationCode);
+          });
+        }
+
+        var chromeExtensionLogin = function(register) {
+              console.log("Using Chrome extension, so we use sessions instead of OAuth flow. ");
+              chrome.tabs.create({ url: config.getApiUrl() + "/" });
+        };
+
         $scope.nativeLogin = function(platform, accessToken, register){
             localStorageService.setItem('isWelcomed', true);
             $rootScope.isWelcomed = true;
