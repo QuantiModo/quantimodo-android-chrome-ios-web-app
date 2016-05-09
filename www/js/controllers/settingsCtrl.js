@@ -100,6 +100,7 @@ angular.module('starter')
                 $rootScope.user = null;
                 localStorageService.clear();
                 notificationService.cancelNotifications();
+              	logoutOfApi();
                 //TODO: Fix this
                 //QuantiModo.logoutOfApi();
                 refreshTrackingPageAndGoToWelcome();
@@ -108,6 +109,7 @@ angular.module('starter')
             var afterLogoutDoNotDeleteMeasurements = function(){
                 $rootScope.user = null;
                 clearTokensFromLocalStorage();
+                logoutOfApi();
                 //TODO: Fix this
                 //QuantiModo.logoutOfApi();
                 refreshTrackingPageAndGoToWelcome();
@@ -127,6 +129,15 @@ angular.module('starter')
             localStorageService.deleteItem('expiresAt');
         }
 
+                // when user is logging out
+        function logoutOfApi() {
+			if(config.getClientId() === 'oAuthDisabled'){
+				var logoutUrl = config.getURL("api/v2/auth/logout");
+                window.open(logoutUrl, '_blank');
+			} else {
+                console.log('Client id is ' + config.getClientId() + ' so not sending to ' +  config.getURL("api/v2/auth/logout"));
+            }
+        }
 
         // load rating popover
 	    $ionicPopover.fromTemplateUrl('templates/settings/ask-for-a-rating.html', {
