@@ -6,7 +6,10 @@ angular.module('starter')
                                     QuantiModo, notificationService, $rootScope, localStorageService, reminderService,
                                     $ionicPopup, $ionicSideMenuDelegate) {
 
-        // flags
+        $rootScope.loaderImagePath = config.appSettings.loaderImagePath;
+        if(!$rootScope.loaderImagePath){
+            $rootScope.loaderImagePath = 'img/loader.gif';
+        }
         $scope.controller_name = "AppCtrl";
         $scope.menu = config.appSettings.menu;
         $scope.showTrackingSubMenu = false;
