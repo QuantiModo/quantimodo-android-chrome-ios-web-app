@@ -21,12 +21,13 @@ window.config = {
     permissions : ['readmeasurements', 'writemeasurements'],
     port : '4417',
     protocol : 'https',
-    shoppingCarEnabled : true
+    shoppingCartEnabled : true
 };
 
 config.appSettings  = {
     appName : 'MoodiModo',
     allowOffline : true,
+    loaderImagePath : 'img/pop-tart-cat.gif',
 
     defaultState : 'app.track',
     welcomeState : 'app.welcome',
@@ -687,7 +688,7 @@ config.getClientSecret = function(){
 
 config.getRedirectUri = function(){
     if(!window.private_keys.redirect_uris){
-        return 'https://app.quantimo.do/ionic/Modo/www/callback/'
+        return 'https://app.quantimo.do/ionic/Modo/www/callback/';
     }
     if (window.chrome && chrome.runtime && chrome.runtime.id) {
         return window.private_keys.redirect_uris.Chrome;

@@ -6,18 +6,14 @@ angular.module('starter')
                                       $ionicLoading, $injector) {
 
         $scope.controller_name = "LoginCtrl";
-        $scope.isIOS = ionic.Platform.isIPad() || ionic.Platform.isIOS();
         console.log("isIos is" + $scope.isIos);
-        $scope.isAndroid = ionic.Platform.isAndroid();
-        $scope.isChrome = window.chrome ? true : false;
         $rootScope.hideMenu = true;
         $scope.headline = config.appSettings.headline;
         $scope.features = config.appSettings.features;
         var $cordovaFacebook = {};
-        if($scope.isIOS && $injector.has('$cordovaFacebook')){
+        if($rootScope.isIOS && $injector.has('$cordovaFacebook')){
             $cordovaFacebook = $injector.get('$cordovaFacebook');
         }
-
 
         $scope.init = function(){
             if($rootScope.helpPopup){
@@ -25,6 +21,9 @@ angular.module('starter')
                 $rootScope.helpPopup.close();
             }
             console.log("login initialized");
+            if(!$rootScope.user && $rootScope.isChromeExtension){
+                $rootScope.getUserAndSetInLocalStorage();
+            }
             if($rootScope.user){
                 console.log("Already logged in on login page.  Going to default state...");
                 $state.go(config.appSettings.defaultState);
@@ -39,9 +38,10 @@ angular.module('starter')
 
             var url = config.getURL("api/oauth2/authorize", true);
 
-            if (window.chrome && chrome.runtime && chrome.runtime.id) {
-                console.log("$scope.login: Chrome Detected");
-                chromeLogin(url, register);
+            if($rootScope.isChromeApp){
+                chromeAppLogin(register);
+            } else if ($rootScope.isChromeExtension) {
+                chromeExtensionLogin(register);
             } else if(ionic.Platform.is('browser')){
                 console.log("$scope.login: Browser Detected");
                 browserLogin(url, register);
@@ -56,8 +56,8 @@ angular.module('starter')
 
             if($rootScope.user){
                 console.log('Settings user in login');
-                setUserForIntercom($rootScope.user);
-                setUserForBugsnag($rootScope.user);
+                $rootScope.setUserForIntercom($rootScope.user);
+                $rootScope.setUserForBugsnag($rootScope.user);
                 $state.go(config.appSettings.defaultState);
             }
         };
@@ -65,13 +65,11 @@ angular.module('starter')
         var getOrSetUserInLocalStorage = function() {
             var userObject = localStorageService.getItemAsObject('user');
             if(!userObject){
-                userObject = getUserAndSetInLocalStorage();
+                userObject = $rootScope.getUserAndSetInLocalStorage();
             }
             if(userObject){
                 console.log('Settings user in getOrSetUserInLocalStorage');
                 $rootScope.user = userObject;
-                setUserForIntercom(userObject);
-                setUserForBugsnag(userObject);
                 return userObject;
             }
 
@@ -95,11 +93,11 @@ angular.module('starter')
                             authService.updateAccessToken(response);
                         }
 
-
-                        // get user details from server
-                        getUserAndSetInLocalStorage();
-
+                        console.log('get user details from server...');
+                        $rootScope.getUserAndSetInLocalStorage();
                         $rootScope.$broadcast('callAppCtrlInit');
+                        $state.go(config.appSettings.defaultState);
+
                     }
                 })
                 .catch(function(err){
@@ -108,56 +106,6 @@ angular.module('starter')
                     // set flags
                     localStorageService.setItem('user', null);
                 });
-        };
-        var getUserAndSetInLocalStorage = function(){
-            authService.apiGet('api/user/me',
-                [],
-                {},
-                function(userObject){
-                    if(userObject){
-                        // set user data in local storage
-                        console.log('Settings user in getUserAndSetInLocalStorage');
-                        localStorageService.setItem('user', JSON.stringify(userObject));
-                        $rootScope.user = userObject;
-                        setUserForIntercom($rootScope.user);
-                        setUserForBugsnag($rootScope.user);
-                        $state.go(config.appSettings.defaultState);
-                        return userObject;
-                    }
-
-                },function(err){
-                    console.log(err);
-                }
-            );
-        };
-        var setUserForIntercom = function(userObject) {
-            if(userObject){
-                window.intercomSettings = {
-                    app_id: "uwtx2m33",
-                    name: userObject.displayName,
-                    email: userObject.email,
-                    user_id: userObject.id
-                };
-            }
-            return userObject;
-        };
-
-        var setUserForBugsnag = function(userObject) {
-            Bugsnag.metaData = {
-                user: {
-                    name: userObject.displayName,
-                    email: userObject.email
-                }
-            };
-            return userObject;
-        };
-
-        var setUserInLocalStorageIfWeHaveAccessToken = function(){
-            localStorageService.getItem('accessToken',function(accessToken){
-                if(accessToken) {
-                    getUserAndSetInLocalStorage();
-                }
-            });
         };
 
         var nonNativeMobileLogin = function(register) {
@@ -198,32 +146,28 @@ angular.module('starter')
             });
         };
 
-        var chromeLogin = function(register) {
-            if(chrome.identity){
-                chromeAppLogin(register);
-            } else {
-                chromeExtensionLogin(register);
-            }
-        };
-
         var chromeAppLogin = function(register){
           console.log("login: Use Chrome app (content script, background page, etc.");
           var url = authService.generateV1OAuthUrl(register);
           chrome.identity.launchWebAuthFlow({
               'url': url,
               'interactive': true
-          }, function(redirect_url) {
+          }, function() {
               var authorizationCode = authService.getAuthorizationCodeFromUrl(event);
               authService.getAccessTokenFromAuthorizationCode(authorizationCode);
           });
-        }
-
-        var chromeExtensionLogin = function(register) {
-              console.log("Using Chrome extension, so we use sessions instead of OAuth flow. ");
-              chrome.tabs.create({ url: config.getApiUrl() + "/" });
         };
 
-        $scope.nativeLogin = function(platform, accessToken, register){
+        var chromeExtensionLogin = function(register) {
+            var loginUrl = config.getURL("api/v2/auth/login");
+            if (register === true) {
+            loginUrl = config.getURL("api/v2/auth/register");
+            }
+            console.log("Using Chrome extension, so we use sessions instead of OAuth flow. ");
+            chrome.tabs.create({ url: loginUrl });
+        };
+
+        $scope.nativeLogin = function(platform, accessToken){
             localStorageService.setItem('isWelcomed', true);
             $rootScope.isWelcomed = true;
 
@@ -351,7 +295,7 @@ angular.module('starter')
                 console.debug('sendToNonOAuthBrowserLoginUrl: AUTH redirect URL created:', loginUrl);
                 var apiUrl = config.getApiUrl();
                 var apiUrlMatchesHostName = apiUrl.indexOf(window.location.hostname);
-                if(apiUrlMatchesHostName > -1) {
+                if(apiUrlMatchesHostName > -1 || $rootScope.isChromeExtension) {
                     window.location.replace(loginUrl);
                 } else {
                     alert("API url doesn't match auth base url.  Please make use the same domain in config file");

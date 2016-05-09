@@ -6,6 +6,16 @@ angular.module('starter')
         var loginAlert;
 
         return {
+
+            convertToObjectIfJsonString : function (stringOrObject) {
+                try {
+                    stringOrObject = JSON.parse(stringOrObject);
+                } catch (e) {
+                    return stringOrObject;
+                }
+                return stringOrObject;
+            },
+
             
             showAlert : function(title, template) {
                 var alertPopup = $ionicPopup.alert({
@@ -31,7 +41,7 @@ angular.module('starter')
                 if(!loadingMessage) {
                     $ionicLoading.show({
                         noBackdrop: true,
-                        template: '<img src="img/pop-tart-cat.gif"><!--<br><p class="item-icon-left">Loading stuff...<ion-spinner icon="lines"/></p>-->'
+                        template: '<img src={{loaderImagePath}}><!--<br><p class="item-icon-left">Loading stuff...<ion-spinner icon="lines"/></p>-->'
                     });
                 }
                 

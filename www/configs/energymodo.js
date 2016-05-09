@@ -3,8 +3,12 @@ var getPlatform = function(){
         typeof ionic.Platform !== "undefined" &&
         typeof ionic.Platform.isIOS !== "undefined" && 
         typeof ionic.Platform.isAndroid !== "undefined" ) 
+    {
         return ionic.Platform.isIOS()? "iOS" : ionic.Platform.isAndroid()? "Android" : "Web";
-    else return "Ionic";
+    }
+    else {
+        return "Ionic";
+    }
 };
 
 window.config = {
@@ -17,13 +21,13 @@ window.config = {
     permissions : ['readmeasurements', 'writemeasurements'],
     port : '4417',
     protocol : 'https',
-    shoppingCarEnabled : true
+    shoppingCartEnabled : true
 };
 
 config.appSettings  = {
     appName : 'EnergyModo',
     allowOffline : true,
-
+    loaderImagePath : 'img/pop-tart-cat.gif',
     defaultState : 'app.track',
     welcomeState : 'app.welcome',
 
@@ -577,14 +581,16 @@ config.appSettings  = {
             title : 'Help & Feedback',
             href : window.chrome ? "mailto:help@quantimo.do" : "#app/feedback",
             icon : 'ion-ios-help-outline'
-        },
+        }
     ]
 };
 
 config.getPrimaryOutcomeVariableOptionLabels = function(shouldShowNumbers){
     if(shouldShowNumbers || !config.appSettings.primaryOutcomeVariableRatingOptionLabels){
         return ['1',  '2',  '3',  '4', '5'];
-    } else return config.appSettings.primaryOutcomeVariableRatingOptionLabels;
+    } else {
+        return config.appSettings.primaryOutcomeVariableRatingOptionLabels;
+    }
 };
 
 config.getPrimaryOutcomeVariableOptions = function(shouldShowNumbers){
@@ -611,7 +617,9 @@ config.getPrimaryOutcomeVariableOptions = function(shouldShowNumbers){
                 img: 'img/ic_5.png'
             }
         ];
-    } else return config.appSettings.primaryOutcomeVariableRatingOptions;
+    } else {
+        return config.appSettings.primaryOutcomeVariableRatingOptions;
+    }
 };
 
 config.getImageForPrimaryOutcomeVariableByValue = function(val){
@@ -673,7 +681,7 @@ config.getClientSecret = function(){
 
 config.getRedirectUri = function(){
     if(!window.private_keys.redirect_uris){
-        return 'https://app.quantimo.do/ionic/Modo/www/callback/'
+        return 'https://app.quantimo.do/ionic/Modo/www/callback/';
     }
     if (window.chrome && chrome.runtime && chrome.runtime.id) {
         return window.private_keys.redirect_uris.Chrome;
@@ -705,7 +713,9 @@ config.getPermissionString = function(){
 
     var str = "";
     for(var i=0; i < config.permissions.length; i++)
+    {
         str+= config.permissions[i]+"%20";
+    }
     return str.replace(/%20([^%20]*)$/,'$1');
 
 };

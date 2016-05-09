@@ -10,9 +10,9 @@ angular.module('starter')
         localStorageService.getItem('askForRating', function (askForRating) {
                 $scope.ratings = askForRating ? askForRating : "hourly";
         });
-		$scope.isIOS = ionic.Platform.isIPad() || ionic.Platform.isIOS();
-		$scope.isAndroid = ionic.Platform.isAndroid();
-        $scope.isChrome = window.chrome ? true : false;
+		$rootScope.isIOS = ionic.Platform.isIPad() || ionic.Platform.isIOS();
+		$rootScope.isAndroid = ionic.Platform.isAndroid();
+        $rootScope.isChrome = window.chrome ? true : false;
 	    // populate user data
 
 
@@ -36,16 +36,12 @@ angular.module('starter')
         
 		$scope.init = function(){
 
-            if(!$rootScope.user){
-                $rootScope.user = localStorageService.getItemAsObject('user');
-            }
-
 	    };
 
         $scope.logout = function(){
 
             var startLogout = function(){
-                console.log('Logging out...')
+                console.log('Logging out...');
                 $rootScope.isSyncing = false;
                 $rootScope.user = null;
                 $rootScope.isMobile = window.cordova;
@@ -99,31 +95,23 @@ angular.module('starter')
 
                 });
             };
-
-            function logOutOfApi() {
-                if (window.chrome && window.chrome.extension && typeof window.chrome.identity === "undefined") {
-                    chrome.tabs.create({
-                        url: config.getApiUrl() + "/api/v2/auth/logout"
-                    });
-                }
-            }
-
+            
             var completelyResetAppState = function(){
                 $rootScope.user = null;
                 localStorageService.clear();
                 notificationService.cancelNotifications();
-                logOutOfApi();
-
+              	logoutOfApi();
+                //TODO: Fix this
+                //QuantiModo.logoutOfApi();
                 refreshTrackingPageAndGoToWelcome();
             };
-
-
+            
             var afterLogoutDoNotDeleteMeasurements = function(){
                 $rootScope.user = null;
                 clearTokensFromLocalStorage();
-             
-                logOutOfApi();
-
+                logoutOfApi();
+                //TODO: Fix this
+                //QuantiModo.logoutOfApi();
                 refreshTrackingPageAndGoToWelcome();
             };
 
@@ -141,6 +129,15 @@ angular.module('starter')
             localStorageService.deleteItem('expiresAt');
         }
 
+                // when user is logging out
+        function logoutOfApi() {
+			if(config.getClientId() === 'oAuthDisabled'){
+				var logoutUrl = config.getURL("api/v2/auth/logout");
+                window.open(logoutUrl, '_blank');
+			} else {
+                console.log('Client id is ' + config.getClientId() + ' so not sending to ' +  config.getURL("api/v2/auth/logout"));
+            }
+        }
 
         // load rating popover
 	    $ionicPopover.fromTemplateUrl('templates/settings/ask-for-a-rating.html', {
