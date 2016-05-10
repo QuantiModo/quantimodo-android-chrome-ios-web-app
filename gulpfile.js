@@ -892,7 +892,7 @@ gulp.task('makeIosApp', function(callback){
 gulp.task('bumpVersion', function(){
 	var deferred = q.defer();
 
-	var xml = fs.readFileSync('./apps/'+APP_NAME+'/config.xml'+APP_NAME+'.xml', 'utf8');
+	var xml = fs.readFileSync('./apps/'+APP_NAME+'/config.xml', 'utf8');
 	
 	parseString(xml, function (err, result) {
 		if(err){
