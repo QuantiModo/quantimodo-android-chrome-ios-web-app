@@ -11,7 +11,7 @@
 
 ionic platform add ios
 ionic platform add android
-ionic resources
+ionic resources >/dev/null
 cp resources/icon.png www/img/icon_700.png
 convert resources/icon.png -resize 16x16 www/img/icon_16.png
 convert resources/icon.png -resize 48x48 www/img/icon_48.png
