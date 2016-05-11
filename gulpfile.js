@@ -429,8 +429,8 @@ function execute(command, callback){
     	if (error !== null) {
 	      console.log('exec ERROR: ' + error);
 	    }
-    	callback(error); 
-    });
+		callback(error, stdout);
+	});
 
     my_child_process.stdout.pipe(process.stdout);
     my_child_process.stderr.pipe(process.stderr);
@@ -793,7 +793,8 @@ gulp.task('addPodfile', [ 'getIOSAppFolderName' ], function(){
 				throw err;
 			}
 			
-			if(data.indexOf('pod \'Bugsnag\', :git => "https://github.com/bugsnag/bugsnag-cocoa.git"') < 0){
+			//if(data.indexOf('pod \'Bugsnag\', :git => "https://github.com/bugsnag/bugsnag-cocoa.git"') < 0){
+			if(data.indexOf('Bugsnag') < 0){
 				console.log("no Bugsnag detected");
 				
 				gulp.src('./platforms/ios/Podfile')
