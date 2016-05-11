@@ -278,7 +278,7 @@ gulp.task('getAccessTokenFromGoogle', ['getCode'], function(){
 
 	request(options, function(error, message, response){
 		if(error){
-			console.log('Failed to generate the access code');
+			console.log('Failed to generate the access code', error);
 			defer.reject();
 		} else {
 			response = JSON.parse(response);	
@@ -384,7 +384,7 @@ gulp.task('publishToGoogleAppStore', ['shouldPublish'],function(){
 
 	request(options, function(error, message, publishResult){
 		if(error) { 
-			console.log("error in publishing to trusted Users");
+			console.log("error in publishing to trusted Users", error);
 			deferred.reject();
 		} else {
 			publishResult = JSON.parse(publishResult);
@@ -583,7 +583,7 @@ gulp.task('addFacebookPlugin', ['readKeysForCurrentApp'] , function(){
 
 		execute(commands, function(error){
 			if(error !== null){
-				console.log("***THERE WAS AN ERROR ADDING THE FACEBOOK PLUGIN***");
+				console.log("***THERE WAS AN ERROR ADDING THE FACEBOOK PLUGIN***", error);
 				deferred.reject();
 			} else {
 				console.log("\n***FACEBOOK PLUGIN SUCCESSFULLY ADDED***");
@@ -607,7 +607,7 @@ gulp.task('addFacebookPlugin', ['readKeysForCurrentApp'] , function(){
 	    	
 	    	execute(commands, function(error){
 	    		if(error !== null){
-	    			console.log("***THERE WAS AN ERROR DOWNLOADING THE FACEBOOK PLUGIN***");
+	    			console.log("***THERE WAS AN ERROR DOWNLOADING THE FACEBOOK PLUGIN***", error);
 	    			deferred.reject();
 	    		} else {
 	    			console.log("\n***FACEBOOK PLUGIN DOWNLOADED, NOW ADDING IT TO IONIC PROJECT***");
@@ -630,7 +630,7 @@ gulp.task('addGooglePlusPlugin', ['readKeysForCurrentApp'] , function(){
 
 	execute(commands, function(error){
 		if(error !== null){
-			console.log("***ERROR ADDING THE GOOGLE PLUS PLUGIN***");
+			console.log("***ERROR ADDING THE GOOGLE PLUS PLUGIN***", error);
 			deferred.reject();
 		} else {
 			console.log("\n***GOOGLE PLUS PLUGIN ADDED****");
@@ -651,7 +651,7 @@ gulp.task('getIOSAppFolderName', ['getAppName'] , function(){
 		var xml = fs.readFileSync('./apps/'+APP_NAME+'/config.xml', 'utf8');
 		parseString(xml, function (err, result) {
 		    if(err){
-		    	console.log("failed to read xml file");
+		    	console.log("failed to read xml file", err);
 		    	deferred.reject();
 		    } else {
 		    	if(result && result.widget && result.widget.name && result.widget.name.length > 0){
@@ -804,7 +804,7 @@ gulp.task('addPodfile', [ 'getIOSAppFolderName' ], function(){
 
 	    	execute(commands, function(error){
 	    		if(error !== null){
-	    			console.log("There was an error detected");
+	    			console.log("There was an error detected", error);
 	    			deferred.reject();
 	    		} else {
 	    			console.log("\n***Podfile Added****");
@@ -835,7 +835,7 @@ gulp.task('installPods', [ 'addPodfile' ] , function(){
 
 	execute(commands, function(error){
 		if(error !== null){
-			console.log("There was an error detected");
+			console.log("There was an error detected", error);
 			deferred.reject();
 		} else {
 			console.log("\n***Pods Installed****");
@@ -896,7 +896,7 @@ gulp.task('bumpVersion', function(){
 	
 	parseString(xml, function (err, result) {
 		if(err){
-			console.log("failed to read xml file");
+			console.log("failed to read xml file", err);
 			deferred.reject();
 		} else {
 			var version = "1.0.0";
