@@ -312,6 +312,9 @@ angular.module('starter')
                 if(!$scope.state.measurementIsSetup){
                     setMeasurementVariablesByMeasurementId();
                 }
+                if(!$scope.state.measurementIsSetup) {
+                    setupFromReminderStateParameter();
+                }
                 if(!$scope.state.measurementIsSetup){
                     if($stateParams.fromState){
                         $state.go($stateParams.fromState);
@@ -416,6 +419,12 @@ angular.module('starter')
             }
         };
 
+        var setupFromReminderStateParameter = function(){
+            if($stateParams.reminder !== null && typeof $stateParams.reminder !== "undefined"){
+                setupTrackingByReminder();
+            }
+        };
+
         var setupFromVariableStateParameter = function(){
             if($stateParams.variableObject !== null && typeof $stateParams.variableObject !== "undefined"){
                 $scope.state.title = "Record Measurement";
@@ -451,6 +460,19 @@ angular.module('starter')
             $scope.state.measurement.startTime = moment(measurementObject.startTime).unix();
             $scope.state.measurementDate = moment(measurementObject.startTime)._d;
             $scope.state.measurementIsSetup = true;
+        };
+
+        var setupTrackingByReminder = function(){
+            if($stateParams.reminder !== null && typeof $stateParams.reminder !== "undefined"){
+                $scope.state.title = "Record Measurement";
+                $scope.state.measurement.value = $stateParams.reminder.defaultValue;
+                $scope.state.measurement.variable = $stateParams.reminder.variableName;
+                $scope.state.measurement.abbreviatedUnitName = $stateParams.reminder.abbreviatedUnitName;
+                $scope.state.measurement.variableCategoryName = $stateParams.reminder.variableCategoryName;
+                $scope.state.measurement.combinationOperation = $stateParams.reminder.combinationOperation;
+                $scope.state.measurement.startTime = currentTime.getTime() / 1000;
+                $scope.state.measurementIsSetup = true;
+            }
         };
 
     });

@@ -191,6 +191,7 @@ angular.module('starter',
             url: "/measurement-add/:variableName",
             cache:false,
             params: {
+                reminder : null,
                 fromState : null,
                 measurement : null,
                 variableObject : null
