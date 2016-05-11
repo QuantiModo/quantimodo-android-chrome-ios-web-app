@@ -5,7 +5,7 @@
         The Mind First Mood Tracking app from QuantiModo
     </description>
   <author email="help@quantimo.do" href="http://help.quantimo.do/">
-      Team QuantiModo.
+      QuantiModo
     </author>
   <content src="index.html"/>
   <access origin="*"/>
@@ -32,6 +32,10 @@
   
   <feature name="StatusBar">
     <param name="ios-package" value="CDVStatusBar" onload="true"/>
+  </feature>
+  <feature name="InAppBrowser">
+    <param name="ios-package" value="CDVInAppBrowser"/>
+    <param name="android-package" value="org.apache.cordova.inappbrowser.InAppBrowser"/>
   </feature>
   <platform name="ios">
     <splash src="resources/ios/splash/Default-568h@2x~iphone.png" width="640" height="1136"/>
