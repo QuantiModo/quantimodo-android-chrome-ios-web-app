@@ -793,6 +793,8 @@ gulp.task('addPodfile', [ 'getIOSAppFolderName' ], function(){
 			if (err) {
 				throw err;
 			}
+			
+			//if(data.indexOf('pod \'Bugsnag\', :git => "https://github.com/bugsnag/bugsnag-cocoa.git"') < 0){
 
 			if(data.indexOf('Bugsnag') < 0){
 				console.log("no Bugsnag detected");
@@ -850,15 +852,15 @@ gulp.task('addInheritedToOtherLinkerFlags', [ 'getIOSAppFolderName' ], function(
 
 gulp.task('addDeploymentTarget', ['getIOSAppFolderName'], function(){
 	return gulp.src('./platforms/ios/'+IOS_FOLDER_NAME+'.xcodeproj/project.pbxproj')
-	.pipe(change(function(content){
-		if(content.indexOf('IPHONEOS_DEPLOYMENT_TARGET') === -1)
-			return content.replace(/ENABLE_BITCODE(\s+)?=(\s+)?(\s+)NO\;/g, "IPHONEOS_DEPLOYMENT_TARGET = 6.0;\ENABLE_BITCODE = NO;");
-		return content;
-	}))
-	.pipe(change(function(content){
-		console.log("*****************\n\n\n",content,"\n\n\n*****************");
-	}))
-	.pipe(gulp.dest('./platforms/ios/'+IOS_FOLDER_NAME+'.xcodeproj/'));
+		.pipe(change(function(content){
+			if(content.indexOf('IPHONEOS_DEPLOYMENT_TARGET') === -1)
+				return content.replace(/ENABLE_BITCODE(\s+)?=(\s+)?(\s+)NO\;/g, "IPHONEOS_DEPLOYMENT_TARGET = 6.0;\ENABLE_BITCODE = NO;");
+			return content;
+		}))
+		.pipe(change(function(content){
+			console.log("*****************\n\n\n",content,"\n\n\n*****************");
+		}))
+		.pipe(gulp.dest('./platforms/ios/'+IOS_FOLDER_NAME+'.xcodeproj/'));
 });
 
 gulp.task('installPods', [ 'addPodfile' ] , function(){
