@@ -1,11 +1,62 @@
 angular.module('starter')
 
     // utility methods
-    .factory('utilsService', function($ionicPopup,$state) {
+    .factory('utilsService', function($ionicPopup, $state, $ionicLoading) {
 
         var loginAlert;
 
         return {
+
+            convertToObjectIfJsonString : function (stringOrObject) {
+                try {
+                    stringOrObject = JSON.parse(stringOrObject);
+                } catch (e) {
+                    return stringOrObject;
+                }
+                return stringOrObject;
+            },
+
+            
+            showAlert : function(title, template) {
+                var alertPopup = $ionicPopup.alert({
+                    cssClass : 'positive',
+                    okType : 'button-positive',
+                    title: title,
+                    template: template
+                });
+            },
+
+            // Hide spinner
+            loadingStop : function(){
+                $ionicLoading.hide();
+            },
+
+            // show spinner
+            loadingStart : function(loadingMessage, hideAfter){
+                
+                if(!hideAfter){
+                    hideAfter = 10;
+                }
+                
+                if(!loadingMessage) {
+                    $ionicLoading.show({
+                        noBackdrop: true,
+                        template: '<img src={{loaderImagePath}}><!--<br><p class="item-icon-left">Loading stuff...<ion-spinner icon="lines"/></p>-->'
+                    });
+                }
+                
+                if(loadingMessage) {
+                    $ionicLoading.show({
+                        noBackdrop: true,
+                        template: '<p class="item-icon-left">' + loadingMessage + '<ion-spinner icon="lines"/></p>'
+                    });
+                }
+
+                setTimeout(function(){
+                    $ionicLoading.hide();
+                }, hideAfter);
+            },
+
             // returns bool
             // if a string starts with substring
             startsWith : function (fullString, search) {
@@ -34,7 +85,9 @@ angular.module('starter')
                         }
                     }
                     return false;
-                } else return false;
+                } else {
+                    return false;
+                }
             },
 
             showLoginRequiredAlert: function(login){
@@ -46,7 +99,7 @@ angular.module('starter')
                             type:'button-assertive',
                             onTap: function(e){
                                 var ref = window.open(config.getURL('register'),'_blank');
-                                $state.go('app.welcome');
+                                $state.go(config.appSettings.welcomeState);
 
                          }
                         },
@@ -61,12 +114,12 @@ angular.module('starter')
                             text:'Cancel',
                             type:'button-stable',
                             onTap:function(e){
-                                $state.go(config.appSettings.default_state);
+                                $state.go(config.appSettings.defaultState);
                             }
                         }
                     ],
                     cssClass:'alert-popup'
-                })
+                });
             }
         };
     });

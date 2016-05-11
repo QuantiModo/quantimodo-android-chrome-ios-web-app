@@ -1,106 +1,82 @@
 angular.module('starter')
 
-    // Controlls the Negative Factors page
-    .controller('NegativeCtrl', function($scope,localStorageService, $ionicModal, $timeout, measurementService, $ionicLoading, $ionicPopup,$state, correlationService, $rootScope,utilsService) {
+    // Controls the Negative Factors page
+    .controller('NegativeCtrl', function($scope,localStorageService, $ionicModal, $timeout, measurementService, 
+                                         $ionicLoading, $ionicPopup, $state, correlationService, $rootScope,
+                                         utilsService, authService) {
 
         /*// redirect if not logged in
-        if(!$scope.isLoggedIn){
-            $state.go('app.welcome');
+        if(!$rootScope.user){
+            $state.go(config.appSettings.welcomeState);
             // app wide signal to sibling controllers that the state has changed
             $rootScope.$broadcast('transition');
         }*/
-
-        $scope.not_show_confirmation_negative;
-        localStorageService.getItem('not_show_confirmation_negative',function(not_show_confirmation_negative){
-            $scope.not_show_confirmation_negative = not_show_confirmation_negative ? JSON.parse(not_show_confirmation_negative) : false;
+        
+        localStorageService.getItem('notShowConfirmationNegative',function(notShowConfirmationNegative){
+            $scope.notShowConfirmationNegative = notShowConfirmationNegative ? JSON.parse(notShowConfirmationNegative) : false;
         });
-        $scope.not_show_confirmation_negative_down;
-        localStorageService.getItem('not_show_confirmation_negative_down',function(not_show_confirmation_negative_down){
-           $scope.not_show_confirmation_negative_down = not_show_confirmation_negative_down ? JSON.parse(not_show_confirmation_negative_down) : false;
+        
+        localStorageService.getItem('notShowConfirmationNegativeDown',function(notShowConfirmationNegativeDown){
+           $scope.notShowConfirmationNegativeDown = notShowConfirmationNegativeDown ? JSON.parse(notShowConfirmationNegativeDown) : false;
         });
 
         $scope.controller_name = "NegativeCtrl";
 
         $scope.negatives = false;
-        $scope.users_negative_factors = false;
+        $scope.usersNegativeFactors = false;
 
-        // show alert for upvoted/failure
-        $scope.showAlert = function(title, template) {
-            $ionicPopup.alert({
-                cssClass : 'calm',
-                okType : 'button-calm',
-                title: title,
-                template: template
-            });
-        };
 
-        // constructor
         $scope.init = function(){
-
-
-
-            if($scope.isLoggedIn){
-                // show loader
-                $ionicLoading.show({
-                    noBackdrop: true,
-                    template: '<p class="item-icon-left">Loading stuff...<ion-spinner icon="lines"/></p>'
-                });
-
-                // get negative list
+            $scope.state.loading = true;
+            utilsService.loadingStart();
+            var isAuthorized = authService.checkAuthOrSendToLogin();
+            if(isAuthorized){
+                utilsService.loadingStart();
                 correlationService.getNegativeFactors()
-                .then(function(list){
-                    
-                    // update view model
-                    $scope.negatives = list;
-                    
-                    // hide spinner
-                    $ionicLoading.hide();
-
-                    correlationService.getUsersPositiveFactors().then(function(list){
-                        $scope.users_negative_factors = list;
-                     });
-
-                }, function(){
-                    
-                    // hide spinner
-                    $ionicLoading.hide();
-                    utilsService.showLoginRequiredAlert($scope.login);
-
+                    .then(function(correlationObjects){
+                        $scope.negatives = correlationObjects;
+                        correlationService.getUsersPositiveFactors().then(function(correlationObjects){
+                            $scope.usersNegativeFactors = correlationObjects;
+                        });
+                        $ionicLoading.hide();
+                    }, function(){
+                        $ionicLoading.hide();
+                        console.log('negativeCtrl: Could not get correlations.  Going to login page...');
+                        $state.go('app.login', {
+                            fromUrl : window.location.href
+                        });
                     });
-            } else {
-                utilsService.showLoginRequiredAlert($scope.login);
-            }
-
+            } 
         };
 
-        // when downvoted
-        $scope.downvote = function(factor) {
+        // when downVoted
+        $scope.downVote = function(factor) {
 
-            if (!$scope.not_show_confirmation_negative_down) {
+            if (!$scope.notShowConfirmationNegativeDown) {
 
                 $ionicPopup.show({
                     title: 'Voting thumbs down indicates',
                     subTitle: 'you disagree that ' + factor.cause + ' decreases your ' + factor.effect + '.',
                     scope: $scope,
-                    template: '<label><input type="checkbox" ng-model="$parent.not_show_confirmation_negative_down" class="show-again-checkbox">Don\'t show this again</label>',
+                    template: '<label><input type="checkbox" ng-model="$parent.notShowConfirmationNegativeDown" class="show-again-checkbox">Don\'t show this again</label>',
                     buttons: [
                         {text: 'Cancel'},
                         {text: 'Disagree',
                             type: 'button-positive',
                             onTap: function () {
-                                localStorageService.setItem('not_show_confirmation_negative_down',$scope.not_show_confirmation_negative_down);
-                                downvote(factor);
+                                localStorageService.setItem('notShowConfirmationNegativeDown',$scope.notShowConfirmationNegativeDown);
+                                downVote(factor);
                             }
                         }
                     ]
 
                 });
             }else{
-                downvote(factor);
+                downVote(factor);
             }
         };
 
-        function downvote(factor){
+        function downVote(factor){
 
         	var prevValue = factor.userVote;
             factor.userVote = 0;
@@ -112,48 +88,48 @@ angular.module('starter')
             var correlationCoefficient = factor.correlationCoefficient;
 
             // call service method for voting
-            if($scope.isLoggedIn){
+            if($rootScope.user){
                 correlationService.vote(vote, cause, effect, correlationCoefficient)
                     .then(function(){
-                        $scope.showAlert('Downvoted!');
+                        utilsService.showAlert('Downvoted!');
                     }, function(){
                         factor.userVote = prevValue;
-                        $scope.showAlert('Downvote Failed!');
+                        utilsService.showAlert('Downvote Failed!');
                         
                     });
             } else {
                 factor.userVote = prevValue;
-            	$state.go('app.welcome')
+            	$state.go(config.appSettings.welcomeState);
             	}
         }
 
-        // when upvoted
-        $scope.upvote = function(factor){
-            if(!$scope.not_show_confirmation_negative){
+        // when upVoted
+        $scope.upVote = function(factor){
+            if(!$scope.notShowConfirmationNegative){
                 $ionicPopup.show({
                     title:'Voting thumbs up indicates',
                     subTitle: 'you agree that '+factor.cause+' decreases your '+factor.effect+'.',
                     scope:$scope,
-                    template:'<label><input type="checkbox" ng-model="$parent.not_show_confirmation_negative" class="show-again-checkbox">Don\'t show this again</label>',
+                    template:'<label><input type="checkbox" ng-model="$parent.notShowConfirmationNegative" class="show-again-checkbox">Don\'t show this again</label>',
                     buttons:[
                         {text: 'Cancel'},
                         {text: 'Agree',
                             type: 'button-positive',
                             onTap: function(){
-                                localStorageService.setItem('not_show_confirmation_negative',$scope.not_show_confirmation_negative);
-                                upvote(factor);
+                                localStorageService.setItem('notShowConfirmationNegative',$scope.notShowConfirmationNegative);
+                                upVote(factor);
                             }
                         }
                     ]
 
                 });
             }else{
-                upvote(factor);
+                upVote(factor);
             }
 
         };
 
-        function upvote(factor){
+        function upVote(factor){
 
         	var prevValue = factor.userVote;
             factor.userVote =1;
@@ -164,25 +140,25 @@ angular.module('starter')
             var vote = 1;
             var correlationCoefficient = factor.correlationCoefficient;
 
-            if($scope.isLoggedIn){
+            if($rootScope.user){
 
                 // call service method for voting
                 correlationService.vote(vote, cause, effect, correlationCoefficient)
                     .then(function(){
-                        $scope.showAlert('Upvoted!');
+                        utilsService.showAlert('Upvoted!');
                     }, function(){
                     	factor.userVote = prevValue;
-                        $scope.showAlert('Upvote Failed!');
+                        utilsService.showAlert('Upvote Failed!');
                     });
 
             } else {
 				factor.userVote = prevValue;
-            	$state.go('app.welcome')
-            	};
-        };
+            	$state.go(config.appSettings.welcomeState);
+            	}
+        }
 
         // open store in inAppbrowser
-        $scope.open_store = function(name){
+        $scope.openStore = function(name){
             console.log("open store for ", name);
             
             // create link

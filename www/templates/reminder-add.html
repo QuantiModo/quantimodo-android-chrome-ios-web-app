@@ -1,0 +1,197 @@
+<ion-view hide-nav-bar="hideNavigationMenu" view-title="{{state.title}}">
+    <ion-content scroll="true" overflow-scroll="true">
+		
+		<div class="list card" ng-show="state.showVariableCategorySelector">
+            <!--<div class="item item-divider" style="background-color:#11c1f3; color:white;">Select Variable Category</div>-->
+			<label class="item item-input item-select">
+				<div class="input-label" style="white-space:normal; width: 60%">Select Variable Category</div>
+				<select ng-model="state.variableCategoryName" ng-change="onVariableCategoryChange()">
+					<option ng-repeat="variableCategory in variables.variableCategories" value="{{variableCategory.name}}">{{variableCategory.name}}</option>
+				</select>
+			</label>
+		</div>
+
+        <div class="list list-inset" ng-show="state.showSearchBox">
+          <!--<div class="item item-divider" style="background-color:#11c1f3; color:white;">Enter Variable Name</div>-->
+          <label class="item item-input">
+            <i class="icon ion-search placeholder-icon"></i>
+            <input type="text"
+                   placeholder={{state.variableCategoryObject.variableSearchPlaceholderText}}
+                   ng-model="state.variableSearchQuery"
+                   ng-change="onSearch()"
+                   ng-model-options='{ debounce: 500 }'>
+          </label>
+            <p></p>
+            <ion-list>
+                <ion-item style="text-align:center;border-bottom: 1px solid rgb(221, 221, 221);" ng-show="state.loading">
+                    <img src={{loaderImagePath}}>
+                </ion-item>
+            </ion-list>
+        </div>
+
+
+        <div class="list card" ng-show="state.showResults" >
+
+            <p ng-show="state.searching"></p>
+            <ion-list>
+                <ion-item style="text-align:center;border-bottom: 1px solid rgb(221, 221, 221);" ng-show="state.searching">
+                    <img src="../www/img/loader.gif">
+                </ion-item>
+            </ion-list>
+        	<a class="item" ng-repeat="result in variableSearchResults | unique:'id' " ng-click="onVariableSelect(result)">{{result.name}}</a>
+            <ion-list ng-show="state.showAddVariableButton">
+                <ion-item style="border-top: 1px solid rgb(221, 221, 221);" ng-click="addVariable()">
+                    {{state.variableCategoryObject.addNewVariableButtonText}}
+                </ion-item>
+            </ion-list>
+        </div>
+
+        <div class="card" ng-show="state.showAddVariable">
+            <div class="list">
+                <p class="heading positive" style="padding:14px;">{{state.variableCategoryObject.addNewVariableCardText}}</p>
+
+
+                <label class="item item-input item-select" ng-show="state.showVariableCategorySelector">
+                    <div class="input-label">
+                        Select variable category
+                    </div>
+                    <select ng-model="state.variableCategoryName" ng-change=>
+                        <option ng-repeat="i in state.variableCategories track by i.id" value="{{i.name}}">
+                            {{i.name}}
+                        </option>
+                    </select>
+                </label>
+
+                <label class="item item-input item-stacked-label">
+                    <span class="input-label">{{state.variableCategoryName | singularize}} Name</span>
+                    <input type="text" ng-model="state.variableName" id="variableName" placeholder="Enter the new variable name here...">
+                </label>
+            </div>
+
+<!--            <div class="card" ng-show="state.showAddVariable">
+                <p style="padding:14px;">How should we combine data over multiple days?</p>
+
+                <label class="item item-radio">
+                    <input type="radio" ng-model="state.sumAvg" value="sum" name="group">
+                    <div class="item-content">
+                        Sum (i.e. Apples eaten)
+                    </div>
+                    <i class="radio-icon ion-checkmark"></i>
+                </label>
+
+                <label class="item item-radio">
+                    <input type="radio" ng-model="state.sumAvg" value="avg" name="group">
+                    <div class="item-content">
+                        Average (i.e. Your weight)
+                    </div>
+                    <i class="radio-icon ion-checkmark"></i>
+                </label>
+            </div>-->
+        </div>
+
+
+        <div class="list card" ng-show="state.showReminderFrequencyCard">
+        	<div class="item item-divider">{{state.variableName}} reminder settings</div>
+
+<!--
+            <div class="row labeled-control">
+        		<div id="rem-set-left" class="col">
+        			<input type="number" style="width:100%;text-align:right;" placeholder={{state.variableCategoryObject.defaultValuePlaceholderText}} ng-model="state.defaultValue" class="up-top">
+        		</div>
+        		<div id="rem-set-right" class="col col-r">
+        			<span>
+        				{{state.selectedUnit}}
+        			</span>
+        		</div>
+        	</div>
+-->
+
+            <div ng-if="(state.variableCategoryName != 'Emotions' && state.variableCategoryName != 'Symptoms')" class="row labeled-control">
+                <div class="col col-l">
+                        <span>
+                            {{state.variableCategoryObject.defaultValueLabel}}
+                        </span>
+                </div>
+                <div class="col">
+                    <input type="text" ng-model="state.defaultValue" id="defaultValue" placeholder={{state.variableCategoryObject.defaultValuePlaceholderText}} class="up-top">
+                </div>
+            </div>
+
+
+            <div class="row labeled-control" ng-if="(state.variableCategoryName != 'Emotions' && state.variableCategoryName != 'Symptoms')">
+                <div class="col col-l">
+                    <span class="input-label">Unit</span>
+                </div>
+                <div class="col">
+                    <div class="row up-top" style="padding-left:0px;">
+                        <div class="col" style="padding-top:5px;">
+
+                            <!-- Default to most common unit when tracking measurement, and always keep it editable-->
+                            <input type="text" ng-change="unitSearch(state.abbreviatedUnitName)" ng-model="state.abbreviatedUnitName" placeholder="Search for a unit...">
+
+                            <!-- Below replaced by above so that we can always change the unit-->
+                            <!-- Default to most common unit when adding new variable, keep it editable-->
+                            <!--
+                            <input type="text" ng-show="state.showAddVariable" ng-change="unitSearch(state.abbreviatedUnitName)" ng-model="state.abbreviatedUnitName" placeholder="Type to search">
+                            -->
+                            <!-- Lock to default unit when tracking measurement for existing variable-->
+                            <!--
+                            <span ng-show="!state.showAddVariable">{{state.selectedUnitAbbreviatedName}}</span>
+                            -->
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <div class="card" ng-show="state.showUnits && state.searchedUnits.length">
+                <div class="list">
+                    <ion-list>
+                        <ion-item ng-repeat="unit in state.searchedUnits" on-tap="unitSelected(unit)">
+                            {{unit.name}} ({{unit.abbreviatedName}})
+                        </ion-item>
+                    </ion-list>
+                </div>
+            </div>
+
+        	<label class="item item-input item-select">
+        		<div class="input-label" style="white-space:normal; width: 60%">
+        			Select Frequency
+        		</div>
+        		<select ng-change="onFrequencyChange()" ng-model="state.selectedFrequency" style="width: 40%">
+                    <optgroup label="Intervals">
+                        <option ng-repeat="frequency in variables.frequencyVariables" ng-if="frequency.group==='intervals'">{{frequency.name}}</option>
+                    </optgroup>
+                    <optgroup label="Frequency">
+                        <option ng-repeat="frequency in variables.frequencyVariables" ng-if="frequency.group==='frequency'">{{frequency.name}}</option>
+                    </optgroup>
+        		</select>
+        	</label>
+            
+            <div class="list card" ng-show="state.selectedFrequency === 'Daily'">
+                    <label class="item item-input">
+                        <div class="input-label" >
+                            Reminder time
+                        </div>
+                        <button class="button button-block up-top"
+                                style="text-align:left;font-size:14px;border:none;color:black;background-color: white;margin-bottom: 0px;margin-top: 0px;padding-left: 0px;"
+                                ng-click="openReminderStartTimePicker()">
+                            {{state.reminderStartTimeEpochTime | fromUnixTimestampToLocalTimeOfDay}}
+                        </button>
+                    </label>
+            </div>
+
+			<div class="row">
+				<div class="col col-50">
+					<button class="button button-block button-assertive" ng-click="cancel()">Cancel</button>
+				</div>
+				<div class="col col-50">
+					<button class="button button-block button-positive" ng-click="save()">Save</button>
+				</div>
+			</div>
+        </div>
+
+        <div class="bar bar-footer bar-balanced" ng-show="variableObject">
+            <div class="title"  ng-click="goToAddMeasurement()">Record a measurement now</div>
+        </div>
+    </ion-content>
+</ion-view>

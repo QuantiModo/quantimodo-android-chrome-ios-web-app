@@ -43,10 +43,10 @@ angular.module('starter')
             },
 
             searchUnits:function(){
-                var query = $scope.state.unit_text;
+                var query = $scope.state.abbreviatedUnitName;
                 if(query !== ""){
-                    $scope.flags.showUnits = true;
-                    var matches = $scope.state.units.filter(function(unit) {
+                    $scope.state.showUnits = true;
+                    var matches = $scope.state.unitObjects.filter(function(unit) {
                         return unit.abbreviatedName.toLowerCase().indexOf(query.toLowerCase()) !== -1;
                     });
 

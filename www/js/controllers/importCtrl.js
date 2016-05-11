@@ -8,34 +8,24 @@ angular.module('starter')
 		$scope.controller_name = "ImportCtrl";
 		
 		/*// redirect if not logged in
-	    if(!$scope.isLoggedIn){
+	    if(!$rootScope.user){
 
-	        $state.go('app.welcome');
+	        $state.go(config.appSettings.welcomeState);
 	        // app wide signal to sibling controllers that the state has changed
 	        $rootScope.$broadcast('transition');
 	    }*/
 
 	    // close the loader
-	    window.closeloading = function(){
+	    window.closeLoading = function(){
 	        $ionicLoading.hide();
 	    };
 
 	    // constructor
 	    $scope.init = function(){
-	        
-	        // show spinner
-	        $ionicLoading.show({
-	            noBackdrop: true,
-	            template: '<p class="item-icon-left">One moment please...<ion-spinner icon="lines"/></p>'
-	        });  
-
+			utilsService.loadingStart();
 	        // get user's access token
 	        authService.getAccessTokenFromAnySource().then(function(token){
-	            
-	            console.log("Valid token", token);
-
 	            $ionicLoading.hide();
-
 	            if(ionic.Platform.platforms[0] === "browser"){
 					console.log("Browser Detected");
 					
@@ -47,22 +37,21 @@ angular.module('starter')
 						alert("Please unblock popups and refresh to access the Import Data page.");
 					}
 					
-					$state.go(config.appSettings.default_state);
+					$state.go(config.appSettings.defaultState);
 	            } else {	            	
 	            	var targetUrl = config.getURL("api/v1/connect/mobile", true);
 	            	targetUrl += "access_token="+token.accessToken;
 	            	var ref = window.open(targetUrl,'_blank', 'location=no,toolbar=yes');
 	            	ref.addEventListener('exit', function(){
-						$state.go(config.appSettings.default_state);
+						$state.go(config.appSettings.defaultState);
 					});
-	            }	            
-
+	            }
 	        }, function(){
-
-	            console.log("need to log in");
-                utilsService.showLoginRequiredAlert($scope.login);
-                $ionicLoading.hide();
-
+				$ionicLoading.hide();
+				console.log('importCtrl: Could not get getAccessTokenFromAnySource.  Going to login page...');
+				$state.go('app.login', {
+					fromUrl : window.location.href
+				});
 	        });
 	       
 	    };

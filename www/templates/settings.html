@@ -1,11 +1,11 @@
-<ion-view hide-nav-bar="skipMenu" view-title="Settings">
+<ion-view hide-nav-bar="hideNavigationMenu" view-title="Settings">
     <ion-content>
-        <div ng-show='config.appSettings.primary_outcome_variable' class="list card">
+        <div ng-show='config.appSettings.primaryOutcomeVariable' class="list card">
             <div class="item item-text-wrap">
                 <p>RATING</p>
             </div>
 
-            <a href="" ng-click="rating_popover.show();"  class="item ">
+            <a href="" ng-click="ratingPopover.show();"  class="item ">
               Ask for a rating
               <p ng-show="ratings=='never'">Never</p>
               <!--FOR DEVELOPMENT ONLY-->
@@ -18,7 +18,7 @@
               <p ng-show="ratings=='daily'">Daily</p>
             </a>
 	
-    		<a href="" ng-click="additional_rating_popover.show();" class="item ">
+    		<a href="" ng-click="additionalRatingPopover.show();" class="item ">
     		  Additional required ratings
     		  <p>{{addString}}</p>
     		</a>
@@ -26,15 +26,15 @@
 
 
         <div class="list card">
-            <a href="" ng-show="!isLoggedIn" ng-click="login_from_settings()" class="item ">
+            <a href="" ng-show="!user" ng-click="loginFromSettings()" class="item ">
               Account
-              <p>Not Logged In, Tap to Sign in.</p>
+              <p>Tap to sign in</p>
             </a>
 
 
-            <a href="" ng-show="isLoggedIn" ng-click="logout()" class="item ">
-              Account
-              <p>Signed In as {{user_name}}. Tap to Sign Out</p>
+            <a href="" ng-show="user" ng-click="logout()" class="item ">
+              Signed in as {{user.displayName}}
+              <p>Tap to sign out</p>
             </a>
     		
         </div>
@@ -55,16 +55,8 @@
         </div>
 
         <div class="list card">
-            <div class="item item-text-wrap">
-                <p>Feedback</p>
-            </div>
-			
             <a ng-href="{{ window.chrome ? 'mailto:help@quantimo.do':'#app/feedback'}}" class="item ">
-              Help & Feedback
-            </a>
-
-            <a href="#app/contact" class="item ">
-              Contact Us
+                Contact Us
             </a>
 
             <a href="#app/postidea" class="item ">
@@ -72,5 +64,12 @@
             </a>
         </div>
 
+        <div class="card sign-in" >
+            <div class="item item-text-wrap">
+                <button class="button button-block icon-left ion-trash-a button-assertive" ng-click="logout()">
+                    Clear all user data
+                </button>
+            </div>
+        </div>
     </ion-content>
 </ion-view>

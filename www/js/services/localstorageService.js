@@ -5,65 +5,82 @@
 
 angular.module('starter')
 
-    .factory('localStorageService',function(){
+    .factory('localStorageService',function(utilsService, $rootScope){
 
         return{
+
             deleteItem : function(key){
-                var key_identifier = config.appSettings.storage_identifier;
-                if (window.chrome && chrome.runtime && chrome.runtime.id) {
+                var keyIdentifier = config.appSettings.appStorageIdentifier;
+                if ($rootScope.isChromeApp) {
 
                     // Code running in a Chrome extension (content script, background page, etc.)
-                    chrome.storage.local.remove(key_identifier+key);
+                    chrome.storage.local.remove(keyIdentifier+key);
 
                 } else {
-                    localStorage.removeItem(key_identifier+key);
+                    localStorage.removeItem(keyIdentifier+key);
                 }
             },
 
             setItem:function(key, value){
-                var key_identifier = config.appSettings.storage_identifier;
-                if (window.chrome && chrome.runtime && chrome.runtime.id) {
+                var keyIdentifier = config.appSettings.appStorageIdentifier;
+                if ($rootScope.isChromeApp) {
                     // Code running in a Chrome extension (content script, background page, etc.)
                     var obj = {};
-                    obj[key_identifier+key] = value;
+                    obj[keyIdentifier+key] = value;
                     chrome.storage.local.set(obj);
 
                 } else {
-                    localStorage.setItem(key_identifier+key,value);
+                    localStorage.setItem(keyIdentifier+key,value);
                 }
             },
-
+            
             getItem:function(key,callback){
-                var key_identifier = config.appSettings.storage_identifier;
-                if (window.chrome && chrome.runtime && chrome.runtime.id) {
+                var keyIdentifier = config.appSettings.appStorageIdentifier;
+                if ($rootScope.isChromeApp) {
                     // Code running in a Chrome extension (content script, background page, etc.)
-                    chrome.storage.local.get(key_identifier+key,function(val){
-                        callback(val[key_identifier+key]);
+                    chrome.storage.local.get(keyIdentifier+key,function(val){
+                        callback(val[keyIdentifier+key]);
                     });
                 } else {
-                    var val = localStorage.getItem(key_identifier+key);
+                    var val = localStorage.getItem(keyIdentifier+key);
                     callback(val);
                 }
             },
 
             getItemSync: function (key) {
-                var key_identifier = config.appSettings.storage_identifier;
-                if (window.chrome && chrome.runtime && chrome.runtime.id) {
+                var keyIdentifier = config.appSettings.appStorageIdentifier;
+                if ($rootScope.isChromeApp) {
                     // Code running in a Chrome extension (content script, background page, etc.)
-                    chrome.storage.local.get(key_identifier+key,function(val){
-                        return val[key_identifier+key];
+                    chrome.storage.local.get(keyIdentifier+key,function(val){
+                        return val[keyIdentifier+key];
                     });
                 } else {
-                    return localStorage.getItem(key_identifier+key);
+                    return localStorage.getItem(keyIdentifier+key);
+                }
+            },
+
+            getItemAsObject: function (key) {
+                var keyIdentifier = config.appSettings.appStorageIdentifier;
+                if ($rootScope.isChromeApp) {
+                    // Code running in a Chrome extension (content script, background page, etc.)
+                    chrome.storage.local.get(keyIdentifier+key,function(val){
+                        var item = val[keyIdentifier+key];
+                        item = utilsService.convertToObjectIfJsonString(item);
+                        return item;
+                    });
+                } else {
+                    var item = localStorage.getItem(keyIdentifier+key);
+                    item = utilsService.convertToObjectIfJsonString(item);
+                    return item;
                 }
             },
 
             clear:function(){
-                if (window.chrome && chrome.runtime && chrome.runtime.id) {
+                if ($rootScope.isChromeApp) {
                     chrome.storage.local.clear();
                 } else {
                     localStorage.clear();
                 }
             }
-        }
+        };
     });

@@ -1,11 +1,11 @@
 angular.module('starter')
-.controller('IntroCtrl', function($scope, $state, localStorageService, $ionicSlideBoxDelegate, $ionicLoading) {
+.controller('IntroCtrl', function($scope, $state, localStorageService, $ionicSlideBoxDelegate, utilsService) {
     
-    $scope.view_title = config.appSettings.app_name;
-    $scope.primary_outcome_variable = config.appSettings.primary_outcome_variable;
-    $scope.primary_outcome_variable_options = config.getPrimaryOutcomeVariableOptions();
-    $scope.primary_outcome_variable_numbers = config.getPrimaryOutcomeVariableOptions(true);
-    $scope.intro_config = config.appSettings.intro;
+    $scope.viewTitle = config.appSettings.appName;
+    $scope.primaryOutcomeVariable = config.appSettings.primaryOutcomeVariable;
+    $scope.primaryOutcomeVariableRatingOptions = config.getPrimaryOutcomeVariableOptions();
+    $scope.primaryOutcomeVariableNumbers = config.getPrimaryOutcomeVariableOptions(true);
+    $scope.introConfiguration = config.appSettings.intro;
     
     $scope.myIntro = {
         ready : false,
@@ -14,7 +14,7 @@ angular.module('starter')
         // Called to navigate to the main app
         startApp : function() {
             localStorageService.setItem('introSeen', true);
-            $state.go('app.welcome');
+            $state.go(config.appSettings.welcomeState);
         },
 
         next : function() {
@@ -28,23 +28,19 @@ angular.module('starter')
         // Called each time the slide changes
         slideChanged : function(index) {
             $scope.myIntro.slideIndex = index;
-        },
+        }
     };
 
     var init = function(){
-        // show loader
-        $ionicLoading.show({
-            noBackdrop: true,
-            template: '<p class="item-icon-left">Loading stuff...<ion-spinner icon="lines"/></p>'
-        });
+        utilsService.loadingStart();
 
         localStorageService.getItem('introSeen', function(introSeen){
             if(introSeen){
-                $state.go('app.welcome');
+                $state.go(config.appSettings.welcomeState);
             } else {
                 $scope.myIntro.ready = true;
             }
-            $ionicLoading.hide();
+            utilsService.loadingStop();
         });
     };
 

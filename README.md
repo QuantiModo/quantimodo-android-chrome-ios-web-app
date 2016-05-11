@@ -27,6 +27,14 @@ A generic app that can be easily configured to help the user track and optimize 
 1. Run `node app.js`
 1. See project at [http://localhost:5000/](http://localhost:5000/)
 
+
+# Chrome Development Tips
+1. Install [Chrome Apps & Extensions Developer Tool](https://chrome.google.com/webstore/detail/chrome-apps-extensions-de/ohmmkhmmmpcnpikjeljgnaoabkaalbgc?utm_source=chrome-ntp-icon)
+1. You can load the whole repo as an unpacked extension
+1. [Add the www folder to your workspace](https://developer.chrome.com/devtools/docs/workspaces)
+1. To be able to edit and save files within the Chrome dev console, map the browser's index.html file to the workspace www/index.html
+1. To avoid debugging libraries, go to Chrome Dev Console -> Settings -> Blackboxing and add `\.min\.js$`, `/backbone\.js$`, `jquery.js` and `/angular\.js$`
+
 #QuantiModo Ionic App
 
 ## File Structure
@@ -105,9 +113,9 @@ So everytime you wish to deploy your app, take for example `app/moodimodo` you s
 `[your_app_code_name_here].config.js`
     Then copy the contents of `www/private_configs/sample_private.config.js`. This will give you the placeholder structure and data required by the app in the private_config file. You should replace all the values with your own values or keys with respect to the new app you are building.
 
-5. **xmlconfigs**
+5. **xml configs**
     
-    Head over to `xmlconfigs` directory. Create a new file `[your_app_code_name_here].xml`. Then copy the contents of `xmlconfigs/moodimodo.xml`. This will give you the boilerplate of the properties required in the XML file. You can make appropriate changes according to your app where necessary.
+    Head over to `apps` directory. Create a new file `[your_app_code_name_here]/config.xml`. Then copy the contents of `apps/moodimodo/config.xml`. This will give you the boilerplate of the properties required in the XML file. You can make appropriate changes according to your app where necessary.
 
 > After these steps your app creation is complete. Now you can edit the app in the respective files as mentioned below.
 
@@ -118,16 +126,16 @@ Now Editing an app would mean understanding the structure of the app a little bi
 
 The current App has 3 config files:
 
-1. xmlconfigs/appname.xml
-2. www/configs/appname.js
-3. www/private_keys/appname.config.js
+1. config.xml
+2. www/configs/{{appname}}.js
+3. www/private_configs/{{appname}}.config.js
 
-##### **`appname.xml`**
+##### **`config.xml`**
 This is the XML file, which will be used to make your “actual” iOS App project. So the most important variables in this file are:
 
 1. App Name
   ```
-  <name>{{write_your_app_name_here}}</name>
+  <name>{{appName}}</name>
   ```
 This will be the name for your App, and will be the name of the .xcodeproj file, So remember to name your app here.
 
@@ -197,7 +205,7 @@ window.config = {
   ],
     port : '4417',
     protocol : 'https',
-    shopping_cart_enabled : true,
+    shoppingCarEnabled : true,
 };
 ```
 ### Explanation
@@ -214,35 +222,35 @@ window.config = {
 
 `protocol` : (http or https) The protocol to use when requesting the api.
 
-`shopping_cart_enabled` : true or false if you wish to keep the shopping cart buttons in positive/negative predictor lists.
+`shoppingCarEnabled` : true or false if you wish to keep the shopping cart buttons in positive/negative predictor lists.
 
 **`config.appSettings` Object **
 
 ```
 config.appSettings  = {
-    app_name : 'EnergyModo',
+    appName : 'EnergyModo',
 
-    primary_outcome_variable : 'Energy',
+    primaryOutcomeVariable : 'Energy',
 
-    storage_identifier: 'EnergyModoData*',
+    appStorageIdentifier: 'EnergyModoData*',
       
-    primary_outcome_variable_details : { ... },
+    primaryOutcomeVariableDetails : { ... },
 
-    primary_outcome_variables_options_labels : [ ... ],
+    primaryOutcomeVariableOptionLabels : [ ... ],
 
-    primary_outcome_variable_options : [ ... ],
+    primaryOutcomeVariableOptions : [ ... ],
 
-    welcome_text:"Let's start off by reporting your Energy on the card below",
+    welcomeText:"Let's start off by reporting your Energy on the card below",
     
-    factor_average_text:"Your average energy level is ",
+    primaryOutcomeVariableAverageText:"Your average energy level is ",
     
-    notification_image : "file://img/logo.png",
+    mobileNotificationImage : "file://img/logo.png",
     
-    notification_text : "Rate your Energy",
+    mobileNotificationText : "Rate your Energy",
     
-    conversion_dataset: { ... },
+    primaryOutcomeValueConversionDataSet: { ... },
     
-    conversion_dataset_reversed : { ... },
+    primaryOutcomeValueConversionDataSetReversed : { ... },
     
     intro : { ... }
 };
@@ -250,16 +258,16 @@ config.appSettings  = {
 ```
 ### Explanation
 
-`app_name` :  The Name of your app.
+`appName` :  The Name of your app.
 
-`primary_outcome_variable` : The primary outcome variable you are tracking (like Mood or Energy etc.)
+`primaryOutcomeVariable` : The primary outcome variable you are tracking (like Mood or Energy etc.)
 
-`storage_identifier` : a unique to your app string that will be prepended to any key stored in `localStorage`. (no spaces or any characters not allowed in keys)
+`appStorageIdentifier` : a unique to your app string that will be prepended to any key stored in `localStorage`. (no spaces or any characters not allowed in keys)
 
-`primary_outcome_variable_details`
+`primaryOutcomeVariableDetails`
 
 ```
-primary_outcome_variable_details : {
+primaryOutcomeVariableDetails : {
    name : "Overall Energy",
    category : "Energy",
    unit : "/5",
@@ -273,9 +281,9 @@ primary_outcome_variable_details : {
 `combinationOperation` : MEAN or SUM depending upon your primary outcome variable.
 
 
-`primary_outcome_variables_options_labels`
+`primaryOutcomeVariableOptionLabels`
 ```
-primary_outcome_variables_options_labels : { 
+primaryOutcomeVariableOptionLabels : {
     'lowest', 
     'low', 
     'average', 
@@ -285,9 +293,9 @@ primary_outcome_variables_options_labels : {
 ```
 These will be used on the charts, to represent the individual bars for the 5 different values. (replace them with values that you want to represent your bars with in the charts).
 
-`primary_outcome_variable_options`
+`primaryOutcomeVariableOptions`
 ```
-primary_outcome_variable_options : [
+primaryOutcomeVariableOptions : [
         {
             value: 'lowest',
             img: 'img/ic_1.png'
@@ -312,21 +320,21 @@ primary_outcome_variable_options : [
 ```
 These are the five options (available on the Trrack page) that the users will rate. Each of the option has an `image` (that will replace the emoji) and `value` (the quantifiable value the image represents).
 
-**Note**: Make sure the values match with the values in the `primary_outcome_variables_options_labels`. 
+**Note**: Make sure the values match with the values in the `primaryOutcomeVariableOptionLabels`.
 
-`welcome_text` : The text app greets the user with when the app is opened for the first time.
+`welcomeText` : The text app greets the user with when the app is opened for the first time.
 
-`tracking_question` : The question displayed when the user is on the Track Screen.
+`primaryOutcomeVariableTrackingQuestion` : The question displayed when the user is on the Track Screen.
 
-`factor_average_text` : a string that tells user his average primary outcome variable value.
+`primaryOutcomeVariableAverageText` : a string that tells user his average primary outcome variable value.
 
-`notification_image` : the logo that gets displayed with the notification in ios
+`mobileNotificationImage` : the logo that gets displayed with the notification in ios
 
-`notification_text` : the text that appears in the notification on ios
+`mobileNotificationText` : the text that appears in the notification on ios
 
-`conversion_dataset`
+`primaryOutcomeValueConversionDataSet`
 ```
-conversion_dataset: {
+primaryOutcomeValueConversionDataSet: {
     "1": "lowest",
     "2": "low",
     "3": "average",
@@ -336,9 +344,9 @@ conversion_dataset: {
 ```
 This is the data set where the keys are the mapped with the buttons. For example, `button 1` will represent `lowest`.
 
-`conversion_dataset_reversed`
+`primaryOutcomeValueConversionDataSetReversed`
 ```
-conversion_dataset_reversed : {
+primaryOutcomeValueConversionDataSetReversed : {
    "lowest" : 1,
     "sad" : 2,
     "ok" : 3,
@@ -435,13 +443,13 @@ This is the dataset for intro, you can edit the images that get displayed accord
 
 **notification_callback**
 ```
-window.notification_callback = function(reported_variable, reporting_time){
+window.notification_callback = function(reportedVariable, reportingTime){
   // implement the notification function here.
   // use reported variable and the reported time.
   ...
 }
 ```
-More often than not you will end up keeping the existing function and making the changes in `conversion_dataset`'s would work just fine, but if you wish to change something else, you have the option to do it so in this function.
+More often than not you will end up keeping the existing function and making the changes in `primaryOutcomeValueConversionDataSet`'s would work just fine, but if you wish to change something else, you have the option to do it so in this function.
 
 #### Running the App
 After you have generated your app, you can run the project through `node app.js`. This will run the project at [http://localhost:5000/](http://localhost:5000/)
@@ -449,7 +457,7 @@ After you have generated your app, you can run the project through `node app.js`
 #### Generate iOS App
 You should run the following Cordova commands to setup your iOS project.
 
-1. `gulp generateXmlConfig`. This will copy your generated xml config file (xmlconfigs/[your_app_code_name_here].xml) into the main config.xml so that the iOS app is generated with your new app as default.
+1. `gulp generateXmlConfig`. This will copy your generated xml config file (apps/[your_app_code_name_here]/config.xml) into the main config.xml so that the iOS app is generated with your new app as default.
 2. `cordova platforms add iOS`. This would create the iOS app in `platforms/ios` folder
 
 This should generate the app and you should be good to go!
@@ -506,7 +514,7 @@ After you have generated your app, you can run the project through `node app.js`
 #### Generate iOS App
 You should run the following cordova commands to setup your iOS project.
 
-1. `gulp generateXmlConfig`. This will copy your generated xml config file (xmlconfigs/[your_app_code_name_here].xml) into the main config.xml so that the iOS app is generated with your new app as default.
+1. `gulp generateXmlConfig`. This will copy your generated xml config file (apps/[your_app_code_name_here]/config.xml) into the main config.xml so that the iOS app is generated with your new app as default.
 2. `cordova platforms add iOS`. This would create the iOS app in `platforms/ios` folder
 
 This should generate the app and you should be good to go!

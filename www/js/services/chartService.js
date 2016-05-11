@@ -4,7 +4,7 @@ angular.module('starter')
 	    var chartService = {
 
 	    	// generate bar chart stub with data
-	        getBarChartStub : function(data){
+	        configureBarChart : function(data){
 	            return {
 	                options: {
 	                    chart: {
@@ -16,7 +16,7 @@ angular.module('starter')
 	                        }
 	                    },
 	                    title : {
-	                        text : config.appSettings.primary_outcome_variable+ ' Distribution'
+	                        text : config.appSettings.primaryOutcomeVariable+ ' Distribution'
 	                    },
 	                    xAxis : {
 	                        categories : config.getPrimaryOutcomeVariableOptionLabels()
@@ -57,14 +57,19 @@ angular.module('starter')
 	                    colors : [ "#55000000", "#5D83FF", "#68B107", "#ffbd40", "#CB0000" ]
 	                },
 	                series: [{
-	                    name : config.appSettings.primary_outcome_variable,
+	                    name : config.appSettings.primaryOutcomeVariable,
 	                    data: data
 	                }]
 	            };
 	        },
 
 	        // generate stock chart
-	        getLineChartStub : function(data){
+	        configureLineChart : function(data){
+
+				data = data.sort(function(a, b){
+					return a[0] - b[0];
+				});
+
 	        	return {
 	        		useHighStocks: true,
 	        		options : {
@@ -72,7 +77,7 @@ angular.module('starter')
 	        			    enabled : false
 	        			},
 	        			title: {
-	        			    text: config.appSettings.primary_outcome_variable+' Over Time'
+	        			    text: config.appSettings.primaryOutcomeVariable + ' Over Time'
 	        			},
 	        			xAxis : {
 	        				type: 'datetime',
@@ -111,13 +116,13 @@ angular.module('starter')
                         }
 	        		},
 	        		series :[{
-			            name : config.appSettings.primary_outcome_variable,
+			            name : config.appSettings.primaryOutcomeVariable,
 			            data : data,
 			            tooltip: {
 			                valueDecimals: 2
 			            }
 			        }]
-	        	}
+	        	};
 	        }
 	    };
 

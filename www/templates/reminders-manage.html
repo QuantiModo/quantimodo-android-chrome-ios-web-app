@@ -1,0 +1,42 @@
+<ion-view hide-nav-bar="hideNavigationMenu" view-title="{{state.title}}">
+	<ion-content scroll="true" overflow-scroll="true"> 
+		
+		<div ng-show="state.showButtons" class="list card">
+			<!--<div class="item item-divider" style="background-color:#11c1f3; color:white;">Actions</div>-->
+			<a href="#/app/reminder_add/{{state.variableCategory}}" class="item item-icon-left">
+				<i class="icon ion-plus positive"></i>
+				{{state.addButtonText}}
+			</a>
+		</div>
+
+		<div ng-show="state.showButtons" class="list card">
+<!--			<div class="item item-divider" style="background-color:#11c1f3; color:white;">
+				All Reminders
+			</div>-->
+
+			<div class="list card" ng-repeat="reminder in state.allReminders" >
+				<div class="item" style="padding-bottom:0px;">
+					<div class="row">
+						<div class="col" style="padding-top: 0px;">
+							<i style="font-size: 60px;" class="icon positive ion-ios-alarm-outline"></i>
+						</div>
+						<div class="col col-75">
+							<h2 style="white-space: normal;">{{reminder.variableName}}</h2>
+							<p style="white-space: normal;">{{reminder.defaultValue}}&nbsp;{{reminder.abbreviatedUnitName}} {{reminder | reminderTimes}}</p>
+						</div>							
+					</div>
+					<div class="row">
+						<div class="button-bar">
+							<a class="button button-clear button-assertive" style="text-overflow: clip;" ng-click="deleteReminder(reminder)"> <i class="ion-trash-b"> &nbsp; Delete</i></a>
+					  		<a class="button button-clear button-calm" ng-click="edit(reminder)" style="text-overflow: clip;"><i class="ion-edit"> &nbsp; Edit</i></a>
+						</div>
+					</div>
+				</div>
+			</div>
+			
+<!--			<div class="button-bar">
+				<a class="button button-clear button-positive" ng-click="init()" style="text-overflow: clip;"><i class="ion-refresh">  Refresh</i></a>
+			</div>-->
+		</div>
+	</ion-content>
+</ion-view>

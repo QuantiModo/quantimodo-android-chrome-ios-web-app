@@ -1,10 +1,7 @@
 angular.module('starter')
-    .controller('IframeScreenCtrl', function ($scope, authService, utilsService, $ionicLoading, $sce) {
-        // show spinner
-        $ionicLoading.show({
-            noBackdrop: true,
-            template: '<p class="item-icon-left">One moment please...<ion-spinner icon="lines"/></p>'
-        });
+    .controller('IframeScreenCtrl', function ($scope, authService, utilsService, $ionicLoading, $sce, $state) {
+
+        utilsService.loadingStart();
         console.debug('IframeScreenCtrl works!');
 
         var embedPlugin;
@@ -36,8 +33,10 @@ angular.module('starter')
             );
             $ionicLoading.hide();
         }, function(){
-            console.log("No access token. Need to log in.");
-            utilsService.showLoginRequiredAlert($scope.login);
+            console.log("getAccessTokenFromAnySource: No access token. Need to log in.");
+            $state.go('app.login', {
+                fromUrl : window.location.href
+            });
             $ionicLoading.hide();
         });
     });

@@ -3,66 +3,26 @@ angular.module('starter')
 	// Controls the settings page
 	.controller('SettingsCtrl', function($scope,localStorageService, $ionicModal, $timeout, utilsService, authService,
 										 measurementService, chartService, $ionicPopover, $cordovaFile,
-										 $cordovaFileOpener2, $ionicPopup, $state,notificationService, QuantiModo) {
+										 $cordovaFileOpener2, $ionicPopup, $state,notificationService, QuantiModo,
+                                         $rootScope) {
 		$scope.controller_name = "SettingsCtrl";
-		
 		// populate ratings interval
         localStorageService.getItem('askForRating', function (askForRating) {
-                $scope.ratings = askForRating ? askForRating : "hourly"
+                $scope.ratings = askForRating ? askForRating : "hourly";
         });
-		$scope.isIOS = ionic.Platform.isIPad() || ionic.Platform.isIOS();
-		$scope.isAndroid = ionic.Platform.isAndroid();
-        $scope.isChrome = window.chrome ? true : false;
+		$rootScope.isIOS = ionic.Platform.isIPad() || ionic.Platform.isIOS();
+		$rootScope.isAndroid = ionic.Platform.isAndroid();
+        $rootScope.isChrome = window.chrome ? true : false;
 	    // populate user data
-        localStorageService.getItem('user',function(user){
-            $scope.user_name = user ? JSON.parse(user)['displayName'] : "";
-        });
+
 
         // when login is tapped
-	    $scope.login_from_settings = function(){
-	        if(ionic.Platform.platforms[0] === "browser"){
-	        	// if on browser
-	            $state.go('app.welcome');
-	            
-	            // let it login
-	            setTimeout(function(){
-	                $scope.login();
-	            },100);
-
-	        } else $scope.login();
+	    $scope.loginFromSettings = function(){
+			$state.go('app.login');
 	    };
-
-
-	    // add other factors to track to a string to show on settings page 
-	    $scope.calculateAddString = function(){
-	        var localAdditonalRatings;
-	        localStorageService.getItem('additional_ratings',function(additional_ratings){
-                localAdditonalRatings = additional_ratings? JSON.parse(additional_ratings): {};
-            });
-            var str = "";
-	        for(var rat in localAdditonalRatings){
-	            if(localAdditonalRatings[rat])
-	                str+= rat+",";
-	        }
-	        str = str.replace(/,$/, '');
-	        $scope.addString = str;
-	    };
-
-	    // save what other things to track
-	    $scope.save_add_ratings = function(){
-	    	localStorageService.setItem('additional_ratings', JSON.stringify($scope.additional_ratings));
-	        
-	        console.log($scope.additional_ratings);
-	        
-	        // hide popover
-	        $scope.additional_rating_popover.hide();
-	        
-	        // calulcate and show the string on settings page
-	        $scope.calculateAddString();
-	    };
-
+        
 	    // when interval is updated
-	    $scope.save_rating_interval = function(interval){
+	    $scope.saveRatingInterval = function(interval){
 	        //schedule notification
 	        //TODO we can pass callback function to check the status of scheduling
 	        notificationService.scheduleNotification(interval);
@@ -71,88 +31,139 @@ angular.module('starter')
 	        $scope.ratings = interval;
 	        
 	        // hide popover
-	        $scope.rating_popover.hide();
+	        $scope.ratingPopover.hide();
+	    };
+        
+		$scope.init = function(){
+
 	    };
 
+        $scope.logout = function(){
 
-	    // constructor
-	    $scope.init = function(){
-	         var localAdditonalRatings;
+            var startLogout = function(){
+                console.log('Logging out...');
+                $rootScope.isSyncing = false;
+                $rootScope.user = null;
+                $rootScope.isMobile = window.cordova;
+                $rootScope.isBrowser = ionic.Platform.platforms[0] === "browser";
+                if($rootScope.isMobile || !$rootScope.isBrowser){
+                    console.log('startLogout: Open the auth window via inAppBrowser.  Platform is ' + ionic.Platform.platforms[0]);
+                    var ref = window.open(config.getApiUrl() + '/api/v2/auth/logout','_blank', 'location=no,toolbar=yes');
 
-            localStorageService.getItem('additional_ratings',function(additional_ratings){
-                 localAdditonalRatings = additional_ratings? JSON.parse(additional_ratings): {};
+                    console.log('startLogout: listen to its event when the page changes');
 
-            });
+                    ref.addEventListener('loadstart', function(event) {
+                        ref.close();
+                        $scope.showDataClearPopup();
+                    });
+                } else {
+                    $scope.showDataClearPopup();
+                }
+            };
 
-	        // populate previously selected additional variables
-	        // TODO: Refactor
-	        $scope.additional_ratings = {
-	            Guilty : localAdditonalRatings && localAdditonalRatings.Guilty? localAdditonalRatings.Guilty : false,
-	            Alert : localAdditonalRatings && localAdditonalRatings.Alert? localAdditonalRatings.Alert : false,
-	            Excited : localAdditonalRatings && localAdditonalRatings.Excited? localAdditonalRatings.Excited : false,
-	            Guilty : localAdditonalRatings && localAdditonalRatings.Guilty? localAdditonalRatings.Guilty : false,
-	            Irritable : localAdditonalRatings && localAdditonalRatings.Irritable? localAdditonalRatings.Irritable : false,
-	            Ashamed : localAdditonalRatings && localAdditonalRatings.Ashamed? localAdditonalRatings.Ashamed : false,
-	            Attentive : localAdditonalRatings && localAdditonalRatings.Attentive? localAdditonalRatings.Attentive : false,
-	            Hostile : localAdditonalRatings && localAdditonalRatings.Hostile? localAdditonalRatings.Hostile : false,
-	            Active : localAdditonalRatings && localAdditonalRatings.Active? localAdditonalRatings.Active : false,
-	            Nervous : localAdditonalRatings && localAdditonalRatings.Nervous? localAdditonalRatings.Nervous : false,
-	            Interested : localAdditonalRatings && localAdditonalRatings.Interested? localAdditonalRatings.Interested : false,
-	            Irritable : localAdditonalRatings && localAdditonalRatings.Irritable? localAdditonalRatings.Irritable : false,
-	            Enthusiastic : localAdditonalRatings && localAdditonalRatings.Enthusiastic? localAdditonalRatings.Enthusiastic : false,
-	            Jittery : localAdditonalRatings && localAdditonalRatings.Jittery? localAdditonalRatings.Jittery : false,
-	            Strong : localAdditonalRatings && localAdditonalRatings.Strong? localAdditonalRatings.Strong : false,
-	            Distressed : localAdditonalRatings && localAdditonalRatings.Distressed? localAdditonalRatings.Distressed : false,
-	            Determined : localAdditonalRatings && localAdditonalRatings.Determined? localAdditonalRatings.Determined : false,
-	            Upset : localAdditonalRatings && localAdditonalRatings.Upset? localAdditonalRatings.Upset : false,
-	            Proud : localAdditonalRatings && localAdditonalRatings.Proud? localAdditonalRatings.Proud : false,
-	            Scared : localAdditonalRatings && localAdditonalRatings.Scared? localAdditonalRatings.Scared : false,
-	            Inspired: localAdditonalRatings && localAdditonalRatings.Inspired? localAdditonalRatings.Inspired: false
-	        };
+            function refreshTrackingPageAndGoToWelcome() {
+                localStorageService.setItem('isWelcomed', false);
+                // calculate primary outcome variable and chart data
+                measurementService.calculateAveragePrimaryOutcomeVariableValue().then(function () {
+                    measurementService.calculateBothChart();
+                    measurementService.resetSyncFlag();
 
-	        // update string
-	        $scope.calculateAddString();
-	    };
+                    //hard reload
+                    $state.go(config.appSettings.welcomeState, {}, {
+                        reload: true
+                    });
+                });
+            }
 
-	    // load rating popover
-	    $ionicPopover.fromTemplateUrl('templates/settings/ask_for_a_rating.html', {
+            $scope.showDataClearPopup = function(){
+                $ionicPopup.show({
+                    title:'Clear local storage?',
+                    subTitle: 'Do you want do delete all data from local storage?',
+                    scope: $scope,
+                    buttons:[
+                        {
+                            text: 'No',
+                            type: 'button-assertive',
+                            onTap : afterLogoutDoNotDeleteMeasurements
+                        },
+                        {
+                            text: 'Yes',
+                            type: 'button-positive',
+                            onTap: completelyResetAppState
+                        }
+                    ]
+
+                });
+            };
+            
+            var completelyResetAppState = function(){
+                $rootScope.user = null;
+                localStorageService.clear();
+                notificationService.cancelNotifications();
+              	logoutOfApi();
+                //TODO: Fix this
+                //QuantiModo.logoutOfApi();
+                refreshTrackingPageAndGoToWelcome();
+            };
+            
+            var afterLogoutDoNotDeleteMeasurements = function(){
+                $rootScope.user = null;
+                clearTokensFromLocalStorage();
+                logoutOfApi();
+                //TODO: Fix this
+                //QuantiModo.logoutOfApi();
+                refreshTrackingPageAndGoToWelcome();
+            };
+
+            startLogout();
+        };
+
+        // when user is logging out
+        function clearTokensFromLocalStorage() {
+            //Set out local storage flag for welcome screen variables
+            localStorageService.setItem('isLoggedIn', false);
+
+            localStorageService.setItem('primaryOutcomeVariableReportedWelcomeScreen', true);
+            localStorageService.deleteItem('accessToken');
+            localStorageService.deleteItem('refreshToken');
+            localStorageService.deleteItem('expiresAt');
+        }
+
+                // when user is logging out
+        function logoutOfApi() {
+			if(config.getClientId() === 'oAuthDisabled'){
+				var logoutUrl = config.getURL("api/v2/auth/logout");
+                window.open(logoutUrl, '_blank');
+			} else {
+                console.log('Client id is ' + config.getClientId() + ' so not sending to ' +  config.getURL("api/v2/auth/logout"));
+            }
+        }
+
+        // load rating popover
+	    $ionicPopover.fromTemplateUrl('templates/settings/ask-for-a-rating.html', {
 	    	scope: $scope
 	    }).then(function(popover) {
-	    	$scope.rating_popover = popover;
-	    });
-
-	    // load additional variables popover
-	    $ionicPopover.fromTemplateUrl('templates/settings/additional_ratings_required.html', {
-	    	scope: $scope
-	    }).then(function(popover) {
-	    	$scope.additional_rating_popover = popover;
+	    	$scope.ratingPopover = popover;
 	    });
 
 
 	    // Convert all data Array to a CSV object
 	    var convertToCSV = function(objArray) {
-	        var array = typeof objArray != 'object' ? JSON.parse(objArray) : objArray;
+	        var array = typeof objArray !== 'object' ? JSON.parse(objArray) : objArray;
 	        var str = '';
 	        for (var i = 0; i < array.length; i++) {
 	            var line = '';
 	            for (var index in array[i]) {
-	                if (line != '') line += ',';
+	                if (line != '') {
+						line += ',';
+					}
 	                line += array[i][index];
 	            }
 	            str += line + '\r\n';
 	        }
 	        return str;
 	    };
-
-	    // show alert box
-	    $scope.showAlert = function(title, template) {
-	        var alertPopup = $ionicPopup.alert({
-				cssClass : 'calm',
-				okType : 'button-calm',
-				title: title,
-				template: template
-	        });
-	    };
+		
 
 		// When Export is tapped
 		$scope.exportCsv = function(){
@@ -205,9 +216,9 @@ angular.module('starter')
 	    // When Export is tapped
 	    $scope.export = function(){
 
-	    	localStorageService.getItem('allData', function(allData){
+	    	localStorageService.getItem('allMeasurements', function(allMeasurements){
 		    	// get all data 
-		        var arr = allData? JSON.parse(allData) : [];
+		        var arr = allMeasurements? JSON.parse(allMeasurements) : [];
 		        
 		        // convert JSon to CSV
 		        var csv = convertToCSV(arr);
@@ -220,7 +231,7 @@ angular.module('starter')
 					$cordovaFileOpener2.open(cordova.file.dataDirectory+'csv.csv','application/csv');
 
 		        }, function (error) {
-					$scope.showAlert('Please generate CSV later!');
+					utilsService.showAlert('Please generate CSV later!');
 				});
 	    	});
 	    };

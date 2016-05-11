@@ -1,23 +1,23 @@
 <ion-side-menus enable-menu-with-back-views="true" >
     <ion-side-menu-content>
-        <ion-nav-bar class="bar-calm">
+        <ion-nav-bar class="bar-positive">
             <ion-nav-buttons side="left">
-                <button ng-hide="skipMenu || (hideMenu && !isWelcomed ) " class="button button-icon button-clear ion-navicon" menu-toggle="left">
+                <button ng-hide="hideNavigationMenu || (hideMenu && !isWelcomed ) " class="button button-icon button-clear ion-navicon" menu-toggle="left">
                 </button>
             </ion-nav-buttons>
 
             <ion-nav-buttons side="right">
                 <div class="buttons">
-                    <button class="button button-icon ion-calendar" ng-show="showCalender" ng-click="showCalenderF($event)"></button>
+                    <button class="button button-icon ion-calendar" ng-show="showCalenderButton" ng-click="showCalenderPopup($event)"></button>
                 </div>
             </ion-nav-buttons>
         </ion-nav-bar>
         
-        <div class="col" ng-if="!skipMenu" ng-class="{'blink': isSyncing,'sync-indicator':isSyncing}" ng-show="isSyncing">
+        <div class="col" ng-if="!hideNavigationMenu" ng-class="{'blink': isSyncing,'sync-indicator':isSyncing}" ng-show="isSyncing">
             <span>Data is Syncing</span>
         </div>
 
-        <div class="col" ng-if="skipMenu" style="top:0px!important;" ng-class="{'blink': isSyncing,'sync-indicator':isSyncing}" ng-show="isSyncing">
+        <div class="col" ng-if="hideNavigationMenu" style="top:0px!important;" ng-class="{'blink': isSyncing,'sync-indicator':isSyncing}" ng-show="isSyncing">
             <span>Data is Syncing</span>
         </div>
         <ion-nav-view name="menuContent">
@@ -25,8 +25,8 @@
         </ion-nav-view>
     </ion-side-menu-content>
 
-    <ion-side-menu side="left" is-enabled="!skipMenu">
-        <ion-header-bar class="bar-calm">
+    <ion-side-menu side="left" is-enabled="!hideNavigationMenu">
+        <ion-header-bar class="bar-positive">
             <h1 class="title"></h1>
         </ion-header-bar>
         <ion-content>

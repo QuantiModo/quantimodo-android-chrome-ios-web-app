@@ -3,20 +3,25 @@ angular.module('starter')
 	// Controls the History Page of the App.
 	.controller('RemindersAddCtrl', function($scope, authService, $ionicPopup, localStorageService, $state,
 											 $stateParams, measurementService, reminderService, $ionicLoading,
-											 utilsService, $filter, ionicTimePicker, $timeout, variableCategoryService){
+											 utilsService, $filter, ionicTimePicker, $timeout, 
+											 variableCategoryService, variableService, unitService, timeService,
+                                             QuantiModo){
 
 	    $scope.controller_name = "RemindersAddCtrl";
 
 		console.log('Loading ' + $scope.controller_name);
 
+        var currentTime = new Date();
+
         // state
 	    $scope.state = {
+			variableSearchResults : [],
+			unitCategories : [],
             title : "Add Reminder",
             showAddVariableCard : false,
             variableId : null,
             variableName : null,
             combinationOperation : null,
-            unitCategories : {},
             showVariableCategorySelector : false,
             showSearchBox : false,
             showResults : false,
@@ -25,31 +30,13 @@ angular.module('starter')
             showUnits: false,
             variableSearchQuery : "",
             searching : false,
-            selectedFrequency : 'Hourly',
+            selectedFrequency : 'Daily',
             selectedReminder : false,
-            reminderStartTimeSecondsSinceMidnightLocal : new Date().getTime()/1000,
-            reminderStartTimeObject : {
-                epochTime: new Date().getTime()/1000,
-                inputTime: 0,
-                format: 12,
-                step: 1
-            },
-            reminderStartTimeUtcHourMinuteSecond : moment.utc().format('HH:mm:ss')
-	    };
-
-        console.log('Input time is ' + $scope.state.reminderStartTimeObject.inputTime);
-
+            reminderStartTimeEpochTime : currentTime.getTime() / 1000
+    };
+        
         $scope.state.variableCategoryObject = variableCategoryService.getVariableCategoryInfo();
-
-        // lists
-        $scope.lists = {
-            list : [],
-            userVariables : [],
-            searchVariables : [],
-            unitCategories : []
-        };
-
-
+		
 	    // data
 	    $scope.variables = {
 	    	variableCategories : [
@@ -63,7 +50,6 @@ angular.module('starter')
                 { id : 8, name : 'Sleep' },
                 { id : 9, name : 'Misc' }
 	    	],
-	    	list : [],
 	    	frequencyVariables : [
 	    		
 	    		{ id : 1, name : 'Every 12 hours' , group : 'intervals'},
@@ -80,7 +66,7 @@ angular.module('starter')
 	    };
 
 		// when add new variable is tapped
-		$scope.add_variable = function(){
+		$scope.addVariable = function(){
 			console.log("add variable");
 			$scope.state.showSearchBox = false;
 			$scope.state.showResults = false;
@@ -93,6 +79,7 @@ angular.module('starter')
 		};
 
 		$scope.openReminderStartTimePicker = function() {
+            
             $scope.state.timePickerConfiguration = {
                 callback: function (val) {
                     if (typeof (val) === 'undefined') {
@@ -107,56 +94,39 @@ angular.module('starter')
                             selectedTime.getUTCHours(), 'H :', selectedTime.getUTCMinutes(), 'M');
 
                         $scope.state.reminderStartTimeEpochTime = a.getTime() / 1000;
-                        $scope.state.reminderStartTimeUtc = moment.utc(a).format('HH:mm:ss');
+                        $scope.state.reminderStartTimeStringUtc = moment.utc(a).format('HH:mm:ss');
                     }
-                },
-                inputTime: $scope.state.reminderStartTimeSecondsSinceMidnightLocal
+                }
             };
 
 			ionicTimePicker.openTimePicker($scope.state.timePickerConfiguration);
 		};
 
 		// populate list with recently tracked category variables
-    	var populate_recent_tracked = function(variableCategoryName){
+    	var populateRecentlyTrackedVariables = function(variableCategoryName){
+    		utilsService.loadingStart();
+            if(!variableCategoryName){
+                // get all variables
+                console.log('Get most recent anything variables');
+                variableService.getVariables().then(function(variables){
+                    $scope.variableSearchResults = variables;
+                    utilsService.loadingStop();
+                }, function(){
+                    utilsService.loadingStop();
+                });
+            } else {
+                variableService.searchVariablesIncludePublic('*', $scope.state.variableCategoryName).then(function(variables){
+                    $scope.variableSearchResults = variables;
+                    utilsService.loadingStop();
+                }, function(){
+                    console.log('Could not get variables');
+                    utilsService.loadingStop();
+                });
+            }
 
-    		utils.startLoading();
-	    	// get user token
-			authService.getAccessTokenFromAnySource().then(function(token){
-
-				if(!variableCategoryName){
-					// get all variables
-					console.log('Get most recent anything variables');
-					measurementService.getVariables().then(function(variables){
-
-					    $scope.userVariables = variables;
-					    $scope.variables.list = variables;
-					    utils.stopLoading();
-
-					}, function(){
-						utils.stopLoading();
-					});
-				} else {
-					console.log('get all variables by category');
-					measurementService.searchVariablesIncludePublic('*', $scope.state.variableCategoryName).then(function(variables){
-
-					    $scope.userVariables = variables;
-					    $scope.variables.list = variables;
-
-					    utils.stopLoading();
-
-					}, function(){
-						utils.stopLoading();
-					});
-				}
-
-			}, function(){
-			   utilsService.showLoginRequiredAlert($scope.login);
-			   utils.stopLoading();
-
-			});
     	};
 
-	    // when category is selected
+	    // when variableCategoryName is selected
 	    $scope.onVariableCategoryChange = function(){
 	    	console.log("Variable category selected: ", $scope.state.variableCategoryName);
 	    	$scope.state.variableSearchQuery = '';
@@ -165,30 +135,36 @@ angular.module('starter')
             setupVariableCategory($scope.state.variableCategoryName);
 	    };
 
-	    var variableSearch = function(variableSearchQuery){
+        $scope.goToAddMeasurement = function(){
+            $state.go('app.measurementAdd', {
+                variableObject: $scope.variableObject,
+                fromState: $state.current.name
+            });
+        };
+
+
+        var variableSearch = function(variableSearchQuery){
 	    	// search server for the query
 
 	    	if(!$scope.state.variableCategoryName){
-	    		measurementService.searchVariablesIncludePublic(variableSearchQuery)
+				variableService.searchVariablesIncludePublic(variableSearchQuery)
 	    		.then(function(variables){
 
 	    		    // populate list with results
 	    		    $scope.state.showResults = true;
-	    		    $scope.searchVariables = variables;
-	    		    $scope.variables.list = $scope.searchVariables;
+	    		    $scope.variableSearchResults = variables;
 	    		    $scope.state.searching = false;
                     if(variables.length < 1){
                         $scope.state.showAddVariableButton = true;
                     }
 	    		});
 	    	} else {
-	    		measurementService.searchVariablesIncludePublic(variableSearchQuery, $scope.variableCategoryName)
+				variableService.searchVariablesIncludePublic(variableSearchQuery, $scope.variableCategoryName)
 	    		.then(function(variables){
 
 	    		    // populate list with results
 	    		    $scope.state.showResults = true;
-	    		    $scope.searchVariables = variables;
-	    		    $scope.variables.list = $scope.searchVariables;
+	    		    $scope.variableSearchResults = variables;
 	    		    $scope.state.searching = false;
                     if(variables.length < 1){
                         $scope.state.showAddVariableButton = true;
@@ -230,37 +206,10 @@ angular.module('starter')
 	    	//$scope.state.defaultValue = selectedVariable.mostCommonValue? selectedVariable.mostCommonValue : selectedVariable.lastValue;
 	    };
 
-	    var utils = {
-    	    startLoading : function(){
-    	    	// show spinner
-    			$ionicLoading.show({
-    				noBackdrop: true,
-    				template: '<p class="item-icon-left">Thank you for your patience.  Your call is very important to us...<ion-spinner icon="lines"/></p>'
-    		    });
-    	    },
-
-    	    stopLoading : function(){
-    	    	// hide spinner
-    	    	$ionicLoading.hide();
-    	    },
-
-    	    // alert box
-	        showAlert : function(title, cssClass) {
-	           var alertPopup = $ionicPopup.alert({
-	             cssClass : cssClass? cssClass : 'calm',
-	             okType : cssClass? 'button-'+cssClass : 'button-calm',
-	             title: title
-	           });
-	        }
-	    };
-
 	    // when frequency is changed
 	    $scope.onFrequencyChange = function(){
 	    	console.log("onFrequencyChange ran");
-
-	    	//var reminderStartTimeMoment = moment.utc($scope.state.reminderStartTimeObject.epochTime*1000);
-	    	//$scope.state.reminderStartTimeSecondsSinceMidnightLocal = moment.utc(reminderStartTimeMoment).format("HH:mm:ss");
-
+            
 	    };
 
 	    // when adding/editing is cancelled
@@ -269,7 +218,7 @@ angular.module('starter')
 	    		if($stateParams.reminder.fromState){
 	    			$state.go($stateParams.reminder.fromState);
 	    		} else {
-					$state.go('app.reminders_manage');
+					$state.go('app.remindersManage');
                 }
 
 	    	} else {
@@ -279,7 +228,7 @@ angular.module('starter')
 
 	    $scope.edit = function(){
 
-	    	utils.startLoading();
+	    	utilsService.loadingStart();
 
 	    	reminderService.postTrackingReminder(
 	    		$scope.state.id,
@@ -290,24 +239,25 @@ angular.module('starter')
                 $scope.state.variableCategoryName,
                 $scope.state.abbreviatedUnitName,
                 $scope.state.combinationOperation,
-                $scope.state.reminderStartTimeUtc)
+                $scope.state.reminderStartTimeStringUtc)
 	    	.then(function(){
 
-	    		utils.stopLoading();
+	    		utilsService.loadingStop();
 	    		if($stateParams.reminder !== null && typeof $stateParams.reminder !== "undefined"){
 	    			if($stateParams.reminder.fromState){
 	    				$state.go($stateParams.reminder.fromState);
 	    			} else {
-						$state.go('app.reminders_manage');
+						$state.go('app.remindersManage');
                     }
 	    		} else {
-					$state.go('app.reminders_manage');
+					$state.go('app.remindersManage');
                 }
 
 	    	}, function(err){
 
-	    		utils.stopLoading();
-	    		utils.showAlert('Failed to add Reminder, Try again!', 'assertive');
+	    		utilsService.loadingStop();
+	    		utilsService.showAlert('Failed to add Reminder, Try again!', 'assertive');
+				console.log(err);
 	    	});
 	    };
 
@@ -336,22 +286,22 @@ angular.module('starter')
 	    	}
 
             if(!$scope.state.variableName) {
-                $scope.showAlert('Variable Name missing!');
+                utilsService.showAlert('Variable Name missing!');
                 return;
             }
 
             if(!$scope.state.abbreviatedUnitName) {
-                $scope.showAlert('Unit is missing!');
+                utilsService.showAlert('Unit is missing!');
                 return;
             }
 
             if(!$scope.state.defaultValue) {
-                $scope.showAlert('Default value is missing!');
+                utilsService.showAlert('Default value is missing!');
                 return;
             }
 
 
-	    	utils.startLoading();
+	    	utilsService.loadingStart();
 
 	    	reminderService.addNewReminder(
 	    		$scope.state.id,
@@ -361,31 +311,30 @@ angular.module('starter')
                 $scope.state.variableCategoryName,
                 $scope.state.abbreviatedUnitName,
                 $scope.state.combinationOperation,
-                $scope.state.reminderStartTimeUtc)
+                $scope.state.reminderStartTimeStringUtc)
 	    	.then(function(){
 
-	    		utils.stopLoading();
+	    		utilsService.loadingStop();
 	    		if($stateParams.reminder !== null && typeof $stateParams.reminder !== "undefined"){
 	    			if($stateParams.reminder.fromState){
 	    				$state.go($stateParams.reminder.fromState);
 	    			} else {
-						$state.go('app.reminders_manage');
+						$state.go('app.remindersManage');
                     }
 	    		} else {
-					$state.go('app.reminders_manage');
+					$state.go('app.remindersManage');
                 }
 
 	    	}, function(err){
                 console.log(err);
-	    		utils.stopLoading();
-	    		utils.showAlert('Failed to add Reminder, Try again!', 'assertive');
+	    		utilsService.loadingStop();
+	    		utilsService.showAlert('Failed to add Reminder, Try again!', 'assertive');
 	    	});
 	    };
 
 
 	    // setup editing view
 	    var setupEditReminder = function(){
-
 
             $scope.state.id = $stateParams.reminder.id;
             $scope.state.variableName = $stateParams.reminder.variableName;
@@ -395,19 +344,7 @@ angular.module('starter')
 	    	$scope.state.abbreviatedUnitName = $scope.state.selectedReminder.abbreviatedUnitName;
             $scope.state.defaultValue = $scope.state.selectedReminder.defaultValue;
             $scope.state.reminderFrequency = $scope.state.selectedReminder.reminderFrequency;
-            $scope.state.reminderStartTimeUtc = $scope.state.selectedReminder.reminderStartTime;
-            var reminderStartTimeStringUtc = $scope.state.selectedReminder.reminderStartTime + " +0000";
-            var reminderStartTimeFormat = "HH:mm:ss Z";
-
-            $scope.state.reminderStartTimeMoment = moment(reminderStartTimeStringUtc, reminderStartTimeFormat);
-
-            var hoursSinceMidnightLocal = moment(reminderStartTimeStringUtc, reminderStartTimeFormat).format("HH");
-            var minutsSinceMidnightLocal = moment(reminderStartTimeStringUtc, reminderStartTimeFormat).format("mm");
-			var secondsSinceMidnightLocal =
-				hoursSinceMidnightLocal * 60 *60 + minutsSinceMidnightLocal * 60;
-
-			$scope.state.reminderStartTimeSecondsSinceMidnightLocal = secondsSinceMidnightLocal;
-
+            $scope.state.reminderStartTimeStringUtc = $scope.state.selectedReminder.reminderStartTime;
 
 	    	var reverseFrequencyChart = {
 
@@ -423,14 +360,16 @@ angular.module('starter')
 				0: "Never"
 	    	};
 
-			if(typeof $stateParams.reminder.reminderStartTime !== "undefined" && $stateParams.reminder.reminderStartTime !== null){
-				$scope.state.reminderStartTimeUtcHourMinuteSecond = $stateParams.reminder.reminderStartTime;
+			if(typeof $stateParams.reminder.reminderStartTime !== "undefined" &&
+                $stateParams.reminder.reminderStartTime !== null){
+
+				$scope.state.reminderStartTimeStringUtc = $stateParams.reminder.reminderStartTime;
+                $scope.state.reminderStartTimeEpochTime =
+                    timeService.getEpochTimeFromUtcString($stateParams.reminder.reminderStartTime);
 			}
 
 	    	if($scope.state.reminderFrequency && $scope.state.reminderFrequency !== null){
 	    		$scope.state.selectedFrequency = reverseFrequencyChart[$scope.state.reminderFrequency];
-	    	} else if($scope.state.reminderStartTime){
-	    		$scope.state.selectedFrequency = "Daily";
 	    	}
 
 	    	$scope.state.showReminderFrequencyCard = true;
@@ -439,7 +378,7 @@ angular.module('starter')
 
 	    // setup category view
 	    var setupVariableCategory = function(variableCategoryName){
-
+            console.log("$stateParams.variableCategoryName  is " + variableCategoryName);
             if(!variableCategoryName){
                 variableCategoryName = '';
             }
@@ -450,99 +389,98 @@ angular.module('starter')
             $scope.state.showSearchBox = true;
             $scope.state.showResults = true;
 
-			populate_recent_tracked(variableCategoryName);
+			populateRecentlyTrackedVariables(variableCategoryName);
 	    };
 
 	    // setup new reminder view
-	    var setupNewReminder = function(){
+	    var setupNewReminderSearch = function(){
 	    	$scope.state.showVariableCategorySelector = true;
 	    	$scope.state.showSearchBox = true;
 	    };
 
-	    // constructor
-	    $scope.init = function(){
+        function setupReminderEditingFromVariableId(variableId) {
+            if(variableId){
+                variableService.getVariableById(variableId)
+                    .then(function (variables) {
+                        $scope.variableObject = variables[0];
+                        console.log($scope.variableObject);
+                        $scope.onVariableSelect($scope.variableObject);
+                        utilsService.loadingStop();
+                    }, function () {
+                        utilsService.loadingStop();
+                        console.log("failed to get variable");
+                    });
 
-
-            if($stateParams.variableCategoryName){
-                console.log("$stateParams.variableCategoryName  is " + $stateParams.variableCategoryName);
-                setupVariableCategory($stateParams.variableCategoryName);
-                $scope.state.variableCategoryObject = variableCategoryService.getVariableCategoryInfo($stateParams.variableCategoryName);
-                $scope.state.showSearchBox = true;
-                $scope.state.showResults = true;
-                $scope.state.showVariableCategorySelector = false;
-                $scope.state.title = "Add a " + $filter('wordAliases')(pluralize($stateParams.variableCategoryName, 1) + " Reminder");
             }
+        }
 
-            var reminderIdUrlParameter = utilsService.getUrlParameter(window.location.href, 'reminderId');
+        function setupReminderEditingFromUrlParameter(reminderIdUrlParameter) {
+            reminderService.getTrackingReminders(null, reminderIdUrlParameter)
+                .then(function (reminders) {
+                    $scope.state.allReminders = reminders;
+                    if (reminders.length !== 1) {
+                        utilsService.showAlert("Reminder id " + reminderIdUrlParameter + " not found!", 'assertive');
+                        if ($stateParams.reminder.fromState) {
+                            $state.go($stateParams.reminder.fromState);
+                        } else {
+                            $state.go('app.remindersManage');
+                        }
+                    }
+                    $stateParams.reminder = $scope.state.allReminders[0];
+                    setupEditReminder($stateParams.reminder);
+                    utilsService.loadingStop();
+                }, function () {
+                    utilsService.loadingStop();
+                    console.log("failed to get reminders");
+                });
+        }
 
-			// get user token
-			authService.getAccessTokenFromAnySource().then(function(token){
-				if($stateParams.variableCategoryName){
-					$scope.variableCategoryName = $stateParams.variableCategoryName;
-					setupVariableCategory($scope.variableCategoryName);
-				}
-				else if($stateParams.reminder && $stateParams.reminder !== null) {
-					setupEditReminder($stateParams.reminder);
+        $scope.init = function(){
+            $scope.state.loading = true;
+            utilsService.loadingStart();
+            var isAuthorized = authService.checkAuthOrSendToLogin();
+            if(isAuthorized){
+                if($stateParams.variableCategoryName){
+                    setupVariableCategory($stateParams.variableCategoryName);
+                }
+                var reminderIdUrlParameter = utilsService.getUrlParameter(window.location.href, 'reminderId');
+                var variableIdUrlParameter = utilsService.getUrlParameter(window.location.href, 'variableId');
+                $scope.getUnits();
+                if($stateParams.variableCategoryName){
+                    $scope.variableCategoryName = $stateParams.variableCategoryName;
+                    setupVariableCategory($scope.variableCategoryName);
+                }
+                else if($stateParams.reminder && $stateParams.reminder !== null) {
+                    setupEditReminder($stateParams.reminder);
                 }
                 else if(reminderIdUrlParameter) {
-                    reminderService.getTrackingReminders(null, reminderIdUrlParameter)
-                        .then(function(reminders){
-                            $scope.state.allReminders = reminders;
-                            if (reminders.length !== 1){
-                                utils.showAlert("Reminder id " + reminderIdUrlParameter + " not found!", 'assertive');
-                                if($stateParams.reminder.fromState){
-                                    $state.go($stateParams.reminder.fromState);
-                                } else {
-                                    $state.go('app.reminders_manage');
-                                }
-                            }
-                            $stateParams.reminder = $scope.state.allReminders[0];
-                            setupEditReminder($stateParams.reminder);
-                            utils.stopLoading();
-                        }, function(){
-                            utils.stopLoading();
-                            console.log("failed to get reminders");
-                            console.log("need to log in");
-                            $ionicLoading.hide();
-                            utilsService.showLoginRequiredAlert($scope.login);
-                        });
+                    setupReminderEditingFromUrlParameter(reminderIdUrlParameter);
+                } else if(variableIdUrlParameter){
+                    setupReminderEditingFromVariableId(variableIdUrlParameter);
                 }
-				else {
-					setupNewReminder();
+                else {
+                    setupNewReminderSearch();
                 }
-			}, function(){
-				$ionicLoading.hide();
-				console.log("need to log in");
-				//utilsService.showLoginRequiredAlert($scope.login);
-			});
+            }
+            $scope.state.loading = false;
 	    };
 
         // when view is changed
     	$scope.$on('$ionicView.enter', function(e){
     		$scope.init();
     	});
-
-	    // Show alert with a title
-	    $scope.showAlert = function(title, template){
-			var alertPopup = $ionicPopup.alert({
-				cssClass : 'calm',
-				okType : 'button-calm',
-				title: title,
-				template: template
-			});
-	    };
-
-        $scope.unit_search = function(){
+        
+        $scope.unitSearch = function(){
 
             var unitSearchQuery = $scope.state.abbreviatedUnitName;
             if(unitSearchQuery !== ""){
                 $scope.state.showUnits = true;
-                var unitMatches = $scope.state.units.filter(function(unit) {
+                var unitMatches = $scope.state.unitObjects.filter(function(unit) {
                     return unit.abbreviatedName.toLowerCase().indexOf(unitSearchQuery.toLowerCase()) !== -1;
                 });
 
                 if(unitMatches.length < 1){
-                    unitMatches = $scope.state.units.filter(function(unit) {
+                    unitMatches = $scope.state.unitObjects.filter(function(unit) {
                         return unit.name.toLowerCase().indexOf(unitSearchQuery.toLowerCase()) !== -1;
                     });
                 }
@@ -557,13 +495,13 @@ angular.module('starter')
         };
 
         // when a unit is selected
-        $scope.unit_selected = function(unit){
+        $scope.unitSelected = function(unit){
             console.log("selecting_unit",unit);
 
             // update viewmodel
             $scope.state.abbreviatedUnitName = unit.abbreviatedName;
             $scope.state.showUnits = false;
-            $scope.state.selected_sub = unit.abbreviatedName;
+            $scope.state.selectedUnitAbbreviatedName = unit.abbreviatedName;
         };
 
         $scope.toggleShowUnits = function(){
@@ -576,37 +514,37 @@ angular.module('starter')
 
         $scope.getUnits = function () {
             // get units
-            measurementService.refreshUnits();
-            measurementService.getUnits().then(function (units) {
+            unitService.refreshUnits();
+			unitService.getUnits().then(function (unitObjects) {
 
-                $scope.state.units = units;
+                $scope.state.unitObjects = unitObjects;
 
                 // populate unitCategories
-                for (var i in units) {
-                    if ($scope.lists.unitCategories.indexOf(units[i].category) === -1) {
-                        $scope.lists.unitCategories.push(units[i].category);
-                        $scope.state.unitCategories[units[i].category] = [{
-                            name: units[i].name,
-                            abbreviatedName: units[i].abbreviatedName
+                for (var i in unitObjects) {
+                    if ($scope.state.unitCategories.indexOf(unitObjects[i].category) === -1) {
+                        $scope.state.unitCategories.push(unitObjects[i].category);
+                        $scope.state.unitCategories[unitObjects[i].category] = [{
+                            name: unitObjects[i].name,
+                            abbreviatedName: unitObjects[i].abbreviatedName
                         }];
                     } else {
-                        $scope.state.unitCategories[units[i].category].push({
-                            name: units[i].name,
-                            abbreviatedName: units[i].abbreviatedName
+                        $scope.state.unitCategories[unitObjects[i].category].push({
+                            name: unitObjects[i].name,
+                            abbreviatedName: unitObjects[i].abbreviatedName
                         });
                     }
                 }
 
                 // set default unit category
-                $scope.selected_unit_category = 'Duration';
+                $scope.selectedUnitCategoryName = 'Duration';
 
                 // set first sub unit of selected category
-                $scope.state.selected_sub = $scope.state.unitCategories[$scope.selected_unit_category][0].abbreviatedName;
+                $scope.state.selectedUnitAbbreviatedName = $scope.state.unitCategories[$scope.selectedUnitCategoryName][0].abbreviatedName;
 
-                console.log("got units", units);
+                console.log("got units", unitObjects);
 
                 // if (variableCategoryConfig[category].defaultUnitAbbreviatedName) {
-                //     set_unit(variableCategoryConfig[category].defaultUnitAbbreviatedName);
+                //     setUnit(variableCategoryConfig[category].defaultUnitAbbreviatedName);
                 // }
 
                 // hide spinner

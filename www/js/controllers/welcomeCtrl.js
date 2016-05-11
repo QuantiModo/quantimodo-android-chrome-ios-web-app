@@ -5,44 +5,27 @@ angular.module('starter')
                                         $state, $ionicHistory, notificationService, localStorageService, $rootScope) {
         
         $scope.controller_name = "WelcomeCtrl";
-        $scope.isIOS = ionic.Platform.isIPad() || ionic.Platform.isIOS();
-        $scope.isAndroid = ionic.Platform.isAndroid();
-        $scope.isChrome = window.chrome ? true : false;
+        $rootScope.isIOS = ionic.Platform.isIPad() || ionic.Platform.isIOS();
+        $rootScope.isAndroid = ionic.Platform.isAndroid();
+        $rootScope.isChrome = window.chrome ? true : false;
         $rootScope.hideMenu = true;
         $scope.reportedVariableValue = false;
         $scope.headline = config.appSettings.headline;
         $scope.features = config.appSettings.features;
-        $scope.appName = config.appSettings.app_name;
-        $scope.allowOffline = config.getAllowOffline();
-        console.log('hide menu');
+        $scope.appName = config.appSettings.appName;
 
-
-        // flags
-        localStorageService.getItem('primaryOutcomeVariableReportedWelcomeScreen', function (primaryOutcomeVariableReportedWelcomeScreen) {
-            $scope.show_primary_outcome_variable_card = primaryOutcomeVariableReportedWelcomeScreen ? false : true;
-
-        });
-
-        localStorageService.getItem('interval',function(interval){
-            $scope.show_interval_card = interval ? false : true;
-
-        });
-        
         localStorageService.getItem('askForRating',function(askForRating){
-            $scope.notification_interval = askForRating || $scope.isIOS? "hour" : "hourly";
+            $scope.notificationInterval = askForRating || $rootScope.isIOS? "hour" : "hourly";
         });
 
-        $scope.subscribe_notification = true;
-        
-        console.log("$scope", $scope.show_interval_card);
+        $scope.subscribeNotification = true;
 
-        // when interval is set 
-        $scope.save_interval = function(){
-            localStorageService.setItem('interval',true);
+        $scope.saveInterval = function(){
+
             /*TODO schedule notification*/
-            if($scope.subscribe_notification){
+            if($scope.subscribeNotification){
 
-                notificationService.scheduleNotification($scope.notification_interval);
+                notificationService.scheduleNotification($scope.notificationInterval);
 
                 var intervals = {
                     "never" : 0,
@@ -55,54 +38,56 @@ angular.module('starter')
                 };
 
                 $rootScope.reminderToSchedule = {
-                    id: config.appSettings.primary_outcome_variable_details.id,
+                    id: config.appSettings.primaryOutcomeVariableDetails.id,
                     reportedVariableValue: $scope.reportedVariableValue,
-                    interval: intervals[$scope.notification_interval], 
-                    name: config.appSettings.primary_outcome_variable_details.name,
-                    category: config.appSettings.primary_outcome_variable_details.category,
-                    unit: config.appSettings.primary_outcome_variable_details.unit,
-                    combinationOperation : config.appSettings.primary_outcome_variable_details.combinationOperation
+                    interval: intervals[$scope.notificationInterval], 
+                    name: config.appSettings.primaryOutcomeVariableDetails.name,
+                    category: config.appSettings.primaryOutcomeVariableDetails.category,
+                    unit: config.appSettings.primaryOutcomeVariableDetails.abbreviatedUnitName,
+                    combinationOperation : config.appSettings.primaryOutcomeVariableDetails.combinationOperation
                 };
 
-                localStorageService.setItem('askForRating', $scope.notification_interval);
-                $scope.show_interval_card = false;
+                localStorageService.setItem('askForRating', $scope.notificationInterval);
+                $scope.showIntervalCard = false;
+                $state.go('app.login');
             }            
         };
 
         // skip interval reporting is tapped
-        $scope.skip_interval = function(){
-            localStorageService.setItem('interval',true);
-            $scope.show_interval_card = false;
+        $scope.skipInterval = function(){
+            $scope.showIntervalCard = false;
+            $state.go('app.login');
         };
 
-        // factorValue is reported
-        $scope.report_primary_outcome_variable = function(factorValue){
+        // ratingValue is reported
+        $scope.reportPrimaryOutcomeVariable = function(ratingValue){
 
-            $scope.reportedVariableValue = config.appSettings.conversion_dataset_reversed[factorValue] ? 
-                config.appSettings.conversion_dataset_reversed[factorValue] : false;
+            $scope.reportedVariableValue = config.appSettings.primaryOutcomeValueConversionDataSetReversed[ratingValue] ?
+                config.appSettings.primaryOutcomeValueConversionDataSetReversed[ratingValue] : false;
             
             localStorageService.setItem('primaryOutcomeVariableReportedWelcomeScreen',true);
-            localStorageService.setItem('allData', JSON.stringify([]));
+            localStorageService.setItem('allMeasurements', JSON.stringify([]));
             
-            // update localstorage
-            measurementService.updatePrimaryOutcomeVariableLocally(factorValue).then(function () {
+            // update local storage
+            measurementService.updatePrimaryOutcomeVariableLocally(ratingValue).then(function () {
                 // try to send the data to server
-                measurementService.updatePrimaryOutcomeVariable(factorValue);
+                if($rootScope.user){
+                    measurementService.updatePrimaryOutcomeVariableOnServer(ratingValue);
+                }
 
                 // calculate charts data
                 measurementService.calculateAveragePrimaryOutcomeVariableValue().then(function(){
                     measurementService.calculateBothChart();
-                    $scope.show_primary_outcome_variable_card = false;
+                    $scope.showPrimaryOutcomeVariableCard = false;
                 });
             });
+            $scope.hidePrimaryOutcomeVariableCard = true;
+            $scope.showIntervalCard = true;
         };
 
-        // constructor
+
         $scope.init = function(){
-            console.log("welcome init");
-            
-            // for setting intervals
-            $scope.timeRemaining = false;
+            console.log("welcome initialization...");
             
         };
 

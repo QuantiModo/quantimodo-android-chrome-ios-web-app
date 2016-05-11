@@ -6,11 +6,11 @@ angular.module('starter')
                                           $ionicSlideBoxDelegate) {
         $scope.controller_name = "IntroPageCtrl";
 
-            $scope.view_title = config.appSettings.app_name;
-            $scope.primary_outcome_variable = config.appSettings.primary_outcome_variable;
-            $scope.primary_outcome_variable_options = config.getPrimaryOutcomeVariableOptions();
-            $scope.primary_outcome_variable_numbers = config.getPrimaryOutcomeVariableOptions(true);
-            $scope.intro_config = config.appSettings.intro;
+            $scope.viewTitle = config.appSettings.appName;
+            $scope.primaryOutcomeVariable = config.appSettings.primaryOutcomeVariable;
+            $scope.primaryOutcomeVariableRatingOptions = config.getPrimaryOutcomeVariableOptions();
+            $scope.primaryOutcomeVariableNumbers = config.getPrimaryOutcomeVariableOptions(true);
+            $scope.introConfiguration = config.appSettings.intro;
 
             $scope.myIntro = {
                 ready : false,
@@ -18,7 +18,7 @@ angular.module('starter')
                 slideIndex : 0,
                 // Called to navigate to the main app
                 startApp : function() {
-                    $state.go(config.appSettings.default_state);
+                    $state.go(config.appSettings.defaultState);
                 },
 
                 next : function() {
@@ -36,18 +36,9 @@ angular.module('starter')
             };
 
             var init = function(){
-                // show loader
-                $ionicLoading.show(
-                    {
-                        noBackdrop: true,
-                        template: '<p class="item-icon-left">Loading stuff...<ion-spinner icon="lines"/></p>'
-                    }
-                );
-
+                utilsService.loadingStart();
                 $scope.myIntro.ready = true;
-
                 $ionicLoading.hide();
-
             };
 
             // when view is changed
