@@ -94,7 +94,7 @@ gulp.task('swagger', function(){
 	return deferred.promise;
 });
 
-gulp.task('private', function(){
+gulp.task('generatePrivateConfigFromEnvs', function(){
 
 	var deferred = q.defer();
 
