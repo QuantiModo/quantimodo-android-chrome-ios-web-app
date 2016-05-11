@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<widget id="com.quantimodo.moodimodoapp" version="1.0.20" ios-CFBundleVersion="1.0.20.2" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget id="com.quantimodo.moodimodoapp" version="1.0.20" ios-CFBundleVersion="1.0.20.3" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
   <name>MoodiModo</name>
   <description>
         The mood-tracking app from QuantiModo
@@ -18,7 +18,7 @@
   <preference name="SplashScreenDelay" value="3000"/>
 
   <allow-navigation href="https://app.quantimo.do/*" />
-  
+
   <notificationplugin interactive="true">
       <button id="repeat_rating" display="Same As Last Time" mode="background"></button>
       <button id="other" display="Other" mode="foreground"></button>
@@ -29,7 +29,7 @@
       <TwoButtonLayout first="repeat_rating" second="other"></TwoButtonLayout>
       <FourButtonLayout first="sad" second="happy" third="ok" fourth="depressed" ></FourButtonLayout>
   </notificationplugin>
-  
+
   <feature name="StatusBar">
     <param name="ios-package" value="CDVStatusBar" onload="true"/>
   </feature>
