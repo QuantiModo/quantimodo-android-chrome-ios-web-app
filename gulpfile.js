@@ -848,6 +848,20 @@ gulp.task('addInheritedToOtherLinkerFlags', [ 'getIOSAppFolderName' ], function(
 	.pipe(gulp.dest('./platforms/ios/'+IOS_FOLDER_NAME+'.xcodeproj/'));
 });
 
+gulp.task('addDeploymentTarget', ['getIOSAppFolderName'], function(){
+	return gulp.src('./platforms/ios/'+IOS_FOLDER_NAME+'.xcodeproj/project.pbxproj')
+		.pipe(change(function(content){
+			if(content.indexOf('IPHONEOS_DEPLOYMENT_TARGET') === -1)
+				return content.replace(/ENABLE_BITCODE(\s+)?=(\s+)?(\s+)NO\;/g, "IPHONEOS_DEPLOYMENT_TARGET = 6.0;\ENABLE_BITCODE = NO;");
+			return content;
+		}))
+		.pipe(change(function(content){
+			console.log("*****************\n\n\n",content,"\n\n\n*****************");
+		}))
+		.pipe(gulp.dest('./platforms/ios/'+IOS_FOLDER_NAME+'.xcodeproj/'));
+});
+
+
 gulp.task('installPods', [ 'addPodfile' ] , function(){
 	var deferred = q.defer();
 
@@ -907,6 +921,7 @@ gulp.task('makeIosApp', function(callback){
 	'addBugsnagInObjC',
 	'enableBitCode',
 	'addInheritedToOtherLinkerFlags',
+	'addDeploymentTarget',
 	'addPodfile',
 	'installPods',
 	callback);
