@@ -11,6 +11,8 @@ before_install:
 - npm install -g grunt-cli@0.1.13
 - npm install -g cordova@5.4.0
 - npm install -g ionic@1.7.10
+- npm install -g ios-sim
+- npm install -g ios-deploy
 before_script:
 - chmod a+x ./scripts/decrypt-key.sh
 - ./scripts/decrypt-key.sh
