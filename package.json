@@ -45,7 +45,8 @@
     "cordova-plugin-file-opener2"
   ],
   "cordovaPlatforms": [
-    "android"
+    "android",
+    "ios"
   ],
   "engines": {
     "node": "0.10.x"
