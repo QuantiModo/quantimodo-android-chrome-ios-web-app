@@ -3,7 +3,7 @@ angular.module('starter')
     // Controls the Track Page of the App
     .controller('IntroPageCtrl', function($scope, $ionicModal, $state, $timeout, utilsService, authService,
                                       measurementService, chartService, $ionicPopup, localStorageService, $ionicLoading,
-                                          $ionicSlideBoxDelegate) {
+                                          $ionicSlideBoxDelegate, $rootScope) {
         $scope.controller_name = "IntroPageCtrl";
 
             $scope.viewTitle = config.appSettings.appName;
@@ -18,6 +18,7 @@ angular.module('starter')
                 slideIndex : 0,
                 // Called to navigate to the main app
                 startApp : function() {
+                    $rootScope.hideMenu = false;
                     $state.go(config.appSettings.defaultState);
                 },
 

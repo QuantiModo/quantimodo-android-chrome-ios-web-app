@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<widget id="com.quantimodo.moodimodoapp" version="QUANTIMODO_TEMPLATE_APP_VERSION" ios-CFBundleVersion="QUANTIMODO_TEMPLATE_APP_VERSION" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget id="com.quantimodo.moodimodoapp" version="1.2.0" ios-CFBundleVersion="1.2.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
   <name>MoodiModo</name>
   <description>
         The mood-tracking app from QuantiModo
     </description>
   <author email="help@quantimo.do" href="http://help.quantimo.do/">
-      Team QuantiModo
+      QuantiModo
     </author>
   <content src="index.html"/>
   <access origin="*"/>
@@ -31,6 +31,10 @@
   </notificationplugin>
   <feature name="StatusBar">
     <param name="ios-package" value="CDVStatusBar" onload="true"/>
+  </feature>
+  <feature name="InAppBrowser">
+    <param name="ios-package" value="CDVInAppBrowser"/>
+    <param name="android-package" value="org.apache.cordova.inappbrowser.InAppBrowser"/>
   </feature>
   <platform name="ios">
     <splash src="resources/ios/splash/Default-568h@2x~iphone.png" width="640" height="1136"/>

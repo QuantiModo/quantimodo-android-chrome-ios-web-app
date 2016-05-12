@@ -26,6 +26,7 @@ angular.module('starter')
             }
             if($rootScope.user){
                 console.log("Already logged in on login page.  Going to default state...");
+                $rootScope.hideMenu = false;
                 $state.go(config.appSettings.defaultState);
             }
         };
@@ -58,6 +59,7 @@ angular.module('starter')
                 console.log('Settings user in login');
                 $rootScope.setUserForIntercom($rootScope.user);
                 $rootScope.setUserForBugsnag($rootScope.user);
+                $rootScope.hideMenu = false;
                 $state.go(config.appSettings.defaultState);
             }
         };
@@ -95,6 +97,7 @@ angular.module('starter')
 
                         console.log('get user details from server...');
                         $rootScope.getUserAndSetInLocalStorage();
+                        $rootScope.hideMenu = false;
                         $rootScope.$broadcast('callAppCtrlInit');
                         $state.go(config.appSettings.defaultState);
 
@@ -283,6 +286,7 @@ angular.module('starter')
         var sendToNonOAuthBrowserLoginUrl = function(register) {
             var user = getOrSetUserInLocalStorage();
             if(user){
+                $rootScope.hideMenu = false;
                 $state.go(config.appSettings.defaultState);
             }
             if(!user){
