@@ -89,10 +89,10 @@ angular.module('starter')
 			// retrieves access token.
 			// if expired, renews it
             getAccessTokenFromUrlParameter: function () {
-                var tokenInGetParams = authService.utilsService.getUrlParameter(location.href, 'accessToken');
+                var tokenInGetParams = utilsService.getUrlParameter(location.href, 'accessToken');
 
                 if (!tokenInGetParams) {
-                    tokenInGetParams = authService.utilsService.getUrlParameter(location.href, 'access_token');
+                    tokenInGetParams = utilsService.getUrlParameter(location.href, 'access_token');
                 }
                 return tokenInGetParams;
             },
