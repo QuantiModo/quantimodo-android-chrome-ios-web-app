@@ -24,7 +24,8 @@ if [ "$APP_NAME" == "moodimodo" ]; then
 
     cd ${PROJECT_ROOT}
     ionic state reset
-    ionic resources
+    echo "Generating image resources for $APP_NAME..."
+    ionic resources >/dev/null
     chmod a+x ./scripts/decrypt-key.sh
     ./scripts/decrypt-key.sh
     chmod a+x ./scripts/add-key.sh
