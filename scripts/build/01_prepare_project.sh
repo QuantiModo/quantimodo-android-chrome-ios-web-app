@@ -21,11 +21,11 @@ fi
 
 rm -rf ${BUILD_PATH}/${APP_NAME}
 
-if [ -d "${PROJECT_ROOT}/apps" ];
+if [ -d "${PROJECT_ROOT}/apps/${APP_NAME}" ];
     then
-        echo "${PROJECT_ROOT}/apps path exists";
+        echo "${PROJECT_ROOT}/apps/${APP_NAME} path exists";
     else
-        echo "${PROJECT_ROOT}/apps path not found!";
+        echo "${PROJECT_ROOT}/apps/${APP_NAME} path not found!";
         exit
 fi
 
