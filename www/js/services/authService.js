@@ -114,7 +114,7 @@ angular.module('starter')
 				}
 
 				if (localStorageService.getItemSync('accessToken')) {
-					console.log('resolving token using value from local storage');
+					//console.log('resolving token using value from local storage');
 					deferred.resolve({
 						accessToken: localStorageService.getItemSync('accessToken')
 					});
