@@ -15,10 +15,15 @@ fi
 
 if [ -z "$1" ]
   then
-  echo -e "No Android keystore password third argument given so quitting..."
-   exit
+  echo -e "No Android keystore password third argument given..."
 else
     ANDROID_KEYSTORE_PASSWORD=$1
+fi
+
+if [ ! -d "$ANDROID_KEYSTORE_PASSWORD" ]
+  then
+  echo -e "${RED} ANDROID_KEYSTORE_PASSWORD doesn't exist! Quitting! "
+  exit
 fi
 
 if [ -z "$2" ]
