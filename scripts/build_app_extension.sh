@@ -39,8 +39,6 @@ fi
 
 QM_DOCKER_PATH="/Users/Shared/Jenkins/Home/workspace/QM-Docker-Build"
 
-CHROME_EXTENSION_SCRIPT=${PROJECT_ROOT}/scripts/build_chrome_extension.sh
-CHROME_APP_SCRIPT=${PROJECT_ROOT}/scripts/build_chrome_app.sh
 ANDROID_APP_SCRIPT=${PROJECT_ROOT}/scripts/build_android_app.sh
 IOS_APP_SCRIPT=${PROJECT_ROOT}/scripts/build_ios_app.sh
 IMAGES_SCRIPT=${PROJECT_ROOT}/scripts/create_icons.sh

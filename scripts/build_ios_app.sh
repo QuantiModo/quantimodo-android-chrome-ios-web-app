@@ -26,10 +26,6 @@ fi
 
 BUILD_PATH="${PROJECT_ROOT}/build"
 
-# Install npm and bower libraries
-#cd ${IONIC_PATH} $$ git stash && git checkout app/${APP_NAME}
-
-
 if [ "$APP_NAME" == "moodimodo" ]; then
     ### Build iOS App ###
     export APP_NAME="MoodiModo"
