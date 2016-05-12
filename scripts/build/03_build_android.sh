@@ -1,18 +1,8 @@
 #!/bin/bash
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-NC='\033[0m' # No Color
-ANDROID_KEYSTORE_PATH="/Users/Shared/Jenkins/Home/workspace/QM-Docker-Build/configs/android/quantimodo.keystore"
 
 if [ -z "$APP_NAME" ]
   then
     echo -e "${RED}build_android_app.sh: Please provide lowercase APP_NAME ${NC}"
-    exit
-fi
-
-if [ -z "$2" ]
-  then
-  echo -e "${RED}build_android_app.sh: No ANDROID_KEYSTORE_PASSWORD second argument.sh...${NC}"
     exit
 fi
 
