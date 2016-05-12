@@ -235,6 +235,10 @@ angular.module('starter')
             if(!$rootScope.user && config.getClientId() === 'oAuthDisabled'){
                 $rootScope.getUserAndSetInLocalStorage();
             }
+            if($rootScope.user){
+                    $rootScope.setUserForIntercom($rootScope.user);
+                    $rootScope.setUserForBugsnag($rootScope.user);
+            }
             hideMenuIfSetInUrlParameter();
             goToWelcomeStateIfNotWelcomed();
             scheduleReminder();
