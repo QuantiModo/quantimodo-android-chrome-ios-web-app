@@ -8,7 +8,6 @@ else
 fi
 
 if [ -z "$PROJECT_ROOT" ]
-  then
     then
       $PROJECT_ROOT="$PWD"
       echo "No PROJECT_ROOT given. Using $PROJECT_ROOT..."
