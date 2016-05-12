@@ -25,10 +25,10 @@ fi
 
 if [ -z "$3" ]
   then
-  echo -e "${RED}No ANDROID_KEYSTORE_PASSWORD third argument given to build_app_extension.sh...${NC}"
+  echo -e "${RED}build_app_extension: No ANDROID_KEYSTORE_PASSWORD third argument given to build_app_extension.sh...${NC}"
 else
     ANDROID_KEYSTORE_PASSWORD=$3
-    echo -e "ANDROID_KEYSTORE_PASSWORD third argument given to build_app_extension.sh is $ANDROID_KEYSTORE_PASSWORD..."
+    echo -e "build_app_extension: ANDROID_KEYSTORE_PASSWORD third argument given to build_app_extension.sh is $ANDROID_KEYSTORE_PASSWORD..."
 fi
 
 if [ -z "$4" ]
