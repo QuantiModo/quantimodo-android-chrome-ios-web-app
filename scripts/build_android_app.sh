@@ -28,7 +28,7 @@ if [ -z "$3" ]
         BUILD_PATH="$3"
 fi
 
-if [ ! -d "$ANDROID_HOME" ]
+if [ -z "${ANDROID_HOME}" ]
     then
       echo -e "${RED}build_android_app.sh: Android home doesn't exist. On OSX, you can set it like this: http://stackoverflow.com/questions/19986214/setting-android-home-enviromental-variable-on-mac-os-x ${NC}"
       exit
@@ -37,7 +37,7 @@ if [ ! -d "$ANDROID_HOME" ]
 fi
 
 echo -e "${RED}build_android_app.sh: ANDROID_KEYSTORE_PASSWORD second argument given is ${ANDROID_KEYSTORE_PASSWORD}...${NC}"
-if [ ! -d ${ANDROID_KEYSTORE_PASSWORD} ]
+if [ -z "${ANDROID_KEYSTORE_PASSWORD}" ]
   then
       echo -e "${RED}build_android_app.sh: ANDROID_KEYSTORE_PASSWORD doesn't exist. Please set it in Jenkins->Manage Jenkins->Configure System->Environment variables${NC}"
       exit
@@ -45,7 +45,7 @@ if [ ! -d ${ANDROID_KEYSTORE_PASSWORD} ]
       echo -e "${GREEN}build_android_app.sh: ANDROID_KEYSTORE_PASSWORD is ${ANDROID_KEYSTORE_PASSWORD}${NC}"
 fi
 
-if [ ! -d "$ANDROID_KEYSTORE_PATH" ]
+if [ -z "${ANDROID_KEYSTORE_PATH}" ]
     then
       echo -e "${RED} ANDROID_KEYSTORE_PATH doesn't exist. Please set it in Jenkins->Manage Jenkins->Configure System->Environment variables${NC}"
       exit
