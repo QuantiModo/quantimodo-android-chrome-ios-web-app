@@ -28,6 +28,8 @@ if [ -z "$3" ]
         BUILD_PATH="$3"
 fi
 
+echo -e "${RED}build_android_app.sh: BUILD_PATH is ${BUILD_PATH}...${NC}"
+
 if [ -z "${ANDROID_HOME}" ]
     then
       echo -e "${RED}build_android_app.sh: Android home doesn't exist. On OSX, you can set it like this: http://stackoverflow.com/questions/19986214/setting-android-home-enviromental-variable-on-mac-os-x ${NC}"
@@ -52,6 +54,8 @@ if [ -z "${ANDROID_KEYSTORE_PATH}" ]
     else
       echo -e "${GREEN}build_android_app.sh: ANDROID_KEYSTORE_PATH is $ANDROID_KEYSTORE_PATH${NC}"
 fi
+
+echo -e "${RED}build_android_app.sh: PROJECT_ROOT is ${PROJECT_ROOT}...${NC}"
 
 ### Build Android App ###
 cd ${PROJECT_ROOT}
