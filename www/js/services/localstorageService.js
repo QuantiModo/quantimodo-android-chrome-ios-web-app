@@ -5,23 +5,13 @@
 
 angular.module('starter')
 
-    .factory('localStorageService',function(){
+    .factory('localStorageService',function(utilsService, $rootScope){
 
         return{
 
-            convertToObjectIfJsonString : function (stringOrObject) {
-                try {
-                    stringOrObject = JSON.parse(stringOrObject);
-                } catch (e) {
-                    return stringOrObject;
-                }
-                return stringOrObject;
-            },
-
-
             deleteItem : function(key){
                 var keyIdentifier = config.appSettings.appStorageIdentifier;
-                if (window.chrome && chrome.runtime && chrome.runtime.id) {
+                if ($rootScope.isChromeApp) {
 
                     // Code running in a Chrome extension (content script, background page, etc.)
                     chrome.storage.local.remove(keyIdentifier+key);
@@ -33,7 +23,7 @@ angular.module('starter')
 
             setItem:function(key, value){
                 var keyIdentifier = config.appSettings.appStorageIdentifier;
-                if (window.chrome && chrome.runtime && chrome.runtime.id) {
+                if ($rootScope.isChromeApp) {
                     // Code running in a Chrome extension (content script, background page, etc.)
                     var obj = {};
                     obj[keyIdentifier+key] = value;
@@ -46,7 +36,7 @@ angular.module('starter')
             
             getItem:function(key,callback){
                 var keyIdentifier = config.appSettings.appStorageIdentifier;
-                if (window.chrome && chrome.runtime && chrome.runtime.id) {
+                if ($rootScope.isChromeApp) {
                     // Code running in a Chrome extension (content script, background page, etc.)
                     chrome.storage.local.get(keyIdentifier+key,function(val){
                         callback(val[keyIdentifier+key]);
@@ -59,7 +49,7 @@ angular.module('starter')
 
             getItemSync: function (key) {
                 var keyIdentifier = config.appSettings.appStorageIdentifier;
-                if (window.chrome && chrome.runtime && chrome.runtime.id) {
+                if ($rootScope.isChromeApp) {
                     // Code running in a Chrome extension (content script, background page, etc.)
                     chrome.storage.local.get(keyIdentifier+key,function(val){
                         return val[keyIdentifier+key];
@@ -71,22 +61,22 @@ angular.module('starter')
 
             getItemAsObject: function (key) {
                 var keyIdentifier = config.appSettings.appStorageIdentifier;
-                if (window.chrome && chrome.runtime && chrome.runtime.id) {
+                if ($rootScope.isChromeApp) {
                     // Code running in a Chrome extension (content script, background page, etc.)
                     chrome.storage.local.get(keyIdentifier+key,function(val){
                         var item = val[keyIdentifier+key];
-                        item = this.convertToObjectIfJsonString(item);
+                        item = utilsService.convertToObjectIfJsonString(item);
                         return item;
                     });
                 } else {
                     var item = localStorage.getItem(keyIdentifier+key);
-                    item = this.convertToObjectIfJsonString(item);
+                    item = utilsService.convertToObjectIfJsonString(item);
                     return item;
                 }
             },
 
             clear:function(){
-                if (window.chrome && chrome.runtime && chrome.runtime.id) {
+                if ($rootScope.isChromeApp) {
                     chrome.storage.local.clear();
                 } else {
                     localStorage.clear();

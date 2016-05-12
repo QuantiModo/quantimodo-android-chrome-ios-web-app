@@ -395,7 +395,7 @@ angular.module('starter')
 			},
 
 			// sync local data to QuantiModo API
-			syncData : function(){
+			syncPrimaryOutcomeVariableMeasurements : function(){
 				var deferred = $q.defer();
                 isSyncing = true;
                 var params;
@@ -410,7 +410,7 @@ angular.module('starter')
                         limit:200,
                         offset:0
                     };
-                    console.log("syncData",params);
+                    console.log("syncPrimaryOutcomeVariableMeasurements",params);
                 });
 
 				// send request
@@ -487,8 +487,8 @@ angular.module('starter')
                                                 }
                                             });
                                         });
-                                        console.log('updated records');
-                                        console.log(updatedRecords);
+                                        //console.log('updated records');
+                                        //console.log(updatedRecords);
                                         allMeasurements = allMeasurements.concat(newRecords);
                                     }
 
@@ -619,7 +619,7 @@ angular.module('starter')
                         barArr[currentValue - 1]++;
                     }
                 }
-                localStorageService.setItem('lineChartData', JSON.stringify(lineArr));
+                //localStorageService.setItem('lineChartData', JSON.stringify(lineArr));
                 localStorageService.setItem('barChartData', JSON.stringify(barArr));
                 return {lineArr: lineArr, barArr: barArr};
             },

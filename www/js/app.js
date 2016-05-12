@@ -50,6 +50,7 @@ angular.module('starter',
                     if($ionicHistory.backView()){
                         $ionicHistory.goBack();
                     } else if(localStorage.user){
+                        $rootScope.hideMenu = false;
                         $state.go(config.appSettings.defaultState);
                     } else {
                         $state.go(config.appSettings.welcomeState);
@@ -123,6 +124,7 @@ angular.module('starter',
       })
 
       .state('app.welcome', {
+          cache: false,
         url: "/welcome",
         views: {
           'menuContent': {
@@ -190,6 +192,7 @@ angular.module('starter',
             url: "/measurement-add/:variableName",
             cache:false,
             params: {
+                reminder : null,
                 fromState : null,
                 measurement : null,
                 variableObject : null

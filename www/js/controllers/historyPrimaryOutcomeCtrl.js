@@ -2,7 +2,7 @@ angular.module('starter')
 
 	// Controls the History Page of the App.
 	.controller('HistoryPrimaryOutcomeCtrl', function($scope, $ionicModal, $timeout, $ionicLoading, authService, $ionicPopover,
-										measurementService, $ionicPopup, localStorageService, utilsService, $state){
+										measurementService, $ionicPopup, localStorageService, utilsService, $state, $rootScope){
 
 	    $scope.controller_name = "HistoryPrimaryOutcomeCtrl";
         
@@ -76,11 +76,15 @@ angular.module('starter')
 	    $scope.init = function(){
 			
 			utilsService.loadingStart();
+			if($rootScope.user){
+				measurementService.syncPrimaryOutcomeVariableMeasurements();
+			}
 			var history;
 			localStorageService.getItem('allMeasurements',function(allMeasurements){
 				history = allMeasurements? JSON.parse(allMeasurements) : [];
 				if(history.length < 1){
 					console.log('No measurements for history!  Going to default state. ');
+                    $rootScope.hideMenu = false;
 					$state.go(config.appSettings.defaultState);
 				}
 				if(history.length > 0){

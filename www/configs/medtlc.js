@@ -4,8 +4,12 @@ var getPlatform = function(){
         typeof ionic.Platform !== "undefined" &&
         typeof ionic.Platform.isIOS !== "undefined" &&
         typeof ionic.Platform.isAndroid !== "undefined" )
+    {
         return ionic.Platform.isIOS()? "iOS" : ionic.Platform.isAndroid()? "Android" : "Web";
-    else return "Ionic";
+    }
+    else {
+        return "Ionic";
+    }
 };
 
 window.config = {
@@ -18,7 +22,7 @@ window.config = {
     permissions : ['readmeasurements', 'writemeasurements'],
     port : '4417',
     protocol : 'https',
-    shoppingCarEnabled : true
+    shoppingCartEnabled : true
 };
 
 config.appSettings  = {
@@ -441,7 +445,7 @@ config.getClientSecret = function(){
 
 config.getRedirectUri = function(){
     if(!window.private_keys.redirect_uris){
-        return 'https://app.quantimo.do/ionic/Modo/www/callback/'
+        return 'https://app.quantimo.do/ionic/Modo/www/callback/';
     }
     if (window.chrome && chrome.runtime && chrome.runtime.id) {
         return window.private_keys.redirect_uris.Chrome;
@@ -456,11 +460,10 @@ config.getApiUrl = function(){
         return 'https://app.quantimo.do';
     }
     var platform = getPlatform();
-    if(platform === 'Web' && window.private_keys.client_ids.Web === 'oAuthDisabled'){
-        return window.location.origin;
-    }
     if (window.chrome && chrome.runtime && chrome.runtime.id) {
         return window.private_keys.api_urls.Chrome;
+    } else if (platform === 'Web' && window.private_keys.client_ids.Web === 'oAuthDisabled') {
+        return window.location.origin;
     } else {
         return platform === "Ionic"? window.private_keys.api_urls.Web : platform === "Web"? window.private_keys.api_urls.Web : platform === "iOS"? window.private_keys.api_urls.iOS : window.private_keys.api_urls.Android;
     }

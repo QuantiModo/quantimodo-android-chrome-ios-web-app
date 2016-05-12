@@ -60,10 +60,10 @@ gulp.task('install', ['git-check'], function() {
 });
 
 gulp.task('generateXmlConfig', ['getAppName'], function(){
-	
+
 	var deferred = q.defer();
 
-	gulp.src('./xmlconfigs/'+APP_NAME+'.xml')
+	gulp.src('./apps/'+APP_NAME+'/config.xml')
 	.pipe(rename('config.xml'))
 	.pipe(gulp.dest('./'));
 
@@ -73,7 +73,7 @@ gulp.task('generateXmlConfig', ['getAppName'], function(){
 		return content.replace(/defaultApp\s?:\s?("|')\w+("|'),/g, 'defaultApp : "'+APP_NAME+'",');
 	}))
 	.pipe(gulp.dest('./www/js/'));
-	
+
 	return deferred.promise;
 });
 
@@ -84,9 +84,9 @@ gulp.task('swagger', function(){
 
 	var angularjsSourceCode = CodeGen.getAngularCode({ className: 'Test', swagger: swagger });
 	console.log(angularjsSourceCode);
-	
+
 	fs.writeFile('./www/js/services/swaggerjs.js', angularjsSourceCode , function (err) {
-			if (err) 
+			if (err)
 					return console.log(err);
 			console.log('Swagger code > /www/js/services/swaggerjs.js');
 			deferred.resolve();
@@ -94,7 +94,7 @@ gulp.task('swagger', function(){
 	return deferred.promise;
 });
 
-gulp.task('private', function(){
+gulp.task('generatePrivateConfigFromEnvs', function(){
 
 	var deferred = q.defer();
 
@@ -137,7 +137,7 @@ gulp.task('private', function(){
 			} else {
 				console.log(appName+'_WEB_CLIENT_ID'+' NOT DETECTED');
 			}
-			
+
 			if(typeof env_keys[appName+'_WEB_CLIENT_SECRET'] !== "undefined"){
 				configkeys.client_secrets.Web = env_keys[appName+'_WEB_CLIENT_SECRET'];
 				console.log(appName+'_WEB_CLIENT_SECRET'+' Detected');
@@ -160,7 +160,7 @@ gulp.task('private', function(){
 				console.log(appName+'_WEB_REDIRECT_URI'+' NOT DETECTED. Using https://app.quantimo.do/ionic/Modo/www/callback/');
 				configkeys.redirect_uris.Web = 'https://app.quantimo.do/ionic/Modo/www/callback/';
 			}
-			
+
             if(typeof env_keys['IONIC_BUGSNAG_KEY'] !== "undefined"){
                 configkeys.bugsnag_key = env_keys['IONIC_BUGSNAG_KEY'];
                 console.log('IONIC_BUGSNAG_KEY' +' Detected');
@@ -178,7 +178,7 @@ gulp.task('private', function(){
 	}
 
 	return deferred.promise;
-	
+
 });
 
 var answer = '';
@@ -231,13 +231,13 @@ gulp.task('makezip', ['copywww'], function(){
 
 gulp.task('openbrowser', ['makezip'], function(){
 	 var deferred = q.defer();
-	 
+
 	 gulp.src(__filename)
 	.pipe(open({uri: 'https://accounts.google.com/o/oauth2/auth?response_type=code&scope=https://www.googleapis.com/auth/chromewebstore&client_id=1052648855194-h7mj5q7mmc31k0g3b9rj65ctk0uejo9p.apps.googleusercontent.com&redirect_uri=urn:ietf:wg:oauth:2.0:oob'}));
 
-	
+
 	deferred.resolve();
-	
+
 });
 
 var code = '';
@@ -256,7 +256,7 @@ gulp.task('getCode', ['openbrowser'], function(){
 			deferred.resolve();
 		});
 	}, 2000);
-	
+
 	return deferred.promise;
 });
 
@@ -278,10 +278,10 @@ gulp.task('getAccessTokenFromGoogle', ['getCode'], function(){
 
 	request(options, function(error, message, response){
 		if(error){
-			console.log('Failed to generate the access code');
+			console.log('Failed to generate the access code', error);
 			defer.reject();
 		} else {
-			response = JSON.parse(response);	
+			response = JSON.parse(response);
 			access_token = response.access_token;
 			deferred.resolve();
 		}
@@ -330,7 +330,7 @@ gulp.task('uploadToAppServer', ['getAccessTokenFromGoogle'], function(){
 		} else {
 			console.log('Upload Response Recieved');
 			data = JSON.parse(data);
-			
+
 			if(data.uploadState === "SUCCESS"){
 				console.log('Uploaded successfully!');
 				deferred.resolve();
@@ -383,8 +383,8 @@ gulp.task('publishToGoogleAppStore', ['shouldPublish'],function(){
 	};
 
 	request(options, function(error, message, publishResult){
-		if(error) { 
-			console.log("error in publishing to trusted Users");
+		if(error) {
+			console.log("error in publishing to trusted Users", error);
 			deferred.reject();
 		} else {
 			publishResult = JSON.parse(publishResult);
@@ -425,11 +425,11 @@ gulp.task('git-check', function(done) {
 
 var exec = require('child_process').exec;
 function execute(command, callback){
-    var my_child_process = exec(command, function(error, stdout, stderr){ 
+    var my_child_process = exec(command, function(error, stdout, stderr){
     	if (error !== null) {
 	      console.log('exec ERROR: ' + error);
 	    }
-    	callback(error); 
+    	callback(error, stdout);
     });
 
     my_child_process.stdout.pipe(process.stdout);
@@ -437,7 +437,7 @@ function execute(command, callback){
 }
 gulp.task('deleteIOSApp', function () {
 	var deferred = q.defer();
-  
+
 	execute("ionic platform rm ios", function(error){
 		if(error !== null){
 			console.log("ERROR REMOVING IOS APP: " + error);
@@ -453,7 +453,7 @@ gulp.task('deleteIOSApp', function () {
 
 gulp.task('deleteFacebookPlugin', function(){
 	var deferred = q.defer();
-	
+
 	execute("cordova plugin rm phonegap-facebook-plugin", function(error){
 		if(error !== null){
 			console.log("ERROR REMOVING FACEBOOK PLUGIN: " + error);
@@ -463,13 +463,13 @@ gulp.task('deleteFacebookPlugin', function(){
 			deferred.resolve();
 		}
 	});
-	
+
 	return deferred.promise;
 });
 
 gulp.task('deleteGooglePlusPlugin', function(){
 	var deferred = q.defer();
-	
+
 	execute("cordova plugin rm cordova-plugin-googleplus", function(error){
 		if(error !== null){
 			console.log("ERROR REMOVING GOOGLE PLUS PLUGIN: " + error);
@@ -479,7 +479,7 @@ gulp.task('deleteGooglePlusPlugin', function(){
 			deferred.resolve();
 		}
 	});
-	
+
 	return deferred.promise;
 });
 
@@ -499,13 +499,29 @@ gulp.task('addIOSApp', function(){
 	return deferred.promise;
 });
 
+gulp.task('ionicResources', function(){
+	var deferred = q.defer();
+
+	execute("ionic resources", function(error){
+		if(error !== null){
+			console.log("ERROR GENERATING RESOURCES " + error);
+			deferred.reject();
+		} else {
+			console.log("\n***RESOURCES GENERATED****");
+			deferred.resolve();
+		}
+	});
+
+	return deferred.promise;
+});
+
 var APP_NAME = false;
+
 
 gulp.task('getAppName', function(){
 	var deferred = q.defer();
 
-	if(APP_NAME) deferred.resolve();
-	else {
+	var inquireAboutAppName = function(){
 		inquirer.prompt([{
 			type: 'input',
 			name: 'app',
@@ -514,6 +530,29 @@ gulp.task('getAppName', function(){
 			APP_NAME = answers.app;
 			deferred.resolve();
 		});
+	};
+
+	if(APP_NAME) deferred.resolve();
+	else {
+		var app_name = process.env["APP_NAME"];
+		if(app_name && app_name.length){
+			APP_NAME = app_name.toLowerCase();
+			console.log("the app name fron env is", JSON.stringify(APP_NAME));
+			deferred.resolve();
+		} else {
+			var commandForGit = 'git rev-parse --abbrev-ref HEAD';
+			execute(commandForGit, function(error, output){
+				output = output.trim();
+				if(error || output.indexOf('app/') < 0 || !output.split("/")[1] || output.split("/")[1].length === 0){
+					console.log("Failed to get App name automatically.", error);
+					inquireAboutAppName();
+				} else {
+					APP_NAME = output.split("/")[1];
+					console.log("the app name from git branch is", JSON.stringify(APP_NAME));
+					deferred.resolve();
+				}
+			});
+		}
 	}
 	return deferred.promise;
 });
@@ -529,7 +568,7 @@ gulp.task('readKeysForCurrentApp', ['getAppName'] ,function(){
 		if (err) {
 			throw err;
 		}
-		
+
 		var exr = false;
 
 		if(data.indexOf('FACEBOOK_APP_ID') < 0){
@@ -562,7 +601,7 @@ gulp.task('readKeysForCurrentApp', ['getAppName'] ,function(){
 			var rx =  /("|')GOOGLEPLUS_REVERSED_CLIENT_ID("|')(\s)?:(\s)?("|')(\w*|\.*|\-*)*("|')/g;
 			var arr = rx.exec(data);
 			GOOGLEPLUS_REVERSED_CLIENT_ID = JSON.parse("{"+arr[0]+"}").GOOGLEPLUS_REVERSED_CLIENT_ID;
-			
+
 			console.log(FACEBOOK_APP_ID, FACEBOOK_APP_NAME, GOOGLEPLUS_REVERSED_CLIENT_ID);
 			deferred.resolve();
 		} else deferred.reject();
@@ -583,7 +622,7 @@ gulp.task('addFacebookPlugin', ['readKeysForCurrentApp'] , function(){
 
 		execute(commands, function(error){
 			if(error !== null){
-				console.log("***THERE WAS AN ERROR ADDING THE FACEBOOK PLUGIN***");
+				console.log("***THERE WAS AN ERROR ADDING THE FACEBOOK PLUGIN***", error);
 				deferred.reject();
 			} else {
 				console.log("\n***FACEBOOK PLUGIN SUCCESSFULLY ADDED***");
@@ -604,10 +643,10 @@ gulp.task('addFacebookPlugin', ['readKeysForCurrentApp'] , function(){
 	    		"cd fbplugin",
 	    		"GIT_CURL_VERBOSE=1 GIT_TRACE=1 git clone https://github.com/Wizcorp/phonegap-facebook-plugin.git"
 	    	].join(' && ');
-	    	
+
 	    	execute(commands, function(error){
 	    		if(error !== null){
-	    			console.log("***THERE WAS AN ERROR DOWNLOADING THE FACEBOOK PLUGIN***");
+	    			console.log("***THERE WAS AN ERROR DOWNLOADING THE FACEBOOK PLUGIN***", error);
 	    			deferred.reject();
 	    		} else {
 	    			console.log("\n***FACEBOOK PLUGIN DOWNLOADED, NOW ADDING IT TO IONIC PROJECT***");
@@ -630,7 +669,7 @@ gulp.task('addGooglePlusPlugin', ['readKeysForCurrentApp'] , function(){
 
 	execute(commands, function(error){
 		if(error !== null){
-			console.log("***ERROR ADDING THE GOOGLE PLUS PLUGIN***");
+			console.log("***ERROR ADDING THE GOOGLE PLUS PLUGIN***", error);
 			deferred.reject();
 		} else {
 			console.log("\n***GOOGLE PLUS PLUGIN ADDED****");
@@ -648,10 +687,10 @@ gulp.task('getIOSAppFolderName', ['getAppName'] , function(){
 
 	if(IOS_FOLDER_NAME) deferred.resolve();
 	else {
-		var xml = fs.readFileSync('./xmlconfigs/'+APP_NAME+'.xml', 'utf8');
+		var xml = fs.readFileSync('./apps/'+APP_NAME+'/config.xml', 'utf8');
 		parseString(xml, function (err, result) {
 		    if(err){
-		    	console.log("failed to read xml file");
+		    	console.log("failed to read xml file", err);
 		    	deferred.reject();
 		    } else {
 		    	if(result && result.widget && result.widget.name && result.widget.name.length > 0){
@@ -690,10 +729,10 @@ gulp.task('fixResourcesPlist', ['getIOSAppFolderName'] , function(){
 	myPlist.LSApplicationQueriesSchemes = LSApplicationQueriesSchemes.concat(myPlist.LSApplicationQueriesSchemes);
 
 	if(myPlist.NSAppTransportSecurity && myPlist.NSAppTransportSecurity.NSExceptionDomains){
-		
+
 		// facebook.com
 		var facebookDotCom = {};
-		
+
 		if(myPlist.NSAppTransportSecurity.NSExceptionDomains["facebook.com"]){
 			facebookDotCom = myPlist.NSAppTransportSecurity.NSExceptionDomains["facebook.com"];
 		}
@@ -712,7 +751,7 @@ gulp.task('fixResourcesPlist', ['getIOSAppFolderName'] , function(){
 
 		// fbcdn.net
 		var fbcdnDotNet = {};
-		
+
 		if(myPlist.NSAppTransportSecurity.NSExceptionDomains["fbcdn.net"]){
 			fbcdnDotNet = myPlist.NSAppTransportSecurity.NSExceptionDomains["fbcdn.net"];
 		}
@@ -731,7 +770,7 @@ gulp.task('fixResourcesPlist', ['getIOSAppFolderName'] , function(){
 
 		// akamaihd.net
 		var akamaihdDotNet = {};
-		
+
 		if(myPlist.NSAppTransportSecurity.NSExceptionDomains["akamaihd.net"]){
 			akamaihdDotNet = myPlist.NSAppTransportSecurity.NSExceptionDomains["akamaihd.net"];
 		}
@@ -770,10 +809,12 @@ gulp.task('addPodfile', [ 'getIOSAppFolderName' ], function(){
 			if (err) {
 				throw err;
 			}
-			
-			if(data.indexOf('pod \'Bugsnag\', :git => "https://github.com/bugsnag/bugsnag-cocoa.git"') < 0){
+
+			//if(data.indexOf('pod \'Bugsnag\', :git => "https://github.com/bugsnag/bugsnag-cocoa.git"') < 0){
+
+			if(data.indexOf('Bugsnag') < 0){
 				console.log("no Bugsnag detected");
-				
+
 				gulp.src('./platforms/ios/Podfile')
 				.pipe(change(function(content){
 					var bugsnag_str = 'target \''+IOS_FOLDER_NAME+'\' do \npod \'Bugsnag\', :git => "https://github.com/bugsnag/bugsnag-cocoa.git"';
@@ -796,7 +837,7 @@ gulp.task('addPodfile', [ 'getIOSAppFolderName' ], function(){
 	        addBugsnagToPodfile();
 	    } else {
 	    	console.log("PODFILE REPO NOT FOUND, Installing it First");
-	    	
+
 	    	var commands = [
 	    		'cd ./platforms/ios',
 	    		'pod init'
@@ -804,7 +845,7 @@ gulp.task('addPodfile', [ 'getIOSAppFolderName' ], function(){
 
 	    	execute(commands, function(error){
 	    		if(error !== null){
-	    			console.log("There was an error detected");
+	    			console.log("There was an error detected", error);
 	    			deferred.reject();
 	    		} else {
 	    			console.log("\n***Podfile Added****");
@@ -825,6 +866,19 @@ gulp.task('addInheritedToOtherLinkerFlags', [ 'getIOSAppFolderName' ], function(
 	.pipe(gulp.dest('./platforms/ios/'+IOS_FOLDER_NAME+'.xcodeproj/'));
 });
 
+gulp.task('addDeploymentTarget', ['getIOSAppFolderName'], function(){
+	return gulp.src('./platforms/ios/'+IOS_FOLDER_NAME+'.xcodeproj/project.pbxproj')
+		.pipe(change(function(content){
+			if(content.indexOf('IPHONEOS_DEPLOYMENT_TARGET') === -1)
+				return content.replace(/ENABLE_BITCODE(\s+)?=(\s+)?(\s+)NO\;/g, "IPHONEOS_DEPLOYMENT_TARGET = 6.0;\ENABLE_BITCODE = NO;");
+			return content;
+		}))
+		.pipe(change(function(content){
+			console.log("*****************\n\n\n",content,"\n\n\n*****************");
+		}))
+		.pipe(gulp.dest('./platforms/ios/'+IOS_FOLDER_NAME+'.xcodeproj/'));
+});
+
 gulp.task('installPods', [ 'addPodfile' ] , function(){
 	var deferred = q.defer();
 
@@ -835,7 +889,7 @@ gulp.task('installPods', [ 'addPodfile' ] , function(){
 
 	execute(commands, function(error){
 		if(error !== null){
-			console.log("There was an error detected");
+			console.log("There was an error detected", error);
 			deferred.reject();
 		} else {
 			console.log("\n***Pods Installed****");
@@ -877,6 +931,7 @@ gulp.task('makeIosApp', function(callback){
 	'deleteFacebookPlugin',
 	'deleteGooglePlusPlugin',
 	'addIOSApp',
+  'ionicResources',
 	'readKeysForCurrentApp',
 	'addFacebookPlugin',
 	'addGooglePlusPlugin',
@@ -884,6 +939,7 @@ gulp.task('makeIosApp', function(callback){
 	'addBugsnagInObjC',
 	'enableBitCode',
 	'addInheritedToOtherLinkerFlags',
+	'addDeploymentTarget',
 	'addPodfile',
 	'installPods',
 	callback);
@@ -892,11 +948,11 @@ gulp.task('makeIosApp', function(callback){
 gulp.task('bumpVersion', function(){
 	var deferred = q.defer();
 
-	var xml = fs.readFileSync('./xmlconfigs/'+APP_NAME+'.xml', 'utf8');
-	
+	var xml = fs.readFileSync('./apps/'+APP_NAME+'/config.xml', 'utf8');
+
 	parseString(xml, function (err, result) {
 		if(err){
-			console.log("failed to read xml file");
+			console.log("failed to read xml file", err);
 			deferred.reject();
 		} else {
 			var version = "1.0.0";
@@ -905,9 +961,9 @@ gulp.task('bumpVersion', function(){
 				if(result.widget.$['version']) version = result.widget.$['version'];
 				if(result.widget.$["ios-CFBundleVersion"]) version = result.widget.$["ios-CFBundleVersion"];
 			}
-			
+
 	    	// bump version number
-	    	var numberToBumpArr = version.split('.'); 
+	    	var numberToBumpArr = version.split('.');
 	    	var numberToBump = numberToBumpArr[numberToBumpArr.length-1];
 	    	numberToBumpArr[numberToBumpArr.length-1] = (parseInt(numberToBump)+1).toString();
 	    	version = numberToBumpArr.join('.');
@@ -915,14 +971,14 @@ gulp.task('bumpVersion', function(){
 	    	if(!result) result = {};
 	    	if(!result.widget) result['widget'] = {};
 	    	if(!result.widget.$) result.widget['$'] = {};
-	    	
+
 	    	result.widget.$["version"] = version;
 	    	result.widget.$["ios-CFBundleVersion"] = version;
 
 	    	var builder = new xml2js.Builder();
 	    	var updatedXml = builder.buildObject(result);
 
-	    	fs.writeFile('./xmlconfigs/'+APP_NAME+'.xml', updatedXml, 'utf8', function (err) {
+	    	fs.writeFile('./apps/'+APP_NAME+'/config.xml', updatedXml, 'utf8', function (err) {
 	    		if (err) {
 	    			console.log("error writing to xml file", err);
 	    			deferred.reject();
@@ -933,6 +989,6 @@ gulp.task('bumpVersion', function(){
 	    	});
 	    }
 	});
-	
+
 	return deferred.promise;
 });

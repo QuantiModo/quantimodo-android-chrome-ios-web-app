@@ -21,7 +21,7 @@ angular.module('starter')
                     console.log('data: ' + JSON.stringify(data));
                     console.log('headers: ' + JSON.stringify(headers));
                     console.log('config: ' + JSON.stringify(config));
-                    $state.go('app.login');
+                    //$state.go('app.login');
                     return;
                 }
                 if(!data){
@@ -80,7 +80,7 @@ angular.module('starter')
                         }
                     };
 
-                    console.log("Making this request: " + JSON.stringify(request));
+                    //console.log("Making this request: " + JSON.stringify(request));
 
                     $http(request).success(successHandler).error(function(data,status,headers,config){
                         QuantiModo.errorHandler(data, status, headers, config, request);
@@ -227,6 +227,16 @@ angular.module('starter')
                     successHandler,
                     errorHandler);
             };
+        
+            QuantiModo.logoutOfApi = function(successHandler, errorHandler){
+                //TODO: Fix this
+                console.log('Logging out of api does not work yet.  Fix it!');        
+                QuantiModo.get('api/v2/auth/logout',
+                    [],
+                    {},
+                    successHandler,
+                    errorHandler);
+            };
 
             // get positive list
             QuantiModo.getCauses = function(successHandler, errorHandler){
@@ -305,15 +315,24 @@ angular.module('starter')
                     errorHandler);
             };
 
-            QuantiModo.getVariable = function(variable, successHandler, errorHandler){
-                QuantiModo.get('api/v1/variables/' + encodeURIComponent(variable),
+            QuantiModo.getVariablesByName = function(variableName, successHandler, errorHandler){
+                QuantiModo.get('api/v1/variables/' + encodeURIComponent(variableName),
                     [],
                     {},
                     successHandler,
                     errorHandler);
             };
 
-            // get user variables
+            QuantiModo.getVariableById = function(variableId, successHandler, errorHandler){
+                QuantiModo.get('api/v1/variables' ,
+                    ['id'],
+                    {id: variableId},
+                    successHandler,
+                    errorHandler);
+            };
+
+
+        // get user variables
             QuantiModo.getVariablesByCategory = function(category,successHandler, errorHandler){
                 QuantiModo.get('api/v1/variables',
                     ['category', 'limit'],

@@ -24,7 +24,7 @@
             <p></p>
             <ion-list>
                 <ion-item style="text-align:center;border-bottom: 1px solid rgb(221, 221, 221);" ng-show="state.loading">
-                    <img src="img/pop-tart-cat.gif">
+                    <img src={{loaderImagePath}}>
                 </ion-item>
             </ion-list>
         </div>
@@ -188,6 +188,10 @@
 					<button class="button button-block button-positive" ng-click="save()">Save</button>
 				</div>
 			</div>
+        </div>
+
+        <div class="bar bar-footer bar-balanced" ng-show="variableObject">
+            <div class="title"  ng-click="goToAddMeasurement()">Record a measurement now</div>
         </div>
     </ion-content>
 </ion-view>
