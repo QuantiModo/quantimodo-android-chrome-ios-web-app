@@ -499,6 +499,22 @@ gulp.task('addIOSApp', function(){
 	return deferred.promise;
 });
 
+gulp.task('ionicResources', function(){
+	var deferred = q.defer();
+
+	execute("ionic resources", function(error){
+		if(error !== null){
+			console.log("ERROR GENERATING RESOURCES " + error);
+			deferred.reject();
+		} else {
+			console.log("\n***RESOURCES GENERATED****");
+			deferred.resolve();
+		}
+	});
+
+	return deferred.promise;
+});
+
 var APP_NAME = false;
 
 
@@ -793,7 +809,7 @@ gulp.task('addPodfile', [ 'getIOSAppFolderName' ], function(){
 			if (err) {
 				throw err;
 			}
-			
+
 			//if(data.indexOf('pod \'Bugsnag\', :git => "https://github.com/bugsnag/bugsnag-cocoa.git"') < 0){
 
 			if(data.indexOf('Bugsnag') < 0){
@@ -915,6 +931,7 @@ gulp.task('makeIosApp', function(callback){
 	'deleteFacebookPlugin',
 	'deleteGooglePlusPlugin',
 	'addIOSApp',
+  'ionicResources',
 	'readKeysForCurrentApp',
 	'addFacebookPlugin',
 	'addGooglePlusPlugin',
