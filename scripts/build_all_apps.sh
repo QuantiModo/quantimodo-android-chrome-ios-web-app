@@ -9,7 +9,7 @@ export DROPBOX_PATH=/Users/Shared/Jenkins/Dropbox/QuantiModo/apps
 export ANDROID_KEYSTORE_PATH="/Users/Shared/Jenkins/Home/workspace/QM-Docker-Build/configs/android/quantimodo.keystore"
 export QM_DOCKER_PATH="/Users/Shared/Jenkins/Home/workspace/QM-Docker-Build"
 export IMAGES_SCRIPT=${PROJECT_ROOT}/scripts/create_icons.sh
-export APP_PRIVATE_CONFIG="${QM_DOCKER_PATH}/configs/ionic/${APP_NAME}.config.js"
+export APP_PRIVATE_CONFIG_PATH="${QM_DOCKER_PATH}/configs/ionic"
 export BUILD_PATH="${PROJECT_ROOT}/build"
 export LANG=en_US.UTF-8
 export TEAM_ID="YD2FK7S2S5"
@@ -39,7 +39,7 @@ if [ -z "$ANDROID_KEYSTORE_PASSWORD" ]
 fi
 echo "ANDROID_KEYSTORE_PASSWORD is $ANDROID_KEYSTORE_PASSWORD"
 
-source ${PROJECT_ROOT}/scripts/build/00_install_dependencies.sh
+#source ${PROJECT_ROOT}/scripts/build/00_install_dependencies.sh
 
 export APP_NAME=moodimodo
 source ${PROJECT_ROOT}/scripts/build/01_prepare_project.sh
@@ -49,10 +49,19 @@ source ${PROJECT_ROOT}/scripts/build/04_build_ios.sh
 #source ${PROJECT_ROOT}/04_reset_workspace.sh
 
 export APP_NAME=mindfirst
-run-parts ${PROJECT_ROOT}/scripts/build/
+source ${PROJECT_ROOT}/scripts/build/01_prepare_project.sh
+source ${PROJECT_ROOT}/scripts/build/02_build_chrome.sh
+source ${PROJECT_ROOT}/scripts/build/03_build_android.sh
+source ${PROJECT_ROOT}/scripts/build/04_build_ios.sh
 
 export APP_NAME=energymodo
-run-parts ${PROJECT_ROOT}/scripts/build/
+source ${PROJECT_ROOT}/scripts/build/01_prepare_project.sh
+source ${PROJECT_ROOT}/scripts/build/02_build_chrome.sh
+source ${PROJECT_ROOT}/scripts/build/03_build_android.sh
+source ${PROJECT_ROOT}/scripts/build/04_build_ios.sh
 
 export APP_NAME=medtlc
-run-parts ${PROJECT_ROOT}/scripts/build/
+source ${PROJECT_ROOT}/scripts/build/01_prepare_project.sh
+source ${PROJECT_ROOT}/scripts/build/02_build_chrome.sh
+source ${PROJECT_ROOT}/scripts/build/03_build_android.sh
+source ${PROJECT_ROOT}/scripts/build/04_build_ios.sh

@@ -20,3 +20,7 @@ scripts/profile/028ab892-9a5e-4004-adac-b8472e760bdb.mobileprovision
 resources/chrome_extension/www/
 resources/chrome_app/www/
 resources/android/
+build/
+www/img/splash/
+www/img/icon/
+www/resources/ios/splash

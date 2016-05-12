@@ -2,7 +2,7 @@
 
 if [ -z "$VERSION_NUMBER" ]
   then
-    echo "${RED}No version parameter second argument given so using ${VERSION_NUMBER} as default version number...${NC}"
+    echo "${GREEN}No version parameter second argument given so using ${VERSION_NUMBER} as default version number...${NC}"
 else
     echo -e "VERSION_NUMBER is $VERSION_NUMBER...${NC}"
 fi
@@ -44,3 +44,7 @@ rm -rf "${BUILD_PATH}/${APP_NAME}/chrome_app/www/lib/phonegap-facebook-plugin/pl
 rm -rf "${BUILD_PATH}/${APP_NAME}/chrome_app/www/lib/phonegap-facebook-plugin/platforms/ios"
 cd "${BUILD_PATH}/${APP_NAME}" && zip -r "${BUILD_PATH}/${APP_NAME}/${APP_NAME}-Chrome-App.zip" chrome_app >/dev/null
 echo "${APP_NAME} Chrome app is ready"
+
+mkdir "$DROPBOX_PATH/$APP_NAME"
+echo -e "${GREEN}Copying ${BUILD_PATH}/${APP_NAME} to $DROPBOX_PATH/${APP_NAME}/${NC}"
+cp -R ${BUILD_PATH}/${APP_NAME}/* "$DROPBOX_PATH/${APP_NAME}/"

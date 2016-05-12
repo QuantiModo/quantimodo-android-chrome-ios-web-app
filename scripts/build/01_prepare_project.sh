@@ -2,7 +2,7 @@
 
 if [ -z "$VERSION_NUMBER" ]
   then
-    echo "${RED}No version parameter second argument given so using ${VERSION_NUMBER} as default version number...${NC}"
+    echo "${GREEN}No version parameter second argument given so using ${VERSION_NUMBER} as default version number...${NC}"
 else
     echo -e "VERSION_NUMBER is $VERSION_NUMBER...${NC}"
 fi
@@ -19,6 +19,7 @@ if [ -z "$PROJECT_ROOT" ]
     exit
 fi
 
+
 rm -rf ${BUILD_PATH}/${APP_NAME}
 
 if [ -d "${PROJECT_ROOT}/apps" ];
@@ -29,8 +30,11 @@ if [ -d "${PROJECT_ROOT}/apps" ];
         exit
 fi
 
+export LC_CTYPE=C
+export LANG=C
 echo -e "${GREEN}Replacing QUANTIMODO_TEMPLATE_APP_VERSION with ${VERSION_NUMBER}...${NC}"
 cd "${PROJECT_ROOT}/apps" && find . -type f -exec sed -i '' -e 's/QUANTIMODO_TEMPLATE_APP_VERSION/'${VERSION_NUMBER}'/g' {} \;
+export LANG=en_US.UTF-8
 
 echo -e "${GREEN}Copy ${APP_NAME} config and resource files${NC}"
 cp -R ${PROJECT_ROOT}/apps/${APP_NAME}/*  "${PROJECT_ROOT}"
@@ -42,5 +46,5 @@ cp -R ${PROJECT_ROOT}/resources/android/*  "${PROJECT_ROOT}/www/img/"
 
 rm -rf "${BUILD_PATH}/${APP_NAME}"
 
-echo -e "${GREEN}Copy ${APP_PRIVATE_CONFIG} private config to ${PROJECT_ROOT}/www/private_configs/${NC}"
-cp "${APP_PRIVATE_CONFIG}" "${PROJECT_ROOT}/www/private_configs/"
+echo -e "${GREEN}Copy ${APP_PRIVATE_CONFIG_PATH}/${APP_NAME}.config.js private config to ${PROJECT_ROOT}/www/private_configs/${NC}"
+cp "${APP_PRIVATE_CONFIG_PATH}/${APP_NAME}.config.js" "${PROJECT_ROOT}/www/private_configs/"
