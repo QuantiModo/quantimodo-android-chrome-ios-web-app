@@ -61,14 +61,14 @@ npm install -g ionic@1.7.10
 cd "${PROJECT_ROOT}" && npm install && bower install
 npm rebuild node-sass
 
-bash "${BUILD_SCRIPT}" moodimodo ${VERSION_NUMBER} "${ANDROID_KEYSTORE_PASSWORD}" "${BUILD_PATH}" "Track and find out what affects your mood!"
+source "${BUILD_SCRIPT}" moodimodo ${VERSION_NUMBER} "${ANDROID_KEYSTORE_PASSWORD}" "${BUILD_PATH}" "Track and find out what affects your mood!"
 echo "Moodimodo is done and in ${BUILD_PATH}/MoodiModo"
 
-bash "${BUILD_SCRIPT}" mindfirst ${VERSION_NUMBER} "${ANDROID_KEYSTORE_PASSWORD}" "${BUILD_PATH}" "Track and find out what affects your mood!"
+source "${BUILD_SCRIPT}" mindfirst ${VERSION_NUMBER} "${ANDROID_KEYSTORE_PASSWORD}" "${BUILD_PATH}" "Track and find out what affects your mood!"
 echo "Mindfirst is done and in ${BUILD_PATH}/Mindfirst"
 
-bash "${BUILD_SCRIPT}" energymodo ${VERSION_NUMBER} "${ANDROID_KEYSTORE_PASSWORD}" "${BUILD_PATH}" "Track and find out what affects your energy levels!"
+source "${BUILD_SCRIPT}" energymodo ${VERSION_NUMBER} "${ANDROID_KEYSTORE_PASSWORD}" "${BUILD_PATH}" "Track and find out what affects your energy levels!"
 echo "Energymodo is done and in ${BUILD_PATH}/Energymodo"
 
-bash "${BUILD_SCRIPT}" medtlc ${VERSION_NUMBER} "${ANDROID_KEYSTORE_PASSWORD}" "${BUILD_PATH}" "Medication - Track. Learn. Connect."
+source "${BUILD_SCRIPT}" medtlc ${VERSION_NUMBER} "${ANDROID_KEYSTORE_PASSWORD}" "${BUILD_PATH}" "Medication - Track. Learn. Connect."
 echo "MedTLC is done and in ${BUILD_PATH}/MedTLC"

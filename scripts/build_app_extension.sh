@@ -76,7 +76,7 @@ cp -R ${PROJECT_ROOT}/apps/${APP_NAME}/*  "${PROJECT_ROOT}"
 
 cd "${PROJECT_ROOT}"
 #ionic state reset
-bash "${IMAGES_SCRIPT}"
+source "${IMAGES_SCRIPT}"
 cp -R ${PROJECT_ROOT}/resources/android/*  "${PROJECT_ROOT}/www/img/"
 
 rm -rf "${BUILD_PATH}/${APP_NAME}"
@@ -103,10 +103,10 @@ cd "${BUILD_PATH}/${APP_NAME}" && zip -r "${BUILD_PATH}/${APP_NAME}/${APP_NAME}-
 echo "${APP_NAME} Chrome app is ready"
 
 echo -e "${GREEN}Building ${APP_NAME} Android App... ${NC}"
-bash "${ANDROID_APP_SCRIPT}" ${APP_NAME} "${ANDROID_KEYSTORE_PASSWORD}"
+source "${ANDROID_APP_SCRIPT}" ${APP_NAME} "${ANDROID_KEYSTORE_PASSWORD}"
 
 echo -e "${GREEN}*** Building ${APP_NAME} iOS App... ***${NC}"
-bash "${IOS_APP_SCRIPT}" ${APP_NAME} "${PROJECT_ROOT}"
+source "${IOS_APP_SCRIPT}" ${APP_NAME} "${PROJECT_ROOT}"
 
 cd "${PROJECT_ROOT}" && git reset --hard
 
