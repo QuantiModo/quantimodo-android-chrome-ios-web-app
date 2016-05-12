@@ -15,10 +15,10 @@ fi
 
 if [ -z "$2" ]
   then
-  echo -e "${RED}build_android_app.sh: No ANDROID_KEYSTORE_PASSWORD first argument given to build_android_app.sh...${NC}"
+  echo -e "${RED}build_android_app.sh: No ANDROID_KEYSTORE_PASSWORD second argument.sh...${NC}"
 else
     ANDROID_KEYSTORE_PASSWORD=$2
-    echo -e "${RED}build_android_app.sh: ANDROID_KEYSTORE_PASSWORD first argument given to build_app_extension.sh is ${ANDROID_KEYSTORE_PASSWORD}...${NC}"
+    echo -e "${RED}build_android_app.sh: ANDROID_KEYSTORE_PASSWORD second argument given is ${ANDROID_KEYSTORE_PASSWORD}...${NC}"
 fi
 
 if [ -z "$3" ]
@@ -36,6 +36,7 @@ if [ ! -d "$ANDROID_HOME" ]
          echo -e "${GREEN}build_android_app.sh: Android home is $ANDROID_HOME ${NC}"
 fi
 
+echo -e "${RED}build_android_app.sh: ANDROID_KEYSTORE_PASSWORD second argument given is ${ANDROID_KEYSTORE_PASSWORD}...${NC}"
 if [ ! -d ${ANDROID_KEYSTORE_PASSWORD} ]
   then
       echo -e "${RED}build_android_app.sh: ANDROID_KEYSTORE_PASSWORD doesn't exist. Please set it in Jenkins->Manage Jenkins->Configure System->Environment variables${NC}"
