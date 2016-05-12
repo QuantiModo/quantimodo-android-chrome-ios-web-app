@@ -52,16 +52,16 @@ export APP_NAME=mindfirst
 source ${PROJECT_ROOT}/scripts/build/01_prepare_project.sh
 source ${PROJECT_ROOT}/scripts/build/02_build_chrome.sh
 source ${PROJECT_ROOT}/scripts/build/03_build_android.sh
-source ${PROJECT_ROOT}/scripts/build/04_build_ios.sh
+#source ${PROJECT_ROOT}/scripts/build/04_build_ios.sh
 
 export APP_NAME=energymodo
 source ${PROJECT_ROOT}/scripts/build/01_prepare_project.sh
 source ${PROJECT_ROOT}/scripts/build/02_build_chrome.sh
 source ${PROJECT_ROOT}/scripts/build/03_build_android.sh
-source ${PROJECT_ROOT}/scripts/build/04_build_ios.sh
+#source ${PROJECT_ROOT}/scripts/build/04_build_ios.sh
 
 export APP_NAME=medtlc
 source ${PROJECT_ROOT}/scripts/build/01_prepare_project.sh
 source ${PROJECT_ROOT}/scripts/build/02_build_chrome.sh
 source ${PROJECT_ROOT}/scripts/build/03_build_android.sh
-source ${PROJECT_ROOT}/scripts/build/04_build_ios.sh
+#source ${PROJECT_ROOT}/scripts/build/04_build_ios.sh

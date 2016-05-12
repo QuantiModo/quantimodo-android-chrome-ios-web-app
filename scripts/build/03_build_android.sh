@@ -12,7 +12,7 @@ if [ -z "$BUILD_PATH" ]
     exit
 fi
 
-echo -e "${RED}build_android.sh: BUILD_PATH is ${BUILD_PATH}...${NC}"
+echo -e "${GREEN}build_android.sh: BUILD_PATH is ${BUILD_PATH}...${NC}"
 
 if [ -z "${ANDROID_HOME}" ]
     then
@@ -64,5 +64,6 @@ echo "Android app is ready"
 
 mkdir "$DROPBOX_PATH/$APP_NAME"
 echo -e "${GREEN}Copying ${BUILD_PATH}/${APP_NAME} to $DROPBOX_PATH/${APP_NAME}/${NC}"
-cp -R ${BUILD_PATH}/${APP_NAME}/* "$DROPBOX_PATH/${APP_NAME}/"
+#cp -R ${BUILD_PATH}/${APP_NAME}/* "$DROPBOX_PATH/${APP_NAME}/"
+rsync ${BUILD_PATH}/${APP_NAME}/* "$DROPBOX_PATH/${APP_NAME}/"
 ### Build Android App ###
