@@ -17,7 +17,7 @@ if [ -z "$1" ]
   then
   echo -e "No Android keystore password third argument given..."
 else
-    ANDROID_KEYSTORE_PASSWORD=$1
+    ANDROID_KEYSTORE_PASSWORD="$1"
 fi
 
 if [ ! -d "$ANDROID_KEYSTORE_PASSWORD" ]
