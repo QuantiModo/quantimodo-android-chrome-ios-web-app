@@ -84,6 +84,7 @@ angular.module('starter')
 				history = allMeasurements? JSON.parse(allMeasurements) : [];
 				if(history.length < 1){
 					console.log('No measurements for history!  Going to default state. ');
+                    $rootScope.hideMenu = false;
 					$state.go(config.appSettings.defaultState);
 				}
 				if(history.length > 0){
