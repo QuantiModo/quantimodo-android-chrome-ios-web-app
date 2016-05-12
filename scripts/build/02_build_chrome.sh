@@ -9,8 +9,8 @@ fi
 
 if [ -z "$BUILD_PATH" ]
   then
-  echo "No BUILD_PATH given..."
-    exit
+    $BUILD_PATH="$PROJECT_ROOT"/build
+    echo "No BUILD_PATH given. Using $BUILD_PATH..."
 fi
 
 if [ -z "$PROJECT_ROOT" ]

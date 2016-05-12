@@ -7,18 +7,18 @@ else
     echo -e "VERSION_NUMBER is $VERSION_NUMBER...${NC}"
 fi
 
-if [ -z "$BUILD_PATH" ]
-  then
-  echo "No BUILD_PATH given..."
-    exit
-fi
-
 if [ -z "$PROJECT_ROOT" ]
   then
-  echo "No PROJECT_ROOT given..."
-    exit
+    then
+      $PROJECT_ROOT="$PWD"
+      echo "No PROJECT_ROOT given. Using $PROJECT_ROOT..."
 fi
 
+if [ -z "$BUILD_PATH" ]
+    then
+      $BUILD_PATH="$PROJECT_ROOT"/build
+      echo "No BUILD_PATH given. Using $BUILD_PATH..."
+fi
 
 rm -rf ${BUILD_PATH}/${APP_NAME}
 
