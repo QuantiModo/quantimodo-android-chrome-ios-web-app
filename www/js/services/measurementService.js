@@ -52,10 +52,20 @@ angular.module('starter')
                 var returnFiltered = function(start, end){
                     
                     allMeasurements = allMeasurements.sort(function(a, b){
+                        if(!a.startTime){
+                            a.startTime = a.timestamp;
+                        }
+
+                        if(!b.startTime){
+                            b.startTime = b.timestamp;
+                        }
                         return a.startTime - b.startTime;
                     });
 
                     var filtered = allMeasurements.filter(function(x){
+                        if(!x.startTime){
+                            x.startTime = a.timestamp;
+                        }
                         return x.startTime >= start && x.startTime <= end;
                     });
                     
@@ -462,10 +472,16 @@ angular.module('starter')
                                         //to remove duplicates since the server would also return the records that we already have in allDate
                                         var lastSyncTimeTimestamp = new Date(lastSyncTime).getTime()/1000;
                                         allMeasurements = allMeasurements.filter(function(measurement){
+                                            if(!measurement.startTime){
+                                                measurement.startTime = measurement.timestamp;
+                                            }
                                             return measurement.startTime < lastSyncTimeTimestamp;
                                         });
                                         //Extracting New Records
                                         var newRecords = response.filter(function (measurement) {
+                                            if(!measurement.startTime){
+                                                measurement.startTime = measurement.timestamp;
+                                            }
                                             return measurement.startTime > lastSyncTimeTimestamp;
                                         });
                                         console.log('new record');
@@ -481,6 +497,12 @@ angular.module('starter')
                                         //Replacing primary outcome variable object in original allMeasurements object
                                         allMeasurements.map(function(x,index) {
                                             updatedRecords.forEach(function(elem){
+                                                if(!x.startTime){
+                                                    x.startTime = x.timestamp;
+                                                }
+                                                if(!elem.startTime){
+                                                    elem.startTime = elem.timestamp;
+                                                }
                                                 if (x.startTime  === elem.startTime  && x.source === config.get('clientSourceName')) {
                                                     console.log('found at ' + index);
                                                     x = elem;
@@ -493,7 +515,14 @@ angular.module('starter')
                                     }
 
                                     var s  = 9999999999999; 
-                                    allMeasurements.forEach(function(x){if(x.startTime <= s){s = x.startTime;}});
+                                    allMeasurements.forEach(function(x){
+                                        if(!x.startTime){
+                                            x.startTime = x.timestamp;
+                                        }
+                                        if(x.startTime <= s){
+                                            s = x.startTime;
+                                        }
+                                    });
 
                                     measurementService.setDates(new Date().getTime(),s*1000);
                                     //updating last updated time and data in local storage so that we syncing should continue from this point
