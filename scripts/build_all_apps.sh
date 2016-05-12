@@ -6,6 +6,24 @@ GREEN='\033[0;32m'
 NC='\033[0m' # No Color
 VERSION_NUMBER=1.2.0
 
+if [ ! -d "$ANDROID_HOME" ]
+  then
+  echo -e "${RED} Android home doesn't exist. On OSX, you can set it like this: http://stackoverflow.com/questions/19986214/setting-android-home-enviromental-variable-on-mac-os-x "
+  exit
+fi
+
+if [ ! -d "$ANDROID_KEYSTORE_PASSWORD" ]
+  then
+  echo -e "${RED} ANDROID_KEYSTORE_PASSWORD doesn't exist. Please set it in Jenkins->Manage Jenkins->Configure System->Environment variables"
+  exit
+fi
+
+if [ ! -d "$ANDROID_KEYSTORE_PATH" ]
+  then
+  echo -e "${RED} ANDROID_KEYSTORE_PATH doesn't exist. Please set it in Jenkins->Manage Jenkins->Configure System->Environment variables"
+  exit
+fi
+
 if [ -z "$1" ]
   then
     PROJECT_ROOT="$PWD"

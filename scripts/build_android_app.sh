@@ -35,13 +35,13 @@ fi
 
 if [ ! -d "$ANDROID_KEYSTORE_PASSWORD" ]
   then
-  echo -e "${RED} ANDROID_KEYSTORE_PASSWORD home doesn't exist. Please set it in Jenkins->Manage Jenkins->Configure System->Environment variables"
+  echo -e "${RED} ANDROID_KEYSTORE_PASSWORD doesn't exist. Please set it in Jenkins->Manage Jenkins->Configure System->Environment variables"
   exit
 fi
 
 if [ ! -d "$ANDROID_KEYSTORE_PATH" ]
   then
-  echo -e "${RED} ANDROID_KEYSTORE_PATH home doesn't exist. Please set it in Jenkins->Manage Jenkins->Configure System->Environment variables"
+  echo -e "${RED} ANDROID_KEYSTORE_PATH doesn't exist. Please set it in Jenkins->Manage Jenkins->Configure System->Environment variables"
   exit
 fi
 
