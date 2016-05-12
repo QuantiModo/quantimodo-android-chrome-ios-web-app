@@ -17,17 +17,18 @@ fi
 
 if [ -z "$2" ]
   then
-    echo "No version parameter second argument given so using ${VERSION_NUMBER} as default version number..."
+    echo "${RED}No version parameter second argument given so using ${VERSION_NUMBER} as default version number...${NC}"
 else
     VERSION_NUMBER="$2"
+    echo -e "VERSION_NUMBER second argument given to build_app_extension.sh is $VERSION_NUMBER...${NC}"
 fi
 
 if [ -z "$3" ]
   then
-  echo -e "No Android keystore password third argument given so quitting..."
-   exit
+  echo -e "${RED}No ANDROID_KEYSTORE_PASSWORD third argument given to build_app_extension.sh...${NC}"
 else
     ANDROID_KEYSTORE_PASSWORD=$3
+    echo -e "ANDROID_KEYSTORE_PASSWORD third argument given to build_app_extension.sh is $ANDROID_KEYSTORE_PASSWORD..."
 fi
 
 if [ -z "$4" ]
@@ -103,7 +104,7 @@ cd "${BUILD_PATH}/${APP_NAME}" && zip -r "${BUILD_PATH}/${APP_NAME}/${APP_NAME}-
 echo "${APP_NAME} Chrome app is ready"
 
 echo -e "${GREEN}Building ${APP_NAME} Android App... ${NC}"
-source "${ANDROID_APP_SCRIPT}" ${APP_NAME} "${ANDROID_KEYSTORE_PASSWORD}"
+source "${ANDROID_APP_SCRIPT}" ${APP_NAME} ${ANDROID_KEYSTORE_PASSWORD}
 
 echo -e "${GREEN}*** Building ${APP_NAME} iOS App... ***${NC}"
 source "${IOS_APP_SCRIPT}" ${APP_NAME} "${PROJECT_ROOT}"

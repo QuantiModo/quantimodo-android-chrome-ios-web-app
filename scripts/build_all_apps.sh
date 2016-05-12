@@ -15,14 +15,14 @@ fi
 
 if [ -z "$1" ]
   then
-  echo -e "No Android keystore password third argument given..."
+  echo -e "No Android keystore password first argument given to build_all_apps.sh..."
 else
     ANDROID_KEYSTORE_PASSWORD="$1"
 fi
 
 if [ ! -d "$ANDROID_KEYSTORE_PASSWORD" ]
   then
-  echo -e "${RED} ANDROID_KEYSTORE_PASSWORD doesn't exist! Quitting! "
+  echo -e "${RED} ANDROID_KEYSTORE_PASSWORD doesn't exist for build_all_apps.sh! Quitting! "
   exit
 fi
 
@@ -61,14 +61,14 @@ npm install -g ionic@1.7.10
 cd "${PROJECT_ROOT}" && npm install && bower install
 npm rebuild node-sass
 
-source "${BUILD_SCRIPT}" moodimodo ${VERSION_NUMBER} "${ANDROID_KEYSTORE_PASSWORD}" "${BUILD_PATH}" "Track and find out what affects your mood!"
+source "${BUILD_SCRIPT}" moodimodo ${VERSION_NUMBER} ${ANDROID_KEYSTORE_PASSWORD} "${BUILD_PATH}" "Track and find out what affects your mood!"
 echo "Moodimodo is done and in ${BUILD_PATH}/MoodiModo"
 
-source "${BUILD_SCRIPT}" mindfirst ${VERSION_NUMBER} "${ANDROID_KEYSTORE_PASSWORD}" "${BUILD_PATH}" "Track and find out what affects your mood!"
+source "${BUILD_SCRIPT}" mindfirst ${VERSION_NUMBER} ${ANDROID_KEYSTORE_PASSWORD} "${BUILD_PATH}" "Track and find out what affects your mood!"
 echo "Mindfirst is done and in ${BUILD_PATH}/Mindfirst"
 
-source "${BUILD_SCRIPT}" energymodo ${VERSION_NUMBER} "${ANDROID_KEYSTORE_PASSWORD}" "${BUILD_PATH}" "Track and find out what affects your energy levels!"
+source "${BUILD_SCRIPT}" energymodo ${VERSION_NUMBER} ${ANDROID_KEYSTORE_PASSWORD} "${BUILD_PATH}" "Track and find out what affects your energy levels!"
 echo "Energymodo is done and in ${BUILD_PATH}/Energymodo"
 
-source "${BUILD_SCRIPT}" medtlc ${VERSION_NUMBER} "${ANDROID_KEYSTORE_PASSWORD}" "${BUILD_PATH}" "Medication - Track. Learn. Connect."
+source "${BUILD_SCRIPT}" medtlc ${VERSION_NUMBER} ${ANDROID_KEYSTORE_PASSWORD} "${BUILD_PATH}" "Medication - Track. Learn. Connect."
 echo "MedTLC is done and in ${BUILD_PATH}/MedTLC"
