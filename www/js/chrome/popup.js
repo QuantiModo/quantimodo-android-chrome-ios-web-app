@@ -34,7 +34,7 @@ var onFaceButtonClicked = function() {
 
     // Create an array of measurements
     var measurements = [{
-        timestamp: Math.floor(Date.now() / 1000),
+        startTime: Math.floor(Date.now() / 1000),
         value: ratingValue
     }];
     // Add it to a request, payload is what we'll send to QuantiModo

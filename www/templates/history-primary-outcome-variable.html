@@ -7,7 +7,7 @@
                     <img ng-src="{{historyItem.value | ImageByValue }}" style="width:80px;" />
                   </div>
                   <div class="history-block">
-                    <h2 class="history_time" ng-repeat="line in (historyItem.timestamp | time) track by $index">
+                    <h2 class="history_time" ng-repeat="line in (historyItem.startTime | time) track by $index">
                       {{line}}
                     </h2>
                     <br/>
