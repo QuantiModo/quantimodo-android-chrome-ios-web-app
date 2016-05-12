@@ -7,7 +7,7 @@ NC='\033[0m' # No Color
 VERSION_NUMBER=1.2.0
 PROJECT_ROOT="$PWD"
 
-if [ ! -d "$ANDROID_HOME" ]
+if [ -z "$ANDROID_HOME" ]
   then
   echo -e "${RED} Android home doesn't exist. On OSX, you can set it like this: http://stackoverflow.com/questions/19986214/setting-android-home-enviromental-variable-on-mac-os-x "
   exit
@@ -20,7 +20,7 @@ else
     ANDROID_KEYSTORE_PASSWORD="$1"
 fi
 
-if [ ! -d "$ANDROID_KEYSTORE_PASSWORD" ]
+if [ -z "$ANDROID_KEYSTORE_PASSWORD" ]
   then
   echo -e "${RED} ANDROID_KEYSTORE_PASSWORD doesn't exist for build_all_apps.sh! Quitting! "
   exit
@@ -33,8 +33,6 @@ if [ -z "$2" ]
 else
     BUILD_PATH="$2"
 fi
-
-BUILD_SCRIPT="${PROJECT_ROOT}/scripts/build_app_extension.sh"
 
 cd ${PROJECT_ROOT}
 #brew update && brew upgrade
@@ -61,14 +59,14 @@ npm install -g ionic@1.7.10
 cd "${PROJECT_ROOT}" && npm install && bower install
 #npm rebuild node-sass
 
-source "${BUILD_SCRIPT}" moodimodo ${VERSION_NUMBER} ${ANDROID_KEYSTORE_PASSWORD} "${BUILD_PATH}" "Track and find out what affects your mood!"
-echo "Moodimodo is done and in ${BUILD_PATH}/MoodiModo"
+export APP_NAME=moodimodo
+run-parts ${PROJECT_ROOT}/scripts/build/
 
-source "${BUILD_SCRIPT}" mindfirst ${VERSION_NUMBER} ${ANDROID_KEYSTORE_PASSWORD} "${BUILD_PATH}" "Track and find out what affects your mood!"
-echo "Mindfirst is done and in ${BUILD_PATH}/Mindfirst"
+export APP_NAME=mindfirst
+run-parts ${PROJECT_ROOT}/scripts/build/
 
-source "${BUILD_SCRIPT}" energymodo ${VERSION_NUMBER} ${ANDROID_KEYSTORE_PASSWORD} "${BUILD_PATH}" "Track and find out what affects your energy levels!"
-echo "Energymodo is done and in ${BUILD_PATH}/Energymodo"
+export APP_NAME=energymodo
+run-parts ${PROJECT_ROOT}/scripts/build/
 
-source "${BUILD_SCRIPT}" medtlc ${VERSION_NUMBER} ${ANDROID_KEYSTORE_PASSWORD} "${BUILD_PATH}" "Medication - Track. Learn. Connect."
-echo "MedTLC is done and in ${BUILD_PATH}/MedTLC"
+export APP_NAME=medtlc
+run-parts ${PROJECT_ROOT}/scripts/build/

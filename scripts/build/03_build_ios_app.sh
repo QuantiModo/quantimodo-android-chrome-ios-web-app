@@ -8,20 +8,16 @@ sleep 5
 echo "This script must be run on OSX"
 echo "Prerequisites:  http://brew.sh/"
 
-if [ -z "$1" ]
+if [ -z "$APP_NAME" ]
   then
     echo -e "${RED}Please provide lowercase app name as first parameter ${NC}"
-else
-    APP_NAME=$1
-    echo -e "${RED}Lowercase app name is $APP_NAME ${NC}"
+    exit
 fi
 
-if [ -z "$2" ]
+if [ -z "$PROJECT_ROOT" ]
   then
-  echo -e "No project root 2nd argument given so using $PWD as default project root..."
-    PROJECT_ROOT=$PWD
-else
-    PROJECT_ROOT=$2
+  echo -e "No PROJECT_ROOT..."
+    exit
 fi
 
 BUILD_PATH="${PROJECT_ROOT}/build"

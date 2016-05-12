@@ -2,30 +2,24 @@
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 NC='\033[0m' # No Color
-PROJECT_ROOT=$PWD
 ANDROID_KEYSTORE_PATH="/Users/Shared/Jenkins/Home/workspace/QM-Docker-Build/configs/android/quantimodo.keystore"
 
-if [ -z "$1" ]
+if [ -z "$APP_NAME" ]
   then
-    echo -e "${RED}build_android_app.sh: Please provide lowercase app name as first parameter ${NC}"
-else
-    APP_NAME=$1
-    echo -e "${RED}build_android_app.sh: Lowercase app name is $APP_NAME ${NC}"
+    echo -e "${RED}build_android_app.sh: Please provide lowercase APP_NAME ${NC}"
+    exit
 fi
 
 if [ -z "$2" ]
   then
   echo -e "${RED}build_android_app.sh: No ANDROID_KEYSTORE_PASSWORD second argument.sh...${NC}"
-else
-    ANDROID_KEYSTORE_PASSWORD=$2
-    echo -e "${RED}build_android_app.sh: ANDROID_KEYSTORE_PASSWORD second argument given is ${ANDROID_KEYSTORE_PASSWORD}...${NC}"
+    exit
 fi
 
-if [ -z "$3" ]
+if [ -z "$BUILD_PATH" ]
     then
-        BUILD_PATH="${PROJECT_ROOT}/build"
-    else
-        BUILD_PATH="$3"
+  echo -e "${RED}build_android_app.sh: No BUILD_PATH...${NC}"
+    exit
 fi
 
 echo -e "${RED}build_android_app.sh: BUILD_PATH is ${BUILD_PATH}...${NC}"

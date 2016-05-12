@@ -10,9 +10,7 @@ PROJECT_ROOT=$PWD
 if [ -z "$1" ]
   then
     echo -e "${RED}Please provide lowercase app name as first parameter ${NC}"
-else
-    APP_NAME=$1
-    echo -e "${RED}Lowercase app name is $APP_NAME ${NC}"
+    exit
 fi
 
 if [ -z "$2" ]
@@ -23,20 +21,11 @@ else
     echo -e "VERSION_NUMBER second argument given to build_app_extension.sh is $VERSION_NUMBER...${NC}"
 fi
 
-if [ -z "$3" ]
-  then
-  echo -e "${RED}build_app_extension: No ANDROID_KEYSTORE_PASSWORD third argument given to build_app_extension.sh...${NC}"
-else
-    ANDROID_KEYSTORE_PASSWORD=$3
-    echo -e "build_app_extension: ANDROID_KEYSTORE_PASSWORD third argument given to build_app_extension.sh is $ANDROID_KEYSTORE_PASSWORD..."
-fi
 
-if [ -z "$4" ]
+if [ -z "$BUILD_PATH" ]
   then
-  echo "No build path 4th argument given so using ${PROJECT_ROOT}/build as build path..."
-    BUILD_PATH="${PROJECT_ROOT}/build"
-else
-    BUILD_PATH=$4
+  echo "No build path given..."
+    exit
 fi
 
 QM_DOCKER_PATH="/Users/Shared/Jenkins/Home/workspace/QM-Docker-Build"
@@ -102,15 +91,3 @@ rm -rf "${BUILD_PATH}/${APP_NAME}/chrome_app/www/lib/phonegap-facebook-plugin/pl
 rm -rf "${BUILD_PATH}/${APP_NAME}/chrome_app/www/lib/phonegap-facebook-plugin/platforms/ios"
 cd "${BUILD_PATH}/${APP_NAME}" && zip -r "${BUILD_PATH}/${APP_NAME}/${APP_NAME}-Chrome-App.zip" chrome_app >/dev/null
 echo "${APP_NAME} Chrome app is ready"
-
-echo -e "${GREEN}Building ${APP_NAME} Android App... ${NC}"
-source "${ANDROID_APP_SCRIPT}" ${APP_NAME} ${ANDROID_KEYSTORE_PASSWORD}
-
-echo -e "${GREEN}*** Building ${APP_NAME} iOS App... ***${NC}"
-source "${IOS_APP_SCRIPT}" ${APP_NAME} "${PROJECT_ROOT}"
-
-cd "${PROJECT_ROOT}" && git reset --hard
-
-mkdir "$DROPBOX_PATH/$APP_NAME"
-echo -e "${GREEN}Copying ${BUILD_PATH}/${APP_NAME} to $DROPBOX_PATH/${APP_NAME}/${NC}"
-cp -R ${BUILD_PATH}/${APP_NAME}/* "$DROPBOX_PATH/${APP_NAME}/"
