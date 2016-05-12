@@ -487,8 +487,8 @@ angular.module('starter')
                                                 }
                                             });
                                         });
-                                        console.log('updated records');
-                                        console.log(updatedRecords);
+                                        //console.log('updated records');
+                                        //console.log(updatedRecords);
                                         allMeasurements = allMeasurements.concat(newRecords);
                                     }
 
