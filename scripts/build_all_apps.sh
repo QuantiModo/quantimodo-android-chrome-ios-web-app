@@ -37,16 +37,16 @@ fi
 BUILD_SCRIPT="${PROJECT_ROOT}/scripts/build_app_extension.sh"
 
 cd ${PROJECT_ROOT}
-brew update && brew upgrade
-brew prune
-echo "npm cache clean"
-npm cache clean
-echo "brew install nvm"
-brew install nvm
-export NVM_DIR=~/.nvm
-source $(brew --prefix nvm)/nvm.sh
+#brew update && brew upgrade
+#brew prune
+#echo "npm cache clean"
+#npm cache clean
+#echo "brew install nvm"
+#brew install nvm
+#export NVM_DIR=~/.nvm
+#source $(brew --prefix nvm)/nvm.sh
 echo "Using node 4.4.4 because 6 seems to break stuff: https://github.com/steelbrain/exec/issues/13"
-nvm install 4.4.4
+#nvm install 4.4.4
 nvm use 4.4.4
 npm install -g bower
 brew install ruby
@@ -59,7 +59,7 @@ npm install -g cordova@5.4.0
 npm install -g ionic@1.7.10
 
 cd "${PROJECT_ROOT}" && npm install && bower install
-npm rebuild node-sass
+#npm rebuild node-sass
 
 source "${BUILD_SCRIPT}" moodimodo ${VERSION_NUMBER} ${ANDROID_KEYSTORE_PASSWORD} "${BUILD_PATH}" "Track and find out what affects your mood!"
 echo "Moodimodo is done and in ${BUILD_PATH}/MoodiModo"
