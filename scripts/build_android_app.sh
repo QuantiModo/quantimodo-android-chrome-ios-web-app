@@ -2,7 +2,8 @@
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 NC='\033[0m' # No Color
-echo -e "${RED}Please don't forget to update manifest.json file with new version${NC}"
+PROJECT_ROOT=$PWD
+ANDROID_KEYSTORE_PATH="/Users/Shared/Jenkins/Home/workspace/QM-Docker-Build/configs/android/quantimodo.keystore"
 
 if [ -z "$1" ]
   then
@@ -14,10 +15,10 @@ fi
 
 if [ -z "$2" ]
   then
-  echo -e "No project root 2nd argument given so using $PWD as default project root..."
-    PROJECT_ROOT=$PWD
+  echo -e "No Android keystore password third argument given so quitting..."
+   exit
 else
-    PROJECT_ROOT=$2
+    ANDROID_KEYSTORE_PASSWORD=$2
 fi
 
 if [ -z "$3" ]

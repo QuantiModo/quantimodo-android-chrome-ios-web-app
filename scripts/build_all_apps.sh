@@ -5,6 +5,7 @@ RED='\033[0;31m'
 GREEN='\033[0;32m'
 NC='\033[0m' # No Color
 VERSION_NUMBER=1.2.0
+PROJECT_ROOT="$PWD"
 
 if [ ! -d "$ANDROID_HOME" ]
   then
@@ -12,26 +13,13 @@ if [ ! -d "$ANDROID_HOME" ]
   exit
 fi
 
-if [ ! -d "$ANDROID_KEYSTORE_PASSWORD" ]
-  then
-  echo -e "${RED} ANDROID_KEYSTORE_PASSWORD doesn't exist. Please set it in Jenkins->Manage Jenkins->Configure System->Environment variables"
-  exit
-fi
-
-if [ ! -d "$ANDROID_KEYSTORE_PATH" ]
-  then
-  echo -e "${RED} ANDROID_KEYSTORE_PATH doesn't exist. Please set it in Jenkins->Manage Jenkins->Configure System->Environment variables"
-  exit
-fi
-
 if [ -z "$1" ]
   then
-    PROJECT_ROOT="$PWD"
-    echo "No project root 1st argument given. Using $PROJECT_ROOT..."
+  echo -e "No Android keystore password third argument given so quitting..."
+   exit
 else
-    PROJECT_ROOT="$1"
+    ANDROID_KEYSTORE_PASSWORD=$1
 fi
-
 
 if [ -z "$2" ]
   then
@@ -68,14 +56,14 @@ npm install -g ionic@1.7.10
 cd "${PROJECT_ROOT}" && npm install && bower install
 npm rebuild node-sass
 
-bash "${BUILD_SCRIPT}" moodimodo ${VERSION_NUMBER} "${PROJECT_ROOT}" "${BUILD_PATH}" "Track and find out what affects your mood!"
+bash "${BUILD_SCRIPT}" moodimodo ${VERSION_NUMBER} "${ANDROID_KEYSTORE_PASSWORD}" "${BUILD_PATH}" "Track and find out what affects your mood!"
 echo "Moodimodo is done and in ${BUILD_PATH}/MoodiModo"
 
-bash "${BUILD_SCRIPT}" mindfirst ${VERSION_NUMBER} "${PROJECT_ROOT}" "${BUILD_PATH}" "Track and find out what affects your mood!"
+bash "${BUILD_SCRIPT}" mindfirst ${VERSION_NUMBER} "${ANDROID_KEYSTORE_PASSWORD}" "${BUILD_PATH}" "Track and find out what affects your mood!"
 echo "Mindfirst is done and in ${BUILD_PATH}/Mindfirst"
 
-bash "${BUILD_SCRIPT}" energymodo ${VERSION_NUMBER} "${PROJECT_ROOT}" "${BUILD_PATH}" "Track and find out what affects your energy levels!"
+bash "${BUILD_SCRIPT}" energymodo ${VERSION_NUMBER} "${ANDROID_KEYSTORE_PASSWORD}" "${BUILD_PATH}" "Track and find out what affects your energy levels!"
 echo "Energymodo is done and in ${BUILD_PATH}/Energymodo"
 
-bash "${BUILD_SCRIPT}" medtlc ${VERSION_NUMBER} "${PROJECT_ROOT}" "${BUILD_PATH}" "Medication - Track. Learn. Connect."
+bash "${BUILD_SCRIPT}" medtlc ${VERSION_NUMBER} "${ANDROID_KEYSTORE_PASSWORD}" "${BUILD_PATH}" "Medication - Track. Learn. Connect."
 echo "MedTLC is done and in ${BUILD_PATH}/MedTLC"

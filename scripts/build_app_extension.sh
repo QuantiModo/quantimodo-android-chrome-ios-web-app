@@ -5,6 +5,7 @@ NC='\033[0m' # No Color
 #echo -e "${RED}Please don't forget to update manifest.json file with new version ${NC}"
 VERSION_NUMBER="1.2.0"
 DROPBOX_PATH=/Users/Shared/Jenkins/Dropbox/QuantiModo/apps
+PROJECT_ROOT=$PWD
 
 if [ -z "$1" ]
   then
@@ -23,10 +24,10 @@ fi
 
 if [ -z "$3" ]
   then
-  echo -e "No project root third argument given so using $PWD as default project root..."
-    PROJECT_ROOT=$PWD
+  echo -e "No Android keystore password third argument given so quitting..."
+   exit
 else
-    PROJECT_ROOT=$3
+    ANDROID_KEYSTORE_PASSWORD=$3
 fi
 
 if [ -z "$4" ]
@@ -102,7 +103,7 @@ cd "${BUILD_PATH}/${APP_NAME}" && zip -r "${BUILD_PATH}/${APP_NAME}/${APP_NAME}-
 echo "${APP_NAME} Chrome app is ready"
 
 echo -e "${GREEN}Building ${APP_NAME} Android App... ${NC}"
-bash "${ANDROID_APP_SCRIPT}" ${APP_NAME} "${PROJECT_ROOT}"
+bash "${ANDROID_APP_SCRIPT}" ${APP_NAME} "${ANDROID_KEYSTORE_PASSWORD}"
 
 echo -e "${GREEN}*** Building ${APP_NAME} iOS App... ***${NC}"
 bash "${IOS_APP_SCRIPT}" ${APP_NAME} "${PROJECT_ROOT}"
