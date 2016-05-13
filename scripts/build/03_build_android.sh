@@ -47,7 +47,8 @@ ionic state reset
 rm -rf platforms/android
 ionic platform remove android
 ionic platform add android
-ionic resources
+echo "Generating image resources for $APP_NAME..."
+ionic resources >/dev/null
 cordova build --debug android >/dev/null
 cordova build --release android >/dev/null
 mkdir -p ${BUILD_PATH}/${APP_NAME}/android

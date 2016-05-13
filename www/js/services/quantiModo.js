@@ -186,7 +186,7 @@ angular.module('starter')
             // post measurements old method
             QuantiModo.postMeasurements= function(measurements, successHandler ,errorHandler) { 
                 QuantiModo.post('api/measurements',
-                    ['source', 'variable', 'combinationOperation', 'timestamp', 'value', 'unit'],
+                    ['source', 'variable', 'combinationOperation', 'startTime', 'value', 'unit'],
                     measurements,
                     successHandler,
                     errorHandler);
