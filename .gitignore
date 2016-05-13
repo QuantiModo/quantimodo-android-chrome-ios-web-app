@@ -1,26 +1,18 @@
-!/scripts/build/*
 # Specifies intentionally untracked files to ignore when using Git
 # http://git-scm.com/docs/gitignore
 node_modules/
-platforms/
+platforms/android/
+platforms/ios/
 plugins/
 www/lib/
-chromeApps/*/www
 www/private_configs/*.config.js
-!www/private_configs/sample_private.config.js
-chromeApps/zips/*.zip
 .idea/
-hooks
-.vagrant/
+*.app.dSYM.zip
+*.ipa
+*.mobileprovision
+!platforms/ios/www/lib/bugsnag/dist
 android-sdk-linux/
 android-sdk_r24.2-linux.tgz
 scripts/certs/apple.cer
 scripts/certs/dist.cer
 scripts/certs/dist.p12
-scripts/profile/028ab892-9a5e-4004-adac-b8472e760bdb.mobileprovision
-resources/chrome_extension/www/
-resources/chrome_app/www/
-resources/android/
-www/img/splash/
-www/img/icon/
-www/resources/ios/splash
