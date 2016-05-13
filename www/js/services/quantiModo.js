@@ -80,7 +80,7 @@ angular.module('starter')
                         }
                     };
 
-                    console.log("Making this request: " + JSON.stringify(request));
+                    //console.log("Making this request: " + JSON.stringify(request));
 
                     $http(request).success(successHandler).error(function(data,status,headers,config){
                         QuantiModo.errorHandler(data, status, headers, config, request);
@@ -186,7 +186,7 @@ angular.module('starter')
             // post measurements old method
             QuantiModo.postMeasurements= function(measurements, successHandler ,errorHandler) { 
                 QuantiModo.post('api/measurements',
-                    ['source', 'variable', 'combinationOperation', 'timestamp', 'value', 'unit'],
+                    ['source', 'variable', 'combinationOperation', 'startTime', 'value', 'unit'],
                     measurements,
                     successHandler,
                     errorHandler);

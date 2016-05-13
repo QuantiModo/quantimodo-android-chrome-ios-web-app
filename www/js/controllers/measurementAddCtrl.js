@@ -119,6 +119,7 @@ angular.module('starter')
             if($stateParams.fromState){
                 $state.go($stateParams.fromState);
             } else {
+                $rootScope.hideMenu = false;
                 $state.go(config.appSettings.defaultState);
             }
         };
@@ -134,6 +135,7 @@ angular.module('starter')
             if($stateParams.fromState){
                 $state.go($stateParams.fromState);
             } else {
+                $rootScope.hideMenu = false;
                 $state.go(config.appSettings.defaultState);
             }
         };
@@ -196,6 +198,7 @@ angular.module('starter')
                         if($stateParams.fromState){
                             $state.go($stateParams.fromState);
                         } else {
+                            $rootScope.hideMenu = false;
                             $state.go(config.appSettings.defaultState);
                         }
 
@@ -229,6 +232,7 @@ angular.module('starter')
                     if($stateParams.fromState){
                         $state.go($stateParams.fromState);
                     } else {
+                        $rootScope.hideMenu = false;
                         $state.go(config.appSettings.defaultState);
                     }
 
@@ -240,6 +244,7 @@ angular.module('starter')
             if($stateParams.fromState){
                 $state.go($stateParams.fromState);
             } else {
+                $rootScope.hideMenu = false;
                 $state.go(config.appSettings.defaultState);
             }
 
@@ -319,6 +324,7 @@ angular.module('starter')
                     if($stateParams.fromState){
                         $state.go($stateParams.fromState);
                     } else {
+                        $rootScope.hideMenu = false;
                         $state.go(config.appSettings.defaultState);
                     }
                 }

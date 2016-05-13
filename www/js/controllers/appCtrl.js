@@ -160,18 +160,18 @@ angular.module('starter')
         function goToDefaultStateShowMenuClearIntroHistoryAndRedraw() {
 
             if ($state.current.name === "app.welcome") {
-                $state.go(config.appSettings.defaultState);
                 $rootScope.hideMenu = false;
+                $state.go(config.appSettings.defaultState);
             }
 
             if ($state.current.name === "app.login" && $rootScope.user) {
-                $state.go(config.appSettings.defaultState);
                 $rootScope.hideMenu = false;
+                $state.go(config.appSettings.defaultState);
             }
 
             if (config.appSettings.allowOffline) {
-                $state.go(config.appSettings.defaultState);
                 $rootScope.hideMenu = false;
+                $state.go(config.appSettings.defaultState);
             }
 
 
@@ -234,6 +234,10 @@ angular.module('starter')
             }
             if(!$rootScope.user && config.getClientId() === 'oAuthDisabled'){
                 $rootScope.getUserAndSetInLocalStorage();
+            }
+            if($rootScope.user){
+                    $rootScope.setUserForIntercom($rootScope.user);
+                    $rootScope.setUserForBugsnag($rootScope.user);
             }
             hideMenuIfSetInUrlParameter();
             goToWelcomeStateIfNotWelcomed();

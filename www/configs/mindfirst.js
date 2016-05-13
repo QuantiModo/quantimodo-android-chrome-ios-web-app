@@ -777,7 +777,7 @@ window.notification_callback = function(reportedVariable, reportingTime){
         var allMeasurementsObject = {
             storedValue : val,
             value : val,
-            timestamp : reportTime,
+            startTime : reportTime,
             humanTime : {
                 date : new Date().toISOString()
             }

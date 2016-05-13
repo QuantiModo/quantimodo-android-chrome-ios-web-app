@@ -52,11 +52,21 @@ angular.module('starter')
                 var returnFiltered = function(start, end){
                     
                     allMeasurements = allMeasurements.sort(function(a, b){
-                        return a.timestamp - b.timestamp;
+                        if(!a.startTime){
+                            a.startTime = a.timestamp;
+                        }
+
+                        if(!b.startTime){
+                            b.startTime = b.timestamp;
+                        }
+                        return a.startTime - b.startTime;
                     });
 
                     var filtered = allMeasurements.filter(function(x){
-                        return x.timestamp >= start && x.timestamp <= end;
+                        if(!x.startTime){
+                            x.startTime = a.timestamp;
+                        }
+                        return x.startTime >= start && x.startTime <= end;
                     });
                     
                     return callback(filtered);
@@ -170,7 +180,7 @@ angular.module('starter')
                             var newMeasurementObject = {
                                 variableId : config.appSettings.primaryOutcomeVariableDetails.id,
                                 value : ratingValue,
-                                timestamp : reportTime,
+                                startTime : reportTime,
                                 humanTime : {
                                     date : new Date().toISOString()
                                 },
@@ -236,7 +246,7 @@ angular.module('starter')
 
                         // add to queue
                         measurementsQueue.push({
-                            timestamp:  Math.floor(reportTime / 1000),
+                            startTime:  Math.floor(reportTime / 1000),
                             value: ratingValue,
                             note : ""
                         });
@@ -287,7 +297,7 @@ angular.module('starter')
                         combinationOperation : isAvg? "MEAN" : "SUM",
                 	   	measurements : [
                 		   	{
-                		   		timestamp:  epoch / 1000,
+                		   		startTime:  epoch / 1000,
                 		   		value: val,
                 		   		note : note
                 		   	}
@@ -300,7 +310,7 @@ angular.module('starter')
                     name: variable,
                     source: config.get('clientSourceName'),
                     unit: unit,
-                    timestamp:  epoch / 1000,
+                    startTime:  epoch / 1000,
                     value: val,
                     category : category,
                     note : "",
@@ -336,7 +346,7 @@ angular.module('starter')
 			},
 
 			// edit existing measurement
-			editPrimaryOutcomeVariable : function(timestamp, val, note){
+			editPrimaryOutcomeVariable : function(startTime, val, note){
 				var deferred = $q.defer();
 				// measurements set
 				var measurements = [
@@ -347,7 +357,7 @@ angular.module('starter')
                         combinationOperation: config.appSettings.primaryOutcomeVariableDetails.combinationOperation,
                         unit: config.appSettings.primaryOutcomeVariableDetails.abbreviatedUnitName,
 					   	measurements : [{
-					   		timestamp:  timestamp,
+					   		startTime:  startTime,
 					   		value: val,
 					   		note : (note && note !== null)? note : null
 					   	}]
@@ -360,7 +370,7 @@ angular.module('starter')
                localStorageService.getItem('allMeasurements',function(allMeasurements){
                    measurementDataSet = JSON.parse(allMeasurements);
                    // extract the measurement from localStorage
-                   var selectedMeasurementDataSetItems = measurementDataSet.filter(function(x){return x.timestamp === timestamp;});
+                   var selectedMeasurementDataSetItems = measurementDataSet.filter(function(x){return x.startTime === startTime;});
 
                    // update localstorage data
                    var selectedMeasurementItem = selectedMeasurementDataSetItems[0];
@@ -462,11 +472,17 @@ angular.module('starter')
                                         //to remove duplicates since the server would also return the records that we already have in allDate
                                         var lastSyncTimeTimestamp = new Date(lastSyncTime).getTime()/1000;
                                         allMeasurements = allMeasurements.filter(function(measurement){
-                                            return measurement.timestamp < lastSyncTimeTimestamp;
+                                            if(!measurement.startTime){
+                                                measurement.startTime = measurement.timestamp;
+                                            }
+                                            return measurement.startTime < lastSyncTimeTimestamp;
                                         });
                                         //Extracting New Records
                                         var newRecords = response.filter(function (measurement) {
-                                            return measurement.timestamp > lastSyncTimeTimestamp;
+                                            if(!measurement.startTime){
+                                                measurement.startTime = measurement.timestamp;
+                                            }
+                                            return measurement.startTime > lastSyncTimeTimestamp;
                                         });
                                         console.log('new record');
                                         console.log(newRecords);
@@ -481,25 +497,38 @@ angular.module('starter')
                                         //Replacing primary outcome variable object in original allMeasurements object
                                         allMeasurements.map(function(x,index) {
                                             updatedRecords.forEach(function(elem){
-                                                if (x.timestamp  === elem.timestamp  && x.source === config.get('clientSourceName')) {
+                                                if(!x.startTime){
+                                                    x.startTime = x.timestamp;
+                                                }
+                                                if(!elem.startTime){
+                                                    elem.startTime = elem.timestamp;
+                                                }
+                                                if (x.startTime  === elem.startTime  && x.source === config.get('clientSourceName')) {
                                                     console.log('found at ' + index);
                                                     x = elem;
                                                 }
                                             });
                                         });
-                                        console.log('updated records');
-                                        console.log(updatedRecords);
+                                        //console.log('updated records');
+                                        //console.log(updatedRecords);
                                         allMeasurements = allMeasurements.concat(newRecords);
                                     }
 
                                     var s  = 9999999999999; 
-                                    allMeasurements.forEach(function(x){if(x.timestamp <= s){s = x.timestamp;}});
+                                    allMeasurements.forEach(function(x){
+                                        if(!x.startTime){
+                                            x.startTime = x.timestamp;
+                                        }
+                                        if(x.startTime <= s){
+                                            s = x.startTime;
+                                        }
+                                    });
 
                                     measurementService.setDates(new Date().getTime(),s*1000);
                                     //updating last updated time and data in local storage so that we syncing should continue from this point
                                     //if user restarts the app or refreshes the page.
                                     localStorageService.setItem('allMeasurements',JSON.stringify(allMeasurements));
-                                    localStorageService.setItem('lastSyncTime',moment(allMeasurements[allMeasurements.length-1].timestamp*1000).utc().format('YYYY-MM-DDTHH:mm:ss'));
+                                    localStorageService.setItem('lastSyncTime',moment(allMeasurements[allMeasurements.length-1].startTime*1000).utc().format('YYYY-MM-DDTHH:mm:ss'));
                                 });
 
                             }
@@ -652,9 +681,9 @@ angular.module('starter')
 						var currentValue = Math.ceil(allMeasurements[i].value);
 						if (allMeasurements[i].abbreviatedUnitName === config.appSettings.primaryOutcomeVariableDetails.abbreviatedUnitName &&
 							(currentValue - 1) <= 4 && (currentValue - 1) >= 0) {
-							var timestamp = moment(allMeasurements[i].humanTime.date).unix() * 1000;
+							var startTime = moment(allMeasurements[i].humanTime.date).unix() * 1000;
 							var percentValue = (currentValue - 1) * 25;
-							var lineChartItem = [timestamp, percentValue];
+							var lineChartItem = [startTime, percentValue];
 							lineArr.push(lineChartItem);
 							barArr[currentValue - 1]++;
 						}

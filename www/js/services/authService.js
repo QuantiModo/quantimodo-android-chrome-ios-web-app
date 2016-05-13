@@ -89,10 +89,10 @@ angular.module('starter')
 			// retrieves access token.
 			// if expired, renews it
             getAccessTokenFromUrlParameter: function () {
-                var tokenInGetParams = authService.utilsService.getUrlParameter(location.href, 'accessToken');
+                var tokenInGetParams = utilsService.getUrlParameter(location.href, 'accessToken');
 
                 if (!tokenInGetParams) {
-                    tokenInGetParams = authService.utilsService.getUrlParameter(location.href, 'access_token');
+                    tokenInGetParams = utilsService.getUrlParameter(location.href, 'access_token');
                 }
                 return tokenInGetParams;
             },
@@ -114,7 +114,7 @@ angular.module('starter')
 				}
 
 				if (localStorageService.getItemSync('accessToken')) {
-					console.log('resolving token using value from local storage');
+					//console.log('resolving token using value from local storage');
 					deferred.resolve({
 						accessToken: localStorageService.getItemSync('accessToken')
 					});
