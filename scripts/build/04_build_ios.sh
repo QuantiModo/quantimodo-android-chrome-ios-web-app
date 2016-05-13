@@ -11,18 +11,18 @@ if [ -z "$APP_NAME" ]
     exit
 fi
 
-if [ -z "$PROJECT_ROOT" ]
+if [ -z "$INTERMEDIATE_PATH" ]
   then
-  echo -e "No PROJECT_ROOT..."
+  echo -e "No INTERMEDIATE_PATH!"
     exit
   else
-    echo "PROJECT_ROOT is $PROJECT_ROOT"
+    echo "INTERMEDIATE_PATH is $INTERMEDIATE_PATH"
 fi
 
 if [ "$APP_NAME" == "moodimodo" ]; then
     ### Build iOS App ###
 
-    cd ${PROJECT_ROOT}
+    cd ${INTERMEDIATE_PATH}
     ionic state reset
     echo "Generating image resources for $APP_NAME..."
     ionic resources >/dev/null

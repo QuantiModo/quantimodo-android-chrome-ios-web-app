@@ -19,6 +19,12 @@ if [ -z "$BUILD_PATH" ]
       echo "No BUILD_PATH given. Using $BUILD_PATH..."
 fi
 
+if [ -z "$INTERMEDIATE_PATH" ]
+    then
+      $INTERMEDIATE_PATH="$PROJECT_ROOT"/build/intermediate
+      echo "No INTERMEDIATE_PATH given. Using $INTERMEDIATE_PATH..."
+fi
+
 rm -rf ${BUILD_PATH}/${APP_NAME}
 
 if [ -d "${PROJECT_ROOT}/apps/${APP_NAME}" ];
@@ -29,21 +35,22 @@ if [ -d "${PROJECT_ROOT}/apps/${APP_NAME}" ];
         exit
 fi
 
+cp -R ${PROJECT_ROOT}/* ${INTERMEDIATE_PATH}
 export LC_CTYPE=C
 export LANG=C
 echo -e "${GREEN}Replacing QUANTIMODO_TEMPLATE_APP_VERSION with ${VERSION_NUMBER}...${NC}"
-cd "${PROJECT_ROOT}/apps" && find . -type f -exec sed -i '' -e 's/QUANTIMODO_TEMPLATE_APP_VERSION/'${VERSION_NUMBER}'/g' {} \;
+cd "${INTERMEDIATE_PATH}/apps" && find . -type f -exec sed -i '' -e 's/QUANTIMODO_TEMPLATE_APP_VERSION/'${VERSION_NUMBER}'/g' {} \;
 export LANG=en_US.UTF-8
 
 echo -e "${GREEN}Copy ${APP_NAME} config and resource files${NC}"
-cp -R ${PROJECT_ROOT}/apps/${APP_NAME}/*  "${PROJECT_ROOT}"
+cp -R ${INTERMEDIATE_PATH}/apps/${APP_NAME}/*  "${INTERMEDIATE_PATH}"
 
-cd "${PROJECT_ROOT}"
+cd "${INTERMEDIATE_PATH}"
 #ionic state reset
 source "${IMAGES_SCRIPT}"
-cp -R ${PROJECT_ROOT}/resources/android/*  "${PROJECT_ROOT}/www/img/"
+cp -R ${INTERMEDIATE_PATH}/resources/android/*  "${INTERMEDIATE_PATH}/www/img/"
 
 rm -rf "${BUILD_PATH}/${APP_NAME}"
 
-echo -e "${GREEN}Copy ${APP_PRIVATE_CONFIG_PATH}/${APP_NAME}.config.js private config to ${PROJECT_ROOT}/www/private_configs/${NC}"
-cp "${APP_PRIVATE_CONFIG_PATH}/${APP_NAME}.config.js" "${PROJECT_ROOT}/www/private_configs/"
+echo -e "${GREEN}Copy ${APP_PRIVATE_CONFIG_PATH}/${APP_NAME}.config.js private config to ${INTERMEDIATE_PATH}/www/private_configs/${NC}"
+cp "${APP_PRIVATE_CONFIG_PATH}/${APP_NAME}.config.js" "${INTERMEDIATE_PATH}/www/private_configs/"

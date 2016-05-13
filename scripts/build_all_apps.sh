@@ -11,6 +11,7 @@ export QM_DOCKER_PATH="/Users/Shared/Jenkins/Home/workspace/QM-Docker-Build"
 export IMAGES_SCRIPT=${PROJECT_ROOT}/scripts/create_icons.sh
 export APP_PRIVATE_CONFIG_PATH="${QM_DOCKER_PATH}/configs/ionic"
 export BUILD_PATH="${PROJECT_ROOT}/build"
+export INTERMEDIATE_PATH="${PROJECT_ROOT}/build/intermediate"
 export LANG=en_US.UTF-8
 export TEAM_ID="YD2FK7S2S5"
 export DEVELOPER_NAME="iPhone Distribution=Mike Sinn (YD2FK7S2S5)"
