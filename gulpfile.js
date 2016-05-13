@@ -931,7 +931,7 @@ gulp.task('makeIosApp', function(callback){
 	'deleteFacebookPlugin',
 	'deleteGooglePlusPlugin',
 	'addIOSApp',
-  'ionicResources',
+    'ionicResources',
 	'readKeysForCurrentApp',
 	'addFacebookPlugin',
 	'addGooglePlusPlugin',
