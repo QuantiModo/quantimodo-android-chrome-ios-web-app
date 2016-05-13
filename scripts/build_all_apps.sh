@@ -40,29 +40,29 @@ if [ -z "$ANDROID_KEYSTORE_PASSWORD" ]
 fi
 echo "ANDROID_KEYSTORE_PASSWORD is $ANDROID_KEYSTORE_PASSWORD"
 
-#source ${PROJECT_ROOT}/scripts/build/00_install_dependencies.sh
+#source ${PROJECT_ROOT}/scripts/build_scripts/00_install_dependencies.sh
 
 export APP_NAME=moodimodo
-source ${PROJECT_ROOT}/scripts/build/01_prepare_project.sh
-source ${PROJECT_ROOT}/scripts/build/02_build_chrome.sh
-source ${PROJECT_ROOT}/scripts/build/03_build_android.sh
-source ${PROJECT_ROOT}/scripts/build/04_build_ios.sh
+source ${PROJECT_ROOT}/scripts/build_scripts/01_prepare_project.sh
+source ${PROJECT_ROOT}/scripts/build_scripts/02_build_chrome.sh
+source ${PROJECT_ROOT}/scripts/build_scripts/03_build_android.sh
+source ${PROJECT_ROOT}/scripts/build_scripts/04_build_ios.sh
 #source ${PROJECT_ROOT}/04_reset_workspace.sh
 
 export APP_NAME=mindfirst
-source ${PROJECT_ROOT}/scripts/build/01_prepare_project.sh
-source ${PROJECT_ROOT}/scripts/build/02_build_chrome.sh
-source ${PROJECT_ROOT}/scripts/build/03_build_android.sh
-#source ${PROJECT_ROOT}/scripts/build/04_build_ios.sh
+source ${PROJECT_ROOT}/scripts/build_scripts/01_prepare_project.sh
+source ${PROJECT_ROOT}/scripts/build_scripts/02_build_chrome.sh
+source ${PROJECT_ROOT}/scripts/build_scripts/03_build_android.sh
+#source ${PROJECT_ROOT}/scripts/build_scripts/04_build_ios.sh
 
 export APP_NAME=energymodo
-source ${PROJECT_ROOT}/scripts/build/01_prepare_project.sh
-source ${PROJECT_ROOT}/scripts/build/02_build_chrome.sh
-source ${PROJECT_ROOT}/scripts/build/03_build_android.sh
-#source ${PROJECT_ROOT}/scripts/build/04_build_ios.sh
+source ${PROJECT_ROOT}/scripts/build_scripts/01_prepare_project.sh
+source ${PROJECT_ROOT}/scripts/build_scripts/02_build_chrome.sh
+source ${PROJECT_ROOT}/scripts/build_scripts/03_build_android.sh
+#source ${PROJECT_ROOT}/scripts/build_scripts/04_build_ios.sh
 
 export APP_NAME=medtlc
-source ${PROJECT_ROOT}/scripts/build/01_prepare_project.sh
-source ${PROJECT_ROOT}/scripts/build/02_build_chrome.sh
-source ${PROJECT_ROOT}/scripts/build/03_build_android.sh
-#source ${PROJECT_ROOT}/scripts/build/04_build_ios.sh
+source ${PROJECT_ROOT}/scripts/build_scripts/01_prepare_project.sh
+source ${PROJECT_ROOT}/scripts/build_scripts/02_build_chrome.sh
+source ${PROJECT_ROOT}/scripts/build_scripts/03_build_android.sh
+#source ${PROJECT_ROOT}/scripts/build_scripts/04_build_ios.sh
