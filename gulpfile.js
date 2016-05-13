@@ -537,9 +537,12 @@ gulp.task('getAppName', function(){
 		var app_name = process.env["APP_NAME"];
 		if(app_name && app_name.length){
 			APP_NAME = app_name.toLowerCase();
-			console.log("the app name fron env is", JSON.stringify(APP_NAME));
+			console.log("*** APP_NAME from env is: ", JSON.stringify(APP_NAME));
 			deferred.resolve();
 		} else {
+			console.error("Failed to get APP_NAME!  Please export as an env!", error);
+			deferred.reject();
+			/*
 			var commandForGit = 'git rev-parse --abbrev-ref HEAD';
 			execute(commandForGit, function(error, output){
 				output = output.trim();
@@ -552,6 +555,7 @@ gulp.task('getAppName', function(){
 					deferred.resolve();
 				}
 			});
+			*/
 		}
 	}
 	return deferred.promise;
