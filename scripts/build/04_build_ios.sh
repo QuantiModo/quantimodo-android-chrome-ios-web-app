@@ -23,16 +23,29 @@ if [ "$APP_NAME" == "moodimodo" ]; then
     ### Build iOS App ###
 
     cd ${INTERMEDIATE_PATH}
-    ionic state reset
-    echo "Generating image resources for $APP_NAME..."
+    #ionic state reset
+    #echo "Generating image resources for $APP_NAME..."
     ionic resources >/dev/null
     chmod a+x ./scripts/decrypt-key.sh
     ./scripts/decrypt-key.sh
     chmod a+x ./scripts/add-key.sh
     ./scripts/add-key.sh
     gulp -v
+    rm -rf plugins/ && rm -rf platforms/
+    gulp addFacebookPlugin
+    gulp addGooglePlusPlugin
+    cordova platform add ios
+    ionic resources
+    gulp readKeysForCurrentApp
+    gulp fixResourcesPlist
+    gulp addBugsnagInObjC
+#    gulp enableBitCode
+    gulp addInheritedToOtherLinkerFlags
+    gulp addDeploymentTarget
+    gulp addPodfile
+    gulp installPods
 #    gulp generateXmlConfig
-    gulp makeIosApp
+    #gulp makeIosApp
     chmod a+x ./scripts/package-and-upload.sh
     ./scripts/package-and-upload.sh
     ### Build iOS App ###
