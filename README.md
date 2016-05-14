@@ -1,5 +1,5 @@
 A generic app that can be easily configured to help the user track and optimize any given outcome variable.
-------
+-------
 
 [![Codacy Badge](https://api.codacy.com/project/badge/grade/0a7979bc18bd4975bd861b1747b4d6b5)](https://www.codacy.com/app/m_2/QuantiModo-Ionic-Template-App)
 
