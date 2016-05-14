@@ -42,14 +42,16 @@ cp -R ${INTERMEDIATE_PATH}/www/*  "${BUILD_PATH}/${APP_NAME}/chrome_extension/ww
 rm -rf "${BUILD_PATH}/${APP_NAME}/chrome_extension/www/lib/phonegap-facebook-plugin/platforms/android"
 rm -rf "${BUILD_PATH}/${APP_NAME}/chrome_extension/www/lib/phonegap-facebook-plugin/platforms/ios"
 cd "${BUILD_PATH}/${APP_NAME}" && zip -r "${BUILD_PATH}/${APP_NAME}/${APP_NAME}-Chrome-Extension.zip" chrome_extension >/dev/null
+cp "${BUILD_PATH}/${APP_NAME}/${APP_NAME}-Chrome-Extension.zip" "$DROPBOX_PATH/${APP_NAME}/"
 echo "${APP_NAME} Chrome extension is ready"
 
 rm -rf "${BUILD_PATH}/${APP_NAME}/chrome_app/www/lib/phonegap-facebook-plugin/platforms/android"
 rm -rf "${BUILD_PATH}/${APP_NAME}/chrome_app/www/lib/phonegap-facebook-plugin/platforms/ios"
 cd "${BUILD_PATH}/${APP_NAME}" && zip -r "${BUILD_PATH}/${APP_NAME}/${APP_NAME}-Chrome-App.zip" chrome_app >/dev/null
+cp "${BUILD_PATH}/${APP_NAME}/${APP_NAME}-Chrome-App.zip" "$DROPBOX_PATH/${APP_NAME}/"
 echo "${APP_NAME} Chrome app is ready"
 
 mkdir "$DROPBOX_PATH/$APP_NAME"
 echo -e "${GREEN}Copying ${BUILD_PATH}/${APP_NAME} to $DROPBOX_PATH/${APP_NAME}/${NC}"
-cp -R ${BUILD_PATH}/${APP_NAME}/* "$DROPBOX_PATH/${APP_NAME}/"
+#cp -R ${BUILD_PATH}/${APP_NAME}/* "$DROPBOX_PATH/${APP_NAME}/"
 #rsync ${BUILD_PATH}/${APP_NAME}/* "$DROPBOX_PATH/${APP_NAME}/"

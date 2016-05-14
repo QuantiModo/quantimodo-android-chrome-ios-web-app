@@ -8,7 +8,13 @@ fi
 
 if [ -z "$BUILD_PATH" ]
     then
-  echo -e "${RED}build_android.sh: No BUILD_PATH...${NC}"
+  echo -e "${RED}build_android.sh: No BUILD_PATH!${NC}"
+    exit
+fi
+
+if [ -d "$ANDROID_BUILD_TOOLS" ]
+    then
+  echo -e "${RED}build_android.sh: ANDROID_BUILD_TOOLS directory $ANDROID_BUILD_TOOLS does not exist! Please update env!${NC}"
     exit
 fi
 
@@ -53,14 +59,14 @@ cd ${BUILD_PATH}/${APP_NAME}/android
 # Sign the app
 jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore ${ANDROID_KEYSTORE_PATH} -storepass ${ANDROID_KEYSTORE_PASSWORD} android-release-unsigned.apk quantimodo >/dev/null
 # Optimize apk
-${ANDROID_HOME}/build-tools/23.0.1/zipalign 4 android-release-unsigned.apk ${APP_NAME}-signed.apk >/dev/null
-${ANDROID_HOME}/build-tools/23.0.2/zipalign 4 android-release-unsigned.apk ${APP_NAME}-signed.apk >/dev/null
-${ANDROID_HOME}/build-tools/22.0.1/zipalign 4 android-release-unsigned.apk ${APP_NAME}-signed.apk >/dev/null
+${ANDROID_BUILD_TOOLS}/zipalign 4 android-release-unsigned.apk ${APP_NAME}-android-release-signed.apk >/dev/null
 
+cp android-debug.apk "$DROPBOX_PATH/${APP_NAME}/${APP_NAME}-android-debug.apk"
+cp ${APP_NAME}-android-release-signed.apk "$DROPBOX_PATH/${APP_NAME}/"
 echo "Android app is ready"
 
 mkdir "$DROPBOX_PATH/$APP_NAME"
 echo -e "${GREEN}Copying ${BUILD_PATH}/${APP_NAME} to $DROPBOX_PATH/${APP_NAME}/${NC}"
-cp -R ${BUILD_PATH}/${APP_NAME}/* "$DROPBOX_PATH/${APP_NAME}/"
+#cp -R ${BUILD_PATH}/${APP_NAME}/* "$DROPBOX_PATH/${APP_NAME}/"
 #rsync ${BUILD_PATH}/${APP_NAME}/* "$DROPBOX_PATH/${APP_NAME}/"
 ### Build Android App ###

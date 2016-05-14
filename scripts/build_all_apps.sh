@@ -50,6 +50,14 @@ if [ -z "$ANDROID_HOME" ]
 fi
 echo "ANDROID_HOME is $ANDROID_HOME"
 
+if [ -z "$ANDROID_BUILD_TOOLS" ]
+  then
+    export ANDROID_BUILD_TOOLS="${ANDROID_HOME}/build-tools/22.0.1"
+  # echo -e "${RED} Android home doesn't exist. On OSX, you can set it like this: http://stackoverflow.com/questions/19986214/setting-android-home-enviromental-variable-on-mac-os-x "
+  # exit
+fi
+echo "ANDROID_BUILD_TOOLS is $ANDROID_BUILD_TOOLS"
+
 if [ -z "$ANDROID_KEYSTORE_PASSWORD" ]
   then
   echo -e "${RED} ANDROID_KEYSTORE_PASSWORD does not exist for build_all_apps.sh! Quitting! "
