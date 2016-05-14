@@ -33,12 +33,23 @@
                         
             <ion-list>
                
-                <ion-item ng-show="menuItem.subMenuPanel || (!menuItem.subMenuPanel && !menuItem.isSubMenu) || this[menuItem.subMenuVariable]" ng-class="{'sub-menu': menuItem.isSubMenu}" ng-repeat="menuItem in menu" ng-click="closeMenuIfNeeded(menuItem)" ng-href="{{menuItem.href}}">
-                    <i ng-if="menuItem.subMenuPanel" 
-                        class="{{this['menuItem.icon']? 'ion-chevron-down' : 'ion-chevron-right'}}"> 
+                <ion-item ng-show="menuItem.isSubMenuParent ||
+                    (!menuItem.isSubMenuParent && !menuItem.isSubMenuChild) ||
+                     this[menuItem.showSubMenuVariable]"
+                      ng-class="{'sub-menu': menuItem.isSubMenuChild}"
+                      ng-repeat="menuItem in menu"
+                      ng-click="closeMenuIfNeeded(menuItem)"
+                      ng-href="{{menuItem.href}}">
+
+                    <i ng-if="menuItem.isSubMenuParent && this[menuItem.showSubMenuVariable]"
+                       class="{{menuItem.expandedIcon}}">
                         &nbsp; {{menuItem.title}}
                     </i>
-                    <i ng-if="!menuItem.subMenuPanel" class="{{menuItem.icon}}" menu-close>
+                    <i ng-if="menuItem.isSubMenuParent && !this[menuItem.showSubMenuVariable]"
+                       class="{{menuItem.collapsedIcon}}">
+                        &nbsp; {{menuItem.title}}
+                    </i>
+                    <i ng-if="!menuItem.isSubMenuParent" class="{{menuItem.icon}}" menu-close>
                         &nbsp; {{menuItem.title}}
                     </i >
                 </ion-item>

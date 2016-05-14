@@ -294,48 +294,50 @@ config.appSettings  = {
         {
             title : 'Reminders',
             click : 'toggleReminderSubMenu',
-            icon : 'showReminderSubMenu',
-            subMenuPanel : true
+            showSubMenuVariable : 'showReminderSubMenu',
+            isSubMenuParent : true,
+            collapsedIcon : 'ion-chevron-right',
+            expandedIcon : 'ion-chevron-down'
         },
         {
             title : 'Inbox',
-            isSubMenu : true,
-            subMenuVariable : 'showReminderSubMenu',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showReminderSubMenu',
             href : '#/app/reminders-inbox',
             icon : 'ion-android-notifications-none'
         },
         {
             title : 'Manage',
-            isSubMenu : true,
-            subMenuVariable : 'showReminderSubMenu',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showReminderSubMenu',
             href : '#/app/reminders-manage',
             icon : 'ion-ios-gear-outline'
         },
         {
             title : 'Emotions',
-            isSubMenu : true,
-            subMenuVariable : 'showReminderSubMenu',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showReminderSubMenu',
             href : '#/app/reminder_add/Emotions',
             icon : 'ion-happy-outline'
         },
         {
             title : 'Responses',
-            isSubMenu : true,
-            subMenuVariable : 'showReminderSubMenu',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showReminderSubMenu',
             href : '#/app/reminder_add/Symptoms',
             icon : 'ion-ios-pulse'
         },
         {
             title : 'Treatments',
-            isSubMenu : true,
-            subMenuVariable : 'showReminderSubMenu',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showReminderSubMenu',
             href : '#/app/reminder_add/Treatments',
             icon : 'ion-ios-medkit-outline'
         },
         {
             title : 'Foods',
-            isSubMenu : true,
-            subMenuVariable : 'showReminderSubMenu',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showReminderSubMenu',
             href : '#/app/reminder_add/Foods',
             icon : 'ion-ios-nutrition-outline'
         },

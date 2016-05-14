@@ -61,7 +61,7 @@ angular.module('starter')
             if(menuItem.click){
                 $scope[menuItem.click] && $scope[menuItem.click]();
             }
-            else if(!menuItem.subMenuPanel){
+            else if(!menuItem.isSubMenuParent){
                 $scope.closeMenu();
             }
         };
@@ -251,6 +251,9 @@ angular.module('starter')
             $scope.init();
         });
 
+        $scope.togglePrimaryOutcomeSubMenu = function(){
+            $scope.showPrimaryOutcomeSubMenu = !$scope.showPrimaryOutcomeSubMenu;
+        };
 
         $scope.toggleEmotionsSubMenu = function(){
             $scope.showEmotionsSubMenu = !$scope.showEmotionsSubMenu;
