@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<widget id="com.quantimodo.moodimodoapp" version="1.2.0" ios-CFBundleVersion="1.2.0.4" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget id="com.quantimodo.moodimodoapp" version="IONIC_APP_VERSION_NUMBER" ios-CFBundleVersion="IONIC_IOS_APP_VERSION_NUMBER" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
   <name>MoodiModo</name>
   <description>
         The mood-tracking app from QuantiModo
     </description>
-  <author email="help@quantimo.do" href="http://help.quantimo.do/">
-      QuantiModo
+  <author email="info@quantimo.do" href="http://help.quantimo.do/">
+     QuantiModo
     </author>
   <content src="index.html"/>
   <access origin="*"/>
