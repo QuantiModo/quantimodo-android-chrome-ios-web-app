@@ -30,8 +30,12 @@ fi
 echo -e "${GREEN}Copying www folder into app and extension${NC}"
 mkdir -p "${BUILD_PATH}/${APP_NAME}/chrome_app/www"
 mkdir -p "${BUILD_PATH}/${APP_NAME}/chrome_extension/www"
+
 cp -R ${INTERMEDIATE_PATH}/resources/chrome_app/* "${BUILD_PATH}/${APP_NAME}/chrome_app/"
 cp -R ${INTERMEDIATE_PATH}/resources/chrome_extension/* "${BUILD_PATH}/${APP_NAME}/chrome_extension/"
+
+#rsync -aP --exclude=build/ --exclude=.git/ ${INTERMEDIATE_PATH}/www/* "${BUILD_PATH}/${APP_NAME}/chrome_app/www/"
+#rsync -aP --exclude=build/ --exclude=.git/ ${INTERMEDIATE_PATH}/www/* "${BUILD_PATH}/${APP_NAME}/chrome_extension/www/"
 cp -R ${INTERMEDIATE_PATH}/www/*  "${BUILD_PATH}/${APP_NAME}/chrome_app/www/"
 cp -R ${INTERMEDIATE_PATH}/www/*  "${BUILD_PATH}/${APP_NAME}/chrome_extension/www/"
 

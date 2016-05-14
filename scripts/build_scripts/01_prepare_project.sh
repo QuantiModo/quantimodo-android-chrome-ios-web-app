@@ -40,7 +40,11 @@ cp -R ${INTERMEDIATE_PATH}/apps/${APP_NAME}/*  "${INTERMEDIATE_PATH}"
 
 cd "${INTERMEDIATE_PATH}"
 #ionic state reset
+
+echo "Generating images for ${APP_NAME}..."
 source "${IMAGES_SCRIPT}"
+
+echo "Copying generated images from ${INTERMEDIATE_PATH}/resources/android to ${INTERMEDIATE_PATH}/www/img/"
 cp -R ${INTERMEDIATE_PATH}/resources/android/*  "${INTERMEDIATE_PATH}/www/img/"
 
 rm -rf "${BUILD_PATH}/${APP_NAME}"
