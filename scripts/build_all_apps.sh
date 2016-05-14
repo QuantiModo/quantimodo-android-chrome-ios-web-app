@@ -53,7 +53,7 @@ echo "ANDROID_HOME is $ANDROID_HOME"
 
 if [ -z "$ANDROID_BUILD_TOOLS" ]
   then
-    export ANDROID_BUILD_TOOLS="${ANDROID_HOME}/build-tools/22.0.1"
+    export ANDROID_BUILD_TOOLS="${ANDROID_HOME}/build-tools/23.0.3"
   # echo -e "${RED} Android home doesn't exist. On OSX, you can set it like this: http://stackoverflow.com/questions/19986214/setting-android-home-enviromental-variable-on-mac-os-x "
   # exit
 fi
