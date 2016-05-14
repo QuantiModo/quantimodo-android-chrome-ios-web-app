@@ -34,6 +34,11 @@ config.appSettings  = {
     primaryOutcomeVariable : 'Energy',
 
     appStorageIdentifier: 'EnergyModoData*',
+
+    settingsPageOptions :
+    {
+        showReminderFrequencySelector : true
+    },
       
     primaryOutcomeVariableDetails : {
         id : 108092,

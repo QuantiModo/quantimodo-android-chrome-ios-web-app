@@ -37,6 +37,10 @@ config.appSettings  = {
 
     welcomeState : 'app.remindersInbox',
 
+    settingsPageOptions :
+    {
+        showReminderFrequencySelector : false
+    },
 
     headline : 'Medications - Track, Learn, Connect',
     features: [
