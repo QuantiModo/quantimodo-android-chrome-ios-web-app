@@ -9,7 +9,7 @@ xcodebuild -exportArchive -archivePath "$PWD/build/${APP_NAME}.xcarchive" -expor
 
 security delete-keychain ios-build.keychain
 
-pilot upload -u ${FASTLANE_USER} -i "${PWD}/build/${APP_NAME}.ipa" -a "${APP_IDENTIFIER}" -p "${APPLE_ID}" --verbose
+pilot upload -u ${FASTLANE_USER} -i "${PWD}/build/${APP_NAME}.ipa" -a "${APP_IDENTIFIER}" -p "${APPLE_ID}"
 
 # until my_cmd | grep -m 1 "String Im Looking For"; do : ; done
 
