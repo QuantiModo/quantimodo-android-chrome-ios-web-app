@@ -27,16 +27,12 @@ if [ -z "${ANDROID_KEYSTORE_PASSWORD}" ]
   then
       echo -e "${RED}build_android.sh: ANDROID_KEYSTORE_PASSWORD doesn't exist. Please set it in Jenkins->Manage Jenkins->Configure System->Environment variables${NC}"
       exit
-  else
-      echo -e "${GREEN}build_android.sh: ANDROID_KEYSTORE_PASSWORD is ${ANDROID_KEYSTORE_PASSWORD}${NC}"
 fi
 
 if [ -z "${ANDROID_KEYSTORE_PATH}" ]
     then
       echo -e "${RED}build_android.sh: ANDROID_KEYSTORE_PATH doesn't exist. Please set it in Jenkins->Manage Jenkins->Configure System->Environment variables${NC}"
       exit
-    else
-      echo -e "${GREEN}build_android.sh: ANDROID_KEYSTORE_PATH is $ANDROID_KEYSTORE_PATH${NC}"
 fi
 
 echo -e "${GREEN}build_android.sh: INTERMEDIATE_PATH is ${INTERMEDIATE_PATH}...${NC}"
