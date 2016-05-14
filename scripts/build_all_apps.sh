@@ -42,7 +42,7 @@ fi
 echo "ANDROID_KEYSTORE_PASSWORD is $ANDROID_KEYSTORE_PASSWORD"
 
 echo "Copying everything from ${PROJECT_ROOT} to $INTERMEDIATE_PATH"
-rsync -aP --exclude=build/ --exclude=.git/ --exclude=platforms/ --exclude=node_modules/ --exclude=plugins/ ${PROJECT_ROOT}/* ${INTERMEDIATE_PATH}
+rsync -a --exclude=build/ --exclude=.git/ --exclude=platforms/ --exclude=node_modules/ --exclude=plugins/ ${PROJECT_ROOT}/* ${INTERMEDIATE_PATH}
 cd ${INTERMEDIATE_PATH}
 
 #source ${PROJECT_ROOT}/scripts/build_scripts/00_install_dependencies.sh
