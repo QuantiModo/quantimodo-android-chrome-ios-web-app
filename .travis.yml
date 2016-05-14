@@ -25,7 +25,8 @@ script:
 - gulp -v
 - echo "ran through gulp"
 - gulp generateXmlConfig
-- cp -R apps/moodimodo/* $PWD
+- cp -R apps/${LOWERCASE_APP_NAME}/* $PWD
+- cp apps/${LOWERCASE_APP_NAME}/resources/icon_white.png $PWD/resources/icon.png
 - ionic resources
 - gulp makeIosApp
 - chmod a+x ./scripts/package-and-upload.sh
@@ -33,6 +34,7 @@ script:
 env:
   global:
   - APP_NAME="MoodiModo"
+  - LOWERCASE_APP_NAME="moodimodo"
   - TEAM_ID="YD2FK7S2S5"
   - DEVELOPER_NAME="iPhone Distribution: Mike Sinn (YD2FK7S2S5)"
   - PROFILE_NAME="028ab892-9a5e-4004-adac-b8472e760bdb"
