@@ -3,13 +3,13 @@
 
 cd platforms/ios
 
-xcodebuild -workspace "${APP_NAME}.xcworkspace" -scheme "${APP_NAME}" -sdk iphoneos -configuration Release  archive -archivePath "$PWD/build/${APP_NAME}.xcarchive" CODE_SIGN_IDENTITY="$DEVELOPER_NAME" PROVISIONING_PROFILE="$PROFILE_UUID"
+xcodebuild -workspace "${APP_DISPLAY_NAME}.xcworkspace" -scheme "${APP_DISPLAY_NAME}" -sdk iphoneos -configuration Release  archive -archivePath "$PWD/build/${APP_DISPLAY_NAME}.xcarchive" CODE_SIGN_IDENTITY="$DEVELOPER_NAME" PROVISIONING_PROFILE="$PROFILE_UUID"
 
-xcodebuild -exportArchive -archivePath "$PWD/build/${APP_NAME}.xcarchive" -exportPath $PWD/build -exportOptionsPlist $PWD/exportOptions.plist
+xcodebuild -exportArchive -archivePath "$PWD/build/${APP_DISPLAY_NAME}.xcarchive" -exportPath $PWD/build -exportOptionsPlist $PWD/exportOptions.plist
 
 security delete-keychain ios-build.keychain
 
-pilot upload -u ${FASTLANE_USER} -i "${PWD}/build/${APP_NAME}.ipa" -a "${APP_IDENTIFIER}" -p "${APPLE_ID}" --verbose
+pilot upload -u ${FASTLANE_USER} -i "${PWD}/build/${APP_DISPLAY_NAME}.ipa" -a "${APP_IDENTIFIER}" -p "${APPLE_ID}" --verbose
 
 # until my_cmd | grep -m 1 "String Im Looking For"; do : ; done
 
