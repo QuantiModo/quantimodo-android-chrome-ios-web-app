@@ -36,7 +36,7 @@ env:
   global:
   - APP_NAME="MoodiModo"
   - IONIC_APP_VERSION_NUMBER="1.2.0"
-  - IONIC_IOS_APP_VERSION_NUMBER="1.2.0.5"
+  - IONIC_IOS_APP_VERSION_NUMBER="1.2.0.6"
   - LOWERCASE_APP_NAME="moodimodo"
   - TEAM_ID="YD2FK7S2S5"
   - DEVELOPER_NAME="iPhone Distribution: Mike Sinn (YD2FK7S2S5)"
