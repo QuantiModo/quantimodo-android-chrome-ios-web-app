@@ -28,12 +28,15 @@ script:
 - cp -R apps/${LOWERCASE_APP_NAME}/* $PWD
 - cp apps/${LOWERCASE_APP_NAME}/resources/icon_white.png $PWD/resources/icon.png
 - ionic resources
+- gulp setVersionNumbersWithEnvs
 - gulp makeIosApp
 - chmod a+x ./scripts/package-and-upload.sh
 - ./scripts/package-and-upload.sh
 env:
   global:
   - APP_NAME="MoodiModo"
+  - IONIC_APP_VERSION_NUMBER="1.2.0"
+  - IONIC_IOS_APP_VERSION_NUMBER="1.2.0.5"
   - LOWERCASE_APP_NAME="moodimodo"
   - TEAM_ID="YD2FK7S2S5"
   - DEVELOPER_NAME="iPhone Distribution: Mike Sinn (YD2FK7S2S5)"
