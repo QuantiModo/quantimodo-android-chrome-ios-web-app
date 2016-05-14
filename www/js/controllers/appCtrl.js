@@ -252,6 +252,26 @@ angular.module('starter')
         });
 
 
+        $scope.toggleEmotionsSubMenu = function(){
+            $scope.showEmotionsSubMenu = !$scope.showEmotionsSubMenu;
+        };
+
+        $scope.toggleDietSubMenu = function(){
+            $scope.showDietSubMenu = !$scope.showDietSubMenu;
+        };
+
+        $scope.toggleTreatmentsSubMenu = function(){
+            $scope.showTreatmentsSubMenu = !$scope.showTreatmentsSubMenu;
+        };
+
+        $scope.toggleSymptomsSubMenu = function(){
+            $scope.showSymptomsSubMenu = !$scope.showSymptomsSubMenu;
+        };
+
+        $scope.togglePhysicalActivitySubMenu = function(){
+            $scope.showPhysicalActivitySubMenu= !$scope.showPhysicalActivitySubMenu;
+        };
+
         $scope.toggleTrackingSubMenu = function(){
             $scope.showTrackingSubMenu = !$scope.showTrackingSubMenu;
         };

@@ -419,6 +419,53 @@ config.appSettings  = {
             icon : 'ion-happy-outline'
         },
         {
+            title : 'Emotions',
+            click : 'toggleEmotionsSubMenu',
+            icon : 'showEmotionsSubMenu',
+            subMenuPanel : true
+        },
+        {
+            title : 'Add Reminder',
+            isSubMenu : true,
+            subMenuVariable : 'showEmotionsSubMenu',
+            href : '#/app/track_factors',
+            icon : 'ion-ios-world-outline'
+        },
+        {
+            title : 'Manage Reminders',
+            isSubMenu : true,
+            subMenuVariable : 'showReminderSubMenu',
+            href : '#/app/reminders-manage/Emotions',
+            icon : 'ion-ios-gear-outline'
+        },
+        {
+            title : 'Record a Measurement',
+            isSubMenu : true,
+            subMenuVariable : 'showEmotionsSubMenu',
+            href : '#/app/track_factors_category/Emotions',
+            icon : 'ion-happy-outline'
+        },
+        {
+            title : 'Diet',
+            click : 'toggleTrackingSubMenu',
+            icon : 'showTrackingSubMenu',
+            subMenuPanel : true
+        },
+        {
+            title : 'Add Reminder',
+            isSubMenu : true,
+            subMenuVariable : 'showTrackingSubMenu',
+            href : '#/app/track_factors',
+            icon : 'ion-ios-world-outline'
+        },
+        {
+            title : 'Track foods',
+            isSubMenu : true,
+            subMenuVariable : 'showTrackingSubMenu',
+            href : '#/app/track_factors_category/Foods',
+            icon : 'ion-ios-nutrition-outline'
+        },
+        {
             title : 'Track Factors',
             click : 'toggleTrackingSubMenu',
             icon : 'showTrackingSubMenu',
