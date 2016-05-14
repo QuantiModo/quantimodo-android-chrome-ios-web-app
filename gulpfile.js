@@ -109,19 +109,19 @@ gulp.task('generatePrivateConfigFromEnvs', function(){
 	// 	"ENERGYMODO_WEB_CLIENT_SECRET" : 'asd',
 	// };
 
-	var env_keys = process.env;
+	var environmentalVariables = process.env;
 
 	// Only run when on heroku
-	if(typeof env_keys['BUILDPACK_URL'] === "undefined" ){
+	if(typeof environmentalVariables['BUILDPACK_URL'] === "undefined" ){
 		console.log("BUILDPACK_URL is undefined.  Heroku Not Detected.  Kashif, what is this check for?");
 		deferred.reject();
 	}
 
-	if(typeof env_keys['APPS'] === "undefined" || env_keys['APPS'].trim() === ''){
+	if(typeof environmentalVariables['APPS'] === "undefined" || environmentalVariables['APPS'].trim() === ''){
 		console.error('No Apps Found');
 		deferred.reject();
 	} else {
-		var apps = env_keys['APPS'].split(',');
+		var apps = environmentalVariables['APPS'].split(',');
 
 		apps.forEach(function(appName){
 			appName = appName.trim();
@@ -131,38 +131,38 @@ gulp.task('generatePrivateConfigFromEnvs', function(){
 				redirect_uris : {},
 				api_urls : {}
 			};
-			if(typeof env_keys[appName+'_WEB_CLIENT_ID'] !== "undefined"){
-				configkeys.client_ids.Web = env_keys[appName+'_WEB_CLIENT_ID'];
+			if(typeof environmentalVariables[appName+'_WEB_CLIENT_ID'] !== "undefined"){
+				configkeys.client_ids.Web = environmentalVariables[appName+'_WEB_CLIENT_ID'];
 				console.log(appName+'_WEB_CLIENT_ID'+' Detected');
 			} else {
 				console.log(appName+'_WEB_CLIENT_ID'+' NOT DETECTED');
 			}
 
-			if(typeof env_keys[appName+'_WEB_CLIENT_SECRET'] !== "undefined"){
-				configkeys.client_secrets.Web = env_keys[appName+'_WEB_CLIENT_SECRET'];
+			if(typeof environmentalVariables[appName+'_WEB_CLIENT_SECRET'] !== "undefined"){
+				configkeys.client_secrets.Web = environmentalVariables[appName+'_WEB_CLIENT_SECRET'];
 				console.log(appName+'_WEB_CLIENT_SECRET'+' Detected');
 			} else {
 				console.log(appName+'_WEB_CLIENT_SECRET'+' NOT DETECTED');
 			}
 
-			if(typeof env_keys[appName+'_WEB_API_URL'] !== "undefined"){
-				configkeys.api_urls.Web = env_keys[appName+'_WEB_API_URL'];
+			if(typeof environmentalVariables[appName+'_WEB_API_URL'] !== "undefined"){
+				configkeys.api_urls.Web = environmentalVariables[appName+'_WEB_API_URL'];
 				console.log(appName+'_WEB_API_URL'+' Detected');
 			} else {
 				console.log(appName+'_WEB_API_URL'+' NOT DETECTED. Using https://app.quantimo.do');
 				configkeys.api_urls.Web = 'https://app.quantimo.do';
 			}
 
-			if(typeof env_keys[appName+'_WEB_REDIRECT_URI'] !== "undefined"){
-				configkeys.redirect_uris.Web = env_keys[appName+'_WEB_REDIRECT_URI'];
+			if(typeof environmentalVariables[appName+'_WEB_REDIRECT_URI'] !== "undefined"){
+				configkeys.redirect_uris.Web = environmentalVariables[appName+'_WEB_REDIRECT_URI'];
 				console.log(appName+'_WEB_REDIRECT_URI'+' Detected');
 			} else {
 				console.log(appName+'_WEB_REDIRECT_URI'+' NOT DETECTED. Using https://app.quantimo.do/ionic/Modo/www/callback/');
 				configkeys.redirect_uris.Web = 'https://app.quantimo.do/ionic/Modo/www/callback/';
 			}
 
-            if(typeof env_keys['IONIC_BUGSNAG_KEY'] !== "undefined"){
-                configkeys.bugsnag_key = env_keys['IONIC_BUGSNAG_KEY'];
+            if(typeof environmentalVariables['IONIC_BUGSNAG_KEY'] !== "undefined"){
+                configkeys.bugsnag_key = environmentalVariables['IONIC_BUGSNAG_KEY'];
                 console.log('IONIC_BUGSNAG_KEY' +' Detected');
             } else {
                 console.log('IONIC_BUGSNAG_KEY'+' NOT DETECTED');
@@ -537,9 +537,12 @@ gulp.task('getAppName', function(){
 		var app_name = process.env["APP_NAME"];
 		if(app_name && app_name.length){
 			APP_NAME = app_name.toLowerCase();
-			console.log("the app name fron env is", JSON.stringify(APP_NAME));
+			console.log("*** APP_NAME from env is: ", JSON.stringify(APP_NAME));
 			deferred.resolve();
 		} else {
+			console.error("Failed to get APP_NAME!  Please export as an env!", error);
+			deferred.reject();
+			/*
 			var commandForGit = 'git rev-parse --abbrev-ref HEAD';
 			execute(commandForGit, function(error, output){
 				output = output.trim();
@@ -552,6 +555,7 @@ gulp.task('getAppName', function(){
 					deferred.resolve();
 				}
 			});
+			*/
 		}
 	}
 	return deferred.promise;
@@ -988,6 +992,60 @@ gulp.task('bumpVersion', function(){
 	    		}
 	    	});
 	    }
+	});
+
+	return deferred.promise;
+});
+
+gulp.task('setVersionNumbersWithEnvs', function(){
+	
+	var deferred = q.defer();
+	var environmentalVariables = process.env;
+	if(!environmentalVariables['IONIC_APP_VERSION_NUMBER']){
+		throw new Error('Please set IONIC_APP_VERSION_NUMBER env!');
+	}
+
+	if(!environmentalVariables['IONIC_IOS_APP_VERSION_NUMBER']){
+		throw new Error('Please set IONIC_IOS_APP_VERSION_NUMBER env!');
+	}	
+	
+	var xml = fs.readFileSync('./config.xml', 'utf8');
+
+	parseString(xml, function (err, parsedXmlFile) {
+		if(err){
+			throw new Error("failed to read xml file", err);
+		} else {
+
+			if(parsedXmlFile && parsedXmlFile.widget && parsedXmlFile.widget.$ ){
+				if(parsedXmlFile.widget.$['version']) {
+					var currentVersionNumber = parsedXmlFile.widget.$['version'];
+				}
+				if(parsedXmlFile.widget.$["ios-CFBundleVersion"]) {
+					var currentIosVersionNumber = parsedXmlFile.widget.$["ios-CFBundleVersion"];
+				}
+			}
+
+			if(!parsedXmlFile) parsedXmlFile = {};
+			if(!parsedXmlFile.widget) parsedXmlFile['widget'] = {};
+			if(!parsedXmlFile.widget.$) parsedXmlFile.widget['$'] = {};
+
+			parsedXmlFile.widget.$["version"] = environmentalVariables['IONIC_APP_VERSION_NUMBER'];
+			parsedXmlFile.widget.$["ios-CFBundleVersion"] = environmentalVariables['IONIC_IOS_APP_VERSION_NUMBER'];
+
+			var builder = new xml2js.Builder();
+			var updatedXmlFile = builder.buildObject(parsedXmlFile);
+
+			fs.writeFile('./config.xml', updatedXmlFile, 'utf8', function (err) {
+				if (err) {
+					console.log("Error updating version in config.xml", err);
+					deferred.reject();
+				} else {
+					console.log("Successfully updated the version number to " + 
+						environmentalVariables['IONIC_APP_VERSION_NUMBER'] + " in config.xml file");
+					deferred.resolve();
+				}
+			});
+		}
 	});
 
 	return deferred.promise;

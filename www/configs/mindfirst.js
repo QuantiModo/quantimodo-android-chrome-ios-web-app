@@ -35,6 +35,11 @@ config.appSettings  = {
 
     primaryOutcomeVariable : 'Mood',
 
+    settingsPageOptions :
+    {
+        showReminderFrequencySelector : true
+    },
+
     appStorageIdentifier: 'MindFirstData*',
 
     headline : 'Sync and Analyze Your Data',

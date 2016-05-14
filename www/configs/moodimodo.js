@@ -28,6 +28,11 @@ config.appSettings  = {
     appName : 'MoodiModo',
     allowOffline : true,
     loaderImagePath : 'img/pop-tart-cat.gif',
+    
+    settingsPageOptions :
+    {
+        showReminderFrequencySelector : true
+    },
 
     defaultState : 'app.track',
     welcomeState : 'app.welcome',

@@ -14,7 +14,7 @@ if ! type "zip" > /dev/null;
     echo -e "${GREEN}Zip package already installed...${NC}"
 fi
 
-cd ${PROJECT_ROOT}
+cd ${INTERMEDIATE_PATH}
 brew update && brew upgrade
 brew prune
 echo "npm cache clean"
@@ -36,5 +36,5 @@ npm install -g grunt-cli@0.1.13
 npm install -g cordova@5.4.0
 npm install -g ionic@1.7.10
 
-cd "${PROJECT_ROOT}" && npm install && bower install
+cd "${INTERMEDIATE_PATH}" && npm install && bower install
 #npm rebuild node-sass

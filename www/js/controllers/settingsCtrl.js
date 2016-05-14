@@ -6,6 +6,7 @@ angular.module('starter')
 										 $cordovaFileOpener2, $ionicPopup, $state,notificationService, QuantiModo,
                                          $rootScope) {
 		$scope.controller_name = "SettingsCtrl";
+		$scope.showReminderFrequencySelector = config.appSettings.settingsPageOptions.showReminderFrequencySelector;
 		// populate ratings interval
         localStorageService.getItem('askForRating', function (askForRating) {
                 $scope.ratings = askForRating ? askForRating : "hourly";
