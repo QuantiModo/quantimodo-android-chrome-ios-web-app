@@ -8,24 +8,24 @@ fi
 
 if [ -z "$BUILD_PATH" ]
     then
-  echo -e "${RED}build_android.sh: No BUILD_PATH!${NC}"
-    exit
+        echo -e "${RED}build_android.sh: No BUILD_PATH!${NC}"
+        exit
 fi
 
-if [ -d "$ANDROID_BUILD_TOOLS" ]
+if [ ! -d "$ANDROID_BUILD_TOOLS" ]
     then
-  echo -e "${RED}build_android.sh: ANDROID_BUILD_TOOLS directory $ANDROID_BUILD_TOOLS does not exist! Please update env!${NC}"
-    exit
+        echo -e "${RED}build_android.sh: ANDROID_BUILD_TOOLS directory $ANDROID_BUILD_TOOLS does not exist! Please update env!${NC}"
+        exit
 fi
 
 echo -e "${GREEN}build_android.sh: BUILD_PATH is ${BUILD_PATH}...${NC}"
 
 if [ -z "${ANDROID_HOME}" ]
     then
-      echo -e "${RED}build_android.sh: Android home doesn't exist. On OSX, you can set it like this: http://stackoverflow.com/questions/19986214/setting-android-home-enviromental-variable-on-mac-os-x ${NC}"
-      exit
+        echo -e "${RED}build_android.sh: ANDROID_HOME variable not set. On OSX, you can set it like this: http://stackoverflow.com/questions/19986214/setting-android-home-enviromental-variable-on-mac-os-x ${NC}"
+        exit
     else
-         echo -e "${GREEN}build_android.sh: Android home is $ANDROID_HOME ${NC}"
+        echo -e "${GREEN}build_android.sh: Android home is $ANDROID_HOME ${NC}"
 fi
 
 echo -e "${GREEN}build_android.sh: ANDROID_KEYSTORE_PASSWORD second argument given is ${ANDROID_KEYSTORE_PASSWORD}...${NC}"
