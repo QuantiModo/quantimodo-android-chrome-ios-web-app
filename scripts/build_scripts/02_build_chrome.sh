@@ -9,7 +9,7 @@ fi
 
 if [ -z "$BUILD_PATH" ]
   then
-    $BUILD_PATH="$PROJECT_ROOT"/build
+    $BUILD_PATH="$IONIC_PATH"/build
     echo "No BUILD_PATH given. Using $BUILD_PATH..."
 fi
 
