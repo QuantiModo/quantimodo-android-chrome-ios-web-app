@@ -3,16 +3,32 @@
 export RED='\033[0;31m'
 export GREEN='\033[0;32m'
 export NC='\033[0m' # No Color
+
+SCRIPT_PATH="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/$(basename "${BASH_SOURCE[0]}")"
+SCRIPT_FOLDER=`dirname ${SCRIPT_PATH}`
+echo "SCRIPT_FOLDER is $SCRIPT_FOLDER"
+cd ${SCRIPT_FOLDER}
+cd ..
 export IONIC_PATH="$PWD"
+echo "IONIC_PATH is $IONIC_PATH"
+cd ..
+mkdir qm-ionic-intermediates
+cd qm-ionic-intermediates
+export INTERMEDIATE_PATH="$PWD"
+echo "INTERMEDIATE_PATH is $INTERMEDIATE_PATH"
 export VERSION_NUMBER="1.2.0"
 export DROPBOX_PATH=/Users/Shared/Jenkins/Dropbox/QuantiModo/apps
-export ANDROID_KEYSTORE_PATH="/Users/Shared/Jenkins/Home/workspace/QM-Docker-Build/configs/android/quantimodo.keystore"
-export QM_DOCKER_PATH="/Users/Shared/Jenkins/Home/workspace/QM-Docker-Build"
+
+if [ -z "$QM_DOCKER_PATH" ]
+    then
+        export QM_DOCKER_PATH="/Users/Shared/Jenkins/Home/workspace/QM-Docker-Build"
+fi
+
+export ANDROID_KEYSTORE_PATH="$QM_DOCKER_PATH/configs/android/quantimodo.keystore"
 export IMAGES_SCRIPT=${IONIC_PATH}/scripts/create_icons.sh
 export APP_PRIVATE_CONFIG_PATH="${QM_DOCKER_PATH}/configs/ionic"
 export BUILD_PATH="${IONIC_PATH}/build"
-export INTERMEDIATE_PATH="${IONIC_PATH}/build/intermediate"
-mkdir ${INTERMEDIATE_PATH}
+
 export LANG=en_US.UTF-8
 export TEAM_ID="YD2FK7S2S5"
 export DEVELOPER_NAME="iPhone Distribution=Mike Sinn (YD2FK7S2S5)"
