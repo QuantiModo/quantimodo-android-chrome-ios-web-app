@@ -1,5 +1,7 @@
 #!/bin/bash
 
+export IONIC_APP_VERSION_NUMBER=1.2.0
+
 export RED='\033[0;31m'
 export GREEN='\033[0;32m'
 export NC='\033[0m' # No Color
@@ -16,7 +18,6 @@ mkdir qm-ionic-intermediates
 cd qm-ionic-intermediates
 export INTERMEDIATE_PATH="$PWD"
 echo "INTERMEDIATE_PATH is $INTERMEDIATE_PATH"
-export VERSION_NUMBER="1.2.0"
 export DROPBOX_PATH=/Users/Shared/Jenkins/Dropbox/QuantiModo/apps
 
 if [ -z "$QM_DOCKER_PATH" ]

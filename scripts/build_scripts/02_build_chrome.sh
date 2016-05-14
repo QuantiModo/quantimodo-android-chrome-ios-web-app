@@ -1,10 +1,11 @@
 #!/bin/bash
 
-if [ -z "$VERSION_NUMBER" ]
+if [ -z "$IONIC_APP_VERSION_NUMBER" ]
   then
-    echo "${GREEN}No version parameter second argument given so using ${VERSION_NUMBER} as default version number...${NC}"
+    echo "${GREEN}IONIC_APP_VERSION_NUMBER not set!${NC}"
+    exit
 else
-    echo -e "VERSION_NUMBER is $VERSION_NUMBER...${NC}"
+    echo -e "IONIC_APP_VERSION_NUMBER is $IONIC_APP_VERSION_NUMBER...${NC}"
 fi
 
 if [ -z "$BUILD_PATH" ]

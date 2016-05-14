@@ -1,10 +1,10 @@
 #!/bin/bash
 
-if [ -z "$VERSION_NUMBER" ]
+if [ -z "$IONIC_APP_VERSION_NUMBER" ]
   then
-    echo "${GREEN}No version parameter second argument given so using ${VERSION_NUMBER} as default version number...${NC}"
+    echo "${GREEN}No version parameter second argument given so using ${IONIC_APP_VERSION_NUMBER} as default version number...${NC}"
 else
-    echo -e "VERSION_NUMBER is $VERSION_NUMBER...${NC}"
+    echo -e "IONIC_APP_VERSION_NUMBER is $IONIC_APP_VERSION_NUMBER...${NC}"
 fi
 
 if [ -z "$INTERMEDIATE_PATH" ]
@@ -31,8 +31,8 @@ fi
 
 export LC_CTYPE=C
 export LANG=C
-echo -e "${GREEN}Replacing QUANTIMODO_TEMPLATE_APP_VERSION with ${VERSION_NUMBER}...${NC}"
-cd "${INTERMEDIATE_PATH}/apps" && find . -type f -exec sed -i '' -e 's/QUANTIMODO_TEMPLATE_APP_VERSION/'${VERSION_NUMBER}'/g' {} \;
+echo -e "${GREEN}Replacing IONIC_APP_VERSION_NUMBER with ${IONIC_APP_VERSION_NUMBER}...${NC}"
+cd "${INTERMEDIATE_PATH}/apps" && find . -type f -exec sed -i '' -e 's/IONIC_APP_VERSION_NUMBER/'${IONIC_APP_VERSION_NUMBER}'/g' {} \;
 export LANG=en_US.UTF-8
 
 echo -e "${GREEN}Copy ${APP_NAME} config and resource files${NC}"
