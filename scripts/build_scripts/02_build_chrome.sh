@@ -13,27 +13,27 @@ if [ -z "$BUILD_PATH" ]
     echo "No BUILD_PATH given. Using $BUILD_PATH..."
 fi
 
-if [ -z "$PROJECT_ROOT" ]
+if [ -z "$INTERMEDIATE_PATH" ]
   then
-  echo "No PROJECT_ROOT given..."
+  echo "No INTERMEDIATE_PATH given..."
     exit
 fi
 
-if [ -d "${PROJECT_ROOT}/apps" ];
+if [ -d "${INTERMEDIATE_PATH}/apps" ];
     then
-        echo "${PROJECT_ROOT}/apps path exists";
+        echo "${INTERMEDIATE_PATH}/apps path exists";
     else
-        echo "${PROJECT_ROOT}/apps path not found!";
+        echo "${INTERMEDIATE_PATH}/apps path not found!";
         exit
 fi
 
 echo -e "${GREEN}Copying www folder into app and extension${NC}"
 mkdir -p "${BUILD_PATH}/${APP_NAME}/chrome_app/www"
 mkdir -p "${BUILD_PATH}/${APP_NAME}/chrome_extension/www"
-cp -R ${PROJECT_ROOT}/resources/chrome_app/* "${BUILD_PATH}/${APP_NAME}/chrome_app/"
-cp -R ${PROJECT_ROOT}/resources/chrome_extension/* "${BUILD_PATH}/${APP_NAME}/chrome_extension/"
-cp -R ${PROJECT_ROOT}/www/*  "${BUILD_PATH}/${APP_NAME}/chrome_app/www/"
-cp -R ${PROJECT_ROOT}/www/*  "${BUILD_PATH}/${APP_NAME}/chrome_extension/www/"
+cp -R ${INTERMEDIATE_PATH}/resources/chrome_app/* "${BUILD_PATH}/${APP_NAME}/chrome_app/"
+cp -R ${INTERMEDIATE_PATH}/resources/chrome_extension/* "${BUILD_PATH}/${APP_NAME}/chrome_extension/"
+cp -R ${INTERMEDIATE_PATH}/www/*  "${BUILD_PATH}/${APP_NAME}/chrome_app/www/"
+cp -R ${INTERMEDIATE_PATH}/www/*  "${BUILD_PATH}/${APP_NAME}/chrome_extension/www/"
 
 rm -rf "${BUILD_PATH}/${APP_NAME}/chrome_extension/www/lib/phonegap-facebook-plugin/platforms/android"
 rm -rf "${BUILD_PATH}/${APP_NAME}/chrome_extension/www/lib/phonegap-facebook-plugin/platforms/ios"

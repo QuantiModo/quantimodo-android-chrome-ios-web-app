@@ -7,10 +7,10 @@ else
     echo -e "VERSION_NUMBER is $VERSION_NUMBER...${NC}"
 fi
 
-if [ -z "$PROJECT_ROOT" ]
+if [ -z "$INTERMEDIATE_PATH" ]
     then
-      $PROJECT_ROOT="$PWD"
-      echo "No PROJECT_ROOT given. Using $PROJECT_ROOT..."
+      $INTERMEDIATE_PATH="$PWD"
+      echo "No INTERMEDIATE_PATH given. Using $INTERMEDIATE_PATH..."
 fi
 
 if [ -z "$BUILD_PATH" ]
@@ -21,29 +21,29 @@ fi
 
 rm -rf ${BUILD_PATH}/${APP_NAME}
 
-if [ -d "${PROJECT_ROOT}/apps/${APP_NAME}" ];
+if [ -d "${INTERMEDIATE_PATH}/apps/${APP_NAME}" ];
     then
-        echo "${PROJECT_ROOT}/apps/${APP_NAME} path exists";
+        echo "${INTERMEDIATE_PATH}/apps/${APP_NAME} path exists";
     else
-        echo "${PROJECT_ROOT}/apps/${APP_NAME} path not found!";
+        echo "${INTERMEDIATE_PATH}/apps/${APP_NAME} path not found!";
         exit
 fi
 
 export LC_CTYPE=C
 export LANG=C
 echo -e "${GREEN}Replacing QUANTIMODO_TEMPLATE_APP_VERSION with ${VERSION_NUMBER}...${NC}"
-cd "${PROJECT_ROOT}/apps" && find . -type f -exec sed -i '' -e 's/QUANTIMODO_TEMPLATE_APP_VERSION/'${VERSION_NUMBER}'/g' {} \;
+cd "${INTERMEDIATE_PATH}/apps" && find . -type f -exec sed -i '' -e 's/QUANTIMODO_TEMPLATE_APP_VERSION/'${VERSION_NUMBER}'/g' {} \;
 export LANG=en_US.UTF-8
 
 echo -e "${GREEN}Copy ${APP_NAME} config and resource files${NC}"
-cp -R ${PROJECT_ROOT}/apps/${APP_NAME}/*  "${PROJECT_ROOT}"
+cp -R ${INTERMEDIATE_PATH}/apps/${APP_NAME}/*  "${INTERMEDIATE_PATH}"
 
-cd "${PROJECT_ROOT}"
+cd "${INTERMEDIATE_PATH}"
 #ionic state reset
 source "${IMAGES_SCRIPT}"
-cp -R ${PROJECT_ROOT}/resources/android/*  "${PROJECT_ROOT}/www/img/"
+cp -R ${INTERMEDIATE_PATH}/resources/android/*  "${INTERMEDIATE_PATH}/www/img/"
 
 rm -rf "${BUILD_PATH}/${APP_NAME}"
 
-echo -e "${GREEN}Copy ${APP_PRIVATE_CONFIG_PATH}/${APP_NAME}.config.js private config to ${PROJECT_ROOT}/www/private_configs/${NC}"
-cp "${APP_PRIVATE_CONFIG_PATH}/${APP_NAME}.config.js" "${PROJECT_ROOT}/www/private_configs/"
+echo -e "${GREEN}Copy ${APP_PRIVATE_CONFIG_PATH}/${APP_NAME}.config.js private config to ${INTERMEDIATE_PATH}/www/private_configs/${NC}"
+cp "${APP_PRIVATE_CONFIG_PATH}/${APP_NAME}.config.js" "${INTERMEDIATE_PATH}/www/private_configs/"

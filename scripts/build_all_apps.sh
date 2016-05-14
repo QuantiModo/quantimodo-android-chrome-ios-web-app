@@ -12,6 +12,7 @@ export IMAGES_SCRIPT=${PROJECT_ROOT}/scripts/create_icons.sh
 export APP_PRIVATE_CONFIG_PATH="${QM_DOCKER_PATH}/configs/ionic"
 export BUILD_PATH="${PROJECT_ROOT}/build"
 export INTERMEDIATE_PATH="${PROJECT_ROOT}/build/intermediate"
+mkdir ${INTERMEDIATE_PATH}
 export LANG=en_US.UTF-8
 export TEAM_ID="YD2FK7S2S5"
 export DEVELOPER_NAME="iPhone Distribution=Mike Sinn (YD2FK7S2S5)"
@@ -40,29 +41,33 @@ if [ -z "$ANDROID_KEYSTORE_PASSWORD" ]
 fi
 echo "ANDROID_KEYSTORE_PASSWORD is $ANDROID_KEYSTORE_PASSWORD"
 
+echo "Copying everything from ${PROJECT_ROOT} to $INTERMEDIATE_PATH"
+rsync -aP --exclude=build/ --exclude=.git/ --exclude=platforms/ --exclude=node_modules/ --exclude=plugins/ ${PROJECT_ROOT}/* ${INTERMEDIATE_PATH}
+cd ${INTERMEDIATE_PATH}
+
 #source ${PROJECT_ROOT}/scripts/build_scripts/00_install_dependencies.sh
 
 export APP_NAME=moodimodo
-source ${PROJECT_ROOT}/scripts/build_scripts/01_prepare_project.sh
-source ${PROJECT_ROOT}/scripts/build_scripts/02_build_chrome.sh
-source ${PROJECT_ROOT}/scripts/build_scripts/03_build_android.sh
-source ${PROJECT_ROOT}/scripts/build_scripts/04_build_ios.sh
-#source ${PROJECT_ROOT}/04_reset_workspace.sh
+source ${INTERMEDIATE_PATH}/scripts/build_scripts/01_prepare_project.sh
+source ${INTERMEDIATE_PATH}/scripts/build_scripts/02_build_chrome.sh
+source ${INTERMEDIATE_PATH}/scripts/build_scripts/03_build_android.sh
+#source ${INTERMEDIATE_PATH}/scripts/build_scripts/04_build_ios.sh
+#source ${INTERMEDIATE_PATH}/04_reset_workspace.sh
 
 export APP_NAME=mindfirst
-source ${PROJECT_ROOT}/scripts/build_scripts/01_prepare_project.sh
-source ${PROJECT_ROOT}/scripts/build_scripts/02_build_chrome.sh
-source ${PROJECT_ROOT}/scripts/build_scripts/03_build_android.sh
-#source ${PROJECT_ROOT}/scripts/build_scripts/04_build_ios.sh
+source ${INTERMEDIATE_PATH}/scripts/build_scripts/01_prepare_project.sh
+source ${INTERMEDIATE_PATH}/scripts/build_scripts/02_build_chrome.sh
+source ${INTERMEDIATE_PATH}/scripts/build_scripts/03_build_android.sh
+#source ${INTERMEDIATE_PATH}/scripts/build_scripts/04_build_ios.sh
 
 export APP_NAME=energymodo
-source ${PROJECT_ROOT}/scripts/build_scripts/01_prepare_project.sh
-source ${PROJECT_ROOT}/scripts/build_scripts/02_build_chrome.sh
-source ${PROJECT_ROOT}/scripts/build_scripts/03_build_android.sh
-#source ${PROJECT_ROOT}/scripts/build_scripts/04_build_ios.sh
+source ${INTERMEDIATE_PATH}/scripts/build_scripts/01_prepare_project.sh
+source ${INTERMEDIATE_PATH}/scripts/build_scripts/02_build_chrome.sh
+source ${INTERMEDIATE_PATH}/scripts/build_scripts/03_build_android.sh
+#source ${INTERMEDIATE_PATH}/scripts/build_scripts/04_build_ios.sh
 
 export APP_NAME=medtlc
-source ${PROJECT_ROOT}/scripts/build_scripts/01_prepare_project.sh
-source ${PROJECT_ROOT}/scripts/build_scripts/02_build_chrome.sh
-source ${PROJECT_ROOT}/scripts/build_scripts/03_build_android.sh
-#source ${PROJECT_ROOT}/scripts/build_scripts/04_build_ios.sh
+source ${INTERMEDIATE_PATH}/scripts/build_scripts/01_prepare_project.sh
+source ${INTERMEDIATE_PATH}/scripts/build_scripts/02_build_chrome.sh
+source ${INTERMEDIATE_PATH}/scripts/build_scripts/03_build_android.sh
+#source ${INTERMEDIATE_PATH}/scripts/build_scripts/04_build_ios.sh

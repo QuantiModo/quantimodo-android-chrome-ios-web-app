@@ -39,10 +39,10 @@ if [ -z "${ANDROID_KEYSTORE_PATH}" ]
       echo -e "${GREEN}build_android.sh: ANDROID_KEYSTORE_PATH is $ANDROID_KEYSTORE_PATH${NC}"
 fi
 
-echo -e "${GREEN}build_android.sh: PROJECT_ROOT is ${PROJECT_ROOT}...${NC}"
+echo -e "${GREEN}build_android.sh: INTERMEDIATE_PATH is ${INTERMEDIATE_PATH}...${NC}"
 
 ### Build Android App ###
-cd ${PROJECT_ROOT}
+cd ${INTERMEDIATE_PATH}
 ionic state reset
 rm -rf platforms/android
 ionic platform remove android
