@@ -9,7 +9,7 @@ angular.module('starter')
 		$scope.showReminderFrequencySelector = config.appSettings.settingsPageOptions.showReminderFrequencySelector;
 		// populate ratings interval
         localStorageService.getItem('askForRating', function (askForRating) {
-                $scope.ratings = askForRating ? askForRating : "hourly";
+                $scope.primaryOutcomeRatingFrequencyDescription = askForRating ? askForRating : "hourly";
         });
 		$rootScope.isIOS = ionic.Platform.isIPad() || ionic.Platform.isIOS();
 		$rootScope.isAndroid = ionic.Platform.isAndroid();
@@ -29,7 +29,7 @@ angular.module('starter')
 	        notificationService.scheduleNotification(interval);
 	        
 	        localStorageService.setItem('askForRating', interval);
-	        $scope.ratings = interval;
+	        $scope.primaryOutcomeRatingFrequencyDescription = interval;
 	        
 	        // hide popover
 	        $scope.ratingPopover.hide();
