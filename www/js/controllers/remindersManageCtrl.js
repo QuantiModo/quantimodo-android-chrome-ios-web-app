@@ -105,7 +105,11 @@ angular.module('starter')
 
 	    $scope.edit = function(reminder){
 	    	reminder.fromState = $state.current.name;
-	    	$state.go('app.reminderAdd', {reminder : reminder});
+	    	$state.go('app.reminderAdd', 
+	    	{
+	    		reminder : reminder,
+	    		fromUrl: window.location.href
+	    	});
 	    };
 
 	    $scope.deleteReminder = function(reminder){
