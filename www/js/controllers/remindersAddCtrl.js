@@ -162,6 +162,7 @@ angular.module('starter')
 	    	if(!selectedVariable.variableCategoryName){
 	    		selectedVariable.variableCategoryName = selectedVariable.category;
 	    	}
+	    	$scope.variableObject=selectedVariable;
 
             setupVariableCategory(selectedVariable.variableCategoryName);
             $scope.state.abbreviatedUnitName = selectedVariable.abbreviatedUnitName;
@@ -358,8 +359,6 @@ angular.module('starter')
             $scope.state.showVariableCategorySelector = false;
             $scope.state.showSearchBox = true;
             $scope.state.showResults = true;
-
-			populateUserVariables(variableCategoryName);
 	    };
 
 	    // setup new reminder view
@@ -424,6 +423,8 @@ angular.module('starter')
                 if($stateParams.variableCategoryName){
                     $scope.state.variableCategoryName = $stateParams.variableCategoryName;
                     setupVariableCategory($scope.state.variableCategoryName);
+                    populateUserVariables($stateParams.variableCategoryName);
+
                 }
                 else if($stateParams.reminder && $stateParams.reminder !== null) {
                     setupEditReminder($stateParams.reminder);
