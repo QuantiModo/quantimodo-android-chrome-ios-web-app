@@ -49,6 +49,10 @@ ionic state reset
 rm -rf platforms/android
 ionic platform remove android
 ionic platform add android
+echo "gulp addFacebookPlugin for $LOWERCASE_APP_NAME Android app..."
+gulp addFacebookPlugin
+echo "gulp addFacebookPlugin for $LOWERCASE_APP_NAME Android app..."
+gulp addGooglePlusPlugin
 echo "Generating image resources for $LOWERCASE_APP_NAME..."
 ionic resources >/dev/null
 cordova build --debug android >/dev/null

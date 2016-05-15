@@ -70,7 +70,7 @@ echo "Copying everything from ${IONIC_PATH} to $INTERMEDIATE_PATH"
 rsync -a --exclude=build/ --exclude=.git/ ${IONIC_PATH}/* ${INTERMEDIATE_PATH}
 cd ${INTERMEDIATE_PATH}
 
-#source ${IONIC_PATH}/scripts/build_scripts/00_install_dependencies.sh
+source ${IONIC_PATH}/scripts/build_scripts/00_install_dependencies.sh
 
 export LOWERCASE_APP_NAME=moodimodo
 source ${INTERMEDIATE_PATH}/scripts/build_scripts/01_prepare_project.sh

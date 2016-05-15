@@ -517,49 +517,44 @@ gulp.task('ionicResources', function(){
 
 var LOWERCASE_APP_NAME = false;
 
-
 gulp.task('getAppName', function(){
 	var deferred = q.defer();
-
-	var inquireAboutAppName = function(){
-		inquirer.prompt([{
-			type: 'input',
-			name: 'app',
-			message: 'Please enter the app name (moodimodo/energymodo/etc..)'
-		}], function( answers ) {
-			LOWERCASE_APP_NAME = answers.app;
-			deferred.resolve();
-		});
-	};
-
-	if(LOWERCASE_APP_NAME) deferred.resolve();
-	else {
-		var app_name = process.env["LOWERCASE_APP_NAME"];
-		if(app_name && app_name.length){
-			//LOWERCASE_APP_NAME = app_name.toLowerCase();
-			console.log("*** LOWERCASE_APP_NAME from env is: ", JSON.stringify(LOWERCASE_APP_NAME));
-			deferred.resolve();
-		} else {
-			console.error("Failed to get APP_NAME!  Please export as an env!", error);
-			deferred.reject();
-			/*
-			var commandForGit = 'git rev-parse --abbrev-ref HEAD';
-			execute(commandForGit, function(error, output){
-				output = output.trim();
-				if(error || output.indexOf('app/') < 0 || !output.split("/")[1] || output.split("/")[1].length === 0){
-					console.log("Failed to get App name automatically.", error);
-					inquireAboutAppName();
-				} else {
-					APP_NAME = output.split("/")[1];
-					console.log("the app name from git branch is", JSON.stringify(APP_NAME));
-					deferred.resolve();
-				}
-			});
-			*/
-		}
-	}
+  gutil.log('process.env.LOWERCASE_APP_NAME is ' + process.env.LOWERCASE_APP_NAME);
+  LOWERCASE_APP_NAME = process.env.LOWERCASE_APP_NAME;
+  if(LOWERCASE_APP_NAME) deferred.resolve();
+  if(!LOWERCASE_APP_NAME){
+    throw new Error('Please set LOWERCASE_APP_NAME env!');
+  }
 	return deferred.promise;
 });
+
+gulp.task('getAppNameFromUserInput', function(){
+  var inquireAboutAppName = function(){
+    inquirer.prompt([{
+      type: 'input',
+      name: 'app',
+      message: 'Please enter the app name (moodimodo/energymodo/etc..)'
+    }], function( answers ) {
+      LOWERCASE_APP_NAME = answers.app;
+      deferred.resolve();
+    });
+  };
+}
+
+gulp.task('getAppNameFromGitBranchName', function(){
+  var commandForGit = 'git rev-parse --abbrev-ref HEAD';
+  execute(commandForGit, function(error, output){
+    output = output.trim();
+    if(error || output.indexOf('app/') < 0 || !output.split("/")[1] || output.split("/")[1].length === 0){
+      console.log("Failed to get App name automatically.", error);
+      inquireAboutAppName();
+    } else {
+      LOWERCASE_APP_NAME = output.split("/")[1];
+      console.log("the app name from git branch is", JSON.stringify(LOWERCASE_APP_NAME));
+      deferred.resolve();
+    }
+  });
+}
 
 var FACEBOOK_APP_ID = false;
 var FACEBOOK_APP_NAME = false;
@@ -998,7 +993,7 @@ gulp.task('bumpVersion', function(){
 });
 
 gulp.task('setVersionNumbersWithEnvs', function(){
-	
+
 	var deferred = q.defer();
 	var environmentalVariables = process.env;
 	if(!environmentalVariables['IONIC_APP_VERSION_NUMBER']){
@@ -1007,8 +1002,8 @@ gulp.task('setVersionNumbersWithEnvs', function(){
 
 	if(!environmentalVariables['IONIC_IOS_APP_VERSION_NUMBER']){
 		throw new Error('Please set IONIC_IOS_APP_VERSION_NUMBER env!');
-	}	
-	
+	}
+
 	var xml = fs.readFileSync('./config.xml', 'utf8');
 
 	parseString(xml, function (err, parsedXmlFile) {
@@ -1040,7 +1035,7 @@ gulp.task('setVersionNumbersWithEnvs', function(){
 					console.log("Error updating version in config.xml", err);
 					deferred.reject();
 				} else {
-					console.log("Successfully updated the version number to " + 
+					console.log("Successfully updated the version number to " +
 						environmentalVariables['IONIC_APP_VERSION_NUMBER'] + " in config.xml file");
 					deferred.resolve();
 				}
