@@ -539,7 +539,7 @@ gulp.task('getAppNameFromUserInput', function(){
       deferred.resolve();
     });
   };
-}
+});
 
 gulp.task('getAppNameFromGitBranchName', function(){
   var commandForGit = 'git rev-parse --abbrev-ref HEAD';
@@ -554,7 +554,7 @@ gulp.task('getAppNameFromGitBranchName', function(){
       deferred.resolve();
     }
   });
-}
+});
 
 var FACEBOOK_APP_ID = false;
 var FACEBOOK_APP_NAME = false;
