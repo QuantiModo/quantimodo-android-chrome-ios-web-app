@@ -4,8 +4,8 @@ angular.module('starter')
 
         //Notification intervals in minutes
         var intervals = {
-            "minute":1,
-            "five_minutes":5,
+            'minutely':1,
+            "every five minutes":5,
             "hourly":60,
             "every three hours":180,
             "twice a day": 720,

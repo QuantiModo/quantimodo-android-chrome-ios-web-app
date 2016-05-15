@@ -9,8 +9,8 @@
               Ask for a rating {{primaryOutcomeRatingFrequencyDescription}}
               <p ng-show="primaryOutcomeRatingFrequencyDescription=='never'">Never</p>
               <!--FOR DEVELOPMENT ONLY-->
-                <p ng-show="primaryOutcomeRatingFrequencyDescription=='minute'">Every minute</p>
-                <p ng-show="primaryOutcomeRatingFrequencyDescription=='five_minutes'">Every five minutes</p>
+                <p ng-show="primaryOutcomeRatingFrequencyDescription=='minutely'">Every minute</p>
+                <p ng-show="primaryOutcomeRatingFrequencyDescription=='every five minutes'">Every five minutes</p>
                 <!---->
               <p ng-show="primaryOutcomeRatingFrequencyDescription=='hourly'">Hourly</p>
               <p ng-show="primaryOutcomeRatingFrequencyDescription=='every three hours'">Every three hours</p>
@@ -18,10 +18,10 @@
               <p ng-show="primaryOutcomeRatingFrequencyDescription=='daily'">Daily</p>
             </a>
 	
-    		<a href="" ng-click="additionalRatingPopover.show();" class="item ">
+ <!--   		<a href="" ng-click="additionalRatingPopover.show();" class="item ">
     		  Additional required ratings
     		  <p>{{addString}}</p>
-    		</a>
+    		</a>-->
         </div>
 
 
