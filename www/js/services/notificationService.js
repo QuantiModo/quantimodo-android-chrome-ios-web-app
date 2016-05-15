@@ -51,7 +51,7 @@ angular.module('starter')
                     }
                    
                 }
-                else if($rootScope.isChrome){
+                else if($rootScope.isChromeExtension || $rootScope.isChromeApp){
                     chrome.alarms.clear("trackReportAlarm");
                     var alarmInfo = {periodInMinutes: intervals[interval]};
                     chrome.alarms.create("trackReportAlarm", alarmInfo);
