@@ -8,8 +8,8 @@ angular.module('starter')
 		$scope.controller_name = "SettingsCtrl";
 		$scope.showReminderFrequencySelector = config.appSettings.settingsPageOptions.showReminderFrequencySelector;
 		// populate ratings interval
-        localStorageService.getItem('askForRating', function (askForRating) {
-                $scope.primaryOutcomeRatingFrequencyDescription = askForRating ? askForRating : "hourly";
+        localStorageService.getItem('primaryOutcomeRatingFrequencyDescription', function (primaryOutcomeRatingFrequencyDescription) {
+                $scope.primaryOutcomeRatingFrequencyDescription = primaryOutcomeRatingFrequencyDescription ? primaryOutcomeRatingFrequencyDescription : "hourly";
         });
 		$rootScope.isIOS = ionic.Platform.isIPad() || ionic.Platform.isIOS();
 		$rootScope.isAndroid = ionic.Platform.isAndroid();
@@ -28,7 +28,7 @@ angular.module('starter')
 	        //TODO we can pass callback function to check the status of scheduling
 	        notificationService.scheduleNotification(interval);
 	        
-	        localStorageService.setItem('askForRating', interval);
+	        localStorageService.setItem('primaryOutcomeRatingFrequencyDescription', interval);
 	        $scope.primaryOutcomeRatingFrequencyDescription = interval;
 	        
 	        // hide popover
