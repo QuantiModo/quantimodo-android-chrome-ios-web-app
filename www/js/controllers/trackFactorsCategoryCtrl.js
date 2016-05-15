@@ -36,7 +36,8 @@ angular.module('starter')
             $state.go('app.measurementAdd', 
                 {
                     variableObject : variableObject,
-                    fromState : $state.current.name
+                    fromState : $state.current.name,
+                    fromUrl: window.location.href
                 }
             );
         };

@@ -32,7 +32,8 @@ angular.module('starter')
             searching : false,
             selectedFrequency : 'Daily',
             selectedReminder : false,
-            reminderStartTimeEpochTime : currentTime.getTime() / 1000
+            reminderStartTimeEpochTime : currentTime.getTime() / 1000,
+            measurementSynonymSingularLowercase : 'measurement'
     };
         
         $scope.state.variableCategoryObject = variableCategoryService.getVariableCategoryInfo();
@@ -114,7 +115,8 @@ angular.module('starter')
         $scope.goToAddMeasurement = function(){
             $state.go('app.measurementAdd', {
                 variableObject: $scope.variableObject,
-                fromState: $state.current.name
+                fromState: $state.current.name,
+                fromUrl: window.location.href
             });
         };
 
@@ -162,6 +164,7 @@ angular.module('starter')
 	    	if(!selectedVariable.variableCategoryName){
 	    		selectedVariable.variableCategoryName = selectedVariable.category;
 	    	}
+	    	$scope.variableObject=selectedVariable;
 
             setupVariableCategory(selectedVariable.variableCategoryName);
             $scope.state.abbreviatedUnitName = selectedVariable.abbreviatedUnitName;
@@ -185,8 +188,8 @@ angular.module('starter')
 	    // when adding/editing is cancelled
 	    $scope.cancel = function(){
 	    	if($stateParams.reminder && $stateParams.reminder !== null){
-	    		if($stateParams.reminder.fromState){
-	    			$state.go($stateParams.reminder.fromState);
+	    		if($stateParams.fromUrl){
+                    window.location=$stateParams.fromUrl;
 	    		} else {
 					$state.go('app.remindersManage');
                 }
@@ -214,7 +217,9 @@ angular.module('starter')
 
 	    		utilsService.loadingStop();
 	    		if($stateParams.reminder !== null && typeof $stateParams.reminder !== "undefined"){
-	    			if($stateParams.reminder.fromState){
+                    if($stateParams.fromUrl){
+                        window.location = $stateParams.fromUrl;
+                    } else if ($stateParams.reminder.fromState){
 	    				$state.go($stateParams.reminder.fromState);
 	    			} else {
 						$state.go('app.remindersManage');
@@ -286,7 +291,9 @@ angular.module('starter')
 
 	    		utilsService.loadingStop();
 	    		if($stateParams.reminder !== null && typeof $stateParams.reminder !== "undefined"){
-	    			if($stateParams.reminder.fromState){
+                    if($stateParams.fromUrl){
+                        window.location = $stateParams.fromUrl;
+                    } else if ($stateParams.reminder.fromState){
 	    				$state.go($stateParams.reminder.fromState);
 	    			} else {
 						$state.go('app.remindersManage');
@@ -354,12 +361,11 @@ angular.module('starter')
             }
             $scope.state.variableCategoryName = variableCategoryName;
             $scope.state.variableCategoryObject = variableCategoryService.getVariableCategoryInfo(variableCategoryName);
-            $scope.state.title = "Add a " + $filter('wordAliases')(pluralize(variableCategoryName, 1) + " Reminder");
+            $scope.state.title = "Add " + $filter('wordAliases')(pluralize(variableCategoryName, 1) + " Reminder");
             $scope.state.showVariableCategorySelector = false;
             $scope.state.showSearchBox = true;
             $scope.state.showResults = true;
-
-			populateUserVariables(variableCategoryName);
+            $scope.state.measurementSynonymSingularLowercase = $scope.state.variableCategoryObject.measurementSynonymSingularLowercase;
 	    };
 
 	    // setup new reminder view
@@ -390,7 +396,9 @@ angular.module('starter')
                     $scope.state.allReminders = reminders;
                     if (reminders.length !== 1) {
                         utilsService.showAlert("Reminder id " + reminderIdUrlParameter + " not found!", 'assertive');
-                        if ($stateParams.reminder.fromState) {
+                        if($stateParams.fromUrl){
+                            window.location = $stateParams.fromUrl;
+                        } else if  ($stateParams.reminder.fromState) {
                             $state.go($stateParams.reminder.fromState);
                         } else {
                             $state.go('app.remindersManage');
@@ -408,13 +416,9 @@ angular.module('starter')
         $scope.init = function(){
             $scope.state.loading = true;
             utilsService.loadingStart();
-            //var isAuthorized = authService.checkAuthOrSendToLogin();
+            var isAuthorized = authService.checkAuthOrSendToLogin();
 
-            if(!$rootScope.user){
-                $state.go('app.login');
-            }
-
-            if($rootScope.user){
+            if(isAuthorized){
                 if($stateParams.variableCategoryName){
                     setupVariableCategory($stateParams.variableCategoryName);
                 }
@@ -424,14 +428,17 @@ angular.module('starter')
                 if($stateParams.variableCategoryName){
                     $scope.state.variableCategoryName = $stateParams.variableCategoryName;
                     setupVariableCategory($scope.state.variableCategoryName);
-                }
-                else if($stateParams.reminder && $stateParams.reminder !== null) {
+                    populateUserVariables($stateParams.variableCategoryName);
+                } else if ($stateParams.reminder && $stateParams.reminder !== null) {
                     setupEditReminder($stateParams.reminder);
                 }
                 else if(reminderIdUrlParameter) {
                     setupReminderEditingFromUrlParameter(reminderIdUrlParameter);
                 } else if(variableIdUrlParameter){
                     setupReminderEditingFromVariableId(variableIdUrlParameter);
+                } else if ($stateParams.variableObject) {
+                    $scope.variableObject = $stateParams.variableObject;
+                    $scope.onVariableSelect($stateParams.variableObject);
                 }
                 else {
                     setupNewReminderSearch();

@@ -314,27 +314,30 @@ angular.module('starter')
         }
 
         $rootScope.getUserAndSetInLocalStorage = function(){
+            
+            var successHandler = function(userObject) {
+                if (userObject) {
+                    // set user data in local storage
+                    console.log('Settings user in getUserAndSetInLocalStorage');
+                    localStorageService.setItem('user', JSON.stringify(userObject));
+                    $rootScope.user = userObject;
+                    $rootScope.setUserForIntercom($rootScope.user);
+                    $rootScope.setUserForBugsnag($rootScope.user);
+                    $rootScope.$broadcast('updateChartsAndSyncMeasurements');
+                    var currentStateName = $state.current.name;
+                    console.log('Current state is  ' + currentStateName);
+                    if (currentStateName === 'app.login') {
+                        goToDefaultStateShowMenuClearIntroHistoryAndRedraw();
+                    }
+                    return userObject;
+                }
+            };
+            
             authService.apiGet('api/user/me',
                 [],
                 {},
-                function(userObject){
-                    if(userObject){
-                       // set user data in local storage
-                        console.log('Settings user in getUserAndSetInLocalStorage');
-                        localStorageService.setItem('user', JSON.stringify(userObject));
-                        $rootScope.user = userObject;
-                        $rootScope.setUserForIntercom($rootScope.user);
-                        $rootScope.setUserForBugsnag($rootScope.user);
-                        $rootScope.$broadcast('updateChartsAndSyncMeasurements');
-                        var currentStateName = $state.current.name;
-                        console.log('Current state is  ' + currentStateName);
-                        if(currentStateName === 'app.login'){
-                            goToDefaultStateShowMenuClearIntroHistoryAndRedraw();
-                        }
-                        return userObject;
-                    }
-
-                },function(err){
+                successHandler,
+                function(err){
                     console.log(err);
                 }
             );
