@@ -220,7 +220,7 @@ config.appSettings  = {
         "#/app/reminders-inbox/Symptoms": 'If you\'ve already added some side effect or response tracking reminders, here\'s where your medication reminder notifications should appear when it\'s time to take them.  Once you have some notifications, you can use those to record how you feel.',
         "#/app/reminders-manage/Treatments": 'Here, you can set up or delete existing medications.',
         "#/app/reminders-manage/Symptoms": 'Here, you can set up or delete existing side effect tracking or response tracking reminders.',
-        "#/app/reminders-manage": 'Here, you can set up or delete existing reminders for .',
+        "#/app/reminders-manage": 'Here, you can create, modify or delete existing reminders.',
         "#/app/reminders-inbox": 'Be sure to add your "How I feel" responses throughout the day so you can monitor the effects of your medications and dosages.',
         "#/app/history": 'You can see and edit your past data and add notes by tapping on any item in the list.',
         "#/app/track_factors_category/Foods": 'Record your diet on this page. <span class="positive">Add a new Food Variable</span> if you do not find the meal you looked for in the search results.',
