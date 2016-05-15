@@ -144,34 +144,26 @@ angular.module('starter')
 
 
         var variableSearch = function(variableSearchQuery){
-	    	// search server for the query
-
-	    	if(!$scope.state.variableCategoryName){
-				variableService.searchVariablesIncludePublic(variableSearchQuery)
-	    		.then(function(variables){
-
-	    		    // populate list with results
-	    		    $scope.state.showResults = true;
-	    		    $scope.variableSearchResults = variables;
-	    		    $scope.state.searching = false;
-                    if(variables.length < 1){
-                        $scope.state.showAddVariableButton = true;
-                    }
-	    		});
-	    	} else {
-				variableService.searchVariablesIncludePublic(variableSearchQuery, $scope.variableCategoryName)
-	    		.then(function(variables){
-
-	    		    // populate list with results
-	    		    $scope.state.showResults = true;
-	    		    $scope.variableSearchResults = variables;
-	    		    $scope.state.searching = false;
-                    if(variables.length < 1){
-                        $scope.state.showAddVariableButton = true;
-                    }
-	    		});
-	    	}
+            variableService.searchVariablesIncludePublic(variableSearchQuery, $scope.state.variableCategoryName)
+            .then(function(variables){
+                // populate list with results
+                $scope.state.showResults = true;
+                $scope.variableSearchResults = variables;
+                $scope.state.searching = false;
+                if(variables.length < 1){
+                    $scope.state.showAddVariableButton = true;
+                }
+            });
 	    };
+
+        var populateUserVariables = function(){
+            variableService.getUserVariablesByCategory($scope.state.variableCategoryName)
+                .then(function(variables){
+                    $scope.state.showResults = true;
+                    $scope.variableSearchResults = variables;
+                    $scope.state.searching = false;
+                });
+        };
 
 	    // when a query is searched in the search box
 	    $scope.onSearch = function(){
@@ -179,9 +171,8 @@ angular.module('starter')
 	    	if($scope.state.variableSearchQuery === ""){
                 $scope.state.showResults = true;
                 $scope.state.searching = true;
-                variableSearch($scope.state.variableSearchQuery);
+                populateUserVariables($scope.state.variableSearchQuery);
             } else {
-
                 $scope.state.showResults = true;
                 $scope.state.searching = true;
                 variableSearch($scope.state.variableSearchQuery);
@@ -450,8 +441,8 @@ angular.module('starter')
                 var variableIdUrlParameter = utilsService.getUrlParameter(window.location.href, 'variableId');
                 $scope.getUnits();
                 if($stateParams.variableCategoryName){
-                    $scope.variableCategoryName = $stateParams.variableCategoryName;
-                    setupVariableCategory($scope.variableCategoryName);
+                    $scope.state.variableCategoryName = $stateParams.variableCategoryName;
+                    setupVariableCategory($scope.state.variableCategoryName);
                 }
                 else if($stateParams.reminder && $stateParams.reminder !== null) {
                     setupEditReminder($stateParams.reminder);
