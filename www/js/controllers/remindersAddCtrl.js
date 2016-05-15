@@ -32,7 +32,8 @@ angular.module('starter')
             searching : false,
             selectedFrequency : 'Daily',
             selectedReminder : false,
-            reminderStartTimeEpochTime : currentTime.getTime() / 1000
+            reminderStartTimeEpochTime : currentTime.getTime() / 1000,
+            measurementSynonymSingularLowercase : 'measurement'
     };
         
         $scope.state.variableCategoryObject = variableCategoryService.getVariableCategoryInfo();
@@ -364,6 +365,7 @@ angular.module('starter')
             $scope.state.showVariableCategorySelector = false;
             $scope.state.showSearchBox = true;
             $scope.state.showResults = true;
+            $scope.state.measurementSynonymSingularLowercase = $scope.state.variableCategoryObject.measurementSynonymSingularLowercase;
 	    };
 
 	    // setup new reminder view
@@ -431,15 +433,16 @@ angular.module('starter')
                     $scope.state.variableCategoryName = $stateParams.variableCategoryName;
                     setupVariableCategory($scope.state.variableCategoryName);
                     populateUserVariables($stateParams.variableCategoryName);
-
-                }
-                else if($stateParams.reminder && $stateParams.reminder !== null) {
+                } else if ($stateParams.reminder && $stateParams.reminder !== null) {
                     setupEditReminder($stateParams.reminder);
                 }
                 else if(reminderIdUrlParameter) {
                     setupReminderEditingFromUrlParameter(reminderIdUrlParameter);
                 } else if(variableIdUrlParameter){
                     setupReminderEditingFromVariableId(variableIdUrlParameter);
+                } else if ($stateParams.variableObject) {
+                    $scope.variableObject = $stateParams.variableObject;
+                    $scope.onVariableSelect($stateParams.variableObject);
                 }
                 else {
                     setupNewReminderSearch();

@@ -445,6 +445,7 @@ angular.module('starter')
 
         var setupFromVariableStateParameter = function(){
             if($stateParams.variableObject !== null && typeof $stateParams.variableObject !== "undefined"){
+                $scope.variableObject = $stateParams.variableObject;
                 $scope.state.title = "Record Measurement";
                 $scope.state.measurement.variable = $stateParams.variableObject.name;
                 $scope.state.measurement.abbreviatedUnitName = $stateParams.variableObject.abbreviatedUnitName;
@@ -461,6 +462,14 @@ angular.module('starter')
                 var measurementObject = measurementService.getMeasurementById(measurementId);
                 setupTracking(measurementObject);
             }
+        };
+
+        $scope.goToAddReminder = function(){
+            $state.go('app.reminderAdd', {
+                variableObject: $scope.variableObject,
+                fromState: $state.current.name,
+                fromUrl: window.location.href
+            });
         };
 
         var setupTracking = function(measurementObject){
