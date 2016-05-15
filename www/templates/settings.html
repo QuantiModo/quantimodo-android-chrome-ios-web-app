@@ -6,15 +6,15 @@
             </div>
 
             <a href="" ng-click="ratingPopover.show();"  class="item ">
-              Ask for a rating
+              Ask for a rating {{primaryOutcomeRatingFrequencyDescription}}
               <p ng-show="primaryOutcomeRatingFrequencyDescription=='never'">Never</p>
               <!--FOR DEVELOPMENT ONLY-->
                 <p ng-show="primaryOutcomeRatingFrequencyDescription=='minute'">Every minute</p>
                 <p ng-show="primaryOutcomeRatingFrequencyDescription=='five_minutes'">Every five minutes</p>
                 <!---->
               <p ng-show="primaryOutcomeRatingFrequencyDescription=='hourly'">Hourly</p>
-              <p ng-show="primaryOutcomeRatingFrequencyDescription=='three'">Every three hours</p>
-              <p ng-show="primaryOutcomeRatingFrequencyDescription=='twice'">Twice daily</p>
+              <p ng-show="primaryOutcomeRatingFrequencyDescription=='every three hours'">Every three hours</p>
+              <p ng-show="primaryOutcomeRatingFrequencyDescription=='twice a day'">Twice daily</p>
               <p ng-show="primaryOutcomeRatingFrequencyDescription=='daily'">Daily</p>
             </a>
 	

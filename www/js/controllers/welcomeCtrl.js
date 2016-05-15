@@ -31,8 +31,8 @@ angular.module('starter')
                     "never" : 0,
                     "hourly": 60 * 60,
                     "hour": 60 * 60,
-                    "three" : 03 * 60 * 60,
-                    "twice" : 12 * 60 * 60,
+                    "every three hours" : 3 * 60 * 60,
+                    "twice a day" : 12 * 60 * 60,
                     "daily" : 24 * 60 * 60,
                     "day" : 24 * 60 * 60
                 };

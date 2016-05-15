@@ -7,8 +7,8 @@ angular.module('starter')
             "minute":1,
             "five_minutes":5,
             "hourly":60,
-            "three":180,
-            "twice": 720,
+            "every three hours":180,
+            "twice a day": 720,
             "daily": 1440
         };
 
