@@ -5,7 +5,7 @@ IONIC_PATH="${PROJECT_ROOT}/public.built/ionic/Modo"
 CHROME_EXTENSION_PATH="${IONIC_PATH}/resources/chrome_extension"
 
 APP_PATH=${IONIC_PATH}/resources/chrome_app
-APP_CONFIG=${PROJECT_ROOT}/configs/ionic/${APP_NAME}.config.js
+APP_CONFIG=${PROJECT_ROOT}/configs/ionic/${LOWERCASE_APP_NAME}.config.js
 
 # rsync -a /vagrant/public.built/ionic/Modo/www/ /vagrant/public.built/ionic/Modo/resources/chrome_extension/www
 

@@ -5,9 +5,9 @@ sleep 5
 echo "This script must be run on OSX"
 echo "Prerequisites:  http://brew.sh/"
 
-if [ -z "$APP_NAME" ]
+if [ -z "$LOWERCASE_APP_NAME" ]
   then
-    echo -e "${RED}Please provide lowercase app name as first parameter ${NC}"
+    echo -e "${RED}Please provide LOWERCASE_APP_NAME! ${NC}"
     exit
 fi
 
@@ -19,26 +19,26 @@ if [ -z "$INTERMEDIATE_PATH" ]
     echo "INTERMEDIATE_PATH is $INTERMEDIATE_PATH"
 fi
 
-if [ "$APP_NAME" == "moodimodo" ]; then
+if [ "$LOWERCASE_APP_NAME" == "moodimodo" ]; then
     ### Build iOS App ###
 
     cd ${INTERMEDIATE_PATH}
     #ionic state reset
-    #echo "Generating image resources for $APP_NAME..."
+    #echo "Generating image resources for $LOWERCASE_APP_NAME..."
     chmod a+x ./scripts/decrypt-key.sh
     ./scripts/decrypt-key.sh
     chmod a+x ./scripts/add-key.sh
     ./scripts/add-key.sh
     gulp -v
-    echo "Removing plugins and platforms for $APP_NAME in $PWD..."
+    echo "Removing plugins and platforms for $LOWERCASE_APP_NAME in $PWD..."
     rm -rf plugins/ && rm -rf platforms/
-    echo "gulp addFacebookPlugin for $APP_NAME in $PWD..."
+    echo "gulp addFacebookPlugin for $LOWERCASE_APP_NAME in $PWD..."
     gulp addFacebookPlugin
-    echo "gulp addGooglePlusPlugin for $APP_NAME in $PWD..."
+    echo "gulp addGooglePlusPlugin for $LOWERCASE_APP_NAME in $PWD..."
     gulp addGooglePlusPlugin
-    echo "ionic platform add ios for $APP_NAME in $PWD..."
+    echo "ionic platform add ios for $LOWERCASE_APP_NAME in $PWD..."
     ionic platform add ios
-    echo "ionic resources for $APP_NAME in $PWD..."
+    echo "ionic resources for $LOWERCASE_APP_NAME in $PWD..."
     ionic resources
     gulp readKeysForCurrentApp
     gulp fixResourcesPlist

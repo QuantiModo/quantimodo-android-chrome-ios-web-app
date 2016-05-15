@@ -29,30 +29,30 @@ if [ -d "${INTERMEDIATE_PATH}/apps" ];
 fi
 
 echo -e "${GREEN}Copying www folder into app and extension${NC}"
-mkdir -p "${BUILD_PATH}/${APP_NAME}/chrome_app/www"
-mkdir -p "${BUILD_PATH}/${APP_NAME}/chrome_extension/www"
+mkdir -p "${BUILD_PATH}/${LOWERCASE_APP_NAME}/chrome_app/www"
+mkdir -p "${BUILD_PATH}/${LOWERCASE_APP_NAME}/chrome_extension/www"
 
-cp -R ${INTERMEDIATE_PATH}/resources/chrome_app/* "${BUILD_PATH}/${APP_NAME}/chrome_app/"
-cp -R ${INTERMEDIATE_PATH}/resources/chrome_extension/* "${BUILD_PATH}/${APP_NAME}/chrome_extension/"
+cp -R ${INTERMEDIATE_PATH}/resources/chrome_app/* "${BUILD_PATH}/${LOWERCASE_APP_NAME}/chrome_app/"
+cp -R ${INTERMEDIATE_PATH}/resources/chrome_extension/* "${BUILD_PATH}/${LOWERCASE_APP_NAME}/chrome_extension/"
 
-#rsync -aP --exclude=build/ --exclude=.git/ ${INTERMEDIATE_PATH}/www/* "${BUILD_PATH}/${APP_NAME}/chrome_app/www/"
-#rsync -aP --exclude=build/ --exclude=.git/ ${INTERMEDIATE_PATH}/www/* "${BUILD_PATH}/${APP_NAME}/chrome_extension/www/"
-cp -R ${INTERMEDIATE_PATH}/www/*  "${BUILD_PATH}/${APP_NAME}/chrome_app/www/"
-cp -R ${INTERMEDIATE_PATH}/www/*  "${BUILD_PATH}/${APP_NAME}/chrome_extension/www/"
+#rsync -aP --exclude=build/ --exclude=.git/ ${INTERMEDIATE_PATH}/www/* "${BUILD_PATH}/${LOWERCASE_APP_NAME}/chrome_app/www/"
+#rsync -aP --exclude=build/ --exclude=.git/ ${INTERMEDIATE_PATH}/www/* "${BUILD_PATH}/${LOWERCASE_APP_NAME}/chrome_extension/www/"
+cp -R ${INTERMEDIATE_PATH}/www/*  "${BUILD_PATH}/${LOWERCASE_APP_NAME}/chrome_app/www/"
+cp -R ${INTERMEDIATE_PATH}/www/*  "${BUILD_PATH}/${LOWERCASE_APP_NAME}/chrome_extension/www/"
 
-rm -rf "${BUILD_PATH}/${APP_NAME}/chrome_extension/www/lib/phonegap-facebook-plugin/platforms/android"
-rm -rf "${BUILD_PATH}/${APP_NAME}/chrome_extension/www/lib/phonegap-facebook-plugin/platforms/ios"
-cd "${BUILD_PATH}/${APP_NAME}" && zip -r "${BUILD_PATH}/${APP_NAME}/${APP_NAME}-Chrome-Extension.zip" chrome_extension >/dev/null
-cp "${BUILD_PATH}/${APP_NAME}/${APP_NAME}-Chrome-Extension.zip" "$DROPBOX_PATH/${APP_NAME}/"
-echo "${APP_NAME} Chrome extension is ready"
+rm -rf "${BUILD_PATH}/${LOWERCASE_APP_NAME}/chrome_extension/www/lib/phonegap-facebook-plugin/platforms/android"
+rm -rf "${BUILD_PATH}/${LOWERCASE_APP_NAME}/chrome_extension/www/lib/phonegap-facebook-plugin/platforms/ios"
+cd "${BUILD_PATH}/${LOWERCASE_APP_NAME}" && zip -r "${BUILD_PATH}/${LOWERCASE_APP_NAME}/${LOWERCASE_APP_NAME}-Chrome-Extension.zip" chrome_extension >/dev/null
+cp "${BUILD_PATH}/${LOWERCASE_APP_NAME}/${LOWERCASE_APP_NAME}-Chrome-Extension.zip" "$DROPBOX_PATH/${LOWERCASE_APP_NAME}/"
+echo "${LOWERCASE_APP_NAME} Chrome extension is ready"
 
-rm -rf "${BUILD_PATH}/${APP_NAME}/chrome_app/www/lib/phonegap-facebook-plugin/platforms/android"
-rm -rf "${BUILD_PATH}/${APP_NAME}/chrome_app/www/lib/phonegap-facebook-plugin/platforms/ios"
-cd "${BUILD_PATH}/${APP_NAME}" && zip -r "${BUILD_PATH}/${APP_NAME}/${APP_NAME}-Chrome-App.zip" chrome_app >/dev/null
-cp "${BUILD_PATH}/${APP_NAME}/${APP_NAME}-Chrome-App.zip" "$DROPBOX_PATH/${APP_NAME}/"
-echo "${APP_NAME} Chrome app is ready"
+rm -rf "${BUILD_PATH}/${LOWERCASE_APP_NAME}/chrome_app/www/lib/phonegap-facebook-plugin/platforms/android"
+rm -rf "${BUILD_PATH}/${LOWERCASE_APP_NAME}/chrome_app/www/lib/phonegap-facebook-plugin/platforms/ios"
+cd "${BUILD_PATH}/${LOWERCASE_APP_NAME}" && zip -r "${BUILD_PATH}/${LOWERCASE_APP_NAME}/${LOWERCASE_APP_NAME}-Chrome-App.zip" chrome_app >/dev/null
+cp "${BUILD_PATH}/${LOWERCASE_APP_NAME}/${LOWERCASE_APP_NAME}-Chrome-App.zip" "$DROPBOX_PATH/${LOWERCASE_APP_NAME}/"
+echo "${LOWERCASE_APP_NAME} Chrome app is ready"
 
-mkdir "$DROPBOX_PATH/$APP_NAME"
-echo -e "${GREEN}Copying ${BUILD_PATH}/${APP_NAME} to $DROPBOX_PATH/${APP_NAME}/${NC}"
-#cp -R ${BUILD_PATH}/${APP_NAME}/* "$DROPBOX_PATH/${APP_NAME}/"
-#rsync ${BUILD_PATH}/${APP_NAME}/* "$DROPBOX_PATH/${APP_NAME}/"
+mkdir "$DROPBOX_PATH/$LOWERCASE_APP_NAME"
+echo -e "${GREEN}Copying ${BUILD_PATH}/${LOWERCASE_APP_NAME} to $DROPBOX_PATH/${LOWERCASE_APP_NAME}/${NC}"
+#cp -R ${BUILD_PATH}/${LOWERCASE_APP_NAME}/* "$DROPBOX_PATH/${LOWERCASE_APP_NAME}/"
+#rsync ${BUILD_PATH}/${LOWERCASE_APP_NAME}/* "$DROPBOX_PATH/${LOWERCASE_APP_NAME}/"
