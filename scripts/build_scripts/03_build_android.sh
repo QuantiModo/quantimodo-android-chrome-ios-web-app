@@ -45,14 +45,28 @@ echo -e "${GREEN}build_android.sh: INTERMEDIATE_PATH is ${INTERMEDIATE_PATH}...$
 
 ### Build Android App ###
 cd ${INTERMEDIATE_PATH}
+echo "ionic state reset for $LOWERCASE_APP_NAME Android app..."
 ionic state reset
+echo "deleting platforms/android for $LOWERCASE_APP_NAME Android app..."
 rm -rf platforms/android
+echo "ionic platform remove android for $LOWERCASE_APP_NAME Android app..."
 ionic platform remove android
+echo "ionic platform add android for $LOWERCASE_APP_NAME Android app..."
 ionic platform add android
-echo "gulp addFacebookPlugin for $LOWERCASE_APP_NAME Android app..."
-gulp addFacebookPlugin
+echo "cordova plugin rm phonegap-facebook-plugin for $LOWERCASE_APP_NAME Android app..."
+cordova plugin rm phonegap-facebook-plugin
+echo "cordova plugin rm cordova-plugin-facebook4 for $LOWERCASE_APP_NAME Android app..."
+cordova plugin rm cordova-plugin-facebook4
+echo "rm -rf ../fbplugin for $LOWERCASE_APP_NAME Android app..."
+rm -rf ../fbplugin
+#echo "gulp addFacebookPlugin for $LOWERCASE_APP_NAME Android app..."
+#gulp addFacebookPlugin
+echo "cordova plugin add cordova-plugin-facebook4 --save  for $LOWERCASE_APP_NAME Android app..."
+cordova plugin add cordova-plugin-facebook4 --save --variable APP_ID="225078261031461" --variable APP_NAME="QuantiModo"
 echo "gulp addFacebookPlugin for $LOWERCASE_APP_NAME Android app..."
 gulp addGooglePlusPlugin
+#echo "push for $LOWERCASE_APP_NAME Android app..."
+#cordova plugin add phonegap-plugin-push --variable SENDER_ID="quantimo-do"
 echo "Generating image resources for $LOWERCASE_APP_NAME..."
 ionic resources >/dev/null
 cordova build --debug android >/dev/null

@@ -635,7 +635,7 @@ gulp.task('addFacebookPlugin', ['readKeysForCurrentApp'] , function(){
 	    	console.log("FACEBOOK REPO ALREADY CLONED");
 	        addFacebookPlugin();
 	    } else {
-	    	console.log("FACEBOOK REPO NOT FOUND, CLONING IT NOW");
+			console.log("FACEBOOK REPO NOT FOUND, CLONING https://github.com/Wizcorp/phonegap-facebook-plugin.git NOW");
 	    	var commands = [
 	    		"cd ../",
 	    		"mkdir fbplugin",
@@ -643,6 +643,16 @@ gulp.task('addFacebookPlugin', ['readKeysForCurrentApp'] , function(){
 	    		"GIT_CURL_VERBOSE=1 GIT_TRACE=1 git clone https://github.com/Wizcorp/phonegap-facebook-plugin.git"
 	    	].join(' && ');
 
+
+/*			//Try this if you get the muliple dex file error still
+      console.log("FACEBOOK REPO NOT FOUND, CLONING https://github.com/Telerik-Verified-Plugins/Facebook.git NOW");
+			var commands = [
+				"cd ../",
+				"mkdir fbplugin",
+				"cd fbplugin",
+				"GIT_CURL_VERBOSE=1 GIT_TRACE=1 git clone https://github.com/Telerik-Verified-Plugins/Facebook.git"
+        ].join(' && ');
+*/
 	    	execute(commands, function(error){
 	    		if(error !== null){
 	    			console.log("***THERE WAS AN ERROR DOWNLOADING THE FACEBOOK PLUGIN***", error);
