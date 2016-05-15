@@ -145,6 +145,7 @@ angular.module('starter')
                             }
                         };
                         localStorageService.setItem('user', JSON.stringify(userCredentialsResp));
+						$rootScope.user = userCredentialsResp;
                         
                         //get token value from response
                         var token = userCredentialsResp.data.token.split("|")[2];
@@ -220,6 +221,7 @@ angular.module('starter')
                }
             var accessTokenInUrl = authService.getAccessTokenFromUrlParameter;
             if(accessTokenInUrl){
+				$rootScope.getUserAndSetInLocalStorage();
                    return true;
                }
             if(!user && !accessTokenInUrl){
