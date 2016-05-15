@@ -114,7 +114,8 @@ angular.module('starter')
         $scope.goToAddMeasurement = function(){
             $state.go('app.measurementAdd', {
                 variableObject: $scope.variableObject,
-                fromState: $state.current.name
+                fromState: $state.current.name,
+                fromUrl: window.location.href
             });
         };
 
@@ -186,8 +187,8 @@ angular.module('starter')
 	    // when adding/editing is cancelled
 	    $scope.cancel = function(){
 	    	if($stateParams.reminder && $stateParams.reminder !== null){
-	    		if($stateParams.reminder.fromState){
-	    			$state.go($stateParams.reminder.fromState);
+	    		if($stateParams.fromUrl){
+                    window.location=$stateParams.fromUrl;
 	    		} else {
 					$state.go('app.remindersManage');
                 }
@@ -215,7 +216,9 @@ angular.module('starter')
 
 	    		utilsService.loadingStop();
 	    		if($stateParams.reminder !== null && typeof $stateParams.reminder !== "undefined"){
-	    			if($stateParams.reminder.fromState){
+                    if($stateParams.fromUrl){
+                        window.location = $stateParams.fromUrl;
+                    } else if ($stateParams.reminder.fromState){
 	    				$state.go($stateParams.reminder.fromState);
 	    			} else {
 						$state.go('app.remindersManage');
@@ -287,7 +290,9 @@ angular.module('starter')
 
 	    		utilsService.loadingStop();
 	    		if($stateParams.reminder !== null && typeof $stateParams.reminder !== "undefined"){
-	    			if($stateParams.reminder.fromState){
+                    if($stateParams.fromUrl){
+                        window.location = $stateParams.fromUrl;
+                    } else if ($stateParams.reminder.fromState){
 	    				$state.go($stateParams.reminder.fromState);
 	    			} else {
 						$state.go('app.remindersManage');
@@ -389,7 +394,9 @@ angular.module('starter')
                     $scope.state.allReminders = reminders;
                     if (reminders.length !== 1) {
                         utilsService.showAlert("Reminder id " + reminderIdUrlParameter + " not found!", 'assertive');
-                        if ($stateParams.reminder.fromState) {
+                        if($stateParams.fromUrl){
+                            window.location = $stateParams.fromUrl;
+                        } else if  ($stateParams.reminder.fromState) {
                             $state.go($stateParams.reminder.fromState);
                         } else {
                             $state.go('app.remindersManage');

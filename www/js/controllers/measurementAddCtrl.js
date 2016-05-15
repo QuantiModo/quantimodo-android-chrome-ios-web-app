@@ -116,7 +116,9 @@ angular.module('starter')
 
         // cancel activity
         $scope.cancel = function(){
-            if($stateParams.fromState){
+            if($stateParams.fromUrl){
+                window.location = $stateParams.fromUrl;
+            } else if ($stateParams.fromState){
                 $state.go($stateParams.fromState);
             } else {
                 $rootScope.hideMenu = false;
@@ -132,7 +134,9 @@ angular.module('starter')
             };
             measurementService.deleteMeasurement(measurementToDelete);
 
-            if($stateParams.fromState){
+            if($stateParams.fromUrl){
+                window.location = $stateParams.fromUrl;
+            } else if ($stateParams.fromState){
                 $state.go($stateParams.fromState);
             } else {
                 $rootScope.hideMenu = false;
@@ -195,7 +199,9 @@ angular.module('starter')
                     .then(function(){
                         utilsService.showAlert('Added Variable');
 
-                        if($stateParams.fromState){
+                        if($stateParams.fromUrl){
+                            window.location = $stateParams.fromUrl;
+                        } else if ($stateParams.fromState){
                             $state.go($stateParams.fromState);
                         } else {
                             $rootScope.hideMenu = false;
@@ -229,7 +235,9 @@ angular.module('starter')
                         params.note);
                     utilsService.showAlert(params.variableName + ' measurement saved!');
 
-                    if($stateParams.fromState){
+                    if($stateParams.fromUrl){
+                        window.location = $stateParams.fromUrl;
+                    } else if ($stateParams.fromState){
                         $state.go($stateParams.fromState);
                     } else {
                         $rootScope.hideMenu = false;
@@ -241,7 +249,9 @@ angular.module('starter')
                 }
             }
 
-            if($stateParams.fromState){
+            if($stateParams.fromUrl){
+                window.location = $stateParams.fromUrl;
+            } else if ($stateParams.fromState){
                 $state.go($stateParams.fromState);
             } else {
                 $rootScope.hideMenu = false;
@@ -321,7 +331,9 @@ angular.module('starter')
                     setupFromReminderStateParameter();
                 }
                 if(!$scope.state.measurementIsSetup){
-                    if($stateParams.fromState){
+                    if($stateParams.fromUrl){
+                        window.location = $stateParams.fromUrl;
+                    } else if ($stateParams.fromState){
                         $state.go($stateParams.fromState);
                     } else {
                         $rootScope.hideMenu = false;
