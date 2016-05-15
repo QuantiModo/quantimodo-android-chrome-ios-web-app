@@ -5,7 +5,7 @@ angular.module('starter')
 											 $stateParams, measurementService, reminderService, $ionicLoading,
 											 utilsService, $filter, ionicTimePicker, $timeout, 
 											 variableCategoryService, variableService, unitService, timeService,
-                                             QuantiModo){
+                                             $rootScope){
 
 	    $scope.controller_name = "RemindersAddCtrl";
 
@@ -101,30 +101,6 @@ angular.module('starter')
 
 			ionicTimePicker.openTimePicker($scope.state.timePickerConfiguration);
 		};
-
-		// populate list with recently tracked category variables
-    	var populateRecentlyTrackedVariables = function(variableCategoryName){
-    		utilsService.loadingStart();
-            if(!variableCategoryName){
-                // get all variables
-                console.log('Get most recent anything variables');
-                variableService.getVariables().then(function(variables){
-                    $scope.variableSearchResults = variables;
-                    utilsService.loadingStop();
-                }, function(){
-                    utilsService.loadingStop();
-                });
-            } else {
-                variableService.searchVariablesIncludePublic('*', $scope.state.variableCategoryName).then(function(variables){
-                    $scope.variableSearchResults = variables;
-                    utilsService.loadingStop();
-                }, function(){
-                    console.log('Could not get variables');
-                    utilsService.loadingStop();
-                });
-            }
-
-    	};
 
 	    // when variableCategoryName is selected
 	    $scope.onVariableCategoryChange = function(){
@@ -383,7 +359,7 @@ angular.module('starter')
             $scope.state.showSearchBox = true;
             $scope.state.showResults = true;
 
-			populateRecentlyTrackedVariables(variableCategoryName);
+			populateUserVariables(variableCategoryName);
 	    };
 
 	    // setup new reminder view
@@ -432,8 +408,13 @@ angular.module('starter')
         $scope.init = function(){
             $scope.state.loading = true;
             utilsService.loadingStart();
-            var isAuthorized = authService.checkAuthOrSendToLogin();
-            if(isAuthorized){
+            //var isAuthorized = authService.checkAuthOrSendToLogin();
+
+            if(!$rootScope.user){
+                $state.go('app.login');
+            }
+
+            if($rootScope.user){
                 if($stateParams.variableCategoryName){
                     setupVariableCategory($stateParams.variableCategoryName);
                 }
