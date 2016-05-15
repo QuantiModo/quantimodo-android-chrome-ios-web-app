@@ -6,22 +6,22 @@
             </div>
 
             <a href="" ng-click="ratingPopover.show();"  class="item ">
-              Ask for a rating
-              <p ng-show="ratings=='never'">Never</p>
+              Ask for a rating {{primaryOutcomeRatingFrequencyDescription}}
+              <p ng-show="primaryOutcomeRatingFrequencyDescription=='never'">Never</p>
               <!--FOR DEVELOPMENT ONLY-->
-                <p ng-show="ratings=='minute'">Every minute</p>
-                <p ng-show="ratings=='five_minutes'">Every five minutes</p>
+                <p ng-show="primaryOutcomeRatingFrequencyDescription=='minutely'">Every minute</p>
+                <p ng-show="primaryOutcomeRatingFrequencyDescription=='every five minutes'">Every five minutes</p>
                 <!---->
-              <p ng-show="ratings=='hourly'">Hourly</p>
-              <p ng-show="ratings=='three'">Every three hours</p>
-              <p ng-show="ratings=='twice'">Twice daily</p>
-              <p ng-show="ratings=='daily'">Daily</p>
+              <p ng-show="primaryOutcomeRatingFrequencyDescription=='hourly'">Hourly</p>
+              <p ng-show="primaryOutcomeRatingFrequencyDescription=='every three hours'">Every three hours</p>
+              <p ng-show="primaryOutcomeRatingFrequencyDescription=='twice a day'">Twice daily</p>
+              <p ng-show="primaryOutcomeRatingFrequencyDescription=='daily'">Daily</p>
             </a>
 	
-    		<a href="" ng-click="additionalRatingPopover.show();" class="item ">
+ <!--   		<a href="" ng-click="additionalRatingPopover.show();" class="item ">
     		  Additional required ratings
     		  <p>{{addString}}</p>
-    		</a>
+    		</a>-->
         </div>
 
 

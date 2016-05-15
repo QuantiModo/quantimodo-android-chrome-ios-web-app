@@ -61,7 +61,7 @@ angular.module('starter')
             if(menuItem.click){
                 $scope[menuItem.click] && $scope[menuItem.click]();
             }
-            else if(!menuItem.subMenuPanel){
+            else if(!menuItem.isSubMenuParent){
                 $scope.closeMenu();
             }
         };
@@ -251,6 +251,29 @@ angular.module('starter')
             $scope.init();
         });
 
+        $scope.togglePrimaryOutcomeSubMenu = function(){
+            $scope.showPrimaryOutcomeSubMenu = !$scope.showPrimaryOutcomeSubMenu;
+        };
+
+        $scope.toggleEmotionsSubMenu = function(){
+            $scope.showEmotionsSubMenu = !$scope.showEmotionsSubMenu;
+        };
+
+        $scope.toggleDietSubMenu = function(){
+            $scope.showDietSubMenu = !$scope.showDietSubMenu;
+        };
+
+        $scope.toggleTreatmentsSubMenu = function(){
+            $scope.showTreatmentsSubMenu = !$scope.showTreatmentsSubMenu;
+        };
+
+        $scope.toggleSymptomsSubMenu = function(){
+            $scope.showSymptomsSubMenu = !$scope.showSymptomsSubMenu;
+        };
+
+        $scope.togglePhysicalActivitySubMenu = function(){
+            $scope.showPhysicalActivitySubMenu= !$scope.showPhysicalActivitySubMenu;
+        };
 
         $scope.toggleTrackingSubMenu = function(){
             $scope.showTrackingSubMenu = !$scope.showTrackingSubMenu;

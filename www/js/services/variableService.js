@@ -90,11 +90,11 @@ angular.module('starter')
 		       return deferred.promise;
 		   	},
 
-            getVariablesByCategory : function(category){
+            getUserVariablesByCategory : function(category){
                 var deferred = $q.defer();
 
                 // refresh always
-                QuantiModo.getVariablesByCategory(category,function(vars){
+                QuantiModo.getUserVariablesByCategory(category,function(vars){
                     localStorageService.setItem('variables',JSON.stringify(vars));
                     console.log(vars);
                     deferred.resolve(vars);

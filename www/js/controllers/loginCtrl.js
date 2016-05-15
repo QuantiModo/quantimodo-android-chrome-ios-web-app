@@ -37,18 +37,16 @@ angular.module('starter')
             localStorageService.setItem('isWelcomed', true);
             $rootScope.isWelcomed = true;
 
-            var url = config.getURL("api/oauth2/authorize", true);
-
             if($rootScope.isChromeApp){
                 chromeAppLogin(register);
             } else if ($rootScope.isChromeExtension) {
                 chromeExtensionLogin(register);
             } else if(ionic.Platform.is('browser')){
                 console.log("$scope.login: Browser Detected");
-                browserLogin(url, register);
+                browserLogin(register);
             } else {
                 console.log("$scope.login: Browser and Chrome Not Detected.  Assuming mobile platform");
-                nonNativeMobileLogin(url, register);
+                nonNativeMobileLogin(register);
             }
 
             var userObject = localStorageService.getItemAsObject('user');
