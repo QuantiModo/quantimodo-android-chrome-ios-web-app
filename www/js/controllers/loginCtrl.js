@@ -7,7 +7,7 @@ angular.module('starter')
 
         $scope.controller_name = "LoginCtrl";
         console.log("isIos is" + $rootScope.isIos);
-        $rootScope.hideMenu = true;
+        $rootScope.hideNavigationMenu = true;
         $scope.headline = config.appSettings.headline;
         $scope.features = config.appSettings.features;
         var $cordovaFacebook = {};
@@ -26,7 +26,7 @@ angular.module('starter')
             }
             if($rootScope.user){
                 console.log("Already logged in on login page.  Going to default state...");
-                $rootScope.hideMenu = false;
+                $rootScope.hideNavigationMenu = false;
                 $state.go(config.appSettings.defaultState);
             }
         };
@@ -57,7 +57,7 @@ angular.module('starter')
                 console.log('Settings user in login');
                 $rootScope.setUserForIntercom($rootScope.user);
                 $rootScope.setUserForBugsnag($rootScope.user);
-                $rootScope.hideMenu = false;
+                $rootScope.hideNavigationMenu = false;
                 $state.go(config.appSettings.defaultState);
             }
         };
@@ -95,7 +95,7 @@ angular.module('starter')
 
                         console.log('get user details from server...');
                         $rootScope.getUserAndSetInLocalStorage();
-                        $rootScope.hideMenu = false;
+                        $rootScope.hideNavigationMenu = false;
                         $rootScope.$broadcast('callAppCtrlInit');
                         $state.go(config.appSettings.defaultState);
 
@@ -284,7 +284,7 @@ angular.module('starter')
         var sendToNonOAuthBrowserLoginUrl = function(register) {
             var user = getOrSetUserInLocalStorage();
             if(user){
-                $rootScope.hideMenu = false;
+                $rootScope.hideNavigationMenu = false;
                 $state.go(config.appSettings.defaultState);
             }
             if(!user){

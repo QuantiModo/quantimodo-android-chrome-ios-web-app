@@ -18,7 +18,7 @@ angular.module('starter')
                 slideIndex : 0,
                 // Called to navigate to the main app
                 startApp : function() {
-                    $rootScope.hideMenu = false;
+                    $rootScope.hideNavigationMenu = false;
                     $state.go(config.appSettings.defaultState);
                 },
 

@@ -8,7 +8,7 @@ angular.module('starter')
         $rootScope.isIOS = ionic.Platform.isIPad() || ionic.Platform.isIOS();
         $rootScope.isAndroid = ionic.Platform.isAndroid();
         $rootScope.isChrome = window.chrome ? true : false;
-        $rootScope.hideMenu = true;
+        $rootScope.hideNavigationMenu = true;
         $scope.reportedVariableValue = false;
         $scope.headline = config.appSettings.headline;
         $scope.features = config.appSettings.features;
