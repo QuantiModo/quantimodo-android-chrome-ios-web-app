@@ -11,9 +11,9 @@
 
 #ionic platform add ios
 cd "${INTERMEDIATE_PATH}"
-echo "Adding android platform for ${APP_NAME} at ${PWD}"
+echo "Adding android platform for ${LOWERCASE_APP_NAME} at ${PWD}"
 ionic platform add android
-echo "Generating images for ${APP_NAME} at ${PWD}..."
+echo "Generating images for ${LOWERCASE_APP_NAME} at ${PWD}..."
 ionic resources >/dev/null
 cp resources/icon.png www/img/icon_700.png
 convert resources/icon.png -resize 16x16 www/img/icon_16.png
