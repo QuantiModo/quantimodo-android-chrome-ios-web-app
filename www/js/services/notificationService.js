@@ -4,11 +4,11 @@ angular.module('starter')
 
         //Notification intervals in minutes
         var intervals = {
-            "minute":1,
-            "five_minutes":5,
+            'minutely':1,
+            "every five minutes":5,
             "hourly":60,
-            "three":180,
-            "twice": 720,
+            "every three hours":180,
+            "twice a day": 720,
             "daily": 1440
         };
 
@@ -51,7 +51,7 @@ angular.module('starter')
                     }
                    
                 }
-                else if($rootScope.isChrome){
+                else if($rootScope.isChromeExtension || $rootScope.isChromeApp){
                     chrome.alarms.clear("trackReportAlarm");
                     var alarmInfo = {periodInMinutes: intervals[interval]};
                     chrome.alarms.create("trackReportAlarm", alarmInfo);

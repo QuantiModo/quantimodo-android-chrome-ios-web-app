@@ -3,56 +3,56 @@
 		<h3>Ask for a rating</h3>
 		<hr/>
 		<label class="item item-radio">
-		    <input type="radio" ng-model="ratings" name="group" value="never">
+		    <input type="radio" ng-model="primaryOutcomeRatingFrequencyDescription" name="group" value="never">
 		    <div class="item-content">
 		      Never
 		    </div>
 		    <i class="radio-icon ion-checkmark"></i>
 	  	</label>
         <!--<label class="item item-radio">
-            <input type="radio" ng-model="ratings" name="group" value="minute">
+            <input type="radio" ng-model="primaryOutcomeRatingFrequencyDescription" name="group" value='minutely'>
             <div class="item-content">
                 Every minute
             </div>
             <i class="radio-icon ion-checkmark"></i>
         </label>-->
         <label class="item item-radio">
-            <input type="radio" ng-model="ratings" name="group" value="five_minutes">
+            <input type="radio" ng-model="primaryOutcomeRatingFrequencyDescription" name="group" value="every five minutes">
             <div class="item-content">
                 Every five minutes
             </div>
             <i class="radio-icon ion-checkmark"></i>
         </label>
 	  	<label class="item item-radio">
-		    <input type="radio" ng-model="ratings" name="group" value="hourly">
+		    <input type="radio" ng-model="primaryOutcomeRatingFrequencyDescription" name="group" value="hourly">
 		    <div class="item-content">
 		      Hourly
 		    </div>
 		    <i class="radio-icon ion-checkmark"></i>
 	  	</label>
 	  	<label class="item item-radio">
-		    <input type="radio" ng-model="ratings" name="group" value="three">
+		    <input type="radio" ng-model="primaryOutcomeRatingFrequencyDescription" name="group" value="every three hours">
 		    <div class="item-content">
 		      Every three hours
 		    </div>
 		    <i class="radio-icon ion-checkmark"></i>
 	  	</label>
 	  	<label class="item item-radio">
-		    <input type="radio" ng-model="ratings" name="group" value="twice">
+		    <input type="radio" ng-model="primaryOutcomeRatingFrequencyDescription" name="group" value="twice a day">
 		    <div class="item-content">
 		      Twice daily
 		    </div>
 		    <i class="radio-icon ion-checkmark"></i>
 	  	</label>
 	  	<label class="item item-radio">
-		    <input type="radio" ng-model="ratings" name="group" value="daily">
+		    <input type="radio" ng-model="primaryOutcomeRatingFrequencyDescription" name="group" value="daily">
 		    <div class="item-content">
 		      Daily
 		    </div>
 		    <i class="radio-icon ion-checkmark"></i>
 	  	</label>
 
-	  	<button class="button button-block button-positive" ng-click="saveRatingInterval(ratings)">
+	  	<button class="button button-block button-positive" ng-click="saveRatingInterval(primaryOutcomeRatingFrequencyDescription)">
 	  		Save
 	  	</button>
 	</div>
@@ -61,7 +61,7 @@
 		<h3>Ask for a rating</h3>
 		<hr/>
 		<label class="item item-radio">
-		    <input type="radio" ng-model="ratings" name="group" value="never">
+		    <input type="radio" ng-model="primaryOutcomeRatingFrequencyDescription" name="group" value="never">
 		    <div class="item-content">
 		      Never
 		    </div>
@@ -69,7 +69,7 @@
 	  	</label>
         <!--
         <label class="item item-radio">
-            <input type="radio" ng-model="ratings" name="group" value="second">
+            <input type="radio" ng-model="primaryOutcomeRatingFrequencyDescription" name="group" value="second">
             <div class="item-content">
                 Every second
             </div>
@@ -77,7 +77,7 @@
         </label>
         
         <label class="item item-radio">
-            <input type="radio" ng-model="ratings" name="group" value="minute">
+            <input type="radio" ng-model="primaryOutcomeRatingFrequencyDescription" name="group" value='minutely'>
             <div class="item-content">
                 Every minute
             </div>
@@ -85,14 +85,14 @@
         </label>
         -->
 	  	<label class="item item-radio">
-		    <input type="radio" ng-model="ratings" name="group" value="hour">
+		    <input type="radio" ng-model="primaryOutcomeRatingFrequencyDescription" name="group" value="hour">
 		    <div class="item-content">
 		      Every Hour
 		    </div>
 		    <i class="radio-icon ion-checkmark"></i>
 	  	</label>
 	  	<label class="item item-radio">
-		    <input type="radio" ng-model="ratings" name="group" value="day">
+		    <input type="radio" ng-model="primaryOutcomeRatingFrequencyDescription" name="group" value="day">
 		    <div class="item-content">
 		      Every Day
 		    </div>
@@ -100,21 +100,21 @@
 	  	</label>
 	  	<!--
 	  	<label class="item item-radio">
-		    <input type="radio" ng-model="ratings" name="group" value="week">
+		    <input type="radio" ng-model="primaryOutcomeRatingFrequencyDescription" name="group" value="week">
 		    <div class="item-content">
 		      Every week
 		    </div>
 		    <i class="radio-icon ion-checkmark"></i>
 	  	</label>
 	  	<label class="item item-radio">
-		    <input type="radio" ng-model="ratings" name="group" value="month">
+		    <input type="radio" ng-model="primaryOutcomeRatingFrequencyDescription" name="group" value="month">
 		    <div class="item-content">
 		      Monthly
 		    </div>
 		    <i class="radio-icon ion-checkmark"></i>
 	  	</label>
 		-->
-	  	<button class="button button-block button-positive" ng-click="saveRatingInterval(ratings)">
+	  	<button class="button button-block button-positive" ng-click="saveRatingInterval(primaryOutcomeRatingFrequencyDescription)">
 	  		Save
 	  	</button>
 	</div>

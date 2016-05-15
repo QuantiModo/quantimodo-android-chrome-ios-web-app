@@ -5,7 +5,7 @@ angular.module('starter')
 											 $stateParams, measurementService, reminderService, $ionicLoading,
 											 utilsService, $filter, ionicTimePicker, $timeout, 
 											 variableCategoryService, variableService, unitService, timeService,
-                                             QuantiModo){
+                                             $rootScope){
 
 	    $scope.controller_name = "RemindersAddCtrl";
 
@@ -102,30 +102,6 @@ angular.module('starter')
 			ionicTimePicker.openTimePicker($scope.state.timePickerConfiguration);
 		};
 
-		// populate list with recently tracked category variables
-    	var populateRecentlyTrackedVariables = function(variableCategoryName){
-    		utilsService.loadingStart();
-            if(!variableCategoryName){
-                // get all variables
-                console.log('Get most recent anything variables');
-                variableService.getVariables().then(function(variables){
-                    $scope.variableSearchResults = variables;
-                    utilsService.loadingStop();
-                }, function(){
-                    utilsService.loadingStop();
-                });
-            } else {
-                variableService.searchVariablesIncludePublic('*', $scope.state.variableCategoryName).then(function(variables){
-                    $scope.variableSearchResults = variables;
-                    utilsService.loadingStop();
-                }, function(){
-                    console.log('Could not get variables');
-                    utilsService.loadingStop();
-                });
-            }
-
-    	};
-
 	    // when variableCategoryName is selected
 	    $scope.onVariableCategoryChange = function(){
 	    	console.log("Variable category selected: ", $scope.state.variableCategoryName);
@@ -144,34 +120,26 @@ angular.module('starter')
 
 
         var variableSearch = function(variableSearchQuery){
-	    	// search server for the query
-
-	    	if(!$scope.state.variableCategoryName){
-				variableService.searchVariablesIncludePublic(variableSearchQuery)
-	    		.then(function(variables){
-
-	    		    // populate list with results
-	    		    $scope.state.showResults = true;
-	    		    $scope.variableSearchResults = variables;
-	    		    $scope.state.searching = false;
-                    if(variables.length < 1){
-                        $scope.state.showAddVariableButton = true;
-                    }
-	    		});
-	    	} else {
-				variableService.searchVariablesIncludePublic(variableSearchQuery, $scope.variableCategoryName)
-	    		.then(function(variables){
-
-	    		    // populate list with results
-	    		    $scope.state.showResults = true;
-	    		    $scope.variableSearchResults = variables;
-	    		    $scope.state.searching = false;
-                    if(variables.length < 1){
-                        $scope.state.showAddVariableButton = true;
-                    }
-	    		});
-	    	}
+            variableService.searchVariablesIncludePublic(variableSearchQuery, $scope.state.variableCategoryName)
+            .then(function(variables){
+                // populate list with results
+                $scope.state.showResults = true;
+                $scope.variableSearchResults = variables;
+                $scope.state.searching = false;
+                if(variables.length < 1){
+                    $scope.state.showAddVariableButton = true;
+                }
+            });
 	    };
+
+        var populateUserVariables = function(){
+            variableService.getUserVariablesByCategory($scope.state.variableCategoryName)
+                .then(function(variables){
+                    $scope.state.showResults = true;
+                    $scope.variableSearchResults = variables;
+                    $scope.state.searching = false;
+                });
+        };
 
 	    // when a query is searched in the search box
 	    $scope.onSearch = function(){
@@ -179,9 +147,8 @@ angular.module('starter')
 	    	if($scope.state.variableSearchQuery === ""){
                 $scope.state.showResults = true;
                 $scope.state.searching = true;
-                variableSearch($scope.state.variableSearchQuery);
+                populateUserVariables($scope.state.variableSearchQuery);
             } else {
-
                 $scope.state.showResults = true;
                 $scope.state.searching = true;
                 variableSearch($scope.state.variableSearchQuery);
@@ -192,8 +159,11 @@ angular.module('starter')
 	    $scope.onVariableSelect = function(selectedVariable){
 	    	console.log("Variable Selected: ", selectedVariable);
 
+	    	if(!selectedVariable.variableCategoryName){
+	    		selectedVariable.variableCategoryName = selectedVariable.category;
+	    	}
+
             setupVariableCategory(selectedVariable.variableCategoryName);
-            $scope.state.abbreviatedUnitName = selectedVariable.abbreviatedUnitName;
             $scope.state.abbreviatedUnitName = selectedVariable.abbreviatedUnitName;
             $scope.state.combinationOperation = selectedVariable.combinationOperation;
             $scope.state.id = selectedVariable.id;
@@ -378,7 +348,7 @@ angular.module('starter')
 
 	    // setup category view
 	    var setupVariableCategory = function(variableCategoryName){
-            console.log("$stateParams.variableCategoryName  is " + variableCategoryName);
+            console.log("variableCategoryName  is " + variableCategoryName);
             if(!variableCategoryName){
                 variableCategoryName = '';
             }
@@ -389,7 +359,7 @@ angular.module('starter')
             $scope.state.showSearchBox = true;
             $scope.state.showResults = true;
 
-			populateRecentlyTrackedVariables(variableCategoryName);
+			populateUserVariables(variableCategoryName);
 	    };
 
 	    // setup new reminder view
@@ -438,8 +408,13 @@ angular.module('starter')
         $scope.init = function(){
             $scope.state.loading = true;
             utilsService.loadingStart();
-            var isAuthorized = authService.checkAuthOrSendToLogin();
-            if(isAuthorized){
+            //var isAuthorized = authService.checkAuthOrSendToLogin();
+
+            if(!$rootScope.user){
+                $state.go('app.login');
+            }
+
+            if($rootScope.user){
                 if($stateParams.variableCategoryName){
                     setupVariableCategory($stateParams.variableCategoryName);
                 }
@@ -447,8 +422,8 @@ angular.module('starter')
                 var variableIdUrlParameter = utilsService.getUrlParameter(window.location.href, 'variableId');
                 $scope.getUnits();
                 if($stateParams.variableCategoryName){
-                    $scope.variableCategoryName = $stateParams.variableCategoryName;
-                    setupVariableCategory($scope.variableCategoryName);
+                    $scope.state.variableCategoryName = $stateParams.variableCategoryName;
+                    setupVariableCategory($scope.state.variableCategoryName);
                 }
                 else if($stateParams.reminder && $stateParams.reminder !== null) {
                     setupEditReminder($stateParams.reminder);
