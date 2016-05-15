@@ -130,14 +130,10 @@ angular.module('starter')
             localStorageService.deleteItem('expiresAt');
         }
 
-                // when user is logging out
+		// when user is logging out
         function logoutOfApi() {
-			if(config.getClientId() === 'oAuthDisabled'){
-				var logoutUrl = config.getURL("api/v2/auth/logout");
-                window.open(logoutUrl, '_blank');
-			} else {
-                console.log('Client id is ' + config.getClientId() + ' so not sending to ' +  config.getURL("api/v2/auth/logout"));
-            }
+			var logoutUrl = config.getURL("api/v2/auth/logout");
+			window.open(logoutUrl,'_blank');
         }
 
         // load rating popover
