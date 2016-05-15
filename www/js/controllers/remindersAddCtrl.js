@@ -192,8 +192,11 @@ angular.module('starter')
 	    $scope.onVariableSelect = function(selectedVariable){
 	    	console.log("Variable Selected: ", selectedVariable);
 
+	    	if(!selectedVariable.variableCategoryName){
+	    		selectedVariable.variableCategoryName = selectedVariable.category;
+	    	}
+
             setupVariableCategory(selectedVariable.variableCategoryName);
-            $scope.state.abbreviatedUnitName = selectedVariable.abbreviatedUnitName;
             $scope.state.abbreviatedUnitName = selectedVariable.abbreviatedUnitName;
             $scope.state.combinationOperation = selectedVariable.combinationOperation;
             $scope.state.id = selectedVariable.id;
@@ -378,7 +381,7 @@ angular.module('starter')
 
 	    // setup category view
 	    var setupVariableCategory = function(variableCategoryName){
-            console.log("$stateParams.variableCategoryName  is " + variableCategoryName);
+            console.log("variableCategoryName  is " + variableCategoryName);
             if(!variableCategoryName){
                 variableCategoryName = '';
             }
