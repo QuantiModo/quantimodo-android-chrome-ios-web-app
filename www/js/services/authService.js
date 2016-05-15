@@ -164,17 +164,9 @@ angular.module('starter')
                         console.log('getAccessTokenFromUserEndpoint: Platform is browser: ' + ionic.Platform.is('browser'));
                         console.log('getAccessTokenFromUserEndpoint: Platform is ios: ' + ionic.Platform.is('ios'));
                         console.log('getAccessTokenFromUserEndpoint: Platform is android: ' + ionic.Platform.is('android'));
-
-                        //Using OAuth on Staging for tests
-                        if(!ionic.Platform.is('ios') && !ionic.Platform.is('android') &&
-                            config.getClientId() === 'oAuthDisabled' &&
-                            !(window.location.origin.indexOf('staging.quantimo.do') > -1)){
-                            console.log("getAccessTokenFromUserEndpoint: Browser Detected and client id is oAuthDisabled.  ");
-                            $ionicLoading.hide();
-                            //$state.go('app.login');
-                        } else {
-                            authService._defaultGetAccessToken(deferred);
-                        }
+						$rootScope.user = null;
+						localStorageService.deleteItem('user');
+						$state.go('app.login');
                     }
                 );
             },
@@ -372,6 +364,7 @@ angular.module('starter')
 						if (data && data.error && data.error.message) {
                             error = data.error.message;
                         }
+                        console.error("API Request to "+request.url+" Failed",error,{},"error");
 						Bugsnag.notify("API Request to "+request.url+" Failed",error,{},"error");
 						errorHandler(data,status,headers,config);
 					});

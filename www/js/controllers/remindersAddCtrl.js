@@ -361,7 +361,7 @@ angular.module('starter')
             }
             $scope.state.variableCategoryName = variableCategoryName;
             $scope.state.variableCategoryObject = variableCategoryService.getVariableCategoryInfo(variableCategoryName);
-            $scope.state.title = "Add a " + $filter('wordAliases')(pluralize(variableCategoryName, 1) + " Reminder");
+            $scope.state.title = "Add " + $filter('wordAliases')(pluralize(variableCategoryName, 1) + " Reminder");
             $scope.state.showVariableCategorySelector = false;
             $scope.state.showSearchBox = true;
             $scope.state.showResults = true;
@@ -416,13 +416,9 @@ angular.module('starter')
         $scope.init = function(){
             $scope.state.loading = true;
             utilsService.loadingStart();
-            //var isAuthorized = authService.checkAuthOrSendToLogin();
+            var isAuthorized = authService.checkAuthOrSendToLogin();
 
-            if(!$rootScope.user){
-                $state.go('app.login');
-            }
-
-            if($rootScope.user){
+            if(isAuthorized){
                 if($stateParams.variableCategoryName){
                     setupVariableCategory($stateParams.variableCategoryName);
                 }
