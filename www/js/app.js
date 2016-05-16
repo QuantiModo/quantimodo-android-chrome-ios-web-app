@@ -343,7 +343,12 @@ angular.module('starter',
           }
       })
       .state('app.historyAll', {
-          url: "/history-all",
+          url: "/history-all/:variableCategoryName",
+          params: {
+              variableCategoryName : null,
+              fromState : null,
+              fromUrl : null,
+          },
           views: {
               'menuContent': {
                   templateUrl: "templates/history-all.html",

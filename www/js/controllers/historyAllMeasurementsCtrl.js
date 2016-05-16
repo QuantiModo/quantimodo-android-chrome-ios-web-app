@@ -7,7 +7,7 @@ angular.module('starter')
 										   $ionicPopup, 
                                            variableCategoryService, 
                                            unitService,
-                                            utilsService){
+                                            utilsService, $stateParams){
 
 	    $scope.controller_name = "historyAllMeasurementsCtrl";
         
@@ -17,8 +17,15 @@ angular.module('starter')
 	    	history : [],
 			units : [],
 			variableCategories : [],
-			showLoadMoreButton: false
+			showLoadMoreButton: false,
+			title: 'Measurement History'
 	    };
+
+		var setupVariableCategory = function () {
+			if($stateParams.variableCategoryName){
+				$scope.title = $stateParams.variableCategoryName + ' History';
+			}
+		};
 
         $scope.goToState = function(state){
             $state.go(state, {
@@ -54,7 +61,8 @@ angular.module('starter')
 	    	measurementService.getHistoryMeasurements({
     		    offset: $scope.state.offset,
     		    limit: $scope.state.limit,
-    		    sort: "-startTime"
+    		    sort: "-startTime",
+				variableCategoryName: $stateParams.variableCategoryName
 	    	}).then(function(history){
     			$scope.state.history = $scope.state.history.concat(history);
 				if($scope.state.history.length > 49){
@@ -75,6 +83,7 @@ angular.module('starter')
 	    
 	    // constructor
 	    $scope.init = function(){
+			setupVariableCategory();
 			$scope.state.loading = true;
             $ionicLoading.show({
                 noBackdrop: true,
