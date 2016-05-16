@@ -124,7 +124,7 @@ if [ -f ${DROPBOX_PATH}/${LOWERCASE_APP_NAME}/${LOWERCASE_APP_NAME}-android-rele
 then
    echo echo "${LOWERCASE_APP_NAME} Android app is ready in $DROPBOX_PATH/${LOWERCASE_APP_NAME}/"
 else
-   echo "ERROR: File $DROPBOX_PATH/${LOWERCASE_APP_NAME}/"${LOWERCASE_APP_NAME}-android-release-signed.apk does not exist. Build FAILED"
+   echo "ERROR: File $DROPBOX_PATH/${LOWERCASE_APP_NAME}/${LOWERCASE_APP_NAME}-android-release-signed.apk does not exist. Build FAILED"
    exit 1
 fi
 
