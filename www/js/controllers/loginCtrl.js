@@ -224,7 +224,10 @@ angular.module('starter')
         // log in with google
         $scope.googleLogin = function(){
             utilsService.loadingStart('Logging you in', 2000);
-            window.plugins.googleplus.login({}, function (userData) {
+            window.plugins.googleplus.login({
+                //scopes go here
+            },
+                function (userData) {
                     $ionicLoading.hide();
                     console.log('successfully logged in');
                     console.log('google->', JSON.stringify(userData));
