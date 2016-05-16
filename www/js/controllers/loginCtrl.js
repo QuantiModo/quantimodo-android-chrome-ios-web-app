@@ -225,8 +225,10 @@ angular.module('starter')
         $scope.googleLogin = function(){
             utilsService.loadingStart('Logging you in', 2000);
             window.plugins.googleplus.login({
-                //scopes go here
-            },
+                'scopes': '', // optional, space-separated list of scopes, If not included or empty, defaults to `profile` and `email`.
+                'webClientId': '1052648855194.apps.googleusercontent.com', // optional clientId of your Web application from Credentials settings of your project - On Android, this MUST be included to get an idToken. On iOS, it is not required.
+                'offline': true // optional, but requires the webClientId - if set to true the plugin will also return a serverAuthCode, which can be used to grant offline access to a non-Google server
+                },
                 function (userData) {
                     $ionicLoading.hide();
                     console.log('successfully logged in');
