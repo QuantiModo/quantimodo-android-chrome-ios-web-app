@@ -151,7 +151,7 @@ angular.module('starter')
         };
 
         // when work on this activity is complete
-        function hideMenuIfSetInUrlParameter() {
+        function hideNavigationMenuIfSetInUrlParameter() {
             if (location.href.toLowerCase().indexOf('hidemenu=true') !== -1) {
                 $rootScope.hideNavigationMenu = true;
             }
@@ -160,17 +160,17 @@ angular.module('starter')
         function goToDefaultStateShowMenuClearIntroHistoryAndRedraw() {
 
             if ($state.current.name === "app.welcome") {
-                $rootScope.hideMenu = false;
+                $rootScope.hideNavigationMenu = false;
                 $state.go(config.appSettings.defaultState);
             }
 
             if ($state.current.name === "app.login" && $rootScope.user) {
-                $rootScope.hideMenu = false;
+                $rootScope.hideNavigationMenu = false;
                 $state.go(config.appSettings.defaultState);
             }
 
             if (config.appSettings.allowOffline) {
-                $rootScope.hideMenu = false;
+                $rootScope.hideNavigationMenu = false;
                 $state.go(config.appSettings.defaultState);
             }
 
@@ -239,7 +239,7 @@ angular.module('starter')
                     $rootScope.setUserForIntercom($rootScope.user);
                     $rootScope.setUserForBugsnag($rootScope.user);
             }
-            hideMenuIfSetInUrlParameter();
+            hideNavigationMenuIfSetInUrlParameter();
             goToWelcomeStateIfNotWelcomed();
             scheduleReminder();
             $ionicLoading.hide();

@@ -62,7 +62,7 @@ rm -rf ../fbplugin
 #echo "gulp addFacebookPlugin for $LOWERCASE_APP_NAME Android app..."
 #gulp addFacebookPlugin
 echo "cordova plugin add cordova-plugin-facebook4 --save  for $LOWERCASE_APP_NAME Android app..."
-cordova plugin add cordova-plugin-facebook4 --save --variable APP_ID="225078261031461" --variable APP_NAME="QuantiModo"
+cordova plugin add https://github.com/jeduan/cordova-plugin-facebook4 --save --variable APP_ID="${FACEBOOK_APP_ID}" --variable APP_NAME="${FACEBOOK_APP_NAME}"
 echo "gulp addFacebookPlugin for $LOWERCASE_APP_NAME Android app..."
 gulp addGooglePlusPlugin
 #echo "push for $LOWERCASE_APP_NAME Android app..."

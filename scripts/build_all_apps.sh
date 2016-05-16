@@ -64,7 +64,6 @@ if [ -z "$ANDROID_KEYSTORE_PASSWORD" ]
   echo -e "${RED} ANDROID_KEYSTORE_PASSWORD does not exist for build_all_apps.sh! Quitting! "
   exit
 fi
-echo "ANDROID_KEYSTORE_PASSWORD is $ANDROID_KEYSTORE_PASSWORD"
 
 echo "Copying everything from ${IONIC_PATH} to $INTERMEDIATE_PATH"
 rsync -a --exclude=build/ --exclude=.git/ ${IONIC_PATH}/* ${INTERMEDIATE_PATH}

@@ -39,4 +39,12 @@
 			</div>-->
 		</div>
 	</ion-content>
+	<nav mfb-menu position="bl" effect="slidein-spring"
+		 active-icon="ion-minus-round" resting-icon="ion-plus-round"
+		 toggling-method="click" ng-hide="hideNavigationMenu || (hideNavigationMenu && !isWelcomed)">
+		<button mfb-button icon="ion-happy-outline" label="How are you?" ng-click="goToState('app.track')"></button>
+		<button mfb-button icon="ion-ios-medkit-outline" label="Add a medication" ng-click="goToState('app.reminderAddCategory', {variableCategoryName : 'Treatments'})"></button>
+		<button mfb-button icon="ion-ios-pulse" label="Add Vital Sign" ng-click="goToState('app.track_factors_category', {variableCategoryName : 'Vital Signs'})"></button>
+		<button mfb-button icon="ion-heart-broken" label="Record a Symptom" ng-click="goToState('app.track_factors_category', {variableCategoryName : 'Symptoms'})"></button>
+	</nav>
 </ion-view>

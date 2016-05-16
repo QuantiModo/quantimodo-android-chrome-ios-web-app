@@ -121,7 +121,7 @@ angular.module('starter')
             } else if ($stateParams.fromState){
                 $state.go($stateParams.fromState);
             } else {
-                $rootScope.hideMenu = false;
+                $rootScope.hideNavigationMenu = false;
                 $state.go(config.appSettings.defaultState);
             }
         };
@@ -139,7 +139,7 @@ angular.module('starter')
             } else if ($stateParams.fromState){
                 $state.go($stateParams.fromState);
             } else {
-                $rootScope.hideMenu = false;
+                $rootScope.hideNavigationMenu = false;
                 $state.go(config.appSettings.defaultState);
             }
         };
@@ -204,7 +204,7 @@ angular.module('starter')
                         } else if ($stateParams.fromState){
                             $state.go($stateParams.fromState);
                         } else {
-                            $rootScope.hideMenu = false;
+                            $rootScope.hideNavigationMenu = false;
                             $state.go(config.appSettings.defaultState);
                         }
 
@@ -240,7 +240,7 @@ angular.module('starter')
                     } else if ($stateParams.fromState){
                         $state.go($stateParams.fromState);
                     } else {
-                        $rootScope.hideMenu = false;
+                        $rootScope.hideNavigationMenu = false;
                         $state.go(config.appSettings.defaultState);
                     }
 
@@ -254,7 +254,7 @@ angular.module('starter')
             } else if ($stateParams.fromState){
                 $state.go($stateParams.fromState);
             } else {
-                $rootScope.hideMenu = false;
+                $rootScope.hideNavigationMenu = false;
                 $state.go(config.appSettings.defaultState);
             }
 
@@ -336,7 +336,7 @@ angular.module('starter')
                     } else if ($stateParams.fromState){
                         $state.go($stateParams.fromState);
                     } else {
-                        $rootScope.hideMenu = false;
+                        $rootScope.hideNavigationMenu = false;
                         $state.go(config.appSettings.defaultState);
                     }
                 }
