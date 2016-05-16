@@ -11,7 +11,7 @@ angular.module('starter')
         $scope.headline = config.appSettings.headline;
         $scope.features = config.appSettings.features;
         var $cordovaFacebook = {};
-        if($rootScope.isIOS && $injector.has('$cordovaFacebook')){
+        if(($rootScope.isIOS || $rootScope.isAndroid) && $injector.has('$cordovaFacebook')){
             $cordovaFacebook = $injector.get('$cordovaFacebook');
         }
 
