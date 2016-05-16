@@ -125,7 +125,7 @@ angular.module('starter')
 	    var getTrackingReminderNotifications = function(){
 	    	utilsService.loadingStart();
 
-	    	reminderService.getTrackingReminderNotifications($stateParams.variableCategoryName)
+	    	reminderService.getTrackingReminderNotifications($stateParams.variableCategoryName, $stateParams.today)
 	    	.then(function(reminders){
 				if(reminders.length > 1){
 					$scope.state.showButtons = false;
