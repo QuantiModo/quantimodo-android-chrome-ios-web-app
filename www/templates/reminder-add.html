@@ -179,7 +179,13 @@
                         </button>
                     </label>
             </div>
-
+            <div class="row">
+                <button ng-show="reminder.id" ng-click="deleteReminder()"
+                        class="button icon-left ion-trash-a button-assertive"
+                        style="margin: auto">
+                    Delete Reminder
+                </button>
+            </div>
 			<div class="row">
 				<div class="col col-50">
 					<button class="button button-block button-assertive" ng-click="cancel()">Cancel</button>

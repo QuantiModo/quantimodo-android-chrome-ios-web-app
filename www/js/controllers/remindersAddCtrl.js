@@ -313,6 +313,7 @@ angular.module('starter')
 	    // setup editing view
 	    var setupEditReminder = function(){
 
+            $scope.reminder = $stateParams.reminder;
             $scope.state.id = $stateParams.reminder.id;
             $scope.state.variableName = $stateParams.reminder.variableName;
             $scope.state.variableId = $stateParams.reminder.variableId;
@@ -474,6 +475,29 @@ angular.module('starter')
             } else {
                 $scope.state.showUnits = false;
             }
+        };
+
+        $scope.deleteReminder = function(){
+            utilsService.loadingStart();
+            reminderService.deleteReminder($scope.reminder.id)
+                .then(function(){
+
+                    utilsService.loadingStop();
+                    utilsService.showAlert('Reminder Deleted.');
+                    if($stateParams.fromUrl){
+                        window.location=$stateParams.fromUrl;
+                    } else if ($stateParams.fromState){
+                        $state.go($stateParams.fromState);
+                    } else {
+                        $rootScope.hideMenu = false;
+                        $state.go('app.remindersManage');
+                    }
+
+                }, function(err){
+
+                    utilsService.loadingStop();
+                    utilsService.showAlert('Failed to Delete Reminder, Try again!', 'assertive');
+                });
         };
 
         // when a unit is selected
