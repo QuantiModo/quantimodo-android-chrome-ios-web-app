@@ -70,28 +70,28 @@ echo "Copying everything from ${IONIC_PATH} to $INTERMEDIATE_PATH"
 rsync -a --exclude=build/ --exclude=.git/ ${IONIC_PATH}/* ${INTERMEDIATE_PATH}
 cd ${INTERMEDIATE_PATH}
 
-#source ${IONIC_PATH}/scripts/build_scripts/00_install_dependencies.sh
+source ${IONIC_PATH}/scripts/build_scripts/00_install_dependencies.sh
 
-export APP_NAME=moodimodo
+export LOWERCASE_APP_NAME=moodimodo
 source ${INTERMEDIATE_PATH}/scripts/build_scripts/01_prepare_project.sh
 source ${INTERMEDIATE_PATH}/scripts/build_scripts/02_build_chrome.sh
 source ${INTERMEDIATE_PATH}/scripts/build_scripts/03_build_android.sh
 #source ${INTERMEDIATE_PATH}/scripts/build_scripts/04_build_ios.sh
 #source ${INTERMEDIATE_PATH}/04_reset_workspace.sh
 
-export APP_NAME=mindfirst
+export LOWERCASE_APP_NAME=mindfirst
 source ${INTERMEDIATE_PATH}/scripts/build_scripts/01_prepare_project.sh
 source ${INTERMEDIATE_PATH}/scripts/build_scripts/02_build_chrome.sh
 source ${INTERMEDIATE_PATH}/scripts/build_scripts/03_build_android.sh
 #source ${INTERMEDIATE_PATH}/scripts/build_scripts/04_build_ios.sh
 
-export APP_NAME=energymodo
+export LOWERCASE_APP_NAME=energymodo
 source ${INTERMEDIATE_PATH}/scripts/build_scripts/01_prepare_project.sh
 source ${INTERMEDIATE_PATH}/scripts/build_scripts/02_build_chrome.sh
 source ${INTERMEDIATE_PATH}/scripts/build_scripts/03_build_android.sh
 #source ${INTERMEDIATE_PATH}/scripts/build_scripts/04_build_ios.sh
 
-export APP_NAME=medtlc
+export LOWERCASE_APP_NAME=medtlc
 source ${INTERMEDIATE_PATH}/scripts/build_scripts/01_prepare_project.sh
 source ${INTERMEDIATE_PATH}/scripts/build_scripts/02_build_chrome.sh
 source ${INTERMEDIATE_PATH}/scripts/build_scripts/03_build_android.sh

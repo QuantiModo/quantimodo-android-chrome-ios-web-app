@@ -63,14 +63,14 @@ gulp.task('generateXmlConfig', ['getAppName'], function(){
 
 	var deferred = q.defer();
 
-	gulp.src('./apps/'+APP_NAME+'/config.xml')
+	gulp.src('./apps/' + LOWERCASE_APP_NAME  +'/config.xml')
 	.pipe(rename('config.xml'))
 	.pipe(gulp.dest('./'));
 
 	gulp.src('./www/js/apps.js')
 	.pipe(change(function(content){
 		deferred.resolve();
-		return content.replace(/defaultApp\s?:\s?("|')\w+("|'),/g, 'defaultApp : "'+APP_NAME+'",');
+		return content.replace(/defaultApp\s?:\s?("|')\w+("|'),/g, 'defaultApp : "' + LOWERCASE_APP_NAME + '",');
 	}))
 	.pipe(gulp.dest('./www/js/'));
 
@@ -515,50 +515,45 @@ gulp.task('ionicResources', function(){
 	return deferred.promise;
 });
 
-var APP_NAME = false;
-
+var LOWERCASE_APP_NAME = false;
 
 gulp.task('getAppName', function(){
 	var deferred = q.defer();
-
-	var inquireAboutAppName = function(){
-		inquirer.prompt([{
-			type: 'input',
-			name: 'app',
-			message: 'Please enter the app name (moodimodo/energymodo/etc..)'
-		}], function( answers ) {
-			APP_NAME = answers.app;
-			deferred.resolve();
-		});
-	};
-
-	if(APP_NAME) deferred.resolve();
-	else {
-		var app_name = process.env["APP_NAME"];
-		if(app_name && app_name.length){
-			APP_NAME = app_name.toLowerCase();
-			console.log("*** APP_NAME from env is: ", JSON.stringify(APP_NAME));
-			deferred.resolve();
-		} else {
-			console.error("Failed to get APP_NAME!  Please export as an env!", error);
-			deferred.reject();
-			/*
-			var commandForGit = 'git rev-parse --abbrev-ref HEAD';
-			execute(commandForGit, function(error, output){
-				output = output.trim();
-				if(error || output.indexOf('app/') < 0 || !output.split("/")[1] || output.split("/")[1].length === 0){
-					console.log("Failed to get App name automatically.", error);
-					inquireAboutAppName();
-				} else {
-					APP_NAME = output.split("/")[1];
-					console.log("the app name from git branch is", JSON.stringify(APP_NAME));
-					deferred.resolve();
-				}
-			});
-			*/
-		}
-	}
+  gutil.log('process.env.LOWERCASE_APP_NAME is ' + process.env.LOWERCASE_APP_NAME);
+  LOWERCASE_APP_NAME = process.env.LOWERCASE_APP_NAME;
+  if(LOWERCASE_APP_NAME) deferred.resolve();
+  if(!LOWERCASE_APP_NAME){
+    throw new Error('Please set LOWERCASE_APP_NAME env!');
+  }
 	return deferred.promise;
+});
+
+gulp.task('getAppNameFromUserInput', function(){
+  var inquireAboutAppName = function(){
+    inquirer.prompt([{
+      type: 'input',
+      name: 'app',
+      message: 'Please enter the app name (moodimodo/energymodo/etc..)'
+    }], function( answers ) {
+      LOWERCASE_APP_NAME = answers.app;
+      deferred.resolve();
+    });
+  };
+});
+
+gulp.task('getAppNameFromGitBranchName', function(){
+  var commandForGit = 'git rev-parse --abbrev-ref HEAD';
+  execute(commandForGit, function(error, output){
+    output = output.trim();
+    if(error || output.indexOf('app/') < 0 || !output.split("/")[1] || output.split("/")[1].length === 0){
+      console.log("Failed to get App name automatically.", error);
+      inquireAboutAppName();
+    } else {
+      LOWERCASE_APP_NAME = output.split("/")[1];
+      console.log("the app name from git branch is", JSON.stringify(LOWERCASE_APP_NAME));
+      deferred.resolve();
+    }
+  });
 });
 
 var FACEBOOK_APP_ID = false;
@@ -568,7 +563,7 @@ var GOOGLEPLUS_REVERSED_CLIENT_ID = false;
 gulp.task('readKeysForCurrentApp', ['getAppName'] ,function(){
 	var deferred = q.defer();
 
-	fs.readFile('./www/private_configs/'+APP_NAME+'.config.js', function (err, data) {
+	fs.readFile('./www/private_configs/' + LOWERCASE_APP_NAME + '.config.js', function (err, data) {
 		if (err) {
 			throw err;
 		}
@@ -640,7 +635,7 @@ gulp.task('addFacebookPlugin', ['readKeysForCurrentApp'] , function(){
 	    	console.log("FACEBOOK REPO ALREADY CLONED");
 	        addFacebookPlugin();
 	    } else {
-	    	console.log("FACEBOOK REPO NOT FOUND, CLONING IT NOW");
+			console.log("FACEBOOK REPO NOT FOUND, CLONING https://github.com/Wizcorp/phonegap-facebook-plugin.git NOW");
 	    	var commands = [
 	    		"cd ../",
 	    		"mkdir fbplugin",
@@ -648,6 +643,16 @@ gulp.task('addFacebookPlugin', ['readKeysForCurrentApp'] , function(){
 	    		"GIT_CURL_VERBOSE=1 GIT_TRACE=1 git clone https://github.com/Wizcorp/phonegap-facebook-plugin.git"
 	    	].join(' && ');
 
+
+/*			//Try this if you get the muliple dex file error still
+      console.log("FACEBOOK REPO NOT FOUND, CLONING https://github.com/Telerik-Verified-Plugins/Facebook.git NOW");
+			var commands = [
+				"cd ../",
+				"mkdir fbplugin",
+				"cd fbplugin",
+				"GIT_CURL_VERBOSE=1 GIT_TRACE=1 git clone https://github.com/Telerik-Verified-Plugins/Facebook.git"
+        ].join(' && ');
+*/
 	    	execute(commands, function(error){
 	    		if(error !== null){
 	    			console.log("***THERE WAS AN ERROR DOWNLOADING THE FACEBOOK PLUGIN***", error);
@@ -691,7 +696,7 @@ gulp.task('getIOSAppFolderName', ['getAppName'] , function(){
 
 	if(IOS_FOLDER_NAME) deferred.resolve();
 	else {
-		var xml = fs.readFileSync('./apps/'+APP_NAME+'/config.xml', 'utf8');
+		var xml = fs.readFileSync('./apps/' + LOWERCASE_APP_NAME + '/config.xml', 'utf8');
 		parseString(xml, function (err, result) {
 		    if(err){
 		    	console.log("failed to read xml file", err);
@@ -952,7 +957,7 @@ gulp.task('makeIosApp', function(callback){
 gulp.task('bumpVersion', function(){
 	var deferred = q.defer();
 
-	var xml = fs.readFileSync('./apps/'+APP_NAME+'/config.xml', 'utf8');
+	var xml = fs.readFileSync('./apps/' + LOWERCASE_APP_NAME + '/config.xml', 'utf8');
 
 	parseString(xml, function (err, result) {
 		if(err){
@@ -982,7 +987,7 @@ gulp.task('bumpVersion', function(){
 	    	var builder = new xml2js.Builder();
 	    	var updatedXml = builder.buildObject(result);
 
-	    	fs.writeFile('./apps/'+APP_NAME+'/config.xml', updatedXml, 'utf8', function (err) {
+	    	fs.writeFile('./apps/' + LOWERCASE_APP_NAME + '/config.xml', updatedXml, 'utf8', function (err) {
 	    		if (err) {
 	    			console.log("error writing to xml file", err);
 	    			deferred.reject();
@@ -998,7 +1003,7 @@ gulp.task('bumpVersion', function(){
 });
 
 gulp.task('setVersionNumbersWithEnvs', function(){
-	
+
 	var deferred = q.defer();
 	var environmentalVariables = process.env;
 	if(!environmentalVariables['IONIC_APP_VERSION_NUMBER']){
@@ -1007,8 +1012,8 @@ gulp.task('setVersionNumbersWithEnvs', function(){
 
 	if(!environmentalVariables['IONIC_IOS_APP_VERSION_NUMBER']){
 		throw new Error('Please set IONIC_IOS_APP_VERSION_NUMBER env!');
-	}	
-	
+	}
+
 	var xml = fs.readFileSync('./config.xml', 'utf8');
 
 	parseString(xml, function (err, parsedXmlFile) {
@@ -1040,7 +1045,7 @@ gulp.task('setVersionNumbersWithEnvs', function(){
 					console.log("Error updating version in config.xml", err);
 					deferred.reject();
 				} else {
-					console.log("Successfully updated the version number to " + 
+					console.log("Successfully updated the version number to " +
 						environmentalVariables['IONIC_APP_VERSION_NUMBER'] + " in config.xml file");
 					deferred.resolve();
 				}

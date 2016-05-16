@@ -6,7 +6,7 @@ angular.module('starter')
                                       $ionicLoading, $injector) {
 
         $scope.controller_name = "LoginCtrl";
-        console.log("isIos is" + $scope.isIos);
+        console.log("isIos is" + $rootScope.isIos);
         $rootScope.hideMenu = true;
         $scope.headline = config.appSettings.headline;
         $scope.features = config.appSettings.features;

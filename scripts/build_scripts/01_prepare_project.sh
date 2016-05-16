@@ -19,13 +19,13 @@ if [ -z "$BUILD_PATH" ]
       echo "No BUILD_PATH given. Using $BUILD_PATH..."
 fi
 
-rm -rf ${BUILD_PATH}/${APP_NAME}
+rm -rf ${BUILD_PATH}/${LOWERCASE_APP_NAME}
 
-if [ -d "${INTERMEDIATE_PATH}/apps/${APP_NAME}" ];
+if [ -d "${INTERMEDIATE_PATH}/apps/${LOWERCASE_APP_NAME}" ];
     then
-        echo "${INTERMEDIATE_PATH}/apps/${APP_NAME} path exists";
+        echo "${INTERMEDIATE_PATH}/apps/${LOWERCASE_APP_NAME} path exists";
     else
-        echo "${INTERMEDIATE_PATH}/apps/${APP_NAME} path not found!";
+        echo "${INTERMEDIATE_PATH}/apps/${LOWERCASE_APP_NAME} path not found!";
         exit
 fi
 
@@ -35,19 +35,19 @@ echo -e "${GREEN}Replacing IONIC_APP_VERSION_NUMBER with ${IONIC_APP_VERSION_NUM
 cd "${INTERMEDIATE_PATH}/apps" && find . -type f -exec sed -i '' -e 's/IONIC_APP_VERSION_NUMBER/'${IONIC_APP_VERSION_NUMBER}'/g' {} \;
 export LANG=en_US.UTF-8
 
-echo -e "${GREEN}Copy ${APP_NAME} config and resource files${NC}"
-cp -R ${INTERMEDIATE_PATH}/apps/${APP_NAME}/*  "${INTERMEDIATE_PATH}"
+echo -e "${GREEN}Copy ${LOWERCASE_APP_NAME} config and resource files${NC}"
+cp -R ${INTERMEDIATE_PATH}/apps/${LOWERCASE_APP_NAME}/*  "${INTERMEDIATE_PATH}"
 
 cd "${INTERMEDIATE_PATH}"
 #ionic state reset
 
-echo "Generating images for ${APP_NAME}..."
+echo "Generating images for ${LOWERCASE_APP_NAME}..."
 source "${IMAGES_SCRIPT}"
 
 echo "Copying generated images from ${INTERMEDIATE_PATH}/resources/android to ${INTERMEDIATE_PATH}/www/img/"
 cp -R ${INTERMEDIATE_PATH}/resources/android/*  "${INTERMEDIATE_PATH}/www/img/"
 
-rm -rf "${BUILD_PATH}/${APP_NAME}"
+rm -rf "${BUILD_PATH}/${LOWERCASE_APP_NAME}"
 
-echo -e "${GREEN}Copy ${APP_PRIVATE_CONFIG_PATH}/${APP_NAME}.config.js private config to ${INTERMEDIATE_PATH}/www/private_configs/${NC}"
-cp "${APP_PRIVATE_CONFIG_PATH}/${APP_NAME}.config.js" "${INTERMEDIATE_PATH}/www/private_configs/"
+echo -e "${GREEN}Copy ${APP_PRIVATE_CONFIG_PATH}/${LOWERCASE_APP_NAME}.config.js private config to ${INTERMEDIATE_PATH}/www/private_configs/${NC}"
+cp "${APP_PRIVATE_CONFIG_PATH}/${LOWERCASE_APP_NAME}.config.js" "${INTERMEDIATE_PATH}/www/private_configs/"
