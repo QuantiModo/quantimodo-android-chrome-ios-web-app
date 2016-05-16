@@ -46,13 +46,7 @@ angular.module('starter')
 			$scope.state.showAddVitalSignButton = config.appSettings.remindersInbox.showAddVitalSignButton;
 		}
 
-		if(typeof(config.appSettings.remindersInbox.title) !== 'undefined'){
-			$scope.state.title = config.appSettings.remindersInbox.title;
-		}
 
-		if($stateParams.variableCategoryName){
-			$scope.state.title = $filter('wordAliases')($stateParams.variableCategoryName) + " " + $filter('wordAliases')("Reminder Inbox");
-		}
 
 	    $scope.selectPrimaryOutcomeVariableValue = function($event, val){
 	        // remove any previous primary outcome variables if present
@@ -65,6 +59,20 @@ angular.module('starter')
 
 	        $scope.state.selected1to5Value = val;
 
+		};
+
+		var setPageTitle = function(){
+			if(typeof(config.appSettings.remindersInbox.title) !== 'undefined'){
+				$scope.state.title = config.appSettings.remindersInbox.title;
+			}
+
+			if($stateParams.variableCategoryName){
+				$scope.state.title = $filter('wordAliases')($stateParams.variableCategoryName) + " " + $filter('wordAliases')("Reminder Inbox");
+			}
+
+			if($stateParams.today) {
+				$scope.state.title = 'Upcoming Reminders'
+			}
 		};
 
 	    var filterViaDates = function(reminders) {
@@ -130,6 +138,10 @@ angular.module('starter')
 				if(reminders.length > 1){
 					$scope.state.showButtons = false;
 				}
+				if(reminders.length < 2){
+					$scope.state.showButtons = true;
+				}
+
 	    		$scope.state.trackingRemindersNotifications = reminders;
 	    		$scope.state.filteredReminders = filterViaDates(reminders);
 	    		utilsService.loadingStop();
@@ -160,6 +172,7 @@ angular.module('starter')
 
 	    	}, function(err){
 	    		utilsService.showAlert('Failed to Skip Reminder, Try again!', 'assertive');
+				console.error(err);
 	    	});
 	    };
 
@@ -168,17 +181,17 @@ angular.module('starter')
 	    	.then(function(){
 	    		$scope.init();
 	    	}, function(err){
-				console.log(err);
+				console.error(err);
 	    		utilsService.showAlert('Failed to Snooze Reminder, Try again!', 'assertive');
 	    	});
 	    };
 
 	    $scope.init = function(){
 			$scope.state.loading = true;
+			setPageTitle();
 			utilsService.loadingStart();
 			var isAuthorized = authService.checkAuthOrSendToLogin();
 			if(isAuthorized){
-				$scope.state.showButtons = true;
 				$scope.showHelpInfoPopupIfNecessary();
 				getTrackingReminderNotifications();
 				$ionicLoading.hide();
@@ -204,8 +217,8 @@ angular.module('starter')
 	    		$scope.init();
 
 	    	}, function(err){
-				console.log(err);
 	    		utilsService.loadingStop();
+				console.error(err);
 	    		utilsService.showAlert('Failed to Delete Reminder, Try again!', 'assertive');
 	    	});
 	    };
