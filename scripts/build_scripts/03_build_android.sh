@@ -53,6 +53,7 @@ echo "ionic platform remove android for $LOWERCASE_APP_NAME Android app..."
 ionic platform remove android
 echo "ionic platform add android for $LOWERCASE_APP_NAME Android app..."
 ionic platform add android
+
 echo "cordova plugin rm phonegap-facebook-plugin for $LOWERCASE_APP_NAME Android app..."
 cordova plugin rm phonegap-facebook-plugin
 echo "cordova plugin rm cordova-plugin-facebook4 for $LOWERCASE_APP_NAME Android app..."
@@ -63,8 +64,13 @@ rm -rf ../fbplugin
 #gulp addFacebookPlugin
 echo "cordova plugin add cordova-plugin-facebook4 --save  for $LOWERCASE_APP_NAME Android app..."
 cordova plugin add https://github.com/jeduan/cordova-plugin-facebook4 --save --variable APP_ID="${FACEBOOK_APP_ID}" --variable APP_NAME="${FACEBOOK_APP_NAME}"
-echo "gulp addFacebookPlugin for $LOWERCASE_APP_NAME Android app..."
-gulp addGooglePlusPlugin
+
+#echo "gulp addFacebookPlugin for $LOWERCASE_APP_NAME Android app..."
+#gulp addGooglePlusPlugin
+
+echo "cordova plugin add https://github.com/EddyVerbruggen/cordova-plugin-googleplus for $LOWERCASE_APP_NAME Android app..."
+cordova plugin add https://github.com/EddyVerbruggen/cordova-plugin-googleplus --variable REVERSED_CLIENT_ID=${GOOGLE_REVERSED_CLIENT_ID}
+
 #echo "push for $LOWERCASE_APP_NAME Android app..."
 #cordova plugin add phonegap-plugin-push --variable SENDER_ID="quantimo-do"
 echo "Generating image resources for $LOWERCASE_APP_NAME..."
