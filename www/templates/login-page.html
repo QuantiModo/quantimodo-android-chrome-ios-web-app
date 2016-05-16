@@ -8,18 +8,19 @@
 					<li>By creating a FREE account you'll be able to:</li>
 					<li ng-repeat="feature in features">{{feature}}</li>
 				</ul>
-	            <button ng-show="isMobile" class="button button-block button-positive" ng-click="facebookLogin()">
-					<i class="icon logo-facebook"></i>
-	                Facebook Sign In
+	            <button class="button button-block button-positive" ng-click="facebookLogin()">
+					<i class="icon ion-social-facebook"></i>
+					&nbsp Facebook Sign In
 	            </button>
-	            <button ng-show="isMobile"  class="button button-block button-positive" ng-click="googleLogin()">
-					<i class="icon logo-google"></i>
-	                Google Sign In
+	            <button  class="button button-block button-assertive" ng-click="googleLogin()">
+					<i class="icon ion-social-google"></i>
+					&nbsp Google Sign In
 	            </button>
-	            <button class="button button-block button-positive" ng-click="login()">
-					<i class="icon md-log-in"></i>
-	                Sign In
-	            </button>
+				<button class="button button-block button-royal" ng-click="login()">
+					<i class="icon ion-log-in"></i>
+					&nbsp Sign In
+				</button>
+
 <!--				<button class="button button-block button-positive" ng-click="login(true)">
 					I'm New
 				</button>-->
