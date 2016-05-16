@@ -27,7 +27,7 @@ angular.module('starter')
 
 
         $scope.init = function(){
-            $scope.state.loading = true;
+            $scope.loading = true;
             utilsService.loadingStart();
             var isAuthorized = authService.checkAuthOrSendToLogin();
             if(isAuthorized){

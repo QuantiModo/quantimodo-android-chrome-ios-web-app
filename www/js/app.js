@@ -50,7 +50,7 @@ angular.module('starter',
                     if($ionicHistory.backView()){
                         $ionicHistory.goBack();
                     } else if(localStorage.user){
-                        $rootScope.hideMenu = false;
+                        $rootScope.hideNavigationMenu = false;
                         $state.go(config.appSettings.defaultState);
                     } else {
                         $state.go(config.appSettings.welcomeState);
