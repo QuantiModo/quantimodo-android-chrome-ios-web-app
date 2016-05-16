@@ -61,8 +61,8 @@ echo "ANDROID_BUILD_TOOLS is $ANDROID_BUILD_TOOLS"
 
 if [ -z "$ANDROID_KEYSTORE_PASSWORD" ]
   then
-  echo -e "${RED} ANDROID_KEYSTORE_PASSWORD does not exist for build_all_apps.sh! Quitting! "
-  exit
+  echo -e "${RED}ERROR: ANDROID_KEYSTORE_PASSWORD does not exist for build_all_apps.sh! Quitting! "
+  exit 1
 fi
 
 echo "Copying everything from ${IONIC_PATH} to $INTERMEDIATE_PATH"
@@ -78,11 +78,27 @@ source ${INTERMEDIATE_PATH}/scripts/build_scripts/03_build_android.sh
 #source ${INTERMEDIATE_PATH}/scripts/build_scripts/04_build_ios.sh
 #source ${INTERMEDIATE_PATH}/04_reset_workspace.sh
 
+if [ -f ${DROPBOX_PATH}/${LOWERCASE_APP_NAME}/${LOWERCASE_APP_NAME}-android-release-signed.apk ];
+then
+   echo echo "${LOWERCASE_APP_NAME} Android app is ready in $DROPBOX_PATH/${LOWERCASE_APP_NAME}/"
+else
+   echo "ERROR: File ${LOWERCASE_APP_NAME}-android-release-signed.apk does not exist. Build FAILED"
+   exit 1
+fi
+
 export LOWERCASE_APP_NAME=mindfirst
 source ${INTERMEDIATE_PATH}/scripts/build_scripts/01_prepare_project.sh
 source ${INTERMEDIATE_PATH}/scripts/build_scripts/02_build_chrome.sh
 source ${INTERMEDIATE_PATH}/scripts/build_scripts/03_build_android.sh
 #source ${INTERMEDIATE_PATH}/scripts/build_scripts/04_build_ios.sh
+
+if [ -f ${DROPBOX_PATH}/${LOWERCASE_APP_NAME}/${LOWERCASE_APP_NAME}-android-release-signed.apk ];
+then
+   echo echo "${LOWERCASE_APP_NAME} Android app is ready in $DROPBOX_PATH/${LOWERCASE_APP_NAME}/"
+else
+   echo "ERROR: File ${LOWERCASE_APP_NAME}-android-release-signed.apk does not exist. Build FAILED"
+   exit 1
+fi
 
 export LOWERCASE_APP_NAME=energymodo
 source ${INTERMEDIATE_PATH}/scripts/build_scripts/01_prepare_project.sh
@@ -90,8 +106,26 @@ source ${INTERMEDIATE_PATH}/scripts/build_scripts/02_build_chrome.sh
 source ${INTERMEDIATE_PATH}/scripts/build_scripts/03_build_android.sh
 #source ${INTERMEDIATE_PATH}/scripts/build_scripts/04_build_ios.sh
 
+if [ -f ${DROPBOX_PATH}/${LOWERCASE_APP_NAME}/${LOWERCASE_APP_NAME}-android-release-signed.apk ];
+then
+   echo echo "${LOWERCASE_APP_NAME} Android app is ready in $DROPBOX_PATH/${LOWERCASE_APP_NAME}/"
+else
+   echo "ERROR: File ${LOWERCASE_APP_NAME}-android-release-signed.apk does not exist. Build FAILED"
+   exit 1
+fi
+
 export LOWERCASE_APP_NAME=medtlc
 source ${INTERMEDIATE_PATH}/scripts/build_scripts/01_prepare_project.sh
 source ${INTERMEDIATE_PATH}/scripts/build_scripts/02_build_chrome.sh
 source ${INTERMEDIATE_PATH}/scripts/build_scripts/03_build_android.sh
 #source ${INTERMEDIATE_PATH}/scripts/build_scripts/04_build_ios.sh
+
+if [ -f ${DROPBOX_PATH}/${LOWERCASE_APP_NAME}/${LOWERCASE_APP_NAME}-android-release-signed.apk ];
+then
+   echo echo "${LOWERCASE_APP_NAME} Android app is ready in $DROPBOX_PATH/${LOWERCASE_APP_NAME}/"
+else
+   echo "ERROR: File $DROPBOX_PATH/${LOWERCASE_APP_NAME}/"${LOWERCASE_APP_NAME}-android-release-signed.apk does not exist. Build FAILED"
+   exit 1
+fi
+
+exit 0

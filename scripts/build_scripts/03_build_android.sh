@@ -87,7 +87,14 @@ ${ANDROID_BUILD_TOOLS}/zipalign 4 android-release-unsigned.apk ${LOWERCASE_APP_N
 
 cp android-debug.apk "$DROPBOX_PATH/${LOWERCASE_APP_NAME}/${LOWERCASE_APP_NAME}-android-debug.apk"
 cp ${LOWERCASE_APP_NAME}-android-release-signed.apk "$DROPBOX_PATH/${LOWERCASE_APP_NAME}/"
-echo "Android app is ready"
+
+if [ -f ${LOWERCASE_APP_NAME}-android-release-signed.apk ];
+then
+   echo echo "${LOWERCASE_APP_NAME} Android app is ready in $DROPBOX_PATH/${LOWERCASE_APP_NAME}/"
+else
+   echo "ERROR: File ${LOWERCASE_APP_NAME}-android-release-signed.apk does not exist. Build FAILED"
+   exit 1
+fi
 
 mkdir "$DROPBOX_PATH/$LOWERCASE_APP_NAME"
 echo -e "${GREEN}Copying ${BUILD_PATH}/${LOWERCASE_APP_NAME} to $DROPBOX_PATH/${LOWERCASE_APP_NAME}/${NC}"
