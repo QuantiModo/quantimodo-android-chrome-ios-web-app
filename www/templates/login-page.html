@@ -8,11 +8,11 @@
 					<li>By creating a FREE account you'll be able to:</li>
 					<li ng-repeat="feature in features">{{feature}}</li>
 				</ul>
-	            <button class="button button-block button-positive" ng-click="facebookLogin()">
+	            <button ng-show="isMobile" class="button button-block button-positive" ng-click="facebookLogin()">
 					<i class="icon ion-social-facebook"></i>
 					&nbsp Facebook Sign In
 	            </button>
-	            <button  class="button button-block button-assertive" ng-click="googleLogin()">
+	            <button ng-show="isIos" class="button button-block button-assertive" ng-click="googleLogin()">
 					<i class="icon ion-social-google"></i>
 					&nbsp Google Sign In
 	            </button>
