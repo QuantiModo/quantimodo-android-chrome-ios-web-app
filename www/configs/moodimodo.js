@@ -416,7 +416,7 @@ config.appSettings  = {
         {
             title : 'Reminder Inbox',
             href : '#/app/reminders-inbox',
-            icon : 'ion-android-notifications-none'
+            icon : 'ion-archive'
         },
         {
             title : 'Overall Mood',
@@ -529,6 +529,20 @@ config.appSettings  = {
             isSubMenuParent : true,
             collapsedIcon : 'ion-ios-medkit-outline',
             expandedIcon : 'ion-chevron-down'
+        },
+        {
+            title : 'Overdue',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showTreatmentsSubMenu',
+            href : '#/app/reminders-inbox/Treatments',
+            icon : 'ion-clock'
+        },
+        {
+            title : 'Today',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showTreatmentsSubMenu',
+            href : '#/app/reminders-inbox-today/Treatments',
+            icon : 'ion-android-sunny'
         },
         {
             title : 'Manage Reminders',

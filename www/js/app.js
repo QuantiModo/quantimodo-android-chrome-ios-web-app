@@ -387,6 +387,25 @@ angular.module('starter',
                 }
             }
         })
+        .state('app.remindersInboxTodayCategory', {
+            url: "/reminders-inbox-today/:variableCategoryName",
+            cache:false,
+            params: {
+                unit: null,
+                variableName : null,
+                dateTime : null,
+                value : null,
+                fromUrl : null,
+                today : true
+            },
+
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/reminders-inbox.html",
+                    controller: 'RemindersInboxCtrl'
+                }
+            }
+        })
       .state('app.remindersInboxCategory', {
           url: "/reminders-inbox/:variableCategoryName",
           cache:false,
