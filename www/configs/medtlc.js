@@ -37,6 +37,10 @@ config.appSettings  = {
 
     welcomeState : 'app.remindersInbox',
 
+    settingsPageOptions :
+    {
+        showReminderFrequencySelector : false
+    },
 
     headline : 'Medications - Track, Learn, Connect',
     features: [
@@ -214,9 +218,9 @@ config.appSettings  = {
     helpPopupMessages : {
         "#/app/reminders-inbox/Treatments": 'Be sure to add your "How I feel" responses throughout the day so you can monitor the effects of your medications and dosages.',
         "#/app/reminders-inbox/Symptoms": 'If you\'ve already added some side effect or response tracking reminders, here\'s where your medication reminder notifications should appear when it\'s time to take them.  Once you have some notifications, you can use those to record how you feel.',
-        "#/app/reminders-manage/Treatments": 'Here, you can set up or delete existing medication reminders.',
+        "#/app/reminders-manage/Treatments": 'Here, you can set up or delete existing medications.',
         "#/app/reminders-manage/Symptoms": 'Here, you can set up or delete existing side effect tracking or response tracking reminders.',
-        "#/app/reminders-manage": 'Here, you can set up or delete existing reminders for .',
+        "#/app/reminders-manage": 'Here, you can create, modify or delete existing reminders.',
         "#/app/reminders-inbox": 'Be sure to add your "How I feel" responses throughout the day so you can monitor the effects of your medications and dosages.',
         "#/app/history": 'You can see and edit your past data and add notes by tapping on any item in the list.',
         "#/app/track_factors_category/Foods": 'Record your diet on this page. <span class="positive">Add a new Food Variable</span> if you do not find the meal you looked for in the search results.',
@@ -290,48 +294,50 @@ config.appSettings  = {
         {
             title : 'Reminders',
             click : 'toggleReminderSubMenu',
-            icon : 'showReminderSubMenu',
-            subMenuPanel : true
+            showSubMenuVariable : 'showReminderSubMenu',
+            isSubMenuParent : true,
+            collapsedIcon : 'ion-chevron-right',
+            expandedIcon : 'ion-chevron-down'
         },
         {
             title : 'Inbox',
-            isSubMenu : true,
-            subMenuVariable : 'showReminderSubMenu',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showReminderSubMenu',
             href : '#/app/reminders-inbox',
             icon : 'ion-android-notifications-none'
         },
         {
             title : 'Manage',
-            isSubMenu : true,
-            subMenuVariable : 'showReminderSubMenu',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showReminderSubMenu',
             href : '#/app/reminders-manage',
             icon : 'ion-ios-gear-outline'
         },
         {
             title : 'Emotions',
-            isSubMenu : true,
-            subMenuVariable : 'showReminderSubMenu',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showReminderSubMenu',
             href : '#/app/reminder_add/Emotions',
             icon : 'ion-happy-outline'
         },
         {
             title : 'Responses',
-            isSubMenu : true,
-            subMenuVariable : 'showReminderSubMenu',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showReminderSubMenu',
             href : '#/app/reminder_add/Symptoms',
             icon : 'ion-ios-pulse'
         },
         {
             title : 'Treatments',
-            isSubMenu : true,
-            subMenuVariable : 'showReminderSubMenu',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showReminderSubMenu',
             href : '#/app/reminder_add/Treatments',
             icon : 'ion-ios-medkit-outline'
         },
         {
             title : 'Foods',
-            isSubMenu : true,
-            subMenuVariable : 'showReminderSubMenu',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showReminderSubMenu',
             href : '#/app/reminder_add/Foods',
             icon : 'ion-ios-nutrition-outline'
         },

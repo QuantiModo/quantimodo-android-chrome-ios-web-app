@@ -5,7 +5,7 @@ angular.module('starter')
 											 $stateParams, measurementService, reminderService, $ionicLoading,
 											 utilsService, $filter, ionicTimePicker, $timeout, 
 											 variableCategoryService, variableService, unitService, timeService,
-                                             QuantiModo, notificationService){
+                                             $rootScope, notificationService){
 
 	    $scope.controller_name = "RemindersAddCtrl";
 
@@ -32,7 +32,8 @@ angular.module('starter')
             searching : false,
             selectedFrequency : 'Daily',
             selectedReminder : false,
-            reminderStartTimeEpochTime : currentTime.getTime() / 1000
+            reminderStartTimeEpochTime : currentTime.getTime() / 1000,
+            measurementSynonymSingularLowercase : 'measurement'
     };
         
         $scope.state.variableCategoryObject = variableCategoryService.getVariableCategoryInfo();
@@ -102,30 +103,6 @@ angular.module('starter')
 			ionicTimePicker.openTimePicker($scope.state.timePickerConfiguration);
 		};
 
-		// populate list with recently tracked category variables
-    	var populateRecentlyTrackedVariables = function(variableCategoryName){
-    		utilsService.loadingStart();
-            if(!variableCategoryName){
-                // get all variables
-                console.log('Get most recent anything variables');
-                variableService.getVariables().then(function(variables){
-                    $scope.variableSearchResults = variables;
-                    utilsService.loadingStop();
-                }, function(){
-                    utilsService.loadingStop();
-                });
-            } else {
-                variableService.searchVariablesIncludePublic('*', $scope.state.variableCategoryName).then(function(variables){
-                    $scope.variableSearchResults = variables;
-                    utilsService.loadingStop();
-                }, function(){
-                    console.log('Could not get variables');
-                    utilsService.loadingStop();
-                });
-            }
-
-    	};
-
 	    // when variableCategoryName is selected
 	    $scope.onVariableCategoryChange = function(){
 	    	console.log("Variable category selected: ", $scope.state.variableCategoryName);
@@ -138,40 +115,33 @@ angular.module('starter')
         $scope.goToAddMeasurement = function(){
             $state.go('app.measurementAdd', {
                 variableObject: $scope.variableObject,
-                fromState: $state.current.name
+                fromState: $state.current.name,
+                fromUrl: window.location.href
             });
         };
 
 
         var variableSearch = function(variableSearchQuery){
-	    	// search server for the query
-
-	    	if(!$scope.state.variableCategoryName){
-				variableService.searchVariablesIncludePublic(variableSearchQuery)
-	    		.then(function(variables){
-
-	    		    // populate list with results
-	    		    $scope.state.showResults = true;
-	    		    $scope.variableSearchResults = variables;
-	    		    $scope.state.searching = false;
-                    if(variables.length < 1){
-                        $scope.state.showAddVariableButton = true;
-                    }
-	    		});
-	    	} else {
-				variableService.searchVariablesIncludePublic(variableSearchQuery, $scope.variableCategoryName)
-	    		.then(function(variables){
-
-	    		    // populate list with results
-	    		    $scope.state.showResults = true;
-	    		    $scope.variableSearchResults = variables;
-	    		    $scope.state.searching = false;
-                    if(variables.length < 1){
-                        $scope.state.showAddVariableButton = true;
-                    }
-	    		});
-	    	}
+            variableService.searchVariablesIncludePublic(variableSearchQuery, $scope.state.variableCategoryName)
+            .then(function(variables){
+                // populate list with results
+                $scope.state.showResults = true;
+                $scope.variableSearchResults = variables;
+                $scope.state.searching = false;
+                if(variables.length < 1){
+                    $scope.state.showAddVariableButton = true;
+                }
+            });
 	    };
+
+        var populateUserVariables = function(){
+            variableService.getUserVariablesByCategory($scope.state.variableCategoryName)
+                .then(function(variables){
+                    $scope.state.showResults = true;
+                    $scope.variableSearchResults = variables;
+                    $scope.state.searching = false;
+                });
+        };
 
 	    // when a query is searched in the search box
 	    $scope.onSearch = function(){
@@ -179,9 +149,8 @@ angular.module('starter')
 	    	if($scope.state.variableSearchQuery === ""){
                 $scope.state.showResults = true;
                 $scope.state.searching = true;
-                variableSearch($scope.state.variableSearchQuery);
+                populateUserVariables($scope.state.variableSearchQuery);
             } else {
-
                 $scope.state.showResults = true;
                 $scope.state.searching = true;
                 variableSearch($scope.state.variableSearchQuery);
@@ -192,8 +161,12 @@ angular.module('starter')
 	    $scope.onVariableSelect = function(selectedVariable){
 	    	console.log("Variable Selected: ", selectedVariable);
 
+	    	if(!selectedVariable.variableCategoryName){
+	    		selectedVariable.variableCategoryName = selectedVariable.category;
+	    	}
+	    	$scope.variableObject=selectedVariable;
+
             setupVariableCategory(selectedVariable.variableCategoryName);
-            $scope.state.abbreviatedUnitName = selectedVariable.abbreviatedUnitName;
             $scope.state.abbreviatedUnitName = selectedVariable.abbreviatedUnitName;
             $scope.state.combinationOperation = selectedVariable.combinationOperation;
             $scope.state.id = selectedVariable.id;
@@ -215,8 +188,8 @@ angular.module('starter')
 	    // when adding/editing is cancelled
 	    $scope.cancel = function(){
 	    	if($stateParams.reminder && $stateParams.reminder !== null){
-	    		if($stateParams.reminder.fromState){
-	    			$state.go($stateParams.reminder.fromState);
+	    		if($stateParams.fromUrl){
+                    window.location=$stateParams.fromUrl;
 	    		} else {
 					$state.go('app.remindersManage');
                 }
@@ -252,7 +225,9 @@ angular.module('starter')
 
                 notificationService.scheduleReminder(notificationParams);
 	    		if($stateParams.reminder !== null && typeof $stateParams.reminder !== "undefined"){
-	    			if($stateParams.reminder.fromState){
+                    if($stateParams.fromUrl){
+                        window.location = $stateParams.fromUrl;
+                    } else if ($stateParams.reminder.fromState){
 	    				$state.go($stateParams.reminder.fromState);
 	    			} else {
 						$state.go('app.remindersManage');
@@ -331,7 +306,9 @@ angular.module('starter')
 
                 notificationService.scheduleReminder(notificationParams);
 	    		if($stateParams.reminder !== null && typeof $stateParams.reminder !== "undefined"){
-	    			if($stateParams.reminder.fromState){
+                    if($stateParams.fromUrl){
+                        window.location = $stateParams.fromUrl;
+                    } else if ($stateParams.reminder.fromState){
 	    				$state.go($stateParams.reminder.fromState);
 	    			} else {
 						$state.go('app.remindersManage');
@@ -351,6 +328,7 @@ angular.module('starter')
 	    // setup editing view
 	    var setupEditReminder = function(){
 
+            $scope.reminder = $stateParams.reminder;
             $scope.state.id = $stateParams.reminder.id;
             $scope.state.variableName = $stateParams.reminder.variableName;
             $scope.state.variableId = $stateParams.reminder.variableId;
@@ -393,18 +371,17 @@ angular.module('starter')
 
 	    // setup category view
 	    var setupVariableCategory = function(variableCategoryName){
-            console.log("$stateParams.variableCategoryName  is " + variableCategoryName);
+            console.log("variableCategoryName  is " + variableCategoryName);
             if(!variableCategoryName){
                 variableCategoryName = '';
             }
             $scope.state.variableCategoryName = variableCategoryName;
             $scope.state.variableCategoryObject = variableCategoryService.getVariableCategoryInfo(variableCategoryName);
-            $scope.state.title = "Add a " + $filter('wordAliases')(pluralize(variableCategoryName, 1) + " Reminder");
+            $scope.state.title = "Add " + $filter('wordAliases')(pluralize(variableCategoryName, 1) + " Reminder");
             $scope.state.showVariableCategorySelector = false;
             $scope.state.showSearchBox = true;
             $scope.state.showResults = true;
-
-			populateRecentlyTrackedVariables(variableCategoryName);
+            $scope.state.measurementSynonymSingularLowercase = $scope.state.variableCategoryObject.measurementSynonymSingularLowercase;
 	    };
 
 	    // setup new reminder view
@@ -435,7 +412,9 @@ angular.module('starter')
                     $scope.state.allReminders = reminders;
                     if (reminders.length !== 1) {
                         utilsService.showAlert("Reminder id " + reminderIdUrlParameter + " not found!", 'assertive');
-                        if ($stateParams.reminder.fromState) {
+                        if($stateParams.fromUrl){
+                            window.location = $stateParams.fromUrl;
+                        } else if  ($stateParams.reminder.fromState) {
                             $state.go($stateParams.reminder.fromState);
                         } else {
                             $state.go('app.remindersManage');
@@ -454,6 +433,7 @@ angular.module('starter')
             $scope.state.loading = true;
             utilsService.loadingStart();
             var isAuthorized = authService.checkAuthOrSendToLogin();
+
             if(isAuthorized){
                 if($stateParams.variableCategoryName){
                     setupVariableCategory($stateParams.variableCategoryName);
@@ -462,16 +442,19 @@ angular.module('starter')
                 var variableIdUrlParameter = utilsService.getUrlParameter(window.location.href, 'variableId');
                 $scope.getUnits();
                 if($stateParams.variableCategoryName){
-                    $scope.variableCategoryName = $stateParams.variableCategoryName;
-                    setupVariableCategory($scope.variableCategoryName);
-                }
-                else if($stateParams.reminder && $stateParams.reminder !== null) {
+                    $scope.state.variableCategoryName = $stateParams.variableCategoryName;
+                    setupVariableCategory($scope.state.variableCategoryName);
+                    populateUserVariables($stateParams.variableCategoryName);
+                } else if ($stateParams.reminder && $stateParams.reminder !== null) {
                     setupEditReminder($stateParams.reminder);
                 }
                 else if(reminderIdUrlParameter) {
                     setupReminderEditingFromUrlParameter(reminderIdUrlParameter);
                 } else if(variableIdUrlParameter){
                     setupReminderEditingFromVariableId(variableIdUrlParameter);
+                } else if ($stateParams.variableObject) {
+                    $scope.variableObject = $stateParams.variableObject;
+                    $scope.onVariableSelect($stateParams.variableObject);
                 }
                 else {
                     setupNewReminderSearch();
@@ -507,6 +490,29 @@ angular.module('starter')
             } else {
                 $scope.state.showUnits = false;
             }
+        };
+
+        $scope.deleteReminder = function(){
+            utilsService.loadingStart();
+            reminderService.deleteReminder($scope.reminder.id)
+                .then(function(){
+
+                    utilsService.loadingStop();
+                    utilsService.showAlert('Reminder Deleted.');
+                    if($stateParams.fromUrl){
+                        window.location=$stateParams.fromUrl;
+                    } else if ($stateParams.fromState){
+                        $state.go($stateParams.fromState);
+                    } else {
+                        $rootScope.hideMenu = false;
+                        $state.go('app.remindersManage');
+                    }
+
+                }, function(err){
+
+                    utilsService.loadingStop();
+                    utilsService.showAlert('Failed to Delete Reminder, Try again!', 'assertive');
+                });
         };
 
         // when a unit is selected

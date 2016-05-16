@@ -6,9 +6,10 @@ angular.module('starter')
 										 $cordovaFileOpener2, $ionicPopup, $state,notificationService, QuantiModo,
                                          $rootScope) {
 		$scope.controller_name = "SettingsCtrl";
+		$scope.showReminderFrequencySelector = config.appSettings.settingsPageOptions.showReminderFrequencySelector;
 		// populate ratings interval
-        localStorageService.getItem('askForRating', function (askForRating) {
-                $scope.ratings = askForRating ? askForRating : "hourly";
+        localStorageService.getItem('primaryOutcomeRatingFrequencyDescription', function (primaryOutcomeRatingFrequencyDescription) {
+                $scope.primaryOutcomeRatingFrequencyDescription = primaryOutcomeRatingFrequencyDescription ? primaryOutcomeRatingFrequencyDescription : "hourly";
         });
 		$rootScope.isIOS = ionic.Platform.isIPad() || ionic.Platform.isIOS();
 		$rootScope.isAndroid = ionic.Platform.isAndroid();
@@ -27,8 +28,8 @@ angular.module('starter')
 	        //TODO we can pass callback function to check the status of scheduling
 	        notificationService.scheduleNotification(interval);
 	        
-	        localStorageService.setItem('askForRating', interval);
-	        $scope.ratings = interval;
+	        localStorageService.setItem('primaryOutcomeRatingFrequencyDescription', interval);
+	        $scope.primaryOutcomeRatingFrequencyDescription = interval;
 	        
 	        // hide popover
 	        $scope.ratingPopover.hide();
@@ -129,14 +130,10 @@ angular.module('starter')
             localStorageService.deleteItem('expiresAt');
         }
 
-                // when user is logging out
+		// when user is logging out
         function logoutOfApi() {
-			if(config.getClientId() === 'oAuthDisabled'){
-				var logoutUrl = config.getURL("api/v2/auth/logout");
-                window.open(logoutUrl, '_blank');
-			} else {
-                console.log('Client id is ' + config.getClientId() + ' so not sending to ' +  config.getURL("api/v2/auth/logout"));
-            }
+			var logoutUrl = config.getURL("api/v2/auth/logout");
+			window.open(logoutUrl,'_blank');
         }
 
         // load rating popover

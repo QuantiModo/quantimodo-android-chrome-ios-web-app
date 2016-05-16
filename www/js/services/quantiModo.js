@@ -1,6 +1,6 @@
 angular.module('starter')    
     // QuantiModo API implementation
-    .factory('QuantiModo', function($http, $q, authService, localStorageService, $state, $ionicLoading){
+    .factory('QuantiModo', function($http, $q, authService, localStorageService, $state, $ionicLoading, $rootScope){
             var QuantiModo = {};
 
             QuantiModo.successHandler = function(data){
@@ -16,12 +16,14 @@ angular.module('starter')
                 $ionicLoading.hide();
                 if(status === 401){
                     localStorageService.deleteItem('accessToken');
+                    localStorageService.deleteItem('user');
+                    $rootScope.user = null;
                     console.log('QuantiModo.errorHandler: Sending to login because we got 401 with request ' +
                         JSON.stringify(request));
                     console.log('data: ' + JSON.stringify(data));
                     console.log('headers: ' + JSON.stringify(headers));
                     console.log('config: ' + JSON.stringify(config));
-                    //$state.go('app.login');
+                    $state.go('app.login');
                     return;
                 }
                 if(!data){
@@ -333,7 +335,7 @@ angular.module('starter')
 
 
         // get user variables
-            QuantiModo.getVariablesByCategory = function(category,successHandler, errorHandler){
+            QuantiModo.getUserVariablesByCategory = function(category,successHandler, errorHandler){
                 QuantiModo.get('api/v1/variables',
                     ['category', 'limit'],
                     {category:category, limit:5},

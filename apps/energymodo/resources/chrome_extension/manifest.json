@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "EnergyModo Energy-Tracking Extension",
   "description": "Track and see what affects your energy levels!",
-  "version": "QUANTIMODO_TEMPLATE_APP_VERSION",
+  "version": "IONIC_APP_VERSION_NUMBER",
   "options_page": "www/chrome_extension/options/options.html",
   "icons": {
     "16"	: "www/img/icon_16.png",
@@ -20,7 +20,7 @@
   ],
   "browser_action": {
     "default_icon": "www/img/icon_700.png",
-    "default_popup": "www/templates/chrome/iframe.html"
+    "default_popup": "www/templates/chrome/reminders-inbox-iframe.html"
   },
   "background": {
     "scripts": ["www/js/chrome/background.js"],

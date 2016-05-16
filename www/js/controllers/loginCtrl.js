@@ -6,12 +6,12 @@ angular.module('starter')
                                       $ionicLoading, $injector) {
 
         $scope.controller_name = "LoginCtrl";
-        console.log("isIos is" + $scope.isIos);
-        $rootScope.hideMenu = true;
+        console.log("isIos is" + $rootScope.isIos);
+        $rootScope.hideNavigationMenu = true;
         $scope.headline = config.appSettings.headline;
         $scope.features = config.appSettings.features;
         var $cordovaFacebook = {};
-        if($rootScope.isIOS && $injector.has('$cordovaFacebook')){
+        if(($rootScope.isIOS || $rootScope.isAndroid) && $injector.has('$cordovaFacebook')){
             $cordovaFacebook = $injector.get('$cordovaFacebook');
         }
 
@@ -26,7 +26,7 @@ angular.module('starter')
             }
             if($rootScope.user){
                 console.log("Already logged in on login page.  Going to default state...");
-                $rootScope.hideMenu = false;
+                $rootScope.hideNavigationMenu = false;
                 $state.go(config.appSettings.defaultState);
             }
         };
@@ -37,18 +37,16 @@ angular.module('starter')
             localStorageService.setItem('isWelcomed', true);
             $rootScope.isWelcomed = true;
 
-            var url = config.getURL("api/oauth2/authorize", true);
-
             if($rootScope.isChromeApp){
                 chromeAppLogin(register);
             } else if ($rootScope.isChromeExtension) {
                 chromeExtensionLogin(register);
             } else if(ionic.Platform.is('browser')){
                 console.log("$scope.login: Browser Detected");
-                browserLogin(url, register);
+                browserLogin(register);
             } else {
                 console.log("$scope.login: Browser and Chrome Not Detected.  Assuming mobile platform");
-                nonNativeMobileLogin(url, register);
+                nonNativeMobileLogin(register);
             }
 
             var userObject = localStorageService.getItemAsObject('user');
@@ -59,7 +57,7 @@ angular.module('starter')
                 console.log('Settings user in login');
                 $rootScope.setUserForIntercom($rootScope.user);
                 $rootScope.setUserForBugsnag($rootScope.user);
-                $rootScope.hideMenu = false;
+                $rootScope.hideNavigationMenu = false;
                 $state.go(config.appSettings.defaultState);
             }
         };
@@ -97,7 +95,7 @@ angular.module('starter')
 
                         console.log('get user details from server...');
                         $rootScope.getUserAndSetInLocalStorage();
-                        $rootScope.hideMenu = false;
+                        $rootScope.hideNavigationMenu = false;
                         $rootScope.$broadcast('callAppCtrlInit');
                         $state.go(config.appSettings.defaultState);
 
@@ -226,7 +224,12 @@ angular.module('starter')
         // log in with google
         $scope.googleLogin = function(){
             utilsService.loadingStart('Logging you in', 2000);
-            window.plugins.googleplus.login({}, function (userData) {
+            window.plugins.googleplus.login({
+                'scopes': 'https://www.googleapis.com/auth/plus.login https://www.googleapis.com/auth/userinfo.email', // optional, space-separated list of scopes, If not included or empty, defaults to `profile` and `email`.
+                'webClientId': '1052648855194.apps.googleusercontent.com', // optional clientId of your Web application from Credentials settings of your project - On Android, this MUST be included to get an idToken. On iOS, it is not required.
+                'offline': true // optional, but requires the webClientId - if set to true the plugin will also return a serverAuthCode, which can be used to grant offline access to a non-Google server
+                },
+                function (userData) {
                     $ionicLoading.hide();
                     console.log('successfully logged in');
                     console.log('google->', JSON.stringify(userData));
@@ -286,7 +289,7 @@ angular.module('starter')
         var sendToNonOAuthBrowserLoginUrl = function(register) {
             var user = getOrSetUserInLocalStorage();
             if(user){
-                $rootScope.hideMenu = false;
+                $rootScope.hideNavigationMenu = false;
                 $state.go(config.appSettings.defaultState);
             }
             if(!user){

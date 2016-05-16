@@ -61,7 +61,7 @@ angular.module('starter')
             if(menuItem.click){
                 $scope[menuItem.click] && $scope[menuItem.click]();
             }
-            else if(!menuItem.subMenuPanel){
+            else if(!menuItem.isSubMenuParent){
                 $scope.closeMenu();
             }
         };
@@ -151,7 +151,7 @@ angular.module('starter')
         };
 
         // when work on this activity is complete
-        function hideMenuIfSetInUrlParameter() {
+        function hideNavigationMenuIfSetInUrlParameter() {
             if (location.href.toLowerCase().indexOf('hidemenu=true') !== -1) {
                 $rootScope.hideNavigationMenu = true;
             }
@@ -160,17 +160,17 @@ angular.module('starter')
         function goToDefaultStateShowMenuClearIntroHistoryAndRedraw() {
 
             if ($state.current.name === "app.welcome") {
-                $rootScope.hideMenu = false;
+                $rootScope.hideNavigationMenu = false;
                 $state.go(config.appSettings.defaultState);
             }
 
             if ($state.current.name === "app.login" && $rootScope.user) {
-                $rootScope.hideMenu = false;
+                $rootScope.hideNavigationMenu = false;
                 $state.go(config.appSettings.defaultState);
             }
 
             if (config.appSettings.allowOffline) {
-                $rootScope.hideMenu = false;
+                $rootScope.hideNavigationMenu = false;
                 $state.go(config.appSettings.defaultState);
             }
 
@@ -239,7 +239,7 @@ angular.module('starter')
                     $rootScope.setUserForIntercom($rootScope.user);
                     $rootScope.setUserForBugsnag($rootScope.user);
             }
-            hideMenuIfSetInUrlParameter();
+            hideNavigationMenuIfSetInUrlParameter();
             goToWelcomeStateIfNotWelcomed();
             scheduleReminder();
             $ionicLoading.hide();
@@ -251,6 +251,29 @@ angular.module('starter')
             $scope.init();
         });
 
+        $scope.togglePrimaryOutcomeSubMenu = function(){
+            $scope.showPrimaryOutcomeSubMenu = !$scope.showPrimaryOutcomeSubMenu;
+        };
+
+        $scope.toggleEmotionsSubMenu = function(){
+            $scope.showEmotionsSubMenu = !$scope.showEmotionsSubMenu;
+        };
+
+        $scope.toggleDietSubMenu = function(){
+            $scope.showDietSubMenu = !$scope.showDietSubMenu;
+        };
+
+        $scope.toggleTreatmentsSubMenu = function(){
+            $scope.showTreatmentsSubMenu = !$scope.showTreatmentsSubMenu;
+        };
+
+        $scope.toggleSymptomsSubMenu = function(){
+            $scope.showSymptomsSubMenu = !$scope.showSymptomsSubMenu;
+        };
+
+        $scope.togglePhysicalActivitySubMenu = function(){
+            $scope.showPhysicalActivitySubMenu= !$scope.showPhysicalActivitySubMenu;
+        };
 
         $scope.toggleTrackingSubMenu = function(){
             $scope.showTrackingSubMenu = !$scope.showTrackingSubMenu;
@@ -275,6 +298,7 @@ angular.module('starter')
         function setPlatformVariables() {
             $rootScope.isIOS = ionic.Platform.isIPad() || ionic.Platform.isIOS();
             $rootScope.isAndroid = ionic.Platform.isAndroid();
+            $rootScope.isMobile = ionic.Platform.isAndroid() || ionic.Platform.isIPad() || ionic.Platform.isIOS();
             $rootScope.isChrome = window.chrome ? true : false;
 
             var currentUrl =  window.location.href;
@@ -291,27 +315,30 @@ angular.module('starter')
         }
 
         $rootScope.getUserAndSetInLocalStorage = function(){
+            
+            var successHandler = function(userObject) {
+                if (userObject) {
+                    // set user data in local storage
+                    console.log('Settings user in getUserAndSetInLocalStorage');
+                    localStorageService.setItem('user', JSON.stringify(userObject));
+                    $rootScope.user = userObject;
+                    $rootScope.setUserForIntercom($rootScope.user);
+                    $rootScope.setUserForBugsnag($rootScope.user);
+                    $rootScope.$broadcast('updateChartsAndSyncMeasurements');
+                    var currentStateName = $state.current.name;
+                    console.log('Current state is  ' + currentStateName);
+                    if (currentStateName === 'app.login') {
+                        goToDefaultStateShowMenuClearIntroHistoryAndRedraw();
+                    }
+                    return userObject;
+                }
+            };
+            
             authService.apiGet('api/user/me',
                 [],
                 {},
-                function(userObject){
-                    if(userObject){
-                       // set user data in local storage
-                        console.log('Settings user in getUserAndSetInLocalStorage');
-                        localStorageService.setItem('user', JSON.stringify(userObject));
-                        $rootScope.user = userObject;
-                        $rootScope.setUserForIntercom($rootScope.user);
-                        $rootScope.setUserForBugsnag($rootScope.user);
-                        $rootScope.$broadcast('updateChartsAndSyncMeasurements');
-                        var currentStateName = $state.current.name;
-                        console.log('Current state is  ' + currentStateName);
-                        if(currentStateName === 'app.login'){
-                            goToDefaultStateShowMenuClearIntroHistoryAndRedraw();
-                        }
-                        return userObject;
-                    }
-
-                },function(err){
+                successHandler,
+                function(err){
                     console.log(err);
                 }
             );

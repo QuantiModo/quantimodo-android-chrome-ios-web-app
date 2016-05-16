@@ -1,4 +1,4 @@
-<ion-view hide-nav-bar="hideNavigationMenu" view-title="Welcome!">
+<ion-view hide-nav-bar="hideNavigationMenu" view-title="Welcome Tour">
     <ion-slide-box on-slide-changed="myIntro.slideChanged(index)">
 
         <ion-slide ng-repeat="introConf in introConfiguration">
@@ -43,7 +43,7 @@
                     <div ng-if="introConf.content.finalP && introConf.content.finalP.buttonBarVisible">
                         <div class="button-bar">
                             <a class="button button-positive" ng-show="myIntro.slideIndex != introConfiguration.length-1 " ng-click="myIntro.startApp()">
-                                Skip
+                                Skip Tour
                             </a>
                             <a class="button button-positive" ng-show="myIntro.slideIndex > 0 && myIntro.slideIndex < introConfiguration.length-1" ng-click="myIntro.previous()">
                                 Back

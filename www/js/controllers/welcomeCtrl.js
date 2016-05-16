@@ -8,14 +8,14 @@ angular.module('starter')
         $rootScope.isIOS = ionic.Platform.isIPad() || ionic.Platform.isIOS();
         $rootScope.isAndroid = ionic.Platform.isAndroid();
         $rootScope.isChrome = window.chrome ? true : false;
-        $rootScope.hideMenu = true;
+        $rootScope.hideNavigationMenu = true;
         $scope.reportedVariableValue = false;
         $scope.headline = config.appSettings.headline;
         $scope.features = config.appSettings.features;
         $scope.appName = config.appSettings.appName;
 
-        localStorageService.getItem('askForRating',function(askForRating){
-            $scope.notificationInterval = askForRating || $rootScope.isIOS? "hour" : "hourly";
+        localStorageService.getItem('primaryOutcomeRatingFrequencyDescription',function(primaryOutcomeRatingFrequencyDescription){
+            $scope.primaryOutcomeRatingFrequencyDescription = primaryOutcomeRatingFrequencyDescription || $rootScope.isIOS? "day" : "daily";
         });
 
         $scope.subscribeNotification = true;
@@ -25,14 +25,14 @@ angular.module('starter')
             /*TODO schedule notification*/
             if($scope.subscribeNotification){
 
-                notificationService.scheduleNotification($scope.notificationInterval);
+                notificationService.scheduleNotification($scope.primaryOutcomeRatingFrequencyDescription);
 
                 var intervals = {
                     "never" : 0,
                     "hourly": 60 * 60,
                     "hour": 60 * 60,
-                    "three" : 03 * 60 * 60,
-                    "twice" : 12 * 60 * 60,
+                    "every three hours" : 3 * 60 * 60,
+                    "twice a day" : 12 * 60 * 60,
                     "daily" : 24 * 60 * 60,
                     "day" : 24 * 60 * 60
                 };
@@ -40,14 +40,14 @@ angular.module('starter')
                 $rootScope.reminderToSchedule = {
                     id: config.appSettings.primaryOutcomeVariableDetails.id,
                     reportedVariableValue: $scope.reportedVariableValue,
-                    interval: intervals[$scope.notificationInterval], 
+                    interval: intervals[$scope.primaryOutcomeRatingFrequencyDescription], 
                     name: config.appSettings.primaryOutcomeVariableDetails.name,
                     category: config.appSettings.primaryOutcomeVariableDetails.category,
                     unit: config.appSettings.primaryOutcomeVariableDetails.abbreviatedUnitName,
                     combinationOperation : config.appSettings.primaryOutcomeVariableDetails.combinationOperation
                 };
 
-                localStorageService.setItem('askForRating', $scope.notificationInterval);
+                localStorageService.setItem('primaryOutcomeRatingFrequencyDescription', $scope.primaryOutcomeRatingFrequencyDescription);
                 $scope.showIntervalCard = false;
                 $state.go('app.login');
             }            

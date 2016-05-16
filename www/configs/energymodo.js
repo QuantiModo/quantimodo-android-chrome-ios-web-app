@@ -34,6 +34,11 @@ config.appSettings  = {
     primaryOutcomeVariable : 'Energy',
 
     appStorageIdentifier: 'EnergyModoData*',
+
+    settingsPageOptions :
+    {
+        showReminderFrequencySelector : true
+    },
       
     primaryOutcomeVariableDetails : {
         id : 108092,
@@ -409,116 +414,122 @@ config.appSettings  = {
         {
             title : 'Track Factors',
             click : 'toggleTrackingSubMenu',
-            icon : 'showTrackingSubMenu',
-            subMenuPanel : true
+            showSubMenuVariable : 'showTrackingSubMenu',
+            isSubMenuParent : true,
+            collapsedIcon : 'ion-chevron-right',
+            expandedIcon : 'ion-chevron-down'
         },
         {
             title : 'Track anything',
-            isSubMenu : true,
-            subMenuVariable : 'showTrackingSubMenu',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showTrackingSubMenu',
             href : '#/app/track_factors',
             icon : 'ion-ios-world-outline'   
         },
         {
             title : 'Track foods',
-            isSubMenu : true,
-            subMenuVariable : 'showTrackingSubMenu',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showTrackingSubMenu',
             href : '#/app/track_factors_category/Foods',
             icon : 'ion-ios-nutrition-outline'
         },
         {
             title : 'Track emotions',
-            isSubMenu : true,
-            subMenuVariable : 'showTrackingSubMenu',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showTrackingSubMenu',
             href : '#/app/track_factors_category/Emotions',
             icon : 'ion-happy-outline'
         },
         {
             title : 'Track symptoms',
-            isSubMenu : true,
-            subMenuVariable : 'showTrackingSubMenu',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showTrackingSubMenu',
             href : '#/app/track_factors_category/Symptoms',
             icon : 'ion-ios-pulse'
         },
         {
             title : 'Track treatments',
-            isSubMenu : true,
-            subMenuVariable : 'showTrackingSubMenu',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showTrackingSubMenu',
             href : '#/app/track_factors_category/Treatments',
             icon : 'ion-ios-medkit-outline'
         },
         {
             title : 'Track physical activity',
-            isSubMenu : true,
-            subMenuVariable : 'showTrackingSubMenu',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showTrackingSubMenu',
             href : '#/app/track_factors_category/Physical Activity',
             icon : 'ion-ios-body-outline'
         },
         {
             title : 'Reminders',
             click : 'toggleReminderSubMenu',
-            icon : 'showReminderSubMenu',
-            subMenuPanel : true
+            showSubMenuVariable : 'showReminderSubMenu',
+            isSubMenuParent : true,
+            collapsedIcon : 'ion-chevron-right',
+            expandedIcon : 'ion-chevron-down'
         },
         {
             title : 'Inbox',
-            isSubMenu : true,
-            subMenuVariable : 'showReminderSubMenu',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showReminderSubMenu',
             href : '#/app/reminders-inbox',
             icon : 'ion-android-notifications-none'
         },
         {
             title : 'Manage',
-            isSubMenu : true,
-            subMenuVariable : 'showReminderSubMenu',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showReminderSubMenu',
             href : '#/app/reminders-manage',
             icon : 'ion-ios-gear-outline'
         },
         {
             title : 'Emotions',
-            isSubMenu : true,
-            subMenuVariable : 'showReminderSubMenu',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showReminderSubMenu',
             href : '#/app/reminder_add/Emotions',
             icon : 'ion-happy-outline'
         },
         {
             title : 'Symptoms',
-            isSubMenu : true,
-            subMenuVariable : 'showReminderSubMenu',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showReminderSubMenu',
             href : '#/app/reminder_add/Symptoms',
             icon : 'ion-ios-pulse'
         },
         {
             title : 'Treatments',
-            isSubMenu : true,
-            subMenuVariable : 'showReminderSubMenu',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showReminderSubMenu',
             href : '#/app/reminder_add/Treatments',
             icon : 'ion-ios-medkit-outline'
         },
         {
             title : 'Foods',
-            isSubMenu : true,
-            subMenuVariable : 'showReminderSubMenu',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showReminderSubMenu',
             href : '#/app/reminder_add/Foods',
             icon : 'ion-ios-nutrition-outline'
         },
         {
             title : 'History',
             click : 'toggleHistorySubMenu',
-            icon : 'showHistorySubMenu',
-            subMenuPanel : true
+            showSubMenuVariable : 'showHistorySubMenu',
+            isSubMenuParent : true,
+            collapsedIcon : 'ion-chevron-right',
+            expandedIcon : 'ion-chevron-down'
         },
         {
             title : 'Energy(s)',
-            isSubMenu : true,
-            subMenuVariable : 'showHistorySubMenu',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showHistorySubMenu',
             href : '#/app/history',
             icon : 'ion-happy-outline'
         },
         {
             title : 'All Measurements',
-            isSubMenu : true,
-            subMenuVariable : 'showHistorySubMenu',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showHistorySubMenu',
             href : '#/app/history-all',
             icon : 'ion-ios-paper-outline'
         },
@@ -535,40 +546,44 @@ config.appSettings  = {
         {
             title : 'Predictor Search',
             click : 'togglePredictorSearchSubMenu',
-            icon : 'showPredictorSearchSubMenu',
-            subMenuPanel : true
+            showSubMenuVariable : 'showPredictorSearchSubMenu',
+            isSubMenuParent : true,
+            collapsedIcon : 'ion-chevron-right',
+            expandedIcon : 'ion-chevron-down'
         },
         {
             title : 'Common',
-            isSubMenu : true,
-            subMenuVariable : 'showPredictorSearchSubMenu',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showPredictorSearchSubMenu',
             href : '#/app/search-common-relationships',
             icon : 'ion-ios-people'
         },
         {
             title : 'Yours',
-            isSubMenu : true,
-            subMenuVariable : 'showPredictorSearchSubMenu',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showPredictorSearchSubMenu',
             href : '#/app/search-user-relationships',
             icon : 'ion-person'
         },
         {
             title : 'Predictors of Energy',
             click : 'toggleOutcomePredictorSubMenu',
-            icon : 'showOutcomePredictorSubMenu',
-            subMenuPanel : true
+            showSubMenuVariable : 'showOutcomePredictorSubMenu',
+            isSubMenuParent : true,
+            collapsedIcon : 'ion-chevron-right',
+            expandedIcon : 'ion-chevron-down'
         },
         {
             title : 'Positive Energy',
-            isSubMenu : true,
-            subMenuVariable : 'showOutcomePredictorSubMenu',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showOutcomePredictorSubMenu',
             href : '#/app/positive',
             icon : 'ion-happy-outline'
         },
         {
             title : 'Negative Energy',
-            isSubMenu : true,
-            subMenuVariable : 'showOutcomePredictorSubMenu',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showOutcomePredictorSubMenu',
             href : '#/app/negative',
             icon : 'ion-sad-outline'
         },

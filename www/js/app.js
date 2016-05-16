@@ -50,7 +50,7 @@ angular.module('starter',
                     if($ionicHistory.backView()){
                         $ionicHistory.goBack();
                     } else if(localStorage.user){
-                        $rootScope.hideMenu = false;
+                        $rootScope.hideNavigationMenu = false;
                         $state.go(config.appSettings.defaultState);
                     } else {
                         $state.go(config.appSettings.welcomeState);
@@ -166,6 +166,12 @@ angular.module('starter',
       })
       .state('app.track_factors', {
           url: "/track_factors",
+          params: {
+              reminder : null,
+              fromState : null,
+              measurement : null,
+              variableObject : null
+          },
           views: {
               'menuContent': {
                   templateUrl: "templates/variable-search.html",
@@ -179,6 +185,7 @@ angular.module('starter',
           params: {
               variableCategoryName : null,
               fromState : null,
+              fromUrl : null,
               measurement : null
           },
           views: {
@@ -194,6 +201,7 @@ angular.module('starter',
             params: {
                 reminder : null,
                 fromState : null,
+                fromUrl : null,
                 measurement : null,
                 variableObject : null
             },
@@ -206,6 +214,13 @@ angular.module('starter',
         })
         .state('app.variable_settings', {
             url: "/variable_settings/:variableName",
+            params: {
+                reminder : null,
+                fromState : null,
+                fromUrl : null,
+                measurement : null,
+                variableObject : null
+            },
             views: {
                 'menuContent': {
                     templateUrl: "templates/variable-settings.html",
@@ -343,7 +358,8 @@ angular.module('starter',
             unit: null,
             variableName : null,
             dateTime : null,
-            value : null
+            value : null,
+              fromUrl : null
           },
           views: {
               'menuContent': {
@@ -359,7 +375,8 @@ angular.module('starter',
             unit: null,
             variableName : null,
             dateTime : null,
-            value : null
+            value : null, 
+            fromUrl : null
           },
           views: {
               'menuContent': {
@@ -391,6 +408,13 @@ angular.module('starter',
       .state('app.reminderAddCategory', {
           url: "/reminder_add/:variableCategoryName",
           cache:false,
+          params: {
+              reminder : null,
+              fromState : null,
+              fromUrl : null,
+              measurement : null,
+              variableObject : null
+          },
           views: {
               'menuContent': {
                   templateUrl: "templates/reminder-add.html",
@@ -402,7 +426,11 @@ angular.module('starter',
           url: "/reminder_add",
           cache:false,
           params: {
-            reminder: null
+              reminder : null,
+              fromState : null,
+              fromUrl : null,
+              measurement : null,
+              variableObject : null
           },
           views: {
               'menuContent': {

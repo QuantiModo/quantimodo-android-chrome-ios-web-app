@@ -179,7 +179,13 @@
                         </button>
                     </label>
             </div>
-
+            <div class="row">
+                <button ng-show="reminder.id" ng-click="deleteReminder()"
+                        class="button icon-left ion-trash-a button-assertive"
+                        style="margin: auto">
+                    Delete Reminder
+                </button>
+            </div>
 			<div class="row">
 				<div class="col col-50">
 					<button class="button button-block button-assertive" ng-click="cancel()">Cancel</button>
@@ -191,7 +197,7 @@
         </div>
 
         <div class="bar bar-footer bar-balanced" ng-show="variableObject">
-            <div class="title"  ng-click="goToAddMeasurement()">Record a measurement now</div>
+            <div class="title"  ng-click="goToAddMeasurement()">Record a {{state.measurementSynonymSingularLowercase}} now</div>
         </div>
     </ion-content>
 </ion-view>

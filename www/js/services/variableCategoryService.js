@@ -20,46 +20,52 @@ angular.module('starter')
                         addNewVariableCardText : 'Add a new variable',
                         variableCategoryName : '',
                         abbreviatedUnitName : '',
-                        defaultValue : ''
+                        defaultValue : '',
+                        measurementSynonymSingularLowercase : "measurement"
                     },
                     "Vital Signs": {
                         defaultUnitAbbreviatedName: '',
                         helpText: "What vital sign do you want to record?",
                         variableCategoryName: "Vital Signs",
-                        variableCategoryNameSingularLowercase: "vital sign"
+                        variableCategoryNameSingularLowercase: "vital sign",
+                        measurementSynonymSingularLowercase : "measurement"
                     },
-                    Foods: {
+                    "Foods" : {
                         defaultUnitAbbreviatedName: "serving",
                         helpText: "What did you eat?",
                         variableCategoryName: "Foods",
-                        variableCategoryNameSingularLowercase: "food"
+                        variableCategoryNameSingularLowercase: "food",
+                        measurementSynonymSingularLowercase : "meal"
                     },
                     Emotions: {
                         defaultUnitAbbreviatedName: "/5",
                         helpText: "What emotion do you want to rate?",
                         variableCategoryName: "Emotions",
-                        variableCategoryNameSingularLowercase: "emotion"
+                        variableCategoryNameSingularLowercase: "emotion",
+                        measurementSynonymSingularLowercase : "rating"
                     },
                     Symptoms: {
                         defaultUnitAbbreviatedName: "/5",
                         helpText: "What symptom do you want to record?",
                         variableCategoryName: "Symptoms",
-                        variableCategoryNameSingularLowercase: "symptom"
+                        variableCategoryNameSingularLowercase: "symptom",
+                        measurementSynonymSingularLowercase : "rating"
                     },
                     Treatments: {
-                        defaultUnitAbbreviatedName: "mg",
-                        helpText: "What treatment do you want to record?",
-                        variableCategoryName: "Treatments",
-                        variableCategoryNameSingularLowercase: "treatment",
-                        defaultValueLabel: "Dosage",
-                        defaultValuePlaceholderText: "Enter dose value here..."
-
+                        defaultUnitAbbreviatedName : "mg",
+                        helpText : "What treatment do you want to record?",
+                        variableCategoryName : "Treatments",
+                        variableCategoryNameSingularLowercase : "treatment",
+                        defaultValueLabel : "Dosage",
+                        defaultValuePlaceholderText : "Enter dose value here...",
+                        measurementSynonymSingularLowercase : "dose"
                     },
                     "Physical Activity": {
                         defaultUnitAbbreviatedName: '',
                         helpText: "What physical activity do you want to record?",
                         variableCategoryName: "Physical Activity",
-                        variableCategoryNameSingularLowercase: "physical activity"
+                        variableCategoryNameSingularLowercase: "physical activity",
+                        measurementSynonymSingularLowercase : "activity"
                     }
                 };
 

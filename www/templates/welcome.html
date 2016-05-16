@@ -34,23 +34,23 @@
 		<ul class="list">
 			<li class="item item-input item-select">
 				<div class="input-label">
-					Interval
+					Ask for a rating
 				</div>
 
 				<div ng-hide="isIOS">
-					<select ng-model="$parent.notificationInterval">
+					<select ng-model="$parent.primaryOutcomeRatingFrequencyDescription">
 						<option value="never">Never</option>
 						<option value="hourly">Hourly</option>
-						<option value="three">Every three hours</option>
-						<option value="twice">Twice daily</option>
+						<option value="every three hours">Every three hours</option>
+						<option value="twice a day">Twice daily</option>
 						<option value="daily">Daily</option>
 					</select>
 				</div>
 				<div ng-show="isIOS">
-					<select ng-model="$parent.notificationInterval">
+					<select ng-model="$parent.primaryOutcomeRatingFrequencyDescription">
 						<option value="never">Never</option>
 						<option value="hour">Hourly</option>
-						<option value="day">Every Day</option>
+						<option value="day">Daily</option>
 					</select>
 				</div>
 			</li>
@@ -61,7 +61,7 @@
 				Show Notifications
 			</li>
 		</ul>
-		<button class="button button-block button-positive" ng-click="saveInterval(notificationInterval)">
+		<button class="button button-block button-positive" ng-click="saveInterval(primaryOutcomeRatingFrequencyDescription)">
 			Schedule
 		</button>
         <button class="button button-block button-assertive" ng-click="skipInterval()">
