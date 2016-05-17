@@ -34,7 +34,7 @@ config.appSettings  = {
         showReminderFrequencySelector : true
     },
 
-    defaultState : 'app.track',
+    defaultState : 'app.remindersInbox',
     welcomeState : 'app.welcome',
 
     primaryOutcomeVariable : 'Mood',
