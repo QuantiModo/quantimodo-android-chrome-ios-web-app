@@ -1,0 +1,26 @@
+{
+  "name": "QuantiModo Life-Tracking App",
+  "description": "Track and find out what influences your mood!",
+  "version": "IONIC_APP_VERSION_NUMBER",
+  "manifest_version": 2,
+  "minimum_chrome_version": "33",
+  "icons": {
+      "16" : "www/img/icon_16.png",
+      "48" : "www/img/icon_48.png",
+      "128" : "www/img/icon_128.png"
+  },
+  "app": {
+    "background": {
+      "scripts": ["www/js/chrome/background.js"]
+    }
+  },
+  "permissions": [
+    "identity",
+    "geolocation",
+    "storage",
+    "notifications",
+    "alarms",
+
+    "http://app.quantimo.do/*"
+  ]
+}

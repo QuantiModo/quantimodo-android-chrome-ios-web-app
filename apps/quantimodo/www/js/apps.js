@@ -6,7 +6,7 @@ var appsManager = {
 		"medtlc" : "configs/medtlc",
 		"quantimodo" : "configs/quantimodo"
 	},
-	defaultApp : "mindfirst",
+	defaultApp : "quantimodo",
 	getDefaultConfig : function(){
 		return appsManager.apps[appsManager.defaultApp] ? appsManager.apps[appsManager.defaultApp]+'.js' : false;
 	},
