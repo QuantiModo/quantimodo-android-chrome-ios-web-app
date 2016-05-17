@@ -34,7 +34,7 @@ script:
 - ./scripts/package-and-upload.sh
 env:
   global:
-  - IONIC_IOS_APP_VERSION_NUMBER="1.2.0.14"
+  - IONIC_IOS_APP_VERSION_NUMBER="1.2.0.15"
   - IONIC_APP_VERSION_NUMBER="1.2.0"
   - APP_DISPLAY_NAME="MoodiModo"
   - LOWERCASE_APP_NAME="moodimodo"
