@@ -186,7 +186,7 @@ angular.module('starter')
         }
 
         $scope.goToDefaultStateIfWelcomed = function(){
-            // if user has seen the welcome screen before
+            console.debug('appCtrl: user has seen the welcome screen before...');
             localStorageService.getItem('isWelcomed',function(isWelcomed) {
                 if(isWelcomed  === true || isWelcomed === "true"){
                     $rootScope.isWelcomed = true;
@@ -208,15 +208,15 @@ angular.module('starter')
             if (!$rootScope.user && !accessTokenInUrl) {
                 localStorageService.getItem('isWelcomed',function(isWelcomed) {
                     if(!isWelcomed || isWelcomed === false || isWelcomed === "false"){
-                        console.log('going to welcome state...');
+                        console.debug('appCtrl: going to welcome state...');
                         //$rootScope.hideNavigationMenu = true;
                         $state.go(config.appSettings.welcomeState);
                     } else {
-                        console.log('Not welcoming because isWelcomed is ' + isWelcomed);
+                        console.debug('Not welcoming because isWelcomed is ' + isWelcomed);
                     }
                 });
             } else {
-                console.log('Not going to welcome state...');
+                console.debug('Not going to welcome state...');
             }
         };
 
