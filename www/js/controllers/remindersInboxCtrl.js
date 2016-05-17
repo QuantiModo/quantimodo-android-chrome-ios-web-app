@@ -27,7 +27,8 @@ angular.module('starter')
 				step: 1
 			},
 			variable : {},
-			isDisabled : false
+			isDisabled : false,
+			title : 'Reminder Inbox'
 	    };
 
 		if(typeof config.appSettings.remindersInbox.showAddHowIFeelResponseButton !== 'undefined'){
