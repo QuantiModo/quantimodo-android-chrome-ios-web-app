@@ -416,7 +416,7 @@ config.appSettings  = {
         {
             title : 'Reminder Inbox',
             href : '#/app/reminders-inbox',
-            icon : 'ion-android-notifications-none'
+            icon : 'ion-archive'
         },
         {
             title : 'Overall Mood',
@@ -477,6 +477,13 @@ config.appSettings  = {
             icon : 'ion-edit'
         },
         {
+            title : 'History',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showEmotionsSubMenu',
+            href : '#/app/history-all/Emotions',
+            icon : 'ion-ios-paper-outline'
+        },
+        {
             title : 'Diet',
             click : 'toggleDietSubMenu',
             showSubMenuVariable : 'showDietSubMenu',
@@ -497,6 +504,13 @@ config.appSettings  = {
             showSubMenuVariable : 'showDietSubMenu',
             href : '#/app/track_factors_category/Foods',
             icon : 'ion-edit'
+        },
+        {
+            title : 'History',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showDietSubMenu',
+            href : '#/app/history-all/Foods',
+            icon : 'ion-ios-paper-outline'
         },
         {
             title : 'Symptoms',
@@ -522,6 +536,13 @@ config.appSettings  = {
             icon : 'ion-edit'
         },
         {
+            title : 'History',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showSymptomsSubMenu',
+            href : '#/app/history-all/Symptoms',
+            icon : 'ion-ios-paper-outline'
+        },
+        {
             title : 'Treatments',
             click : 'toggleTreatmentsSubMenu',
             icon : 'ion-ios-pulse',
@@ -529,6 +550,20 @@ config.appSettings  = {
             isSubMenuParent : true,
             collapsedIcon : 'ion-ios-medkit-outline',
             expandedIcon : 'ion-chevron-down'
+        },
+        {
+            title : 'Overdue',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showTreatmentsSubMenu',
+            href : '#/app/reminders-inbox/Treatments',
+            icon : 'ion-clock'
+        },
+        {
+            title : 'Today',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showTreatmentsSubMenu',
+            href : '#/app/reminders-inbox-today/Treatments',
+            icon : 'ion-android-sunny'
         },
         {
             title : 'Manage Reminders',
@@ -543,6 +578,13 @@ config.appSettings  = {
             showSubMenuVariable : 'showTreatmentsSubMenu',
             href : '#/app/track_factors_category/Treatments',
             icon : 'ion-edit'
+        },
+        {
+            title : 'History',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showTreatmentsSubMenu',
+            href : '#/app/history-all/Treatments',
+            icon : 'ion-ios-paper-outline'
         },
         {
             title : 'Physical Activity',
@@ -568,6 +610,13 @@ config.appSettings  = {
             icon : 'ion-edit'
         },
         {
+            title : 'History',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showPhysicalActivitySubMenu',
+            href : '#/app/history-all/Physical Activity',
+            icon : 'ion-ios-paper-outline'
+        },
+        {
             title : 'All Measurements',
             isSubMenuChild : true,
             showSubMenuVariable : 'showHistorySubMenu',
@@ -583,6 +632,13 @@ config.appSettings  = {
             title : 'Variables',
             href : '#app/search-variables',
             icon : 'ion-social-vimeo'
+        },
+        {
+            title : 'All Measurements',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showHistorySubMenu',
+            href : '#/app/history-all',
+            icon : 'ion-ios-paper-outline'
         },
         {
             title : 'Predictor Search',

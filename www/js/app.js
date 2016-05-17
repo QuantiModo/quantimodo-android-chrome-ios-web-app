@@ -342,8 +342,27 @@ angular.module('starter',
               }
           }
       })
-      .state('app.historyAll', {
-          url: "/history-all",
+        .state('app.historyAll', {
+            url: "/history-all",
+            params: {
+                variableCategoryName : null,
+                fromState : null,
+                fromUrl : null
+            },
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/history-all.html",
+                    controller: 'historyAllMeasurementsCtrl'
+                }
+            }
+        })
+      .state('app.historyAllCategory', {
+          url: "/history-all/:variableCategoryName",
+          params: {
+              variableCategoryName : null,
+              fromState : null,
+              fromUrl : null
+          },
           views: {
               'menuContent': {
                   templateUrl: "templates/history-all.html",
@@ -368,6 +387,44 @@ angular.module('starter',
               }
           }
       })
+        .state('app.remindersInboxToday', {
+            url: "/reminders-inbox-today",
+            cache:false,
+            params: {
+                unit: null,
+                variableName : null,
+                dateTime : null,
+                value : null,
+                fromUrl : null,
+                today : true
+            },
+
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/reminders-inbox.html",
+                    controller: 'RemindersInboxCtrl'
+                }
+            }
+        })
+        .state('app.remindersInboxTodayCategory', {
+            url: "/reminders-inbox-today/:variableCategoryName",
+            cache:false,
+            params: {
+                unit: null,
+                variableName : null,
+                dateTime : null,
+                value : null,
+                fromUrl : null,
+                today : true
+            },
+
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/reminders-inbox.html",
+                    controller: 'RemindersInboxCtrl'
+                }
+            }
+        })
       .state('app.remindersInboxCategory', {
           url: "/reminders-inbox/:variableCategoryName",
           cache:false,

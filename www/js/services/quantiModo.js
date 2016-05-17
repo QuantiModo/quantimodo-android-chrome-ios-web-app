@@ -170,7 +170,7 @@ angular.module('starter')
 
             QuantiModo.getV1Measurements = function(params, successHandler, errorHandler){
                 QuantiModo.get('api/v1/measurements',
-                    ['source', 'limit', 'offset', 'sort', 'id'],
+                    ['source', 'limit', 'offset', 'sort', 'id', 'variableCategoryName'],
                     params,
                     successHandler,
                     errorHandler);
@@ -382,7 +382,7 @@ angular.module('starter')
             // get pending reminders 
             QuantiModo.getTrackingReminderNotifications = function(params, successHandler, errorHandler){
                 QuantiModo.get('api/v1/trackingReminderNotifications',
-                    ['variableCategoryName'],
+                    ['variableCategoryName', 'reminderTime', 'sort'],
                     params,
                     successHandler,
                     errorHandler);

@@ -1,6 +1,6 @@
 angular.module('starter')
 	// Measurement Service
-	.factory('reminderService', function($http, $q, QuantiModo, localStorageService){
+	.factory('reminderService', function($http, $q, QuantiModo, timeService){
 
 		// service methods
 		var reminderService = {
@@ -135,10 +135,31 @@ angular.module('starter')
 				return deferred.promise;
 			},
 
-			getTrackingReminderNotifications : function(category){
+			getTrackingReminderNotifications : function(category, today){
+
+				var localMidnightInUtcString = timeService.getLocalMidnightInUtcString();
+				var params = {};
+				if(today && !category){
+					var reminderTime = '(gt)' + localMidnightInUtcString;
+					params = {
+                        reminderTime : reminderTime,
+                        sort : 'reminderTime'
+                    }
+				}
+
+				if(!today && category){
+					params = {variableCategoryName : category}
+				}
+
+				if(today && category){
+					params = {
+						reminderTime : '(gt)' + localMidnightInUtcString,
+						variableCategoryName : category,
+                        sort : 'reminderTime'
+					}
+				}
 
 				var deferred = $q.defer();
-				var params = typeof category != "undefined" && category != "" ?{variableCategoryName : category} : {};
 				QuantiModo.getTrackingReminderNotifications(params, function(reminders){
 					if(reminders.success) deferred.resolve(reminders.data);
 					else deferred.reject("error");

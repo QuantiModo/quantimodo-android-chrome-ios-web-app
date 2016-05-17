@@ -38,7 +38,14 @@ angular.module('starter')
                 var epochTime = moment(utcTimeStringFull, timeFormat).unix();
                 
                 return epochTime;
-            }
+            },
+
+			getLocalMidnightInUtcString: function () {
+				var localMidnightMoment = moment(0, "HH");
+				var timeFormat = 'YYYY-MM-DDTHH:mm:ss';
+				var localMidnightInUtcString = localMidnightMoment.utc().format(timeFormat);
+				return localMidnightInUtcString;
+			}
 		};
 
 		return timeService;

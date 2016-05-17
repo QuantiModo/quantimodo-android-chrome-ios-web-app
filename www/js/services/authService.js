@@ -151,7 +151,7 @@ angular.module('starter')
                         var token = userCredentialsResp.data.token.split("|")[2];
                         //update locally stored token
                         localStorageService.setItem('accessToken', token);
-
+						$ionicLoading.hide();
                         //resolve promise
                         deferred.resolve({
                             accessToken: token

@@ -29,6 +29,7 @@ angular.module('starter')
                 $rootScope.hideNavigationMenu = false;
                 $state.go(config.appSettings.defaultState);
             }
+            $ionicLoading.hide();
         };
 
         // User wants to login
