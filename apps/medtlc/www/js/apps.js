@@ -3,7 +3,8 @@ var appsManager = {
 		"moodimodo" : "configs/moodimodo",
 		"energymodo" : "configs/energymodo",
 		"mindfirst" : "configs/mindfirst",
-		"medtlc" : "configs/medtlc"
+		"medtlc" : "configs/medtlc",
+		"quantimodo" : "configs/quantimodo"
 	},
 	defaultApp : "medtlc",
 	getDefaultConfig : function(){
