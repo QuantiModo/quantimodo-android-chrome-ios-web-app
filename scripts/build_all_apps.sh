@@ -71,6 +71,13 @@ cd ${INTERMEDIATE_PATH}
 
 source ${IONIC_PATH}/scripts/build_scripts/00_install_dependencies.sh
 
+export LOWERCASE_APP_NAME=quantimodo
+source ${INTERMEDIATE_PATH}/scripts/build_scripts/01_prepare_project.sh
+source ${INTERMEDIATE_PATH}/scripts/build_scripts/02_build_chrome.sh
+source ${INTERMEDIATE_PATH}/scripts/build_scripts/03_build_android.sh
+#source ${INTERMEDIATE_PATH}/scripts/build_scripts/04_build_ios.sh
+#source ${INTERMEDIATE_PATH}/04_reset_workspace.sh
+
 export LOWERCASE_APP_NAME=moodimodo
 source ${INTERMEDIATE_PATH}/scripts/build_scripts/01_prepare_project.sh
 source ${INTERMEDIATE_PATH}/scripts/build_scripts/02_build_chrome.sh
