@@ -290,17 +290,13 @@ angular.module('starter')
 	    	.then(function(){
 
 	    		utilsService.loadingStop();
-	    		if($stateParams.reminder !== null && typeof $stateParams.reminder !== "undefined"){
-                    if($stateParams.fromUrl){
-                        window.location = $stateParams.fromUrl;
-                    } else if ($stateParams.reminder.fromState){
-	    				$state.go($stateParams.reminder.fromState);
-	    			} else {
-						$state.go('app.remindersManage');
-                    }
-	    		} else {
+				if($stateParams.fromUrl){
+					window.location = $stateParams.fromUrl;
+				} else if ($stateParams.reminder.fromState){
+					$state.go($stateParams.reminder.fromState);
+				} else {
 					$state.go('app.remindersManage');
-                }
+				}
 
 	    	}, function(err){
                 console.log(err);
