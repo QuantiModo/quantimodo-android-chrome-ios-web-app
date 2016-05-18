@@ -170,9 +170,9 @@ gulp.task('generatePrivateConfigFromEnvs', function(){
 
 			var content = 'window.private_keys = '+JSON.stringify(configkeys, 0, 2);
 
-			fs.writeFileSync("./www/private_configs/"+appName.toLowerCase()+".config.js", content);
+			fs.writeFileSync("./www/private_configs/" + LOWERCASE_APP_NAME + ".config.js", content);
 
-			console.log('Created '+ './www/private_configs/'+appName.toLowerCase()+'.config.js');
+			console.log('Created '+ './www/private_configs/' + LOWERCASE_APP_NAME + '.config.js');
 
 		});
 	}
