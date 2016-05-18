@@ -483,6 +483,7 @@ angular.module('starter',
           url: "/reminder_add",
           cache:false,
           params: {
+              variableCategoryName : null,
               reminder : null,
               fromState : null,
               fromUrl : null,

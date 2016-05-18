@@ -112,6 +112,15 @@ angular.module('starter')
 	    	});
 	    };
 
+	    $scope.addNewReminder = function(){
+	    	$state.go('app.reminderAdd', 
+	    	{
+	    		variableCategoryName : $stateParams.variableCategoryName,
+	    		fromUrl: window.location.href
+	    	});
+	    };
+
+
 	    $scope.deleteReminder = function(reminder){
 	    	utilsService.loadingStart();
 	    	reminderService.deleteReminder(reminder.id)
