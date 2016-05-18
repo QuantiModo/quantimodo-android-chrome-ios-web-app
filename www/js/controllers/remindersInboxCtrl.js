@@ -133,7 +133,7 @@ angular.module('starter')
 	    };
 
 	    var getTrackingReminderNotifications = function(){
-	    	$scope.showLoader();
+	    	$scope.showLoader('Fetching reminders...');
 
 	    	reminderService.getTrackingReminderNotifications($stateParams.variableCategoryName, $stateParams.today)
 	    	.then(function(reminders){
@@ -236,6 +236,9 @@ angular.module('starter')
     	});
 
 		$scope.showLoader = function (loadingText) {
+			if(!loadingText){
+				loadingText = '';
+			}
 			$scope.loading = true;
 			$ionicLoading.show({
 				template: loadingText+ '<br><br><img src={{loaderImagePath}}>',

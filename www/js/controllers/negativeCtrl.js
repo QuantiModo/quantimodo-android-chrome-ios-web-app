@@ -169,6 +169,9 @@ angular.module('starter')
         };
 
         $scope.showLoader = function (loadingText) {
+            if(!loadingText){
+                loadingText = '';
+            }
             $scope.loading = true;
             $ionicLoading.show({
                 template: loadingText + '<br><br><img src={{loaderImagePath}}>',
