@@ -84,7 +84,7 @@ angular.module('starter')
 	    // constructor
 	    $scope.init = function(){
 			setupVariableCategory();
-			$scope.state.loading = true;
+			$scope.loading = true;
             $ionicLoading.show({
                 noBackdrop: true,
                 template: '<p class="item-icon-left">' + 'Loading Stuff' + '<ion-spinner icon="lines"/></p>'
@@ -108,7 +108,7 @@ angular.module('starter')
                 getHistory();
                 //$ionicLoading.hide();
 			}
-            $scope.state.loading = false;
+            $scope.loading = false;
 	    };
 
         // when view is changed

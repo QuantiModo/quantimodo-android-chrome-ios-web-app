@@ -308,11 +308,11 @@ angular.module('starter')
 
         // constructor
         $scope.init = function(){
-            $scope.state.loading = true;
+            $scope.loading = true;
             utilsService.loadingStart();
             var isAuthorized = authService.checkAuthOrSendToLogin();
             if(isAuthorized){
-                $scope.state.loading = true;
+                $scope.loading = true;
                 utilsService.loadingStart();
                 if(!$scope.state.measurementIsSetup){
                     setupFromUrlParameters();

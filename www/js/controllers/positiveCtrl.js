@@ -121,7 +121,7 @@ angular.module('starter')
         }
         
 	    $scope.init = function(){
-            utilsService.loadingStart();
+            $scope.showLoader('Fetching positive predictors...');
             var isAuthorized = authService.checkAuthOrSendToLogin();
             if(isAuthorized){
                 correlationService.getPositiveFactors()
@@ -130,6 +130,7 @@ angular.module('starter')
                         correlationService.getUsersPositiveFactors().then(function(correlationObjects){
                             $scope.usersPositiveFactors = correlationObjects;
                         });
+                        $ionicLoading.hide();
                         $scope.loading = false;
                     }, function(){
                         $scope.loading = false;
@@ -139,10 +140,8 @@ angular.module('starter')
 	    };
 
 	    $scope.openStore = function(name){
-
 	    	// make url
 	    	name = name.split(' ').join('+');
-	    	
 	    	// open store
 	       window.open('http://www.amazon.com/gp/aw/s/ref=mh_283155_is_s_stripbooks?ie=UTF8&n=283155&k='+name, '_blank', 'location=no');
 	    };
@@ -152,6 +151,20 @@ angular.module('starter')
             $state.reload();
         };
 
-	    // run constructor
-	    $scope.init();
+        $scope.showLoader = function (loadingText) {
+            $scope.loading = true;
+            $ionicLoading.show({
+                template: loadingText + '<br><br><img src={{loaderImagePath}}>',
+                content: 'Loading',
+                animation: 'fade-in',
+                showBackdrop: false,
+                maxWidth: 1000,
+                showDelay: 0
+            });
+        };
+
+        // when view is changed
+        $scope.$on('$ionicView.enter', function(e){
+            $scope.init();
+        });
 	});

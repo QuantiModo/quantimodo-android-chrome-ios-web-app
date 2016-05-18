@@ -429,7 +429,7 @@ angular.module('starter')
         }
 
         $scope.init = function(){
-            $scope.state.loading = true;
+            $scope.loading = true;
             utilsService.loadingStart();
             var isAuthorized = authService.checkAuthOrSendToLogin();
 
@@ -459,7 +459,7 @@ angular.module('starter')
                     setupNewReminderSearch();
                 }
             }
-            $scope.state.loading = false;
+            $scope.loading = false;
 	    };
 
         // when view is changed
