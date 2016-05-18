@@ -1007,11 +1007,13 @@ gulp.task('setVersionNumbersWithEnvs', function(){
 	var deferred = q.defer();
 	var environmentalVariables = process.env;
 	if(!environmentalVariables['IONIC_APP_VERSION_NUMBER']){
-		throw new Error('Please set IONIC_APP_VERSION_NUMBER env!');
+		//throw new Error('Please set IONIC_APP_VERSION_NUMBER env!');
+		environmentalVariables['IONIC_APP_VERSION_NUMBER'] = '1.4.6';
 	}
 
 	if(!environmentalVariables['IONIC_IOS_APP_VERSION_NUMBER']){
-		throw new Error('Please set IONIC_IOS_APP_VERSION_NUMBER env!');
+		//throw new Error('Please set IONIC_IOS_APP_VERSION_NUMBER env!');
+		environmentalVariables['IONIC_IOS_APP_VERSION_NUMBER'] = '1.4.6.2';
 	}
 
 	var xml = fs.readFileSync('./config.xml', 'utf8');
