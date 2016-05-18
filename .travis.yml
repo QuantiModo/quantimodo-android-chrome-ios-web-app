@@ -14,10 +14,10 @@ before_install:
 - npm install -g ios-sim
 - npm install -g ios-deploy
 before_script:
-- chmod a+x ./scripts/decrypt-key.sh
-- ./scripts/decrypt-key.sh
-- chmod a+x ./scripts/add-key.sh
-- ./scripts/add-key.sh
+- #chmod a+x ./scripts/decrypt-key.sh
+- #./scripts/decrypt-key.sh
+- #chmod a+x ./scripts/add-key.sh
+- #./scripts/add-key.sh
 script:
 - chmod a+x ./scripts/build_scripts/04_build_ios.sh
 - ./scripts/build_scripts/04_build_ios.sh energymodo EnergyModo 1115037652 "com.quantimodo.energymodo"

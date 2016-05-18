@@ -38,6 +38,11 @@ else
     export APP_IDENTIFIER=$4
 fi
 
+chmod a+x ./scripts/decrypt-key.sh
+./scripts/decrypt-key.sh
+chmod a+x ./scripts/add-key.sh
+./scripts/add-key.sh
+
 cp -R apps/${LOWERCASE_APP_NAME}/* $PWD
 ionic state reset
 npm install
