@@ -104,7 +104,7 @@ else
 fi
 
 export APPLE_ID="1024924226"
-export APP_IDENTIFIER="com.quantimodo.mindfirst"
+export APP_IDENTIFIER="com.quantimodo.moodimodo"
 export APP_DISPLAY_NAME="Mind First"
 export LOWERCASE_APP_NAME=mindfirst
 source ${INTERMEDIATE_PATH}/scripts/build_scripts/01_prepare_project.sh
