@@ -10,7 +10,7 @@ if [ -z "$1" ]
     echo -e "${RED}Please provide LOWERCASE_APP_NAME as first parameter ${NC}"
     exit
 else
-    LOWERCASE_APP_NAME=$1
+    export LOWERCASE_APP_NAME=$1
     echo -e "${RED}Lowercase app name is $LOWERCASE_APP_NAME ${NC}"
 fi
 
@@ -19,7 +19,7 @@ if [ -z "$2" ]
     echo -e "${RED}Please provide APP_DISPLAY_NAME as second parameter ${NC}"
     exit
 else
-    APP_DISPLAY_NAME="$2"
+    export APP_DISPLAY_NAME="$2"
 fi
 
 if [ -z "$3" ]
@@ -27,7 +27,7 @@ if [ -z "$3" ]
     echo -e "${RED}Please provide APPLE_ID as third parameter ${NC}"
     exit
 else
-    APPLE_ID=$3
+    export APPLE_ID=$3
 fi
 
 if [ -z "$4" ]
@@ -35,7 +35,7 @@ if [ -z "$4" ]
     echo -e "${RED}Please provide APP_IDENTIFIER as fourth parameter ${NC}"
     exit
 else
-    APP_IDENTIFIER=$4
+    export APP_IDENTIFIER=$4
 fi
 
 cp -R apps/${LOWERCASE_APP_NAME}/* $PWD
