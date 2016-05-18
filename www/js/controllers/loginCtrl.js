@@ -16,6 +16,7 @@ angular.module('starter')
         }
 
         $scope.init = function(){
+            $scope.showLoader();
             if($rootScope.helpPopup){
                 console.log('Closing help popup!');
                 $rootScope.helpPopup.close();
@@ -35,6 +36,7 @@ angular.module('starter')
         // User wants to login
         $scope.login = function(register) {
 
+            $scope.showLoader();
             localStorageService.setItem('isWelcomed', true);
             $rootScope.isWelcomed = true;
 
@@ -78,6 +80,7 @@ angular.module('starter')
 
         // get Access Token
         var fetchAccessTokenAndUserDetails = function(authorization_code, withJWT) {
+            $scope.showLoader();
             authService.getAccessTokenFromAuthorizationCode(authorization_code, withJWT)
                 .then(function(response) {
 
@@ -111,6 +114,7 @@ angular.module('starter')
         };
 
         var nonNativeMobileLogin = function(register) {
+            $scope.showLoader();
             console.log("nonNativeMobileLogin: Mobile device detected and ionic platform is " + ionic.Platform.platforms[0]);
             console.log(JSON.stringify(ionic.Platform.platforms));
 
@@ -149,6 +153,7 @@ angular.module('starter')
         };
 
         var chromeAppLogin = function(register){
+            $scope.showLoader();
           console.log("login: Use Chrome app (content script, background page, etc.");
           var url = authService.generateV1OAuthUrl(register);
           chrome.identity.launchWebAuthFlow({
@@ -161,6 +166,7 @@ angular.module('starter')
         };
 
         var chromeExtensionLogin = function(register) {
+            $scope.showLoader();
             var loginUrl = config.getURL("api/v2/auth/login");
             if (register === true) {
             loginUrl = config.getURL("api/v2/auth/register");
@@ -170,10 +176,10 @@ angular.module('starter')
         };
 
         $scope.nativeLogin = function(platform, accessToken){
+            $scope.showLoader();
             localStorageService.setItem('isWelcomed', true);
             $rootScope.isWelcomed = true;
 
-            utilsService.loadingStart('Talking to QuantiModo', 3000);
             authService.getJWTToken(platform, accessToken)
                 .then(function(JWTToken){
                     // success
@@ -224,7 +230,7 @@ angular.module('starter')
 
         // log in with google
         $scope.googleLogin = function(){
-            utilsService.loadingStart('Logging you in', 2000);
+            $scope.showLoader();
             window.plugins.googleplus.login({
                 'scopes': 'https://www.googleapis.com/auth/plus.login https://www.googleapis.com/auth/userinfo.email', // optional, space-separated list of scopes, If not included or empty, defaults to `profile` and `email`.
                 'webClientId': '1052648855194.apps.googleusercontent.com', // optional clientId of your Web application from Credentials settings of your project - On Android, this MUST be included to get an idToken. On iOS, it is not required.
@@ -254,7 +260,7 @@ angular.module('starter')
 
         // login with facebook
         $scope.facebookLogin = function(){
-            utilsService.loadingStart('Logging you in', 2000);
+            $scope.showLoader();
             $cordovaFacebook.login(["public_profile", "email", "user_friends"])
                 .then(function(success) {
                     // success
@@ -279,6 +285,7 @@ angular.module('starter')
         };
 
         var browserLogin = function(register) {
+            $scope.showLoader();
             console.log("Browser Login");
             if (config.getClientId() !== 'oAuthDisabled') {
                 oAuthBrowserLogin(register);
@@ -288,6 +295,7 @@ angular.module('starter')
         };
 
         var sendToNonOAuthBrowserLoginUrl = function(register) {
+            $scope.showLoader();
             var user = getOrSetUserInLocalStorage();
             if(user){
                 $rootScope.hideNavigationMenu = false;
@@ -312,6 +320,7 @@ angular.module('starter')
         };
 
         var oAuthBrowserLogin = function (register) {
+            $scope.showLoader();
             var url = authService.generateV1OAuthUrl(register);
 
             var ref = window.open(url, '_blank');
@@ -362,6 +371,22 @@ angular.module('starter')
                 // listen to broadcast messages from other tabs within browser
                 window.addEventListener("message", window.onMessageReceived, false);
             }
+        };
+
+
+        $scope.showLoader = function () {
+            $ionicLoading.show({
+                template: '<img src={{loaderImagePath}}>',
+                content: 'Loading',
+                animation: 'fade-in',
+                showBackdrop: false,
+                maxWidth: 1000,
+                showDelay: 0
+            });
+
+            $timeout(function () {
+                $ionicLoading.hide();
+            }, 10000);
         };
 
 
