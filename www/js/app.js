@@ -13,6 +13,11 @@ angular.module('starter',
 
 .run(function($ionicPlatform, $ionicHistory, $state, $rootScope) {
 
+    if(!window.private_keys){
+        alert('No private config file found!');
+        return;
+    }
+
     $rootScope.goToState = function(state, params){
         $state.go(state, params);
     };
