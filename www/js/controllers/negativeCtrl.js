@@ -5,6 +5,7 @@ angular.module('starter')
                                          $ionicLoading, $ionicPopup, $state, correlationService, $rootScope,
                                          utilsService, authService) {
 
+        $scope.loading = true;
         /*// redirect if not logged in
         if(!$rootScope.user){
             $state.go(config.appSettings.welcomeState);
@@ -28,19 +29,17 @@ angular.module('starter')
 
         $scope.init = function(){
             $scope.loading = true;
-            utilsService.loadingStart();
             var isAuthorized = authService.checkAuthOrSendToLogin();
             if(isAuthorized){
-                utilsService.loadingStart();
                 correlationService.getNegativeFactors()
                     .then(function(correlationObjects){
                         $scope.negatives = correlationObjects;
                         correlationService.getUsersPositiveFactors().then(function(correlationObjects){
                             $scope.usersNegativeFactors = correlationObjects;
                         });
-                        $ionicLoading.hide();
+                        $scope.loading = false;
                     }, function(){
-                        $ionicLoading.hide();
+                        $scope.loading = false;
                         console.log('negativeCtrl: Could not get correlations.  Going to login page...');
                         $state.go('app.login', {
                             fromUrl : window.location.href

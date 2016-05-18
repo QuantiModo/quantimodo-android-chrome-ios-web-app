@@ -242,7 +242,6 @@ angular.module('starter')
             hideNavigationMenuIfSetInUrlParameter();
             goToWelcomeStateIfNotWelcomed();
             scheduleReminder();
-            $ionicLoading.hide();
             goToDefaultStateIfLoggedInOnLoginState();
         };
 

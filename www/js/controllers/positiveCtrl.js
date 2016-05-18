@@ -6,6 +6,8 @@ angular.module('starter')
                                          localStorageService, utilsService, authService) {
 
 
+        $scope.loading = true;
+
         if(!$rootScope.user){
             $state.go(config.appSettings.welcomeState);
             // app wide signal to sibling controllers that the state has changed
@@ -23,9 +25,7 @@ angular.module('starter')
 		$scope.controller_name = "PositiveCtrl";
         $scope.positives = false;
         $scope.usersPositiveFactors = false;
-        
-        utilsService.loadingStart();
-        
+
 	    $scope.downVote = function(factor){
 
             if(!$scope.notShowConfirmationPositiveDown){
@@ -121,18 +121,18 @@ angular.module('starter')
         }
         
 	    $scope.init = function(){
-            $scope.loading = true;
             utilsService.loadingStart();
             var isAuthorized = authService.checkAuthOrSendToLogin();
             if(isAuthorized){
                 correlationService.getPositiveFactors()
                     .then(function(correlationObjects){
                         $scope.positives = correlationObjects;
-                        $ionicLoading.hide();
                         correlationService.getUsersPositiveFactors().then(function(correlationObjects){
                             $scope.usersPositiveFactors = correlationObjects;
                         });
+                        $scope.loading = false;
                     }, function(){
+                        $scope.loading = false;
                         $ionicLoading.hide();
                     });
             }
