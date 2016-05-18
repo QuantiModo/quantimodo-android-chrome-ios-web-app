@@ -121,10 +121,10 @@ gulp.task('generatePrivateConfigFromEnvs', function(){
 		console.error('No Apps Found');
 		deferred.reject();
 	} else {
-		var apps = environmentalVariables['APPS'].split(',');
+		var upperCaseAppNames = environmentalVariables['APPS'].split(',');
 
-		apps.forEach(function(upperCaseAppName){
-			upperCaseAppName = appName.trim();
+		upperCaseAppNames.forEach(function(upperCaseAppName){
+			upperCaseAppName = upperCaseAppName.trim();
 			var configkeys = {
 				client_ids : {},
 				client_secrets : {},
@@ -138,7 +138,7 @@ gulp.task('generatePrivateConfigFromEnvs', function(){
 				console.log(upperCaseAppName+'_WEB_CLIENT_ID'+' NOT DETECTED');
 			}
 
-			if(typeof environmentalVariables[appName+'_WEB_CLIENT_SECRET'] !== "undefined"){
+			if(typeof environmentalVariables[upperCaseAppName+'_WEB_CLIENT_SECRET'] !== "undefined"){
 				configkeys.client_secrets.Web = environmentalVariables[upperCaseAppName+'_WEB_CLIENT_SECRET'];
 				console.log(upperCaseAppName+'_WEB_CLIENT_SECRET'+' Detected');
 			} else {
