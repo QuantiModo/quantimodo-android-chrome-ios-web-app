@@ -278,9 +278,13 @@ angular.module('starter')
                 return;
             }
 
-            if(!$scope.state.defaultValue) {
+            if(!$scope.state.defaultValue && $scope.state.abbreviatedUnitName !== '/5') {
                 utilsService.showAlert('Default value is missing!');
                 return;
+            }
+
+            if($scope.state.abbreviatedUnitName === '/5'){
+            	$scope.state.defaultValue = 3;
             }
 
 
@@ -508,20 +512,6 @@ angular.module('starter')
                     utilsService.loadingStop();
                     utilsService.showAlert('Failed to Delete Reminder, Try again!', 'assertive');
                 });
-        };
-
-
-        $scope.selectPrimaryOutcomeVariableValue = function($event, val){
-            // remove any previous primary outcome variables if present
-            jQuery('.active-primary-outcome-variable-rating-button').removeClass('active-primary-outcome-variable-rating-button');
-
-            // make this primary outcome variable glow visually
-            jQuery($event.target).addClass('active-primary-outcome-variable-rating-button');
-
-            jQuery($event.target).parent().removeClass('primary-outcome-variable-history').addClass('primary-outcome-variable-history');
-
-            // update view
-            $scope.state.defaultValue = val;
         };
 
         // when a unit is selected
