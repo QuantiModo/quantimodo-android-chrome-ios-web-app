@@ -54,4 +54,5 @@ cp apps/${LOWERCASE_APP_NAME}/resources/icon_white.png $PWD/resources/icon.png
 ionic resources
 gulp setVersionNumbersWithEnvs
 gulp makeIosApp
-chmod a+x ./scripts/package-and-upload.sh./scripts/package-and-upload.sh
+chmod a+x ./scripts/package-and-upload.sh
+./scripts/package-and-upload.sh
