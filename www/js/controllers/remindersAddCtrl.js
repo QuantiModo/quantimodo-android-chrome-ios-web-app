@@ -172,9 +172,14 @@ angular.module('starter')
             $scope.state.id = selectedVariable.id;
             $scope.state.variableId = selectedVariable.variableId;
             $scope.state.variableName = selectedVariable.name;
+            $scope.state.variableDescription = selectedVariable.description;
             $scope.state.showResults = false;
             $scope.state.showSearchBox = false;
             $scope.state.showReminderFrequencyCard = true;
+
+            if ($scope.state.abbreviatedUnitName == "/5" && $scope.state.variableCategoryName == "Symptoms") {
+                $scope.state.defaultValue = 3;
+            }
 
 	    	//$scope.state.defaultValue = selectedVariable.mostCommonValue? selectedVariable.mostCommonValue : selectedVariable.lastValue;
 	    };
