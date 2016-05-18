@@ -2,7 +2,6 @@
     <ion-content scroll="true" overflow-scroll="true">
 		
 		<div class="list card" ng-show="state.showVariableCategorySelector">
-            <!--<div class="item item-divider" style="background-color:#11c1f3; color:white;">Select Variable Category</div>-->
 			<label class="item item-input item-select">
 				<div class="input-label" style="white-space:normal; width: 60%">Select Variable Category</div>
 				<select ng-model="state.variableCategoryName" ng-change="onVariableCategoryChange()">
@@ -12,7 +11,6 @@
 		</div>
 
         <div class="list list-inset" ng-show="state.showSearchBox">
-          <!--<div class="item item-divider" style="background-color:#11c1f3; color:white;">Enter Variable Name</div>-->
           <label class="item item-input">
             <i class="icon ion-search placeholder-icon"></i>
             <input type="text"
@@ -49,8 +47,6 @@
         <div class="card" ng-show="state.showAddVariable">
             <div class="list">
                 <p class="heading positive" style="padding:14px;">{{state.variableCategoryObject.addNewVariableCardText}}</p>
-
-
                 <label class="item item-input item-select" ng-show="state.showVariableCategorySelector">
                     <div class="input-label">
                         Select variable category
@@ -61,107 +57,25 @@
                         </option>
                     </select>
                 </label>
-
                 <label class="item item-input item-stacked-label">
                     <span class="input-label">{{state.variableCategoryName | singularize}} Name</span>
                     <input type="text" ng-model="state.variableName" id="variableName" placeholder="Enter the new variable name here...">
                 </label>
             </div>
-
-<!--            <div class="card" ng-show="state.showAddVariable">
-                <p style="padding:14px;">How should we combine data over multiple days?</p>
-
-                <label class="item item-radio">
-                    <input type="radio" ng-model="state.sumAvg" value="sum" name="group">
-                    <div class="item-content">
-                        Sum (i.e. Apples eaten)
-                    </div>
-                    <i class="radio-icon ion-checkmark"></i>
-                </label>
-
-                <label class="item item-radio">
-                    <input type="radio" ng-model="state.sumAvg" value="avg" name="group">
-                    <div class="item-content">
-                        Average (i.e. Your weight)
-                    </div>
-                    <i class="radio-icon ion-checkmark"></i>
-                </label>
-            </div>-->
         </div>
-
 
         <div class="list card" ng-show="state.showReminderFrequencyCard">
         	<div class="item item-divider">{{state.variableName}} reminder settings</div>
-
-<!--
-            <div class="row labeled-control">
-        		<div id="rem-set-left" class="col">
-        			<input type="number" style="width:100%;text-align:right;" placeholder={{state.variableCategoryObject.defaultValuePlaceholderText}} ng-model="state.defaultValue" class="up-top">
-        		</div>
-        		<div id="rem-set-right" class="col col-r">
-        			<span>
-        				{{state.selectedUnit}}
-        			</span>
-        		</div>
-        	</div>
--->
-
-            <div ng-if="(state.variableCategoryName != 'Emotions' && state.variableCategoryName != 'Symptoms')" class="row labeled-control">
-                <div class="col col-l">
-                        <span>
-                            {{state.variableCategoryObject.defaultValueLabel}}
-                        </span>
-                </div>
-                <div class="col">
-                    <input type="text" ng-model="state.defaultValue" id="defaultValue" placeholder={{state.variableCategoryObject.defaultValuePlaceholderText}} class="up-top">
-                </div>
-            </div>
-
-            <div ng-if="(state.variableCategoryName !== 'Symptoms' && state.abbreviatedUnitName !== '/5')">
-                <div class="primary-outcome-variable-rating-buttons primary-outcome-variable-history"
-                     ng-if="(state.variableDescription.indexOf('positive') > -1 || state.variableDescription.indexOf('negative') > -1)">
-                    <img ng-repeat="option in primaryOutcomeVariableRatingOptions"
-                         ng-click="selectPrimaryOutcomeVariableValue($event, option.value)"
-                         ng-src="{{option.img}}"
-                    >
-                </div>
-
-                <div class="primary-outcome-variable-rating-buttons primary-outcome-variable-history col"
-                     ng-if="(state.abbreviatedUnitName === '/5' && state.variableDescription == null || (state.variableDescription.indexOf('positive') == -1 && state.variableDescription.indexOf('negative') == -1))">
-                    <img ng-repeat="option in primaryOutcomeVariableNumbers"
-                         ng-click="selectPrimaryOutcomeVariableValue($event, option.value)"
-                         ng-src="{{option.img}}"
-                         ng-class="{'active-primary-outcome-variable-rating-button' : option.value == state.measurement.value}"
-                    >
-                </div>
-            </div>
-
-
-            <div class="row labeled-control" ng-if="(state.abbreviatedUnitName !== '/5')">
-                <div class="col col-l">
+            <div class="list">
+                <label ng-if="(state.abbreviatedUnitName !== '/5')" class="item item-input">
+                    <span class="input-label">{{state.defaultValueLabel}}</span>
+                    <input type="text" ng-model="state.defaultValue" id="defaultValue" placeholder={{state.defaultValuePlaceholderText}} >
+                </label>
+                <label ng-if="(state.abbreviatedUnitName !== '/5')" class="item item-input">
                     <span class="input-label">Unit</span>
-                </div>
-                <div class="col">
-                    <div class="row up-top" style="padding-left:0px;">
-                        <div class="col" style="padding-top:5px;">
+                    <input type="text" ng-change="unitSearch(state.abbreviatedUnitName)" ng-model="state.abbreviatedUnitName" placeholder="Search for a unit...">
+                </label>
 
-                            <!-- Default to most common unit when tracking measurement, and always keep it editable-->
-                            <input type="text" ng-change="unitSearch(state.abbreviatedUnitName)" ng-model="state.abbreviatedUnitName" placeholder="Search for a unit...">
-
-                            <!-- Below replaced by above so that we can always change the unit-->
-                            <!-- Default to most common unit when adding new variable, keep it editable-->
-                            <!--
-                            <input type="text" ng-show="state.showAddVariable" ng-change="unitSearch(state.abbreviatedUnitName)" ng-model="state.abbreviatedUnitName" placeholder="Type to search">
-                            -->
-                            <!-- Lock to default unit when tracking measurement for existing variable-->
-                            <!--
-                            <span ng-show="!state.showAddVariable">{{state.selectedUnitAbbreviatedName}}</span>
-                            -->
-                        </div>
-
-                    </div>
-                </div>
-            </div>
             <div class="card" ng-show="state.showUnits && state.searchedUnits.length">
                 <div class="list">
                     <ion-list>
@@ -171,7 +85,6 @@
                     </ion-list>
                 </div>
             </div>
-
         	<label class="item item-input item-select">
         		<div class="input-label" style="white-space:normal; width: 60%">
         			Select Frequency
@@ -185,7 +98,7 @@
                     </optgroup>
         		</select>
         	</label>
-            
+            </div>
             <div class="list card" ng-show="state.selectedFrequency === 'Daily'">
                     <label class="item item-input">
                         <div class="input-label" >

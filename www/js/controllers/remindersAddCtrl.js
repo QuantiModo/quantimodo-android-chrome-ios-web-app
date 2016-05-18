@@ -33,8 +33,11 @@ angular.module('starter')
             selectedFrequency : 'Daily',
             selectedReminder : false,
             reminderStartTimeEpochTime : currentTime.getTime() / 1000,
-            measurementSynonymSingularLowercase : 'measurement'
-    };
+            reminderStartTimeStringUtc : timeService.getCurrentTimeInUtcString(),
+            measurementSynonymSingularLowercase : 'measurement',
+            defaultValueLabel : 'Default Value',
+            defaultValuePlaceholderText : 'Enter most common value here'
+        };
         
         $scope.state.variableCategoryObject = variableCategoryService.getVariableCategoryInfo();
 		
@@ -204,7 +207,7 @@ angular.module('starter')
             }
 	    };
 
-	    $scope.edit = function(){
+	    $scope.saveModifiedReminder = function(){
 
 	    	utilsService.loadingStart();
 
@@ -261,7 +264,7 @@ angular.module('starter')
 	    $scope.save = function(){
 
 	    	if($stateParams.reminder && $stateParams.reminder !== null){
-	    		$scope.edit();
+	    		$scope.saveModifiedReminder();
 	    		return;
 	    	}
 
@@ -297,7 +300,7 @@ angular.module('starter')
 	    		utilsService.loadingStop();
 				if($stateParams.fromUrl){
 					window.location = $stateParams.fromUrl;
-				} else if ($stateParams.reminder.fromState){
+				} else if ($stateParams.reminder && $stateParams.reminder.fromState){
 					$state.go($stateParams.reminder.fromState);
 				} else {
 					$state.go('app.remindersManage');
@@ -312,18 +315,18 @@ angular.module('starter')
 
 
 	    // setup editing view
-	    var setupEditReminder = function(){
+	    var setupEditReminder = function(reminder){
 
-            $scope.reminder = $stateParams.reminder;
-            $scope.state.id = $stateParams.reminder.id;
-            $scope.state.variableName = $stateParams.reminder.variableName;
-            $scope.state.variableId = $stateParams.reminder.variableId;
-	    	$scope.state.selectedReminder = $stateParams.reminder;
-	    	$scope.state.title = "Edit " +  $stateParams.reminder.variableName + " Reminder";
-	    	$scope.state.abbreviatedUnitName = $scope.state.selectedReminder.abbreviatedUnitName;
-            $scope.state.defaultValue = $scope.state.selectedReminder.defaultValue;
-            $scope.state.reminderFrequency = $scope.state.selectedReminder.reminderFrequency;
-            $scope.state.reminderStartTimeStringUtc = $scope.state.selectedReminder.reminderStartTime;
+            $scope.reminder = reminder;
+            $scope.state.id = reminder.id;
+            $scope.state.variableName = reminder.variableName;
+            $scope.state.variableId = reminder.variableId;
+	    	$scope.state.selectedReminder = reminder;
+	    	$scope.state.title = "Edit " +  reminder.variableName + " Reminder";
+	    	$scope.state.abbreviatedUnitName = reminder.abbreviatedUnitName;
+            $scope.state.defaultValue = reminder.defaultValue;
+            $scope.state.reminderFrequency = reminder.reminderFrequency;
+            $scope.state.reminderStartTimeStringUtc = reminder.reminderStartTime;
 
 	    	var reverseFrequencyChart = {
 
@@ -368,6 +371,12 @@ angular.module('starter')
             $scope.state.showSearchBox = true;
             $scope.state.showResults = true;
             $scope.state.measurementSynonymSingularLowercase = $scope.state.variableCategoryObject.measurementSynonymSingularLowercase;
+            if($scope.state.variableCategoryObject.defaultValueLabel){
+                $scope.state.defaultValueLabel = $scope.state.variableCategoryObject.defaultValueLabel;
+            }
+            if($scope.state.variableCategoryObject.defaultValuePlaceholderText){
+                $scope.state.defaultValuePlaceholderText = $scope.state.variableCategoryObject.defaultValuePlaceholderText;
+            }
 	    };
 
 	    // setup new reminder view
