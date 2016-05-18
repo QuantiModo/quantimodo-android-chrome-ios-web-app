@@ -19,6 +19,7 @@ before_script:
 - chmod a+x ./scripts/add-key.sh
 - ./scripts/add-key.sh
 script:
+- chmod a+x ./scripts/build_scripts/04_build_ios.sh
 - ./scripts/build_scripts/04_build_ios.sh energymodo EnergyModo 1115037652 "com.quantimodo.energymodo"
 - ./scripts/build_scripts/04_build_ios.sh medtlc MedTLC 1115037661 "com.quantimodo.medtlc"
 - ./scripts/build_scripts/04_build_ios.sh mindfirst "Mind First" 1024924226 "com.quantimodo.moodimodo"
