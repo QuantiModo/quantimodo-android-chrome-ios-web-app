@@ -16,7 +16,7 @@ if [[ -z "$PROFILE_NAME" ]]; then
 fi
 
 if [[ ! -e "./scripts/profile/$PROFILE_NAME.mobileprovision.enc" ]]; then
-    echo "Error: Missing encrypted provision profile"
+    echo "Error: Missing encrypted provision profile $PROFILE_NAME.mobileprovision.enc"
     exit 1
 fi
 
@@ -36,19 +36,19 @@ openssl aes-256-cbc \
 -in "./scripts/certs/apple.cer.enc" -d -a \
 -out "./scripts/certs/apple.cer"
 
-echo "DECRYPTING ./scripts/profile/$PROFILE_NAME.mobileprovision.enc..."
+echo "DECRYPTING ./scripts/profile/$PROFILE_NAME.mobileprovision.enc to scripts/profile/$PROFILE_NAME.mobileprovision..."
 openssl aes-256-cbc \
 -k "$ENCRYPTION_SECRET" \
 -in "./scripts/profile/$PROFILE_NAME.mobileprovision.enc" -d -a \
 -out "./scripts/profile/$PROFILE_NAME.mobileprovision"
 
-echo "DECRYPTING ./scripts/certs/dist.cer.enc..."
+echo "DECRYPTING ./scripts/certs/dist.cer.enc to scripts/certs/dist.cer..."
 openssl aes-256-cbc \
 -k "$ENCRYPTION_SECRET" \
 -in "./scripts/certs/dist.cer.enc" -d -a \
 -out "./scripts/certs/dist.cer"
 
-echo "DECRYPTING ./scripts/certs/dist.p12.enc..."
+echo "DECRYPTING /scripts/certs/dist.p12.enc to scripts/certs/dist.p12..."
 openssl aes-256-cbc \
 -k "$ENCRYPTION_SECRET" \
 -in "./scripts/certs/dist.p12.enc" -d -a \
