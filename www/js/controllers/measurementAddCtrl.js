@@ -53,7 +53,7 @@ angular.module('starter')
                 $scope.unitSelected(unitObject);
 
                 // redraw view
-                $scope.$apply();
+                $scope.safeApply();
 
                 // hackish timeout for view to update itself
                 setTimeout(function(){
@@ -63,7 +63,7 @@ angular.module('starter')
                     $scope.state.measurement.abbreviatedUnitName = unitObject.abbreviatedName;
 
                     // redraw view
-                    $scope.$apply();
+                    $scope.safeApply();
                 },100);
 
             },100);
@@ -158,7 +158,7 @@ angular.module('starter')
                         $scope.state.measurement.value = value;
                     }
                     // redraw view
-                    $scope.$apply();
+                    $scope.safeApply();
                 }, 500);
             });
         };
@@ -269,7 +269,7 @@ angular.module('starter')
             setTimeout(function(){
                 console.log('changed to ', $scope.state.unitCategories[$scope.selectedUnitCategoryName][0].abbreviatedName);
                 $scope.state.measurement.abbreviatedUnitName = $scope.state.unitCategories[$scope.selectedUnitCategoryName][0].abbreviatedName;
-                $scope.$apply();
+                $scope.safeApply();
             }, 100);
         };
 
@@ -308,11 +308,11 @@ angular.module('starter')
 
         // constructor
         $scope.init = function(){
-            $scope.state.loading = true;
+            $scope.loading = true;
             utilsService.loadingStart();
             var isAuthorized = authService.checkAuthOrSendToLogin();
             if(isAuthorized){
-                $scope.state.loading = true;
+                $scope.loading = true;
                 utilsService.loadingStart();
                 if(!$scope.state.measurementIsSetup){
                     setupFromUrlParameters();

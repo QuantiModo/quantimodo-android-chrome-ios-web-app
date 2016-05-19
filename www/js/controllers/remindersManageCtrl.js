@@ -26,7 +26,8 @@ angular.module('starter')
 				step: 1
 			},
 			variable : {},
-			isDisabled : false
+			isDisabled : false,
+			loading : true
 	    };
 
 		if($stateParams.variableCategoryName){
@@ -51,13 +52,15 @@ angular.module('starter')
 		};
 
 	    var getTrackingReminders = function(){
-	    	utilsService.loadingStart();
+			$scope.showLoader();
 	    	reminderService.getTrackingReminders($stateParams.variableCategoryName)
 	    	.then(function(reminders){
 	    		$scope.state.allReminders = reminders;
-	    		utilsService.loadingStop();
+	    		$ionicLoading.hide();
+				$scope.loading = false;
 	    	}, function(){
 				$ionicLoading.hide();
+				$scope.loading = false;
 				$state.go('app.login');
 	    	});
 	    };
@@ -91,14 +94,12 @@ angular.module('starter')
 
 	    // constructor
 	    $scope.init = function(){
-			$scope.state.loading = true;
-			utilsService.loadingStart();
+			$scope.showLoader();
 			var isAuthorized = authService.checkAuthOrSendToLogin();
 			if(isAuthorized){
 				$scope.state.showButtons = true;
 				$scope.showHelpInfoPopupIfNecessary();
 				getTrackingReminders();
-				$ionicLoading.hide();
 			} 
 	    };
 
@@ -122,17 +123,16 @@ angular.module('starter')
 
 
 	    $scope.deleteReminder = function(reminder){
-	    	utilsService.loadingStart();
-	    	reminderService.deleteReminder(reminder.id)
+			$scope.showLoader();
+			reminderService.deleteReminder(reminder.id)
 	    	.then(function(){
-
-	    		utilsService.loadingStop();
+				$ionicLoading.hide();
+				$scope.loading = false;
 	    		utilsService.showAlert('Reminder Deleted.');
 	    		$scope.init();
-
 	    	}, function(err){
-
-	    		utilsService.loadingStop();
+	    		$ionicLoading.hide();
+				$scope.loading = false;
 	    		utilsService.showAlert('Failed to Delete Reminder, Try again!', 'assertive');
 	    	});
 	    };
@@ -141,5 +141,19 @@ angular.module('starter')
     	$scope.$on('$ionicView.enter', function(e){
     		$scope.init();
     	});
-
+		
+		$scope.showLoader = function (loadingText) {
+			if(!loadingText){
+				loadingText = '';
+			}
+			$scope.loading = true;
+			$ionicLoading.show({
+				template: loadingText + '<br><br><img src={{loaderImagePath}}>',
+				content: 'Loading',
+				animation: 'fade-in',
+				showBackdrop: false,
+				maxWidth: 1000,
+				showDelay: 0
+			});
+		};
 	});

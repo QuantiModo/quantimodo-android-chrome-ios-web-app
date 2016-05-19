@@ -121,43 +121,43 @@ gulp.task('generatePrivateConfigFromEnvs', function(){
 		console.error('No Apps Found');
 		deferred.reject();
 	} else {
-		var apps = environmentalVariables['APPS'].split(',');
+		var upperCaseAppNames = environmentalVariables['APPS'].split(',');
 
-		apps.forEach(function(appName){
-			appName = appName.trim();
+		upperCaseAppNames.forEach(function(upperCaseAppName){
+			upperCaseAppName = upperCaseAppName.trim();
 			var configkeys = {
 				client_ids : {},
 				client_secrets : {},
 				redirect_uris : {},
 				api_urls : {}
 			};
-			if(typeof environmentalVariables[appName+'_WEB_CLIENT_ID'] !== "undefined"){
-				configkeys.client_ids.Web = environmentalVariables[appName+'_WEB_CLIENT_ID'];
-				console.log(appName+'_WEB_CLIENT_ID'+' Detected');
+			if(typeof environmentalVariables[upperCaseAppName+'_WEB_CLIENT_ID'] !== "undefined"){
+				configkeys.client_ids.Web = environmentalVariables[upperCaseAppName+'_WEB_CLIENT_ID'];
+				console.log(upperCaseAppName+'_WEB_CLIENT_ID'+' Detected');
 			} else {
-				console.log(appName+'_WEB_CLIENT_ID'+' NOT DETECTED');
+				console.log(upperCaseAppName+'_WEB_CLIENT_ID'+' NOT DETECTED');
 			}
 
-			if(typeof environmentalVariables[appName+'_WEB_CLIENT_SECRET'] !== "undefined"){
-				configkeys.client_secrets.Web = environmentalVariables[appName+'_WEB_CLIENT_SECRET'];
-				console.log(appName+'_WEB_CLIENT_SECRET'+' Detected');
+			if(typeof environmentalVariables[upperCaseAppName+'_WEB_CLIENT_SECRET'] !== "undefined"){
+				configkeys.client_secrets.Web = environmentalVariables[upperCaseAppName+'_WEB_CLIENT_SECRET'];
+				console.log(upperCaseAppName+'_WEB_CLIENT_SECRET'+' Detected');
 			} else {
-				console.log(appName+'_WEB_CLIENT_SECRET'+' NOT DETECTED');
+				console.log(upperCaseAppName+'_WEB_CLIENT_SECRET'+' NOT DETECTED');
 			}
 
-			if(typeof environmentalVariables[appName+'_WEB_API_URL'] !== "undefined"){
-				configkeys.api_urls.Web = environmentalVariables[appName+'_WEB_API_URL'];
-				console.log(appName+'_WEB_API_URL'+' Detected');
+			if(typeof environmentalVariables[upperCaseAppName+'_WEB_API_URL'] !== "undefined"){
+				configkeys.api_urls.Web = environmentalVariables[upperCaseAppName+'_WEB_API_URL'];
+				console.log(upperCaseAppName+'_WEB_API_URL'+' Detected');
 			} else {
-				console.log(appName+'_WEB_API_URL'+' NOT DETECTED. Using https://app.quantimo.do');
+				console.log(upperCaseAppName+'_WEB_API_URL'+' NOT DETECTED. Using https://app.quantimo.do');
 				configkeys.api_urls.Web = 'https://app.quantimo.do';
 			}
 
-			if(typeof environmentalVariables[appName+'_WEB_REDIRECT_URI'] !== "undefined"){
-				configkeys.redirect_uris.Web = environmentalVariables[appName+'_WEB_REDIRECT_URI'];
-				console.log(appName+'_WEB_REDIRECT_URI'+' Detected');
+			if(typeof environmentalVariables[upperCaseAppName+'_WEB_REDIRECT_URI'] !== "undefined"){
+				configkeys.redirect_uris.Web = environmentalVariables[upperCaseAppName+'_WEB_REDIRECT_URI'];
+				console.log(upperCaseAppName+'_WEB_REDIRECT_URI'+' Detected');
 			} else {
-				console.log(appName+'_WEB_REDIRECT_URI'+' NOT DETECTED. Using https://app.quantimo.do/ionic/Modo/www/callback/');
+				console.log(upperCaseAppName+'_WEB_REDIRECT_URI'+' NOT DETECTED. Using https://app.quantimo.do/ionic/Modo/www/callback/');
 				configkeys.redirect_uris.Web = 'https://app.quantimo.do/ionic/Modo/www/callback/';
 			}
 
@@ -170,9 +170,11 @@ gulp.task('generatePrivateConfigFromEnvs', function(){
 
 			var content = 'window.private_keys = '+JSON.stringify(configkeys, 0, 2);
 
-			fs.writeFileSync("./www/private_configs/" + LOWERCASE_APP_NAME + ".config.js", content);
+			var lowerCaseAppName = upperCaseAppName.toLowerCase();
 
-			console.log('Created '+ './www/private_configs/' + LOWERCASE_APP_NAME + '.config.js');
+			fs.writeFileSync("./www/private_configs/" + lowerCaseAppName + ".config.js", content);
+
+			console.log('Created '+ './www/private_configs/' + lowerCaseAppName + '.config.js');
 
 		});
 	}

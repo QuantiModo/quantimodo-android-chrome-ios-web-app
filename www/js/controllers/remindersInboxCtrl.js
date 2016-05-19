@@ -28,7 +28,8 @@ angular.module('starter')
 			},
 			variable : {},
 			isDisabled : false,
-			title : 'Reminder Inbox'
+			title : 'Reminder Inbox',
+			loading : true
 	    };
 
 		if(typeof config.appSettings.remindersInbox.showAddHowIFeelResponseButton !== 'undefined'){
@@ -132,7 +133,7 @@ angular.module('starter')
 	    };
 
 	    var getTrackingReminderNotifications = function(){
-	    	$scope.showLoader();
+	    	$scope.showLoader('Fetching reminders...');
 
 	    	reminderService.getTrackingReminderNotifications($stateParams.variableCategoryName, $stateParams.today)
 	    	.then(function(reminders){
@@ -146,8 +147,10 @@ angular.module('starter')
 	    		$scope.state.trackingRemindersNotifications = reminders;
 	    		$scope.state.filteredReminders = filterViaDates(reminders);
 				$ionicLoading.hide();
+				$scope.loading = false;
 	    	}, function(){
 				$ionicLoading.hide();
+				$scope.loading = false;
 	    		console.error("failed to get reminders");
 				//utilsService.showLoginRequiredAlert($scope.login);
 
@@ -191,8 +194,7 @@ angular.module('starter')
 	    };
 
 	    $scope.init = function(){
-			$scope.state.loading = true;
-			$scope.showLoader();
+			$scope.showLoader('Fetching reminders...');
 			setPageTitle();
 			var isAuthorized = authService.checkAuthOrSendToLogin();
 			if(isAuthorized){
@@ -216,11 +218,13 @@ angular.module('starter')
 	    	.then(function(){
 
 				$ionicLoading.hide();
+				$scope.loading = false;
 	    		utilsService.showAlert('Reminder Deleted.');
 	    		$scope.init();
 
 	    	}, function(err){
 				$ionicLoading.hide();
+				$scope.loading = false;
 				console.error(err);
 	    		utilsService.showAlert('Failed to Delete Reminder, Try again!', 'assertive');
 	    	});
@@ -231,9 +235,13 @@ angular.module('starter')
     		$scope.init();
     	});
 
-		$scope.showLoader = function () {
+		$scope.showLoader = function (loadingText) {
+			if(!loadingText){
+				loadingText = '';
+			}
+			$scope.loading = true;
 			$ionicLoading.show({
-				template: '<img src={{loaderImagePath}}>',
+				template: loadingText+ '<br><br><img src={{loaderImagePath}}>',
 				content: 'Loading',
 				animation: 'fade-in',
 				showBackdrop: false,

@@ -37,7 +37,7 @@ angular.module('starter')
 
                     setTimeout(function () {
                         $scope.timeRemaining = false;
-                        $scope.$apply();
+                        $scope.safeApply();
                     }, 500);
 
                     updateCharts();
@@ -57,7 +57,7 @@ angular.module('starter')
             if(!$scope.$$phase) {
                 $scope.showRatingFaces = true;
                 console.log("Not in the middle of digest cycle, so redrawing everything...");
-                $scope.$apply();
+                $scope.safeApply();
             }
         };
 
@@ -110,7 +110,7 @@ angular.module('starter')
                 }
 
                 if(!$scope.$$phase) {
-                    $scope.$apply();
+                    $scope.safeApply();
                 }
             });
         };
@@ -184,6 +184,7 @@ angular.module('starter')
             $scope.showHelpInfoPopupIfNecessary();
             syncPrimaryOutcomeVariableMeasurements();
             generateLineAndBarChartData();
+            $ionicLoading.hide();
         };
 
         $scope.init();
