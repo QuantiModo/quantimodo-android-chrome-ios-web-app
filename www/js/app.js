@@ -13,11 +13,6 @@ angular.module('starter',
 
 .run(function($ionicPlatform, $ionicHistory, $state, $rootScope) {
 
-    if(!window.private_keys){
-        alert('No private config file found!');
-        return;
-    }
-
     $rootScope.goToState = function(state, params){
         $state.go(state, params);
     };
@@ -26,13 +21,18 @@ angular.module('starter',
         if(typeof config !== "undefined"){
             clearInterval(intervalChecker);
 
+            if(!window.private_keys){
+                alert('No private config file found!');
+                return;
+            }
+
             if(window.private_keys.bugsnag_key) {
                 //Set Bugsnag Release Stage
                 Bugsnag.apiKey = window.private_keys.bugsnag_key;
                 Bugsnag.releaseStage = config.getEnv();
                 Bugsnag.notifyReleaseStages = config.bugsnag.notifyReleaseStages;
             } else {
-                console.warn('No bugsnag_key found in private config!');
+                alert('No bugsnag_key found in private config!');
             }
 
             $ionicPlatform.ready(function() {
