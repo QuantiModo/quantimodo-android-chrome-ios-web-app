@@ -320,7 +320,7 @@ angular.module('starter')
         };
 
         var oAuthBrowserLogin = function (register) {
-            $scope.showLoader();
+            //$scope.showLoader();
             var url = authService.generateV1OAuthUrl(register);
 
             var ref = window.open(url, '_blank');
