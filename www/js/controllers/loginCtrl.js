@@ -16,7 +16,7 @@ angular.module('starter')
         }
 
         $scope.init = function(){
-            $scope.showLoader();
+            //$scope.showLoader();
             if($rootScope.helpPopup){
                 console.log('Closing help popup!');
                 $rootScope.helpPopup.close();
@@ -36,7 +36,7 @@ angular.module('starter')
         // User wants to login
         $scope.login = function(register) {
 
-            $scope.showLoader();
+            //$scope.showLoader();
             localStorageService.setItem('isWelcomed', true);
             $rootScope.isWelcomed = true;
 
@@ -80,7 +80,7 @@ angular.module('starter')
 
         // get Access Token
         var fetchAccessTokenAndUserDetails = function(authorization_code, withJWT) {
-            $scope.showLoader();
+            //$scope.showLoader();
             authService.getAccessTokenFromAuthorizationCode(authorization_code, withJWT)
                 .then(function(response) {
 
@@ -114,7 +114,7 @@ angular.module('starter')
         };
 
         var nonNativeMobileLogin = function(register) {
-            $scope.showLoader();
+            //$scope.showLoader();
             console.log("nonNativeMobileLogin: Mobile device detected and ionic platform is " + ionic.Platform.platforms[0]);
             console.log(JSON.stringify(ionic.Platform.platforms));
 
@@ -153,7 +153,7 @@ angular.module('starter')
         };
 
         var chromeAppLogin = function(register){
-            $scope.showLoader();
+          //$scope.showLoader();
           console.log("login: Use Chrome app (content script, background page, etc.");
           var url = authService.generateV1OAuthUrl(register);
           chrome.identity.launchWebAuthFlow({
@@ -166,7 +166,7 @@ angular.module('starter')
         };
 
         var chromeExtensionLogin = function(register) {
-            $scope.showLoader();
+            //$scope.showLoader();
             var loginUrl = config.getURL("api/v2/auth/login");
             if (register === true) {
             loginUrl = config.getURL("api/v2/auth/register");
@@ -176,7 +176,7 @@ angular.module('starter')
         };
 
         $scope.nativeLogin = function(platform, accessToken){
-            $scope.showLoader();
+            //$scope.showLoader();
             localStorageService.setItem('isWelcomed', true);
             $rootScope.isWelcomed = true;
 
@@ -285,7 +285,7 @@ angular.module('starter')
         };
 
         var browserLogin = function(register) {
-            $scope.showLoader();
+            //$scope.showLoader();
             console.log("Browser Login");
             if (config.getClientId() !== 'oAuthDisabled') {
                 oAuthBrowserLogin(register);
@@ -295,7 +295,7 @@ angular.module('starter')
         };
 
         var sendToNonOAuthBrowserLoginUrl = function(register) {
-            $scope.showLoader();
+            //$scope.showLoader();
             var user = getOrSetUserInLocalStorage();
             if(user){
                 $rootScope.hideNavigationMenu = false;
