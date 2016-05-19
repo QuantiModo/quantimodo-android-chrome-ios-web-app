@@ -28,6 +28,7 @@ angular.module('starter',
 
             if(window.private_keys.bugsnag_key) {
                 //Set Bugsnag Release Stage
+                $rootScope.bugsnagApiKey = window.private_keys.bugsnag_key;
                 Bugsnag.apiKey = window.private_keys.bugsnag_key;
                 Bugsnag.releaseStage = config.getEnv();
                 Bugsnag.notifyReleaseStages = config.bugsnag.notifyReleaseStages;
