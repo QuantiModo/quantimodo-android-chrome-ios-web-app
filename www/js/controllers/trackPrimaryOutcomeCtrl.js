@@ -184,6 +184,7 @@ angular.module('starter')
             $scope.showHelpInfoPopupIfNecessary();
             syncPrimaryOutcomeVariableMeasurements();
             generateLineAndBarChartData();
+            $ionicLoading.hide();
         };
 
         $scope.init();
