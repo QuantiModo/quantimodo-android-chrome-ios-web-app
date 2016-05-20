@@ -4,7 +4,7 @@
     		<div class="item item-text-wrap">
                 <div class="primary-outcome-variable-rating-buttons" >
                     <p class="heading positive" style="padding:14px; text-align: center;">{{primaryOutcomeVariableTrackingQuestion}}</p>
-                    <img ng-repeat="option in primaryOutcomeVariableRatingOptions"
+                    <img ng-repeat="option in positiveRatingOptions"
                          ng-click="recordPrimaryOutcomeVariableRating(option.value)"
                          ng-src="{{option.img}}"
                             >

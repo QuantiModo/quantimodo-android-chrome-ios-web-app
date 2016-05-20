@@ -44,7 +44,7 @@
             </div>
         </div>
 
-        <div class="card"style="overflow: visible">
+        <div class="card" style="overflow: visible" ng-hide="loading">
             <div class="item item-divider">
                 {{state.measurement.variable}}
             </div>
@@ -59,9 +59,33 @@
                         <input type="text" ng-model="state.measurement.value" id="measurementValue" placeholder="Enter Value Here" class="up-top">
                     </div>
                 </div>
-
-                <div class="primary-outcome-variable-rating-buttons primary-outcome-variable-history col" ng-if="(state.measurement.abbreviatedUnitName === '/5')">
-                    <img ng-repeat="option in primaryOutcomeVariableNumbers" ng-click="selectPrimaryOutcomeVariableValue($event, option.value)" ng-src="{{option.img}}"  ng-class="{'active-primary-outcome-variable-rating-button' : option.value == state.measurement.value}">
+                <div class="primary-outcome-variable-rating-buttons primary-outcome-variable-history col"
+                     ng-if="variableObject.description.toLowerCase().indexOf('positive') === -1 &&
+						 	variableObject.description.toLowerCase().indexOf('negative') === -1 &&
+							state.measurement.abbreviatedUnitName === '/5'">
+                    <img ng-repeat="option in numericRatingOptions"
+                         ng-click="selectPrimaryOutcomeVariableValue($event, option.value)"
+                         ng-src="{{option.img}}"
+                         ng-class="{'active-primary-outcome-variable-rating-button' :
+                         option.value == state.measurement.value}">
+                </div>
+                <div class="primary-outcome-variable-rating-buttons primary-outcome-variable-history col"
+                     ng-if="state.measurement.abbreviatedUnitName === '/5' &&
+						 	variableObject.description.toLowerCase().indexOf('positive') > -1">
+                    <img ng-repeat="option in positiveRatingOptions"
+                         ng-click="selectPrimaryOutcomeVariableValue($event, option.numericValue)"
+                         ng-src="{{option.img}}"
+                         ng-class="{'active-primary-outcome-variable-rating-button' :
+                         option.value == state.measurement.value}">
+                </div>
+                <div class="primary-outcome-variable-rating-buttons primary-outcome-variable-history col"
+                     ng-if="state.measurement.abbreviatedUnitName === '/5' &&
+						 	variableObject.description.toLowerCase().indexOf('negative') > -1">
+                    <img ng-repeat="option in negativeRatingOptions"
+                         ng-click="selectPrimaryOutcomeVariableValue($event, option.numericValue)"
+                         ng-src="{{option.img}}"
+                         ng-class="{'active-primary-outcome-variable-rating-button' :
+                         option.value == state.measurement.value}">
                 </div>
 
                 <div class="row labeled-control" ng-if="(state.measurement.abbreviatedUnitName !== '/5')">
@@ -142,7 +166,7 @@
             </div>
         </div>    
  
-        <div class="card" >
+        <div class="card" ng-hide="loading">
             <button ng-click="done()" class="button button-positive button-block">
                 Save Measurement
             </button>

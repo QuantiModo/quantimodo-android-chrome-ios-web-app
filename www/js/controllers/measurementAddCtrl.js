@@ -12,6 +12,7 @@ angular.module('starter')
         var variableCategoryName = $stateParams.variableCategoryName;
         var variableCategoryObject = variableCategoryService.getVariableCategoryInfo(variableCategoryName);
         var currentTime = new Date();
+        $scope.loading = true;
 
         $scope.state = {
             measurementIsSetup : false,
@@ -374,6 +375,7 @@ angular.module('starter')
 
                 // hide spinner
                 $ionicLoading.hide();
+                $scope.loading = false;
 
             });
         };
@@ -444,6 +446,7 @@ angular.module('starter')
         };
 
         var setupFromVariableStateParameter = function(){
+            console.log($stateParams.variableObject);
             if($stateParams.variableObject !== null && typeof $stateParams.variableObject !== "undefined"){
                 $scope.variableObject = $stateParams.variableObject;
                 $scope.state.title = "Record Measurement";
