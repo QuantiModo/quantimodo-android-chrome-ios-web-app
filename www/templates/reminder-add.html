@@ -1,7 +1,7 @@
 <ion-view hide-nav-bar="hideNavigationMenu" view-title="{{state.title}}">
     <ion-content scroll="true" overflow-scroll="true">
 		
-		<div class="list card" ng-show="state.showVariableCategorySelector">
+		<div class="list card" ng-show="state.showVariableCategorySelector" >
 			<label class="item item-input item-select">
 				<div class="input-label" style="white-space:normal; width: 60%">Select Variable Category</div>
 				<select ng-model="state.variableCategoryName" ng-change="onVariableCategoryChange()">
@@ -9,22 +9,15 @@
 				</select>
 			</label>
 		</div>
-
-        <div class="list list-inset" ng-show="state.showSearchBox">
+        <div class="list list-inset" ng-show="state.showSearchBox" >
           <label class="item item-input">
             <i class="icon ion-search placeholder-icon"></i>
             <input type="text"
-                   placeholder={{state.variableCategoryObject.variableSearchPlaceholderText}}
+                   placeholder={{state.variableSearchPlaceholderText}}
                    ng-model="state.variableSearchQuery"
                    ng-change="onSearch()"
-                   ng-model-options='{ debounce: 500 }'>
+                   ng-model-options='{ debounce: 1000 }'>
           </label>
-            <p></p>
-            <ion-list>
-                <ion-item style="text-align:center;border-bottom: 1px solid rgb(221, 221, 221);" ng-show="loading">
-                    <img src={{loaderImagePath}}>
-                </ion-item>
-            </ion-list>
         </div>
 
 
@@ -38,30 +31,10 @@
             </ion-list>
         	<a class="item" ng-repeat="result in variableSearchResults | unique:'id' " ng-click="onVariableSelect(result)">{{result.name}}</a>
             <ion-list ng-show="state.showAddVariableButton">
-                <ion-item style="border-top: 1px solid rgb(221, 221, 221);" ng-click="addVariable()">
-                    {{state.variableCategoryObject.addNewVariableButtonText}}
+                <ion-item style="border-top: 1px solid rgb(221, 221, 221);" ng-click="addNewVariable()">
+                    {{state.addNewVariableButtonText}}
                 </ion-item>
             </ion-list>
-        </div>
-
-        <div class="card" ng-show="state.showAddVariable">
-            <div class="list">
-                <p class="heading positive" style="padding:14px;">{{state.variableCategoryObject.addNewVariableCardText}}</p>
-                <label class="item item-input item-select" ng-show="state.showVariableCategorySelector">
-                    <div class="input-label">
-                        Select variable category
-                    </div>
-                    <select ng-model="state.variableCategoryName" ng-change=>
-                        <option ng-repeat="i in state.variableCategories track by i.id" value="{{i.name}}">
-                            {{i.name}}
-                        </option>
-                    </select>
-                </label>
-                <label class="item item-input item-stacked-label">
-                    <span class="input-label">{{state.variableCategoryName | singularize}} Name</span>
-                    <input type="text" ng-model="state.variableName" id="variableName" placeholder="Enter the new variable name here...">
-                </label>
-            </div>
         </div>
 
         <div class="list card" ng-show="state.showReminderFrequencyCard">
@@ -71,20 +44,25 @@
                     <span class="input-label">{{state.defaultValueLabel}}</span>
                     <input type="text" ng-model="state.defaultValue" id="defaultValue" placeholder={{state.defaultValuePlaceholderText}} >
                 </label>
-                <label ng-if="(state.abbreviatedUnitName !== '/5')" class="item item-input">
-                    <span class="input-label">Unit</span>
-                    <input type="text" ng-change="unitSearch(state.abbreviatedUnitName)" ng-model="state.abbreviatedUnitName" placeholder="Search for a unit...">
-                </label>
 
-            <div class="card" ng-show="state.showUnits && state.searchedUnits.length">
-                <div class="list">
-                    <ion-list>
-                        <ion-item ng-repeat="unit in state.searchedUnits" on-tap="unitSelected(unit)">
-                            {{unit.name}} ({{unit.abbreviatedName}})
-                        </ion-item>
-                    </ion-list>
-                </div>
-            </div>
+                <label ng-if="(state.abbreviatedUnitName !== '/5')" class="item item-input item-select">
+                    <div class="input-label">
+                        Unit
+                    </div>
+                    <select ng-model="state.abbreviatedUnitName">
+                        <option ng-selected="{{unitObject.abbreviatedName == state.abbreviatedUnitName}}"
+                                ng-repeat="unitObject in state.unitObjects"
+                                value="{{unitObject.abbreviatedName}}">
+                            {{unitObject.name}} ({{unitObject.abbreviatedName}})
+                        </option>
+                    </select>
+                </label>
+                <label class="item item-input item-select" ng-if="state.showAddVariableCard && !state.variableCategoryName">
+                    <div class="input-label" style="white-space:normal; width: 60%">Select Variable Category</div>
+                    <select ng-model="state.variableCategoryName">
+                        <option ng-repeat="variableCategory in variables.variableCategories" value="{{variableCategory.name}}">{{variableCategory.name}}</option>
+                    </select>
+                </label>
         	<label class="item item-input item-select">
         		<div class="input-label" style="white-space:normal; width: 60%">
         			Select Frequency

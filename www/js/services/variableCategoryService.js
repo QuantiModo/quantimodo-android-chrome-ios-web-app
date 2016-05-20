@@ -10,7 +10,7 @@ angular.module('starter')
                 var variableCategoryInfo =
                 {
                     "Anything": {
-                        defaultUnitAbbreviatedName: '',
+                        defaultAbbreviatedUnitName: '',
                         helpText: "What do you want to record?",
                         variableCategoryNameSingularLowercase: "anything",
                         variableSearchPlaceholderText : "Search for a variable here...",
@@ -24,35 +24,35 @@ angular.module('starter')
                         measurementSynonymSingularLowercase : "measurement"
                     },
                     "Vital Signs": {
-                        defaultUnitAbbreviatedName: '',
+                        defaultAbbreviatedUnitName: '',
                         helpText: "What vital sign do you want to record?",
                         variableCategoryName: "Vital Signs",
                         variableCategoryNameSingularLowercase: "vital sign",
                         measurementSynonymSingularLowercase : "measurement"
                     },
                     "Foods" : {
-                        defaultUnitAbbreviatedName: "serving",
+                        defaultAbbreviatedUnitName: "serving",
                         helpText: "What did you eat?",
                         variableCategoryName: "Foods",
                         variableCategoryNameSingularLowercase: "food",
                         measurementSynonymSingularLowercase : "meal"
                     },
                     Emotions: {
-                        defaultUnitAbbreviatedName: "/5",
+                        defaultAbbreviatedUnitName: "/5",
                         helpText: "What emotion do you want to rate?",
                         variableCategoryName: "Emotions",
                         variableCategoryNameSingularLowercase: "emotion",
                         measurementSynonymSingularLowercase : "rating"
                     },
                     Symptoms: {
-                        defaultUnitAbbreviatedName: "/5",
+                        defaultAbbreviatedUnitName: "/5",
                         helpText: "What symptom do you want to record?",
                         variableCategoryName: "Symptoms",
                         variableCategoryNameSingularLowercase: "symptom",
                         measurementSynonymSingularLowercase : "rating"
                     },
                     Treatments: {
-                        defaultUnitAbbreviatedName : "mg",
+                        defaultAbbreviatedUnitName : "mg",
                         helpText : "What treatment do you want to record?",
                         variableCategoryName : "Treatments",
                         variableCategoryNameSingularLowercase : "treatment",
@@ -61,7 +61,7 @@ angular.module('starter')
                         measurementSynonymSingularLowercase : "dose"
                     },
                     "Physical Activity": {
-                        defaultUnitAbbreviatedName: '',
+                        defaultAbbreviatedUnitName: '',
                         helpText: "What physical activity do you want to record?",
                         variableCategoryName: "Physical Activity",
                         variableCategoryNameSingularLowercase: "physical activity",
