@@ -31,7 +31,7 @@ angular.module('starter')
 	    };
 
 		if($stateParams.variableCategoryName){
-			$scope.state.title = "Manage " + $filter('wordAliases')($stateParams.variableCategoryName);
+			$scope.state.title = "Manage " + pluralize($filter('wordAliases')($stateParams.variableCategoryName), 1) + " Reminders";
 			$scope.state.addButtonText = "Add New " + pluralize($filter('wordAliases')($stateParams.variableCategoryName), 1);
 		} else {
 			$scope.state.title = "Manage Reminders";
