@@ -17,6 +17,7 @@ angular.module('starter')
 
         $scope.init = function(){
             //$scope.showLoader();
+            $ionicLoading.hide();
             if($rootScope.helpPopup){
                 console.log('Closing help popup!');
                 $rootScope.helpPopup.close();
@@ -31,7 +32,6 @@ angular.module('starter')
                 $rootScope.hideNavigationMenu = false;
                 $state.go(config.appSettings.defaultState);
             }
-            $ionicLoading.hide();
         };
 
         // User wants to login
