@@ -32,7 +32,8 @@ angular.module('starter')
 
 		if($stateParams.variableCategoryName){
 			$scope.state.title = "Manage " + pluralize($filter('wordAliases')($stateParams.variableCategoryName), 1) + " Reminders";
-			$scope.state.addButtonText = "Add New " + pluralize($filter('wordAliases')($stateParams.variableCategoryName), 1);
+			$scope.state.addButtonText = 'Add new ' +
+				pluralize($filter('wordAliases')($stateParams.variableCategoryName.toLowerCase()), 1) + ' reminder';
 		} else {
 			$scope.state.title = "Manage Reminders";
 			$scope.state.addButtonText = "Add new reminder";
@@ -52,7 +53,12 @@ angular.module('starter')
 		};
 
 	    var getTrackingReminders = function(){
-			$scope.showLoader();
+			if($stateParams.variableCategoryName) {
+				$scope.showLoader('Fetching ' + $stateParams.variableCategoryName.toLowerCase() + '...');
+			} else {
+				$scope.showLoader('Fetching reminders...');
+			}
+
 	    	reminderService.getTrackingReminders($stateParams.variableCategoryName)
 	    	.then(function(reminders){
 	    		$scope.state.allReminders = reminders;
@@ -94,7 +100,6 @@ angular.module('starter')
 
 	    // constructor
 	    $scope.init = function(){
-			$scope.showLoader();
 			var isAuthorized = authService.checkAuthOrSendToLogin();
 			if(isAuthorized){
 				$scope.state.showButtons = true;
@@ -123,12 +128,12 @@ angular.module('starter')
 
 
 	    $scope.deleteReminder = function(reminder){
-			$scope.showLoader();
+			$scope.showLoader('Deleting ' + reminder.variableName.toLowerCase() + ' reminder...');
 			reminderService.deleteReminder(reminder.id)
 	    	.then(function(){
 				$ionicLoading.hide();
 				$scope.loading = false;
-	    		utilsService.showAlert('Reminder Deleted.');
+	    		utilsService.showAlert(reminder.variableName + ' reminder deleted');
 	    		$scope.init();
 	    	}, function(err){
 	    		$ionicLoading.hide();
