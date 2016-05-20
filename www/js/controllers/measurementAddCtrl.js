@@ -110,7 +110,7 @@ angular.module('starter')
             $scope.state.measurement.value = "";
             $scope.state.measurement.note = null;
             if($scope.state.variableCategoryObject) {
-                setUnit(variableCategoryObject.defaultUnitAbbreviatedName);
+                setUnit(variableCategoryObject.defaultAbbreviatedUnitName);
             }
         };
 
