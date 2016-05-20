@@ -27,7 +27,7 @@ if [ -z "$QM_DOCKER_PATH" ]
 fi
 
 export IMAGES_SCRIPT=${IONIC_PATH}/scripts/create_icons.sh
-export APP_PRIVATE_CONFIG_PATH="${QM_DOCKER_PATH}/configs/ionic"
+export APP_PRIVATE_CONFIG_PATH="${QM_DOCKER_PATH}/configs/ionic/private_configs"
 export BUILD_PATH="${IONIC_PATH}/build"
 export LANG=en_US.UTF-8
 export ENCRYPTION_SECRET=$ENCRYPTION_SECRET
