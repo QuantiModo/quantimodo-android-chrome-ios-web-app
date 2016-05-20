@@ -187,8 +187,6 @@ angular.module('starter')
                     console.log("nativeLogin: Mobile device detected and platform is " + platform);
                     var url = authService.generateV2OAuthUrl(JWTToken);
 
-                    $ionicLoading.hide();
-
                     console.log('nativeLogin: open the auth window via inAppBrowser.');
                     var ref = window.open(url,'_blank', 'location=no,toolbar=no');
 
@@ -295,7 +293,7 @@ angular.module('starter')
         };
 
         var sendToNonOAuthBrowserLoginUrl = function(register) {
-            //$scope.showLoader();
+
             var user = getOrSetUserInLocalStorage();
             if(user){
                 $rootScope.hideNavigationMenu = false;
@@ -307,11 +305,12 @@ angular.module('starter')
                     loginUrl = config.getURL("api/v2/auth/register");
                 }
                 console.log("sendToNonOAuthBrowserLoginUrl: Client id is oAuthDisabled - will redirect to regular login.");
-                loginUrl += "redirect_uri=" + encodeURIComponent(window.location.href);
+                loginUrl += "redirect_uri=" + encodeURIComponent(window.location.href.replace('app/login','app/reminders-inbox'));
                 console.debug('sendToNonOAuthBrowserLoginUrl: AUTH redirect URL created:', loginUrl);
                 var apiUrl = config.getApiUrl();
                 var apiUrlMatchesHostName = apiUrl.indexOf(window.location.hostname);
                 if(apiUrlMatchesHostName > -1 || $rootScope.isChromeExtension) {
+                    $scope.showLoader();
                     window.location.replace(loginUrl);
                 } else {
                     alert("API url doesn't match auth base url.  Please make use the same domain in config file");
@@ -386,7 +385,7 @@ angular.module('starter')
 
             $timeout(function () {
                 $ionicLoading.hide();
-            }, 10000);
+            }, 30000);
         };
 
 
