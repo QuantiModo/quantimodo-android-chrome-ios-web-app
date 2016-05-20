@@ -117,8 +117,15 @@ gulp.task('generatePrivateConfigFromEnvs', function(){
 		deferred.reject();
 	}
 
+	if(typeof environmentalVariables['APPS'] === "undefined" || environmentalVariables['APPS'].trim() === '') {
+		if (environmentalVariables['LOWERCASE_APP_NAME']) {
+			console.log('No APPS env found.  Using LOWERCASE_APP_NAME ' + environmentalVariables['LOWERCASE_APP_NAME'].toUpperCase());
+			environmentalVariables['APPS'] = environmentalVariables['LOWERCASE_APP_NAME'].toUpperCase();
+		}
+	}
+
 	if(typeof environmentalVariables['APPS'] === "undefined" || environmentalVariables['APPS'].trim() === ''){
-		console.error('No Apps Found');
+		console.error('No APPS env found!');
 		deferred.reject();
 	} else {
 		var upperCaseAppNames = environmentalVariables['APPS'].split(',');
