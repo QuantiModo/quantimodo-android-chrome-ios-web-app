@@ -125,7 +125,7 @@ angular.module('starter')
 				if(reminderId){
 					params = {id : reminderId};
 				}
-				QuantiModo.getTrackingReminders(params ,function(reminders){
+				QuantiModo.getTrackingReminders(params, function(reminders){
 					if(reminders.success) deferred.resolve(reminders.data);
 					else deferred.reject("error");
 				}, function(err){
