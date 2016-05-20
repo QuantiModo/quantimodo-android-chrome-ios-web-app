@@ -71,6 +71,9 @@ cordova plugin add https://github.com/jeduan/cordova-plugin-facebook4 --save --v
 echo "cordova plugin add https://github.com/EddyVerbruggen/cordova-plugin-googleplus for $LOWERCASE_APP_NAME Android app..."
 cordova plugin add https://github.com/EddyVerbruggen/cordova-plugin-googleplus --variable REVERSED_CLIENT_ID=${GOOGLE_REVERSED_CLIENT_ID}
 
+echo "plugin add cordova-fabric-plugin  for $LOWERCASE_APP_NAME Android app..."
+cordova plugin add cordova-fabric-plugin --variable FABRIC_API_KEY=${FABRIC_API_KEY} --variable FABRIC_API_SECRET=${FABRIC_API_SECRET}
+
 #echo "push for $LOWERCASE_APP_NAME Android app..."
 #cordova plugin add phonegap-plugin-push --variable SENDER_ID="quantimo-do"
 echo "Generating image resources for $LOWERCASE_APP_NAME..."
