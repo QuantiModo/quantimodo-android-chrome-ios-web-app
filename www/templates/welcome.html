@@ -17,7 +17,7 @@
 <div ng-hide="hidePrimaryOutcomeVariableCard" class="card primary-outcome-variable-reporting">
 	<div class="item item-text-wrap">
 		<div  class="primary-outcome-variable-rating-buttons">
-            <img ng-repeat="option in primaryOutcomeVariableRatingOptions"
+            <img ng-repeat="option in positiveRatingOptions"
                  ng-click="reportPrimaryOutcomeVariable(option.value)"
                  ng-src="{{option.img}}"
             >

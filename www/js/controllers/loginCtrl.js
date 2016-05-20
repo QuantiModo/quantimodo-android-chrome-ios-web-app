@@ -36,7 +36,7 @@ angular.module('starter')
         // User wants to login
         $scope.login = function(register) {
 
-            //$scope.showLoader();
+            $scope.showLoader();
             localStorageService.setItem('isWelcomed', true);
             $rootScope.isWelcomed = true;
 

@@ -67,7 +67,7 @@ config.appSettings  = {
         'Ecstatic'
     ],
 
-    primaryOutcomeVariableRatingOptions : [
+    positiveRatingOptions : [
         {
             value: 'depressed',
             img: 'img/ic_face_depressed.png'
@@ -353,60 +353,6 @@ config.appSettings  = {
         }
     ]
 
-};
-
-config.getPrimaryOutcomeVariableOptionLabels = function(shouldShowNumbers){
-    if(shouldShowNumbers || !config.appSettings.primaryOutcomeVariableRatingOptionLabels){
-        return ['1',  '2',  '3',  '4', '5'];
-    } else {
-        return config.appSettings.primaryOutcomeVariableRatingOptionLabels;
-    }
-};
-
-config.getPrimaryOutcomeVariableOptions = function(shouldShowNumbers){
-    if(shouldShowNumbers || !config.appSettings.primaryOutcomeVariableRatingOptions){
-        return [
-            {
-                value: '1',
-                img: 'img/ic_1.png'
-            },
-            {
-                value: '2',
-                img: 'img/ic_2.png'
-            },
-            {
-                value: '3',
-                img: 'img/ic_3.png'
-            },
-            {
-                value: '4',
-                img: 'img/ic_4.png'
-            },
-            {
-                value: '5',
-                img: 'img/ic_5.png'
-            }
-        ];
-    } else {
-        return config.appSettings.primaryOutcomeVariableRatingOptions;
-    }
-};
-
-config.getImageForPrimaryOutcomeVariableByValue = function(val){
-    var filtered_list = this.appSettings.primaryOutcomeVariableRatingOptions.filter(function(option){
-        return option.value === val;
-    });
-
-    return filtered_list.length? filtered_list[0].img || false : false;
-};
-
-config.getImageForPrimaryOutcomeVariableByNumber = function(num){
-    var primaryOutcomeVariable = this.appSettings.primaryOutcomeValueConversionDataSet[num]? this.appSettings.primaryOutcomeValueConversionDataSet[num] : false;
-    return primaryOutcomeVariable? config.getImageForPrimaryOutcomeVariableByValue(primaryOutcomeVariable) : false;
-};
-
-config.getPrimaryOutcomeVariableByNumber = function(num){
-    return this.appSettings.primaryOutcomeValueConversionDataSet[num]? this.appSettings.primaryOutcomeValueConversionDataSet[num] : false;
 };
 
 config.getEnv = function(){

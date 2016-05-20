@@ -3,7 +3,7 @@ angular.module('starter')
     // Controls the Track Page of the App
     .controller('TrackPrimaryOutcomeCtrl', function($scope, $ionicModal, $state, $timeout, utilsService, authService, 
                                                     measurementService, chartService, $ionicPopup, localStorageService,
-                                                    $rootScope, $ionicLoading) {
+                                                    $rootScope, $ionicLoading, ratingService) {
         $scope.controller_name = "TrackPrimaryOutcomeCtrl";
 
         $scope.showCharts = false;
@@ -49,7 +49,7 @@ angular.module('starter')
         var updateAveragePrimaryOutcomeRatingView = function(averagePrimaryOutcomeVariableRating){
             var averageRatingValue = config.appSettings.primaryOutcomeValueConversionDataSet[averagePrimaryOutcomeVariableRating];
             if(averageRatingValue){
-                $scope.averagePrimaryOutcomeVariableImage = config.getImageForPrimaryOutcomeVariableByValue(averageRatingValue);
+                $scope.averagePrimaryOutcomeVariableImage = ratingService.getRatingFaceImageByValue(averageRatingValue);
                 $scope.averagePrimaryOutcomeVariableValue = averageRatingValue;
                 console.log("updated averagePrimaryOutcomeVariableRating view");
             }

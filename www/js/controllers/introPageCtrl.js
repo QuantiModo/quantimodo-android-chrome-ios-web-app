@@ -8,8 +8,6 @@ angular.module('starter')
 
             $scope.viewTitle = config.appSettings.appName;
             $scope.primaryOutcomeVariable = config.appSettings.primaryOutcomeVariable;
-            $scope.primaryOutcomeVariableRatingOptions = config.getPrimaryOutcomeVariableOptions();
-            $scope.primaryOutcomeVariableNumbers = config.getPrimaryOutcomeVariableOptions(true);
             $scope.introConfiguration = config.appSettings.intro;
 
             $scope.myIntro = {

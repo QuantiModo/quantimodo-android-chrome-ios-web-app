@@ -4,7 +4,7 @@ angular.module('starter')
 	.controller('AppCtrl', function($scope, $ionicModal, $timeout, $injector, utilsService, authService,
                                     measurementService, $ionicPopover, $ionicLoading, $state, $ionicHistory,
                                     QuantiModo, notificationService, $rootScope, localStorageService, reminderService,
-                                    $ionicPopup, $ionicSideMenuDelegate) {
+                                    $ionicPopup, $ionicSideMenuDelegate, ratingService) {
 
         $rootScope.loaderImagePath = config.appSettings.loaderImagePath;
         if(!$rootScope.loaderImagePath){
@@ -74,8 +74,9 @@ angular.module('starter')
         /*Wrapper Config*/
         $scope.viewTitle = config.appSettings.appName;
         $scope.primaryOutcomeVariable = config.appSettings.primaryOutcomeVariable;
-        $scope.primaryOutcomeVariableRatingOptions = config.getPrimaryOutcomeVariableOptions();
-        $scope.primaryOutcomeVariableNumbers = config.getPrimaryOutcomeVariableOptions(true);
+        $scope.positiveRatingOptions = ratingService.getPositiveRatingOptions();
+        $scope.negativeRatingOptions = ratingService.getNegativeRatingOptions();
+        $scope.numericRatingOptions = ratingService.getNumericRatingOptions();
         $scope.welcomeText = config.appSettings.welcomeText;
         $scope.primaryOutcomeVariableTrackingQuestion = config.appSettings.primaryOutcomeVariableTrackingQuestion;
         $scope.primaryOutcomeVariableAverageText = config.appSettings.primaryOutcomeVariableAverageText;
