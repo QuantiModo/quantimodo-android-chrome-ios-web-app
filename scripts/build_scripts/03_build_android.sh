@@ -3,19 +3,19 @@
 if [ -z "$LOWERCASE_APP_NAME" ]
   then
     echo -e "${RED}build_android.sh: Please provide lowercase LOWERCASE_APP_NAME ${NC}"
-    exit
+    exit 1
 fi
 
 if [ -z "$BUILD_PATH" ]
     then
         echo -e "${RED}build_android.sh: No BUILD_PATH!${NC}"
-        exit
+        exit 1
 fi
 
 if [ ! -d "$ANDROID_BUILD_TOOLS" ]
     then
         echo -e "${RED}build_android.sh: ANDROID_BUILD_TOOLS directory $ANDROID_BUILD_TOOLS does not exist! Please update env!${NC}"
-        exit
+        exit 1
 fi
 
 echo -e "${GREEN}build_android.sh: BUILD_PATH is ${BUILD_PATH}...${NC}"
@@ -23,7 +23,7 @@ echo -e "${GREEN}build_android.sh: BUILD_PATH is ${BUILD_PATH}...${NC}"
 if [ -z "${ANDROID_HOME}" ]
     then
         echo -e "${RED}build_android.sh: ANDROID_HOME variable not set. On OSX, you can set it like this: http://stackoverflow.com/questions/19986214/setting-android-home-enviromental-variable-on-mac-os-x ${NC}"
-        exit
+        exit 1
     else
         echo -e "${GREEN}build_android.sh: Android home is $ANDROID_HOME ${NC}"
 fi
@@ -32,14 +32,33 @@ echo -e "${GREEN}build_android.sh: ANDROID_KEYSTORE_PASSWORD second argument giv
 if [ -z "${ANDROID_KEYSTORE_PASSWORD}" ]
   then
       echo -e "${RED}build_android.sh: ANDROID_KEYSTORE_PASSWORD doesn't exist. Please set it in Jenkins->Manage Jenkins->Configure System->Environment variables${NC}"
-      exit
+      exit 1
 fi
 
 if [ -z "${ANDROID_KEYSTORE_PATH}" ]
     then
       echo -e "${RED}build_android.sh: ANDROID_KEYSTORE_PATH doesn't exist. Please set it in Jenkins->Manage Jenkins->Configure System->Environment variables${NC}"
-      exit
+      exit 1
 fi
+
+if [ -z "${FACEBOOK_APP_ID}" ]
+    then
+      echo -e "${RED}build_android.sh: FACEBOOK_APP_ID doesn't exist. Please set it in Jenkins->Manage Jenkins->Configure System->Environment variables${NC}"
+      exit 1
+fi
+
+if [ -z "${FACEBOOK_APP_NAME}" ]
+    then
+      echo -e "${RED}build_android.sh: FACEBOOK_APP_NAME doesn't exist. Please set it in Jenkins->Manage Jenkins->Configure System->Environment variables${NC}"
+      exit 1
+fi
+
+if [ -z "${REVERSED_CLIENT_ID}" ]
+    then
+      echo -e "${RED}build_android.sh: REVERSED_CLIENT_ID doesn't exist. Please set it in Jenkins->Manage Jenkins->Configure System->Environment variables${NC}"
+      exit 1
+fi
+
 
 echo -e "${GREEN}build_android.sh: INTERMEDIATE_PATH is ${INTERMEDIATE_PATH}...${NC}"
 
@@ -62,13 +81,13 @@ echo "rm -rf ../fbplugin for $LOWERCASE_APP_NAME Android app..."
 rm -rf ../fbplugin
 #echo "gulp addFacebookPlugin for $LOWERCASE_APP_NAME Android app..."
 #gulp addFacebookPlugin
-echo "cordova plugin add cordova-plugin-facebook4 --save  for $LOWERCASE_APP_NAME Android app..."
+echo "cordova plugin add cordova-plugin-facebook4 APP_ID=${FACEBOOK_APP_ID} APP_NAME=${FACEBOOK_APP_NAME} for $LOWERCASE_APP_NAME Android app..."
 cordova plugin add https://github.com/jeduan/cordova-plugin-facebook4 --save --variable APP_ID="${FACEBOOK_APP_ID}" --variable APP_NAME="${FACEBOOK_APP_NAME}"
 
 #echo "gulp addFacebookPlugin for $LOWERCASE_APP_NAME Android app..."
 #gulp addGooglePlusPlugin
 
-echo "cordova plugin add https://github.com/EddyVerbruggen/cordova-plugin-googleplus for $LOWERCASE_APP_NAME Android app..."
+echo "cordova plugin add https://github.com/EddyVerbruggen/cordova-plugin-googleplus REVERSED_CLIENT_ID=${GOOGLE_REVERSED_CLIENT_ID} for $LOWERCASE_APP_NAME Android app..."
 cordova plugin add https://github.com/EddyVerbruggen/cordova-plugin-googleplus --variable REVERSED_CLIENT_ID=${GOOGLE_REVERSED_CLIENT_ID}
 
 echo "plugin add cordova-fabric-plugin  for $LOWERCASE_APP_NAME Android app..."
