@@ -138,17 +138,21 @@ angular.module('starter')
 			getTrackingReminderNotifications : function(category, today){
 
 				var localMidnightInUtcString = timeService.getLocalMidnightInUtcString();
+				var currentDateTimeInUtcString = timeService.getCurrentDateTimeInUtcString();
 				var params = {};
 				if(today && !category){
 					var reminderTime = '(gt)' + localMidnightInUtcString;
 					params = {
                         reminderTime : reminderTime,
                         sort : 'reminderTime'
-                    }
+                    };
 				}
 
 				if(!today && category){
-					params = {variableCategoryName : category}
+					params = {
+						variableCategoryName : category,
+						reminderTime : '(lt)' + currentDateTimeInUtcString
+					};
 				}
 
 				if(today && category){
@@ -156,13 +160,23 @@ angular.module('starter')
 						reminderTime : '(gt)' + localMidnightInUtcString,
 						variableCategoryName : category,
                         sort : 'reminderTime'
-					}
+					};
+				}
+
+				if(!today && !category){
+					params = {
+						reminderTime : '(lt)' + currentDateTimeInUtcString
+					};
 				}
 
 				var deferred = $q.defer();
 				QuantiModo.getTrackingReminderNotifications(params, function(reminders){
-					if(reminders.success) deferred.resolve(reminders.data);
-					else deferred.reject("error");
+					if(reminders.success) {
+						deferred.resolve(reminders.data);
+					}
+					else {
+						deferred.reject("error");
+					}
 				}, function(err){
 					deferred.reject(err);
 				});
