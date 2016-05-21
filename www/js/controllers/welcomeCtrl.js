@@ -14,9 +14,19 @@ angular.module('starter')
         $scope.features = config.appSettings.features;
         $scope.appName = config.appSettings.appName;
 
-        localStorageService.getItem('primaryOutcomeRatingFrequencyDescription',function(primaryOutcomeRatingFrequencyDescription){
-            $scope.primaryOutcomeRatingFrequencyDescription = primaryOutcomeRatingFrequencyDescription || $rootScope.isIOS? "day" : "daily";
-        });
+        localStorageService.getItem('primaryOutcomeRatingFrequencyDescription',
+            function(primaryOutcomeRatingFrequencyDescription) {
+                if (primaryOutcomeRatingFrequencyDescription) {
+                    $scope.primaryOutcomeRatingFrequencyDescription = primaryOutcomeRatingFrequencyDescription;
+                }
+                if (!primaryOutcomeRatingFrequencyDescription && $rootScope.isIOS) {
+                    $scope.primaryOutcomeRatingFrequencyDescription = 'day';
+                }
+                if (!primaryOutcomeRatingFrequencyDescription && !$rootScope.isIOS) {
+                    $scope.primaryOutcomeRatingFrequencyDescription = 'daily';
+                }
+            }
+        );
 
         $scope.subscribeNotification = true;
 
