@@ -58,7 +58,7 @@ angular.module('starter')
             $rootScope.user = userObject;
 
             if($rootScope.user){
-                console.log('Settings user in login');
+                console.debug('login: Setting up user and goign to default state');
                 $rootScope.setUserForIntercom($rootScope.user);
                 $rootScope.setUserForBugsnag($rootScope.user);
                 $rootScope.hideNavigationMenu = false;
@@ -98,7 +98,7 @@ angular.module('starter')
                             authService.updateAccessToken(response);
                         }
 
-                        console.log('get user details from server...');
+                        console.debug('get user details from server and going to defaultState...');
                         $rootScope.getUserAndSetInLocalStorage();
                         $rootScope.hideNavigationMenu = false;
                         $rootScope.$broadcast('callAppCtrlInit');
@@ -298,6 +298,7 @@ angular.module('starter')
             var user = getOrSetUserInLocalStorage();
             if(user){
                 $rootScope.hideNavigationMenu = false;
+                console.debug('sendToNonOAuthBrowserLoginUrl: User logged in so going to defaultState');
                 $state.go(config.appSettings.defaultState);
             }
             if(!user){

@@ -12,6 +12,7 @@ angular.module('starter')
         // Called to navigate to the main app
         startApp : function() {
             localStorageService.setItem('introSeen', true);
+            console.debug('startApp: Going to welcome state...');
             $state.go(config.appSettings.welcomeState);
         },
 
@@ -34,6 +35,7 @@ angular.module('starter')
 
         localStorageService.getItem('introSeen', function(introSeen){
             if(introSeen){
+                console.debug('introCtrl init: Going to welcome state...');
                 $state.go(config.appSettings.welcomeState);
             } else {
                 $scope.myIntro.ready = true;

@@ -17,6 +17,7 @@ angular.module('starter')
                 // Called to navigate to the main app
                 startApp : function() {
                     $rootScope.hideNavigationMenu = false;
+                    console.debug('startApp: Going to default state...');
                     $state.go(config.appSettings.defaultState);
                 },
 

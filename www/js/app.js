@@ -57,8 +57,10 @@ angular.module('starter',
                         $ionicHistory.goBack();
                     } else if(localStorage.user){
                         $rootScope.hideNavigationMenu = false;
+                        console.debug('registerBackButtonAction: Going to default state...');
                         $state.go(config.appSettings.defaultState);
                     } else {
+                        console.debug('registerBackButtonAction: Going to welcome state...');
                         $state.go(config.appSettings.welcomeState);
                     }
                 }

@@ -18,11 +18,11 @@ angular.module('starter')
                     localStorageService.deleteItem('accessToken');
                     localStorageService.deleteItem('user');
                     $rootScope.user = null;
-                    console.log('QuantiModo.errorHandler: Sending to login because we got 401 with request ' +
+                    console.warn('QuantiModo.errorHandler: Sending to login because we got 401 with request ' +
                         JSON.stringify(request));
-                    console.log('data: ' + JSON.stringify(data));
-                    console.log('headers: ' + JSON.stringify(headers));
-                    console.log('config: ' + JSON.stringify(config));
+                    console.debug('data: ' + JSON.stringify(data));
+                    console.debug('headers: ' + JSON.stringify(headers));
+                    console.debug('config: ' + JSON.stringify(config));
                     $state.go('app.login');
                     return;
                 }

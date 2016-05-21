@@ -162,15 +162,18 @@ angular.module('starter')
 
             if ($state.current.name === "app.welcome") {
                 $rootScope.hideNavigationMenu = false;
+                console.debug('goToDefaultStateShowMenuClearIntroHistoryAndRedraw: Going to default state...');
                 $state.go(config.appSettings.defaultState);
             }
 
             if ($state.current.name === "app.login" && $rootScope.user) {
                 $rootScope.hideNavigationMenu = false;
+                console.debug('goToDefaultStateShowMenuClearIntroHistoryAndRedraw: Going to default state...');
                 $state.go(config.appSettings.defaultState);
             }
 
             if (config.appSettings.allowOffline) {
+                console.debug('goToDefaultStateShowMenuClearIntroHistoryAndRedraw: Going to default state...');
                 $rootScope.hideNavigationMenu = false;
                 $state.go(config.appSettings.defaultState);
             }
@@ -191,6 +194,7 @@ angular.module('starter')
             localStorageService.getItem('isWelcomed',function(isWelcomed) {
                 if(isWelcomed  === true || isWelcomed === "true"){
                     $rootScope.isWelcomed = true;
+                    console.debug('goToDefaultStateIfWelcomed: Going to default state...');
                     goToDefaultStateShowMenuClearIntroHistoryAndRedraw();
                 }
             });
@@ -200,6 +204,7 @@ angular.module('starter')
             var loginState = 'app.login';
             if(loginState.indexOf($state.current.name) !== -1 && $rootScope.user){
                 $rootScope.hideNavigationMenu = false;
+                console.debug('goToDefaultStateIfLoggedInOnLoginState: Going to default state...');
                 $state.go(config.appSettings.defaultState);
             }
         };
