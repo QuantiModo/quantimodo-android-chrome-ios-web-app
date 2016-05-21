@@ -49,6 +49,7 @@ angular.module('starter')
 
                 localStorageService.setItem('primaryOutcomeRatingFrequencyDescription', $scope.primaryOutcomeRatingFrequencyDescription);
                 $scope.showIntervalCard = false;
+                console.debug('saveInterval: Going to login state...');
                 $state.go('app.login');
             }            
         };
@@ -56,6 +57,7 @@ angular.module('starter')
         // skip interval reporting is tapped
         $scope.skipInterval = function(){
             $scope.showIntervalCard = false;
+            console.debug('skipInterval: Going to login state...');
             $state.go('app.login');
         };
 

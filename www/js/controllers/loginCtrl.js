@@ -228,7 +228,7 @@ angular.module('starter')
         };
 
         // log in with google
-        $scope.googleLogin = function(){
+        $scope.googleLogin = function(register){
             $scope.showLoader();
             window.plugins.googleplus.login({
                 'scopes': 'https://www.googleapis.com/auth/plus.login https://www.googleapis.com/auth/userinfo.email', // optional, space-separated list of scopes, If not included or empty, defaults to `profile` and `email`.
@@ -237,15 +237,20 @@ angular.module('starter')
                 },
                 function (userData) {
                     $ionicLoading.hide();
-                    console.log('successfully logged in');
-                    console.log('google->', JSON.stringify(userData));
-                    var accessToken = userData.accessToken;
-
-                    $scope.nativeLogin('google', accessToken);
+                    console.debug('successfully logged in');
+                    console.debug('google->', JSON.stringify(userData));
+                    if(!userData.accessToken){
+                        console.error('googleLogin: No userData.accessToken provided! Fallback to nonNativeMobileLogin...');
+                        nonNativeMobileLogin(register);
+                    } else {
+                        $scope.nativeLogin('google', userData.accessToken);
+                    }
                 },
                 function (msg) {
                     $ionicLoading.hide();
-                    console.log("google login error", msg);
+                    console.error("Google login error: ", msg);
+                    console.debug('googleLogin: Fallback to nonNativeMobileLogin...');
+                    nonNativeMobileLogin(register);
                 });
         };
 
