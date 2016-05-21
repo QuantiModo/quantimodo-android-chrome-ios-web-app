@@ -138,6 +138,11 @@ angular.module('starter')
 	    };
 
         var populateUserVariables = function(){
+            if($stateParams.variableCategoryName){
+                $scope.showLoader('Fetching most recent ' + $stateParams.variableCategoryName.toLowerCase() + '...');
+            } else {
+                $scope.showLoader('Fetching most recent variables...');
+            }
             variableService.getUserVariablesByCategory($scope.state.variableCategoryName)
                 .then(function(variables){
                     $scope.state.showResults = true;
@@ -434,11 +439,7 @@ angular.module('starter')
         }
 
         $scope.init = function(){
-            if($stateParams.variableCategoryName){
-                $scope.showLoader('Fetching most recent ' + $stateParams.variableCategoryName.toLowerCase() + '...');
-            } else {
-                $scope.showLoader('Fetching most recent variables...');
-            }
+
 
             var isAuthorized = authService.checkAuthOrSendToLogin();
 
