@@ -194,7 +194,6 @@ angular.module('starter')
 	    };
 
 	    $scope.init = function(){
-			$scope.showLoader('Fetching reminders...');
 			setPageTitle();
 			var isAuthorized = authService.checkAuthOrSendToLogin();
 			if(isAuthorized){
