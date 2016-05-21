@@ -542,10 +542,8 @@ angular.module('starter')
         };
 
         $scope.getUnits = function () {
-            unitService.refreshUnits();
 			unitService.getUnits().then(function (unitObjects) {
                 $scope.state.unitObjects = unitObjects;
-                console.log("got units", unitObjects);
             });
         };
 

@@ -347,41 +347,13 @@ angular.module('starter')
         };
 
         var populateUnits = function () {
-            // get units
-            unitService.refreshUnits();
             unitService.getUnits().then(function(unitObjects){
-
                 $scope.state.unitObjects = unitObjects;
-
-                // populate unitCategories
-                for(var i in unitObjects){
-                    if($scope.state.unitCategories.indexOf(unitObjects[i].category) === -1){
-                        $scope.state.unitCategories.push(unitObjects[i].category);
-                        $scope.state.unitCategories[unitObjects[i].category] = [{name : unitObjects[i].name, abbreviatedName: unitObjects[i].abbreviatedName}];
-                    } else {
-                        $scope.state.unitCategories[unitObjects[i].category].push({name: unitObjects[i].name, abbreviatedName: unitObjects[i].abbreviatedName});
-                    }
-                }
-
-                // set default unit category
-                // Don't know why we need this
-                //$scope.selectedUnitCategoryName = 'Duration';
-
-                // set first sub unit of selected category
-                // Not sure what this is for but it overwrites the existing unit for measurements
-                //$scope.state.measurement.abbreviatedUnitName = $scope.state.unitCategories[$scope.selectedUnitCategoryName][0].abbreviatedName;
-
-                //console.log("got units", unitObjects);
-
-                // hide spinner
                 $ionicLoading.hide();
                 $scope.loading = false;
-
             });
         };
-
-
-        // for date
+        
         $scope.currentDate = new Date();
 
         // update data when view is navigated to
