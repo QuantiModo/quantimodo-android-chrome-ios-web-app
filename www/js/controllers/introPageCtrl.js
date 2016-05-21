@@ -36,7 +36,7 @@ angular.module('starter')
             };
 
             var init = function(){
-                utilsService.loadingStart();
+                $scope.showLoader();
                 $scope.myIntro.ready = true;
                 $ionicLoading.hide();
             };

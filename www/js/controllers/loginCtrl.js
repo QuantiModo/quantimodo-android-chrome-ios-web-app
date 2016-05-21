@@ -379,22 +379,5 @@ angular.module('starter')
             }
         };
 
-
-        $scope.showLoader = function () {
-            $ionicLoading.show({
-                template: '<img src={{loaderImagePath}}>',
-                content: 'Loading',
-                animation: 'fade-in',
-                showBackdrop: false,
-                maxWidth: 1000,
-                showDelay: 0
-            });
-
-            $timeout(function () {
-                $ionicLoading.hide();
-            }, 30000);
-        };
-
-
         $scope.init();
     });

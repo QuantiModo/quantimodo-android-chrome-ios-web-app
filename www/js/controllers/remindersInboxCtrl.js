@@ -233,21 +233,5 @@ angular.module('starter')
     	$scope.$on('$ionicView.enter', function(e){
     		$scope.init();
     	});
-
-		$scope.showLoader = function (loadingText) {
-			if(!loadingText){
-				loadingText = '';
-			}
-			$scope.loading = true;
-			$ionicLoading.show({
-				template: loadingText+ '<br><br><img src={{loaderImagePath}}>',
-				content: 'Loading',
-				animation: 'fade-in',
-				showBackdrop: false,
-				maxWidth: 1000,
-				showDelay: 0
-			});
-		};
-
-
+		
 	});

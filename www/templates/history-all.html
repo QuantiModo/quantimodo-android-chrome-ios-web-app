@@ -1,10 +1,5 @@
-<ion-view hide-nav-bar="hideNavigationMenu" view-title="{{state.title}}">
+<ion-view hide-nav-bar="hideNavigationMenu" view-title="{{title}}">
      <ion-content>
-     <ion-list>
-         <ion-item style="text-align:center;border-bottom: 1px solid rgb(221, 221, 221);" ng-show="loading">
-             <img src={{loaderImagePath}}>
-         </ion-item>
-     </ion-list>
       <ion-list>
           <div collection-repeat="historyItem in state.history" divider-collection-repeat>
               <ion-item  ng-click="editMeasurement(historyItem)">

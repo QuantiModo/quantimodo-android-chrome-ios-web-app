@@ -1,7 +1,7 @@
 angular.module('starter')
     .controller('IframeScreenCtrl', function ($scope, authService, utilsService, $ionicLoading, $sce, $state) {
 
-        utilsService.loadingStart();
+        $scope.showLoader();
         console.debug('IframeScreenCtrl works!');
 
         var embedPlugin;

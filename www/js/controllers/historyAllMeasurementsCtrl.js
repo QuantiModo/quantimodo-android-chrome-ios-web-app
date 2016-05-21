@@ -17,9 +17,10 @@ angular.module('starter')
 	    	history : [],
 			units : [],
 			variableCategories : [],
-			showLoadMoreButton: false,
-			title: 'Measurement History'
+			showLoadMoreButton: false
 	    };
+
+		$scope.title = 'Measurement History';
 
 		var setupVariableCategory = function () {
 			if($stateParams.variableCategoryName){
@@ -57,7 +58,7 @@ angular.module('starter')
 
 
 	    var getHistory = function(){
-	    	utilsService.loadingStart();
+	    	//$scope.showLoader();
 	    	measurementService.getHistoryMeasurements({
     		    offset: $scope.state.offset,
     		    limit: $scope.state.limit,
@@ -68,10 +69,10 @@ angular.module('starter')
 				if($scope.state.history.length > 49){
 					$scope.state.showLoadMoreButton = true;
 				}
-    			utilsService.loadingStop();
+				$scope.hideLoader();
 	    	}, function(error){
 	    		console.log('error getting measurements', error);
-	    		utilsService.loadingStop();
+				$scope.hideLoader();
 	    	});
 
 	    };
@@ -83,15 +84,13 @@ angular.module('starter')
 	    
 	    // constructor
 	    $scope.init = function(){
+			$scope.showLoader('Fetching ' + $stateParams.variableCategoryName.toLowerCase()
+				+ ' measurements...');
 			setupVariableCategory();
-			$scope.loading = true;
-            $ionicLoading.show({
-                noBackdrop: true,
-                template: '<p class="item-icon-left">' + 'Loading Stuff' + '<ion-spinner icon="lines"/></p>'
-            });
-			utilsService.loadingStart();
             var isAuthorized = authService.checkAuthOrSendToLogin();
 			if(isAuthorized){
+				$scope.showLoader('Fetching ' + $stateParams.variableCategoryName.toLowerCase()
+					+ ' measurements...');
                 $scope.showHelpInfoPopupIfNecessary();
                 variableCategoryService.getVariableCategories()
                     .then(function(variableCategories){
@@ -106,9 +105,7 @@ angular.module('starter')
                         console.log("error getting units", err);
                     });
                 getHistory();
-                //$ionicLoading.hide();
 			}
-            $scope.loading = false;
 	    };
 
         // when view is changed

@@ -75,7 +75,7 @@ angular.module('starter')
 	    // constructor
 	    $scope.init = function(){
 			
-			utilsService.loadingStart();
+			$scope.showLoader();
 			if($rootScope.user){
 				measurementService.syncPrimaryOutcomeVariableMeasurements();
 			}

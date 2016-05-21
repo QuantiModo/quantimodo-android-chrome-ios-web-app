@@ -154,7 +154,7 @@ angular.module('starter')
 
                     // update loader text
                     $ionicLoading.hide();
-                    utilsService.loadingStart('Calculating stuff', 2000);
+                    $scope.showLoader('Calculating stuff', 2000);
 
                     // calculate primary outcome variable values
                     measurementService.calculateAveragePrimaryOutcomeVariableValue().then(function(){

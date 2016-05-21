@@ -44,7 +44,7 @@ angular.module('starter')
         
         $scope.init = function(){
             $scope.loading = true;
-            utilsService.loadingStart();
+            $scope.showLoader();
             var isAuthorized = authService.checkAuthOrSendToLogin();
             if(isAuthorized){
                 $scope.showHelpInfoPopupIfNecessary();

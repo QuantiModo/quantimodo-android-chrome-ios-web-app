@@ -31,7 +31,7 @@ angular.module('starter')
     };
 
     var init = function(){
-        utilsService.loadingStart();
+        $scope.showLoader();
 
         localStorageService.getItem('introSeen', function(introSeen){
             if(introSeen){
@@ -40,7 +40,7 @@ angular.module('starter')
             } else {
                 $scope.myIntro.ready = true;
             }
-            utilsService.loadingStop();
+            $scope.hideLoader();
         });
     };
 
