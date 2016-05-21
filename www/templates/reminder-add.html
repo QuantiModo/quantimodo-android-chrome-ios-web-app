@@ -3,7 +3,7 @@
 		
 		<div class="list card" ng-show="state.showVariableCategorySelector" >
 			<label class="item item-input item-select">
-				<div class="input-label" style="white-space:normal; width: 60%">Select Variable Category</div>
+				<div class="input-label" style="white-space:normal; width: 60%">Select Category</div>
 				<select ng-model="state.variableCategoryName" ng-change="onVariableCategoryChange()">
 					<option ng-repeat="variableCategory in variables.variableCategories" value="{{variableCategory.name}}">{{variableCategory.name}}</option>
 				</select>
@@ -58,7 +58,7 @@
                     </select>
                 </label>
                 <label class="item item-input item-select" ng-if="state.showAddVariableCard && !state.variableCategoryName">
-                    <div class="input-label" style="white-space:normal; width: 60%">Select Variable Category</div>
+                    <div class="input-label" style="white-space:normal; width: 60%">Select Category</div>
                     <select ng-model="state.variableCategoryName">
                         <option ng-repeat="variableCategory in variables.variableCategories" value="{{variableCategory.name}}">{{variableCategory.name}}</option>
                     </select>
