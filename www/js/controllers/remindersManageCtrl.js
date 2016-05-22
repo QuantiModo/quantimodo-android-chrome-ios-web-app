@@ -61,6 +61,7 @@ angular.module('starter')
 
 	    	reminderService.getTrackingReminders($stateParams.variableCategoryName)
 	    	.then(function(reminders){
+				reminders = reminderService.addRatingTimesToDailyReminders(reminders);
 	    		$scope.state.allReminders = reminders;
 	    		$ionicLoading.hide();
 				$scope.loading = false;
