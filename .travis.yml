@@ -28,7 +28,7 @@ script:
 env:
   global:
   - IONIC_APP_VERSION_NUMBER="1.4.6"
-  - IONIC_IOS_APP_VERSION_NUMBER="1.4.6.8"
+  - IONIC_IOS_APP_VERSION_NUMBER="1.4.6.9"
   - TEAM_ID="YD2FK7S2S5"
   - DEVELOPER_NAME="iPhone Distribution: Mike Sinn (YD2FK7S2S5)"
   - PROFILE_NAME="028ab892-9a5e-4004-adac-b8472e760bdb"

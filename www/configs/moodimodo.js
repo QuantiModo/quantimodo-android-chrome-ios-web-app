@@ -397,6 +397,11 @@ config.appSettings  = {
             icon : 'ion-archive'
         },
         {
+            title : 'Manage Reminders',
+            href : '#/app/reminders-manage',
+            icon : 'ion-android-notifications-none'
+        },
+        {
             title : 'Overall Mood',
             click : 'togglePrimaryOutcomeSubMenu',
             showSubMenuVariable : 'showPrimaryOutcomeSubMenu',
