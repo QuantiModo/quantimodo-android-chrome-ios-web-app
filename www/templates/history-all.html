@@ -4,8 +4,9 @@
           <div collection-repeat="historyItem in state.history" divider-collection-repeat>
               <ion-item  ng-click="editMeasurement(historyItem)">
                   <div style="display:inline-block;float:left;margin-left:10px;margin-right:10px;width:80px;text-align:center">
-                    <i class="{{historyItem.variableCategoryName | ImageByVariableCategoryName }}" style="color:#11c1f3;font-size: 75px;"></i>
-                    <p style="font-weight:bold;white-space:normal">{{historyItem.variable}}</p>
+                    <i ng-hide="historyItem.image" class="{{historyItem.variableCategoryName | ImageByVariableCategoryName }}" style="color:#11c1f3;font-size: 75px;"></i>
+                      <img ng-show="historyItem.image" ng-src="{{historyItem.image}}" style="width:80px;" />
+                      <p style="font-weight:bold;white-space:normal">{{historyItem.variable}}</p>
                   </div>
                   <div class="history-block" style="margin-left:10px;">
                       <h2 style="font-weight:bold;white-space:normal"> {{historyItem.value}} {{historyItem.abbreviatedUnitName}} {{historyItem.variable}}</h2>

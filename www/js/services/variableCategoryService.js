@@ -146,9 +146,9 @@ angular.module('starter')
             },
             
             getVariableCategoryIcon : function(variableCategoryName){
-                var variableCategoryInfo = this.getVariableCategoryInfo();
-                if(variableCategoryInfo[variableCategoryName]){
-                    return variableCategoryInfo[variableCategoryName].icon;
+                var variableCategoryInfo = this.getVariableCategoryInfo(variableCategoryName);
+                if(variableCategoryInfo.icon){
+                    return variableCategoryInfo.icon;
                 } else {
                     console.warn('Could not find icon for variableCategoryName ' + variableCategoryName);
                     return 'ion-speedometer';

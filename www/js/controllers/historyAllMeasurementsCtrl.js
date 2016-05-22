@@ -7,7 +7,7 @@ angular.module('starter')
 										   $ionicPopup, 
                                            variableCategoryService, 
                                            unitService,
-                                            utilsService, $stateParams){
+                                            utilsService, $stateParams, ratingService){
 
 	    $scope.controller_name = "historyAllMeasurementsCtrl";
         
@@ -66,6 +66,7 @@ angular.module('starter')
 				variableCategoryName: $stateParams.variableCategoryName
 	    	}).then(function(history){
     			$scope.state.history = $scope.state.history.concat(history);
+				$scope.state.history = ratingService.addImagesToMeasurements($scope.state.history);
 				if($scope.state.history.length > 49){
 					$scope.state.showLoadMoreButton = true;
 				}
