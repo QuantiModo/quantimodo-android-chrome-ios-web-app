@@ -7,7 +7,7 @@ angular.module('starter')
 										   $ionicPopup, 
                                            variableCategoryService, 
                                            unitService,
-                                            utilsService, $stateParams){
+                                            utilsService, $stateParams, ratingService){
 
 	    $scope.controller_name = "historyAllMeasurementsCtrl";
         
@@ -66,6 +66,7 @@ angular.module('starter')
 				variableCategoryName: $stateParams.variableCategoryName
 	    	}).then(function(history){
     			$scope.state.history = $scope.state.history.concat(history);
+				$scope.state.history = ratingService.addImagesToMeasurements($scope.state.history);
 				if($scope.state.history.length > 49){
 					$scope.state.showLoadMoreButton = true;
 				}
@@ -84,13 +85,15 @@ angular.module('starter')
 	    
 	    // constructor
 	    $scope.init = function(){
-			$scope.showLoader('Fetching ' + $stateParams.variableCategoryName.toLowerCase()
-				+ ' measurements...');
+			if($stateParams.variableCategoryName) {
+				$scope.showLoader('Fetching ' + $stateParams.variableCategoryName.toLowerCase()
+					+ ' measurements...');
+			} else {
+				$scope.showLoader('Fetching measurements...');
+			}
 			setupVariableCategory();
             var isAuthorized = authService.checkAuthOrSendToLogin();
 			if(isAuthorized){
-				$scope.showLoader('Fetching ' + $stateParams.variableCategoryName.toLowerCase()
-					+ ' measurements...');
                 $scope.showHelpInfoPopupIfNecessary();
                 variableCategoryService.getVariableCategories()
                     .then(function(variableCategories){

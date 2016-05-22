@@ -22,7 +22,7 @@ angular.module('starter',
             clearInterval(intervalChecker);
 
             if(!window.private_keys){
-                alert('No private config file found!');
+                console.error('intervalChecker: No private config file found!');
                 return;
             }
 
@@ -33,7 +33,7 @@ angular.module('starter',
                 Bugsnag.releaseStage = config.getEnv();
                 Bugsnag.notifyReleaseStages = config.bugsnag.notifyReleaseStages;
             } else {
-                alert('No bugsnag_key found in private config!');
+                console.error('intervalChecker: No bugsnag_key found in private config!');
             }
 
             $ionicPlatform.ready(function() {

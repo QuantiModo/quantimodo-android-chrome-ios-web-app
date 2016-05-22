@@ -1,11 +1,15 @@
 angular.module('starter')
 
 	// Controls the History Page of the App.
-	.controller('HistoryPrimaryOutcomeCtrl', function($scope, $ionicModal, $timeout, $ionicLoading, authService, $ionicPopover,
-										measurementService, $ionicPopup, localStorageService, utilsService, $state, $rootScope){
+	.controller('HistoryPrimaryOutcomeCtrl', function($scope, $ionicModal, $timeout, $ionicLoading, authService,
+													  $ionicPopover, measurementService, $ionicPopup,
+													  localStorageService, utilsService,
+													  $state, $rootScope, ratingService){
 
 	    $scope.controller_name = "HistoryPrimaryOutcomeCtrl";
-        
+		
+/*  Don't need popover anymore
+
 	    // load editing popover
 	    $ionicPopover.fromTemplateUrl('templates/history-popup.html', {
 	        scope: $scope
@@ -28,7 +32,7 @@ angular.module('starter')
 	        jQuery('.primary-outcome-variable .active-primary-outcome-variable').removeClass('active-primary-outcome-variable');
 	        
 	        // highlight the appropriate factor for the history item.
-	        jQuery('.'+config.appSettings.primaryOutcomeValueConversionDataSet[Math.ceil(history.value)]).addClass('active-primary-outcome-variable');
+	        jQuery('.'+config.appSettings.ratingValueToTextConversionDataSet[Math.ceil(history.value)]).addClass('active-primary-outcome-variable');
 	    };
 
 	    // when a value is edited
@@ -63,18 +67,28 @@ angular.module('starter')
 	    $scope.selectPrimaryOutcomeVariableValue = function($event, option){
 	    	// remove any previous primary outcome variables if present
 	        jQuery('.primary-outcome-variable .active-primary-outcome-variable').removeClass('active-primary-outcome-variable');
-	        
+
 	        // make this primary outcome variable glow visually
 	        jQuery($event.target).addClass('active-primary-outcome-variable');
-	        
+
 	        // update view
-	        $scope.selectedPrimaryOutcomeVariableValue = config.appSettings.primaryOutcomeValueConversionDataSetReversed[option.value];
+	        $scope.selectedPrimaryOutcomeVariableValue = config.appSettings.ratingTextToValueConversionDataSet[option.lowercaseTextDescription];
 
 	    };
 
-	    // constructor
-	    $scope.init = function(){
+*/
+		$scope.editMeasurement = function(measurement){
+			$state.go('app.measurementAdd', {
+				measurement: measurement,
+				fromState: $state.current.name,
+				fromUrl: window.location.href
+			});
+		};
+
+		
+		$scope.init = function(){
 			
+			console.debug($scope.ratingInfo[1].positiveImage);
 			$scope.showLoader();
 			if($rootScope.user){
 				measurementService.syncPrimaryOutcomeVariableMeasurements();
@@ -89,13 +103,14 @@ angular.module('starter')
 				}
 				if(history.length > 0){
 					$scope.showHelpInfoPopupIfNecessary();
-					$scope.history = history.sort(function(a,b){
+					history = history.sort(function(a,b){
 						if(a.startTime < b.startTime){
 							return 1;}
 						if(a.startTime> b.startTime)
 						{return -1;}
 						return 0;
 					});
+					$scope.history = ratingService.addImagesToMeasurements(history);
 				}
 			});
 

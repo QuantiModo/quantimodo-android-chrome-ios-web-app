@@ -53,7 +53,8 @@ config.appSettings  = {
         name : "Overall Mood",
         category : "Mood",
         abbreviatedUnitName : "/5",
-        combinationOperation: "MEAN"
+        combinationOperation: "MEAN",
+        description: 'positive'
     },
 
     primaryOutcomeVariableRatingOptionLabels : [
@@ -64,42 +65,19 @@ config.appSettings  = {
         'Ecstatic'
     ],
 
-    positiveRatingOptions : [
-        {
-            value: 'depressed',
-            img: 'img/ic_face_depressed.png'
-        },
-        {
-            value: 'sad',
-            img: 'img/ic_face_sad.png'
-        },
-        {
-            value: 'ok',
-            img: 'img/ic_face_ok.png'
-        },
-        {
-            value: 'happy',
-            img: 'img/ic_face_happy.png'
-        },
-        {
-            value: 'ecstatic',
-            img: 'img/ic_face_ecstatic.png'
-        }
-    ],
-
     welcomeText : "Let's start off by reporting your first mood on the card below",
     primaryOutcomeVariableTrackingQuestion : "How are you?",
     primaryOutcomeVariableAverageText : "Your average mood is ",
     mobileNotificationImage : "file://img/icon_128.png",
     mobileNotificationText : "Time to Track",
-    primaryOutcomeValueConversionDataSet: {
+    ratingValueToTextConversionDataSet: {
         "1": "depressed",
         "2": "sad",
         "3": "ok",
         "4": "happy",
         "5": "ecstatic"
     },
-    primaryOutcomeValueConversionDataSetReversed : {
+    ratingTextToValueConversionDataSet : {
         "depressed" : 1,
         "sad" : 2,
         "ok" : 3,
@@ -396,7 +374,7 @@ config.appSettings  = {
 
     helpPopupMessages : {
         "#/app/track" :'Here, you can view your <span class="positive">average Mood</span> as well as charts illustrating how it changes over time', 
-        "#/app/history" :'You can see and edit your past mood ratings and notes by tapping on any item in the list.  <br/> <br/>You can also Add a note by tapping on a mood rating in the list.',
+        "#/app/history" :'You can see and edit your past mood ratings and notes by tapping on any item in the list.  <br/> <br/>You can also add a note by tapping on a mood rating in the list.',
         "#/app/track_factors_category/Foods" :'You can track your diet on this page. You can also <span class="positive">Add a new Food Variable</span> if you do not find the meal you looked for in the search results.',
         "#/app/track_factors_category/Symptoms" :'You can track any symptom on this page. You can also <span class="positive">Add a new Symptom</span> if you don\'t find the symptom you looked for in the search results.',
         "#/app/track_factors_category/Treatments" :'You can track any treatment on this page. You can also <span class="positive">Add a new Treatment</span> if you don\'t find the treatment you looked for in the search results.',
@@ -792,8 +770,8 @@ window.notification_callback = function(reportedVariable, reportingTime){
         val = localStorage[keyIdentifier+'lastReportedPrimaryOutcomeVariableValue']?
         JSON.parse(localStorage[keyIdentifier+'lastReportedPrimaryOutcomeVariableValue']) : false;
     } else {
-        val = config.appSettings.primaryOutcomeValueConversionDataSetReversed[reportedVariable]?
-        config.appSettings.primaryOutcomeValueConversionDataSetReversed[reportedVariable] : false;
+        val = config.appSettings.ratingTextToValueConversionDataSet[reportedVariable]?
+        config.appSettings.ratingTextToValueConversionDataSet[reportedVariable] : false;
     }
 
     // report

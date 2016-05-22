@@ -143,21 +143,21 @@ angular.module('starter')
 			},
 
 			// update primary outcome variable in local storage
-			updatePrimaryOutcomeVariableLocally : function(ratingValue){
-                console.log("reported", ratingValue);
+			updatePrimaryOutcomeVariableLocally : function(numericRatingValue){
+                console.log("reported", numericRatingValue);
                 var deferred = $q.defer();
 				var reportTime = Math.floor(new Date().getTime()/1000);
 
                 // if val is string (needs conversion)
-                if(isNaN(parseFloat(ratingValue))){
-                    ratingValue = config.appSettings.primaryOutcomeValueConversionDataSetReversed[ratingValue] ?
-                        config.appSettings.primaryOutcomeValueConversionDataSetReversed[ratingValue] : false;
+                if(isNaN(parseFloat(numericRatingValue))){
+                    numericRatingValue = config.appSettings.ratingTextToValueConversionDataSet[numericRatingValue] ?
+                        config.appSettings.ratingTextToValueConversionDataSet[numericRatingValue] : false;
                 } 
 
                 function checkSync(){
                     if(!isSyncing){
                         console.log('isSync false');
-                        reportPrimaryOutcomeVariableValue(ratingValue);
+                        reportPrimaryOutcomeVariableValue(numericRatingValue);
                     }else{
                         console.log('isSync true');
                         setTimeout(function(){
@@ -167,19 +167,19 @@ angular.module('starter')
                     }
                 }
 
-                function reportPrimaryOutcomeVariableValue(ratingValue){
+                function reportPrimaryOutcomeVariableValue(numericRatingValue){
                     // only if we found a result for the reported val
-                    if(ratingValue){
+                    if(numericRatingValue){
 
                         // update localStorage
-                        localStorageService.setItem('lastReportedPrimaryOutcomeVariableValue', ratingValue);
+                        localStorageService.setItem('lastReportedPrimaryOutcomeVariableValue', numericRatingValue);
 
                         // update full data
                         localStorageService.getItem('allMeasurements',function(allMeasurementsInLocalStorage){
 
                             var newMeasurementObject = {
                                 variableId : config.appSettings.primaryOutcomeVariableDetails.id,
-                                value : ratingValue,
+                                value : numericRatingValue,
                                 startTime : reportTime,
                                 humanTime : {
                                     date : new Date().toISOString()
@@ -199,7 +199,7 @@ angular.module('starter')
                             localStorageService.getItem('barChartData',function(barChartData){
                                 if(barChartData){
                                     barChartData = JSON.parse(barChartData);
-                                    barChartData[ratingValue-1]++;
+                                    barChartData[numericRatingValue-1]++;
                                     localStorageService.setItem('barChartData',JSON.stringify(barChartData));
                                 }
                             });
@@ -208,7 +208,7 @@ angular.module('starter')
                             localStorageService.getItem('lineChartData',function(lineChartData){
                                 if(lineChartData){
                                     lineChartData = JSON.parse(lineChartData);
-                                    lineChartData.push([reportTime*1000, (ratingValue-1)*25]);
+                                    lineChartData.push([reportTime*1000, (numericRatingValue-1)*25]);
                                     localStorageService.setItem('lineChartData',JSON.stringify(lineChartData));
                                 }
                                 deferred.resolve();
@@ -227,18 +227,18 @@ angular.module('starter')
 			},
 
 			// update primary outcome variable request to QuantiModo API
-			updatePrimaryOutcomeVariableOnServer : function(ratingValue){
+			updatePrimaryOutcomeVariableOnServer : function(numericRatingValue){
 
 				var reportTime  = new Date().getTime();
 
                 // if val is string (needs conversion)
-                if(isNaN(parseFloat(ratingValue))){
-                    ratingValue = config.appSettings.primaryOutcomeValueConversionDataSetReversed[ratingValue] ?
-                    config.appSettings.primaryOutcomeValueConversionDataSetReversed[ratingValue] : false;
+                if(isNaN(parseFloat(numericRatingValue))){
+                    numericRatingValue = config.appSettings.ratingTextToValueConversionDataSet[numericRatingValue] ?
+                    config.appSettings.ratingTextToValueConversionDataSet[numericRatingValue] : false;
                 } 
 
-                if(ratingValue){
-                    localStorageService.setItem('lastReportedPrimaryOutcomeVariableValue', ratingValue);
+                if(numericRatingValue){
+                    localStorageService.setItem('lastReportedPrimaryOutcomeVariableValue', numericRatingValue);
                     
                     // check queue
                     localStorageService.getItem('measurementsQueue',function(measurementsQueue){
@@ -247,7 +247,7 @@ angular.module('starter')
                         // add to queue
                         measurementsQueue.push({
                             startTime:  Math.floor(reportTime / 1000),
-                            value: ratingValue,
+                            value: numericRatingValue,
                             note : ""
                         });
 
@@ -279,7 +279,7 @@ angular.module('starter')
             },
 
 			// post a singe measurement
-			postTrackingMeasurement : function(epoch, variable, val, unit, isAvg, category, note, usePromise){
+			postTrackingMeasurement : function(startTimeEpoch, variableName, value, unit, isAvg, variableCategoryName, note, usePromise){
 
                 var deferred = $q.defer();
 
@@ -287,18 +287,25 @@ angular.module('starter')
                     note = null;
                 }
 
+                var nowMilliseconds = new Date();
+                var oneWeekInFuture = nowMilliseconds.getTime()/1000 + 7 * 86400;
+                if(startTimeEpoch > oneWeekInFuture){
+                    startTimeEpoch = startTimeEpoch / 1000;
+                    console.warn('Assuming startTime is in milliseconds since it is more than 1 week in the future');
+                }
+
                 // measurements set
                 var measurements = [
                     {
-                        name: variable,
+                        variableName: variableName,
                 	   	source: config.get('clientSourceName'),
-                	   	category: category,
-                	   	unit: unit,
+                	   	variableCategoryName: variableCategoryName,
+                	   	abbreviatedUnitName: unit,
                         combinationOperation : isAvg? "MEAN" : "SUM",
                 	   	measurements : [
                 		   	{
-                		   		startTime:  epoch / 1000,
-                		   		value: val,
+                		   		startTime:  startTimeEpoch,
+                		   		value: value,
                 		   		note : note
                 		   	}
                 	   	]
@@ -307,12 +314,12 @@ angular.module('starter')
 
                 // for local
                 var measurement = {
-                    name: variable,
+                    variableName: variableName,
                     source: config.get('clientSourceName'),
-                    unit: unit,
-                    startTime:  epoch / 1000,
-                    value: val,
-                    category : category,
+                    abbreviatedUnitName: unit,
+                    startTime:  startTimeEpoch,
+                    value: value,
+                    variableCategoryName : variableCategoryName,
                     note : "",
                     combinationOperation : isAvg? "MEAN" : "SUM"
                 };

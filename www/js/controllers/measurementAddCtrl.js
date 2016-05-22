@@ -167,12 +167,14 @@ angular.module('starter')
         // completed adding and/or measuring
         $scope.done = function(){
 
+            $scope.state.measurement.startTime = $scope.selectedDate.getTime()/1000;
+
             // populate params
             var params = {
                 variableName : $scope.state.measurement.variable || jQuery('#variableName').val(),
                 value : $scope.state.measurement.value || jQuery('#measurementValue').val(),
                 note : $scope.state.measurement.note || jQuery('#note').val(),
-                startTime : $scope.state.measurement.startTime * 1000,
+                startTime : $scope.state.measurement.startTime,
                 abbreviatedUnitName : $scope.state.showAddVariable? (typeof $scope.abbreviatedUnitName === "undefined" || $scope.abbreviatedUnitName === "" )? $scope.state.measurement.abbreviatedUnitName : $scope.abbreviatedUnitName : $scope.state.measurement.abbreviatedUnitName,
                 variableCategoryName : $scope.state.measurement.variableCategoryName,
                 isAvg : $scope.state.sumAvg === "avg"? true : false
@@ -354,17 +356,17 @@ angular.module('starter')
             });
         };
         
-        $scope.currentDate = new Date();
+        $scope.selectedDate = new Date();
 
         // update data when view is navigated to
         $scope.$on('$ionicView.enter', $scope.init);
 
         // when date is updated
-        $scope.datePickerCallback = function (val) {
-            if(typeof(val)==='undefined'){
+        $scope.datePickerCallback = function (selectedDate) {
+            if(typeof(selectedDate)==='undefined'){
                 console.log('Date not selected');
             }else{
-                $scope.currentDate = new Date(val);
+                $scope.selectedDate = selectedDate;
             }
         };
 
@@ -401,13 +403,13 @@ angular.module('starter')
                 measurementObject.variable = variableName;
                 measurementObject.startTime = startTime;
                 measurementObject.value = value;
-                setupTracking(measurementObject);
+                setupTrackingByMeasurement(measurementObject);
             }
         };
 
         var setupFromMeasurementStateParameter = function(){
             if($stateParams.measurement !== null && typeof $stateParams.measurement !== "undefined"){
-                setupTracking($stateParams.measurement);
+                setupTrackingByMeasurement($stateParams.measurement);
             }
         };
 
@@ -435,7 +437,7 @@ angular.module('starter')
             var measurementId = utilsService.getUrlParameter(location.href, 'measurementId', true);
             if(measurementId){
                 var measurementObject = measurementService.getMeasurementById(measurementId);
-                setupTracking(measurementObject);
+                setupTrackingByMeasurement(measurementObject);
             }
         };
 
@@ -447,21 +449,52 @@ angular.module('starter')
             });
         };
 
-        var setupTracking = function(measurementObject){
+        var setupTrackingByMeasurement = function(measurementObject){
+
+            if(isNaN(measurementObject.startTime)){
+                measurementObject.startTime = moment(measurementObject.startTime).unix();
+            }
+
+            $scope.selectedDate = new Date(measurementObject.startTimeEpoch * 1000);
+            $scope.datePickerObj = {
+                inputDate: $scope.selectedDate,
+                setLabel: 'Set',
+                todayLabel: 'Today',
+                closeLabel: 'Close',
+                mondayFirst: false,
+                weeksList: ["S", "M", "T", "W", "T", "F", "S"],
+                monthsList: ["Jan", "Feb", "March", "April", "May", "June", "July", "Aug", "Sept", "Oct", "Nov", "Dec"],
+                templateType: 'popup',
+                from: new Date(2012, 8, 1),
+                to: new Date(),
+                showTodayButton: true,
+                dateFormat: 'dd MMMM yyyy',
+                closeOnSelect: false
+            };
+
             console.log('track : ' , measurementObject);
 
-            if(measurementObject.startTime.indexOf(" ") !== -1) {
-                measurementObject.startTime = measurementObject.startTime.replace(/\ /g,'+');
-            }
+            // What was this for?
+            // if(measurementObject.startTime.indexOf(" ") !== -1) {
+            //     measurementObject.startTime = measurementObject.startTime.replace(/\ /g,'+');
+            // }
 
             $scope.state.title = "Edit Measurement";
             $scope.state.measurement = measurementObject;
-            if(!$scope.state.measurement.variableCategoryName){
-                $scope.state.measurement.variableCategoryName = measurementObject.variableCategoryName;
-            }
-            $scope.state.measurement.startTime = moment(measurementObject.startTime).unix();
-            $scope.state.measurementDate = moment(measurementObject.startTime)._d;
+            //$scope.state.measurementDate = moment(measurementObject.startTime)._d;
             $scope.state.measurementIsSetup = true;
+
+            if($scope.state.measurement.abbreviatedUnitName === '/5'){
+                if(!$scope.state.measurement.variableDescription){
+                    $scope.showNumericRatingNumberButtons = true;
+                } else if ($scope.state.measurement.variableDescription.toLowerCase().indexOf('positive') > -1){
+                    $scope.showPositiveRatingFaceButtons = true;
+                } else if ($scope.state.measurement.variableDescription.toLowerCase().indexOf('negative') > -1){
+                    $scope.showNegativeRatingFaceButtons = true;
+                }
+            } else {
+                $scope.showValueBox = true;
+            }
         };
 
         var setupTrackingByReminder = function(){

@@ -21,35 +21,40 @@ angular.module('starter')
                         variableCategoryName : '',
                         abbreviatedUnitName : '',
                         defaultValue : '',
-                        measurementSynonymSingularLowercase : "measurement"
+                        measurementSynonymSingularLowercase : "measurement",
+                        icon: "ion-ios-nutrition"
                     },
                     "Vital Signs": {
                         defaultAbbreviatedUnitName: '',
                         helpText: "What vital sign do you want to record?",
                         variableCategoryName: "Vital Signs",
                         variableCategoryNameSingularLowercase: "vital sign",
-                        measurementSynonymSingularLowercase : "measurement"
+                        measurementSynonymSingularLowercase : "measurement",
+                        icon: "ion-ios-pulse"
                     },
                     "Foods" : {
                         defaultAbbreviatedUnitName: "serving",
                         helpText: "What did you eat?",
                         variableCategoryName: "Foods",
                         variableCategoryNameSingularLowercase: "food",
-                        measurementSynonymSingularLowercase : "meal"
+                        measurementSynonymSingularLowercase : "meal",
+                        icon: "ion-ios-nutrition"
                     },
                     Emotions: {
                         defaultAbbreviatedUnitName: "/5",
                         helpText: "What emotion do you want to rate?",
                         variableCategoryName: "Emotions",
                         variableCategoryNameSingularLowercase: "emotion",
-                        measurementSynonymSingularLowercase : "rating"
+                        measurementSynonymSingularLowercase : "rating",
+                        icon: "ion-happy-outline"
                     },
                     Symptoms: {
                         defaultAbbreviatedUnitName: "/5",
                         helpText: "What symptom do you want to record?",
                         variableCategoryName: "Symptoms",
                         variableCategoryNameSingularLowercase: "symptom",
-                        measurementSynonymSingularLowercase : "rating"
+                        measurementSynonymSingularLowercase : "rating",
+                        icon: "ion-ios-pulse"
                     },
                     Treatments: {
                         defaultAbbreviatedUnitName : "mg",
@@ -58,14 +63,16 @@ angular.module('starter')
                         variableCategoryNameSingularLowercase : "treatment",
                         defaultValueLabel : "Dosage",
                         defaultValuePlaceholderText : "Enter dose value here...",
-                        measurementSynonymSingularLowercase : "dose"
+                        measurementSynonymSingularLowercase : "dose",
+                        icon: "ion-ios-medkit-outline"
                     },
                     "Physical Activity": {
                         defaultAbbreviatedUnitName: '',
                         helpText: "What physical activity do you want to record?",
                         variableCategoryName: "Physical Activity",
                         variableCategoryNameSingularLowercase: "physical activity",
-                        measurementSynonymSingularLowercase : "activity"
+                        measurementSynonymSingularLowercase : "activity",
+                        icon: "ion-ios-body"
                     }
                 };
 
@@ -136,6 +143,17 @@ angular.module('starter')
                 });
 
                 return deferred.promise;
+            },
+            
+            getVariableCategoryIcon : function(variableCategoryName){
+                var variableCategoryInfo = this.getVariableCategoryInfo(variableCategoryName);
+                if(variableCategoryInfo.icon){
+                    return variableCategoryInfo.icon;
+                } else {
+                    console.warn('Could not find icon for variableCategoryName ' + variableCategoryName);
+                    return 'ion-speedometer';
+                }
+                
             }
         };
         

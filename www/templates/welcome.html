@@ -18,7 +18,7 @@
 	<div class="item item-text-wrap">
 		<div  class="primary-outcome-variable-rating-buttons">
             <img ng-repeat="option in positiveRatingOptions"
-                 ng-click="reportPrimaryOutcomeVariable(option.value)"
+                 ng-click="reportPrimaryOutcomeVariable(option.numericValue)"
                  ng-src="{{option.img}}"
             >
 		</div>

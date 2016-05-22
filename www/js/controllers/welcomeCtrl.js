@@ -74,8 +74,8 @@ angular.module('starter')
         // ratingValue is reported
         $scope.reportPrimaryOutcomeVariable = function(ratingValue){
 
-            $scope.reportedVariableValue = config.appSettings.primaryOutcomeValueConversionDataSetReversed[ratingValue] ?
-                config.appSettings.primaryOutcomeValueConversionDataSetReversed[ratingValue] : false;
+            $scope.reportedVariableValue = config.appSettings.ratingTextToValueConversionDataSet[ratingValue] ?
+                config.appSettings.ratingTextToValueConversionDataSet[ratingValue] : false;
             
             localStorageService.setItem('primaryOutcomeVariableReportedWelcomeScreen',true);
             localStorageService.setItem('allMeasurements', JSON.stringify([]));
