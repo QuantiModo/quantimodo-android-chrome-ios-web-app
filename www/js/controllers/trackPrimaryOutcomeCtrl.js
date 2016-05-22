@@ -50,7 +50,7 @@ angular.module('starter')
             var averageRatingText =
                 config.appSettings.ratingValueToTextConversionDataSet[averagePrimaryOutcomeVariableRatingValue];
             if(averageRatingText){
-                $scope.averagePrimaryOutcomeVariableImage = ratingService.getRatingFaceImageByText(averageRatingValue);
+                $scope.averagePrimaryOutcomeVariableImage = ratingService.getRatingFaceImageByText(averageRatingText);
                 $scope.averagePrimaryOutcomeVariableText = averageRatingText;
                 console.log("updated averagePrimaryOutcomeVariableRating view");
             }
