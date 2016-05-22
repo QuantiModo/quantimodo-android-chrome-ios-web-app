@@ -388,7 +388,7 @@ config.appSettings  = {
 
     helpPopupMessages : {
         "#/app/track" :'Here, you can view your <span class="positive">average Mood</span> as well as charts illustrating how it changes over time',
-        "#/app/history" :'You can see and edit your past mood ratings and notes by tapping on any item in the list.  <br/> <br/>You can also Add a note by tapping on a mood rating in the list.',
+        "#/app/history" :'You can see and edit your past mood ratings and notes by tapping on any item in the list.  <br/> <br/>You can also add a note by tapping on a mood rating in the list.',
         "#/app/track_factors_category/Foods" :'You can track your diet on this page. You can also <span class="positive">Add a new Food Variable</span> if you do not find the meal you looked for in the search results.',
         "#/app/track_factors_category/Symptoms" :'You can track any symptom on this page. You can also <span class="positive">Add a new Symptom</span> if you don\'t find the symptom you looked for in the search results.',
         "#/app/track_factors_category/Treatments" :'You can track any treatment on this page. You can also <span class="positive">Add a new Treatment</span> if you don\'t find the treatment you looked for in the search results.',
