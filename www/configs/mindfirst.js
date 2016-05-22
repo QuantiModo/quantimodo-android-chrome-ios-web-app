@@ -54,7 +54,8 @@ config.appSettings  = {
         name : "Overall Mood",
         category : "Mood",
         abbreviatedUnitName : "/5",
-        combinationOperation: "MEAN"
+        combinationOperation: "MEAN",
+        description: 'positive'
     },
 
     primaryOutcomeVariableRatingOptionLabels : [
@@ -65,42 +66,19 @@ config.appSettings  = {
         'Ecstatic'
     ],
 
-    positiveRatingOptions : [
-        {
-            value: 'depressed',
-            img: 'img/ic_face_depressed.png'
-        },
-        {
-            value: 'sad',
-            img: 'img/ic_face_sad.png'
-        },
-        {
-            value: 'ok',
-            img: 'img/ic_face_ok.png'
-        },
-        {
-            value: 'happy',
-            img: 'img/ic_face_happy.png'
-        },
-        {
-            value: 'ecstatic',
-            img: 'img/ic_face_ecstatic.png'
-        }
-    ],
-
     welcomeText:"Let's start off by reporting your first mood on the card below",
     primaryOutcomeVariableTrackingQuestion:"How are you?",
     primaryOutcomeVariableAverageText:"Your average mood is ",
     mobileNotificationImage : "file://img/icon_128.png",
     mobileNotificationText : "Time to Track",
-    primaryOutcomeValueConversionDataSet: {
+    ratingValueToTextConversionDataSet: {
         "1": "depressed",
         "2": "sad",
         "3": "ok",
         "4": "happy",
         "5": "ecstatic" 
     },
-    primaryOutcomeValueConversionDataSetReversed : {
+    ratingTextToValueConversionDataSet : {
         "depressed" : 1,
         "sad" : 2,
         "ok" : 3,
@@ -725,8 +703,8 @@ window.notification_callback = function(reportedVariable, reportingTime){
         val = localStorage[keyIdentifier+'lastReportedPrimaryOutcomeVariableValue']?
         JSON.parse(localStorage[keyIdentifier+'lastReportedPrimaryOutcomeVariableValue']) : false;
     } else {
-        val = config.appSettings.primaryOutcomeValueConversionDataSetReversed[reportedVariable]?
-        config.appSettings.primaryOutcomeValueConversionDataSetReversed[reportedVariable] : false;
+        val = config.appSettings.ratingTextToValueConversionDataSet[reportedVariable]?
+        config.appSettings.ratingTextToValueConversionDataSet[reportedVariable] : false;
     }
     
     // report

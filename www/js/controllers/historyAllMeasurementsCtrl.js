@@ -84,13 +84,15 @@ angular.module('starter')
 	    
 	    // constructor
 	    $scope.init = function(){
-			$scope.showLoader('Fetching ' + $stateParams.variableCategoryName.toLowerCase()
-				+ ' measurements...');
+			if($stateParams.variableCategoryName) {
+				$scope.showLoader('Fetching ' + $stateParams.variableCategoryName.toLowerCase()
+					+ ' measurements...');
+			} else {
+				$scope.showLoader('Fetching measurements...');
+			}
 			setupVariableCategory();
             var isAuthorized = authService.checkAuthOrSendToLogin();
 			if(isAuthorized){
-				$scope.showLoader('Fetching ' + $stateParams.variableCategoryName.toLowerCase()
-					+ ' measurements...');
                 $scope.showHelpInfoPopupIfNecessary();
                 variableCategoryService.getVariableCategories()
                     .then(function(variableCategories){

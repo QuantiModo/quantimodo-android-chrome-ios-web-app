@@ -53,7 +53,8 @@ config.appSettings  = {
         name : "Overall Mood",
         category : "Mood",
         abbreviatedUnitName : "/5",
-        combinationOperation: "MEAN"
+        combinationOperation: "MEAN",
+        description: 'positive'
     },
 
     primaryOutcomeVariableRatingOptionLabels : [
@@ -69,14 +70,14 @@ config.appSettings  = {
     primaryOutcomeVariableAverageText : "Your average mood is ",
     mobileNotificationImage : "file://img/icon_128.png",
     mobileNotificationText : "Time to Track",
-    primaryOutcomeValueConversionDataSet: {
+    ratingValueToTextConversionDataSet: {
         "1": "depressed",
         "2": "sad",
         "3": "ok",
         "4": "happy",
         "5": "ecstatic"
     },
-    primaryOutcomeValueConversionDataSetReversed : {
+    ratingTextToValueConversionDataSet : {
         "depressed" : 1,
         "sad" : 2,
         "ok" : 3,
@@ -769,8 +770,8 @@ window.notification_callback = function(reportedVariable, reportingTime){
         val = localStorage[keyIdentifier+'lastReportedPrimaryOutcomeVariableValue']?
         JSON.parse(localStorage[keyIdentifier+'lastReportedPrimaryOutcomeVariableValue']) : false;
     } else {
-        val = config.appSettings.primaryOutcomeValueConversionDataSetReversed[reportedVariable]?
-        config.appSettings.primaryOutcomeValueConversionDataSetReversed[reportedVariable] : false;
+        val = config.appSettings.ratingTextToValueConversionDataSet[reportedVariable]?
+        config.appSettings.ratingTextToValueConversionDataSet[reportedVariable] : false;
     }
 
     // report

@@ -1,8 +1,10 @@
 angular.module('starter')
 
 	// Controls the History Page of the App.
-	.controller('HistoryPrimaryOutcomeCtrl', function($scope, $ionicModal, $timeout, $ionicLoading, authService, $ionicPopover,
-										measurementService, $ionicPopup, localStorageService, utilsService, $state, $rootScope){
+	.controller('HistoryPrimaryOutcomeCtrl', function($scope, $ionicModal, $timeout, $ionicLoading, authService,
+													  $ionicPopover, measurementService, $ionicPopup,
+													  localStorageService, utilsService,
+													  $state, $rootScope, ratingService){
 
 	    $scope.controller_name = "HistoryPrimaryOutcomeCtrl";
         
@@ -28,7 +30,7 @@ angular.module('starter')
 	        jQuery('.primary-outcome-variable .active-primary-outcome-variable').removeClass('active-primary-outcome-variable');
 	        
 	        // highlight the appropriate factor for the history item.
-	        jQuery('.'+config.appSettings.primaryOutcomeValueConversionDataSet[Math.ceil(history.value)]).addClass('active-primary-outcome-variable');
+	        jQuery('.'+config.appSettings.ratingValueToTextConversionDataSet[Math.ceil(history.value)]).addClass('active-primary-outcome-variable');
 	    };
 
 	    // when a value is edited
@@ -68,13 +70,14 @@ angular.module('starter')
 	        jQuery($event.target).addClass('active-primary-outcome-variable');
 	        
 	        // update view
-	        $scope.selectedPrimaryOutcomeVariableValue = config.appSettings.primaryOutcomeValueConversionDataSetReversed[option.value];
+	        $scope.selectedPrimaryOutcomeVariableValue = config.appSettings.ratingTextToValueConversionDataSet[option.value];
 
 	    };
 
 	    // constructor
 	    $scope.init = function(){
 			
+			console.debug($scope.ratingInfo[1].positiveImage);
 			$scope.showLoader();
 			if($rootScope.user){
 				measurementService.syncPrimaryOutcomeVariableMeasurements();
@@ -89,13 +92,14 @@ angular.module('starter')
 				}
 				if(history.length > 0){
 					$scope.showHelpInfoPopupIfNecessary();
-					$scope.history = history.sort(function(a,b){
+					history = history.sort(function(a,b){
 						if(a.startTime < b.startTime){
 							return 1;}
 						if(a.startTime> b.startTime)
 						{return -1;}
 						return 0;
 					});
+					$scope.history = ratingService.addImagesToMeasurements(history);
 				}
 			});
 

@@ -150,8 +150,8 @@ angular.module('starter')
 
                 // if val is string (needs conversion)
                 if(isNaN(parseFloat(ratingValue))){
-                    ratingValue = config.appSettings.primaryOutcomeValueConversionDataSetReversed[ratingValue] ?
-                        config.appSettings.primaryOutcomeValueConversionDataSetReversed[ratingValue] : false;
+                    ratingValue = config.appSettings.ratingTextToValueConversionDataSet[ratingValue] ?
+                        config.appSettings.ratingTextToValueConversionDataSet[ratingValue] : false;
                 } 
 
                 function checkSync(){
@@ -227,14 +227,14 @@ angular.module('starter')
 			},
 
 			// update primary outcome variable request to QuantiModo API
-			updatePrimaryOutcomeVariableOnServer : function(ratingValue){
+			updatePrimaryOutcomeVariableOnServer : function(rating){
 
 				var reportTime  = new Date().getTime();
 
                 // if val is string (needs conversion)
-                if(isNaN(parseFloat(ratingValue))){
-                    ratingValue = config.appSettings.primaryOutcomeValueConversionDataSetReversed[ratingValue] ?
-                    config.appSettings.primaryOutcomeValueConversionDataSetReversed[ratingValue] : false;
+                if(isNaN(parseFloat(rating))){
+                    var ratingValue = config.appSettings.ratingTextToValueConversionDataSet[rating] ?
+                    config.appSettings.ratingTextToValueConversionDataSet[rating] : false;
                 } 
 
                 if(ratingValue){

@@ -45,7 +45,8 @@ config.appSettings  = {
         name : "Overall Energy",
         category : "Energy",
         abbreviatedUnitName : "/5",
-        combinationOperation: "MEAN"
+        combinationOperation: "MEAN",
+        positiveOrNegative: 'positive'
     },
 
     primaryOutcomeVariableRatingOptionLabels : [
@@ -56,42 +57,19 @@ config.appSettings  = {
         '5' 
     ],
 
-    positiveRatingOptions : [
-        {
-            value: '1',
-            img: 'img/ic_1.png'
-        },
-        {
-            value: '2',
-            img: 'img/ic_2.png'
-        },
-        {
-            value: '3',
-            img: 'img/ic_3.png'
-        },
-        {
-            value: '4',
-            img: 'img/ic_4.png'
-        },
-        {
-            value: '5',
-            img: 'img/ic_5.png'
-        }
-    ],
-
     welcomeText:"Let's start off by reporting your Energy on the card below",
     primaryOutcomeVariableTrackingQuestion:"How is your energy level right now?",
     primaryOutcomeVariableAverageText:"Your average energy level is ",
     mobileNotificationImage : "file://img/icon_128.png",
     mobileNotificationText : "Time to Track",
-    primaryOutcomeValueConversionDataSet: {
+    ratingValueToTextConversionDataSet: {
         "1": "1",
         "2": "2",
         "3": "3",
         "4": "4",
         "5": "5" 
     },
-    primaryOutcomeValueConversionDataSetReversed : {
+    ratingTextToValueConversionDataSet : {
         "1" : 1,
         "2" : 2,
         "3" : 3,
@@ -717,8 +695,8 @@ window.notification_callback = function(reportedVariable, reportingTime){
         val = localStorage[keyIdentifier+'lastReportedPrimaryOutcomeVariableValue']?
         JSON.parse(localStorage[keyIdentifier+'lastReportedPrimaryOutcomeVariableValue']) : false;
     } else {
-        val = config.appSettings.primaryOutcomeValueConversionDataSetReversed[reportedVariable]?
-        config.appSettings.primaryOutcomeValueConversionDataSetReversed[reportedVariable] : false;
+        val = config.appSettings.ratingTextToValueConversionDataSet[reportedVariable]?
+        config.appSettings.ratingTextToValueConversionDataSet[reportedVariable] : false;
     }
     
     // report

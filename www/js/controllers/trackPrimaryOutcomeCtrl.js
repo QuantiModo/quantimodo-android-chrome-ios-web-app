@@ -46,11 +46,12 @@ angular.module('starter')
         };
 
         // Update primary outcome variable images via an integer
-        var updateAveragePrimaryOutcomeRatingView = function(averagePrimaryOutcomeVariableRating){
-            var averageRatingValue = config.appSettings.primaryOutcomeValueConversionDataSet[averagePrimaryOutcomeVariableRating];
-            if(averageRatingValue){
-                $scope.averagePrimaryOutcomeVariableImage = ratingService.getRatingFaceImageByValue(averageRatingValue);
-                $scope.averagePrimaryOutcomeVariableValue = averageRatingValue;
+        var updateAveragePrimaryOutcomeRatingView = function(averagePrimaryOutcomeVariableRatingValue){
+            var averageRatingText =
+                config.appSettings.ratingValueToTextConversionDataSet[averagePrimaryOutcomeVariableRatingValue];
+            if(averageRatingText){
+                $scope.averagePrimaryOutcomeVariableImage = ratingService.getRatingFaceImageByText(averageRatingValue);
+                $scope.averagePrimaryOutcomeVariableText = averageRatingText;
                 console.log("updated averagePrimaryOutcomeVariableRating view");
             }
 

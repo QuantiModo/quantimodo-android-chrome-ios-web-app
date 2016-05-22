@@ -15,6 +15,8 @@ angular.module('starter')
         $scope.showTrackingSubMenu = false;
         $rootScope.allowOffline = config.appSettings.allowOffline;
         $scope.showReminderSubMenu = false;
+        $scope.primaryOutcomeVariableDetails = config.appSettings.primaryOutcomeVariableDetails;
+        $scope.ratingInfo = ratingService.getRatingInfo();
         $scope.closeMenu = function() {
             $ionicSideMenuDelegate.toggleLeft(false);
         };
