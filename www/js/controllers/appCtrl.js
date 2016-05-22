@@ -4,14 +4,16 @@ angular.module('starter')
 	.controller('AppCtrl', function($scope, $ionicModal, $timeout, $injector, utilsService, authService,
                                     measurementService, $ionicPopover, $ionicLoading, $state, $ionicHistory,
                                     QuantiModo, notificationService, $rootScope, localStorageService, reminderService,
-                                    $ionicPopup, $ionicSideMenuDelegate, ratingService) {
+                                    $ionicPopup, $ionicSideMenuDelegate, ratingService, migrationService) {
 
         $rootScope.loaderImagePath = config.appSettings.loaderImagePath;
+        $scope.appVersion = 1466;
         if(!$rootScope.loaderImagePath){
             $rootScope.loaderImagePath = 'img/loader.gif';
         }
         $scope.controller_name = "AppCtrl";
         $scope.menu = config.appSettings.menu;
+        $scope.appSettings = config.appSettings;
         $scope.showTrackingSubMenu = false;
         $rootScope.allowOffline = config.appSettings.allowOffline;
         $scope.showReminderSubMenu = false;
@@ -247,6 +249,7 @@ angular.module('starter')
                     $rootScope.setUserForIntercom($rootScope.user);
                     $rootScope.setUserForBugsnag($rootScope.user);
             }
+            migrationService.version1466();
             hideNavigationMenuIfSetInUrlParameter();
             goToWelcomeStateIfNotWelcomed();
             scheduleReminder();
