@@ -62,7 +62,7 @@
                 <div class="primary-outcome-variable-rating-buttons primary-outcome-variable-history col"
                      ng-if="showNumericRatingNumberButtons">
                     <img ng-repeat="option in numericRatingOptions"
-                         ng-click="selectPrimaryOutcomeVariableValue($event, option.value)"
+                         ng-click="selectPrimaryOutcomeVariableValue($event, option.numericValue)"
                          ng-src="{{option.img}}"
                          ng-class="{'active-primary-outcome-variable-rating-button' :
                          option.value === state.measurement.value}">

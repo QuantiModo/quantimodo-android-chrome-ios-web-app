@@ -54,30 +54,22 @@ angular.module('starter')
             	return positiveImage;
             },
 
-            getNegativeImageByRatingValue : function(ratingValue){
+            getNegativeImageByRatingValue : function(numericValue){
                 var negativeRatingOptions = this.getNegativeRatingOptions();
                 var filteredList = negativeRatingOptions.filter(function(option){
-                    return option.value === ratingValue;
+                    return option.numericValue === numericValue;
                 });
 
                 return filteredList.length? filteredList[0].img || false : false;
             },
 
-            getNumericImageByRatingValue : function(ratingValue){
+            getNumericImageByRatingValue : function(numericValue){
                 var numericRatingOptions = this.getNumericRatingOptions();
                 var filteredList = numericRatingOptions.filter(function(option){
-                    return option.value === ratingValue;
+                    return option.numericValue === numericValue;
                 });
 
                 return filteredList.length? filteredList[0].img || false : false;
-            },
-
-            getImageForPrimaryOutcomeVariableByNumber : function(ratingValue){
-
-                var primaryOutcomeVariable = config.appSettings.ratingValueToTextConversionDataSet[ratingValue] ?
-                    config.appSettings.ratingValueToTextConversionDataSet[ratingValue] : false;
-                return primaryOutcomeVariable ? 
-                    ratingService.getImageForPrimaryOutcomeVariableByValue(primaryOutcomeVariable) : false;
             },
     
             getPrimaryOutcomeVariableByNumber : function(num){
@@ -169,33 +161,36 @@ angular.module('starter')
             getNumericRatingOptions : function() {
                 return [
                     {
-                        value: '1',
+                        numericValue: '1',
                         img: 'img/ic_1.png'
                     },
                     {
-                        value: '2',
+                        numericValue: '2',
                         img: 'img/ic_2.png'
                     },
                     {
-                        value: '3',
+                        numericValue: '3',
                         img: 'img/ic_3.png'
                     },
                     {
-                        value: '4',
+                        numericValue: '4',
                         img: 'img/ic_4.png'
                     },
                     {
-                        value: '5',
+                        numericValue: '5',
                         img: 'img/ic_5.png'
                     }
-                ]
+                ];
             },
             
             addImagesToMeasurements : function (measurements){
                 var ratingInfo = ratingService.getRatingInfo();
                 var index;
                 for (index = 0; index < measurements.length; ++index) {
-                    if(measurements[index].variableId === config.appSettings.primaryOutcomeVariableDetails.id){
+                            if(!measurements[index].variableName){
+                                        measurements[index].variableName = measurements[index].variable
+                            }
+                    if(measurements[index].variableName === config.appSettings.primaryOutcomeVariableDetails.name){
                         measurements[index].variableDescription = config.appSettings.primaryOutcomeVariableDetails.description;
                     }
 

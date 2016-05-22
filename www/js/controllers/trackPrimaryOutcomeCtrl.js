@@ -9,7 +9,7 @@ angular.module('starter')
         $scope.showCharts = false;
         $scope.showRatingFaces = true;
 
-        $scope.recordPrimaryOutcomeVariableRating = function (primaryOutcomeRatingValue) {
+        $scope.recordPrimaryOutcomeVariableRating = function (numericRatingValue) {
 
             // flag for blink effect
             $scope.timeRemaining = true;
@@ -22,14 +22,14 @@ angular.module('starter')
             }
 
             // update local storage
-            measurementService.updatePrimaryOutcomeVariableLocally(primaryOutcomeRatingValue).then(function () {
+            measurementService.updatePrimaryOutcomeVariableLocally(numericRatingValue).then(function () {
 
                 if(!$rootScope.user){
                     $rootScope.user = localStorageService.getItemAsObject('user');
                 }
                 if($rootScope.user){
                     // try to send the data to server if we have a user
-                    measurementService.updatePrimaryOutcomeVariableOnServer(primaryOutcomeRatingValue);
+                    measurementService.updatePrimaryOutcomeVariableOnServer(numericRatingValue);
                 }
 
                 // calculate charts data
@@ -46,9 +46,9 @@ angular.module('starter')
         };
 
         // Update primary outcome variable images via an integer
-        var updateAveragePrimaryOutcomeRatingView = function(averagePrimaryOutcomeVariableRatingValue){
+        var updateAveragePrimaryOutcomeRatingView = function(numericRatingValue){
             var averageRatingText =
-                config.appSettings.ratingValueToTextConversionDataSet[averagePrimaryOutcomeVariableRatingValue];
+                config.appSettings.ratingValueToTextConversionDataSet[numericRatingValue];
             if(averageRatingText){
                 $scope.averagePrimaryOutcomeVariableImage = ratingService.getRatingFaceImageByText(averageRatingText);
                 $scope.averagePrimaryOutcomeVariableText = averageRatingText;

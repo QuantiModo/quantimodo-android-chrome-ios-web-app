@@ -7,7 +7,9 @@ angular.module('starter')
 													  $state, $rootScope, ratingService){
 
 	    $scope.controller_name = "HistoryPrimaryOutcomeCtrl";
-        
+		
+/*  Don't need popover anymore
+
 	    // load editing popover
 	    $ionicPopover.fromTemplateUrl('templates/history-popup.html', {
 	        scope: $scope
@@ -32,14 +34,6 @@ angular.module('starter')
 	        // highlight the appropriate factor for the history item.
 	        jQuery('.'+config.appSettings.ratingValueToTextConversionDataSet[Math.ceil(history.value)]).addClass('active-primary-outcome-variable');
 	    };
-
-		$scope.editMeasurement = function(measurement){
-			$state.go('app.measurementAdd', {
-				measurement: measurement,
-				fromState: $state.current.name,
-				fromUrl: window.location.href
-			});
-		};
 
 	    // when a value is edited
 	    $scope.saveValue = function(){
@@ -73,17 +67,26 @@ angular.module('starter')
 	    $scope.selectPrimaryOutcomeVariableValue = function($event, option){
 	    	// remove any previous primary outcome variables if present
 	        jQuery('.primary-outcome-variable .active-primary-outcome-variable').removeClass('active-primary-outcome-variable');
-	        
+
 	        // make this primary outcome variable glow visually
 	        jQuery($event.target).addClass('active-primary-outcome-variable');
-	        
+
 	        // update view
-	        $scope.selectedPrimaryOutcomeVariableValue = config.appSettings.ratingTextToValueConversionDataSet[option.value];
+	        $scope.selectedPrimaryOutcomeVariableValue = config.appSettings.ratingTextToValueConversionDataSet[option.lowercaseTextDescription];
 
 	    };
 
-	    // constructor
-	    $scope.init = function(){
+*/
+		$scope.editMeasurement = function(measurement){
+			$state.go('app.measurementAdd', {
+				measurement: measurement,
+				fromState: $state.current.name,
+				fromUrl: window.location.href
+			});
+		};
+
+		
+		$scope.init = function(){
 			
 			console.debug($scope.ratingInfo[1].positiveImage);
 			$scope.showLoader();
