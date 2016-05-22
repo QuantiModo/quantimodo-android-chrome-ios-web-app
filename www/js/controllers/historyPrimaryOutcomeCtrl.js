@@ -33,6 +33,14 @@ angular.module('starter')
 	        jQuery('.'+config.appSettings.ratingValueToTextConversionDataSet[Math.ceil(history.value)]).addClass('active-primary-outcome-variable');
 	    };
 
+		$scope.editMeasurement = function(measurement){
+			$state.go('app.measurementAdd', {
+				measurement: measurement,
+				fromState: $state.current.name,
+				fromUrl: window.location.href
+			});
+		};
+
 	    // when a value is edited
 	    $scope.saveValue = function(){
 
