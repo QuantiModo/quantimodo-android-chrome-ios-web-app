@@ -1,5 +1,5 @@
 angular.module('starter')
-.controller('IntroCtrl', function($scope, $state, localStorageService, $ionicSlideBoxDelegate, utilsService) {
+.controller('IntroCtrl', function($scope, $state, localStorageService, $ionicSlideBoxDelegate, $ionicLoading) {
     
     $scope.viewTitle = config.appSettings.appName;
     $scope.primaryOutcomeVariable = config.appSettings.primaryOutcomeVariable;
@@ -28,6 +28,26 @@ angular.module('starter')
         slideChanged : function(index) {
             $scope.myIntro.slideIndex = index;
         }
+    };
+
+    $scope.showLoader = function (loadingText) {
+        if(!loadingText){
+            loadingText = '';
+        }
+        $scope.loading = true;
+        $ionicLoading.show({
+            template: loadingText+ '<br><br><img src={{loaderImagePath}}>',
+            content: 'Loading',
+            animation: 'fade-in',
+            showBackdrop: false,
+            maxWidth: 1000,
+            showDelay: 0
+        });
+    };
+
+    $scope.hideLoader = function () {
+        $scope.loading = false;
+        $ionicLoading.hide();
     };
 
     var init = function(){
