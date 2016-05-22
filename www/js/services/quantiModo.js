@@ -65,7 +65,9 @@ angular.module('starter')
                         { 
                             throw 'invalid parameter; allowed parameters: ' + allowedParams.toString(); 
                         }
-                        urlParams.push(encodeURIComponent(key) + '=' + encodeURIComponent(params[key]));
+                        if(params[key]){
+                            urlParams.push(encodeURIComponent(key) + '=' + encodeURIComponent(params[key]));
+                        }
                     }
                     //We can't append access token to Ionic requests for some reason
                     //urlParams.push(encodeURIComponent('access_token') + '=' + encodeURIComponent(tokenObject.accessToken));
