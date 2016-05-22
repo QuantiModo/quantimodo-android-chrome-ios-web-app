@@ -452,7 +452,7 @@ angular.module('starter')
         var setupTrackingByMeasurement = function(measurementObject){
 
             if(isNaN(measurementObject.startTime)){
-                measurementObject.startTimeEpoch = moment(measurementObject.startTime).unix();
+                measurementObject.startTime = moment(measurementObject.startTime).unix();
             }
 
             $scope.selectedDate = new Date(measurementObject.startTimeEpoch * 1000);
@@ -481,7 +481,7 @@ angular.module('starter')
 
             $scope.state.title = "Edit Measurement";
             $scope.state.measurement = measurementObject;
-            $scope.state.measurementDate = moment(measurementObject.startTime)._d;
+            //$scope.state.measurementDate = moment(measurementObject.startTime)._d;
             $scope.state.measurementIsSetup = true;
 
             if($scope.state.measurement.abbreviatedUnitName === '/5'){

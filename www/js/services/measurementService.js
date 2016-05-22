@@ -300,7 +300,7 @@ angular.module('starter')
                         variableName: variableName,
                 	   	source: config.get('clientSourceName'),
                 	   	variableCategoryName: variableCategoryName,
-                	   	unit: unit,
+                	   	abbreviatedUnitName: unit,
                         combinationOperation : isAvg? "MEAN" : "SUM",
                 	   	measurements : [
                 		   	{
@@ -316,7 +316,7 @@ angular.module('starter')
                 var measurement = {
                     variableName: variableName,
                     source: config.get('clientSourceName'),
-                    unit: unit,
+                    abbreviatedUnitName: unit,
                     startTime:  startTimeEpoch,
                     value: value,
                     variableCategoryName : variableCategoryName,
