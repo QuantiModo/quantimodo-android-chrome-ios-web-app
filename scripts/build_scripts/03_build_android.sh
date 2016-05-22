@@ -87,8 +87,12 @@ cordova plugin add https://github.com/jeduan/cordova-plugin-facebook4 --save --v
 #echo "gulp addFacebookPlugin for $LOWERCASE_APP_NAME Android app..."
 #gulp addGooglePlusPlugin
 
-echo "cordova plugin add https://github.com/EddyVerbruggen/cordova-plugin-googleplus REVERSED_CLIENT_ID=${GOOGLE_REVERSED_CLIENT_ID} for $LOWERCASE_APP_NAME Android app..."
-cordova plugin add https://github.com/EddyVerbruggen/cordova-plugin-googleplus --variable REVERSED_CLIENT_ID=${GOOGLE_REVERSED_CLIENT_ID}
+# I think this version might be causing the login issues
+#echo "cordova plugin add https://github.com/EddyVerbruggen/cordova-plugin-googleplus REVERSED_CLIENT_ID=${GOOGLE_REVERSED_CLIENT_ID} for $LOWERCASE_APP_NAME Android app..."
+#cordova plugin add https://github.com/EddyVerbruggen/cordova-plugin-googleplus --variable REVERSED_CLIENT_ID=${GOOGLE_REVERSED_CLIENT_ID}
+
+echo "cordova plugin add cordova-plugin-googleplus REVERSED_CLIENT_ID=${GOOGLE_REVERSED_CLIENT_ID} for $LOWERCASE_APP_NAME Android app..."
+cordova plugin add cordova-plugin-googleplus --variable REVERSED_CLIENT_ID=${GOOGLE_REVERSED_CLIENT_ID}
 
 echo "plugin add cordova-fabric-plugin  for $LOWERCASE_APP_NAME Android app..."
 cordova plugin add cordova-fabric-plugin --variable FABRIC_API_KEY=${FABRIC_API_KEY} --variable FABRIC_API_SECRET=${FABRIC_API_SECRET}

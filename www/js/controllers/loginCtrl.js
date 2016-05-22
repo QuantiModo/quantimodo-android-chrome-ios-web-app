@@ -230,28 +230,35 @@ angular.module('starter')
         // log in with google
         $scope.googleLogin = function(register){
             $scope.showLoader();
-            window.plugins.googleplus.login({
-                'scopes': 'https://www.googleapis.com/auth/plus.login https://www.googleapis.com/auth/userinfo.email', // optional, space-separated list of scopes, If not included or empty, defaults to `profile` and `email`.
-                'webClientId': '1052648855194.apps.googleusercontent.com', // optional clientId of your Web application from Credentials settings of your project - On Android, this MUST be included to get an idToken. On iOS, it is not required.
-                'offline': true // optional, but requires the webClientId - if set to true the plugin will also return a serverAuthCode, which can be used to grant offline access to a non-Google server
-                },
-                function (userData) {
-                    $ionicLoading.hide();
-                    console.debug('successfully logged in');
-                    console.debug('google->', JSON.stringify(userData));
-                    if(!userData.accessToken){
-                        console.error('googleLogin: No userData.accessToken provided! Fallback to nonNativeMobileLogin...');
+            document.addEventListener('deviceready', deviceReady, false);
+            function deviceReady() {
+                //I get called when everything's ready for the plugin to be called!
+                console.log('Device is ready!');
+                window.plugins.googleplus.login({
+                        'scopes': 'https://www.googleapis.com/auth/plus.login https://www.googleapis.com/auth/userinfo.email', // optional, space-separated list of scopes, If not included or empty, defaults to `profile` and `email`.
+                        'webClientId': '1052648855194.apps.googleusercontent.com', // optional clientId of your Web application from Credentials settings of your project - On Android, this MUST be included to get an idToken. On iOS, it is not required.
+                        'offline': true // optional, but requires the webClientId - if set to true the plugin will also return a serverAuthCode, which can be used to grant offline access to a non-Google server
+                    },
+                    function (userData) {
+                        $ionicLoading.hide();
+                        console.debug('successfully logged in');
+                        console.debug('google->', JSON.stringify(userData));
+                        if(!userData.accessToken){
+                            console.error('googleLogin: No userData.accessToken provided! Fallback to nonNativeMobileLogin...');
+                            nonNativeMobileLogin(register);
+                        } else {
+                            $scope.nativeLogin('google', userData.accessToken);
+                        }
+                    },
+                    function (msg) {
+                        $ionicLoading.hide();
+                        console.error("Google login error: ", msg);
+                        console.debug('googleLogin: Fallback to nonNativeMobileLogin...');
                         nonNativeMobileLogin(register);
-                    } else {
-                        $scope.nativeLogin('google', userData.accessToken);
                     }
-                },
-                function (msg) {
-                    $ionicLoading.hide();
-                    console.error("Google login error: ", msg);
-                    console.debug('googleLogin: Fallback to nonNativeMobileLogin...');
-                    nonNativeMobileLogin(register);
-                });
+                );
+            }
+
         };
 
         $scope.googleLogout = function(){
