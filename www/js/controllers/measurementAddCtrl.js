@@ -401,13 +401,13 @@ angular.module('starter')
                 measurementObject.variable = variableName;
                 measurementObject.startTime = startTime;
                 measurementObject.value = value;
-                setupTracking(measurementObject);
+                setupTrackingByMeasurement(measurementObject);
             }
         };
 
         var setupFromMeasurementStateParameter = function(){
             if($stateParams.measurement !== null && typeof $stateParams.measurement !== "undefined"){
-                setupTracking($stateParams.measurement);
+                setupTrackingByMeasurement($stateParams.measurement);
             }
         };
 
@@ -435,7 +435,7 @@ angular.module('starter')
             var measurementId = utilsService.getUrlParameter(location.href, 'measurementId', true);
             if(measurementId){
                 var measurementObject = measurementService.getMeasurementById(measurementId);
-                setupTracking(measurementObject);
+                setupTrackingByMeasurement(measurementObject);
             }
         };
 
@@ -447,7 +447,7 @@ angular.module('starter')
             });
         };
 
-        var setupTracking = function(measurementObject){
+        var setupTrackingByMeasurement = function(measurementObject){
             console.log('track : ' , measurementObject);
 
             if(measurementObject.startTime.indexOf(" ") !== -1) {
@@ -462,6 +462,18 @@ angular.module('starter')
             $scope.state.measurement.startTime = moment(measurementObject.startTime).unix();
             $scope.state.measurementDate = moment(measurementObject.startTime)._d;
             $scope.state.measurementIsSetup = true;
+
+            if($scope.state.measurement.abbreviatedUnitName === '/5'){
+                if(!$scope.state.measurement.variableDescription){
+                    $scope.showNumericRatingNumberButtons = true;
+                } else if ($scope.state.measurement.variableDescription.toLowerCase().indexOf('positive') > -1){
+                    $scope.showPositiveRatingFaceButtons = true;
+                } else if ($scope.state.measurement.variableDescription.toLowerCase().indexOf('negative') > -1){
+                    $scope.showNegativeRatingFaceButtons = true;
+                }
+            } else {
+                $scope.showValueBox = true;
+            }
         };
 
         var setupTrackingByReminder = function(){

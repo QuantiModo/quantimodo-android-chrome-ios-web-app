@@ -116,7 +116,7 @@ angular.module('starter')
 
         var nonNativeMobileLogin = function(register) {
             //$scope.showLoader();
-            console.log("nonNativeMobileLogin: Mobile device detected and ionic platform is " + ionic.Platform.platforms[0]);
+            //console.log("nonNativeMobileLogin: Mobile device detected and ionic platform is " + ionic.Platform.platforms[0]);
             console.log(JSON.stringify(ionic.Platform.platforms));
 
             var url = authService.generateV1OAuthUrl(register);

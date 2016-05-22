@@ -49,7 +49,7 @@
                 {{state.measurement.variable}}
             </div>
             <div class="list">
-                <div ng-if="(state.measurement.abbreviatedUnitName !== '/5')" class="row labeled-control">
+                <div ng-if="showValueBox" class="row labeled-control">
                     <div class="col col-l">
                         <span>
                             Value
@@ -60,9 +60,7 @@
                     </div>
                 </div>
                 <div class="primary-outcome-variable-rating-buttons primary-outcome-variable-history col"
-                     ng-if="variableObject.description.toLowerCase().indexOf('positive') === -1 &&
-						 	variableObject.description.toLowerCase().indexOf('negative') === -1 &&
-							state.measurement.abbreviatedUnitName === '/5'">
+                     ng-if="showNumericRatingNumberButtons">
                     <img ng-repeat="option in numericRatingOptions"
                          ng-click="selectPrimaryOutcomeVariableValue($event, option.value)"
                          ng-src="{{option.img}}"
@@ -70,8 +68,7 @@
                          option.value === state.measurement.value}">
                 </div>
                 <div class="primary-outcome-variable-rating-buttons primary-outcome-variable-history col"
-                     ng-if="state.measurement.abbreviatedUnitName === '/5' &&
-						 	variableObject.description.toLowerCase().indexOf('positive') > -1">
+                     ng-if="showPositiveRatingFaceButtons">
                     <img ng-repeat="option in positiveRatingOptions"
                          ng-click="selectPrimaryOutcomeVariableValue($event, option.numericValue)"
                          ng-src="{{option.img}}"
@@ -79,8 +76,7 @@
                          option.value === state.measurement.value}">
                 </div>
                 <div class="primary-outcome-variable-rating-buttons primary-outcome-variable-history col"
-                     ng-if="state.measurement.abbreviatedUnitName === '/5' &&
-						 	variableObject.description.toLowerCase().indexOf('negative') > -1">
+                     ng-if="showNegativeRatingFaceButtons">
                     <img ng-repeat="option in negativeRatingOptions"
                          ng-click="selectPrimaryOutcomeVariableValue($event, option.numericValue)"
                          ng-src="{{option.img}}"
