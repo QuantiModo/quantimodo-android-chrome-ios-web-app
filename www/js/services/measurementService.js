@@ -279,12 +279,19 @@ angular.module('starter')
             },
 
 			// post a singe measurement
-			postTrackingMeasurement : function(epoch, variable, val, unit, isAvg, category, note, usePromise){
+			postTrackingMeasurement : function(startTimeEpoch, variableName, value, unit, isAvg, variableCategoryName, note, usePromise){
 
                 var deferred = $q.defer();
 
                 if(note === ""){
                     note = null;
+                }
+
+                var nowMilliseconds = new Date();
+                var oneWeekInFuture = nowMilliseconds.getTime()/1000 + 7 * 86400;
+                if(startTimeEpoch > oneWeekInFuture){
+                    startTimeEpoch = startTimeEpoch / 1000;
+                    console.warn('Assuming startTime is in milliseconds since it is more than 1 week in the future');
                 }
 
                 // measurements set
@@ -297,8 +304,8 @@ angular.module('starter')
                         combinationOperation : isAvg? "MEAN" : "SUM",
                 	   	measurements : [
                 		   	{
-                		   		startTime:  epoch / 1000,
-                		   		value: val,
+                		   		startTime:  startTimeEpoch,
+                		   		value: value,
                 		   		note : note
                 		   	}
                 	   	]
@@ -310,7 +317,7 @@ angular.module('starter')
                     variableName: variableName,
                     source: config.get('clientSourceName'),
                     unit: unit,
-                    startTime:  epoch / 1000,
+                    startTime:  startTimeEpoch,
                     value: value,
                     variableCategoryName : variableCategoryName,
                     note : "",

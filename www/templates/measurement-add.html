@@ -125,9 +125,9 @@
                         </span>
                     </div>
                     <div class="col" style="padding-top: 15px;">
-                        <ionic-datepicker style="width:100%" idate="currentDate" disablepreviousdates="false" callback="datePickerCallback">
+                        <ionic-datepicker style="width:100%" idate="selectedDate" disablepreviousdates="false" callback="datePickerCallback">
                             <button class="button button-block measure-date up-top" style="font-size:14px;border:none;color:black;background-color: white;margin-bottom: 0px;margin-top: 0px;padding-left: 0px; text-align:left;">
-                                {{ currentDate | date:'dd - MMMM - yyyy' }}
+                                {{ selectedDate | date:'dd - MMMM - yyyy' }}
                             </button>
                         </ionic-datepicker>
                     </div>
