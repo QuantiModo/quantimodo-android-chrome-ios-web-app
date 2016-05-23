@@ -202,8 +202,9 @@ angular.module('starter')
 			addRatingTimesToDailyReminders : function(reminders) {
 				var index;
 				for (index = 0; index < reminders.length; ++index) {
-					if (reminders[index].valueAndFrequencyTextDescription === 'Rate daily') {
-						reminders[index].valueAndFrequencyTextDescription = 'Rate daily at ' +
+					if (reminders[index].valueAndFrequencyTextDescription.indexOf('daily') > 0) {
+						reminders[index].valueAndFrequencyTextDescription =
+							reminders[index].valueAndFrequencyTextDescription + ' at ' +
 							reminderService.convertReminderTimeStringToMoment(reminders[index].reminderStartTime).format("h:mm A");
 					}
 				}
