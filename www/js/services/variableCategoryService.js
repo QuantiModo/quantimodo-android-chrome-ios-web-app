@@ -10,7 +10,7 @@ angular.module('starter')
                 var variableCategoryInfo =
                 {
                     "Anything": {
-                        defaultUnitAbbreviatedName: '',
+                        defaultAbbreviatedUnitName: '',
                         helpText: "What do you want to record?",
                         variableCategoryNameSingularLowercase: "anything",
                         variableSearchPlaceholderText : "Search for a variable here...",
@@ -20,46 +20,59 @@ angular.module('starter')
                         addNewVariableCardText : 'Add a new variable',
                         variableCategoryName : '',
                         abbreviatedUnitName : '',
-                        defaultValue : ''
+                        defaultValue : '',
+                        measurementSynonymSingularLowercase : "measurement",
+                        icon: "ion-ios-nutrition"
                     },
                     "Vital Signs": {
-                        defaultUnitAbbreviatedName: '',
+                        defaultAbbreviatedUnitName: '',
                         helpText: "What vital sign do you want to record?",
                         variableCategoryName: "Vital Signs",
-                        variableCategoryNameSingularLowercase: "vital sign"
+                        variableCategoryNameSingularLowercase: "vital sign",
+                        measurementSynonymSingularLowercase : "measurement",
+                        icon: "ion-ios-pulse"
                     },
-                    Foods: {
-                        defaultUnitAbbreviatedName: "serving",
+                    "Foods" : {
+                        defaultAbbreviatedUnitName: "serving",
                         helpText: "What did you eat?",
                         variableCategoryName: "Foods",
-                        variableCategoryNameSingularLowercase: "food"
+                        variableCategoryNameSingularLowercase: "food",
+                        measurementSynonymSingularLowercase : "meal",
+                        icon: "ion-ios-nutrition"
                     },
                     Emotions: {
-                        defaultUnitAbbreviatedName: "/5",
+                        defaultAbbreviatedUnitName: "/5",
                         helpText: "What emotion do you want to rate?",
                         variableCategoryName: "Emotions",
-                        variableCategoryNameSingularLowercase: "emotion"
+                        variableCategoryNameSingularLowercase: "emotion",
+                        measurementSynonymSingularLowercase : "rating",
+                        icon: "ion-happy-outline"
                     },
                     Symptoms: {
-                        defaultUnitAbbreviatedName: "/5",
+                        defaultAbbreviatedUnitName: "/5",
                         helpText: "What symptom do you want to record?",
                         variableCategoryName: "Symptoms",
-                        variableCategoryNameSingularLowercase: "symptom"
+                        variableCategoryNameSingularLowercase: "symptom",
+                        measurementSynonymSingularLowercase : "rating",
+                        icon: "ion-ios-pulse"
                     },
                     Treatments: {
-                        defaultUnitAbbreviatedName: "mg",
-                        helpText: "What treatment do you want to record?",
-                        variableCategoryName: "Treatments",
-                        variableCategoryNameSingularLowercase: "treatment",
-                        defaultValueLabel: "Dosage",
-                        defaultValuePlaceholderText: "Enter dose value here..."
-
+                        defaultAbbreviatedUnitName : "mg",
+                        helpText : "What treatment do you want to record?",
+                        variableCategoryName : "Treatments",
+                        variableCategoryNameSingularLowercase : "treatment",
+                        defaultValueLabel : "Dosage",
+                        defaultValuePlaceholderText : "Enter dose value here...",
+                        measurementSynonymSingularLowercase : "dose",
+                        icon: "ion-ios-medkit-outline"
                     },
                     "Physical Activity": {
-                        defaultUnitAbbreviatedName: '',
+                        defaultAbbreviatedUnitName: '',
                         helpText: "What physical activity do you want to record?",
                         variableCategoryName: "Physical Activity",
-                        variableCategoryNameSingularLowercase: "physical activity"
+                        variableCategoryNameSingularLowercase: "physical activity",
+                        measurementSynonymSingularLowercase : "activity",
+                        icon: "ion-ios-body"
                     }
                 };
 
@@ -130,6 +143,17 @@ angular.module('starter')
                 });
 
                 return deferred.promise;
+            },
+            
+            getVariableCategoryIcon : function(variableCategoryName){
+                var variableCategoryInfo = this.getVariableCategoryInfo(variableCategoryName);
+                if(variableCategoryInfo.icon){
+                    return variableCategoryInfo.icon;
+                } else {
+                    console.warn('Could not find icon for variableCategoryName ' + variableCategoryName);
+                    return 'ion-speedometer';
+                }
+                
             }
         };
         

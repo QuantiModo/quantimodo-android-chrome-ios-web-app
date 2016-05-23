@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<widget id="com.quantimodo.moodimodoapp" version="1.2.0" ios-CFBundleVersion="1.2.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
-  <name>MoodiModo</name>
+<widget id="com.quantimodo.quantimodo" version="IONIC_APP_VERSION_NUMBER" ios-CFBundleVersion="IONIC_IOS_APP_VERSION_NUMBER" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+  <name>QuantiModo</name>
   <description>
-        The mood-tracking app from QuantiModo
+        Perfect your life!
     </description>
-  <author email="info@quantimo.do" href="http://help.quantimo.do/">
-     QuantiModo
+  <author email="help@quantimo.do" href="http://help.quantimo.do/">
+      QuantiModo
     </author>
   <content src="index.html"/>
   <access origin="*"/>
@@ -16,7 +16,9 @@
   <preference name="BackupWebStorage" value="none"/>
   <preference name="SplashScreen" value="screen"/>
   <preference name="SplashScreenDelay" value="3000"/>
-  <allow-navigation href="https://app.quantimo.do/*"/>
+
+  <allow-navigation href="https://app.quantimo.do/*" />
+
   <notificationplugin interactive="true">
     <button id="repeat_rating" display="Same As Last Time" mode="background"/>
     <button id="other" display="Other" mode="foreground"/>

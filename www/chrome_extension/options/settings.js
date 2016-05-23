@@ -75,7 +75,7 @@ document.addEventListener('DOMContentLoaded', function ()
 	for(var i = 0; notificationIntervalSelect.options.length; i++) 
 	{
 		var currentOption = notificationIntervalSelect.options[i];
-        if(currentOption.value == notificationInterval) 
+        if(currentOption.value === notificationInterval) 
 		{
             notificationIntervalSelect.selectedIndex = i;
             break;

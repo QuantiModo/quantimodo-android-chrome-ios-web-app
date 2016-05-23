@@ -1,19 +1,13 @@
 <ion-view hide-nav-bar="hideNavigationMenu" view-title="{{state.title}}">
 	<ion-content scroll="true" overflow-scroll="true"> 
 		
-		<div ng-show="state.showButtons" class="list card">
-			<!--<div class="item item-divider" style="background-color:#11c1f3; color:white;">Actions</div>-->
-			<a href="#/app/reminder_add/{{state.variableCategory}}" class="item item-icon-left">
+		<div ng-show="state.showButtons" class="list card" ng-click="addNewReminder()">
+			<a class="item item-icon-left">
 				<i class="icon ion-plus positive"></i>
 				{{state.addButtonText}}
 			</a>
 		</div>
-
-		<div ng-show="state.showButtons" class="list card">
-<!--			<div class="item item-divider" style="background-color:#11c1f3; color:white;">
-				All Reminders
-			</div>-->
-
+		<div ng-hide="loading" class="list card">
 			<div class="list card" ng-repeat="reminder in state.allReminders" >
 				<div class="item" style="padding-bottom:0px;">
 					<div class="row">
@@ -22,7 +16,7 @@
 						</div>
 						<div class="col col-75">
 							<h2 style="white-space: normal;">{{reminder.variableName}}</h2>
-							<p style="white-space: normal;">{{reminder.defaultValue}}&nbsp;{{reminder.abbreviatedUnitName}} {{reminder | reminderTimes}}</p>
+							<p style="white-space: normal;">{{reminder.valueAndFrequencyTextDescription}}</p>
 						</div>							
 					</div>
 					<div class="row">
@@ -33,10 +27,14 @@
 					</div>
 				</div>
 			</div>
-			
-<!--			<div class="button-bar">
-				<a class="button button-clear button-positive" ng-click="init()" style="text-overflow: clip;"><i class="ion-refresh">  Refresh</i></a>
-			</div>-->
 		</div>
 	</ion-content>
+	<nav mfb-menu position="bl" effect="slidein-spring"
+		 active-icon="ion-minus-round" resting-icon="ion-plus-round"
+		 toggling-method="click" ng-hide="hideNavigationMenu || (hideNavigationMenu && !isWelcomed)">
+		<button mfb-button icon="ion-happy-outline" label="How are you?" ng-click="goToState('app.track')"></button>
+		<button mfb-button icon="ion-ios-medkit-outline" label="Add a medication" ng-click="goToState('app.reminderAddCategory', {variableCategoryName : 'Treatments'})"></button>
+		<button mfb-button icon="ion-ios-pulse" label="Add Vital Sign" ng-click="goToState('app.track_factors_category', {variableCategoryName : 'Vital Signs'})"></button>
+		<button mfb-button icon="ion-heart-broken" label="Record a Symptom" ng-click="goToState('app.track_factors_category', {variableCategoryName : 'Symptoms'})"></button>
+	</nav>
 </ion-view>

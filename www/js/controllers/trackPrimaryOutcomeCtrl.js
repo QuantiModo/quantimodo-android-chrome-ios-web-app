@@ -3,13 +3,13 @@ angular.module('starter')
     // Controls the Track Page of the App
     .controller('TrackPrimaryOutcomeCtrl', function($scope, $ionicModal, $state, $timeout, utilsService, authService, 
                                                     measurementService, chartService, $ionicPopup, localStorageService,
-                                                    $rootScope, $ionicLoading) {
+                                                    $rootScope, $ionicLoading, ratingService) {
         $scope.controller_name = "TrackPrimaryOutcomeCtrl";
 
         $scope.showCharts = false;
         $scope.showRatingFaces = true;
 
-        $scope.recordPrimaryOutcomeVariableRating = function (primaryOutcomeRatingValue) {
+        $scope.recordPrimaryOutcomeVariableRating = function (numericRatingValue) {
 
             // flag for blink effect
             $scope.timeRemaining = true;
@@ -22,14 +22,14 @@ angular.module('starter')
             }
 
             // update local storage
-            measurementService.updatePrimaryOutcomeVariableLocally(primaryOutcomeRatingValue).then(function () {
+            measurementService.updatePrimaryOutcomeVariableLocally(numericRatingValue).then(function () {
 
                 if(!$rootScope.user){
                     $rootScope.user = localStorageService.getItemAsObject('user');
                 }
                 if($rootScope.user){
                     // try to send the data to server if we have a user
-                    measurementService.updatePrimaryOutcomeVariableOnServer(primaryOutcomeRatingValue);
+                    measurementService.updatePrimaryOutcomeVariableOnServer(numericRatingValue);
                 }
 
                 // calculate charts data
@@ -37,7 +37,7 @@ angular.module('starter')
 
                     setTimeout(function () {
                         $scope.timeRemaining = false;
-                        $scope.$apply();
+                        $scope.safeApply();
                     }, 500);
 
                     updateCharts();
@@ -46,18 +46,19 @@ angular.module('starter')
         };
 
         // Update primary outcome variable images via an integer
-        var updateAveragePrimaryOutcomeRatingView = function(averagePrimaryOutcomeVariableRating){
-            var averageRatingValue = config.appSettings.primaryOutcomeValueConversionDataSet[averagePrimaryOutcomeVariableRating];
-            if(averageRatingValue){
-                $scope.averagePrimaryOutcomeVariableImage = config.getImageForPrimaryOutcomeVariableByValue(averageRatingValue);
-                $scope.averagePrimaryOutcomeVariableValue = averageRatingValue;
+        var updateAveragePrimaryOutcomeRatingView = function(numericRatingValue){
+            var averageRatingText =
+                config.appSettings.ratingValueToTextConversionDataSet[numericRatingValue];
+            if(averageRatingText){
+                $scope.averagePrimaryOutcomeVariableImage = ratingService.getRatingFaceImageByText(averageRatingText);
+                $scope.averagePrimaryOutcomeVariableText = averageRatingText;
                 console.log("updated averagePrimaryOutcomeVariableRating view");
             }
 
             if(!$scope.$$phase) {
                 $scope.showRatingFaces = true;
                 console.log("Not in the middle of digest cycle, so redrawing everything...");
-                $scope.$apply();
+                $scope.safeApply();
             }
         };
 
@@ -110,7 +111,7 @@ angular.module('starter')
                 }
 
                 if(!$scope.$$phase) {
-                    $scope.$apply();
+                    $scope.safeApply();
                 }
             });
         };
@@ -154,7 +155,7 @@ angular.module('starter')
 
                     // update loader text
                     $ionicLoading.hide();
-                    utilsService.loadingStart('Calculating stuff', 2000);
+                    $scope.showLoader('Calculating stuff', 2000);
 
                     // calculate primary outcome variable values
                     measurementService.calculateAveragePrimaryOutcomeVariableValue().then(function(){
@@ -184,6 +185,7 @@ angular.module('starter')
             $scope.showHelpInfoPopupIfNecessary();
             syncPrimaryOutcomeVariableMeasurements();
             generateLineAndBarChartData();
+            $ionicLoading.hide();
         };
 
         $scope.init();

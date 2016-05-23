@@ -1,6 +1,6 @@
 angular.module('starter')    
     // QuantiModo API implementation
-    .factory('QuantiModo', function($http, $q, authService, localStorageService, $state, $ionicLoading){
+    .factory('QuantiModo', function($http, $q, authService, localStorageService, $state, $ionicLoading, $rootScope){
             var QuantiModo = {};
 
             QuantiModo.successHandler = function(data){
@@ -16,12 +16,14 @@ angular.module('starter')
                 $ionicLoading.hide();
                 if(status === 401){
                     localStorageService.deleteItem('accessToken');
-                    console.log('QuantiModo.errorHandler: Sending to login because we got 401 with request ' +
+                    localStorageService.deleteItem('user');
+                    $rootScope.user = null;
+                    console.warn('QuantiModo.errorHandler: Sending to login because we got 401 with request ' +
                         JSON.stringify(request));
-                    console.log('data: ' + JSON.stringify(data));
-                    console.log('headers: ' + JSON.stringify(headers));
-                    console.log('config: ' + JSON.stringify(config));
-                    //$state.go('app.login');
+                    console.debug('data: ' + JSON.stringify(data));
+                    console.debug('headers: ' + JSON.stringify(headers));
+                    console.debug('config: ' + JSON.stringify(config));
+                    $state.go('app.login');
                     return;
                 }
                 if(!data){
@@ -63,7 +65,9 @@ angular.module('starter')
                         { 
                             throw 'invalid parameter; allowed parameters: ' + allowedParams.toString(); 
                         }
-                        urlParams.push(encodeURIComponent(key) + '=' + encodeURIComponent(params[key]));
+                        if(params[key]){
+                            urlParams.push(encodeURIComponent(key) + '=' + encodeURIComponent(params[key]));
+                        }
                     }
                     //We can't append access token to Ionic requests for some reason
                     //urlParams.push(encodeURIComponent('access_token') + '=' + encodeURIComponent(tokenObject.accessToken));
@@ -168,7 +172,7 @@ angular.module('starter')
 
             QuantiModo.getV1Measurements = function(params, successHandler, errorHandler){
                 QuantiModo.get('api/v1/measurements',
-                    ['source', 'limit', 'offset', 'sort', 'id'],
+                    ['source', 'limit', 'offset', 'sort', 'id', 'variableCategoryName'],
                     params,
                     successHandler,
                     errorHandler);
@@ -186,7 +190,7 @@ angular.module('starter')
             // post measurements old method
             QuantiModo.postMeasurements= function(measurements, successHandler ,errorHandler) { 
                 QuantiModo.post('api/measurements',
-                    ['source', 'variable', 'combinationOperation', 'timestamp', 'value', 'unit'],
+                    ['source', 'variable', 'combinationOperation', 'startTime', 'value', 'unit'],
                     measurements,
                     successHandler,
                     errorHandler);
@@ -222,7 +226,7 @@ angular.module('starter')
             // post new Measurements for user
             QuantiModo.postMeasurementsV2 = function(measurementset, successHandler ,errorHandler){
                 QuantiModo.post('api/measurements/v2', 
-                    ['measurements', 'name', 'source', 'category', 'combinationOperation', 'unit'], 
+                    ['measurements', 'variableName', 'source', 'variableCategoryName', 'combinationOperation', 'abbreviatedUnitName'],
                     measurementset, 
                     successHandler,
                     errorHandler);
@@ -333,12 +337,21 @@ angular.module('starter')
 
 
         // get user variables
-            QuantiModo.getVariablesByCategory = function(category,successHandler, errorHandler){
-                QuantiModo.get('api/v1/variables',
-                    ['category', 'limit'],
-                    {category:category, limit:5},
-                    successHandler,
-                    errorHandler);
+            QuantiModo.getUserVariablesByCategory = function(category,successHandler, errorHandler){
+                if(category){
+                    QuantiModo.get('api/v1/variables',
+                        ['category', 'limit'],
+                        {category:category, limit:5},
+                        successHandler,
+                        errorHandler);
+                }
+                if(!category){
+                    QuantiModo.get('api/v1/variables',
+                        ['category', 'limit'],
+                        {limit:5},
+                        successHandler,
+                        errorHandler);
+                }
             };
 
             // get variable categories
@@ -380,7 +393,7 @@ angular.module('starter')
             // get pending reminders 
             QuantiModo.getTrackingReminderNotifications = function(params, successHandler, errorHandler){
                 QuantiModo.get('api/v1/trackingReminderNotifications',
-                    ['variableCategoryName'],
+                    ['variableCategoryName', 'reminderTime', 'sort'],
                     params,
                     successHandler,
                     errorHandler);

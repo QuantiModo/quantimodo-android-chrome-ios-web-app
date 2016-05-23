@@ -52,11 +52,21 @@ angular.module('starter')
                 var returnFiltered = function(start, end){
                     
                     allMeasurements = allMeasurements.sort(function(a, b){
-                        return a.timestamp - b.timestamp;
+                        if(!a.startTime){
+                            a.startTime = a.timestamp;
+                        }
+
+                        if(!b.startTime){
+                            b.startTime = b.timestamp;
+                        }
+                        return a.startTime - b.startTime;
                     });
 
                     var filtered = allMeasurements.filter(function(x){
-                        return x.timestamp >= start && x.timestamp <= end;
+                        if(!x.startTime){
+                            x.startTime = a.timestamp;
+                        }
+                        return x.startTime >= start && x.startTime <= end;
                     });
                     
                     return callback(filtered);
@@ -133,21 +143,21 @@ angular.module('starter')
 			},
 
 			// update primary outcome variable in local storage
-			updatePrimaryOutcomeVariableLocally : function(ratingValue){
-                console.log("reported", ratingValue);
+			updatePrimaryOutcomeVariableLocally : function(numericRatingValue){
+                console.log("reported", numericRatingValue);
                 var deferred = $q.defer();
 				var reportTime = Math.floor(new Date().getTime()/1000);
 
                 // if val is string (needs conversion)
-                if(isNaN(parseFloat(ratingValue))){
-                    ratingValue = config.appSettings.primaryOutcomeValueConversionDataSetReversed[ratingValue] ?
-                        config.appSettings.primaryOutcomeValueConversionDataSetReversed[ratingValue] : false;
+                if(isNaN(parseFloat(numericRatingValue))){
+                    numericRatingValue = config.appSettings.ratingTextToValueConversionDataSet[numericRatingValue] ?
+                        config.appSettings.ratingTextToValueConversionDataSet[numericRatingValue] : false;
                 } 
 
                 function checkSync(){
                     if(!isSyncing){
                         console.log('isSync false');
-                        reportPrimaryOutcomeVariableValue(ratingValue);
+                        reportPrimaryOutcomeVariableValue(numericRatingValue);
                     }else{
                         console.log('isSync true');
                         setTimeout(function(){
@@ -157,20 +167,20 @@ angular.module('starter')
                     }
                 }
 
-                function reportPrimaryOutcomeVariableValue(ratingValue){
+                function reportPrimaryOutcomeVariableValue(numericRatingValue){
                     // only if we found a result for the reported val
-                    if(ratingValue){
+                    if(numericRatingValue){
 
                         // update localStorage
-                        localStorageService.setItem('lastReportedPrimaryOutcomeVariableValue', ratingValue);
+                        localStorageService.setItem('lastReportedPrimaryOutcomeVariableValue', numericRatingValue);
 
                         // update full data
                         localStorageService.getItem('allMeasurements',function(allMeasurementsInLocalStorage){
 
                             var newMeasurementObject = {
                                 variableId : config.appSettings.primaryOutcomeVariableDetails.id,
-                                value : ratingValue,
-                                timestamp : reportTime,
+                                value : numericRatingValue,
+                                startTime : reportTime,
                                 humanTime : {
                                     date : new Date().toISOString()
                                 },
@@ -189,7 +199,7 @@ angular.module('starter')
                             localStorageService.getItem('barChartData',function(barChartData){
                                 if(barChartData){
                                     barChartData = JSON.parse(barChartData);
-                                    barChartData[ratingValue-1]++;
+                                    barChartData[numericRatingValue-1]++;
                                     localStorageService.setItem('barChartData',JSON.stringify(barChartData));
                                 }
                             });
@@ -198,7 +208,7 @@ angular.module('starter')
                             localStorageService.getItem('lineChartData',function(lineChartData){
                                 if(lineChartData){
                                     lineChartData = JSON.parse(lineChartData);
-                                    lineChartData.push([reportTime*1000, (ratingValue-1)*25]);
+                                    lineChartData.push([reportTime*1000, (numericRatingValue-1)*25]);
                                     localStorageService.setItem('lineChartData',JSON.stringify(lineChartData));
                                 }
                                 deferred.resolve();
@@ -217,18 +227,18 @@ angular.module('starter')
 			},
 
 			// update primary outcome variable request to QuantiModo API
-			updatePrimaryOutcomeVariableOnServer : function(ratingValue){
+			updatePrimaryOutcomeVariableOnServer : function(numericRatingValue){
 
 				var reportTime  = new Date().getTime();
 
                 // if val is string (needs conversion)
-                if(isNaN(parseFloat(ratingValue))){
-                    ratingValue = config.appSettings.primaryOutcomeValueConversionDataSetReversed[ratingValue] ?
-                    config.appSettings.primaryOutcomeValueConversionDataSetReversed[ratingValue] : false;
+                if(isNaN(parseFloat(numericRatingValue))){
+                    numericRatingValue = config.appSettings.ratingTextToValueConversionDataSet[numericRatingValue] ?
+                    config.appSettings.ratingTextToValueConversionDataSet[numericRatingValue] : false;
                 } 
 
-                if(ratingValue){
-                    localStorageService.setItem('lastReportedPrimaryOutcomeVariableValue', ratingValue);
+                if(numericRatingValue){
+                    localStorageService.setItem('lastReportedPrimaryOutcomeVariableValue', numericRatingValue);
                     
                     // check queue
                     localStorageService.getItem('measurementsQueue',function(measurementsQueue){
@@ -236,8 +246,8 @@ angular.module('starter')
 
                         // add to queue
                         measurementsQueue.push({
-                            timestamp:  Math.floor(reportTime / 1000),
-                            value: ratingValue,
+                            startTime:  Math.floor(reportTime / 1000),
+                            value: numericRatingValue,
                             note : ""
                         });
 
@@ -269,7 +279,7 @@ angular.module('starter')
             },
 
 			// post a singe measurement
-			postTrackingMeasurement : function(epoch, variable, val, unit, isAvg, category, note, usePromise){
+			postTrackingMeasurement : function(startTimeEpoch, variableName, value, unit, isAvg, variableCategoryName, note, usePromise){
 
                 var deferred = $q.defer();
 
@@ -277,18 +287,25 @@ angular.module('starter')
                     note = null;
                 }
 
+                var nowMilliseconds = new Date();
+                var oneWeekInFuture = nowMilliseconds.getTime()/1000 + 7 * 86400;
+                if(startTimeEpoch > oneWeekInFuture){
+                    startTimeEpoch = startTimeEpoch / 1000;
+                    console.warn('Assuming startTime is in milliseconds since it is more than 1 week in the future');
+                }
+
                 // measurements set
                 var measurements = [
                     {
-                        name: variable,
+                        variableName: variableName,
                 	   	source: config.get('clientSourceName'),
-                	   	category: category,
-                	   	unit: unit,
+                	   	variableCategoryName: variableCategoryName,
+                	   	abbreviatedUnitName: unit,
                         combinationOperation : isAvg? "MEAN" : "SUM",
                 	   	measurements : [
                 		   	{
-                		   		timestamp:  epoch / 1000,
-                		   		value: val,
+                		   		startTime:  startTimeEpoch,
+                		   		value: value,
                 		   		note : note
                 		   	}
                 	   	]
@@ -297,12 +314,12 @@ angular.module('starter')
 
                 // for local
                 var measurement = {
-                    name: variable,
+                    variableName: variableName,
                     source: config.get('clientSourceName'),
-                    unit: unit,
-                    timestamp:  epoch / 1000,
-                    value: val,
-                    category : category,
+                    abbreviatedUnitName: unit,
+                    startTime:  startTimeEpoch,
+                    value: value,
+                    variableCategoryName : variableCategoryName,
                     note : "",
                     combinationOperation : isAvg? "MEAN" : "SUM"
                 };
@@ -336,7 +353,7 @@ angular.module('starter')
 			},
 
 			// edit existing measurement
-			editPrimaryOutcomeVariable : function(timestamp, val, note){
+			editPrimaryOutcomeVariable : function(startTime, val, note){
 				var deferred = $q.defer();
 				// measurements set
 				var measurements = [
@@ -347,7 +364,7 @@ angular.module('starter')
                         combinationOperation: config.appSettings.primaryOutcomeVariableDetails.combinationOperation,
                         unit: config.appSettings.primaryOutcomeVariableDetails.abbreviatedUnitName,
 					   	measurements : [{
-					   		timestamp:  timestamp,
+					   		startTime:  startTime,
 					   		value: val,
 					   		note : (note && note !== null)? note : null
 					   	}]
@@ -360,7 +377,7 @@ angular.module('starter')
                localStorageService.getItem('allMeasurements',function(allMeasurements){
                    measurementDataSet = JSON.parse(allMeasurements);
                    // extract the measurement from localStorage
-                   var selectedMeasurementDataSetItems = measurementDataSet.filter(function(x){return x.timestamp === timestamp;});
+                   var selectedMeasurementDataSetItems = measurementDataSet.filter(function(x){return x.startTime === startTime;});
 
                    // update localstorage data
                    var selectedMeasurementItem = selectedMeasurementDataSetItems[0];
@@ -462,11 +479,17 @@ angular.module('starter')
                                         //to remove duplicates since the server would also return the records that we already have in allDate
                                         var lastSyncTimeTimestamp = new Date(lastSyncTime).getTime()/1000;
                                         allMeasurements = allMeasurements.filter(function(measurement){
-                                            return measurement.timestamp < lastSyncTimeTimestamp;
+                                            if(!measurement.startTime){
+                                                measurement.startTime = measurement.timestamp;
+                                            }
+                                            return measurement.startTime < lastSyncTimeTimestamp;
                                         });
                                         //Extracting New Records
                                         var newRecords = response.filter(function (measurement) {
-                                            return measurement.timestamp > lastSyncTimeTimestamp;
+                                            if(!measurement.startTime){
+                                                measurement.startTime = measurement.timestamp;
+                                            }
+                                            return measurement.startTime > lastSyncTimeTimestamp;
                                         });
                                         console.log('new record');
                                         console.log(newRecords);
@@ -481,7 +504,13 @@ angular.module('starter')
                                         //Replacing primary outcome variable object in original allMeasurements object
                                         allMeasurements.map(function(x,index) {
                                             updatedRecords.forEach(function(elem){
-                                                if (x.timestamp  === elem.timestamp  && x.source === config.get('clientSourceName')) {
+                                                if(!x.startTime){
+                                                    x.startTime = x.timestamp;
+                                                }
+                                                if(!elem.startTime){
+                                                    elem.startTime = elem.timestamp;
+                                                }
+                                                if (x.startTime  === elem.startTime  && x.source === config.get('clientSourceName')) {
                                                     console.log('found at ' + index);
                                                     x = elem;
                                                 }
@@ -493,13 +522,20 @@ angular.module('starter')
                                     }
 
                                     var s  = 9999999999999; 
-                                    allMeasurements.forEach(function(x){if(x.timestamp <= s){s = x.timestamp;}});
+                                    allMeasurements.forEach(function(x){
+                                        if(!x.startTime){
+                                            x.startTime = x.timestamp;
+                                        }
+                                        if(x.startTime <= s){
+                                            s = x.startTime;
+                                        }
+                                    });
 
                                     measurementService.setDates(new Date().getTime(),s*1000);
                                     //updating last updated time and data in local storage so that we syncing should continue from this point
                                     //if user restarts the app or refreshes the page.
                                     localStorageService.setItem('allMeasurements',JSON.stringify(allMeasurements));
-                                    localStorageService.setItem('lastSyncTime',moment(allMeasurements[allMeasurements.length-1].timestamp*1000).utc().format('YYYY-MM-DDTHH:mm:ss'));
+                                    localStorageService.setItem('lastSyncTime',moment(allMeasurements[allMeasurements.length-1].startTime*1000).utc().format('YYYY-MM-DDTHH:mm:ss'));
                                 });
 
                             }
@@ -652,9 +688,9 @@ angular.module('starter')
 						var currentValue = Math.ceil(allMeasurements[i].value);
 						if (allMeasurements[i].abbreviatedUnitName === config.appSettings.primaryOutcomeVariableDetails.abbreviatedUnitName &&
 							(currentValue - 1) <= 4 && (currentValue - 1) >= 0) {
-							var timestamp = moment(allMeasurements[i].humanTime.date).unix() * 1000;
+							var startTime = moment(allMeasurements[i].humanTime.date).unix() * 1000;
 							var percentValue = (currentValue - 1) * 25;
-							var lineChartItem = [timestamp, percentValue];
+							var lineChartItem = [startTime, percentValue];
 							lineArr.push(lineChartItem);
 							barArr[currentValue - 1]++;
 						}

@@ -8,8 +8,6 @@ angular.module('starter')
 
             $scope.viewTitle = config.appSettings.appName;
             $scope.primaryOutcomeVariable = config.appSettings.primaryOutcomeVariable;
-            $scope.primaryOutcomeVariableRatingOptions = config.getPrimaryOutcomeVariableOptions();
-            $scope.primaryOutcomeVariableNumbers = config.getPrimaryOutcomeVariableOptions(true);
             $scope.introConfiguration = config.appSettings.intro;
 
             $scope.myIntro = {
@@ -18,7 +16,8 @@ angular.module('starter')
                 slideIndex : 0,
                 // Called to navigate to the main app
                 startApp : function() {
-                    $rootScope.hideMenu = false;
+                    $rootScope.hideNavigationMenu = false;
+                    console.debug('startApp: Going to default state...');
                     $state.go(config.appSettings.defaultState);
                 },
 
@@ -37,7 +36,7 @@ angular.module('starter')
             };
 
             var init = function(){
-                utilsService.loadingStart();
+                $scope.showLoader();
                 $scope.myIntro.ready = true;
                 $ionicLoading.hide();
             };

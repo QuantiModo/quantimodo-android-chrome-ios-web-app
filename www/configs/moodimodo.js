@@ -28,6 +28,11 @@ config.appSettings  = {
     appName : 'MoodiModo',
     allowOffline : true,
     loaderImagePath : 'img/pop-tart-cat.gif',
+    
+    settingsPageOptions :
+    {
+        showReminderFrequencySelector : true
+    },
 
     defaultState : 'app.track',
     welcomeState : 'app.welcome',
@@ -48,7 +53,8 @@ config.appSettings  = {
         name : "Overall Mood",
         category : "Mood",
         abbreviatedUnitName : "/5",
-        combinationOperation: "MEAN"
+        combinationOperation: "MEAN",
+        description: 'positive'
     },
 
     primaryOutcomeVariableRatingOptionLabels : [
@@ -58,43 +64,20 @@ config.appSettings  = {
         'Happy',
         'Ecstatic'
     ],
-
-    primaryOutcomeVariableRatingOptions : [
-        {
-            value: 'depressed',
-            img: 'img/ic_face_depressed.png'
-        },
-        {
-            value: 'sad',
-            img: 'img/ic_face_sad.png'
-        },
-        {
-            value: 'ok',
-            img: 'img/ic_face_ok.png'
-        },
-        {
-            value: 'happy',
-            img: 'img/ic_face_happy.png'
-        },
-        {
-            value: 'ecstatic',
-            img: 'img/ic_face_ecstatic.png'
-        }
-    ],
-
+    
     welcomeText : "Let's start off by reporting your first mood on the card below",
     primaryOutcomeVariableTrackingQuestion : "How are you?",
     primaryOutcomeVariableAverageText : "Your average mood is ",
     mobileNotificationImage : "file://img/icon_128.png",
     mobileNotificationText : "Time to Track",
-    primaryOutcomeValueConversionDataSet: {
+    ratingValueToTextConversionDataSet: {
         "1": "depressed",
         "2": "sad",
         "3": "ok",
         "4": "happy",
         "5": "ecstatic"
     },
-    primaryOutcomeValueConversionDataSetReversed : {
+    ratingTextToValueConversionDataSet : {
         "depressed" : 1,
         "sad" : 2,
         "ok" : 3,
@@ -127,24 +110,6 @@ config.appSettings  = {
                     classes : 'intro-paragraph',
                     buttonBarVisible : true   
                 }
-            }
-        },
-        // screen 2
-        {
-            img : {
-                height : '70',
-                width : '70'
-            },
-            content : {
-
-                showOutcomeVariableImages : true,
-                showFirstBr : true,   
-                finalP: {
-                    visible : true,
-                    content : 'Go to the <span class="positive">Track Mood</span> page to report your Mood!',
-                    classes : 'intro-paragraph',
-                    buttonBarVisible : true
-                } 
             }
         },
         // screen 3
@@ -195,7 +160,7 @@ config.appSettings  = {
                 showSecondBr : true,
                 finalP: {
                     visible : true,
-                    content : 'You can see and edit your past Mood ratings and notes by opening the <span class="positive">History</span> page.',
+                    content : 'You can see and edit your past mood ratings and notes by opening the <span class="positive">History</span> page.',
                     classes : 'intro-paragraph',
                     buttonBarVisible : true
                 }
@@ -220,7 +185,7 @@ config.appSettings  = {
                 },
                 finalP: {
                     visible : true,
-                    content : 'Add a note by tapping on a Mood rating in the <span class="positive">History</span> page. You can also <span class="positive">Edit</span> your Mood there too.',
+                    content : 'Add a note by tapping on a mood rating in the <span class="positive">History</span> page. You can also <span class="positive">Edit</span> your Mood there too.',
                     classes : 'intro-paragraph',
                     buttonBarVisible : true
                 }
@@ -391,7 +356,7 @@ config.appSettings  = {
 
     helpPopupMessages : {
         "#/app/track" :'Here, you can view your <span class="positive">average Mood</span> as well as charts illustrating how it changes over time', 
-        "#/app/history" :'You can see and edit your past Mood ratings and notes by tapping on any item in the list.  <br/> <br/>You can also Add a note by tapping on a Mood rating in the list.',
+        "#/app/history" :'You can see and edit your past mood ratings and notes by tapping on any item in the list.  <br/> <br/>You can also add a note by tapping on a mood rating in the list.',
         "#/app/track_factors_category/Foods" :'You can track your diet on this page. You can also <span class="positive">Add a new Food Variable</span> if you do not find the meal you looked for in the search results.',
         "#/app/track_factors_category/Symptoms" :'You can track any symptom on this page. You can also <span class="positive">Add a new Symptom</span> if you don\'t find the symptom you looked for in the search results.',
         "#/app/track_factors_category/Treatments" :'You can track any treatment on this page. You can also <span class="positive">Add a new Treatment</span> if you don\'t find the treatment you looked for in the search results.',
@@ -409,123 +374,217 @@ config.appSettings  = {
 
     menu : [
         {
-            title : 'Track Mood',
-            href : '#/app/track',
-            icon : 'ion-happy-outline'
-        },
-        {
-            title : 'Track Factors',
-            click : 'toggleTrackingSubMenu',
-            icon : 'showTrackingSubMenu',
-            subMenuPanel : true
-        },
-        {
-            title : 'Track anything',
-            isSubMenu : true,
-            subMenuVariable : 'showTrackingSubMenu',
-            href : '#/app/track_factors',
-            icon : 'ion-ios-world-outline'   
-        },
-        {
-            title : 'Track foods',
-            isSubMenu : true,
-            subMenuVariable : 'showTrackingSubMenu',
-            href : '#/app/track_factors_category/Foods',
-            icon : 'ion-ios-nutrition-outline'
-        },
-        {
-            title : 'Track emotions',
-            isSubMenu : true,
-            subMenuVariable : 'showTrackingSubMenu',
-            href : '#/app/track_factors_category/Emotions',
-            icon : 'ion-happy-outline'
-        },
-        {
-            title : 'Track symptoms',
-            isSubMenu : true,
-            subMenuVariable : 'showTrackingSubMenu',
-            href : '#/app/track_factors_category/Symptoms',
-            icon : 'ion-ios-pulse'
-        },
-        {
-            title : 'Track treatments',
-            isSubMenu : true,
-            subMenuVariable : 'showTrackingSubMenu',
-            href : '#/app/track_factors_category/Treatments',
-            icon : 'ion-ios-medkit-outline'
-        },
-        {
-            title : 'Track physical activity',
-            isSubMenu : true,
-            subMenuVariable : 'showTrackingSubMenu',
-            href : '#/app/track_factors_category/Physical Activity',
-            icon : 'ion-ios-body-outline'
-        },
-        {
-            title : 'Reminders',
-            click : 'toggleReminderSubMenu',
-            icon : 'showReminderSubMenu',
-            subMenuPanel : true
-        },
-        {
-            title : 'Inbox',
-            isSubMenu : true,
-            subMenuVariable : 'showReminderSubMenu',
+            title : 'Reminder Inbox',
             href : '#/app/reminders-inbox',
+            icon : 'ion-archive'
+        },
+        {
+            title : 'Manage Reminders',
+            href : '#/app/reminders-manage',
             icon : 'ion-android-notifications-none'
         },
         {
-            title : 'Manage',
-            isSubMenu : true,
-            subMenuVariable : 'showReminderSubMenu',
-            href : '#/app/reminders-manage',
-            icon : 'ion-ios-gear-outline'
+            title : 'Overall Mood',
+            click : 'togglePrimaryOutcomeSubMenu',
+            showSubMenuVariable : 'showPrimaryOutcomeSubMenu',
+            isSubMenuParent : true,
+            collapsedIcon : 'ion-chevron-right',
+            expandedIcon : 'ion-chevron-down'
         },
         {
-            title : 'Emotions',
-            isSubMenu : true,
-            subMenuVariable : 'showReminderSubMenu',
-            href : '#/app/reminder_add/Emotions',
-            icon : 'ion-happy-outline'
-        },
-        {
-            title : 'Symptoms',
-            isSubMenu : true,
-            subMenuVariable : 'showReminderSubMenu',
-            href : '#/app/reminder_add/Symptoms',
-            icon : 'ion-ios-pulse'
-        },
-        {
-            title : 'Treatments',
-            isSubMenu : true,
-            subMenuVariable : 'showReminderSubMenu',
-            href : '#/app/reminder_add/Treatments',
-            icon : 'ion-ios-medkit-outline'
-        },
-        {
-            title : 'Foods',
-            isSubMenu : true,
-            subMenuVariable : 'showReminderSubMenu',
-            href : '#/app/reminder_add/Foods',
-            icon : 'ion-ios-nutrition-outline'
+            title : 'Charts',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showPrimaryOutcomeSubMenu',
+            href : '#/app/track',
+            icon : 'ion-arrow-graph-up-right'
         },
         {
             title : 'History',
-            click : 'toggleHistorySubMenu',
-            icon : 'showHistorySubMenu',
-            subMenuPanel : true
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showPrimaryOutcomeSubMenu',
+            href : '#/app/history',
+            icon : 'ion-ios-list-outline'
         },
         {
-            title : 'Moods',
-            isSubMenu : true,
-            subMenuVariable : 'showHistorySubMenu',
-            href : '#/app/history',
+            title : 'Positive Predictors',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showPrimaryOutcomeSubMenu',
+            href : '#/app/positive',
             icon : 'ion-happy-outline'
         },
         {
+            title : 'Negative Predictors',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showPrimaryOutcomeSubMenu',
+            href : '#/app/negative',
+            icon : 'ion-sad-outline'
+        },
+        {
+            title : 'Emotions',
+            click : 'toggleEmotionsSubMenu',
+            showSubMenuVariable : 'showEmotionsSubMenu',
+            isSubMenuParent : true,
+            collapsedIcon : 'ion-happy-outline',
+            expandedIcon : 'ion-chevron-down'
+        },
+        {
+            title : 'Manage Reminders',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showEmotionsSubMenu',
+            href : '#/app/reminders-manage/Emotions',
+            icon : 'ion-android-notifications-none'
+        },
+        {
+            title : 'Record Rating',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showEmotionsSubMenu',
+            href : '#/app/track_factors_category/Emotions',
+            icon : 'ion-edit'
+        },
+        {
+            title : 'History',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showEmotionsSubMenu',
+            href : '#/app/history-all/Emotions',
+            icon : 'ion-ios-paper-outline'
+        },
+        {
+            title : 'Diet',
+            click : 'toggleDietSubMenu',
+            showSubMenuVariable : 'showDietSubMenu',
+            isSubMenuParent : true,
+            collapsedIcon : 'ion-ios-nutrition-outline',
+            expandedIcon : 'ion-chevron-down'
+        },
+        {
+            title : 'Manage Reminders',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showDietSubMenu',
+            href : '#/app/reminders-manage/Foods',
+            icon : 'ion-android-notifications-none'
+        },
+        {
+            title : 'Record Meal',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showDietSubMenu',
+            href : '#/app/track_factors_category/Foods',
+            icon : 'ion-edit'
+        },
+        {
+            title : 'History',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showDietSubMenu',
+            href : '#/app/history-all/Foods',
+            icon : 'ion-ios-paper-outline'
+        },
+        {
+            title : 'Symptoms',
+            click : 'toggleSymptomsSubMenu',
+            icon : 'ion-ios-pulse',
+            isSubMenuParent : true,
+            showSubMenuVariable : 'showSymptomsSubMenu',
+            collapsedIcon : 'ion-ios-pulse',
+            expandedIcon : 'ion-chevron-down'
+        },
+        {
+            title : 'Manage Reminders',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showSymptomsSubMenu',
+            href : '#/app/reminders-manage/Symptoms',
+            icon : 'ion-android-notifications-none'
+        },
+        {
+            title : 'Rate Symptom',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showSymptomsSubMenu',
+            href : '#/app/track_factors_category/Symptoms',
+            icon : 'ion-edit'
+        },
+        {
+            title : 'History',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showSymptomsSubMenu',
+            href : '#/app/history-all/Symptoms',
+            icon : 'ion-ios-paper-outline'
+        },
+        {
+            title : 'Treatments',
+            click : 'toggleTreatmentsSubMenu',
+            icon : 'ion-ios-pulse',
+            showSubMenuVariable : 'showTreatmentsSubMenu',
+            isSubMenuParent : true,
+            collapsedIcon : 'ion-ios-medkit-outline',
+            expandedIcon : 'ion-chevron-down'
+        },
+        {
+            title : 'Overdue',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showTreatmentsSubMenu',
+            href : '#/app/reminders-inbox/Treatments',
+            icon : 'ion-clock'
+        },
+        {
+            title : 'Today',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showTreatmentsSubMenu',
+            href : '#/app/reminders-inbox-today/Treatments',
+            icon : 'ion-android-sunny'
+        },
+        {
+            title : 'Manage Reminders',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showTreatmentsSubMenu',
+            href : '#/app/reminders-manage/Treatments',
+            icon : 'ion-android-notifications-none'
+        },
+        {
+            title : 'Record Treatment',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showTreatmentsSubMenu',
+            href : '#/app/track_factors_category/Treatments',
+            icon : 'ion-edit'
+        },
+        {
+            title : 'History',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showTreatmentsSubMenu',
+            href : '#/app/history-all/Treatments',
+            icon : 'ion-ios-paper-outline'
+        },
+        {
+            title : 'Physical Activity',
+            click : 'togglePhysicalActivitySubMenu',
+            icon : 'ion-ios-pulse',
+            showSubMenuVariable : 'showPhysicalActivitySubMenu',
+            isSubMenuParent : true,
+            collapsedIcon : 'ion-ios-body-outline',
+            expandedIcon : 'ion-chevron-down'
+        },
+        {
+            title : 'Manage Reminders',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showPhysicalActivitySubMenu',
+            href : '#/app/reminders-manage/Physical Activity',
+            icon : 'ion-android-notifications-none'
+        },
+        {
+            title : 'Record Activity',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showPhysicalActivitySubMenu',
+            href : '#/app/track_factors_category/Physical Activity',
+            icon : 'ion-edit'
+        },
+        {
+            title : 'History',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showPhysicalActivitySubMenu',
+            href : '#/app/history-all/Physical Activity',
+            icon : 'ion-ios-paper-outline'
+        },
+        {
             title : 'All Measurements',
-            isSubMenu : true,
-            subMenuVariable : 'showHistorySubMenu',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showHistorySubMenu',
             href : '#/app/history-all',
             icon : 'ion-ios-paper-outline'
         },
@@ -540,44 +599,33 @@ config.appSettings  = {
             icon : 'ion-social-vimeo'
         },
         {
+            title : 'All Measurements',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showHistorySubMenu',
+            href : '#/app/history-all',
+            icon : 'ion-ios-paper-outline'
+        },
+        {
             title : 'Predictor Search',
             click : 'togglePredictorSearchSubMenu',
-            icon : 'showPredictorSearchSubMenu',
-            subMenuPanel : true
+            showSubMenuVariable : 'showPredictorSearchSubMenu',
+            isSubMenuParent : true,
+            collapsedIcon : 'ion-chevron-right',
+            expandedIcon : 'ion-chevron-down'
         },
         {
             title : 'Common',
-            isSubMenu : true,
-            subMenuVariable : 'showPredictorSearchSubMenu',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showPredictorSearchSubMenu',
             href : '#/app/search-common-relationships',
             icon : 'ion-ios-people'
         },
         {
             title : 'Yours',
-            isSubMenu : true,
-            subMenuVariable : 'showPredictorSearchSubMenu',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showPredictorSearchSubMenu',
             href : '#/app/search-user-relationships',
             icon : 'ion-person'
-        },
-        {
-            title : 'Predictors of Mood',
-            click : 'toggleOutcomePredictorSubMenu',
-            icon : 'showOutcomePredictorSubMenu',
-            subMenuPanel : true
-        },
-        {
-            title : 'Positive Mood',
-            isSubMenu : true,
-            subMenuVariable : 'showOutcomePredictorSubMenu',
-            href : '#/app/positive',
-            icon : 'ion-happy-outline'
-        },
-        {
-            title : 'Negative Mood',
-            isSubMenu : true,
-            subMenuVariable : 'showOutcomePredictorSubMenu',
-            href : '#/app/negative',
-            icon : 'ion-sad-outline'
         },
         {
             title : 'Settings',
@@ -588,62 +636,8 @@ config.appSettings  = {
             title : 'Help & Feedback',
             href : window.chrome ? "mailto:help@quantimo.do" : "#app/feedback",
             icon : 'ion-ios-help-outline'
-        },
+        }
     ]
-};
-
-config.getPrimaryOutcomeVariableOptionLabels = function(shouldShowNumbers){
-    if(shouldShowNumbers || !config.appSettings.primaryOutcomeVariableRatingOptionLabels){
-        return ['1',  '2',  '3',  '4', '5'];
-    } else {
-        return config.appSettings.primaryOutcomeVariableRatingOptionLabels;
-    }
-};
-
-config.getPrimaryOutcomeVariableOptions = function(shouldShowNumbers){
-    if(shouldShowNumbers || !config.appSettings.primaryOutcomeVariableRatingOptions){
-        return [
-            {
-                value: '1',
-                img: 'img/ic_1.png'
-            },
-            {
-                value: '2',
-                img: 'img/ic_2.png'
-            },
-            {
-                value: '3',
-                img: 'img/ic_3.png'
-            },
-            {
-                value: '4',
-                img: 'img/ic_4.png'
-            },
-            {
-                value: '5',
-                img: 'img/ic_5.png'
-            }
-        ];
-    } else {
-        return config.appSettings.primaryOutcomeVariableRatingOptions;
-    }
-};
-
-config.getImageForPrimaryOutcomeVariableByValue = function(val){
-    var filtered_list = this.appSettings.primaryOutcomeVariableRatingOptions.filter(function(option){
-        return option.value === val;
-    });
-
-    return filtered_list.length? filtered_list[0].img || false : false;
-};
-
-config.getImageForPrimaryOutcomeVariableByNumber = function(num){
-    var primaryOutcomeVariable = this.appSettings.primaryOutcomeValueConversionDataSet[num]? this.appSettings.primaryOutcomeValueConversionDataSet[num] : false;
-    return primaryOutcomeVariable? config.getImageForPrimaryOutcomeVariableByValue(primaryOutcomeVariable) : false;
-};
-
-config.getPrimaryOutcomeVariableByNumber = function(num){
-    return this.appSettings.primaryOutcomeValueConversionDataSet[num]? this.appSettings.primaryOutcomeValueConversionDataSet[num] : false;
 };
 
 config.getEnv = function(){
@@ -763,8 +757,8 @@ window.notification_callback = function(reportedVariable, reportingTime){
         val = localStorage[keyIdentifier+'lastReportedPrimaryOutcomeVariableValue']?
         JSON.parse(localStorage[keyIdentifier+'lastReportedPrimaryOutcomeVariableValue']) : false;
     } else {
-        val = config.appSettings.primaryOutcomeValueConversionDataSetReversed[reportedVariable]?
-        config.appSettings.primaryOutcomeValueConversionDataSetReversed[reportedVariable] : false;
+        val = config.appSettings.ratingTextToValueConversionDataSet[reportedVariable]?
+        config.appSettings.ratingTextToValueConversionDataSet[reportedVariable] : false;
     }
 
     // report
@@ -775,7 +769,7 @@ window.notification_callback = function(reportedVariable, reportingTime){
         var allMeasurementsObject = {
             storedValue : val,
             value : val,
-            timestamp : reportTime,
+            startTime : reportTime,
             humanTime : {
                 date : new Date().toISOString()
             }

@@ -12,6 +12,7 @@ angular.module('starter')
         var variableCategoryName = $stateParams.variableCategoryName;
         var variableCategoryObject = variableCategoryService.getVariableCategoryInfo(variableCategoryName);
         var currentTime = new Date();
+        $scope.loading = true;
 
         $scope.state = {
             measurementIsSetup : false,
@@ -53,7 +54,7 @@ angular.module('starter')
                 $scope.unitSelected(unitObject);
 
                 // redraw view
-                $scope.$apply();
+                $scope.safeApply();
 
                 // hackish timeout for view to update itself
                 setTimeout(function(){
@@ -63,7 +64,7 @@ angular.module('starter')
                     $scope.state.measurement.abbreviatedUnitName = unitObject.abbreviatedName;
 
                     // redraw view
-                    $scope.$apply();
+                    $scope.safeApply();
                 },100);
 
             },100);
@@ -110,16 +111,18 @@ angular.module('starter')
             $scope.state.measurement.value = "";
             $scope.state.measurement.note = null;
             if($scope.state.variableCategoryObject) {
-                setUnit(variableCategoryObject.defaultUnitAbbreviatedName);
+                setUnit(variableCategoryObject.defaultAbbreviatedUnitName);
             }
         };
 
         // cancel activity
         $scope.cancel = function(){
-            if($stateParams.fromState){
+            if($stateParams.fromUrl){
+                window.location = $stateParams.fromUrl;
+            } else if ($stateParams.fromState){
                 $state.go($stateParams.fromState);
             } else {
-                $rootScope.hideMenu = false;
+                $rootScope.hideNavigationMenu = false;
                 $state.go(config.appSettings.defaultState);
             }
         };
@@ -132,10 +135,12 @@ angular.module('starter')
             };
             measurementService.deleteMeasurement(measurementToDelete);
 
-            if($stateParams.fromState){
+            if($stateParams.fromUrl){
+                window.location = $stateParams.fromUrl;
+            } else if ($stateParams.fromState){
                 $state.go($stateParams.fromState);
             } else {
-                $rootScope.hideMenu = false;
+                $rootScope.hideNavigationMenu = false;
                 $state.go(config.appSettings.defaultState);
             }
         };
@@ -154,7 +159,7 @@ angular.module('starter')
                         $scope.state.measurement.value = value;
                     }
                     // redraw view
-                    $scope.$apply();
+                    $scope.safeApply();
                 }, 500);
             });
         };
@@ -162,12 +167,14 @@ angular.module('starter')
         // completed adding and/or measuring
         $scope.done = function(){
 
+            $scope.state.measurement.startTime = $scope.selectedDate.getTime()/1000;
+
             // populate params
             var params = {
                 variableName : $scope.state.measurement.variable || jQuery('#variableName').val(),
                 value : $scope.state.measurement.value || jQuery('#measurementValue').val(),
                 note : $scope.state.measurement.note || jQuery('#note').val(),
-                startTime : $scope.state.measurement.startTime * 1000,
+                startTime : $scope.state.measurement.startTime,
                 abbreviatedUnitName : $scope.state.showAddVariable? (typeof $scope.abbreviatedUnitName === "undefined" || $scope.abbreviatedUnitName === "" )? $scope.state.measurement.abbreviatedUnitName : $scope.abbreviatedUnitName : $scope.state.measurement.abbreviatedUnitName,
                 variableCategoryName : $scope.state.measurement.variableCategoryName,
                 isAvg : $scope.state.sumAvg === "avg"? true : false
@@ -195,10 +202,12 @@ angular.module('starter')
                     .then(function(){
                         utilsService.showAlert('Added Variable');
 
-                        if($stateParams.fromState){
+                        if($stateParams.fromUrl){
+                            window.location = $stateParams.fromUrl;
+                        } else if ($stateParams.fromState){
                             $state.go($stateParams.fromState);
                         } else {
-                            $rootScope.hideMenu = false;
+                            $rootScope.hideNavigationMenu = false;
                             $state.go(config.appSettings.defaultState);
                         }
 
@@ -229,10 +238,12 @@ angular.module('starter')
                         params.note);
                     utilsService.showAlert(params.variableName + ' measurement saved!');
 
-                    if($stateParams.fromState){
+                    if($stateParams.fromUrl){
+                        window.location = $stateParams.fromUrl;
+                    } else if ($stateParams.fromState){
                         $state.go($stateParams.fromState);
                     } else {
-                        $rootScope.hideMenu = false;
+                        $rootScope.hideNavigationMenu = false;
                         $state.go(config.appSettings.defaultState);
                     }
 
@@ -241,10 +252,12 @@ angular.module('starter')
                 }
             }
 
-            if($stateParams.fromState){
+            if($stateParams.fromUrl){
+                window.location = $stateParams.fromUrl;
+            } else if ($stateParams.fromState){
                 $state.go($stateParams.fromState);
             } else {
-                $rootScope.hideMenu = false;
+                $rootScope.hideNavigationMenu = false;
                 $state.go(config.appSettings.defaultState);
             }
 
@@ -259,7 +272,7 @@ angular.module('starter')
             setTimeout(function(){
                 console.log('changed to ', $scope.state.unitCategories[$scope.selectedUnitCategoryName][0].abbreviatedName);
                 $scope.state.measurement.abbreviatedUnitName = $scope.state.unitCategories[$scope.selectedUnitCategoryName][0].abbreviatedName;
-                $scope.$apply();
+                $scope.safeApply();
             }, 100);
         };
 
@@ -298,12 +311,12 @@ angular.module('starter')
 
         // constructor
         $scope.init = function(){
-            $scope.state.loading = true;
-            utilsService.loadingStart();
+            $scope.loading = true;
+            $scope.showLoader();
             var isAuthorized = authService.checkAuthOrSendToLogin();
             if(isAuthorized){
-                $scope.state.loading = true;
-                utilsService.loadingStart();
+                $scope.loading = true;
+                $scope.showLoader();
                 if(!$scope.state.measurementIsSetup){
                     setupFromUrlParameters();
                 }
@@ -321,10 +334,12 @@ angular.module('starter')
                     setupFromReminderStateParameter();
                 }
                 if(!$scope.state.measurementIsSetup){
-                    if($stateParams.fromState){
+                    if($stateParams.fromUrl){
+                        window.location = $stateParams.fromUrl;
+                    } else if ($stateParams.fromState){
                         $state.go($stateParams.fromState);
                     } else {
-                        $rootScope.hideMenu = false;
+                        $rootScope.hideNavigationMenu = false;
                         $state.go(config.appSettings.defaultState);
                     }
                 }
@@ -334,51 +349,24 @@ angular.module('starter')
         };
 
         var populateUnits = function () {
-            // get units
-            unitService.refreshUnits();
             unitService.getUnits().then(function(unitObjects){
-
                 $scope.state.unitObjects = unitObjects;
-
-                // populate unitCategories
-                for(var i in unitObjects){
-                    if($scope.state.unitCategories.indexOf(unitObjects[i].category) === -1){
-                        $scope.state.unitCategories.push(unitObjects[i].category);
-                        $scope.state.unitCategories[unitObjects[i].category] = [{name : unitObjects[i].name, abbreviatedName: unitObjects[i].abbreviatedName}];
-                    } else {
-                        $scope.state.unitCategories[unitObjects[i].category].push({name: unitObjects[i].name, abbreviatedName: unitObjects[i].abbreviatedName});
-                    }
-                }
-
-                // set default unit category
-                // Don't know why we need this
-                //$scope.selectedUnitCategoryName = 'Duration';
-
-                // set first sub unit of selected category
-                // Not sure what this is for but it overwrites the existing unit for measurements
-                //$scope.state.measurement.abbreviatedUnitName = $scope.state.unitCategories[$scope.selectedUnitCategoryName][0].abbreviatedName;
-
-                //console.log("got units", unitObjects);
-
-                // hide spinner
                 $ionicLoading.hide();
-
+                $scope.loading = false;
             });
         };
-
-
-        // for date
-        $scope.currentDate = new Date();
+        
+        $scope.selectedDate = new Date();
 
         // update data when view is navigated to
         $scope.$on('$ionicView.enter', $scope.init);
 
         // when date is updated
-        $scope.datePickerCallback = function (val) {
-            if(typeof(val)==='undefined'){
+        $scope.datePickerCallback = function (selectedDate) {
+            if(typeof(selectedDate)==='undefined'){
                 console.log('Date not selected');
             }else{
-                $scope.currentDate = new Date(val);
+                $scope.selectedDate = selectedDate;
             }
         };
 
@@ -415,13 +403,13 @@ angular.module('starter')
                 measurementObject.variable = variableName;
                 measurementObject.startTime = startTime;
                 measurementObject.value = value;
-                setupTracking(measurementObject);
+                setupTrackingByMeasurement(measurementObject);
             }
         };
 
         var setupFromMeasurementStateParameter = function(){
             if($stateParams.measurement !== null && typeof $stateParams.measurement !== "undefined"){
-                setupTracking($stateParams.measurement);
+                setupTrackingByMeasurement($stateParams.measurement);
             }
         };
 
@@ -432,7 +420,9 @@ angular.module('starter')
         };
 
         var setupFromVariableStateParameter = function(){
+            console.log($stateParams.variableObject);
             if($stateParams.variableObject !== null && typeof $stateParams.variableObject !== "undefined"){
+                $scope.variableObject = $stateParams.variableObject;
                 $scope.state.title = "Record Measurement";
                 $scope.state.measurement.variable = $stateParams.variableObject.name;
                 $scope.state.measurement.abbreviatedUnitName = $stateParams.variableObject.abbreviatedUnitName;
@@ -447,25 +437,64 @@ angular.module('starter')
             var measurementId = utilsService.getUrlParameter(location.href, 'measurementId', true);
             if(measurementId){
                 var measurementObject = measurementService.getMeasurementById(measurementId);
-                setupTracking(measurementObject);
+                setupTrackingByMeasurement(measurementObject);
             }
         };
 
-        var setupTracking = function(measurementObject){
+        $scope.goToAddReminder = function(){
+            $state.go('app.reminderAdd', {
+                variableObject: $scope.variableObject,
+                fromState: $state.current.name,
+                fromUrl: window.location.href
+            });
+        };
+
+        var setupTrackingByMeasurement = function(measurementObject){
+
+            if(isNaN(measurementObject.startTime)){
+                measurementObject.startTime = moment(measurementObject.startTime).unix();
+            }
+
+            $scope.selectedDate = new Date(measurementObject.startTimeEpoch * 1000);
+            $scope.datePickerObj = {
+                inputDate: $scope.selectedDate,
+                setLabel: 'Set',
+                todayLabel: 'Today',
+                closeLabel: 'Close',
+                mondayFirst: false,
+                weeksList: ["S", "M", "T", "W", "T", "F", "S"],
+                monthsList: ["Jan", "Feb", "March", "April", "May", "June", "July", "Aug", "Sept", "Oct", "Nov", "Dec"],
+                templateType: 'popup',
+                from: new Date(2012, 8, 1),
+                to: new Date(),
+                showTodayButton: true,
+                dateFormat: 'dd MMMM yyyy',
+                closeOnSelect: false
+            };
+
             console.log('track : ' , measurementObject);
 
-            if(measurementObject.startTime.indexOf(" ") !== -1) {
-                measurementObject.startTime = measurementObject.startTime.replace(/\ /g,'+');
-            }
+            // What was this for?
+            // if(measurementObject.startTime.indexOf(" ") !== -1) {
+            //     measurementObject.startTime = measurementObject.startTime.replace(/\ /g,'+');
+            // }
 
             $scope.state.title = "Edit Measurement";
             $scope.state.measurement = measurementObject;
-            if(!$scope.state.measurement.variableCategoryName){
-                $scope.state.measurement.variableCategoryName = measurementObject.variableCategoryName;
-            }
-            $scope.state.measurement.startTime = moment(measurementObject.startTime).unix();
-            $scope.state.measurementDate = moment(measurementObject.startTime)._d;
+            //$scope.state.measurementDate = moment(measurementObject.startTime)._d;
             $scope.state.measurementIsSetup = true;
+
+            if($scope.state.measurement.abbreviatedUnitName === '/5'){
+                if(!$scope.state.measurement.variableDescription){
+                    $scope.showNumericRatingNumberButtons = true;
+                } else if ($scope.state.measurement.variableDescription.toLowerCase().indexOf('positive') > -1){
+                    $scope.showPositiveRatingFaceButtons = true;
+                } else if ($scope.state.measurement.variableDescription.toLowerCase().indexOf('negative') > -1){
+                    $scope.showNegativeRatingFaceButtons = true;
+                }
+            } else {
+                $scope.showValueBox = true;
+            }
         };
 
         var setupTrackingByReminder = function(){

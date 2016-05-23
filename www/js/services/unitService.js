@@ -21,9 +21,7 @@ angular.module('starter')
                         });
                     }
                 });
-
-
-
+                
                 return deferred.promise;
             },
 
@@ -53,9 +51,9 @@ angular.module('starter')
                     $timeout(function() {
                         $scope.state.searchedUnits = matches;
                     }, 100);
-
-
-                } else $scope.state.showUnits = false;
+                } else {
+                    $scope.state.showUnits = false;
+                }
             }
         };
 

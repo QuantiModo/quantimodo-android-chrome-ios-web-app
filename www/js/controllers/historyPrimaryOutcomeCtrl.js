@@ -1,11 +1,15 @@
 angular.module('starter')
 
 	// Controls the History Page of the App.
-	.controller('HistoryPrimaryOutcomeCtrl', function($scope, $ionicModal, $timeout, $ionicLoading, authService, $ionicPopover,
-										measurementService, $ionicPopup, localStorageService, utilsService, $state, $rootScope){
+	.controller('HistoryPrimaryOutcomeCtrl', function($scope, $ionicModal, $timeout, $ionicLoading, authService,
+													  $ionicPopover, measurementService, $ionicPopup,
+													  localStorageService, utilsService,
+													  $state, $rootScope, ratingService){
 
 	    $scope.controller_name = "HistoryPrimaryOutcomeCtrl";
-        
+		
+/*  Don't need popover anymore
+
 	    // load editing popover
 	    $ionicPopover.fromTemplateUrl('templates/history-popup.html', {
 	        scope: $scope
@@ -28,7 +32,7 @@ angular.module('starter')
 	        jQuery('.primary-outcome-variable .active-primary-outcome-variable').removeClass('active-primary-outcome-variable');
 	        
 	        // highlight the appropriate factor for the history item.
-	        jQuery('.'+config.appSettings.primaryOutcomeValueConversionDataSet[Math.ceil(history.value)]).addClass('active-primary-outcome-variable');
+	        jQuery('.'+config.appSettings.ratingValueToTextConversionDataSet[Math.ceil(history.value)]).addClass('active-primary-outcome-variable');
 	    };
 
 	    // when a value is edited
@@ -37,7 +41,7 @@ angular.module('starter')
 			var note = $scope.selectedItem.note? $scope.selectedItem.note : null;
 
 	        // update on the server
-	        measurementService.editPrimaryOutcomeVariable($scope.selectedItem.timestamp, $scope.selectedPrimaryOutcomeVariableValue, note)
+	        measurementService.editPrimaryOutcomeVariable($scope.selectedItem.startTime, $scope.selectedPrimaryOutcomeVariableValue, note)
 	        .then(function(){
 	        	// do nothing user would have safely navigated away
 	        	console.log("edit complete");
@@ -63,19 +67,29 @@ angular.module('starter')
 	    $scope.selectPrimaryOutcomeVariableValue = function($event, option){
 	    	// remove any previous primary outcome variables if present
 	        jQuery('.primary-outcome-variable .active-primary-outcome-variable').removeClass('active-primary-outcome-variable');
-	        
+
 	        // make this primary outcome variable glow visually
 	        jQuery($event.target).addClass('active-primary-outcome-variable');
-	        
+
 	        // update view
-	        $scope.selectedPrimaryOutcomeVariableValue = config.appSettings.primaryOutcomeValueConversionDataSetReversed[option.value];
+	        $scope.selectedPrimaryOutcomeVariableValue = config.appSettings.ratingTextToValueConversionDataSet[option.lowercaseTextDescription];
 
 	    };
 
-	    // constructor
-	    $scope.init = function(){
+*/
+		$scope.editMeasurement = function(measurement){
+			$state.go('app.measurementAdd', {
+				measurement: measurement,
+				fromState: $state.current.name,
+				fromUrl: window.location.href
+			});
+		};
+
+		
+		$scope.init = function(){
 			
-			utilsService.loadingStart();
+			console.debug($scope.ratingInfo[1].positiveImage);
+			$scope.showLoader();
 			if($rootScope.user){
 				measurementService.syncPrimaryOutcomeVariableMeasurements();
 			}
@@ -84,18 +98,19 @@ angular.module('starter')
 				history = allMeasurements? JSON.parse(allMeasurements) : [];
 				if(history.length < 1){
 					console.log('No measurements for history!  Going to default state. ');
-                    $rootScope.hideMenu = false;
+                    $rootScope.hideNavigationMenu = false;
 					$state.go(config.appSettings.defaultState);
 				}
 				if(history.length > 0){
 					$scope.showHelpInfoPopupIfNecessary();
-					$scope.history = history.sort(function(a,b){
-						if(a.timestamp < b.timestamp){
+					history = history.sort(function(a,b){
+						if(a.startTime < b.startTime){
 							return 1;}
-						if(a.timestamp> b.timestamp)
+						if(a.startTime> b.startTime)
 						{return -1;}
 						return 0;
 					});
+					$scope.history = ratingService.addImagesToMeasurements(history);
 				}
 			});
 

@@ -63,14 +63,14 @@ gulp.task('generateXmlConfig', ['getAppName'], function(){
 
 	var deferred = q.defer();
 
-	gulp.src('./apps/'+APP_NAME+'/config.xml')
+	gulp.src('./apps/' + LOWERCASE_APP_NAME  +'/config.xml')
 	.pipe(rename('config.xml'))
 	.pipe(gulp.dest('./'));
 
 	gulp.src('./www/js/apps.js')
 	.pipe(change(function(content){
 		deferred.resolve();
-		return content.replace(/defaultApp\s?:\s?("|')\w+("|'),/g, 'defaultApp : "'+APP_NAME+'",');
+		return content.replace(/defaultApp\s?:\s?("|')\w+("|'),/g, 'defaultApp : "' + LOWERCASE_APP_NAME + '",');
 	}))
 	.pipe(gulp.dest('./www/js/'));
 
@@ -94,7 +94,7 @@ gulp.task('swagger', function(){
 	return deferred.promise;
 });
 
-gulp.task('generatePrivateConfigFromEnvs', function(){
+gulp.task('generatePrivateConfigFromEnvsForHeroku', function(){
 
 	var deferred = q.defer();
 
@@ -109,60 +109,68 @@ gulp.task('generatePrivateConfigFromEnvs', function(){
 	// 	"ENERGYMODO_WEB_CLIENT_SECRET" : 'asd',
 	// };
 
-	var env_keys = process.env;
+	var environmentalVariables = process.env;
 
 	// Only run when on heroku
-	if(typeof env_keys['BUILDPACK_URL'] === "undefined" ){
+	if(typeof environmentalVariables['BUILDPACK_URL'] === "undefined" ){
 		console.log("BUILDPACK_URL is undefined.  Heroku Not Detected.  Kashif, what is this check for?");
 		deferred.reject();
 	}
 
-	if(typeof env_keys['APPS'] === "undefined" || env_keys['APPS'].trim() === ''){
-		console.error('No Apps Found');
+	// Can't do this because it overwrites decrypted config on Travis
+	// if(typeof environmentalVariables['APPS'] === "undefined" || environmentalVariables['APPS'].trim() === '') {
+	// 	if (environmentalVariables['LOWERCASE_APP_NAME']) {
+	// 		console.log('No APPS env found.  Using LOWERCASE_APP_NAME ' + environmentalVariables['LOWERCASE_APP_NAME'].toUpperCase());
+	// 		environmentalVariables['APPS'] = environmentalVariables['LOWERCASE_APP_NAME'].toUpperCase();
+	// 	}
+	// }
+
+	if(typeof environmentalVariables['APPS'] === "undefined" || environmentalVariables['APPS'].trim() === ''){
+		console.error('No APPS env found!');
 		deferred.reject();
 	} else {
-		var apps = env_keys['APPS'].split(',');
+		var upperCaseAppNames = environmentalVariables['APPS'].split(',');
 
-		apps.forEach(function(appName){
-			appName = appName.trim();
+		upperCaseAppNames.forEach(function(upperCaseAppName){
+			upperCaseAppName = upperCaseAppName.trim();
 			var configkeys = {
 				client_ids : {},
 				client_secrets : {},
 				redirect_uris : {},
 				api_urls : {}
 			};
-			if(typeof env_keys[appName+'_WEB_CLIENT_ID'] !== "undefined"){
-				configkeys.client_ids.Web = env_keys[appName+'_WEB_CLIENT_ID'];
-				console.log(appName+'_WEB_CLIENT_ID'+' Detected');
+			if(typeof environmentalVariables[upperCaseAppName+'_WEB_CLIENT_ID'] !== "undefined"){
+				configkeys.client_ids.Web = environmentalVariables[upperCaseAppName+'_WEB_CLIENT_ID'];
+				console.log(upperCaseAppName+'_WEB_CLIENT_ID'+' Detected');
 			} else {
-				console.log(appName+'_WEB_CLIENT_ID'+' NOT DETECTED');
+				console.log(upperCaseAppName+'_WEB_CLIENT_ID'+' NOT DETECTED');
 			}
 
-			if(typeof env_keys[appName+'_WEB_CLIENT_SECRET'] !== "undefined"){
-				configkeys.client_secrets.Web = env_keys[appName+'_WEB_CLIENT_SECRET'];
-				console.log(appName+'_WEB_CLIENT_SECRET'+' Detected');
+			if(typeof environmentalVariables[upperCaseAppName+'_WEB_CLIENT_SECRET'] !== "undefined"){
+				configkeys.client_secrets.Web = environmentalVariables[upperCaseAppName+'_WEB_CLIENT_SECRET'];
+				console.log(upperCaseAppName+'_WEB_CLIENT_SECRET'+' Detected');
 			} else {
-				console.log(appName+'_WEB_CLIENT_SECRET'+' NOT DETECTED');
+				console.log(upperCaseAppName+'_WEB_CLIENT_SECRET'+' NOT DETECTED');
 			}
 
-			if(typeof env_keys[appName+'_WEB_API_URL'] !== "undefined"){
-				configkeys.api_urls.Web = env_keys[appName+'_WEB_API_URL'];
-				console.log(appName+'_WEB_API_URL'+' Detected');
+			if(typeof environmentalVariables[upperCaseAppName+'_WEB_API_URL'] !== "undefined"){
+				configkeys.api_urls.Web = environmentalVariables[upperCaseAppName+'_WEB_API_URL'];
+				console.log(upperCaseAppName+'_WEB_API_URL'+' Detected');
 			} else {
-				console.log(appName+'_WEB_API_URL'+' NOT DETECTED. Using https://app.quantimo.do');
+				console.log(upperCaseAppName+'_WEB_API_URL'+' NOT DETECTED. Using https://app.quantimo.do');
 				configkeys.api_urls.Web = 'https://app.quantimo.do';
 			}
 
-			if(typeof env_keys[appName+'_WEB_REDIRECT_URI'] !== "undefined"){
-				configkeys.redirect_uris.Web = env_keys[appName+'_WEB_REDIRECT_URI'];
-				console.log(appName+'_WEB_REDIRECT_URI'+' Detected');
+			if(typeof environmentalVariables[upperCaseAppName+'_WEB_REDIRECT_URI'] !== "undefined"){
+				configkeys.redirect_uris.Web = environmentalVariables[upperCaseAppName+'_WEB_REDIRECT_URI'];
+				console.log(upperCaseAppName+'_WEB_REDIRECT_URI'+' Detected');
 			} else {
-				console.log(appName+'_WEB_REDIRECT_URI'+' NOT DETECTED. Using https://app.quantimo.do/ionic/Modo/www/callback/');
+				console.log(upperCaseAppName+'_WEB_REDIRECT_URI'+' NOT DETECTED. Using https://app.quantimo.do/ionic/Modo/www/callback/');
 				configkeys.redirect_uris.Web = 'https://app.quantimo.do/ionic/Modo/www/callback/';
 			}
 
-            if(typeof env_keys['IONIC_BUGSNAG_KEY'] !== "undefined"){
-                configkeys.bugsnag_key = env_keys['IONIC_BUGSNAG_KEY'];
+            if(typeof environmentalVariables['IONIC_BUGSNAG_KEY'] !== "undefined"){
+                configkeys.bugsnag_key = environmentalVariables['IONIC_BUGSNAG_KEY'];
                 console.log('IONIC_BUGSNAG_KEY' +' Detected');
             } else {
                 console.log('IONIC_BUGSNAG_KEY'+' NOT DETECTED');
@@ -170,9 +178,11 @@ gulp.task('generatePrivateConfigFromEnvs', function(){
 
 			var content = 'window.private_keys = '+JSON.stringify(configkeys, 0, 2);
 
-			fs.writeFileSync("./www/private_configs/"+appName.toLowerCase()+".config.js", content);
+			var lowerCaseAppName = upperCaseAppName.toLowerCase();
 
-			console.log('Created '+ './www/private_configs/'+appName.toLowerCase()+'.config.js');
+			fs.writeFileSync("./www/private_configs/" + lowerCaseAppName + ".config.js", content);
+
+			console.log('Created '+ './www/private_configs/' + lowerCaseAppName + '.config.js');
 
 		});
 	}
@@ -515,46 +525,45 @@ gulp.task('ionicResources', function(){
 	return deferred.promise;
 });
 
-var APP_NAME = false;
-
+var LOWERCASE_APP_NAME = false;
 
 gulp.task('getAppName', function(){
 	var deferred = q.defer();
-
-	var inquireAboutAppName = function(){
-		inquirer.prompt([{
-			type: 'input',
-			name: 'app',
-			message: 'Please enter the app name (moodimodo/energymodo/etc..)'
-		}], function( answers ) {
-			APP_NAME = answers.app;
-			deferred.resolve();
-		});
-	};
-
-	if(APP_NAME) deferred.resolve();
-	else {
-		var app_name = process.env["APP_NAME"];
-		if(app_name && app_name.length){
-			APP_NAME = app_name.toLowerCase();
-			console.log("the app name fron env is", JSON.stringify(APP_NAME));
-			deferred.resolve();
-		} else {
-			var commandForGit = 'git rev-parse --abbrev-ref HEAD';
-			execute(commandForGit, function(error, output){
-				output = output.trim();
-				if(error || output.indexOf('app/') < 0 || !output.split("/")[1] || output.split("/")[1].length === 0){
-					console.log("Failed to get App name automatically.", error);
-					inquireAboutAppName();
-				} else {
-					APP_NAME = output.split("/")[1];
-					console.log("the app name from git branch is", JSON.stringify(APP_NAME));
-					deferred.resolve();
-				}
-			});
-		}
-	}
+  gutil.log('process.env.LOWERCASE_APP_NAME is ' + process.env.LOWERCASE_APP_NAME);
+  LOWERCASE_APP_NAME = process.env.LOWERCASE_APP_NAME;
+  if(LOWERCASE_APP_NAME) deferred.resolve();
+  if(!LOWERCASE_APP_NAME){
+    throw new Error('Please set LOWERCASE_APP_NAME env!');
+  }
 	return deferred.promise;
+});
+
+gulp.task('getAppNameFromUserInput', function(){
+  var inquireAboutAppName = function(){
+    inquirer.prompt([{
+      type: 'input',
+      name: 'app',
+      message: 'Please enter the app name (moodimodo/energymodo/etc..)'
+    }], function( answers ) {
+      LOWERCASE_APP_NAME = answers.app;
+      deferred.resolve();
+    });
+  };
+});
+
+gulp.task('getAppNameFromGitBranchName', function(){
+  var commandForGit = 'git rev-parse --abbrev-ref HEAD';
+  execute(commandForGit, function(error, output){
+    output = output.trim();
+    if(error || output.indexOf('app/') < 0 || !output.split("/")[1] || output.split("/")[1].length === 0){
+      console.log("Failed to get App name automatically.", error);
+      inquireAboutAppName();
+    } else {
+      LOWERCASE_APP_NAME = output.split("/")[1];
+      console.log("the app name from git branch is", JSON.stringify(LOWERCASE_APP_NAME));
+      deferred.resolve();
+    }
+  });
 });
 
 var FACEBOOK_APP_ID = false;
@@ -564,7 +573,15 @@ var GOOGLEPLUS_REVERSED_CLIENT_ID = false;
 gulp.task('readKeysForCurrentApp', ['getAppName'] ,function(){
 	var deferred = q.defer();
 
-	fs.readFile('./www/private_configs/'+APP_NAME+'.config.js', function (err, data) {
+	fs.stat('./www/private_configs/' + LOWERCASE_APP_NAME + '.config.js', function(err, stat) {
+		if(err == null) {
+			console.log('./www/private_configs/' + LOWERCASE_APP_NAME + '.config.js exists');
+		} else {
+			console.log(err.code);
+		}
+	});
+
+	fs.readFile('./www/private_configs/' + LOWERCASE_APP_NAME + '.config.js', function (err, data) {
 		if (err) {
 			throw err;
 		}
@@ -573,19 +590,19 @@ gulp.task('readKeysForCurrentApp', ['getAppName'] ,function(){
 
 		if(data.indexOf('FACEBOOK_APP_ID') < 0){
 			exr = true;
-			console.log("no FACEBOOK_APP_ID found in file");
+			console.log("ERROR: NO FACEBOOK_APP_ID found in ./www/private_configs/" + LOWERCASE_APP_NAME + '.config.js');
 			deferred.reject();
 		}
 
 		if(data.indexOf('FACEBOOK_APP_NAME') < 0){
 			exr = true;
-			console.log("no FACEBOOK_APP_NAME found in file");
+			console.log("ERROR: NO FACEBOOK_APP_NAME found in ./www/private_configs/" + LOWERCASE_APP_NAME + '.config.js');
 			deferred.reject();
 		}
 
 		if(data.indexOf('GOOGLEPLUS_REVERSED_CLIENT_ID') < 0){
 			exr = true;
-			console.log("no GOOGLEPLUS_REVERSED_CLIENT_ID found in file");
+			console.log("ERROR: NO GOOGLEPLUS_REVERSED_CLIENT_ID found in ./www/private_configs/" + LOWERCASE_APP_NAME + '.config.js');
 			deferred.reject();
 		}
 
@@ -636,7 +653,7 @@ gulp.task('addFacebookPlugin', ['readKeysForCurrentApp'] , function(){
 	    	console.log("FACEBOOK REPO ALREADY CLONED");
 	        addFacebookPlugin();
 	    } else {
-	    	console.log("FACEBOOK REPO NOT FOUND, CLONING IT NOW");
+			console.log("FACEBOOK REPO NOT FOUND, CLONING https://github.com/Wizcorp/phonegap-facebook-plugin.git NOW");
 	    	var commands = [
 	    		"cd ../",
 	    		"mkdir fbplugin",
@@ -644,6 +661,16 @@ gulp.task('addFacebookPlugin', ['readKeysForCurrentApp'] , function(){
 	    		"GIT_CURL_VERBOSE=1 GIT_TRACE=1 git clone https://github.com/Wizcorp/phonegap-facebook-plugin.git"
 	    	].join(' && ');
 
+
+/*			//Try this if you get the muliple dex file error still
+      console.log("FACEBOOK REPO NOT FOUND, CLONING https://github.com/Telerik-Verified-Plugins/Facebook.git NOW");
+			var commands = [
+				"cd ../",
+				"mkdir fbplugin",
+				"cd fbplugin",
+				"GIT_CURL_VERBOSE=1 GIT_TRACE=1 git clone https://github.com/Telerik-Verified-Plugins/Facebook.git"
+        ].join(' && ');
+*/
 	    	execute(commands, function(error){
 	    		if(error !== null){
 	    			console.log("***THERE WAS AN ERROR DOWNLOADING THE FACEBOOK PLUGIN***", error);
@@ -687,7 +714,7 @@ gulp.task('getIOSAppFolderName', ['getAppName'] , function(){
 
 	if(IOS_FOLDER_NAME) deferred.resolve();
 	else {
-		var xml = fs.readFileSync('./apps/'+APP_NAME+'/config.xml', 'utf8');
+		var xml = fs.readFileSync('./apps/' + LOWERCASE_APP_NAME + '/config.xml', 'utf8');
 		parseString(xml, function (err, result) {
 		    if(err){
 		    	console.log("failed to read xml file", err);
@@ -931,7 +958,7 @@ gulp.task('makeIosApp', function(callback){
 	'deleteFacebookPlugin',
 	'deleteGooglePlusPlugin',
 	'addIOSApp',
-  'ionicResources',
+    'ionicResources',
 	'readKeysForCurrentApp',
 	'addFacebookPlugin',
 	'addGooglePlusPlugin',
@@ -948,7 +975,7 @@ gulp.task('makeIosApp', function(callback){
 gulp.task('bumpVersion', function(){
 	var deferred = q.defer();
 
-	var xml = fs.readFileSync('./apps/'+APP_NAME+'/config.xml', 'utf8');
+	var xml = fs.readFileSync('./apps/' + LOWERCASE_APP_NAME + '/config.xml', 'utf8');
 
 	parseString(xml, function (err, result) {
 		if(err){
@@ -978,7 +1005,7 @@ gulp.task('bumpVersion', function(){
 	    	var builder = new xml2js.Builder();
 	    	var updatedXml = builder.buildObject(result);
 
-	    	fs.writeFile('./apps/'+APP_NAME+'/config.xml', updatedXml, 'utf8', function (err) {
+	    	fs.writeFile('./apps/' + LOWERCASE_APP_NAME + '/config.xml', updatedXml, 'utf8', function (err) {
 	    		if (err) {
 	    			console.log("error writing to xml file", err);
 	    			deferred.reject();
@@ -988,6 +1015,62 @@ gulp.task('bumpVersion', function(){
 	    		}
 	    	});
 	    }
+	});
+
+	return deferred.promise;
+});
+
+gulp.task('setVersionNumbersWithEnvs', function(){
+
+	var deferred = q.defer();
+	var environmentalVariables = process.env;
+	if(!environmentalVariables['IONIC_APP_VERSION_NUMBER']){
+		//throw new Error('Please set IONIC_APP_VERSION_NUMBER env!');
+		environmentalVariables['IONIC_APP_VERSION_NUMBER'] = '1.4.6';
+	}
+
+	if(!environmentalVariables['IONIC_IOS_APP_VERSION_NUMBER']){
+		//throw new Error('Please set IONIC_IOS_APP_VERSION_NUMBER env!');
+		environmentalVariables['IONIC_IOS_APP_VERSION_NUMBER'] = '1.4.6.2';
+	}
+
+	var xml = fs.readFileSync('./config.xml', 'utf8');
+
+	parseString(xml, function (err, parsedXmlFile) {
+		if(err){
+			throw new Error("failed to read xml file", err);
+		} else {
+
+			if(parsedXmlFile && parsedXmlFile.widget && parsedXmlFile.widget.$ ){
+				if(parsedXmlFile.widget.$['version']) {
+					var currentVersionNumber = parsedXmlFile.widget.$['version'];
+				}
+				if(parsedXmlFile.widget.$["ios-CFBundleVersion"]) {
+					var currentIosVersionNumber = parsedXmlFile.widget.$["ios-CFBundleVersion"];
+				}
+			}
+
+			if(!parsedXmlFile) parsedXmlFile = {};
+			if(!parsedXmlFile.widget) parsedXmlFile['widget'] = {};
+			if(!parsedXmlFile.widget.$) parsedXmlFile.widget['$'] = {};
+
+			parsedXmlFile.widget.$["version"] = environmentalVariables['IONIC_APP_VERSION_NUMBER'];
+			parsedXmlFile.widget.$["ios-CFBundleVersion"] = environmentalVariables['IONIC_IOS_APP_VERSION_NUMBER'];
+
+			var builder = new xml2js.Builder();
+			var updatedXmlFile = builder.buildObject(parsedXmlFile);
+
+			fs.writeFile('./config.xml', updatedXmlFile, 'utf8', function (err) {
+				if (err) {
+					console.log("Error updating version in config.xml", err);
+					deferred.reject();
+				} else {
+					console.log("Successfully updated the version number to " +
+						environmentalVariables['IONIC_APP_VERSION_NUMBER'] + " in config.xml file");
+					deferred.resolve();
+				}
+			});
+		}
 	});
 
 	return deferred.promise;

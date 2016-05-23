@@ -99,6 +99,7 @@ angular.module('starter')
                             type:'button-assertive',
                             onTap: function(e){
                                 var ref = window.open(config.getURL('register'),'_blank');
+                                console.debug('showLoginRequiredAlert: Going to welcome state');
                                 $state.go(config.appSettings.welcomeState);
 
                          }

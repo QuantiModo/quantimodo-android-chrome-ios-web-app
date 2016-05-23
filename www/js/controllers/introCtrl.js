@@ -1,10 +1,8 @@
 angular.module('starter')
-.controller('IntroCtrl', function($scope, $state, localStorageService, $ionicSlideBoxDelegate, utilsService) {
+.controller('IntroCtrl', function($scope, $state, localStorageService, $ionicSlideBoxDelegate, $ionicLoading) {
     
     $scope.viewTitle = config.appSettings.appName;
     $scope.primaryOutcomeVariable = config.appSettings.primaryOutcomeVariable;
-    $scope.primaryOutcomeVariableRatingOptions = config.getPrimaryOutcomeVariableOptions();
-    $scope.primaryOutcomeVariableNumbers = config.getPrimaryOutcomeVariableOptions(true);
     $scope.introConfiguration = config.appSettings.intro;
     
     $scope.myIntro = {
@@ -14,6 +12,7 @@ angular.module('starter')
         // Called to navigate to the main app
         startApp : function() {
             localStorageService.setItem('introSeen', true);
+            console.debug('startApp: Going to welcome state...');
             $state.go(config.appSettings.welcomeState);
         },
 
@@ -31,16 +30,37 @@ angular.module('starter')
         }
     };
 
+    $scope.showLoader = function (loadingText) {
+        if(!loadingText){
+            loadingText = '';
+        }
+        $scope.loading = true;
+        $ionicLoading.show({
+            template: loadingText+ '<br><br><img src={{loaderImagePath}}>',
+            content: 'Loading',
+            animation: 'fade-in',
+            showBackdrop: false,
+            maxWidth: 1000,
+            showDelay: 0
+        });
+    };
+
+    $scope.hideLoader = function () {
+        $scope.loading = false;
+        $ionicLoading.hide();
+    };
+
     var init = function(){
-        utilsService.loadingStart();
+        $scope.showLoader();
 
         localStorageService.getItem('introSeen', function(introSeen){
             if(introSeen){
+                console.debug('introCtrl init: Going to welcome state...');
                 $state.go(config.appSettings.welcomeState);
             } else {
                 $scope.myIntro.ready = true;
             }
-            utilsService.loadingStop();
+            $scope.hideLoader();
         });
     };
 

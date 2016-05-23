@@ -8,7 +8,7 @@ A configuration object "appSettings" is available in /js/config.js for changing 
 
 3. "primaryOutcomeVariableRatingOptionLabels" : array of primary outcome variable options, the elements of this array will be displayed on the x-axis of the graph
 
-4. "primaryOutcomeVariableRatingOptions" : Array of objects, this will dynamically generate the reporting card with provided options and images.
+4. "positiveRatingOptions" : Array of objects, this will dynamically generate the reporting card with provided options and images.
 
 5. "welcomeText" : This text will be displayed on first line of welcome card on welcome screen
 
@@ -27,30 +27,6 @@ config.appSettings  = {
     appName : 'MoodiModo', // This will change the name of the app on Top header
     primaryOutcomeVariable : 'Mood', // Tracking factor that the app will track,
     primaryOutcomeVariableRatingOptionLabels : [ 'Depressed', 'Sad', 'OK', 'Happy', 'Ecstatic' ] , //tracking facotor options, the elements of this array will be displayed on the x-axis of the graph
-    primaryOutcomeVariableRatingOptions : [ //Tracking factor options with images.
-        {
-            value: 'face_depressed',
-            img: 'img/ic_face_depressed.png'
-        },
-        {
-            value: 'face_sad',
-            img: 'img/ic_face_sad.png'
-        },
-        {
-            value: 'face_ok',
-            img: 'img/ic_face_ok.png'
-        },
-        {
-            value: 'face_happy',
-            img: 'img/ic_face_happy.png'
-        },
-        {
-            value: 'face_ecstatic',
-            img: 'img/ic_face_ecstatic.png'
-        }
-
-
-    ],
     welcomeText:"Let's start off by reporting your first mood on the card below", // This text will be displayed on first line of welcome card on welcome screen
     primaryOutcomeVariableTrackingQuestion:"How are you?", // will be displayed above primary outcome variable reporting card
     primaryOutcomeVariableAverageText:"Your average mood is "

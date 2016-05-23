@@ -1,4 +1,4 @@
-<ion-view hide-nav-bar="hideNavigationMenu" view-title="Welcome!">
+<ion-view hide-nav-bar="hideNavigationMenu" view-title="Welcome Tour">
     <ion-slide-box on-slide-changed="myIntro.slideChanged(index)">
 
         <ion-slide ng-repeat="introConf in introConfiguration">
@@ -21,9 +21,9 @@
                 </p>
                 
                 <div ng-if="introConf.content.showOutcomeVariableImages" >
-                    <div class="ponka" style="display:inline-block" ng-repeat="option in primaryOutcomeVariableRatingOptions">
+                    <div class="ponka" style="display:inline-block" ng-repeat="option in positiveRatingOptions">
                         <img style="width:{{introConf.img.width}}px; height:{{introConf.img.height}}px;" class="intro-primary-outcome-variable" ng-src="{{option.img}}">
-                        <p>{{option.value}}</p>
+                        <p>{{option.displayDescription}}</p>
                     </div>
 
                 </div>

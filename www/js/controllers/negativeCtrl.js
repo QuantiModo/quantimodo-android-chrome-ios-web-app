@@ -5,6 +5,7 @@ angular.module('starter')
                                          $ionicLoading, $ionicPopup, $state, correlationService, $rootScope,
                                          utilsService, authService) {
 
+        $scope.loading = true;
         /*// redirect if not logged in
         if(!$rootScope.user){
             $state.go(config.appSettings.welcomeState);
@@ -27,11 +28,9 @@ angular.module('starter')
 
 
         $scope.init = function(){
-            $scope.state.loading = true;
-            utilsService.loadingStart();
+            $scope.showLoader('Fetching negative predictors...');
             var isAuthorized = authService.checkAuthOrSendToLogin();
             if(isAuthorized){
-                utilsService.loadingStart();
                 correlationService.getNegativeFactors()
                     .then(function(correlationObjects){
                         $scope.negatives = correlationObjects;
@@ -39,8 +38,10 @@ angular.module('starter')
                             $scope.usersNegativeFactors = correlationObjects;
                         });
                         $ionicLoading.hide();
+                        $scope.loading = false;
                     }, function(){
                         $ionicLoading.hide();
+                        $scope.loading = false;
                         console.log('negativeCtrl: Could not get correlations.  Going to login page...');
                         $state.go('app.login', {
                             fromUrl : window.location.href
@@ -51,9 +52,7 @@ angular.module('starter')
 
         // when downVoted
         $scope.downVote = function(factor) {
-
             if (!$scope.notShowConfirmationNegativeDown) {
-
                 $ionicPopup.show({
                     title: 'Voting thumbs down indicates',
                     subTitle: 'you disagree that ' + factor.cause + ' decreases your ' + factor.effect + '.',
@@ -100,7 +99,7 @@ angular.module('starter')
             } else {
                 factor.userVote = prevValue;
             	$state.go(config.appSettings.welcomeState);
-            	}
+            }
         }
 
         // when upVoted
@@ -169,6 +168,24 @@ angular.module('starter')
 
         };
 
-        // call constructor
-        $scope.init();
+        $scope.showLoader = function (loadingText) {
+            if(!loadingText){
+                loadingText = '';
+            }
+            $scope.loading = true;
+            $ionicLoading.show({
+                template: loadingText + '<br><br><img src={{loaderImagePath}}>',
+                content: 'Loading',
+                animation: 'fade-in',
+                showBackdrop: false,
+                maxWidth: 1000,
+                showDelay: 0
+            });
+        };
+
+
+        // when view is changed
+        $scope.$on('$ionicView.enter', function(e){
+            $scope.init();
+        });
     });

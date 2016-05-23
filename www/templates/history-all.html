@@ -1,16 +1,12 @@
-<ion-view hide-nav-bar="hideNavigationMenu" view-title="History">
+<ion-view hide-nav-bar="hideNavigationMenu" view-title="{{title}}">
      <ion-content>
-     <ion-list>
-         <ion-item style="text-align:center;border-bottom: 1px solid rgb(221, 221, 221);" ng-show="state.loading">
-             <img src={{loaderImagePath}}>
-         </ion-item>
-     </ion-list>
       <ion-list>
           <div collection-repeat="historyItem in state.history" divider-collection-repeat>
               <ion-item  ng-click="editMeasurement(historyItem)">
                   <div style="display:inline-block;float:left;margin-left:10px;margin-right:10px;width:80px;text-align:center">
-                    <i class="{{historyItem.variableCategoryName | ImageByVariableCategoryName }}" style="color:#11c1f3;font-size: 75px;"></i>
-                    <p style="font-weight:bold;white-space:normal">{{historyItem.variable}}</p>
+                    <i ng-hide="historyItem.image" class="{{historyItem.variableCategoryName | ImageByVariableCategoryName }}" style="color:#11c1f3;font-size: 75px;"></i>
+                      <img ng-show="historyItem.image" ng-src="{{historyItem.image}}" style="width:80px;" />
+                      <p style="font-weight:bold;white-space:normal">{{historyItem.variable}}</p>
                   </div>
                   <div class="history-block" style="margin-left:10px;">
                       <h2 style="font-weight:bold;white-space:normal"> {{historyItem.value}} {{historyItem.abbreviatedUnitName}} {{historyItem.variable}}</h2>
@@ -27,4 +23,12 @@
         <a class="button button-clear button-calm" ng-click="getNext()" style="text-overflow: clip;"><i class="ion-refresh">  Load More</i></a>
       </div>
     </ion-content>
+    <nav mfb-menu position="bl" effect="slidein-spring"
+         active-icon="ion-minus-round" resting-icon="ion-plus-round"
+         toggling-method="click" ng-hide="hideNavigationMenu || (hideNavigationMenu && !isWelcomed)">
+        <button mfb-button icon="ion-happy-outline" label="How are you?" ng-click="goToState('app.track')"></button>
+        <button mfb-button icon="ion-ios-medkit-outline" label="Add a medication" ng-click="goToState('app.reminderAddCategory', {variableCategoryName : 'Treatments'})"></button>
+        <button mfb-button icon="ion-ios-pulse" label="Add Vital Sign" ng-click="goToState('app.track_factors_category', {variableCategoryName : 'Vital Signs'})"></button>
+        <button mfb-button icon="ion-heart-broken" label="Record a Symptom" ng-click="goToState('app.track_factors_category', {variableCategoryName : 'Symptoms'})"></button>
+    </nav>
 </ion-view>

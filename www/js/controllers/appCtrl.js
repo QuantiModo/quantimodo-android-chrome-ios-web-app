@@ -4,17 +4,21 @@ angular.module('starter')
 	.controller('AppCtrl', function($scope, $ionicModal, $timeout, $injector, utilsService, authService,
                                     measurementService, $ionicPopover, $ionicLoading, $state, $ionicHistory,
                                     QuantiModo, notificationService, $rootScope, localStorageService, reminderService,
-                                    $ionicPopup, $ionicSideMenuDelegate) {
+                                    $ionicPopup, $ionicSideMenuDelegate, ratingService, migrationService) {
 
         $rootScope.loaderImagePath = config.appSettings.loaderImagePath;
+        $scope.appVersion = 1466;
         if(!$rootScope.loaderImagePath){
             $rootScope.loaderImagePath = 'img/loader.gif';
         }
         $scope.controller_name = "AppCtrl";
         $scope.menu = config.appSettings.menu;
+        $scope.appSettings = config.appSettings;
         $scope.showTrackingSubMenu = false;
         $rootScope.allowOffline = config.appSettings.allowOffline;
         $scope.showReminderSubMenu = false;
+        $scope.primaryOutcomeVariableDetails = config.appSettings.primaryOutcomeVariableDetails;
+        $scope.ratingInfo = ratingService.getRatingInfo();
         $scope.closeMenu = function() {
             $ionicSideMenuDelegate.toggleLeft(false);
         };
@@ -61,7 +65,7 @@ angular.module('starter')
             if(menuItem.click){
                 $scope[menuItem.click] && $scope[menuItem.click]();
             }
-            else if(!menuItem.subMenuPanel){
+            else if(!menuItem.isSubMenuParent){
                 $scope.closeMenu();
             }
         };
@@ -74,8 +78,9 @@ angular.module('starter')
         /*Wrapper Config*/
         $scope.viewTitle = config.appSettings.appName;
         $scope.primaryOutcomeVariable = config.appSettings.primaryOutcomeVariable;
-        $scope.primaryOutcomeVariableRatingOptions = config.getPrimaryOutcomeVariableOptions();
-        $scope.primaryOutcomeVariableNumbers = config.getPrimaryOutcomeVariableOptions(true);
+        $scope.positiveRatingOptions = ratingService.getPositiveRatingOptions();
+        $scope.negativeRatingOptions = ratingService.getNegativeRatingOptions();
+        $scope.numericRatingOptions = ratingService.getNumericRatingOptions();
         $scope.welcomeText = config.appSettings.welcomeText;
         $scope.primaryOutcomeVariableTrackingQuestion = config.appSettings.primaryOutcomeVariableTrackingQuestion;
         $scope.primaryOutcomeVariableAverageText = config.appSettings.primaryOutcomeVariableAverageText;
@@ -120,7 +125,7 @@ angular.module('starter')
         };
 
         // show calender popup
-        $scope.showCalenderPopup = function($event){
+        $scope.showCalendarPopup = function($event){
             $scope.popover.show($event);
             measurementService.getToDate(function(endDate){
                 $scope.toDate = new Date(endDate);
@@ -151,7 +156,7 @@ angular.module('starter')
         };
 
         // when work on this activity is complete
-        function hideMenuIfSetInUrlParameter() {
+        function hideNavigationMenuIfSetInUrlParameter() {
             if (location.href.toLowerCase().indexOf('hidemenu=true') !== -1) {
                 $rootScope.hideNavigationMenu = true;
             }
@@ -160,17 +165,20 @@ angular.module('starter')
         function goToDefaultStateShowMenuClearIntroHistoryAndRedraw() {
 
             if ($state.current.name === "app.welcome") {
-                $rootScope.hideMenu = false;
+                $rootScope.hideNavigationMenu = false;
+                console.debug('goToDefaultStateShowMenuClearIntroHistoryAndRedraw: Going to default state...');
                 $state.go(config.appSettings.defaultState);
             }
 
             if ($state.current.name === "app.login" && $rootScope.user) {
-                $rootScope.hideMenu = false;
+                $rootScope.hideNavigationMenu = false;
+                console.debug('goToDefaultStateShowMenuClearIntroHistoryAndRedraw: Going to default state...');
                 $state.go(config.appSettings.defaultState);
             }
 
             if (config.appSettings.allowOffline) {
-                $rootScope.hideMenu = false;
+                console.debug('goToDefaultStateShowMenuClearIntroHistoryAndRedraw: Going to default state...');
+                $rootScope.hideNavigationMenu = false;
                 $state.go(config.appSettings.defaultState);
             }
 
@@ -186,10 +194,11 @@ angular.module('starter')
         }
 
         $scope.goToDefaultStateIfWelcomed = function(){
-            // if user has seen the welcome screen before
+            console.debug('appCtrl: user has seen the welcome screen before...');
             localStorageService.getItem('isWelcomed',function(isWelcomed) {
                 if(isWelcomed  === true || isWelcomed === "true"){
                     $rootScope.isWelcomed = true;
+                    console.debug('goToDefaultStateIfWelcomed: Going to default state...');
                     goToDefaultStateShowMenuClearIntroHistoryAndRedraw();
                 }
             });
@@ -199,6 +208,7 @@ angular.module('starter')
             var loginState = 'app.login';
             if(loginState.indexOf($state.current.name) !== -1 && $rootScope.user){
                 $rootScope.hideNavigationMenu = false;
+                console.debug('goToDefaultStateIfLoggedInOnLoginState: Going to default state...');
                 $state.go(config.appSettings.defaultState);
             }
         };
@@ -208,15 +218,15 @@ angular.module('starter')
             if (!$rootScope.user && !accessTokenInUrl) {
                 localStorageService.getItem('isWelcomed',function(isWelcomed) {
                     if(!isWelcomed || isWelcomed === false || isWelcomed === "false"){
-                        console.log('going to welcome state...');
+                        console.debug('appCtrl: going to welcome state...');
                         //$rootScope.hideNavigationMenu = true;
                         $state.go(config.appSettings.welcomeState);
                     } else {
-                        console.log('Not welcoming because isWelcomed is ' + isWelcomed);
+                        console.debug('Not welcoming because isWelcomed is ' + isWelcomed);
                     }
                 });
             } else {
-                console.log('Not going to welcome state...');
+                console.debug('Not going to welcome state...');
             }
         };
 
@@ -239,10 +249,10 @@ angular.module('starter')
                     $rootScope.setUserForIntercom($rootScope.user);
                     $rootScope.setUserForBugsnag($rootScope.user);
             }
-            hideMenuIfSetInUrlParameter();
+            migrationService.version1466();
+            hideNavigationMenuIfSetInUrlParameter();
             goToWelcomeStateIfNotWelcomed();
             scheduleReminder();
-            $ionicLoading.hide();
             goToDefaultStateIfLoggedInOnLoginState();
         };
 
@@ -251,6 +261,29 @@ angular.module('starter')
             $scope.init();
         });
 
+        $scope.togglePrimaryOutcomeSubMenu = function(){
+            $scope.showPrimaryOutcomeSubMenu = !$scope.showPrimaryOutcomeSubMenu;
+        };
+
+        $scope.toggleEmotionsSubMenu = function(){
+            $scope.showEmotionsSubMenu = !$scope.showEmotionsSubMenu;
+        };
+
+        $scope.toggleDietSubMenu = function(){
+            $scope.showDietSubMenu = !$scope.showDietSubMenu;
+        };
+
+        $scope.toggleTreatmentsSubMenu = function(){
+            $scope.showTreatmentsSubMenu = !$scope.showTreatmentsSubMenu;
+        };
+
+        $scope.toggleSymptomsSubMenu = function(){
+            $scope.showSymptomsSubMenu = !$scope.showSymptomsSubMenu;
+        };
+
+        $scope.togglePhysicalActivitySubMenu = function(){
+            $scope.showPhysicalActivitySubMenu= !$scope.showPhysicalActivitySubMenu;
+        };
 
         $scope.toggleTrackingSubMenu = function(){
             $scope.showTrackingSubMenu = !$scope.showTrackingSubMenu;
@@ -275,6 +308,7 @@ angular.module('starter')
         function setPlatformVariables() {
             $rootScope.isIOS = ionic.Platform.isIPad() || ionic.Platform.isIOS();
             $rootScope.isAndroid = ionic.Platform.isAndroid();
+            $rootScope.isMobile = ionic.Platform.isAndroid() || ionic.Platform.isIPad() || ionic.Platform.isIOS();
             $rootScope.isChrome = window.chrome ? true : false;
 
             var currentUrl =  window.location.href;
@@ -291,27 +325,30 @@ angular.module('starter')
         }
 
         $rootScope.getUserAndSetInLocalStorage = function(){
+            
+            var successHandler = function(userObject) {
+                if (userObject) {
+                    // set user data in local storage
+                    console.log('Settings user in getUserAndSetInLocalStorage');
+                    localStorageService.setItem('user', JSON.stringify(userObject));
+                    $rootScope.user = userObject;
+                    $rootScope.setUserForIntercom($rootScope.user);
+                    $rootScope.setUserForBugsnag($rootScope.user);
+                    $rootScope.$broadcast('updateChartsAndSyncMeasurements');
+                    var currentStateName = $state.current.name;
+                    console.log('Current state is  ' + currentStateName);
+                    if (currentStateName === 'app.login') {
+                        goToDefaultStateShowMenuClearIntroHistoryAndRedraw();
+                    }
+                    return userObject;
+                }
+            };
+            
             authService.apiGet('api/user/me',
                 [],
                 {},
-                function(userObject){
-                    if(userObject){
-                       // set user data in local storage
-                        console.log('Settings user in getUserAndSetInLocalStorage');
-                        localStorageService.setItem('user', JSON.stringify(userObject));
-                        $rootScope.user = userObject;
-                        $rootScope.setUserForIntercom($rootScope.user);
-                        $rootScope.setUserForBugsnag($rootScope.user);
-                        $rootScope.$broadcast('updateChartsAndSyncMeasurements');
-                        var currentStateName = $state.current.name;
-                        console.log('Current state is  ' + currentStateName);
-                        if(currentStateName === 'app.login'){
-                            goToDefaultStateShowMenuClearIntroHistoryAndRedraw();
-                        }
-                        return userObject;
-                    }
-
-                },function(err){
+                successHandler,
+                function(err){
                     console.log(err);
                 }
             );
@@ -339,9 +376,36 @@ angular.module('starter')
             return userObject;
         };
 
+        $scope.safeApply = function(fn) {
+            var phase = this.$root.$$phase;
+            if(phase === '$apply' || phase === '$digest') {
+                if(fn && (typeof(fn) === 'function')) {
+                    fn();
+                }
+            } else {
+                this.$apply(fn);
+            }
+        };
 
-        // call constructor
-        $scope.init();
+        $scope.showLoader = function (loadingText) {
+            if(!loadingText){
+                loadingText = '';
+            }
+            $scope.loading = true;
+            $ionicLoading.show({
+                template: loadingText+ '<br><br><img src={{loaderImagePath}}>',
+                content: 'Loading',
+                animation: 'fade-in',
+                showBackdrop: false,
+                maxWidth: 1000,
+                showDelay: 0
+            });
+        };
+
+        $scope.hideLoader = function (loadingText) {
+            $scope.loading = false;
+            $ionicLoading.hide();
+        };
         
-
+        $scope.init();
     });

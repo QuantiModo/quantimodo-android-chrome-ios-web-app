@@ -36,14 +36,15 @@ angular.module('starter')
             $state.go('app.measurementAdd', 
                 {
                     variableObject : variableObject,
-                    fromState : $state.current.name
+                    fromState : $state.current.name,
+                    fromUrl: window.location.href
                 }
             );
         };
         
         $scope.init = function(){
-            $scope.state.loading = true;
-            utilsService.loadingStart();
+            $scope.loading = true;
+            $scope.showLoader();
             var isAuthorized = authService.checkAuthOrSendToLogin();
             if(isAuthorized){
                 $scope.showHelpInfoPopupIfNecessary();
@@ -62,7 +63,7 @@ angular.module('starter')
 
                 console.log("got variables", variables);
 
-                $scope.state.loading = false;
+                $scope.loading = false;
                 $ionicLoading.hide();
                 if(variables.length < 1){
                     $scope.state.showAddVariableButton = true;
@@ -77,20 +78,20 @@ angular.module('starter')
         $scope.search = function(variableSearchQuery){
             console.log(variableSearchQuery);
 
-            $scope.state.loading = true;
+            $scope.loading = true;
 
             // search server for the query
             variableService.searchVariablesIncludePublic(variableSearchQuery, variableCategoryName).then(function(variables){
 
                 // populate list with results
                 $scope.state.variableSearchResults = variables;
-                $scope.state.loading = false;
+                $scope.loading = false;
                 if(variables.length < 1){
                     $scope.state.showAddVariableButton = true;
                 }
             });
 
-            $scope.state.loading = false;
+            $scope.loading = false;
         };
 
     });

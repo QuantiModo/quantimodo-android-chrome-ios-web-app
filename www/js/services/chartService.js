@@ -1,6 +1,6 @@
 angular.module('starter')
 	// returns high chart compatible Stubs for line and Bar charts
-	.factory('chartService', function(){
+	.factory('chartService', function(ratingService){
 	    var chartService = {
 
 	    	// generate bar chart stub with data
@@ -19,7 +19,7 @@ angular.module('starter')
 	                        text : config.appSettings.primaryOutcomeVariable+ ' Distribution'
 	                    },
 	                    xAxis : {
-	                        categories : config.getPrimaryOutcomeVariableOptionLabels()
+	                        categories : ratingService.getPrimaryOutcomeVariableOptionLabels()
 	                    },
 	                    yAxis : {
 	                        title : {
@@ -90,7 +90,9 @@ angular.module('starter')
                 	        	week: '%e. %b',
                 	        	month: '%b \'%y',
                 	        	year: '%Y'
-                    	    }
+                    	    },
+                    	    min: data[0][0],
+                    	    max: data[data.length-1][0]
 	        			},
 	                    credits: {
 	                        enabled: false

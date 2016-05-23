@@ -89,10 +89,10 @@ angular.module('starter')
 			// retrieves access token.
 			// if expired, renews it
             getAccessTokenFromUrlParameter: function () {
-                var tokenInGetParams = authService.utilsService.getUrlParameter(location.href, 'accessToken');
+                var tokenInGetParams = utilsService.getUrlParameter(location.href, 'accessToken');
 
                 if (!tokenInGetParams) {
-                    tokenInGetParams = authService.utilsService.getUrlParameter(location.href, 'access_token');
+                    tokenInGetParams = utilsService.getUrlParameter(location.href, 'access_token');
                 }
                 return tokenInGetParams;
             },
@@ -114,7 +114,7 @@ angular.module('starter')
 				}
 
 				if (localStorageService.getItemSync('accessToken')) {
-					console.log('resolving token using value from local storage');
+					//console.log('resolving token using value from local storage');
 					deferred.resolve({
 						accessToken: localStorageService.getItemSync('accessToken')
 					});
@@ -145,12 +145,13 @@ angular.module('starter')
                             }
                         };
                         localStorageService.setItem('user', JSON.stringify(userCredentialsResp));
+						$rootScope.user = userCredentialsResp;
                         
                         //get token value from response
                         var token = userCredentialsResp.data.token.split("|")[2];
                         //update locally stored token
                         localStorageService.setItem('accessToken', token);
-
+						$ionicLoading.hide();
                         //resolve promise
                         deferred.resolve({
                             accessToken: token
@@ -159,22 +160,14 @@ angular.module('starter')
                     },
                     function (errorResp) {
 
-                        console.log('getAccessTokenFromUserEndpoint: failed to fetch user credentials', errorResp);
-                        console.log('getAccessTokenFromUserEndpoint: client id is ' + config.getClientId());
-                        console.log('getAccessTokenFromUserEndpoint: Platform is browser: ' + ionic.Platform.is('browser'));
-                        console.log('getAccessTokenFromUserEndpoint: Platform is ios: ' + ionic.Platform.is('ios'));
-                        console.log('getAccessTokenFromUserEndpoint: Platform is android: ' + ionic.Platform.is('android'));
-
-                        //Using OAuth on Staging for tests
-                        if(!ionic.Platform.is('ios') && !ionic.Platform.is('android') &&
-                            config.getClientId() === 'oAuthDisabled' &&
-                            !(window.location.origin.indexOf('staging.quantimo.do') > -1)){
-                            console.log("getAccessTokenFromUserEndpoint: Browser Detected and client id is oAuthDisabled.  ");
-                            $ionicLoading.hide();
-                            //$state.go('app.login');
-                        } else {
-                            authService._defaultGetAccessToken(deferred);
-                        }
+                        console.debug('getAccessTokenFromUserEndpoint: failed to fetch user credentials', errorResp);
+                        console.debug('getAccessTokenFromUserEndpoint: client id is ' + config.getClientId());
+                        console.debug('getAccessTokenFromUserEndpoint: Platform is browser: ' + ionic.Platform.is('browser'));
+                        console.debug('getAccessTokenFromUserEndpoint: Platform is ios: ' + ionic.Platform.is('ios'));
+                        console.debug('getAccessTokenFromUserEndpoint: Platform is android: ' + ionic.Platform.is('android'));
+						$rootScope.user = null;
+						localStorageService.deleteItem('user');
+						$state.go('app.login');
                     }
                 );
             },
@@ -228,11 +221,12 @@ angular.module('starter')
                }
             var accessTokenInUrl = authService.getAccessTokenFromUrlParameter;
             if(accessTokenInUrl){
+				$rootScope.getUserAndSetInLocalStorage();
                    return true;
                }
             if(!user && !accessTokenInUrl){
                    $ionicLoading.hide();
-                   console.log('checkAuthOrSendToLogin: Could not get user or access token from url. Going to login page...');
+                   console.debug('checkAuthOrSendToLogin: Could not get user or access token from url. Going to login page...');
                    $state.go('app.login');
                }
         },
@@ -372,6 +366,7 @@ angular.module('starter')
 						if (data && data.error && data.error.message) {
                             error = data.error.message;
                         }
+                        console.error("API Request to "+request.url+" Failed",error,{},"error");
 						Bugsnag.notify("API Request to "+request.url+" Failed",error,{},"error");
 						errorHandler(data,status,headers,config);
 					});

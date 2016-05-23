@@ -13,7 +13,6 @@
     "alarms",
     "notifications",
     "storage",
-    "cookies",
     "tabs",
     "https://app.quantimo.do/*",
     "*://cdn.rawgit.com/*"

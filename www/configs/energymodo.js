@@ -34,13 +34,19 @@ config.appSettings  = {
     primaryOutcomeVariable : 'Energy',
 
     appStorageIdentifier: 'EnergyModoData*',
+
+    settingsPageOptions :
+    {
+        showReminderFrequencySelector : true
+    },
       
     primaryOutcomeVariableDetails : {
         id : 108092,
         name : "Overall Energy",
         category : "Energy",
         abbreviatedUnitName : "/5",
-        combinationOperation: "MEAN"
+        combinationOperation: "MEAN",
+        positiveOrNegative: 'positive'
     },
 
     primaryOutcomeVariableRatingOptionLabels : [
@@ -51,42 +57,19 @@ config.appSettings  = {
         '5' 
     ],
 
-    primaryOutcomeVariableRatingOptions : [
-        {
-            value: '1',
-            img: 'img/ic_1.png'
-        },
-        {
-            value: '2',
-            img: 'img/ic_2.png'
-        },
-        {
-            value: '3',
-            img: 'img/ic_3.png'
-        },
-        {
-            value: '4',
-            img: 'img/ic_4.png'
-        },
-        {
-            value: '5',
-            img: 'img/ic_5.png'
-        }
-    ],
-
     welcomeText:"Let's start off by reporting your Energy on the card below",
     primaryOutcomeVariableTrackingQuestion:"How is your energy level right now?",
     primaryOutcomeVariableAverageText:"Your average energy level is ",
     mobileNotificationImage : "file://img/icon_128.png",
     mobileNotificationText : "Time to Track",
-    primaryOutcomeValueConversionDataSet: {
+    ratingValueToTextConversionDataSet: {
         "1": "1",
         "2": "2",
         "3": "3",
         "4": "4",
         "5": "5" 
     },
-    primaryOutcomeValueConversionDataSetReversed : {
+    ratingTextToValueConversionDataSet : {
         "1" : 1,
         "2" : 2,
         "3" : 3,
@@ -119,24 +102,6 @@ config.appSettings  = {
                     classes : 'intro-paragraph',
                     buttonBarVisible : true   
                 }
-            }
-        },
-        // screen 2
-        {
-            img : {
-                height : '70',
-                width : '70'
-            },
-            content : {
-
-                showOutcomeVariableImages : true,
-                showFirstBr : true,   
-                finalP: {
-                    visible : true,
-                    content : 'Go to the <span class="positive">Track Energy</span> page to report your Energy!',
-                    classes : 'intro-paragraph',
-                    buttonBarVisible : true
-                } 
             }
         },
         // screen 3
@@ -383,7 +348,7 @@ config.appSettings  = {
 
     helpPopupMessages : {
         "#/app/track": 'Here, you can view your <span class="positive">average Energy</span> as well as charts illustrating how it changes over time',
-        "#/app/history": 'You can see and edit your past Energy ratings and notes by tapping on any item in the list.  <br/> <br/>You can also Add a note by tapping on a Energy rating in the list.',
+        "#/app/history": 'You can see and edit your past Energy ratings and notes by tapping on any item in the list.  <br/> <br/>You can also add a note by tapping on a Energy rating in the list.',
         "#/app/track_factors_category/Foods": 'You can track your diet on this page. You can also <span class="positive">Add a new Food Variable</span> if you do not find the meal you looked for in the search results.',
         "#/app/track_factors_category/Symptoms": 'You can track any symptom on this page. You can also <span class="positive">Add a new Symptom</span> if you don\'t find the symptom you looked for in the search results.',
         "#/app/track_factors_category/Treatments": 'You can track any treatment on this page. You can also <span class="positive">Add a new Treatment</span> if you don\'t find the treatment you looked for in the search results.',
@@ -409,116 +374,122 @@ config.appSettings  = {
         {
             title : 'Track Factors',
             click : 'toggleTrackingSubMenu',
-            icon : 'showTrackingSubMenu',
-            subMenuPanel : true
+            showSubMenuVariable : 'showTrackingSubMenu',
+            isSubMenuParent : true,
+            collapsedIcon : 'ion-chevron-right',
+            expandedIcon : 'ion-chevron-down'
         },
         {
             title : 'Track anything',
-            isSubMenu : true,
-            subMenuVariable : 'showTrackingSubMenu',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showTrackingSubMenu',
             href : '#/app/track_factors',
             icon : 'ion-ios-world-outline'   
         },
         {
             title : 'Track foods',
-            isSubMenu : true,
-            subMenuVariable : 'showTrackingSubMenu',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showTrackingSubMenu',
             href : '#/app/track_factors_category/Foods',
             icon : 'ion-ios-nutrition-outline'
         },
         {
             title : 'Track emotions',
-            isSubMenu : true,
-            subMenuVariable : 'showTrackingSubMenu',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showTrackingSubMenu',
             href : '#/app/track_factors_category/Emotions',
             icon : 'ion-happy-outline'
         },
         {
             title : 'Track symptoms',
-            isSubMenu : true,
-            subMenuVariable : 'showTrackingSubMenu',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showTrackingSubMenu',
             href : '#/app/track_factors_category/Symptoms',
             icon : 'ion-ios-pulse'
         },
         {
             title : 'Track treatments',
-            isSubMenu : true,
-            subMenuVariable : 'showTrackingSubMenu',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showTrackingSubMenu',
             href : '#/app/track_factors_category/Treatments',
             icon : 'ion-ios-medkit-outline'
         },
         {
             title : 'Track physical activity',
-            isSubMenu : true,
-            subMenuVariable : 'showTrackingSubMenu',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showTrackingSubMenu',
             href : '#/app/track_factors_category/Physical Activity',
             icon : 'ion-ios-body-outline'
         },
         {
             title : 'Reminders',
             click : 'toggleReminderSubMenu',
-            icon : 'showReminderSubMenu',
-            subMenuPanel : true
+            showSubMenuVariable : 'showReminderSubMenu',
+            isSubMenuParent : true,
+            collapsedIcon : 'ion-chevron-right',
+            expandedIcon : 'ion-chevron-down'
         },
         {
             title : 'Inbox',
-            isSubMenu : true,
-            subMenuVariable : 'showReminderSubMenu',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showReminderSubMenu',
             href : '#/app/reminders-inbox',
             icon : 'ion-android-notifications-none'
         },
         {
             title : 'Manage',
-            isSubMenu : true,
-            subMenuVariable : 'showReminderSubMenu',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showReminderSubMenu',
             href : '#/app/reminders-manage',
             icon : 'ion-ios-gear-outline'
         },
         {
             title : 'Emotions',
-            isSubMenu : true,
-            subMenuVariable : 'showReminderSubMenu',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showReminderSubMenu',
             href : '#/app/reminder_add/Emotions',
             icon : 'ion-happy-outline'
         },
         {
             title : 'Symptoms',
-            isSubMenu : true,
-            subMenuVariable : 'showReminderSubMenu',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showReminderSubMenu',
             href : '#/app/reminder_add/Symptoms',
             icon : 'ion-ios-pulse'
         },
         {
             title : 'Treatments',
-            isSubMenu : true,
-            subMenuVariable : 'showReminderSubMenu',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showReminderSubMenu',
             href : '#/app/reminder_add/Treatments',
             icon : 'ion-ios-medkit-outline'
         },
         {
             title : 'Foods',
-            isSubMenu : true,
-            subMenuVariable : 'showReminderSubMenu',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showReminderSubMenu',
             href : '#/app/reminder_add/Foods',
             icon : 'ion-ios-nutrition-outline'
         },
         {
             title : 'History',
             click : 'toggleHistorySubMenu',
-            icon : 'showHistorySubMenu',
-            subMenuPanel : true
+            showSubMenuVariable : 'showHistorySubMenu',
+            isSubMenuParent : true,
+            collapsedIcon : 'ion-chevron-right',
+            expandedIcon : 'ion-chevron-down'
         },
         {
             title : 'Energy(s)',
-            isSubMenu : true,
-            subMenuVariable : 'showHistorySubMenu',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showHistorySubMenu',
             href : '#/app/history',
             icon : 'ion-happy-outline'
         },
         {
             title : 'All Measurements',
-            isSubMenu : true,
-            subMenuVariable : 'showHistorySubMenu',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showHistorySubMenu',
             href : '#/app/history-all',
             icon : 'ion-ios-paper-outline'
         },
@@ -535,40 +506,44 @@ config.appSettings  = {
         {
             title : 'Predictor Search',
             click : 'togglePredictorSearchSubMenu',
-            icon : 'showPredictorSearchSubMenu',
-            subMenuPanel : true
+            showSubMenuVariable : 'showPredictorSearchSubMenu',
+            isSubMenuParent : true,
+            collapsedIcon : 'ion-chevron-right',
+            expandedIcon : 'ion-chevron-down'
         },
         {
             title : 'Common',
-            isSubMenu : true,
-            subMenuVariable : 'showPredictorSearchSubMenu',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showPredictorSearchSubMenu',
             href : '#/app/search-common-relationships',
             icon : 'ion-ios-people'
         },
         {
             title : 'Yours',
-            isSubMenu : true,
-            subMenuVariable : 'showPredictorSearchSubMenu',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showPredictorSearchSubMenu',
             href : '#/app/search-user-relationships',
             icon : 'ion-person'
         },
         {
             title : 'Predictors of Energy',
             click : 'toggleOutcomePredictorSubMenu',
-            icon : 'showOutcomePredictorSubMenu',
-            subMenuPanel : true
+            showSubMenuVariable : 'showOutcomePredictorSubMenu',
+            isSubMenuParent : true,
+            collapsedIcon : 'ion-chevron-right',
+            expandedIcon : 'ion-chevron-down'
         },
         {
             title : 'Positive Energy',
-            isSubMenu : true,
-            subMenuVariable : 'showOutcomePredictorSubMenu',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showOutcomePredictorSubMenu',
             href : '#/app/positive',
             icon : 'ion-happy-outline'
         },
         {
             title : 'Negative Energy',
-            isSubMenu : true,
-            subMenuVariable : 'showOutcomePredictorSubMenu',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showOutcomePredictorSubMenu',
             href : '#/app/negative',
             icon : 'ion-sad-outline'
         },
@@ -583,60 +558,6 @@ config.appSettings  = {
             icon : 'ion-ios-help-outline'
         }
     ]
-};
-
-config.getPrimaryOutcomeVariableOptionLabels = function(shouldShowNumbers){
-    if(shouldShowNumbers || !config.appSettings.primaryOutcomeVariableRatingOptionLabels){
-        return ['1',  '2',  '3',  '4', '5'];
-    } else {
-        return config.appSettings.primaryOutcomeVariableRatingOptionLabels;
-    }
-};
-
-config.getPrimaryOutcomeVariableOptions = function(shouldShowNumbers){
-    if(shouldShowNumbers || !config.appSettings.primaryOutcomeVariableRatingOptions){
-        return [
-            {
-                value: '1',
-                img: 'img/ic_1.png'
-            },
-            {
-                value: '2',
-                img: 'img/ic_2.png'
-            },
-            {
-                value: '3',
-                img: 'img/ic_3.png'
-            },
-            {
-                value: '4',
-                img: 'img/ic_4.png'
-            },
-            {
-                value: '5',
-                img: 'img/ic_5.png'
-            }
-        ];
-    } else {
-        return config.appSettings.primaryOutcomeVariableRatingOptions;
-    }
-};
-
-config.getImageForPrimaryOutcomeVariableByValue = function(val){
-    var filtered_list = this.appSettings.primaryOutcomeVariableRatingOptions.filter(function(option){
-        return option.value === val;
-    });
-
-    return filtered_list.length? filtered_list[0].img || false : false;
-};
-
-config.getImageForPrimaryOutcomeVariableByNumber = function(num){
-    var primaryOutcomeVariable = this.appSettings.primaryOutcomeValueConversionDataSet[num]? this.appSettings.primaryOutcomeValueConversionDataSet[num] : false;
-    return primaryOutcomeVariable? config.getImageForPrimaryOutcomeVariableByValue(primaryOutcomeVariable) : false;
-};
-
-config.getPrimaryOutcomeVariableByNumber = function(num){
-    return this.appSettings.primaryOutcomeValueConversionDataSet[num]? this.appSettings.primaryOutcomeValueConversionDataSet[num] : false;
 };
 
 config.getEnv = function(){
@@ -756,8 +677,8 @@ window.notification_callback = function(reportedVariable, reportingTime){
         val = localStorage[keyIdentifier+'lastReportedPrimaryOutcomeVariableValue']?
         JSON.parse(localStorage[keyIdentifier+'lastReportedPrimaryOutcomeVariableValue']) : false;
     } else {
-        val = config.appSettings.primaryOutcomeValueConversionDataSetReversed[reportedVariable]?
-        config.appSettings.primaryOutcomeValueConversionDataSetReversed[reportedVariable] : false;
+        val = config.appSettings.ratingTextToValueConversionDataSet[reportedVariable]?
+        config.appSettings.ratingTextToValueConversionDataSet[reportedVariable] : false;
     }
     
     // report
@@ -768,7 +689,7 @@ window.notification_callback = function(reportedVariable, reportingTime){
         var allMeasurementsObject = {
             storedValue : val,
             value : val,
-            timestamp : reportTime,
+            startTime : reportTime,
             humanTime : {
                 date : new Date().toISOString()
             }

@@ -44,12 +44,12 @@
             </div>
         </div>
 
-        <div class="card"style="overflow: visible">
+        <div class="card" style="overflow: visible" ng-hide="loading">
             <div class="item item-divider">
                 {{state.measurement.variable}}
             </div>
             <div class="list">
-                <div ng-if="(state.measurement.abbreviatedUnitName !== '/5')" class="row labeled-control">
+                <div ng-if="showValueBox" class="row labeled-control">
                     <div class="col col-l">
                         <span>
                             Value
@@ -59,9 +59,29 @@
                         <input type="text" ng-model="state.measurement.value" id="measurementValue" placeholder="Enter Value Here" class="up-top">
                     </div>
                 </div>
-
-                <div class="primary-outcome-variable-rating-buttons primary-outcome-variable-history col" ng-if="(state.measurement.abbreviatedUnitName === '/5')">
-                    <img ng-repeat="option in primaryOutcomeVariableNumbers" ng-click="selectPrimaryOutcomeVariableValue($event, option.value)" ng-src="{{option.img}}"  ng-class="{'active-primary-outcome-variable-rating-button' : option.value == state.measurement.value}">
+                <div class="primary-outcome-variable-rating-buttons primary-outcome-variable-history col"
+                     ng-if="showNumericRatingNumberButtons">
+                    <img ng-repeat="option in numericRatingOptions"
+                         ng-click="selectPrimaryOutcomeVariableValue($event, option.numericValue)"
+                         ng-src="{{option.img}}"
+                         ng-class="{'active-primary-outcome-variable-rating-button' :
+                         option.value === state.measurement.value}">
+                </div>
+                <div class="primary-outcome-variable-rating-buttons primary-outcome-variable-history col"
+                     ng-if="showPositiveRatingFaceButtons">
+                    <img ng-repeat="option in positiveRatingOptions"
+                         ng-click="selectPrimaryOutcomeVariableValue($event, option.numericValue)"
+                         ng-src="{{option.img}}"
+                         ng-class="{'active-primary-outcome-variable-rating-button' :
+                         option.value === state.measurement.value}">
+                </div>
+                <div class="primary-outcome-variable-rating-buttons primary-outcome-variable-history col"
+                     ng-if="showNegativeRatingFaceButtons">
+                    <img ng-repeat="option in negativeRatingOptions"
+                         ng-click="selectPrimaryOutcomeVariableValue($event, option.numericValue)"
+                         ng-src="{{option.img}}"
+                         ng-class="{'active-primary-outcome-variable-rating-button' :
+                         option.value === state.measurement.value}">
                 </div>
 
                 <div class="row labeled-control" ng-if="(state.measurement.abbreviatedUnitName !== '/5')">
@@ -105,9 +125,9 @@
                         </span>
                     </div>
                     <div class="col" style="padding-top: 15px;">
-                        <ionic-datepicker style="width:100%" idate="currentDate" disablepreviousdates="false" callback="datePickerCallback">
+                        <ionic-datepicker style="width:100%" idate="selectedDate" disablepreviousdates="false" callback="datePickerCallback">
                             <button class="button button-block measure-date up-top" style="font-size:14px;border:none;color:black;background-color: white;margin-bottom: 0px;margin-top: 0px;padding-left: 0px; text-align:left;">
-                                {{ currentDate | date:'dd - MMMM - yyyy' }}
+                                {{ selectedDate | date:'dd - MMMM - yyyy' }}
                             </button>
                         </ionic-datepicker>
                     </div>
@@ -142,7 +162,7 @@
             </div>
         </div>    
  
-        <div class="card" >
+        <div class="card" ng-hide="loading">
             <button ng-click="done()" class="button button-positive button-block">
                 Save Measurement
             </button>
@@ -154,4 +174,7 @@
             </button>
         </div>
     </ion-content>
+    <div class="bar bar-footer bar-balanced" ng-show="variableObject">
+        <div class="title"  ng-click="goToAddReminder()">Remind me to track</div>
+    </div>
 </ion-view>
