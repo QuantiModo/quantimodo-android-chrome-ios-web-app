@@ -125,7 +125,7 @@ angular.module('starter')
         };
 
         // show calender popup
-        $scope.showCalenderPopup = function($event){
+        $scope.showCalendarPopup = function($event){
             $scope.popover.show($event);
             measurementService.getToDate(function(endDate){
                 $scope.toDate = new Date(endDate);
