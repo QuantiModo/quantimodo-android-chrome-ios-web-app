@@ -572,6 +572,14 @@ var GOOGLEPLUS_REVERSED_CLIENT_ID = false;
 gulp.task('readKeysForCurrentApp', ['getAppName'] ,function(){
 	var deferred = q.defer();
 
+	fs.stat('./www/private_configs/' + LOWERCASE_APP_NAME + '.config.js', function(err, stat) {
+		if(err == null) {
+			console.log('./www/private_configs/' + LOWERCASE_APP_NAME + '.config.js exists');
+		} else {
+			console.log(err.code);
+		}
+	});
+
 	fs.readFile('./www/private_configs/' + LOWERCASE_APP_NAME + '.config.js', function (err, data) {
 		if (err) {
 			throw err;
@@ -581,19 +589,19 @@ gulp.task('readKeysForCurrentApp', ['getAppName'] ,function(){
 
 		if(data.indexOf('FACEBOOK_APP_ID') < 0){
 			exr = true;
-			console.log("no FACEBOOK_APP_ID found in file");
+			console.log("no FACEBOOK_APP_ID found in ./www/private_configs/" + LOWERCASE_APP_NAME + '.config.js');
 			deferred.reject();
 		}
 
 		if(data.indexOf('FACEBOOK_APP_NAME') < 0){
 			exr = true;
-			console.log("no FACEBOOK_APP_NAME found in file");
+			console.log("no FACEBOOK_APP_NAME found in ./www/private_configs/" + LOWERCASE_APP_NAME + '.config.js');
 			deferred.reject();
 		}
 
 		if(data.indexOf('GOOGLEPLUS_REVERSED_CLIENT_ID') < 0){
 			exr = true;
-			console.log("no GOOGLEPLUS_REVERSED_CLIENT_ID found in file");
+			console.log("no GOOGLEPLUS_REVERSED_CLIENT_ID found in ./www/private_configs/" + LOWERCASE_APP_NAME + '.config.js');
 			deferred.reject();
 		}
 
