@@ -94,7 +94,7 @@ gulp.task('swagger', function(){
 	return deferred.promise;
 });
 
-gulp.task('generatePrivateConfigFromEnvs', function(){
+gulp.task('generatePrivateConfigFromEnvsForHeroku', function(){
 
 	var deferred = q.defer();
 
@@ -117,12 +117,13 @@ gulp.task('generatePrivateConfigFromEnvs', function(){
 		deferred.reject();
 	}
 
-	if(typeof environmentalVariables['APPS'] === "undefined" || environmentalVariables['APPS'].trim() === '') {
-		if (environmentalVariables['LOWERCASE_APP_NAME']) {
-			console.log('No APPS env found.  Using LOWERCASE_APP_NAME ' + environmentalVariables['LOWERCASE_APP_NAME'].toUpperCase());
-			environmentalVariables['APPS'] = environmentalVariables['LOWERCASE_APP_NAME'].toUpperCase();
-		}
-	}
+	// Can't do this because it overwrites decrypted config on Travis
+	// if(typeof environmentalVariables['APPS'] === "undefined" || environmentalVariables['APPS'].trim() === '') {
+	// 	if (environmentalVariables['LOWERCASE_APP_NAME']) {
+	// 		console.log('No APPS env found.  Using LOWERCASE_APP_NAME ' + environmentalVariables['LOWERCASE_APP_NAME'].toUpperCase());
+	// 		environmentalVariables['APPS'] = environmentalVariables['LOWERCASE_APP_NAME'].toUpperCase();
+	// 	}
+	// }
 
 	if(typeof environmentalVariables['APPS'] === "undefined" || environmentalVariables['APPS'].trim() === ''){
 		console.error('No APPS env found!');
@@ -589,19 +590,19 @@ gulp.task('readKeysForCurrentApp', ['getAppName'] ,function(){
 
 		if(data.indexOf('FACEBOOK_APP_ID') < 0){
 			exr = true;
-			console.log("no FACEBOOK_APP_ID found in ./www/private_configs/" + LOWERCASE_APP_NAME + '.config.js');
+			console.log("ERROR: NO FACEBOOK_APP_ID found in ./www/private_configs/" + LOWERCASE_APP_NAME + '.config.js');
 			deferred.reject();
 		}
 
 		if(data.indexOf('FACEBOOK_APP_NAME') < 0){
 			exr = true;
-			console.log("no FACEBOOK_APP_NAME found in ./www/private_configs/" + LOWERCASE_APP_NAME + '.config.js');
+			console.log("ERROR: NO FACEBOOK_APP_NAME found in ./www/private_configs/" + LOWERCASE_APP_NAME + '.config.js');
 			deferred.reject();
 		}
 
 		if(data.indexOf('GOOGLEPLUS_REVERSED_CLIENT_ID') < 0){
 			exr = true;
-			console.log("no GOOGLEPLUS_REVERSED_CLIENT_ID found in ./www/private_configs/" + LOWERCASE_APP_NAME + '.config.js');
+			console.log("ERROR: NO GOOGLEPLUS_REVERSED_CLIENT_ID found in ./www/private_configs/" + LOWERCASE_APP_NAME + '.config.js');
 			deferred.reject();
 		}
 
