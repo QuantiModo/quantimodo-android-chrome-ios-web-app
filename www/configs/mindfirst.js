@@ -113,24 +113,6 @@ config.appSettings  = {
                 }
             }
         },
-        // screen 2
-        {
-            img : {
-                height : '70',
-                width : '70'
-            },
-            content : {
-
-                showOutcomeVariableImages : true,
-                showFirstBr : true,   
-                finalP: {
-                    visible : true,
-                    content : 'Go to the <span class="positive">Track Mood</span> page to report your Mood!',
-                    classes : 'intro-paragraph',
-                    buttonBarVisible : true
-                } 
-            }
-        },
         // screen 3
         {
             img : {

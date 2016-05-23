@@ -104,24 +104,6 @@ config.appSettings  = {
                 }
             }
         },
-        // screen 2
-        {
-            img : {
-                height : '70',
-                width : '70'
-            },
-            content : {
-
-                showOutcomeVariableImages : true,
-                showFirstBr : true,   
-                finalP: {
-                    visible : true,
-                    content : 'Go to the <span class="positive">Track Energy</span> page to report your Energy!',
-                    classes : 'intro-paragraph',
-                    buttonBarVisible : true
-                } 
-            }
-        },
         // screen 3
         {
             img : {
