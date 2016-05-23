@@ -90,7 +90,9 @@ angular.module('starter')
                 	        	week: '%e. %b',
                 	        	month: '%b \'%y',
                 	        	year: '%Y'
-                    	    }
+                    	    },
+                    	    min: data[0][0],
+                    	    max: data[data.length-1][0]
 	        			},
 	                    credits: {
 	                        enabled: false
