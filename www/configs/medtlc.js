@@ -124,7 +124,7 @@ config.appSettings  = {
             content : {
                 firstP : {
                     visible : true,
-                    content : 'Medications and Reminders',
+                    content : 'Medications',
                     classes : 'intro-header positive'
                 },
                 logoDiv : {
@@ -133,7 +133,7 @@ config.appSettings  = {
                 },
                 finalP: {
                     visible : true,
-                    content : 'Add medications and reminders on the Add Medications page.',
+                    content : 'Add medications on the Add Medications page.',
                     classes : 'intro-paragraph-small',
                     buttonBarVisible : true
                 }
