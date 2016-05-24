@@ -121,7 +121,9 @@ angular.module('starter')
 					date.isSame(yesterday, 'd') !== true && date.isSame(today, 'd') !== true;
 	    	});
 
-	    	if(last30DayResult.length) result.push({ name : "Last 30 Days", reminders : last30DayResult });
+	    	if(last30DayResult.length) {
+				result.push({ name : "Last 30 Days", reminders : last30DayResult });
+			}
 
 	    	var olderResult = reminders.filter(function(reminder){
 	    		return moment.utc(reminder.trackingReminderNotificationTime).local().isBefore(monthold) === true;
@@ -203,12 +205,21 @@ angular.module('starter')
 	    };
 
 	    $scope.editMeasurement = function(reminder){
-			$state.go('app.measurementAdd', {reminder: reminder});
+			$scope.skip(reminder);
+			$state.go('app.measurementAdd',
+				{
+					reminder: reminder,
+					fromUrl: window.location.href
+				});
 	    };
 
 	    $scope.editReminderSettings = function(reminder){
-	    	reminder["fromState"] = $state.current.name;
-	    	$state.go('app.reminderAdd', {reminder : reminder});
+	    	reminder.fromState = $state.current.name;
+	    	$state.go('app.reminderAdd',
+				{
+					reminder : reminder,
+					fromUrl: window.location.href
+				});
 	    };
 
 	    $scope.deleteReminder = function(reminder){
