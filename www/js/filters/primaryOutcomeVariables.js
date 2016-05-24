@@ -1,12 +1,22 @@
 angular.module('starter')
 	// returns the Image string against value
-	.filter('ImageByValue', function(){
-	    return function(value){
-	        return config.getImageForPrimaryOutcomeVariableByNumber(value);
+	.filter('positiveImageByValue', function(ratingService){
+	    return function(ratingValue){
+	        return ratingService.getPositiveImageByRatingValue(ratingValue);
 	    };
 	})
-	.filter('PrimaryOutcomeVariableByNumber', function(){
+	.filter('negativeImageByValue', function(ratingService){
+		return function(ratingValue){
+			return ratingService.getNegativeImageByRatingValue(ratingValue);
+		};
+	})
+	.filter('numericImageByValue', function(ratingService){
+		return function(ratingValue){
+			return ratingService.getNumericImageByRatingValue(ratingValue);
+		};
+	})
+	.filter('PrimaryOutcomeVariableByNumber', function(ratingService){
 		return function(value){
-			return config.getPrimaryOutcomeVariableByNumber(value);
+			return ratingService.getPrimaryOutcomeVariableByNumber(value);
 		};
 	});

@@ -50,12 +50,12 @@ angular.module('starter')
 
         // constructor
         $scope.init = function(){
-            $scope.state.loading = true;
-            utilsService.loadingStart();
+            $scope.loading = true;
+            $scope.showLoader();
             var isAuthorized = authService.checkAuthOrSendToLogin();
             if(isAuthorized){
                 $scope.showHelpInfoPopupIfNecessary();
-                $scope.state.loading = true;
+                $scope.loading = true;
                 $scope.state.sumAvg = "avg";
                 variableService.getVariablesByName($stateParams.variableName).then(function(variableObject){
                     $scope.state.variableObject = variableObject;

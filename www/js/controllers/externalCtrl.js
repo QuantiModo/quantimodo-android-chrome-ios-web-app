@@ -6,12 +6,12 @@ angular.module('starter')
 	    
 	    // when page load completes
 	    window.closeLoading = function(){
-			utilsService.loadingStop();
+			$scope.hideLoader();
 	    };
 	    
 	    // constructor
 	    $scope.init = function(){
-			utilsService.loadingStart();
+			//$scope.showLoader();
 	    };
 
 	    // call constructor

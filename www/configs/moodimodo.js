@@ -53,7 +53,8 @@ config.appSettings  = {
         name : "Overall Mood",
         category : "Mood",
         abbreviatedUnitName : "/5",
-        combinationOperation: "MEAN"
+        combinationOperation: "MEAN",
+        description: 'positive'
     },
 
     primaryOutcomeVariableRatingOptionLabels : [
@@ -63,43 +64,20 @@ config.appSettings  = {
         'Happy',
         'Ecstatic'
     ],
-
-    primaryOutcomeVariableRatingOptions : [
-        {
-            value: 'depressed',
-            img: 'img/ic_face_depressed.png'
-        },
-        {
-            value: 'sad',
-            img: 'img/ic_face_sad.png'
-        },
-        {
-            value: 'ok',
-            img: 'img/ic_face_ok.png'
-        },
-        {
-            value: 'happy',
-            img: 'img/ic_face_happy.png'
-        },
-        {
-            value: 'ecstatic',
-            img: 'img/ic_face_ecstatic.png'
-        }
-    ],
-
+    
     welcomeText : "Let's start off by reporting your first mood on the card below",
     primaryOutcomeVariableTrackingQuestion : "How are you?",
     primaryOutcomeVariableAverageText : "Your average mood is ",
     mobileNotificationImage : "file://img/icon_128.png",
     mobileNotificationText : "Time to Track",
-    primaryOutcomeValueConversionDataSet: {
+    ratingValueToTextConversionDataSet: {
         "1": "depressed",
         "2": "sad",
         "3": "ok",
         "4": "happy",
         "5": "ecstatic"
     },
-    primaryOutcomeValueConversionDataSetReversed : {
+    ratingTextToValueConversionDataSet : {
         "depressed" : 1,
         "sad" : 2,
         "ok" : 3,
@@ -132,24 +110,6 @@ config.appSettings  = {
                     classes : 'intro-paragraph',
                     buttonBarVisible : true   
                 }
-            }
-        },
-        // screen 2
-        {
-            img : {
-                height : '70',
-                width : '70'
-            },
-            content : {
-
-                showOutcomeVariableImages : true,
-                showFirstBr : true,   
-                finalP: {
-                    visible : true,
-                    content : 'Go to the <span class="positive">Track Mood</span> page to report your Mood!',
-                    classes : 'intro-paragraph',
-                    buttonBarVisible : true
-                } 
             }
         },
         // screen 3
@@ -396,7 +356,7 @@ config.appSettings  = {
 
     helpPopupMessages : {
         "#/app/track" :'Here, you can view your <span class="positive">average Mood</span> as well as charts illustrating how it changes over time', 
-        "#/app/history" :'You can see and edit your past mood ratings and notes by tapping on any item in the list.  <br/> <br/>You can also Add a note by tapping on a mood rating in the list.',
+        "#/app/history" :'You can see and edit your past mood ratings and notes by tapping on any item in the list.  <br/> <br/>You can also add a note by tapping on a mood rating in the list.',
         "#/app/track_factors_category/Foods" :'You can track your diet on this page. You can also <span class="positive">Add a new Food Variable</span> if you do not find the meal you looked for in the search results.',
         "#/app/track_factors_category/Symptoms" :'You can track any symptom on this page. You can also <span class="positive">Add a new Symptom</span> if you don\'t find the symptom you looked for in the search results.',
         "#/app/track_factors_category/Treatments" :'You can track any treatment on this page. You can also <span class="positive">Add a new Treatment</span> if you don\'t find the treatment you looked for in the search results.',
@@ -416,6 +376,11 @@ config.appSettings  = {
         {
             title : 'Reminder Inbox',
             href : '#/app/reminders-inbox',
+            icon : 'ion-archive'
+        },
+        {
+            title : 'Manage Reminders',
+            href : '#/app/reminders-manage',
             icon : 'ion-android-notifications-none'
         },
         {
@@ -477,6 +442,13 @@ config.appSettings  = {
             icon : 'ion-edit'
         },
         {
+            title : 'History',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showEmotionsSubMenu',
+            href : '#/app/history-all/Emotions',
+            icon : 'ion-ios-paper-outline'
+        },
+        {
             title : 'Diet',
             click : 'toggleDietSubMenu',
             showSubMenuVariable : 'showDietSubMenu',
@@ -497,6 +469,13 @@ config.appSettings  = {
             showSubMenuVariable : 'showDietSubMenu',
             href : '#/app/track_factors_category/Foods',
             icon : 'ion-edit'
+        },
+        {
+            title : 'History',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showDietSubMenu',
+            href : '#/app/history-all/Foods',
+            icon : 'ion-ios-paper-outline'
         },
         {
             title : 'Symptoms',
@@ -522,6 +501,13 @@ config.appSettings  = {
             icon : 'ion-edit'
         },
         {
+            title : 'History',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showSymptomsSubMenu',
+            href : '#/app/history-all/Symptoms',
+            icon : 'ion-ios-paper-outline'
+        },
+        {
             title : 'Treatments',
             click : 'toggleTreatmentsSubMenu',
             icon : 'ion-ios-pulse',
@@ -529,6 +515,20 @@ config.appSettings  = {
             isSubMenuParent : true,
             collapsedIcon : 'ion-ios-medkit-outline',
             expandedIcon : 'ion-chevron-down'
+        },
+        {
+            title : 'Overdue',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showTreatmentsSubMenu',
+            href : '#/app/reminders-inbox/Treatments',
+            icon : 'ion-clock'
+        },
+        {
+            title : 'Today',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showTreatmentsSubMenu',
+            href : '#/app/reminders-inbox-today/Treatments',
+            icon : 'ion-android-sunny'
         },
         {
             title : 'Manage Reminders',
@@ -543,6 +543,13 @@ config.appSettings  = {
             showSubMenuVariable : 'showTreatmentsSubMenu',
             href : '#/app/track_factors_category/Treatments',
             icon : 'ion-edit'
+        },
+        {
+            title : 'History',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showTreatmentsSubMenu',
+            href : '#/app/history-all/Treatments',
+            icon : 'ion-ios-paper-outline'
         },
         {
             title : 'Physical Activity',
@@ -568,6 +575,13 @@ config.appSettings  = {
             icon : 'ion-edit'
         },
         {
+            title : 'History',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showPhysicalActivitySubMenu',
+            href : '#/app/history-all/Physical Activity',
+            icon : 'ion-ios-paper-outline'
+        },
+        {
             title : 'All Measurements',
             isSubMenuChild : true,
             showSubMenuVariable : 'showHistorySubMenu',
@@ -583,6 +597,13 @@ config.appSettings  = {
             title : 'Variables',
             href : '#app/search-variables',
             icon : 'ion-social-vimeo'
+        },
+        {
+            title : 'All Measurements',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showHistorySubMenu',
+            href : '#/app/history-all',
+            icon : 'ion-ios-paper-outline'
         },
         {
             title : 'Predictor Search',
@@ -617,60 +638,6 @@ config.appSettings  = {
             icon : 'ion-ios-help-outline'
         }
     ]
-};
-
-config.getPrimaryOutcomeVariableOptionLabels = function(shouldShowNumbers){
-    if(shouldShowNumbers || !config.appSettings.primaryOutcomeVariableRatingOptionLabels){
-        return ['1',  '2',  '3',  '4', '5'];
-    } else {
-        return config.appSettings.primaryOutcomeVariableRatingOptionLabels;
-    }
-};
-
-config.getPrimaryOutcomeVariableOptions = function(shouldShowNumbers){
-    if(shouldShowNumbers || !config.appSettings.primaryOutcomeVariableRatingOptions){
-        return [
-            {
-                value: '1',
-                img: 'img/ic_1.png'
-            },
-            {
-                value: '2',
-                img: 'img/ic_2.png'
-            },
-            {
-                value: '3',
-                img: 'img/ic_3.png'
-            },
-            {
-                value: '4',
-                img: 'img/ic_4.png'
-            },
-            {
-                value: '5',
-                img: 'img/ic_5.png'
-            }
-        ];
-    } else {
-        return config.appSettings.primaryOutcomeVariableRatingOptions;
-    }
-};
-
-config.getImageForPrimaryOutcomeVariableByValue = function(val){
-    var filtered_list = this.appSettings.primaryOutcomeVariableRatingOptions.filter(function(option){
-        return option.value === val;
-    });
-
-    return filtered_list.length? filtered_list[0].img || false : false;
-};
-
-config.getImageForPrimaryOutcomeVariableByNumber = function(num){
-    var primaryOutcomeVariable = this.appSettings.primaryOutcomeValueConversionDataSet[num]? this.appSettings.primaryOutcomeValueConversionDataSet[num] : false;
-    return primaryOutcomeVariable? config.getImageForPrimaryOutcomeVariableByValue(primaryOutcomeVariable) : false;
-};
-
-config.getPrimaryOutcomeVariableByNumber = function(num){
-    return this.appSettings.primaryOutcomeValueConversionDataSet[num]? this.appSettings.primaryOutcomeValueConversionDataSet[num] : false;
 };
 
 config.getEnv = function(){
@@ -790,8 +757,8 @@ window.notification_callback = function(reportedVariable, reportingTime){
         val = localStorage[keyIdentifier+'lastReportedPrimaryOutcomeVariableValue']?
         JSON.parse(localStorage[keyIdentifier+'lastReportedPrimaryOutcomeVariableValue']) : false;
     } else {
-        val = config.appSettings.primaryOutcomeValueConversionDataSetReversed[reportedVariable]?
-        config.appSettings.primaryOutcomeValueConversionDataSetReversed[reportedVariable] : false;
+        val = config.appSettings.ratingTextToValueConversionDataSet[reportedVariable]?
+        config.appSettings.ratingTextToValueConversionDataSet[reportedVariable] : false;
     }
 
     // report

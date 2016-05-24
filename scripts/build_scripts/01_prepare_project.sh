@@ -19,14 +19,33 @@ if [ -z "$BUILD_PATH" ]
       echo "No BUILD_PATH given. Using $BUILD_PATH..."
 fi
 
+if [ -z "$LOWERCASE_APP_NAME" ]
+    then
+      echo "ERROR: No LOWERCASE_APP_NAME given!"
+      exit 1
+fi
+
 rm -rf ${BUILD_PATH}/${LOWERCASE_APP_NAME}
 
 if [ -d "${INTERMEDIATE_PATH}/apps/${LOWERCASE_APP_NAME}" ];
     then
         echo "${INTERMEDIATE_PATH}/apps/${LOWERCASE_APP_NAME} path exists";
     else
-        echo "${INTERMEDIATE_PATH}/apps/${LOWERCASE_APP_NAME} path not found!";
-        exit
+        echo "ERROR: ${INTERMEDIATE_PATH}/apps/${LOWERCASE_APP_NAME} path not found!";
+        exit 1
+fi
+
+if [ -d "${APP_PRIVATE_CONFIG_PATH}" ];
+    then
+        echo "${APP_PRIVATE_CONFIG_PATH} path exists";
+    else
+        echo "ERROR: APP_PRIVATE_CONFIG_PATH ${APP_PRIVATE_CONFIG_PATH} path not found!";
+        exit 1
+fi
+
+if [ ! -f ${APP_PRIVATE_CONFIG_PATH}/${LOWERCASE_APP_NAME}.config.js ]; then
+    echo "ERROR: ${APP_PRIVATE_CONFIG_PATH}/${LOWERCASE_APP_NAME}.config.js file not found!";
+    exit 1
 fi
 
 export LC_CTYPE=C

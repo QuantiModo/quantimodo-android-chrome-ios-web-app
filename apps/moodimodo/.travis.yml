@@ -1,0 +1,52 @@
+language: objective-c
+os: osx
+osx_image: xcode7.1
+before_install:
+- export LANG=en_US.UTF-8
+- brew update
+- gem update pilot
+- gem install xcodeproj -v 0.28.2
+- gem install cocoapods -v 0.39.0
+- npm install -g gulp@3.9.0
+- npm install -g grunt-cli@0.1.13
+- npm install -g cordova@5.4.0
+- npm install -g ionic@1.7.10
+- npm install -g ios-sim
+- npm install -g ios-deploy
+before_script:
+- chmod a+x ./scripts/decrypt-key.sh
+- ./scripts/decrypt-key.sh
+- chmod a+x ./scripts/add-key.sh
+- ./scripts/add-key.sh
+script:
+- ionic state reset
+- npm install
+- echo "npm has installed"
+- gulp -v
+- echo "ran through gulp"
+- gulp generateXmlConfig
+- cp -R apps/${LOWERCASE_APP_NAME}/* $PWD
+- cp apps/${LOWERCASE_APP_NAME}/resources/icon_white.png $PWD/resources/icon.png
+- ionic resources
+- gulp setVersionNumbersWithEnvs
+- gulp makeIosApp
+- chmod a+x ./scripts/package-and-upload.sh
+- ./scripts/package-and-upload.sh
+env:
+  global:
+  - APP_DISPLAY_NAME="MoodiModo"
+  - LOWERCASE_APP_NAME="moodimodo"
+  - APP_IDENTIFIER="com.quantimodo.moodimodoapp"
+  - APPLE_ID="1046797567"
+  - TEAM_ID="YD2FK7S2S5"
+  - DEVELOPER_NAME="iPhone Distribution: Mike Sinn (YD2FK7S2S5)"
+  - PROFILE_NAME="028ab892-9a5e-4004-adac-b8472e760bdb"
+  - PROFILE_UUID="028ab892-9a5e-4004-adac-b8472e760bdb"
+  - DELIVER_WHAT_TO_TEST="Test the Basics of the app and see if something breaks!"
+  - APP_UPLOAD_BRANCH="app/moodimodo"
+  - DELIVER_USER="ios@quantimodo.com"
+  - FASTLANE_USER="ios@quantimodo.com"
+  - secure: FMLEhv2Uw1+nsdGbdYzrZYo8IGtkoFG0I+yNn//bFJC5Z46eQJTYfG9mt9mKMwh14TcgiwbGp7nX0QSoYB34NW5yF/FoRoGAUe+m6ru2vTn8o6BpC/JAP+Je0n4ffQjJ9i4U8W5qQDR8ZdapCHKV6aSxZ7ECl0a5T11A62ks+u50SC3yvxOJJYMMDhy8MCHW6rCxwNFaPF5QltbPfNh2rfAWClsmomve4Z7pGU8Xv9Otn8hRiTTfLEBh0neC1v2M5Y3uxMOxI0Q6H/l0iD+Q0DgSflS76DS0iaBJOJ5rvCyUig48osz4+xX43ft+Y25DjEgSMoFncH04Yruy/XVODm9+BvYrxV1JqCWK/UQXbRY83pVXnabm5f07fyTGtEF4wY05zjc5FI8J1gL/86YV9fugvbd6kVj2ptIGijPrFN20JK1KpUl0z8JgjzVMClzompzSbq98UyeGOxDHxM+dXJ2t8sJUrnXp++otqT5SVaKbtEazZJovZTVZetB2FGPEYa00p6123JQBqhPDuwJ023y68aIvgUGY+dVMhgvwzb3DIi73f6Ax4k4yL7WNyAjBjQfwHPMF2B6mEboMMBwIGgR8dbgQmUya+/iDBSHsNROXfWOIurML6DEryKCHFPJdLxlZtdcTqlIMBE4lUtFo6bg1SYRKR/ZC/yPzaV7CaeE=
+  - secure: cmLCPCVi26vZC50Qg8oLxhCsBAza4y6s7V6XSTTN0IqJ2/8/zZ+sdGCct9H7/LNTtgleaF7szZS1qO/HcwSxFw3yKpg4tLKFVlNnhKonx+86VSq/8BhhCrioTM92lQPc7WQb5G3rqCr5i+T7sjLy9M0OqoNdLw3EvGT//BS6oznj5yiqZNMw05spSV3rqyDyHvJHMD2RXc7a4FNUeX7Gu1Gln7tG91ppWXUYu5yCAfC7Pd7wBuP71CjIDt+/jwv20W8AD6twOQOnLZ7WOX/l1/eClTtM+8eLSQX+NhSk9YjV3ByF4Vvr1BRaEttpIkIcDz5/YYyECz024MTlPQsufJYt7ZdPsaImP18Lzc4gUEPpahxC1gvwmH7rJ00Rf35UzzzzKABwMyl324dodFUJSYfMujIrNEV77hnsBigAPCQQNADGNZ+uQD6VbJB10SrYz3bR1/ii9xaovH5Kl3cCUOQCpqBUqo5NFMWMeZ+LTAQhaxW2JTmp3MAoq37QjSsi/hHIuXGlwWIR74kFnlRH5TvNjyd/OcetKvKuHXBsWZo2cFfPhqkPUCsCikGVNxIfd5Xsp1tAnTBo76/nAd8Is+CFsOIcXl3P+cKEEzPakJdz4GEhujcfUbMw/aWnKu8s5Fw8hV+O6fdwltcSTLfglXnrpsQ0CK1nctleCkXCoR0=
+  - secure: PrQ+4HUoKUnCQMcqmTeR86zNFn0wSogAAclknTvJfSKzyO6DWlAqYBw+NLqaN/ZfGgwXYIHwglfUSlh0UgLd9p616Y4NrD3BDWrFfa1WvlL1bpLRIx8ZwgfxeCSe4I/NmCQiCF0/hQxYga+VMCUztCQqwJI4GKsbXDVgGXXP6RKSrNavSlAQBNGKSXKnYwnPnD9YLjtDzQXjNDimmaNKCT5diLN2b3FoCxh9a+aXhjbFLfbVAQm5qaIpRDHzNxl+1a2u1imByFOEL5tYHFYCUAdkrwpny0B/xaWPUZCvgSY2ODams6EOx7F1SjIg0pNcblR9KbJ1VMrBS/UkOQOWR1gT3l1iwZ2ht9ph+u5w+j1RIds+b5bdqZnzPQkFfE6cxJrNekzMyhg9hHfewUmwh1/iCcxhPLrfqCMdS+gJbWtNfXKv4JTSoq2kxQTJEKTtBBkU2zrYTLznGNgNs6CxbQLBWq+zJ3VWD1mAVAiD9XEL67vcjLUSI7KqiOdWGiNhedBSQHxrNN4JrFByDUmCdewpkIZQuoc9l6UMLy6lTgJFZ86473hqjFXQk8mW5R3EkiJwSOE9fjcegytyv7zTToaHrKRp7B/5YV6Y3Rp3k+/b73rQNnxGW9vtJhMApTaSxnyCfhBmol6qhV4prHqZ+y6GKK5m3MAnWjytNdxL2TE=
+  - secure: O3V431zlRPYQH6OSyWkQnVNGbiLQ28lSXmCkKzVIlUnb8Bhf+Cany5qOpASQevbMCk5KWzND/ULKP+maLA7z/RpGr77Dfb5CpzL+YHB5eWZ0W1eWbzTYH5nISD+8JbDWUcihBTV4HwMgK4EAZtxzTkgrdBAMISxIMWBf2wlWYK60Ydh9O3UAg2VSzXQQ1k+V404zRfGDwX99vwCERw3Q7xJT3v86B2+bxP9hj4VTTNsKJ0bY1JwPE/poRh8ZfyHtoTjyIadEdmop35aa6V6wc1Uk6kmulSc7+QA2HUV+1O3c4OR1g+cq4ScvHNIGeftZ6TEpyrbIJtN2syAX+wkdNr7ekVrzwv04swyErI9Y5zeGH68eljPW1jTZwWcYZEpy53DDC7iON5El/RyhSycLTIaiMgtVI0kQyfNbyTUs26XdYuK1uqHts6yQHdXfPLjvtRzKNqUyIfyIQXZDajsYWxzn3RicCe5ncIIyrXmHgly+m1oK3JB+1R5nGsMGUxGnitCenFHt/02FUuClr6TI+gXCJfy3HtrFoQ2xg6Lenz7I2P63raCG1Moc9IIrm8IBUc5fHZd2sYcY8z6c48Ug7XawMn/zjmbi1nN0WewZAjXSMEimYTMjSS+Wz54ehnqAszH58ztFtYfoaJMqa9ZGqEy5gRlxrIYyoZRjmDv8JJo=

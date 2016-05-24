@@ -44,7 +44,8 @@
     <script src="lib/ionic-datepicker/dist/ionic-datepicker.js"></script>
     <script src="lib/ionic-timepicker/dist/ionic-timepicker.bundle.min.js"></script>
     <script src="lib/moment/moment.js"></script>
-    <script src="lib/bugsnag/src/bugsnag.js" data-autonotify="false"></script>
+    <!-- Must use local Bugsnag library because external one causes problems in Chrome extension -->
+    <script src="lib/bugsnag/src/bugsnag.js"></script>
     <script src="https://cdn.rawgit.com/quantimodo/import-data/master/connect.js"></script>
     <script src="lib/pluralize/pluralize.js"></script>
     <script src="lib/ng-material-floating-button/src/mfb-directive.js"></script>
@@ -66,6 +67,8 @@
     <script src="js/services/variableCategoryService.js"></script>
     <script src="js/services/unitService.js"></script>
     <script src="js/services/timeService.js"></script>
+    <script src="js/services/ratingService.js"></script>
+    <script src="js/services/migrationService.js"></script>
 
     <script src="js/filters/singularize.js"></script>
     <script src="js/filters/fromNow.js"></script>

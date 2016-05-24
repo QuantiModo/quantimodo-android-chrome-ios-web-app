@@ -2,9 +2,9 @@
      <ion-content>
       <ion-list>
           <div collection-repeat="historyItem in history" divider-collection-repeat>
-              <ion-item ng-click="openPopover(historyItem)" >
+              <ion-item ng-click="editMeasurement(historyItem)" >
                   <div style="display:inline-block;float:left;margin-right:15px;">
-                    <img ng-src="{{historyItem.value | ImageByValue }}" style="width:80px;" />
+                    <img ng-src="{{historyItem.image}}" style="width:80px;" />
                   </div>
                   <div class="history-block">
                     <h2 class="history_time" ng-repeat="line in (historyItem.startTime | time) track by $index">

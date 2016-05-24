@@ -16,6 +16,8 @@ angular.module('starter')
         }
 
         $scope.init = function(){
+            //$scope.showLoader();
+            $ionicLoading.hide();
             if($rootScope.helpPopup){
                 console.log('Closing help popup!');
                 $rootScope.helpPopup.close();
@@ -25,6 +27,7 @@ angular.module('starter')
                 $rootScope.getUserAndSetInLocalStorage();
             }
             if($rootScope.user){
+                $ionicLoading.hide();
                 console.log("Already logged in on login page.  Going to default state...");
                 $rootScope.hideNavigationMenu = false;
                 $state.go(config.appSettings.defaultState);
@@ -34,6 +37,7 @@ angular.module('starter')
         // User wants to login
         $scope.login = function(register) {
 
+            $scope.showLoader();
             localStorageService.setItem('isWelcomed', true);
             $rootScope.isWelcomed = true;
 
@@ -54,7 +58,7 @@ angular.module('starter')
             $rootScope.user = userObject;
 
             if($rootScope.user){
-                console.log('Settings user in login');
+                console.debug('login: Setting up user and goign to default state');
                 $rootScope.setUserForIntercom($rootScope.user);
                 $rootScope.setUserForBugsnag($rootScope.user);
                 $rootScope.hideNavigationMenu = false;
@@ -77,6 +81,7 @@ angular.module('starter')
 
         // get Access Token
         var fetchAccessTokenAndUserDetails = function(authorization_code, withJWT) {
+            //$scope.showLoader();
             authService.getAccessTokenFromAuthorizationCode(authorization_code, withJWT)
                 .then(function(response) {
 
@@ -93,7 +98,7 @@ angular.module('starter')
                             authService.updateAccessToken(response);
                         }
 
-                        console.log('get user details from server...');
+                        console.debug('get user details from server and going to defaultState...');
                         $rootScope.getUserAndSetInLocalStorage();
                         $rootScope.hideNavigationMenu = false;
                         $rootScope.$broadcast('callAppCtrlInit');
@@ -110,7 +115,8 @@ angular.module('starter')
         };
 
         var nonNativeMobileLogin = function(register) {
-            console.log("nonNativeMobileLogin: Mobile device detected and ionic platform is " + ionic.Platform.platforms[0]);
+            //$scope.showLoader();
+            //console.log("nonNativeMobileLogin: Mobile device detected and ionic platform is " + ionic.Platform.platforms[0]);
             console.log(JSON.stringify(ionic.Platform.platforms));
 
             var url = authService.generateV1OAuthUrl(register);
@@ -148,6 +154,7 @@ angular.module('starter')
         };
 
         var chromeAppLogin = function(register){
+          //$scope.showLoader();
           console.log("login: Use Chrome app (content script, background page, etc.");
           var url = authService.generateV1OAuthUrl(register);
           chrome.identity.launchWebAuthFlow({
@@ -160,6 +167,7 @@ angular.module('starter')
         };
 
         var chromeExtensionLogin = function(register) {
+            //$scope.showLoader();
             var loginUrl = config.getURL("api/v2/auth/login");
             if (register === true) {
             loginUrl = config.getURL("api/v2/auth/register");
@@ -169,18 +177,16 @@ angular.module('starter')
         };
 
         $scope.nativeLogin = function(platform, accessToken){
+            //$scope.showLoader();
             localStorageService.setItem('isWelcomed', true);
             $rootScope.isWelcomed = true;
 
-            utilsService.loadingStart('Talking to QuantiModo', 3000);
             authService.getJWTToken(platform, accessToken)
                 .then(function(JWTToken){
                     // success
 
                     console.log("nativeLogin: Mobile device detected and platform is " + platform);
                     var url = authService.generateV2OAuthUrl(JWTToken);
-
-                    $ionicLoading.hide();
 
                     console.log('nativeLogin: open the auth window via inAppBrowser.');
                     var ref = window.open(url,'_blank', 'location=no,toolbar=no');
@@ -222,25 +228,37 @@ angular.module('starter')
         };
 
         // log in with google
-        $scope.googleLogin = function(){
-            utilsService.loadingStart('Logging you in', 2000);
-            window.plugins.googleplus.login({
-                'scopes': 'https://www.googleapis.com/auth/plus.login https://www.googleapis.com/auth/userinfo.email', // optional, space-separated list of scopes, If not included or empty, defaults to `profile` and `email`.
-                'webClientId': '1052648855194.apps.googleusercontent.com', // optional clientId of your Web application from Credentials settings of your project - On Android, this MUST be included to get an idToken. On iOS, it is not required.
-                'offline': true // optional, but requires the webClientId - if set to true the plugin will also return a serverAuthCode, which can be used to grant offline access to a non-Google server
-                },
-                function (userData) {
-                    $ionicLoading.hide();
-                    console.log('successfully logged in');
-                    console.log('google->', JSON.stringify(userData));
-                    var accessToken = userData.accessToken;
+        $scope.googleLogin = function(register){
+            $scope.showLoader();
+            document.addEventListener('deviceready', deviceReady, false);
+            function deviceReady() {
+                //I get called when everything's ready for the plugin to be called!
+                console.log('Device is ready!');
+                window.plugins.googleplus.login({
+                        'scopes': 'https://www.googleapis.com/auth/plus.login https://www.googleapis.com/auth/userinfo.email', // optional, space-separated list of scopes, If not included or empty, defaults to `profile` and `email`.
+                        'webClientId': '1052648855194.apps.googleusercontent.com', // optional clientId of your Web application from Credentials settings of your project - On Android, this MUST be included to get an idToken. On iOS, it is not required.
+                        'offline': true // optional, but requires the webClientId - if set to true the plugin will also return a serverAuthCode, which can be used to grant offline access to a non-Google server
+                    },
+                    function (userData) {
+                        $ionicLoading.hide();
+                        console.debug('successfully logged in');
+                        console.debug('google->', JSON.stringify(userData));
+                        if(!userData.accessToken){
+                            console.error('googleLogin: No userData.accessToken provided! Fallback to nonNativeMobileLogin...');
+                            nonNativeMobileLogin(register);
+                        } else {
+                            $scope.nativeLogin('google', userData.accessToken);
+                        }
+                    },
+                    function (msg) {
+                        $ionicLoading.hide();
+                        console.error("Google login error: ", msg);
+                        console.debug('googleLogin: Fallback to nonNativeMobileLogin...');
+                        nonNativeMobileLogin(register);
+                    }
+                );
+            }
 
-                    $scope.nativeLogin('google', accessToken);
-                },
-                function (msg) {
-                    $ionicLoading.hide();
-                    console.log("google login error", msg);
-                });
         };
 
         $scope.googleLogout = function(){
@@ -253,7 +271,7 @@ angular.module('starter')
 
         // login with facebook
         $scope.facebookLogin = function(){
-            utilsService.loadingStart('Logging you in', 2000);
+            $scope.showLoader();
             $cordovaFacebook.login(["public_profile", "email", "user_friends"])
                 .then(function(success) {
                     // success
@@ -278,6 +296,7 @@ angular.module('starter')
         };
 
         var browserLogin = function(register) {
+            //$scope.showLoader();
             console.log("Browser Login");
             if (config.getClientId() !== 'oAuthDisabled') {
                 oAuthBrowserLogin(register);
@@ -287,9 +306,11 @@ angular.module('starter')
         };
 
         var sendToNonOAuthBrowserLoginUrl = function(register) {
+
             var user = getOrSetUserInLocalStorage();
             if(user){
                 $rootScope.hideNavigationMenu = false;
+                console.debug('sendToNonOAuthBrowserLoginUrl: User logged in so going to defaultState');
                 $state.go(config.appSettings.defaultState);
             }
             if(!user){
@@ -298,11 +319,12 @@ angular.module('starter')
                     loginUrl = config.getURL("api/v2/auth/register");
                 }
                 console.log("sendToNonOAuthBrowserLoginUrl: Client id is oAuthDisabled - will redirect to regular login.");
-                loginUrl += "redirect_uri=" + encodeURIComponent(window.location.href);
+                loginUrl += "redirect_uri=" + encodeURIComponent(window.location.href.replace('app/login','app/reminders-inbox'));
                 console.debug('sendToNonOAuthBrowserLoginUrl: AUTH redirect URL created:', loginUrl);
                 var apiUrl = config.getApiUrl();
                 var apiUrlMatchesHostName = apiUrl.indexOf(window.location.hostname);
                 if(apiUrlMatchesHostName > -1 || $rootScope.isChromeExtension) {
+                    $scope.showLoader();
                     window.location.replace(loginUrl);
                 } else {
                     alert("API url doesn't match auth base url.  Please make use the same domain in config file");
@@ -311,6 +333,7 @@ angular.module('starter')
         };
 
         var oAuthBrowserLogin = function (register) {
+            //$scope.showLoader();
             var url = authService.generateV1OAuthUrl(register);
 
             var ref = window.open(url, '_blank');
@@ -362,7 +385,6 @@ angular.module('starter')
                 window.addEventListener("message", window.onMessageReceived, false);
             }
         };
-
 
         $scope.init();
     });

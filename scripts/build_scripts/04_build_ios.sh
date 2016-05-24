@@ -5,54 +5,54 @@ sleep 5
 echo "This script must be run on OSX"
 echo "Prerequisites:  http://brew.sh/"
 
-if [ -z "$LOWERCASE_APP_NAME" ]
+if [ -z "$1" ]
   then
-    echo -e "${RED}Please provide LOWERCASE_APP_NAME! ${NC}"
+    echo -e "${RED}Please provide LOWERCASE_APP_NAME as first parameter ${NC}"
     exit
-fi
-
-if [ -z "$INTERMEDIATE_PATH" ]
-  then
-  echo -e "No INTERMEDIATE_PATH!"
-    exit
-  else
-    echo "INTERMEDIATE_PATH is $INTERMEDIATE_PATH"
-fi
-
-if [ "$LOWERCASE_APP_NAME" == "moodimodo" ]; then
-    ### Build iOS App ###
-
-    cd ${INTERMEDIATE_PATH}
-    #ionic state reset
-    #echo "Generating image resources for $LOWERCASE_APP_NAME..."
-    chmod a+x ./scripts/decrypt-key.sh
-    ./scripts/decrypt-key.sh
-    chmod a+x ./scripts/add-key.sh
-    ./scripts/add-key.sh
-    gulp -v
-    echo "Removing plugins and platforms for $LOWERCASE_APP_NAME in $PWD..."
-    rm -rf plugins/ && rm -rf platforms/
-    echo "gulp addFacebookPlugin for $LOWERCASE_APP_NAME in $PWD..."
-    gulp addFacebookPlugin
-    echo "gulp addGooglePlusPlugin for $LOWERCASE_APP_NAME in $PWD..."
-    gulp addGooglePlusPlugin
-    echo "ionic platform add ios for $LOWERCASE_APP_NAME in $PWD..."
-    ionic platform add ios
-    echo "ionic resources for $LOWERCASE_APP_NAME in $PWD..."
-    ionic resources
-    gulp readKeysForCurrentApp
-    gulp fixResourcesPlist
-    gulp addBugsnagInObjC
-#    gulp enableBitCode
-    gulp addInheritedToOtherLinkerFlags
-    gulp addDeploymentTarget
-    gulp addPodfile
-    gulp installPods
-#    gulp generateXmlConfig
-    #gulp makeIosApp
-    chmod a+x ./scripts/package-and-upload.sh
-    ./scripts/package-and-upload.sh
-    ### Build iOS App ###
 else
-    echo "Can only build moodimodo iOS app for now"
+    export LOWERCASE_APP_NAME=$1
+    echo -e "${RED}Lowercase app name is $LOWERCASE_APP_NAME ${NC}"
 fi
+
+if [ -z "$2" ]
+  then
+    echo -e "${RED}Please provide APP_DISPLAY_NAME as second parameter ${NC}"
+    exit
+else
+    export APP_DISPLAY_NAME="$2"
+fi
+
+if [ -z "$3" ]
+  then
+    echo -e "${RED}Please provide APPLE_ID as third parameter ${NC}"
+    exit
+else
+    export APPLE_ID=$3
+fi
+
+if [ -z "$4" ]
+  then
+    echo -e "${RED}Please provide APP_IDENTIFIER as fourth parameter ${NC}"
+    exit
+else
+    export APP_IDENTIFIER=$4
+fi
+
+chmod a+x ./scripts/decrypt-key.sh
+./scripts/decrypt-key.sh
+chmod a+x ./scripts/add-key.sh
+./scripts/add-key.sh
+
+cp -R apps/${LOWERCASE_APP_NAME}/* $PWD
+ionic state reset
+npm install
+echo "npm has installed"
+gulp -v
+echo "ran through gulp"
+gulp generateXmlConfig
+cp apps/${LOWERCASE_APP_NAME}/resources/icon_white.png $PWD/resources/icon.png
+ionic resources
+gulp setVersionNumbersWithEnvs
+gulp makeIosApp
+chmod a+x ./scripts/package-and-upload.sh
+./scripts/package-and-upload.sh

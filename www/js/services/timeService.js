@@ -38,7 +38,29 @@ angular.module('starter')
                 var epochTime = moment(utcTimeStringFull, timeFormat).unix();
                 
                 return epochTime;
-            }
+            },
+
+			getLocalMidnightInUtcString: function () {
+				var localMidnightMoment = moment(0, "HH");
+				var timeFormat = 'YYYY-MM-DDTHH:mm:ss';
+				var localMidnightInUtcString = localMidnightMoment.utc().format(timeFormat);
+				return localMidnightInUtcString;
+			},
+
+			
+			getCurrentTimeInUtcString: function () {
+				var currentMoment = moment();
+				var timeFormat = 'HH:mm:ss';
+				var currentTimeInUtcString = currentMoment.utc().format(timeFormat);
+				return currentTimeInUtcString;
+			},
+
+			getCurrentDateTimeInUtcString: function () {
+				var currentMoment = moment();
+				var timeFormat = 'YYYY-MM-DDTHH:mm:ss';
+				var currentTimeInUtcString = currentMoment.utc().format(timeFormat);
+				return currentTimeInUtcString;
+			}
 		};
 
 		return timeService;

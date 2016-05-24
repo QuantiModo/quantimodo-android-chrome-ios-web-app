@@ -1,10 +1,10 @@
 <div hide-nav-bar="hideNavigationMenu" class="card history-edit-card">
 	<div class="item item-text-wrap">
-	  	<div class="primary-outcome-variable primary-outcome-variable-history">
-	  		<img ng-repeat="option in primaryOutcomeVariableRatingOptions"
+	  	<div class="primary-outcome-variable-rating-buttons primary-outcome-variable-history">
+	  		<img ng-repeat="option in positiveRatingOptions"
                  ng-click="selectPrimaryOutcomeVariableValue($event, option)"
                  ng-src="{{option.img}}"
-                 class="{{option.value}}"
+                 class="{{option.numericValue}}"
             >
 		</div>
 		<br/>

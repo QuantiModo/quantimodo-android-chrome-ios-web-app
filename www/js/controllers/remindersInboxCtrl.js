@@ -27,7 +27,9 @@ angular.module('starter')
 				step: 1
 			},
 			variable : {},
-			isDisabled : false
+			isDisabled : false,
+			title : 'Reminder Inbox',
+			loading : true
 	    };
 
 		if(typeof config.appSettings.remindersInbox.showAddHowIFeelResponseButton !== 'undefined'){
@@ -46,13 +48,7 @@ angular.module('starter')
 			$scope.state.showAddVitalSignButton = config.appSettings.remindersInbox.showAddVitalSignButton;
 		}
 
-		if(typeof(config.appSettings.remindersInbox.title) !== 'undefined'){
-			$scope.state.title = config.appSettings.remindersInbox.title;
-		}
 
-		if($stateParams.variableCategoryName){
-			$scope.state.title = $filter('wordAliases')($stateParams.variableCategoryName) + " " + $filter('wordAliases')("Reminder Inbox");
-		}
 
 	    $scope.selectPrimaryOutcomeVariableValue = function($event, val){
 	        // remove any previous primary outcome variables if present
@@ -65,6 +61,20 @@ angular.module('starter')
 
 	        $scope.state.selected1to5Value = val;
 
+		};
+
+		var setPageTitle = function(){
+			if(typeof(config.appSettings.remindersInbox.title) !== 'undefined'){
+				$scope.state.title = config.appSettings.remindersInbox.title;
+			}
+
+			if($stateParams.variableCategoryName){
+				$scope.state.title = $filter('wordAliases')($stateParams.variableCategoryName) + " " + $filter('wordAliases')("Reminder Inbox");
+			}
+
+			if($stateParams.today) {
+				$scope.state.title = 'Upcoming Reminders'
+			}
 		};
 
 	    var filterViaDates = function(reminders) {
@@ -111,7 +121,9 @@ angular.module('starter')
 					date.isSame(yesterday, 'd') !== true && date.isSame(today, 'd') !== true;
 	    	});
 
-	    	if(last30DayResult.length) result.push({ name : "Last 30 Days", reminders : last30DayResult });
+	    	if(last30DayResult.length) {
+				result.push({ name : "Last 30 Days", reminders : last30DayResult });
+			}
 
 	    	var olderResult = reminders.filter(function(reminder){
 	    		return moment.utc(reminder.trackingReminderNotificationTime).local().isBefore(monthold) === true;
@@ -123,89 +135,109 @@ angular.module('starter')
 	    };
 
 	    var getTrackingReminderNotifications = function(){
-	    	utilsService.loadingStart();
+	    	//$scope.showLoader('Fetching reminders...');
+			$scope.showLoader();
 
-	    	reminderService.getTrackingReminderNotifications($stateParams.variableCategoryName)
+	    	reminderService.getTrackingReminderNotifications($stateParams.variableCategoryName, $stateParams.today)
 	    	.then(function(reminders){
 				if(reminders.length > 1){
 					$scope.state.showButtons = false;
 				}
+				if(reminders.length < 2){
+					$scope.state.showButtons = true;
+				}
+
 	    		$scope.state.trackingRemindersNotifications = reminders;
 	    		$scope.state.filteredReminders = filterViaDates(reminders);
-	    		utilsService.loadingStop();
+				$ionicLoading.hide();
+				$scope.loading = false;
 	    	}, function(){
-	    		utilsService.loadingStop();
-	    		console.log("failed to get reminders");
+				$ionicLoading.hide();
+				$scope.loading = false;
+	    		console.error("failed to get reminders");
 				//utilsService.showLoginRequiredAlert($scope.login);
 
 	    	});
 	    };
 
 	    $scope.track = function(reminder, modifiedReminderValue){
+			$scope.showLoader();
 			console.log('modifiedReminderValue is ' + modifiedReminderValue);
 	    	reminderService.trackReminder(reminder.id, modifiedReminderValue)
 	    	.then(function(){
 	    		$scope.init();
 
 	    	}, function(err){
+				console.error(err);
 	    		utilsService.showAlert('Failed to Track Reminder, Try again!', 'assertive');
 	    	});
 	    };
 
 	    $scope.skip = function(reminder){
-	    	
+			$scope.showLoader();
 	    	reminderService.skipReminder(reminder.id)
 	    	.then(function(){
+	    		$scope.hideLoader();
 	    		$scope.init();
-
 	    	}, function(err){
+	    		$scope.hideLoader();
 	    		utilsService.showAlert('Failed to Skip Reminder, Try again!', 'assertive');
+				console.error(err);
 	    	});
 	    };
 
 	    $scope.snooze = function(reminder){
+			$scope.showLoader();
 	    	reminderService.snoozeReminder(reminder.id)
 	    	.then(function(){
 	    		$scope.init();
 	    	}, function(err){
-				console.log(err);
+				console.error(err);
 	    		utilsService.showAlert('Failed to Snooze Reminder, Try again!', 'assertive');
 	    	});
 	    };
 
 	    $scope.init = function(){
-			$scope.state.loading = true;
-			utilsService.loadingStart();
+			setPageTitle();
 			var isAuthorized = authService.checkAuthOrSendToLogin();
 			if(isAuthorized){
-				$scope.state.showButtons = true;
 				$scope.showHelpInfoPopupIfNecessary();
 				getTrackingReminderNotifications();
-				$ionicLoading.hide();
 			}
 	    };
 
 	    $scope.editMeasurement = function(reminder){
-			$state.go('app.measurementAdd', {reminder: reminder});
+			reminderService.skipReminder(reminder.id);
+			$state.go('app.measurementAdd',
+				{
+					reminder: reminder,
+					fromUrl: window.location.href
+				});
 	    };
 
 	    $scope.editReminderSettings = function(reminder){
-	    	reminder["fromState"] = $state.current.name;
-	    	$state.go('app.reminderAdd', {reminder : reminder});
+	    	reminder.fromState = $state.current.name;
+	    	$state.go('app.reminderAdd',
+				{
+					reminder : reminder,
+					fromUrl: window.location.href
+				});
 	    };
 
 	    $scope.deleteReminder = function(reminder){
-	    	utilsService.loadingStart();
+			$scope.showLoader();
 	    	reminderService.deleteReminder(reminder.id)
 	    	.then(function(){
 
-	    		utilsService.loadingStop();
+				$ionicLoading.hide();
+				$scope.loading = false;
 	    		utilsService.showAlert('Reminder Deleted.');
 	    		$scope.init();
 
 	    	}, function(err){
-				console.log(err);
-	    		utilsService.loadingStop();
+				$ionicLoading.hide();
+				$scope.loading = false;
+				console.error(err);
 	    		utilsService.showAlert('Failed to Delete Reminder, Try again!', 'assertive');
 	    	});
 	    };
@@ -214,5 +246,5 @@ angular.module('starter')
     	$scope.$on('$ionicView.enter', function(e){
     		$scope.init();
     	});
-
+		
 	});

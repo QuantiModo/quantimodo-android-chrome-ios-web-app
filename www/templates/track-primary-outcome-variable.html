@@ -4,8 +4,8 @@
     		<div class="item item-text-wrap">
                 <div class="primary-outcome-variable-rating-buttons" >
                     <p class="heading positive" style="padding:14px; text-align: center;">{{primaryOutcomeVariableTrackingQuestion}}</p>
-                    <img ng-repeat="option in primaryOutcomeVariableRatingOptions"
-                         ng-click="recordPrimaryOutcomeVariableRating(option.value)"
+                    <img ng-repeat="option in positiveRatingOptions"
+                         ng-click="recordPrimaryOutcomeVariableRating(option.numericValue)"
                          ng-src="{{option.img}}"
                             >
                 </div>
@@ -24,8 +24,8 @@
                 <div>
                     <img ng-src="{{averagePrimaryOutcomeVariableImage}}" class="top-left" alt="Depressed">
                     <div class="to-right">
-                        <br>
-                        <span ng-show="averagePrimaryOutcomeVariableValue" class="heading">{{primaryOutcomeVariableAverageText}} {{averagePrimaryOutcomeVariableValue}}.</span>
+
+                        <span class="heading">{{appSettings.primaryOutcomeVariableAverageText}} {{averagePrimaryOutcomeVariableText}}.</span>
                         <ul class="from-top">
                             <!--                           <li>We hope you feel great!</li>-->
                         </ul>

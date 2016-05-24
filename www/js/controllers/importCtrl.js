@@ -22,7 +22,7 @@ angular.module('starter')
 
 	    // constructor
 	    $scope.init = function(){
-			utilsService.loadingStart();
+			$scope.showLoader();
 	        // get user's access token
 	        authService.getAccessTokenFromAnySource().then(function(token){
 	            $ionicLoading.hide();

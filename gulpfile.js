@@ -94,7 +94,7 @@ gulp.task('swagger', function(){
 	return deferred.promise;
 });
 
-gulp.task('generatePrivateConfigFromEnvs', function(){
+gulp.task('generatePrivateConfigFromEnvsForHeroku', function(){
 
 	var deferred = q.defer();
 
@@ -117,47 +117,55 @@ gulp.task('generatePrivateConfigFromEnvs', function(){
 		deferred.reject();
 	}
 
+	// Can't do this because it overwrites decrypted config on Travis
+	// if(typeof environmentalVariables['APPS'] === "undefined" || environmentalVariables['APPS'].trim() === '') {
+	// 	if (environmentalVariables['LOWERCASE_APP_NAME']) {
+	// 		console.log('No APPS env found.  Using LOWERCASE_APP_NAME ' + environmentalVariables['LOWERCASE_APP_NAME'].toUpperCase());
+	// 		environmentalVariables['APPS'] = environmentalVariables['LOWERCASE_APP_NAME'].toUpperCase();
+	// 	}
+	// }
+
 	if(typeof environmentalVariables['APPS'] === "undefined" || environmentalVariables['APPS'].trim() === ''){
-		console.error('No Apps Found');
+		console.error('No APPS env found!');
 		deferred.reject();
 	} else {
-		var apps = environmentalVariables['APPS'].split(',');
+		var upperCaseAppNames = environmentalVariables['APPS'].split(',');
 
-		apps.forEach(function(appName){
-			appName = appName.trim();
+		upperCaseAppNames.forEach(function(upperCaseAppName){
+			upperCaseAppName = upperCaseAppName.trim();
 			var configkeys = {
 				client_ids : {},
 				client_secrets : {},
 				redirect_uris : {},
 				api_urls : {}
 			};
-			if(typeof environmentalVariables[appName+'_WEB_CLIENT_ID'] !== "undefined"){
-				configkeys.client_ids.Web = environmentalVariables[appName+'_WEB_CLIENT_ID'];
-				console.log(appName+'_WEB_CLIENT_ID'+' Detected');
+			if(typeof environmentalVariables[upperCaseAppName+'_WEB_CLIENT_ID'] !== "undefined"){
+				configkeys.client_ids.Web = environmentalVariables[upperCaseAppName+'_WEB_CLIENT_ID'];
+				console.log(upperCaseAppName+'_WEB_CLIENT_ID'+' Detected');
 			} else {
-				console.log(appName+'_WEB_CLIENT_ID'+' NOT DETECTED');
+				console.log(upperCaseAppName+'_WEB_CLIENT_ID'+' NOT DETECTED');
 			}
 
-			if(typeof environmentalVariables[appName+'_WEB_CLIENT_SECRET'] !== "undefined"){
-				configkeys.client_secrets.Web = environmentalVariables[appName+'_WEB_CLIENT_SECRET'];
-				console.log(appName+'_WEB_CLIENT_SECRET'+' Detected');
+			if(typeof environmentalVariables[upperCaseAppName+'_WEB_CLIENT_SECRET'] !== "undefined"){
+				configkeys.client_secrets.Web = environmentalVariables[upperCaseAppName+'_WEB_CLIENT_SECRET'];
+				console.log(upperCaseAppName+'_WEB_CLIENT_SECRET'+' Detected');
 			} else {
-				console.log(appName+'_WEB_CLIENT_SECRET'+' NOT DETECTED');
+				console.log(upperCaseAppName+'_WEB_CLIENT_SECRET'+' NOT DETECTED');
 			}
 
-			if(typeof environmentalVariables[appName+'_WEB_API_URL'] !== "undefined"){
-				configkeys.api_urls.Web = environmentalVariables[appName+'_WEB_API_URL'];
-				console.log(appName+'_WEB_API_URL'+' Detected');
+			if(typeof environmentalVariables[upperCaseAppName+'_WEB_API_URL'] !== "undefined"){
+				configkeys.api_urls.Web = environmentalVariables[upperCaseAppName+'_WEB_API_URL'];
+				console.log(upperCaseAppName+'_WEB_API_URL'+' Detected');
 			} else {
-				console.log(appName+'_WEB_API_URL'+' NOT DETECTED. Using https://app.quantimo.do');
+				console.log(upperCaseAppName+'_WEB_API_URL'+' NOT DETECTED. Using https://app.quantimo.do');
 				configkeys.api_urls.Web = 'https://app.quantimo.do';
 			}
 
-			if(typeof environmentalVariables[appName+'_WEB_REDIRECT_URI'] !== "undefined"){
-				configkeys.redirect_uris.Web = environmentalVariables[appName+'_WEB_REDIRECT_URI'];
-				console.log(appName+'_WEB_REDIRECT_URI'+' Detected');
+			if(typeof environmentalVariables[upperCaseAppName+'_WEB_REDIRECT_URI'] !== "undefined"){
+				configkeys.redirect_uris.Web = environmentalVariables[upperCaseAppName+'_WEB_REDIRECT_URI'];
+				console.log(upperCaseAppName+'_WEB_REDIRECT_URI'+' Detected');
 			} else {
-				console.log(appName+'_WEB_REDIRECT_URI'+' NOT DETECTED. Using https://app.quantimo.do/ionic/Modo/www/callback/');
+				console.log(upperCaseAppName+'_WEB_REDIRECT_URI'+' NOT DETECTED. Using https://app.quantimo.do/ionic/Modo/www/callback/');
 				configkeys.redirect_uris.Web = 'https://app.quantimo.do/ionic/Modo/www/callback/';
 			}
 
@@ -170,9 +178,11 @@ gulp.task('generatePrivateConfigFromEnvs', function(){
 
 			var content = 'window.private_keys = '+JSON.stringify(configkeys, 0, 2);
 
-			fs.writeFileSync("./www/private_configs/"+appName.toLowerCase()+".config.js", content);
+			var lowerCaseAppName = upperCaseAppName.toLowerCase();
 
-			console.log('Created '+ './www/private_configs/'+appName.toLowerCase()+'.config.js');
+			fs.writeFileSync("./www/private_configs/" + lowerCaseAppName + ".config.js", content);
+
+			console.log('Created '+ './www/private_configs/' + lowerCaseAppName + '.config.js');
 
 		});
 	}
@@ -563,6 +573,14 @@ var GOOGLEPLUS_REVERSED_CLIENT_ID = false;
 gulp.task('readKeysForCurrentApp', ['getAppName'] ,function(){
 	var deferred = q.defer();
 
+	fs.stat('./www/private_configs/' + LOWERCASE_APP_NAME + '.config.js', function(err, stat) {
+		if(err == null) {
+			console.log('./www/private_configs/' + LOWERCASE_APP_NAME + '.config.js exists');
+		} else {
+			console.log(err.code);
+		}
+	});
+
 	fs.readFile('./www/private_configs/' + LOWERCASE_APP_NAME + '.config.js', function (err, data) {
 		if (err) {
 			throw err;
@@ -572,19 +590,19 @@ gulp.task('readKeysForCurrentApp', ['getAppName'] ,function(){
 
 		if(data.indexOf('FACEBOOK_APP_ID') < 0){
 			exr = true;
-			console.log("no FACEBOOK_APP_ID found in file");
+			console.log("ERROR: NO FACEBOOK_APP_ID found in ./www/private_configs/" + LOWERCASE_APP_NAME + '.config.js');
 			deferred.reject();
 		}
 
 		if(data.indexOf('FACEBOOK_APP_NAME') < 0){
 			exr = true;
-			console.log("no FACEBOOK_APP_NAME found in file");
+			console.log("ERROR: NO FACEBOOK_APP_NAME found in ./www/private_configs/" + LOWERCASE_APP_NAME + '.config.js');
 			deferred.reject();
 		}
 
 		if(data.indexOf('GOOGLEPLUS_REVERSED_CLIENT_ID') < 0){
 			exr = true;
-			console.log("no GOOGLEPLUS_REVERSED_CLIENT_ID found in file");
+			console.log("ERROR: NO GOOGLEPLUS_REVERSED_CLIENT_ID found in ./www/private_configs/" + LOWERCASE_APP_NAME + '.config.js');
 			deferred.reject();
 		}
 
@@ -1007,11 +1025,17 @@ gulp.task('setVersionNumbersWithEnvs', function(){
 	var deferred = q.defer();
 	var environmentalVariables = process.env;
 	if(!environmentalVariables['IONIC_APP_VERSION_NUMBER']){
-		throw new Error('Please set IONIC_APP_VERSION_NUMBER env!');
+		//throw new Error('Please set IONIC_APP_VERSION_NUMBER env!');
+		environmentalVariables['IONIC_APP_VERSION_NUMBER'] = '1.4.7';
+		console.warn('No IONIC_APP_VERSION_NUMBER env!  Using hardcoded gulp version ' +
+			environmentalVariables['IONIC_APP_VERSION_NUMBER'])
 	}
 
 	if(!environmentalVariables['IONIC_IOS_APP_VERSION_NUMBER']){
-		throw new Error('Please set IONIC_IOS_APP_VERSION_NUMBER env!');
+		//throw new Error('Please set IONIC_IOS_APP_VERSION_NUMBER env!');
+		environmentalVariables['IONIC_IOS_APP_VERSION_NUMBER'] = '1.4.7.1';
+		console.warn('No IONIC_IOS_APP_VERSION_NUMBER env!  Using hardcoded gulp version ' +
+			environmentalVariables['IONIC_IOS_APP_VERSION_NUMBER'])
 	}
 
 	var xml = fs.readFileSync('./config.xml', 'utf8');

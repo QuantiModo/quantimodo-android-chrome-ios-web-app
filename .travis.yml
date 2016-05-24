@@ -14,32 +14,21 @@ before_install:
 - npm install -g ios-sim
 - npm install -g ios-deploy
 before_script:
-- chmod a+x ./scripts/decrypt-key.sh
-- ./scripts/decrypt-key.sh
-- chmod a+x ./scripts/add-key.sh
-- ./scripts/add-key.sh
+- #chmod a+x ./scripts/decrypt-key.sh
+- #./scripts/decrypt-key.sh
+- #chmod a+x ./scripts/add-key.sh
+- #./scripts/add-key.sh
 script:
-- ionic state reset
-- npm install
-- echo "npm has installed"
-- gulp -v
-- echo "ran through gulp"
-- gulp generateXmlConfig
-- cp -R apps/${LOWERCASE_APP_NAME}/* $PWD
-- cp apps/${LOWERCASE_APP_NAME}/resources/icon_white.png $PWD/resources/icon.png
-- ionic resources
-- gulp setVersionNumbersWithEnvs
-- gulp makeIosApp
-- chmod a+x ./scripts/package-and-upload.sh
-- ./scripts/package-and-upload.sh
+- chmod a+x ./scripts/build_scripts/04_build_ios.sh
+- #./scripts/build_scripts/04_build_ios.sh energymodo EnergyModo 1115037652 "com.quantimodo.energymodo"
+- #./scripts/build_scripts/04_build_ios.sh medtlc MedTLC 1115037661 "com.quantimodo.medtlc"
+- #./scripts/build_scripts/04_build_ios.sh mindfirst "Mind First" 1024924226 "com.quantimodo.moodimodo"
+- ./scripts/build_scripts/04_build_ios.sh moodimodo MoodiModo 1046797567 "com.quantimodo.moodimodoapp"
+- #./scripts/build_scripts/04_build_ios.sh quantimodo QuantiModo 1115037060 "com.quantimodo.quantimodo"
 env:
   global:
-  - IONIC_IOS_APP_VERSION_NUMBER="1.2.0.14"
-  - IONIC_APP_VERSION_NUMBER="1.2.0"
-  - APP_DISPLAY_NAME="MoodiModo"
-  - LOWERCASE_APP_NAME="moodimodo"
-  - APP_IDENTIFIER="com.quantimodo.moodimodoapp"
-  - APPLE_ID="1046797567"
+  - IONIC_APP_VERSION_NUMBER="1.4.7"
+  - IONIC_IOS_APP_VERSION_NUMBER="1.4.7.1"
   - TEAM_ID="YD2FK7S2S5"
   - DEVELOPER_NAME="iPhone Distribution: Mike Sinn (YD2FK7S2S5)"
   - PROFILE_NAME="028ab892-9a5e-4004-adac-b8472e760bdb"

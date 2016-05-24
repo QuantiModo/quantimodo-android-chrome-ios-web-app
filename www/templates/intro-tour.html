@@ -21,9 +21,9 @@
                 </p>
                 
                 <div ng-if="introConf.content.showOutcomeVariableImages" >
-                    <div class="ponka" style="display:inline-block" ng-repeat="option in primaryOutcomeVariableRatingOptions">
+                    <div class="ponka" style="display:inline-block" ng-repeat="option in positiveRatingOptions">
                         <img style="width:{{introConf.img.width}}px; height:{{introConf.img.height}}px;" class="intro-primary-outcome-variable" ng-src="{{option.img}}">
-                        <p>{{option.value}}</p>
+                        <p>{{option.displayDescription}}</p>
                     </div>
 
                 </div>
@@ -43,7 +43,7 @@
                     <div ng-if="introConf.content.finalP && introConf.content.finalP.buttonBarVisible">
                         <div class="button-bar">
                             <a class="button button-positive" ng-show="myIntro.slideIndex != introConfiguration.length-1 " ng-click="myIntro.startApp()">
-                                Skip Tour
+                                Skip
                             </a>
                             <a class="button button-positive" ng-show="myIntro.slideIndex > 0 && myIntro.slideIndex < introConfiguration.length-1" ng-click="myIntro.previous()">
                                 Back

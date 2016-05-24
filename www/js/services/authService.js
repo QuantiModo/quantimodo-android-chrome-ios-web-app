@@ -151,7 +151,7 @@ angular.module('starter')
                         var token = userCredentialsResp.data.token.split("|")[2];
                         //update locally stored token
                         localStorageService.setItem('accessToken', token);
-
+						$ionicLoading.hide();
                         //resolve promise
                         deferred.resolve({
                             accessToken: token
@@ -160,11 +160,11 @@ angular.module('starter')
                     },
                     function (errorResp) {
 
-                        console.log('getAccessTokenFromUserEndpoint: failed to fetch user credentials', errorResp);
-                        console.log('getAccessTokenFromUserEndpoint: client id is ' + config.getClientId());
-                        console.log('getAccessTokenFromUserEndpoint: Platform is browser: ' + ionic.Platform.is('browser'));
-                        console.log('getAccessTokenFromUserEndpoint: Platform is ios: ' + ionic.Platform.is('ios'));
-                        console.log('getAccessTokenFromUserEndpoint: Platform is android: ' + ionic.Platform.is('android'));
+                        console.debug('getAccessTokenFromUserEndpoint: failed to fetch user credentials', errorResp);
+                        console.debug('getAccessTokenFromUserEndpoint: client id is ' + config.getClientId());
+                        console.debug('getAccessTokenFromUserEndpoint: Platform is browser: ' + ionic.Platform.is('browser'));
+                        console.debug('getAccessTokenFromUserEndpoint: Platform is ios: ' + ionic.Platform.is('ios'));
+                        console.debug('getAccessTokenFromUserEndpoint: Platform is android: ' + ionic.Platform.is('android'));
 						$rootScope.user = null;
 						localStorageService.deleteItem('user');
 						$state.go('app.login');
@@ -226,7 +226,7 @@ angular.module('starter')
                }
             if(!user && !accessTokenInUrl){
                    $ionicLoading.hide();
-                   console.log('checkAuthOrSendToLogin: Could not get user or access token from url. Going to login page...');
+                   console.debug('checkAuthOrSendToLogin: Could not get user or access token from url. Going to login page...');
                    $state.go('app.login');
                }
         },

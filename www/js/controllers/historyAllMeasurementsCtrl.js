@@ -7,7 +7,7 @@ angular.module('starter')
 										   $ionicPopup, 
                                            variableCategoryService, 
                                            unitService,
-                                            utilsService){
+                                            utilsService, $stateParams, ratingService){
 
 	    $scope.controller_name = "historyAllMeasurementsCtrl";
         
@@ -19,6 +19,14 @@ angular.module('starter')
 			variableCategories : [],
 			showLoadMoreButton: false
 	    };
+
+		$scope.title = 'Measurement History';
+
+		var setupVariableCategory = function () {
+			if($stateParams.variableCategoryName){
+				$scope.title = $stateParams.variableCategoryName + ' History';
+			}
+		};
 
         $scope.goToState = function(state){
             $state.go(state, {
@@ -50,20 +58,22 @@ angular.module('starter')
 
 
 	    var getHistory = function(){
-	    	utilsService.loadingStart();
+	    	//$scope.showLoader();
 	    	measurementService.getHistoryMeasurements({
     		    offset: $scope.state.offset,
     		    limit: $scope.state.limit,
-    		    sort: "-startTime"
+    		    sort: "-startTime",
+				variableCategoryName: $stateParams.variableCategoryName
 	    	}).then(function(history){
     			$scope.state.history = $scope.state.history.concat(history);
+				$scope.state.history = ratingService.addImagesToMeasurements($scope.state.history);
 				if($scope.state.history.length > 49){
 					$scope.state.showLoadMoreButton = true;
 				}
-    			utilsService.loadingStop();
+				$scope.hideLoader();
 	    	}, function(error){
 	    		console.log('error getting measurements', error);
-	    		utilsService.loadingStop();
+				$scope.hideLoader();
 	    	});
 
 	    };
@@ -75,12 +85,13 @@ angular.module('starter')
 	    
 	    // constructor
 	    $scope.init = function(){
-			$scope.state.loading = true;
-            $ionicLoading.show({
-                noBackdrop: true,
-                template: '<p class="item-icon-left">' + 'Loading Stuff' + '<ion-spinner icon="lines"/></p>'
-            });
-			utilsService.loadingStart();
+			if($stateParams.variableCategoryName) {
+				$scope.showLoader('Fetching ' + $stateParams.variableCategoryName.toLowerCase()
+					+ ' measurements...');
+			} else {
+				$scope.showLoader('Fetching measurements...');
+			}
+			setupVariableCategory();
             var isAuthorized = authService.checkAuthOrSendToLogin();
 			if(isAuthorized){
                 $scope.showHelpInfoPopupIfNecessary();
@@ -97,9 +108,7 @@ angular.module('starter')
                         console.log("error getting units", err);
                     });
                 getHistory();
-                //$ionicLoading.hide();
 			}
-            $scope.state.loading = false;
 	    };
 
         // when view is changed

@@ -14,9 +14,19 @@ angular.module('starter')
         $scope.features = config.appSettings.features;
         $scope.appName = config.appSettings.appName;
 
-        localStorageService.getItem('primaryOutcomeRatingFrequencyDescription',function(primaryOutcomeRatingFrequencyDescription){
-            $scope.primaryOutcomeRatingFrequencyDescription = primaryOutcomeRatingFrequencyDescription || $rootScope.isIOS? "day" : "daily";
-        });
+        localStorageService.getItem('primaryOutcomeRatingFrequencyDescription',
+            function(primaryOutcomeRatingFrequencyDescription) {
+                if (primaryOutcomeRatingFrequencyDescription) {
+                    $scope.primaryOutcomeRatingFrequencyDescription = primaryOutcomeRatingFrequencyDescription;
+                }
+                if (!primaryOutcomeRatingFrequencyDescription && $rootScope.isIOS) {
+                    $scope.primaryOutcomeRatingFrequencyDescription = 'day';
+                }
+                if (!primaryOutcomeRatingFrequencyDescription && !$rootScope.isIOS) {
+                    $scope.primaryOutcomeRatingFrequencyDescription = 'daily';
+                }
+            }
+        );
 
         $scope.subscribeNotification = true;
 
@@ -49,6 +59,7 @@ angular.module('starter')
 
                 localStorageService.setItem('primaryOutcomeRatingFrequencyDescription', $scope.primaryOutcomeRatingFrequencyDescription);
                 $scope.showIntervalCard = false;
+                console.debug('saveInterval: Going to login state...');
                 $state.go('app.login');
             }            
         };
@@ -56,14 +67,15 @@ angular.module('starter')
         // skip interval reporting is tapped
         $scope.skipInterval = function(){
             $scope.showIntervalCard = false;
+            console.debug('skipInterval: Going to login state...');
             $state.go('app.login');
         };
 
         // ratingValue is reported
         $scope.reportPrimaryOutcomeVariable = function(ratingValue){
 
-            $scope.reportedVariableValue = config.appSettings.primaryOutcomeValueConversionDataSetReversed[ratingValue] ?
-                config.appSettings.primaryOutcomeValueConversionDataSetReversed[ratingValue] : false;
+            $scope.reportedVariableValue = config.appSettings.ratingTextToValueConversionDataSet[ratingValue] ?
+                config.appSettings.ratingTextToValueConversionDataSet[ratingValue] : false;
             
             localStorageService.setItem('primaryOutcomeVariableReportedWelcomeScreen',true);
             localStorageService.setItem('allMeasurements', JSON.stringify([]));
