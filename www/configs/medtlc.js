@@ -245,6 +245,11 @@ config.appSettings  = {
             icon : 'ion-ios-pulse'
         },
         {
+            title : "Today's Meds",
+            href : '#/app/reminders-inbox-today/Treatments',
+            icon : 'ion-android-sunny'
+        },
+        {
             title : 'Show Reminders',
             href : '#/app/reminders-inbox',
             icon : 'ion-android-notifications-none'
