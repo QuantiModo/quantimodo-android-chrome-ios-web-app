@@ -1026,12 +1026,16 @@ gulp.task('setVersionNumbersWithEnvs', function(){
 	var environmentalVariables = process.env;
 	if(!environmentalVariables['IONIC_APP_VERSION_NUMBER']){
 		//throw new Error('Please set IONIC_APP_VERSION_NUMBER env!');
-		environmentalVariables['IONIC_APP_VERSION_NUMBER'] = '1.4.6';
+		environmentalVariables['IONIC_APP_VERSION_NUMBER'] = '1.4.7';
+		console.warn('No IONIC_APP_VERSION_NUMBER env!  Using hardcoded gulp version ' +
+			environmentalVariables['IONIC_APP_VERSION_NUMBER'])
 	}
 
 	if(!environmentalVariables['IONIC_IOS_APP_VERSION_NUMBER']){
 		//throw new Error('Please set IONIC_IOS_APP_VERSION_NUMBER env!');
-		environmentalVariables['IONIC_IOS_APP_VERSION_NUMBER'] = '1.4.6.2';
+		environmentalVariables['IONIC_IOS_APP_VERSION_NUMBER'] = '1.4.7.0';
+		console.warn('No IONIC_IOS_APP_VERSION_NUMBER env!  Using hardcoded gulp version ' +
+			environmentalVariables['IONIC_IOS_APP_VERSION_NUMBER'])
 	}
 
 	var xml = fs.readFileSync('./config.xml', 'utf8');
