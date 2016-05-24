@@ -139,7 +139,8 @@ angular.module('starter')
 
         var populateUserVariables = function(){
             if($stateParams.variableCategoryName){
-                $scope.showLoader('Fetching most recent ' + $stateParams.variableCategoryName.toLowerCase() + '...');
+                $scope.showLoader('Fetching most recent ' +
+                    $filter('wordAliases')($stateParams.variableCategoryName.toLowerCase()) + '...');
             } else {
                 $scope.showLoader('Fetching most recent variables...');
             }
