@@ -9,11 +9,11 @@ angular.module('starter')
 			// measurements set
 			var measurements = [
 				{					
-                    name: config.appSettings.primaryOutcomeVariableDetails.name,
+                    variableName: config.appSettings.primaryOutcomeVariableDetails.name,
                     source: config.get('clientSourceName'),
-                    category: config.appSettings.primaryOutcomeVariableDetails.category,
+                    variableCategoryName: config.appSettings.primaryOutcomeVariableDetails.category,
                     combinationOperation: config.appSettings.primaryOutcomeVariableDetails.combinationOperation,
-                    unit: config.appSettings.primaryOutcomeVariableDetails.abbreviatedUnitName,
+                    abbreviatedUnitName: config.appSettings.primaryOutcomeVariableDetails.abbreviatedUnitName,
                     measurements : measurementsQueue
 				}
 			];
@@ -471,7 +471,7 @@ angular.module('starter')
                                 localStorageService.getItem('allMeasurements',function(val){
                                    allMeasurements = val ? JSON.parse(val) : [];
 
-                                    if(!lastSyncTime || allMeasurements.length === 0) {
+                                    if(!lastSyncTime || allMeasurements.length === 0 || allMeasurements === '[]') {
                                         
                                         allMeasurements = allMeasurements.concat(response);
                                     }
