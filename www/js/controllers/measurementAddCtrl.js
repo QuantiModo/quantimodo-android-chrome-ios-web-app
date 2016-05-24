@@ -5,14 +5,13 @@ angular.module('starter')
                                                      authService, measurementService, $state, $rootScope, $stateParams,
                                                      utilsService, localStorageService, $filter, $ionicScrollDelegate,
                                                         variableCategoryService, ionicTimePicker, variableService,
-                                                        unitService, timeService){
+                                                        unitService){
 
         $scope.controller_name = "MeasurementAddCtrl";
 
         var variableCategoryName = $stateParams.variableCategoryName;
         var variableCategoryObject = variableCategoryService.getVariableCategoryInfo(variableCategoryName);
         var currentTime = new Date();
-        $scope.loading = true;
 
         $scope.state = {
             measurementIsSetup : false,
@@ -158,14 +157,14 @@ angular.module('starter')
                     if(value) {
                         $scope.state.measurement.value = value;
                     }
-                    // redraw view
+                    console.debug('onMeasurementStart: redrawing view...');
                     $scope.safeApply();
                 }, 500);
             });
         };
 
-        // completed adding and/or measuring
         $scope.done = function(){
+            console.debug('done: completed adding and/or measuring');
 
             $scope.state.measurement.startTime = $scope.selectedDate.getTime()/1000;
 
@@ -182,8 +181,9 @@ angular.module('starter')
 
             console.log(params);
 
-            // check if it is a new variable
+
             if($scope.state.showAddVariable){
+                console.debug('done: Adding new variable..');
 
                 // validation
                 if(params.variableName === ""){
@@ -311,12 +311,9 @@ angular.module('starter')
 
         // constructor
         $scope.init = function(){
-            $scope.loading = true;
-            $scope.showLoader();
+            //$scope.showLoader();
             var isAuthorized = authService.checkAuthOrSendToLogin();
             if(isAuthorized){
-                $scope.loading = true;
-                $scope.showLoader();
                 if(!$scope.state.measurementIsSetup){
                     setupFromUrlParameters();
                 }
@@ -344,15 +341,14 @@ angular.module('starter')
                     }
                 }
                 populateUnits();
-                $ionicLoading.hide();
+                $scope.hideLoader();
             }
         };
 
         var populateUnits = function () {
             unitService.getUnits().then(function(unitObjects){
                 $scope.state.unitObjects = unitObjects;
-                $ionicLoading.hide();
-                $scope.loading = false;
+                $scope.hideLoader();
             });
         };
         
@@ -420,7 +416,7 @@ angular.module('starter')
         };
 
         var setupFromVariableStateParameter = function(){
-            console.log($stateParams.variableObject);
+            console.log('variableObject is ' + $stateParams.variableObject);
             if($stateParams.variableObject !== null && typeof $stateParams.variableObject !== "undefined"){
                 $scope.variableObject = $stateParams.variableObject;
                 $scope.state.title = "Record Measurement";
@@ -430,6 +426,8 @@ angular.module('starter')
                 $scope.state.measurement.combinationOperation = $stateParams.variableObject.combinationOperation;
                 $scope.state.measurement.startTime = currentTime.getTime() / 1000;
                 $scope.state.measurementIsSetup = true;
+                setupValueFieldType($stateParams.variableObject.abbreviatedUnitName, $stateParams.variableObject.description);
+                $scope.hideLoader();
             }
         };
 
@@ -439,6 +437,7 @@ angular.module('starter')
                 var measurementObject = measurementService.getMeasurementById(measurementId);
                 setupTrackingByMeasurement(measurementObject);
             }
+            $scope.hideLoader();
         };
 
         $scope.goToAddReminder = function(){
@@ -448,6 +447,20 @@ angular.module('starter')
                 fromUrl: window.location.href
             });
         };
+
+        function setupValueFieldType(abbreviatedUnitName, variableDescription) {
+            if (abbreviatedUnitName === '/5') {
+                if (!variableDescription) {
+                    $scope.showNumericRatingNumberButtons = true;
+                } else if (variableDescription.toLowerCase().indexOf('positive') > -1) {
+                    $scope.showPositiveRatingFaceButtons = true;
+                } else if (variableDescription.toLowerCase().indexOf('negative') > -1) {
+                    $scope.showNegativeRatingFaceButtons = true;
+                }
+            } else {
+                $scope.showValueBox = true;
+            }
+        }
 
         var setupTrackingByMeasurement = function(measurementObject){
 
@@ -483,18 +496,9 @@ angular.module('starter')
             $scope.state.measurement = measurementObject;
             //$scope.state.measurementDate = moment(measurementObject.startTime)._d;
             $scope.state.measurementIsSetup = true;
-
-            if($scope.state.measurement.abbreviatedUnitName === '/5'){
-                if(!$scope.state.measurement.variableDescription){
-                    $scope.showNumericRatingNumberButtons = true;
-                } else if ($scope.state.measurement.variableDescription.toLowerCase().indexOf('positive') > -1){
-                    $scope.showPositiveRatingFaceButtons = true;
-                } else if ($scope.state.measurement.variableDescription.toLowerCase().indexOf('negative') > -1){
-                    $scope.showNegativeRatingFaceButtons = true;
-                }
-            } else {
-                $scope.showValueBox = true;
-            }
+            setupValueFieldType($scope.state.measurement.abbreviatedUnitName,
+                $scope.state.measurement.variableDescription);
+            $scope.hideLoader();
         };
 
         var setupTrackingByReminder = function(){
@@ -507,6 +511,9 @@ angular.module('starter')
                 $scope.state.measurement.combinationOperation = $stateParams.reminder.combinationOperation;
                 $scope.state.measurement.startTime = currentTime.getTime() / 1000;
                 $scope.state.measurementIsSetup = true;
+                setupValueFieldType($stateParams.reminder.abbreviatedUnitName,
+                    $stateParams.reminder.variableDescription);
+                $scope.hideLoader();
             }
         };
 

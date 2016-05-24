@@ -177,9 +177,10 @@ angular.module('starter')
 			$scope.showLoader();
 	    	reminderService.skipReminder(reminder.id)
 	    	.then(function(){
+	    		$scope.hideLoader();
 	    		$scope.init();
-
 	    	}, function(err){
+	    		$scope.hideLoader();
 	    		utilsService.showAlert('Failed to Skip Reminder, Try again!', 'assertive');
 				console.error(err);
 	    	});
@@ -206,7 +207,7 @@ angular.module('starter')
 	    };
 
 	    $scope.editMeasurement = function(reminder){
-			$scope.skip(reminder);
+			reminderService.skipReminder(reminder.id);
 			$state.go('app.measurementAdd',
 				{
 					reminder: reminder,
