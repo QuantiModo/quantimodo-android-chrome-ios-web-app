@@ -226,7 +226,9 @@ angular.module('starter')
                 $scope.state.variableCategoryName,
                 $scope.state.abbreviatedUnitName,
                 $scope.state.combinationOperation,
-                $scope.state.reminderStartTimeStringUtc)
+                $scope.state.reminderStartTimeStringUtc,
+                $scope.state.instructions
+            )
 	    	.then(function(){
 
 	    		$ionicLoading.hide();
@@ -311,7 +313,9 @@ angular.module('starter')
                 $scope.state.variableCategoryName,
                 $scope.state.abbreviatedUnitName,
                 $scope.state.combinationOperation,
-                $scope.state.reminderStartTimeStringUtc)
+                $scope.state.reminderStartTimeStringUtc,
+                $scope.state.instructions
+            )
 	    	.then(function(){
 
 	    		$ionicLoading.hide();
@@ -345,8 +349,8 @@ angular.module('starter')
             $scope.state.defaultValue = reminder.defaultValue;
             $scope.state.reminderFrequency = reminder.reminderFrequency;
             $scope.state.reminderStartTimeStringUtc = reminder.reminderStartTime;
-            setupVariableCategory(reminder.variableCategoryName);
-
+            $scope.state.instructions = reminder.instructions;
+            
 	    	var reverseFrequencyChart = {
 
 	    		86400: "Daily",

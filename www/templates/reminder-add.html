@@ -63,19 +63,19 @@
                         <option ng-repeat="variableCategory in variables.variableCategories" value="{{variableCategory.name}}">{{variableCategory.name}}</option>
                     </select>
                 </label>
-        	<label class="item item-input item-select">
-        		<div class="input-label" style="white-space:normal; width: 60%">
-        			Select Frequency
-        		</div>
-        		<select ng-change="onFrequencyChange()" ng-model="state.selectedFrequency" style="width: 40%">
-                    <optgroup label="Intervals">
-                        <option ng-repeat="frequency in variables.frequencyVariables" ng-if="frequency.group==='intervals'">{{frequency.name}}</option>
-                    </optgroup>
-                    <optgroup label="Frequency">
-                        <option ng-repeat="frequency in variables.frequencyVariables" ng-if="frequency.group==='frequency'">{{frequency.name}}</option>
-                    </optgroup>
-        		</select>
-        	</label>
+                <label class="item item-input item-select">
+                    <div class="input-label" style="white-space:normal; width: 60%">
+                        Select Frequency
+                    </div>
+                    <select ng-change="onFrequencyChange()" ng-model="state.selectedFrequency" style="width: 40%">
+                        <optgroup label="Intervals">
+                            <option ng-repeat="frequency in variables.frequencyVariables" ng-if="frequency.group==='intervals'">{{frequency.name}}</option>
+                        </optgroup>
+                        <optgroup label="Frequency">
+                            <option ng-repeat="frequency in variables.frequencyVariables" ng-if="frequency.group==='frequency'">{{frequency.name}}</option>
+                        </optgroup>
+                    </select>
+                </label>
             </div>
             <div class="list card" ng-show="state.selectedFrequency === 'Daily'">
                     <label class="item item-input">
@@ -101,6 +101,11 @@
                     </button>
                 </label>
             </div>
+            <label class="item item-input">
+                <span class="input-label">Instructions</span>
+                <input type="text" ng-model="state.instructions" id="instructions" placeholder="Enter instructions here..." >
+            </label>
+            <br>
             <div class="row">
                 <button ng-show="reminder.id" ng-click="deleteReminder()"
                         class="button icon-left ion-trash-a button-assertive"
