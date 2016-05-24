@@ -89,6 +89,18 @@
                         </button>
                     </label>
             </div>
+            <div class="list card" ng-show="state.selectedFrequency !== 'Daily'">
+                <label class="item item-input">
+                    <div class="input-label" >
+                        Reminder start time
+                    </div>
+                    <button class="button button-block up-top"
+                            style="text-align:left;font-size:14px;border:none;color:black;background-color: white;margin-bottom: 0px;margin-top: 0px;padding-left: 0px;"
+                            ng-click="openReminderStartTimePicker()">
+                        {{state.reminderStartTimeEpochTime | fromUnixTimestampToLocalTimeOfDay}}
+                    </button>
+                </label>
+            </div>
             <div class="row">
                 <button ng-show="reminder.id" ng-click="deleteReminder()"
                         class="button icon-left ion-trash-a button-assertive"

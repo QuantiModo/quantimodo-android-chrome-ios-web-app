@@ -345,6 +345,7 @@ angular.module('starter')
             $scope.state.defaultValue = reminder.defaultValue;
             $scope.state.reminderFrequency = reminder.reminderFrequency;
             $scope.state.reminderStartTimeStringUtc = reminder.reminderStartTime;
+            setupVariableCategory(reminder.variableCategoryName);
 
 	    	var reverseFrequencyChart = {
 
