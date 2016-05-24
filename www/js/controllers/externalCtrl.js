@@ -11,7 +11,7 @@ angular.module('starter')
 	    
 	    // constructor
 	    $scope.init = function(){
-			$scope.showLoader();
+			//$scope.showLoader();
 	    };
 
 	    // call constructor

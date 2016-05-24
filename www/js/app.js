@@ -332,6 +332,8 @@ angular.module('starter',
               }
           }
       })
+      // Broken; redirecting to help page instead
+      /*
       .state('app.postIdea', {
           url: "/postidea",
           views: {
@@ -341,6 +343,7 @@ angular.module('starter',
               }
           }
       })
+      */
       .state('app.history', {
           url: "/history",
           views: {
