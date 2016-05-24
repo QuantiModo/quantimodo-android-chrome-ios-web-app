@@ -135,7 +135,8 @@ angular.module('starter')
 	    };
 
 	    var getTrackingReminderNotifications = function(){
-	    	$scope.showLoader('Fetching reminders...');
+	    	//$scope.showLoader('Fetching reminders...');
+			$scope.showLoader();
 
 	    	reminderService.getTrackingReminderNotifications($stateParams.variableCategoryName, $stateParams.today)
 	    	.then(function(reminders){
