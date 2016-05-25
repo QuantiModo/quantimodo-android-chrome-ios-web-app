@@ -193,6 +193,7 @@ angular.module('starter')
                             var measurementsToSaveInLocalStorage = JSON.parse(allMeasurementsInLocalStorage);
                             measurementsToSaveInLocalStorage.push(newMeasurementObject);
 
+							// append here
                             localStorageService.setItem('allMeasurements', JSON.stringify(measurementsToSaveInLocalStorage));
 
                             // update Bar chart data
