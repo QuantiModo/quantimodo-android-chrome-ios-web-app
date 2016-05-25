@@ -14,7 +14,7 @@ angular.module('starter')
                     variableCategoryName: config.appSettings.primaryOutcomeVariableDetails.category,
                     combinationOperation: config.appSettings.primaryOutcomeVariableDetails.combinationOperation,
                     abbreviatedUnitName: config.appSettings.primaryOutcomeVariableDetails.abbreviatedUnitName,
-                    measurements : measurementsQueue
+                    measurements: measurementsQueue
 				}
 			];
 
