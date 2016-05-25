@@ -155,7 +155,6 @@ angular.module('starter')
 				$ionicLoading.hide();
 				$scope.loading = false;
 	    		console.error("failed to get reminders");
-				//utilsService.showLoginRequiredAlert($scope.login);
 
 	    	});
 	    };

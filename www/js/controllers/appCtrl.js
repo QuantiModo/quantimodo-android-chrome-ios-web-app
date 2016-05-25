@@ -213,6 +213,7 @@ angular.module('starter')
             }
         };
 
+        /* // Deprecated
         var goToWelcomeStateIfNotWelcomed = function(){
             var accessTokenInUrl = authService.getAccessTokenFromUrlParameter();
             if (!$rootScope.user && !accessTokenInUrl) {
@@ -229,6 +230,7 @@ angular.module('starter')
                 console.debug('Not going to welcome state...');
             }
         };
+        */
 
         // hide loader and move to next page
         var hideLoaderMove = function(){
@@ -251,7 +253,7 @@ angular.module('starter')
             }
             migrationService.version1466();
             hideNavigationMenuIfSetInUrlParameter();
-            goToWelcomeStateIfNotWelcomed();
+            //goToWelcomeStateIfNotWelcomed();
             scheduleReminder();
             goToDefaultStateIfLoggedInOnLoginState();
         };

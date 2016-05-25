@@ -60,8 +60,12 @@ angular.module('starter',
                         console.debug('registerBackButtonAction: Going to default state...');
                         $state.go(config.appSettings.defaultState);
                     } else {
+                        /*
                         console.debug('registerBackButtonAction: Going to welcome state...');
                         $state.go(config.appSettings.welcomeState);
+                        */
+                        console.debug('registerBackButtonAction: Closing the app');
+                        ionic.Platform.exitApp();
                     }
                 }
             }, 100);  
