@@ -15,7 +15,7 @@
             <input type="text"
                    placeholder={{state.variableSearchPlaceholderText}}
                    ng-model="state.variableSearchQuery"
-                   ng-change="onSearch()"
+                   ng-change="onVariableSearch()"
                    ng-model-options='{ debounce: 1000 }'>
           </label>
         </div>
@@ -29,7 +29,7 @@
                     <img src="../www/img/loader.gif">
                 </ion-item>
             </ion-list>
-        	<a class="item" ng-repeat="result in variableSearchResults | unique:'id' " ng-click="onVariableSelect(result)">{{result.name}}</a>
+        	<a class="item" ng-repeat="result in state.variableSearchResults | unique:'id' " ng-click="onVariableSelect(result)">{{result.name}}</a>
             <ion-list ng-show="state.showAddVariableButton">
                 <ion-item style="border-top: 1px solid rgb(221, 221, 221);" ng-click="addNewVariable()">
                     {{state.addNewVariableButtonText}}

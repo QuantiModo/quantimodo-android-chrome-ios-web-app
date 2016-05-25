@@ -83,41 +83,18 @@
                          ng-class="{'active-primary-outcome-variable-rating-button' :
                          option.value === state.measurement.value}">
                 </div>
-
-                <div class="row labeled-control" ng-if="(state.measurement.abbreviatedUnitName !== '/5')">
-                    <div class="col col-l">
-                        <span class="input-label">Unit</span>
+                <label ng-if="(state.measurement.abbreviatedUnitName !== '/5')" class="item item-input item-select">
+                    <div class="input-label">
+                        Unit
                     </div>
-                    <div class="col">
-                        <div class="row up-top" style="padding-left:0px;">
-                            <div class="col" style="padding-top:5px;">
-
-                                <!-- Default to most common unit when tracking measurement, and always keep it editable-->
-                                <input type="text" ng-change="unitSearch(state.measurement.abbreviatedUnitName)" ng-model="state.measurement.abbreviatedUnitName" placeholder="Search for a unit...">
-
-                                <!-- Below replaced by above so that we can always change the unit-->
-                                <!-- Default to most common unit when adding new variable, keep it editable-->
-                                <!--
-                                <input type="text" ng-show="state.showAddVariable" ng-change="unitSearch(state.measurement.abbreviatedUnitName)" ng-model="state.measurement.abbreviatedUnitName" placeholder="Type to search">
-                                -->
-                                <!-- Lock to default unit when tracking measurement for existing variable-->
-                                <!--
-                                <span ng-show="!state.showAddVariable">{{state.selectedUnitAbbreviatedName}}</span>
-                                -->
-                            </div>
-                           
-                        </div>
-                    </div>
-                </div>
-                <div class="card" ng-show="state.showUnits && state.searchedUnits.length">
-                    <div class="list">
-                        <ion-list>
-                            <ion-item ng-repeat="unit in state.searchedUnits" on-tap="unitSelected(unit)">
-                                {{unit.abbreviatedName}}
-                            </ion-item>
-                        </ion-list>
-                    </div>
-                </div>
+                    <select ng-model="state.measurement.abbreviatedUnitName">
+                        <option ng-selected="{{unitObject.abbreviatedName === state.measurement.abbreviatedUnitName}}"
+                                ng-repeat="unitObject in state.unitObjects"
+                                value="{{unitObject.abbreviatedName}}">
+                            {{unitObject.name}} ({{unitObject.abbreviatedName}})
+                        </option>
+                    </select>
+                </label>
                 <div class="row labeled-control">
                     <div class="col col-l">
                         <span>

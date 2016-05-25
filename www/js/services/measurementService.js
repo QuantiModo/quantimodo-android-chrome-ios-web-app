@@ -652,7 +652,7 @@ angular.module('starter')
                     var currentValue = Math.ceil(measurements[i].value);
                     if (measurements[i].abbreviatedUnitName === config.appSettings.primaryOutcomeVariableDetails.abbreviatedUnitName &&
                         (currentValue - 1) <= 4 && (currentValue - 1) >= 0) {
-                        lineArr.push([moment(measurements[i].humanTime.date).unix() * 1000, (currentValue - 1) * 25]);
+                        lineArr.push([moment(measurements[i].startTime).unix() * 1000, (currentValue - 1) * 25]);
                         barArr[currentValue - 1]++;
                     }
                 }
@@ -689,9 +689,9 @@ angular.module('starter')
 						var currentValue = Math.ceil(allMeasurements[i].value);
 						if (allMeasurements[i].abbreviatedUnitName === config.appSettings.primaryOutcomeVariableDetails.abbreviatedUnitName &&
 							(currentValue - 1) <= 4 && (currentValue - 1) >= 0) {
-							var startTime = moment(allMeasurements[i].humanTime.date).unix() * 1000;
+							var startTimeMilliseconds = moment(allMeasurements[i].startTime).unix() * 1000;
 							var percentValue = (currentValue - 1) * 25;
-							var lineChartItem = [startTime, percentValue];
+							var lineChartItem = [startTimeMilliseconds, percentValue];
 							lineArr.push(lineChartItem);
 							barArr[currentValue - 1]++;
 						}
