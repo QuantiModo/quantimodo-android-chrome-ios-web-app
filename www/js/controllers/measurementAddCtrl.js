@@ -164,6 +164,27 @@ angular.module('starter')
         };
 
         $scope.done = function(){
+
+            if(!$scope.state.measurement.value){
+                utilsService.showAlert('Please enter value');
+                return;
+            }
+
+            if(!$scope.state.measurement.variable){
+                utilsService.showAlert('Please enter variable name');
+                return;
+            }
+
+            if(!$scope.state.measurement.variableCategoryName){
+                utilsService.showAlert('Please select a variable category');
+                return;
+            }
+
+            if(!$scope.state.measurement.abbreviatedUnitName && !$scope.abbreviatedUnitName){
+                utilsService.showAlert('Please select a unit');
+                return;
+            }
+
             console.debug('done: completed adding and/or measuring');
 
             $scope.state.measurement.startTime = $scope.selectedDate.getTime()/1000;
@@ -174,7 +195,11 @@ angular.module('starter')
                 value : $scope.state.measurement.value || jQuery('#measurementValue').val(),
                 note : $scope.state.measurement.note || jQuery('#note').val(),
                 startTime : $scope.state.measurement.startTime,
-                abbreviatedUnitName : $scope.state.showAddVariable? (typeof $scope.abbreviatedUnitName === "undefined" || $scope.abbreviatedUnitName === "" )? $scope.state.measurement.abbreviatedUnitName : $scope.abbreviatedUnitName : $scope.state.measurement.abbreviatedUnitName,
+                abbreviatedUnitName : $scope.state.showAddVariable ? (typeof $scope.abbreviatedUnitName ===
+                    "undefined" || $scope.abbreviatedUnitName === "" ) ?
+                    $scope.state.measurement.abbreviatedUnitName :
+                    $scope.abbreviatedUnitName :
+                    $scope.state.measurement.abbreviatedUnitName,
                 variableCategoryName : $scope.state.measurement.variableCategoryName,
                 isAvg : $scope.state.sumAvg === "avg"? true : false
             };
@@ -421,9 +446,21 @@ angular.module('starter')
                 $scope.variableObject = $stateParams.variableObject;
                 $scope.state.title = "Record Measurement";
                 $scope.state.measurement.variable = $stateParams.variableObject.name;
-                $scope.state.measurement.abbreviatedUnitName = $stateParams.variableObject.abbreviatedUnitName;
-                $scope.state.measurement.variableCategoryName = $stateParams.variableObject.category;
-                $scope.state.measurement.combinationOperation = $stateParams.variableObject.combinationOperation;
+                if($stateParams.variableObject.abbreviatedUnitName){
+                    $scope.state.measurement.abbreviatedUnitName = $stateParams.variableObject.abbreviatedUnitName;
+                }
+                if($stateParams.variableObject.category){
+                    $scope.state.measurement.variableCategoryName = $stateParams.variableObject.category;
+                } else if($stateParams.variableObject.variableCategoryName) {
+                    $scope.state.measurement.variableCategoryName = $stateParams.variableObject.variableCategoryName;
+                } else {
+                    $scope.state.showCategoryAsSelector;
+                }
+                if($stateParams.variableObject.combinationOperation){
+                    $scope.state.measurement.combinationOperation = $stateParams.variableObject.combinationOperation;
+                } else {
+                    $stateParams.variableObject.combinationOperation = 'MEAN';
+                }
                 $scope.state.measurement.startTime = currentTime.getTime() / 1000;
                 $scope.state.measurementIsSetup = true;
                 setupValueFieldType($stateParams.variableObject.abbreviatedUnitName, $stateParams.variableObject.description);
