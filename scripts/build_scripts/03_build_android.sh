@@ -106,13 +106,44 @@ cordova build --release android >/dev/null
 mkdir -p ${BUILD_PATH}/${LOWERCASE_APP_NAME}/android
 cp -R platforms/android/build/outputs/apk/* ${BUILD_PATH}/${LOWERCASE_APP_NAME}/android
 cd ${BUILD_PATH}/${LOWERCASE_APP_NAME}/android
-# Sign the app
-jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore ${ANDROID_KEYSTORE_PATH} -storepass ${ANDROID_KEYSTORE_PASSWORD} android-release-unsigned.apk quantimodo >/dev/null
-# Optimize apk
-${ANDROID_BUILD_TOOLS}/zipalign 4 android-release-unsigned.apk ${LOWERCASE_APP_NAME}-android-release-signed.apk >/dev/null
 
-cp android-debug.apk "$DROPBOX_PATH/${LOWERCASE_APP_NAME}/${LOWERCASE_APP_NAME}-android-debug.apk"
-cp ${LOWERCASE_APP_NAME}-android-release-signed.apk "$DROPBOX_PATH/${LOWERCASE_APP_NAME}/"
+UNSIGNED_APK_PATH="android-release-unsigned.apk"
+SIGNED_APK_PATH=${LOWERCASE_APP_NAME}-android-release-signed.apk
+ALIAS=quantimodo
+
+UNSIGNED_DEBUG_APK_PATH="android-debug-unaligned.apk"
+SIGNED_DEBUG_APK_PATH=${LOWERCASE_APP_NAME}-android-debug-signed.apk
+ANDROID_DEBUG_KEYSTORE_PATH="~/.android/debug.keystore"
+ANDROID_DEBUG_KEYSTORE_PASSWORD=android
+DEBUG_ALIAS=androiddebugkey
+
+# delete META-INF folder
+zip -d ${UNSIGNED_APK_PATH} META-INF/\*
+# sign APK
+jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore ${ANDROID_KEYSTORE_PATH} -storepass ${ANDROID_KEYSTORE_PASSWORD} ${UNSIGNED_APK_PATH} ${ALIAS}
+#verify
+jarsigner -verify ${UNSIGNED_APK_PATH}
+#zipalign
+zipalign -v 4 ${UNSIGNED_APK_PATH} ${SIGNED_APK_PATH}
+
+# delete META-INF folder
+zip -d ${UNSIGNED_DEBUG_APK_PATH} META-INF/\*
+# sign APK
+jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore ${ANDROID_DEBUG_KEYSTORE_PATH} -storepass ${ANDROID_DEBUG_KEYSTORE_PASSWORD} ${UNSIGNED_DEBUG_APK_PATH} ${DEBUG_ALIAS}
+#verify
+jarsigner -verify ${UNSIGNED_DEBUG_APK_PATH}
+#zipalign
+zipalign -v 4 ${UNSIGNED_DEBUG_APK_PATH} ${SIGNED_DEBUG_APK_PATH}
+
+# Sign the app
+#jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore ${ANDROID_KEYSTORE_PATH} -storepass ${ANDROID_KEYSTORE_PASSWORD} ${UNSIGNED_APK_PATH} ${ALIAS} >/dev/null
+
+# Optimize apk
+#${ANDROID_BUILD_TOOLS}/zipalign 4 ${UNSIGNED_APK_PATH} ${SIGNED_APK_PATH} >/dev/null
+
+
+cp ${SIGNED_DEBUG_APK_PATH} "$DROPBOX_PATH/${LOWERCASE_APP_NAME}/${LOWERCASE_APP_NAME}-android-debug.apk"
+cp ${SIGNED_APK_PATH} "$DROPBOX_PATH/${LOWERCASE_APP_NAME}/"
 
 if [ -f ${LOWERCASE_APP_NAME}-android-release-signed.apk ];
 then
