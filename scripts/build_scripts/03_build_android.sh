@@ -151,7 +151,7 @@ jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore ${ANDROID_KEYST
 #verify
 jarsigner -verify ${UNSIGNED_APK_PATH}
 #zipalign
-zipalign -v 4 ${UNSIGNED_APK_PATH} ${SIGNED_APK_PATH}
+${ANDROID_BUILD_TOOLS}/zipalign -v 4 ${UNSIGNED_APK_PATH} ${SIGNED_APK_PATH}
 
 echo -e "${GREEN}Copying ${BUILD_PATH}/${LOWERCASE_APP_NAME} to $DROPBOX_PATH/${LOWERCASE_APP_NAME}/${NC}"
 cp ${SIGNED_APK_PATH} "$DROPBOX_PATH/${LOWERCASE_APP_NAME}/"
