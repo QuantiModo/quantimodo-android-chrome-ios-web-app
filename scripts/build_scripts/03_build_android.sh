@@ -138,7 +138,7 @@ jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore ${ANDROID_DEBUG
 #verify
 jarsigner -verify ${UNSIGNED_DEBUG_APK_PATH}
 #zipalign
-zipalign -v 4 ${UNSIGNED_DEBUG_APK_PATH} ${SIGNED_DEBUG_APK_PATH}
+${ANDROID_BUILD_TOOLS}/zipalign -v 4 ${UNSIGNED_DEBUG_APK_PATH} ${SIGNED_DEBUG_APK_PATH}
 
 # Sign the app
 #jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore ${ANDROID_KEYSTORE_PATH} -storepass ${ANDROID_KEYSTORE_PASSWORD} ${UNSIGNED_APK_PATH} ${ALIAS} >/dev/null
