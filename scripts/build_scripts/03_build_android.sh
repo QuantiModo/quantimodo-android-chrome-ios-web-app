@@ -41,6 +41,12 @@ if [ -z "${ANDROID_KEYSTORE_PATH}" ]
       exit 1
 fi
 
+if [ -z "${ANDROID_DEBUG_KEYSTORE_PATH}" ]
+    then
+      echo -e "${RED}build_android.sh: ANDROID_DEBUG_KEYSTORE_PATH doesn't exist. Please set it in Jenkins->Manage Jenkins->Configure System->Environment variables${NC}"
+      exit 1
+fi
+
 if [ -z "${FACEBOOK_APP_ID}" ]
     then
       echo -e "${RED}build_android.sh: FACEBOOK_APP_ID doesn't exist. Please set it in Jenkins->Manage Jenkins->Configure System->Environment variables${NC}"
@@ -113,7 +119,6 @@ ALIAS=quantimodo
 
 UNSIGNED_DEBUG_APK_PATH="android-debug-unaligned.apk"
 SIGNED_DEBUG_APK_PATH=${LOWERCASE_APP_NAME}-android-debug-signed.apk
-ANDROID_DEBUG_KEYSTORE_PATH="~/.android/debug.keystore"
 ANDROID_DEBUG_KEYSTORE_PASSWORD=android
 DEBUG_ALIAS=androiddebugkey
 
