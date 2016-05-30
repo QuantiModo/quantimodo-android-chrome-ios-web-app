@@ -12,7 +12,9 @@ angular.module('starter')
 				variableCategoryName, 
 				abbreviatedUnitName, 
 				combinationOperation,
-				reminderStartTime){
+				reminderStartTime,
+			  	instructions
+			){
 				
 				var deferred = $q.defer();
 
@@ -24,7 +26,8 @@ angular.module('starter')
                     variableCategoryName : variableCategoryName,
                     abbreviatedUnitName : abbreviatedUnitName,
                     combinationOperation : combinationOperation,
-                    reminderStartTime : reminderStartTime
+                    reminderStartTime : reminderStartTime,
+					instructions : instructions
                 };
 
                 QuantiModo.postTrackingReminder(params, function(){
@@ -44,7 +47,9 @@ angular.module('starter')
 				variableCategoryName, 
 				abbreviatedUnitName, 
 				combinationOperation,
-				reminderStartTime){
+				reminderStartTime,
+			   instructions
+			){
 				
 				var deferred = $q.defer();
 
@@ -59,7 +64,8 @@ angular.module('starter')
                     variableCategoryName : variableCategoryName,
                     abbreviatedUnitName : abbreviatedUnitName,
                     combinationOperation : combinationOperation,
-                    reminderStartTime : reminderStartTime
+                    reminderStartTime : reminderStartTime,
+					instructions : instructions
                 };
 
                 QuantiModo.postTrackingReminder(params, function(){
@@ -126,8 +132,12 @@ angular.module('starter')
 					params = {id : reminderId};
 				}
 				QuantiModo.getTrackingReminders(params, function(reminders){
-					if(reminders.success) deferred.resolve(reminders.data);
-					else deferred.reject("error");
+					if(reminders.success) {
+						deferred.resolve(reminders.data);
+					}
+					else {
+						deferred.reject("error");
+					}
 				}, function(err){
 					deferred.reject(err);
 				});

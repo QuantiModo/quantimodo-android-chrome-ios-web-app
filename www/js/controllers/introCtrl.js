@@ -51,18 +51,21 @@ angular.module('starter')
     };
 
     var init = function(){
+        
         $scope.showLoader();
-
+        
         localStorageService.getItem('introSeen', function(introSeen){
             if(introSeen){
-                console.debug('introCtrl init: Going to welcome state...');
-                $state.go(config.appSettings.welcomeState);
+                console.debug('introCtrl init: Going to default state...');
+                $state.go(config.appSettings.defaultState);
             } else {
                 $scope.myIntro.ready = true;
             }
             $scope.hideLoader();
         });
+        
     };
+
 
     // when view is changed
     $scope.$on('$ionicView.enter', function(e) {

@@ -56,7 +56,8 @@ angular.module('starter')
 			if($stateParams.variableCategoryName) {
 				$scope.showLoader('Fetching ' + $stateParams.variableCategoryName.toLowerCase() + '...');
 			} else {
-				$scope.showLoader('Fetching reminders...');
+				//$scope.showLoader('Fetching reminders...');
+				$scope.showLoader();
 			}
 
 	    	reminderService.getTrackingReminders($stateParams.variableCategoryName)

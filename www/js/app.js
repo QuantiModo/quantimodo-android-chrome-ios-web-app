@@ -60,8 +60,12 @@ angular.module('starter',
                         console.debug('registerBackButtonAction: Going to default state...');
                         $state.go(config.appSettings.defaultState);
                     } else {
+                        /*
                         console.debug('registerBackButtonAction: Going to welcome state...');
                         $state.go(config.appSettings.welcomeState);
+                        */
+                        console.debug('registerBackButtonAction: Closing the app');
+                        ionic.Platform.exitApp();
                     }
                 }
             }, 100);  
@@ -332,6 +336,8 @@ angular.module('starter',
               }
           }
       })
+      // Broken; redirecting to help page instead
+      /*
       .state('app.postIdea', {
           url: "/postidea",
           views: {
@@ -341,6 +347,7 @@ angular.module('starter',
               }
           }
       })
+      */
       .state('app.history', {
           url: "/history",
           views: {

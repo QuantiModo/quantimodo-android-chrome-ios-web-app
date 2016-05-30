@@ -60,7 +60,7 @@ angular.module('starter')
             // returns bool
             // if a string starts with substring
             startsWith : function (fullString, search) {
-                return fullString.slice(0, search.length) == search;
+                return fullString.slice(0, search.length) === search;
             },
 
             hasInIt : function(fullString, search){
@@ -77,11 +77,14 @@ angular.module('starter')
                     for (var i = 0; i < sURLVariables.length; i++)
                     {
                         var sParameterName = sURLVariables[i].split('=');
-                        if (sParameterName[0] == sParam)
+                        if (sParameterName[0] === sParam)
                         {
-                            if(typeof shouldDecode !== "undefined") 
+                            if(typeof shouldDecode !== "undefined")  {
                                 return decodeURIComponent(sParameterName[1]);
-                            else return sParameterName[1];
+                            }
+                            else {
+                                return sParameterName[1];
+                            }
                         }
                     }
                     return false;
@@ -89,38 +92,5 @@ angular.module('starter')
                     return false;
                 }
             },
-
-            showLoginRequiredAlert: function(login){
-               loginAlert =  $ionicPopup.show({
-                    title:'This feature requires you to be logged in',
-                    buttons:[
-                        {
-                            text:'Register',
-                            type:'button-assertive',
-                            onTap: function(e){
-                                var ref = window.open(config.getURL('register'),'_blank');
-                                console.debug('showLoginRequiredAlert: Going to welcome state');
-                                $state.go(config.appSettings.welcomeState);
-
-                         }
-                        },
-                        {
-                            text:'Login',
-                            type: 'button-positive',
-                            onTap:function(e){
-                                $state.go('app.login');
-                            }
-                        },
-                        {
-                            text:'Cancel',
-                            type:'button-stable',
-                            onTap:function(e){
-                                $state.go(config.appSettings.defaultState);
-                            }
-                        }
-                    ],
-                    cssClass:'alert-popup'
-                });
-            }
         };
     });

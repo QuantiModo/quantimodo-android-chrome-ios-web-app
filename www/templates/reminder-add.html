@@ -15,7 +15,7 @@
             <input type="text"
                    placeholder={{state.variableSearchPlaceholderText}}
                    ng-model="state.variableSearchQuery"
-                   ng-change="onSearch()"
+                   ng-change="onVariableSearch()"
                    ng-model-options='{ debounce: 1000 }'>
           </label>
         </div>
@@ -29,7 +29,7 @@
                     <img src="../www/img/loader.gif">
                 </ion-item>
             </ion-list>
-        	<a class="item" ng-repeat="result in variableSearchResults | unique:'id' " ng-click="onVariableSelect(result)">{{result.name}}</a>
+        	<a class="item" ng-repeat="result in state.variableSearchResults | unique:'id' " ng-click="onVariableSelect(result)">{{result.name}}</a>
             <ion-list ng-show="state.showAddVariableButton">
                 <ion-item style="border-top: 1px solid rgb(221, 221, 221);" ng-click="addNewVariable()">
                     {{state.addNewVariableButtonText}}
@@ -63,19 +63,19 @@
                         <option ng-repeat="variableCategory in variables.variableCategories" value="{{variableCategory.name}}">{{variableCategory.name}}</option>
                     </select>
                 </label>
-        	<label class="item item-input item-select">
-        		<div class="input-label" style="white-space:normal; width: 60%">
-        			Select Frequency
-        		</div>
-        		<select ng-change="onFrequencyChange()" ng-model="state.selectedFrequency" style="width: 40%">
-                    <optgroup label="Intervals">
-                        <option ng-repeat="frequency in variables.frequencyVariables" ng-if="frequency.group==='intervals'">{{frequency.name}}</option>
-                    </optgroup>
-                    <optgroup label="Frequency">
-                        <option ng-repeat="frequency in variables.frequencyVariables" ng-if="frequency.group==='frequency'">{{frequency.name}}</option>
-                    </optgroup>
-        		</select>
-        	</label>
+                <label class="item item-input item-select">
+                    <div class="input-label" style="white-space:normal; width: 60%">
+                        Select Frequency
+                    </div>
+                    <select ng-change="onFrequencyChange()" ng-model="state.selectedFrequency" style="width: 40%">
+                        <optgroup label="Intervals">
+                            <option ng-repeat="frequency in variables.frequencyVariables" ng-if="frequency.group==='intervals'">{{frequency.name}}</option>
+                        </optgroup>
+                        <optgroup label="Frequency">
+                            <option ng-repeat="frequency in variables.frequencyVariables" ng-if="frequency.group==='frequency'">{{frequency.name}}</option>
+                        </optgroup>
+                    </select>
+                </label>
             </div>
             <div class="list card" ng-show="state.selectedFrequency === 'Daily'">
                     <label class="item item-input">
@@ -89,6 +89,23 @@
                         </button>
                     </label>
             </div>
+            <div class="list card" ng-show="state.selectedFrequency !== 'Daily'">
+                <label class="item item-input">
+                    <div class="input-label" >
+                        Reminder start time
+                    </div>
+                    <button class="button button-block up-top"
+                            style="text-align:left;font-size:14px;border:none;color:black;background-color: white;margin-bottom: 0px;margin-top: 0px;padding-left: 0px;"
+                            ng-click="openReminderStartTimePicker()">
+                        {{state.reminderStartTimeEpochTime | fromUnixTimestampToLocalTimeOfDay}}
+                    </button>
+                </label>
+            </div>
+            <label class="item item-input">
+                <span class="input-label">Instructions</span>
+                <input type="text" ng-model="state.instructions" id="instructions" placeholder="Enter instructions here..." >
+            </label>
+            <br>
             <div class="row">
                 <button ng-show="reminder.id" ng-click="deleteReminder()"
                         class="button icon-left ion-trash-a button-assertive"
@@ -110,4 +127,12 @@
             <div class="title"  ng-click="goToAddMeasurement()">Record a {{state.measurementSynonymSingularLowercase}} now</div>
         </div>
     </ion-content>
+    <nav mfb-menu position="bl" effect="slidein-spring"
+         active-icon="ion-minus-round" resting-icon="ion-plus-round"
+         toggling-method="click" ng-hide="hideNavigationMenu || (hideNavigationMenu && !isWelcomed)">
+        <button mfb-button icon="ion-happy-outline" label="How are you?" ng-click="goToState('app.track')"></button>
+        <button mfb-button icon="ion-ios-medkit-outline" label="Add a medication" ng-click="goToState('app.reminderAddCategory', {variableCategoryName : 'Treatments'})"></button>
+        <button mfb-button icon="ion-ios-pulse" label="Add Vital Sign" ng-click="goToState('app.track_factors_category', {variableCategoryName : 'Vital Signs'})"></button>
+        <button mfb-button icon="ion-heart-broken" label="Record a Symptom" ng-click="goToState('app.track_factors_category', {variableCategoryName : 'Symptoms'})"></button>
+    </nav>
 </ion-view>

@@ -186,16 +186,6 @@ angular.module('starter')
                     errorHandler);
             };
 
-
-            // post measurements old method
-            QuantiModo.postMeasurements= function(measurements, successHandler ,errorHandler) { 
-                QuantiModo.post('api/measurements',
-                    ['source', 'variable', 'combinationOperation', 'startTime', 'value', 'unit'],
-                    measurements,
-                    successHandler,
-                    errorHandler);
-            };
-
             // Request measurements to be emailed as a csv
             QuantiModo.postMeasurementsCsvExport = function() {
                 QuantiModo.post('api/v2/measurements/request_csv',

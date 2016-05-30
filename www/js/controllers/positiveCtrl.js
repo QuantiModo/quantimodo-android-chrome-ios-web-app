@@ -9,7 +9,12 @@ angular.module('starter')
         $scope.loading = true;
 
         if(!$rootScope.user){
+        	/*
+        	console.debug("postiveCtrl going to welcome state");
             $state.go(config.appSettings.welcomeState);
+            */
+            console.debug("positiveCtrl: not logged in, going to default state");
+            $state.go(config.appSettings.defaultState);
             // app wide signal to sibling controllers that the state has changed
             $rootScope.$broadcast('transition');
         }

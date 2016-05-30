@@ -9,12 +9,12 @@ angular.module('starter')
 			// measurements set
 			var measurements = [
 				{					
-                    name: config.appSettings.primaryOutcomeVariableDetails.name,
+                    variableName: config.appSettings.primaryOutcomeVariableDetails.name,
                     source: config.get('clientSourceName'),
-                    category: config.appSettings.primaryOutcomeVariableDetails.category,
+                    variableCategoryName: config.appSettings.primaryOutcomeVariableDetails.category,
                     combinationOperation: config.appSettings.primaryOutcomeVariableDetails.combinationOperation,
-                    unit: config.appSettings.primaryOutcomeVariableDetails.abbreviatedUnitName,
-                    measurements : measurementsQueue
+                    abbreviatedUnitName: config.appSettings.primaryOutcomeVariableDetails.abbreviatedUnitName,
+                    measurements: measurementsQueue
 				}
 			];
 
@@ -193,6 +193,7 @@ angular.module('starter')
                             var measurementsToSaveInLocalStorage = JSON.parse(allMeasurementsInLocalStorage);
                             measurementsToSaveInLocalStorage.push(newMeasurementObject);
 
+							// append here
                             localStorageService.setItem('allMeasurements', JSON.stringify(measurementsToSaveInLocalStorage));
 
                             // update Bar chart data
@@ -471,7 +472,7 @@ angular.module('starter')
                                 localStorageService.getItem('allMeasurements',function(val){
                                    allMeasurements = val ? JSON.parse(val) : [];
 
-                                    if(!lastSyncTime || allMeasurements.length === 0) {
+                                    if(!lastSyncTime || allMeasurements.length === 0 || allMeasurements === '[]') {
                                         
                                         allMeasurements = allMeasurements.concat(response);
                                     }
@@ -651,7 +652,7 @@ angular.module('starter')
                     var currentValue = Math.ceil(measurements[i].value);
                     if (measurements[i].abbreviatedUnitName === config.appSettings.primaryOutcomeVariableDetails.abbreviatedUnitName &&
                         (currentValue - 1) <= 4 && (currentValue - 1) >= 0) {
-                        lineArr.push([moment(measurements[i].humanTime.date).unix() * 1000, (currentValue - 1) * 25]);
+                        lineArr.push([moment(measurements[i].startTime).unix() * 1000, (currentValue - 1) * 25]);
                         barArr[currentValue - 1]++;
                     }
                 }
@@ -688,9 +689,9 @@ angular.module('starter')
 						var currentValue = Math.ceil(allMeasurements[i].value);
 						if (allMeasurements[i].abbreviatedUnitName === config.appSettings.primaryOutcomeVariableDetails.abbreviatedUnitName &&
 							(currentValue - 1) <= 4 && (currentValue - 1) >= 0) {
-							var startTime = moment(allMeasurements[i].humanTime.date).unix() * 1000;
+							var startTimeMilliseconds = moment(allMeasurements[i].startTime).unix() * 1000;
 							var percentValue = (currentValue - 1) * 25;
-							var lineChartItem = [startTime, percentValue];
+							var lineChartItem = [startTimeMilliseconds, percentValue];
 							lineArr.push(lineChartItem);
 							barArr[currentValue - 1]++;
 						}
