@@ -676,7 +676,7 @@ config.get = function(key){
 
 
 window.notification_callback = function(reportedVariable, reportingTime){
-    var reportTime  = Math.floor(reportingTime/1000) || Math.floor(new Date().getTime()/1000);
+    var startTime  = Math.floor(reportingTime/1000) || Math.floor(new Date().getTime()/1000);
     var keyIdentifier = config.appSettings.appStorageIdentifier;
     var val = false;
 
@@ -697,7 +697,7 @@ window.notification_callback = function(reportedVariable, reportingTime){
         var allMeasurementsObject = {
             storedValue : val,
             value : val,
-            startTime : reportTime,
+            startTime : startTime,
             humanTime : {
                 date : new Date().toISOString()
             }
@@ -723,7 +723,7 @@ window.notification_callback = function(reportedVariable, reportingTime){
         if(localStorage[keyIdentifier+'lineChartData']){
             if(val>0){
                 var lineChartData = JSON.parse(localStorage[keyIdentifier+'lineChartData']);
-                lineChartData.push([reportTime, (val-1)*25]);
+                lineChartData.push([startTime, (val-1)*25]);
                 localStorage[keyIdentifier+'lineChartData'] = JSON.stringify(lineChartData);    
             }
             

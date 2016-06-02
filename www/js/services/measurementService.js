@@ -146,7 +146,7 @@ angular.module('starter')
 			updatePrimaryOutcomeVariableLocally : function(numericRatingValue){
                 console.log("reported", numericRatingValue);
                 var deferred = $q.defer();
-				var reportTime = Math.floor(new Date().getTime()/1000);
+				var startTime = Math.floor(new Date().getTime()/1000);
 
                 // if val is string (needs conversion)
                 if(isNaN(parseFloat(numericRatingValue))){
@@ -157,7 +157,7 @@ angular.module('starter')
                 function checkSync(){
                     if(!isSyncing){
                         console.log('isSync false');
-                        reportPrimaryOutcomeVariableValue(numericRatingValue);
+                        storeMeasurementLocalStorageAndUpdateChartData(numericRatingValue);
                     }else{
                         console.log('isSync true');
                         setTimeout(function(){
@@ -167,7 +167,7 @@ angular.module('starter')
                     }
                 }
 
-                function reportPrimaryOutcomeVariableValue(numericRatingValue){
+                function storeMeasurementLocalStorageAndUpdateChartData(numericRatingValue){
                     // only if we found a result for the reported val
                     if(numericRatingValue){
 
@@ -180,7 +180,7 @@ angular.module('starter')
                             var newMeasurementObject = {
                                 variableId : config.appSettings.primaryOutcomeVariableDetails.id,
                                 value : numericRatingValue,
-                                startTime : reportTime,
+                                startTime : startTime,
                                 humanTime : {
                                     date : new Date().toISOString()
                                 },
@@ -196,6 +196,10 @@ angular.module('starter')
 							// append here
                             localStorageService.setItem('allMeasurements', JSON.stringify(measurementsToSaveInLocalStorage));
 
+                            //add to measurementsQueue to be synced later
+                            var startTime  = new Date().getTime();
+                            measurementService.addToMeasurementsQueue(numericRatingValue, startTime);
+
                             // update Bar chart data
                             localStorageService.getItem('barChartData',function(barChartData){
                                 if(barChartData){
@@ -203,16 +207,6 @@ angular.module('starter')
                                     barChartData[numericRatingValue-1]++;
                                     localStorageService.setItem('barChartData',JSON.stringify(barChartData));
                                 }
-                            });
-
-                            // update Line chart data
-                            localStorageService.getItem('lineChartData',function(lineChartData){
-                                if(lineChartData){
-                                    lineChartData = JSON.parse(lineChartData);
-                                    lineChartData.push([reportTime*1000, (numericRatingValue-1)*25]);
-                                    localStorageService.setItem('lineChartData',JSON.stringify(lineChartData));
-                                }
-                                deferred.resolve();
                             });
 
                         });
@@ -227,10 +221,28 @@ angular.module('starter')
                 return deferred.promise;
 			},
 
+
+            // add to measurementsQueue in local storage
+            addToMeasurementsQueue : function(numericRatingValue, startTime) {
+                // check queue
+                localStorageService.getItem('measurementsQueue',function(measurementsQueue) {
+                    measurementsQueue = measurementsQueue ? JSON.parse(measurementsQueue) : [];
+
+                    // add to queue
+                    measurementsQueue.push({
+                        startTime: Math.floor(startTime / 1000),
+                        value: numericRatingValue,
+                        note: ""
+                    });
+                    //resave queue
+                    localStorageService.setItem('measurementsQueue', JSON.stringify(measurementsQueue));
+                });
+            },
+
 			// update primary outcome variable request to QuantiModo API
 			updatePrimaryOutcomeVariableOnServer : function(numericRatingValue){
 
-				var reportTime  = new Date().getTime();
+				var startTime  = new Date().getTime();
 
                 // if val is string (needs conversion)
                 if(isNaN(parseFloat(numericRatingValue))){
@@ -240,22 +252,9 @@ angular.module('starter')
 
                 if(numericRatingValue){
                     localStorageService.setItem('lastReportedPrimaryOutcomeVariableValue', numericRatingValue);
-                    
-                    // check queue
+
+                    measurementService.addToMeasurementsQueue(numericRatingValue, startTime);
                     localStorageService.getItem('measurementsQueue',function(measurementsQueue){
-                        measurementsQueue = measurementsQueue? JSON.parse(measurementsQueue) : [];
-
-                        // add to queue
-                        measurementsQueue.push({
-                            startTime:  Math.floor(reportTime / 1000),
-                            value: numericRatingValue,
-                            note : ""
-                        });
-
-                        //resave queue
-                        localStorageService.setItem('measurementsQueue', JSON.stringify(measurementsQueue));
-
-                        // sync queue with server
                         syncQueue(measurementsQueue);
                     });
                 }
@@ -279,7 +278,7 @@ angular.module('starter')
                 return deferred.promise;
             },
 
-			// post a singe measurement
+			// post a single measurement
 			postTrackingMeasurement : function(startTimeEpoch, variableName, value, unit, isAvg, variableCategoryName, note, usePromise){
 
                 var deferred = $q.defer();
