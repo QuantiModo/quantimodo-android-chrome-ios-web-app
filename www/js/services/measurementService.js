@@ -416,13 +416,15 @@ angular.module('starter')
 				var deferred = $q.defer();
                 isSyncing = true;
                 var params;
-                var lastSyncTime;
+                $rootScope.lastSyncTime = 0;
 
                 localStorageService.getItem('lastSyncTime',function(val){
-                    lastSyncTime = val || 0;
+                    if (val) {
+                    	$rootScope.lastSyncTime = val;	
+                    }
                     params = {
                         variableName : config.appSettings.primaryOutcomeVariableDetails.name,
-                        'lastUpdated':'(ge)'+ lastSyncTime ,
+                        'lastUpdated':'(ge)'+ $rootScope.lastSyncTime ,
                         sort : '-startTime',
                         limit:200,
                         offset:0
@@ -451,6 +453,10 @@ angular.module('starter')
 					QuantiModo.getMeasurements(params).then(function(response){
 						if(response){
                             localStorageService.setItem('lastSyncTime',moment.utc().format('YYYY-MM-DDTHH:mm:ss'));
+                            localStorageService.getItem('lastSyncTime',function(val){
+                                $rootScope.lastSyncTime = val;
+                                console.log("lastSyncTime is " + $rootScope.lastSyncTime);
+                            });
                             // set flag
 							isSynced = true;
                             isSyncing = false;
@@ -471,13 +477,16 @@ angular.module('starter')
                                 localStorageService.getItem('allMeasurements',function(val){
                                    allMeasurements = val ? JSON.parse(val) : [];
 
-                                    if(!lastSyncTime || allMeasurements.length === 0 || allMeasurements === '[]') {
+                                    if(!$rootScope.lastSyncTime || allMeasurements.length === 0 || allMeasurements === '[]') {
                                         
                                         allMeasurements = allMeasurements.concat(response);
                                     }
                                     else{
+                                        // KELLY: problem in here now. Initial sync is fine, but the second sync
+                                        // (unexplained) goes in here and overwrites allMeasurements?
+
                                         //to remove duplicates since the server would also return the records that we already have in allDate
-                                        var lastSyncTimeTimestamp = new Date(lastSyncTime).getTime()/1000;
+                                        var lastSyncTimeTimestamp = new Date($rootScope.lastSyncTime).getTime()/1000;
                                         allMeasurements = allMeasurements.filter(function(measurement){
                                             if(!measurement.startTime){
                                                 measurement.startTime = measurement.timestamp;
@@ -536,6 +545,10 @@ angular.module('starter')
                                     //if user restarts the app or refreshes the page.
                                     localStorageService.setItem('allMeasurements',JSON.stringify(allMeasurements));
                                     localStorageService.setItem('lastSyncTime',moment(allMeasurements[allMeasurements.length-1].startTime*1000).utc().format('YYYY-MM-DDTHH:mm:ss'));
+                                    localStorageService.getItem('lastSyncTime',function(val){
+                                        $rootScope.lastSyncTime = val;
+                                        console.log("lastSyncTime is " + $rootScope.lastSyncTime);
+                                    });
                                 });
 
                             }
@@ -559,7 +572,7 @@ angular.module('starter')
                         {
                             syncQueue(measurementsQueue).then(
                                 function(){
-                                    if(!lastSyncTime){
+                                    if(!$rootScope.lastSyncTime){
                                         //we will get all the data from server
                                         localStorageService.setItem('allMeasurements','[]');
                                     }
