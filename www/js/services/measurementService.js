@@ -62,11 +62,11 @@ angular.module('starter')
                         return a.startTime - b.startTime;
                     });
 
-                    var filtered = allMeasurements.filter(function(x){
-                        if(!x.startTime){
-                            x.startTime = a.timestamp;
+                    var filtered = allMeasurements.filter(function(measurement){
+                        if(!measurement.startTime){
+                            measurement.startTime = measurement.timestamp;
                         }
-                        return x.startTime >= start && x.startTime <= end;
+                        return measurement.startTime >= start && measurement.startTime <= end;
                     });
                     
                     return callback(filtered);
