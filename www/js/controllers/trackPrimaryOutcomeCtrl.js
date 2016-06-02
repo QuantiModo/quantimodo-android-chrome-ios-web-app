@@ -9,7 +9,7 @@ angular.module('starter')
         $scope.showCharts = false;
         $scope.showRatingFaces = true;
 
-        $scope.recordPrimaryOutcomeVariableRating = function (numericRatingValue) {
+        $scope.storeRatingLocalAndServerAndUpdateCharts = function (numericRatingValue) {
 
             // flag for blink effect
             $scope.timeRemaining = true;
