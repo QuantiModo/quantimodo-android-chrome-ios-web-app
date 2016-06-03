@@ -239,6 +239,27 @@ angular.module('starter')
                 });
             },
 
+			// update primary outcome variable request to QuantiModo API
+			updatePrimaryOutcomeVariableOnServer : function(numericRatingValue){
+
+				var startTime  = new Date().getTime();
+
+                // if val is string (needs conversion)
+                if(isNaN(parseFloat(numericRatingValue))){
+                    numericRatingValue = config.appSettings.ratingTextToValueConversionDataSet[numericRatingValue] ?
+                    config.appSettings.ratingTextToValueConversionDataSet[numericRatingValue] : false;
+                } 
+
+                if(numericRatingValue){
+                    localStorageService.setItem('lastReportedPrimaryOutcomeVariableValue', numericRatingValue);
+
+                    measurementService.addToMeasurementsQueue(numericRatingValue, startTime);
+                    localStorageService.getItem('measurementsQueue',function(measurementsQueue){
+                        syncQueue(measurementsQueue);
+                    });
+                }
+			},
+
             postTrackingMeasurementLocally : function(measurementObject){
                 var deferred = $q.defer();
 
