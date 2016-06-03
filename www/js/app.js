@@ -1,3 +1,5 @@
+var db = null;
+
 angular.module('starter',
     [
         'ionic',
@@ -11,7 +13,7 @@ angular.module('starter',
     ]
 )
 
-.run(function($ionicPlatform, $ionicHistory, $state, $rootScope) {
+.run(function($ionicPlatform, $ionicHistory, $state, $rootScope, $cordovaSQLite) {
 
     $rootScope.goToState = function(state, params){
         $state.go(state, params);
@@ -45,6 +47,12 @@ angular.module('starter',
                 if (window.StatusBar) {
                     // org.apache.cordova.statusbar required
                     StatusBar.styleDefault();
+                }
+                if (!$rootScope.isMobile) {
+                    db = window.openDatabase("my.db", "1.0", "Cordova Demo", 200000);
+                }
+                else {
+                    db = $cordovaSQLite.openDB("my.db");
                 }
             });
 

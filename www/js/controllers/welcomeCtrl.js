@@ -82,11 +82,6 @@ angular.module('starter')
             
             // update local storage
             measurementService.updatePrimaryOutcomeVariableLocally(ratingValue).then(function () {
-                // try to send the data to server
-                /*if($rootScope.user){
-                    measurementService.updatePrimaryOutcomeVariableOnServer(ratingValue);
-                }*/
-
                 // calculate charts data
                 measurementService.calculateAveragePrimaryOutcomeVariableValue().then(function(){
                     //measurementService.calculateBothChart();
