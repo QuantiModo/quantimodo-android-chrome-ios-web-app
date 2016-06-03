@@ -255,7 +255,7 @@ angular.module('starter')
 
                     measurementService.addToMeasurementsQueue(numericRatingValue, startTime);
                     localStorageService.getItem('measurementsQueue',function(measurementsQueue){
-                        syncQueue(measurementsQueue);
+                        postQueueToServer(measurementsQueue);
                     });
                 }
 			},
