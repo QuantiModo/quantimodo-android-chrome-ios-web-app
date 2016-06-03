@@ -252,9 +252,8 @@ angular.module('starter')
 
                 if(numericRatingValue){
                     localStorageService.setItem('lastReportedPrimaryOutcomeVariableValue', numericRatingValue);
-
-                    measurementService.addToMeasurementsQueue(numericRatingValue, startTime);
                     localStorageService.getItem('measurementsQueue',function(measurementsQueue){
+                        measurementsQueue = measurementsQueue ? JSON.parse(measurementsQueue) : [];
                         postQueueToServer(measurementsQueue);
                     });
                 }
