@@ -481,9 +481,6 @@ angular.module('starter')
                                         allMeasurements = allMeasurements.concat(response);
                                     }
                                     else{
-                                        // KELLY: problem in here now. Initial sync is fine, but the second sync
-                                        // (unexplained) goes in here and overwrites allMeasurements?
-
                                         //to remove duplicates since the server would also return the records that we already have in allDate
                                         var lastSyncTimeTimestamp = new Date($rootScope.lastSyncTime).getTime()/1000;
                                         allMeasurements = allMeasurements.filter(function(measurement){
