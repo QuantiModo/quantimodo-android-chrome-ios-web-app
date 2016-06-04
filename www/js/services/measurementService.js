@@ -3,7 +3,7 @@ angular.module('starter')
 	.factory('measurementService', function($http, $q, QuantiModo, localStorageService, $rootScope){
 
 		// sync the measurements in queue with QuantiModo API
-		var syncQueue = function(measurementsQueue){
+		var postQueueToServer = function(measurementsQueue){
 			var defer = $q.defer();
 
 			// measurements set
@@ -252,10 +252,9 @@ angular.module('starter')
 
                 if(numericRatingValue){
                     localStorageService.setItem('lastReportedPrimaryOutcomeVariableValue', numericRatingValue);
-
-                    measurementService.addToMeasurementsQueue(numericRatingValue, startTime);
                     localStorageService.getItem('measurementsQueue',function(measurementsQueue){
-                        syncQueue(measurementsQueue);
+                        measurementsQueue = measurementsQueue ? JSON.parse(measurementsQueue) : [];
+                        postQueueToServer(measurementsQueue);
                     });
                 }
 			},
@@ -411,18 +410,20 @@ angular.module('starter')
 				return deferred.promise;
 			},
 
-			// sync local data to QuantiModo API
+			// get data from QuantiModo API
 			syncPrimaryOutcomeVariableMeasurements : function(){
 				var deferred = $q.defer();
                 isSyncing = true;
                 var params;
-                var lastSyncTime;
+                $rootScope.lastSyncTime = 0;
 
                 localStorageService.getItem('lastSyncTime',function(val){
-                    lastSyncTime = val || 0;
+                    if (val) {
+                    	$rootScope.lastSyncTime = val;	
+                    }
                     params = {
                         variableName : config.appSettings.primaryOutcomeVariableDetails.name,
-                        'lastUpdated':'(ge)'+ lastSyncTime ,
+                        'lastUpdated':'(ge)'+ $rootScope.lastSyncTime ,
                         sort : '-startTime',
                         limit:200,
                         offset:0
@@ -451,6 +452,10 @@ angular.module('starter')
 					QuantiModo.getMeasurements(params).then(function(response){
 						if(response){
                             localStorageService.setItem('lastSyncTime',moment.utc().format('YYYY-MM-DDTHH:mm:ss'));
+                            localStorageService.getItem('lastSyncTime',function(val){
+                                $rootScope.lastSyncTime = val;
+                                console.log("lastSyncTime is " + $rootScope.lastSyncTime);
+                            });
                             // set flag
 							isSynced = true;
                             isSyncing = false;
@@ -471,13 +476,13 @@ angular.module('starter')
                                 localStorageService.getItem('allMeasurements',function(val){
                                    allMeasurements = val ? JSON.parse(val) : [];
 
-                                    if(!lastSyncTime || allMeasurements.length === 0 || allMeasurements === '[]') {
+                                    if(!$rootScope.lastSyncTime || allMeasurements.length === 0 || allMeasurements === '[]') {
                                         
                                         allMeasurements = allMeasurements.concat(response);
                                     }
                                     else{
                                         //to remove duplicates since the server would also return the records that we already have in allDate
-                                        var lastSyncTimeTimestamp = new Date(lastSyncTime).getTime()/1000;
+                                        var lastSyncTimeTimestamp = new Date($rootScope.lastSyncTime).getTime()/1000;
                                         allMeasurements = allMeasurements.filter(function(measurement){
                                             if(!measurement.startTime){
                                                 measurement.startTime = measurement.timestamp;
@@ -491,8 +496,10 @@ angular.module('starter')
                                             }
                                             return measurement.startTime > lastSyncTimeTimestamp;
                                         });
-                                        console.log('new record');
-                                        console.log(newRecords);
+                                        if (newRecords.length > 0) {
+                                        	console.log('new record');
+                                        	console.log(newRecords);
+                                        }
                                         //Handling case if a primary outcome variable is updated
                                         //Extracting Updated Records
                                         var updatedRecords = response.filter(function(measurement){
@@ -535,7 +542,11 @@ angular.module('starter')
                                     //updating last updated time and data in local storage so that we syncing should continue from this point
                                     //if user restarts the app or refreshes the page.
                                     localStorageService.setItem('allMeasurements',JSON.stringify(allMeasurements));
-                                    localStorageService.setItem('lastSyncTime',moment(allMeasurements[allMeasurements.length-1].startTime*1000).utc().format('YYYY-MM-DDTHH:mm:ss'));
+                                    localStorageService.setItem('lastSyncTime',moment.utc().format('YYYY-MM-DDTHH:mm:ss'));
+                                    localStorageService.getItem('lastSyncTime',function(val){
+                                        $rootScope.lastSyncTime = val;
+                                        console.log("lastSyncTime is " + $rootScope.lastSyncTime);
+                                    });
                                 });
 
                             }
@@ -552,34 +563,28 @@ angular.module('starter')
 
 				//sync queue
                 localStorageService.getItem('measurementsQueue',function(measurementsQueue){
-                    if(measurementsQueue){
+
+                    if(measurementsQueue && measurementsQueue.length > 0){
                         // if measurement queues is present
                         measurementsQueue = JSON.parse(measurementsQueue);
-                        if(measurementsQueue.length > 0)
-                        {
-                            syncQueue(measurementsQueue).then(
-                                function(){
-                                    if(!lastSyncTime){
-                                        //we will get all the data from server
-                                        localStorageService.setItem('allMeasurements','[]');
-                                    }
-                                    setTimeout(
-                                        function()
-                                        {
-                                            getMeasurements();
-                                        },
-                                        100
-                                    );
+                        postQueueToServer(measurementsQueue).then(
+                            function(){
+                                if(!$rootScope.lastSyncTime){
+                                    //we will get all the data from server
+                                    localStorageService.setItem('allMeasurements','[]');
                                 }
-                            );
-                        }
-                        else {
-                            getMeasurements();
-                        }
+                                setTimeout(
+                                    function()
+                                    {
+                                        getMeasurements();
+                                    },
+                                    100
+                                );
+                            }
+                        );
                     } else {
                         getMeasurements();
                     }
-
                 });
 
 				return deferred.promise;
