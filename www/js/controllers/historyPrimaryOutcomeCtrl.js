@@ -41,7 +41,7 @@ angular.module('starter')
 			var note = $scope.selectedItem.note? $scope.selectedItem.note : null;
 
 	        // update on the server
-	        measurementService.editPrimaryOutcomeVariable($scope.selectedItem.startTime, $scope.selectedPrimaryOutcomeVariableValue, note)
+	        measurementService.editPrimaryOutcomeVariable($scope.selectedItem.startTimeEpoch, $scope.selectedPrimaryOutcomeVariableValue, note)
 	        .then(function(){
 	        	// do nothing user would have safely navigated away
 	        	console.log("edit complete");
@@ -104,9 +104,9 @@ angular.module('starter')
 				if(history.length > 0){
 					$scope.showHelpInfoPopupIfNecessary();
 					history = history.sort(function(a,b){
-						if(a.startTime < b.startTime){
+						if(a.startTimeEpoch < b.startTimeEpoch){
 							return 1;}
-						if(a.startTime> b.startTime)
+						if(a.startTimeEpoch> b.startTimeEpoch)
 						{return -1;}
 						return 0;
 					});

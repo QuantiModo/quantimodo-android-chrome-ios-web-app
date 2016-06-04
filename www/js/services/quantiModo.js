@@ -133,7 +133,7 @@ angular.module('starter')
             // get Measurements for user
             var getMeasurements = function(params, successHandler, errorHandler){
                 QuantiModo.get('api/measurements',
-                    ['variableName', 'sort', 'startTime', 'endTime', 'groupingWidth', 'groupingTimezone', 'source', 'unit','limit','offset','lastUpdated'],
+                    ['variableName', 'sort', 'startTimeEpoch', 'endTime', 'groupingWidth', 'groupingTimezone', 'source', 'unit','limit','offset','lastUpdated'],
                     params,
                     successHandler,
                     errorHandler);
@@ -180,7 +180,7 @@ angular.module('starter')
 
             QuantiModo.deleteV1Measurements = function(measurements, successHandler, errorHandler){
                 QuantiModo.post('api/v1/measurements/delete',
-                    ['variableId', 'variableName', 'startTime', 'id'],
+                    ['variableId', 'variableName', 'startTimeEpoch', 'id'],
                     measurements,
                     successHandler,
                     errorHandler);
