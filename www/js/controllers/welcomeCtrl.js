@@ -81,7 +81,7 @@ angular.module('starter')
             //localStorageService.setItem('allMeasurements', JSON.stringify([]));
             
             // update local storage
-            measurementService.updatePrimaryOutcomeVariableLocally(ratingValue).then(function () {
+            measurementService.addToMeasurementsQueue(ratingValue).then(function () {
                 // calculate charts data
                 measurementService.calculateAveragePrimaryOutcomeVariableValue().then(function(){
                     //measurementService.calculateBothChart();

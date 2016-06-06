@@ -22,25 +22,12 @@ angular.module('starter')
             }
 
             // update local storage
-            measurementService.updatePrimaryOutcomeVariableLocally(numericRatingValue);
+            measurementService.addToMeasurementsQueue(numericRatingValue);
 
-            if(!$rootScope.user){
-                $rootScope.user = localStorageService.getItemAsObject('user');
+            if(!$rootScope.isSyncing){
+                syncPrimaryOutcomeVariableMeasurements();
             }
-            if($rootScope.user){
-                // try to send the data to server if we have a user
-                measurementService.updatePrimaryOutcomeVariableOnServer(numericRatingValue);
-            }
-
-            // calculate charts data
-            measurementService.calculateAveragePrimaryOutcomeVariableValue().then(function () {
-                setTimeout(function () {
-                $scope.timeRemaining = false;
-                $scope.safeApply();
-            }, 500);
-
             updateCharts();
-        });
            
         };
 
@@ -132,18 +119,6 @@ angular.module('starter')
         // calculate values for both of the charts
         var syncPrimaryOutcomeVariableMeasurements = function(){
 
-            if(!$rootScope.user){
-                var userObject = localStorageService.getItemAsObject('user');
-                if(userObject){
-                    $rootScope.user = userObject;
-                }
-            }
-
-            if(!$rootScope.user){
-                console.log('Cannot sync because we do not have a user in local storage!');
-                return;
-            }
-
             if($rootScope.user){
                 $rootScope.isSyncing = true;
                 console.log('Syncing primary outcome measurements...');
@@ -161,8 +136,6 @@ angular.module('starter')
                         measurementService.getPrimaryOutcomeVariableValue().then(calculateChartValues, calculateChartValues);
                         updateCharts();
                     });
-
-
                 });
             }
         };
@@ -182,8 +155,10 @@ angular.module('starter')
             $scope.redrawLineChart = true;
             $scope.redrawBarChart = true;
             $scope.showHelpInfoPopupIfNecessary();
+            if($rootScope.user){
+                measurementService.syncPrimaryOutcomeVariableMeasurements();
+            }
             syncPrimaryOutcomeVariableMeasurements();
-            generateLineAndBarChartData();
             $ionicLoading.hide();
         };
 
