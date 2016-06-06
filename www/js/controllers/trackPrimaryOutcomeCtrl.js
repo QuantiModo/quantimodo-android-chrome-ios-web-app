@@ -42,7 +42,6 @@ angular.module('starter')
             }
 
             if(!$scope.$$phase) {
-                $scope.showRatingFaces = true;
                 console.log("Not in the middle of digest cycle, so redrawing everything...");
                 $scope.safeApply();
             }
@@ -81,6 +80,8 @@ angular.module('starter')
                 measurementService.getAllLocalMeasurements(false, function(allMeasurements) {
                     var lineArr = [];
                     var barArr = [0, 0, 0, 0, 0];
+                    var sum = 0;
+
                     if (allMeasurements) {
                         for (var i = 0; i < allMeasurements.length; i++) {
                             var currentValue = Math.ceil(allMeasurements[i].value);
@@ -92,15 +93,11 @@ angular.module('starter')
                                 lineArr.push(lineChartItem);
                                 barArr[currentValue - 1]++;
                             }
-                            var sum = 0;
                             sum+= allMeasurements[i].value;
-                            var avgVal = Math.round(sum/(allMeasurements.length));
-
                             // set localstorage values
-                            localStorageService.setItem('averagePrimaryOutcomeVariableValue',avgVal);
-
-
                         }
+                        var avgVal = Math.round(sum/(allMeasurements.length));
+                        localStorageService.setItem('averagePrimaryOutcomeVariableValue',avgVal);
 
                         if(!$scope.barChartConfig || barArr !== $scope.barChartConfig.series[0].data) {
                             updateAveragePrimaryOutcomeRatingView(averagePrimaryOutcomeVariableValue);
@@ -158,6 +155,7 @@ angular.module('starter')
             $scope.averagePrimaryOutcomeVariableValue = false;
             $scope.lineChartData = null;
             $scope.barChartData = null;
+            $scope.showRatingFaces = true;
 
             // chart flags
             $scope.lineChartConfig = false; 
