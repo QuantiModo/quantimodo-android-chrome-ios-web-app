@@ -78,27 +78,55 @@ angular.module('starter')
         // updates all the visual elements on the page
         var updateCharts = function(){
             localStorageService.getItem('averagePrimaryOutcomeVariableValue',function(averagePrimaryOutcomeVariableValue){
-                var __ret = measurementService.getLineAndBarChartData();
-                if(__ret){
-                    if(!$scope.barChartConfig || __ret.barArr !== $scope.barChartConfig.series[0].data){
-                        updateAveragePrimaryOutcomeRatingView(averagePrimaryOutcomeVariableValue);
-                        $scope.lineChartData = __ret.lineArr;
-                        $scope.barChartData = __ret.barArr;
-                        updateLineChart($scope.lineChartData);
-                        updateBarChart($scope.barChartData);
-                        $scope.showCharts = true;
-                        if(!$scope.$$phase) {
-                            $scope.safeApply();
+                measurementService.getAllLocalMeasurements(false, function(allMeasurements) {
+                    var lineArr = [];
+                    var barArr = [0, 0, 0, 0, 0];
+                    if (allMeasurements) {
+                        for (var i = 0; i < allMeasurements.length; i++) {
+                            var currentValue = Math.ceil(allMeasurements[i].value);
+                            if (allMeasurements[i].abbreviatedUnitName === config.appSettings.primaryOutcomeVariableDetails.abbreviatedUnitName &&
+                                (currentValue - 1) <= 4 && (currentValue - 1) >= 0) {
+                                var startTimeMilliseconds = moment(allMeasurements[i].startTimeEpoch).unix() * 1000;
+                                var percentValue = (currentValue - 1) * 25;
+                                var lineChartItem = [startTimeMilliseconds, percentValue];
+                                lineArr.push(lineChartItem);
+                                barArr[currentValue - 1]++;
+                            }
+                            var sum = 0;
+                            sum+= allMeasurements[i].value;
+                            var avgVal = Math.round(sum/(allMeasurements.length));
+
+                            // set localstorage values
+                            localStorageService.setItem('averagePrimaryOutcomeVariableValue',avgVal);
+
+
+                        }
+
+                        if(!$scope.barChartConfig || barArr !== $scope.barChartConfig.series[0].data) {
+                            updateAveragePrimaryOutcomeRatingView(averagePrimaryOutcomeVariableValue);
+                            $scope.lineChartData = lineArr;
+                            $scope.barChartData = barArr;
+                            if ($scope.lineChartData.length > 0 && $scope.barChartData.length === 5) {
+                                updateLineChart($scope.lineChartData);
+                                updateBarChart($scope.barChartData);
+                                $scope.showCharts = true; 
+                            }
+                            if (!$scope.$$phase) {
+                                $scope.safeApply();
+                            }
                         }
                     }
-                }
+                });
             });
         };
 
+        // Deprecated
+        /*
         // calculate values for both of the charts
         var calculateChartValues = function(){
             measurementService.calculateBothChart().then($ionicLoading.hide());
         };
+        */
 
         // calculate values for both of the charts
         var syncPrimaryOutcomeVariableMeasurements = function(){
@@ -113,13 +141,11 @@ angular.module('starter')
 
                     // update loader text
                     $ionicLoading.hide();
-                    $scope.showLoader('Calculating stuff', 2000);
+                    //$scope.showLoader('Calculating stuff', 2000);
 
                     // calculate primary outcome variable values
-                    measurementService.calculateAveragePrimaryOutcomeVariableValue().then(function(){
-                        measurementService.getPrimaryOutcomeVariableValue().then(calculateChartValues, calculateChartValues);
-                        updateCharts();
-                    });
+                    updateCharts();
+
                 });
             }
         };

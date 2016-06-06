@@ -23,10 +23,15 @@ angular.module('starter')
 
                     var measurementsQueue = localStorageService.getItemAsObject('measurementsQueue');
 
-                    allMeasurements = measurementsFromLocalStorage.concat(measurementsQueue);
+                    if (measurementsFromLocalStorage) {
+                        allMeasurements = measurementsFromLocalStorage.concat(measurementsQueue);
+                    }
+                    else {
+                        allMeasurements = measurementsQueue;
+                    }
 
                     // filtered measurements
-                    var returnFiltered = function(start, end){
+                    var returnSorted = function(start, end){
 
                         allMeasurements = allMeasurements.sort(function(a, b){
                             if(!a.startTimeEpoch){
@@ -38,15 +43,16 @@ angular.module('starter')
                             }
                             return a.startTimeEpoch - b.startTimeEpoch;
                         });
-
+						/*
                         var filtered = allMeasurements.filter(function(measurement){
                             if(!measurement.startTimeEpoch){
                                 measurement.startTimeEpoch = measurement.timestamp;
                             }
                             return measurement.startTimeEpoch >= start && measurement.startTimeEpoch <= end;
                         });
+                        */
 
-                        return callback(filtered);
+                        return callback(allMeasurements);
                     };
 
                     if(!allMeasurements){
@@ -60,12 +66,12 @@ angular.module('starter')
                         var end;
 
                         if(tillNow){
-                            end = Date.now()/1000;
-                            returnFiltered(start,end);
+                            end = Math.floor(Date.now()/1000);
+                            returnSorted(start,end);
                         } else {
                             measurementService.getToDate(function(end){
                                 end = end / 1000;
-                                returnFiltered(start,end);
+                                returnSorted(start,end);
                             });
                         }
                     });
@@ -186,6 +192,7 @@ angular.module('starter')
                         name: config.appSettings.primaryOutcomeVariableDetails.name,
                         variableDescription: config.appSettings.primaryOutcomeVariableDetails.description,
                         startTimeEpoch: Math.floor(startTimeEpoch / 1000),
+                        abbreviatedUnitName: config.appSettings.primaryOutcomeVariableDetails.abbreviatedUnitName,
                         value: numericRatingValue,
                         note: ""
                     });
@@ -259,7 +266,7 @@ angular.module('starter')
 			syncPrimaryOutcomeVariableMeasurements : function(){
 				var deferred = $q.defer();
                 isSyncing = true;
-                var params;
+
                 $rootScope.lastSyncTime = 0;
 
                 localStorageService.getItem('lastSyncTime',function(lastSyncTime){
@@ -273,6 +280,12 @@ angular.module('starter')
                     if (lastSyncTime) {
                     	$rootScope.lastSyncTime = lastSyncTime;
                     }
+
+                });
+
+				// send request
+				var getMeasurements = function(){
+                    var params;
                     params = {
                         variableName : config.appSettings.primaryOutcomeVariableDetails.name,
                         'lastUpdated':'(ge)'+ $rootScope.lastSyncTime ,
@@ -280,11 +293,6 @@ angular.module('starter')
                         limit:200,
                         offset:0
                     };
-                    console.log("syncPrimaryOutcomeVariableMeasurements",params);
-                });
-
-				// send request
-				var getMeasurements = function(){
 
                     localStorageService.getItem('user', function(user){
                         if(!user){
@@ -328,57 +336,25 @@ angular.module('starter')
                                 localStorageService.getItem('allMeasurements',function(allMeasurements){
                                    allMeasurements = allMeasurements ? JSON.parse(allMeasurements) : [];
 
-                                    if(!$rootScope.lastSyncTime || allMeasurements.length === 0 || allMeasurements === '[]') {
-                                        
-                                        allMeasurements = allMeasurements.concat(response);
-                                    }
-                                    else{
-                                        //to remove duplicates since the server would also return the records that we already have in allDate
-                                        var lastSyncTimeTimestamp = new Date($rootScope.lastSyncTime).getTime()/1000;
-                                        allMeasurements = allMeasurements.filter(function(measurement){
-                                            if(!measurement.startTimeEpoch){
-                                                measurement.startTimeEpoch = measurement.timestamp;
+                                        var filteredStoredMeasurements = [];
+
+                                        allMeasurements.forEach(function(storedMeasurement) {
+                                            var found = false;
+                                            var i = 0;
+                                            while (!found && i < response.length) {
+                                                var responseMeasurement = response[i];
+                                                if (storedMeasurement.startTimeEpoch === responseMeasurement.startTimeEpoch &&
+                                                    storedMeasurement.id === responseMeasurement.id) {
+                                                    found = true;
+                                                }
+                                                i++;
                                             }
-                                            return measurement.startTimeEpoch < lastSyncTimeTimestamp;
-                                        });
-                                        //Extracting New Records
-                                        var newRecords = response.filter(function (measurement) {
-                                            if(!measurement.startTimeEpoch){
-                                                measurement.startTimeEpoch = measurement.timestamp;
+                                            if (!found) {
+                                                filteredStoredMeasurements.push(storedMeasurement);
                                             }
-                                            return measurement.startTimeEpoch > lastSyncTimeTimestamp;
                                         });
-                                        if (newRecords.length > 0) {
-                                        	console.log('new record');
-                                        	console.log(newRecords);
-                                        }
-                                        //Handling case if a primary outcome variable is updated
-                                        //Extracting Updated Records
-                                        var updatedRecords = response.filter(function(measurement){
-                                            var updatedAtTimestamp =  moment.utc(measurement.updatedTime * 1000).unix();
-                                            var createdAtTimestamp =  moment.utc(measurement.createdTime * 1000).unix();
-                                            //Criteria for updated records
-                                            return (updatedAtTimestamp > lastSyncTimeTimestamp && createdAtTimestamp !== updatedAtTimestamp) ;
-                                        });
-                                        //Replacing primary outcome variable object in original allMeasurements object
-                                        allMeasurements.map(function(x,index) {
-                                            updatedRecords.forEach(function(elem){
-                                                if(!x.startTimeEpoch){
-                                                    x.startTimeEpoch = x.timestamp;
-                                                }
-                                                if(!elem.startTimeEpoch){
-                                                    elem.startTimeEpoch = elem.timestamp;
-                                                }
-                                                if (x.startTimeEpoch  === elem.startTimeEpoch  && x.source === config.get('clientSourceName')) {
-                                                    console.log('found at ' + index);
-                                                    x = elem;
-                                                }
-                                            });
-                                        });
-                                        //console.log('updated records');
-                                        //console.log(updatedRecords);
-                                        allMeasurements = allMeasurements.concat(newRecords);
-                                    }
+                                        allMeasurements = filteredStoredMeasurements.concat(response);
+
 
                                     var s  = 9999999999999; 
                                     allMeasurements.forEach(function(x){
@@ -395,7 +371,7 @@ angular.module('starter')
                                     //if user restarts the app or refreshes the page.
                                     localStorageService.setItem('allMeasurements',JSON.stringify(allMeasurements));
                                     $rootScope.lastSyncTime = moment.utc().format('YYYY-MM-DDTHH:mm:ss');
-                                    localStorageService.setItem($rootScope.lastSyncTime);
+                                    localStorageService.setItem('lastSyncTime', $rootScope.lastSyncTime);
                                     console.log("lastSyncTime is " + $rootScope.lastSyncTime);
 
                                 });
@@ -440,118 +416,6 @@ angular.module('starter')
 
 				return deferred.promise;
 			},
-
-			// calculate average from local data
-			calculateAveragePrimaryOutcomeVariableValue : function(){
-				var deferred = $q.defer();
-				var data;
-                measurementService.getAllLocalMeasurements(false,function(allMeasurements){
-                    data = allMeasurements;
-                    // check if data is present to calculate primary outcome variable from
-                    if(!data && data.length === 0) {
-                        deferred.reject(false);
-                    }
-                    else {
-                        var sum = 0;
-                        var zeroes = 0;
-
-                        // loop through calculating average
-                        for(var i in data){
-                            if(data[i].value === 0 || data[i].value === "0") {
-                                zeroes++;
-                            }
-                            else {
-                                sum+= data[i].value;
-                            }
-                        }
-
-                        var avgVal = Math.round(sum/(data.length-zeroes));
-
-                        // set localstorage values
-                        localStorageService.setItem('averagePrimaryOutcomeVariableValue',avgVal);
-                        deferred.resolve(avgVal);
-                    }
-                });
-			   	return deferred.promise;
-			},
-
-			// get average primary outcome variable from local stroage
-			getPrimaryOutcomeVariableValue : function(){
-				var deferred = $q.defer();
-
-				// return from localstorage if present
-                localStorageService.getItem('averagePrimaryOutcomeVariableValue',function(averagePrimaryOutcomeVariableValue){
-                    if(averagePrimaryOutcomeVariableValue) {
-                        deferred.resolve(averagePrimaryOutcomeVariableValue);
-                    }
-                    else {
-                        // calculate it again if not found
-                        measurementService.calculateAveragePrimaryOutcomeVariableValue()
-                            .then(function(val){
-                                deferred.resolve(val);
-                            }, function(){
-                                deferred.reject(false);
-                            });
-                    }
-                });
-
-
-				return deferred.promise;
-			},
-
-            generateLineAndBarChartArrays : function (measurements) {
-                var lineArr = [];
-                var barArr = [0, 0, 0, 0, 0];
-
-                for (var i = 0; i < measurements.length; i++) {
-                    var currentValue = Math.ceil(measurements[i].value);
-                    if (measurements[i].abbreviatedUnitName === config.appSettings.primaryOutcomeVariableDetails.abbreviatedUnitName &&
-                        (currentValue - 1) <= 4 && (currentValue - 1) >= 0) {
-                        lineArr.push([moment(measurements[i].startTimeEpoch).unix() * 1000, (currentValue - 1) * 25]);
-                        barArr[currentValue - 1]++;
-                    }
-                }
-                return {lineArr: lineArr, barArr: barArr};
-            },
-
-            // calculate both charts in same iteration
-			calculateBothChart : function(){
-				var deferred = $q.defer();
-
-                measurementService.getAllLocalMeasurements(false,function(data){
-                    if(!data && data.length === 0){
-                        deferred.reject(false);
-                    } else {
-                        var __ret = measurementService.generateLineAndBarChartArrays(data);
-                        var lineArr = __ret.lineArr;
-                        var barArr = __ret.barArr;
-                        deferred.resolve([lineArr, barArr]);
-                    }
-                });
-                
-		       return deferred.promise;
-			},
-            
-            getLineAndBarChartData : function () {
-                var lineArr = [];
-                var barArr = [0, 0, 0, 0, 0];
-                measurementService.getAllLocalMeasurements(false, function(allMeasurements) {
-                    if (allMeasurements) {
-                        for (var i = 0; i < allMeasurements.length; i++) {
-                            var currentValue = Math.ceil(allMeasurements[i].value);
-                            if (allMeasurements[i].abbreviatedUnitName === config.appSettings.primaryOutcomeVariableDetails.abbreviatedUnitName &&
-                                (currentValue - 1) <= 4 && (currentValue - 1) >= 0) {
-                                var startTimeMilliseconds = moment(allMeasurements[i].startTimeEpoch).unix() * 1000;
-                                var percentValue = (currentValue - 1) * 25;
-                                var lineChartItem = [startTimeMilliseconds, percentValue];
-                                lineArr.push(lineChartItem);
-                                barArr[currentValue - 1]++;
-                            }
-                        }
-                        return {lineArr: lineArr, barArr: barArr};
-                    }
-                });
-            },
 
             getHistoryMeasurements : function(params){
                 var deferred = $q.defer();
