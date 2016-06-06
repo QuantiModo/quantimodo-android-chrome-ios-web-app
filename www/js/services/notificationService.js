@@ -20,7 +20,7 @@ angular.module('starter')
                 if(typeof cordova != "undefined"){
                     if(ionic.Platform.isAndroid()){
                         cordova.plugins.notification.local.cancelAll(function(){
-                            if(interval!="never"){
+                            if(interval !== "never"){
                                 cordova.plugins.notification.local.schedule({
                                     text: config.appSettings.mobileNotificationText,
                                     every: intervals[interval],
@@ -30,6 +30,7 @@ angular.module('starter')
                                     console.log('notification scheduled');
                                 });
                                 cordova.plugins.notification.local.on("click", function (notification) {
+                                    window.location = window.location.href + 'app/reminders-inbox';
                                 });
                             }
                         });
@@ -45,6 +46,7 @@ angular.module('starter')
                                     console.log('notification scheduled');
                                 });
                                 cordova.plugins.notification.local.on("click", function (notification) {
+                                    window.location = window.location.href + 'app/reminders-inbox';
                                 });
                             }
                         });
@@ -82,11 +84,11 @@ angular.module('starter')
                     reminderTime.setMinutes( parseInt(time[2]) || 0 );
                 }
 
-                if (params['frequency'] != "Daily") {
+                if (params['frequency'] !== "Daily") {
                     if(typeof cordova != "undefined"){
                         //Android and iOS frequency reminders
                         cordova.plugins.notification.local.clearAll(function(){
-                            if(params['frequency'] != "Never"){
+                            if(params['frequency'] !== "Never"){
                                 cordova.plugins.notification.local.schedule({
                                     text: text,
                                     every: intervals[interval],
@@ -96,6 +98,7 @@ angular.module('starter')
                                     console.log('notification scheduled');
                                 });
                                 cordova.plugins.notification.local.on("click", function (notification) {
+                                    window.location = window.location.href + 'app/reminders-inbox';
                                 });
                             }
                         });
