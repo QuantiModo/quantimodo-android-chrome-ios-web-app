@@ -21,13 +21,9 @@ angular.module('starter')
                 });
             }
 
-            // update local storage
-            measurementService.addToMeasurementsQueue(numericRatingValue);
-
             if(!$rootScope.isSyncing){
                 syncPrimaryOutcomeVariableMeasurements();
             }
-            updateCharts();
            
         };
 
@@ -117,16 +113,9 @@ angular.module('starter')
             });
         };
 
-        // Deprecated
-        /*
-        // calculate values for both of the charts
-        var calculateChartValues = function(){
-            measurementService.calculateBothChart().then($ionicLoading.hide());
-        };
-        */
-
         // calculate values for both of the charts
         var syncPrimaryOutcomeVariableMeasurements = function(){
+            console.debug("trackPrimaryOutcomeCtrl: syncPrimaryOutcomeVariableMeasurements");
 
             if($rootScope.user){
                 $rootScope.isSyncing = true;
@@ -141,6 +130,7 @@ angular.module('starter')
                     //$scope.showLoader('Calculating stuff', 2000);
 
                     // calculate primary outcome variable values
+                    console.debug("trackPrimaryOutcomeCtrl: syncPrimaryOutcomeVariableMeasurements about to call updateCharts()");
                     updateCharts();
 
                 });
@@ -169,19 +159,34 @@ angular.module('starter')
 
         $scope.init();
 
+        //KELLY clean this up
         $scope.$on('updateChartsAndSyncMeasurements', function(){
             console.log('track state redrawing event triggered through sibling controllers. Updating charts and syncing..');
+            /*
             if(!$scope.lineChartConfig){
                 updateCharts();
             }
+            */
             syncPrimaryOutcomeVariableMeasurements();
+        });
+
+        //KELLY test this
+        $scope.$on('updateCharts', function(){
+            console.log('track state redrawing event triggered through sibling controllers. Updating charts and syncing..');
+            
+             //if(!$scope.lineChartConfig){
+                updateCharts();
+             //}
+            
+            
         });
 
         $scope.$on('$ionicView.enter', function(e) {
             console.log('track state brought in focus. Updating charts and syncing..');
-            if(!$scope.lineChartConfig){
+            /*$scope.lineChartConfig){
                 updateCharts();
             }
+            */
             syncPrimaryOutcomeVariableMeasurements();
             $timeout(function() {
                 $scope.$broadcast('highchartsng.reflow');

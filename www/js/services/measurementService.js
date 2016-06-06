@@ -2,10 +2,6 @@ angular.module('starter')
 	// Measurement Service
 	.factory('measurementService', function($http, $q, QuantiModo, localStorageService, $rootScope){
 
-
-		// flag whether the Service is in a synced state
-		var isSynced = false;
-
         //flag to indicate if data syncing is in progress
         var isSyncing = false;
 
@@ -79,9 +75,132 @@ angular.module('starter')
                 });
             },
 
+            // get data from QuantiModo API
+            getMeasurements : function(){
+                console.debug("measurementService: getMeasurements");
+                var deferred = $q.defer();
+                isSyncing = true;
 
-        // sync the measurements in queue with QuantiModo API
-            syncQueueToServer : function(){
+                $rootScope.lastSyncTime = 0;
+
+                localStorageService.getItem('lastSyncTime',function(lastSyncTime){
+                    var nowDate = new Date();
+                    var lastSyncDate = new Date(lastSyncTime);
+                    var milliSecondsSinceLastSync = nowDate - lastSyncDate;
+                    if(milliSecondsSinceLastSync < 5 * 60 * 1000){
+                        deferred.resolve();
+                        return deferred.promise;
+                    }
+                    if (lastSyncTime) {
+                        $rootScope.lastSyncTime = lastSyncTime;
+                    }
+
+                });
+
+                // send request
+                var params;
+                params = {
+                    variableName : config.appSettings.primaryOutcomeVariableDetails.name,
+                    'lastUpdated':'(ge)'+ $rootScope.lastSyncTime ,
+                    sort : '-startTimeEpoch',
+                    limit:200,
+                    offset:0
+                };
+
+                localStorageService.getItem('user', function(user){
+                    if(!user){
+                        isSyncing = false;
+                        deferred.resolve();
+                    }
+                });
+
+                // send request
+                QuantiModo.getMeasurements(params).then(function(response){
+                    if(response){
+                        localStorageService.setItem('lastSyncTime',moment.utc().format('YYYY-MM-DDTHH:mm:ss'));
+                        localStorageService.getItem('lastSyncTime',function(val){
+                            $rootScope.lastSyncTime = val;
+                            console.log("lastSyncTime is " + $rootScope.lastSyncTime);
+                        });
+                        // set flag
+                        isSyncing = false;
+                        deferred.resolve(response);
+                        //KELLY test this
+                        $rootScope.$broadcast('updateCharts');
+                    }
+                    else {
+                        deferred.reject(false);
+                    }
+                }, function(response){
+                    isSyncing = false;
+                    $rootScope.isSyncing = false;
+                    deferred.reject(false);
+                }, function(response){
+                    // KELLY move to first function (success callback)
+                    if(response){
+                        if(response.length > 0){
+                            // update local data
+                            var allMeasurements;
+                            localStorageService.getItem('allMeasurements',function(allMeasurements){
+                                allMeasurements = allMeasurements ? JSON.parse(allMeasurements) : [];
+
+                                var filteredStoredMeasurements = [];
+
+                                allMeasurements.forEach(function(storedMeasurement) {
+                                    var found = false;
+                                    var i = 0;
+                                    while (!found && i < response.length) {
+                                        var responseMeasurement = response[i];
+                                        if (storedMeasurement.startTimeEpoch === responseMeasurement.startTimeEpoch &&
+                                            storedMeasurement.id === responseMeasurement.id) {
+                                            found = true;
+                                        }
+                                        i++;
+                                    }
+                                    if (!found) {
+                                        filteredStoredMeasurements.push(storedMeasurement);
+                                    }
+                                });
+                                allMeasurements = filteredStoredMeasurements.concat(response);
+
+
+                                var s  = 9999999999999;
+                                allMeasurements.forEach(function(x){
+                                    if(!x.startTimeEpoch){
+                                        x.startTimeEpoch = x.timestamp;
+                                    }
+                                    if(x.startTimeEpoch <= s){
+                                        s = x.startTimeEpoch;
+                                    }
+                                });
+
+                                measurementService.setDates(new Date().getTime(),s*1000);
+                                //updating last updated time and data in local storage so that we syncing should continue from this point
+                                //if user restarts the app or refreshes the page.
+                                localStorageService.setItem('allMeasurements',JSON.stringify(allMeasurements));
+                                $rootScope.lastSyncTime = moment.utc().format('YYYY-MM-DDTHH:mm:ss');
+                                localStorageService.setItem('lastSyncTime', $rootScope.lastSyncTime);
+                                console.log("lastSyncTime is " + $rootScope.lastSyncTime);
+
+                            });
+
+                        }
+                    } else {
+                        localStorageService.getItem('user', function(user){
+                            if(!user){
+                                isSyncing = false;
+                                deferred.resolve();
+                            }
+                        });
+                    }
+                });
+                
+                return deferred.promise;
+            },
+
+            // sync the measurements in queue with QuantiModo API
+            syncPrimaryOutcomeVariableMeasurements : function(){
+                console.debug("measurementService: syncPrimaryOutcomeVariableMeasurements");
                 var defer = $q.defer();
 
                 localStorageService.getItem('measurementsQueue',function(measurementsQueue) {
@@ -92,10 +211,6 @@ angular.module('starter')
                         defer.resolve();
                         console.debug('No measurements to sync!');
                         return defer.promise;
-                    }
-
-                    if(measurementObjects.length > 0) {
-
                     }
 
                     // measurements set
@@ -115,7 +230,10 @@ angular.module('starter')
                     // send request
                     QuantiModo.postMeasurementsV2(measurements, function (response) {
                         // success
-
+                        console.debug("measurementService: syncPrimaryOutcomeVariableMeasurements about to call getMeasurements()");
+                        // KELLY problem: getMeasurements finishes after all calls to updateCharts;
+                        // therefore updateCharts doesn't have needed data
+                        measurementService.getMeasurements();
                         // clear queue
                         localStorageService.setItem('measurementsQueue', JSON.stringify([]));
                         defer.resolve();
@@ -128,7 +246,10 @@ angular.module('starter')
                         localStorageService.setItem('measurementsQueue', JSON.stringify(measurementsQueue));
                         console.log("error", response);
                         defer.resolve();
+
+
                     });
+
                 });
 
                 return defer.promise;
@@ -262,161 +383,6 @@ angular.module('starter')
 				return deferred.promise;
 			},
 
-			// get data from QuantiModo API
-			syncPrimaryOutcomeVariableMeasurements : function(){
-				var deferred = $q.defer();
-                isSyncing = true;
-
-                $rootScope.lastSyncTime = 0;
-
-                localStorageService.getItem('lastSyncTime',function(lastSyncTime){
-                    var nowDate = new Date();
-                    var lastSyncDate = new Date(lastSyncTime);
-                    var milliSecondsSinceLastSync = nowDate - lastSyncDate;
-                    if(milliSecondsSinceLastSync < 5 * 60 * 1000){
-                    	deferred.resolve();
-                        return deferred.promise;
-                    }
-                    if (lastSyncTime) {
-                    	$rootScope.lastSyncTime = lastSyncTime;
-                    }
-
-                });
-
-				// send request
-				var getMeasurements = function(){
-                    var params;
-                    params = {
-                        variableName : config.appSettings.primaryOutcomeVariableDetails.name,
-                        'lastUpdated':'(ge)'+ $rootScope.lastSyncTime ,
-                        sort : '-startTimeEpoch',
-                        limit:200,
-                        offset:0
-                    };
-
-                    localStorageService.getItem('user', function(user){
-                        if(!user){
-                            isSyncing = false;
-                            deferred.resolve();
-                        }
-                    });
-
-					// if the data is already synced
-					if(isSynced){
-						isSyncing = false;
-                        deferred.resolve();
-						return;
-					}
-
-					// send request
-					QuantiModo.getMeasurements(params).then(function(response){
-						if(response){
-                            localStorageService.setItem('lastSyncTime',moment.utc().format('YYYY-MM-DDTHH:mm:ss'));
-                            localStorageService.getItem('lastSyncTime',function(val){
-                                $rootScope.lastSyncTime = val;
-                                console.log("lastSyncTime is " + $rootScope.lastSyncTime);
-                            });
-                            // set flag
-							isSynced = true;
-                            isSyncing = false;
-							deferred.resolve(response);
-						}
-						else {
-                            deferred.reject(false);
-                        }
-					}, function(response){
-                        isSyncing = false;
-                        $rootScope.isSyncing = false;
-                        deferred.reject(false);
-                    }, function(response){
-                        if(response){
-                            if(response.length > 0){
-                                // update local data
-                                var allMeasurements;
-                                localStorageService.getItem('allMeasurements',function(allMeasurements){
-                                   allMeasurements = allMeasurements ? JSON.parse(allMeasurements) : [];
-
-                                        var filteredStoredMeasurements = [];
-
-                                        allMeasurements.forEach(function(storedMeasurement) {
-                                            var found = false;
-                                            var i = 0;
-                                            while (!found && i < response.length) {
-                                                var responseMeasurement = response[i];
-                                                if (storedMeasurement.startTimeEpoch === responseMeasurement.startTimeEpoch &&
-                                                    storedMeasurement.id === responseMeasurement.id) {
-                                                    found = true;
-                                                }
-                                                i++;
-                                            }
-                                            if (!found) {
-                                                filteredStoredMeasurements.push(storedMeasurement);
-                                            }
-                                        });
-                                        allMeasurements = filteredStoredMeasurements.concat(response);
-
-
-                                    var s  = 9999999999999; 
-                                    allMeasurements.forEach(function(x){
-                                        if(!x.startTimeEpoch){
-                                            x.startTimeEpoch = x.timestamp;
-                                        }
-                                        if(x.startTimeEpoch <= s){
-                                            s = x.startTimeEpoch;
-                                        }
-                                    });
-
-                                    measurementService.setDates(new Date().getTime(),s*1000);
-                                    //updating last updated time and data in local storage so that we syncing should continue from this point
-                                    //if user restarts the app or refreshes the page.
-                                    localStorageService.setItem('allMeasurements',JSON.stringify(allMeasurements));
-                                    $rootScope.lastSyncTime = moment.utc().format('YYYY-MM-DDTHH:mm:ss');
-                                    localStorageService.setItem('lastSyncTime', $rootScope.lastSyncTime);
-                                    console.log("lastSyncTime is " + $rootScope.lastSyncTime);
-
-                                });
-
-                            }
-                        } else {
-                            localStorageService.getItem('user', function(user){
-                                if(!user){
-                                    isSyncing = false;
-                                    deferred.resolve();
-                                }
-                            });
-                        }
-                    });
-				};
-
-				//sync queue
-                localStorageService.getItem('measurementsQueue',function(measurementsQueue){
-
-                    if(measurementsQueue && measurementsQueue.length > 0){
-                        // if measurement queues is present
-                        measurementsQueue = JSON.parse(measurementsQueue);
-                        measurementService.syncQueueToServer(measurementsQueue).then(
-                            function(){
-                                if(!$rootScope.lastSyncTime){
-                                    //we will get all the data from server
-                                    //localStorageService.setItem('allMeasurements','[]');
-                                }
-                                setTimeout(
-                                    function()
-                                    {
-                                        getMeasurements();
-                                    },
-                                    100
-                                );
-                            }
-                        );
-                    } else {
-                        getMeasurements();
-                    }
-                });
-
-				return deferred.promise;
-			},
-
             getHistoryMeasurements : function(params){
                 var deferred = $q.defer();
 
@@ -451,10 +417,6 @@ angular.module('starter')
                     console.log("error", response);
                 });
             },
-
-            resetSyncFlag:function(){
-              isSynced = false;
-            }
 		};
 
 		return measurementService;

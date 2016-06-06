@@ -85,9 +85,6 @@ angular.module('starter')
 
             function refreshTrackingPageAndGoToWelcome() {
                 localStorageService.setItem('isWelcomed', false);
-                // calculate primary outcome variable and chart data
-				measurementService.resetSyncFlag();
-
 				//hard reload
 				$state.go(config.appSettings.welcomeState, {}, {
 					reload: true
