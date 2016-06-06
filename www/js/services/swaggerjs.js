@@ -1982,8 +1982,8 @@ It is possible to apply multiple constraints by providing an array of query filt
                     queryParameters['unit'] = parameters['unit'];
                 }
 
-                if (parameters['startTime'] !== undefined) {
-                    queryParameters['startTime'] = parameters['startTime'];
+                if (parameters['startTimeEpoch'] !== undefined) {
+                    queryParameters['startTimeEpoch'] = parameters['startTimeEpoch'];
                 }
 
                 if (parameters['endTime'] !== undefined) {
@@ -2056,7 +2056,7 @@ It is possible to apply multiple constraints by providing an array of query filt
                 return deferred.promise;
             };
             /**
-             * You can submit or update multiple measurements in a "measurements" sub-array.  If the variable these measurements correspond to does not already exist in the database, it will be automatically added.  The request body should look something like [{"measurements":[{"startTime":1406419860,"value":"1","note":"I am a note about back pain."},{"startTime":1406519865,"value":"3","note":"I am another note about back pain."}],"name":"Back Pain","source":"QuantiModo","category":"Symptoms","combinationOperation":"MEAN","unit":"/5"}]
+             * You can submit or update multiple measurements in a "measurements" sub-array.  If the variable these measurements correspond to does not already exist in the database, it will be automatically added.  The request body should look something like [{"measurements":[{"startTimeEpoch":1406419860,"value":"1","note":"I am a note about back pain."},{"startTimeEpoch":1406519865,"value":"3","note":"I am another note about back pain."}],"name":"Back Pain","source":"QuantiModo","category":"Symptoms","combinationOperation":"MEAN","unit":"/5"}]
              * @method
              * @name Test#postV1Measurements
              * @param {} Measurements - An array of measurements you want to insert.
@@ -2183,8 +2183,8 @@ It is possible to apply multiple constraints by providing an array of query filt
                     queryParameters['abbreviatedUnitName'] = parameters['abbreviatedUnitName'];
                 }
 
-                if (parameters['startTime'] !== undefined) {
-                    queryParameters['startTime'] = parameters['startTime'];
+                if (parameters['startTimeEpoch'] !== undefined) {
+                    queryParameters['startTimeEpoch'] = parameters['startTimeEpoch'];
                 }
 
                 if (parameters['endTime'] !== undefined) {
@@ -2901,8 +2901,8 @@ It is possible to apply multiple constraints by providing an array of query filt
                     queryParameters['endTime'] = parameters['endTime'];
                 }
 
-                if (parameters['startTime'] !== undefined) {
-                    queryParameters['startTime'] = parameters['startTime'];
+                if (parameters['startTimeEpoch'] !== undefined) {
+                    queryParameters['startTimeEpoch'] = parameters['startTimeEpoch'];
                 }
 
                 if (parameters['limit'] !== undefined) {
