@@ -262,9 +262,16 @@ angular.module('starter')
                 var params;
                 $rootScope.lastSyncTime = 0;
 
-                localStorageService.getItem('lastSyncTime',function(val){
-                    if (val) {
-                    	$rootScope.lastSyncTime = val;	
+                localStorageService.getItem('lastSyncTime',function(lastSyncTime){
+                    var nowDate = new Date();
+                    var lastSyncDate = new Date(lastSyncTime);
+                    var milliSecondsSinceLastSync = nowDate - lastSyncDate;
+                    if(milliSecondsSinceLastSync < 5 * 60 * 1000){
+                    	deferred.resolve();
+                        return deferred.promise;
+                    }
+                    if (lastSyncTime) {
+                    	$rootScope.lastSyncTime = lastSyncTime;
                     }
                     params = {
                         variableName : config.appSettings.primaryOutcomeVariableDetails.name,
@@ -318,8 +325,8 @@ angular.module('starter')
                             if(response.length > 0){
                                 // update local data
                                 var allMeasurements;
-                                localStorageService.getItem('allMeasurements',function(val){
-                                   allMeasurements = val ? JSON.parse(val) : [];
+                                localStorageService.getItem('allMeasurements',function(allMeasurements){
+                                   allMeasurements = allMeasurements ? JSON.parse(allMeasurements) : [];
 
                                     if(!$rootScope.lastSyncTime || allMeasurements.length === 0 || allMeasurements === '[]') {
                                         
@@ -387,11 +394,10 @@ angular.module('starter')
                                     //updating last updated time and data in local storage so that we syncing should continue from this point
                                     //if user restarts the app or refreshes the page.
                                     localStorageService.setItem('allMeasurements',JSON.stringify(allMeasurements));
-                                    localStorageService.setItem('lastSyncTime',moment.utc().format('YYYY-MM-DDTHH:mm:ss'));
-                                    localStorageService.getItem('lastSyncTime',function(val){
-                                        $rootScope.lastSyncTime = val;
-                                        console.log("lastSyncTime is " + $rootScope.lastSyncTime);
-                                    });
+                                    $rootScope.lastSyncTime = moment.utc().format('YYYY-MM-DDTHH:mm:ss');
+                                    localStorageService.setItem($rootScope.lastSyncTime);
+                                    console.log("lastSyncTime is " + $rootScope.lastSyncTime);
+
                                 });
 
                             }
@@ -416,7 +422,7 @@ angular.module('starter')
                             function(){
                                 if(!$rootScope.lastSyncTime){
                                     //we will get all the data from server
-                                    localStorageService.setItem('allMeasurements','[]');
+                                    //localStorageService.setItem('allMeasurements','[]');
                                 }
                                 setTimeout(
                                     function()
@@ -529,22 +535,22 @@ angular.module('starter')
             getLineAndBarChartData : function () {
                 var lineArr = [];
                 var barArr = [0, 0, 0, 0, 0];
-                var allMeasurements = localStorageService.getItemSync('allMeasurements');
-                if(allMeasurements){
-					allMeasurements = JSON.parse(allMeasurements);
-					for (var i = 0; i < allMeasurements.length; i++) {
-						var currentValue = Math.ceil(allMeasurements[i].value);
-						if (allMeasurements[i].abbreviatedUnitName === config.appSettings.primaryOutcomeVariableDetails.abbreviatedUnitName &&
-							(currentValue - 1) <= 4 && (currentValue - 1) >= 0) {
-							var startTimeMilliseconds = moment(allMeasurements[i].startTimeEpoch).unix() * 1000;
-							var percentValue = (currentValue - 1) * 25;
-							var lineChartItem = [startTimeMilliseconds, percentValue];
-							lineArr.push(lineChartItem);
-							barArr[currentValue - 1]++;
-						}
-					}
-					return {lineArr: lineArr, barArr: barArr};
-                }
+                measurementService.getAllLocalMeasurements(false, function(allMeasurements) {
+                    if (allMeasurements) {
+                        for (var i = 0; i < allMeasurements.length; i++) {
+                            var currentValue = Math.ceil(allMeasurements[i].value);
+                            if (allMeasurements[i].abbreviatedUnitName === config.appSettings.primaryOutcomeVariableDetails.abbreviatedUnitName &&
+                                (currentValue - 1) <= 4 && (currentValue - 1) >= 0) {
+                                var startTimeMilliseconds = moment(allMeasurements[i].startTimeEpoch).unix() * 1000;
+                                var percentValue = (currentValue - 1) * 25;
+                                var lineChartItem = [startTimeMilliseconds, percentValue];
+                                lineArr.push(lineChartItem);
+                                barArr[currentValue - 1]++;
+                            }
+                        }
+                        return {lineArr: lineArr, barArr: barArr};
+                    }
+                });
             },
 
             getHistoryMeasurements : function(params){
