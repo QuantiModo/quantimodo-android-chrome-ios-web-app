@@ -78,38 +78,22 @@ angular.module('starter')
         // updates all the visual elements on the page
         var updateCharts = function(){
             localStorageService.getItem('averagePrimaryOutcomeVariableValue',function(averagePrimaryOutcomeVariableValue){
-                if(averagePrimaryOutcomeVariableValue){
-                    updateAveragePrimaryOutcomeRatingView(averagePrimaryOutcomeVariableValue);
-                }
-
-                generateLineAndBarChartData();
-
-                // update line chart
-                if($scope.lineChartData !== "[]" && $scope.lineChartData !== null) {
-                    updateLineChart($scope.lineChartData);
-                    $scope.showCharts = true;
-                }
-
-                // update bar chart
-                if($scope.barChartData !== "[0,0,0,0,0]" && $scope.barChartData !== null){
-                    updateBarChart($scope.barChartData);
-                    $scope.showCharts = true;
-                }
-
-                if(!$scope.$$phase) {
-                    $scope.safeApply();
+                var __ret = measurementService.getLineAndBarChartData();
+                if(__ret){
+                    if(!$scope.barChartConfig || __ret.barArr !== $scope.barChartConfig.series[0].data){
+                        updateAveragePrimaryOutcomeRatingView(averagePrimaryOutcomeVariableValue);
+                        $scope.lineChartData = __ret.lineArr;
+                        $scope.barChartData = __ret.barArr;
+                        updateLineChart($scope.lineChartData);
+                        updateBarChart($scope.barChartData);
+                        $scope.showCharts = true;
+                        if(!$scope.$$phase) {
+                            $scope.safeApply();
+                        }
+                    }
                 }
             });
         };
-
-        // constructor
-        function generateLineAndBarChartData() {
-            var __ret = measurementService.getLineAndBarChartData();
-            if(__ret){
-                $scope.lineChartData = __ret.lineArr;
-                $scope.barChartData = __ret.barArr;
-            }
-        }
 
         // calculate values for both of the charts
         var calculateChartValues = function(){
