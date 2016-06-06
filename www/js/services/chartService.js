@@ -54,7 +54,7 @@ angular.module('starter')
 	                        enabled: false
 	                    },
 
-	                    colors : [ "#55000000", "#5D83FF", "#68B107", "#ffbd40", "#CB0000" ]
+	                    colors : [ "#000000", "#5D83FF", "#68B107", "#ffbd40", "#CB0000" ]
 	                },
 	                series: [{
 	                    name : config.appSettings.primaryOutcomeVariable,
