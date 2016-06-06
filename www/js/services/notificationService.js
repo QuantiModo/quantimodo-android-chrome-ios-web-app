@@ -30,7 +30,9 @@ angular.module('starter')
                                     console.log('notification scheduled');
                                 });
                                 cordova.plugins.notification.local.on("click", function (notification) {
-                                    window.location = window.location.href + 'app/reminders-inbox';
+                                    var redirectUrl = window.location.href + 'app/reminders-inbox';
+                                    console.log('Setting window.location to ' + redirectUrl);
+                                    window.location = redirectUrl;
                                 });
                             }
                         });
@@ -46,7 +48,9 @@ angular.module('starter')
                                     console.log('notification scheduled');
                                 });
                                 cordova.plugins.notification.local.on("click", function (notification) {
-                                    window.location = window.location.href + 'app/reminders-inbox';
+                                    var redirectUrl = window.location.href + 'app/reminders-inbox';
+                                    console.log('Setting window.location to ' + redirectUrl);
+                                    window.location = redirectUrl;
                                 });
                             }
                         });
@@ -98,7 +102,9 @@ angular.module('starter')
                                     console.log('notification scheduled');
                                 });
                                 cordova.plugins.notification.local.on("click", function (notification) {
-                                    window.location = window.location.href + 'app/reminders-inbox';
+                                    var redirectUrl = window.location.href + 'app/reminders-inbox';
+                                    console.log('Setting window.location to ' + redirectUrl);
+                                    window.location = redirectUrl;
                                 });
                             }
                         });
