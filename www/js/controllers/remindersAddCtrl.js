@@ -122,20 +122,25 @@ angular.module('starter')
             });
         };
 
-
-        var variableSearch = function(variableSearchQuery){
-            variableService.searchVariablesIncludePublic(variableSearchQuery, $scope.state.variableCategoryName)
-            .then(function(variables){
-                // populate list with results
+        // when a query is searched in the search box
+        $scope.onVariableSearch = function(){
+            console.log("Search: ", $scope.state.variableSearchQuery);
+            if($scope.state.variableSearchQuery.length > 2){
                 $scope.state.showResults = true;
-                $scope.variableSearchResults = variables;
-                $scope.state.searching = false;
-                if(variables.length < 1){
-                    $scope.state.showAddVariableButton = true;
-                    $scope.state.addNewVariableButtonText = '+ Create ' + variableSearchQuery + ' reminder';
-                }
-            });
-	    };
+                $scope.state.searching = true;
+                variableService.searchVariablesIncludePublic($scope.state.variableSearchQuery, $scope.state.variableCategoryName)
+                    .then(function(variables){
+                        // populate list with results
+                        $scope.state.showResults = true;
+                        $scope.state.variableSearchResults = variables;
+                        $scope.state.searching = false;
+                        if(variables.length < 1){
+                            $scope.state.showAddVariableButton = true;
+                            $scope.state.addNewVariableButtonText = '+ Create ' + $scope.state.variableSearchQuery + ' reminder';
+                        }
+                    });
+            }
+        };
 
         var populateUserVariables = function(){
             if($stateParams.variableCategoryName){
@@ -147,7 +152,7 @@ angular.module('starter')
             variableService.getUserVariablesByCategory($scope.state.variableCategoryName)
                 .then(function(variables){
                     $scope.state.showResults = true;
-                    $scope.variableSearchResults = variables;
+                    $scope.state.variableSearchResults = variables;
                     $scope.state.searching = false;
                     if(!$scope.state.variableCategoryName){
                         $scope.state.showVariableCategorySelector = true;
@@ -157,16 +162,6 @@ angular.module('starter')
                     $scope.state.showSearchBox = true;
                 });
         };
-
-	    // when a query is searched in the search box
-	    $scope.onSearch = function(){
-	    	console.log("Search: ", $scope.state.variableSearchQuery);
-	    	if($scope.state.variableSearchQuery.length > 2){
-                $scope.state.showResults = true;
-                $scope.state.searching = true;
-                variableSearch($scope.state.variableSearchQuery);
-	    	}
-	    };
 
 	    // when a search result is selected
 	    $scope.onVariableSelect = function(selectedVariable){
@@ -226,7 +221,9 @@ angular.module('starter')
                 $scope.state.variableCategoryName,
                 $scope.state.abbreviatedUnitName,
                 $scope.state.combinationOperation,
-                $scope.state.reminderStartTimeStringUtc)
+                $scope.state.reminderStartTimeStringUtc,
+                $scope.state.instructions
+            )
 	    	.then(function(){
 
 	    		$ionicLoading.hide();
@@ -234,8 +231,8 @@ angular.module('starter')
 	    		if($stateParams.reminder !== null && typeof $stateParams.reminder !== "undefined"){
                     if($stateParams.fromUrl){
                         window.location = $stateParams.fromUrl;
-                    } else if ($stateParams.reminder.fromState){
-	    				$state.go($stateParams.reminder.fromState);
+                    } else if ($stateParams.fromState){
+	    				$state.go($stateParams.fromState);
 	    			} else {
 						$state.go('app.remindersManage');
                     }
@@ -311,15 +308,17 @@ angular.module('starter')
                 $scope.state.variableCategoryName,
                 $scope.state.abbreviatedUnitName,
                 $scope.state.combinationOperation,
-                $scope.state.reminderStartTimeStringUtc)
+                $scope.state.reminderStartTimeStringUtc,
+                $scope.state.instructions
+            )
 	    	.then(function(){
 
 	    		$ionicLoading.hide();
                 $scope.loading = false;
 				if($stateParams.fromUrl){
 					window.location = $stateParams.fromUrl;
-				} else if ($stateParams.reminder && $stateParams.reminder.fromState){
-					$state.go($stateParams.reminder.fromState);
+				} else if ($stateParams.reminder && $stateParams.fromState){
+					$state.go($stateParams.fromState);
 				} else {
 					$state.go('app.remindersManage');
 				}
@@ -345,7 +344,8 @@ angular.module('starter')
             $scope.state.defaultValue = reminder.defaultValue;
             $scope.state.reminderFrequency = reminder.reminderFrequency;
             $scope.state.reminderStartTimeStringUtc = reminder.reminderStartTime;
-
+            $scope.state.instructions = reminder.instructions;
+            
 	    	var reverseFrequencyChart = {
 
 	    		86400: "Daily",
@@ -422,8 +422,8 @@ angular.module('starter')
                         utilsService.showAlert("Reminder id " + reminderIdUrlParameter + " not found!", 'assertive');
                         if($stateParams.fromUrl){
                             window.location = $stateParams.fromUrl;
-                        } else if  ($stateParams.reminder.fromState) {
-                            $state.go($stateParams.reminder.fromState);
+                        } else if  ($stateParams.fromState) {
+                            $state.go($stateParams.fromState);
                         } else {
                             $state.go('app.remindersManage');
                         }

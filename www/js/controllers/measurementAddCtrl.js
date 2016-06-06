@@ -89,7 +89,7 @@ angular.module('starter')
                         console.log('Selected epoch is : ', val, 'and the time is ',
                             selectedTime.getUTCHours(), 'H :', selectedTime.getUTCMinutes(), 'M');
 
-                        $scope.state.measurement.startTime = a.getTime() / 1000;
+                        $scope.state.measurement.startTimeEpoch = a.getTime() / 1000;
                         $scope.state.measurementStartTimeUtc = moment.utc(a).format('HH:mm:ss');
                     }
                 },
@@ -130,7 +130,7 @@ angular.module('starter')
         $scope.deleteMeasurement = function(){
             var measurementToDelete = {
                 variableName : $scope.state.measurement.variable,
-                startTime : $scope.state.measurement.startTime
+                startTimeEpoch : $scope.state.measurement.startTimeEpoch
             };
             measurementService.deleteMeasurement(measurementToDelete);
 
@@ -164,17 +164,42 @@ angular.module('starter')
         };
 
         $scope.done = function(){
+
+            if(!$scope.state.measurement.value){
+                utilsService.showAlert('Please enter value');
+                return;
+            }
+
+            if(!$scope.state.measurement.variable){
+                utilsService.showAlert('Please enter variable name');
+                return;
+            }
+
+            if(!$scope.state.measurement.variableCategoryName){
+                utilsService.showAlert('Please select a variable category');
+                return;
+            }
+
+            if(!$scope.state.measurement.abbreviatedUnitName && !$scope.abbreviatedUnitName){
+                utilsService.showAlert('Please select a unit');
+                return;
+            }
+
             console.debug('done: completed adding and/or measuring');
 
-            $scope.state.measurement.startTime = $scope.selectedDate.getTime()/1000;
+            $scope.state.measurement.startTimeEpoch = $scope.selectedDate.getTime()/1000;
 
             // populate params
             var params = {
                 variableName : $scope.state.measurement.variable || jQuery('#variableName').val(),
                 value : $scope.state.measurement.value || jQuery('#measurementValue').val(),
                 note : $scope.state.measurement.note || jQuery('#note').val(),
-                startTime : $scope.state.measurement.startTime,
-                abbreviatedUnitName : $scope.state.showAddVariable? (typeof $scope.abbreviatedUnitName === "undefined" || $scope.abbreviatedUnitName === "" )? $scope.state.measurement.abbreviatedUnitName : $scope.abbreviatedUnitName : $scope.state.measurement.abbreviatedUnitName,
+                startTimeEpoch : $scope.state.measurement.startTimeEpoch,
+                abbreviatedUnitName : $scope.state.showAddVariable ? (typeof $scope.abbreviatedUnitName ===
+                    "undefined" || $scope.abbreviatedUnitName === "" ) ?
+                    $scope.state.measurement.abbreviatedUnitName :
+                    $scope.abbreviatedUnitName :
+                    $scope.state.measurement.abbreviatedUnitName,
                 variableCategoryName : $scope.state.measurement.variableCategoryName,
                 isAvg : $scope.state.sumAvg === "avg"? true : false
             };
@@ -192,7 +217,7 @@ angular.module('starter')
 
                     // add variable
                     measurementService.postTrackingMeasurement(
-                        params.startTime,
+                        params.startTimeEpoch,
                         params.variableName,
                         params.value,
                         params.abbreviatedUnitName,
@@ -229,7 +254,7 @@ angular.module('starter')
 
                     // post measurement
                     measurementService.postTrackingMeasurement(
-                        params.startTime,
+                        params.startTimeEpoch,
                         params.variableName,
                         params.value,
                         params.abbreviatedUnitName,
@@ -390,14 +415,14 @@ angular.module('starter')
         var setupFromUrlParameters = function() {
             var unit = utilsService.getUrlParameter(location.href, 'unit', true);
             var variableName = utilsService.getUrlParameter(location.href, 'variableName', true);
-            var startTime = utilsService.getUrlParameter(location.href, 'startTime', true);
+            var startTimeEpoch = utilsService.getUrlParameter(location.href, 'startTimeEpoch', true);
             var value = utilsService.getUrlParameter(location.href, 'value', true);
 
-            if (unit || variableName || startTime || value) {
+            if (unit || variableName || startTimeEpoch || value) {
                 var measurementObject = {};
                 measurementObject.abbreviatedUnitName = unit;
                 measurementObject.variable = variableName;
-                measurementObject.startTime = startTime;
+                measurementObject.startTimeEpoch = startTimeEpoch;
                 measurementObject.value = value;
                 setupTrackingByMeasurement(measurementObject);
             }
@@ -421,10 +446,22 @@ angular.module('starter')
                 $scope.variableObject = $stateParams.variableObject;
                 $scope.state.title = "Record Measurement";
                 $scope.state.measurement.variable = $stateParams.variableObject.name;
-                $scope.state.measurement.abbreviatedUnitName = $stateParams.variableObject.abbreviatedUnitName;
-                $scope.state.measurement.variableCategoryName = $stateParams.variableObject.category;
-                $scope.state.measurement.combinationOperation = $stateParams.variableObject.combinationOperation;
-                $scope.state.measurement.startTime = currentTime.getTime() / 1000;
+                if($stateParams.variableObject.abbreviatedUnitName){
+                    $scope.state.measurement.abbreviatedUnitName = $stateParams.variableObject.abbreviatedUnitName;
+                }
+                if($stateParams.variableObject.category){
+                    $scope.state.measurement.variableCategoryName = $stateParams.variableObject.category;
+                } else if($stateParams.variableObject.variableCategoryName) {
+                    $scope.state.measurement.variableCategoryName = $stateParams.variableObject.variableCategoryName;
+                } else {
+                    $scope.state.showCategoryAsSelector;
+                }
+                if($stateParams.variableObject.combinationOperation){
+                    $scope.state.measurement.combinationOperation = $stateParams.variableObject.combinationOperation;
+                } else {
+                    $stateParams.variableObject.combinationOperation = 'MEAN';
+                }
+                $scope.state.measurement.startTimeEpoch = currentTime.getTime() / 1000;
                 $scope.state.measurementIsSetup = true;
                 setupValueFieldType($stateParams.variableObject.abbreviatedUnitName, $stateParams.variableObject.description);
                 $scope.hideLoader();
@@ -464,8 +501,8 @@ angular.module('starter')
 
         var setupTrackingByMeasurement = function(measurementObject){
 
-            if(isNaN(measurementObject.startTime)){
-                measurementObject.startTime = moment(measurementObject.startTime).unix();
+            if(isNaN(measurementObject.startTimeEpoch)){
+                measurementObject.startTimeEpoch = moment(measurementObject.startTimeEpoch).unix();
             }
 
             $scope.selectedDate = new Date(measurementObject.startTimeEpoch * 1000);
@@ -488,13 +525,13 @@ angular.module('starter')
             console.log('track : ' , measurementObject);
 
             // What was this for?
-            // if(measurementObject.startTime.indexOf(" ") !== -1) {
-            //     measurementObject.startTime = measurementObject.startTime.replace(/\ /g,'+');
+            // if(measurementObject.startTimeEpoch.indexOf(" ") !== -1) {
+            //     measurementObject.startTimeEpoch = measurementObject.startTimeEpoch.replace(/\ /g,'+');
             // }
 
             $scope.state.title = "Edit Measurement";
             $scope.state.measurement = measurementObject;
-            //$scope.state.measurementDate = moment(measurementObject.startTime)._d;
+            //$scope.state.measurementDate = moment(measurementObject.startTimeEpoch)._d;
             $scope.state.measurementIsSetup = true;
             setupValueFieldType($scope.state.measurement.abbreviatedUnitName,
                 $scope.state.measurement.variableDescription);
@@ -509,7 +546,7 @@ angular.module('starter')
                 $scope.state.measurement.abbreviatedUnitName = $stateParams.reminder.abbreviatedUnitName;
                 $scope.state.measurement.variableCategoryName = $stateParams.reminder.variableCategoryName;
                 $scope.state.measurement.combinationOperation = $stateParams.reminder.combinationOperation;
-                $scope.state.measurement.startTime = currentTime.getTime() / 1000;
+                $scope.state.measurement.startTimeEpoch = currentTime.getTime() / 1000;
                 $scope.state.measurementIsSetup = true;
                 setupValueFieldType($stateParams.reminder.abbreviatedUnitName,
                     $stateParams.reminder.variableDescription);

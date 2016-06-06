@@ -243,11 +243,11 @@ angular.module('starter')
                         $ionicLoading.hide();
                         console.debug('successfully logged in');
                         console.debug('google->', JSON.stringify(userData));
-                        if(!userData.accessToken){
+                        if(!userData.oauthToken){
                             console.error('googleLogin: No userData.accessToken provided! Fallback to nonNativeMobileLogin...');
                             nonNativeMobileLogin(register);
                         } else {
-                            $scope.nativeLogin('google', userData.accessToken);
+                            $scope.nativeLogin('google', userData.oauthToken);
                         }
                     },
                     function (msg) {

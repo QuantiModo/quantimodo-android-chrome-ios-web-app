@@ -77,7 +77,7 @@ angular.module('starter')
 			}
 		};
 
-	    var filterViaDates = function(reminders) {
+	    var filterViaDates = function(trackingReminderNotifications) {
 
 			var result = [];
 			var reference = moment().local();
@@ -86,24 +86,24 @@ angular.module('starter')
 			var weekold = reference.clone().subtract(7, 'days').startOf('day');
 			var monthold = reference.clone().subtract(30, 'days').startOf('day');
 
-			var todayResult = reminders.filter(function (reminder) {
-				return moment.utc(reminder.trackingReminderNotificationTime).local().isSame(today, 'd') === true;
+			var todayResult = trackingReminderNotifications.filter(function (trackingReminderNotification) {
+				return moment.utc(trackingReminderNotification.trackingReminderNotificationTime).local().isSame(today, 'd') === true;
 			});
 
 			if (todayResult.length) {
 				result.push({name: "Today", reminders: todayResult});
 			}
 
-	    	var yesterdayResult = reminders.filter(function(reminder){
-	    		return moment.utc(reminder.trackingReminderNotificationTime).local().isSame(yesterday, 'd') === true;
+	    	var yesterdayResult = trackingReminderNotifications.filter(function(trackingReminderNotification){
+	    		return moment.utc(trackingReminderNotification.trackingReminderNotificationTime).local().isSame(yesterday, 'd') === true;
 	    	});
 
 	    	if(yesterdayResult.length) {
 				result.push({ name : "Yesterday", reminders : yesterdayResult });
 			}
 
-	    	var last7DayResult = reminders.filter(function(reminder){
-	    		var date = moment.utc(reminder.trackingReminderNotificationTime).local();
+	    	var last7DayResult = trackingReminderNotifications.filter(function(trackingReminderNotification){
+	    		var date = moment.utc(trackingReminderNotification.trackingReminderNotificationTime).local();
 
 	    		return date.isAfter(weekold) === true && date.isSame(yesterday, 'd') !== true && 
 					date.isSame(today, 'd') !== true;
@@ -113,9 +113,9 @@ angular.module('starter')
 				result.push({ name : "Last 7 Days", reminders : last7DayResult });
 			}
 
-	    	var last30DayResult = reminders.filter(function(reminder){
+	    	var last30DayResult = trackingReminderNotifications.filter(function(trackingReminderNotification){
 
-	    		var date = moment.utc(reminder.trackingReminderNotificationTime).local();
+	    		var date = moment.utc(trackingReminderNotification.trackingReminderNotificationTime).local();
 
 	    		return date.isAfter(monthold) === true && date.isBefore(weekold) === true &&
 					date.isSame(yesterday, 'd') !== true && date.isSame(today, 'd') !== true;
@@ -125,8 +125,8 @@ angular.module('starter')
 				result.push({ name : "Last 30 Days", reminders : last30DayResult });
 			}
 
-	    	var olderResult = reminders.filter(function(reminder){
-	    		return moment.utc(reminder.trackingReminderNotificationTime).local().isBefore(monthold) === true;
+	    	var olderResult = trackingReminderNotifications.filter(function(trackingReminderNotification){
+	    		return moment.utc(trackingReminderNotification.trackingReminderNotificationTime).local().isBefore(monthold) === true;
 	    	});
 
 	    	if(olderResult.length) result.push({ name : "Older", reminders : olderResult });
@@ -139,31 +139,30 @@ angular.module('starter')
 			$scope.showLoader();
 
 	    	reminderService.getTrackingReminderNotifications($stateParams.variableCategoryName, $stateParams.today)
-	    	.then(function(reminders){
-				if(reminders.length > 1){
+	    	.then(function(trackingReminderNotifications){
+				if(trackingReminderNotifications.length > 1){
 					$scope.state.showButtons = false;
 				}
-				if(reminders.length < 2){
+				if(trackingReminderNotifications.length < 2){
 					$scope.state.showButtons = true;
 				}
 
-	    		$scope.state.trackingRemindersNotifications = reminders;
-	    		$scope.state.filteredReminders = filterViaDates(reminders);
+	    		$scope.state.trackingRemindersNotifications = trackingReminderNotifications;
+	    		$scope.state.filteredReminders = filterViaDates(trackingReminderNotifications);
 				$ionicLoading.hide();
 				$scope.loading = false;
 	    	}, function(){
 				$ionicLoading.hide();
 				$scope.loading = false;
 	    		console.error("failed to get reminders");
-				//utilsService.showLoginRequiredAlert($scope.login);
 
 	    	});
 	    };
 
-	    $scope.track = function(reminder, modifiedReminderValue){
+	    $scope.track = function(trackingReminderNotification, modifiedReminderValue){
 			$scope.showLoader();
 			console.log('modifiedReminderValue is ' + modifiedReminderValue);
-	    	reminderService.trackReminder(reminder.id, modifiedReminderValue)
+	    	reminderService.trackReminder(trackingReminderNotification.id, modifiedReminderValue)
 	    	.then(function(){
 	    		$scope.init();
 
@@ -173,9 +172,9 @@ angular.module('starter')
 	    	});
 	    };
 
-	    $scope.skip = function(reminder){
+	    $scope.skip = function(trackingReminderNotification){
 			$scope.showLoader();
-	    	reminderService.skipReminder(reminder.id)
+	    	reminderService.skipReminder(trackingReminderNotification.id)
 	    	.then(function(){
 	    		$scope.hideLoader();
 	    		$scope.init();
@@ -186,9 +185,9 @@ angular.module('starter')
 	    	});
 	    };
 
-	    $scope.snooze = function(reminder){
+	    $scope.snooze = function(trackingReminderNotification){
 			$scope.showLoader();
-	    	reminderService.snoozeReminder(reminder.id)
+	    	reminderService.snoozeReminder(trackingReminderNotification.id)
 	    	.then(function(){
 	    		$scope.init();
 	    	}, function(err){
@@ -206,27 +205,29 @@ angular.module('starter')
 			}
 	    };
 
-	    $scope.editMeasurement = function(reminder){
-			reminderService.skipReminder(reminder.id);
+	    $scope.editMeasurement = function(trackingReminderNotification){
+			reminderService.skipReminder(trackingReminderNotification.id);
 			$state.go('app.measurementAdd',
 				{
-					reminder: reminder,
+					reminder: trackingReminderNotification,
 					fromUrl: window.location.href
 				});
 	    };
 
-	    $scope.editReminderSettings = function(reminder){
-	    	reminder.fromState = $state.current.name;
+	    $scope.editReminderSettings = function(trackingReminderNotification){
+			var reminder = trackingReminderNotification;
+			reminder.id = trackingReminderNotification.trackingReminderId;
 	    	$state.go('app.reminderAdd',
 				{
 					reminder : reminder,
-					fromUrl: window.location.href
+					fromUrl: window.location.href,
+					fromState : $state.current.name
 				});
 	    };
 
-	    $scope.deleteReminder = function(reminder){
+	    $scope.deleteReminder = function(trackingReminderNotification){
 			$scope.showLoader();
-	    	reminderService.deleteReminder(reminder.id)
+	    	reminderService.deleteReminder(trackingReminderNotification.id)
 	    	.then(function(){
 
 				$ionicLoading.hide();

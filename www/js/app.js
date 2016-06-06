@@ -1,3 +1,6 @@
+// Database
+//var db = null;
+
 angular.module('starter',
     [
         'ionic',
@@ -12,6 +15,8 @@ angular.module('starter',
 )
 
 .run(function($ionicPlatform, $ionicHistory, $state, $rootScope) {
+// Database
+//.run(function($ionicPlatform, $ionicHistory, $state, $rootScope, $cordovaSQLite) {
 
     $rootScope.goToState = function(state, params){
         $state.go(state, params);
@@ -46,6 +51,15 @@ angular.module('starter',
                     // org.apache.cordova.statusbar required
                     StatusBar.styleDefault();
                 }
+                // Database
+                /*
+                if (!$rootScope.isMobile) {
+                    db = window.openDatabase("my.db", "1.0", "Cordova Demo", 200000);
+                }
+                else {
+                    db = $cordovaSQLite.openDB("my.db");
+                }
+                */
             });
 
             $ionicPlatform.registerBackButtonAction(function (event) {
@@ -60,8 +74,12 @@ angular.module('starter',
                         console.debug('registerBackButtonAction: Going to default state...');
                         $state.go(config.appSettings.defaultState);
                     } else {
+                        /*
                         console.debug('registerBackButtonAction: Going to welcome state...');
                         $state.go(config.appSettings.welcomeState);
+                        */
+                        console.debug('registerBackButtonAction: Closing the app');
+                        ionic.Platform.exitApp();
                     }
                 }
             }, 100);  

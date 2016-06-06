@@ -98,7 +98,12 @@ angular.module('starter')
                     });
             } else {
                 factor.userVote = prevValue;
+                /*
+                console.debug("negativeCtrl going to welcome state");
             	$state.go(config.appSettings.welcomeState);
+            	*/
+            	console.debug("negativeCtrl: not logged in, going to default state");
+            	$state.go(config.appSettings.defaultState);
             }
         }
 
@@ -152,7 +157,12 @@ angular.module('starter')
 
             } else {
 				factor.userVote = prevValue;
+				/*
+				console.debug("negativeCtrl going to welcome state");
             	$state.go(config.appSettings.welcomeState);
+            	*/
+            	console.debug("negativeCtrl: not logged in, going to default state");
+            	$state.go(config.appSettings.defaultState);
             	}
         }
 

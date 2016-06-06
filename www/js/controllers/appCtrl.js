@@ -213,6 +213,7 @@ angular.module('starter')
             }
         };
 
+        /* // Deprecated
         var goToWelcomeStateIfNotWelcomed = function(){
             var accessTokenInUrl = authService.getAccessTokenFromUrlParameter();
             if (!$rootScope.user && !accessTokenInUrl) {
@@ -229,6 +230,7 @@ angular.module('starter')
                 console.debug('Not going to welcome state...');
             }
         };
+        */
 
         // hide loader and move to next page
         var hideLoaderMove = function(){
@@ -251,7 +253,7 @@ angular.module('starter')
             }
             migrationService.version1466();
             hideNavigationMenuIfSetInUrlParameter();
-            goToWelcomeStateIfNotWelcomed();
+            //goToWelcomeStateIfNotWelcomed();
             scheduleReminder();
             goToDefaultStateIfLoggedInOnLoginState();
         };
@@ -329,7 +331,7 @@ angular.module('starter')
             var successHandler = function(userObject) {
                 if (userObject) {
                     // set user data in local storage
-                    console.log('Settings user in getUserAndSetInLocalStorage');
+                    console.log('Setting user in getUserAndSetInLocalStorage');
                     localStorageService.setItem('user', JSON.stringify(userObject));
                     $rootScope.user = userObject;
                     $rootScope.setUserForIntercom($rootScope.user);

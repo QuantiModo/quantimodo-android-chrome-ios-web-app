@@ -24,10 +24,10 @@ angular.module('starter')
         };
 
         if(variableCategoryName){
-            $scope.state.trackFactorsPlaceholderText = "Search for a " +  $filter('wordAliases')(pluralize(variableCategoryName, 1).toLowerCase()) + " here...";
+            $scope.state.variableSearchPlaceholderText = "Search for a " +  $filter('wordAliases')(pluralize(variableCategoryName, 1).toLowerCase()) + " here...";
             $scope.state.title = $filter('wordAliases')('Track') + " " + $filter('wordAliases')(variableCategoryName);
         } else {
-            $scope.state.trackFactorsPlaceholderText = "Search for a variable here...";
+            $scope.state.variableSearchPlaceholderText = "Search for a variable here...";
             $scope.state.title = $filter('wordAliases')('Track');
         }
         
@@ -49,49 +49,74 @@ angular.module('starter')
             if(isAuthorized){
                 $scope.showHelpInfoPopupIfNecessary();
                 $scope.state.showVariableSearchCard = true;
-                populateVariableSearchList();
+                populateUserVariables();
                 $ionicLoading.hide();
             } 
         };
-        
-        var populateVariableSearchList = function(){
-            // get all variables
-            variableService.searchVariablesIncludePublic('*', $scope.state.variableCategoryName).then(function(variables){
 
-                // populate list with results
-                $scope.state.variableSearchResults = variables;
-
-                console.log("got variables", variables);
-
-                $scope.loading = false;
-                $ionicLoading.hide();
-                if(variables.length < 1){
-                    $scope.state.showAddVariableButton = true;
-                }
-            });
+        // when a query is searched in the search box
+        $scope.onVariableSearch = function(){
+            console.log("Search: ", $scope.state.variableSearchQuery);
+            if($scope.state.variableSearchQuery.length > 2){
+                $scope.state.showResults = true;
+                $scope.state.searching = true;
+                variableService.searchVariablesIncludePublic($scope.state.variableSearchQuery, $scope.state.variableCategoryName)
+                    .then(function(variables){
+                        // populate list with results
+                        $scope.state.showResults = true;
+                        $scope.state.variableSearchResults = variables;
+                        $scope.state.searching = false;
+                        if(variables.length < 1){
+                            $scope.state.showAddVariableButton = true;
+                            $scope.state.addNewVariableButtonText = '+ Add ' + $scope.state.variableSearchQuery +
+                                ' measurement';
+                        }
+                    });
+            }
         };
+
+        var populateUserVariables = function(){
+            if($stateParams.variableCategoryName){
+                $scope.showLoader('Fetching most recent ' +
+                    $filter('wordAliases')($stateParams.variableCategoryName.toLowerCase()) + '...');
+            } else {
+                $scope.showLoader('Fetching most recent variables...');
+            }
+            variableService.getUserVariablesByCategory($scope.state.variableCategoryName)
+                .then(function(variables){
+                    $scope.state.showResults = true;
+                    $scope.state.variableSearchResults = variables;
+                    $scope.state.searching = false;
+                    if(!$scope.state.variableCategoryName){
+                        $scope.state.showVariableCategorySelector = true;
+                    }
+                    $ionicLoading.hide();
+                    $scope.loading = false;
+                    $scope.state.showSearchBox = true;
+                });
+        };
+
+        // when add new variable is tapped
+        $scope.addNewVariable = function(){
+            
+            var variableObject = {};
+            variableObject.name = $scope.state.variableSearchQuery;
+            if($scope.state.variableCategoryName){
+                variableObject.variableCategoryName = $scope.state.variableCategoryName;
+            }
+            
+            $state.go('app.measurementAdd',
+                {
+                    variableObject : variableObject,
+                    fromState : $state.current.name,
+                    fromUrl: window.location.href
+                }
+            );
+        };
+
         
         // update data when view is navigated to
         $scope.$on('$ionicView.enter', $scope.init);
-        
-        // search a variable
-        $scope.search = function(variableSearchQuery){
-            console.log(variableSearchQuery);
 
-            $scope.loading = true;
-
-            // search server for the query
-            variableService.searchVariablesIncludePublic(variableSearchQuery, variableCategoryName).then(function(variables){
-
-                // populate list with results
-                $scope.state.variableSearchResults = variables;
-                $scope.loading = false;
-                if(variables.length < 1){
-                    $scope.state.showAddVariableButton = true;
-                }
-            });
-
-            $scope.loading = false;
-        };
 
     });

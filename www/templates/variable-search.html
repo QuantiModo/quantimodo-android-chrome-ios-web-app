@@ -13,12 +13,12 @@
             </div>
             <label class="item item-input">
                 <i class="icon ion-search placeholder-icon"></i>
-                <input ng-model="search_term"
+                <input ng-model="state.variableSearchQuery"
                        ng-model-options="{ debounce: 500 }"
-                       ng-change="search(search_term)"
-                       id="track_search"
+                       ng-change="onVariableSearch(variableSearchQuery)"
+                       id="variableSearch"
                        type="text"
-                       placeholder={{state.trackFactorsPlaceholderText}}>
+                       placeholder={{state.variableSearchPlaceholderText}}>
             </label>
             <p></p>
             <ion-list>
@@ -37,8 +37,8 @@
             </ion-list>
 
             <ion-list ng-show="state.showAddVariableButton">
-                <ion-item style="border-top: 1px solid rgb(221, 221, 221);" ng-click="addVariable()">
-                    + Add a new {{state.variableCategoryObject.variableCategoryNameSingularLowercase | wordAliases}} variable
+                <ion-item style="border-top: 1px solid rgb(221, 221, 221);" ng-click="addNewVariable()">
+                    {{state.addNewVariableButtonText}}
                 </ion-item>
             </ion-list>
         </div>

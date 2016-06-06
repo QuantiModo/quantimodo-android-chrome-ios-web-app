@@ -9,7 +9,7 @@ angular.module('starter')
         $scope.showCharts = false;
         $scope.showRatingFaces = true;
 
-        $scope.recordPrimaryOutcomeVariableRating = function (numericRatingValue) {
+        $scope.storeRatingLocalAndServerAndUpdateCharts = function (numericRatingValue) {
 
             // flag for blink effect
             $scope.timeRemaining = true;
@@ -22,27 +22,26 @@ angular.module('starter')
             }
 
             // update local storage
-            measurementService.updatePrimaryOutcomeVariableLocally(numericRatingValue).then(function () {
+            measurementService.updatePrimaryOutcomeVariableLocally(numericRatingValue);
 
-                if(!$rootScope.user){
-                    $rootScope.user = localStorageService.getItemAsObject('user');
-                }
-                if($rootScope.user){
-                    // try to send the data to server if we have a user
-                    measurementService.updatePrimaryOutcomeVariableOnServer(numericRatingValue);
-                }
+            if(!$rootScope.user){
+                $rootScope.user = localStorageService.getItemAsObject('user');
+            }
+            if($rootScope.user){
+                // try to send the data to server if we have a user
+                measurementService.updatePrimaryOutcomeVariableOnServer(numericRatingValue);
+            }
 
-                // calculate charts data
-                measurementService.calculateAveragePrimaryOutcomeVariableValue().then(function () {
+            // calculate charts data
+            measurementService.calculateAveragePrimaryOutcomeVariableValue().then(function () {
+                setTimeout(function () {
+                $scope.timeRemaining = false;
+                $scope.safeApply();
+            }, 500);
 
-                    setTimeout(function () {
-                        $scope.timeRemaining = false;
-                        $scope.safeApply();
-                    }, 500);
-
-                    updateCharts();
-                });
-            });
+            updateCharts();
+        });
+           
         };
 
         // Update primary outcome variable images via an integer
