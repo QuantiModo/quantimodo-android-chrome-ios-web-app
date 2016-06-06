@@ -125,7 +125,10 @@ angular.module('starter')
               	logoutOfApi();
                 //TODO: Fix this
                 //QuantiModo.logoutOfApi();
-                refreshTrackingPageAndGoToWelcome();
+				//hard reload
+				$state.go(config.appSettings.welcomeState, {}, {
+					reload: true
+				});
             };
             
             var afterLogoutDoNotDeleteMeasurements = function(){
