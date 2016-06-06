@@ -139,9 +139,6 @@ angular.module('starter')
             $scope.redrawLineChart = true;
             $scope.redrawBarChart = true;
             $scope.showHelpInfoPopupIfNecessary();
-            if($rootScope.user){
-                measurementService.syncPrimaryOutcomeVariableMeasurements();
-            }
             syncPrimaryOutcomeVariableMeasurements();
             $ionicLoading.hide();
         };
@@ -150,13 +147,17 @@ angular.module('starter')
 
         $scope.$on('updateChartsAndSyncMeasurements', function(){
             console.log('track state redrawing event triggered through sibling controllers. Updating charts and syncing..');
-            updateCharts();
+            if(!$scope.lineChartConfig){
+                updateCharts();
+            }
             syncPrimaryOutcomeVariableMeasurements();
         });
 
         $scope.$on('$ionicView.enter', function(e) {
             console.log('track state brought in focus. Updating charts and syncing..');
-            updateCharts();
+            if(!$scope.lineChartConfig){
+                updateCharts();
+            }
             syncPrimaryOutcomeVariableMeasurements();
             $timeout(function() {
                 $scope.$broadcast('highchartsng.reflow');
