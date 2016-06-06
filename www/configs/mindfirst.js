@@ -709,25 +709,7 @@ window.notification_callback = function(reportedVariable, reportingTime){
             allMeasurements.push(allMeasurementsObject);
             localStorage[keyIdentifier+'allMeasurements'] = JSON.stringify(allMeasurements);
         }
-
-        // update Bar chart data
-        if(localStorage[keyIdentifier+'barChartData']){
-            if(val>0){
-                var barChartData = JSON.parse(localStorage[keyIdentifier+'barChartData']);
-                barChartData[val-1]++;
-                localStorage[keyIdentifier+'barChartData'] = JSON.stringify(barChartData);
-            }
-        }
-
-        // update Line chart data
-        if(localStorage[keyIdentifier+'lineChartData']){
-            if(val>0){
-                var lineChartData = JSON.parse(localStorage[keyIdentifier+'lineChartData']);
-                lineChartData.push([startTime, (val-1)*25]);
-                localStorage[keyIdentifier+'lineChartData'] = JSON.stringify(lineChartData);    
-            }
-            
-        }
+        
 
         //update measurementsQueue
         if(!localStorage[keyIdentifier+'measurementsQueue']){
