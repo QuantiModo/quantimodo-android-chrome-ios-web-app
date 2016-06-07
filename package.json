@@ -32,7 +32,7 @@
     "postinstall": "bower install && gulp generatePrivateConfigFromEnvsForHeroku"
   },
   "cordovaPlugins": [
-    "https://github.com/kashifzaidi1/cordova-plugin-local-notifications",
+    "https://github.com/katzer/cordova-plugin-local-notifications.git",
     "cordova-plugin-device",
     "cordova-plugin-console",
     "cordova-plugin-whitelist",
