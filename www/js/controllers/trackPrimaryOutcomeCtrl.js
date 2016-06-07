@@ -21,6 +21,9 @@ angular.module('starter')
                 });
             }
 
+            //  add to measurementsQueue
+            measurementService.addToMeasurementsQueue(numericRatingValue);
+
             if(!$rootScope.isSyncing){
                 syncPrimaryOutcomeVariableMeasurements();
             }
