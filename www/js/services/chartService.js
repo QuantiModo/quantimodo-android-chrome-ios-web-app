@@ -100,7 +100,7 @@ angular.module('starter')
                 	        	year: '%Y'
                     	    },
                     	    min: (data[0][0]) - timezoneOffsetMilliseconds,
-                    	    max: (data[data.length-1][0])*1000 - timezoneOffsetMilliseconds
+                    	    max: (data[data.length-1][0]) - timezoneOffsetMilliseconds
 	        			},
 	                    credits: {
 	                        enabled: false
