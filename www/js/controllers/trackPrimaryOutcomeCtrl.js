@@ -165,26 +165,17 @@ angular.module('starter')
 
         $scope.init();
 
-        //KELLY clean this up
         $scope.$on('updateChartsAndSyncMeasurements', function(){
             console.log('track state redrawing event triggered through sibling controllers. Updating charts and syncing..');
-            /*
-            if(!$scope.lineChartConfig){
-                updateCharts();
-            }
-            */
             syncPrimaryOutcomeVariableMeasurements();
         });
-
-        //KELLY test this
+        
         $scope.$on('updateCharts', function(){
             console.log('track state redrawing event triggered through sibling controllers. Updating charts and syncing..');
             
              //if(!$scope.lineChartConfig){
                 updateCharts();
              //}
-            
-            
         });
 
         $scope.$on('$ionicView.enter', function(e) {

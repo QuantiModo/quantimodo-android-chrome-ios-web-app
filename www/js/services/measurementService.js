@@ -125,7 +125,6 @@ angular.module('starter')
                         // set flag
                         isSyncing = false;
                         deferred.resolve(response);
-                        //KELLY test this
                         $rootScope.$broadcast('updateCharts');
                     }
                     else {
@@ -136,7 +135,6 @@ angular.module('starter')
                     $rootScope.isSyncing = false;
                     deferred.reject(false);
                 }, function(response){
-                    // KELLY move to first function (success callback)
                     if(response){
                         if(response.length > 0){
                             // update local data
@@ -231,8 +229,6 @@ angular.module('starter')
                     QuantiModo.postMeasurementsV2(measurements, function (response) {
                         // success
                         console.debug("measurementService: syncPrimaryOutcomeVariableMeasurements about to call getMeasurements()");
-                        // KELLY problem: getMeasurements finishes after all calls to updateCharts;
-                        // therefore updateCharts doesn't have needed data
                         measurementService.getMeasurements();
                         // clear queue
                         localStorageService.setItem('measurementsQueue', JSON.stringify([]));
@@ -413,11 +409,56 @@ angular.module('starter')
             deleteMeasurement : function(measurement){
                 QuantiModo.deleteV1Measurements(measurement, function(response){
                     console.log("success", response);
+                    // update local data
+                    var found = false;
+                    if (measurement.id) {
+                        var newAllMeasurements = [];
+                        localStorageService.getItem('allMeasurements',function(oldAllMeasurements) {
+                            oldAllMeasurements = oldAllMeasurements ? JSON.parse(oldAllMeasurements) : [];
+
+                            oldAllMeasurements.forEach(function (storedMeasurement) {
+                                // look for deleted measurement based on IDs
+                                if (storedMeasurement.id !== measurement.id) {
+                                    // copy non-deleted measurements to newAllMeasurements
+                                    newAllMeasurements.push(storedMeasurement);
+                                }
+                                else {
+                                    console.debug("deleted measurement found in allMeasurements");
+                                    found = true;
+                                }
+                            });
+                        });
+                        if (found) {
+                            localStorageService.setItem('allMeasurements',JSON.stringify(newAllMeasurements));
+                        }
+                    }
+                    else {
+                        var newMeasurementsQueue = [];
+                        localStorageService.getItemAsObject('measurementsQueue',function(oldMeasurementsQueue) {
+                            oldMeasurementsQueue.forEach(function(queuedMeasurement) {
+                                // look for deleted measurement based on startTimeEpoch and FIXME value
+                                if (queuedMeasurement.startTimeEpoch !== measurement.startTimeEpoch) {
+                                    newMeasurementsQueue.push(queuedMeasurement);
+                                }
+                                else {
+                                    console.debug("deleted measurement found in measurementsQueue");
+                                    found = true;
+                                }
+                            });
+                        });
+                        if (found) {
+                            localStorageService.setItem('measurementsQueue',JSON.stringify(newMeasurementsQueue));
+                        }
+                    }
+                    if (!found){
+                        console.debug("error: deleted measurement not found");
+                    }
+
+
                 }, function(response){
                     console.log("error", response);
                 });
             },
 		};
-
 		return measurementService;
 	});
