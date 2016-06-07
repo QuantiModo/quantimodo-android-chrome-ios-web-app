@@ -75,45 +75,44 @@ angular.module('starter')
 
         // updates all the visual elements on the page
         var updateCharts = function(){
-            localStorageService.getItem('averagePrimaryOutcomeVariableValue',function(averagePrimaryOutcomeVariableValue){
-                measurementService.getAllLocalMeasurements(false, function(allMeasurements) {
-                    var lineArr = [];
-                    var barArr = [0, 0, 0, 0, 0];
-                    var sum = 0;
 
-                    if (allMeasurements) {
-                        for (var i = 0; i < allMeasurements.length; i++) {
-                            var currentValue = Math.ceil(allMeasurements[i].value);
-                            if (allMeasurements[i].abbreviatedUnitName === config.appSettings.primaryOutcomeVariableDetails.abbreviatedUnitName &&
-                                (currentValue - 1) <= 4 && (currentValue - 1) >= 0) {
-                                var startTimeMilliseconds = moment(allMeasurements[i].startTimeEpoch).unix() * 1000;
-                                var percentValue = (currentValue - 1) * 25;
-                                var lineChartItem = [startTimeMilliseconds, percentValue];
-                                lineArr.push(lineChartItem);
-                                barArr[currentValue - 1]++;
-                            }
-                            sum+= allMeasurements[i].value;
-                            // set localstorage values
+            measurementService.getAllLocalMeasurements(false, function(allMeasurements) {
+                var lineArr = [];
+                var barArr = [0, 0, 0, 0, 0];
+                var sum = 0;
+
+                if (allMeasurements) {
+                    for (var i = 0; i < allMeasurements.length; i++) {
+                        var currentValue = Math.ceil(allMeasurements[i].value);
+                        if (allMeasurements[i].abbreviatedUnitName === config.appSettings.primaryOutcomeVariableDetails.abbreviatedUnitName &&
+                            (currentValue - 1) <= 4 && (currentValue - 1) >= 0) {
+                            var startTimeMilliseconds = moment(allMeasurements[i].startTimeEpoch).unix() * 1000;
+                            var percentValue = (currentValue - 1) * 25;
+                            var lineChartItem = [startTimeMilliseconds, percentValue];
+                            lineArr.push(lineChartItem);
+                            barArr[currentValue - 1]++;
                         }
-                        var avgVal = Math.round(sum/(allMeasurements.length));
-                        localStorageService.setItem('averagePrimaryOutcomeVariableValue',avgVal);
+                        sum+= allMeasurements[i].value;
+                    }
+                    var averagePrimaryOutcomeVariableValue = Math.round(sum/(allMeasurements.length));
+                    localStorageService.setItem('averagePrimaryOutcomeVariableValue',averagePrimaryOutcomeVariableValue);
 
-                        if(!$scope.barChartConfig || barArr !== $scope.barChartConfig.series[0].data) {
-                            updateAveragePrimaryOutcomeRatingView(averagePrimaryOutcomeVariableValue);
-                            $scope.lineChartData = lineArr;
-                            $scope.barChartData = barArr;
-                            if ($scope.lineChartData.length > 0 && $scope.barChartData.length === 5) {
-                                updateLineChart($scope.lineChartData);
-                                updateBarChart($scope.barChartData);
-                                $scope.showCharts = true; 
-                            }
-                            if (!$scope.$$phase) {
-                                $scope.safeApply();
-                            }
+                    if(!$scope.barChartConfig || barArr !== $scope.barChartConfig.series[0].data) {
+                        updateAveragePrimaryOutcomeRatingView(averagePrimaryOutcomeVariableValue);
+                        $scope.lineChartData = lineArr;
+                        $scope.barChartData = barArr;
+                        if ($scope.lineChartData.length > 0 && $scope.barChartData.length === 5) {
+                            updateLineChart($scope.lineChartData);
+                            updateBarChart($scope.barChartData);
+                            $scope.showCharts = true;
+                        }
+                        if (!$scope.$$phase) {
+                            $scope.safeApply();
                         }
                     }
-                });
+                }
             });
+
         };
 
         // calculate values for both of the charts
