@@ -206,6 +206,7 @@ angular.module('starter')
                     if(!measurementObjects || measurementObjects.length < 1){
                         defer.resolve();
                         console.debug('No measurements to sync!');
+                        $rootScope.$broadcast('updateCharts');
                         return defer.promise;
                     }
 

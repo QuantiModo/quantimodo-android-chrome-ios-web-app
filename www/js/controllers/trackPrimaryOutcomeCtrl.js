@@ -130,8 +130,8 @@ angular.module('starter')
                     $ionicLoading.hide();
                     //$scope.showLoader('Calculating stuff', 2000);
 
-                    // calculate primary outcome variable values
-                    updateCharts();
+                    // now handled with broadcast
+                    //updateCharts();
 
                 });
             }
@@ -167,6 +167,7 @@ angular.module('starter')
         });
         
         $scope.$on('updateCharts', function(){
+            $rootScope.isSyncing = false;
             console.log('track state redrawing event triggered through sibling controllers. Updating charts and syncing..');
             
              //if(!$scope.lineChartConfig){
