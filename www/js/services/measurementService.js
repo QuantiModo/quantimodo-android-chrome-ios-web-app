@@ -77,7 +77,6 @@ angular.module('starter')
 
             // get data from QuantiModo API
             getMeasurements : function(){
-                console.debug("measurementService: getMeasurements");
                 var deferred = $q.defer();
                 isSyncing = true;
 
@@ -198,7 +197,6 @@ angular.module('starter')
 
             // sync the measurements in queue with QuantiModo API
             syncPrimaryOutcomeVariableMeasurements : function(){
-                console.debug("measurementService: syncPrimaryOutcomeVariableMeasurements");
                 var defer = $q.defer();
 
                 localStorageService.getItem('measurementsQueue',function(measurementsQueue) {
@@ -228,7 +226,6 @@ angular.module('starter')
                     // send request
                     QuantiModo.postMeasurementsV2(measurements, function (response) {
                         // success
-                        console.debug("measurementService: syncPrimaryOutcomeVariableMeasurements about to call getMeasurements()");
                         measurementService.getMeasurements();
                         // clear queue
                         localStorageService.setItem('measurementsQueue', JSON.stringify([]));

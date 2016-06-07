@@ -93,7 +93,7 @@ angular.module('starter')
                     {
                         numericValue: 1,
                         displayDescription: 'Depressed',
-                        lowercaseTextDescription: 'depressed',
+                        lowerCaseTextDescription: 'depressed',
                         img: 'img/ic_face_depressed.png'
                     },
                     {

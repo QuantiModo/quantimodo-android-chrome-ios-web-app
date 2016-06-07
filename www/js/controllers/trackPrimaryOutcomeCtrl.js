@@ -118,7 +118,6 @@ angular.module('starter')
 
         // calculate values for both of the charts
         var syncPrimaryOutcomeVariableMeasurements = function(){
-            console.debug("trackPrimaryOutcomeCtrl: syncPrimaryOutcomeVariableMeasurements");
 
             if($rootScope.user){
                 $rootScope.isSyncing = true;
@@ -133,7 +132,6 @@ angular.module('starter')
                     //$scope.showLoader('Calculating stuff', 2000);
 
                     // calculate primary outcome variable values
-                    console.debug("trackPrimaryOutcomeCtrl: syncPrimaryOutcomeVariableMeasurements about to call updateCharts()");
                     updateCharts();
 
                 });
