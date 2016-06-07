@@ -137,15 +137,15 @@ angular.module('starter')
                 console.log('trying to fetch user credentials with call to /api/user');
                 $http.get(config.getURL("api/user")).then(
                     function (userCredentialsResp) {
-                        console.log('direct API call was successful. User credentials fetched:', userCredentialsResp);
+                        console.log('direct API call was successful. User credentials fetched:', userCredentialsResp.data);
                         Bugsnag.metaData = {
                             user: {
                                 name: userCredentialsResp.data.displayName,
                                 email: userCredentialsResp.data.email
                             }
                         };
-                        localStorageService.setItem('user', JSON.stringify(userCredentialsResp));
-						$rootScope.user = userCredentialsResp;
+                        localStorageService.setItem('user', JSON.stringify(userCredentialsResp.data));
+						$rootScope.user = userCredentialsResp.data;
                         
                         //get token value from response
                         var token = userCredentialsResp.data.token.split("|")[2];

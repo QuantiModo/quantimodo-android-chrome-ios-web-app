@@ -85,16 +85,10 @@ angular.module('starter')
 
             function refreshTrackingPageAndGoToWelcome() {
                 localStorageService.setItem('isWelcomed', false);
-                // calculate primary outcome variable and chart data
-                measurementService.calculateAveragePrimaryOutcomeVariableValue().then(function () {
-                    measurementService.calculateBothChart();
-                    measurementService.resetSyncFlag();
-
-                    //hard reload
-                    $state.go(config.appSettings.welcomeState, {}, {
-                        reload: true
-                    });
-                });
+				//hard reload
+				$state.go(config.appSettings.welcomeState, {}, {
+					reload: true
+				});
             }
 
             $scope.showDataClearPopup = function(){
@@ -125,7 +119,10 @@ angular.module('starter')
               	logoutOfApi();
                 //TODO: Fix this
                 //QuantiModo.logoutOfApi();
-                refreshTrackingPageAndGoToWelcome();
+				//hard reload
+				$state.go(config.appSettings.welcomeState, {}, {
+					reload: true
+				});
             };
             
             var afterLogoutDoNotDeleteMeasurements = function(){

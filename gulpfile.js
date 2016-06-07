@@ -690,7 +690,7 @@ gulp.task('addGooglePlusPlugin', ['readKeysForCurrentApp'] , function(){
 	var deferred = q.defer();
 
 	var commands = [
-		'cordova -d plugin add cordova-plugin-googleplus',
+		'cordova -d plugin add cordova-plugin-googleplus@4.0.8',
 		'REVERSED_CLIENT_ID="'+ GOOGLEPLUS_REVERSED_CLIENT_ID +'"'
 	].join(' --variable ');
 
@@ -1026,14 +1026,14 @@ gulp.task('setVersionNumbersWithEnvs', function(){
 	var environmentalVariables = process.env;
 	if(!environmentalVariables['IONIC_APP_VERSION_NUMBER']){
 		//throw new Error('Please set IONIC_APP_VERSION_NUMBER env!');
-		environmentalVariables['IONIC_APP_VERSION_NUMBER'] = '1.4.7';
+		environmentalVariables['IONIC_APP_VERSION_NUMBER'] = '1.4.8';
 		console.warn('No IONIC_APP_VERSION_NUMBER env!  Using hardcoded gulp version ' +
 			environmentalVariables['IONIC_APP_VERSION_NUMBER'])
 	}
 
 	if(!environmentalVariables['IONIC_IOS_APP_VERSION_NUMBER']){
 		//throw new Error('Please set IONIC_IOS_APP_VERSION_NUMBER env!');
-		environmentalVariables['IONIC_IOS_APP_VERSION_NUMBER'] = '1.4.7.3';
+		environmentalVariables['IONIC_IOS_APP_VERSION_NUMBER'] = '1.4.8.2';
 		console.warn('No IONIC_IOS_APP_VERSION_NUMBER env!  Using hardcoded gulp version ' +
 			environmentalVariables['IONIC_IOS_APP_VERSION_NUMBER'])
 	}

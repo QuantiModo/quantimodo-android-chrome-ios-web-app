@@ -95,11 +95,8 @@ cordova plugin add https://github.com/jeduan/cordova-plugin-facebook4 --save --v
 #echo "gulp addFacebookPlugin for $LOWERCASE_APP_NAME Android app..."
 #gulp addGooglePlusPlugin
 
-echo "cordova plugin add https://github.com/EddyVerbruggen/cordova-plugin-googleplus REVERSED_CLIENT_ID=${GOOGLE_REVERSED_CLIENT_ID} for $LOWERCASE_APP_NAME Android app..."
-cordova plugin add https://github.com/EddyVerbruggen/cordova-plugin-googleplus --variable REVERSED_CLIENT_ID=${GOOGLE_REVERSED_CLIENT_ID}
-
-#echo "cordova plugin add cordova-plugin-googleplus REVERSED_CLIENT_ID=${GOOGLE_REVERSED_CLIENT_ID} for $LOWERCASE_APP_NAME Android app..."
-#cordova plugin add cordova-plugin-googleplus --variable REVERSED_CLIENT_ID=${GOOGLE_REVERSED_CLIENT_ID}
+echo "cordova plugin add cordova-plugin-googleplus@4.0.8 REVERSED_CLIENT_ID=${GOOGLE_REVERSED_CLIENT_ID} for $LOWERCASE_APP_NAME Android app..."
+cordova plugin add cordova-plugin-googleplus@4.0.8 --variable REVERSED_CLIENT_ID=${GOOGLE_REVERSED_CLIENT_ID}
 
 echo "plugin add cordova-fabric-plugin  for $LOWERCASE_APP_NAME Android app..."
 cordova plugin add cordova-fabric-plugin --variable FABRIC_API_KEY=${FABRIC_API_KEY} --variable FABRIC_API_SECRET=${FABRIC_API_SECRET}
@@ -123,14 +120,14 @@ SIGNED_DEBUG_APK_PATH=${LOWERCASE_APP_NAME}-android-debug-signed.apk
 ANDROID_DEBUG_KEYSTORE_PASSWORD=android
 DEBUG_ALIAS=androiddebugkey
 
-# delete META-INF folder
-zip -d ${UNSIGNED_DEBUG_APK_PATH} META-INF/\*
-# sign APK
-jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore ${ANDROID_DEBUG_KEYSTORE_PATH} -storepass ${ANDROID_DEBUG_KEYSTORE_PASSWORD} ${UNSIGNED_DEBUG_APK_PATH} ${DEBUG_ALIAS}
-#verify
-jarsigner -verify ${UNSIGNED_DEBUG_APK_PATH}
-#zipalign
-${ANDROID_BUILD_TOOLS}/zipalign -v 4 ${UNSIGNED_DEBUG_APK_PATH} ${SIGNED_DEBUG_APK_PATH}
+echo "Deleting META-INF folder for ${UNSIGNED_DEBUG_APK_PATH}"
+zip -d ${UNSIGNED_DEBUG_APK_PATH} META-INF/\* >/dev/null
+echo "Signing ${UNSIGNED_DEBUG_APK_PATH}"
+jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore ${ANDROID_DEBUG_KEYSTORE_PATH} -storepass ${ANDROID_DEBUG_KEYSTORE_PASSWORD} ${UNSIGNED_DEBUG_APK_PATH} ${DEBUG_ALIAS} >/dev/null
+echo "Verifying ${UNSIGNED_DEBUG_APK_PATH}"
+jarsigner -verify ${UNSIGNED_DEBUG_APK_PATH} >/dev/null
+"Zipaligning ${UNSIGNED_DEBUG_APK_PATH}"
+${ANDROID_BUILD_TOOLS}/zipalign -v 4 ${UNSIGNED_DEBUG_APK_PATH} ${SIGNED_DEBUG_APK_PATH} >/dev/null
 
 echo -e "${GREEN}Copying ${BUILD_PATH}/${LOWERCASE_APP_NAME} to $DROPBOX_PATH/${LOWERCASE_APP_NAME}/${NC}"
 cp ${SIGNED_DEBUG_APK_PATH} "$DROPBOX_PATH/${LOWERCASE_APP_NAME}/"
@@ -143,14 +140,15 @@ else
    exit 1
 fi
 
-# delete META-INF folder
-zip -d ${UNSIGNED_APK_PATH} META-INF/\*
-# sign APK
-jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore ${ANDROID_KEYSTORE_PATH} -storepass ${ANDROID_KEYSTORE_PASSWORD} ${UNSIGNED_APK_PATH} ${ALIAS}
-#verify
-jarsigner -verify ${UNSIGNED_APK_PATH}
-#zipalign
-${ANDROID_BUILD_TOOLS}/zipalign -v 4 ${UNSIGNED_APK_PATH} ${SIGNED_APK_PATH}
+echo "Deleting META-INF folder for ${UNSIGNED_APK_PATH}"
+zip -d ${UNSIGNED_APK_PATH} META-INF/\* >/dev/null
+
+echo "Signing ${UNSIGNED_APK_PATH}"
+jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore ${ANDROID_KEYSTORE_PATH} -storepass ${ANDROID_KEYSTORE_PASSWORD} ${UNSIGNED_APK_PATH} ${ALIAS} >/dev/null
+echo "Verifying ${UNSIGNED_APK_PATH}"
+jarsigner -verify ${UNSIGNED_APK_PATH} >/dev/null
+"Zipaligning ${UNSIGNED_APK_PATH}"
+${ANDROID_BUILD_TOOLS}/zipalign -v 4 ${UNSIGNED_APK_PATH} ${SIGNED_APK_PATH} >/dev/null
 
 echo -e "${GREEN}Copying ${BUILD_PATH}/${LOWERCASE_APP_NAME} to $DROPBOX_PATH/${LOWERCASE_APP_NAME}/${NC}"
 cp ${SIGNED_APK_PATH} "$DROPBOX_PATH/${LOWERCASE_APP_NAME}/"

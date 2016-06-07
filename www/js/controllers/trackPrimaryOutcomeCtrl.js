@@ -9,7 +9,7 @@ angular.module('starter')
         $scope.showCharts = false;
         $scope.showRatingFaces = true;
 
-        $scope.recordPrimaryOutcomeVariableRating = function (numericRatingValue) {
+        $scope.storeRatingLocalAndServerAndUpdateCharts = function (numericRatingValue) {
 
             // flag for blink effect
             $scope.timeRemaining = true;
@@ -21,28 +21,13 @@ angular.module('starter')
                 });
             }
 
-            // update local storage
-            measurementService.updatePrimaryOutcomeVariableLocally(numericRatingValue).then(function () {
+            //  add to measurementsQueue
+            measurementService.addToMeasurementsQueue(numericRatingValue);
 
-                if(!$rootScope.user){
-                    $rootScope.user = localStorageService.getItemAsObject('user');
-                }
-                if($rootScope.user){
-                    // try to send the data to server if we have a user
-                    measurementService.updatePrimaryOutcomeVariableOnServer(numericRatingValue);
-                }
-
-                // calculate charts data
-                measurementService.calculateAveragePrimaryOutcomeVariableValue().then(function () {
-
-                    setTimeout(function () {
-                        $scope.timeRemaining = false;
-                        $scope.safeApply();
-                    }, 500);
-
-                    updateCharts();
-                });
-            });
+            if(!$rootScope.isSyncing){
+                syncPrimaryOutcomeVariableMeasurements();
+            }
+           
         };
 
         // Update primary outcome variable images via an integer
@@ -56,7 +41,6 @@ angular.module('starter')
             }
 
             if(!$scope.$$phase) {
-                $scope.showRatingFaces = true;
                 console.log("Not in the middle of digest cycle, so redrawing everything...");
                 $scope.safeApply();
             }
@@ -92,58 +76,49 @@ angular.module('starter')
         // updates all the visual elements on the page
         var updateCharts = function(){
             localStorageService.getItem('averagePrimaryOutcomeVariableValue',function(averagePrimaryOutcomeVariableValue){
-                if(averagePrimaryOutcomeVariableValue){
-                    updateAveragePrimaryOutcomeRatingView(averagePrimaryOutcomeVariableValue);
-                }
+                measurementService.getAllLocalMeasurements(false, function(allMeasurements) {
+                    var lineArr = [];
+                    var barArr = [0, 0, 0, 0, 0];
+                    var sum = 0;
 
-                generateLineAndBarChartData();
+                    if (allMeasurements) {
+                        for (var i = 0; i < allMeasurements.length; i++) {
+                            var currentValue = Math.ceil(allMeasurements[i].value);
+                            if (allMeasurements[i].abbreviatedUnitName === config.appSettings.primaryOutcomeVariableDetails.abbreviatedUnitName &&
+                                (currentValue - 1) <= 4 && (currentValue - 1) >= 0) {
+                                var startTimeMilliseconds = moment(allMeasurements[i].startTimeEpoch).unix() * 1000;
+                                var percentValue = (currentValue - 1) * 25;
+                                var lineChartItem = [startTimeMilliseconds, percentValue];
+                                lineArr.push(lineChartItem);
+                                barArr[currentValue - 1]++;
+                            }
+                            sum+= allMeasurements[i].value;
+                            // set localstorage values
+                        }
+                        var avgVal = Math.round(sum/(allMeasurements.length));
+                        localStorageService.setItem('averagePrimaryOutcomeVariableValue',avgVal);
 
-                // update line chart
-                if($scope.lineChartData !== "[]" && $scope.lineChartData !== null) {
-                    updateLineChart($scope.lineChartData);
-                    $scope.showCharts = true;
-                }
-
-                // update bar chart
-                if($scope.barChartData !== "[0,0,0,0,0]" && $scope.barChartData !== null){
-                    updateBarChart($scope.barChartData);
-                    $scope.showCharts = true;
-                }
-
-                if(!$scope.$$phase) {
-                    $scope.safeApply();
-                }
+                        if(!$scope.barChartConfig || barArr !== $scope.barChartConfig.series[0].data) {
+                            updateAveragePrimaryOutcomeRatingView(averagePrimaryOutcomeVariableValue);
+                            $scope.lineChartData = lineArr;
+                            $scope.barChartData = barArr;
+                            if ($scope.lineChartData.length > 0 && $scope.barChartData.length === 5) {
+                                updateLineChart($scope.lineChartData);
+                                updateBarChart($scope.barChartData);
+                                $scope.showCharts = true; 
+                            }
+                            if (!$scope.$$phase) {
+                                $scope.safeApply();
+                            }
+                        }
+                    }
+                });
             });
-        };
-
-        // constructor
-        function generateLineAndBarChartData() {
-            var __ret = measurementService.getLineAndBarChartData();
-            if(__ret){
-                $scope.lineChartData = __ret.lineArr;
-                $scope.barChartData = __ret.barArr;
-            }
-        }
-
-        // calculate values for both of the charts
-        var calculateChartValues = function(){
-            measurementService.calculateBothChart().then($ionicLoading.hide());
         };
 
         // calculate values for both of the charts
         var syncPrimaryOutcomeVariableMeasurements = function(){
-
-            if(!$rootScope.user){
-                var userObject = localStorageService.getItemAsObject('user');
-                if(userObject){
-                    $rootScope.user = userObject;
-                }
-            }
-
-            if(!$rootScope.user){
-                console.log('Cannot sync because we do not have a user in local storage!');
-                return;
-            }
+            console.debug("trackPrimaryOutcomeCtrl: syncPrimaryOutcomeVariableMeasurements");
 
             if($rootScope.user){
                 $rootScope.isSyncing = true;
@@ -155,16 +130,16 @@ angular.module('starter')
 
                     // update loader text
                     $ionicLoading.hide();
-                    $scope.showLoader('Calculating stuff', 2000);
+                    //$scope.showLoader('Calculating stuff', 2000);
 
                     // calculate primary outcome variable values
-                    measurementService.calculateAveragePrimaryOutcomeVariableValue().then(function(){
-                        measurementService.getPrimaryOutcomeVariableValue().then(calculateChartValues, calculateChartValues);
-                        updateCharts();
-                    });
-
+                    console.debug("trackPrimaryOutcomeCtrl: syncPrimaryOutcomeVariableMeasurements about to call updateCharts()");
+                    updateCharts();
 
                 });
+            }
+            else {
+                updateCharts();
             }
         };
 
@@ -176,6 +151,7 @@ angular.module('starter')
             $scope.averagePrimaryOutcomeVariableValue = false;
             $scope.lineChartData = null;
             $scope.barChartData = null;
+            $scope.showRatingFaces = true;
 
             // chart flags
             $scope.lineChartConfig = false; 
@@ -184,21 +160,39 @@ angular.module('starter')
             $scope.redrawBarChart = true;
             $scope.showHelpInfoPopupIfNecessary();
             syncPrimaryOutcomeVariableMeasurements();
-            generateLineAndBarChartData();
             $ionicLoading.hide();
         };
 
         $scope.init();
 
+        //KELLY clean this up
         $scope.$on('updateChartsAndSyncMeasurements', function(){
             console.log('track state redrawing event triggered through sibling controllers. Updating charts and syncing..');
-            updateCharts();
+            /*
+            if(!$scope.lineChartConfig){
+                updateCharts();
+            }
+            */
             syncPrimaryOutcomeVariableMeasurements();
+        });
+
+        //KELLY test this
+        $scope.$on('updateCharts', function(){
+            console.log('track state redrawing event triggered through sibling controllers. Updating charts and syncing..');
+            
+             //if(!$scope.lineChartConfig){
+                updateCharts();
+             //}
+            
+            
         });
 
         $scope.$on('$ionicView.enter', function(e) {
             console.log('track state brought in focus. Updating charts and syncing..');
-            updateCharts();
+            /*$scope.lineChartConfig){
+                updateCharts();
+            }
+            */
             syncPrimaryOutcomeVariableMeasurements();
             $timeout(function() {
                 $scope.$broadcast('highchartsng.reflow');

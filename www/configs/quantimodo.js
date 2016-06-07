@@ -743,7 +743,7 @@ config.get = function(key){
 
 
 window.notification_callback = function(reportedVariable, reportingTime){
-    var reportTime  = Math.floor(reportingTime/1000) || Math.floor(new Date().getTime()/1000);
+    var startTime  = Math.floor(reportingTime/1000) || Math.floor(new Date().getTime()/1000);
     var keyIdentifier = config.appSettings.appStorageIdentifier;
     var val = false;
 
@@ -764,7 +764,7 @@ window.notification_callback = function(reportedVariable, reportingTime){
         var allMeasurementsObject = {
             storedValue : val,
             value : val,
-            startTime : reportTime,
+            startTime : startTime,
             humanTime : {
                 date : new Date().toISOString()
             }
@@ -775,20 +775,6 @@ window.notification_callback = function(reportedVariable, reportingTime){
             var allMeasurements = JSON.parse(localStorage[keyIdentifier+'allMeasurements']);
             allMeasurements.push(allMeasurementsObject);
             localStorage[keyIdentifier+'allMeasurements'] = JSON.stringify(allMeasurements);
-        }
-
-        // update Bar chart data
-        if(localStorage[keyIdentifier+'barChartData']){
-            var barChartData = JSON.parse(localStorage[keyIdentifier+'barChartData']);
-            barChartData[val-1]++;
-            localStorage[keyIdentifier+'barChartData'] = JSON.stringify(barChartData);
-        }
-
-        // update Line chart data
-        if(localStorage[keyIdentifier+'lineChartData']){
-            var lineChartData = JSON.parse(localStorage[keyIdentifier+'lineChartData']);
-            lineChartData.push([reportTime, val]);
-            localStorage[keyIdentifier+'lineChartData'] = JSON.stringify(lineChartData);
         }
 
         //update measurementsQueue

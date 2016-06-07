@@ -231,8 +231,8 @@ angular.module('starter')
 	    		if($stateParams.reminder !== null && typeof $stateParams.reminder !== "undefined"){
                     if($stateParams.fromUrl){
                         window.location = $stateParams.fromUrl;
-                    } else if ($stateParams.reminder.fromState){
-	    				$state.go($stateParams.reminder.fromState);
+                    } else if ($stateParams.fromState){
+	    				$state.go($stateParams.fromState);
 	    			} else {
 						$state.go('app.remindersManage');
                     }
@@ -317,8 +317,8 @@ angular.module('starter')
                 $scope.loading = false;
 				if($stateParams.fromUrl){
 					window.location = $stateParams.fromUrl;
-				} else if ($stateParams.reminder && $stateParams.reminder.fromState){
-					$state.go($stateParams.reminder.fromState);
+				} else if ($stateParams.reminder && $stateParams.fromState){
+					$state.go($stateParams.fromState);
 				} else {
 					$state.go('app.remindersManage');
 				}
@@ -422,8 +422,8 @@ angular.module('starter')
                         utilsService.showAlert("Reminder id " + reminderIdUrlParameter + " not found!", 'assertive');
                         if($stateParams.fromUrl){
                             window.location = $stateParams.fromUrl;
-                        } else if  ($stateParams.reminder.fromState) {
-                            $state.go($stateParams.reminder.fromState);
+                        } else if  ($stateParams.fromState) {
+                            $state.go($stateParams.fromState);
                         } else {
                             $state.go('app.remindersManage');
                         }

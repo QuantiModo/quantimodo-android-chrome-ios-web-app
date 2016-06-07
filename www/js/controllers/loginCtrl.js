@@ -235,7 +235,7 @@ angular.module('starter')
                 //I get called when everything's ready for the plugin to be called!
                 console.log('Device is ready!');
                 window.plugins.googleplus.login({
-                        'scopes': 'https://www.googleapis.com/auth/plus.login https://www.googleapis.com/auth/userinfo.email', // optional, space-separated list of scopes, If not included or empty, defaults to `profile` and `email`.
+                        'scopes': 'email https://www.googleapis.com/auth/fitness.activity.write https://www.googleapis.com/auth/fitness.body.write https://www.googleapis.com/auth/fitness.nutrition.write https://www.googleapis.com/auth/plus.login', // optional, space-separated list of scopes, If not included or empty, defaults to `profile` and `email`.
                         'webClientId': '1052648855194.apps.googleusercontent.com', // optional clientId of your Web application from Credentials settings of your project - On Android, this MUST be included to get an idToken. On iOS, it is not required.
                         'offline': true // optional, but requires the webClientId - if set to true the plugin will also return a serverAuthCode, which can be used to grant offline access to a non-Google server
                     },
@@ -243,16 +243,30 @@ angular.module('starter')
                         $ionicLoading.hide();
                         console.debug('successfully logged in');
                         console.debug('google->', JSON.stringify(userData));
+                        
+                        if(userData.oauthToken) {
+                            console.log('userData.oauthToken is ' + userData.oauthToken);
+                            var tokenForApi = userData.oauthToken;
+                        } else if(userData.serverAuthCode) {
+                            console.error('googleLogin: No userData.accessToken!  You might have to use cordova-plugin-googleplus@4.0.8 or update API to use serverAuthCode to get an accessToken from Google...');
+                            tokenForApi = userData.serverAuthCode;
+                        }
+                        
                         if(!userData.oauthToken){
-                            console.error('googleLogin: No userData.accessToken provided! Fallback to nonNativeMobileLogin...');
+                            Bugsnag.notify("ERROR: googleLogin could not get userData.oauthToken!  ", JSON.stringify(userData), {}, "error");
+                        }
+                        
+                        if(!tokenForApi){
+                            console.error('googleLogin: No userData.accessToken or userData.idToken provided! Fallback to nonNativeMobileLogin...');
                             nonNativeMobileLogin(register);
                         } else {
-                            $scope.nativeLogin('google', userData.oauthToken);
+                            $scope.nativeLogin('google', tokenForApi);
                         }
                     },
-                    function (msg) {
+                    function (errorMessage) {
                         $ionicLoading.hide();
-                        console.error("Google login error: ", msg);
+                        Bugsnag.notify("ERROR: googleLogin could not get userData!  Fallback to nonNativeMobileLogin...", JSON.stringify(errorMessage), {}, "error");
+                        console.error("Google login error: ", errorMessage);
                         console.debug('googleLogin: Fallback to nonNativeMobileLogin...');
                         nonNativeMobileLogin(register);
                     }
@@ -280,9 +294,13 @@ angular.module('starter')
                     console.log("facebook->", JSON.stringify(success));
                     var accessToken = success.authResponse.accessToken;
 
+                    if(!accessToken){
+                        Bugsnag.notify("ERROR: facebookLogin could not get accessToken!  ", JSON.stringify(success), {}, "error");
+                    }
+
                     $scope.nativeLogin('facebook', accessToken);
                 }, function (error) {
-                    // error
+                    Bugsnag.notify("ERROR: facebookLogin could not get accessToken!  ", JSON.stringify(error), {}, "error");
                     console.log("facebook login error", error);
                 });
         };

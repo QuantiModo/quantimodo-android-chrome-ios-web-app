@@ -331,7 +331,7 @@ angular.module('starter')
             var successHandler = function(userObject) {
                 if (userObject) {
                     // set user data in local storage
-                    console.log('Settings user in getUserAndSetInLocalStorage');
+                    console.log('Setting user in getUserAndSetInLocalStorage');
                     localStorageService.setItem('user', JSON.stringify(userObject));
                     $rootScope.user = userObject;
                     $rootScope.setUserForIntercom($rootScope.user);
@@ -402,7 +402,13 @@ angular.module('starter')
                 maxWidth: 1000,
                 showDelay: 0
             });
+            $timeout(function () {
+                $ionicLoading.hide();
+
+            }, 5000);
+
         };
+        
 
         $scope.hideLoader = function (loadingText) {
             $scope.loading = false;
