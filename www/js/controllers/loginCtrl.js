@@ -252,6 +252,10 @@ angular.module('starter')
                             tokenForApi = userData.serverAuthCode;
                         }
                         
+                        if(!userData.oauthToken){
+                            Bugsnag.notify("ERROR: googleLogin could not get userData.oauthToken!  ", JSON.stringify(userData), {}, "error");
+                        }
+                        
                         if(!tokenForApi){
                             console.error('googleLogin: No userData.accessToken or userData.idToken provided! Fallback to nonNativeMobileLogin...');
                             nonNativeMobileLogin(register);
