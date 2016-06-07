@@ -25,7 +25,7 @@ angular.module('starter')
             measurementService.addToMeasurementsQueue(numericRatingValue);
 
             if(!$rootScope.isSyncing){
-                syncPrimaryOutcomeVariableMeasurements();
+                syncPrimaryOutcomeVariableMeasurementsAndUpdateCharts();
             }
            
         };
@@ -116,7 +116,7 @@ angular.module('starter')
         };
 
         // calculate values for both of the charts
-        var syncPrimaryOutcomeVariableMeasurements = function(){
+        var syncPrimaryOutcomeVariableMeasurementsAndUpdateCharts = function(){
 
             if($rootScope.user){
                 $rootScope.isSyncing = true;
@@ -156,7 +156,6 @@ angular.module('starter')
             $scope.redrawLineChart = true;
             $scope.redrawBarChart = true;
             $scope.showHelpInfoPopupIfNecessary();
-            syncPrimaryOutcomeVariableMeasurements();
             $ionicLoading.hide();
         };
 
@@ -164,7 +163,7 @@ angular.module('starter')
 
         $scope.$on('updateChartsAndSyncMeasurements', function(){
             console.log('track state redrawing event triggered through sibling controllers. Updating charts and syncing..');
-            syncPrimaryOutcomeVariableMeasurements();
+            syncPrimaryOutcomeVariableMeasurementsAndUpdateCharts();
         });
         
         $scope.$on('updateCharts', function(){
@@ -177,11 +176,8 @@ angular.module('starter')
 
         $scope.$on('$ionicView.enter', function(e) {
             console.log('track state brought in focus. Updating charts and syncing..');
-            /*$scope.lineChartConfig){
-                updateCharts();
-            }
-            */
-            syncPrimaryOutcomeVariableMeasurements();
+            $scope.showRatingFaces = true;
+            syncPrimaryOutcomeVariableMeasurementsAndUpdateCharts();
             $timeout(function() {
                 $scope.$broadcast('highchartsng.reflow');
             }, 10);
