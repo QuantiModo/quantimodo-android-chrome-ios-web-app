@@ -138,6 +138,9 @@ angular.module('starter')
 
                 });
             }
+            else {
+                updateCharts();
+            }
         };
 
         $scope.init = function(){

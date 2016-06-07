@@ -402,7 +402,13 @@ angular.module('starter')
                 maxWidth: 1000,
                 showDelay: 0
             });
+            $timeout(function () {
+                $ionicLoading.hide();
+
+            }, 5000);
+
         };
+        
 
         $scope.hideLoader = function (loadingText) {
             $scope.loading = false;
