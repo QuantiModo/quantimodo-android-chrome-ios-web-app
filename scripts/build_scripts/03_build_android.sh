@@ -95,8 +95,8 @@ cordova plugin add https://github.com/jeduan/cordova-plugin-facebook4 --save --v
 #echo "gulp addFacebookPlugin for $LOWERCASE_APP_NAME Android app..."
 #gulp addGooglePlusPlugin
 
-echo "cordova plugin add https://github.com/EddyVerbruggen/cordova-plugin-googleplus REVERSED_CLIENT_ID=${GOOGLE_REVERSED_CLIENT_ID} for $LOWERCASE_APP_NAME Android app..."
-cordova plugin add https://github.com/EddyVerbruggen/cordova-plugin-googleplus --variable REVERSED_CLIENT_ID=${GOOGLE_REVERSED_CLIENT_ID}
+echo "cordova plugin add cordova-plugin-googleplus@4.0.8 REVERSED_CLIENT_ID=${GOOGLE_REVERSED_CLIENT_ID} for $LOWERCASE_APP_NAME Android app..."
+cordova plugin add cordova-plugin-googleplus@4.0.8 --variable REVERSED_CLIENT_ID=${GOOGLE_REVERSED_CLIENT_ID}
 
 #echo "cordova plugin add cordova-plugin-googleplus REVERSED_CLIENT_ID=${GOOGLE_REVERSED_CLIENT_ID} for $LOWERCASE_APP_NAME Android app..."
 #cordova plugin add cordova-plugin-googleplus --variable REVERSED_CLIENT_ID=${GOOGLE_REVERSED_CLIENT_ID}
