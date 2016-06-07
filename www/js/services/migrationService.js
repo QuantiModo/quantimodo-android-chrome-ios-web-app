@@ -7,7 +7,10 @@ angular.module('starter')
 			// get public variables
 			version1466 : function(){
                 var storedVersion = localStorageService.getItemAsObject('appVersion');
-                if($rootScope.user && storedVersion < 1466){
+                if (!$rootScope.user && !storedVersion) {
+                    localStorageService.setItem('appVersion', 1466);
+                }
+                else if (storedVersion < 1466){
                     console.debug('Running migration version version1466...');
                     localStorageService.deleteItem('allMeasurements');
                     localStorageService.deleteItem('lastSyncTime');

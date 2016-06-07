@@ -93,12 +93,10 @@ angular.module('starter')
 			if($rootScope.user){
 				measurementService.syncPrimaryOutcomeVariableMeasurements();
 			}
-			var history;
-			localStorageService.getItem('allMeasurements',function(allMeasurements){
-				history = allMeasurements? JSON.parse(allMeasurements) : [];
+			measurementService.getAllLocalMeasurements(true,function(history){
 				if(history.length < 1){
 					console.log('No measurements for history!  Going to default state. ');
-                    $rootScope.hideNavigationMenu = false;
+					$rootScope.hideNavigationMenu = false;
 					$state.go(config.appSettings.defaultState);
 				}
 				if(history.length > 0){

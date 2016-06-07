@@ -54,7 +54,7 @@ angular.module('starter')
 	                        enabled: false
 	                    },
 
-	                    colors : [ "#55000000", "#5D83FF", "#68B107", "#ffbd40", "#CB0000" ]
+	                    colors : [ "#000000", "#5D83FF", "#68B107", "#ffbd40", "#CB0000" ]
 	                },
 	                series: [{
 	                    name : config.appSettings.primaryOutcomeVariable,
@@ -66,9 +66,17 @@ angular.module('starter')
 	        // generate stock chart
 	        configureLineChart : function(data){
 
+				var date = new Date();
+				var timezoneOffsetHours = (date.getTimezoneOffset())/60;
+				var timezoneOffsetMilliseconds = timezoneOffsetHours*60*60*1000; // minutes, seconds, milliseconds
+
 				data = data.sort(function(a, b){
 					return a[0] - b[0];
 				});
+
+				for (var i = 0; i < data.length; i++) {
+					data[i][0] = data[i][0]*1000 - timezoneOffsetMilliseconds;
+				}
 
 	        	return {
 	        		useHighStocks: true,
@@ -91,8 +99,8 @@ angular.module('starter')
                 	        	month: '%b \'%y',
                 	        	year: '%Y'
                     	    },
-                    	    min: data[0][0],
-                    	    max: data[data.length-1][0]
+                    	    min: (data[0][0]) - timezoneOffsetMilliseconds,
+                    	    max: (data[data.length-1][0]) - timezoneOffsetMilliseconds
 	        			},
 	                    credits: {
 	                        enabled: false
