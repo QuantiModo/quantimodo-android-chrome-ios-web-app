@@ -690,7 +690,7 @@ gulp.task('addGooglePlusPlugin', ['readKeysForCurrentApp'] , function(){
 	var deferred = q.defer();
 
 	var commands = [
-		'cordova -d plugin add cordova-plugin-googleplus',
+		'cordova -d plugin add cordova-plugin-googleplus@4.0.8',
 		'REVERSED_CLIENT_ID="'+ GOOGLEPLUS_REVERSED_CLIENT_ID +'"'
 	].join(' --variable ');
 
