@@ -207,7 +207,7 @@ angular.module('starter')
 
                     var measurementObjects = JSON.parse(measurementsQueue);
 
-                    if(measurementObjects.length < 1){
+                    if(!measurementObjects || measurementObjects.length < 1){
                         defer.resolve();
                         console.debug('No measurements to sync!');
                         return defer.promise;
