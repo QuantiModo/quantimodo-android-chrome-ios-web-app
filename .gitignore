@@ -16,3 +16,4 @@ android-sdk_r24.2-linux.tgz
 scripts/certs/apple.cer
 scripts/certs/dist.cer
 scripts/certs/dist.p12
+resources/android/
