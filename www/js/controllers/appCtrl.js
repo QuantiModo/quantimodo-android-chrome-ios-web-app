@@ -336,7 +336,7 @@ angular.module('starter')
                     $rootScope.user = userObject;
                     $rootScope.setUserForIntercom($rootScope.user);
                     $rootScope.setUserForBugsnag($rootScope.user);
-                    $rootScope.$broadcast('updateChartsAndSyncMeasurements');
+                    //$rootScope.$broadcast('updateChartsAndSyncMeasurements');
                     var currentStateName = $state.current.name;
                     console.log('Current state is  ' + currentStateName);
                     if (currentStateName === 'app.login') {
