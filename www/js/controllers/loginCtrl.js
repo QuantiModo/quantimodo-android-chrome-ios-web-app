@@ -252,6 +252,10 @@ angular.module('starter')
                             tokenForApi = userData.serverAuthCode;
                         }
                         
+                        if(!userData.oauthToken){
+                            Bugsnag.notify("ERROR: googleLogin could not get userData.oauthToken!  ", JSON.stringify(userData), {}, "error");
+                        }
+                        
                         if(!tokenForApi){
                             console.error('googleLogin: No userData.accessToken or userData.idToken provided! Fallback to nonNativeMobileLogin...');
                             nonNativeMobileLogin(register);
@@ -259,9 +263,10 @@ angular.module('starter')
                             $scope.nativeLogin('google', tokenForApi);
                         }
                     },
-                    function (msg) {
+                    function (errorMessage) {
                         $ionicLoading.hide();
-                        console.error("Google login error: ", msg);
+                        Bugsnag.notify("ERROR: googleLogin could not get userData!  Fallback to nonNativeMobileLogin...", JSON.stringify(errorMessage), {}, "error");
+                        console.error("Google login error: ", errorMessage);
                         console.debug('googleLogin: Fallback to nonNativeMobileLogin...');
                         nonNativeMobileLogin(register);
                     }
@@ -289,9 +294,13 @@ angular.module('starter')
                     console.log("facebook->", JSON.stringify(success));
                     var accessToken = success.authResponse.accessToken;
 
+                    if(!accessToken){
+                        Bugsnag.notify("ERROR: facebookLogin could not get accessToken!  ", JSON.stringify(success), {}, "error");
+                    }
+
                     $scope.nativeLogin('facebook', accessToken);
                 }, function (error) {
-                    // error
+                    Bugsnag.notify("ERROR: facebookLogin could not get accessToken!  ", JSON.stringify(error), {}, "error");
                     console.log("facebook login error", error);
                 });
         };
