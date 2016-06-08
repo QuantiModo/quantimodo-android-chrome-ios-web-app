@@ -500,6 +500,7 @@ angular.module('starter')
             }
         }
 
+        // FIXME if no id, save original startTimeEpoch
         var setupTrackingByMeasurement = function(measurementObject){
 
             if(isNaN(measurementObject.startTimeEpoch)){
