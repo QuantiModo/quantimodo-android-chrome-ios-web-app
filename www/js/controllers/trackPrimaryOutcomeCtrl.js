@@ -25,7 +25,7 @@ angular.module('starter')
             measurementService.addToMeasurementsQueue(numericRatingValue);
 
             if(!$rootScope.isSyncing){
-                syncPrimaryOutcomeVariableMeasurements();
+                syncPrimaryOutcomeVariableMeasurementsAndUpdateCharts();
             }
            
         };
@@ -75,50 +75,48 @@ angular.module('starter')
 
         // updates all the visual elements on the page
         var updateCharts = function(){
-            localStorageService.getItem('averagePrimaryOutcomeVariableValue',function(averagePrimaryOutcomeVariableValue){
-                measurementService.getAllLocalMeasurements(false, function(allMeasurements) {
-                    var lineArr = [];
-                    var barArr = [0, 0, 0, 0, 0];
-                    var sum = 0;
 
-                    if (allMeasurements) {
-                        for (var i = 0; i < allMeasurements.length; i++) {
-                            var currentValue = Math.ceil(allMeasurements[i].value);
-                            if (allMeasurements[i].abbreviatedUnitName === config.appSettings.primaryOutcomeVariableDetails.abbreviatedUnitName &&
-                                (currentValue - 1) <= 4 && (currentValue - 1) >= 0) {
-                                var startTimeMilliseconds = moment(allMeasurements[i].startTimeEpoch).unix() * 1000;
-                                var percentValue = (currentValue - 1) * 25;
-                                var lineChartItem = [startTimeMilliseconds, percentValue];
-                                lineArr.push(lineChartItem);
-                                barArr[currentValue - 1]++;
-                            }
-                            sum+= allMeasurements[i].value;
-                            // set localstorage values
+            measurementService.getAllLocalMeasurements(false, function(allMeasurements) {
+                var lineArr = [];
+                var barArr = [0, 0, 0, 0, 0];
+                var sum = 0;
+
+                if (allMeasurements) {
+                    for (var i = 0; i < allMeasurements.length; i++) {
+                        var currentValue = Math.ceil(allMeasurements[i].value);
+                        if (allMeasurements[i].abbreviatedUnitName === config.appSettings.primaryOutcomeVariableDetails.abbreviatedUnitName &&
+                            (currentValue - 1) <= 4 && (currentValue - 1) >= 0) {
+                            var startTimeMilliseconds = moment(allMeasurements[i].startTimeEpoch).unix() * 1000;
+                            var percentValue = (currentValue - 1) * 25;
+                            var lineChartItem = [startTimeMilliseconds, percentValue];
+                            lineArr.push(lineChartItem);
+                            barArr[currentValue - 1]++;
                         }
-                        var avgVal = Math.round(sum/(allMeasurements.length));
-                        localStorageService.setItem('averagePrimaryOutcomeVariableValue',avgVal);
+                        sum+= allMeasurements[i].value;
+                    }
+                    var averagePrimaryOutcomeVariableValue = Math.round(sum/(allMeasurements.length));
+                    localStorageService.setItem('averagePrimaryOutcomeVariableValue',averagePrimaryOutcomeVariableValue);
 
-                        if(!$scope.barChartConfig || barArr !== $scope.barChartConfig.series[0].data) {
-                            updateAveragePrimaryOutcomeRatingView(averagePrimaryOutcomeVariableValue);
-                            $scope.lineChartData = lineArr;
-                            $scope.barChartData = barArr;
-                            if ($scope.lineChartData.length > 0 && $scope.barChartData.length === 5) {
-                                updateLineChart($scope.lineChartData);
-                                updateBarChart($scope.barChartData);
-                                $scope.showCharts = true; 
-                            }
-                            if (!$scope.$$phase) {
-                                $scope.safeApply();
-                            }
+                    if(!$scope.barChartConfig || barArr !== $scope.barChartConfig.series[0].data) {
+                        updateAveragePrimaryOutcomeRatingView(averagePrimaryOutcomeVariableValue);
+                        $scope.lineChartData = lineArr;
+                        $scope.barChartData = barArr;
+                        if ($scope.lineChartData.length > 0 && $scope.barChartData.length === 5) {
+                            updateLineChart($scope.lineChartData);
+                            updateBarChart($scope.barChartData);
+                            $scope.showCharts = true;
+                        }
+                        if (!$scope.$$phase) {
+                            $scope.safeApply();
                         }
                     }
-                });
+                }
             });
+
         };
 
         // calculate values for both of the charts
-        var syncPrimaryOutcomeVariableMeasurements = function(){
-            console.debug("trackPrimaryOutcomeCtrl: syncPrimaryOutcomeVariableMeasurements");
+        var syncPrimaryOutcomeVariableMeasurementsAndUpdateCharts = function(){
 
             if($rootScope.user){
                 $rootScope.isSyncing = true;
@@ -132,9 +130,8 @@ angular.module('starter')
                     $ionicLoading.hide();
                     //$scope.showLoader('Calculating stuff', 2000);
 
-                    // calculate primary outcome variable values
-                    console.debug("trackPrimaryOutcomeCtrl: syncPrimaryOutcomeVariableMeasurements about to call updateCharts()");
-                    updateCharts();
+                    // now handled with broadcast
+                    //updateCharts();
 
                 });
             }
@@ -159,41 +156,29 @@ angular.module('starter')
             $scope.redrawLineChart = true;
             $scope.redrawBarChart = true;
             $scope.showHelpInfoPopupIfNecessary();
-            syncPrimaryOutcomeVariableMeasurements();
             $ionicLoading.hide();
         };
 
         $scope.init();
 
-        //KELLY clean this up
         $scope.$on('updateChartsAndSyncMeasurements', function(){
             console.log('track state redrawing event triggered through sibling controllers. Updating charts and syncing..');
-            /*
-            if(!$scope.lineChartConfig){
-                updateCharts();
-            }
-            */
-            syncPrimaryOutcomeVariableMeasurements();
+            syncPrimaryOutcomeVariableMeasurementsAndUpdateCharts();
         });
-
-        //KELLY test this
+        
         $scope.$on('updateCharts', function(){
+            $rootScope.isSyncing = false;
             console.log('track state redrawing event triggered through sibling controllers. Updating charts and syncing..');
             
              //if(!$scope.lineChartConfig){
                 updateCharts();
              //}
-            
-            
         });
 
         $scope.$on('$ionicView.enter', function(e) {
             console.log('track state brought in focus. Updating charts and syncing..');
-            /*$scope.lineChartConfig){
-                updateCharts();
-            }
-            */
-            syncPrimaryOutcomeVariableMeasurements();
+            $scope.showRatingFaces = true;
+            syncPrimaryOutcomeVariableMeasurementsAndUpdateCharts();
             $timeout(function() {
                 $scope.$broadcast('highchartsng.reflow');
             }, 10);
