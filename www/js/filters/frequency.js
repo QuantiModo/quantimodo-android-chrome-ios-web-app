@@ -11,6 +11,7 @@ angular.module('starter')
 				7200: "every 2 hours",
 				3600: "hourly",
 				1800: "every 30 minutes",
+				60: "every minute",
 				0: "never"
 			};
 

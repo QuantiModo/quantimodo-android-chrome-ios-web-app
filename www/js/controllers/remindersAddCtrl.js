@@ -63,8 +63,9 @@ angular.module('starter')
 				{ id : 6, name : 'Every 2 hours' , group : 'intervals'},
 				{ id : 7, name : 'Hourly' , group : 'intervals'},
 	    		{ id : 8, name : 'Every 30 minutes' , group : 'intervals'},
-	    		{ id : 9, name : 'Never' , group : 'intervals'},
-	    		{ id : 10, name : 'Daily' , group : 'frequency'}
+                { id : 9, name : 'Every minute' , group : 'intervals'},
+	    		{ id : 10, name : 'Never' , group : 'intervals'},
+	    		{ id : 11, name : 'Daily' , group : 'frequency'}
 	    	]
 	    };
 
@@ -257,6 +258,7 @@ angular.module('starter')
 	    		"Every 4 hours": 4*60*60,
 	    		"Every 3 hours" : 180*60,
 	    		"Every 30 minutes": 30*60,
+                "Every minute": 60,
 	    		"Hourly":60*60,
 	    		"Never": 0,
 	    		"Daily": 24*60*60,
@@ -357,6 +359,7 @@ angular.module('starter')
 				7200: "Every 2 hours",
 				3600: "Hourly",
 				1800: "Every 30 minutes",
+                60: "Every minute",
 				0: "Never"
 	    	};
 

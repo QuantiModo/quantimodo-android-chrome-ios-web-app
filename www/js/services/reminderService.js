@@ -1,6 +1,6 @@
 angular.module('starter')
 	// Measurement Service
-	.factory('reminderService', function($http, $q, QuantiModo, timeService){
+	.factory('reminderService', function($http, $q, QuantiModo, timeService, notificationService){
 
 		// service methods
 		var reminderService = {
@@ -131,9 +131,11 @@ angular.module('starter')
 				if(reminderId){
 					params = {id : reminderId};
 				}
-				QuantiModo.getTrackingReminders(params, function(reminders){
-					if(reminders.success) {
-						deferred.resolve(reminders.data);
+				QuantiModo.getTrackingReminders(params, function(remindersResponse){
+					var trackingReminders = remindersResponse.data;
+					if(remindersResponse.success) {
+						notificationService.scheduleAllNotifications(trackingReminders);
+						deferred.resolve(trackingReminders);
 					}
 					else {
 						deferred.reject("error");

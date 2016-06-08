@@ -73,7 +73,7 @@ angular.module('starter')
 			}
 
 			if($stateParams.today) {
-				$scope.state.title = 'Upcoming Reminders'
+				$scope.state.title = 'Upcoming Reminders';
 			}
 		};
 
@@ -129,7 +129,9 @@ angular.module('starter')
 	    		return moment.utc(trackingReminderNotification.trackingReminderNotificationTime).local().isBefore(monthold) === true;
 	    	});
 
-	    	if(olderResult.length) result.push({ name : "Older", reminders : olderResult });
+	    	if(olderResult.length) {
+				result.push({ name : "Older", reminders : olderResult });
+			}
 
 	    	return result;
 	    };
@@ -159,12 +161,26 @@ angular.module('starter')
 	    	});
 	    };
 
+		var removeNotificationFromDisplay = function(trackingReminderNotificationId){
+			var notificationsToKeep = [];
+			for(var i = 0; i < $scope.state.trackingRemindersNotifications.length; i++){
+				if($scope.state.trackingRemindersNotifications[i].id !== trackingReminderNotificationId){
+					notificationsToKeep.push($scope.state.trackingRemindersNotifications[i]);
+				}
+			}
+			$scope.state.trackingRemindersNotifications = notificationsToKeep;
+			$scope.state.filteredReminders = filterViaDates(notificationsToKeep);
+			$ionicLoading.hide();
+			$scope.loading = false;
+		};
+
 	    $scope.track = function(trackingReminderNotification, modifiedReminderValue){
-			$scope.showLoader();
+			//$scope.showLoader();
 			console.log('modifiedReminderValue is ' + modifiedReminderValue);
+			removeNotificationFromDisplay(trackingReminderNotification.id);
 	    	reminderService.trackReminder(trackingReminderNotification.id, modifiedReminderValue)
 	    	.then(function(){
-	    		$scope.init();
+	    		//$scope.init();
 
 	    	}, function(err){
 				console.error(err);
@@ -173,11 +189,12 @@ angular.module('starter')
 	    };
 
 	    $scope.skip = function(trackingReminderNotification){
-			$scope.showLoader();
+			//$scope.showLoader();
+			removeNotificationFromDisplay(trackingReminderNotification.id);
 	    	reminderService.skipReminder(trackingReminderNotification.id)
 	    	.then(function(){
 	    		$scope.hideLoader();
-	    		$scope.init();
+	    		//$scope.init();
 	    	}, function(err){
 	    		$scope.hideLoader();
 	    		utilsService.showAlert('Failed to Skip Reminder, Try again!', 'assertive');
@@ -186,10 +203,11 @@ angular.module('starter')
 	    };
 
 	    $scope.snooze = function(trackingReminderNotification){
-			$scope.showLoader();
+			//$scope.showLoader();
+			removeNotificationFromDisplay(trackingReminderNotification.id);
 	    	reminderService.snoozeReminder(trackingReminderNotification.id)
 	    	.then(function(){
-	    		$scope.init();
+	    		//$scope.init();
 	    	}, function(err){
 				console.error(err);
 	    		utilsService.showAlert('Failed to Snooze Reminder, Try again!', 'assertive');

@@ -54,6 +54,7 @@ chrome.runtime.onInstalled.addListener(function()
 */
 chrome.alarms.onAlarm.addListener(function(alarm)
 {
+	console.log('onAlarm Listener heard this alarm ', alarm);
 	var showNotification = (localStorage.showNotification || "true") == "true" ? true : false;
 
     if(showNotification){
