@@ -213,31 +213,6 @@ angular.module('starter')
             }
         };
 
-        /* // Deprecated
-        var goToWelcomeStateIfNotWelcomed = function(){
-            var accessTokenInUrl = authService.getAccessTokenFromUrlParameter();
-            if (!$rootScope.user && !accessTokenInUrl) {
-                localStorageService.getItem('isWelcomed',function(isWelcomed) {
-                    if(!isWelcomed || isWelcomed === false || isWelcomed === "false"){
-                        console.debug('appCtrl: going to welcome state...');
-                        //$rootScope.hideNavigationMenu = true;
-                        $state.go(config.appSettings.welcomeState);
-                    } else {
-                        console.debug('Not welcoming because isWelcomed is ' + isWelcomed);
-                    }
-                });
-            } else {
-                console.debug('Not going to welcome state...');
-            }
-        };
-        */
-
-        // hide loader and move to next page
-        var hideLoaderMove = function(){
-            $ionicLoading.hide();
-            $scope.goToDefaultStateIfWelcomed();
-        };
-        
 
         $scope.init = function () {
             console.log("Main Constructor Start");

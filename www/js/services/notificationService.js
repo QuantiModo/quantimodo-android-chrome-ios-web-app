@@ -15,8 +15,17 @@ angular.module('starter')
         return {
 
             scheduleAllNotifications: function(trackingReminders) {
-                if(trackingReminders.length > 0 && ($rootScope.isChromeExtension || $rootScope.isChromeApp)){
-                    chrome.alarms.clearAll();
+                if(trackingReminders.length > 0){
+                    if ($rootScope.isChromeExtension || $rootScope.isChromeApp)
+                    {
+                        chrome.alarms.clearAll();
+                    }
+
+                    if ($rootScope.isAndroid)
+                    {
+                        cordova.plugins.notification.local.cancelAll();
+                    }
+                    
                 }
                 for (var i = 0; i < trackingReminders.length; i++) {
                     this.scheduleNotification(false, trackingReminders[i]);
@@ -27,30 +36,50 @@ angular.module('starter')
             scheduleNotification:function(interval, trackingReminder){
 
                 function scheduleAndroidNotification(interval, trackingReminder) {
-                    cordova.plugins.notification.local.cancelAll(function () {
-                        if (interval !== "never") {
-                            cordova.plugins.notification.local.schedule({
-                                text: config.appSettings.mobileNotificationText,
-                                every: intervals[interval],
-                                icon: config.appSettings.mobileNotificationImage,
-                                id: 1
-                            }, function () {
-                                console.log('notification scheduled');
-                            });
-                            cordova.plugins.notification.local.on("click", function (notification) {
-                                // var redirectUrl = window.location.href + 'app/reminders-inbox';
-                                // console.log('Setting window.location to ' + redirectUrl);
-                                // window.location = redirectUrl;
-                                console.log("$state.go('app.remindersInbox')");
-                                $state.go('app.remindersInbox');
-                            });
-                        }
-                    });
+
+                    if (interval !== "never") {
+                        cordova.plugins.notification.local.schedule({
+                            text: config.appSettings.mobileNotificationText,
+                            every: intervals[interval],
+                            icon: config.appSettings.mobileNotificationImage,
+                            id: 1
+                        }, function () {
+                            console.log('notification scheduled');
+                        });
+                        cordova.plugins.notification.local.on("click", function (notification) {
+                            // var redirectUrl = window.location.href + 'app/reminders-inbox';
+                            // console.log('Setting window.location to ' + redirectUrl);
+                            // window.location = redirectUrl;
+                            console.log("$state.go('app.remindersInbox')");
+                            $state.go('app.remindersInbox');
+                        });
+                    } else if (trackingReminder) {
+                        var firstAt = new Date(trackingReminder.nextReminderTimeEpochSeconds*1000);
+                        var minuteFrequency  = trackingReminder.reminderFrequency / 60;
+                        var notificationSettings = {
+                            text: config.appSettings.mobileNotificationText,
+                            firstAt: firstAt,
+                            every: minuteFrequency,
+                            icon: config.appSettings.mobileNotificationImage,
+                            id: trackingReminder.id
+                        };
+                        cordova.plugins.notification.local.schedule(notificationSettings,
+                            function () {
+                            console.log('notification scheduled', notificationSettings);
+                        });
+                        cordova.plugins.notification.local.on("click", function (notification) {
+                            // var redirectUrl = window.location.href + 'app/reminders-inbox';
+                            // console.log('Setting window.location to ' + redirectUrl);
+                            // window.location = redirectUrl;
+                            console.log("$state.go('app.remindersInbox')");
+                            $state.go('app.remindersInbox');
+                        });
+                    }
                 }
 
                 function scheduleIosNotification(interval, trackingReminder) {
                     cordova.plugins.notification.local.cancelAll(function () {
-                        if (interval != "never") {
+                        if (interval && interval !== "never") {
                             cordova.plugins.notification.local.schedule({
                                 text: config.appSettings.mobileNotificationText,
                                 every: interval,
@@ -72,7 +101,7 @@ angular.module('starter')
 
                 function scheduleChromeExtensionNotification(interval, trackingReminder) {
                     var alarmInfo = {};
-                    if(interval){
+                    if(interval && interval !== "never"){
                         console.log('Reminder notification interval is ' + interval);
                         alarmInfo = {periodInMinutes: intervals[interval]};
                         chrome.alarms.clear("trackReportAlarm");
@@ -119,10 +148,10 @@ angular.module('starter')
 
             scheduleReminder:function(params){
                 var id = Math.floor((Math.random() * 10000) + 1);
-                var text = "Reminder " + params['variableName'];
+                var text = "Reminder " + params.variableName;
 
-                if (params['frequency'] == "Daily") {
-                    var time = params['reminderTime'].match(/(\d+)(?::(\d\d))?\s*(p?)/);
+                if (params.frequency === "Daily") {
+                    var time = params.reminderTime.match(/(\d+)(?::(\d\d))?\s*(p?)/);
                     var reminderTime = new Date();
                     reminderTime.setHours( parseInt(time[1]) + (time[3] ? 12 : 0) );
                     reminderTime.setMinutes( parseInt(time[2]) || 0 );
