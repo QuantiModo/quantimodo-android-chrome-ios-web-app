@@ -14,57 +14,79 @@ angular.module('starter')
 
         return {
             // schedule new notifications
-            scheduleNotification:function(interval){
+            scheduleNotification:function(interval, trackingReminder){
+
+                function scheduleAndroidNotification(interval, trackingReminder) {
+                    cordova.plugins.notification.local.cancelAll(function () {
+                        if (interval !== "never") {
+                            cordova.plugins.notification.local.schedule({
+                                text: config.appSettings.mobileNotificationText,
+                                every: intervals[interval],
+                                icon: config.appSettings.mobileNotificationImage,
+                                id: 1
+                            }, function () {
+                                console.log('notification scheduled');
+                            });
+                            cordova.plugins.notification.local.on("click", function (notification) {
+                                // var redirectUrl = window.location.href + 'app/reminders-inbox';
+                                // console.log('Setting window.location to ' + redirectUrl);
+                                // window.location = redirectUrl;
+                                console.log("$state.go('app.remindersInbox')");
+                                $state.go('app.remindersInbox');
+                            });
+                        }
+                    });
+                }
+
+                function scheduleIosNotification(interval, trackingReminder) {
+                    cordova.plugins.notification.local.cancelAll(function () {
+                        if (interval != "never") {
+                            cordova.plugins.notification.local.schedule({
+                                text: config.appSettings.mobileNotificationText,
+                                every: interval,
+                                icon: config.appSettings.mobileNotificationImage,
+                                id: 1
+                            }, function () {
+                                console.log('notification scheduled');
+                            });
+                            cordova.plugins.notification.local.on("click", function (notification) {
+                                // var redirectUrl = window.location.href + 'app/reminders-inbox';
+                                // console.log('Setting window.location to ' + redirectUrl);
+                                // window.location = redirectUrl;
+                                console.log("$state.go('app.remindersInbox')");
+                                $state.go('app.remindersInbox');
+                            });
+                        }
+                    });
+                }
+
+                function scheduleChromeExtensionNotification(interval, trackingReminder) {
+                    var alarmInfo = {};
+                    if(interval){
+                        alarmInfo = {periodInMinutes: intervals[interval]};
+                        chrome.alarms.clear("trackReportAlarm");
+                        chrome.alarms.create("trackReportAlarm", alarmInfo);
+                    } else if (trackingReminder) {
+                        console.debug('Creating reminder for ', trackingReminder);
+                        alarmInfo.when =  trackingReminder.reminderStartEpochSeconds * 1000;
+                        alarmInfo.periodInMinutes = trackingReminder.frequency / 60;
+                        chrome.alarms.clear(trackingReminder.id);
+                        chrome.alarms.create(trackingReminder.id, alarmInfo);
+                    }
+                    
+                    console.log("Alarm set, every " + intervals[interval] + " minutes");
+                }
 
                 $ionicPlatform.ready(function () {
                     console.log('Reminder notification interval is ' + interval);
                     if (typeof cordova != "undefined") {
                         if (ionic.Platform.isAndroid()) {
-                            cordova.plugins.notification.local.cancelAll(function () {
-                                if (interval !== "never") {
-                                    cordova.plugins.notification.local.schedule({
-                                        text: config.appSettings.mobileNotificationText,
-                                        every: intervals[interval],
-                                        icon: config.appSettings.mobileNotificationImage,
-                                        id: 1
-                                    }, function () {
-                                        console.log('notification scheduled');
-                                    });
-                                    cordova.plugins.notification.local.on("click", function (notification) {
-                                        // var redirectUrl = window.location.href + 'app/reminders-inbox';
-                                        // console.log('Setting window.location to ' + redirectUrl);
-                                        // window.location = redirectUrl;
-                                        console.log("$state.go('app.remindersInbox')");
-                                        $state.go('app.remindersInbox');
-                                    });
-                                }
-                            });
+                            scheduleAndroidNotification(interval, trackingReminder);
                         } else if (ionic.Platform.isIPad() || ionic.Platform.isIOS()) {
-                            cordova.plugins.notification.local.cancelAll(function () {
-                                if (interval != "never") {
-                                    cordova.plugins.notification.local.schedule({
-                                        text: config.appSettings.mobileNotificationText,
-                                        every: interval,
-                                        icon: config.appSettings.mobileNotificationImage,
-                                        id: 1
-                                    }, function () {
-                                        console.log('notification scheduled');
-                                    });
-                                    cordova.plugins.notification.local.on("click", function (notification) {
-                                        // var redirectUrl = window.location.href + 'app/reminders-inbox';
-                                        // console.log('Setting window.location to ' + redirectUrl);
-                                        // window.location = redirectUrl;
-                                        console.log("$state.go('app.remindersInbox')");
-                                        $state.go('app.remindersInbox');
-                                    });
-                                }
-                            });
+                            scheduleIosNotification(interval, trackingReminder);
                         }
                     } else if ($rootScope.isChromeExtension || $rootScope.isChromeApp) {
-                        chrome.alarms.clear("trackReportAlarm");
-                        var alarmInfo = {periodInMinutes: intervals[interval]};
-                        chrome.alarms.create("trackReportAlarm", alarmInfo);
-                        console.log("Alarm set, every " + intervals[interval] + " minutes");
+                        scheduleChromeExtensionNotification(interval, trackingReminder);
                     }
                 });
             },
@@ -92,7 +114,7 @@ angular.module('starter')
                     reminderTime.setMinutes( parseInt(time[2]) || 0 );
                 }
 
-                if (params['frequency'] !== "Daily") {
+                if (params.frequency !== "Daily") {
                     if(typeof cordova != "undefined"){
                         //Android and iOS frequency reminders
                         cordova.plugins.notification.local.clearAll(function(){
@@ -117,7 +139,7 @@ angular.module('starter')
                     }
                     else if($rootScope.isChrome){
                         // chrome frequency reminders
-                        var alarmInfo = {periodInMinutes: intervals[interval]};
+                        alarmInfo = {periodInMinutes: intervals[interval]};
                         chrome.alarms.create("trackReportAlarm", alarmInfo);
                         console.log("Alarm set, every " + intervals[interval] + " minutes");
                     }
