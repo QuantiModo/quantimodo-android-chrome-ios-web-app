@@ -13,6 +13,16 @@ angular.module('starter')
         };
 
         return {
+
+            scheduleAllNotifications: function(trackingReminders) {
+                if(trackingReminders.length > 0 && ($rootScope.isChromeExtension || $rootScope.isChromeApp)){
+                    chrome.alarms.clearAll();
+                }
+                for (var i = 0; i < trackingReminders.length; i++) {
+                    this.scheduleNotification(false, trackingReminders[i]);
+                }
+            },
+            
             // schedule new notifications
             scheduleNotification:function(interval, trackingReminder){
 
@@ -63,22 +73,26 @@ angular.module('starter')
                 function scheduleChromeExtensionNotification(interval, trackingReminder) {
                     var alarmInfo = {};
                     if(interval){
+                        console.log('Reminder notification interval is ' + interval);
                         alarmInfo = {periodInMinutes: intervals[interval]};
                         chrome.alarms.clear("trackReportAlarm");
                         chrome.alarms.create("trackReportAlarm", alarmInfo);
+                        console.log("Alarm set, every " + intervals[interval] + " minutes");
                     } else if (trackingReminder) {
                         console.debug('Creating reminder for ', trackingReminder);
-                        alarmInfo.when =  trackingReminder.reminderStartEpochSeconds * 1000;
+                        alarmInfo.when =  trackingReminder.nextReminderTimeEpochSeconds * 1000;
                         alarmInfo.periodInMinutes = trackingReminder.reminderFrequency / 60;
-                        //chrome.alarms.clear(trackingReminder.id);
-                        chrome.alarms.create(trackingReminder.id.toString(), alarmInfo);
+                        var alarmName = 'when:' + alarmInfo.when + ' periodInMinutes:' + alarmInfo.periodInMinutes;
+                        chrome.alarms.clear(alarmName);
+                        chrome.alarms.create(alarmName, alarmInfo);
+                        console.debug('Created alarm for alarmName ' + alarmName, alarmInfo);
                     }
                     
-                    console.log("Alarm set, every " + intervals[interval] + " minutes");
+
                 }
 
                 $ionicPlatform.ready(function () {
-                    console.log('Reminder notification interval is ' + interval);
+
                     if (typeof cordova != "undefined") {
                         if (ionic.Platform.isAndroid()) {
                             scheduleAndroidNotification(interval, trackingReminder);

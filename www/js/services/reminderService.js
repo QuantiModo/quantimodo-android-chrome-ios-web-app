@@ -134,9 +134,7 @@ angular.module('starter')
 				QuantiModo.getTrackingReminders(params, function(remindersResponse){
 					var trackingReminders = remindersResponse.data;
 					if(remindersResponse.success) {
-						for(var i = 0; i < trackingReminders.length; i++){
-							notificationService.scheduleNotification(false, trackingReminders[i]);
-						}
+						notificationService.scheduleAllNotifications(trackingReminders);
 						deferred.resolve(trackingReminders);
 					}
 					else {
