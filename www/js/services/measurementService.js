@@ -318,7 +318,31 @@ angular.module('starter')
                 return deferred.promise;
             },
 
-            // FIXME
+            // used when updating a measurement through the queue
+            addExistingMeasurementToMeasurementsQueue : function(measurementObject){
+                console.log("added existing measurement to measurementsQueue: " + measurementObject.id);
+                var deferred = $q.defer();
+
+                localStorageService.getItem('measurementsQueue',function(measurementsQueue) {
+                    measurementsQueue = measurementsQueue ? JSON.parse(measurementsQueue) : [];
+                    // add to queue
+                    measurementsQueue.push({
+                        //FIXME
+                        id: measurementObject.id,
+                        name: config.appSettings.primaryOutcomeVariableDetails.name,
+                        variableDescription: config.appSettings.primaryOutcomeVariableDetails.description,
+                        startTimeEpoch: measurementObject.startTimeEpoch,
+                        abbreviatedUnitName: config.appSettings.primaryOutcomeVariableDetails.abbreviatedUnitName,
+                        value: measurementObject.value,
+                        note: measurementObject.note
+                    });
+                    //resave queue
+                    localStorageService.setItem('measurementsQueue', JSON.stringify(measurementsQueue));
+                });
+                return deferred.promise;
+            },
+
+            // adds to allMeasurements directly - not used for primary outcome variables
             postTrackingMeasurementLocally : function(measurementObject){
                 var deferred = $q.defer();
 
@@ -337,9 +361,9 @@ angular.module('starter')
                 return deferred.promise;
             },
 
-            // FIXME
             // post a single measurement
-            postTrackingMeasurement : function(startTimeEpoch, variableName, value, unit, isAvg, variableCategoryName, note, usePromise){
+            postTrackingMeasurement : function(id, prevStartTimeEpoch, startTimeEpoch, variableName, value, unit,
+                                               isAvg, variableCategoryName, note, usePromise){
 
                 var deferred = $q.defer();
 
@@ -347,6 +371,7 @@ angular.module('starter')
                     note = null;
                 }
 
+                // make sure startTimeEpoch isn't in milliseconds
                 var nowMilliseconds = new Date();
                 var oneWeekInFuture = nowMilliseconds.getTime()/1000 + 7 * 86400;
                 if(startTimeEpoch > oneWeekInFuture){
@@ -354,65 +379,121 @@ angular.module('starter')
                     console.warn('Assuming startTime is in milliseconds since it is more than 1 week in the future');
                 }
 
-                // measurements set
-                var measurements = [
-                    {
+                if (variableName === config.appSettings.primaryOutcomeVariableDetails.name) {
+                    // Primary outcome variable - update through measurementsQueue
+                    var found = false;
+                    if (prevStartTimeEpoch) {
+                        localStorageService.getItemAsObject('measurementsQueue',function(measurementsQueue) {
+                            var i = 0;
+                            while (!found && i < measurementsQueue.length) {
+                                if (measurementsQueue[i].startTimeEpoch === prevStartTimeEpoch) {
+                                    found = true;
+                                    measurementsQueue[i].startTimeEpoch = startTimeEpoch;
+                                    measurementsQueue[i].value =  value;
+                                    measurementsQueue[i].note = note;
+                                }
+                            }
+                            localStorageService.setItem('measurementsQueue',JSON.stringify(measurementsQueue));
+                        });
+
+                    } else if(id) {
+                        var newAllMeasurements = [];
+                        localStorageService.getItemAsObject('allMeasurements',function(oldAllMeasurements) {
+                            oldAllMeasurements.forEach(function (storedMeasurement) {
+                                // look for edited measurement based on IDs
+                                if (found || storedMeasurement.id !== id) {
+                                    // copy non-edited measurements to newAllMeasurements
+                                    newAllMeasurements.push(storedMeasurement);
+                                }
+                                else {
+                                    console.debug("edited measurement found in allMeasurements");
+                                    // don't copy
+                                    found = true;
+                                }
+                            });
+                        });
+                        localStorageService.setItem('allMeasurements',JSON.stringify(newAllMeasurements));
+                        var editedMeasurement = {
+                            id: id,
+                            variableName: variableName,
+                            source: config.get('clientSourceName'),
+                            abbreviatedUnitName: unit,
+                            startTimeEpoch:  startTimeEpoch,
+                            value: value,
+                            variableCategoryName : variableCategoryName,
+                            note : "",
+                            combinationOperation : isAvg? "MEAN" : "SUM"
+                        };
+                        measurementService.addExistingMeasurementToMeasurementsQueue(editedMeasurement);
+
+                    } else {
+                        console.debug("error editing primary outcome variable measurement");
+                    }
+                    $rootScope.$broadcast('updateChartsAndSyncMeasurements');
+                }
+                else {
+                    // Non primary outcome variable, post immediately
+
+                    // measurements set
+                    var measurements = [
+                        {
+                            variableName: variableName,
+                            source: config.get('clientSourceName'),
+                            variableCategoryName: variableCategoryName,
+                            abbreviatedUnitName: unit,
+                            combinationOperation : isAvg? "MEAN" : "SUM",
+                            measurements : [
+                                {
+                                    startTimeEpoch:  startTimeEpoch,
+                                    value: value,
+                                    note : note
+                                }
+                            ]
+                        }
+                    ];
+
+                    // for local
+                    var measurement = {
                         variableName: variableName,
                         source: config.get('clientSourceName'),
-                        variableCategoryName: variableCategoryName,
                         abbreviatedUnitName: unit,
-                        combinationOperation : isAvg? "MEAN" : "SUM",
-                        measurements : [
-                            {
-                                startTimeEpoch:  startTimeEpoch,
-                                value: value,
-                                note : note
-                            }
-                        ]
-                    }
-                ];
+                        startTimeEpoch:  startTimeEpoch,
+                        value: value,
+                        variableCategoryName : variableCategoryName,
+                        note : "",
+                        combinationOperation : isAvg? "MEAN" : "SUM"
+                    };
 
-                // for local
-                var measurement = {
-                    variableName: variableName,
-                    source: config.get('clientSourceName'),
-                    abbreviatedUnitName: unit,
-                    startTimeEpoch:  startTimeEpoch,
-                    value: value,
-                    variableCategoryName : variableCategoryName,
-                    note : "",
-                    combinationOperation : isAvg? "MEAN" : "SUM"
-                };
-
-                measurementService.postTrackingMeasurementLocally(measurement)
-                    .then(function(){
-                        // send request
-                        QuantiModo.postMeasurementsV2(measurements, function(response){
-                            if(response.success) {
-                                console.log("success", response);
-                                if(usePromise) {
-                                    deferred.resolve();
+                    measurementService.postTrackingMeasurementLocally(measurement)
+                        .then(function(){
+                            // send request
+                            QuantiModo.postMeasurementsV2(measurements, function(response){
+                                if(response.success) {
+                                    console.log("success", response);
+                                    if(usePromise) {
+                                        deferred.resolve();
+                                    }
+                                } else {
+                                    console.log("error", response);
+                                    if(usePromise) {
+                                        deferred.reject(response.message ? response.message.split('.')[0] : "Can't post measurement right now!");
+                                    }
                                 }
-                            } else {
+                            }, function(response){
                                 console.log("error", response);
                                 if(usePromise) {
                                     deferred.reject(response.message ? response.message.split('.')[0] : "Can't post measurement right now!");
                                 }
-                            }
-                        }, function(response){
-                            console.log("error", response);
-                            if(usePromise) {
-                                deferred.reject(response.message ? response.message.split('.')[0] : "Can't post measurement right now!");
-                            }
+                            });
                         });
-                    });
 
-                if(usePromise) {
-                    return deferred.promise;
+                    if(usePromise) {
+                        return deferred.promise;
+                    }
                 }
             },
 
-            // edit existing measurement
+            // edit existing measurement - NEVER USED
 			editPrimaryOutcomeVariable : function(startTimeEpoch, val, note){
 				var deferred = $q.defer();
 				// measurements set
@@ -529,11 +610,12 @@ angular.module('starter')
                         localStorageService.getItemAsObject('measurementsQueue',function(oldMeasurementsQueue) {
                             oldMeasurementsQueue.forEach(function(queuedMeasurement) {
                                 // look for deleted measurement based on startTimeEpoch and FIXME value
-                                if (queuedMeasurement.startTimeEpoch !== measurement.startTimeEpoch) {
+                                if (found || queuedMeasurement.startTimeEpoch !== measurement.startTimeEpoch) {
                                     newMeasurementsQueue.push(queuedMeasurement);
                                 }
                                 else {
                                     console.debug("deleted measurement found in measurementsQueue");
+                                    // don't copy
                                     found = true;
                                 }
                             });

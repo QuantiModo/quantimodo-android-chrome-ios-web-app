@@ -192,9 +192,11 @@ angular.module('starter')
 
             // populate params
             var params = {
+                id : $scope.state.measurement.id,
                 variableName : $scope.state.measurement.variable || jQuery('#variableName').val(),
                 value : $scope.state.measurement.value || jQuery('#measurementValue').val(),
                 note : $scope.state.measurement.note || jQuery('#note').val(),
+                prevStartTimeEpoch : $scope.state.measurement.prevStartTimeEpoch,
                 startTimeEpoch : $scope.state.measurement.startTimeEpoch,
                 abbreviatedUnitName : $scope.state.showAddVariable ? (typeof $scope.abbreviatedUnitName ===
                     "undefined" || $scope.abbreviatedUnitName === "" ) ?
@@ -218,6 +220,8 @@ angular.module('starter')
 
                     // add variable
                     measurementService.postTrackingMeasurement(
+                        params.id,
+                        params.prevStartTimeEpoch,
                         params.startTimeEpoch,
                         params.variableName,
                         params.value,
@@ -253,8 +257,11 @@ angular.module('starter')
                 } else {
                     // measurement only
 
+                    // KELLY note: this is for adding or editing
                     // post measurement
                     measurementService.postTrackingMeasurement(
+                        params.id,
+                        params.prevStartTimeEpoch,
                         params.startTimeEpoch,
                         params.variableName,
                         params.value,
@@ -507,6 +514,11 @@ angular.module('starter')
                 measurementObject.startTimeEpoch = moment(measurementObject.startTimeEpoch).unix();
             }
 
+            // KELLY
+            if (!measurementObject.id) {
+                measurementObject.prevStartTimeEpoch = measurementObject.startTimeEpoch;
+            }
+
             $scope.selectedDate = new Date(measurementObject.startTimeEpoch * 1000);
             $scope.datePickerObj = {
                 inputDate: $scope.selectedDate,
@@ -525,11 +537,6 @@ angular.module('starter')
             };
 
             console.log('track : ' , measurementObject);
-
-            // What was this for?
-            // if(measurementObject.startTimeEpoch.indexOf(" ") !== -1) {
-            //     measurementObject.startTimeEpoch = measurementObject.startTimeEpoch.replace(/\ /g,'+');
-            // }
 
             $scope.state.title = "Edit Measurement";
             $scope.state.measurement = measurementObject;
