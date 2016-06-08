@@ -405,7 +405,7 @@ angular.module('starter')
             $timeout(function () {
                 $ionicLoading.hide();
 
-            }, 5000);
+            }, 15000);
 
         };
         
