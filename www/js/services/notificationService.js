@@ -69,9 +69,9 @@ angular.module('starter')
                     } else if (trackingReminder) {
                         console.debug('Creating reminder for ', trackingReminder);
                         alarmInfo.when =  trackingReminder.reminderStartEpochSeconds * 1000;
-                        alarmInfo.periodInMinutes = trackingReminder.frequency / 60;
-                        chrome.alarms.clear(trackingReminder.id);
-                        chrome.alarms.create(trackingReminder.id, alarmInfo);
+                        alarmInfo.periodInMinutes = trackingReminder.reminderFrequency / 60;
+                        //chrome.alarms.clear(trackingReminder.id);
+                        chrome.alarms.create(trackingReminder.id.toString(), alarmInfo);
                     }
                     
                     console.log("Alarm set, every " + intervals[interval] + " minutes");
