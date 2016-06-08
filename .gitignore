@@ -17,3 +17,4 @@ scripts/certs/apple.cer
 scripts/certs/dist.cer
 scripts/certs/dist.p12
 resources/android/
+apps/moodimodo/resources/chrome_extension/www/

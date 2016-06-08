@@ -126,9 +126,10 @@ angular.module('starter')
             }
         };
 
-        // cancel activity
+        // delete measurement
         $scope.deleteMeasurement = function(){
             var measurementToDelete = {
+                id : $scope.state.measurement.id,
                 variableName : $scope.state.measurement.variable,
                 startTimeEpoch : $scope.state.measurement.startTimeEpoch
             };
@@ -499,6 +500,7 @@ angular.module('starter')
             }
         }
 
+        // FIXME if no id, save original startTimeEpoch
         var setupTrackingByMeasurement = function(measurementObject){
 
             if(isNaN(measurementObject.startTimeEpoch)){

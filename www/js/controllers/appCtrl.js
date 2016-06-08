@@ -213,31 +213,6 @@ angular.module('starter')
             }
         };
 
-        /* // Deprecated
-        var goToWelcomeStateIfNotWelcomed = function(){
-            var accessTokenInUrl = authService.getAccessTokenFromUrlParameter();
-            if (!$rootScope.user && !accessTokenInUrl) {
-                localStorageService.getItem('isWelcomed',function(isWelcomed) {
-                    if(!isWelcomed || isWelcomed === false || isWelcomed === "false"){
-                        console.debug('appCtrl: going to welcome state...');
-                        //$rootScope.hideNavigationMenu = true;
-                        $state.go(config.appSettings.welcomeState);
-                    } else {
-                        console.debug('Not welcoming because isWelcomed is ' + isWelcomed);
-                    }
-                });
-            } else {
-                console.debug('Not going to welcome state...');
-            }
-        };
-        */
-
-        // hide loader and move to next page
-        var hideLoaderMove = function(){
-            $ionicLoading.hide();
-            $scope.goToDefaultStateIfWelcomed();
-        };
-        
 
         $scope.init = function () {
             console.log("Main Constructor Start");
@@ -336,7 +311,7 @@ angular.module('starter')
                     $rootScope.user = userObject;
                     $rootScope.setUserForIntercom($rootScope.user);
                     $rootScope.setUserForBugsnag($rootScope.user);
-                    $rootScope.$broadcast('updateChartsAndSyncMeasurements');
+                    //$rootScope.$broadcast('updateChartsAndSyncMeasurements');
                     var currentStateName = $state.current.name;
                     console.log('Current state is  ' + currentStateName);
                     if (currentStateName === 'app.login') {
@@ -405,7 +380,7 @@ angular.module('starter')
             $timeout(function () {
                 $ionicLoading.hide();
 
-            }, 5000);
+            }, 15000);
 
         };
         

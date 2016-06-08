@@ -77,7 +77,6 @@ angular.module('starter')
 
             // get data from QuantiModo API
             getMeasurements : function(){
-                console.debug("measurementService: getMeasurements");
                 var deferred = $q.defer();
                 isSyncing = true;
 
@@ -125,7 +124,6 @@ angular.module('starter')
                         // set flag
                         isSyncing = false;
                         deferred.resolve(response);
-                        //KELLY test this
                         $rootScope.$broadcast('updateCharts');
                     }
                     else {
@@ -136,7 +134,6 @@ angular.module('starter')
                     $rootScope.isSyncing = false;
                     deferred.reject(false);
                 }, function(response){
-                    // KELLY move to first function (success callback)
                     if(response){
                         if(response.length > 0){
                             // update local data
@@ -200,7 +197,6 @@ angular.module('starter')
 
             // sync the measurements in queue with QuantiModo API
             syncPrimaryOutcomeVariableMeasurements : function(){
-                console.debug("measurementService: syncPrimaryOutcomeVariableMeasurements");
                 var defer = $q.defer();
 
                 localStorageService.getItem('measurementsQueue',function(measurementsQueue) {
@@ -210,6 +206,7 @@ angular.module('starter')
                     if(!measurementObjects || measurementObjects.length < 1){
                         defer.resolve();
                         console.debug('No measurements to sync!');
+                        $rootScope.$broadcast('updateCharts');
                         return defer.promise;
                     }
 
@@ -230,9 +227,6 @@ angular.module('starter')
                     // send request
                     QuantiModo.postMeasurementsV2(measurements, function (response) {
                         // success
-                        console.debug("measurementService: syncPrimaryOutcomeVariableMeasurements about to call getMeasurements()");
-                        // KELLY problem: getMeasurements finishes after all calls to updateCharts;
-                        // therefore updateCharts doesn't have needed data
                         measurementService.getMeasurements();
                         // clear queue
                         localStorageService.setItem('measurementsQueue', JSON.stringify([]));
@@ -324,7 +318,101 @@ angular.module('starter')
                 return deferred.promise;
             },
 
-			// edit existing measurement
+            // FIXME
+            postTrackingMeasurementLocally : function(measurementObject){
+                var deferred = $q.defer();
+
+                localStorageService.getItem('allMeasurements', function(allMeasurements){
+                    allMeasurements = allMeasurements? JSON.parse(allMeasurements) : [];
+
+                    // add to queue
+                    allMeasurements.push(measurementObject);
+
+                    //resave queue
+                    localStorageService.setItem('allMeasurements', JSON.stringify(allMeasurements));
+
+                    deferred.resolve();
+                });
+
+                return deferred.promise;
+            },
+
+            // FIXME
+            // post a single measurement
+            postTrackingMeasurement : function(startTimeEpoch, variableName, value, unit, isAvg, variableCategoryName, note, usePromise){
+
+                var deferred = $q.defer();
+
+                if(note === ""){
+                    note = null;
+                }
+
+                var nowMilliseconds = new Date();
+                var oneWeekInFuture = nowMilliseconds.getTime()/1000 + 7 * 86400;
+                if(startTimeEpoch > oneWeekInFuture){
+                    startTimeEpoch = startTimeEpoch / 1000;
+                    console.warn('Assuming startTime is in milliseconds since it is more than 1 week in the future');
+                }
+
+                // measurements set
+                var measurements = [
+                    {
+                        variableName: variableName,
+                        source: config.get('clientSourceName'),
+                        variableCategoryName: variableCategoryName,
+                        abbreviatedUnitName: unit,
+                        combinationOperation : isAvg? "MEAN" : "SUM",
+                        measurements : [
+                            {
+                                startTimeEpoch:  startTimeEpoch,
+                                value: value,
+                                note : note
+                            }
+                        ]
+                    }
+                ];
+
+                // for local
+                var measurement = {
+                    variableName: variableName,
+                    source: config.get('clientSourceName'),
+                    abbreviatedUnitName: unit,
+                    startTimeEpoch:  startTimeEpoch,
+                    value: value,
+                    variableCategoryName : variableCategoryName,
+                    note : "",
+                    combinationOperation : isAvg? "MEAN" : "SUM"
+                };
+
+                measurementService.postTrackingMeasurementLocally(measurement)
+                    .then(function(){
+                        // send request
+                        QuantiModo.postMeasurementsV2(measurements, function(response){
+                            if(response.success) {
+                                console.log("success", response);
+                                if(usePromise) {
+                                    deferred.resolve();
+                                }
+                            } else {
+                                console.log("error", response);
+                                if(usePromise) {
+                                    deferred.reject(response.message ? response.message.split('.')[0] : "Can't post measurement right now!");
+                                }
+                            }
+                        }, function(response){
+                            console.log("error", response);
+                            if(usePromise) {
+                                deferred.reject(response.message ? response.message.split('.')[0] : "Can't post measurement right now!");
+                            }
+                        });
+                    });
+
+                if(usePromise) {
+                    return deferred.promise;
+                }
+            },
+
+            // edit existing measurement
 			editPrimaryOutcomeVariable : function(startTimeEpoch, val, note){
 				var deferred = $q.defer();
 				// measurements set
@@ -413,11 +501,56 @@ angular.module('starter')
             deleteMeasurement : function(measurement){
                 QuantiModo.deleteV1Measurements(measurement, function(response){
                     console.log("success", response);
+                    // update local data
+                    var found = false;
+                    if (measurement.id) {
+                        var newAllMeasurements = [];
+                        localStorageService.getItem('allMeasurements',function(oldAllMeasurements) {
+                            oldAllMeasurements = oldAllMeasurements ? JSON.parse(oldAllMeasurements) : [];
+
+                            oldAllMeasurements.forEach(function (storedMeasurement) {
+                                // look for deleted measurement based on IDs
+                                if (storedMeasurement.id !== measurement.id) {
+                                    // copy non-deleted measurements to newAllMeasurements
+                                    newAllMeasurements.push(storedMeasurement);
+                                }
+                                else {
+                                    console.debug("deleted measurement found in allMeasurements");
+                                    found = true;
+                                }
+                            });
+                        });
+                        if (found) {
+                            localStorageService.setItem('allMeasurements',JSON.stringify(newAllMeasurements));
+                        }
+                    }
+                    else {
+                        var newMeasurementsQueue = [];
+                        localStorageService.getItemAsObject('measurementsQueue',function(oldMeasurementsQueue) {
+                            oldMeasurementsQueue.forEach(function(queuedMeasurement) {
+                                // look for deleted measurement based on startTimeEpoch and FIXME value
+                                if (queuedMeasurement.startTimeEpoch !== measurement.startTimeEpoch) {
+                                    newMeasurementsQueue.push(queuedMeasurement);
+                                }
+                                else {
+                                    console.debug("deleted measurement found in measurementsQueue");
+                                    found = true;
+                                }
+                            });
+                        });
+                        if (found) {
+                            localStorageService.setItem('measurementsQueue',JSON.stringify(newMeasurementsQueue));
+                        }
+                    }
+                    if (!found){
+                        console.debug("error: deleted measurement not found");
+                    }
+
+
                 }, function(response){
                     console.log("error", response);
                 });
             },
 		};
-
 		return measurementService;
 	});

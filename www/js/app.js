@@ -183,7 +183,7 @@ angular.module('starter',
         })
       .state('app.track', {
           url: "/track",
-          cache:false,
+          //cache:false,
           views: {
               'menuContent': {
                   templateUrl: "templates/track-primary-outcome-variable.html",

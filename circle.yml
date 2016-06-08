@@ -36,6 +36,7 @@ general:
   branches:
     ignore:
       - gh-pages # list of branches to ignore
+      - /master\/.*/ # or ignore regexes
       - /release\/.*/ # or ignore regexes
       - /feature\/.*/ # or ignore regexes
   artifacts:
