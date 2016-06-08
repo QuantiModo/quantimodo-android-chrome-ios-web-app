@@ -37,14 +37,15 @@ angular.module('starter')
 
                 function scheduleAndroidNotification(interval, trackingReminder) {
 
+                    var notificationSettings = {
+                        text: config.appSettings.mobileNotificationText,
+                        every: intervals[interval],
+                        icon: config.appSettings.mobileNotificationImage,
+                        id: 1
+                    };
                     if (interval !== "never") {
-                        cordova.plugins.notification.local.schedule({
-                            text: config.appSettings.mobileNotificationText,
-                            every: intervals[interval],
-                            icon: config.appSettings.mobileNotificationImage,
-                            id: 1
-                        }, function () {
-                            console.log('notification scheduled');
+                        cordova.plugins.notification.local.schedule(notificationSettings, function () {
+                            console.log('notification scheduled', notificationSettings);
                         });
                         cordova.plugins.notification.local.on("click", function (notification) {
                             // var redirectUrl = window.location.href + 'app/reminders-inbox';
@@ -56,7 +57,7 @@ angular.module('starter')
                     } else if (trackingReminder) {
                         var firstAt = new Date(trackingReminder.nextReminderTimeEpochSeconds*1000);
                         var minuteFrequency  = trackingReminder.reminderFrequency / 60;
-                        var notificationSettings = {
+                        notificationSettings = {
                             text: config.appSettings.mobileNotificationText,
                             firstAt: firstAt,
                             every: minuteFrequency,
@@ -79,14 +80,15 @@ angular.module('starter')
 
                 function scheduleIosNotification(interval, trackingReminder) {
                     cordova.plugins.notification.local.cancelAll(function () {
+                        var notificationSettings = {
+                            text: config.appSettings.mobileNotificationText,
+                            every: interval,
+                            icon: config.appSettings.mobileNotificationImage,
+                            id: 1
+                        };
                         if (interval && interval !== "never") {
-                            cordova.plugins.notification.local.schedule({
-                                text: config.appSettings.mobileNotificationText,
-                                every: interval,
-                                icon: config.appSettings.mobileNotificationImage,
-                                id: 1
-                            }, function () {
-                                console.log('notification scheduled');
+                            cordova.plugins.notification.local.schedule(notificationSettings, function () {
+                                console.log('iOS notification scheduled', notificationSettings);
                             });
                             cordova.plugins.notification.local.on("click", function (notification) {
                                 // var redirectUrl = window.location.href + 'app/reminders-inbox';
@@ -159,16 +161,17 @@ angular.module('starter')
 
                 if (params.frequency !== "Daily") {
                     if(typeof cordova != "undefined"){
+                        var notificationSettings = {
+                            text: text,
+                            every: intervals[interval],
+                            icon: config.appSettings.notification_image,
+                            id : id
+                        };
                         //Android and iOS frequency reminders
                         cordova.plugins.notification.local.clearAll(function(){
-                            if(params['frequency'] !== "Never"){
-                                cordova.plugins.notification.local.schedule({
-                                    text: text,
-                                    every: intervals[interval],
-                                    icon: config.appSettings.notification_image,
-                                    id : id
-                                }, function(){
-                                    console.log('notification scheduled');
+                            if(params.frequency !== "Never"){
+                                cordova.plugins.notification.local.schedule(notificationSettings, function(){
+                                    console.log('scheduleReminder: notification scheduled', notificationSettings);
                                 });
                                 cordova.plugins.notification.local.on("click", function (notification) {
                                     // var redirectUrl = window.location.href + 'app/reminders-inbox';
