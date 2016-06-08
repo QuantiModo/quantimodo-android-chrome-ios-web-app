@@ -43,7 +43,7 @@ angular.module('starter')
                         icon: config.appSettings.mobileNotificationImage,
                         id: 1
                     };
-                    if (interval !== "never") {
+                    if (interval && interval !== "never") {
                         cordova.plugins.notification.local.schedule(notificationSettings, function () {
                             console.log('notification scheduled', notificationSettings);
                         });
