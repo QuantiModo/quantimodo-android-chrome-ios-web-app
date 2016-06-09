@@ -40,8 +40,8 @@ angular.module('starter')
                     var notificationSettings = {
                         text: config.appSettings.mobileNotificationText,
                         every: intervals[interval],
-                        icon: config.appSettings.mobileNotificationImage,
-                        id: 1
+                        icon: "res://drawable-hdpi/icon.png",
+                        id: config.appSettings.primaryOutcomeVariableDetails.id
                     };
                     if (interval && interval !== "never") {
                         cordova.plugins.notification.local.schedule(notificationSettings, function () {
@@ -58,11 +58,20 @@ angular.module('starter')
                         var firstAt = new Date(trackingReminder.nextReminderTimeEpochSeconds*1000);
                         var minuteFrequency  = trackingReminder.reminderFrequency / 60;
                         notificationSettings = {
-                            text: config.appSettings.mobileNotificationText,
+                            autoClear: true,
+                            badge: 0,
+                            color: undefined,
+                            data: undefined,
+                            led: undefined,
+                            ongoing: false,
+                            //smallIcon: "res://drawable-hdpi/icon.png",
+                            sound: "res://platform_default",
+                            title: "Track " + trackingReminder.variableName,
+                            text: "Track " + trackingReminder.variableName,
                             firstAt: firstAt,
                             every: minuteFrequency,
-                            icon: config.appSettings.mobileNotificationImage,
-                            id: trackingReminder.id
+                            icon: "res://drawable-hdpi/icon.png",
+                            id: trackingReminder.variableId
                         };
                         cordova.plugins.notification.local.schedule(notificationSettings,
                             function () {
@@ -84,7 +93,7 @@ angular.module('starter')
                             text: config.appSettings.mobileNotificationText,
                             every: interval,
                             icon: config.appSettings.mobileNotificationImage,
-                            id: 1
+                            id: config.appSettings.primaryOutcomeVariableDetails.id
                         };
                         if (interval && interval !== "never") {
                             cordova.plugins.notification.local.schedule(notificationSettings, function () {
