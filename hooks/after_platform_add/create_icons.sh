@@ -21,3 +21,4 @@ convert resources/icon.png -resize 16x16 www/img/icons/icon_16.png
 convert resources/icon.png -resize 48x48 www/img/icons/icon_48.png
 convert resources/icon.png -resize 128x128 www/img/icons/icon_128.png
 cp -rf www/img platforms/android/res/drawable-hdpi/
+cp -rf resources/android/res platforms/android/

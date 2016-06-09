@@ -23,7 +23,9 @@ angular.module('starter')
 
                     if ($rootScope.isAndroid)
                     {
-                        cordova.plugins.notification.local.cancelAll();
+                        cordova.plugins.notification.local.cancelAll(function() {
+                            console.log("Canceled all Android notifications!");
+                        }, this);
                     }
 
                 }
@@ -40,11 +42,13 @@ angular.module('starter')
                     var notificationSettings = {
                         text: config.appSettings.mobileNotificationText,
                         every: intervals[interval],
-                        icon: "res://drawable-hdpi/icon.png",
-                        id: config.appSettings.primaryOutcomeVariableDetails.id,
-                        smallIcon: "res://drawable-hdpi/img/icon_bw.png"
+                        icon: 'ic_stat_icon_bw',
+                        id: config.appSettings.primaryOutcomeVariableDetails.id
                     };
                     if (interval && interval !== "never") {
+                        cordova.plugins.notification.local.cancel(notificationSettings.id, function() {
+                            console.log("Canceled Android notification " + notificationSettings.id);
+                        });
                         cordova.plugins.notification.local.schedule(notificationSettings, function () {
                             console.log('notification scheduled', notificationSettings);
                         });
@@ -56,6 +60,9 @@ angular.module('starter')
                             $state.go('app.remindersInbox');
                         });
                     } else if (trackingReminder) {
+                        cordova.plugins.notification.local.cancel(trackingReminder.variableId, function() {
+                            console.log("Canceled Android notification " + trackingReminder.variableId);
+                        });
                         var firstAt = new Date(trackingReminder.nextReminderTimeEpochSeconds*1000);
                         var minuteFrequency  = trackingReminder.reminderFrequency / 60;
                         notificationSettings = {
@@ -65,15 +72,15 @@ angular.module('starter')
                             data: undefined,
                             led: undefined,
                             ongoing: false,
-                            smallIcon: "res://drawable-hdpi/img/icon_bw.png",
                             sound: "res://platform_default",
                             title: "Track " + trackingReminder.variableName,
                             text: "Track " + trackingReminder.variableName,
                             firstAt: firstAt,
                             every: minuteFrequency,
-                            icon: "res://drawable-hdpi/icon.png",
+                            icon: 'ic_stat_icon_bw',
                             id: trackingReminder.variableId
                         };
+                        //notificationSettings.smallIcon = "res://drawable-hdpi/img/icon_bw.png";
                         cordova.plugins.notification.local.schedule(notificationSettings,
                             function () {
                                 console.log('notification scheduled', notificationSettings);
