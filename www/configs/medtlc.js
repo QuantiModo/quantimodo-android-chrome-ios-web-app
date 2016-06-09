@@ -94,7 +94,7 @@ config.appSettings  = {
             img : {
                 width : '150',
                 height : '150',
-                url : 'img/medtlc/icon.png'
+                url : 'img/icons/icon.png'
             },
             content : {
 
