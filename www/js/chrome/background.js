@@ -171,7 +171,7 @@ function showTrackingInboxNotification(){
         type: "basic",
         title: "How are you?",
         message: "It's time to track!",
-        iconUrl: "www/img/icon_700.png",
+        iconUrl: "www/img/icons/icon_700.png",
         priority: 2
     };
 
