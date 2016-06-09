@@ -209,6 +209,17 @@ angular.module('starter')
 
             console.log(params);
 
+            var measurementInfo = {
+                id: params.id,
+                prevStartTimeEpoch: params.prevStartTimeEpoch,
+                startTimeEpoch: params.startTimeEpoch,
+                variableName: params.variableName,
+                value: params.value,
+                abbreviatedUnitName: params.abbreviatedUnitName,
+                isAvg: params.isAvg,
+                variableCategoryName: params.variableCategoryName,
+                note: params.note
+            };
 
             if($scope.state.showAddVariable){
                 console.debug('done: Adding new variable..');
@@ -220,15 +231,7 @@ angular.module('starter')
 
                     // add variable
                     measurementService.postTrackingMeasurement(
-                        params.id,
-                        params.prevStartTimeEpoch,
-                        params.startTimeEpoch,
-                        params.variableName,
-                        params.value,
-                        params.abbreviatedUnitName,
-                        params.isAvg,
-                        params.variableCategoryName,
-                        params.note, true)
+                        measurementInfo, true)
                     .then(function(){
                         utilsService.showAlert('Added Variable');
 
@@ -260,15 +263,7 @@ angular.module('starter')
                     // KELLY note: this is for adding or editing
                     // post measurement
                     measurementService.postTrackingMeasurement(
-                        params.id,
-                        params.prevStartTimeEpoch,
-                        params.startTimeEpoch,
-                        params.variableName,
-                        params.value,
-                        params.abbreviatedUnitName,
-                        params.isAvg,
-                        params.variableCategoryName,
-                        params.note);
+                        measurementInfo);
                     utilsService.showAlert(params.variableName + ' measurement saved!');
 
                     if($stateParams.fromUrl){

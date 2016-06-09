@@ -58,7 +58,7 @@ angular.module('starter')
             $rootScope.user = userObject;
 
             if($rootScope.user){
-                console.debug('login: Setting up user and goign to default state');
+                console.debug('login: Setting up user and going to default state');
                 $rootScope.setUserForIntercom($rootScope.user);
                 $rootScope.setUserForBugsnag($rootScope.user);
                 $rootScope.hideNavigationMenu = false;

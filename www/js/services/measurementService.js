@@ -20,7 +20,12 @@ angular.module('starter')
                     var measurementsQueue = localStorageService.getItemAsObject('measurementsQueue');
 
                     if (measurementsFromLocalStorage) {
-                        allMeasurements = measurementsFromLocalStorage.concat(measurementsQueue);
+                    	if (measurementsQueue) {
+                    		allMeasurements = measurementsFromLocalStorage.concat(measurementsQueue);
+                    	}
+                    	else {
+                    		allMeasurements = measurementsFromLocalStorage;
+                    	}    
                     }
                     else {
                         allMeasurements = measurementsQueue;
@@ -30,10 +35,15 @@ angular.module('starter')
                     var returnSorted = function(start, end){
 
                         allMeasurements = allMeasurements.sort(function(a, b){
+                        	if (a === null) {
+                        		return 1;
+                        	}
+                        	if (b === null) {
+                        		return 0;
+                        	}
                             if(!a.startTimeEpoch){
                                 a.startTimeEpoch = a.timestamp;
                             }
-
                             if(!b.startTimeEpoch){
                                 b.startTimeEpoch = b.timestamp;
                             }
@@ -80,21 +90,20 @@ angular.module('starter')
                 var deferred = $q.defer();
                 isSyncing = true;
 
-                $rootScope.lastSyncTime = 0;
-
-                localStorageService.getItem('lastSyncTime',function(lastSyncTime){
-                    var nowDate = new Date();
-                    var lastSyncDate = new Date(lastSyncTime);
-                    var milliSecondsSinceLastSync = nowDate - lastSyncDate;
-                    if(milliSecondsSinceLastSync < 5 * 60 * 1000){
-                        deferred.resolve();
-                        return deferred.promise;
-                    }
-                    if (lastSyncTime) {
-                        $rootScope.lastSyncTime = lastSyncTime;
-                    }
-
-                });
+                $rootScope.lastSyncTime = localStorageService.getItemSync('lastSyncTime');
+                if (!$rootScope.lastSyncTime) {
+                	$rootScope.lastSyncTime = 0;
+                }
+                var nowDate = new Date();
+                var lastSyncDate = new Date($rootScope.lastSyncTime);
+                var milliSecondsSinceLastSync = nowDate - lastSyncDate;
+                /*
+                if(milliSecondsSinceLastSync < 5 * 60 * 1000){
+                	$rootScope.$broadcast('updateCharts');
+                	deferred.resolve();
+               		return deferred.promise;
+                }
+                */
 
                 // send request
                 var params;
@@ -122,6 +131,7 @@ angular.module('starter')
                             console.log("lastSyncTime is " + $rootScope.lastSyncTime);
                         });
                         // set flag
+                        console.log("Measurement sync complete!");
                         isSyncing = false;
                         deferred.resolve(response);
                         $rootScope.$broadcast('updateCharts');
@@ -175,9 +185,12 @@ angular.module('starter')
                                 //updating last updated time and data in local storage so that we syncing should continue from this point
                                 //if user restarts the app or refreshes the page.
                                 localStorageService.setItem('allMeasurements',JSON.stringify(allMeasurements));
+                                $rootScope.$broadcast('updateCharts');
+                                /*
                                 $rootScope.lastSyncTime = moment.utc().format('YYYY-MM-DDTHH:mm:ss');
                                 localStorageService.setItem('lastSyncTime', $rootScope.lastSyncTime);
                                 console.log("lastSyncTime is " + $rootScope.lastSyncTime);
+                                */
 
                             });
 
@@ -206,7 +219,8 @@ angular.module('starter')
                     if(!measurementObjects || measurementObjects.length < 1){
                         defer.resolve();
                         console.debug('No measurements to sync!');
-                        $rootScope.$broadcast('updateCharts');
+                        measurementService.getMeasurements();
+                        //$rootScope.$broadcast('updateCharts');
                         return defer.promise;
                     }
 
@@ -362,46 +376,48 @@ angular.module('starter')
             },
 
             // post a single measurement
-            postTrackingMeasurement : function(id, prevStartTimeEpoch, startTimeEpoch, variableName, value, unit,
-                                               isAvg, variableCategoryName, note, usePromise){
+            postTrackingMeasurement : function(measurementInfo, usePromise){
 
                 var deferred = $q.defer();
 
-                if(note === ""){
-                    note = null;
+                /*
+                if(measurementInfo.note === ""){
+                    measurementInfo.note = null;
                 }
+                */
 
                 // make sure startTimeEpoch isn't in milliseconds
                 var nowMilliseconds = new Date();
                 var oneWeekInFuture = nowMilliseconds.getTime()/1000 + 7 * 86400;
-                if(startTimeEpoch > oneWeekInFuture){
-                    startTimeEpoch = startTimeEpoch / 1000;
+                if(measurementInfo.startTimeEpoch > oneWeekInFuture){
+                    measurementInfo.startTimeEpoch = measurementInfo.startTimeEpoch / 1000;
                     console.warn('Assuming startTime is in milliseconds since it is more than 1 week in the future');
                 }
 
-                if (variableName === config.appSettings.primaryOutcomeVariableDetails.name) {
+                if (measurementInfo.variableName === config.appSettings.primaryOutcomeVariableDetails.name) {
                     // Primary outcome variable - update through measurementsQueue
                     var found = false;
-                    if (prevStartTimeEpoch) {
+                    if (measurementInfo.prevStartTimeEpoch) {
                         localStorageService.getItemAsObject('measurementsQueue',function(measurementsQueue) {
                             var i = 0;
                             while (!found && i < measurementsQueue.length) {
-                                if (measurementsQueue[i].startTimeEpoch === prevStartTimeEpoch) {
+                                if (measurementsQueue[i].startTimeEpoch === measurementInfo.prevStartTimeEpoch) {
                                     found = true;
-                                    measurementsQueue[i].startTimeEpoch = startTimeEpoch;
-                                    measurementsQueue[i].value =  value;
-                                    measurementsQueue[i].note = note;
+                                    measurementsQueue[i].startTimeEpoch = measurementInfo.startTimeEpoch;
+                                    measurementsQueue[i].value =  measurementInfo.value;
+                                    measurementsQueue[i].note = measurementInfo.note;
                                 }
                             }
                             localStorageService.setItem('measurementsQueue',JSON.stringify(measurementsQueue));
                         });
 
-                    } else if(id) {
+                    } else if(measurementInfo.id) {
                         var newAllMeasurements = [];
-                        localStorageService.getItemAsObject('allMeasurements',function(oldAllMeasurements) {
+                        localStorageService.getItem('allMeasurements',function(oldAllMeasurements) {
+                        	oldAllMeasurements = oldAllMeasurements ? JSON.parse(oldAllMeasurements) : [];
                             oldAllMeasurements.forEach(function (storedMeasurement) {
                                 // look for edited measurement based on IDs
-                                if (found || storedMeasurement.id !== id) {
+                                if (found || storedMeasurement.id !== measurementInfo.id) {
                                     // copy non-edited measurements to newAllMeasurements
                                     newAllMeasurements.push(storedMeasurement);
                                 }
@@ -414,15 +430,15 @@ angular.module('starter')
                         });
                         localStorageService.setItem('allMeasurements',JSON.stringify(newAllMeasurements));
                         var editedMeasurement = {
-                            id: id,
-                            variableName: variableName,
+                            id: measurementInfo.id,
+                            variableName: measurementInfo.variableName,
                             source: config.get('clientSourceName'),
-                            abbreviatedUnitName: unit,
-                            startTimeEpoch:  startTimeEpoch,
-                            value: value,
-                            variableCategoryName : variableCategoryName,
-                            note : "",
-                            combinationOperation : isAvg? "MEAN" : "SUM"
+                            abbreviatedUnitName: measurementInfo.unit,
+                            startTimeEpoch:  measurementInfo.startTimeEpoch,
+                            value: measurementInfo.value,
+                            variableCategoryName : measurementInfo.variableCategoryName,
+                            note : measurementInfo.note,
+                            combinationOperation : measurementInfo.isAvg? "MEAN" : "SUM"
                         };
                         measurementService.addExistingMeasurementToMeasurementsQueue(editedMeasurement);
 
@@ -437,16 +453,16 @@ angular.module('starter')
                     // measurements set
                     var measurements = [
                         {
-                            variableName: variableName,
+                            variableName: measurementInfo.variableName,
                             source: config.get('clientSourceName'),
-                            variableCategoryName: variableCategoryName,
-                            abbreviatedUnitName: unit,
-                            combinationOperation : isAvg? "MEAN" : "SUM",
+                            variableCategoryName: measurementInfo.variableCategoryName,
+                            abbreviatedUnitName: measurementInfo.abbreviatedUnitName,
+                            combinationOperation : measurementInfo.isAvg? "MEAN" : "SUM",
                             measurements : [
                                 {
-                                    startTimeEpoch:  startTimeEpoch,
-                                    value: value,
-                                    note : note
+                                    startTimeEpoch:  measurementInfo.startTimeEpoch,
+                                    value: measurementInfo.value,
+                                    note : measurementInfo.note
                                 }
                             ]
                         }
@@ -454,14 +470,14 @@ angular.module('starter')
 
                     // for local
                     var measurement = {
-                        variableName: variableName,
+                        variableName: measurementInfo.variableName,
                         source: config.get('clientSourceName'),
-                        abbreviatedUnitName: unit,
-                        startTimeEpoch:  startTimeEpoch,
-                        value: value,
-                        variableCategoryName : variableCategoryName,
-                        note : "",
-                        combinationOperation : isAvg? "MEAN" : "SUM"
+                        abbreviatedUnitName: measurementInfo.unit,
+                        startTimeEpoch:  measurementInfo.startTimeEpoch,
+                        value: measurementInfo.value,
+                        variableCategoryName : measurementInfo.variableCategoryName,
+                        note : measurementInfo.note,
+                        combinationOperation : measurementInfo.isAvg? "MEAN" : "SUM"
                     };
 
                     measurementService.postTrackingMeasurementLocally(measurement)
