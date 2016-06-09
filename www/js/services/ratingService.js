@@ -8,33 +8,33 @@ angular.module('starter')
                 { 
                     1 : {
                         displayDescription: 'Depressed',
-                        positiveImage: 'img/ic_face_depressed.png',
-                        negativeImage: 'img/ic_face_ecstatic.png',
-                        numericImage:  'img/ic_1.png'
+                        positiveImage: 'img/rating/ic_face_depressed.png',
+                        negativeImage: 'img/rating/ic_face_ecstatic.png',
+                        numericImage:  'img/rating/ic_1.png'
                         },
                     2 :  {
                         displayDescription: 'Sad',
-                        positiveImage: 'img/ic_face_sad.png',
-                        negativeImage: 'img/ic_face_happy.png',
-                        numericImage:  'img/ic_1.png'
+                        positiveImage: 'img/rating/ic_face_sad.png',
+                        negativeImage: 'img/rating/ic_face_happy.png',
+                        numericImage:  'img/rating/ic_1.png'
                         },
                     3 : {
                         displayDescription: 'OK',
-                        positiveImage: 'img/ic_face_ok.png',
-                        negativeImage: 'img/ic_face_ok.png',
-                        numericImage:  'img/ic_1.png'
+                        positiveImage: 'img/rating/ic_face_ok.png',
+                        negativeImage: 'img/rating/ic_face_ok.png',
+                        numericImage:  'img/rating/ic_1.png'
                         },
                     4 : {
                         displayDescription: 'Happy',
-                        positiveImage: 'img/ic_face_happy.png',
-                        negativeImage: 'img/ic_face_sad.png',
-                        numericImage:  'img/ic_1.png'
+                        positiveImage: 'img/rating/ic_face_happy.png',
+                        negativeImage: 'img/rating/ic_face_sad.png',
+                        numericImage:  'img/rating/ic_1.png'
                         },
                     5 : {
                         displayDescription: 'Ecstatic',
-                        positiveImage: 'img/ic_face_ecstatic.png',
-                        negativeImage: 'img/ic_face_depressed.png',
-                        numericImage:  'img/ic_1.png'
+                        positiveImage: 'img/rating/ic_face_ecstatic.png',
+                        negativeImage: 'img/rating/ic_face_depressed.png',
+                        numericImage:  'img/rating/ic_1.png'
                         }
                 };
                 return ratingInfo;
@@ -94,31 +94,31 @@ angular.module('starter')
                         numericValue: 1,
                         displayDescription: 'Depressed',
                         lowerCaseTextDescription: 'depressed',
-                        img: 'img/ic_face_depressed.png'
+                        img: 'img/rating/ic_face_depressed.png'
                     },
                     {
                         numericValue: 2,
                         displayDescription: 'Sad',
                         lowerCaseTextDescription: 'sad',
-                        img: 'img/ic_face_sad.png'
+                        img: 'img/rating/ic_face_sad.png'
                     },
                     {
                         numericValue: 3,
                         displayDescription: 'OK',
                         lowerCaseTextDescription: 'ok',
-                        img: 'img/ic_face_ok.png'
+                        img: 'img/rating/ic_face_ok.png'
                     },
                     {
                         numericValue: 4,
                         displayDescription: 'Happy',
                         lowerCaseTextDescription: 'happy',
-                        img: 'img/ic_face_happy.png'
+                        img: 'img/rating/ic_face_happy.png'
                     },
                     {
                         numericValue: 5,
                         displayDescription: 'Ecstatic',
                         lowerCaseTextDescription: 'ecstatic',
-                        img: 'img/ic_face_ecstatic.png'
+                        img: 'img/rating/ic_face_ecstatic.png'
                     }
                 ]
             },
@@ -129,31 +129,31 @@ angular.module('starter')
                         numericValue: 1,
                         displayDescription: 'Ecstatic',
                         value: 'ecstatic',
-                        img: 'img/ic_face_ecstatic.png'
+                        img: 'img/rating/ic_face_ecstatic.png'
                     },
                     {
                         numericValue: 2,
                         displayDescription: 'Happy',
                         value: 'happy',
-                        img: 'img/ic_face_happy.png'
+                        img: 'img/rating/ic_face_happy.png'
                     },
                     {
                         numericValue: 3,
                         displayDescription: 'OK',
                         value: 'ok',
-                        img: 'img/ic_face_ok.png'
+                        img: 'img/rating/ic_face_ok.png'
                     },
                     {
                         numericValue: 4,
                         displayDescription: 'Sad',
                         value: 'sad',
-                        img: 'img/ic_face_sad.png'
+                        img: 'img/rating/ic_face_sad.png'
                     },
                     {
                         numericValue: 5,
                         displayDescription: 'Depressed',
                         value: 'depressed',
-                        img: 'img/ic_face_depressed.png'
+                        img: 'img/rating/ic_face_depressed.png'
                     }
                 ]
             },
@@ -162,23 +162,23 @@ angular.module('starter')
                 return [
                     {
                         numericValue: '1',
-                        img: 'img/ic_1.png'
+                        img: 'img/rating/ic_1.png'
                     },
                     {
                         numericValue: '2',
-                        img: 'img/ic_2.png'
+                        img: 'img/rating/ic_2.png'
                     },
                     {
                         numericValue: '3',
-                        img: 'img/ic_3.png'
+                        img: 'img/rating/ic_3.png'
                     },
                     {
                         numericValue: '4',
-                        img: 'img/ic_4.png'
+                        img: 'img/rating/ic_4.png'
                     },
                     {
                         numericValue: '5',
-                        img: 'img/ic_5.png'
+                        img: 'img/rating/ic_5.png'
                     }
                 ];
             },
