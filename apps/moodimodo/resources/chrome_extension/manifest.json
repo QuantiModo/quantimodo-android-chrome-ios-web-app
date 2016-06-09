@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "MoodiModo Mood-Tracking Extension",
   "description": "Track and find out what influences your mood!",
-  "version": "1.0.0",
+  "version": "IONIC_APP_VERSION_NUMBER",
   "options_page": "www/chrome_extension/options/options.html",
   "icons": {
     "16"	: "www/img/icons/icon_16.png",
