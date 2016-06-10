@@ -552,6 +552,21 @@ config.appSettings  = {
             icon : 'ion-ios-pulse'
         },
         {
+            title : 'History',
+            click : 'toggleHistorySubMenu',
+            showSubMenuVariable : 'showHistorySubMenu',
+            isSubMenuParent : true,
+            collapsedIcon : 'ion-ios-list-outline',
+            expandedIcon : 'ion-chevron-down'
+        },
+        {
+            title : 'All Measurements',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showHistorySubMenu',
+            href : '#/app/history-all',
+            icon : 'ion-android-globe'
+        },
+        {
             title : 'Emotions',
             isSubMenuChild : true,
             showSubMenuVariable : 'showHistorySubMenu',
@@ -602,14 +617,6 @@ config.appSettings  = {
             title : 'Variables',
             href : '#app/search-variables',
             icon : 'ion-social-vimeo'
-        },
-        {
-            title : 'History',
-            click : 'toggleHistorySubMenu',
-            showSubMenuVariable : 'showHistorySubMenu',
-            isSubMenuParent : true,
-            collapsedIcon : 'ion-ios-list-outline',
-            expandedIcon : 'ion-chevron-down'
         },
         {
             title : 'Strongest Predictors',
