@@ -365,6 +365,7 @@ angular.module('starter',
       */
       .state('app.history', {
           url: "/history",
+          cache:false,
           views: {
               'menuContent': {
                   templateUrl: "templates/history-primary-outcome-variable.html",
