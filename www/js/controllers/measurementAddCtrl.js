@@ -94,7 +94,8 @@ angular.module('starter')
                     }
                 },
                 inputTime: secondsSinceMidnightLocal,
-                step: 1
+                step: 1,
+                closeLabel: 'Cancel'
             };
 
             ionicTimePicker.openTimePicker($scope.state.timePickerConfiguration);

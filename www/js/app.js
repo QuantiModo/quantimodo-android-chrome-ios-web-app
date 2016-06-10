@@ -129,7 +129,8 @@ angular.module('starter',
 
     var timePickerObj = {
         format: 12,
-        step: 1
+        step: 1,
+        closeLabel: 'Cancel'
     };
 
     ionicTimePickerProvider.configTimePicker(timePickerObj);

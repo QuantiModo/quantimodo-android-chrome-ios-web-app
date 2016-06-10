@@ -24,7 +24,8 @@ angular.module('starter')
 	    	slots : {
 				epochTime: new Date().getTime()/1000,
 				format: 12,
-				step: 1
+				step: 1,
+				closeLabel: 'Cancel'
 			},
 			variable : {},
 			isDisabled : false,
