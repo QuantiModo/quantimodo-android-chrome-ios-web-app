@@ -233,6 +233,29 @@ config.appSettings  = {
         hideAddNewReminderButton : true
     },
 
+    floatingMaterialButton : {
+        button1 : {
+            icon: 'ion-happy-outline',
+            label: 'How are you?',
+            clickAction: "goToState('app.track')"
+        },
+        button2 : {
+            icon: 'ion-ios-medkit-outline',
+            label: 'Add a medication',
+            clickAction: "goToState('app.reminderAddCategory', {variableCategoryName : 'Treatments'})"
+        },
+        button3 : {
+            icon: 'ion-ios-pulse',
+            label: 'Add Vital Sign',
+            clickAction: "goToState('app.track_factors_category', {variableCategoryName : 'Vital Signs'})"
+        },
+        button4 : {
+            icon: 'ion-heart-broken',
+            label: 'Record a Symptom',
+            stateAndParameters: "'app.track_factors_category', {variableCategoryName : 'Symptoms'}"
+        }
+    },
+
     menu : [
         {
             title : 'Add How I Feel Response',

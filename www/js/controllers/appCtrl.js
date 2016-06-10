@@ -22,6 +22,7 @@ angular.module('starter')
         $scope.closeMenu = function() {
             $ionicSideMenuDelegate.toggleLeft(false);
         };
+        $scope.floatingMaterialButton = config.appSettings.floatingMaterialButton;
 
         var helpPopupMessages = config.appSettings.helpPopupMessages || false;
 

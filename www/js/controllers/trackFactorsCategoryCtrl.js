@@ -25,10 +25,10 @@ angular.module('starter')
 
         if(variableCategoryName){
             $scope.state.variableSearchPlaceholderText = "Search for a " +  $filter('wordAliases')(pluralize(variableCategoryName, 1).toLowerCase()) + " here...";
-            $scope.state.title = $filter('wordAliases')('Track') + " " + $filter('wordAliases')(variableCategoryName);
+            $scope.state.title = $filter('wordAliases')('Record') + " " + $filter('wordAliases')(variableCategoryName);
         } else {
             $scope.state.variableSearchPlaceholderText = "Search for a variable here...";
-            $scope.state.title = $filter('wordAliases')('Track');
+            $scope.state.title = $filter('wordAliases')('Record a Measurement');
         }
         
         // when an old measurement is tapped to remeasure
