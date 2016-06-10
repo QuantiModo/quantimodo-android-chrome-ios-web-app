@@ -178,7 +178,7 @@ angular.module('starter')
 			//$scope.showLoader();
 			console.log('modifiedReminderValue is ' + modifiedReminderValue);
 			removeNotificationFromDisplay(trackingReminderNotification.id);
-	    	reminderService.trackReminder(trackingReminderNotification.id, modifiedReminderValue)
+	    	reminderService.trackReminderNotification(trackingReminderNotification.id, modifiedReminderValue)
 	    	.then(function(){
 	    		//$scope.init();
 
@@ -191,7 +191,7 @@ angular.module('starter')
 	    $scope.skip = function(trackingReminderNotification){
 			//$scope.showLoader();
 			removeNotificationFromDisplay(trackingReminderNotification.id);
-	    	reminderService.skipReminder(trackingReminderNotification.id)
+	    	reminderService.skipReminderNotification(trackingReminderNotification.id)
 	    	.then(function(){
 	    		$scope.hideLoader();
 	    		//$scope.init();
@@ -205,7 +205,7 @@ angular.module('starter')
 	    $scope.snooze = function(trackingReminderNotification){
 			//$scope.showLoader();
 			removeNotificationFromDisplay(trackingReminderNotification.id);
-	    	reminderService.snoozeReminder(trackingReminderNotification.id)
+	    	reminderService.snoozeReminderNotification(trackingReminderNotification.id)
 	    	.then(function(){
 	    		//$scope.init();
 	    	}, function(err){
@@ -231,7 +231,7 @@ angular.module('starter')
 	    };
 
 	    $scope.editMeasurement = function(trackingReminderNotification){
-			reminderService.skipReminder(trackingReminderNotification.id);
+			reminderService.skipReminderNotification(trackingReminderNotification.id);
 			$state.go('app.measurementAdd',
 				{
 					reminder: trackingReminderNotification,

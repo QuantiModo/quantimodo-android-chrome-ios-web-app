@@ -39,45 +39,7 @@ angular.module('starter')
 				return deferred.promise;
 			},
 
-			postTrackingReminder: function(id,
-				variableId, 
-				defaultValue, 
-				reminderFrequency, 
-				variableName, 
-				variableCategoryName, 
-				abbreviatedUnitName, 
-				combinationOperation,
-				reminderStartTime,
-			   instructions
-			){
-				
-				var deferred = $q.defer();
-
-                console.log('Reminder frequency is ' + reminderFrequency);
-
-                var params = {
-                	id : id,
-					variableId : variableId, 
-                    defaultValue : defaultValue,
-                    reminderFrequency : reminderFrequency,
-                    variableName : variableName,
-                    variableCategoryName : variableCategoryName,
-                    abbreviatedUnitName : abbreviatedUnitName,
-                    combinationOperation : combinationOperation,
-                    reminderStartTime : reminderStartTime,
-					instructions : instructions
-                };
-
-                QuantiModo.postTrackingReminder(params, function(){
-                	deferred.resolve();
-                }, function(err){
-                	deferred.reject(err);
-                });
-
-				return deferred.promise;
-			},
-
-			skipReminder : function(reminderId){
+			skipReminderNotification : function(reminderId){
 				var deferred = $q.defer();
 
 				QuantiModo.skipTrackingReminder(reminderId, function(response){
@@ -92,7 +54,7 @@ angular.module('starter')
 				return deferred.promise;
 			},
 
-			trackReminder : function(reminderId, modifiedReminderValue){
+			trackReminderNotification : function(reminderId, modifiedReminderValue){
 				var deferred = $q.defer();
 
 				QuantiModo.trackTrackingReminder(reminderId, modifiedReminderValue, function(response){
@@ -109,7 +71,7 @@ angular.module('starter')
 				return deferred.promise;
 			},
 
-			snoozeReminder : function(reminderId){
+			snoozeReminderNotification : function(reminderId){
 				var deferred = $q.defer();
 
 				QuantiModo.snoozeTrackingReminder(reminderId, function(response){

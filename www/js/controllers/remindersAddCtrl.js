@@ -213,7 +213,7 @@ angular.module('starter')
 
             $scope.showLoader('Saving ' + $scope.state.variableName + ' reminder...');
 
-	    	reminderService.postTrackingReminder(
+	    	reminderService.addNewReminder(
 	    		$scope.state.id,
 				$scope.state.variableId,
                 $scope.state.defaultValue,
