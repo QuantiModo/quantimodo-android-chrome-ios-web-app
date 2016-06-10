@@ -53,9 +53,7 @@ angular.module('starter')
 
             console.log("load config object chartService.configureBarChart");
             $scope.barChartConfig = chartService.configureBarChart(arr);
-
-            // Fixes chart width
-            $scope.$broadcast('highchartsng.reflow');
+            
             console.log("redraw chart with new data");
             $scope.redrawBarChart = true;
         };
@@ -65,8 +63,7 @@ angular.module('starter')
             console.log("Configuring line chart...");
             $scope.lineChartConfig = chartService.configureLineChart(lineChartData);
 
-            // Fixes chart width
-            $scope.$broadcast('highchartsng.reflow');
+
 
             // redraw chart with new data
             $scope.redrawLineChart = true;
@@ -110,6 +107,12 @@ angular.module('starter')
                             $scope.safeApply();
                         }
                     }
+                    $(window).resize();
+                    $timeout(function() {
+                        $scope.$broadcast('highchartsng.reflow');
+                    }, 10);
+                    // Fixes chart width
+                    $scope.$broadcast('highchartsng.reflow');
                 }
             });
 
@@ -179,8 +182,6 @@ angular.module('starter')
             console.log('track state brought in focus. Updating charts and syncing..');
             $scope.showRatingFaces = true;
             syncPrimaryOutcomeVariableMeasurementsAndUpdateCharts();
-            $timeout(function() {
-                $scope.$broadcast('highchartsng.reflow');
-            }, 10);
+
         });
     });
