@@ -80,8 +80,8 @@ export APP_IDENTIFIER="com.quantimodo.quantimodo"
 export APP_DISPLAY_NAME="QuantiModo"
 export LOWERCASE_APP_NAME=quantimodo
 source ${INTERMEDIATE_PATH}/scripts/build_scripts/01_prepare_project.sh
-source ${INTERMEDIATE_PATH}/scripts/build_scripts/02_build_chrome.sh
 source ${INTERMEDIATE_PATH}/scripts/build_scripts/03_build_android.sh
+source ${INTERMEDIATE_PATH}/scripts/build_scripts/02_build_chrome.sh
 #source ${INTERMEDIATE_PATH}/scripts/build_scripts/04_build_ios.sh
 #source ${INTERMEDIATE_PATH}/04_reset_workspace.sh
 
@@ -90,8 +90,8 @@ export APP_IDENTIFIER="com.quantimodo.moodimodoapp"
 export APP_DISPLAY_NAME="MoodiModo"
 export LOWERCASE_APP_NAME=moodimodo
 source ${INTERMEDIATE_PATH}/scripts/build_scripts/01_prepare_project.sh
-source ${INTERMEDIATE_PATH}/scripts/build_scripts/02_build_chrome.sh
 source ${INTERMEDIATE_PATH}/scripts/build_scripts/03_build_android.sh
+source ${INTERMEDIATE_PATH}/scripts/build_scripts/02_build_chrome.sh
 #source ${INTERMEDIATE_PATH}/scripts/build_scripts/04_build_ios.sh
 #source ${INTERMEDIATE_PATH}/04_reset_workspace.sh
 
@@ -108,8 +108,8 @@ export APP_IDENTIFIER="com.quantimodo.moodimodo"
 export APP_DISPLAY_NAME="Mind First"
 export LOWERCASE_APP_NAME=mindfirst
 source ${INTERMEDIATE_PATH}/scripts/build_scripts/01_prepare_project.sh
-source ${INTERMEDIATE_PATH}/scripts/build_scripts/02_build_chrome.sh
 source ${INTERMEDIATE_PATH}/scripts/build_scripts/03_build_android.sh
+source ${INTERMEDIATE_PATH}/scripts/build_scripts/02_build_chrome.sh
 #source ${INTERMEDIATE_PATH}/scripts/build_scripts/04_build_ios.sh
 
 if [ -f ${DROPBOX_PATH}/${LOWERCASE_APP_NAME}/${LOWERCASE_APP_NAME}-android-release-signed.apk ];
@@ -125,8 +125,8 @@ export APP_IDENTIFIER="com.quantimodo.energymodo"
 export APP_DISPLAY_NAME="EnergyModo"
 export LOWERCASE_APP_NAME=energymodo
 source ${INTERMEDIATE_PATH}/scripts/build_scripts/01_prepare_project.sh
-source ${INTERMEDIATE_PATH}/scripts/build_scripts/02_build_chrome.sh
 source ${INTERMEDIATE_PATH}/scripts/build_scripts/03_build_android.sh
+source ${INTERMEDIATE_PATH}/scripts/build_scripts/02_build_chrome.sh
 #source ${INTERMEDIATE_PATH}/scripts/build_scripts/04_build_ios.sh
 
 if [ -f ${DROPBOX_PATH}/${LOWERCASE_APP_NAME}/${LOWERCASE_APP_NAME}-android-release-signed.apk ];
@@ -142,8 +142,8 @@ export APP_IDENTIFIER="com.quantimodo.medtlc"
 export APP_DISPLAY_NAME="MedTLC"
 export LOWERCASE_APP_NAME=medtlc
 source ${INTERMEDIATE_PATH}/scripts/build_scripts/01_prepare_project.sh
-source ${INTERMEDIATE_PATH}/scripts/build_scripts/02_build_chrome.sh
 source ${INTERMEDIATE_PATH}/scripts/build_scripts/03_build_android.sh
+source ${INTERMEDIATE_PATH}/scripts/build_scripts/02_build_chrome.sh
 #source ${INTERMEDIATE_PATH}/scripts/build_scripts/04_build_ios.sh
 
 if [ -f ${DROPBOX_PATH}/${LOWERCASE_APP_NAME}/${LOWERCASE_APP_NAME}-android-release-signed.apk ];
