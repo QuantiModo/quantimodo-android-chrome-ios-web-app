@@ -58,7 +58,8 @@ chrome.alarms.onAlarm.addListener(function(alarm)
 	var showNotification = (localStorage.showNotification || "true") == "true" ? true : false;
 
     if(showNotification){
-        checkForNotifications();
+		showTrackingInboxNotification();
+        //checkForNotifications();
     }
 });
 
