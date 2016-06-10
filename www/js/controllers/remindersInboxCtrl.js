@@ -2,7 +2,7 @@ angular.module('starter')
 
 	.controller('RemindersInboxCtrl', function($scope, authService, $ionicPopup, localStorageService, $state, 
 											   reminderService, $ionicLoading, measurementService, utilsService, 
-											   $stateParams, $location, $filter){
+											   $stateParams, $location, $filter, $ionicPlatform){
 
 	    $scope.controller_name = "RemindersInboxCtrl";
 
@@ -221,6 +221,11 @@ angular.module('starter')
 				$scope.showHelpInfoPopupIfNecessary();
 				getTrackingReminderNotifications();
 			}
+			$ionicPlatform.ready(function () {
+				cordova.plugins.notification.local.clearAll(function () {
+					console.debug("clearAll active notifications");
+				}, this);
+			});
 	    };
 
 	    $scope.editMeasurement = function(trackingReminderNotification){

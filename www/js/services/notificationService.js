@@ -33,8 +33,7 @@ angular.module('starter')
                     this.scheduleNotification(false, trackingReminders[i]);
                 }
             },
-
-            // schedule new notifications
+            
             scheduleNotification:function(interval, trackingReminder){
 
                 function scheduleAndroidNotification(interval, trackingReminder) {
@@ -53,9 +52,6 @@ angular.module('starter')
                             console.log('notification scheduled', notificationSettings);
                         });
                         cordova.plugins.notification.local.on("click", function (notification) {
-                            // var redirectUrl = window.location.href + 'app/reminders-inbox';
-                            // console.log('Setting window.location to ' + redirectUrl);
-                            // window.location = redirectUrl;
                             console.log("$state.go('app.remindersInbox')");
                             $state.go('app.remindersInbox');
                         });
@@ -74,21 +70,17 @@ angular.module('starter')
                             ongoing: false,
                             sound: "res://platform_default",
                             title: "Track " + trackingReminder.variableName,
-                            text: "Track " + trackingReminder.variableName,
+                            text: "Tap to open reminder inbox",
                             firstAt: firstAt,
                             every: minuteFrequency,
                             icon: 'ic_stat_icon_bw',
                             id: trackingReminder.id
                         };
-                        //notificationSettings.smallIcon = "res://drawable-hdpi/img/icon_bw.png";
                         cordova.plugins.notification.local.schedule(notificationSettings,
                             function () {
                                 console.log('notification scheduled', notificationSettings);
                             });
                         cordova.plugins.notification.local.on("click", function (notification) {
-                            // var redirectUrl = window.location.href + 'app/reminders-inbox';
-                            // console.log('Setting window.location to ' + redirectUrl);
-                            // window.location = redirectUrl;
                             console.log("$state.go('app.remindersInbox')");
                             $state.go('app.remindersInbox');
                         });
@@ -108,9 +100,6 @@ angular.module('starter')
                                 console.log('iOS notification scheduled', notificationSettings);
                             });
                             cordova.plugins.notification.local.on("click", function (notification) {
-                                // var redirectUrl = window.location.href + 'app/reminders-inbox';
-                                // console.log('Setting window.location to ' + redirectUrl);
-                                // window.location = redirectUrl;
                                 console.log("$state.go('app.remindersInbox')");
                                 $state.go('app.remindersInbox');
                             });
