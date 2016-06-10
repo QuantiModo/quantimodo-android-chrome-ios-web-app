@@ -3,17 +3,16 @@
       <ion-list>
           <div collection-repeat="historyItem in state.history" divider-collection-repeat>
               <ion-item  ng-click="editMeasurement(historyItem)">
-                  <div style="display:inline-block;float:left;margin-left:10px;margin-right:10px;width:80px;text-align:center">
-                    <i ng-hide="historyItem.image" class="{{historyItem.variableCategoryName | ImageByVariableCategoryName }}" style="color:#11c1f3;font-size: 75px;"></i>
-                      <img ng-show="historyItem.image" ng-src="{{historyItem.image}}" style="width:80px;" />
-                      <p style="font-weight:bold;white-space:normal">{{historyItem.variable}}</p>
+                  <div style="display:inline-block;float:left;margin-left:5px;margin-right:5px;width:50px;text-align:center">
+                    <i ng-hide="historyItem.image" class="{{historyItem.variableCategoryName | ImageByVariableCategoryName }}" style="color:#11c1f3;font-size: 50px;"></i>
+                      <img ng-show="historyItem.image" ng-src="{{historyItem.image}}" style="width:50px;" />
+<!--                      <p style="font-weight:bold;white-space:normal">{{historyItem.variable}}</p>-->
                   </div>
-                  <div class="history-block" style="margin-left:10px;">
+                  <div class="history-block" style="margin-left:5px;">
                       <h2 style="font-weight:bold;white-space:normal"> {{historyItem.value}} {{historyItem.abbreviatedUnitName}} {{historyItem.variable}}</h2>
-                    <h2 class="history_time" ng-repeat="line in (historyItem.startTimeEpoch | time) track by $index">
+                    <h2 class="history-time" ng-repeat="line in (historyItem.startTimeEpoch | timeDateOneLine) track by $index">
                       {{line}}
                     </h2>
-                    <br/>
                   </div>
               </ion-item>
 

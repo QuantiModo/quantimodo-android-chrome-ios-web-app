@@ -92,8 +92,9 @@ div.dateDiv > input {
 
 .history-block {
 	display:inline-block;
-	padding-top: 10px;
+	padding-top: 0px;
 	padding-left: 10px;
+    padding-right: 60px;
 }
 
 .calm-icon {
