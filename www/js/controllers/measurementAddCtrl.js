@@ -192,9 +192,11 @@ angular.module('starter')
 
             // populate params
             var params = {
+                id : $scope.state.measurement.id,
                 variableName : $scope.state.measurement.variable || jQuery('#variableName').val(),
                 value : $scope.state.measurement.value || jQuery('#measurementValue').val(),
                 note : $scope.state.measurement.note || jQuery('#note').val(),
+                prevStartTimeEpoch : $scope.state.measurement.prevStartTimeEpoch,
                 startTimeEpoch : $scope.state.measurement.startTimeEpoch,
                 abbreviatedUnitName : $scope.state.showAddVariable ? (typeof $scope.abbreviatedUnitName ===
                     "undefined" || $scope.abbreviatedUnitName === "" ) ?
@@ -207,6 +209,17 @@ angular.module('starter')
 
             console.log(params);
 
+            var measurementInfo = {
+                id: params.id,
+                prevStartTimeEpoch: params.prevStartTimeEpoch,
+                startTimeEpoch: params.startTimeEpoch,
+                variableName: params.variableName,
+                value: params.value,
+                abbreviatedUnitName: params.abbreviatedUnitName,
+                isAvg: params.isAvg,
+                variableCategoryName: params.variableCategoryName,
+                note: params.note
+            };
 
             if($scope.state.showAddVariable){
                 console.debug('done: Adding new variable..');
@@ -218,13 +231,7 @@ angular.module('starter')
 
                     // add variable
                     measurementService.postTrackingMeasurement(
-                        params.startTimeEpoch,
-                        params.variableName,
-                        params.value,
-                        params.abbreviatedUnitName,
-                        params.isAvg,
-                        params.variableCategoryName,
-                        params.note, true)
+                        measurementInfo, true)
                     .then(function(){
                         utilsService.showAlert('Added Variable');
 
@@ -253,15 +260,10 @@ angular.module('starter')
                 } else {
                     // measurement only
 
+                    // KELLY note: this is for adding or editing
                     // post measurement
                     measurementService.postTrackingMeasurement(
-                        params.startTimeEpoch,
-                        params.variableName,
-                        params.value,
-                        params.abbreviatedUnitName,
-                        params.isAvg,
-                        params.variableCategoryName,
-                        params.note);
+                        measurementInfo);
                     utilsService.showAlert(params.variableName + ' measurement saved!');
 
                     if($stateParams.fromUrl){
@@ -507,6 +509,11 @@ angular.module('starter')
                 measurementObject.startTimeEpoch = moment(measurementObject.startTimeEpoch).unix();
             }
 
+            // KELLY
+            if (!measurementObject.id) {
+                measurementObject.prevStartTimeEpoch = measurementObject.startTimeEpoch;
+            }
+
             $scope.selectedDate = new Date(measurementObject.startTimeEpoch * 1000);
             $scope.datePickerObj = {
                 inputDate: $scope.selectedDate,
@@ -525,11 +532,6 @@ angular.module('starter')
             };
 
             console.log('track : ' , measurementObject);
-
-            // What was this for?
-            // if(measurementObject.startTimeEpoch.indexOf(" ") !== -1) {
-            //     measurementObject.startTimeEpoch = measurementObject.startTimeEpoch.replace(/\ /g,'+');
-            // }
 
             $scope.state.title = "Edit Measurement";
             $scope.state.measurement = measurementObject;

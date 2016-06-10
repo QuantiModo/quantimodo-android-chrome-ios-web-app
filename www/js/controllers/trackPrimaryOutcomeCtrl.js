@@ -123,7 +123,7 @@ angular.module('starter')
                 console.log('Syncing primary outcome measurements...');
 
                 measurementService.syncPrimaryOutcomeVariableMeasurements().then(function(){
-                    console.log("Measurement sync complete!");
+                    //console.log("Measurement sync complete!");
                     $rootScope.isSyncing = false;
 
                     // update loader text

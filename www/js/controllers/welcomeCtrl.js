@@ -51,7 +51,7 @@ angular.module('starter')
                     id: config.appSettings.primaryOutcomeVariableDetails.id,
                     reportedVariableValue: $scope.reportedVariableValue,
                     interval: intervals[$scope.primaryOutcomeRatingFrequencyDescription], 
-                    name: config.appSettings.primaryOutcomeVariableDetails.name,
+                    variableName: config.appSettings.primaryOutcomeVariableDetails.name,
                     category: config.appSettings.primaryOutcomeVariableDetails.category,
                     unit: config.appSettings.primaryOutcomeVariableDetails.abbreviatedUnitName,
                     combinationOperation : config.appSettings.primaryOutcomeVariableDetails.combinationOperation
