@@ -73,12 +73,24 @@ angular.module('starter')
                         variableCategoryNameSingularLowercase: "physical activity",
                         measurementSynonymSingularLowercase : "activity",
                         icon: "ion-ios-body"
+                    },
+                    "Activity": {
+                        defaultAbbreviatedUnitName: '',
+                        helpText: "What activity do you want to record?",
+                        variableCategoryName: "Activity",
+                        variableCategoryNameSingularLowercase: "activity",
+                        measurementSynonymSingularLowercase : "activity",
+                        icon: "ion-ios-body"
                     }
                 };
 
 
                 if(variableCategoryName){
                     var selectedVariableCategoryObject =  variableCategoryInfo[variableCategoryName];
+
+                    if(!selectedVariableCategoryObject){
+                        console.error('No variableCategoryInfo for ' + variableCategoryName);
+                    }
 
                     if(!selectedVariableCategoryObject.addNewVariableButtonText){
                         selectedVariableCategoryObject.addNewVariableButtonText =
