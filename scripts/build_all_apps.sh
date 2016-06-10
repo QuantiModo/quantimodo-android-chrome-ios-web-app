@@ -15,6 +15,7 @@ cd ..
 export IONIC_PATH="$PWD"
 echo "IONIC_PATH is $IONIC_PATH"
 cd ..
+rm -rf qm-ionic-intermediates
 mkdir qm-ionic-intermediates
 cd qm-ionic-intermediates
 export INTERMEDIATE_PATH="$PWD"
