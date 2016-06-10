@@ -220,6 +220,8 @@ angular.module('starter')
 			if(isAuthorized){
 				$scope.showHelpInfoPopupIfNecessary();
 				getTrackingReminderNotifications();
+				//update alarms and local notifications
+				reminderService.getTrackingReminders();
 			}
 			if (typeof cordova != "undefined") {
 				$ionicPlatform.ready(function () {
