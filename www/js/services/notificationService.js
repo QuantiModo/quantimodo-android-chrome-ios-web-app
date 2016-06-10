@@ -56,8 +56,8 @@ angular.module('starter')
                             $state.go('app.remindersInbox');
                         });
                     } else if (trackingReminder) {
-                        cordova.plugins.notification.local.cancel(trackingReminder.variableId, function() {
-                            console.log("Canceled Android notification " + trackingReminder.variableId);
+                        cordova.plugins.notification.local.cancel(trackingReminder.id, function() {
+                            console.log("Canceled Android notification " + trackingReminder.id);
                         });
                         var firstAt = new Date(trackingReminder.nextReminderTimeEpochSeconds*1000);
                         var minuteFrequency  = trackingReminder.reminderFrequency / 60;
@@ -67,8 +67,8 @@ angular.module('starter')
                             color: undefined,
                             data: undefined,
                             led: undefined,
+                            sound: null,
                             ongoing: false,
-                            sound: "res://platform_default",
                             title: "Track " + trackingReminder.variableName,
                             text: "Tap to open reminder inbox",
                             firstAt: firstAt,
@@ -76,12 +76,14 @@ angular.module('starter')
                             icon: 'ic_stat_icon_bw',
                             id: trackingReminder.id
                         };
+                        //notificationSettings.sound = "res://platform_default";
+                        //notificationSettings.smallIcon = 'ic_stat_icon_bw';
                         cordova.plugins.notification.local.schedule(notificationSettings,
                             function () {
-                                console.log('notification scheduled', notificationSettings);
+                                console.debug('notification scheduled', notificationSettings);
                             });
                         cordova.plugins.notification.local.on("click", function (notification) {
-                            console.log("$state.go('app.remindersInbox')");
+                            console.debug("$state.go('app.remindersInbox')");
                             $state.go('app.remindersInbox');
                         });
                     }
@@ -101,6 +103,37 @@ angular.module('starter')
                             });
                             cordova.plugins.notification.local.on("click", function (notification) {
                                 console.log("$state.go('app.remindersInbox')");
+                                $state.go('app.remindersInbox');
+                            });
+                        } else if (trackingReminder) {
+                            cordova.plugins.notification.local.cancel(trackingReminder.id, function() {
+                                console.log("Canceled iOS notification " + trackingReminder.id);
+                            });
+                            var firstAt = new Date(trackingReminder.nextReminderTimeEpochSeconds*1000);
+                            var minuteFrequency  = trackingReminder.reminderFrequency / 60;
+                            notificationSettings = {
+                                autoClear: true,
+                                badge: 0,
+                                color: undefined,
+                                data: undefined,
+                                led: undefined,
+                                ongoing: false,
+                                sound: null,
+                                title: "Track " + trackingReminder.variableName,
+                                text: "Tap to open reminder inbox",
+                                firstAt: firstAt,
+                                every: minuteFrequency,
+                                icon: config.appSettings.mobileNotificationImage,
+                                id: trackingReminder.id
+                            };
+                            //notificationSettings.sound = "res://platform_default";
+                            //notificationSettings.smallIcon = 'ic_stat_icon_bw';
+                            cordova.plugins.notification.local.schedule(notificationSettings,
+                                function () {
+                                    console.debug('notification scheduled', notificationSettings);
+                                });
+                            cordova.plugins.notification.local.on("click", function (notification) {
+                                console.debug("$state.go('app.remindersInbox')");
                                 $state.go('app.remindersInbox');
                             });
                         }
