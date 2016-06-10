@@ -29,7 +29,7 @@ config.appSettings  = {
     appName : 'Mind First Mood Tracker',
     allowOffline : true,
     loaderImagePath : 'img/pop-tart-cat.gif',
-    defaultState : 'app.track',
+    defaultState : 'app.remindersInbox',
 
     welcomeState : 'app.welcome',
 

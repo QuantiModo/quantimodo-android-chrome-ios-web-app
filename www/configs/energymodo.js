@@ -28,7 +28,7 @@ config.appSettings  = {
     appName : 'EnergyModo',
     allowOffline : true,
     loaderImagePath : 'img/pop-tart-cat.gif',
-    defaultState : 'app.track',
+    defaultState : 'app.remindersInbox',
     welcomeState : 'app.welcome',
 
     primaryOutcomeVariable : 'Energy',
