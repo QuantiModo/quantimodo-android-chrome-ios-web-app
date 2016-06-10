@@ -1,5 +1,5 @@
 {
-  "name": "QuantiModo-Ionic-Template-App",
+  "name": "quantiModo-ionic",
   "private": "true",
   "devDependencies": {
     "ionic": "driftyco/ionic-bower#1.0.0"
