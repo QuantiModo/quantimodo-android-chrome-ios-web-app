@@ -14,11 +14,11 @@ cd ${SCRIPT_FOLDER}
 cd ..
 export IONIC_PATH="$PWD"
 echo "IONIC_PATH is $IONIC_PATH"
-cd ..
-rm -rf qm-ionic-intermediates
-mkdir qm-ionic-intermediates
-cd qm-ionic-intermediates
-export INTERMEDIATE_PATH="$PWD"
+#cd ..
+#mkdir qm-ionic-intermediates
+#cd qm-ionic-intermediates
+#export INTERMEDIATE_PATH="$PWD"
+export INTERMEDIATE_PATH="$IONIC_PATH"
 echo "INTERMEDIATE_PATH is $INTERMEDIATE_PATH"
 export DROPBOX_PATH=/Users/Shared/Jenkins/Dropbox/QuantiModo/apps
 
@@ -69,8 +69,8 @@ if [ -z "$ANDROID_KEYSTORE_PASSWORD" ]
   exit 1
 fi
 
-echo "Copying everything from ${IONIC_PATH} to $INTERMEDIATE_PATH"
-rsync -a --exclude=build/ --exclude=.git/ ${IONIC_PATH}/* ${INTERMEDIATE_PATH}
+#echo "Copying everything from ${IONIC_PATH} to $INTERMEDIATE_PATH"
+#rsync -a --exclude=build/ --exclude=.git/ ${IONIC_PATH}/* ${INTERMEDIATE_PATH}
 cd ${INTERMEDIATE_PATH}
 
 source ${IONIC_PATH}/scripts/build_scripts/00_install_dependencies.sh
