@@ -152,7 +152,7 @@ angular.module('starter')
                         console.debug('Creating reminder for ', trackingReminder);
                         alarmInfo.when =  trackingReminder.nextReminderTimeEpochSeconds * 1000;
                         alarmInfo.periodInMinutes = trackingReminder.reminderFrequency / 60;
-                        var alarmName = 'when:' + alarmInfo.when + ' periodInMinutes:' + alarmInfo.periodInMinutes;
+                        var alarmName = trackingReminder.id.toString();
                         chrome.alarms.clear(alarmName);
                         chrome.alarms.create(alarmName, alarmInfo);
                         console.debug('Created alarm for alarmName ' + alarmName, alarmInfo);

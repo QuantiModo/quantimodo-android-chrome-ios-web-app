@@ -64,10 +64,10 @@
                     </select>
                 </label>
                 <label class="item item-input item-select">
-                    <div class="input-label" style="white-space:normal; width: 60%">
-                        Select Frequency
+                    <div class="input-label">
+                        Frequency
                     </div>
-                    <select ng-change="onFrequencyChange()" ng-model="state.selectedFrequency" style="width: 40%">
+                    <select ng-change="onFrequencyChange()" ng-model="state.selectedFrequency" style="width: 100%">
                         <optgroup label="Intervals">
                             <option ng-repeat="frequency in variables.frequencyVariables" ng-if="frequency.group==='intervals'">{{frequency.name}}</option>
                         </optgroup>
