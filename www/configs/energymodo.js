@@ -60,7 +60,7 @@ config.appSettings  = {
     welcomeText:"Let's start off by reporting your Energy on the card below",
     primaryOutcomeVariableTrackingQuestion:"How is your energy level right now?",
     primaryOutcomeVariableAverageText:"Your average energy level is ",
-    mobileNotificationImage : "file://img/icon_128.png",
+    mobileNotificationImage : "file://img/icons/icon_128.png",
     mobileNotificationText : "Time to Track",
     ratingValueToTextConversionDataSet: {
         "1": "1",
@@ -83,7 +83,7 @@ config.appSettings  = {
             img : {
                 width : '150',
                 height : '150',
-                url : 'img/icon.png'
+                url : 'img/icons/icon.png'
             },
             content : {
 
@@ -322,7 +322,7 @@ config.appSettings  = {
             img : {
                 width : '180',
                 height : '180',
-                url : 'img/ic_face_ecstatic.png'
+                url : 'img/rating/ic_face_ecstatic.png'
             },
             content : {
 

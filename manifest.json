@@ -5,9 +5,9 @@
   "version": "1.2.0",
   "options_page": "www/chrome_extension/options/options.html",
   "icons": {
-    "16"	: "www/img/icon_16.png",
-    "48"	: "www/img/icon_48.png",
-    "128"	: "www/img/icon_128.png"
+    "16"	: "www/img/icons/icon_16.png",
+    "48"	: "www/img/icons/icon_48.png",
+    "128"	: "www/img/icons/icon_128.png"
   },
   "permissions": [
     "alarms",
@@ -19,7 +19,7 @@
     "*://cdn.rawgit.com/*"
   ],
   "browser_action": {
-    "default_icon": "www/img/icon_700.png",
+    "default_icon": "www/img/icons/icon_700.png",
     "default_popup": "www/templates/chrome/iframe.html"
   },
   "background": {

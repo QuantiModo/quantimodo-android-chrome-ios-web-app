@@ -68,7 +68,7 @@ config.appSettings  = {
     welcomeText : "Let's start off by reporting your first mood on the card below",
     primaryOutcomeVariableTrackingQuestion : "How are you?",
     primaryOutcomeVariableAverageText : "Your average mood is ",
-    mobileNotificationImage : "file://img/icon_128.png",
+    mobileNotificationImage : "file://img/icons/icon_128.png",
     mobileNotificationText : "Time to Track",
     ratingValueToTextConversionDataSet: {
         "1": "depressed",
@@ -91,7 +91,7 @@ config.appSettings  = {
             img : {
                 width : '150',
                 height : '150',
-                url : 'img/icon.png'
+                url : 'img/icons/icon.png'
             },
             content : {
 
@@ -330,7 +330,7 @@ config.appSettings  = {
             img : {
                 width : '180',
                 height : '180',
-                url : 'img/ic_face_ecstatic.png'
+                url : 'img/rating/ic_face_ecstatic.png'
             },
             content : {
 

@@ -71,7 +71,7 @@ config.appSettings  = {
     welcomeText:"Let's start off by adding your first medication!",
     primaryOutcomeVariableTrackingQuestion:"What medication are you taking?",
     primaryOutcomeVariableAverageText:"Your average mood is ",
-    mobileNotificationImage : "file://img/icon_128.png",
+    mobileNotificationImage : "file://img/icons/icon_128.png",
     mobileNotificationText : "Time to Track",
     ratingValueToTextConversionDataSet: {
         "1": "depressed",
@@ -94,7 +94,7 @@ config.appSettings  = {
             img : {
                 width : '150',
                 height : '150',
-                url : 'img/medtlc/icon.png'
+                url : 'img/icons/icon.png'
             },
             content : {
 

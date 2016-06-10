@@ -298,23 +298,23 @@ These will be used on the charts, to represent the individual bars for the 5 dif
 primaryOutcomeVariableOptions : [
         {
             value: 'lowest',
-            img: 'img/ic_1.png'
+            img: 'img/rating/ic_1.png'
         },
         {
             value: 'low',
-            img: 'img/ic_2.png'
+            img: 'img/rating/ic_2.png'
         },
         {
             value: 'average',
-            img: 'img/ic_3.png'
+            img: 'img/rating/ic_3.png'
         },
         {
             value: 'high',
-            img: 'img/ic_4.png'
+            img: 'img/rating/ic_4.png'
         },
         {
             value: 'highest',
-            img: 'img/ic_5.png'
+            img: 'img/rating/ic_5.png'
         }
     ],
 ```
@@ -433,7 +433,7 @@ intro : {
       img : {
           width : '180',
           height : '180',
-          url : 'img/ic_face_ecstatic.png'
+          url : 'img/rating/ic_face_ecstatic.png'
       }
   }
 }
