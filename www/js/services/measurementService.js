@@ -318,7 +318,7 @@ angular.module('starter')
 
                     // add to queue
                     measurementsQueue.push({
-                        name: config.appSettings.primaryOutcomeVariableDetails.name,
+                        variableName: config.appSettings.primaryOutcomeVariableDetails.name,
                         variableDescription: config.appSettings.primaryOutcomeVariableDetails.description,
                         startTimeEpoch: Math.floor(startTimeEpoch / 1000),
                         abbreviatedUnitName: config.appSettings.primaryOutcomeVariableDetails.abbreviatedUnitName,
@@ -343,7 +343,7 @@ angular.module('starter')
                     measurementsQueue.push({
                         //FIXME
                         id: measurementObject.id,
-                        name: config.appSettings.primaryOutcomeVariableDetails.name,
+                        variableName: config.appSettings.primaryOutcomeVariableDetails.name,
                         variableDescription: config.appSettings.primaryOutcomeVariableDetails.description,
                         startTimeEpoch: measurementObject.startTimeEpoch,
                         abbreviatedUnitName: config.appSettings.primaryOutcomeVariableDetails.abbreviatedUnitName,
@@ -515,7 +515,7 @@ angular.module('starter')
 				// measurements set
 				var measurements = [
 					{
-					   	name: config.appSettings.primaryOutcomeVariableDetails.name,
+					   	variableName: config.appSettings.primaryOutcomeVariableDetails.name,
                         source: config.get('clientSourceName'),
                         category: config.appSettings.primaryOutcomeVariableDetails.category,
                         combinationOperation: config.appSettings.primaryOutcomeVariableDetails.combinationOperation,
