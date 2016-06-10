@@ -93,7 +93,8 @@ angular.module('starter')
                         $scope.state.measurementStartTimeUtc = moment.utc(a).format('HH:mm:ss');
                     }
                 },
-                inputTime: secondsSinceMidnightLocal
+                inputTime: secondsSinceMidnightLocal,
+                step: 1
             };
 
             ionicTimePicker.openTimePicker($scope.state.timePickerConfiguration);

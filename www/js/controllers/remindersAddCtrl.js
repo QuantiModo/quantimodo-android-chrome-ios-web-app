@@ -104,7 +104,8 @@ angular.module('starter')
                         $scope.state.reminderStartTimeEpochTime = a.getTime() / 1000;
                         $scope.state.reminderStartTimeStringUtc = moment.utc(a).format('HH:mm:ss');
                     }
-                }
+                },
+                step: 1
             };
 
 			ionicTimePicker.openTimePicker($scope.state.timePickerConfiguration);
