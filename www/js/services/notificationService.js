@@ -78,7 +78,7 @@ angular.module('starter')
                             firstAt: firstAt,
                             every: minuteFrequency,
                             icon: 'ic_stat_icon_bw',
-                            id: trackingReminder.variableId
+                            id: trackingReminder.id
                         };
                         //notificationSettings.smallIcon = "res://drawable-hdpi/img/icon_bw.png";
                         cordova.plugins.notification.local.schedule(notificationSettings,
