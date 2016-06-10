@@ -120,7 +120,7 @@
                         <button class="button button-block up-top"
                                 style="text-align:left;font-size:14px;border:none;color:black;background-color: white;margin-bottom: 0px;margin-top: 0px;padding-left: 0px;"
                                 ng-click="openMeasurementStartTimePicker()">
-                            {{state.measurement.startTime | fromUnixTimestampToLocalTimeOfDay}}
+                            {{state.measurement.startTimeEpoch | fromUnixTimestampToLocalTimeOfDay}}
                         </button>
                     </div>
                 </div>
