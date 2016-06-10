@@ -221,11 +221,13 @@ angular.module('starter')
 				$scope.showHelpInfoPopupIfNecessary();
 				getTrackingReminderNotifications();
 			}
-			$ionicPlatform.ready(function () {
-				cordova.plugins.notification.local.clearAll(function () {
-					console.debug("clearAll active notifications");
-				}, this);
-			});
+			if (typeof cordova != "undefined") {
+				$ionicPlatform.ready(function () {
+					cordova.plugins.notification.local.clearAll(function () {
+						console.debug("clearAll active notifications");
+					}, this);
+				});
+			}
 	    };
 
 	    $scope.editMeasurement = function(trackingReminderNotification){
