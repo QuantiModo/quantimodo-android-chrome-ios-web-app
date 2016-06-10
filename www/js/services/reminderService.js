@@ -31,6 +31,8 @@ angular.module('starter')
                 };
 
                 QuantiModo.postTrackingReminder(params, function(){
+					//update alarms and local notifications
+					reminderService.getTrackingReminders();
                 	deferred.resolve();
                 }, function(err){
                 	deferred.reject(err);
@@ -96,7 +98,9 @@ angular.module('starter')
 				QuantiModo.getTrackingReminders(params, function(remindersResponse){
 					var trackingReminders = remindersResponse.data;
 					if(remindersResponse.success) {
-						notificationService.scheduleAllNotifications(trackingReminders);
+						if(!category){
+							notificationService.scheduleAllNotifications(trackingReminders);
+						}
 						deferred.resolve(trackingReminders);
 					}
 					else {
@@ -162,7 +166,11 @@ angular.module('starter')
 				var deferred = $q.defer();
 
 				QuantiModo.deleteTrackingReminder(reminderId, function(response){
-					if(response.success) deferred.resolve();
+					if(response.success) {
+						//update alarms and local notifications
+						reminderService.getTrackingReminders();
+						deferred.resolve();
+					}
 					else {
 						deferred.reject();
 					}
