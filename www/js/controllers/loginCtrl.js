@@ -174,6 +174,8 @@ angular.module('starter')
             }
             console.log("Using Chrome extension, so we use sessions instead of OAuth flow. ");
             chrome.tabs.create({ url: loginUrl });
+            console.debug("Closing window");
+            window.close();
         };
 
         $scope.nativeLogin = function(platform, accessToken){
