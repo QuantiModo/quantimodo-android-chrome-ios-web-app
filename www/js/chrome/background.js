@@ -70,6 +70,9 @@ chrome.notifications.onClicked.addListener(function(notificationId)
 {
     var windowParams;
 
+	var badgeParams = {text:""};
+	chrome.browserAction.setBadgeText(badgeParams);
+
 	if(notificationId === "moodReportNotification")
 	{
 		windowParams = {url: "rating_popup.html",

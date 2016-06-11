@@ -15,6 +15,8 @@ QuantiModo makes it easy to retrieve normalized user data from a wide array of d
 
  * Sign in, and add some data at [https://app.quantimo.do/connect](https://app.quantimo.do/connect) to try out the API for yourself
 
+ * Create an app to get your client id and secret at [https://app.quantimo.do/api/v2/apps](https://app.quantimo.do/api/v2/apps)
+
  * As long as you're signed in, it will use your browser's cookie for authentication.  However, client applications must use OAuth2 tokens to access the API.
 
 ## Oauth2 Authentication
