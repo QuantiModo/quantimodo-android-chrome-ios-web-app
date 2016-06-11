@@ -16,9 +16,9 @@ angular.module('starter')
 		return function(time){
 			if(time){
 				if(typeof time === "number") {
-					return moment(time * 1000).format("hh:mm a MMM Do YYYY").split(/,/g);
+					return moment(time * 1000).format("h:mm a MMM Do YYYY").split(/,/g);
 				}
-				return moment.utc(time).local().format("h:mm:ss a dddd, MMMM Do YYYY").split(/,/g);
+				return moment.utc(time).local().format("h:mm a dddd MMMM Do YYYY").split(/,/g);
 			} else {
 				return "";
 			}
