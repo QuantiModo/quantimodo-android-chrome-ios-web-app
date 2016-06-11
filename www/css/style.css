@@ -8,13 +8,13 @@ ul > li {
 	font-size: 16px;
 }
 
-.loading-container .loading {
+/*.loading-container .loading {
     background-color: white;
     color: #333;
     border-width: 1px !important;
     border-color: #999 !important;
     border-style: solid !important;
-}
+}*/
 
 .primary-outcome-variable-rating-buttons {
 	text-align: center;

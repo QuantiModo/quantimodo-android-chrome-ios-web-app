@@ -69,7 +69,7 @@ config.appSettings  = {
     ],
 
     welcomeText:"Let's start off by adding your first medication!",
-    primaryOutcomeVariableTrackingQuestion:"What medication are you taking?",
+    primaryOutcomeVariableTrackingQuestion:"How are you",
     primaryOutcomeVariableAverageText:"Your average mood is ",
     mobileNotificationImage : "file://img/icons/icon_128.png",
     mobileNotificationText : "Time to Track",
@@ -237,17 +237,17 @@ config.appSettings  = {
         button1 : {
             icon: 'ion-happy-outline',
             label: 'How are you?',
-            clickAction: "'app.track'"
+            stateAndParameters: "'app.track'"
         },
         button2 : {
             icon: 'ion-ios-medkit-outline',
             label: 'Add a medication',
-            clickAction: "'app.reminderAddCategory', {variableCategoryName : 'Treatments'}"
+            stateAndParameters: "'app.reminderAddCategory', {variableCategoryName : 'Treatments'}"
         },
         button3 : {
             icon: 'ion-ios-pulse',
             label: 'Add Vital Sign',
-            clickAction: "'app.track_factors_category', {variableCategoryName : 'Vital Signs'}"
+            stateAndParameters: "'app.track_factors_category', {variableCategoryName : 'Vital Signs'}"
         },
         button4 : {
             icon: 'ion-heart-broken',

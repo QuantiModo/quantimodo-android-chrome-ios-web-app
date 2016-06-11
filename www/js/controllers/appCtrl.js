@@ -7,7 +7,7 @@ angular.module('starter')
                                     $ionicPopup, $ionicSideMenuDelegate, ratingService, migrationService) {
 
         $rootScope.loaderImagePath = config.appSettings.loaderImagePath;
-        $scope.appVersion = 1466;
+        $scope.appVersion = 1489;
         if(!$rootScope.loaderImagePath){
             $rootScope.loaderImagePath = 'img/loader.gif';
         }
@@ -376,7 +376,10 @@ angular.module('starter')
                 animation: 'fade-in',
                 showBackdrop: false,
                 maxWidth: 1000,
-                showDelay: 0
+                showDelay: 0,
+                noBackdrop: true,
+                hideOnStateChange: true,
+                duration: 15000
             });
             $timeout(function () {
                 $ionicLoading.hide();
@@ -386,7 +389,7 @@ angular.module('starter')
         };
         
 
-        $scope.hideLoader = function (loadingText) {
+        $scope.hideLoader = function () {
             $scope.loading = false;
             $ionicLoading.hide();
         };
