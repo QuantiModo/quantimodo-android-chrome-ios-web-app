@@ -39,6 +39,8 @@ config.appSettings  = {
     {
         showReminderFrequencySelector : true
     },
+
+    headline : 'Sync and Analyze Your Data',
       
     primaryOutcomeVariableDetails : {
         id : 108092,
