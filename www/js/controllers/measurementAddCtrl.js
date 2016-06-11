@@ -257,7 +257,7 @@ angular.module('starter')
 
                 // validation
                 if(params.value === ""){
-                    utilsService.showAlert('Enter a Value');
+                    utilsService.showAlert('Please enter a value');
 
                 } else {
                     // measurement only
@@ -266,7 +266,7 @@ angular.module('starter')
                     // post measurement
                     measurementService.postTrackingMeasurement(
                         measurementInfo);
-                    utilsService.showAlert(params.variableName + ' measurement saved!');
+                    //utilsService.showAlert(params.variableName + ' measurement saved!');
 
                     if($stateParams.fromUrl){
                         window.location = $stateParams.fromUrl;
