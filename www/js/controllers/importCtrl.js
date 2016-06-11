@@ -29,7 +29,7 @@ angular.module('starter')
 	            if(ionic.Platform.platforms[0] === "browser"){
 					console.log("Browser Detected");
 					
-					var url = config.getURL("api/v1/connect/mobile", true);
+					var url = config.getURL("api/v2/account/connectors", true);
 					url += "access_token=" + token.accessToken;
 					var newTab = window.open(url,'_blank');
 
