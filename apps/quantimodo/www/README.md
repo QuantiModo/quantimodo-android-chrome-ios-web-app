@@ -1,6 +1,6 @@
 # QuantiModo Life-Optimizer
 
-Perfect your life!
+Track and find out what's influencing your health and happiness!
 
 ## Description
 
