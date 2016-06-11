@@ -16,25 +16,25 @@ angular.module('starter')
                         displayDescription: 'Sad',
                         positiveImage: 'img/rating/ic_face_sad.png',
                         negativeImage: 'img/rating/ic_face_happy.png',
-                        numericImage:  'img/rating/ic_1.png'
+                        numericImage:  'img/rating/ic_2.png'
                         },
                     3 : {
                         displayDescription: 'OK',
                         positiveImage: 'img/rating/ic_face_ok.png',
                         negativeImage: 'img/rating/ic_face_ok.png',
-                        numericImage:  'img/rating/ic_1.png'
+                        numericImage:  'img/rating/ic_3.png'
                         },
                     4 : {
                         displayDescription: 'Happy',
                         positiveImage: 'img/rating/ic_face_happy.png',
                         negativeImage: 'img/rating/ic_face_sad.png',
-                        numericImage:  'img/rating/ic_1.png'
+                        numericImage:  'img/rating/ic_4.png'
                         },
                     5 : {
                         displayDescription: 'Ecstatic',
                         positiveImage: 'img/rating/ic_face_ecstatic.png',
                         negativeImage: 'img/rating/ic_face_depressed.png',
-                        numericImage:  'img/rating/ic_1.png'
+                        numericImage:  'img/rating/ic_5.png'
                         }
                 };
                 return ratingInfo;
