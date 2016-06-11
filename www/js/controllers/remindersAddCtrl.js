@@ -35,7 +35,8 @@ angular.module('starter')
             reminderStartTimeStringUtc : timeService.getCurrentTimeInUtcString(),
             measurementSynonymSingularLowercase : 'measurement',
             defaultValueLabel : 'Default Value',
-            defaultValuePlaceholderText : 'Enter typical value'
+            defaultValuePlaceholderText : 'Enter typical value',
+            variableSearchPlaceholderText : 'Search for a variable...'
         };
 
         $scope.loading = true;
