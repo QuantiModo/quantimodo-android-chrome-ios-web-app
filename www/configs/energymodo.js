@@ -363,8 +363,30 @@ config.appSettings  = {
     wordAliases : {
 
     },
-
-
+    
+    floatingMaterialButton : {
+        button1 : {
+            icon: 'ion-android-notifications-none',
+            label: 'Add a Reminder',
+            stateAndParameters: "'app.reminderAdd'"
+        },
+        button2 : {
+            icon: 'ion-compose',
+            label: 'Record a Measurement',
+            stateAndParameters: "'app.track_factors'"
+        },
+        button3 : {
+            icon: 'ion-ios-cloud-download-outline',
+            label: 'Import Data',
+            stateAndParameters: "'app.import'"
+        },
+        button4 : {
+            icon: 'ion-heart-broken',
+            label: 'Record a Symptom',
+            stateAndParameters: "'app.track_factors_category', {variableCategoryName : 'Symptoms'}"
+        }
+    },
+    
     menu : [
         {
             title : 'Reminder Inbox',

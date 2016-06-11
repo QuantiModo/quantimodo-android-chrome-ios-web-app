@@ -237,17 +237,17 @@ config.appSettings  = {
         button1 : {
             icon: 'ion-happy-outline',
             label: 'How are you?',
-            clickAction: "goToState('app.track')"
+            clickAction: "'app.track'"
         },
         button2 : {
             icon: 'ion-ios-medkit-outline',
             label: 'Add a medication',
-            clickAction: "goToState('app.reminderAddCategory', {variableCategoryName : 'Treatments'})"
+            clickAction: "'app.reminderAddCategory', {variableCategoryName : 'Treatments'}"
         },
         button3 : {
             icon: 'ion-ios-pulse',
             label: 'Add Vital Sign',
-            clickAction: "goToState('app.track_factors_category', {variableCategoryName : 'Vital Signs'})"
+            clickAction: "'app.track_factors_category', {variableCategoryName : 'Vital Signs'}"
         },
         button4 : {
             icon: 'ion-heart-broken',

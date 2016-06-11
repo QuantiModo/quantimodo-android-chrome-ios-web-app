@@ -375,19 +375,19 @@ config.appSettings  = {
 
     floatingMaterialButton : {
         button1 : {
-            icon: 'ion-happy-outline',
-            label: 'How are you?',
-            clickAction: "goToState('app.track')"
+            icon: 'ion-android-notifications-none',
+            label: 'Add a Reminder',
+            stateAndParameters: "'app.reminderAdd'"
         },
         button2 : {
-            icon: 'ion-ios-medkit-outline',
-            label: 'Add a medication',
-            clickAction: "goToState('app.reminderAddCategory', {variableCategoryName : 'Treatments'})"
+            icon: 'ion-compose',
+            label: 'Record a Measurement',
+            stateAndParameters: "'app.track_factors'"
         },
         button3 : {
-            icon: 'ion-ios-pulse',
-            label: 'Add Vital Sign',
-            clickAction: "goToState('app.track_factors_category', {variableCategoryName : 'Vital Signs'})"
+            icon: 'ion-ios-cloud-download-outline',
+            label: 'Import Data',
+            stateAndParameters: "'app.import'"
         },
         button4 : {
             icon: 'ion-heart-broken',
@@ -395,7 +395,6 @@ config.appSettings  = {
             stateAndParameters: "'app.track_factors_category', {variableCategoryName : 'Symptoms'}"
         }
     },
-
 
     menu : [
         {
