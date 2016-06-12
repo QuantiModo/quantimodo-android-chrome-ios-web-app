@@ -40,6 +40,12 @@ angular.module('starter')
                 return epochTime;
             },
 
+			getEpochMillisecondsFromUtcDateTimeString: function (utcDateTimeString) {
+				var timeFormat = 'YYYY-MM-DDTHH:mm:ss';
+				var epochMilliseconds = 1000 * moment(utcDateTimeString, timeFormat).unix();
+				return epochMilliseconds;
+			},
+
 			getLocalMidnightInUtcString: function () {
 				var localMidnightMoment = moment(0, "HH");
 				var timeFormat = 'YYYY-MM-DDTHH:mm:ss';
