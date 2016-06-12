@@ -249,6 +249,7 @@ angular.module('starter')
                         // refresh the last updated at from api
                         setTimeout($scope.init, 200);
                     }, function(err){
+                        Bugsnag.notify(err, JSON.stringify(err), {}, "error");
                         utilsService.showAlert(err);
                     });
                 }

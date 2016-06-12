@@ -184,6 +184,7 @@ angular.module('starter')
 	    		//$scope.init();
 
 	    	}, function(err){
+				Bugsnag.notify(err, JSON.stringify(err), {}, "error");
 				console.error(err);
 	    		utilsService.showAlert('Failed to Track Reminder, Try again!', 'assertive');
 	    	});
@@ -197,6 +198,7 @@ angular.module('starter')
 	    		$scope.hideLoader();
 	    		//$scope.init();
 	    	}, function(err){
+				Bugsnag.notify(err, JSON.stringify(err), {}, "error");
 	    		$scope.hideLoader();
 	    		utilsService.showAlert('Failed to Skip Reminder, Try again!', 'assertive');
 				console.error(err);
@@ -210,6 +212,7 @@ angular.module('starter')
 	    	.then(function(){
 	    		//$scope.init();
 	    	}, function(err){
+				Bugsnag.notify(err, JSON.stringify(err), {}, "error");
 				console.error(err);
 	    		utilsService.showAlert('Failed to Snooze Reminder, Try again!', 'assertive');
 	    	});
@@ -264,6 +267,7 @@ angular.module('starter')
 	    		$scope.init();
 
 	    	}, function(err){
+				Bugsnag.notify(err, JSON.stringify(err), {}, "error");
 				$ionicLoading.hide();
 				$scope.loading = false;
 				console.error(err);

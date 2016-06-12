@@ -246,6 +246,7 @@ angular.module('starter')
 					$cordovaFileOpener2.open(cordova.file.dataDirectory+'csv.csv','application/csv');
 
 		        }, function (error) {
+					Bugsnag.notify(error, JSON.stringify(error), {}, "error");
 					utilsService.showAlert('Please generate CSV later!');
 				});
 	    	});

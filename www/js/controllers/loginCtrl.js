@@ -107,7 +107,7 @@ angular.module('starter')
                     }
                 })
                 .catch(function(err){
-
+                    Bugsnag.notify(err, JSON.stringify(err), {}, "error");
                     console.log("error in generating access token", err);
                     // set flags
                     localStorageService.setItem('user', null);
@@ -245,20 +245,18 @@ angular.module('starter')
                         $ionicLoading.hide();
                         console.debug('successfully logged in');
                         console.debug('google->', JSON.stringify(userData));
+                        var tokenForApi = null;
                         
                         if(userData.oauthToken) {
                             console.log('userData.oauthToken is ' + userData.oauthToken);
-                            var tokenForApi = userData.oauthToken;
+                            tokenForApi = userData.oauthToken;
                         } else if(userData.serverAuthCode) {
                             console.error('googleLogin: No userData.accessToken!  You might have to use cordova-plugin-googleplus@4.0.8 or update API to use serverAuthCode to get an accessToken from Google...');
                             tokenForApi = userData.serverAuthCode;
                         }
                         
-                        if(!userData.oauthToken){
-                            Bugsnag.notify("ERROR: googleLogin could not get userData.oauthToken!  ", JSON.stringify(userData), {}, "error");
-                        }
-                        
                         if(!tokenForApi){
+                            Bugsnag.notify("ERROR: googleLogin could not get userData.oauthToken!  ", JSON.stringify(userData), {}, "error");
                             console.error('googleLogin: No userData.accessToken or userData.idToken provided! Fallback to nonNativeMobileLogin...');
                             nonNativeMobileLogin(register);
                         } else {

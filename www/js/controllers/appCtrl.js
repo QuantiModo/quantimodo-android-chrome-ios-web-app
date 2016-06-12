@@ -154,6 +154,7 @@ angular.module('starter')
                     console.log('reminder scheduled', $rootScope.reminderToSchedule);
                     delete $rootScope.reminderToSchedule;
                 }, function(err){
+                    Bugsnag.notify("reminderService.addNewReminder", JSON.stringify(trackingReminder), {}, "error");
                     console.log(err);
                 });
             }
@@ -330,6 +331,7 @@ angular.module('starter')
                 {},
                 successHandler,
                 function(err){
+                    Bugsnag.notify(err, JSON.stringify(err), {}, "error");
                     console.log(err);
                 }
             );

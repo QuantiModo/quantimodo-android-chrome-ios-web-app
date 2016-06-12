@@ -72,6 +72,7 @@ angular.module('starter')
 				}
 				$scope.hideLoader();
 	    	}, function(error){
+				Bugsnag.notify(error, JSON.stringify(error), {}, "error");
 	    		console.log('error getting measurements', error);
 				$scope.hideLoader();
 	    	});
@@ -99,12 +100,14 @@ angular.module('starter')
                     .then(function(variableCategories){
                         $scope.state.variableCategories = variableCategories;
                     }, function(err){
+						Bugsnag.notify(err, JSON.stringify(err), {}, "error");
                         console.log("error getting variable categories", err);
                     });
                 unitService.getUnits()
                     .then(function(units){
                         $scope.state.unitObjects = units;
                     }, function(err){
+						Bugsnag.notify(err, JSON.stringify(err), {}, "error");
                         console.log("error getting units", err);
                     });
                 getHistory();

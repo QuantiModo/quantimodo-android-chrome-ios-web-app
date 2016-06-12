@@ -139,6 +139,7 @@ angular.module('starter')
 	    		utilsService.showAlert(reminder.variableName + ' reminder deleted');
 	    		$scope.init();
 	    	}, function(err){
+				Bugsnag.notify(err, JSON.stringify(err), {}, "error");
 	    		$ionicLoading.hide();
 				$scope.loading = false;
 	    		utilsService.showAlert('Failed to Delete Reminder, Try again!', 'assertive');

@@ -574,6 +574,7 @@ angular.module('starter')
                 QuantiModo.getV1Measurements(params, function(response){
                     deferred.resolve(response);
                 }, function(error){
+                    Bugsnag.notify(error, JSON.stringify(error), {}, "error");
                     deferred.reject(error);
                 });
 
@@ -591,6 +592,7 @@ angular.module('starter')
                     var measurementObject = measurementArray[0];
                     return measurementObject;
                 }, function(error){
+                    Bugsnag.notify(error, JSON.stringify(error), {}, "error");
                     console.log(error);
                 });
             },

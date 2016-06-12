@@ -14,6 +14,7 @@ angular.module('starter')
 					reminderService.getTrackingReminders();
                 	deferred.resolve();
                 }, function(err){
+					Bugsnag.notify(err, JSON.stringify(err), {}, "error");
                 	deferred.reject(err);
                 });
 
@@ -29,6 +30,7 @@ angular.module('starter')
 						deferred.reject();
 					}
 				}, function(err){
+					Bugsnag.notify(err, JSON.stringify(err), {}, "error");
 					deferred.reject(err);
 				});
 				
@@ -46,6 +48,7 @@ angular.module('starter')
 						deferred.reject();
 					}
 				}, function(err){
+					Bugsnag.notify(err, JSON.stringify(err), {}, "error");
 					deferred.reject(err);
 				});
 				
@@ -61,6 +64,7 @@ angular.module('starter')
 						deferred.reject();
 					}
 				}, function(err){
+					Bugsnag.notify(err, JSON.stringify(err), {}, "error");
 					deferred.reject(err);
 				});
 				
@@ -86,6 +90,7 @@ angular.module('starter')
 						deferred.reject("error");
 					}
 				}, function(err){
+					Bugsnag.notify(err, JSON.stringify(err), {}, "error");
 					deferred.reject(err);
 				});
 
@@ -135,6 +140,7 @@ angular.module('starter')
 						deferred.reject("error");
 					}
 				}, function(err){
+					Bugsnag.notify(err, JSON.stringify(err), {}, "error");
 					deferred.reject(err);
 				});
 
@@ -154,6 +160,7 @@ angular.module('starter')
 						deferred.reject();
 					}
 				}, function(err){
+					Bugsnag.notify(err, JSON.stringify(err), {}, "error");
 					deferred.reject(err);
 				});
 				
