@@ -1,6 +1,6 @@
 angular.module('starter')
 // Handles the Notifications (inapp, push)
-    .factory('notificationService',function($rootScope, $ionicPlatform, $state){
+    .factory('notificationService',function($rootScope, $ionicPlatform, $state, localStorageService, timeService){
 
         //Notification intervals in minutes
         var intervals = {
@@ -14,24 +14,38 @@ angular.module('starter')
 
         return {
 
-            scheduleAllNotifications: function(trackingReminders) {
-                if(trackingReminders.length > 0){
-                    if ($rootScope.isChromeExtension || $rootScope.isChromeApp)
-                    {
-                        chrome.alarms.clearAll();
-                    }
+            scheduleAllNotifications: function(trackingRemindersFromApi) {
 
-                    if ($rootScope.isAndroid)
-                    {
-                        cordova.plugins.notification.local.cancelAll(function() {
-                            console.log("Canceled all Android notifications!");
-                        }, this);
+                if(trackingRemindersFromApi.length > 0){
+                    var scheduledTrackingReminders = localStorageService.getItemSync('scheduledTrackingReminders');
+                    scheduledTrackingReminders = JSON.parse(scheduledTrackingReminders);
+                    for (i = 0; i < scheduledTrackingReminders.length; i++) {
+                        var existingReminderFoundInApiResponse = false;
+                        for (var j = 0; j < trackingRemindersFromApi.length; j++) {
+                            if (trackingRemindersFromApi[i].id === scheduledTrackingReminders[j].id) {
+                                existingReminderFoundInApiResponse = true;
+                            }
+                        }
+                        if(!existingReminderFoundInApiResponse) {
+                            console.debug('No api reminder found matching ', scheduledTrackingReminders[j]);
+                            if ($rootScope.isChromeExtension || $rootScope.isChromeApp) {
+                                chrome.alarms.clear(JSON.stringify(scheduledTrackingReminders[j]));
+                            } else {
+                                cordova.plugins.notification.local.cancel(scheduledTrackingReminders[j].id);
+                            }
+                        }
                     }
-
                 }
-                for (var i = 0; i < trackingReminders.length; i++) {
-                    this.scheduleNotification(false, trackingReminders[i]);
+                var lastReminderSyncTimeEpochMilliseconds = parseInt(localStorageService.getItemSync('lastReminderSyncTimeEpochMilliseconds'));
+                for (var i = 0; i < trackingRemindersFromApi.length; i++) {
+                    trackingRemindersFromApi[i].updatedAtEpochMilliseconds = timeService.getEpochMillisecondsFromUtcDateTimeString(trackingRemindersFromApi[i].updatedAt);
+                    if(trackingRemindersFromApi[i].updatedAtEpochMilliseconds > lastReminderSyncTimeEpochMilliseconds){
+                        this.scheduleNotification(false, trackingRemindersFromApi[i]);
+                    }
                 }
+                lastReminderSyncTimeEpochMilliseconds = new Date().getTime();
+                localStorageService.setItem('lastReminderSyncTimeEpochMilliseconds', lastReminderSyncTimeEpochMilliseconds);
+                localStorageService.setItem('scheduledTrackingReminders', JSON.stringify(trackingRemindersFromApi));
             },
             
             scheduleNotification:function(interval, trackingReminder){
@@ -152,7 +166,11 @@ angular.module('starter')
                         console.debug('Creating reminder for ', trackingReminder);
                         alarmInfo.when =  trackingReminder.nextReminderTimeEpochSeconds * 1000;
                         alarmInfo.periodInMinutes = trackingReminder.reminderFrequency / 60;
-                        var alarmName = JSON.stringify(trackingReminder);
+                        var alarmName = {
+                            reminderId: trackingReminder.id,
+                            variableName: trackingReminder.variableName
+                        };
+                        alarmName = JSON.stringify(alarmName);
                         chrome.alarms.clear(alarmName);
                         chrome.alarms.create(alarmName, alarmInfo);
                         console.debug('Created alarm for alarmName ' + alarmName, alarmInfo);
