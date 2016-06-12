@@ -5,32 +5,11 @@ angular.module('starter')
 		// service methods
 		var reminderService = {
 
-			addNewReminder : function(variableId, 
-				defaultValue, 
-				reminderFrequency, 
-				variableName, 
-				variableCategoryName, 
-				abbreviatedUnitName, 
-				combinationOperation,
-				reminderStartTime,
-			  	instructions
-			){
+			addNewReminder : function(trackingReminder){
 				
 				var deferred = $q.defer();
-
-                var params = {
-					variableId : variableId, 
-                    defaultValue : defaultValue,
-                    reminderFrequency : reminderFrequency,
-                    variableName : variableName,
-                    variableCategoryName : variableCategoryName,
-                    abbreviatedUnitName : abbreviatedUnitName,
-                    combinationOperation : combinationOperation,
-                    reminderStartTime : reminderStartTime,
-					instructions : instructions
-                };
-
-                QuantiModo.postTrackingReminder(params, function(){
+				
+                QuantiModo.postTrackingReminder(trackingReminder, function(){
 					//update alarms and local notifications
 					reminderService.getTrackingReminders();
                 	deferred.resolve();

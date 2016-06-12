@@ -243,11 +243,11 @@ angular.module('starter')
 	    };
 
 	    $scope.editReminderSettings = function(trackingReminderNotification){
-			var reminder = trackingReminderNotification;
-			reminder.id = trackingReminderNotification.trackingReminderId;
+			var trackingReminder = trackingReminderNotification;
+			trackingReminder.id = trackingReminderNotification.trackingReminderId;
 	    	$state.go('app.reminderAdd',
 				{
-					reminder : reminder,
+					reminder : trackingReminder,
 					fromUrl: window.location.href,
 					fromState : $state.current.name
 				});

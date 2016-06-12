@@ -121,7 +121,7 @@ angular.module('starter')
 	    	});
 	    };
 
-	    $scope.addNewReminder = function(){
+	    $scope.addNewReminderButtonClick = function(){
 	    	$state.go('app.reminderAdd', 
 	    	{
 	    		variableCategoryName : $stateParams.variableCategoryName,

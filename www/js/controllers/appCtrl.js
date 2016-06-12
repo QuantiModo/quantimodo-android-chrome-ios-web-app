@@ -139,17 +139,20 @@ angular.module('starter')
         var scheduleReminder = function(){
             if($rootScope.reminderToSchedule){
 
-                reminderService.addNewReminder(
-                    $rootScope.reminderToSchedule.id,
-                    $rootScope.reminderToSchedule.reportedVariableValue,
-                    $rootScope.reminderToSchedule.interval,
-                    $rootScope.reminderToSchedule.name,
-                    $rootScope.reminderToSchedule.category,
-                    $rootScope.reminderToSchedule.unit,
-                    $rootScope.reminderToSchedule.combinationOperation)
+                var trackingReminder = {
+                    variableId: $rootScope.reminderToSchedule.id,
+                    defaultValue: $rootScope.reminderToSchedule.reportedVariableValue,
+                    variableName: $rootScope.reminderToSchedule.name,
+                    frequency: $rootScope.reminderToSchedule.interval,
+                    variableCategoryName: $rootScope.reminderToSchedule.category,
+                    abbreviatedUnitName: $rootScope.reminderToSchedule.unit,
+                    combinationOperation: $rootScope.reminderToSchedule.combinationOperation
+                };
+
+                reminderService.addNewReminder(trackingReminder)
                 .then(function(){
+                    console.log('reminder scheduled', $rootScope.reminderToSchedule);
                     delete $rootScope.reminderToSchedule;
-                    console.log('reminder scheduled');
                 }, function(err){
                     console.log(err);
                 });
