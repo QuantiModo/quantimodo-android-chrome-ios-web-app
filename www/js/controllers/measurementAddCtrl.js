@@ -183,13 +183,13 @@ angular.module('starter')
 
         $scope.done = function(){
 
-            if(!$scope.state.measurement.value){
-                utilsService.showAlert('Please enter value');
+            if($scope.state.measurement.value === ''){
+                utilsService.showAlert('Please enter a value');
                 return;
             }
 
-            if(!$scope.state.measurement.variable){
-                utilsService.showAlert('Please enter variable name');
+            if(!$scope.state.measurement.variable && !$scope.state.measurement.variableName){
+                utilsService.showAlert('Please enter a variable name');
                 return;
             }
 
