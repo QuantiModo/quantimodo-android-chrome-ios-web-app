@@ -1,25 +1,23 @@
 <ion-view hide-nav-bar="hideNavigationMenu" view-title="Track your {{primaryOutcomeVariable}}">
     <ion-content>
-    	<div ng-show="showRatingFaces" class="card primary-outcome-variable-reporting">
+    	<div class="card primary-outcome-variable-reporting">
     		<div class="item item-text-wrap">
-                <div class="primary-outcome-variable-rating-buttons" >
+                <div ng-show="showRatingFaces" class="primary-outcome-variable-rating-buttons" >
                     <p class="heading positive" style="padding:14px; text-align: center;">{{primaryOutcomeVariableTrackingQuestion}}</p>
                     <img ng-repeat="option in positiveRatingOptions"
                          ng-click="storeRatingLocalAndServerAndUpdateCharts(option.numericValue)"
                          ng-src="{{option.img}}"
                             >
                 </div>
+                <div ng-show="timeRemaining">
+                    <br/>
+                    <ul>
+                        <li style="padding:14px; text-align: center;">Thanks for reporting your {{primaryOutcomeVariable}}!</li>
+                        <li ng-show="secondsLeft">You can report your {{primaryOutcomeVariable}} back in {{secondsLeft}} seconds</li>
+                    </ul>
+                </div>
     		</div>
     	</div>
-        <div ng-show="timeRemaining">
-            <div class="item item-text-wrap">
-                <br/>
-                <ul>
-                    <li style="padding:14px; text-align: center;">Thanks for reporting your {{primaryOutcomeVariable}}!</li>
-                    <li ng-show="secondsLeft">You can report your {{primaryOutcomeVariable}} back in {{secondsLeft}} seconds</li>
-                </ul>
-            </div>
-        </div>
 
         <div ng-show="averagePrimaryOutcomeVariableImage" class="card primary-outcome-variable-average">
             <div class="item item-text-wrap">
