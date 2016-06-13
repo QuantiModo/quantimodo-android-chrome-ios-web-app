@@ -42,7 +42,7 @@ angular.module('starter')
 
 	    $scope.selectPrimaryOutcomeVariableValue = function($event, val){
 	        // remove any previous primary outcome variables if present
-	        jQuery('.primary-outcome-variable .active-primary-outcome-variable-rating-button').removeClass('active-primary-outcome-variable-rating-button');
+	        jQuery('.primary-outcome-variable-rating-buttons .active-primary-outcome-variable-rating-button').removeClass('active-primary-outcome-variable-rating-button');
 
 	        // make this primary outcome variable glow visually
 	        jQuery($event.target).addClass('active-primary-outcome-variable-rating-button');
