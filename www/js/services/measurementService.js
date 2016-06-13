@@ -597,59 +597,71 @@ angular.module('starter')
                 });
             },
 
-            deleteMeasurement : function(measurement){
+            deleteMeasurementFromLocalStorage : function(measurement) {
+                var deferred = $q.defer();
+                var found = false;
+                if (measurement.id) {
+                    var newAllMeasurements = [];
+                    localStorageService.getItem('allMeasurements',function(oldAllMeasurements) {
+                        oldAllMeasurements = oldAllMeasurements ? JSON.parse(oldAllMeasurements) : [];
+
+                        oldAllMeasurements.forEach(function (storedMeasurement) {
+                            // look for deleted measurement based on IDs
+                            if (storedMeasurement.id !== measurement.id) {
+                                // copy non-deleted measurements to newAllMeasurements
+                                newAllMeasurements.push(storedMeasurement);
+                            }
+                            else {
+                                console.debug("deleted measurement found in allMeasurements");
+                                found = true;
+                            }
+                        });
+                    });
+                    if (found) {
+                        localStorageService.setItem('allMeasurements',JSON.stringify(newAllMeasurements));
+                        deferred.resolve();
+                    }
+                }
+                else {
+                    var newMeasurementsQueue = [];
+                    localStorageService.getItemAsObject('measurementsQueue',function(oldMeasurementsQueue) {
+                        oldMeasurementsQueue.forEach(function(queuedMeasurement) {
+                            // look for deleted measurement based on startTimeEpoch and FIXME value
+                            if (found || queuedMeasurement.startTimeEpoch !== measurement.startTimeEpoch) {
+                                newMeasurementsQueue.push(queuedMeasurement);
+                            }
+                            else {
+                                console.debug("deleted measurement found in measurementsQueue");
+                                // don't copy
+                                found = true;
+                            }
+                        });
+                    });
+                    if (found) {
+                        localStorageService.setItem('measurementsQueue',JSON.stringify(newMeasurementsQueue));
+                        deferred.resolve();
+                    }
+                }
+                if (!found){
+                    console.debug("error: deleted measurement not found");
+                    deferred.reject();
+                }
+                return deferred.promise;
+
+            },
+
+            deleteMeasurementFromServer : function(measurement){
+                var deferred = $q.defer();
                 QuantiModo.deleteV1Measurements(measurement, function(response){
                     console.log("success", response);
                     // update local data
-                    var found = false;
-                    if (measurement.id) {
-                        var newAllMeasurements = [];
-                        localStorageService.getItem('allMeasurements',function(oldAllMeasurements) {
-                            oldAllMeasurements = oldAllMeasurements ? JSON.parse(oldAllMeasurements) : [];
-
-                            oldAllMeasurements.forEach(function (storedMeasurement) {
-                                // look for deleted measurement based on IDs
-                                if (storedMeasurement.id !== measurement.id) {
-                                    // copy non-deleted measurements to newAllMeasurements
-                                    newAllMeasurements.push(storedMeasurement);
-                                }
-                                else {
-                                    console.debug("deleted measurement found in allMeasurements");
-                                    found = true;
-                                }
-                            });
-                        });
-                        if (found) {
-                            localStorageService.setItem('allMeasurements',JSON.stringify(newAllMeasurements));
-                        }
-                    }
-                    else {
-                        var newMeasurementsQueue = [];
-                        localStorageService.getItemAsObject('measurementsQueue',function(oldMeasurementsQueue) {
-                            oldMeasurementsQueue.forEach(function(queuedMeasurement) {
-                                // look for deleted measurement based on startTimeEpoch and FIXME value
-                                if (found || queuedMeasurement.startTimeEpoch !== measurement.startTimeEpoch) {
-                                    newMeasurementsQueue.push(queuedMeasurement);
-                                }
-                                else {
-                                    console.debug("deleted measurement found in measurementsQueue");
-                                    // don't copy
-                                    found = true;
-                                }
-                            });
-                        });
-                        if (found) {
-                            localStorageService.setItem('measurementsQueue',JSON.stringify(newMeasurementsQueue));
-                        }
-                    }
-                    if (!found){
-                        console.debug("error: deleted measurement not found");
-                    }
-
-
+                    measurementService.deleteMeasurementFromLocalStorage(measurement);
+                    deferred.resolve(response);
                 }, function(response){
                     console.log("error", response);
+                    deferred.reject();
                 });
+                return deferred.promise;
             },
 		};
 		return measurementService;
