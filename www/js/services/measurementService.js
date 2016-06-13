@@ -318,7 +318,9 @@ angular.module('starter')
 
                     // add to queue
                     measurementsQueue.push({
+                        variable: config.appSettings.primaryOutcomeVariableDetails.name,
                         variableName: config.appSettings.primaryOutcomeVariableDetails.name,
+                        variableCategoryName: config.appSettings.primaryOutcomeVariableDetails.category,
                         variableDescription: config.appSettings.primaryOutcomeVariableDetails.description,
                         startTimeEpoch: Math.floor(startTimeEpoch / 1000),
                         abbreviatedUnitName: config.appSettings.primaryOutcomeVariableDetails.abbreviatedUnitName,
@@ -341,9 +343,10 @@ angular.module('starter')
                     measurementsQueue = measurementsQueue ? JSON.parse(measurementsQueue) : [];
                     // add to queue
                     measurementsQueue.push({
-                        //FIXME
                         id: measurementObject.id,
+                        variable: config.appSettings.primaryOutcomeVariableDetails.name,
                         variableName: config.appSettings.primaryOutcomeVariableDetails.name,
+                        variableCategoryName: measurementObject.variableCategoryName,
                         variableDescription: config.appSettings.primaryOutcomeVariableDetails.description,
                         startTimeEpoch: measurementObject.startTimeEpoch,
                         abbreviatedUnitName: config.appSettings.primaryOutcomeVariableDetails.abbreviatedUnitName,
