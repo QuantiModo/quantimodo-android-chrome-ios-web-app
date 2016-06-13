@@ -120,7 +120,7 @@ angular.module('starter')
                         lowerCaseTextDescription: 'ecstatic',
                         img: 'img/rating/ic_face_ecstatic.png'
                     }
-                ]
+                ];
             },
 
             getNegativeRatingOptions : function() {
@@ -155,7 +155,7 @@ angular.module('starter')
                         value: 'depressed',
                         img: 'img/rating/ic_face_depressed.png'
                     }
-                ]
+                ];
             },
 
             getNumericRatingOptions : function() {
