@@ -1,8 +1,8 @@
 <ion-view hide-nav-bar="hideNavigationMenu" view-title="Track your {{primaryOutcomeVariable}}">
     <ion-content>
-    	<div ng-show="showRatingFaces" class="card primary-outcome-variable-reporting">
+    	<div class="card primary-outcome-variable-reporting">
     		<div class="item item-text-wrap">
-                <div class="primary-outcome-variable-rating-buttons" >
+                <div ng-show="showRatingFaces" class="primary-outcome-variable-rating-buttons" >
                     <p class="heading positive" style="padding:14px; text-align: center;">{{primaryOutcomeVariableTrackingQuestion}}</p>
                     <img ng-repeat="option in positiveRatingOptions"
                          ng-click="storeRatingLocalAndServerAndUpdateCharts(option.numericValue)"
