@@ -646,7 +646,7 @@ angular.module('starter')
                     }
                 }
                 if (!found){
-                    console.debug("error: deleted measurement not found");
+                    console.debug("error: deleted measurement not found in local storage");
                     deferred.reject();
                 }
                 return deferred.promise;
@@ -657,8 +657,6 @@ angular.module('starter')
                 var deferred = $q.defer();
                 QuantiModo.deleteV1Measurements(measurement, function(response){
                     console.log("success", response);
-                    // update local data
-                    measurementService.deleteMeasurementFromLocalStorage(measurement);
                     deferred.resolve(response);
                 }, function(response){
                     console.log("error", response);
