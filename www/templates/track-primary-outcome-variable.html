@@ -9,15 +9,17 @@
                          ng-src="{{option.img}}"
                             >
                 </div>
-                <div ng-show="timeRemaining">
-                    <br/>
-                    <ul>
-                        <li style="padding:14px; text-align: center;">Thanks for reporting your {{primaryOutcomeVariable}}!</li>
-                        <li ng-show="secondsLeft">You can report your {{primaryOutcomeVariable}} back in {{secondsLeft}} seconds</li>
-                    </ul>
-                </div>
     		</div>
     	</div>
+        <div ng-show="timeRemaining">
+            <div class="item item-text-wrap">
+                <br/>
+                <ul>
+                    <li style="padding:14px; text-align: center;">Thanks for reporting your {{primaryOutcomeVariable}}!</li>
+                    <li ng-show="secondsLeft">You can report your {{primaryOutcomeVariable}} back in {{secondsLeft}} seconds</li>
+                </ul>
+            </div>
+        </div>
 
         <div ng-show="averagePrimaryOutcomeVariableImage" class="card primary-outcome-variable-average">
             <div class="item item-text-wrap">

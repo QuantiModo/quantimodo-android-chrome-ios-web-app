@@ -181,6 +181,7 @@ angular.module('starter')
         $scope.$on('$ionicView.enter', function(e) {
             console.log('track state brought in focus. Updating charts and syncing..');
             $scope.showRatingFaces = true;
+            $scope.timeRemaining = false;
             syncPrimaryOutcomeVariableMeasurementsAndUpdateCharts();
 
         });
