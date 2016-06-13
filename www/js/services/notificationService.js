@@ -19,19 +19,21 @@ angular.module('starter')
                 if(trackingRemindersFromApi.length > 0){
                     var scheduledTrackingReminders = localStorageService.getItemSync('scheduledTrackingReminders');
                     scheduledTrackingReminders = JSON.parse(scheduledTrackingReminders);
-                    for (i = 0; i < scheduledTrackingReminders.length; i++) {
-                        var existingReminderFoundInApiResponse = false;
-                        for (var j = 0; j < trackingRemindersFromApi.length; j++) {
-                            if (trackingRemindersFromApi[i].id === scheduledTrackingReminders[j].id) {
-                                existingReminderFoundInApiResponse = true;
+                    if (scheduledTrackingReminders) {
+                        for (i = 0; i < scheduledTrackingReminders.length; i++) {
+                            var existingReminderFoundInApiResponse = false;
+                            for (var j = 0; j < trackingRemindersFromApi.length; j++) {
+                                if (trackingRemindersFromApi[j].id === scheduledTrackingReminders[i].id) {
+                                    existingReminderFoundInApiResponse = true;
+                                }
                             }
-                        }
-                        if(!existingReminderFoundInApiResponse) {
-                            console.debug('No api reminder found matching ', scheduledTrackingReminders[j]);
-                            if ($rootScope.isChromeExtension || $rootScope.isChromeApp) {
-                                chrome.alarms.clear(JSON.stringify(scheduledTrackingReminders[j]));
-                            } else {
-                                cordova.plugins.notification.local.cancel(scheduledTrackingReminders[j].id);
+                            if(!existingReminderFoundInApiResponse) {
+                                console.debug('No api reminder found matching ', scheduledTrackingReminders[i]);
+                                if ($rootScope.isChromeExtension || $rootScope.isChromeApp) {
+                                    chrome.alarms.clear(JSON.stringify(scheduledTrackingReminders[i]));
+                                } else {
+                                    cordova.plugins.notification.local.cancel(scheduledTrackingReminders[i].id);
+                                }
                             }
                         }
                     }
