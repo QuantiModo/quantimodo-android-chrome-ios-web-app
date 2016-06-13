@@ -137,6 +137,7 @@ angular.module('starter')
             };
             measurementService.deleteMeasurementFromLocalStorage(measurementToDelete).then(
                 function() {
+                    console.log("About to delete measurement on server");
                     if($stateParams.fromUrl){
                         window.location = $stateParams.fromUrl;
                     } else if ($stateParams.fromState){
@@ -146,6 +147,17 @@ angular.module('starter')
                         $state.go(config.appSettings.defaultState);
                     }
                     measurementService.deleteMeasurementFromServer(measurementToDelete);
+                },
+                function() {
+                    console.log("Cannot delete measurement on server");
+                    if($stateParams.fromUrl){
+                        window.location = $stateParams.fromUrl;
+                    } else if ($stateParams.fromState){
+                        $state.go($stateParams.fromState);
+                    } else {
+                        $rootScope.hideNavigationMenu = false;
+                        $state.go(config.appSettings.defaultState);
+                    }
                 }
             );
         };
