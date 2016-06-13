@@ -65,7 +65,7 @@
                          ng-click="selectPrimaryOutcomeVariableValue($event, option.numericValue)"
                          ng-src="{{option.img}}"
                          ng-class="{'active-primary-outcome-variable-rating-button' :
-                         option.value === state.measurement.value}">
+                         option.numericValue === state.measurement.value}">
                 </div>
                 <div class="primary-outcome-variable-rating-buttons primary-outcome-variable-history col"
                      ng-if="showPositiveRatingFaceButtons">
@@ -81,7 +81,7 @@
                          ng-click="selectPrimaryOutcomeVariableValue($event, option.numericValue)"
                          ng-src="{{option.img}}"
                          ng-class="{'active-primary-outcome-variable-rating-button' :
-                         option.value === state.measurement.value}">
+                         option.numericValue === state.measurement.value}">
                 </div>
                 <label ng-if="(state.measurement.abbreviatedUnitName !== '/5')" class="item item-input item-select">
                     <div class="input-label">
