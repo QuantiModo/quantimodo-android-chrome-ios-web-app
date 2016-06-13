@@ -87,6 +87,7 @@ angular.module('starter')
 
 		
 		$scope.init = function(){
+			console.debug('history page init');
 			
 			console.debug($scope.ratingInfo[1].positiveImage);
 			$scope.showLoader();

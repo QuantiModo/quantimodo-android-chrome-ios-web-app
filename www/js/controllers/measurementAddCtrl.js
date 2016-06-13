@@ -135,16 +135,19 @@ angular.module('starter')
                 variableName : $scope.state.measurement.variable,
                 startTimeEpoch : $scope.state.measurement.startTimeEpoch
             };
-            measurementService.deleteMeasurement(measurementToDelete);
-
-            if($stateParams.fromUrl){
-                window.location = $stateParams.fromUrl;
-            } else if ($stateParams.fromState){
-                $state.go($stateParams.fromState);
-            } else {
-                $rootScope.hideNavigationMenu = false;
-                $state.go(config.appSettings.defaultState);
-            }
+            measurementService.deleteMeasurementFromLocalStorage(measurementToDelete).then(
+                function() {
+                    if($stateParams.fromUrl){
+                        window.location = $stateParams.fromUrl;
+                    } else if ($stateParams.fromState){
+                        $state.go($stateParams.fromState);
+                    } else {
+                        $rootScope.hideNavigationMenu = false;
+                        $state.go(config.appSettings.defaultState);
+                    }
+                    measurementService.deleteMeasurementFromServer(measurementToDelete);
+                }
+            );
         };
 
         $scope.onMeasurementStart = function(){
