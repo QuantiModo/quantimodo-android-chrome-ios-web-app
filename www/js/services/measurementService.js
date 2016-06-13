@@ -134,7 +134,7 @@ angular.module('starter')
                         console.log("Measurement sync complete!");
                         isSyncing = false;
                         deferred.resolve(response);
-                        //$rootScope.$broadcast('updateCharts');
+                        $rootScope.$broadcast('updateCharts');
                     }
                     else {
                         deferred.reject(false);
