@@ -646,7 +646,7 @@ angular.module('starter')
                     }
                 }
                 if (!found){
-                    console.debug("error: deleted measurement not found in local storage");
+                    console.debug("deleted measurement not found in local storage");
                     deferred.reject();
                 }
                 return deferred.promise;

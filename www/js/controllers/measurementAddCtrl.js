@@ -149,7 +149,8 @@ angular.module('starter')
                     measurementService.deleteMeasurementFromServer(measurementToDelete);
                 },
                 function() {
-                    console.log("Cannot delete measurement on server");
+                    console.log("Cannot delete measurement from local storage");
+                    measurementService.deleteMeasurementFromServer(measurementToDelete);
                     if($stateParams.fromUrl){
                         window.location = $stateParams.fromUrl;
                     } else if ($stateParams.fromState){
