@@ -88,7 +88,8 @@ angular.module('starter',
 
 })
 
-.config(function($stateProvider, $urlRouterProvider, $compileProvider, ionicTimePickerProvider) {
+.config(function($stateProvider, $urlRouterProvider, $compileProvider, ionicTimePickerProvider,
+                 ionicDatePickerProvider) {
     $compileProvider.imgSrcSanitizationWhitelist(/^\s*(https?|ftp|file|mailto|chrome-extension):/);
     $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|file|ftp|mailto|chrome-extension):/);
 
@@ -127,6 +128,7 @@ angular.module('starter',
       }]
     };
 
+    // Configure timepicker
     var timePickerObj = {
         format: 12,
         step: 1,
@@ -134,6 +136,23 @@ angular.module('starter',
     };
 
     ionicTimePickerProvider.configTimePicker(timePickerObj);
+    // Configure datepicker
+    var datePickerObj = {
+        inputDate: new Date(),
+        setLabel: 'Set',
+        todayLabel: 'Today',
+        closeLabel: 'Cancel',
+        mondayFirst: false,
+        weeksList: ["S", "M", "T", "W", "T", "F", "S"],
+        //monthsList: ["Jan", "Feb", "March", "April", "May", "June", "July", "Aug", "Sept", "Oct", "Nov", "Dec"],
+        templateType: 'modal',
+        from: new Date(2012, 8, 1),
+        to: new Date(),
+        showTodayButton: true,
+        dateFormat: 'dd MMMM yyyy',
+        closeOnSelect: false
+    };
+    ionicDatePickerProvider.configDatePicker(datePickerObj);
 
     $stateProvider
       .state('intro', {

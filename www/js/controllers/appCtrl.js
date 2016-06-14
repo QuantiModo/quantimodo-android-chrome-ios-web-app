@@ -4,7 +4,8 @@ angular.module('starter')
 	.controller('AppCtrl', function($scope, $ionicModal, $timeout, $injector, utilsService, authService,
                                     measurementService, $ionicPopover, $ionicLoading, $state, $ionicHistory,
                                     QuantiModo, notificationService, $rootScope, localStorageService, reminderService,
-                                    $ionicPopup, $ionicSideMenuDelegate, ratingService, migrationService) {
+                                    $ionicPopup, $ionicSideMenuDelegate, ratingService, migrationService,
+                                    ionicDatePicker) {
 
         $rootScope.loaderImagePath = config.appSettings.loaderImagePath;
         $scope.appVersion = 1489;
@@ -26,38 +27,48 @@ angular.module('starter')
 
         //FIXME how to link these to calendar popups?
         $scope.fromDatePickerObj = {
-            inputDate: new Date(),
-            setLabel: 'Set',
-            todayLabel: 'Today',
-            closeLabel: 'Cancel',
-            mondayFirst: false,
-            weeksList: ["S", "M", "T", "W", "T", "F", "S"],
-            monthsList: ["Jan", "Feb", "March", "April", "May", "June", "July", "Aug", "Sept", "Oct", "Nov", "Dec"],
-            templateType: 'popup',
+            //callback: $scope.datePickerFromCallback,
+            callback: function (val) {
+                if (typeof(val)==='undefined') {
+                    console.log('Date not selected');
+                } else if (val > $scope.toDate) {
+                    console.log("From date after to date");
+                    // FIXME show user what's wrong
+                    // FIXME reset date in date picker
+                } else {
+                    $scope.fromDate = new Date(val);
+                    $scope.saveDates();
+                }
+            },
             from: new Date(2012, 8, 1),
-            to: new Date(2018, 8, 1),
-            showTodayButton: true,
-            dateFormat: 'dd MMMM yyyy',
-            closeOnSelect: false,
-            disableWeekdays: [6]
+            to: new Date(2018, 8, 1)
+        };
+
+        $scope.openFromDatePicker = function(){
+            ionicDatePicker.openDatePicker($scope.fromDatePickerObj);
         };
 
         $scope.toDatePickerObj = {
-            inputDate: new Date(),
-            setLabel: 'Set',
-            todayLabel: 'Today',
-            closeLabel: 'Cancel',
-            mondayFirst: false,
-            weeksList: ["S", "M", "T", "W", "T", "F", "S"],
-            monthsList: ["Jan", "Feb", "March", "April", "May", "June", "July", "Aug", "Sept", "Oct", "Nov", "Dec"],
-            templateType: 'popup',
+            //callback: $scope.datePickerToCallback,
+            callback: function(val) {
+                if (typeof(val)==='undefined') {
+                    console.log('Date not selected');
+                } else if (val < $scope.fromDate) {
+                    console.log("To date before from date");
+                    // FIXME show user what's wrong
+                    // FIXME reset date in date picker
+                } else {
+                    $scope.toDate = new Date(val);
+                    $scope.saveDates();
+                }
+            },
             from: new Date(2012, 8, 1),
-            to: new Date(2018, 8, 1),
-            showTodayButton: true,
-            dateFormat: 'dd MMMM yyyy',
-            closeOnSelect: false,
-            disableWeekdays: [6]
-        }
+            to: new Date(2018, 8, 1)
+        };
+
+        $scope.openToDatePicker = function(){
+            ionicDatePicker.openDatePicker($scope.toDatePickerObj);
+        };
 
         var helpPopupMessages = config.appSettings.helpPopupMessages || false;
 
@@ -131,6 +142,7 @@ angular.module('starter')
             }
         });
 
+        // FIXME what is this linked to?
         // load the calendar popup
         $ionicPopover.fromTemplateUrl('templates/popover.html', {
             scope: $scope
@@ -178,7 +190,7 @@ angular.module('starter')
             $scope.init();
         };
 
-        // show calendar popup
+        // show main calendar popup (from and to)
         $scope.showCalendarPopup = function($event){
             $scope.popover.show($event);
             measurementService.getToDate(function(endDate){
