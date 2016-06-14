@@ -152,13 +152,10 @@ angular.module('starter')
 
 	    		$scope.state.trackingRemindersNotifications = trackingReminderNotifications;
 	    		$scope.state.filteredReminders = filterViaDates(trackingReminderNotifications);
-				$ionicLoading.hide();
-				$scope.loading = false;
+				$scope.hideLoader();
 	    	}, function(){
-				$ionicLoading.hide();
-				$scope.loading = false;
+				$scope.hideLoader();
 	    		console.error("failed to get reminders");
-
 	    	});
 	    };
 

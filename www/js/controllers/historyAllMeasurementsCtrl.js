@@ -58,7 +58,7 @@ angular.module('starter')
 
 
 	    var getHistory = function(){
-	    	//$scope.showLoader();
+	    	$scope.showLoader();
 	    	measurementService.getHistoryMeasurements({
     		    offset: $scope.state.offset,
     		    limit: $scope.state.limit,
@@ -86,12 +86,6 @@ angular.module('starter')
 	    
 	    // constructor
 	    $scope.init = function(){
-			if($stateParams.variableCategoryName) {
-				$scope.showLoader('Fetching ' + $stateParams.variableCategoryName.toLowerCase()
-					+ ' measurements...');
-			} else {
-				$scope.showLoader('Fetching measurements...');
-			}
 			setupVariableCategory();
             var isAuthorized = authService.checkAuthOrSendToLogin();
 			if(isAuthorized){
