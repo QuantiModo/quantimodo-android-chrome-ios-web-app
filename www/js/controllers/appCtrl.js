@@ -24,6 +24,41 @@ angular.module('starter')
         };
         $scope.floatingMaterialButton = config.appSettings.floatingMaterialButton;
 
+        //FIXME how to link these to calendar popups?
+        $scope.fromDatePickerObj = {
+            inputDate: new Date(),
+            setLabel: 'Set',
+            todayLabel: 'Today',
+            closeLabel: 'Cancel',
+            mondayFirst: false,
+            weeksList: ["S", "M", "T", "W", "T", "F", "S"],
+            monthsList: ["Jan", "Feb", "March", "April", "May", "June", "July", "Aug", "Sept", "Oct", "Nov", "Dec"],
+            templateType: 'popup',
+            from: new Date(2012, 8, 1),
+            to: new Date(2018, 8, 1),
+            showTodayButton: true,
+            dateFormat: 'dd MMMM yyyy',
+            closeOnSelect: false,
+            disableWeekdays: [6]
+        };
+
+        $scope.toDatePickerObj = {
+            inputDate: new Date(),
+            setLabel: 'Set',
+            todayLabel: 'Today',
+            closeLabel: 'Cancel',
+            mondayFirst: false,
+            weeksList: ["S", "M", "T", "W", "T", "F", "S"],
+            monthsList: ["Jan", "Feb", "March", "April", "May", "June", "July", "Aug", "Sept", "Oct", "Nov", "Dec"],
+            templateType: 'popup',
+            from: new Date(2012, 8, 1),
+            to: new Date(2018, 8, 1),
+            showTodayButton: true,
+            dateFormat: 'dd MMMM yyyy',
+            closeOnSelect: false,
+            disableWeekdays: [6]
+        }
+
         var helpPopupMessages = config.appSettings.helpPopupMessages || false;
 
         $scope.showHelpInfoPopupIfNecessary = function(e) {
@@ -108,9 +143,13 @@ angular.module('starter')
 
         // when from date is updated
         $scope.datePickerFromCallback = function (val) {
-            if(typeof(val)==='undefined'){
+            if (typeof(val)==='undefined') {
                 console.log('Date not selected');
-            }else{
+            } else if (val > $scope.toDate) {
+                console.log("From date after to date");
+                // FIXME show user what's wrong
+                // FIXME reset date in date picker
+            } else {
                 $scope.fromDate = new Date(val);
                 $scope.saveDates();
             }
@@ -118,9 +157,13 @@ angular.module('starter')
 
         // when to date is updated
         $scope.datePickerToCallback = function (val) {
-            if(typeof(val)==='undefined'){
+            if (typeof(val)==='undefined') {
                 console.log('Date not selected');
-            }else{
+            } else if (val < $scope.fromDate) {
+                console.log("To date before from date");
+                // FIXME show user what's wrong
+                // FIXME reset date in date picker
+            } else {
                 $scope.toDate = new Date(val);
                 $scope.saveDates();
             }
@@ -145,6 +188,7 @@ angular.module('starter')
                 });
             });
         };
+
 
         var scheduleReminder = function(){
             if($rootScope.reminderToSchedule){

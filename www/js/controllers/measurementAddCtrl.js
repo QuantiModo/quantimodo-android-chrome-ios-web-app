@@ -520,15 +520,13 @@ angular.module('starter')
                 $scope.showValueBox = true;
             }
         }
-
-        // FIXME if no id, save original startTimeEpoch
+        
         var setupTrackingByMeasurement = function(measurementObject){
 
             if(isNaN(measurementObject.startTimeEpoch)){
                 measurementObject.startTimeEpoch = moment(measurementObject.startTimeEpoch).unix();
             }
 
-            // KELLY
             if (!measurementObject.id) {
                 measurementObject.prevStartTimeEpoch = measurementObject.startTimeEpoch;
             }
@@ -538,7 +536,7 @@ angular.module('starter')
                 inputDate: $scope.selectedDate,
                 setLabel: 'Set',
                 todayLabel: 'Today',
-                closeLabel: 'Close',
+                closeLabel: 'Cancel',
                 mondayFirst: false,
                 weeksList: ["S", "M", "T", "W", "T", "F", "S"],
                 monthsList: ["Jan", "Feb", "March", "April", "May", "June", "July", "Aug", "Sept", "Oct", "Nov", "Dec"],
