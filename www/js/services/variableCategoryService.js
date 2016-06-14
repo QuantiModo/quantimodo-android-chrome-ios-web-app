@@ -81,6 +81,14 @@ angular.module('starter')
                         variableCategoryNameSingularLowercase: "activity",
                         measurementSynonymSingularLowercase : "activity",
                         icon: "ion-ios-body"
+                    },
+                    "Environment": {
+                        defaultAbbreviatedUnitName: '',
+                        helpText: "What environmental variable do you want to record?",
+                        variableCategoryName: "Environment",
+                        variableCategoryNameSingularLowercase: "environment",
+                        measurementSynonymSingularLowercase : "environmental measurement",
+                        icon: "ion-ios-partlysunny-outline"
                     }
                 };
 
