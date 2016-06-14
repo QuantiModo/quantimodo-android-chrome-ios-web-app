@@ -90,13 +90,13 @@ angular.module('starter')
         // when view is changed
         $scope.$on('$ionicView.enter', function(e) {
             if(e.targetScope && e.targetScope.controller_name && e.targetScope.controller_name === "TrackPrimaryOutcomeCtrl"){
-                $scope.showCalenderButton = true;
+                $scope.showCalendarButton = true;
             } else {
-                $scope.showCalenderButton = false;
+                $scope.showCalendarButton = false;
             }
         });
 
-        // load the calender popup
+        // load the calendar popup
         $ionicPopover.fromTemplateUrl('templates/popover.html', {
             scope: $scope
         }).then(function(popover) {
@@ -106,7 +106,7 @@ angular.module('starter')
         $scope.fromDate = new Date();
         $scope.toDate = new Date();
 
-        // when date is updated
+        // when from date is updated
         $scope.datePickerFromCallback = function (val) {
             if(typeof(val)==='undefined'){
                 console.log('Date not selected');
@@ -115,7 +115,17 @@ angular.module('starter')
                 $scope.saveDates();
             }
         };
-        // update dates selected from calender
+
+        // when to date is updated
+        $scope.datePickerToCallback = function (val) {
+            if(typeof(val)==='undefined'){
+                console.log('Date not selected');
+            }else{
+                $scope.toDate = new Date(val);
+                $scope.saveDates();
+            }
+        };
+        // update dates selected from calendar
         $scope.saveDates = function(){
             var to = moment($scope.toDate).unix()*1000;
             var from = moment($scope.fromDate).unix()*1000;
@@ -125,7 +135,7 @@ angular.module('starter')
             $scope.init();
         };
 
-        // show calender popup
+        // show calendar popup
         $scope.showCalendarPopup = function($event){
             $scope.popover.show($event);
             measurementService.getToDate(function(endDate){
