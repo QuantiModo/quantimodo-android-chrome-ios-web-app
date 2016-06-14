@@ -24,6 +24,18 @@ angular.module('starter')
 			}
 		};
 	})
+	.filter('timeDayDate', function(){
+		return function(time){
+			if(time){
+				if(typeof time === "number") {
+					return moment(time * 1000).format("h:mm a dddd MMM Do YYYY").split(/,/g);
+				}
+				return moment.utc(time).local().format("dddd at dddd h:mm a dddd MMMM Do YYYY").split(/,/g);
+			} else {
+				return "";
+			}
+		};
+	})
 	.filter('reminderTime', function(){
 	    return function(time){
 	    	if(time){

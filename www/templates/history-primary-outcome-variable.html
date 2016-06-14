@@ -7,9 +7,9 @@
                     <img ng-src="{{historyItem.image}}" style="width:80px;" />
                   </div>
                   <div class="history-block">
-                    <h2 class="history-time" ng-repeat="line in (historyItem.startTimeEpoch | time) track by $index">
-                      {{line}}
-                    </h2>
+                      <h2 class="history-time" ng-repeat="line in (historyItem.startTimeEpoch | timeDayDate) track by $index">
+                          {{line}}
+                      </h2>
                     <br/>
                     <h2 class="" >{{historyItem.value | percentage}}% {{historyItem.value | PrimaryOutcomeVariableByNumber}}</h2>
                   </div>
