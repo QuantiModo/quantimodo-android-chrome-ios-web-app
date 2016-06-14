@@ -265,8 +265,15 @@ angular.module('starter')
 
 			// date setter from - to
 			setDates : function(to, from){
-				localStorageService.setItem('toDate',parseInt(to));
+                var oldFromDate = localStorageService.getItemSync('fromDate');
+                var oldToDate = localStorageService.getItemSync('toDate');
                 localStorageService.setItem('fromDate',parseInt(from));
+				localStorageService.setItem('toDate',parseInt(to));
+                // if date range changed, update charts
+                if (parseInt(oldFromDate) !== parseInt(from) || parseInt(oldToDate) !== parseInt(to)) {
+                    $rootScope.$broadcast('updateCharts');
+                }
+
 			},
 
 			// retrieve date to end on
