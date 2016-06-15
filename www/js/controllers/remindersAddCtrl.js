@@ -290,7 +290,7 @@ angular.module('starter')
                 return;
             }
 
-            if(!$scope.state.trackingReminder.defaultValue) {
+            if(!$scope.state.trackingReminder.defaultValue && $scope.state.trackingReminder.defaultValue !== 0) {
                 utilsService.showAlert('Please enter a default value');
                 return;
             }
