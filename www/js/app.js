@@ -134,8 +134,8 @@ angular.module('starter',
         step: 1,
         closeLabel: 'Cancel'
     };
-
     ionicTimePickerProvider.configTimePicker(timePickerObj);
+
     // Configure datepicker
     var datePickerObj = {
         inputDate: new Date(),
