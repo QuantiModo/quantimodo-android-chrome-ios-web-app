@@ -304,7 +304,30 @@ angular.module('starter')
                     }
                 });
 			},
+            
+            createPrimaryOutcomeMeasurement : function(numericRatingValue) {
+                // if val is string (needs conversion)
+                if(isNaN(parseFloat(numericRatingValue))){
+                    numericRatingValue = config.appSettings.ratingTextToValueConversionDataSet[numericRatingValue] ?
+                        config.appSettings.ratingTextToValueConversionDataSet[numericRatingValue] : false;
+                }
+                var startTimeEpoch  = new Date().getTime();
+                var measurementObject = {
+                    id: null,
+                    variable: config.appSettings.primaryOutcomeVariableDetails.name,
+                    variableName: config.appSettings.primaryOutcomeVariableDetails.name,
+                    variableCategoryName: config.appSettings.primaryOutcomeVariableDetails.category,
+                    variableDescription: config.appSettings.primaryOutcomeVariableDetails.description,
+                    startTimeEpoch: Math.floor(startTimeEpoch / 1000),
+                    abbreviatedUnitName: config.appSettings.primaryOutcomeVariableDetails.abbreviatedUnitName,
+                    value: numericRatingValue,
+                    note: ""  
+                };
+                return measurementObject;
+            },
 
+            /*
+            // Deprecated
 			// update primary outcome variable in local storage
             addToMeasurementsQueue : function(numericRatingValue){
                 console.log("reported", numericRatingValue);
@@ -315,8 +338,7 @@ angular.module('starter')
                     numericRatingValue = config.appSettings.ratingTextToValueConversionDataSet[numericRatingValue] ?
                         config.appSettings.ratingTextToValueConversionDataSet[numericRatingValue] : false;
                 }
-
-                localStorageService.setItem('lastReportedPrimaryOutcomeVariableValue', numericRatingValue);
+                
                 //add to measurementsQueue to be synced later
                 var startTimeEpoch  = new Date().getTime();
                 // check queue
@@ -340,10 +362,11 @@ angular.module('starter')
 
                 return deferred.promise;
             },
+            */
 
             // used when adding a new measurement from record measurement OR updating a measurement through the queue
-            addDetailedMeasurementToMeasurementsQueue : function(measurementObject){
-                console.log("added existing measurement to measurementsQueue: " + measurementObject.id);
+            addToMeasurementsQueue : function(measurementObject){
+                console.log("added to measurementsQueue: id = " + measurementObject.id);
                 var deferred = $q.defer();
 
                 localStorageService.getItem('measurementsQueue',function(measurementsQueue) {
@@ -453,7 +476,7 @@ angular.module('starter')
                             note : measurementInfo.note,
                             combinationOperation : measurementInfo.isAvg? "MEAN" : "SUM"
                         };
-                        measurementService.addDetailedMeasurementToMeasurementsQueue(editedMeasurement);
+                        measurementService.addToMeasurementsQueue(editedMeasurement);
 
                     } else {
                         // adding primary outcome variable measurement from record measurements page
@@ -468,7 +491,7 @@ angular.module('starter')
                             note : measurementInfo.note,
                             combinationOperation : measurementInfo.isAvg? "MEAN" : "SUM"
                         };
-                        measurementService.addDetailedMeasurementToMeasurementsQueue(newMeasurement);
+                        measurementService.addToMeasurementsQueue(newMeasurement);
                     }
                     $rootScope.$broadcast('updateChartsAndSyncMeasurements');
                 }
