@@ -198,9 +198,9 @@ angular.module('starter')
                         measurements[index].roundedValue = Math.round(measurements[index].value);
                     }
 
-                    if (measurements[index].abbreviatedUnitName === '%') {
-                        measurements[index].roundedValue = Math.round(measurements[index].value / 25 + 1);
-                    }
+                    // if (measurements[index].abbreviatedUnitName === '%') {
+                    //     measurements[index].roundedValue = Math.round(measurements[index].value / 25 + 1);
+                    // }
 
                     if (measurements[index].roundedValue && measurements[index].variableDescription === 'positive') {
                         if (ratingInfo[measurements[index].roundedValue]) {
