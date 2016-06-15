@@ -69,29 +69,23 @@ angular.module('starter')
             },100);
         };
 
-        // FIXME don't default to current time for editing measurement
         $scope.openMeasurementStartTimePicker = function() {
 
-            var hoursSinceMidnightLocal = moment().format("HH");
-            var minutesSinceMidnightLocal = moment().format("mm");
-            var secondsSinceMidnightLocal =
-                hoursSinceMidnightLocal * 60 * 60 + minutesSinceMidnightLocal * 60;
+            var secondsSinceMidnightLocal = ($scope.selectedHours * 60 * 60) + ($scope.selectedMinutes * 60);
 
             $scope.state.timePickerConfiguration = {
                 callback: function (val) {
                     if (typeof (val) === 'undefined') {
                         console.log('Time not selected');
                     } else {
-                        var a = new Date();
-                        var selectedTime = new Date(val * 1000);
-                        a.setHours(selectedTime.getUTCHours());
-                        a.setMinutes(selectedTime.getUTCMinutes());
+                        var selectedDateTime = new Date(val * 1000);
+                        $scope.selectedHours = selectedDateTime.getUTCHours();
+                        $scope.selectedMinutes = selectedDateTime.getUTCMinutes();
+                        $scope.selectedDate.setHours($scope.selectedHours);
+                        $scope.selectedDate.setMinutes($scope.selectedMinutes);
 
                         console.log('Selected epoch is : ', val, 'and the time is ',
-                            selectedTime.getUTCHours(), 'H :', selectedTime.getUTCMinutes(), 'M');
-
-                        $scope.state.measurement.startTimeEpoch = a.getTime() / 1000;
-                        $scope.state.measurementStartTimeUtc = moment.utc(a).format('HH:mm:ss');
+                            $scope.selectedHours, 'H :', $scope.selectedMinutes, 'M');
                     }
                 },
                 inputTime: secondsSinceMidnightLocal,
@@ -107,7 +101,10 @@ angular.module('starter')
                     if (typeof(val)==='undefined') {
                         console.log('Date not selected');
                     } else {
+                        // clears out hours and minutes
                         $scope.selectedDate = new Date(val);
+                        $scope.selectedDate.setHours($scope.selectedHours);
+                        $scope.selectedDate.setMinutes($scope.selectedMinutes);
                     }
                 },
                 inputDate: $scope.selectedDate,
@@ -222,7 +219,7 @@ angular.module('starter')
 
             console.debug('done: completed adding and/or measuring');
 
-            // FIXME combine date/time properly
+            // combine selected date and time
             $scope.state.measurement.startTimeEpoch = $scope.selectedDate.getTime()/1000;
 
             // populate params
@@ -295,8 +292,8 @@ angular.module('starter')
 
                 } else {
                     // measurement only
+                    // note: this is for adding or editing
 
-                    // KELLY note: this is for adding or editing
                     // post measurement
                     measurementService.postTrackingMeasurement(
                         measurementInfo);
@@ -417,10 +414,14 @@ angular.module('starter')
         };
         
         $scope.selectedDate = new Date();
+        $scope.selectedHours = $scope.selectedDate.getHours();
+        $scope.selectedMinutes = $scope.selectedDate.getMinutes();
 
         // update data when view is navigated to
         $scope.$on('$ionicView.enter', $scope.init);
 
+        // Deprecated
+        /*
         // when date is updated
         $scope.datePickerCallback = function (selectedDate) {
             if(typeof(selectedDate)==='undefined'){
@@ -429,6 +430,7 @@ angular.module('starter')
                 $scope.selectedDate = selectedDate;
             }
         };
+        */
 
         $scope.selectPrimaryOutcomeVariableValue = function($event, val){
             // remove any previous primary outcome variables if present
@@ -549,6 +551,11 @@ angular.module('starter')
             }
 
             $scope.selectedDate = new Date(measurementObject.startTimeEpoch * 1000);
+            $scope.selectedHours = $scope.selectedDate.getHours();
+            $scope.selectedMinutes = $scope.selectedDate.getMinutes();
+
+            // Not used
+            /*
             $scope.datePickerObj = {
                 inputDate: $scope.selectedDate,
                 setLabel: 'Set',
@@ -564,6 +571,7 @@ angular.module('starter')
                 dateFormat: 'dd MMMM yyyy',
                 closeOnSelect: false
             };
+            */
 
             console.log('track : ' , measurementObject);
 
