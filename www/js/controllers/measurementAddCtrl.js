@@ -16,7 +16,7 @@ angular.module('starter')
         $scope.state = {
             measurementIsSetup : false,
             showAddVariable: false,
-            showCategoryAsSelector: false,
+            showVariableCategorySelector: false,
             showUnits: false,
             unitCategories : [],
             variableCategoryName: variableCategoryName,
@@ -29,8 +29,19 @@ angular.module('starter')
             measurement : {},
             // default operation
             sumAvg : "avg",
-
-            searchedUnits : []
+            searchedUnits : [],
+            defaultValueLabel : 'Value',
+            defaultValuePlaceholderText : 'Enter a value',
+            variableCategories : [
+                { id : 1, name : 'Emotions' },
+                { id : 2, name : 'Symptoms' },
+                { id : 3, name : 'Treatments' },
+                { id : 4, name : 'Foods' },
+                { id : 5, name : 'Vital Signs' },
+                { id : 6, name : 'Physical Activity' },
+                { id : 7, name : 'Sleep' },
+                { id : 8, name : 'Misc' }
+            ]
         };
 
         // when a unit is changed
@@ -324,6 +335,28 @@ angular.module('starter')
 
         };
 
+        // setup category view
+        $scope.setupVariableCategory = function(variableCategoryName){
+            console.log("variableCategoryName  is " + variableCategoryName);
+            //$scope.state.showVariableCategorySelector = false;
+            if(!variableCategoryName){
+                variableCategoryName = '';
+            }
+            $scope.state.measurement.variableCategoryName = variableCategoryName;
+            $scope.state.variableCategoryObject = variableCategoryService.getVariableCategoryInfo(variableCategoryName);
+            $scope.state.measurement.abbreviatedUnitName = $scope.state.variableCategoryObject.defaultAbbreviatedUnitName;
+            $scope.state.title = "Add " + $filter('wordAliases')(pluralize(variableCategoryName, 1)) + " Measurement";
+            $scope.state.measurementSynonymSingularLowercase = $scope.state.variableCategoryObject.measurementSynonymSingularLowercase;
+            if($scope.state.variableCategoryObject.defaultValueLabel){
+                $scope.state.defaultValueLabel = $scope.state.variableCategoryObject.defaultValueLabel;
+            }
+            if($scope.state.variableCategoryObject.defaultValuePlaceholderText){
+                $scope.state.defaultValuePlaceholderText = $scope.state.variableCategoryObject.defaultValuePlaceholderText;
+            }
+            $scope.state.variableSearchPlaceholderText = 'Search for a ' + $filter('wordAliases')(pluralize(variableCategoryName, 1)) + '...';
+            setupValueFieldType($scope.state.variableCategoryObject.defaultAbbreviatedUnitName, null);
+        };
+
         // when a unit category is changed
         $scope.changeUnitCategory = function(x){
             $scope.selectedUnitCategoryName = x;
@@ -495,7 +528,7 @@ angular.module('starter')
                 } else if($stateParams.variableObject.variableCategoryName) {
                     $scope.state.measurement.variableCategoryName = $stateParams.variableObject.variableCategoryName;
                 } else {
-                    $scope.state.showCategoryAsSelector;
+                    $scope.state.showVariableCategorySelector = true;
                 }
                 if($stateParams.variableObject.combinationOperation){
                     $scope.state.measurement.combinationOperation = $stateParams.variableObject.combinationOperation;
@@ -530,13 +563,25 @@ angular.module('starter')
             if (abbreviatedUnitName === '/5') {
                 if (!variableDescription) {
                     $scope.showNumericRatingNumberButtons = true;
+                    $scope.showNegativeRatingFaceButtons = false;
+                    $scope.showValueBox = false;
+                    $scope.showPositiveRatingFaceButtons = false;
                 } else if (variableDescription.toLowerCase().indexOf('positive') > -1) {
                     $scope.showPositiveRatingFaceButtons = true;
+                    $scope.showNumericRatingNumberButtons = false;
+                    $scope.showNegativeRatingFaceButtons = false;
+                    $scope.showValueBox = false;
                 } else if (variableDescription.toLowerCase().indexOf('negative') > -1) {
                     $scope.showNegativeRatingFaceButtons = true;
+                    $scope.showValueBox = false;
+                    $scope.showPositiveRatingFaceButtons = false;
+                    $scope.showNumericRatingNumberButtons = false;
                 }
             } else {
                 $scope.showValueBox = true;
+                $scope.showNegativeRatingFaceButtons = false;
+                $scope.showPositiveRatingFaceButtons = false;
+                $scope.showNumericRatingNumberButtons = false;
             }
         }
         

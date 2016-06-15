@@ -12,15 +12,17 @@ angular.module('starter')
         var variableCategoryObject = variableCategoryService.getVariableCategoryInfo(variableCategoryName);
 
         $scope.state = {
+            searching: true,
             showVariableSearchCard: false,
             showAddVariableButton: false,
-            showCategoryAsSelector: false,
+            showVariableCategorySelector: false,
             variableSearchResults : [],
             variableCategoryName: variableCategoryName,
             variableCategoryObject : variableCategoryObject,
             // variables
             variableName : "",
-            helpText: variableCategoryObject.helpText
+            helpText: variableCategoryObject.helpText,
+            variableSearchQuery: ''
         };
 
         if(variableCategoryName){
@@ -76,6 +78,8 @@ angular.module('starter')
         };
 
         var populateUserVariables = function(){
+            $scope.state.showAddVariableButton = false;
+            $scope.state.searching = true;
             if($stateParams.variableCategoryName){
                 $scope.showLoader('Fetching most recent ' +
                     $filter('wordAliases')($stateParams.variableCategoryName.toLowerCase()) + '...');
