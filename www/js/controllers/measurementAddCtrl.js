@@ -4,7 +4,7 @@ angular.module('starter')
     .controller('MeasurementAddCtrl', function($scope, $ionicModal, $timeout, $ionicPopup ,$ionicLoading,
                                                      authService, measurementService, $state, $rootScope, $stateParams,
                                                      utilsService, localStorageService, $filter, $ionicScrollDelegate,
-                                                        variableCategoryService, ionicTimePicker, variableService,
+                                                        variableCategoryService, ionicTimePicker, ionicDatePicker, variableService,
                                                         unitService){
 
         $scope.controller_name = "MeasurementAddCtrl";
@@ -69,6 +69,7 @@ angular.module('starter')
             },100);
         };
 
+        // FIXME don't default to current time for editing measurement
         $scope.openMeasurementStartTimePicker = function() {
 
             var hoursSinceMidnightLocal = moment().format("HH");
@@ -97,8 +98,23 @@ angular.module('starter')
                 step: 1,
                 closeLabel: 'Cancel'
             };
-
             ionicTimePicker.openTimePicker($scope.state.timePickerConfiguration);
+        };
+
+        $scope.openMeasurementDatePicker = function() {
+            $scope.state.datePickerConfiguration = {
+                callback: function(val) {
+                    if (typeof(val)==='undefined') {
+                        console.log('Date not selected');
+                    } else {
+                        $scope.selectedDate = new Date(val);
+                    }
+                },
+                inputDate: $scope.selectedDate,
+                from:new Date(2012, 8, 1),
+                to: new Date()
+            };
+            ionicDatePicker.openDatePicker($scope.state.datePickerConfiguration);
         };
 
         // when add new variable is tapped
@@ -206,6 +222,7 @@ angular.module('starter')
 
             console.debug('done: completed adding and/or measuring');
 
+            // FIXME combine date/time properly
             $scope.state.measurement.startTimeEpoch = $scope.selectedDate.getTime()/1000;
 
             // populate params
