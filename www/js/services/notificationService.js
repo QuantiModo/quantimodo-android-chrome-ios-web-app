@@ -32,7 +32,10 @@ angular.module('starter')
                                 if ($rootScope.isChromeExtension || $rootScope.isChromeApp) {
                                     chrome.alarms.clear(JSON.stringify(scheduledTrackingReminders[i]));
                                 } else {
-                                    cordova.plugins.notification.local.cancel(scheduledTrackingReminders[i].id);
+                                            if (cordova) {
+                                                          cordova.plugins.notification.local.cancel(scheduledTrackingReminders[i].id);
+
+                                            }
                                 }
                             }
                         }
