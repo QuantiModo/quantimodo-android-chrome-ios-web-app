@@ -79,19 +79,33 @@ angular.module('starter')
                 var sum = 0;
 
                 if (allMeasurements) {
+                    var fromDate = parseInt(localStorageService.getItemSync('fromDate'));
+                    var toDate = parseInt(localStorageService.getItemSync('toDate'));
+                    if (!fromDate) {
+                        fromDate = 0;
+                    }
+                    if (!toDate) {
+                        toDate = Date.now();
+                    }
+                    var rangeLength = 0; // number of measurements in date range
                     for (var i = 0; i < allMeasurements.length; i++) {
                         var currentValue = Math.ceil(allMeasurements[i].value);
-                        if (allMeasurements[i].abbreviatedUnitName === config.appSettings.primaryOutcomeVariableDetails.abbreviatedUnitName &&
+                        if (allMeasurements[i].abbreviatedUnitName ===
+                            config.appSettings.primaryOutcomeVariableDetails.abbreviatedUnitName &&
                             (currentValue - 1) <= 4 && (currentValue - 1) >= 0) {
-                            var startTimeMilliseconds = moment(allMeasurements[i].startTimeEpoch).unix() * 1000;
-                            var percentValue = (currentValue - 1) * 25;
-                            var lineChartItem = [startTimeMilliseconds, percentValue];
-                            lineArr.push(lineChartItem);
-                            barArr[currentValue - 1]++;
+                            var startTimeMilliseconds = allMeasurements[i].startTimeEpoch * 1000;
+                            if (startTimeMilliseconds >= fromDate && startTimeMilliseconds <= toDate) {
+                                var percentValue = (currentValue - 1) * 25;
+                                var lineChartItem = [startTimeMilliseconds, percentValue];
+                                lineArr.push(lineChartItem);
+                                barArr[currentValue - 1]++;
+
+                                sum+= allMeasurements[i].value;
+                                rangeLength++;
+                            }
                         }
-                        sum+= allMeasurements[i].value;
                     }
-                    var averagePrimaryOutcomeVariableValue = Math.round(sum/(allMeasurements.length));
+                    var averagePrimaryOutcomeVariableValue = Math.round(sum/(rangeLength));
                     localStorageService.setItem('averagePrimaryOutcomeVariableValue',averagePrimaryOutcomeVariableValue);
 
                     if(!$scope.barChartConfig || barArr !== $scope.barChartConfig.series[0].data) {

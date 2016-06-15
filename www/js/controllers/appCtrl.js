@@ -4,7 +4,8 @@ angular.module('starter')
 	.controller('AppCtrl', function($scope, $ionicModal, $timeout, $injector, utilsService, authService,
                                     measurementService, $ionicPopover, $ionicLoading, $state, $ionicHistory,
                                     QuantiModo, notificationService, $rootScope, localStorageService, reminderService,
-                                    $ionicPopup, $ionicSideMenuDelegate, ratingService, migrationService) {
+                                    $ionicPopup, $ionicSideMenuDelegate, ratingService, migrationService,
+                                    ionicDatePicker) {
 
         $rootScope.loaderImagePath = config.appSettings.loaderImagePath;
         $scope.appVersion = 1489;
@@ -23,7 +24,114 @@ angular.module('starter')
             $ionicSideMenuDelegate.toggleLeft(false);
         };
         $scope.floatingMaterialButton = config.appSettings.floatingMaterialButton;
+        
+        //  Calendar and  Date picker
 
+        // will update from showCalendarPopup
+        $scope.fromDate = new Date();
+        $scope.toDate = new Date();
+
+        // "from" datepicker config
+        $scope.fromDatePickerObj = {
+            callback: function (val) {
+                if (typeof(val)==='undefined') {
+                    console.log('Date not selected');
+                } else {
+                    $scope.fromDate = new Date(val);
+                    $scope.saveDates();
+                }
+            },
+            inputDate: $scope.fromDate, // previously selected value
+            from: new Date(2012, 8, 1),
+            to: $scope.toDate // don't allow fromDate to be after toDate
+        };
+
+        // "to" datepicker config
+        $scope.toDatePickerObj = {
+            callback: function(val) {
+                if (typeof(val)==='undefined') {
+                    console.log('Date not selected');
+                } else {
+                    $scope.toDate = new Date(val);
+                    $scope.saveDates();
+                }
+            },
+            inputDate: $scope.toDate, // previously selected value
+            from: $scope.fromDate, // don't allow toDate to be after fromDate
+            to: new Date() //today
+        };
+
+        // open datepicker for "from" date
+        $scope.openFromDatePicker = function(){
+            ionicDatePicker.openDatePicker($scope.fromDatePickerObj);
+        };
+
+        // open datepicker for "to" date
+        $scope.openToDatePicker = function(){
+            ionicDatePicker.openDatePicker($scope.toDatePickerObj);
+        };
+
+        // update dates selected from calendar
+        $scope.saveDates = function(){
+            $scope.updateDatesLocalStorage();
+            $scope.updateDatePickerObjects();
+            $scope.popover.hide();
+            $scope.init();
+        };
+        
+        // update fromDate and toDate in datepicker objects
+        $scope.updateDatePickerObjects = function() {
+            $scope.fromDatePickerObj.to = $scope.toDate;
+            $scope.toDatePickerObj.from = $scope.fromDate;
+            $scope.fromDatePickerObj.inputDate = $scope.fromDate;
+            $scope.toDatePickerObj.inputDate = $scope.toDate;
+        };
+        
+        $scope.updateDatesLocalStorage = function() {
+            var to = moment($scope.toDate).unix()*1000;
+            var from = moment($scope.fromDate).unix()*1000;
+            measurementService.setDates(to, from);
+        }
+
+        // show main calendar popup (from and to)
+        $scope.showCalendarPopup = function($event){
+            $scope.popover.show($event);
+            measurementService.getToDate(function(endDate){
+                $scope.toDate = new Date(endDate);
+                $scope.fromDatePickerObj.to = $scope.toDate;
+                measurementService.getFromDate(function(fromDate){
+                    $scope.fromDate = new Date(fromDate);
+                    $scope.toDatePickerObj.from = $scope.fromDate;
+                });
+            });
+        };
+        
+        // Deprecated
+        /*
+        // when from date is updated
+        $scope.fromDatePickerCallback = function (val) {
+            if (typeof(val)==='undefined') {
+                console.log('Date not selected');
+            } else if (val > $scope.toDate) {
+                console.log("From date after to date");
+            } else {
+                $scope.fromDate = new Date(val);
+                $scope.saveDates();
+            }
+        };
+
+        // when to date is updated
+        $scope.datePickerToCallback = function (val) {
+            if (typeof(val)==='undefined') {
+                console.log('Date not selected');
+            } else if (val < $scope.fromDate) {
+                console.log("To date before from date");
+            } else {
+                $scope.toDate = new Date(val);
+                $scope.saveDates();
+            }
+        };
+        */
         var helpPopupMessages = config.appSettings.helpPopupMessages || false;
 
         $scope.showHelpInfoPopupIfNecessary = function(e) {
@@ -90,52 +198,18 @@ angular.module('starter')
         // when view is changed
         $scope.$on('$ionicView.enter', function(e) {
             if(e.targetScope && e.targetScope.controller_name && e.targetScope.controller_name === "TrackPrimaryOutcomeCtrl"){
-                $scope.showCalenderButton = true;
+                $scope.showCalendarButton = true;
             } else {
-                $scope.showCalenderButton = false;
+                $scope.showCalendarButton = false;
             }
         });
 
-        // load the calender popup
         $ionicPopover.fromTemplateUrl('templates/popover.html', {
             scope: $scope
         }).then(function(popover) {
             $scope.popover = popover;
         });
-
-        $scope.fromDate = new Date();
-        $scope.toDate = new Date();
-
-        // when date is updated
-        $scope.datePickerFromCallback = function (val) {
-            if(typeof(val)==='undefined'){
-                console.log('Date not selected');
-            }else{
-                $scope.fromDate = new Date(val);
-                $scope.saveDates();
-            }
-        };
-        // update dates selected from calender
-        $scope.saveDates = function(){
-            var to = moment($scope.toDate).unix()*1000;
-            var from = moment($scope.fromDate).unix()*1000;
-
-            measurementService.setDates(to, from);
-            $scope.popover.hide();
-            $scope.init();
-        };
-
-        // show calender popup
-        $scope.showCalendarPopup = function($event){
-            $scope.popover.show($event);
-            measurementService.getToDate(function(endDate){
-                $scope.toDate = new Date(endDate);
-                measurementService.getFromDate(function(fromDate){
-                    $scope.fromDate = new Date(fromDate);
-                });
-            });
-        };
-
+        
         var scheduleReminder = function(){
             if($rootScope.reminderToSchedule){
 
@@ -217,8 +291,7 @@ angular.module('starter')
                 $state.go(config.appSettings.defaultState);
             }
         };
-
-
+        
         $scope.init = function () {
             console.log("Main Constructor Start");
             if(!$rootScope.user){

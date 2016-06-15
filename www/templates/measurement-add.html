@@ -102,11 +102,14 @@
                         </span>
                     </div>
                     <div class="col" style="padding-top: 15px;">
-                        <ionic-datepicker style="width:100%" idate="selectedDate" disablepreviousdates="false" callback="datePickerCallback">
-                            <button class="button button-block measure-date up-top" style="font-size:14px;border:none;color:black;background-color: white;margin-bottom: 0px;margin-top: 0px;padding-left: 0px; text-align:left;">
+                        <!--FIXME update this-->
+                        <!--<ionic-datepicker style="width:100%" idate="selectedDate" disablepreviousdates="false" callback="datePickerCallback">-->
+                            <button class="button button-block measure-date up-top"
+                                    style="font-size:14px;border:none;color:black;background-color: white;margin-bottom: 0px;margin-top: 0px;padding-left: 0px; text-align:left;"
+                                    ng-click="openMeasurementDatePicker()">
                                 {{ selectedDate | date:'dd - MMMM - yyyy' }}
                             </button>
-                        </ionic-datepicker>
+                        <!--</ionic-datepicker>-->
                     </div>
                 </div>
 
@@ -120,7 +123,7 @@
                         <button class="button button-block up-top"
                                 style="text-align:left;font-size:14px;border:none;color:black;background-color: white;margin-bottom: 0px;margin-top: 0px;padding-left: 0px;"
                                 ng-click="openMeasurementStartTimePicker()">
-                            {{state.measurement.startTimeEpoch | fromUnixTimestampToLocalTimeOfDay}}
+                            {{selectedDate.getTime()/1000 | fromUnixTimestampToLocalTimeOfDay}}
                         </button>
                     </div>
                 </div>
