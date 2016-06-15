@@ -341,8 +341,8 @@ angular.module('starter')
                 return deferred.promise;
             },
 
-            // used when updating a measurement through the queue
-            addExistingMeasurementToMeasurementsQueue : function(measurementObject){
+            // used when adding a new measurement from record measurement OR updating a measurement through the queue
+            addDetailedMeasurementToMeasurementsQueue : function(measurementObject){
                 console.log("added existing measurement to measurementsQueue: " + measurementObject.id);
                 var deferred = $q.defer();
 
@@ -367,6 +367,8 @@ angular.module('starter')
             },
 
             // adds to allMeasurements directly - not used for primary outcome variables
+            // Deprecated
+            /*
             postTrackingMeasurementLocally : function(measurementObject){
                 var deferred = $q.defer();
 
@@ -384,6 +386,7 @@ angular.module('starter')
 
                 return deferred.promise;
             },
+            */
 
             // post a single measurement
             postTrackingMeasurement : function(measurementInfo, usePromise){
@@ -450,10 +453,22 @@ angular.module('starter')
                             note : measurementInfo.note,
                             combinationOperation : measurementInfo.isAvg? "MEAN" : "SUM"
                         };
-                        measurementService.addExistingMeasurementToMeasurementsQueue(editedMeasurement);
+                        measurementService.addDetailedMeasurementToMeasurementsQueue(editedMeasurement);
 
                     } else {
-                        console.debug("error editing primary outcome variable measurement");
+                        // adding primary outcome variable measurement from record measurements page
+                        var newMeasurement = {
+                            id: null,
+                            variableName: measurementInfo.variableName,
+                            source: config.get('clientSourceName'),
+                            abbreviatedUnitName: measurementInfo.unit,
+                            startTimeEpoch:  measurementInfo.startTimeEpoch,
+                            value: measurementInfo.value,
+                            variableCategoryName : measurementInfo.variableCategoryName,
+                            note : measurementInfo.note,
+                            combinationOperation : measurementInfo.isAvg? "MEAN" : "SUM"
+                        };
+                        measurementService.addDetailedMeasurementToMeasurementsQueue(newMeasurement);
                     }
                     $rootScope.$broadcast('updateChartsAndSyncMeasurements');
                 }
@@ -490,29 +505,27 @@ angular.module('starter')
                         combinationOperation : measurementInfo.isAvg? "MEAN" : "SUM"
                     };
 
-                    measurementService.postTrackingMeasurementLocally(measurement)
-                        .then(function(){
-                            // send request
-                            QuantiModo.postMeasurementsV2(measurements, function(response){
-                                if(response.success) {
-                                    console.log("success", response);
-                                    if(usePromise) {
-                                        deferred.resolve();
-                                    }
-                                } else {
-                                    console.log("error", response);
-                                    if(usePromise) {
-                                        deferred.reject(response.message ? response.message.split('.')[0] : "Can't post measurement right now!");
-                                    }
-                                }
-                            }, function(response){
-                                console.log("error", response);
-                                if(usePromise) {
-                                    deferred.reject(response.message ? response.message.split('.')[0] : "Can't post measurement right now!");
-                                }
-                            });
-                        });
 
+                    // send request
+                    QuantiModo.postMeasurementsV2(measurements, function(response){
+                        if(response.success) {
+                            console.log("success", response);
+                            if(usePromise) {
+                                deferred.resolve();
+                            }
+                        } else {
+                            console.log("error", response);
+                            if(usePromise) {
+                                deferred.reject(response.message ? response.message.split('.')[0] : "Can't post measurement right now!");
+                            }
+                        }
+                    }, function(response){
+                        console.log("error", response);
+                        if(usePromise) {
+                            deferred.reject(response.message ? response.message.split('.')[0] : "Can't post measurement right now!");
+                        }
+                    });
+                    
                     if(usePromise) {
                         return deferred.promise;
                     }
