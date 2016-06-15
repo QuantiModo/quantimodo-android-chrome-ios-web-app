@@ -22,23 +22,15 @@ angular.module('starter')
                         abbreviatedUnitName : '',
                         defaultValue : '',
                         measurementSynonymSingularLowercase : "measurement",
-                        icon: "ion-ios-nutrition"
+                        icon: "ion-speedometer"
                     },
-                    "Vital Signs": {
+                    "Activity": {
                         defaultAbbreviatedUnitName: '',
-                        helpText: "What vital sign do you want to record?",
-                        variableCategoryName: "Vital Signs",
-                        variableCategoryNameSingularLowercase: "vital sign",
-                        measurementSynonymSingularLowercase : "measurement",
-                        icon: "ion-ios-pulse"
-                    },
-                    "Foods" : {
-                        defaultAbbreviatedUnitName: "serving",
-                        helpText: "What did you eat?",
-                        variableCategoryName: "Foods",
-                        variableCategoryNameSingularLowercase: "food",
-                        measurementSynonymSingularLowercase : "meal",
-                        icon: "ion-ios-nutrition"
+                        helpText: "What activity do you want to record?",
+                        variableCategoryName: "Activity",
+                        variableCategoryNameSingularLowercase: "activity",
+                        measurementSynonymSingularLowercase : "activity",
+                        icon: "ion-ios-body"
                     },
                     Emotions: {
                         defaultAbbreviatedUnitName: "/5",
@@ -47,6 +39,78 @@ angular.module('starter')
                         variableCategoryNameSingularLowercase: "emotion",
                         measurementSynonymSingularLowercase : "rating",
                         icon: "ion-happy-outline"
+                    },
+                    "Environment": {
+                        defaultAbbreviatedUnitName: '',
+                        helpText: "What environmental variable do you want to record?",
+                        variableCategoryName: "Environment",
+                        variableCategoryNameSingularLowercase: "environment",
+                        measurementSynonymSingularLowercase : "environmental measurement",
+                        icon: "ion-ios-partlysunny-outline"
+                    },
+                    "Foods" : {
+                        defaultAbbreviatedUnitName: "serving",
+                        helpText: "What did you eat?",
+                        variableCategoryName: "Foods",
+                        variableCategoryNameSingularLowercase: "food",
+                        measurementSynonymSingularLowercase : "meal",
+                        icon: "ion-fork"
+                    },
+                    "Location" : {
+                        defaultAbbreviatedUnitName: "min",
+                        helpText: "What location do you want to record?",
+                        variableCategoryName: "Location",
+                        variableCategoryNameSingularLowercase: "location",
+                        measurementSynonymSingularLowercase : "location",
+                        icon: "ion-ios-location"
+                    },
+                    "Music" : {
+                        defaultAbbreviatedUnitName: "count",
+                        helpText: "What music did you listen to?",
+                        variableCategoryName: "Music",
+                        variableCategoryNameSingularLowercase: "music",
+                        measurementSynonymSingularLowercase : "music",
+                        icon: "ion-music-note"
+                    },
+                    "Nutrients" : {
+                        defaultAbbreviatedUnitName: "g",
+                        helpText: "What nutrient do you want to track?",
+                        variableCategoryName: "Nutrients",
+                        variableCategoryNameSingularLowercase: "nutrient",
+                        measurementSynonymSingularLowercase : "nutrient",
+                        icon: "ion-fork"
+                    },
+                    "Payments" : {
+                        defaultAbbreviatedUnitName: "$",
+                        helpText: "What did you pay for?",
+                        variableCategoryName: "Payments",
+                        variableCategoryNameSingularLowercase: "payment",
+                        measurementSynonymSingularLowercase : "payment",
+                        icon: "ion-cash"
+                    },
+                    "Physical Activity": {
+                        defaultAbbreviatedUnitName: '',
+                        helpText: "What physical activity do you want to record?",
+                        variableCategoryName: "Physical Activity",
+                        variableCategoryNameSingularLowercase: "physical activity",
+                        measurementSynonymSingularLowercase : "activity",
+                        icon: "ion-ios-body"
+                    },
+                    "Physique": {
+                        defaultAbbreviatedUnitName: '',
+                        helpText: "What aspect of your physique do you want to record?",
+                        variableCategoryName: "Physique",
+                        variableCategoryNameSingularLowercase: "physique",
+                        measurementSynonymSingularLowercase : "physique measurement",
+                        icon: "ion-ios-body"
+                    },
+                    Sleep: {
+                        defaultAbbreviatedUnitName: "",
+                        helpText: "What aspect of sleep do you want to record?",
+                        variableCategoryName: "Sleep",
+                        variableCategoryNameSingularLowercase: "sleep",
+                        measurementSynonymSingularLowercase : "sleep",
+                        icon: "ion-ios-moon-outline"
                     },
                     Symptoms: {
                         defaultAbbreviatedUnitName: "/5",
@@ -66,39 +130,21 @@ angular.module('starter')
                         measurementSynonymSingularLowercase : "dose",
                         icon: "ion-ios-medkit-outline"
                     },
-                    "Physical Activity": {
+                    "Vital Signs": {
                         defaultAbbreviatedUnitName: '',
-                        helpText: "What physical activity do you want to record?",
-                        variableCategoryName: "Physical Activity",
-                        variableCategoryNameSingularLowercase: "physical activity",
-                        measurementSynonymSingularLowercase : "activity",
-                        icon: "ion-ios-body"
-                    },
-                    "Activity": {
-                        defaultAbbreviatedUnitName: '',
-                        helpText: "What activity do you want to record?",
-                        variableCategoryName: "Activity",
-                        variableCategoryNameSingularLowercase: "activity",
-                        measurementSynonymSingularLowercase : "activity",
-                        icon: "ion-ios-body"
-                    },
-                    "Environment": {
-                        defaultAbbreviatedUnitName: '',
-                        helpText: "What environmental variable do you want to record?",
-                        variableCategoryName: "Environment",
-                        variableCategoryNameSingularLowercase: "environment",
-                        measurementSynonymSingularLowercase : "environmental measurement",
-                        icon: "ion-ios-partlysunny-outline"
+                        helpText: "What vital sign do you want to record?",
+                        variableCategoryName: "Vital Signs",
+                        variableCategoryNameSingularLowercase: "vital sign",
+                        measurementSynonymSingularLowercase : "measurement",
+                        icon: "ion-ios-pulse"
                     }
                 };
 
 
-                if(variableCategoryName){
-                    var selectedVariableCategoryObject =  variableCategoryInfo[variableCategoryName];
+                var selectedVariableCategoryObject = variableCategoryInfo.Anything;
 
-                    if(!selectedVariableCategoryObject){
-                        console.error('No variableCategoryInfo for ' + variableCategoryName);
-                    }
+                if(variableCategoryName && variableCategoryInfo[variableCategoryName]){
+                    selectedVariableCategoryObject =  variableCategoryInfo[variableCategoryName];
 
                     if(!selectedVariableCategoryObject.addNewVariableButtonText){
                         selectedVariableCategoryObject.addNewVariableButtonText =
@@ -123,9 +169,6 @@ angular.module('starter')
                                 + " here...";
                         }
                     }
-
-                } else {
-                    selectedVariableCategoryObject = variableCategoryInfo['Anything'];
                 }
                 
                 return selectedVariableCategoryObject;
