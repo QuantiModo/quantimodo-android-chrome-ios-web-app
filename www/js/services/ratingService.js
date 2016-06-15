@@ -161,23 +161,23 @@ angular.module('starter')
             getNumericRatingOptions : function() {
                 return [
                     {
-                        numericValue: '1',
+                        numericValue: 1,
                         img: 'img/rating/ic_1.png'
                     },
                     {
-                        numericValue: '2',
+                        numericValue: 2,
                         img: 'img/rating/ic_2.png'
                     },
                     {
-                        numericValue: '3',
+                        numericValue: 3,
                         img: 'img/rating/ic_3.png'
                     },
                     {
-                        numericValue: '4',
+                        numericValue: 4,
                         img: 'img/rating/ic_4.png'
                     },
                     {
-                        numericValue: '5',
+                        numericValue: 5,
                         img: 'img/rating/ic_5.png'
                     }
                 ];
