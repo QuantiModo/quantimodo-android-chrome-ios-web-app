@@ -106,32 +106,6 @@ angular.module('starter')
             });
         };
         
-        // Deprecated
-        /*
-        // when from date is updated
-        $scope.fromDatePickerCallback = function (val) {
-            if (typeof(val)==='undefined') {
-                console.log('Date not selected');
-            } else if (val > $scope.toDate) {
-                console.log("From date after to date");
-            } else {
-                $scope.fromDate = new Date(val);
-                $scope.saveDates();
-            }
-        };
-
-        // when to date is updated
-        $scope.datePickerToCallback = function (val) {
-            if (typeof(val)==='undefined') {
-                console.log('Date not selected');
-            } else if (val < $scope.fromDate) {
-                console.log("To date before from date");
-            } else {
-                $scope.toDate = new Date(val);
-                $scope.saveDates();
-            }
-        };
-        */
         var helpPopupMessages = config.appSettings.helpPopupMessages || false;
 
         $scope.showHelpInfoPopupIfNecessary = function(e) {

@@ -22,7 +22,8 @@ angular.module('starter')
             }
 
             //  add to measurementsQueue
-            measurementService.addToMeasurementsQueue(numericRatingValue);
+            var primaryOutcomeMeasurement = measurementService.createPrimaryOutcomeMeasurement(numericRatingValue);
+            measurementService.addToMeasurementsQueue(primaryOutcomeMeasurement);
 
             if(!$rootScope.isSyncing){
                 syncPrimaryOutcomeVariableMeasurementsAndUpdateCharts();

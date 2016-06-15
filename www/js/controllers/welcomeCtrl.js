@@ -81,13 +81,9 @@ angular.module('starter')
             //localStorageService.setItem('allMeasurements', JSON.stringify([]));
             
             // update local storage
-            measurementService.addToMeasurementsQueue(ratingValue).then(function () {
-                // calculate charts data
-                measurementService.calculateAveragePrimaryOutcomeVariableValue().then(function(){
-                    //measurementService.calculateBothChart();
-                    $scope.showPrimaryOutcomeVariableCard = false;
-                });
-            });
+            var primaryOutcomeMeasurement = measurementService.createPrimaryOutcomeMeasurement(ratingValue);
+            measurementService.addToMeasurementsQueue(primaryOutcomeMeasurement);
+            
             $scope.hidePrimaryOutcomeVariableCard = true;
             $scope.showIntervalCard = true;
         };
