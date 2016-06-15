@@ -453,18 +453,6 @@ angular.module('starter')
         // update data when view is navigated to
         $scope.$on('$ionicView.enter', $scope.init);
 
-        // Deprecated
-        /*
-        // when date is updated
-        $scope.datePickerCallback = function (selectedDate) {
-            if(typeof(selectedDate)==='undefined'){
-                console.log('Date not selected');
-            }else{
-                $scope.selectedDate = selectedDate;
-            }
-        };
-        */
-
         $scope.selectPrimaryOutcomeVariableValue = function($event, val){
             // remove any previous primary outcome variables if present
             jQuery('.primary-outcome-variable-rating-buttons .active-primary-outcome-variable-rating-button').removeClass('active-primary-outcome-variable-rating-button');
