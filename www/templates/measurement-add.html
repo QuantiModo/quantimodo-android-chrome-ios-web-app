@@ -6,14 +6,10 @@
                 <p class="heading positive" style="padding:14px;">Add new {{state.variableCategoryObject.variableCategoryNameSingularLowercase | wordAliases}} variable</p>
 
 
-                <label class="item item-input item-select" ng-show="state.showCategoryAsSelector">
-                    <div class="input-label">
-                        Select category
-                    </div>
-                    <select ng-model="state.variableCategory" ng-change=>
-                        <option ng-repeat="i in state.variableCategories track by i.id" value="{{i.name}}">
-                            {{i.name}}
-                        </option>
+                <label class="item item-input item-select" ng-if="state.showVariableCategorySelector">
+                    <div class="input-label" style="white-space:normal; width: 60%">Select Category</div>
+                    <select ng-model="state.measurement.variableCategoryName" ng-change="setupVariableCategory(state.measurement.variableCategoryName)">
+                        <option ng-repeat="variableCategory in state.variableCategories" value="{{variableCategory.name}}">{{variableCategory.name}}</option>
                     </select>
                 </label>
 
@@ -48,17 +44,19 @@
             <div class="item item-divider">
                 {{state.measurement.variable}}
             </div>
+            <div class="list card" ng-show="state.showVariableCategorySelector" >
+                <label class="item item-input item-select">
+                    <div class="input-label" style="white-space:normal; width: 60%">Select Category</div>
+                    <select ng-model="state.measurement.variableCategoryName" ng-change="setupVariableCategory(state.measurement.variableCategoryName)">
+                        <option ng-repeat="variableCategory in state.variableCategories" value="{{variableCategory.name}}">{{variableCategory.name}}</option>
+                    </select>
+                </label>
+            </div>
             <div class="list">
-                <div ng-if="showValueBox" class="row labeled-control">
-                    <div class="col col-l">
-                        <span>
-                            Value
-                        </span>
-                    </div>
-                    <div class="col">
-                        <input type="number" ng-model="state.measurement.value" id="measurementValue" placeholder="Enter Value Here" class="up-top">
-                    </div>
-                </div>
+                <label ng-if="state.measurement.abbreviatedUnitName !== '/5'" class="item item-input">
+                    <span class="input-label">{{state.defaultValueLabel}}</span>
+                    <input type="number" ng-model="state.measurement.value" id="defaultValue" placeholder={{state.defaultValuePlaceholderText}} >
+                </label>
                 <div class="primary-outcome-variable-rating-buttons primary-outcome-variable-history col"
                      ng-if="showNumericRatingNumberButtons">
                     <img ng-repeat="option in numericRatingOptions"

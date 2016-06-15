@@ -47,29 +47,27 @@ angular.module('starter')
 	    // data
 	    $scope.variables = {
 	    	variableCategories : [
-	    		{ id : 1, name : 'Anything' },
-		    	{ id : 2, name : 'Emotions' },
-		    	{ id : 3, name : 'Symptoms' },
-		    	{ id : 4, name : 'Treatments' },
-		    	{ id : 5, name : 'Foods' },
-                { id : 6, name : 'Vital Signs' },
-                { id : 7, name : 'Physical Activity' },
-                { id : 8, name : 'Sleep' },
-                { id : 9, name : 'Misc' }
+		    	{ id : 1, name : 'Emotions' },
+		    	{ id : 2, name : 'Symptoms' },
+		    	{ id : 3, name : 'Treatments' },
+		    	{ id : 4, name : 'Foods' },
+                { id : 5, name : 'Vital Signs' },
+                { id : 6, name : 'Physical Activity' },
+                { id : 7, name : 'Sleep' },
+                { id : 8, name : 'Misc' }
 	    	],
 	    	frequencyVariables : [
-	    		
-	    		{ id : 1, name : 'Every 12 hours' , group : 'intervals'},
-	    		{ id : 2, name : 'Every 8 hours' , group : 'intervals'},
-	    		{ id : 3, name : 'Every 6 hours' , group : 'intervals'},
-	    		{ id : 4, name : 'Every 4 hours' , group : 'intervals'},
-	    		{ id : 5, name : 'Every 3 hours' , group : 'intervals'},
-				{ id : 6, name : 'Every 2 hours' , group : 'intervals'},
-				{ id : 7, name : 'Hourly' , group : 'intervals'},
-	    		{ id : 8, name : 'Every 30 minutes' , group : 'intervals'},
-                { id : 9, name : 'Every minute' , group : 'intervals'},
-	    		{ id : 10, name : 'Never' , group : 'intervals'},
-	    		{ id : 11, name : 'Daily' , group : 'frequency'}
+                { id : 1, name : 'Daily' , group : 'frequency'},
+	    		{ id : 2, name : 'Every 12 hours' , group : 'intervals'},
+	    		{ id : 3, name : 'Every 8 hours' , group : 'intervals'},
+	    		{ id : 4, name : 'Every 6 hours' , group : 'intervals'},
+	    		{ id : 5, name : 'Every 4 hours' , group : 'intervals'},
+	    		{ id : 6, name : 'Every 3 hours' , group : 'intervals'},
+				{ id : 7, name : 'Every 2 hours' , group : 'intervals'},
+				{ id : 8, name : 'Hourly' , group : 'intervals'},
+	    		{ id : 9, name : 'Every 30 minutes' , group : 'intervals'},
+                { id : 10, name : 'Every minute' , group : 'intervals'},
+	    		{ id : 11, name : 'Never' , group : 'intervals'}
 	    	]
 	    };
 
@@ -79,7 +77,7 @@ angular.module('starter')
             if($scope.state.trackingReminder.variableCategoryName){
                 $scope.state.variableCategoryObject =
                     variableCategoryService.getVariableCategoryInfo($scope.state.trackingReminder.variableCategoryName);
-                $scope.state.abbreviatedUnitName = $scope.state.variableCategoryObject.defaultAbbreviatedUnitName;
+                $scope.state.trackingReminder.abbreviatedUnitName = $scope.state.variableCategoryObject.defaultAbbreviatedUnitName;
             }
 			$scope.state.showSearchBox = false;
 			$scope.state.showResults = false;
@@ -179,7 +177,7 @@ angular.module('starter')
 	    	}
 	    	$scope.variableObject=selectedVariable;
 
-            setupVariableCategory(selectedVariable.variableCategoryName);
+            $scope.setupVariableCategory(selectedVariable.variableCategoryName);
             $scope.state.trackingReminder.abbreviatedUnitName = selectedVariable.abbreviatedUnitName;
             $scope.state.trackingReminder.combinationOperation = selectedVariable.combinationOperation;
             $scope.state.trackingReminder.variableId = selectedVariable.id;
@@ -362,7 +360,7 @@ angular.module('starter')
 	    };
 
 	    // setup category view
-	    var setupVariableCategory = function(variableCategoryName){
+	    $scope.setupVariableCategory = function(variableCategoryName){
             console.log("variableCategoryName  is " + variableCategoryName);
             $scope.state.showVariableCategorySelector = false;
             if(!variableCategoryName){
@@ -370,6 +368,7 @@ angular.module('starter')
             }
             $scope.state.trackingReminder.variableCategoryName = variableCategoryName;
             $scope.state.variableCategoryObject = variableCategoryService.getVariableCategoryInfo(variableCategoryName);
+            $scope.state.trackingReminder.abbreviatedUnitName = $scope.state.variableCategoryObject.defaultAbbreviatedUnitName;
             $scope.state.title = "Add " + $filter('wordAliases')(pluralize(variableCategoryName, 1)) + " Reminder";
             $scope.state.measurementSynonymSingularLowercase = $scope.state.variableCategoryObject.measurementSynonymSingularLowercase;
             if($scope.state.variableCategoryObject.defaultValueLabel){
@@ -436,7 +435,7 @@ angular.module('starter')
 
                 if($stateParams.variableCategoryName){
                     $scope.state.trackingReminder.variableCategoryName = $stateParams.variableCategoryName;
-                    setupVariableCategory($scope.state.trackingReminder.variableCategoryName);
+                    $scope.setupVariableCategory($scope.state.trackingReminder.variableCategoryName);
                     populateUserVariables($stateParams.variableCategoryName);
                 } else if ($stateParams.reminder && $stateParams.reminder !== null) {
                     setupEditReminder($stateParams.reminder);

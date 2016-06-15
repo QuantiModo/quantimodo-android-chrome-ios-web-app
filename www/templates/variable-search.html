@@ -22,11 +22,10 @@
             </label>
             <p></p>
             <ion-list>
-                <ion-item style="text-align:center;border-bottom: 1px solid rgb(221, 221, 221);" ng-show="loading">
-                    <img src={{loaderImagePath}}>
+                <ion-item style="text-align:center;border-bottom: 1px solid rgb(221, 221, 221);" ng-show="state.searching">
+                    <img src="../www/img/loader.gif">
                 </ion-item>
             </ion-list>
-
             <ion-list ng-show="state.variableSearchResults.length" class>
                 <ion-item ng-click="selectVariable(item)" ng-repeat="item in state.variableSearchResults | orderBy:'-latestMeasurementTime' | limitTo:5 | unique:'id'  ">
                     <div>

@@ -19,13 +19,12 @@ angular.module('starter')
                         addNewVariableButtonText : '+ Add a new variable',
                         addNewVariableCardText : 'Add a new variable',
                         variableCategoryName : '',
-                        abbreviatedUnitName : '',
                         defaultValue : '',
                         measurementSynonymSingularLowercase : "measurement",
                         icon: "ion-speedometer"
                     },
                     "Activity": {
-                        defaultAbbreviatedUnitName: '',
+                        defaultAbbreviatedUnitName: 'min',
                         helpText: "What activity do you want to record?",
                         variableCategoryName: "Activity",
                         variableCategoryNameSingularLowercase: "activity",
@@ -157,16 +156,16 @@ angular.module('starter')
                     }
 
                     if(!selectedVariableCategoryObject.addNewVariableCardText){
-                        selectedVariableCategoryObject.addNewVariableCardText = "Add a new "
-                            + $filter('wordAliases')(pluralize(selectedVariableCategoryObject.variableCategoryName.toLowerCase(), 1));
+                        selectedVariableCategoryObject.addNewVariableCardText = "Add a new " +
+                            $filter('wordAliases')(pluralize(selectedVariableCategoryObject.variableCategoryName.toLowerCase(), 1));
                     }
 
                     if(!selectedVariableCategoryObject.variableSearchPlaceholderText){
                         if(variableCategoryName){
                             selectedVariableCategoryObject.variableSearchPlaceholderText =
-                                "Search for a "
-                                + $filter('wordAliases')(pluralize(selectedVariableCategoryObject.variableCategoryName.toLowerCase(), 1))
-                                + " here...";
+                                "Search for a " +
+                                $filter('wordAliases')(pluralize(selectedVariableCategoryObject.variableCategoryName.toLowerCase(), 1)) +
+                                " here...";
                         }
                     }
                 }
