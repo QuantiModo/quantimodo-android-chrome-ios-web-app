@@ -30,7 +30,55 @@ angular.module('starter')
 				if(typeof time === "number") {
 					return moment(time * 1000).format("h:mm a dddd MMM Do YYYY").split(/,/g);
 				}
-				return moment.utc(time).local().format("dddd at dddd h:mm a dddd MMMM Do YYYY").split(/,/g);
+				return moment.utc(time).local().format("dddd h:mm a dddd MMMM Do YYYY").split(/,/g);
+			} else {
+				return "";
+			}
+		};
+	})
+	.filter('timeOfDay', function(){
+		return function(time){
+			if(time){
+				if(typeof time === "number") {
+					return moment(time * 1000).format("h:mm a").split(/,/g);
+				}
+				return moment.utc(time).local().format("h:mm a").split(/,/g);
+			} else {
+				return "";
+			}
+		};
+	})
+	.filter('timeOfDayDayOfWeek', function(){
+		return function(time){
+			if(time){
+				if(typeof time === "number") {
+					return moment(time * 1000).format("h:mm a dddd").split(/,/g);
+				}
+				return moment.utc(time).local().format("h:mm a dddd").split(/,/g);
+			} else {
+				return "";
+			}
+		};
+	})
+	.filter('justDate', function(){
+		return function(time){
+			if(time){
+				if(typeof time === "number") {
+					return moment(time * 1000).format("MMMM Do YYYY").split(/,/g);
+				}
+				return moment.utc(time).local().format("MMMM Do YYYY").split(/,/g);
+			} else {
+				return "";
+			}
+		};
+	})
+	.filter('dayOfWeekAndDate', function(){
+		return function(time){
+			if(time){
+				if(typeof time === "number") {
+					return moment(time * 1000).format("dddd MMM Do YYYY").split(/,/g);
+				}
+				return moment.utc(time).local().format("dddd MMMM Do YYYY").split(/,/g);
 			} else {
 				return "";
 			}
