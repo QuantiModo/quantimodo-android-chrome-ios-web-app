@@ -6,7 +6,7 @@ var appsManager = {
 		"medtlc" : "configs/medtlc",
 		"quantimodo" : "configs/quantimodo"
 	},
-	defaultApp : "moodimodo",
+	defaultApp : "energymodo",
 	getDefaultConfig : function(){
 		return appsManager.apps[appsManager.defaultApp] ? appsManager.apps[appsManager.defaultApp]+'.js' : false;
 	},
