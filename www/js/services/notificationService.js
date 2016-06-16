@@ -54,15 +54,14 @@ angular.module('starter')
                             var existingReminderFoundInApiResponse = false;
                             for (var j = 0; j < trackingRemindersFromApi.length; j++) {
                                 if (trackingRemindersFromApi[j].id === scheduledNotifications[i].id) {
-                                    console.debug('Server returned a reminder mathching' + trackingRemindersFromApi[j]);
+                                    console.debug('Server returned a reminder matching' + trackingRemindersFromApi[j]);
                                     existingReminderFoundInApiResponse = true;
                                 }
                             }
                             if(!existingReminderFoundInApiResponse) {
                                 console.debug('Matching API reminder not found. Clearing scheduled notification ' + JSON.stringify(scheduledNotifications[i]));
-                                chrome.alarms.clear(scheduledNotifications[i].name);
-                                cordova.plugins.notification.local.cancel(scheduledNotifications[i].id, function() {
-                                    alert("Canceled notification: " + JSON.stringify(scheduledNotifications[i]));
+                                cordova.plugins.notification.local.cancel(scheduledNotifications[i].id, function () {
+                                    console.debug("Canceled notification " + scheduledNotifications[i].id);
                                 });
                             }
                         }
