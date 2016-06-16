@@ -115,7 +115,7 @@ angular.module('starter')
             var completelyResetAppState = function(){
                 $rootScope.user = null;
                 localStorageService.clear();
-                notificationService.cancelNotifications();
+                notificationService.cancelAllNotifications();
               	logoutOfApi();
                 //TODO: Fix this
                 //QuantiModo.logoutOfApi();
