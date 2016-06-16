@@ -139,7 +139,7 @@ angular.module('starter')
                             color: undefined,
                             data: undefined,
                             led: undefined,
-                            sound: null,
+                            sound: "file://sound/silent.ogg",
                             ongoing: false,
                             title: "Track " + trackingReminder.variableName,
                             text: "Tap to open reminder inbox",
@@ -160,7 +160,8 @@ angular.module('starter')
                         text: config.appSettings.mobileNotificationText,
                         every: intervals[interval],
                         icon: 'ic_stat_icon_bw',
-                        id: config.appSettings.primaryOutcomeVariableDetails.id
+                        id: config.appSettings.primaryOutcomeVariableDetails.id,
+                        sound: "file://sound/silent.ogg"
                     };
                     if (interval && interval !== "never") {
                         cordova.plugins.notification.local.cancel(notificationSettings.id, function() {
@@ -187,7 +188,7 @@ angular.module('starter')
                             data: undefined,
                             led: undefined,
                             ongoing: false,
-                            sound: null,
+                            sound: "file://sound/silent.ogg",
                             title: "Track " + trackingReminder.variableName,
                             text: "Tap to open reminder inbox",
                             firstAt: firstAt,
@@ -207,7 +208,8 @@ angular.module('starter')
                             text: config.appSettings.mobileNotificationText,
                             every: interval,
                             icon: config.appSettings.mobileNotificationImage,
-                            id: config.appSettings.primaryOutcomeVariableDetails.id
+                            id: config.appSettings.primaryOutcomeVariableDetails.id,
+                            sound: "file://sound/silent.ogg"
                         };
                         if (interval && interval !== "never") {
                             cordova.plugins.notification.local.schedule(notificationSettings, function () {
