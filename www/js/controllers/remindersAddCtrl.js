@@ -57,17 +57,17 @@ angular.module('starter')
                 { id : 8, name : 'Misc' }
 	    	],
 	    	frequencyVariables : [
-                { id : 1, name : 'Daily' , group : 'frequency'},
-	    		{ id : 2, name : 'Every 12 hours' , group : 'intervals'},
-	    		{ id : 3, name : 'Every 8 hours' , group : 'intervals'},
-	    		{ id : 4, name : 'Every 6 hours' , group : 'intervals'},
-	    		{ id : 5, name : 'Every 4 hours' , group : 'intervals'},
-	    		{ id : 6, name : 'Every 3 hours' , group : 'intervals'},
-				{ id : 7, name : 'Every 2 hours' , group : 'intervals'},
-				{ id : 8, name : 'Hourly' , group : 'intervals'},
-	    		{ id : 9, name : 'Every 30 minutes' , group : 'intervals'},
-                { id : 10, name : 'Every minute' , group : 'intervals'},
-	    		{ id : 11, name : 'Never' , group : 'intervals'}
+                { id : 1, name : 'Daily'},
+	    		{ id : 2, name : 'Every 12 hours'},
+	    		{ id : 3, name : 'Every 8 hours'},
+	    		{ id : 4, name : 'Every 6 hours'},
+	    		{ id : 5, name : 'Every 4 hours'},
+	    		{ id : 6, name : 'Every 3 hours'},
+				{ id : 7, name : 'Every 2 hours'},
+				{ id : 8, name : 'Hourly'},
+	    		{ id : 9, name : 'Every 30 minutes'},
+                { id : 10, name : 'Every minute'},
+	    		{ id : 11, name : 'Never'}
 	    	]
 	    };
 
