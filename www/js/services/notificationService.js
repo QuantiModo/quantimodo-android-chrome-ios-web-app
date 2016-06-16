@@ -179,7 +179,7 @@ angular.module('starter')
 
                 function scheduleIosNotificationByTrackingReminder(trackingReminder) {
                     if (trackingReminder) {
-                        var firstAt = new Date(trackingReminder.nextReminderTimeEpochSeconds*1000);
+                        var at = new Date(trackingReminder.nextReminderTimeEpochSeconds*1000);
                         var minuteFrequency  = trackingReminder.reminderFrequency / 60;
                         var notificationSettings = {
                             autoClear: true,
@@ -191,7 +191,7 @@ angular.module('starter')
                             sound: "file://sound/silent.ogg",
                             title: "Track " + trackingReminder.variableName,
                             text: "Tap to open reminder inbox",
-                            firstAt: firstAt,
+                            at: at,
                             every: minuteFrequency,
                             icon: config.appSettings.mobileNotificationImage,
                             id: trackingReminder.id
