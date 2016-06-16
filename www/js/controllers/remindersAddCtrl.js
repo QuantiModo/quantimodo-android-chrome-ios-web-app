@@ -89,7 +89,13 @@ angular.module('starter')
 		};
 
 		$scope.openReminderStartTimePicker = function() {
-            
+            var today = new Date();
+            var secondsSinceMidnightLocal = (today.getHours() * 60 * 60) + (today.getMinutes() * 60);
+            console.log(today);
+            console.log("today.getHours(): " + today.getHours());
+            console.log("today.getMinutes(): " + today.getMinutes());
+            console.log("today.getTimezoneOffset(): " + today.getTimezoneOffset() + "; hours = " + today.getTimezoneOffset()/60);
+
             $scope.state.timePickerConfiguration = {
                 callback: function (val) {
                     if (typeof (val) === 'undefined') {
@@ -107,6 +113,7 @@ angular.module('starter')
                         $scope.state.reminderStartTimeStringUtc = moment.utc(a).format('HH:mm:ss');
                     }
                 },
+                inputTime: secondsSinceMidnightLocal,
                 step: 1,
                 closeLabel: 'Cancel'
             };
