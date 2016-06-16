@@ -288,7 +288,7 @@ angular.module('starter')
                         }
 
                         // refresh the last updated at from api
-                        setTimeout($scope.init, 200);
+                        //setTimeout($scope.init, 200);
                     }, function(err){
                         Bugsnag.notify(err, JSON.stringify(err), {}, "error");
                         utilsService.showAlert(err);
@@ -306,33 +306,23 @@ angular.module('starter')
                     // note: this is for adding or editing
 
                     // post measurement
-                    measurementService.postTrackingMeasurement(
-                        measurementInfo);
+                    measurementService.postTrackingMeasurement(measurementInfo, true)
+                    .then(function() {
+                        if($stateParams.fromUrl){
+                            window.location = $stateParams.fromUrl;
+                        } else if ($stateParams.fromState){
+                            $state.go($stateParams.fromState);
+                        } else {
+                            $rootScope.hideNavigationMenu = false;
+                            $state.go(config.appSettings.defaultState);
+                        }
+                    });
                     //utilsService.showAlert(params.variableName + ' measurement saved!');
-
-                    if($stateParams.fromUrl){
-                        window.location = $stateParams.fromUrl;
-                    } else if ($stateParams.fromState){
-                        $state.go($stateParams.fromState);
-                    } else {
-                        $rootScope.hideNavigationMenu = false;
-                        $state.go(config.appSettings.defaultState);
-                    }
-
+                    
                     // refresh data
-                    setTimeout($scope.init, 200);
+                    //setTimeout($scope.init, 200);
                 }
             }
-
-            if($stateParams.fromUrl){
-                window.location = $stateParams.fromUrl;
-            } else if ($stateParams.fromState){
-                $state.go($stateParams.fromState);
-            } else {
-                $rootScope.hideNavigationMenu = false;
-                $state.go(config.appSettings.defaultState);
-            }
-
         };
 
         // setup category view
