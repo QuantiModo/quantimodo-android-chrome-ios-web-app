@@ -60,8 +60,8 @@ angular.module('starter')
                             }
                             if(!existingReminderFoundInApiResponse) {
                                 console.debug('Matching API reminder not found. Clearing scheduled notification ' + JSON.stringify(scheduledNotifications[i]));
-                                cordova.plugins.notification.local.cancel(scheduledNotifications[i].id, function () {
-                                    console.debug("Canceled notification " + scheduledNotifications[i].id);
+                                cordova.plugins.notification.local.cancel(scheduledNotifications[i].id, function (cancelledNotification) {
+                                    console.debug("Canceled notification " + cancelledNotification.id);
                                 });
                             }
                         }
@@ -155,6 +155,7 @@ angular.module('starter')
                 }
 
                 function scheduleGenericAndroidNotification(interval) {
+                    cordova.plugins.notification.local.cancel(config.appSettings.primaryOutcomeVariableDetails.id);
                     var notificationSettings = {
                         text: config.appSettings.mobileNotificationText,
                         every: intervals[interval],
@@ -202,24 +203,23 @@ angular.module('starter')
                 }
 
                 function scheduleGenericIosNotification(interval) {
-                    cordova.plugins.notification.local.cancelAll(function () {
-                        var notificationSettings = {
-                            text: config.appSettings.mobileNotificationText,
-                            every: interval,
-                            icon: config.appSettings.mobileNotificationImage,
-                            id: config.appSettings.primaryOutcomeVariableDetails.id,
-                            sound: "file://sound/silent.ogg"
-                        };
-                        if (interval && interval !== "never") {
-                            cordova.plugins.notification.local.schedule(notificationSettings, function () {
-                                console.log('iOS notification scheduled', notificationSettings);
-                            });
-                            cordova.plugins.notification.local.on("click", function (notification) {
-                                console.log("$state.go('app.remindersInbox')");
-                                $state.go('app.remindersInbox');
-                            });
-                        }
-                    });
+                    cordova.plugins.notification.local.cancel(config.appSettings.primaryOutcomeVariableDetails.id);
+                    var notificationSettings = {
+                        text: config.appSettings.mobileNotificationText,
+                        every: interval,
+                        icon: config.appSettings.mobileNotificationImage,
+                        id: config.appSettings.primaryOutcomeVariableDetails.id,
+                        sound: "file://sound/silent.ogg"
+                    };
+                    if (interval && interval !== "never") {
+                        cordova.plugins.notification.local.schedule(notificationSettings, function () {
+                            console.log('iOS notification scheduled', notificationSettings);
+                        });
+                        cordova.plugins.notification.local.on("click", function (notification) {
+                            console.log("$state.go('app.remindersInbox')");
+                            $state.go('app.remindersInbox');
+                        });
+                    }
                 }
 
                 function scheduleGenericChromeExtensionNotification(interval) {
