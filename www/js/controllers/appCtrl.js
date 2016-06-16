@@ -234,8 +234,7 @@ angular.module('starter')
                 $rootScope.hideNavigationMenu = false;
                 $state.go(config.appSettings.defaultState);
             }
-
-
+            
             // don't animate, clear back history
             $ionicHistory.nextViewOptions({
                 disableAnimate: false,
@@ -243,7 +242,7 @@ angular.module('starter')
             });
 
             // redraw everything according to updated appstate
-            $rootScope.$broadcast('updateChartsAndSyncMeasurements');
+            measurementService.syncPrimaryOutcomeVariableMeasurementsAndUpdateCharts();
         }
 
         $scope.goToDefaultStateIfWelcomed = function(){

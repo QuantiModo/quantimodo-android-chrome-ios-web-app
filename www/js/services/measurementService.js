@@ -1,6 +1,6 @@
 angular.module('starter')
 	// Measurement Service
-	.factory('measurementService', function($http, $q, QuantiModo, localStorageService, $rootScope){
+	.factory('measurementService', function($http, $q, QuantiModo, localStorageService, $rootScope, $ionicLoading){
 
         //flag to indicate if data syncing is in progress
         var isSyncing = false;
@@ -205,6 +205,26 @@ angular.module('starter')
                     }
                 });
                 
+                return deferred.promise;
+            },
+
+            syncPrimaryOutcomeVariableMeasurementsAndUpdateCharts : function(){
+                var deferred = $q.defer();
+
+                if($rootScope.user){
+                    $rootScope.isSyncing = true;
+                    console.log('Syncing primary outcome measurements...');
+
+                    measurementService.syncPrimaryOutcomeVariableMeasurements().then(function(){
+                        $rootScope.isSyncing = false;
+                        $ionicLoading.hide();
+                        deferred.resolve();
+                    });
+                }
+                else {
+                    $rootScope.$broadcast('updateCharts');
+                    deferred.resolve();
+                }
                 return deferred.promise;
             },
 
@@ -433,7 +453,13 @@ angular.module('starter')
                         };
                         measurementService.addToMeasurementsQueue(newMeasurement);
                     }
-                    $rootScope.$broadcast('updateChartsAndSyncMeasurements');
+
+                    measurementService.syncPrimaryOutcomeVariableMeasurementsAndUpdateCharts()
+                        .then(function() {
+                            if(usePromise) {
+                                deferred.resolve();
+                            }
+                        });
                 }
                 else {
                     // Non primary outcome variable, post immediately
@@ -467,8 +493,7 @@ angular.module('starter')
                         note : measurementInfo.note,
                         combinationOperation : measurementInfo.isAvg? "MEAN" : "SUM"
                     };
-
-
+                    
                     // send request
                     QuantiModo.postMeasurementsV2(measurements, function(response){
                         if(response.success) {
@@ -488,71 +513,11 @@ angular.module('starter')
                             deferred.reject(response.message ? response.message.split('.')[0] : "Can't post measurement right now!");
                         }
                     });
-                    
-                    if(usePromise) {
-                        return deferred.promise;
-                    }
+                }
+                if(usePromise) {
+                    return deferred.promise;
                 }
             },
-
-            // edit existing measurement - NEVER USED
-			editPrimaryOutcomeVariable : function(startTimeEpoch, val, note){
-				var deferred = $q.defer();
-				// measurements set
-				var measurements = [
-					{
-					   	variableName: config.appSettings.primaryOutcomeVariableDetails.name,
-                        source: config.get('clientSourceName'),
-                        category: config.appSettings.primaryOutcomeVariableDetails.category,
-                        combinationOperation: config.appSettings.primaryOutcomeVariableDetails.combinationOperation,
-                        unit: config.appSettings.primaryOutcomeVariableDetails.abbreviatedUnitName,
-					   	measurements : [{
-					   		startTimeEpoch:  startTimeEpoch,
-					   		value: val,
-					   		note : (note && note !== null)? note : null
-					   	}]
-					}
-				];
-
-			   console.log(measurements);
-
-			   var measurementDataSet;
-               localStorageService.getItem('allMeasurements',function(allMeasurements){
-                   measurementDataSet = JSON.parse(allMeasurements);
-                   // extract the measurement from localStorage
-                   var selectedMeasurementDataSetItems = measurementDataSet.filter(function(x){return x.startTimeEpoch === startTimeEpoch;});
-
-                   // update localstorage data
-                   var selectedMeasurementItem = selectedMeasurementDataSetItems[0];
-
-                   // extract value
-                   selectedMeasurementItem.value = val;
-                   selectedMeasurementItem.note = (selectedMeasurementItem.note && selectedMeasurementItem.note !== null)? selectedMeasurementItem.note : null;
-
-                   // update localstorage
-                   localStorageService.setItem('allMeasurements',JSON.stringify(measurementDataSet));
-
-                   // send request
-                   QuantiModo.postMeasurementsV2(measurements, function(response){
-
-                       console.log("success", response);
-                       deferred.resolve();
-
-                   }, function(response){
-
-                       console.log("error", response);
-                       //save in measurementsQueue
-                       localStorageService.getItem('measurementsQueue',function(queue){
-                          queue.push(measurements);
-                          deferred.resolve();
-
-                       });
-
-                   });
-               });
-
-				return deferred.promise;
-			},
 
             getHistoryMeasurements : function(params){
                 var deferred = $q.defer();
