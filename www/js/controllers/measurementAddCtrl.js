@@ -208,6 +208,8 @@ angular.module('starter')
 
         $scope.done = function(){
 
+            $scope.showLoader();
+
             if($scope.state.measurement.value === ''){
                 utilsService.showAlert('Please enter a value');
                 return;
@@ -237,7 +239,7 @@ angular.module('starter')
             var params = {
                 id : $scope.state.measurement.id,
                 variableName : $scope.state.measurement.variable || jQuery('#variableName').val(),
-                value : $scope.state.measurement.value || jQuery('#measurementValue').val(),
+                value : $scope.state.measurement.value,
                 note : $scope.state.measurement.note || jQuery('#note').val(),
                 prevStartTimeEpoch : $scope.state.measurement.prevStartTimeEpoch,
                 startTimeEpoch : $scope.state.measurement.startTimeEpoch,
@@ -249,6 +251,10 @@ angular.module('starter')
                 variableCategoryName : $scope.state.measurement.variableCategoryName,
                 isAvg : $scope.state.sumAvg === "avg"? true : false
             };
+
+            if(!params.value && params.value !== 0){
+                params.value = jQuery('#measurementValue').val();
+            }
 
             console.log(params);
 
@@ -308,15 +314,17 @@ angular.module('starter')
                     // post measurement
                     measurementService.postTrackingMeasurement(measurementInfo, true)
                     .then(function() {
-                        if($stateParams.fromUrl){
-                            window.location = $stateParams.fromUrl;
-                        } else if ($stateParams.fromState){
-                            $state.go($stateParams.fromState);
-                        } else {
-                            $rootScope.hideNavigationMenu = false;
-                            $state.go(config.appSettings.defaultState);
-                        }
+
                     });
+
+                    if($stateParams.fromUrl){
+                        window.location = $stateParams.fromUrl;
+                    } else if ($stateParams.fromState){
+                        $state.go($stateParams.fromState);
+                    } else {
+                        $rootScope.hideNavigationMenu = false;
+                        $state.go(config.appSettings.defaultState);
+                    }
                     //utilsService.showAlert(params.variableName + ' measurement saved!');
                     
                     // refresh data
