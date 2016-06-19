@@ -177,6 +177,7 @@ angular.module('starter')
 
 	    $scope.track = function(trackingReminderNotification, modifiedReminderValue){
 			$scope.showLoader();
+			console.debug('Tracking notification', trackingReminderNotification);
 			console.log('modifiedReminderValue is ' + modifiedReminderValue);
 			removeNotificationFromDisplay(trackingReminderNotification.id);
 	    	reminderService.trackReminderNotification(trackingReminderNotification.id, modifiedReminderValue)
@@ -191,6 +192,7 @@ angular.module('starter')
 	    };
 
 	    $scope.skip = function(trackingReminderNotification){
+			console.debug('Skipping notification', trackingReminderNotification);
 			$scope.showLoader();
 			removeNotificationFromDisplay(trackingReminderNotification.id);
 	    	reminderService.skipReminderNotification(trackingReminderNotification.id)
@@ -207,6 +209,7 @@ angular.module('starter')
 
 	    $scope.snooze = function(trackingReminderNotification){
 			$scope.showLoader();
+			console.debug('Snoozing notification', trackingReminderNotification);
 			removeNotificationFromDisplay(trackingReminderNotification.id);
 	    	reminderService.snoozeReminderNotification(trackingReminderNotification.id)
 	    	.then(function(){
