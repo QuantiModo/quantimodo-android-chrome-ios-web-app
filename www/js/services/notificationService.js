@@ -132,7 +132,7 @@ angular.module('starter')
 
                 function scheduleAndroidNotificationByTrackingReminder(trackingReminder) {
                     if (trackingReminder) {
-                        var firstAt = new Date(trackingReminder.nextReminderTimeEpochSeconds*1000);
+                        var at = new Date(trackingReminder.nextReminderTimeEpochSeconds*1000);
                         var minuteFrequency  = trackingReminder.reminderFrequency / 60;
                         var notificationSettings = {
                             autoClear: true,
@@ -144,7 +144,7 @@ angular.module('starter')
                             ongoing: false,
                             title: "Track " + trackingReminder.variableName,
                             text: "Tap to open reminder inbox",
-                            firstAt: firstAt,
+                            at: at,
                             every: minuteFrequency,
                             icon: 'ic_stat_icon_bw',
                             id: trackingReminder.id
