@@ -164,6 +164,9 @@ angular.module('starter')
 			for(var i = 0; i < $scope.state.trackingRemindersNotifications.length; i++){
 				if($scope.state.trackingRemindersNotifications[i].id !== trackingReminderNotificationId){
 					notificationsToKeep.push($scope.state.trackingRemindersNotifications[i]);
+				} else {
+					console.debug('Removing reminder notification id ' + trackingReminderNotificationId +
+						' from $scope.state.trackingRemindersNotifications');
 				}
 			}
 			$scope.state.trackingRemindersNotifications = notificationsToKeep;
@@ -173,7 +176,7 @@ angular.module('starter')
 		};
 
 	    $scope.track = function(trackingReminderNotification, modifiedReminderValue){
-			//$scope.showLoader();
+			$scope.showLoader();
 			console.log('modifiedReminderValue is ' + modifiedReminderValue);
 			removeNotificationFromDisplay(trackingReminderNotification.id);
 	    	reminderService.trackReminderNotification(trackingReminderNotification.id, modifiedReminderValue)
@@ -188,7 +191,7 @@ angular.module('starter')
 	    };
 
 	    $scope.skip = function(trackingReminderNotification){
-			//$scope.showLoader();
+			$scope.showLoader();
 			removeNotificationFromDisplay(trackingReminderNotification.id);
 	    	reminderService.skipReminderNotification(trackingReminderNotification.id)
 	    	.then(function(){
@@ -203,7 +206,7 @@ angular.module('starter')
 	    };
 
 	    $scope.snooze = function(trackingReminderNotification){
-			//$scope.showLoader();
+			$scope.showLoader();
 			removeNotificationFromDisplay(trackingReminderNotification.id);
 	    	reminderService.snoozeReminderNotification(trackingReminderNotification.id)
 	    	.then(function(){
