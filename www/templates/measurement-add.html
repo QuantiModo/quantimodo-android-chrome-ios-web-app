@@ -55,7 +55,7 @@
             <div class="list">
                 <label ng-if="state.measurement.abbreviatedUnitName !== '/5'" class="item item-input">
                     <span class="input-label">{{state.defaultValueLabel}}</span>
-                    <input type="number" ng-model="state.measurement.value" id="defaultValue" placeholder={{state.defaultValuePlaceholderText}} >
+                    <input type="number" ng-model="state.measurement.value" id="defaultValue" onFocus="this.select()" placeholder={{state.defaultValuePlaceholderText}} >
                 </label>
                 <div class="primary-outcome-variable-rating-buttons primary-outcome-variable-history col"
                      ng-if="showNumericRatingNumberButtons">
