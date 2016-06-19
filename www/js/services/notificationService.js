@@ -15,10 +15,12 @@ angular.module('starter')
         return {
 
             scheduleAllNotifications: function(trackingRemindersFromApi) {
-                for (var i = 0; i < trackingRemindersFromApi.length; i++) {
-                    this.scheduleNotification(false, trackingRemindersFromApi[i]);
+                if($rootScope.isChromeExtension || $rootScope.isIOS || $rootScope.isAndroid) {
+                    for (var i = 0; i < trackingRemindersFromApi.length; i++) {
+                        this.scheduleNotification(false, trackingRemindersFromApi[i]);
+                    }
+                    this.cancelNotificationsForDeletedReminders(trackingRemindersFromApi);
                 }
-                this.cancelNotificationsForDeletedReminders(trackingRemindersFromApi);
             },
 
             cancelNotificationsForDeletedReminders: function(trackingRemindersFromApi) {
