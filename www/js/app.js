@@ -89,9 +89,10 @@ angular.module('starter',
 })
 
 .config(function($stateProvider, $urlRouterProvider, $compileProvider, ionicTimePickerProvider,
-                 ionicDatePickerProvider) {
+                 ionicDatePickerProvider, $ionicConfigProvider) {
     $compileProvider.imgSrcSanitizationWhitelist(/^\s*(https?|ftp|file|mailto|chrome-extension):/);
     $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|file|ftp|mailto|chrome-extension):/);
+    $ionicConfigProvider.tabs.position("bottom"); //Places them at the bottom for all OS
 
     var config_resolver = {
       loadMyService: ['$ocLazyLoad', function($ocLazyLoad) {

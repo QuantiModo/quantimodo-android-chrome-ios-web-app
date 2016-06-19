@@ -91,7 +91,7 @@ angular.module('starter')
             var to = moment($scope.toDate).unix()*1000;
             var from = moment($scope.fromDate).unix()*1000;
             measurementService.setDates(to, from);
-        }
+        };
 
         // show main calendar popup (from and to)
         $scope.showCalendarPopup = function($event){
