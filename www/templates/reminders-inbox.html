@@ -42,18 +42,18 @@
 							</div>
 						</div>
 						<div class="button-bar">
-							<a class="button button-clear button-assertive" style="text-overflow: clip; font-size: 12px;" ng-click="skip(reminder)"><i class="ion-android-cancel"> &nbsp; Skip</i></a>
-							<a class="button button-clear button-royal" style="text-overflow: clip; font-size: 12px;" ng-click="snooze(reminder)"><i class="ion-android-notifications-off"> &nbsp; Snooze</i></a>
-							<a class="button button-clear button-calm" ng-click="editReminderSettings(reminder)" style="text-overflow: clip;  font-size: 12px;"><i class="ion-settings"> &nbsp; Settings</i></a>
+							<button class="button button-clear button-assertive" style="text-overflow: clip; font-size: 12px;" ng-click="skip(reminder)"><i class="ion-android-cancel"> &nbsp; Skip</i></button>
+							<button class="button button-clear button-royal" style="text-overflow: clip; font-size: 12px;" ng-click="snooze(reminder)"><i class="ion-android-notifications-off"> &nbsp; Snooze</i></button>
+							<button class="button button-clear button-calm" ng-click="editReminderSettings(reminder)" style="text-overflow: clip;  font-size: 12px;"><i class="ion-settings"> &nbsp; Settings</i></button>
 						</div>
 						<div class="row" ng-if="reminder.abbreviatedUnitName !== '/5' " >
 							<div class="button-bar">
-								<a class="button button-clear button-balanced" style="text-overflow: clip; font-size: 14px;" ng-click="track(reminder)"><i class="ion-android-done"> &nbsp; Record {{reminder.defaultValue}}&nbsp;{{reminder.unitName.toLowerCase()}}</i></a>
+								<button class="button button-clear button-balanced" style="text-overflow: clip; font-size: 14px;" ng-click="track(reminder)"><i class="ion-android-done"> &nbsp; Record {{reminder.defaultValue}}&nbsp;{{reminder.unitName.toLowerCase()}}</i></button>
 							</div>
 						</div>
 						<div class="row" ng-if="reminder.abbreviatedUnitName !== '/5' " >
 							<div class="button-bar">
-								<a class="button button-clear button-calm" style="text-overflow: clip; font-size: 14px;" ng-click="editMeasurement(reminder)"><i class="ion-edit"> &nbsp; Record Different Value/Time</i></a>
+								<button class="button button-clear button-calm" style="text-overflow: clip; font-size: 14px;" ng-click="editMeasurement(reminder)"><i class="ion-edit"> &nbsp; Record Different Value/Time</i></button>
 							</div>
 						</div>
 						<div class="primary-outcome-variable-reporting"
