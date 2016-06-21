@@ -60,7 +60,7 @@
 						 	ng-if="!reminder.description &&	reminder.abbreviatedUnitName === '/5'">
 							<div class="primary-outcome-variable-rating-buttons" >
 								<img ng-repeat="option in numericRatingOptions"
-									 ng-click="track(reminder, option.numericValue)"
+									 ng-click="track(reminder, option.numericValue, $event)"
 									 ng-src="{{option.img}}">
 							</div>
 							<br>
@@ -70,7 +70,7 @@
 						 	reminder.description.toLowerCase().indexOf('positive') > -1">
 							<div class="primary-outcome-variable-rating-buttons" >
 								<img ng-repeat="option in positiveRatingOptions"
-									 ng-click="track(reminder, option.numericValue)"
+									 ng-click="track(reminder, option.numericValue, $event)"
 									 ng-src="{{option.img}}">
 								<br>
 							</div>
@@ -81,7 +81,7 @@
 						 	reminder.description.toLowerCase().indexOf('negative') > -1">
 							<div class="primary-outcome-variable-rating-buttons" >
 								<img ng-repeat="option in negativeRatingOptions"
-									 ng-click="track(reminder, option.numericValue)"
+									 ng-click="track(reminder, option.numericValue, $event)"
 									 ng-src="{{option.img}}">
 								<br>
 							</div>

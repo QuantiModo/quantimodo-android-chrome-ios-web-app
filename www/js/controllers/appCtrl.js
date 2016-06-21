@@ -417,6 +417,7 @@ angular.module('starter')
         };
 
         $scope.showLoader = function (loadingText) {
+            console.debug('Showing Loader');
             if(!loadingText){
                 loadingText = '';
             }

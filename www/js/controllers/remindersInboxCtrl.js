@@ -30,7 +30,8 @@ angular.module('starter')
 			variable : {},
 			isDisabled : false,
 			title : 'Reminder Inbox',
-			loading : true
+			loading : true,
+			lastButtonPressTimeStamp : 0
 	    };
 
 		if(typeof config.appSettings.remindersInbox.showAddHowIFeelResponseButton !== 'undefined'){
@@ -176,10 +177,19 @@ angular.module('starter')
 		};
 
 	    $scope.track = function(trackingReminderNotification, modifiedReminderValue, $event){
+
+			if($event && $scope.lastButtonPressTimeStamp > $event.timeStamp - 3000) {
+				console.debug('This is probably a ghost click so not registering.', $event);
+				return;
+			} else {
+				$scope.lastButtonPressTimeStamp = $event.timeStamp;
+			}
+
+			console.debug('Track event is ', $event);
 			// Didn't solve ghost click problem
 			if($event && $event.type === "touchend") {return;}
 
-			// Trying to solve ghost click problem
+			// Didn't solve ghost click problem
 			if ($event && $event.type !== 'click') {return;}
 
 			$scope.showLoader();
@@ -198,10 +208,19 @@ angular.module('starter')
 	    };
 
 	    $scope.skip = function(trackingReminderNotification, $event){
+
+			if($scope.lastButtonPressTimeStamp > $event.timeStamp - 3000) {
+				console.debug('This is probably a ghost click so not registering.', $event);
+				return;
+			} else {
+				$scope.lastButtonPressTimeStamp = $event.timeStamp;
+			}
+
+			console.debug('Skip event is ', $event);
 			// Didn't solve ghost click problem
 			if($event && $event.type === "touchend") {return;}
 
-			// Trying to solve ghost click problem
+			// Didn't solve ghost click problem
 			if ($event && $event.type !== 'click') {return;}
 
 			console.debug('Skipping notification', trackingReminderNotification);
@@ -221,10 +240,19 @@ angular.module('starter')
 
 	    $scope.snooze = function(trackingReminderNotification, $event){
 
+			if($scope.lastButtonPressTimeStamp > $event.timeStamp - 3000) {
+				console.debug('This is probably a ghost click so not registering.', $event);
+				return;
+			} else {
+				$scope.lastButtonPressTimeStamp = $event.timeStamp;
+			}
+
+			console.debug('Snooze event is ', $event);
+
 			// Didn't solve ghost click problem
 			if($event && $event.type === "touchend") {return;}
 
-			// Trying to solve ghost click problem
+			// Didn't solve ghost click problem
 			if ($event && $event.type !== 'click') {return;}
 
 			$scope.showLoader();
