@@ -180,7 +180,7 @@ angular.module('starter')
 			if($event && $event.type === "touchend") {return;}
 
 			// Trying to solve ghost click problem
-			if ($event.type !== 'click') {return;}
+			if ($event && $event.type !== 'click') {return;}
 
 			$scope.showLoader();
 			console.debug('Tracking notification', trackingReminderNotification);
@@ -202,7 +202,7 @@ angular.module('starter')
 			if($event && $event.type === "touchend") {return;}
 
 			// Trying to solve ghost click problem
-			if ($event.type !== 'click') {return;}
+			if ($event && $event.type !== 'click') {return;}
 
 			console.debug('Skipping notification', trackingReminderNotification);
 			$scope.showLoader();
@@ -225,7 +225,7 @@ angular.module('starter')
 			if($event && $event.type === "touchend") {return;}
 
 			// Trying to solve ghost click problem
-			if ($event.type !== 'click') {return;}
+			if ($event && $event.type !== 'click') {return;}
 
 			$scope.showLoader();
 			console.debug('Snoozing notification', trackingReminderNotification);
