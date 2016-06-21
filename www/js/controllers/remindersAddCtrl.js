@@ -66,8 +66,8 @@ angular.module('starter')
 				{ id : 7, name : 'Every 2 hours'},
 				{ id : 8, name : 'Hourly'},
 	    		{ id : 9, name : 'Every 30 minutes'},
-                { id : 10, name : 'Every minute'},
-	    		{ id : 11, name : 'Never'}
+	    		{ id : 10, name : 'Never'}
+                //{ id : 11, name : 'Every minute'},
 	    	]
 	    };
 
