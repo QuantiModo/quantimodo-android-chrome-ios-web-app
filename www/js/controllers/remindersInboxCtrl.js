@@ -176,7 +176,12 @@ angular.module('starter')
 		};
 
 	    $scope.track = function(trackingReminderNotification, modifiedReminderValue, $event){
+			// Didn't solve ghost click problem
 			if($event && $event.type === "touchend") {return;}
+
+			// Trying to solve ghost click problem
+			if ($event.type !== 'click') {return;}
+
 			$scope.showLoader();
 			console.debug('Tracking notification', trackingReminderNotification);
 			console.log('modifiedReminderValue is ' + modifiedReminderValue);
@@ -193,7 +198,12 @@ angular.module('starter')
 	    };
 
 	    $scope.skip = function(trackingReminderNotification, $event){
+			// Didn't solve ghost click problem
 			if($event && $event.type === "touchend") {return;}
+
+			// Trying to solve ghost click problem
+			if ($event.type !== 'click') {return;}
+
 			console.debug('Skipping notification', trackingReminderNotification);
 			$scope.showLoader();
 			removeNotificationFromDisplay(trackingReminderNotification.id);
@@ -210,7 +220,13 @@ angular.module('starter')
 	    };
 
 	    $scope.snooze = function(trackingReminderNotification, $event){
+
+			// Didn't solve ghost click problem
 			if($event && $event.type === "touchend") {return;}
+
+			// Trying to solve ghost click problem
+			if ($event.type !== 'click') {return;}
+
 			$scope.showLoader();
 			console.debug('Snoozing notification', trackingReminderNotification);
 			removeNotificationFromDisplay(trackingReminderNotification.id);
