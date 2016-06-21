@@ -175,7 +175,8 @@ angular.module('starter')
 			$scope.loading = false;
 		};
 
-	    $scope.track = function(trackingReminderNotification, modifiedReminderValue){
+	    $scope.track = function(trackingReminderNotification, modifiedReminderValue, $event){
+			if($event && $event.type === "touchend") {return;}
 			$scope.showLoader();
 			console.debug('Tracking notification', trackingReminderNotification);
 			console.log('modifiedReminderValue is ' + modifiedReminderValue);
@@ -191,7 +192,8 @@ angular.module('starter')
 	    	});
 	    };
 
-	    $scope.skip = function(trackingReminderNotification){
+	    $scope.skip = function(trackingReminderNotification, $event){
+			if($event && $event.type === "touchend") {return;}
 			console.debug('Skipping notification', trackingReminderNotification);
 			$scope.showLoader();
 			removeNotificationFromDisplay(trackingReminderNotification.id);
@@ -207,7 +209,8 @@ angular.module('starter')
 	    	});
 	    };
 
-	    $scope.snooze = function(trackingReminderNotification){
+	    $scope.snooze = function(trackingReminderNotification, $event){
+			if($event && $event.type === "touchend") {return;}
 			$scope.showLoader();
 			console.debug('Snoozing notification', trackingReminderNotification);
 			removeNotificationFromDisplay(trackingReminderNotification.id);
