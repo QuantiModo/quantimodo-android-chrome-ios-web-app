@@ -187,15 +187,20 @@ angular.module('starter')
                 var ratingInfo = ratingService.getRatingInfo();
                 var index;
                 for (index = 0; index < measurements.length; ++index) {
-                            if(!measurements[index].variableName){
-                                        measurements[index].variableName = measurements[index].variable
-                            }
+                    if(!measurements[index].variableName){
+                        measurements[index].variableName = measurements[index].variable;
+                    }
                     if(measurements[index].variableName === config.appSettings.primaryOutcomeVariableDetails.name){
                         measurements[index].variableDescription = config.appSettings.primaryOutcomeVariableDetails.description;
                     }
 
                     if (measurements[index].abbreviatedUnitName === '/5') {
                         measurements[index].roundedValue = Math.round(measurements[index].value);
+                    }
+
+                    measurements[index].valueUnitVariableName = measurements[index].value + measurements[index].abbreviatedUnitName + ' ' + measurements[index].variableName;
+                    if(measurements[index].valueUnitVariableName.length > 29){
+                        measurements[index].valueUnitVariableName =  measurements[index].valueUnitVariableName.substring(0, 29)+'...';
                     }
 
                     // if (measurements[index].abbreviatedUnitName === '%') {

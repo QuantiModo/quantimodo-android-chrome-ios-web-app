@@ -9,7 +9,7 @@
 <!--                      <p style="font-weight:bold;white-space:normal">{{historyItem.variable}}</p>-->
                   </div>
                   <div class="history-block" style="margin-left:5px;">
-                      <h2 style="font-weight:bold;white-space:normal"> {{historyItem.value}} {{historyItem.abbreviatedUnitName}} {{historyItem.variable | truncateText}}</h2>
+                      <h2 style="font-weight:bold;white-space:normal"> {{historyItem.valueUnitVariableName}}</h2>
                     <h2 class="history-time" ng-repeat="line in (historyItem.startTimeEpoch | timeOfDayDayOfWeek) track by $index">
                       {{line}}
                     </h2>
