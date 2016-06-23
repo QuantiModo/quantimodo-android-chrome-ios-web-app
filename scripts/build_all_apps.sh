@@ -73,7 +73,7 @@ fi
 #rsync -a --exclude=build/ --exclude=.git/ ${IONIC_PATH}/* ${INTERMEDIATE_PATH}
 cd ${INTERMEDIATE_PATH}
 
-source ${IONIC_PATH}/scripts/build_scripts/00_install_dependencies.sh
+#source ${IONIC_PATH}/scripts/build_scripts/00_install_dependencies.sh
 
 export APPLE_ID="1115037060"
 export APP_IDENTIFIER="com.quantimodo.quantimodo"
