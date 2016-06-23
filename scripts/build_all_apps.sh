@@ -20,11 +20,16 @@ echo "IONIC_PATH is $IONIC_PATH"
 #export INTERMEDIATE_PATH="$PWD"
 export INTERMEDIATE_PATH="$IONIC_PATH"
 echo "INTERMEDIATE_PATH is $INTERMEDIATE_PATH"
-export DROPBOX_PATH=/Users/Shared/Jenkins/Dropbox/QuantiModo/apps
+if [ -z "$DROPBOX_PATH" ]
+    then
+        echo -e "${RED}ERROR: DROPBOX_PATH does not exist for build_all_apps.sh! Quitting! "
+        exit 1
+fi
 
 if [ -z "$QM_DOCKER_PATH" ]
     then
-        export QM_DOCKER_PATH="/Users/Shared/Jenkins/Home/workspace/QM-Docker-Build"
+        echo -e "${RED}ERROR: QM_DOCKER_PATH does not exist for build_all_apps.sh! Quitting! "
+        exit 1
 fi
 
 export APP_PRIVATE_CONFIG_PATH="${QM_DOCKER_PATH}/configs/ionic/private_configs"
