@@ -662,7 +662,7 @@ config.appSettings  = {
         },
         {
             title : 'Help & Feedback',
-            href : window.chrome ? "mailto:help@quantimo.do" : "#app/feedback",
+            href : "#app/feedback",
             icon : 'ion-ios-help-outline'
         }
     ]
