@@ -1,6 +1,6 @@
 #!/bin/bash
 
-mkdir "$DROPBOX_PATH/$LOWERCASE_APP_NAME"
+mkdir "$DROPBOX_PATH/QuantiModo/apps/$LOWERCASE_APP_NAME"
 
 if [ -z "$LOWERCASE_APP_NAME" ]
   then
@@ -129,12 +129,12 @@ jarsigner -verify ${UNSIGNED_DEBUG_APK_PATH} >/dev/null
 echo "Zipaligning ${UNSIGNED_DEBUG_APK_PATH}"
 ${ANDROID_BUILD_TOOLS}/zipalign -v 4 ${UNSIGNED_DEBUG_APK_PATH} ${SIGNED_DEBUG_APK_PATH} >/dev/null
 
-echo -e "${GREEN}Copying ${BUILD_PATH}/${LOWERCASE_APP_NAME} to $DROPBOX_PATH/${LOWERCASE_APP_NAME}/${NC}"
-cp ${SIGNED_DEBUG_APK_PATH} "$DROPBOX_PATH/${LOWERCASE_APP_NAME}/"
+echo -e "${GREEN}Copying ${BUILD_PATH}/${LOWERCASE_APP_NAME} to $DROPBOX_PATH/QuantiModo/apps/${LOWERCASE_APP_NAME}/${NC}"
+cp ${SIGNED_DEBUG_APK_PATH} "$DROPBOX_PATH/QuantiModo/apps/${LOWERCASE_APP_NAME}/"
 
 if [ -f ${SIGNED_DEBUG_APK_PATH} ];
 then
-   echo echo "${SIGNED_DEBUG_APK_PATH} is ready in $DROPBOX_PATH/${LOWERCASE_APP_NAME}/"
+   echo echo "${SIGNED_DEBUG_APK_PATH} is ready in $DROPBOX_PATH/QuantiModo/apps/${LOWERCASE_APP_NAME}/"
 else
    echo "ERROR: File ${SIGNED_DEBUG_APK_PATH} does not exist. Build FAILED"
    exit 1
@@ -150,8 +150,8 @@ jarsigner -verify ${UNSIGNED_APK_PATH} >/dev/null
 echo "Zipaligning ${UNSIGNED_APK_PATH}"
 ${ANDROID_BUILD_TOOLS}/zipalign -v 4 ${UNSIGNED_APK_PATH} ${SIGNED_APK_PATH} >/dev/null
 
-echo -e "${GREEN}Copying ${BUILD_PATH}/${LOWERCASE_APP_NAME} to $DROPBOX_PATH/${LOWERCASE_APP_NAME}/${NC}"
-cp ${SIGNED_APK_PATH} "$DROPBOX_PATH/${LOWERCASE_APP_NAME}/"
+echo -e "${GREEN}Copying ${BUILD_PATH}/${LOWERCASE_APP_NAME} to $DROPBOX_PATH/QuantiModo/apps/${LOWERCASE_APP_NAME}/${NC}"
+cp ${SIGNED_APK_PATH} "$DROPBOX_PATH/QuantiModo/apps/${LOWERCASE_APP_NAME}/"
 
 # Sign the app
 #jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore ${ANDROID_KEYSTORE_PATH} -storepass ${ANDROID_KEYSTORE_PASSWORD} ${UNSIGNED_APK_PATH} ${ALIAS} >/dev/null
@@ -161,12 +161,12 @@ cp ${SIGNED_APK_PATH} "$DROPBOX_PATH/${LOWERCASE_APP_NAME}/"
 
 if [ -f ${SIGNED_APK_PATH} ];
 then
-   echo echo "${SIGNED_APK_PATH} is ready in $DROPBOX_PATH/${LOWERCASE_APP_NAME}/"
+   echo echo "${SIGNED_APK_PATH} is ready in $DROPBOX_PATH/QuantiModo/apps/${LOWERCASE_APP_NAME}/"
 else
    echo "ERROR: File ${SIGNED_APK_PATH} does not exist. Build FAILED"
    exit 1
 fi
 
-#cp -R ${BUILD_PATH}/${LOWERCASE_APP_NAME}/* "$DROPBOX_PATH/${LOWERCASE_APP_NAME}/"
-#rsync ${BUILD_PATH}/${LOWERCASE_APP_NAME}/* "$DROPBOX_PATH/${LOWERCASE_APP_NAME}/"
+#cp -R ${BUILD_PATH}/${LOWERCASE_APP_NAME}/* "$DROPBOX_PATH/QuantiModo/apps/${LOWERCASE_APP_NAME}/"
+#rsync ${BUILD_PATH}/${LOWERCASE_APP_NAME}/* "$DROPBOX_PATH/QuantiModo/apps/${LOWERCASE_APP_NAME}/"
 ### Build Android App ###
