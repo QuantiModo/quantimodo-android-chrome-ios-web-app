@@ -10,7 +10,8 @@ angular.module('starter',
         'ionic-datepicker',
         'ionic-timepicker',
         'ngIOS9UIWebViewPatch',
-        'ng-mfb'
+        'ng-mfb',
+        'fabric'
     ]
 )
 
