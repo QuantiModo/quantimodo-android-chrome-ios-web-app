@@ -80,6 +80,14 @@ cd ${INTERMEDIATE_PATH}
 npm install -g bower
 bower install
 
+if [ -f ${INTERMEDIATE_PATH}/www/lib/angular/angular.js ];
+then
+   echo echo "Dependencies installed via bower"
+else
+   echo "ERROR: Dependencies not installed! Build FAILED"
+   exit 1
+fi
+
 #source ${IONIC_PATH}/scripts/build_scripts/00_install_dependencies.sh
 
 export APPLE_ID="1115037060"
