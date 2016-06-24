@@ -159,6 +159,6 @@ else
    exit 1
 fi
 
-chmod -R 777 $DROPBOX_PATH/QuantiModo/apps
+sudo chmod -R 777 ${DROPBOX_PATH}/QuantiModo/apps
 
 exit 0
