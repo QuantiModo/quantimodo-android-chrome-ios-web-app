@@ -54,7 +54,7 @@ angular.module('starter')
                 { id : 5, name : 'Vital Signs' },
                 { id : 6, name : 'Physical Activity' },
                 { id : 7, name : 'Sleep' },
-                { id : 8, name : 'Misc' }
+                { id : 8, name : 'Miscellaneous' }
 	    	],
 	    	frequencyVariables : [
                 { id : 1, name : 'Daily'},
