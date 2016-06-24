@@ -77,7 +77,7 @@ fi
 #echo "Copying everything from ${IONIC_PATH} to $INTERMEDIATE_PATH"
 #rsync -a --exclude=build/ --exclude=.git/ ${IONIC_PATH}/* ${INTERMEDIATE_PATH}
 cd ${INTERMEDIATE_PATH}
-npm install -g bower
+#npm install -g bower
 bower install
 
 if [ -f ${INTERMEDIATE_PATH}/www/lib/angular/angular.js ];
