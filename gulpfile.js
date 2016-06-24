@@ -568,7 +568,7 @@ gulp.task('getAppNameFromGitBranchName', function(){
 
 var FACEBOOK_APP_ID = false;
 var FACEBOOK_APP_NAME = false;
-var GOOGLEPLUS_REVERSED_CLIENT_ID = false;
+var REVERSED_CLIENT_ID = false;
 
 gulp.task('readKeysForCurrentApp', ['getAppName'] ,function(){
 	var deferred = q.defer();
@@ -600,9 +600,9 @@ gulp.task('readKeysForCurrentApp', ['getAppName'] ,function(){
 			deferred.reject();
 		}
 
-		if(data.indexOf('GOOGLEPLUS_REVERSED_CLIENT_ID') < 0){
+		if(data.indexOf('REVERSED_CLIENT_ID') < 0){
 			exr = true;
-			console.log("ERROR: NO GOOGLEPLUS_REVERSED_CLIENT_ID found in ./www/private_configs/" + LOWERCASE_APP_NAME + '.config.js');
+			console.log("ERROR: NO REVERSED_CLIENT_ID found in ./www/private_configs/" + LOWERCASE_APP_NAME + '.config.js');
 			deferred.reject();
 		}
 
@@ -615,11 +615,11 @@ gulp.task('readKeysForCurrentApp', ['getAppName'] ,function(){
 			var arr = rx.exec(data);
 			FACEBOOK_APP_NAME = JSON.parse("{"+arr[0]+"}").FACEBOOK_APP_NAME;
 
-			var rx =  /("|')GOOGLEPLUS_REVERSED_CLIENT_ID("|')(\s)?:(\s)?("|')(\w*|\.*|\-*)*("|')/g;
+			var rx =  /("|')REVERSED_CLIENT_ID("|')(\s)?:(\s)?("|')(\w*|\.*|\-*)*("|')/g;
 			var arr = rx.exec(data);
-			GOOGLEPLUS_REVERSED_CLIENT_ID = JSON.parse("{"+arr[0]+"}").GOOGLEPLUS_REVERSED_CLIENT_ID;
+			REVERSED_CLIENT_ID = JSON.parse("{"+arr[0]+"}").REVERSED_CLIENT_ID;
 
-			console.log(FACEBOOK_APP_ID, FACEBOOK_APP_NAME, GOOGLEPLUS_REVERSED_CLIENT_ID);
+			console.log(FACEBOOK_APP_ID, FACEBOOK_APP_NAME, REVERSED_CLIENT_ID);
 			deferred.resolve();
 		} else deferred.reject();
 	});
@@ -691,7 +691,7 @@ gulp.task('addGooglePlusPlugin', ['readKeysForCurrentApp'] , function(){
 
 	var commands = [
 		'cordova -d plugin add cordova-plugin-googleplus@4.0.8',
-		'REVERSED_CLIENT_ID="'+ GOOGLEPLUS_REVERSED_CLIENT_ID +'"'
+		'REVERSED_CLIENT_ID="'+ REVERSED_CLIENT_ID +'"'
 	].join(' --variable ');
 
 	execute(commands, function(error){
