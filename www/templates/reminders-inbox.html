@@ -6,22 +6,24 @@
 
 			<div class="list card"  ng-hide="hideAddTreatmentRemindersCard">
 				<div class="item" style="padding-bottom:0px;">
+					<p style=" text-align: center; line-height: normal; font-size: 25px;">Treatment Tracking</p>
+
 					<div class="row">
-						<div class="col" style="padding-top: 0px;">
+						<div class="col" style="padding-top: 10px;">
 							<i style="font-size: 60px;" class="icon positive ion-ios-medkit-outline"></i>
 						</div>
 						<div class="col col-75">
-							<h2 style="white-space: normal;">Add your medications and treatments and get reminders to track so we can identify how they might be affecting you.</h2>
+							<p style="white-space: normal; text-align: center;">Get reminded to take and record treatments to identify how they might be affecting you.</p>
 						</div>
 					</div>
 					<div class="row" >
 						<div class="button-bar">
-							<button class="button button-clear button-balanced" style="font-size: 14px;" ng-click="goToState('app.reminderAddCategory', 'Treatments')"><i class="ion-plus-round"> &nbsp; Add a treatment &nbsp;</i></button>
+							<button class="button button-clear button-balanced" style="font-size: 14px;" ng-click="goToState('app.reminderAddCategory', 'Treatments')"><i class="ion-plus-round"> &nbsp; Add treatment reminder &nbsp;</i></button>
 						</div>
 					</div>
 					<div class="row" >
 						<div class="button-bar">
-							<button class="button button-clear button-assertive" style="font-size: 14px;" ng-click="setLocalStorageFlagTrue('hideAddTreatmentRemindersCard')"><i class="ion-close-circled"> &nbsp; Already added all medications</i></button>
+							<button class="button button-clear button-assertive" style="font-size: 14px;" ng-click="setLocalStorageFlagTrue('hideAddTreatmentRemindersCard')"><i class="ion-close-circled"> &nbsp;Done adding treatments</i></button>
 						</div>
 					</div>
 
@@ -29,23 +31,25 @@
 			</div>
 
 			<div class="list card"  ng-hide="hideAddSymptomRemindersCard">
-				<div class="item" style="padding-bottom:0px;">
+				<div class="item" >
+					<p style=" text-align: center; line-height: normal; font-size: 25px;">Symptom Ratings</p>
+
 					<div class="row">
-						<div class="col" style="padding-top: 0px;">
+						<div class="col" style="padding-top: 10px;">
 							<i style="font-size: 60px;" class="icon positive ion-sad-outline"></i>
 						</div>
 						<div class="col col-75">
-							<h2 style="white-space: normal;">Do you have any symptoms that vary in severity? It's important to rate them regularly in order to determine which factors are influencing them. </h2>
+							<p style="white-space: normal; text-align: center;">Rate symptoms regularly in order to determine which factors are influencing them. </p>
 						</div>
 					</div>
 					<div class="row" >
 						<div class="button-bar">
-							<button class="button button-clear button-balanced" style="font-size: 14px;" ng-click="goToState('app.reminderAddCategory', 'Symptoms')"><i class="ion-plus-round"> &nbsp; Add a symptom rating reminder &nbsp;</i></button>
+							<button class="button button-clear button-balanced" style="font-size: 14px;" ng-click="goToState('app.reminderAddCategory', 'Symptoms')"><i class="ion-plus-round"> &nbsp; Add symptom reminder &nbsp;</i></button>
 						</div>
 					</div>
 					<div class="row"  >
 						<div class="button-bar">
-							<button class="button button-clear button-assertive" style="font-size: 14px;" ng-click="setLocalStorageFlagTrue('hideAddSymptomRemindersCard')"><i class="ion-close-circled"> &nbsp; Already added all symptoms</i></button>
+							<button class="button button-clear button-assertive" style="font-size: 14px;" ng-click="setLocalStorageFlagTrue('hideAddSymptomRemindersCard')"><i class="ion-close-circled"> &nbsp; Done adding symptoms</i></button>
 						</div>
 					</div>
 
@@ -54,22 +58,23 @@
 
 			<div class="list card"  ng-hide="hideAddEmotionRemindersCard">
 				<div class="item" style="padding-bottom:0px;">
+					<p style=" text-align: center; line-height: normal; font-size: 25px;">Varying Emotions?</p>
 					<div class="row">
-						<div class="col" style="padding-top: 0px;">
+						<div class="col" style="padding-top: 10px;">
 							<i style="font-size: 60px;" class="icon positive ion-happy-outline"></i>
 						</div>
 						<div class="col col-75">
-							<h2 style="white-space: normal;">Do you have any emotions that vary frequently? It's important to rate them regularly in order to determine which factors are influencing them. </h2>
+							<p style="white-space: normal; text-align: center;">It's important to rate variable emotions regularly in order to determine which factors are influencing them. </p>
 						</div>
 					</div>
 					<div class="row" >
 						<div class="button-bar">
-							<button class="button button-clear button-balanced" style="font-size: 14px;" ng-click="goToState('app.reminderAddCategory', 'Emotions')"><i class="ion-plus-round"> &nbsp; Add an emotion rating reminder &nbsp;</i></button>
+							<button class="button button-clear button-balanced" style="font-size: 14px;" ng-click="goToState('app.reminderAddCategory', 'Emotions')"><i class="ion-plus-round"> &nbsp; Add an emotion reminder&nbsp;</i></button>
 						</div>
 					</div>
 					<div class="row"  >
 						<div class="button-bar">
-							<button class="button button-clear button-assertive" style="font-size: 14px;" ng-click="setLocalStorageFlagTrue('hideAddEmotionRemindersCard')"><i class="ion-close-circled"> &nbsp; Already added all emotions</i></button>
+							<button class="button button-clear button-assertive" style="font-size: 14px;" ng-click="setLocalStorageFlagTrue('hideAddEmotionRemindersCard')"><i class="ion-close-circled"> &nbsp; Done adding emotions</i></button>
 						</div>
 					</div>
 
@@ -78,22 +83,23 @@
 
 			<div class="list card"  ng-hide="hideAddFoodRemindersCard">
 				<div class="item" style="padding-bottom:0px;">
+					<p style=" text-align: center; line-height: normal; font-size: 25px;">Track Diet</p>
 					<div class="row">
-						<div class="col" style="padding-top: 0px;">
+						<div class="col" style="padding-top: 10px;">
 							<i style="font-size: 60px;" class="icon positive ion-ios-nutrition-outline"></i>
 						</div>
 						<div class="col col-75">
-							<h2 style="white-space: normal;">Diet can have a significant impact on your health.  It's important to enter any foods that you regularly eat to see how they might be affecting you. </h2>
+							<p style="white-space: normal; text-align: center;">Diet can have a significant impact on your health.  It's important to enter any foods that you regularly eat to see how they might be affecting you. </p>
 						</div>
 					</div>
 					<div class="row" >
 						<div class="button-bar">
-							<button class="button button-clear button-balanced" style="font-size: 14px;" ng-click="goToState('app.reminderAddCategory', 'Foods')"><i class="ion-plus-round"> &nbsp; Add a food &nbsp;</i></button>
+							<button class="button button-clear button-balanced" style="font-size: 14px;" ng-click="goToState('app.reminderAddCategory', 'Foods')"><i class="ion-plus-round"> &nbsp; Add a food reminder &nbsp;</i></button>
 						</div>
 					</div>
 					<div class="row"  >
 						<div class="button-bar">
-							<button class="button button-clear button-assertive" style="font-size: 14px;" ng-click="setLocalStorageFlagTrue('hideAddFoodRemindersCard')"><i class="ion-close-circled"> &nbsp; Already added all common foods</i></button>
+							<button class="button button-clear button-assertive" style="font-size: 14px;" ng-click="setLocalStorageFlagTrue('hideAddFoodRemindersCard')"><i class="ion-close-circled"> &nbsp; Done adding common foods</i></button>
 						</div>
 					</div>
 				</div>
@@ -101,12 +107,13 @@
 
 			<div class="list card"  ng-hide="hideImportDataCard">
 				<div class="item" style="padding-bottom:0px;">
+					<p style=" text-align: center; line-height: normal; font-size: 25px;">Import Your Data</p>
 					<div class="row">
-						<div class="col" style="padding-top: 0px;">
+						<div class="col" style="padding-top: 10px;">
 							<i style="font-size: 60px;" class="icon positive ion-ios-cloud-download-outline"></i>
 						</div>
 						<div class="col col-75">
-							<h2 style="white-space: normal;">We can automatically import data from dozens of apps and devices.  I'd recommend starting by scrolling down to the Weather connector and entering your zip code so we can see how the weather might be affecting you. </h2>
+							<h2 style="white-space: normal; text-align: center;">Start by scrolling down to the Weather connector and enter your zip code so we can see how the weather might be affecting you. </h2>
 						</div>
 					</div>
 					<div class="row" >
@@ -116,7 +123,7 @@
 					</div>
 					<div class="row"  >
 						<div class="button-bar">
-							<button class="button button-clear button-assertive" style="font-size: 14px;" ng-click="setLocalStorageFlagTrue('hideImportDataCard')"><i class="ion-close-circled"> &nbsp; Already connected all data sources</i></button>
+							<button class="button button-clear button-assertive" style="font-size: 14px;" ng-click="setLocalStorageFlagTrue('hideImportDataCard')"><i class="ion-close-circled"> &nbsp; Done connecting to sources</i></button>
 						</div>
 					</div>
 				</div>
