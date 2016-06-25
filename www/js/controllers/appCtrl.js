@@ -25,6 +25,12 @@ angular.module('starter')
         };
         $scope.floatingMaterialButton = config.appSettings.floatingMaterialButton;
         
+        $scope.hideAddTreatmentRemindersCard = localStorageService.getItemSync('hideAddTreatmentRemindersCard');
+        $scope.hideAddFoodRemindersCard = localStorageService.getItemSync('hideAddFoodRemindersCard');
+        $scope.hideAddSymptomRemindersCard = localStorageService.getItemSync('hideAddSymptomRemindersCard');
+        $scope.hideAddEmotionRemindersCard = localStorageService.getItemSync('hideAddEmotionRemindersCard');
+        $scope.hideImportDataCard = localStorageService.getItemSync('hideImportDataCard');
+
         //  Calendar and  Date picker
 
         // will update from showCalendarPopup
@@ -59,6 +65,19 @@ angular.module('starter')
             inputDate: $scope.toDate, // previously selected value
             from: $scope.fromDate, // don't allow toDate to be after fromDate
             to: new Date() //today
+        };
+
+        $scope.goToState = function(state, variableCategoryName){
+            $state.go(state, {
+                fromState: $state.current.name,
+                fromUrl: window.location.href,
+                variableCategoryName:  variableCategoryName
+            });
+        };
+
+        $scope.setLocalStorageFlagTrue = function(flagName){
+            localStorageService.setItem(flagName, true);
+            $scope[flagName] = true;
         };
 
         // open datepicker for "from" date
