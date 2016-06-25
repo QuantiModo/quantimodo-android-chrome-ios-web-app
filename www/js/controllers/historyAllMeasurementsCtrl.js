@@ -27,13 +27,6 @@ angular.module('starter')
 			}
 		};
 
-        $scope.goToState = function(state){
-            $state.go(state, {
-                fromState: $state.current.name,
-				fromUrl: window.location.href
-			});
-        };
-
 	    $scope.editMeasurement = function(measurement){
 	    	$state.go('app.measurementAdd', {
 	    		measurement: measurement,
