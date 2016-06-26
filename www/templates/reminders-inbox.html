@@ -143,8 +143,8 @@
 								<i style="font-size: 60px;" class="icon positive ion-ios-alarm-outline"></i>
 							</div>
 							<div class="col col-75">
-								<h2 ng-if="reminder.abbreviatedUnitName != '/5'" style="white-space: normal;">{{reminder.defaultValue}}&nbsp;{{reminder.unitName.toLowerCase()}} {{reminder.variableName}}</h2>
-								<h2 ng-if="reminder.abbreviatedUnitName == '/5'" style="white-space: normal;">Rate {{reminder.variableName}}</h2>
+								<h2 ng-if="reminder.abbreviatedUnitName != '/5'" style="white-space: normal; line-height: normal; ">{{reminder.defaultValue}}&nbsp;{{reminder.unitName.toLowerCase()}} {{reminder.variableName}}</h2>
+								<h2 ng-if="reminder.abbreviatedUnitName == '/5'" style="white-space: normal; line-height: normal; ">Rate {{reminder.variableName}}</h2>
 								<p style="white-space: normal;">{{ reminder.trackingReminderNotificationTime | fromUtcToLocalDateAndTime}} </p>
 							</div>
 						</div>
