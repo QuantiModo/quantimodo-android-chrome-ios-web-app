@@ -2,7 +2,7 @@ angular.module('starter')
 
 	.controller('RemindersInboxCtrl', function($scope, authService, $ionicPopup, localStorageService, $state, 
 											   reminderService, $ionicLoading, measurementService, utilsService, 
-											   $stateParams, $location, $filter, $ionicPlatform){
+											   $stateParams, $location, $filter, $ionicPlatform, $rootScope){
 
 	    $scope.controller_name = "RemindersInboxCtrl";
 
@@ -178,19 +178,21 @@ angular.module('starter')
 
 	    $scope.track = function(trackingReminderNotification, modifiedReminderValue, $event){
 
-			if($event && $scope.lastButtonPressTimeStamp > $event.timeStamp - 3000) {
-				console.debug('This is probably a ghost click so not registering.', $event);
-				return;
-			} else {
-				$scope.lastButtonPressTimeStamp = $event.timeStamp;
+			if($rootScope.isAndroid ){
+				if($event && $scope.lastButtonPressTimeStamp > $event.timeStamp - 3000) {
+					console.debug('This is probably a ghost click so not registering.', $event);
+					return;
+				} else {
+					$scope.lastButtonPressTimeStamp = $event.timeStamp;
+				}
+
+				console.debug('Track event is ', $event);
+				// Didn't solve ghost click problem
+				if($event && $event.type === "touchend") {return;}
+
+				// Didn't solve ghost click problem
+				if ($event && $event.type !== 'click') {return;}
 			}
-
-			console.debug('Track event is ', $event);
-			// Didn't solve ghost click problem
-			if($event && $event.type === "touchend") {return;}
-
-			// Didn't solve ghost click problem
-			if ($event && $event.type !== 'click') {return;}
 
 			$scope.showLoader();
 			console.debug('Tracking notification', trackingReminderNotification);
@@ -209,19 +211,21 @@ angular.module('starter')
 
 	    $scope.skip = function(trackingReminderNotification, $event){
 
-			if($scope.lastButtonPressTimeStamp > $event.timeStamp - 3000) {
-				console.debug('This is probably a ghost click so not registering.', $event);
-				return;
-			} else {
-				$scope.lastButtonPressTimeStamp = $event.timeStamp;
+			if($rootScope.isAndroid ){
+				if($event && $scope.lastButtonPressTimeStamp > $event.timeStamp - 3000) {
+					console.debug('This is probably a ghost click so not registering.', $event);
+					return;
+				} else {
+					$scope.lastButtonPressTimeStamp = $event.timeStamp;
+				}
+
+				console.debug('Skip event is ', $event);
+				// Didn't solve ghost click problem
+				if($event && $event.type === "touchend") {return;}
+
+				// Didn't solve ghost click problem
+				if ($event && $event.type !== 'click') {return;}
 			}
-
-			console.debug('Skip event is ', $event);
-			// Didn't solve ghost click problem
-			if($event && $event.type === "touchend") {return;}
-
-			// Didn't solve ghost click problem
-			if ($event && $event.type !== 'click') {return;}
 
 			console.debug('Skipping notification', trackingReminderNotification);
 			$scope.showLoader();
@@ -240,20 +244,21 @@ angular.module('starter')
 
 	    $scope.snooze = function(trackingReminderNotification, $event){
 
-			if($scope.lastButtonPressTimeStamp > $event.timeStamp - 3000) {
-				console.debug('This is probably a ghost click so not registering.', $event);
-				return;
-			} else {
-				$scope.lastButtonPressTimeStamp = $event.timeStamp;
+			if($rootScope.isAndroid ){
+				if($event && $scope.lastButtonPressTimeStamp > $event.timeStamp - 3000) {
+					console.debug('This is probably a ghost click so not registering.', $event);
+					return;
+				} else {
+					$scope.lastButtonPressTimeStamp = $event.timeStamp;
+				}
+
+				console.debug('Snooze event is ', $event);
+				// Didn't solve ghost click problem
+				if($event && $event.type === "touchend") {return;}
+
+				// Didn't solve ghost click problem
+				if ($event && $event.type !== 'click') {return;}
 			}
-
-			console.debug('Snooze event is ', $event);
-
-			// Didn't solve ghost click problem
-			if($event && $event.type === "touchend") {return;}
-
-			// Didn't solve ghost click problem
-			if ($event && $event.type !== 'click') {return;}
 
 			$scope.showLoader();
 			console.debug('Snoozing notification', trackingReminderNotification);
