@@ -208,9 +208,9 @@ angular.module('starter')
 
         $scope.done = function(){
 
-            $scope.showLoader();
 
-            if($scope.state.measurement.value === ''){
+
+            if($scope.state.measurement.value === '' || typeof $scope.state.measurement.value === 'undefined'){
                 utilsService.showAlert('Please enter a value');
                 return;
             }
@@ -230,7 +230,7 @@ angular.module('starter')
                 return;
             }
 
-            console.debug('done: completed adding and/or measuring');
+
 
             // combine selected date and time
             $scope.state.measurement.startTimeEpoch = $scope.selectedDate.getTime()/1000;
@@ -275,9 +275,9 @@ angular.module('starter')
 
                 // validation
                 if(params.variableName === ""){
-                    utilsService.showAlert('Variable Name missing');
+                    utilsService.showAlert('Please enter a variable name');
                 } else {
-
+                    $scope.showLoader();
                     // add variable
                     measurementService.postTrackingMeasurement(
                         measurementInfo, true)
@@ -304,9 +304,8 @@ angular.module('starter')
             } else {
 
                 // validation
-                if(params.value === ""){
+                if($scope.state.measurement.value === '' || typeof $scope.state.measurement.value === 'undefined'){
                     utilsService.showAlert('Please enter a value');
-
                 } else {
                     // measurement only
                     // note: this is for adding or editing
