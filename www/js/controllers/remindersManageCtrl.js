@@ -122,11 +122,21 @@ angular.module('starter')
 	    };
 
 	    $scope.addNewReminderButtonClick = function(){
-	    	$state.go('app.reminderAdd', 
-	    	{
-	    		variableCategoryName : $stateParams.variableCategoryName,
-	    		fromUrl: window.location.href
-	    	});
+			if ($stateParams.variableCategoryName) {
+				$state.go('app.reminderSearchCategory',
+					{
+						variableCategoryName : $stateParams.variableCategoryName,
+						fromUrl: window.location.href
+					});
+			}
+			else {
+				$state.go('app.reminderSearch',
+					{
+						variableCategoryName : $stateParams.variableCategoryName,
+						fromUrl: window.location.href
+					});
+			}
+
 	    };
 
 

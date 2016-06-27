@@ -17,7 +17,7 @@ angular.module('starter')
 	    $scope.state = {
 			variableSearchResults : [],
 			unitCategories : [],
-            title : "Add Reminder",
+            //title : "Add Reminder",
             showAddVariableCard : false,
             showVariableCategorySelector : false,
             showSearchBox : false,
@@ -71,6 +71,8 @@ angular.module('starter')
 	    	]
 	    };
 
+        // Deprecated
+
 		// when add new variable is tapped
 		$scope.addNewVariable = function(){
 			console.log("add variable");
@@ -121,10 +123,13 @@ angular.module('starter')
 			ionicTimePicker.openTimePicker($scope.state.timePickerConfiguration);
 		};
 
+        // Deprecated
+        /*
 	    // when variableCategoryName is selected
 	    $scope.onVariableCategoryChange = function(){
             window.location.replace(window.location.href + '/' + $scope.state.trackingReminder.variableCategoryName);
 	    };
+	    */
 
         $scope.goToAddMeasurement = function(){
             $state.go('app.measurementAdd', {
@@ -134,6 +139,7 @@ angular.module('starter')
             });
         };
 
+        // Deprecated
         // when a query is searched in the search box
         $scope.onVariableSearch = function(){
             console.log("Search: ", $scope.state.variableSearchQuery);
@@ -207,16 +213,15 @@ angular.module('starter')
 
 	    // when adding/editing is cancelled
 	    $scope.cancel = function(){
-	    	if($stateParams.reminder && $stateParams.reminder !== null){
-	    		if($stateParams.fromUrl){
-                    window.location=$stateParams.fromUrl;
-	    		} else {
-					$state.go('app.remindersManage');
-                }
-
-	    	} else {
-				$state.reload();
+	    	//if($stateParams.reminder && $stateParams.reminder !== null){
+            if($stateParams.fromUrl){
+                window.location=$stateParams.fromUrl;
+            } else {
+                $state.go('app.remindersManage');
             }
+	    	/*} else {
+				$state.reload();
+            }*/
 	    };
 
 	    $scope.saveModifiedReminder = function(){
@@ -456,7 +461,7 @@ angular.module('starter')
                     $scope.onVariableSelect($stateParams.variableObject);
                 }
                 else {
-
+                    $scope.state.title = $filter('wordAliases')('Add Reminder');
                     populateUserVariables();
                 }
             }

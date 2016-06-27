@@ -244,6 +244,41 @@ angular.module('starter',
               }
           }
       })
+        .state('app.reminderSearchCategory', {
+            url: "/reminderSearchCategory/:variableCategoryName",
+            cache:false,
+            params: {
+                variableCategoryName : null,
+                fromState : null,
+                fromUrl : null,
+                measurement : null,
+                reminderSearch: true
+            },
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/variable-search.html",
+                    controller: 'TrackFactorsCategoryCtrl'
+                }
+            }
+        })
+
+        .state('app.reminderSearch', {
+            url: "/reminderSearch",
+            cache:false,
+            params: {
+                variableCategoryName : null,
+                fromState : null,
+                fromUrl : null,
+                measurement : null,
+                reminderSearch: true
+            },
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/variable-search.html",
+                    controller: 'TrackFactorsCategoryCtrl'
+                }
+            }
+        })
         .state('app.measurementAdd', {
             url: "/measurement-add/:variableName",
             cache:false,
@@ -520,6 +555,7 @@ angular.module('starter',
           url: "/reminder_add/:variableCategoryName",
           cache:false,
           params: {
+              variableCategoryName : null,
               reminder : null,
               fromState : null,
               fromUrl : null,

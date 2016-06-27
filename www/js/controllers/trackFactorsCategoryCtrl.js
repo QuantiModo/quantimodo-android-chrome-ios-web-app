@@ -25,23 +25,47 @@ angular.module('starter')
             variableSearchQuery: ''
         };
 
-        if(variableCategoryName){
-            $scope.state.variableSearchPlaceholderText = "Search for a " +  $filter('wordAliases')(pluralize(variableCategoryName, 1).toLowerCase()) + " here...";
-            $scope.state.title = $filter('wordAliases')('Record') + " " + $filter('wordAliases')(variableCategoryName);
-        } else {
-            $scope.state.variableSearchPlaceholderText = "Search for a variable here...";
-            $scope.state.title = $filter('wordAliases')('Record a Measurement');
+        if ($stateParams.reminderSearch) {
+            if(variableCategoryName){
+                $scope.state.variableSearchPlaceholderText = "Search for a " +  $filter('wordAliases')(pluralize(variableCategoryName, 1).toLowerCase()) + " here...";
+                $scope.state.title = $filter('wordAliases')('Add') + " " + $filter('wordAliases')(pluralize(variableCategoryName, 1)) + " Reminder";
+            } else {
+                $scope.state.variableSearchPlaceholderText = "Search for a variable here...";
+                $scope.state.title = $filter('wordAliases')('Add Reminder');
+            }
         }
+        else {
+            if(variableCategoryName){
+                $scope.state.variableSearchPlaceholderText = "Search for a " +  $filter('wordAliases')(pluralize(variableCategoryName, 1).toLowerCase()) + " here...";
+                $scope.state.title = $filter('wordAliases')('Record') + " " + $filter('wordAliases')(variableCategoryName);
+            } else {
+                $scope.state.variableSearchPlaceholderText = "Search for a variable here...";
+                $scope.state.title = $filter('wordAliases')('Record a Measurement');
+            }
+        }
+        
         
         // when an old measurement is tapped to remeasure
         $scope.selectVariable = function(variableObject){
-            $state.go('app.measurementAdd', 
-                {
-                    variableObject : variableObject,
-                    fromState : $state.current.name,
-                    fromUrl: window.location.href
-                }
-            );
+            if ($stateParams.reminderSearch) {
+                $state.go('app.reminderAdd',
+                    {
+                        variableObject : variableObject,
+                        fromState : $state.current.name,
+                        fromUrl: window.location.href
+                    }
+                );
+            }
+            else {
+                $state.go('app.measurementAdd',
+                    {
+                        variableObject : variableObject,
+                        fromState : $state.current.name,
+                        fromUrl: window.location.href
+                    }
+                );
+            }
+
         };
         
         $scope.init = function(){
@@ -108,14 +132,26 @@ angular.module('starter')
             if($scope.state.variableCategoryName){
                 variableObject.variableCategoryName = $scope.state.variableCategoryName;
             }
-            
-            $state.go('app.measurementAdd',
-                {
-                    variableObject : variableObject,
-                    fromState : $state.current.name,
-                    fromUrl: window.location.href
-                }
-            );
+
+            if ($stateParams.reminderSearch) {
+                $state.go('app.reminderAdd',
+                    {
+                        variableObject : variableObject,
+                        fromState : $state.current.name,
+                        fromUrl: window.location.href
+                    }
+                );
+            }
+            else {
+                $state.go('app.measurementAdd',
+                    {
+                        variableObject : variableObject,
+                        fromState : $state.current.name,
+                        fromUrl: window.location.href
+                    }
+                );
+            }
+
         };
 
         
