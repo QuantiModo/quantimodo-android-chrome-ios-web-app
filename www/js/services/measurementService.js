@@ -107,9 +107,10 @@ angular.module('starter')
 
                 // send request
                 var params;
+                var paramTime = moment($rootScope.lastSyncTime).subtract(15, 'minutes').format("YYYY-MM-DDTHH:mm:ss");
                 params = {
                     variableName : config.appSettings.primaryOutcomeVariableDetails.name,
-                    'lastUpdated':'(ge)'+ $rootScope.lastSyncTime ,
+                    'lastUpdated':'(ge)'+ paramTime ,
                     sort : '-startTimeEpoch',
                     limit:200,
                     offset:0
