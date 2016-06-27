@@ -15,17 +15,8 @@ angular.module('starter')
 
         // state
 	    $scope.state = {
-			variableSearchResults : [],
-			unitCategories : [],
-            title : "Add Reminder",
-            showAddVariableCard : false,
-            showVariableCategorySelector : false,
-            showSearchBox : false,
-            showResults : false,
             showReminderFrequencyCard : false,
-            showAddVariableButton : false,
             showUnits: false,
-            searching : false,
             selectedFrequency : 'Daily',
             selectedReminder : false,
             reminderStartTimeEpochTime : currentTime.getTime() / 1000,
@@ -67,26 +58,8 @@ angular.module('starter')
 				{ id : 8, name : 'Hourly'},
 	    		{ id : 9, name : 'Every 30 minutes'},
 	    		{ id : 10, name : 'Never'}
-                //{ id : 11, name : 'Every minute'},
 	    	]
 	    };
-
-		// when add new variable is tapped
-		$scope.addNewVariable = function(){
-			console.log("add variable");
-            if($scope.state.trackingReminder.variableCategoryName){
-                $scope.state.variableCategoryObject =
-                    variableCategoryService.getVariableCategoryInfo($scope.state.trackingReminder.variableCategoryName);
-                $scope.state.trackingReminder.abbreviatedUnitName = $scope.state.variableCategoryObject.defaultAbbreviatedUnitName;
-            }
-			$scope.state.showSearchBox = false;
-			$scope.state.showResults = false;
-			$scope.state.showAddVariableCard = true;
-            $scope.state.showReminderFrequencyCard = true;
-            $scope.state.showVariableCategorySelector = false;
-			$scope.state.trackingReminder.variableName = $scope.state.variableSearchQuery;
-            $scope.state.trackingReminder.defaultValue = "";
-		};
 
 		$scope.openReminderStartTimePicker = function() {
             var today = new Date();
@@ -121,37 +94,12 @@ angular.module('starter')
 			ionicTimePicker.openTimePicker($scope.state.timePickerConfiguration);
 		};
 
-	    // when variableCategoryName is selected
-	    $scope.onVariableCategoryChange = function(){
-            window.location.replace(window.location.href + '/' + $scope.state.trackingReminder.variableCategoryName);
-	    };
-
         $scope.goToAddMeasurement = function(){
             $state.go('app.measurementAdd', {
                 variableObject: $scope.variableObject,
                 fromState: $state.current.name,
                 fromUrl: window.location.href
             });
-        };
-
-        // when a query is searched in the search box
-        $scope.onVariableSearch = function(){
-            console.log("Search: ", $scope.state.variableSearchQuery);
-            if($scope.state.variableSearchQuery.length > 2){
-                $scope.state.showResults = true;
-                $scope.state.searching = true;
-                variableService.searchVariablesIncludePublic($scope.state.variableSearchQuery, $scope.state.trackingReminder.variableCategoryName)
-                    .then(function(variables){
-                        // populate list with results
-                        $scope.state.showResults = true;
-                        $scope.state.variableSearchResults = variables;
-                        $scope.state.searching = false;
-                        if(variables.length < 1){
-                            $scope.state.showAddVariableButton = true;
-                            $scope.state.addNewVariableButtonText = '+ Create ' + $scope.state.variableSearchQuery + ' reminder';
-                        }
-                    });
-            }
         };
 
         var populateUserVariables = function(){
@@ -163,18 +111,20 @@ angular.module('starter')
             }
             variableService.getUserVariablesByCategory($scope.state.trackingReminder.variableCategoryName)
                 .then(function(variables){
-                    $scope.state.showResults = true;
-                    $scope.state.variableSearchResults = variables;
-                    $scope.state.searching = false;
+                    //$scope.state.showResults = true;
+                    //$scope.state.variableSearchResults = variables;
+                    //$scope.state.searching = false;
+                    /*
                     if(!$scope.state.trackingReminder.variableCategoryName){
                         $scope.state.showVariableCategorySelector = true;
                     }
+                    */
                     $ionicLoading.hide();
                     $scope.loading = false;
-                    $scope.state.showSearchBox = true;
+                    //$scope.state.showSearchBox = true;
                 });
         };
-
+        
 	    // when a search result is selected
 	    $scope.onVariableSelect = function(selectedVariable){
 	    	console.log("Variable Selected: ", selectedVariable);
@@ -190,8 +140,6 @@ angular.module('starter')
             $scope.state.trackingReminder.variableId = selectedVariable.id;
             $scope.state.trackingReminder.variableName = selectedVariable.name;
             $scope.state.trackingReminder.variableDescription = selectedVariable.description;
-            $scope.state.showResults = false;
-            $scope.state.showSearchBox = false;
             $scope.state.showReminderFrequencyCard = true;
 
             if ($scope.state.trackingReminder.abbreviatedUnitName === "/5") {
@@ -207,16 +155,15 @@ angular.module('starter')
 
 	    // when adding/editing is cancelled
 	    $scope.cancel = function(){
-	    	if($stateParams.reminder && $stateParams.reminder !== null){
-	    		if($stateParams.fromUrl){
-                    window.location=$stateParams.fromUrl;
-	    		} else {
-					$state.go('app.remindersManage');
-                }
-
-	    	} else {
-				$state.reload();
+	    	//if($stateParams.reminder && $stateParams.reminder !== null){
+            if($stateParams.fromUrl){
+                window.location=$stateParams.fromUrl;
+            } else {
+                $state.go('app.remindersManage');
             }
+	    	/*} else {
+				$state.reload();
+            }*/
 	    };
 
 	    $scope.saveModifiedReminder = function(){
@@ -369,7 +316,7 @@ angular.module('starter')
 	    // setup category view
 	    $scope.setupVariableCategory = function(variableCategoryName){
             console.log("variableCategoryName  is " + variableCategoryName);
-            $scope.state.showVariableCategorySelector = false;
+            //$scope.state.showVariableCategorySelector = false;
             if(!variableCategoryName){
                 variableCategoryName = '';
             }
@@ -456,7 +403,7 @@ angular.module('starter')
                     $scope.onVariableSelect($stateParams.variableObject);
                 }
                 else {
-
+                    $scope.state.title = $filter('wordAliases')('Add Reminder');
                     populateUserVariables();
                 }
             }
