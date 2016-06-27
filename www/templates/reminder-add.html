@@ -1,46 +1,6 @@
 <ion-view hide-nav-bar="hideNavigationMenu" view-title="{{state.title}}">
     <ion-content scroll="true" overflow-scroll="true">
 
-        <!--
-		<div class="list card" ng-show="state.showVariableCategorySelector" >
-			<label class="item item-input item-select">
-				<div class="input-label" style="white-space:normal; width: 60%">Select Category</div>
-				<select ng-model="state.trackingReminder.variableCategoryName" ng-change="onVariableCategoryChange()">
-					<option ng-repeat="variableCategory in variables.variableCategories" value="{{variableCategory.name}}">{{variableCategory.name}}</option>
-				</select>
-			</label>
-		</div>
-        <div class="list list-inset" ng-show="state.showSearchBox" >
-          <label class="item item-input">
-            <i class="icon ion-search placeholder-icon"></i>
-            <input type="text"
-                   placeholder={{state.variableSearchPlaceholderText}}
-                   ng-model="state.variableSearchQuery"
-                   ng-change="onVariableSearch()"
-                   ng-model-options='{ debounce: 1000 }'
-                   id="variableSearch">
-          </label>
-        </div>
-
-
-
-        <div class="list card" ng-show="state.showResults" >
-
-            <p ng-show="state.searching"></p>
-            <ion-list>
-                <ion-item style="text-align:center;border-bottom: 1px solid rgb(221, 221, 221);" ng-show="state.searching">
-                    <img src="../www/img/loader.gif">
-                </ion-item>
-            </ion-list>
-        	<a class="item" ng-repeat="result in state.variableSearchResults | unique:'id' " ng-click="onVariableSelect(result)">{{result.name}}</a>
-            <ion-list ng-show="state.showAddVariableButton">
-                <ion-item style="border-top: 1px solid rgb(221, 221, 221);" ng-click="addNewVariable()">
-                    {{state.addNewVariableButtonText}}
-                </ion-item>
-            </ion-list>
-        </div>
-        -->
-
         <div class="list card" ng-show="state.showReminderFrequencyCard">
         	<div class="item item-divider">{{state.trackingReminder.variableName}} reminder settings</div>
             <div class="list">
@@ -128,9 +88,6 @@
                 </button>
             </div>
         </div>
-
-<!--        <div class="bar bar-footer bar-balanced" ng-show="variableObject">
-            <div class="title"  ng-click="goToAddMeasurement()">Record a {{state.measurementSynonymSingularLowercase}} now</div>
-        </div>-->
+        
     </ion-content>
 </ion-view>
