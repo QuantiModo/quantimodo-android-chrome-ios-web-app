@@ -15,6 +15,7 @@ angular.module('starter')
 
         // state
 	    $scope.state = {
+            showAddVariableCard : false,
             showReminderFrequencyCard : false,
             showUnits: false,
             selectedFrequency : 'Daily',
@@ -131,6 +132,9 @@ angular.module('starter')
 
 	    	if(!selectedVariable.variableCategoryName){
 	    		selectedVariable.variableCategoryName = selectedVariable.category;
+	    	}
+	    	if (!selectedVariable.variableCategoryName) {
+	    		$scope.state.showAddVariableCard = true;
 	    	}
 	    	$scope.variableObject=selectedVariable;
 
@@ -316,7 +320,6 @@ angular.module('starter')
 	    // setup category view
 	    $scope.setupVariableCategory = function(variableCategoryName){
             console.log("variableCategoryName  is " + variableCategoryName);
-            //$scope.state.showVariableCategorySelector = false;
             if(!variableCategoryName){
                 variableCategoryName = '';
             }
