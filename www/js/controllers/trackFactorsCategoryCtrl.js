@@ -89,6 +89,7 @@ angular.module('starter')
                 variableService.searchVariablesIncludePublic($scope.state.variableSearchQuery, $scope.state.variableCategoryName)
                     .then(function(variables){
                         // populate list with results
+                        $scope.state.showAddVariableButton = false;
                         $scope.state.showResults = true;
                         $scope.state.variableSearchResults = variables;
                         $scope.state.searching = false;
