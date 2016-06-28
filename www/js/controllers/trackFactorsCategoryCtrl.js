@@ -94,8 +94,15 @@ angular.module('starter')
                         $scope.state.searching = false;
                         if(variables.length < 1){
                             $scope.state.showAddVariableButton = true;
-                            $scope.state.addNewVariableButtonText = '+ Add ' + $scope.state.variableSearchQuery +
-                                ' measurement';
+                            if ($stateParams.reminderSearch) {
+                                $scope.state.addNewVariableButtonText = '+ Add ' + $scope.state.variableSearchQuery +
+                                    ' reminder';
+                            }
+                            else {
+                                $scope.state.addNewVariableButtonText = '+ Add ' + $scope.state.variableSearchQuery +
+                                    ' measurement';
+                            }
+
                         }
                     });
             }
