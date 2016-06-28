@@ -139,11 +139,21 @@ angular.module('starter')
 	    	$scope.variableObject=selectedVariable;
 
             $scope.setupVariableCategory(selectedVariable.variableCategoryName);
-            $scope.state.trackingReminder.abbreviatedUnitName = selectedVariable.abbreviatedUnitName;
-            $scope.state.trackingReminder.combinationOperation = selectedVariable.combinationOperation;
-            $scope.state.trackingReminder.variableId = selectedVariable.id;
-            $scope.state.trackingReminder.variableName = selectedVariable.name;
-            $scope.state.trackingReminder.variableDescription = selectedVariable.description;
+            if (selectedVariable.abbreviatedUnitName) {
+                $scope.state.trackingReminder.abbreviatedUnitName = selectedVariable.abbreviatedUnitName;
+            }
+            if (selectedVariable.combinationOperation) {
+                $scope.state.trackingReminder.combinationOperation = selectedVariable.combinationOperation;
+            }
+            if (selectedVariable.variableId) {
+                $scope.state.trackingReminder.variableId = selectedVariable.id;
+            }
+            if (selectedVariable.name) {
+                $scope.state.trackingReminder.variableName = selectedVariable.name;
+            }
+            if (selectedVariable.description) {
+                $scope.state.trackingReminder.variableDescription = selectedVariable.description;
+            }
             $scope.state.showReminderFrequencyCard = true;
 
             if ($scope.state.trackingReminder.abbreviatedUnitName === "/5") {
