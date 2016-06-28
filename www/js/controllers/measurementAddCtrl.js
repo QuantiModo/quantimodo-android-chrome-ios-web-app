@@ -274,7 +274,7 @@ angular.module('starter')
                 console.debug('done: Adding new variable..');
 
                 // validation
-                if(params.variableName === ""){
+                if(params.variableName == ""){
                     utilsService.showAlert('Please enter a variable name');
                 } else {
                     $scope.showLoader();
