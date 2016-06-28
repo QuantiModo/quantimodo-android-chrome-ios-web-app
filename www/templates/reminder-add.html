@@ -1,79 +1,47 @@
 <ion-view hide-nav-bar="hideNavigationMenu" view-title="{{state.title}}">
     <ion-content scroll="true" overflow-scroll="true">
-		
-		<div class="list card" ng-show="state.showVariableCategorySelector" >
-			<label class="item item-input item-select">
-				<div class="input-label" style="white-space:normal; width: 60%">Select Category</div>
-				<select ng-model="state.variableCategoryName" ng-change="onVariableCategoryChange()">
-					<option ng-repeat="variableCategory in variables.variableCategories" value="{{variableCategory.name}}">{{variableCategory.name}}</option>
-				</select>
-			</label>
-		</div>
-        <div class="list list-inset" ng-show="state.showSearchBox" >
-          <label class="item item-input">
-            <i class="icon ion-search placeholder-icon"></i>
-            <input type="text"
-                   placeholder={{state.variableSearchPlaceholderText}}
-                   ng-model="state.variableSearchQuery"
-                   ng-change="onVariableSearch()"
-                   ng-model-options='{ debounce: 1000 }'>
-          </label>
-        </div>
-
-
-        <div class="list card" ng-show="state.showResults" >
-
-            <p ng-show="state.searching"></p>
-            <ion-list>
-                <ion-item style="text-align:center;border-bottom: 1px solid rgb(221, 221, 221);" ng-show="state.searching">
-                    <img src="../www/img/loader.gif">
-                </ion-item>
-            </ion-list>
-        	<a class="item" ng-repeat="result in state.variableSearchResults | unique:'id' " ng-click="onVariableSelect(result)">{{result.name}}</a>
-            <ion-list ng-show="state.showAddVariableButton">
-                <ion-item style="border-top: 1px solid rgb(221, 221, 221);" ng-click="addNewVariable()">
-                    {{state.addNewVariableButtonText}}
-                </ion-item>
-            </ion-list>
-        </div>
 
         <div class="list card" ng-show="state.showReminderFrequencyCard">
-        	<div class="item item-divider">{{state.variableName}} reminder settings</div>
+        	<div class="item item-divider">{{state.trackingReminder.variableName}} reminder settings</div>
             <div class="list">
-                <label ng-if="(state.abbreviatedUnitName !== '/5')" class="item item-input">
+                <!--<label class="item item-input item-select" ng-if="state.showAddVariableCard && !state.trackingReminder.variableCategoryName">-->
+                <label class="item item-input item-select" ng-if="state.showAddVariableCard">
+                    <div class="input-label" style="white-space:normal; width: 60%">Select Category</div>
+                    <select ng-model="state.trackingReminder.variableCategoryName" ng-change="setupVariableCategory(state.trackingReminder.variableCategoryName)">
+                        <option ng-repeat="variableCategory in variables.variableCategories" value="{{variableCategory.name}}">{{variableCategory.name}}</option>
+                    </select>
+                </label>
+                <label ng-if="(state.trackingReminder.abbreviatedUnitName !== '/5')" class="item item-input">
                     <span class="input-label">{{state.defaultValueLabel}}</span>
-                    <input type="text" ng-model="state.defaultValue" id="defaultValue" placeholder={{state.defaultValuePlaceholderText}} >
+                    <input type="number" ng-model="state.trackingReminder.defaultValue" id="defaultValue" placeholder={{state.defaultValuePlaceholderText}} >
                 </label>
 
-                <label ng-if="(state.abbreviatedUnitName !== '/5')" class="item item-input item-select">
+                <label ng-if="(state.trackingReminder.abbreviatedUnitName !== '/5')" class="item item-input item-select">
                     <div class="input-label">
                         Unit
                     </div>
-                    <select ng-model="state.abbreviatedUnitName">
-                        <option ng-selected="{{unitObject.abbreviatedName == state.abbreviatedUnitName}}"
+                    <select ng-model="state.trackingReminder.abbreviatedUnitName">
+                        <option ng-selected="{{unitObject.abbreviatedName == state.trackingReminder.abbreviatedUnitName}}"
                                 ng-repeat="unitObject in state.unitObjects"
                                 value="{{unitObject.abbreviatedName}}">
                             {{unitObject.name}} ({{unitObject.abbreviatedName}})
                         </option>
                     </select>
                 </label>
-                <label class="item item-input item-select" ng-if="state.showAddVariableCard && !state.variableCategoryName">
+                <!--
+                <label class="item item-input item-select" ng-if="state.showAddVariableCard && !state.trackingReminder.variableCategoryName">
                     <div class="input-label" style="white-space:normal; width: 60%">Select Category</div>
-                    <select ng-model="state.variableCategoryName">
+                    <select ng-model="state.trackingReminder.variableCategoryName">
                         <option ng-repeat="variableCategory in variables.variableCategories" value="{{variableCategory.name}}">{{variableCategory.name}}</option>
                     </select>
                 </label>
+                -->
                 <label class="item item-input item-select">
-                    <div class="input-label" style="white-space:normal; width: 60%">
-                        Select Frequency
+                    <div class="input-label">
+                        Frequency
                     </div>
-                    <select ng-change="onFrequencyChange()" ng-model="state.selectedFrequency" style="width: 40%">
-                        <optgroup label="Intervals">
-                            <option ng-repeat="frequency in variables.frequencyVariables" ng-if="frequency.group==='intervals'">{{frequency.name}}</option>
-                        </optgroup>
-                        <optgroup label="Frequency">
-                            <option ng-repeat="frequency in variables.frequencyVariables" ng-if="frequency.group==='frequency'">{{frequency.name}}</option>
-                        </optgroup>
+                    <select ng-change="onFrequencyChange()" ng-model="state.selectedFrequency">
+                        <option ng-repeat="frequency in variables.frequencyVariables">{{frequency.name}}</option>
                     </select>
                 </label>
             </div>
@@ -101,30 +69,27 @@
                     </button>
                 </label>
             </div>
-            <label class="item item-input">
+            <label class="item item-input" ng-show="state.showInstructionsField">
                 <span class="input-label">Instructions</span>
-                <input type="text" ng-model="state.instructions" id="instructions" placeholder="Enter instructions here..." >
+                <input type="text" ng-model="state.trackingReminder.instructions" id="instructions" placeholder="Enter instructions here..." >
             </label>
             <br>
+			<div class="row">
+				<div class="col col-50">
+					<button class="button button-block icon-left ion-android-cancel button-assertive" ng-click="cancel()">Cancel</button>
+				</div>
+				<div class="col col-50">
+					<button class="button button-block icon-left ion-android-done button-positive" ng-click="save()">Save</button>
+				</div>
+			</div>
             <div class="row">
-                <button ng-show="reminder.id" ng-click="deleteReminder()"
+                <button ng-show="state.trackingReminder.id" ng-click="deleteReminder()"
                         class="button icon-left ion-trash-a button-assertive"
                         style="margin: auto">
                     Delete Reminder
                 </button>
             </div>
-			<div class="row">
-				<div class="col col-50">
-					<button class="button button-block button-assertive" ng-click="cancel()">Cancel</button>
-				</div>
-				<div class="col col-50">
-					<button class="button button-block button-positive" ng-click="save()">Save</button>
-				</div>
-			</div>
         </div>
-
-        <div class="bar bar-footer bar-balanced" ng-show="variableObject">
-            <div class="title"  ng-click="goToAddMeasurement()">Record a {{state.measurementSynonymSingularLowercase}} now</div>
-        </div>
+        
     </ion-content>
 </ion-view>

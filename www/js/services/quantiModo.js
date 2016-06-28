@@ -99,7 +99,7 @@ angular.module('starter')
             QuantiModo.post = function(baseURL, requiredFields, items, successHandler, errorHandler){
                 authService.getAccessTokenFromAnySource().then(function(token){
                     
-                    console.log("Token : ", token.accessToken);
+                    //console.log("Token : ", token.accessToken);
                     // configure params
                     for (var i = 0; i < items.length; i++) 
                     {

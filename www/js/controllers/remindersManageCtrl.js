@@ -23,7 +23,8 @@ angular.module('starter')
 	    	slots : {
 				epochTime: new Date().getTime()/1000,
 				format: 12,
-				step: 1
+				step: 1,
+				closeLabel: 'Cancel'
 			},
 			variable : {},
 			isDisabled : false,
@@ -41,7 +42,7 @@ angular.module('starter')
 
 	    $scope.selectPrimaryOutcomeVariableValue = function($event, val){
 	        // remove any previous primary outcome variables if present
-	        jQuery('.primary-outcome-variable .active-primary-outcome-variable-rating-button').removeClass('active-primary-outcome-variable-rating-button');
+	        jQuery('.primary-outcome-variable-rating-buttons .active-primary-outcome-variable-rating-button').removeClass('active-primary-outcome-variable-rating-button');
 
 	        // make this primary outcome variable glow visually
 	        jQuery($event.target).addClass('active-primary-outcome-variable-rating-button');
@@ -120,12 +121,22 @@ angular.module('starter')
 	    	});
 	    };
 
-	    $scope.addNewReminder = function(){
-	    	$state.go('app.reminderAdd', 
-	    	{
-	    		variableCategoryName : $stateParams.variableCategoryName,
-	    		fromUrl: window.location.href
-	    	});
+	    $scope.addNewReminderButtonClick = function(){
+			if ($stateParams.variableCategoryName) {
+				$state.go('app.reminderSearchCategory',
+					{
+						variableCategoryName : $stateParams.variableCategoryName,
+						fromUrl: window.location.href
+					});
+			}
+			else {
+				$state.go('app.reminderSearch',
+					{
+						variableCategoryName : $stateParams.variableCategoryName,
+						fromUrl: window.location.href
+					});
+			}
+
 	    };
 
 
@@ -138,6 +149,7 @@ angular.module('starter')
 	    		utilsService.showAlert(reminder.variableName + ' reminder deleted');
 	    		$scope.init();
 	    	}, function(err){
+				Bugsnag.notify(err, JSON.stringify(err), {}, "error");
 	    		$ionicLoading.hide();
 				$scope.loading = false;
 	    		utilsService.showAlert('Failed to Delete Reminder, Try again!', 'assertive');

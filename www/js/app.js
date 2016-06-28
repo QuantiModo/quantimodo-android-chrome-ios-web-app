@@ -10,7 +10,8 @@ angular.module('starter',
         'ionic-datepicker',
         'ionic-timepicker',
         'ngIOS9UIWebViewPatch',
-        'ng-mfb'
+        'ng-mfb',
+        'fabric'
     ]
 )
 
@@ -45,7 +46,7 @@ angular.module('starter',
                 // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
                 // for form inputs)
                 if (window.cordova && window.cordova.plugins.Keyboard) {
-                    cordova.plugins.Keyboard.hideKeyboardAccessoryBar(true);
+                    cordova.plugins.Keyboard.hideKeyboardAccessoryBar(false);
                 }
                 if (window.StatusBar) {
                     // org.apache.cordova.statusbar required
@@ -88,9 +89,11 @@ angular.module('starter',
 
 })
 
-.config(function($stateProvider, $urlRouterProvider, $compileProvider, ionicTimePickerProvider) {
+.config(function($stateProvider, $urlRouterProvider, $compileProvider, ionicTimePickerProvider,
+                 ionicDatePickerProvider, $ionicConfigProvider) {
     $compileProvider.imgSrcSanitizationWhitelist(/^\s*(https?|ftp|file|mailto|chrome-extension):/);
     $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|file|ftp|mailto|chrome-extension):/);
+    $ionicConfigProvider.tabs.position("bottom"); //Places them at the bottom for all OS
 
     var config_resolver = {
       loadMyService: ['$ocLazyLoad', function($ocLazyLoad) {
@@ -127,12 +130,31 @@ angular.module('starter',
       }]
     };
 
+    // Configure timepicker
     var timePickerObj = {
         format: 12,
-        step: 1
+        step: 1,
+        closeLabel: 'Cancel'
     };
-
     ionicTimePickerProvider.configTimePicker(timePickerObj);
+
+    // Configure datepicker
+    var datePickerObj = {
+        inputDate: new Date(),
+        setLabel: 'Set',
+        todayLabel: 'Today',
+        closeLabel: 'Cancel',
+        mondayFirst: false,
+        weeksList: ["S", "M", "T", "W", "T", "F", "S"],
+        //monthsList: ["Jan", "Feb", "March", "April", "May", "June", "July", "Aug", "Sept", "Oct", "Nov", "Dec"],
+        templateType: 'modal',
+        from: new Date(2012, 8, 1),
+        to: new Date(),
+        showTodayButton: true,
+        dateFormat: 'dd MMMM yyyy',
+        closeOnSelect: false
+    };
+    ionicDatePickerProvider.configDatePicker(datePickerObj);
 
     $stateProvider
       .state('intro', {
@@ -222,6 +244,41 @@ angular.module('starter',
               }
           }
       })
+        .state('app.reminderSearchCategory', {
+            url: "/reminderSearchCategory/:variableCategoryName",
+            cache:false,
+            params: {
+                variableCategoryName : null,
+                fromState : null,
+                fromUrl : null,
+                measurement : null,
+                reminderSearch: true
+            },
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/variable-search.html",
+                    controller: 'TrackFactorsCategoryCtrl'
+                }
+            }
+        })
+
+        .state('app.reminderSearch', {
+            url: "/reminderSearch",
+            cache:false,
+            params: {
+                variableCategoryName : null,
+                fromState : null,
+                fromUrl : null,
+                measurement : null,
+                reminderSearch: true
+            },
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/variable-search.html",
+                    controller: 'TrackFactorsCategoryCtrl'
+                }
+            }
+        })
         .state('app.measurementAdd', {
             url: "/measurement-add/:variableName",
             cache:false,
@@ -365,6 +422,7 @@ angular.module('starter',
       */
       .state('app.history', {
           url: "/history",
+          cache:false,
           views: {
               'menuContent': {
                   templateUrl: "templates/history-primary-outcome-variable.html",
@@ -374,6 +432,7 @@ angular.module('starter',
       })
         .state('app.historyAll', {
             url: "/history-all",
+            cache: false,
             params: {
                 variableCategoryName : null,
                 fromState : null,
@@ -496,6 +555,7 @@ angular.module('starter',
           url: "/reminder_add/:variableCategoryName",
           cache:false,
           params: {
+              variableCategoryName : null,
               reminder : null,
               fromState : null,
               fromUrl : null,

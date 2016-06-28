@@ -22,10 +22,11 @@ angular.module('starter')
             }
 
             //  add to measurementsQueue
-            measurementService.addToMeasurementsQueue(numericRatingValue);
+            var primaryOutcomeMeasurement = measurementService.createPrimaryOutcomeMeasurement(numericRatingValue);
+            measurementService.addToMeasurementsQueue(primaryOutcomeMeasurement);
 
             if(!$rootScope.isSyncing){
-                syncPrimaryOutcomeVariableMeasurementsAndUpdateCharts();
+                measurementService.syncPrimaryOutcomeVariableMeasurementsAndUpdateCharts();
             }
            
         };
@@ -53,9 +54,7 @@ angular.module('starter')
 
             console.log("load config object chartService.configureBarChart");
             $scope.barChartConfig = chartService.configureBarChart(arr);
-
-            // Fixes chart width
-            $scope.$broadcast('highchartsng.reflow');
+            
             console.log("redraw chart with new data");
             $scope.redrawBarChart = true;
         };
@@ -65,8 +64,7 @@ angular.module('starter')
             console.log("Configuring line chart...");
             $scope.lineChartConfig = chartService.configureLineChart(lineChartData);
 
-            // Fixes chart width
-            $scope.$broadcast('highchartsng.reflow');
+
 
             // redraw chart with new data
             $scope.redrawLineChart = true;
@@ -82,19 +80,33 @@ angular.module('starter')
                 var sum = 0;
 
                 if (allMeasurements) {
+                    var fromDate = parseInt(localStorageService.getItemSync('fromDate'));
+                    var toDate = parseInt(localStorageService.getItemSync('toDate'));
+                    if (!fromDate) {
+                        fromDate = 0;
+                    }
+                    if (!toDate) {
+                        toDate = Date.now();
+                    }
+                    var rangeLength = 0; // number of measurements in date range
                     for (var i = 0; i < allMeasurements.length; i++) {
                         var currentValue = Math.ceil(allMeasurements[i].value);
-                        if (allMeasurements[i].abbreviatedUnitName === config.appSettings.primaryOutcomeVariableDetails.abbreviatedUnitName &&
+                        if (allMeasurements[i].abbreviatedUnitName ===
+                            config.appSettings.primaryOutcomeVariableDetails.abbreviatedUnitName &&
                             (currentValue - 1) <= 4 && (currentValue - 1) >= 0) {
-                            var startTimeMilliseconds = moment(allMeasurements[i].startTimeEpoch).unix() * 1000;
-                            var percentValue = (currentValue - 1) * 25;
-                            var lineChartItem = [startTimeMilliseconds, percentValue];
-                            lineArr.push(lineChartItem);
-                            barArr[currentValue - 1]++;
+                            var startTimeMilliseconds = allMeasurements[i].startTimeEpoch * 1000;
+                            if (startTimeMilliseconds >= fromDate && startTimeMilliseconds <= toDate) {
+                                var percentValue = (currentValue - 1) * 25;
+                                var lineChartItem = [startTimeMilliseconds, percentValue];
+                                lineArr.push(lineChartItem);
+                                barArr[currentValue - 1]++;
+
+                                sum+= allMeasurements[i].value;
+                                rangeLength++;
+                            }
                         }
-                        sum+= allMeasurements[i].value;
                     }
-                    var averagePrimaryOutcomeVariableValue = Math.round(sum/(allMeasurements.length));
+                    var averagePrimaryOutcomeVariableValue = Math.round(sum/(rangeLength));
                     localStorageService.setItem('averagePrimaryOutcomeVariableValue',averagePrimaryOutcomeVariableValue);
 
                     if(!$scope.barChartConfig || barArr !== $scope.barChartConfig.series[0].data) {
@@ -110,12 +122,20 @@ angular.module('starter')
                             $scope.safeApply();
                         }
                     }
+                    $(window).resize();
+                    $timeout(function() {
+                        $scope.$broadcast('highchartsng.reflow');
+                    }, 10);
+                    // Fixes chart width
+                    $scope.$broadcast('highchartsng.reflow');
                 }
             });
 
         };
 
         // calculate values for both of the charts
+        // Deprecated -- moved to measurementService
+        /*
         var syncPrimaryOutcomeVariableMeasurementsAndUpdateCharts = function(){
 
             if($rootScope.user){
@@ -123,7 +143,7 @@ angular.module('starter')
                 console.log('Syncing primary outcome measurements...');
 
                 measurementService.syncPrimaryOutcomeVariableMeasurements().then(function(){
-                    console.log("Measurement sync complete!");
+                    //console.log("Measurement sync complete!");
                     $rootScope.isSyncing = false;
 
                     // update loader text
@@ -139,6 +159,7 @@ angular.module('starter')
                 updateCharts();
             }
         };
+        */
 
         $scope.init = function(){
 
@@ -160,27 +181,18 @@ angular.module('starter')
         };
 
         $scope.init();
-
-        $scope.$on('updateChartsAndSyncMeasurements', function(){
-            console.log('track state redrawing event triggered through sibling controllers. Updating charts and syncing..');
-            syncPrimaryOutcomeVariableMeasurementsAndUpdateCharts();
-        });
         
         $scope.$on('updateCharts', function(){
             $rootScope.isSyncing = false;
             console.log('track state redrawing event triggered through sibling controllers. Updating charts and syncing..');
-            
-             //if(!$scope.lineChartConfig){
-                updateCharts();
-             //}
+            updateCharts();
         });
 
         $scope.$on('$ionicView.enter', function(e) {
             console.log('track state brought in focus. Updating charts and syncing..');
             $scope.showRatingFaces = true;
-            syncPrimaryOutcomeVariableMeasurementsAndUpdateCharts();
-            $timeout(function() {
-                $scope.$broadcast('highchartsng.reflow');
-            }, 10);
+            $scope.timeRemaining = false;
+            measurementService.syncPrimaryOutcomeVariableMeasurementsAndUpdateCharts();
+
         });
     });

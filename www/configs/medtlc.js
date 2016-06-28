@@ -69,9 +69,9 @@ config.appSettings  = {
     ],
 
     welcomeText:"Let's start off by adding your first medication!",
-    primaryOutcomeVariableTrackingQuestion:"What medication are you taking?",
+    primaryOutcomeVariableTrackingQuestion:"How are you",
     primaryOutcomeVariableAverageText:"Your average mood is ",
-    mobileNotificationImage : "file://img/icon_128.png",
+    mobileNotificationImage : "file://img/icons/icon_128.png",
     mobileNotificationText : "Time to Track",
     ratingValueToTextConversionDataSet: {
         "1": "depressed",
@@ -94,7 +94,7 @@ config.appSettings  = {
             img : {
                 width : '150',
                 height : '150',
-                url : 'img/medtlc/icon.png'
+                url : 'img/icons/icon.png'
             },
             content : {
 
@@ -231,6 +231,29 @@ config.appSettings  = {
 
     remindersManage : {
         hideAddNewReminderButton : true
+    },
+
+    floatingMaterialButton : {
+        button1 : {
+            icon: 'ion-happy-outline',
+            label: 'How are you?',
+            stateAndParameters: "'app.track'"
+        },
+        button2 : {
+            icon: 'ion-ios-medkit-outline',
+            label: 'Add a medication',
+            stateAndParameters: "'app.reminderAddCategory', {variableCategoryName : 'Treatments'}"
+        },
+        button3 : {
+            icon: 'ion-ios-pulse',
+            label: 'Add Vital Sign',
+            stateAndParameters: "'app.track_factors_category', {variableCategoryName : 'Vital Signs'}"
+        },
+        button4 : {
+            icon: 'ion-heart-broken',
+            label: 'Record a Symptom',
+            stateAndParameters: "'app.track_factors_category', {variableCategoryName : 'Symptoms'}"
+        }
     },
 
     menu : [

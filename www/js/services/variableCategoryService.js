@@ -19,28 +19,19 @@ angular.module('starter')
                         addNewVariableButtonText : '+ Add a new variable',
                         addNewVariableCardText : 'Add a new variable',
                         variableCategoryName : '',
-                        abbreviatedUnitName : '',
                         defaultValue : '',
                         measurementSynonymSingularLowercase : "measurement",
-                        icon: "ion-ios-nutrition"
+                        icon: "ion-speedometer"
                     },
-                    "Vital Signs": {
-                        defaultAbbreviatedUnitName: '',
-                        helpText: "What vital sign do you want to record?",
-                        variableCategoryName: "Vital Signs",
-                        variableCategoryNameSingularLowercase: "vital sign",
-                        measurementSynonymSingularLowercase : "measurement",
-                        icon: "ion-ios-pulse"
+                    "Activity": {
+                        defaultAbbreviatedUnitName: 'min',
+                        helpText: "What activity do you want to record?",
+                        variableCategoryName: "Activity",
+                        variableCategoryNameSingularLowercase: "activity",
+                        measurementSynonymSingularLowercase : "activity",
+                        icon: "ion-ios-body"
                     },
-                    "Foods" : {
-                        defaultAbbreviatedUnitName: "serving",
-                        helpText: "What did you eat?",
-                        variableCategoryName: "Foods",
-                        variableCategoryNameSingularLowercase: "food",
-                        measurementSynonymSingularLowercase : "meal",
-                        icon: "ion-ios-nutrition"
-                    },
-                    Emotions: {
+                    "Emotions": {
                         defaultAbbreviatedUnitName: "/5",
                         helpText: "What emotion do you want to rate?",
                         variableCategoryName: "Emotions",
@@ -48,7 +39,79 @@ angular.module('starter')
                         measurementSynonymSingularLowercase : "rating",
                         icon: "ion-happy-outline"
                     },
-                    Symptoms: {
+                    "Environment": {
+                        defaultAbbreviatedUnitName: '',
+                        helpText: "What environmental variable do you want to record?",
+                        variableCategoryName: "Environment",
+                        variableCategoryNameSingularLowercase: "environment",
+                        measurementSynonymSingularLowercase : "environmental measurement",
+                        icon: "ion-ios-partlysunny-outline"
+                    },
+                    "Foods" : {
+                        defaultAbbreviatedUnitName: "serving",
+                        helpText: "What did you eat?",
+                        variableCategoryName: "Foods",
+                        variableCategoryNameSingularLowercase: "food",
+                        measurementSynonymSingularLowercase : "meal",
+                        icon: "ion-fork"
+                    },
+                    "Location" : {
+                        defaultAbbreviatedUnitName: "min",
+                        helpText: "What location do you want to record?",
+                        variableCategoryName: "Location",
+                        variableCategoryNameSingularLowercase: "location",
+                        measurementSynonymSingularLowercase : "location",
+                        icon: "ion-ios-location"
+                    },
+                    "Music" : {
+                        defaultAbbreviatedUnitName: "count",
+                        helpText: "What music did you listen to?",
+                        variableCategoryName: "Music",
+                        variableCategoryNameSingularLowercase: "music",
+                        measurementSynonymSingularLowercase : "music",
+                        icon: "ion-music-note"
+                    },
+                    "Nutrients" : {
+                        defaultAbbreviatedUnitName: "g",
+                        helpText: "What nutrient do you want to track?",
+                        variableCategoryName: "Nutrients",
+                        variableCategoryNameSingularLowercase: "nutrient",
+                        measurementSynonymSingularLowercase : "nutrient",
+                        icon: "ion-fork"
+                    },
+                    "Payments" : {
+                        defaultAbbreviatedUnitName: "$",
+                        helpText: "What did you pay for?",
+                        variableCategoryName: "Payments",
+                        variableCategoryNameSingularLowercase: "payment",
+                        measurementSynonymSingularLowercase : "payment",
+                        icon: "ion-cash"
+                    },
+                    "Physical Activity": {
+                        defaultAbbreviatedUnitName: '',
+                        helpText: "What physical activity do you want to record?",
+                        variableCategoryName: "Physical Activity",
+                        variableCategoryNameSingularLowercase: "physical activity",
+                        measurementSynonymSingularLowercase : "activity",
+                        icon: "ion-ios-body"
+                    },
+                    "Physique": {
+                        defaultAbbreviatedUnitName: '',
+                        helpText: "What aspect of your physique do you want to record?",
+                        variableCategoryName: "Physique",
+                        variableCategoryNameSingularLowercase: "physique",
+                        measurementSynonymSingularLowercase : "physique measurement",
+                        icon: "ion-ios-body"
+                    },
+                    "Sleep": {
+                        defaultAbbreviatedUnitName: "",
+                        helpText: "What aspect of sleep do you want to record?",
+                        variableCategoryName: "Sleep",
+                        variableCategoryNameSingularLowercase: "sleep",
+                        measurementSynonymSingularLowercase : "sleep",
+                        icon: "ion-ios-moon-outline"
+                    },
+                    "Symptoms": {
                         defaultAbbreviatedUnitName: "/5",
                         helpText: "What symptom do you want to record?",
                         variableCategoryName: "Symptoms",
@@ -56,7 +119,7 @@ angular.module('starter')
                         measurementSynonymSingularLowercase : "rating",
                         icon: "ion-ios-pulse"
                     },
-                    Treatments: {
+                    "Treatments": {
                         defaultAbbreviatedUnitName : "mg",
                         helpText : "What treatment do you want to record?",
                         variableCategoryName : "Treatments",
@@ -66,19 +129,21 @@ angular.module('starter')
                         measurementSynonymSingularLowercase : "dose",
                         icon: "ion-ios-medkit-outline"
                     },
-                    "Physical Activity": {
+                    "Vital Signs": {
                         defaultAbbreviatedUnitName: '',
-                        helpText: "What physical activity do you want to record?",
-                        variableCategoryName: "Physical Activity",
-                        variableCategoryNameSingularLowercase: "physical activity",
-                        measurementSynonymSingularLowercase : "activity",
-                        icon: "ion-ios-body"
+                        helpText: "What vital sign do you want to record?",
+                        variableCategoryName: "Vital Signs",
+                        variableCategoryNameSingularLowercase: "vital sign",
+                        measurementSynonymSingularLowercase : "measurement",
+                        icon: "ion-ios-pulse"
                     }
                 };
 
 
-                if(variableCategoryName){
-                    var selectedVariableCategoryObject =  variableCategoryInfo[variableCategoryName];
+                var selectedVariableCategoryObject = variableCategoryInfo.Anything;
+
+                if(variableCategoryName && variableCategoryInfo[variableCategoryName]){
+                    selectedVariableCategoryObject =  variableCategoryInfo[variableCategoryName];
 
                     if(!selectedVariableCategoryObject.addNewVariableButtonText){
                         selectedVariableCategoryObject.addNewVariableButtonText =
@@ -91,21 +156,18 @@ angular.module('starter')
                     }
 
                     if(!selectedVariableCategoryObject.addNewVariableCardText){
-                        selectedVariableCategoryObject.addNewVariableCardText = "Add a new "
-                            + $filter('wordAliases')(pluralize(selectedVariableCategoryObject.variableCategoryName.toLowerCase(), 1));
+                        selectedVariableCategoryObject.addNewVariableCardText = "Add a new " +
+                            $filter('wordAliases')(pluralize(selectedVariableCategoryObject.variableCategoryName.toLowerCase(), 1));
                     }
 
                     if(!selectedVariableCategoryObject.variableSearchPlaceholderText){
                         if(variableCategoryName){
                             selectedVariableCategoryObject.variableSearchPlaceholderText =
-                                "Search for a "
-                                + $filter('wordAliases')(pluralize(selectedVariableCategoryObject.variableCategoryName.toLowerCase(), 1))
-                                + " here...";
+                                "Search for a " +
+                                $filter('wordAliases')(pluralize(selectedVariableCategoryObject.variableCategoryName.toLowerCase(), 1)) +
+                                " here...";
                         }
                     }
-
-                } else {
-                    selectedVariableCategoryObject = variableCategoryInfo['Anything'];
                 }
                 
                 return selectedVariableCategoryObject;

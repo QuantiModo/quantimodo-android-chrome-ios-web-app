@@ -17,16 +17,18 @@
     <link href="lib/ionic/css/ionic.css" rel="stylesheet">
     <link href="css/style.css" rel="stylesheet">
     <link href="lib/Ionicons/css/ionicons.css" rel="stylesheet">
-    <link href="lib/ionic-datepicker/dist/style.css" rel="stylesheet">
 
     <link href="lib/ng-material-floating-button/mfb/dist/mfb.css" rel="stylesheet"/>
 
 
-    <link rel="shortcut icon" href="img/icon_16.png"/>
+    <link rel="shortcut icon" href="img/icons/icon_16.png"/>
     <!-- IF using Sass (run gulp sass first), then uncomment below and remove the CSS includes above
     <link href="css/ionic.app.css" rel="stylesheet">
     -->
 
+    <!-- load jQuery -->
+    <!--Putting jQuery before Angular to see if it fixes double click issue per https://github.com/angular/angular.js/issues/6251 -->
+    <script src="lib/jquery/dist/jquery.min.js"></script>
 
     <!-- ionic/angularjs js -->
     <script src="lib/ionic/js/ionic.bundle.js"></script>
@@ -35,13 +37,11 @@
     <!-- cordova script (this will be a 404 during development) -->
     <script src="cordova.js"></script>
 
-    <!-- load jQuery -->
-    <script src="lib/jquery/dist/jquery.min.js"></script>
+
     <script src="lib/oclazyload/dist/ocLazyLoad.min.js"></script>
     <script src="lib/highstock-release/highstock.js"></script>
     <script src="lib/highcharts-ng/dist/highcharts-ng.js"></script>
-    <script src="lib/ionic-datepicker/dist/templates.js"></script>
-    <script src="lib/ionic-datepicker/dist/ionic-datepicker.js"></script>
+    <script src="lib/ionic-datepicker/dist/ionic-datepicker.bundle.min.js"></script>
     <script src="lib/ionic-timepicker/dist/ionic-timepicker.bundle.min.js"></script>
     <script src="lib/moment/moment.js"></script>
     <!-- Must use local Bugsnag library because external one causes problems in Chrome extension -->
@@ -73,7 +73,6 @@
     <script src="js/filters/singularize.js"></script>
     <script src="js/filters/fromNow.js"></script>
     <script src="js/filters/primaryOutcomeVariables.js"></script>
-    <script src="js/filters/variableCategoryImage.js"></script>
     <script src="js/filters/percentage.js"></script>
     <script src="js/filters/fromUtcToLocalDateAndTime.js"></script>
     <script src="js/filters/time.js"></script>
@@ -89,6 +88,7 @@
     <script src="js/controllers/appCtrl.js"></script>
     <script src="js/controllers/loginCtrl.js"></script>
     <script src="js/controllers/patch.js"></script>
+    <script src="js/controllers/fabric.js"></script>
     <script src="js/controllers/welcomeCtrl.js"></script>
     <script src="js/controllers/trackPrimaryOutcomeCtrl.js"></script>
     <script src="js/controllers/settingsCtrl.js"></script>

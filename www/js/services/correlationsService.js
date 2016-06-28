@@ -26,6 +26,7 @@ angular.module('starter')
 
                         deferred.resolve('success');
                     }, function(error){
+                        Bugsnag.notify(error, JSON.stringify(error), {}, "error");
                         deferred.reject(error);
                     });
                 return deferred.promise;
@@ -47,6 +48,7 @@ angular.module('starter')
 
                     deferred.resolve('success');
                 }, function(error){
+                    Bugsnag.notify(error, JSON.stringify(error), {}, "error");
                     deferred.reject(error);
                 });
                 return deferred.promise;

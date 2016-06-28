@@ -1,6 +1,6 @@
 angular.module('starter')
-    // Handles the Notifications (inapp, push)
-    .factory('notificationService',function($rootScope, $ionicPlatform, $state){
+// Handles the Notifications (inapp, push)
+    .factory('notificationService',function($rootScope, $ionicPlatform, $state, localStorageService, timeService){
 
         //Notification intervals in minutes
         var intervals = {
@@ -14,197 +14,298 @@ angular.module('starter')
 
         return {
 
-            scheduleAllNotifications: function(trackingReminders) {
-                if(trackingReminders.length > 0){
-                    if ($rootScope.isChromeExtension || $rootScope.isChromeApp)
-                    {
-                        chrome.alarms.clearAll();
+            scheduleAllNotifications: function(trackingRemindersFromApi) {
+                if($rootScope.isChromeExtension || $rootScope.isIOS || $rootScope.isAndroid) {
+                    for (var i = 0; i < trackingRemindersFromApi.length; i++) {
+                        this.scheduleNotification(false, trackingRemindersFromApi[i]);
                     }
-
-                    if ($rootScope.isAndroid)
-                    {
-                        cordova.plugins.notification.local.cancelAll();
-                    }
-                    
-                }
-                for (var i = 0; i < trackingReminders.length; i++) {
-                    this.scheduleNotification(false, trackingReminders[i]);
+                    this.cancelNotificationsForDeletedReminders(trackingRemindersFromApi);
                 }
             },
-            
-            // schedule new notifications
-            scheduleNotification:function(interval, trackingReminder){
 
-                function scheduleAndroidNotification(interval, trackingReminder) {
+            cancelNotificationsForDeletedReminders: function(trackingRemindersFromApi) {
 
-                    var notificationSettings = {
-                        text: config.appSettings.mobileNotificationText,
-                        every: intervals[interval],
-                        icon: config.appSettings.mobileNotificationImage,
-                        id: 1
-                    };
-                    if (interval && interval !== "never") {
-                        cordova.plugins.notification.local.schedule(notificationSettings, function () {
-                            console.log('notification scheduled', notificationSettings);
-                        });
-                        cordova.plugins.notification.local.on("click", function (notification) {
-                            // var redirectUrl = window.location.href + 'app/reminders-inbox';
-                            // console.log('Setting window.location to ' + redirectUrl);
-                            // window.location = redirectUrl;
-                            console.log("$state.go('app.remindersInbox')");
-                            $state.go('app.remindersInbox');
-                        });
-                    } else if (trackingReminder) {
-                        var firstAt = new Date(trackingReminder.nextReminderTimeEpochSeconds*1000);
-                        var minuteFrequency  = trackingReminder.reminderFrequency / 60;
-                        notificationSettings = {
-                            text: config.appSettings.mobileNotificationText,
-                            firstAt: firstAt,
-                            every: minuteFrequency,
-                            icon: config.appSettings.mobileNotificationImage,
-                            id: trackingReminder.id
-                        };
-                        cordova.plugins.notification.local.schedule(notificationSettings,
-                            function () {
-                            console.log('notification scheduled', notificationSettings);
-                        });
-                        cordova.plugins.notification.local.on("click", function (notification) {
-                            // var redirectUrl = window.location.href + 'app/reminders-inbox';
-                            // console.log('Setting window.location to ' + redirectUrl);
-                            // window.location = redirectUrl;
-                            console.log("$state.go('app.remindersInbox')");
-                            $state.go('app.remindersInbox');
-                        });
-                    }
-                }
-
-                function scheduleIosNotification(interval, trackingReminder) {
-                    cordova.plugins.notification.local.cancelAll(function () {
-                        var notificationSettings = {
-                            text: config.appSettings.mobileNotificationText,
-                            every: interval,
-                            icon: config.appSettings.mobileNotificationImage,
-                            id: 1
-                        };
-                        if (interval && interval !== "never") {
-                            cordova.plugins.notification.local.schedule(notificationSettings, function () {
-                                console.log('iOS notification scheduled', notificationSettings);
-                            });
-                            cordova.plugins.notification.local.on("click", function (notification) {
-                                // var redirectUrl = window.location.href + 'app/reminders-inbox';
-                                // console.log('Setting window.location to ' + redirectUrl);
-                                // window.location = redirectUrl;
-                                console.log("$state.go('app.remindersInbox')");
-                                $state.go('app.remindersInbox');
-                            });
+                function cancelChromeExtensionNotificationsForDeletedReminders(trackingRemindersFromApi) {
+                    chrome.alarms.getAll(function(scheduledTrackingReminders) {
+                        for (var i = 0; i < scheduledTrackingReminders.length; i++) {
+                            var existingReminderFoundInApiResponse = false;
+                            for (var j = 0; j < trackingRemindersFromApi.length; j++) {
+                                var alarmName = {
+                                    reminderId: trackingRemindersFromApi[j].id,
+                                    variableName: trackingRemindersFromApi[j].variableName,
+                                    periodInMinutes: trackingRemindersFromApi[j].reminderFrequency / 60,
+                                    reminderStartTime: trackingRemindersFromApi[j].reminderStartTime,
+                                    startTrackingDate: trackingRemindersFromApi[j].startTrackingDate
+                                };
+                                if (JSON.stringify(alarmName) === scheduledTrackingReminders[i].name) {
+                                    console.debug('Server has a reminder matching alarm ' + JSON.stringify(scheduledTrackingReminders[i]));
+                                    existingReminderFoundInApiResponse = true;
+                                }
+                            }
+                            if(!existingReminderFoundInApiResponse) {
+                                console.debug('No api reminder found matching so cancelling this alarm ', JSON.stringify(scheduledTrackingReminders[i]));
+                                chrome.alarms.clear(scheduledTrackingReminders[i].name);
+                            }
                         }
                     });
                 }
 
-                function scheduleChromeExtensionNotification(interval, trackingReminder) {
-                    var alarmInfo = {};
-                    if(interval && interval !== "never"){
-                        console.log('Reminder notification interval is ' + interval);
-                        alarmInfo = {periodInMinutes: intervals[interval]};
-                        chrome.alarms.clear("trackReportAlarm");
-                        chrome.alarms.create("trackReportAlarm", alarmInfo);
-                        console.log("Alarm set, every " + intervals[interval] + " minutes");
-                    } else if (trackingReminder) {
-                        console.debug('Creating reminder for ', trackingReminder);
-                        alarmInfo.when =  trackingReminder.nextReminderTimeEpochSeconds * 1000;
-                        alarmInfo.periodInMinutes = trackingReminder.reminderFrequency / 60;
-                        var alarmName = 'when:' + alarmInfo.when + ' periodInMinutes:' + alarmInfo.periodInMinutes;
-                        chrome.alarms.clear(alarmName);
-                        chrome.alarms.create(alarmName, alarmInfo);
-                        console.debug('Created alarm for alarmName ' + alarmName, alarmInfo);
-                    }
-                    
+                function cancelIonicNotificationsForDeletedReminders(trackingRemindersFromApi) {
+                    cordova.plugins.notification.local.getAll(function (scheduledNotifications) {
+                        for (var i = 0; i < scheduledNotifications.length; i++) {
+                            var existingReminderFoundInApiResponse = false;
+                            for (var j = 0; j < trackingRemindersFromApi.length; j++) {
+                                if (trackingRemindersFromApi[j].id === scheduledNotifications[i].id) {
+                                    console.debug('Server returned a reminder matching' + trackingRemindersFromApi[j]);
+                                    existingReminderFoundInApiResponse = true;
+                                }
+                            }
+                            if(!existingReminderFoundInApiResponse) {
+                                console.debug('Matching API reminder not found. Clearing scheduled notification ' + JSON.stringify(scheduledNotifications[i]));
+                                cordova.plugins.notification.local.cancel(scheduledNotifications[i].id, function (cancelledNotification) {
+                                    console.debug("Canceled notification ", cancelledNotification);
+                                });
+                            }
+                        }
+                    });
+                }
 
+                if ($rootScope.isChromeExtension || $rootScope.isChromeApp) {
+                    cancelChromeExtensionNotificationsForDeletedReminders(trackingRemindersFromApi);
                 }
 
                 $ionicPlatform.ready(function () {
+                    if (typeof cordova != "undefined") {
+                        console.debug('cancelIonicNotificationsForDeletedReminders');
+                        cancelIonicNotificationsForDeletedReminders(trackingRemindersFromApi);
+                    }
+                });
 
+            },
+
+            scheduleNotification: function(interval, trackingReminder){
+
+                function createOrUpdateIonicNotificationForTrackingReminder(notificationSettings) {
+                    cordova.plugins.notification.local.isPresent(notificationSettings.id, function (present) {
+                        console.debug(notificationSettings.id + present ? "present" : "not found");
+                        if (!present) {
+                            console.debug("Creating notification because not already set for " + JSON.stringify(notificationSettings));
+                            cordova.plugins.notification.local.schedule(notificationSettings,
+                                function () {
+                                    console.debug('notification scheduled', notificationSettings);
+                                });
+                            cordova.plugins.notification.local.on("click", function (notification) {
+                                console.debug("$state.go('app.remindersInbox')");
+                                $state.go('app.remindersInbox');
+                            });
+                        }
+
+                        if (present) {
+                            cordova.plugins.notification.local.get(notificationSettings.id,
+                                function (existingNotification) {
+                                    console.debug("Notification already set for " + JSON.stringify(existingNotification));
+                                    var frequencyChanged = false;
+                                    if (existingNotification && existingNotification.every !== notificationSettings.every) {
+                                        frequencyChanged = true;
+                                    }
+                                    if (frequencyChanged) {
+                                        cordova.plugins.notification.local.cancel(notificationSettings.id, function () {
+                                            console.debug("Canceled notification " + notificationSettings.id);
+                                        });
+                                        cordova.plugins.notification.local.schedule(notificationSettings,
+                                            function () {
+                                                console.debug('notification scheduled', notificationSettings);
+                                            });
+                                        cordova.plugins.notification.local.on("click", function (notification) {
+                                            console.debug("$state.go('app.remindersInbox')");
+                                            $state.go('app.remindersInbox');
+                                        });
+                                    }
+                                    if (!frequencyChanged) {
+                                        console.debug("Not creating notification because frequency not changed for " + JSON.stringify(existingNotification));
+                                    }
+                                }
+                            );
+                        }
+                    });
+                }
+
+                function scheduleAndroidNotificationByTrackingReminder(trackingReminder) {
+                    if (trackingReminder) {
+                        var at = new Date(trackingReminder.nextReminderTimeEpochSeconds*1000);
+                        var minuteFrequency  = trackingReminder.reminderFrequency / 60;
+                        var notificationSettings = {
+                            autoClear: true,
+                            badge: 0,
+                            color: undefined,
+                            data: undefined,
+                            led: undefined,
+                            sound: "file://sound/silent.ogg",
+                            ongoing: false,
+                            title: "Track " + trackingReminder.variableName,
+                            text: "Tap to open reminder inbox",
+                            at: at,
+                            every: minuteFrequency,
+                            icon: 'ic_stat_icon_bw',
+                            id: trackingReminder.id
+                        };
+                        //console.debug("Trying to create Android notification for " + JSON.stringify(notificationSettings));
+                        //notificationSettings.sound = "res://platform_default";
+                        //notificationSettings.smallIcon = 'ic_stat_icon_bw';
+                        createOrUpdateIonicNotificationForTrackingReminder(notificationSettings);
+                    }
+                }
+
+                function scheduleGenericAndroidNotification(interval) {
+                    cordova.plugins.notification.local.cancel(config.appSettings.primaryOutcomeVariableDetails.id);
+                    var notificationSettings = {
+                        text: config.appSettings.mobileNotificationText,
+                        every: intervals[interval],
+                        icon: 'ic_stat_icon_bw',
+                        id: config.appSettings.primaryOutcomeVariableDetails.id,
+                        sound: "file://sound/silent.ogg"
+                    };
+                    if (interval && interval !== "never") {
+                        cordova.plugins.notification.local.cancel(notificationSettings.id, function() {
+                            console.log("Canceled Android notification " + notificationSettings.id);
+                        });
+                        cordova.plugins.notification.local.schedule(notificationSettings, function () {
+                            console.log('notification scheduled', notificationSettings);
+                        });
+                        cordova.plugins.notification.local.on("click", function (notification) {
+                            console.log("$state.go('app.remindersInbox')");
+                            $state.go('app.remindersInbox');
+                        });
+                    }
+                }
+
+                function scheduleIosNotificationByTrackingReminder(trackingReminder) {
+                    if (trackingReminder) {
+                        var at = new Date(trackingReminder.nextReminderTimeEpochSeconds*1000);
+                        var minuteFrequency  = trackingReminder.reminderFrequency / 60;
+                        var notificationSettings = {
+                            autoClear: true,
+                            badge: 0,
+                            color: undefined,
+                            data: undefined,
+                            led: undefined,
+                            ongoing: false,
+                            sound: "file://sound/silent.ogg",
+                            title: "Track " + trackingReminder.variableName,
+                            text: "Tap to open reminder inbox",
+                            at: at,
+                            every: minuteFrequency,
+                            icon: config.appSettings.mobileNotificationImage,
+                            id: trackingReminder.id
+                        };
+                        //notificationSettings.sound = "res://platform_default";
+                        //notificationSettings.smallIcon = 'ic_stat_icon_bw';
+                        createOrUpdateIonicNotificationForTrackingReminder(notificationSettings);
+                    }
+                }
+
+                function scheduleGenericIosNotification(interval) {
+                    cordova.plugins.notification.local.cancel(config.appSettings.primaryOutcomeVariableDetails.id);
+                    var notificationSettings = {
+                        text: config.appSettings.mobileNotificationText,
+                        every: interval,
+                        icon: config.appSettings.mobileNotificationImage,
+                        id: config.appSettings.primaryOutcomeVariableDetails.id,
+                        sound: "file://sound/silent.ogg"
+                    };
+                    if (interval && interval !== "never") {
+                        cordova.plugins.notification.local.schedule(notificationSettings, function () {
+                            console.log('iOS notification scheduled', notificationSettings);
+                        });
+                        cordova.plugins.notification.local.on("click", function (notification) {
+                            console.log("$state.go('app.remindersInbox')");
+                            $state.go('app.remindersInbox');
+                        });
+                    }
+                }
+
+                function scheduleGenericChromeExtensionNotification(interval) {
+                    console.log('Reminder notification interval is ' + interval);
+                    var alarmInfo = {periodInMinutes: intervals[interval]};
+                    chrome.alarms.clear("trackReportAlarm");
+                    chrome.alarms.create("trackReportAlarm", alarmInfo);
+                    console.log("Alarm set, every " + intervals[interval] + " minutes");
+
+                }
+
+                function scheduleChromeExtensionNotificationWithTrackingReminder(trackingReminder) {
+                    var alarmInfo = {};
+                    alarmInfo.when =  trackingReminder.nextReminderTimeEpochSeconds * 1000;
+                    alarmInfo.periodInMinutes = trackingReminder.reminderFrequency / 60;
+                    var alarmName = {
+                        reminderId: trackingReminder.id,
+                        variableName: trackingReminder.variableName,
+                        periodInMinutes: trackingReminder.reminderFrequency / 60,
+                        reminderStartTime: trackingReminder.reminderStartTime,
+                        startTrackingDate: trackingReminder.startTrackingDate
+                    };
+
+                    alarmName = JSON.stringify(alarmName);
+
+                    chrome.alarms.getAll(function(alarms) {
+                        var hasAlarm = alarms.some(function(oneAlarm) {
+                            return oneAlarm.name === alarmName;
+                        });
+                        if (hasAlarm) {
+                            console.log('Already have an alarm for ' + alarmName);
+                        }
+                        if (!hasAlarm) {
+                            chrome.alarms.create(alarmName, alarmInfo);
+                            console.debug('Created alarm for alarmName ' + alarmName, alarmInfo);
+                        }
+                    });
+                }
+
+                $ionicPlatform.ready(function () {
+                    //console.debug('Ionic is ready to schedule notifications');
                     if (typeof cordova != "undefined") {
                         if (ionic.Platform.isAndroid()) {
-                            scheduleAndroidNotification(interval, trackingReminder);
+                            if (interval && interval !== "never") {
+                                console.debug('Scheduling Android notification for interval ' + interval);
+                                scheduleGenericAndroidNotification(interval);
+                            }
+                            if(trackingReminder){
+                                //console.debug('Scheduling Android notification for ' + JSON.stringify(trackingReminder));
+                                scheduleAndroidNotificationByTrackingReminder(trackingReminder);
+                            }
                         } else if (ionic.Platform.isIPad() || ionic.Platform.isIOS()) {
-                            scheduleIosNotification(interval, trackingReminder);
+                            if (interval && interval !== "never") {
+                                scheduleGenericIosNotification(interval);
+                            }
+                            if(trackingReminder){
+                                scheduleIosNotificationByTrackingReminder(trackingReminder);
+                            }
                         }
                     } else if ($rootScope.isChromeExtension || $rootScope.isChromeApp) {
-                        scheduleChromeExtensionNotification(interval, trackingReminder);
+                        if (interval && interval !== "never") {
+                            scheduleGenericChromeExtensionNotification(interval);
+                        }
+                        if(trackingReminder){
+                            scheduleChromeExtensionNotificationWithTrackingReminder(trackingReminder);
+                        }
+                    } else {
+                        console.debug('Not scheduling notifications because platform is not Chrome, Android, or iOS ');
                     }
                 });
             },
 
             // cancel all existing notifications
-            cancelNotifications: function(){
+            cancelAllNotifications: function(){
                 if(typeof cordova != "undefined"){
                     cordova.plugins.notification.local.cancelAll(function(){
                         console.log('notifications cancelled');
                     });
                 }else if(typeof chrome.alarms != "undefined"){
-                    chrome.alarms.clear("trackReportAlarm");
-                }
-
-            },
-
-            scheduleReminder:function(params){
-                var id = Math.floor((Math.random() * 10000) + 1);
-                var text = "Reminder " + params.variableName;
-
-                if (params.frequency === "Daily") {
-                    var time = params.reminderTime.match(/(\d+)(?::(\d\d))?\s*(p?)/);
-                    var reminderTime = new Date();
-                    reminderTime.setHours( parseInt(time[1]) + (time[3] ? 12 : 0) );
-                    reminderTime.setMinutes( parseInt(time[2]) || 0 );
-                }
-
-                if (params.frequency !== "Daily") {
-                    if(typeof cordova != "undefined"){
-                        var notificationSettings = {
-                            text: text,
-                            every: intervals[interval],
-                            icon: config.appSettings.notification_image,
-                            id : id
-                        };
-                        //Android and iOS frequency reminders
-                        cordova.plugins.notification.local.clearAll(function(){
-                            if(params.frequency !== "Never"){
-                                cordova.plugins.notification.local.schedule(notificationSettings, function(){
-                                    console.log('scheduleReminder: notification scheduled', notificationSettings);
-                                });
-                                cordova.plugins.notification.local.on("click", function (notification) {
-                                    // var redirectUrl = window.location.href + 'app/reminders-inbox';
-                                    // console.log('Setting window.location to ' + redirectUrl);
-                                    // window.location = redirectUrl;
-                                    console.log("$state.go('app.remindersInbox')");
-                                    $state.go('app.remindersInbox');
-                                });
-                            }
-                        });
-                    }
-                    else if($rootScope.isChrome){
-                        // chrome frequency reminders
-                        alarmInfo = {periodInMinutes: intervals[interval]};
-                        chrome.alarms.create("trackReportAlarm", alarmInfo);
-                        console.log("Alarm set, every " + intervals[interval] + " minutes");
-                    }
-                } else if(typeof cordova != "undefined") {
-                    //android and ios daily notifications
-                    cordova.plugins.notification.local.schedule({
-                        id: id,
-                        text: text,
-                        every: 'day',
-                        at: reminderTime
+                    chrome.alarms.clearAll(function (){
+                        console.debug('Cleared all Chrome alarms!');
                     });
-                    console.log("Alarm set, every day on", reminderTime);
-                } else {
-                    // chrome daily notifications
-                    var alarmInfo = {when: reminderTime.getTime(), periodInMinutes: 24*60};
-                    console.log('alarminfo', alarmInfo);
-                    chrome.alarms.create("reminderNotification", alarmInfo);
-                    console.log("Alarm set, every day on", reminderTime);
                 }
+
             }
         };
     });

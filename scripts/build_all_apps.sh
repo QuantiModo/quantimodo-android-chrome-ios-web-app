@@ -1,7 +1,7 @@
 #!/bin/bash
 
-export IONIC_APP_VERSION_NUMBER=1.4.8
-export IONIC_IOS_APP_VERSION_NUMBER="1.4.8.4"
+export IONIC_APP_VERSION_NUMBER=1.5.8
+export IONIC_IOS_APP_VERSION_NUMBER="1.5.8.0"
 
 export RED='\033[0;31m'
 export GREEN='\033[0;32m'
@@ -14,19 +14,24 @@ cd ${SCRIPT_FOLDER}
 cd ..
 export IONIC_PATH="$PWD"
 echo "IONIC_PATH is $IONIC_PATH"
-cd ..
-mkdir qm-ionic-intermediates
-cd qm-ionic-intermediates
-export INTERMEDIATE_PATH="$PWD"
+#cd ..
+#mkdir qm-ionic-intermediates
+#cd qm-ionic-intermediates
+#export INTERMEDIATE_PATH="$PWD"
+export INTERMEDIATE_PATH="$IONIC_PATH"
 echo "INTERMEDIATE_PATH is $INTERMEDIATE_PATH"
-export DROPBOX_PATH=/Users/Shared/Jenkins/Dropbox/QuantiModo/apps
+if [ -z "$DROPBOX_PATH" ]
+    then
+        echo -e "${RED}ERROR: DROPBOX_PATH does not exist for build_all_apps.sh! Quitting! "
+        exit 1
+fi
 
 if [ -z "$QM_DOCKER_PATH" ]
     then
-        export QM_DOCKER_PATH="/Users/Shared/Jenkins/Home/workspace/QM-Docker-Build"
+        echo -e "${RED}ERROR: QM_DOCKER_PATH does not exist for build_all_apps.sh! Quitting! "
+        exit 1
 fi
 
-export IMAGES_SCRIPT=${IONIC_PATH}/scripts/create_icons.sh
 export APP_PRIVATE_CONFIG_PATH="${QM_DOCKER_PATH}/configs/ionic/private_configs"
 export BUILD_PATH="${IONIC_PATH}/build"
 export LANG=en_US.UTF-8
@@ -69,19 +74,29 @@ if [ -z "$ANDROID_KEYSTORE_PASSWORD" ]
   exit 1
 fi
 
-echo "Copying everything from ${IONIC_PATH} to $INTERMEDIATE_PATH"
-rsync -a --exclude=build/ --exclude=.git/ ${IONIC_PATH}/* ${INTERMEDIATE_PATH}
+#echo "Copying everything from ${IONIC_PATH} to $INTERMEDIATE_PATH"
+#rsync -a --exclude=build/ --exclude=.git/ ${IONIC_PATH}/* ${INTERMEDIATE_PATH}
 cd ${INTERMEDIATE_PATH}
+#npm install -g bower
+bower install
 
-source ${IONIC_PATH}/scripts/build_scripts/00_install_dependencies.sh
+if [ -f ${INTERMEDIATE_PATH}/www/lib/angular/angular.js ];
+then
+   echo echo "Dependencies installed via bower"
+else
+   echo "ERROR: Dependencies not installed! Build FAILED"
+   exit 1
+fi
+
+#source ${IONIC_PATH}/scripts/build_scripts/00_install_dependencies.sh
 
 export APPLE_ID="1115037060"
 export APP_IDENTIFIER="com.quantimodo.quantimodo"
 export APP_DISPLAY_NAME="QuantiModo"
 export LOWERCASE_APP_NAME=quantimodo
 source ${INTERMEDIATE_PATH}/scripts/build_scripts/01_prepare_project.sh
-source ${INTERMEDIATE_PATH}/scripts/build_scripts/02_build_chrome.sh
 source ${INTERMEDIATE_PATH}/scripts/build_scripts/03_build_android.sh
+source ${INTERMEDIATE_PATH}/scripts/build_scripts/02_build_chrome.sh
 #source ${INTERMEDIATE_PATH}/scripts/build_scripts/04_build_ios.sh
 #source ${INTERMEDIATE_PATH}/04_reset_workspace.sh
 
@@ -90,14 +105,14 @@ export APP_IDENTIFIER="com.quantimodo.moodimodoapp"
 export APP_DISPLAY_NAME="MoodiModo"
 export LOWERCASE_APP_NAME=moodimodo
 source ${INTERMEDIATE_PATH}/scripts/build_scripts/01_prepare_project.sh
-source ${INTERMEDIATE_PATH}/scripts/build_scripts/02_build_chrome.sh
 source ${INTERMEDIATE_PATH}/scripts/build_scripts/03_build_android.sh
+source ${INTERMEDIATE_PATH}/scripts/build_scripts/02_build_chrome.sh
 #source ${INTERMEDIATE_PATH}/scripts/build_scripts/04_build_ios.sh
 #source ${INTERMEDIATE_PATH}/04_reset_workspace.sh
 
-if [ -f ${DROPBOX_PATH}/${LOWERCASE_APP_NAME}/${LOWERCASE_APP_NAME}-android-release-signed.apk ];
+if [ -f ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/${LOWERCASE_APP_NAME}-android-release-signed.apk ];
 then
-   echo echo "${LOWERCASE_APP_NAME} Android app is ready in $DROPBOX_PATH/${LOWERCASE_APP_NAME}/"
+   echo echo "${LOWERCASE_APP_NAME} Android app is ready in $DROPBOX_PATH/QuantiModo/apps/${LOWERCASE_APP_NAME}/"
 else
    echo "ERROR: File ${LOWERCASE_APP_NAME}-android-release-signed.apk does not exist. Build FAILED"
    exit 1
@@ -108,13 +123,13 @@ export APP_IDENTIFIER="com.quantimodo.moodimodo"
 export APP_DISPLAY_NAME="Mind First"
 export LOWERCASE_APP_NAME=mindfirst
 source ${INTERMEDIATE_PATH}/scripts/build_scripts/01_prepare_project.sh
-source ${INTERMEDIATE_PATH}/scripts/build_scripts/02_build_chrome.sh
 source ${INTERMEDIATE_PATH}/scripts/build_scripts/03_build_android.sh
+source ${INTERMEDIATE_PATH}/scripts/build_scripts/02_build_chrome.sh
 #source ${INTERMEDIATE_PATH}/scripts/build_scripts/04_build_ios.sh
 
-if [ -f ${DROPBOX_PATH}/${LOWERCASE_APP_NAME}/${LOWERCASE_APP_NAME}-android-release-signed.apk ];
+if [ -f ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/${LOWERCASE_APP_NAME}-android-release-signed.apk ];
 then
-   echo echo "${LOWERCASE_APP_NAME} Android app is ready in $DROPBOX_PATH/${LOWERCASE_APP_NAME}/"
+   echo echo "${LOWERCASE_APP_NAME} Android app is ready in $DROPBOX_PATH/QuantiModo/apps/${LOWERCASE_APP_NAME}/"
 else
    echo "ERROR: File ${LOWERCASE_APP_NAME}-android-release-signed.apk does not exist. Build FAILED"
    exit 1
@@ -125,13 +140,13 @@ export APP_IDENTIFIER="com.quantimodo.energymodo"
 export APP_DISPLAY_NAME="EnergyModo"
 export LOWERCASE_APP_NAME=energymodo
 source ${INTERMEDIATE_PATH}/scripts/build_scripts/01_prepare_project.sh
-source ${INTERMEDIATE_PATH}/scripts/build_scripts/02_build_chrome.sh
 source ${INTERMEDIATE_PATH}/scripts/build_scripts/03_build_android.sh
+source ${INTERMEDIATE_PATH}/scripts/build_scripts/02_build_chrome.sh
 #source ${INTERMEDIATE_PATH}/scripts/build_scripts/04_build_ios.sh
 
-if [ -f ${DROPBOX_PATH}/${LOWERCASE_APP_NAME}/${LOWERCASE_APP_NAME}-android-release-signed.apk ];
+if [ -f ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/${LOWERCASE_APP_NAME}-android-release-signed.apk ];
 then
-   echo echo "${LOWERCASE_APP_NAME} Android app is ready in $DROPBOX_PATH/${LOWERCASE_APP_NAME}/"
+   echo echo "${LOWERCASE_APP_NAME} Android app is ready in $DROPBOX_PATH/QuantiModo/apps/${LOWERCASE_APP_NAME}/"
 else
    echo "ERROR: File ${LOWERCASE_APP_NAME}-android-release-signed.apk does not exist. Build FAILED"
    exit 1
@@ -142,16 +157,18 @@ export APP_IDENTIFIER="com.quantimodo.medtlc"
 export APP_DISPLAY_NAME="MedTLC"
 export LOWERCASE_APP_NAME=medtlc
 source ${INTERMEDIATE_PATH}/scripts/build_scripts/01_prepare_project.sh
-source ${INTERMEDIATE_PATH}/scripts/build_scripts/02_build_chrome.sh
 source ${INTERMEDIATE_PATH}/scripts/build_scripts/03_build_android.sh
+source ${INTERMEDIATE_PATH}/scripts/build_scripts/02_build_chrome.sh
 #source ${INTERMEDIATE_PATH}/scripts/build_scripts/04_build_ios.sh
 
-if [ -f ${DROPBOX_PATH}/${LOWERCASE_APP_NAME}/${LOWERCASE_APP_NAME}-android-release-signed.apk ];
+if [ -f ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/${LOWERCASE_APP_NAME}-android-release-signed.apk ];
 then
-   echo echo "${LOWERCASE_APP_NAME} Android app is ready in $DROPBOX_PATH/${LOWERCASE_APP_NAME}/"
+   echo echo "${LOWERCASE_APP_NAME} Android app is ready in $DROPBOX_PATH/QuantiModo/apps/${LOWERCASE_APP_NAME}/"
 else
-   echo "ERROR: File $DROPBOX_PATH/${LOWERCASE_APP_NAME}/${LOWERCASE_APP_NAME}-android-release-signed.apk does not exist. Build FAILED"
+   echo "ERROR: File $DROPBOX_PATH/QuantiModo/apps/${LOWERCASE_APP_NAME}/${LOWERCASE_APP_NAME}-android-release-signed.apk does not exist. Build FAILED"
    exit 1
 fi
+
+sudo chmod -R 777 ${DROPBOX_PATH}/QuantiModo/apps
 
 exit 0

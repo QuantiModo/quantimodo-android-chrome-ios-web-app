@@ -58,7 +58,8 @@ chrome.alarms.onAlarm.addListener(function(alarm)
 	var showNotification = (localStorage.showNotification || "true") == "true" ? true : false;
 
     if(showNotification){
-        checkForNotifications();
+		showTrackingInboxNotification(alarm);
+        //checkForNotifications();
     }
 });
 
@@ -68,6 +69,9 @@ chrome.alarms.onAlarm.addListener(function(alarm)
 chrome.notifications.onClicked.addListener(function(notificationId)
 {
     var windowParams;
+
+	var badgeParams = {text:""};
+	chrome.browserAction.setBadgeText(badgeParams);
 
 	if(notificationId === "moodReportNotification")
 	{
@@ -93,6 +97,15 @@ chrome.notifications.onClicked.addListener(function(notificationId)
         };
         chrome.windows.create(windowParams);
     }
+	chrome.notifications.clear(notificationId);
+
+
+	// chrome.notifications.getAll(function (notifications){
+	// 	console.log('Got all notifications ', notifications);
+	// 	for(var i = 0; i < notifications.length; i++){
+	// 		chrome.notifications.clear(notifications[i].id);
+	// 	}
+	// });
 });
 
 /*
@@ -165,15 +178,23 @@ function checkForNotifications()
     xhr.send();
 }
 
-function showTrackingInboxNotification(){
+function showTrackingInboxNotification(alarm){
+
 
     var notificationParams = {
         type: "basic",
         title: "How are you?",
         message: "It's time to track!",
-        iconUrl: "www/img/icon_700.png",
+        iconUrl: "www/img/icons/icon_700.png",
         priority: 2
     };
+
+	var trackingReminder = JSON.parse(alarm.name);
+	
+	if(trackingReminder.variableName){
+		notificationParams.title = 'Time to track ' + trackingReminder.variableName + '!';
+		notificationParams.message = 'Click to open reminder inbox';
+	}
 
     chrome.notifications.create("trackingInboxNotification", notificationParams, function(id){});
 

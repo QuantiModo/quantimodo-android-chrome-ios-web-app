@@ -16,8 +16,7 @@ angular.module('starter')
 	    	limit : 50,
 	    	history : [],
 			units : [],
-			variableCategories : [],
-			showLoadMoreButton: false
+			variableCategories : []
 	    };
 
 		$scope.title = 'Measurement History';
@@ -27,13 +26,6 @@ angular.module('starter')
 				$scope.title = $stateParams.variableCategoryName + ' History';
 			}
 		};
-
-        $scope.goToState = function(state){
-            $state.go(state, {
-                fromState: $state.current.name,
-				fromUrl: window.location.href
-			});
-        };
 
 	    $scope.editMeasurement = function(measurement){
 	    	$state.go('app.measurementAdd', {
@@ -58,7 +50,7 @@ angular.module('starter')
 
 
 	    var getHistory = function(){
-	    	//$scope.showLoader();
+	    	$scope.showLoader();
 	    	measurementService.getHistoryMeasurements({
     		    offset: $scope.state.offset,
     		    limit: $scope.state.limit,
@@ -67,11 +59,9 @@ angular.module('starter')
 	    	}).then(function(history){
     			$scope.state.history = $scope.state.history.concat(history);
 				$scope.state.history = ratingService.addImagesToMeasurements($scope.state.history);
-				if($scope.state.history.length > 49){
-					$scope.state.showLoadMoreButton = true;
-				}
 				$scope.hideLoader();
 	    	}, function(error){
+				Bugsnag.notify(error, JSON.stringify(error), {}, "error");
 	    		console.log('error getting measurements', error);
 				$scope.hideLoader();
 	    	});
@@ -85,12 +75,6 @@ angular.module('starter')
 	    
 	    // constructor
 	    $scope.init = function(){
-			if($stateParams.variableCategoryName) {
-				$scope.showLoader('Fetching ' + $stateParams.variableCategoryName.toLowerCase()
-					+ ' measurements...');
-			} else {
-				$scope.showLoader('Fetching measurements...');
-			}
 			setupVariableCategory();
             var isAuthorized = authService.checkAuthOrSendToLogin();
 			if(isAuthorized){
@@ -99,12 +83,14 @@ angular.module('starter')
                     .then(function(variableCategories){
                         $scope.state.variableCategories = variableCategories;
                     }, function(err){
+						Bugsnag.notify(err, JSON.stringify(err), {}, "error");
                         console.log("error getting variable categories", err);
                     });
                 unitService.getUnits()
                     .then(function(units){
                         $scope.state.unitObjects = units;
                     }, function(err){
+						Bugsnag.notify(err, JSON.stringify(err), {}, "error");
                         console.log("error getting units", err);
                     });
                 getHistory();
@@ -113,6 +99,7 @@ angular.module('starter')
 
         // when view is changed
     	$scope.$on('$ionicView.enter', function(e) {
+			$scope.state.offset = 0;
     		$scope.state.history = [];
     		$scope.init();
     	});

@@ -11,4 +11,15 @@ angular.module('starter')
 			
 	        return originalName;
 	    };
+	})
+	.filter('truncateText', function(){
+		return function(originalText){
+
+			if(originalText.length > 25){
+				return originalText.substring(0,25)+'...';
+			}
+
+			return originalText;
+
+		};
 	});

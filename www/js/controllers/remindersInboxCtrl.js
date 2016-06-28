@@ -2,7 +2,7 @@ angular.module('starter')
 
 	.controller('RemindersInboxCtrl', function($scope, authService, $ionicPopup, localStorageService, $state, 
 											   reminderService, $ionicLoading, measurementService, utilsService, 
-											   $stateParams, $location, $filter){
+											   $stateParams, $location, $filter, $ionicPlatform, $rootScope){
 
 	    $scope.controller_name = "RemindersInboxCtrl";
 
@@ -24,12 +24,14 @@ angular.module('starter')
 	    	slots : {
 				epochTime: new Date().getTime()/1000,
 				format: 12,
-				step: 1
+				step: 1,
+				closeLabel: 'Cancel'
 			},
 			variable : {},
 			isDisabled : false,
 			title : 'Reminder Inbox',
-			loading : true
+			loading : true,
+			lastButtonPressTimeStamp : 0
 	    };
 
 		if(typeof config.appSettings.remindersInbox.showAddHowIFeelResponseButton !== 'undefined'){
@@ -52,7 +54,7 @@ angular.module('starter')
 
 	    $scope.selectPrimaryOutcomeVariableValue = function($event, val){
 	        // remove any previous primary outcome variables if present
-	        jQuery('.primary-outcome-variable .active-primary-outcome-variable-rating-button').removeClass('active-primary-outcome-variable-rating-button');
+	        jQuery('.primary-outcome-variable-rating-buttons .active-primary-outcome-variable-rating-button').removeClass('active-primary-outcome-variable-rating-button');
 
 	        // make this primary outcome variable glow visually
 	        jQuery($event.target).addClass('active-primary-outcome-variable-rating-button');
@@ -151,13 +153,10 @@ angular.module('starter')
 
 	    		$scope.state.trackingRemindersNotifications = trackingReminderNotifications;
 	    		$scope.state.filteredReminders = filterViaDates(trackingReminderNotifications);
-				$ionicLoading.hide();
-				$scope.loading = false;
+				$scope.hideLoader();
 	    	}, function(){
-				$ionicLoading.hide();
-				$scope.loading = false;
+				$scope.hideLoader();
 	    		console.error("failed to get reminders");
-
 	    	});
 	    };
 
@@ -166,6 +165,9 @@ angular.module('starter')
 			for(var i = 0; i < $scope.state.trackingRemindersNotifications.length; i++){
 				if($scope.state.trackingRemindersNotifications[i].id !== trackingReminderNotificationId){
 					notificationsToKeep.push($scope.state.trackingRemindersNotifications[i]);
+				} else {
+					console.debug('Removing reminder notification id ' + trackingReminderNotificationId +
+						' from $scope.state.trackingRemindersNotifications');
 				}
 			}
 			$scope.state.trackingRemindersNotifications = notificationsToKeep;
@@ -174,41 +176,98 @@ angular.module('starter')
 			$scope.loading = false;
 		};
 
-	    $scope.track = function(trackingReminderNotification, modifiedReminderValue){
-			//$scope.showLoader();
+	    $scope.track = function(trackingReminderNotification, modifiedReminderValue, $event){
+
+			if($rootScope.isAndroid ){
+				if($event && $scope.lastButtonPressTimeStamp > $event.timeStamp - 3000) {
+					console.debug('This is probably a ghost click so not registering.', $event);
+					return;
+				} else {
+					$scope.lastButtonPressTimeStamp = $event.timeStamp;
+				}
+
+				console.debug('Track event is ', $event);
+				// Didn't solve ghost click problem
+				if($event && $event.type === "touchend") {return;}
+
+				// Didn't solve ghost click problem
+				if ($event && $event.type !== 'click') {return;}
+			}
+
+			$scope.showLoader();
+			console.debug('Tracking notification', trackingReminderNotification);
 			console.log('modifiedReminderValue is ' + modifiedReminderValue);
 			removeNotificationFromDisplay(trackingReminderNotification.id);
-	    	reminderService.trackReminder(trackingReminderNotification.id, modifiedReminderValue)
+	    	reminderService.trackReminderNotification(trackingReminderNotification.id, modifiedReminderValue)
 	    	.then(function(){
 	    		//$scope.init();
 
 	    	}, function(err){
+				Bugsnag.notify(err, JSON.stringify(err), {}, "error");
 				console.error(err);
 	    		utilsService.showAlert('Failed to Track Reminder, Try again!', 'assertive');
 	    	});
 	    };
 
-	    $scope.skip = function(trackingReminderNotification){
-			//$scope.showLoader();
+	    $scope.skip = function(trackingReminderNotification, $event){
+
+			if($rootScope.isAndroid ){
+				if($event && $scope.lastButtonPressTimeStamp > $event.timeStamp - 3000) {
+					console.debug('This is probably a ghost click so not registering.', $event);
+					return;
+				} else {
+					$scope.lastButtonPressTimeStamp = $event.timeStamp;
+				}
+
+				console.debug('Skip event is ', $event);
+				// Didn't solve ghost click problem
+				if($event && $event.type === "touchend") {return;}
+
+				// Didn't solve ghost click problem
+				if ($event && $event.type !== 'click') {return;}
+			}
+
+			console.debug('Skipping notification', trackingReminderNotification);
+			$scope.showLoader();
 			removeNotificationFromDisplay(trackingReminderNotification.id);
-	    	reminderService.skipReminder(trackingReminderNotification.id)
+	    	reminderService.skipReminderNotification(trackingReminderNotification.id)
 	    	.then(function(){
 	    		$scope.hideLoader();
 	    		//$scope.init();
 	    	}, function(err){
+				Bugsnag.notify(err, JSON.stringify(err), {}, "error");
 	    		$scope.hideLoader();
 	    		utilsService.showAlert('Failed to Skip Reminder, Try again!', 'assertive');
 				console.error(err);
 	    	});
 	    };
 
-	    $scope.snooze = function(trackingReminderNotification){
-			//$scope.showLoader();
+	    $scope.snooze = function(trackingReminderNotification, $event){
+
+			if($rootScope.isAndroid ){
+				if($event && $scope.lastButtonPressTimeStamp > $event.timeStamp - 3000) {
+					console.debug('This is probably a ghost click so not registering.', $event);
+					return;
+				} else {
+					$scope.lastButtonPressTimeStamp = $event.timeStamp;
+				}
+
+				console.debug('Snooze event is ', $event);
+				// Didn't solve ghost click problem
+				if($event && $event.type === "touchend") {return;}
+
+				// Didn't solve ghost click problem
+				if ($event && $event.type !== 'click') {return;}
+			}
+
+			$scope.showLoader();
+			console.debug('Snoozing notification', trackingReminderNotification);
 			removeNotificationFromDisplay(trackingReminderNotification.id);
-	    	reminderService.snoozeReminder(trackingReminderNotification.id)
+	    	reminderService.snoozeReminderNotification(trackingReminderNotification.id)
 	    	.then(function(){
 	    		//$scope.init();
 	    	}, function(err){
+				Bugsnag.notify(err, JSON.stringify(err), {}, "error");
 				console.error(err);
 	    		utilsService.showAlert('Failed to Snooze Reminder, Try again!', 'assertive');
 	    	});
@@ -220,11 +279,20 @@ angular.module('starter')
 			if(isAuthorized){
 				$scope.showHelpInfoPopupIfNecessary();
 				getTrackingReminderNotifications();
+				//update alarms and local notifications
+				reminderService.getTrackingReminders();
+			}
+			if (typeof cordova != "undefined") {
+				$ionicPlatform.ready(function () {
+					cordova.plugins.notification.local.clearAll(function () {
+						console.debug("clearAll active notifications");
+					}, this);
+				});
 			}
 	    };
 
 	    $scope.editMeasurement = function(trackingReminderNotification){
-			reminderService.skipReminder(trackingReminderNotification.id);
+			reminderService.skipReminderNotification(trackingReminderNotification.id);
 			$state.go('app.measurementAdd',
 				{
 					reminder: trackingReminderNotification,
@@ -233,11 +301,11 @@ angular.module('starter')
 	    };
 
 	    $scope.editReminderSettings = function(trackingReminderNotification){
-			var reminder = trackingReminderNotification;
-			reminder.id = trackingReminderNotification.trackingReminderId;
+			var trackingReminder = trackingReminderNotification;
+			trackingReminder.id = trackingReminderNotification.trackingReminderId;
 	    	$state.go('app.reminderAdd',
 				{
-					reminder : reminder,
+					reminder : trackingReminder,
 					fromUrl: window.location.href,
 					fromState : $state.current.name
 				});
@@ -254,6 +322,7 @@ angular.module('starter')
 	    		$scope.init();
 
 	    	}, function(err){
+				Bugsnag.notify(err, JSON.stringify(err), {}, "error");
 				$ionicLoading.hide();
 				$scope.loading = false;
 				console.error(err);

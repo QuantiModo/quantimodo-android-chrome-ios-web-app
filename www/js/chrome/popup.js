@@ -42,7 +42,7 @@ var onFaceButtonClicked = function() {
         message: "uploadMeasurements",
         payload: [{
             measurements: measurements,
-            name: "Overall Mood",
+            variableName: "Overall Mood",
             source: "MoodiModo",
             category: "Mood",
             combinationOperation: "MEAN",

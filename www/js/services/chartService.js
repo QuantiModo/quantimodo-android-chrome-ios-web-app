@@ -75,7 +75,7 @@ angular.module('starter')
 				});
 
 				for (var i = 0; i < data.length; i++) {
-					data[i][0] = data[i][0]*1000 - timezoneOffsetMilliseconds;
+					data[i][0] = data[i][0] - timezoneOffsetMilliseconds;
 				}
 
 	        	return {

@@ -5,79 +5,23 @@ angular.module('starter')
 		// service methods
 		var reminderService = {
 
-			addNewReminder : function(variableId, 
-				defaultValue, 
-				reminderFrequency, 
-				variableName, 
-				variableCategoryName, 
-				abbreviatedUnitName, 
-				combinationOperation,
-				reminderStartTime,
-			  	instructions
-			){
+			addNewReminder : function(trackingReminder){
 				
 				var deferred = $q.defer();
-
-                var params = {
-					variableId : variableId, 
-                    defaultValue : defaultValue,
-                    reminderFrequency : reminderFrequency,
-                    variableName : variableName,
-                    variableCategoryName : variableCategoryName,
-                    abbreviatedUnitName : abbreviatedUnitName,
-                    combinationOperation : combinationOperation,
-                    reminderStartTime : reminderStartTime,
-					instructions : instructions
-                };
-
-                QuantiModo.postTrackingReminder(params, function(){
+				
+                QuantiModo.postTrackingReminder(trackingReminder, function(){
+					//update alarms and local notifications
+					reminderService.getTrackingReminders();
                 	deferred.resolve();
                 }, function(err){
+					Bugsnag.notify(err, JSON.stringify(err), {}, "error");
                 	deferred.reject(err);
                 });
 
 				return deferred.promise;
 			},
 
-			postTrackingReminder: function(id,
-				variableId, 
-				defaultValue, 
-				reminderFrequency, 
-				variableName, 
-				variableCategoryName, 
-				abbreviatedUnitName, 
-				combinationOperation,
-				reminderStartTime,
-			   instructions
-			){
-				
-				var deferred = $q.defer();
-
-                console.log('Reminder frequency is ' + reminderFrequency);
-
-                var params = {
-                	id : id,
-					variableId : variableId, 
-                    defaultValue : defaultValue,
-                    reminderFrequency : reminderFrequency,
-                    variableName : variableName,
-                    variableCategoryName : variableCategoryName,
-                    abbreviatedUnitName : abbreviatedUnitName,
-                    combinationOperation : combinationOperation,
-                    reminderStartTime : reminderStartTime,
-					instructions : instructions
-                };
-
-                QuantiModo.postTrackingReminder(params, function(){
-                	deferred.resolve();
-                }, function(err){
-                	deferred.reject(err);
-                });
-
-				return deferred.promise;
-			},
-
-			skipReminder : function(reminderId){
+			skipReminderNotification : function(reminderId){
 				var deferred = $q.defer();
 
 				QuantiModo.skipTrackingReminder(reminderId, function(response){
@@ -86,13 +30,14 @@ angular.module('starter')
 						deferred.reject();
 					}
 				}, function(err){
+					Bugsnag.notify(err, JSON.stringify(err), {}, "error");
 					deferred.reject(err);
 				});
 				
 				return deferred.promise;
 			},
 
-			trackReminder : function(reminderId, modifiedReminderValue){
+			trackReminderNotification : function(reminderId, modifiedReminderValue){
 				var deferred = $q.defer();
 
 				QuantiModo.trackTrackingReminder(reminderId, modifiedReminderValue, function(response){
@@ -103,13 +48,14 @@ angular.module('starter')
 						deferred.reject();
 					}
 				}, function(err){
+					Bugsnag.notify(err, JSON.stringify(err), {}, "error");
 					deferred.reject(err);
 				});
 				
 				return deferred.promise;
 			},
 
-			snoozeReminder : function(reminderId){
+			snoozeReminderNotification : function(reminderId){
 				var deferred = $q.defer();
 
 				QuantiModo.snoozeTrackingReminder(reminderId, function(response){
@@ -118,6 +64,7 @@ angular.module('starter')
 						deferred.reject();
 					}
 				}, function(err){
+					Bugsnag.notify(err, JSON.stringify(err), {}, "error");
 					deferred.reject(err);
 				});
 				
@@ -134,13 +81,16 @@ angular.module('starter')
 				QuantiModo.getTrackingReminders(params, function(remindersResponse){
 					var trackingReminders = remindersResponse.data;
 					if(remindersResponse.success) {
-						notificationService.scheduleAllNotifications(trackingReminders);
+						if(!category){
+							notificationService.scheduleAllNotifications(trackingReminders);
+						}
 						deferred.resolve(trackingReminders);
 					}
 					else {
 						deferred.reject("error");
 					}
 				}, function(err){
+					Bugsnag.notify(err, JSON.stringify(err), {}, "error");
 					deferred.reject(err);
 				});
 
@@ -190,6 +140,7 @@ angular.module('starter')
 						deferred.reject("error");
 					}
 				}, function(err){
+					Bugsnag.notify(err, JSON.stringify(err), {}, "error");
 					deferred.reject(err);
 				});
 
@@ -200,11 +151,16 @@ angular.module('starter')
 				var deferred = $q.defer();
 
 				QuantiModo.deleteTrackingReminder(reminderId, function(response){
-					if(response.success) deferred.resolve();
+					if(response.success) {
+						//update alarms and local notifications
+						reminderService.getTrackingReminders();
+						deferred.resolve();
+					}
 					else {
 						deferred.reject();
 					}
 				}, function(err){
+					Bugsnag.notify(err, JSON.stringify(err), {}, "error");
 					deferred.reject(err);
 				});
 				

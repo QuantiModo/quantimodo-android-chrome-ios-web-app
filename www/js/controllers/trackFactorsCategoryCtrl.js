@@ -12,34 +12,60 @@ angular.module('starter')
         var variableCategoryObject = variableCategoryService.getVariableCategoryInfo(variableCategoryName);
 
         $scope.state = {
+            searching: true,
             showVariableSearchCard: false,
             showAddVariableButton: false,
-            showCategoryAsSelector: false,
+            showVariableCategorySelector: false,
             variableSearchResults : [],
             variableCategoryName: variableCategoryName,
             variableCategoryObject : variableCategoryObject,
             // variables
             variableName : "",
-            helpText: variableCategoryObject.helpText
+            helpText: variableCategoryObject.helpText,
+            variableSearchQuery: ''
         };
 
-        if(variableCategoryName){
-            $scope.state.variableSearchPlaceholderText = "Search for a " +  $filter('wordAliases')(pluralize(variableCategoryName, 1).toLowerCase()) + " here...";
-            $scope.state.title = $filter('wordAliases')('Track') + " " + $filter('wordAliases')(variableCategoryName);
-        } else {
-            $scope.state.variableSearchPlaceholderText = "Search for a variable here...";
-            $scope.state.title = $filter('wordAliases')('Track');
+        if ($stateParams.reminderSearch) {
+            if(variableCategoryName){
+                $scope.state.variableSearchPlaceholderText = "Search for a " +  $filter('wordAliases')(pluralize(variableCategoryName, 1).toLowerCase()) + " here...";
+                $scope.state.title = $filter('wordAliases')('Add') + " " + $filter('wordAliases')(pluralize(variableCategoryName, 1)) + " Reminder";
+            } else {
+                $scope.state.variableSearchPlaceholderText = "Search for a variable here...";
+                $scope.state.title = $filter('wordAliases')('Add Reminder');
+            }
         }
+        else {
+            if(variableCategoryName){
+                $scope.state.variableSearchPlaceholderText = "Search for a " +  $filter('wordAliases')(pluralize(variableCategoryName, 1).toLowerCase()) + " here...";
+                $scope.state.title = $filter('wordAliases')('Record') + " " + $filter('wordAliases')(variableCategoryName);
+            } else {
+                $scope.state.variableSearchPlaceholderText = "Search for a variable here...";
+                $scope.state.title = $filter('wordAliases')('Record a Measurement');
+            }
+        }
+        
         
         // when an old measurement is tapped to remeasure
         $scope.selectVariable = function(variableObject){
-            $state.go('app.measurementAdd', 
-                {
-                    variableObject : variableObject,
-                    fromState : $state.current.name,
-                    fromUrl: window.location.href
-                }
-            );
+            if ($stateParams.reminderSearch) {
+                $state.go('app.reminderAdd',
+                    {
+                        variableObject : variableObject,
+                        fromState : $state.current.name,
+                        fromUrl: window.location.href
+                    }
+                );
+            }
+            else {
+                $state.go('app.measurementAdd',
+                    {
+                        variableObject : variableObject,
+                        fromState : $state.current.name,
+                        fromUrl: window.location.href
+                    }
+                );
+            }
+
         };
         
         $scope.init = function(){
@@ -63,19 +89,29 @@ angular.module('starter')
                 variableService.searchVariablesIncludePublic($scope.state.variableSearchQuery, $scope.state.variableCategoryName)
                     .then(function(variables){
                         // populate list with results
+                        $scope.state.showAddVariableButton = false;
                         $scope.state.showResults = true;
                         $scope.state.variableSearchResults = variables;
                         $scope.state.searching = false;
                         if(variables.length < 1){
                             $scope.state.showAddVariableButton = true;
-                            $scope.state.addNewVariableButtonText = '+ Add ' + $scope.state.variableSearchQuery +
-                                ' measurement';
+                            if ($stateParams.reminderSearch) {
+                                $scope.state.addNewVariableButtonText = '+ Add ' + $scope.state.variableSearchQuery +
+                                    ' reminder';
+                            }
+                            else {
+                                $scope.state.addNewVariableButtonText = '+ Add ' + $scope.state.variableSearchQuery +
+                                    ' measurement';
+                            }
+
                         }
                     });
             }
         };
 
         var populateUserVariables = function(){
+            $scope.state.showAddVariableButton = false;
+            $scope.state.searching = true;
             if($stateParams.variableCategoryName){
                 $scope.showLoader('Fetching most recent ' +
                     $filter('wordAliases')($stateParams.variableCategoryName.toLowerCase()) + '...');
@@ -104,14 +140,26 @@ angular.module('starter')
             if($scope.state.variableCategoryName){
                 variableObject.variableCategoryName = $scope.state.variableCategoryName;
             }
-            
-            $state.go('app.measurementAdd',
-                {
-                    variableObject : variableObject,
-                    fromState : $state.current.name,
-                    fromUrl: window.location.href
-                }
-            );
+
+            if ($stateParams.reminderSearch) {
+                $state.go('app.reminderAdd',
+                    {
+                        variableObject : variableObject,
+                        fromState : $state.current.name,
+                        fromUrl: window.location.href
+                    }
+                );
+            }
+            else {
+                $state.go('app.measurementAdd',
+                    {
+                        variableObject : variableObject,
+                        fromState : $state.current.name,
+                        fromUrl: window.location.href
+                    }
+                );
+            }
+
         };
 
         

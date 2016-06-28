@@ -4,10 +4,11 @@ angular.module('starter')
 	.controller('AppCtrl', function($scope, $ionicModal, $timeout, $injector, utilsService, authService,
                                     measurementService, $ionicPopover, $ionicLoading, $state, $ionicHistory,
                                     QuantiModo, notificationService, $rootScope, localStorageService, reminderService,
-                                    $ionicPopup, $ionicSideMenuDelegate, ratingService, migrationService) {
+                                    $ionicPopup, $ionicSideMenuDelegate, ratingService, migrationService,
+                                    ionicDatePicker) {
 
         $rootScope.loaderImagePath = config.appSettings.loaderImagePath;
-        $scope.appVersion = 1466;
+        $scope.appVersion = 1489;
         if(!$rootScope.loaderImagePath){
             $rootScope.loaderImagePath = 'img/loader.gif';
         }
@@ -22,7 +23,108 @@ angular.module('starter')
         $scope.closeMenu = function() {
             $ionicSideMenuDelegate.toggleLeft(false);
         };
+        $scope.floatingMaterialButton = config.appSettings.floatingMaterialButton;
+        
+        $scope.hideAddTreatmentRemindersCard = localStorageService.getItemSync('hideAddTreatmentRemindersCard');
+        $scope.hideAddFoodRemindersCard = localStorageService.getItemSync('hideAddFoodRemindersCard');
+        $scope.hideAddSymptomRemindersCard = localStorageService.getItemSync('hideAddSymptomRemindersCard');
+        $scope.hideAddEmotionRemindersCard = localStorageService.getItemSync('hideAddEmotionRemindersCard');
+        $scope.hideImportDataCard = localStorageService.getItemSync('hideImportDataCard');
 
+        //  Calendar and  Date picker
+
+        // will update from showCalendarPopup
+        $scope.fromDate = new Date();
+        $scope.toDate = new Date();
+
+        // "from" datepicker config
+        $scope.fromDatePickerObj = {
+            callback: function (val) {
+                if (typeof(val)==='undefined') {
+                    console.log('Date not selected');
+                } else {
+                    $scope.fromDate = new Date(val);
+                    $scope.saveDates();
+                }
+            },
+            inputDate: $scope.fromDate, // previously selected value
+            from: new Date(2012, 8, 1),
+            to: $scope.toDate // don't allow fromDate to be after toDate
+        };
+
+        // "to" datepicker config
+        $scope.toDatePickerObj = {
+            callback: function(val) {
+                if (typeof(val)==='undefined') {
+                    console.log('Date not selected');
+                } else {
+                    $scope.toDate = new Date(val);
+                    $scope.saveDates();
+                }
+            },
+            inputDate: $scope.toDate, // previously selected value
+            from: $scope.fromDate, // don't allow toDate to be after fromDate
+            to: new Date() //today
+        };
+
+        $scope.goToState = function(state, variableCategoryName){
+            $state.go(state, {
+                fromState: $state.current.name,
+                fromUrl: window.location.href,
+                variableCategoryName:  variableCategoryName
+            });
+        };
+
+        $scope.setLocalStorageFlagTrue = function(flagName){
+            localStorageService.setItem(flagName, true);
+            $scope[flagName] = true;
+        };
+
+        // open datepicker for "from" date
+        $scope.openFromDatePicker = function(){
+            ionicDatePicker.openDatePicker($scope.fromDatePickerObj);
+        };
+
+        // open datepicker for "to" date
+        $scope.openToDatePicker = function(){
+            ionicDatePicker.openDatePicker($scope.toDatePickerObj);
+        };
+
+        // update dates selected from calendar
+        $scope.saveDates = function(){
+            $scope.updateDatesLocalStorage();
+            $scope.updateDatePickerObjects();
+            $scope.popover.hide();
+            $scope.init();
+        };
+        
+        // update fromDate and toDate in datepicker objects
+        $scope.updateDatePickerObjects = function() {
+            $scope.fromDatePickerObj.to = $scope.toDate;
+            $scope.toDatePickerObj.from = $scope.fromDate;
+            $scope.fromDatePickerObj.inputDate = $scope.fromDate;
+            $scope.toDatePickerObj.inputDate = $scope.toDate;
+        };
+        
+        $scope.updateDatesLocalStorage = function() {
+            var to = moment($scope.toDate).unix()*1000;
+            var from = moment($scope.fromDate).unix()*1000;
+            measurementService.setDates(to, from);
+        };
+
+        // show main calendar popup (from and to)
+        $scope.showCalendarPopup = function($event){
+            $scope.popover.show($event);
+            measurementService.getToDate(function(endDate){
+                $scope.toDate = new Date(endDate);
+                $scope.fromDatePickerObj.to = $scope.toDate;
+                measurementService.getFromDate(function(fromDate){
+                    $scope.fromDate = new Date(fromDate);
+                    $scope.toDatePickerObj.from = $scope.fromDate;
+                });
+            });
+        };
+        
         var helpPopupMessages = config.appSettings.helpPopupMessages || false;
 
         $scope.showHelpInfoPopupIfNecessary = function(e) {
@@ -89,67 +191,37 @@ angular.module('starter')
         // when view is changed
         $scope.$on('$ionicView.enter', function(e) {
             if(e.targetScope && e.targetScope.controller_name && e.targetScope.controller_name === "TrackPrimaryOutcomeCtrl"){
-                $scope.showCalenderButton = true;
+                $scope.showCalendarButton = true;
             } else {
-                $scope.showCalenderButton = false;
+                $scope.showCalendarButton = false;
             }
         });
 
-        // load the calender popup
         $ionicPopover.fromTemplateUrl('templates/popover.html', {
             scope: $scope
         }).then(function(popover) {
             $scope.popover = popover;
         });
-
-        $scope.fromDate = new Date();
-        $scope.toDate = new Date();
-
-        // when date is updated
-        $scope.datePickerFromCallback = function (val) {
-            if(typeof(val)==='undefined'){
-                console.log('Date not selected');
-            }else{
-                $scope.fromDate = new Date(val);
-                $scope.saveDates();
-            }
-        };
-        // update dates selected from calender
-        $scope.saveDates = function(){
-            var to = moment($scope.toDate).unix()*1000;
-            var from = moment($scope.fromDate).unix()*1000;
-
-            measurementService.setDates(to, from);
-            $scope.popover.hide();
-            $scope.init();
-        };
-
-        // show calender popup
-        $scope.showCalendarPopup = function($event){
-            $scope.popover.show($event);
-            measurementService.getToDate(function(endDate){
-                $scope.toDate = new Date(endDate);
-                measurementService.getFromDate(function(fromDate){
-                    $scope.fromDate = new Date(fromDate);
-                });
-            });
-        };
-
+        
         var scheduleReminder = function(){
             if($rootScope.reminderToSchedule){
 
-                reminderService.addNewReminder(
-                    $rootScope.reminderToSchedule.id,
-                    $rootScope.reminderToSchedule.reportedVariableValue,
-                    $rootScope.reminderToSchedule.interval,
-                    $rootScope.reminderToSchedule.name,
-                    $rootScope.reminderToSchedule.category,
-                    $rootScope.reminderToSchedule.unit,
-                    $rootScope.reminderToSchedule.combinationOperation)
+                var trackingReminder = {
+                    variableId: $rootScope.reminderToSchedule.id,
+                    defaultValue: $rootScope.reminderToSchedule.reportedVariableValue,
+                    variableName: $rootScope.reminderToSchedule.name,
+                    frequency: $rootScope.reminderToSchedule.interval,
+                    variableCategoryName: $rootScope.reminderToSchedule.category,
+                    abbreviatedUnitName: $rootScope.reminderToSchedule.unit,
+                    combinationOperation: $rootScope.reminderToSchedule.combinationOperation
+                };
+
+                reminderService.addNewReminder(trackingReminder)
                 .then(function(){
+                    console.log('reminder scheduled', $rootScope.reminderToSchedule);
                     delete $rootScope.reminderToSchedule;
-                    console.log('reminder scheduled');
                 }, function(err){
+                    Bugsnag.notify("reminderService.addNewReminder", JSON.stringify(trackingReminder), {}, "error");
                     console.log(err);
                 });
             }
@@ -181,8 +253,7 @@ angular.module('starter')
                 $rootScope.hideNavigationMenu = false;
                 $state.go(config.appSettings.defaultState);
             }
-
-
+            
             // don't animate, clear back history
             $ionicHistory.nextViewOptions({
                 disableAnimate: false,
@@ -190,7 +261,7 @@ angular.module('starter')
             });
 
             // redraw everything according to updated appstate
-            $rootScope.$broadcast('updateChartsAndSyncMeasurements');
+            measurementService.syncPrimaryOutcomeVariableMeasurementsAndUpdateCharts();
         }
 
         $scope.goToDefaultStateIfWelcomed = function(){
@@ -212,8 +283,7 @@ angular.module('starter')
                 $state.go(config.appSettings.defaultState);
             }
         };
-
-
+        
         $scope.init = function () {
             console.log("Main Constructor Start");
             if(!$rootScope.user){
@@ -326,6 +396,7 @@ angular.module('starter')
                 {},
                 successHandler,
                 function(err){
+                    Bugsnag.notify(err, JSON.stringify(err), {}, "error");
                     console.log(err);
                 }
             );
@@ -365,6 +436,7 @@ angular.module('starter')
         };
 
         $scope.showLoader = function (loadingText) {
+            console.debug('Showing Loader');
             if(!loadingText){
                 loadingText = '';
             }
@@ -375,7 +447,10 @@ angular.module('starter')
                 animation: 'fade-in',
                 showBackdrop: false,
                 maxWidth: 1000,
-                showDelay: 0
+                showDelay: 0,
+                noBackdrop: true,
+                hideOnStateChange: true,
+                duration: 15000
             });
             $timeout(function () {
                 $ionicLoading.hide();
@@ -385,7 +460,7 @@ angular.module('starter')
         };
         
 
-        $scope.hideLoader = function (loadingText) {
+        $scope.hideLoader = function () {
             $scope.loading = false;
             $ionicLoading.hide();
         };

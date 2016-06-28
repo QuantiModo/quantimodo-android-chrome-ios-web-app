@@ -8,13 +8,13 @@ ul > li {
 	font-size: 16px;
 }
 
-.loading-container .loading {
+/*.loading-container .loading {
     background-color: white;
     color: #333;
     border-width: 1px !important;
     border-color: #999 !important;
     border-style: solid !important;
-}
+}*/
 
 .primary-outcome-variable-rating-buttons {
 	text-align: center;
@@ -92,8 +92,9 @@ div.dateDiv > input {
 
 .history-block {
 	display:inline-block;
-	padding-top: 10px;
+	padding-top: 0px;
 	padding-left: 10px;
+    padding-right: 60px;
 }
 
 .calm-icon {
@@ -102,7 +103,7 @@ div.dateDiv > input {
 	display:inline-block;
 }
 
-.item-icon-left ion-spinner {
+.item-icon-left .ion-spinner {
   float: left;
   margin-left: -3.2em;
   margin-right: 1em;
@@ -406,33 +407,87 @@ img.intro-primary-outcome-variable-rating-buttons {
     }
 }
 
-/* Time picker */
-.ionic-time-picker-popup .heading {
-    background-color: #11c1f3 !important;
+/* Timepicker */
+.ionic_timepicker_popup .heading {
+    height: 44px;
+    background-color: #3369E8 !important;
+    color: #ffffff;
+    text-align: center;
+    line-height: 44px;
+    font-size: 18px;
+    font-weight: bold;
 }
 
-.ionic-time-picker-popup .button_set {
+.ionic_timepicker_popup .button_set {
     border-color: #0a9ec7 !important;
-    background-color: #11c1f3 !important;
+    background-color: #3369E8 !important;
     color: #fff !important;
 }
 
-.ionic-time-picker-popup .button_close {
+.ionic_timepicker_popup .button_close {
     border-color: #b2b2b2 !important;
-    background-color: #f8f8f8 !important;
-    color: #444 !important;
+    background-color: #3369E8 !important;
+    color: #fff !important;
 }
 
-.ionic-time-picker-popup .button_set.active, .ionic-time-picker-popup .button_set.activated {
+.ionic_timepicker_popup .button_set.active, .ionic_timepicker_popup .button_set.activated {
     border-color: #0a9ec7 !important;
     background-color: #0a9ec7 !important;
     box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.1) !important;
 }
 
-.ionic-time-picker-popup .button_close.active, .ionic-time-picker-popup .button_close.activated {
+.ionic_timepicker_popup .button_close.active, .ionic_timepicker_popup .button_close.activated {
     border-color: #a2a2a2 !important;
     background-color: #e5e5e5 !important;
     box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.1) !important;
+}
+
+
+/* Datepicker */
+.ionic_datepicker_popup .today {
+    border: 1px solid #3369E8 !important;
+}
+.ionic_datepicker_popup .selected_date {
+    background-color: #3369E8 !important;
+}
+.ionic_datepicker_modal .button-clear {
+    color: #3369E8 !important;
+}
+.ionic_datepicker_popup .popup-head {
+    background-color: #3369E8 !important;
+}
+.ionic_datepicker_popup .popup-body .selected_date_full {
+    background-color: #3369E8 !important;
+}
+.ionic_datepicker_popup .popup-body .month_select, .ionic_datepicker_popup .popup-body .year_select {
+    border-bottom: 1px solid #3369E8 !important;
+}
+.ionic_datepicker_popup .popup-body .month_select:after, .ionic_datepicker_popup .popup-body .year_select:after {
+    color: #3369E8 !important;
+}
+.ionic_datepicker_popup .popup-body .button-clear {
+    color: #3369E8 !important;
+}
+.ionic_datepicker_popup .popup-buttons button {
+    background-color: #3369E8 !important;
+}
+.ionic_datepicker_modal .header, .ionic_datepicker_modal .footer {
+    background-color: #3369E8 !important;
+}
+.ionic_datepicker_modal .today {
+    border: 1px solid #3369E8 !important;
+}
+.ionic_datepicker_modal .selected_date {
+    background-color: #3369E8 !important;
+}
+.ionic_datepicker_modal .month_select, .ionic_datepicker_modal .year_select {
+    border-bottom: 1px solid #3369E8 !important;
+}
+.ionic_datepicker_modal .month_select:after, .ionic_datepicker_modal .year_select:after {
+    color: #3369E8 !important;
+}
+.ionic_datepicker_modal .footer .button-block {
+    color: #FFFFff !important;
 }
 
 /*

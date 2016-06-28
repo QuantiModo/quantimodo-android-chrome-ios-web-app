@@ -2,18 +2,14 @@
 	<div class="dateDiv">
 		<br/>
 		<p class="positive">From</p>
-		<ionic-datepicker style="width:100%" idate="fromDate" disablepreviousdates="false" callback="datePickerFromCallback">
-		    <button class="button button-block measure-date up-top" style="font-size:14px;border:none;color:black;background-color: white;margin-bottom: 0px;margin-top: 0px;padding-left: 0px; text-align:left;">
-		        {{ fromDate | date:'dd - MMMM - yyyy' }}
-		    </button>
-		</ionic-datepicker>
+		<button class="button button-block measure-date up-top" style="font-size:14px;border:none;color:black;background-color: white;margin-bottom: 0px;margin-top: 0px;padding-left: 0px; text-align:left;" ng-click="openFromDatePicker()">
+			{{ fromDate | date:'dd - MMMM - yyyy' }}
+		</button>
 		<br/>
 		<p class="positive">To</p>
-		<ionic-datepicker style="width:100%" idate="toDate" disablepreviousdates="false" callback="datePickerToCallback">
-		    <button class="button button-block measure-date up-top" style="font-size:14px;border:none;color:black;background-color: white;margin-bottom: 0px;margin-top: 0px;padding-left: 0px; text-align:left;">
-		        {{ toDate | date:'dd - MMMM - yyyy' }}
-		    </button>
-		</ionic-datepicker>
+		<button class="button button-block measure-date up-top" style="font-size:14px;border:none;color:black;background-color: white;margin-bottom: 0px;margin-top: 0px;padding-left: 0px; text-align:left;" ng-click="openToDatePicker()">
+			{{ toDate | date:'dd - MMMM - yyyy' }}
+		</button>
 	</div>
 	
 
