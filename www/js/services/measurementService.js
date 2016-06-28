@@ -238,11 +238,11 @@ angular.module('starter')
                     var measurementObjects = JSON.parse(measurementsQueue);
 
                     if(!measurementObjects || measurementObjects.length < 1){
-                        defer.resolve();
                         console.debug('No measurements to sync!');
-                        measurementService.getMeasurements();
+                        measurementService.getMeasurements().then(function(){
+                            defer.resolve();
+                        });
                         //$rootScope.$broadcast('updateCharts');
-                        return defer.promise;
                     }
 
                     // measurements set
@@ -262,11 +262,13 @@ angular.module('starter')
                     // send request
                     QuantiModo.postMeasurementsV2(measurements, function (response) {
                         // success
-                        measurementService.getMeasurements();
+                        measurementService.getMeasurements().then(function() {
+                            localStorageService.setItem('measurementsQueue', JSON.stringify([]));
+                            defer.resolve();
+                            console.log("success", response);
+                        });
                         // clear queue
-                        localStorageService.setItem('measurementsQueue', JSON.stringify([]));
-                        defer.resolve();
-                        console.log("success", response);
+                        
 
                     }, function (response) {
                         // error
