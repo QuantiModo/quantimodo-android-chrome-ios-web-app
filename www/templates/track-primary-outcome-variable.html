@@ -3,7 +3,7 @@
     	<div class="card primary-outcome-variable-reporting">
     		<div class="item item-text-wrap">
                 <div ng-show="showRatingFaces" class="primary-outcome-variable-rating-buttons" >
-                    <p class="heading positive" style="padding:14px; text-align: center;">{{primaryOutcomeVariableTrackingQuestion}}</p>
+                    <p class="heading positive" style="padding:14px; text-align: center; line-height: normal;">{{primaryOutcomeVariableTrackingQuestion}}</p>
                     <img ng-repeat="option in positiveRatingOptions"
                          ng-click="storeRatingLocalAndServerAndUpdateCharts(option.numericValue)"
                          ng-src="{{option.img}}"
