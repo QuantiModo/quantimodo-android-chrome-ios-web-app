@@ -31,7 +31,7 @@ angular.module('starter')
                         measurementSynonymSingularLowercase : "activity",
                         icon: "ion-ios-body"
                     },
-                    Emotions: {
+                    "Emotions": {
                         defaultAbbreviatedUnitName: "/5",
                         helpText: "What emotion do you want to rate?",
                         variableCategoryName: "Emotions",
@@ -103,7 +103,7 @@ angular.module('starter')
                         measurementSynonymSingularLowercase : "physique measurement",
                         icon: "ion-ios-body"
                     },
-                    Sleep: {
+                    "Sleep": {
                         defaultAbbreviatedUnitName: "",
                         helpText: "What aspect of sleep do you want to record?",
                         variableCategoryName: "Sleep",
@@ -111,7 +111,7 @@ angular.module('starter')
                         measurementSynonymSingularLowercase : "sleep",
                         icon: "ion-ios-moon-outline"
                     },
-                    Symptoms: {
+                    "Symptoms": {
                         defaultAbbreviatedUnitName: "/5",
                         helpText: "What symptom do you want to record?",
                         variableCategoryName: "Symptoms",
@@ -119,7 +119,7 @@ angular.module('starter')
                         measurementSynonymSingularLowercase : "rating",
                         icon: "ion-ios-pulse"
                     },
-                    Treatments: {
+                    "Treatments": {
                         defaultAbbreviatedUnitName : "mg",
                         helpText : "What treatment do you want to record?",
                         variableCategoryName : "Treatments",
