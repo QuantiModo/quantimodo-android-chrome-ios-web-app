@@ -34,6 +34,10 @@ angular.module('starter')
                 $scope.state.title = $filter('wordAliases')('Add Reminder');
             }
         }
+        else if ($stateParams.variableSearch) {
+            $scope.state.variableSearchPlaceholderText = "Search for a variable here...";
+            $scope.state.title = $filter('wordAliases')('Variables');
+        }
         else {
             if(variableCategoryName){
                 $scope.state.variableSearchPlaceholderText = "Search for a " +  $filter('wordAliases')(pluralize(variableCategoryName, 1).toLowerCase()) + " here...";
@@ -46,12 +50,21 @@ angular.module('starter')
         
         
         // when an old measurement is tapped to remeasure
-        $scope.selectVariable = function(variableObject){
+        $scope.selectVariable = function(variableObject) {
             if ($stateParams.reminderSearch) {
                 $state.go('app.reminderAdd',
                     {
-                        variableObject : variableObject,
-                        fromState : $state.current.name,
+                        variableObject: variableObject,
+                        fromState: $state.current.name,
+                        fromUrl: window.location.href
+                    }
+                );
+            }
+            else if ($stateParams.variableSearch) {
+                $state.go('app.variables',
+                    {
+                        variableName: variableObject.name,
+                        fromState: $state.current.name,
                         fromUrl: window.location.href
                     }
                 );
