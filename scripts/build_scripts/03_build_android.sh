@@ -164,6 +164,7 @@ cp ${SIGNED_APK_PATH} "$DROPBOX_PATH/QuantiModo/apps/${LOWERCASE_APP_NAME}/"
 
 if [ -f ${SIGNED_APK_PATH} ];
 then
+    cd ${INTERMEDIATE_PATH}
     COMMIT_MESSAGE=$(git log -1 HEAD --pretty=format:%s)
     ionic upload --email ${IONIC_EMAIL} --password ${IONIC_PASSWORD} --note "$COMMIT_MESSAGE"
     ionic package build android --email ${IONIC_EMAIL} --password ${IONIC_PASSWORD}
