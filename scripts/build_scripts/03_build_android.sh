@@ -164,7 +164,12 @@ cp ${SIGNED_APK_PATH} "$DROPBOX_PATH/QuantiModo/apps/${LOWERCASE_APP_NAME}/"
 
 if [ -f ${SIGNED_APK_PATH} ];
 then
-   echo echo "${SIGNED_APK_PATH} is ready in $DROPBOX_PATH/QuantiModo/apps/${LOWERCASE_APP_NAME}/"
+    COMMIT_MESSAGE=$(git log -1 HEAD --pretty=format:%s)
+    ionic upload --email ${IONIC_EMAIL} --password ${IONIC_PASSWORD} --note "$COMMIT_MESSAGE"
+    ionic package build android --email ${IONIC_EMAIL} --password ${IONIC_PASSWORD}
+    ionic package build android --release --profile production --email ${IONIC_EMAIL} --password ${IONIC_PASSWORD}
+    ionic package build ios --release --profile production --email ${IONIC_EMAIL} --password ${IONIC_PASSWORD}
+    echo echo "${SIGNED_APK_PATH} is ready in $DROPBOX_PATH/QuantiModo/apps/${LOWERCASE_APP_NAME}/"
 else
    echo "ERROR: File ${SIGNED_APK_PATH} does not exist. Build FAILED"
    exit 1
