@@ -56,6 +56,7 @@ export LANG=en_US.UTF-8
 
 echo -e "${GREEN}Copy ${LOWERCASE_APP_NAME} config and resource files${NC}"
 cp -R ${INTERMEDIATE_PATH}/apps/${LOWERCASE_APP_NAME}/*  "${INTERMEDIATE_PATH}"
+ionic config build
 
 cd "${INTERMEDIATE_PATH}"
 #ionic state reset
