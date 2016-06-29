@@ -511,8 +511,10 @@ angular.module('starter')
                 }
                 if($stateParams.variableObject.category){
                     $scope.state.measurement.variableCategoryName = $stateParams.variableObject.category;
+                    $scope.setupVariableCategory($scope.state.measurement.variableCategoryName);
                 } else if($stateParams.variableObject.variableCategoryName) {
                     $scope.state.measurement.variableCategoryName = $stateParams.variableObject.variableCategoryName;
+                    $scope.setupVariableCategory($scope.state.measurement.variableCategoryName);
                 } else {
                     $scope.state.showVariableCategorySelector = true;
                 }
