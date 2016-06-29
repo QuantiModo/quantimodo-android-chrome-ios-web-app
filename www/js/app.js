@@ -243,7 +243,7 @@ angular.module('starter',
       })
       .state('app.track_factors_category', {
           url: "/track_factors_category/:variableCategoryName",
-          cache:false,
+          //cache:false,
           params: {
               variableCategoryName : null,
               fromState : null,

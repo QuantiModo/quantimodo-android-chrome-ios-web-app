@@ -111,6 +111,9 @@ angular.module('starter')
         };
 
         var populateUserVariables = function(){
+            if($scope.state.variableSearchResults && $scope.state.variableSearchResults.length > 1){
+                return;
+            }
             $scope.state.showAddVariableButton = false;
             $scope.state.searching = true;
             if($stateParams.variableCategoryName){
