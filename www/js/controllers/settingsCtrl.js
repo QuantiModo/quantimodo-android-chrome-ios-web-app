@@ -84,7 +84,7 @@ angular.module('starter')
 
         
 		$scope.init = function(){
-			if(typeof analytics !== undefined) { analytics.trackView("Settings Controller"); }
+			if(analytics) { analytics.trackView("Settings Controller"); }
 	    };
 
 		$scope.contactUs = function(){

@@ -53,7 +53,7 @@ angular.module('starter')
             $scope.loading = true;
             $scope.showLoader();
             var isAuthorized = authService.checkAuthOrSendToLogin();
-            if(typeof analytics !== undefined) { analytics.trackView("Variable Settings Controller"); }
+            if(analytics) { analytics.trackView("Variable Settings Controller"); }
             if(isAuthorized){
                 $scope.showHelpInfoPopupIfNecessary();
                 $scope.loading = true;

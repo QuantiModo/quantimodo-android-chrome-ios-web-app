@@ -22,7 +22,7 @@ angular.module('starter')
 
 	    // constructor
 	    $scope.init = function(){
-			if(typeof analytics !== undefined) { analytics.trackView("Import Data Controller"); }
+			if(analytics) { analytics.trackView("Import Data Controller"); }
 			$scope.showLoader();
 	        // get user's access token
 	        authService.getAccessTokenFromAnySource().then(function(token){

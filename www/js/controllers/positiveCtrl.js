@@ -128,7 +128,7 @@ angular.module('starter')
 	    $scope.init = function(){
             $scope.showLoader('Fetching positive predictors...');
             var isAuthorized = authService.checkAuthOrSendToLogin();
-            if(typeof analytics !== undefined) { analytics.trackView("Positive Predictors Controller"); }
+            if(analytics) { analytics.trackView("Positive Predictors Controller"); }
             if(isAuthorized){
                 correlationService.getPositiveFactors()
                     .then(function(correlationObjects){

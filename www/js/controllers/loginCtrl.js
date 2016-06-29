@@ -63,7 +63,7 @@ angular.module('starter')
                 $rootScope.setUserForBugsnag($rootScope.user);
                 $rootScope.hideNavigationMenu = false;
                 $state.go(config.appSettings.defaultState);
-                if(typeof analytics !== undefined) {
+                if(analytics) {
                     analytics.trackView("Login Controller");
                     analytics.setUserId(userObject.id);
                 }

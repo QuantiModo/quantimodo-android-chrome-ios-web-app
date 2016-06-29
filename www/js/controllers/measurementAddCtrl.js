@@ -432,7 +432,7 @@ angular.module('starter')
                     }
                 }
                 populateUnits();
-                if(typeof analytics !== undefined) { analytics.trackView("Add Measurement Controller"); }
+                if(analytics) { analytics.trackView("Add Measurement Controller"); }
                 $scope.hideLoader();
             }
         };
