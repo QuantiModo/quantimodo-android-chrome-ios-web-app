@@ -242,7 +242,7 @@ config.appSettings  = {
         button2 : {
             icon: 'ion-ios-medkit-outline',
             label: 'Add a medication',
-            stateAndParameters: "'app.reminderAddCategory', {variableCategoryName : 'Treatments'}"
+            stateAndParameters: "'app.reminderSearchCategory', {variableCategoryName : 'Treatments'}"
         },
         button3 : {
             icon: 'ion-ios-pulse',

@@ -377,7 +377,7 @@ config.appSettings  = {
         button1 : {
             icon: 'ion-android-notifications-none',
             label: 'Add a Reminder',
-            stateAndParameters: "'app.reminderAdd'"
+            stateAndParameters: "'app.reminderSearch'"
         },
         button2 : {
             icon: 'ion-compose',
