@@ -13,7 +13,7 @@ angular.module('starter')
         
 	    $scope.state = {
 	    	offset : 0,
-	    	limit : 50,
+	    	limit : 200,
 	    	history : [],
 			units : [],
 			variableCategories : []
@@ -65,7 +65,6 @@ angular.module('starter')
 	    		console.log('error getting measurements', error);
 				$scope.hideLoader();
 	    	});
-
 	    };
 
 	    $scope.getNext = function(){

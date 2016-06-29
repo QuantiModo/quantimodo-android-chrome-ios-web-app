@@ -142,10 +142,15 @@ angular.module('starter')
 
         // cancel activity
         $scope.cancel = function(){
+            var variableName = $scope.state.measurement.variable;
             if($stateParams.fromUrl){
                 window.location = $stateParams.fromUrl;
-            } else if ($stateParams.fromState){
-                $state.go($stateParams.fromState);
+            } else if
+            ($stateParams.fromState){
+                $state.go($stateParams.fromState, {
+                    variableName: variableName,
+                    noReload: true
+                });
             } else {
                 $rootScope.hideNavigationMenu = false;
                 $state.go(config.appSettings.defaultState);
@@ -319,7 +324,11 @@ angular.module('starter')
                     if($stateParams.fromUrl){
                         window.location = $stateParams.fromUrl;
                     } else if ($stateParams.fromState){
-                        $state.go($stateParams.fromState);
+                        var variableName = $scope.state.measurement.variable;
+                        $state.go($stateParams.fromState, {
+                            variableName: variableName,
+                            measurementInfo: measurementInfo
+                        });
                     } else {
                         $rootScope.hideNavigationMenu = false;
                         $state.go(config.appSettings.defaultState);
@@ -501,10 +510,13 @@ angular.module('starter')
 
         var setupFromVariableStateParameter = function(){
             console.log('variableObject is ' + $stateParams.variableObject);
-            if($stateParams.variableObject !== null && typeof $stateParams.variableObject !== "undefined"){
+            if($stateParams.variableObject !== null && typeof $stateParams.variableObject !== "undefined") {
                 $scope.variableObject = $stateParams.variableObject;
                 $scope.state.title = "Record Measurement";
                 $scope.state.measurement.variable = $stateParams.variableObject.name;
+                if (!$scope.state.measurement.variable) {
+                    $scope.state.measurement.variable = $stateParams.variableObject.variableName;
+                }
                 if($stateParams.variableObject.abbreviatedUnitName){
                     $scope.state.measurement.abbreviatedUnitName = $stateParams.variableObject.abbreviatedUnitName;
                 }

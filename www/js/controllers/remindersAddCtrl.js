@@ -151,6 +151,9 @@ angular.module('starter')
             if (selectedVariable.name) {
                 $scope.state.trackingReminder.variableName = selectedVariable.name;
             }
+            if (selectedVariable.variableName) {
+                $scope.state.trackingReminder.variableName = selectedVariable.variableName;
+            }
             if (selectedVariable.description) {
                 $scope.state.trackingReminder.variableDescription = selectedVariable.description;
             }
@@ -172,6 +175,12 @@ angular.module('starter')
 	    	//if($stateParams.reminder && $stateParams.reminder !== null){
             if($stateParams.fromUrl){
                 window.location=$stateParams.fromUrl;
+            } else if ($stateParams.fromState){
+                var variableName = $scope.state.trackingReminder.variableName
+                $state.go($stateParams.fromState, {
+                    variableName: variableName,
+                    noReload: true,
+                });
             } else {
                 $state.go('app.remindersManage');
             }
@@ -391,7 +400,6 @@ angular.module('starter')
         }
 
         $scope.init = function(){
-
 
             var isAuthorized = authService.checkAuthOrSendToLogin();
 

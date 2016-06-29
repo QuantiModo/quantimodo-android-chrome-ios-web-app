@@ -36,7 +36,7 @@ angular.module('starter')
         }
         else if ($stateParams.variableSearch) {
             $scope.state.variableSearchPlaceholderText = "Search for a variable here...";
-            $scope.state.title = $filter('wordAliases')('Variables');
+            $scope.state.title = $filter('wordAliases')('Your Variables');
         }
         else {
             if(variableCategoryName){
@@ -111,6 +111,9 @@ angular.module('starter')
                             if ($stateParams.reminderSearch) {
                                 $scope.state.addNewVariableButtonText = '+ Add ' + $scope.state.variableSearchQuery +
                                     ' reminder';
+                            }
+                            else if ($stateParams.variableSearch) {
+                                $scope.state.showAddVariableButton = false;
                             }
                             else {
                                 $scope.state.addNewVariableButtonText = '+ Add ' + $scope.state.variableSearchQuery +

@@ -1,54 +1,37 @@
-<ion-view hide-nav-bar="hideNavigationMenu" view-title="Track your {{primaryOutcomeVariable}}">
+<ion-view hide-nav-bar="hideNavigationMenu" view-title="{{variableName}}">
     <ion-content>
-    	<div class="card primary-outcome-variable-reporting">
+        <div ng-show="showBarChart" class="card primary-outcome-variable-reporting-chart">
     		<div class="item item-text-wrap">
-                <div ng-show="showRatingFaces" class="primary-outcome-variable-rating-buttons" >
-                    <p class="heading positive" style="padding:14px; text-align: center; line-height: normal;">{{primaryOutcomeVariableTrackingQuestion}}</p>
-                    <img ng-repeat="option in positiveRatingOptions"
-                         ng-click="storeRatingLocalAndServerAndUpdateCharts(option.numericValue)"
-                         ng-src="{{option.img}}"
-                            >
-                </div>
-                <div ng-show="timeRemaining">
-                    <br/>
-                    <ul>
-                        <li style="padding:14px; text-align: center;">Thanks for reporting your {{primaryOutcomeVariable}}!</li>
-                        <li ng-show="secondsLeft">You can report your {{primaryOutcomeVariable}} back in {{secondsLeft}} seconds</li>
-                    </ul>
-                </div>
-    		</div>
-    	</div>
-
-        <div ng-show="averagePrimaryOutcomeVariableImage" class="card primary-outcome-variable-average">
-            <div class="item item-text-wrap">
-                <div>
-                    <img ng-src="{{averagePrimaryOutcomeVariableImage}}" class="top-left" alt="Depressed">
-                    <div class="to-right">
-
-                        <span class="heading">{{appSettings.primaryOutcomeVariableAverageText}} {{averagePrimaryOutcomeVariableText}}.</span>
-                        <ul class="from-top">
-                            <!--                           <li>We hope you feel great!</li>-->
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-
-        <div ng-show="showCharts" class="card primary-outcome-variable-reporting-chart">
-    		<div class="item item-text-wrap">
-<!--                <div style="height: 460px;" ng-show="isSyncing">
-                    <div style="position: absolute;top:45%;text-align: center;width: 100%"><span>Still retrieving data. Check back soon.</span></div>
-                </div>-->
                 <div ng-if="redrawBarChart">
                     <highchart id="chart1" config="barChartConfig"></highchart>    
                 </div>
-    
+            </div>
+        </div>
+        <div ng-show="showLineChart" class="card primary-outcome-variable-reporting-chart">
+            <div class="item item-text-wrap">
                 <div ng-if="redrawLineChart">
                     <highchart id="chart2" config="lineChartConfig"></highchart>    
                 </div>
-                
-    		</div>
-    	</div>
+            </div>
+        </div>
+        <div class="list card" ng-click="recordMeasurementButtonClick()">
+            <a class="item item-icon-left">
+                <i class="icon ion-plus positive"></i>
+                {{recordMeasurementButtonText}}
+            </a>
+        </div>
+        <div class="list card" ng-click="addNewReminderButtonClick()">
+            <a class="item item-icon-left">
+                <i class="icon ion-plus positive"></i>
+                {{addReminderButtonText}}
+            </a>
+        </div>
+        <div class="list card" ng-click="editSettingsButtonClick()" ng-show="false">
+            <a class="item item-icon-left">
+                <!--Find better icon in blue-->
+                <i class="icon ion-settings"></i>
+                {{editSettingsButtonText}}
+            </a>
+        </div>
     </ion-content>
 </ion-view>

@@ -352,9 +352,10 @@ angular.module('starter',
        })
         .state('app.variables', {
             url: "/variables/:variableName",
-            cache: false,
             params: {
                 variableName : null,
+                measurementInfo: null,
+                noReload: false,
                 fromState : null,
                 fromUrl : null,
             },

@@ -1,7 +1,7 @@
 angular.module('starter')
 
     // Controls the Track Page of the App
-    .controller('TrackPrimaryOutcomeCtrl', function($scope, $ionicModal, $state, $timeout, utilsService, authService, 
+    .controller('TrackPrimaryOutcomeCtrl', function($scope, $ionicModal, $state, $timeout, utilsService, authService,
                                                     measurementService, chartService, $ionicPopup, localStorageService,
                                                     $rootScope, $ionicLoading, ratingService) {
         $scope.controller_name = "TrackPrimaryOutcomeCtrl";
@@ -47,15 +47,10 @@ angular.module('starter')
             }
         };
 
-
-        var updateBarChart = function(arr){
+        var updateBarChart = function(barChartData){
             $scope.redrawBarChart = false;
-            console.log("re-drawing bar chart");
-
-            console.log("load config object chartService.configureBarChart");
-            $scope.barChartConfig = chartService.configureBarChart(arr);
-            
-            console.log("redraw chart with new data");
+            console.log("Configuring bar chart...");
+            $scope.barChartConfig = chartService.configureBarChart(barChartData);
             $scope.redrawBarChart = true;
         };
 
@@ -63,12 +58,7 @@ angular.module('starter')
             $scope.redrawLineChart = false;
             console.log("Configuring line chart...");
             $scope.lineChartConfig = chartService.configureLineChart(lineChartData);
-
-
-
-            // redraw chart with new data
             $scope.redrawLineChart = true;
-
         };
 
         // updates all the visual elements on the page
