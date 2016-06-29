@@ -104,7 +104,7 @@ angular.module('starter')
 	    // constructor
 	    $scope.init = function(){
 			var isAuthorized = authService.checkAuthOrSendToLogin();
-			if(analytics) { analytics.trackView("Manage Reminders Controller"); }
+			if (typeof analytics !== 'undefined')  { analytics.trackView("Manage Reminders Controller"); }
 			if(isAuthorized){
 				$scope.state.showButtons = true;
 				$scope.showHelpInfoPopupIfNecessary();

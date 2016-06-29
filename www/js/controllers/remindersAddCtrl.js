@@ -396,7 +396,7 @@ angular.module('starter')
         }
 
         $scope.init = function(){
-            if(analytics) { analytics.trackView("Add Reminder Controller"); }
+            if (typeof analytics !== 'undefined')  { analytics.trackView("Add Reminder Controller"); }
 
             var isAuthorized = authService.checkAuthOrSendToLogin();
 

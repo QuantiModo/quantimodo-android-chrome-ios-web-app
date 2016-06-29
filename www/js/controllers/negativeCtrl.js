@@ -30,7 +30,7 @@ angular.module('starter')
         $scope.init = function(){
             $scope.showLoader('Fetching negative predictors...');
             var isAuthorized = authService.checkAuthOrSendToLogin();
-            if(analytics) { analytics.trackView("Negative Predictors Controller"); }
+            if (typeof analytics !== 'undefined')  { analytics.trackView("Negative Predictors Controller"); }
             if(isAuthorized){
                 correlationService.getNegativeFactors()
                     .then(function(correlationObjects){

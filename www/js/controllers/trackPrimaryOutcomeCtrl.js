@@ -177,7 +177,7 @@ angular.module('starter')
             $scope.redrawLineChart = true;
             $scope.redrawBarChart = true;
             $scope.showHelpInfoPopupIfNecessary();
-            if(analytics) { analytics.trackView("Track Primary Outcome Controller"); }
+            if (typeof analytics !== 'undefined')  { analytics.trackView("Track Primary Outcome Controller"); }
             $ionicLoading.hide();
         };
 

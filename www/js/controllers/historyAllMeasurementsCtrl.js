@@ -75,7 +75,7 @@ angular.module('starter')
 	    
 	    // constructor
 	    $scope.init = function(){
-			if(analytics) { analytics.trackView("All Measurements Controller"); }
+			if (typeof analytics !== 'undefined')  { analytics.trackView("All Measurements Controller"); }
 			
 			setupVariableCategory();
             var isAuthorized = authService.checkAuthOrSendToLogin();

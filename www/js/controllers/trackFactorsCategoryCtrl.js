@@ -71,7 +71,7 @@ angular.module('starter')
         $scope.init = function(){
             $scope.loading = true;
             $scope.showLoader();
-            if(analytics) { analytics.trackView("Variable Search Controller"); }
+            if (typeof analytics !== 'undefined')  { analytics.trackView("Variable Search Controller"); }
             var isAuthorized = authService.checkAuthOrSendToLogin();
             if(isAuthorized){
                 $scope.showHelpInfoPopupIfNecessary();
