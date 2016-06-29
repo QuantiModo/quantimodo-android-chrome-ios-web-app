@@ -496,7 +496,7 @@ angular.module('starter')
 
         var setupFromReminderStateParameter = function(){
             if($stateParams.reminder !== null && typeof $stateParams.reminder !== "undefined"){
-                setupTrackingByReminder();
+                setupTrackingByReminderNotification();
             }
         };
 
@@ -617,7 +617,7 @@ angular.module('starter')
             $scope.hideLoader();
         };
 
-        var setupTrackingByReminder = function(){
+        var setupTrackingByReminderNotification = function(){
             if($stateParams.reminder !== null && typeof $stateParams.reminder !== "undefined"){
                 $scope.state.title = "Record Measurement";
                 $scope.state.measurement.value = $stateParams.reminder.defaultValue;
@@ -625,7 +625,15 @@ angular.module('starter')
                 $scope.state.measurement.abbreviatedUnitName = $stateParams.reminder.abbreviatedUnitName;
                 $scope.state.measurement.variableCategoryName = $stateParams.reminder.variableCategoryName;
                 $scope.state.measurement.combinationOperation = $stateParams.reminder.combinationOperation;
-                $scope.state.measurement.startTimeEpoch = currentTime.getTime() / 1000;
+                if($stateParams.reminder.trackingReminderNotificationTimeEpoch !== "undefined" && $stateParams.reminder.trackingReminderNotificationTimeEpoch){
+                    $scope.selectedDate = new Date($stateParams.reminder.trackingReminderNotificationTimeEpoch * 1000);
+                    $scope.selectedHours = $scope.selectedDate.getHours();
+                    $scope.selectedMinutes = $scope.selectedDate.getMinutes();
+                    $scope.state.measurement.startTimeEpoch = $stateParams.reminder.trackingReminderNotificationTimeEpoch;
+                } else {
+                    $scope.state.measurement.startTimeEpoch = currentTime.getTime() / 1000;
+                }
+
                 $scope.state.measurementIsSetup = true;
                 setupValueFieldType($stateParams.reminder.abbreviatedUnitName,
                     $stateParams.reminder.variableDescription);
