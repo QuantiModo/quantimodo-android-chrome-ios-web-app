@@ -19,4 +19,3 @@ scripts/certs/dist.p12
 resources/android/
 apps/moodimodo/resources/chrome_extension/www/
 apps/moodimodo/resources/chrome_extension/www
-.io-config.json

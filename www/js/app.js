@@ -3,7 +3,7 @@
 
 angular.module('starter',
     [
-        'ionic',
+        'ionic','ionic.service.core', 'ionic.service.analytics',
         'oc.lazyLoad',
         'highcharts-ng',
         'ngCordova',
@@ -15,11 +15,12 @@ angular.module('starter',
     ]
 )
 
-.run(function($ionicPlatform, $ionicHistory, $state, $rootScope) {
+.run(function($ionicPlatform, $ionicHistory, $state, $rootScope, $ionicAnalytics) {
 // Database
 //.run(function($ionicPlatform, $ionicHistory, $state, $rootScope, $cordovaSQLite) {
 
     $ionicPlatform.ready(function() {
+        $ionicAnalytics.register();
         
         if(typeof analytics !== "undefined") {
             console.log("Configuring Google Analytics");
