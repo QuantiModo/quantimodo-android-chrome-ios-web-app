@@ -15,12 +15,11 @@ angular.module('starter',
     ]
 )
 
-.run(function($ionicPlatform, $ionicHistory, $state, $rootScope, $ionicAnalytics) {
+.run(function($ionicPlatform, $ionicHistory, $state, $rootScope) {
 // Database
 //.run(function($ionicPlatform, $ionicHistory, $state, $rootScope, $cordovaSQLite) {
 
     $ionicPlatform.ready(function() {
-        $ionicAnalytics.register();
         
         if(typeof analytics !== "undefined") {
             console.log("Configuring Google Analytics");
