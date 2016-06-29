@@ -71,8 +71,15 @@ angular.module('starter')
 			} else {
 				var emailUrl = 'mailto:?subject=' + subjectLine + '&body=' + emailBody;
 				if($rootScope.isChromeExtension){
-					console.debug('Generating email using Chromebackground page function.');
-					chrome.extension.getBackgroundPage().sendEmail(emailUrl);
+					console.debug('isChromeExtension so sending to website to share data');
+					var url = config.getURL("api/v2/account/applications", true);
+					var newTab = window.open(url,'_blank');
+					if(!newTab){
+						alert("Please unblock popups and refresh to access the Data Sharing page.");
+					}
+					$rootScope.hideNavigationMenu = false;
+					$state.go(config.appSettings.defaultState);
+
 				} else {
 					console.debug('window.plugins.emailComposer not found!  Generating email normal way.');
 					window.open(emailUrl);

@@ -29,14 +29,6 @@ function isUserLoggedIn(resultListener)
 	xhr.send();
 }
 
-function sendEmail(emailUrl) {
-	chrome.tabs.create({ url: emailUrl }, function(tab) {
-		setTimeOut(function() {
-			chrome.tabs.remove(tab.id);
-		}, 500);
-	});
-}
-
 /*
 **	Called when the extension is installed
 */
