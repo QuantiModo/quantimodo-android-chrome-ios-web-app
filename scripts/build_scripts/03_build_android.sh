@@ -108,6 +108,7 @@ ionic plugin add https://github.com/DrMoriarty/cordova-fabric-crashlytics-plugin
 #cordova plugin add phonegap-plugin-push --variable SENDER_ID="quantimo-do"
 echo "Generating image resources for $LOWERCASE_APP_NAME..."
 ionic resources >/dev/null
+ionic config build
 cordova build --debug android >/dev/null
 cordova build --release android >/dev/null
 mkdir -p ${BUILD_PATH}/${LOWERCASE_APP_NAME}/android
