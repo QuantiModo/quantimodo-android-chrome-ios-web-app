@@ -477,6 +477,7 @@ angular.module('starter')
                             combinationOperation : measurementInfo.isAvg? "MEAN" : "SUM",
                             measurements : [
                                 {
+                                    id: measurementInfo.id,
                                     startTimeEpoch:  measurementInfo.startTimeEpoch,
                                     value: measurementInfo.value,
                                     note : measurementInfo.note
