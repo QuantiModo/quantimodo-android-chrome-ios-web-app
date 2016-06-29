@@ -47,7 +47,8 @@
     "cordova-plugin-ios-non-exempt-encryption",
     "cordova-plugin-email-composer",
     "https://github.com/danwilson/google-analytics-plugin.git",
-    "ionic-plugin-deploy"
+    "ionic-plugin-deploy",
+    "cordova-plugin-intercom"
   ],
   "cordovaPlatforms": [
     "android"
