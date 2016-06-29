@@ -69,8 +69,15 @@ angular.module('starter')
 
 				}, false);
 			} else {
-				console.debug('window.plugins.emailComposer not found!  Generating email normal way.');
-				window.open('mailto:?subject=' + subjectLine + '&body=' + emailBody);
+				var emailUrl = 'mailto:?subject=' + subjectLine + '&body=' + emailBody;
+				if($rootScope.isChromeExtension){
+					console.debug('Generating email using Chromebackground page function.');
+					chrome.extension.getBackgroundPage().sendEmail(emailUrl);
+				} else {
+					console.debug('window.plugins.emailComposer not found!  Generating email normal way.');
+					window.open(emailUrl);
+				}
+
 			}
 		};
 
