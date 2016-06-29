@@ -91,6 +91,7 @@ angular.module('starter')
 
         $scope.init = function(){
             console.log("welcome initialization...");
+            if (typeof analytics !== 'undefined')  { analytics.trackView("Welcome Controller"); }
             
         };
 

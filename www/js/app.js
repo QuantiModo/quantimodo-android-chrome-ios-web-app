@@ -19,6 +19,37 @@ angular.module('starter',
 // Database
 //.run(function($ionicPlatform, $ionicHistory, $state, $rootScope, $cordovaSQLite) {
 
+    $ionicPlatform.ready(function() {
+        
+        if(typeof analytics !== "undefined") {
+            console.log("Configuring Google Analytics");
+            analytics.startTrackerWithId("UA-39222734-24");
+        } else {
+            console.log("Google Analytics Unavailable");
+        }
+        
+        // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
+        // for form inputs)
+        if (window.cordova && window.cordova.plugins.Keyboard) {
+            cordova.plugins.Keyboard.hideKeyboardAccessoryBar(false);
+        }
+        if (window.StatusBar) {
+            // org.apache.cordova.statusbar required
+            StatusBar.styleDefault();
+        }
+        // Database
+        /*
+         if (!$rootScope.isMobile) {
+         db = window.openDatabase("my.db", "1.0", "Cordova Demo", 200000);
+         }
+         else {
+         db = $cordovaSQLite.openDB("my.db");
+         }
+         */
+
+    });
+    
+
     $rootScope.goToState = function(state, params){
         $state.go(state, params);
     };
@@ -42,26 +73,7 @@ angular.module('starter',
                 console.error('intervalChecker: No bugsnag_key found in private config!');
             }
 
-            $ionicPlatform.ready(function() {
-                // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
-                // for form inputs)
-                if (window.cordova && window.cordova.plugins.Keyboard) {
-                    cordova.plugins.Keyboard.hideKeyboardAccessoryBar(false);
-                }
-                if (window.StatusBar) {
-                    // org.apache.cordova.statusbar required
-                    StatusBar.styleDefault();
-                }
-                // Database
-                /*
-                if (!$rootScope.isMobile) {
-                    db = window.openDatabase("my.db", "1.0", "Cordova Demo", 200000);
-                }
-                else {
-                    db = $cordovaSQLite.openDB("my.db");
-                }
-                */
-            });
+
 
             $ionicPlatform.registerBackButtonAction(function (event) {
                 if($ionicHistory.currentStateName() === config.appSettings.defaultState){
