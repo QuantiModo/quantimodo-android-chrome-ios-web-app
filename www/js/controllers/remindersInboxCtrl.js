@@ -276,6 +276,7 @@ angular.module('starter')
 	    $scope.init = function(){
 			setPageTitle();
 			var isAuthorized = authService.checkAuthOrSendToLogin();
+			if(typeof analytics !== undefined) { analytics.trackView("Reminders Inbox Controller"); }
 			if(isAuthorized){
 				$scope.showHelpInfoPopupIfNecessary();
 				getTrackingReminderNotifications();
