@@ -79,6 +79,7 @@ fi
 cd ${INTERMEDIATE_PATH}
 #npm install -g bower
 bower install
+ionic config build
 
 if [ -f ${INTERMEDIATE_PATH}/www/lib/angular/angular.js ];
 then

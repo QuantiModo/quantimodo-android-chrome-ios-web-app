@@ -5,3 +5,4 @@ npm install -g bamlab/cordova-deploy
 npm install
 npm install -g karma-cli bower
 bower install
+ionic config build
