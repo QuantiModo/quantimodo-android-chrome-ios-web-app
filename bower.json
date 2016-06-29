@@ -2,8 +2,7 @@
   "name": "quantimodo-ionic",
   "private": "true",
   "devDependencies": {
-    "ionic": "driftyco/ionic-bower#1.0.0",
-    "ionic-platform-web-client": "^0.7.1"
+    "ionic": "driftyco/ionic-bower#1.0.0"
   },
   "dependencies": {
     "jquery": "~2.1.4",
