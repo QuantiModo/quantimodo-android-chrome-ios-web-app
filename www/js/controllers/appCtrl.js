@@ -67,11 +67,11 @@ angular.module('starter')
             to: new Date() //today
         };
 
-        $scope.goToState = function(state, variableCategoryName){
+        $scope.goToState = function(state, stateParameters){
             $state.go(state, {
                 fromState: $state.current.name,
                 fromUrl: window.location.href,
-                variableCategoryName:  variableCategoryName
+                variableCategoryName:  stateParameters.variableCategoryName
             });
         };
 
