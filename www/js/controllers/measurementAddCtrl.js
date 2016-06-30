@@ -402,6 +402,7 @@ angular.module('starter')
 
         // constructor
         $scope.init = function(){
+            Bugsnag.context = "measurementAdd";
             //$scope.showLoader();
             var isAuthorized = authService.checkAuthOrSendToLogin();
             if(isAuthorized){

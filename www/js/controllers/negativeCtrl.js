@@ -28,6 +28,7 @@ angular.module('starter')
 
 
         $scope.init = function(){
+            Bugsnag.context = "negativePredictors";
             $scope.showLoader('Fetching negative predictors...');
             var isAuthorized = authService.checkAuthOrSendToLogin();
             if (typeof analytics !== 'undefined')  { analytics.trackView("Negative Predictors Controller"); }

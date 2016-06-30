@@ -103,6 +103,7 @@ angular.module('starter')
 
 	    // constructor
 	    $scope.init = function(){
+			Bugsnag.context = "reminderManage";
 			var isAuthorized = authService.checkAuthOrSendToLogin();
 			if (typeof analytics !== 'undefined')  { analytics.trackView("Manage Reminders Controller"); }
 			if(isAuthorized){

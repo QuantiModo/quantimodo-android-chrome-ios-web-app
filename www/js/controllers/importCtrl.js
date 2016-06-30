@@ -22,6 +22,7 @@ angular.module('starter')
 
 	    // constructor
 	    $scope.init = function(){
+			Bugsnag.context = "importData";
 			if (typeof analytics !== 'undefined')  { analytics.trackView("Import Data Controller"); }
 			$scope.showLoader();
 	        // get user's access token

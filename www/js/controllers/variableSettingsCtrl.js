@@ -50,6 +50,7 @@ angular.module('starter')
 
         // constructor
         $scope.init = function(){
+            Bugsnag.context = "variableSettings";
             $scope.loading = true;
             $scope.showLoader();
             var isAuthorized = authService.checkAuthOrSendToLogin();
