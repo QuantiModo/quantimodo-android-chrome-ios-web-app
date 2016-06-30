@@ -64,6 +64,7 @@ angular.module('starter')
                 $state.go('app.variables',
                     {
                         variableName: variableObject.name,
+                        variableObject: variableObject,
                         fromState: $state.current.name,
                         fromUrl: window.location.href
                     }
@@ -99,29 +100,41 @@ angular.module('starter')
             if($scope.state.variableSearchQuery.length > 2){
                 $scope.state.showResults = true;
                 $scope.state.searching = true;
-                variableService.searchVariablesIncludePublic($scope.state.variableSearchQuery, $scope.state.variableCategoryName)
-                    .then(function(variables){
-                        // populate list with results
-                        $scope.state.showAddVariableButton = false;
-                        $scope.state.showResults = true;
-                        $scope.state.variableSearchResults = variables;
-                        $scope.state.searching = false;
-                        if(variables.length < 1){
-                            $scope.state.showAddVariableButton = true;
-                            if ($stateParams.reminderSearch) {
-                                $scope.state.addNewVariableButtonText = '+ Add ' + $scope.state.variableSearchQuery +
-                                    ' reminder';
-                            }
-                            else if ($stateParams.variableSearch) {
+                if ($stateParams.variableSearch) { // on variable search page, only show user's variables
+                    variableService.searchUserVariables($scope.state.variableSearchQuery, $scope.state.variableCategoryName)
+                        .then(function(variables){
+                            // populate list with results
+                            $scope.state.showAddVariableButton = false;
+                            $scope.state.showResults = true;
+                            $scope.state.variableSearchResults = variables;
+                            $scope.state.searching = false;
+                            if(variables.length < 1){
                                 $scope.state.showAddVariableButton = false;
                             }
-                            else {
-                                $scope.state.addNewVariableButtonText = '+ Add ' + $scope.state.variableSearchQuery +
-                                    ' measurement';
-                            }
+                        });
+                }
+                else { // on add reminder or record meausurement search pages; include public variables
+                    variableService.searchVariablesIncludePublic($scope.state.variableSearchQuery, $scope.state.variableCategoryName)
+                        .then(function(variables){
+                            // populate list with results
+                            $scope.state.showAddVariableButton = false;
+                            $scope.state.showResults = true;
+                            $scope.state.variableSearchResults = variables;
+                            $scope.state.searching = false;
+                            if(variables.length < 1){
+                                $scope.state.showAddVariableButton = true;
+                                if ($stateParams.reminderSearch) {
+                                    $scope.state.addNewVariableButtonText = '+ Add ' + $scope.state.variableSearchQuery +
+                                        ' reminder';
+                                }
+                                else {
+                                    $scope.state.addNewVariableButtonText = '+ Add ' + $scope.state.variableSearchQuery +
+                                        ' measurement';
+                                }
 
-                        }
-                    });
+                            }
+                        });
+                }
             }
         };
 
@@ -134,6 +147,7 @@ angular.module('starter')
             } else {
                 $scope.showLoader('Fetching most recent variables...');
             }
+            
             variableService.getUserVariablesByCategory($scope.state.variableCategoryName)
                 .then(function(variables){
                     $scope.state.showResults = true;
@@ -145,7 +159,8 @@ angular.module('starter')
                     $ionicLoading.hide();
                     $scope.loading = false;
                     $scope.state.showSearchBox = true;
-                });
+                });     
+            
         };
 
         // when add new variable is tapped

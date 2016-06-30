@@ -12,11 +12,12 @@ angular.module('starter')
         $scope.editSettingsButtonText = "Edit Variable Settings";
         $scope.lineChartConfig = false;
         $scope.barChartConfig = false;
+        $scope.variableName = $stateParams.variableName;
 
         $scope.addNewReminderButtonClick = function() {
             console.log("addNewReminderButtonClick");
             $state.go('app.reminderAdd', {
-                variableObject: $scope.variableObject,
+                variableObject: $rootScope.variablePage.variableObject,
                 fromState: $state.current.name,
             });
         };
@@ -56,7 +57,18 @@ angular.module('starter')
         var showBarChart = function(show) {
             $rootScope.variablePage.showBarChart = show;
             $scope.showBarChart = show;
-        }
+        };
+
+        var windowResize = function() {
+            $(window).resize();
+
+            // Not sure what this does
+            $timeout(function() {
+                $scope.$broadcast('highchartsng.reflow');
+            }, 10);
+            // Fixes chart width
+            $scope.$broadcast('highchartsng.reflow');
+        };
 
         // updates all the visual elements on the page
         var updateCharts = function(){
@@ -80,10 +92,9 @@ angular.module('starter')
 
                 var fromDate = 0;
                 var toDate = Date.now();
-                var rangeLength = 0; // number of measurements in date range
 
                 for (var i = 0; i < $rootScope.variablePage.history.length; i++) {
-                    var currentValue = $rootScope.variablePage.history[i].value; // Math.ceil was used before -- why?
+                    var currentValue = Math.ceil($rootScope.variablePage.history[i].value); // Math.ceil was used before -- why?
                     var startTimeMilliseconds = $rootScope.variablePage.history[i].startTimeEpoch * 1000;
                     if (startTimeMilliseconds >= fromDate && startTimeMilliseconds <= toDate) {
                         var lineChartItem = [startTimeMilliseconds, currentValue];
@@ -121,24 +132,20 @@ angular.module('starter')
                         showLineChart(false);
                     }
                 }
-
-                $(window).resize();
-                
-                // Not sure what this does
-                $timeout(function() {
-                    $scope.$broadcast('highchartsng.reflow');
-                }, 10);
-                // Fixes chart width
-                $scope.$broadcast('highchartsng.reflow');
+                windowResize();
             }
         };
 
         var addDataPointAndUpdateCharts = function() {
-            $rootScope.variablePage.history.concat($stateParams.measurementInfo);
-            var startTimeMilliseconds = $stateParams.measurementInfo.startTimeEpoch;
-            var currentValue = $stateParams.measurementInfo.value;
-            var lineChartItem = [startTimeMilliseconds, currentValue];
-            $rootScope.variablePage.lineChartData.concat(lineChartItem);
+            $rootScope.variablePage.history = $rootScope.variablePage.history.concat($stateParams.measurementInfo);
+
+
+            var startTimeMilliseconds = $stateParams.measurementInfo.startTimeEpoch*1000;
+            //if (startTimeMilliseconds >= fromDate && startTimeMilliseconds <= toDate) {
+                var currentValue = Math.ceil($stateParams.measurementInfo.value);
+                var lineChartItem = [startTimeMilliseconds, currentValue];
+                $rootScope.variablePage.lineChartData.push(lineChartItem);
+            //}
             updateLineChart($rootScope.variablePage.lineChartData);
             if ($rootScope.variablePage.isOutOf5) {
                 $rootScope.variablePage.barChartData[currentValue - 1]++;
@@ -171,7 +178,7 @@ angular.module('starter')
                 Bugsnag.notify(error, JSON.stringify(error), {}, "error");
                 console.log('error getting measurements', error);
                 $scope.hideLoader();
-                deferred.resolve(error);
+                deferred.reject(error);
             });
             return deferred.promise;
         };
@@ -181,17 +188,24 @@ angular.module('starter')
 
         $scope.init = function(){
             console.log("variablePageCtrl: init");
+            var variableObject;
+            if ($stateParams.variableObject) {
+                variableObject = $stateParams.variableObject;
+            }
+            else {
+                variableObject = {
+                    variableName: $stateParams.variableName,
+                    variableCategoryName: null,
+                    abbreviatedUnitName: null
+                }
+            }
             $rootScope.variablePage = {
                 history : [],
                 isOutOf5 : false,
                 sum : 0,
                 rangeLength : 0,
                 averageValue : 0,
-                variableObject : {
-                    variableName: $stateParams.variableName,
-                    variableCategoryName: null,
-                    abbreviatedUnitName: null
-                },
+                variableObject: variableObject,
                 offset: 0,
                 showBarChart: false,
                 showLineChart: false,
@@ -202,11 +216,13 @@ angular.module('starter')
             $ionicLoading.hide();
 
             getHistoryForVariable().then((function() {
-                $rootScope.variablePage.variableObject.variableCategoryName = $rootScope.variablePage.history[0].variableCategoryName;
-                $rootScope.variablePage.variableObject.abbreviatedUnitName = $rootScope.variablePage.history[0].abbreviatedUnitName;
-                console.log("variablePageCtrl: history log");
-                console.log($rootScope.variablePage.history);
-                updateCharts();
+                if ($rootScope.variablePage.history.length > 0) {
+                    $rootScope.variablePage.variableObject.variableCategoryName = $rootScope.variablePage.history[0].variableCategoryName;
+                    $rootScope.variablePage.variableObject.abbreviatedUnitName = $rootScope.variablePage.history[0].abbreviatedUnitName;
+                    console.log("variablePageCtrl: history log");
+                    console.log($rootScope.variablePage.history);
+                    updateCharts();
+                }
             }));
         };
 
@@ -228,17 +244,23 @@ angular.module('starter')
                 console.log("about to call init from enter: no history");
                 $scope.init();
             }
-            else if ($rootScope.variablePage.variableObject.variableName !== $stateParams.variableName) {
+            else if ($rootScope.variablePage.variableObject.variableName !== $stateParams.variableName &&
+            $rootScope.variablePage.variableObject.name !== $stateParams.variableName) {
                 console.log("about to call init from enter: new variableName");
                 $scope.init();
             }
             else if ($stateParams.measurementInfo) {
                 console.log("about to call addDataPointAndUpdateCharts from enter");
                 addDataPointAndUpdateCharts($stateParams.measurementInfo);
+                windowResize();
             }
             else if ($stateParams.noReload) {
+                // lineChartData getting cleared out upon cancel - not reproducible
                 updateLineChart($rootScope.variablePage.lineChartData);
-                updateBarChart($rootScope.variablePage.barChartData);
+                if ($rootScope.variablePage.isOutOf5) {
+                    updateBarChart($rootScope.variablePage.barChartData);
+                }
+                windowResize();
             }
             else {
                 console.log("about to call init from enter: else");

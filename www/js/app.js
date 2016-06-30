@@ -322,6 +322,7 @@ angular.module('starter',
               }
           }
       })
+        /*
       .state('app.searchVariablesEmbed', {
           url: "/search-variables",
           cache:false,
@@ -331,9 +332,9 @@ angular.module('starter',
                   controller: 'IframeScreenCtrl'
               }
           }
-      })
+      })*/
       .state('app.variableSearch', {
-          url: "/search-variables-native",
+          url: "/search-variables",
           cache: false,
           params: {
               variableCategoryName: null,
@@ -354,6 +355,7 @@ angular.module('starter',
             url: "/variables/:variableName",
             params: {
                 variableName : null,
+                variableObject: null,
                 measurementInfo: null,
                 noReload: false,
                 fromState : null,

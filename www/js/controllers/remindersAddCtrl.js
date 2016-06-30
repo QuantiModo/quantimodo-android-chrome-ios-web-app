@@ -176,8 +176,10 @@ angular.module('starter')
             if($stateParams.fromUrl){
                 window.location=$stateParams.fromUrl;
             } else if ($stateParams.fromState){
-                var variableName = $scope.state.trackingReminder.variableName
+                var variableName = $scope.state.trackingReminder.variableName;
+                var variableObject = $scope.variableObject;
                 $state.go($stateParams.fromState, {
+                    variableObject: variableObject,
                     variableName: variableName,
                     noReload: true,
                 });
@@ -281,8 +283,17 @@ angular.module('starter')
                 $scope.loading = false;
 				if($stateParams.fromUrl){
 					window.location = $stateParams.fromUrl;
-				} else if ($stateParams.reminder && $stateParams.fromState){
+				} 
+				else if ($stateParams.reminder && $stateParams.fromState){
 					$state.go($stateParams.fromState);
+				} else if ($stateParams.fromState && $stateParams.variableObject){
+					var variableName = $stateParams.variableObject.variableName;
+                    var variableObject = $scope.variableObject;
+                    $state.go($stateParams.fromState, {
+                        variableObject: variableObject,
+                        variableName: variableName,
+                        noReload: true,
+                    });
 				} else {
 					$state.go('app.remindersManage');
 				}

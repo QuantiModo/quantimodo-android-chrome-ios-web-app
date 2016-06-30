@@ -143,11 +143,13 @@ angular.module('starter')
         // cancel activity
         $scope.cancel = function(){
             var variableName = $scope.state.measurement.variable;
+            var variableObject = $scope.variableObject;
             if($stateParams.fromUrl){
                 window.location = $stateParams.fromUrl;
             } else if
             ($stateParams.fromState){
                 $state.go($stateParams.fromState, {
+                    variableObject: variableObject,
                     variableName: variableName,
                     noReload: true
                 });
@@ -325,7 +327,9 @@ angular.module('starter')
                         window.location = $stateParams.fromUrl;
                     } else if ($stateParams.fromState){
                         var variableName = $scope.state.measurement.variable;
+                        var variableObject = $scope.variableObject;
                         $state.go($stateParams.fromState, {
+                            variableObject: variableObject,
                             variableName: variableName,
                             measurementInfo: measurementInfo
                         });

@@ -30,6 +30,32 @@ angular.module('starter')
                 
 				return deferred.promise;
 			},
+
+
+            // get user variables (without public)
+            searchUserVariables : function(variableSearchQuery, variableCategoryName){
+                var deferred = $q.defer();
+
+                if(!variableSearchQuery){
+                    variableSearchQuery = '*';
+                }
+
+                if(variableCategoryName){
+                    QuantiModo.searchUserVariablesByCategory(variableSearchQuery, variableCategoryName, function(vars){
+                        deferred.resolve(vars);
+                    }, function(){
+                        deferred.reject(false);
+                    });
+                } else {
+                    QuantiModo.searchUserVariables(variableSearchQuery, function(vars){
+                        deferred.resolve(vars);
+                    }, function(){
+                        deferred.reject(false);
+                    });
+                }
+
+                return deferred.promise;
+            },
             
 			// refresh local storage with updated variables from QuantiModo API
 			refreshVariables : function(){
