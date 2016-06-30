@@ -4,7 +4,17 @@ angular.module('starter')
 	    var chartService = {
 
 	    	// generate bar chart stub with data
-	        configureBarChart : function(data){
+	        configureBarChart : function(data, variableName){
+				var displayVariableName;
+				var xAxisLabels;
+				if (variableName) {
+					displayVariableName = variableName + ' distribution';
+					xAxisLabels = ["1", "2", "3", "4", "5"];
+				}
+				else {
+					displayVariableName = config.appSettings.primaryOutcomeVariable + ' Distribution';
+					xAxisLabels = ratingService.getPrimaryOutcomeVariableOptionLabels();
+				}
 	            return {
 	                options: {
 	                    chart: {
@@ -16,10 +26,10 @@ angular.module('starter')
 	                        }
 	                    },
 	                    title : {
-	                        text : config.appSettings.primaryOutcomeVariable+ ' Distribution'
+	                        text : displayVariableName
 	                    },
 	                    xAxis : {
-	                        categories : ratingService.getPrimaryOutcomeVariableOptionLabels()
+	                        categories : xAxisLabels
 	                    },
 	                    yAxis : {
 	                        title : {
@@ -57,18 +67,25 @@ angular.module('starter')
 	                    colors : [ "#000000", "#5D83FF", "#68B107", "#ffbd40", "#CB0000" ]
 	                },
 	                series: [{
-	                    name : config.appSettings.primaryOutcomeVariable,
+	                    name : displayVariableName,
 	                    data: data
 	                }]
 	            };
 	        },
 
 	        // generate stock chart
-	        configureLineChart : function(data){
-
+	        configureLineChart : function(data, variableName) {
 				var date = new Date();
 				var timezoneOffsetHours = (date.getTimezoneOffset())/60;
 				var timezoneOffsetMilliseconds = timezoneOffsetHours*60*60*1000; // minutes, seconds, milliseconds
+				var displayVariableName;
+				if (variableName) {
+					displayVariableName = variableName + ' over time';
+				}
+				else {
+					displayVariableName = config.appSettings.primaryOutcomeVariable + ' Over Time';
+				}
+
 
 				data = data.sort(function(a, b){
 					return a[0] - b[0];
@@ -85,7 +102,7 @@ angular.module('starter')
 	        			    enabled : false
 	        			},
 	        			title: {
-	        			    text: config.appSettings.primaryOutcomeVariable + ' Over Time'
+	        			    text: displayVariableName
 	        			},
 	        			xAxis : {
 	        				type: 'datetime',
@@ -126,7 +143,7 @@ angular.module('starter')
                         }
 	        		},
 	        		series :[{
-			            name : config.appSettings.primaryOutcomeVariable,
+			            name : displayVariableName,
 			            data : data,
 			            tooltip: {
 			                valueDecimals: 2

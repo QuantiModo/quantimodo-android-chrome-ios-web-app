@@ -581,7 +581,7 @@ angular.module('starter')
                     var newMeasurementsQueue = [];
                     localStorageService.getItemAsObject('measurementsQueue',function(oldMeasurementsQueue) {
                         oldMeasurementsQueue.forEach(function(queuedMeasurement) {
-                            // look for deleted measurement based on startTimeEpoch and FIXME value
+                            // look for deleted measurement based on startTimeEpocH
                             if (found || queuedMeasurement.startTimeEpoch !== measurement.startTimeEpoch) {
                                 newMeasurementsQueue.push(queuedMeasurement);
                             }

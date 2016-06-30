@@ -34,6 +34,10 @@ angular.module('starter')
                 $scope.state.title = $filter('wordAliases')('Add Reminder');
             }
         }
+        else if ($stateParams.variableSearch) {
+            $scope.state.variableSearchPlaceholderText = "Search for a variable here...";
+            $scope.state.title = $filter('wordAliases')('Your Variables');
+        }
         else {
             if(variableCategoryName){
                 $scope.state.variableSearchPlaceholderText = "Search for a " +  $filter('wordAliases')(pluralize(variableCategoryName, 1).toLowerCase()) + " here...";
@@ -46,12 +50,22 @@ angular.module('starter')
         
         
         // when an old measurement is tapped to remeasure
-        $scope.selectVariable = function(variableObject){
+        $scope.selectVariable = function(variableObject) {
             if ($stateParams.reminderSearch) {
                 $state.go('app.reminderAdd',
                     {
-                        variableObject : variableObject,
-                        fromState : $state.current.name,
+                        variableObject: variableObject,
+                        fromState: $state.current.name,
+                        fromUrl: window.location.href
+                    }
+                );
+            }
+            else if ($stateParams.variableSearch) {
+                $state.go('app.variables',
+                    {
+                        variableName: variableObject.name,
+                        variableObject: variableObject,
+                        fromState: $state.current.name,
                         fromUrl: window.location.href
                     }
                 );
@@ -88,26 +102,41 @@ angular.module('starter')
             if($scope.state.variableSearchQuery.length > 2){
                 $scope.state.showResults = true;
                 $scope.state.searching = true;
-                variableService.searchVariablesIncludePublic($scope.state.variableSearchQuery, $scope.state.variableCategoryName)
-                    .then(function(variables){
-                        // populate list with results
-                        $scope.state.showAddVariableButton = false;
-                        $scope.state.showResults = true;
-                        $scope.state.variableSearchResults = variables;
-                        $scope.state.searching = false;
-                        if(variables.length < 1){
-                            $scope.state.showAddVariableButton = true;
-                            if ($stateParams.reminderSearch) {
-                                $scope.state.addNewVariableButtonText = '+ Add ' + $scope.state.variableSearchQuery +
-                                    ' reminder';
+                if ($stateParams.variableSearch) { // on variable search page, only show user's variables
+                    variableService.searchUserVariables($scope.state.variableSearchQuery, $scope.state.variableCategoryName)
+                        .then(function(variables){
+                            // populate list with results
+                            $scope.state.showAddVariableButton = false;
+                            $scope.state.showResults = true;
+                            $scope.state.variableSearchResults = variables;
+                            $scope.state.searching = false;
+                            if(variables.length < 1){
+                                $scope.state.showAddVariableButton = false;
                             }
-                            else {
-                                $scope.state.addNewVariableButtonText = '+ Add ' + $scope.state.variableSearchQuery +
-                                    ' measurement';
-                            }
+                        });
+                }
+                else { // on add reminder or record meausurement search pages; include public variables
+                    variableService.searchVariablesIncludePublic($scope.state.variableSearchQuery, $scope.state.variableCategoryName)
+                        .then(function(variables){
+                            // populate list with results
+                            $scope.state.showAddVariableButton = false;
+                            $scope.state.showResults = true;
+                            $scope.state.variableSearchResults = variables;
+                            $scope.state.searching = false;
+                            if(variables.length < 1){
+                                $scope.state.showAddVariableButton = true;
+                                if ($stateParams.reminderSearch) {
+                                    $scope.state.addNewVariableButtonText = '+ Add ' + $scope.state.variableSearchQuery +
+                                        ' reminder';
+                                }
+                                else {
+                                    $scope.state.addNewVariableButtonText = '+ Add ' + $scope.state.variableSearchQuery +
+                                        ' measurement';
+                                }
 
-                        }
-                    });
+                            }
+                        });
+                }
             }
         };
 
@@ -123,6 +152,7 @@ angular.module('starter')
             } else {
                 $scope.showLoader('Fetching most recent variables...');
             }
+            
             variableService.getUserVariablesByCategory($scope.state.variableCategoryName)
                 .then(function(variables){
                     $scope.state.showResults = true;
@@ -134,7 +164,8 @@ angular.module('starter')
                     $ionicLoading.hide();
                     $scope.loading = false;
                     $scope.state.showSearchBox = true;
-                });
+                });     
+            
         };
 
         // when add new variable is tapped

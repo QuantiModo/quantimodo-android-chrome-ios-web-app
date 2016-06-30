@@ -336,6 +336,7 @@ angular.module('starter',
               }
           }
       })
+        /*
       .state('app.searchVariablesEmbed', {
           url: "/search-variables",
           cache:false,
@@ -345,7 +346,43 @@ angular.module('starter',
                   controller: 'IframeScreenCtrl'
               }
           }
-      })
+      })*/
+      .state('app.variableSearch', {
+          url: "/search-variables",
+          cache: false,
+          params: {
+              variableCategoryName: null,
+              fromState: null,
+              fromUrl: null,
+              measurement: null,
+              variableSearch: true
+          },
+          views: {
+              'menuContent': {
+                  templateUrl: "templates/variable-search.html",
+                  controller: 'TrackFactorsCategoryCtrl'
+              }
+          }
+
+       })
+        .state('app.variables', {
+            url: "/variables/:variableName",
+            params: {
+                variableName : null,
+                variableObject: null,
+                measurementInfo: null,
+                noReload: false,
+                fromState : null,
+                fromUrl : null,
+            },
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/variable-page.html",
+                    //controller: 'VariablePageCtrl'
+                    controller: 'VariablePageCtrl'
+                }
+            }
+        })
       .state('app.searchCommonRelationships', {
           url: "/search-common-relationships",
           cache:false,
