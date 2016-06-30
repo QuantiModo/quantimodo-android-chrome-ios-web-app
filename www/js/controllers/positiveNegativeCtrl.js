@@ -66,7 +66,7 @@ angular.module('starter')
                 if ($scope.valence) {
                     correlationService.getPositiveFactors()
                         .then(function(correlationObjects){
-                            $scope.positives = correlationObjects;
+                            $scope.positivesNegatives = correlationObjects;
                             correlationService.getUsersPositiveFactors().then(function(correlationObjects){
                                 $scope.usersPositiveNegativeFactors = correlationObjects;
                             });
@@ -81,7 +81,7 @@ angular.module('starter')
                 else {
                     correlationService.getNegativeFactors()
                         .then(function(correlationObjects){
-                            $scope.negatives = correlationObjects;
+                            $scope.positivesNegatives = correlationObjects;
                             correlationService.getUsersNegativeFactors().then(function(correlationObjects){
                                 $scope.usersPositiveNegativeFactors = correlationObjects;
                             });
