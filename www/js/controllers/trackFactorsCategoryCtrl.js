@@ -69,6 +69,7 @@ angular.module('starter')
         };
         
         $scope.init = function(){
+            Bugsnag.context = "variableSearch";
             $scope.loading = true;
             $scope.showLoader();
             if (typeof analytics !== 'undefined')  { analytics.trackView("Variable Search Controller"); }

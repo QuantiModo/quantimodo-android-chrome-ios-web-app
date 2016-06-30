@@ -274,6 +274,7 @@ angular.module('starter')
 	    };
 
 	    $scope.init = function(){
+			Bugsnag.context = "reminderInbox";
 			setPageTitle();
 			var isAuthorized = authService.checkAuthOrSendToLogin();
 			if (typeof analytics !== 'undefined')  { analytics.trackView("Reminders Inbox Controller"); }

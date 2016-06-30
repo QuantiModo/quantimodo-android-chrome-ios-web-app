@@ -88,6 +88,7 @@ angular.module('starter')
 		
 		$scope.init = function(){
 			console.debug('history page init');
+			Bugsnag.context = "historyPrimary";
 			
 			console.debug($scope.ratingInfo[1].positiveImage);
 			$scope.showLoader();

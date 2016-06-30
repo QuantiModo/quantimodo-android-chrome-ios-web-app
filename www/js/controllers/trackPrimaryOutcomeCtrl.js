@@ -162,6 +162,7 @@ angular.module('starter')
         */
 
         $scope.init = function(){
+            Bugsnag.context = "trackPrimary";
 
             // flags
             $scope.timeRemaining = false;
