@@ -28,8 +28,12 @@ angular.module('starter')
         $scope.usersPositiveFactors = false;
 
         $scope.init = function(){
+            Bugsnag.context = "positivePredictors";
             $scope.showLoader('Fetching positive predictors...');
             var isAuthorized = authService.checkAuthOrSendToLogin();
+            if (typeof analytics !== 'undefined')  {
+                analytics.trackView("Positive Predictors Controller");
+            }
             if(isAuthorized){
                 correlationService.getPositiveFactors()
                     .then(function(correlationObjects){
@@ -130,45 +134,15 @@ angular.module('starter')
             var effect = factor.effect;
             var vote = 1;
             var correlationCoefficient = factor.correlationCoefficient;
-<<<<<<< Updated upstream
-            
-            correlationService.vote(vote, cause, effect, correlationCoefficient)
-                .then(function(){
-                    utilsService.showAlert('Upvoted !');
-                }, function(){
-                    utilsService.showAlert('Upvote Failed !');
-                    factor.userVote = prevValue;
-                });
-        }
-        
-	    $scope.init = function(){
-            Bugsnag.context = "positivePredictors";
-            $scope.showLoader('Fetching positive predictors...');
-            var isAuthorized = authService.checkAuthOrSendToLogin();
-            if (typeof analytics !== 'undefined')  { analytics.trackView("Positive Predictors Controller"); }
-            if(isAuthorized){
-                correlationService.getPositiveFactors()
-                    .then(function(correlationObjects){
-                        $scope.positives = correlationObjects;
-                        correlationService.getUsersPositiveFactors().then(function(correlationObjects){
-                            $scope.usersPositiveFactors = correlationObjects;
-                        });
-                        $ionicLoading.hide();
-                        $scope.loading = false;
-                    }, function(){
-                        $scope.loading = false;
-                        $ionicLoading.hide();
-=======
 
             if ($rootScope.user) {
                 // call service method for voting
                 correlationService.vote(vote, cause, effect, correlationCoefficient)
-                    .then(function () {
-                        utilsService.showAlert('Upvoted !');
-                    }, function () {
+                    .then(function(){
+                        utilsService.showAlert('Upvoted!');
+                    }, function(){
                         factor.userVote = prevValue;
-                        utilsService.showAlert('Upvote Failed !');
->>>>>>> Stashed changes
+                        utilsService.showAlert('Upvote Failed!');
                     });
             } else {
                 factor.userVote = prevValue;
