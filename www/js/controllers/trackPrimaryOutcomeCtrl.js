@@ -152,6 +152,7 @@ angular.module('starter')
         */
 
         $scope.init = function(){
+            Bugsnag.context = "trackPrimary";
 
             // flags
             $scope.timeRemaining = false;
@@ -167,6 +168,7 @@ angular.module('starter')
             $scope.redrawLineChart = true;
             $scope.redrawBarChart = true;
             $scope.showHelpInfoPopupIfNecessary();
+            if (typeof analytics !== 'undefined')  { analytics.trackView("Track Primary Outcome Controller"); }
             $ionicLoading.hide();
         };
 

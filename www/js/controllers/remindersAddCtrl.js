@@ -25,7 +25,8 @@ angular.module('starter')
             measurementSynonymSingularLowercase : 'measurement',
             defaultValueLabel : 'Default Value',
             defaultValuePlaceholderText : 'Enter typical value',
-            variableSearchPlaceholderText : 'Search for a variable...'
+            variableSearchPlaceholderText : 'Search for a variable...',
+            showInstructionsField : false
         };
         
         $scope.state.trackingReminder = {
@@ -365,6 +366,10 @@ angular.module('starter')
                 $scope.state.defaultValuePlaceholderText = $scope.state.variableCategoryObject.defaultValuePlaceholderText;
             }
             $scope.state.variableSearchPlaceholderText = 'Search for a ' + $filter('wordAliases')(pluralize(variableCategoryName, 1)) + '...';
+            
+            if(variableCategoryName === 'Treatments'){
+                $scope.state.showInstructionsField = true;
+            }
 	    };
 
         function setupReminderEditingFromVariableId(variableId) {
@@ -411,6 +416,8 @@ angular.module('starter')
         }
 
         $scope.init = function(){
+            Bugsnag.context = "reminderAdd";
+            if (typeof analytics !== 'undefined')  { analytics.trackView("Add Reminder Controller"); }
 
             var isAuthorized = authService.checkAuthOrSendToLogin();
 

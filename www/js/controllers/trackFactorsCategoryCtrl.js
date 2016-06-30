@@ -83,8 +83,10 @@ angular.module('starter')
         };
         
         $scope.init = function(){
+            Bugsnag.context = "variableSearch";
             $scope.loading = true;
             $scope.showLoader();
+            if (typeof analytics !== 'undefined')  { analytics.trackView("Variable Search Controller"); }
             var isAuthorized = authService.checkAuthOrSendToLogin();
             if(isAuthorized){
                 $scope.showHelpInfoPopupIfNecessary();
@@ -139,6 +141,9 @@ angular.module('starter')
         };
 
         var populateUserVariables = function(){
+            if($scope.state.variableSearchResults && $scope.state.variableSearchResults.length > 1){
+                return;
+            }
             $scope.state.showAddVariableButton = false;
             $scope.state.searching = true;
             if($stateParams.variableCategoryName){

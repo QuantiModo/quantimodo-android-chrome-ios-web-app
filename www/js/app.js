@@ -3,7 +3,7 @@
 
 angular.module('starter',
     [
-        'ionic',
+        'ionic','ionic.service.core', 'ionic.service.analytics',
         'oc.lazyLoad',
         'highcharts-ng',
         'ngCordova',
@@ -15,9 +15,41 @@ angular.module('starter',
     ]
 )
 
-.run(function($ionicPlatform, $ionicHistory, $state, $rootScope) {
+.run(function($ionicPlatform, $ionicHistory, $state, $rootScope, $ionicAnalytics) {
 // Database
 //.run(function($ionicPlatform, $ionicHistory, $state, $rootScope, $cordovaSQLite) {
+
+    $ionicPlatform.ready(function() {
+        $ionicAnalytics.register();
+        
+        if(typeof analytics !== "undefined") {
+            console.log("Configuring Google Analytics");
+            analytics.startTrackerWithId("UA-39222734-24");
+        } else {
+            console.log("Google Analytics Unavailable");
+        }
+        
+        // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
+        // for form inputs)
+        if (window.cordova && window.cordova.plugins.Keyboard) {
+            cordova.plugins.Keyboard.hideKeyboardAccessoryBar(false);
+        }
+        if (window.StatusBar) {
+            // org.apache.cordova.statusbar required
+            StatusBar.styleDefault();
+        }
+        // Database
+        /*
+         if (!$rootScope.isMobile) {
+         db = window.openDatabase("my.db", "1.0", "Cordova Demo", 200000);
+         }
+         else {
+         db = $cordovaSQLite.openDB("my.db");
+         }
+         */
+
+    });
+    
 
     $rootScope.goToState = function(state, params){
         $state.go(state, params);
@@ -38,30 +70,12 @@ angular.module('starter',
                 Bugsnag.apiKey = window.private_keys.bugsnag_key;
                 Bugsnag.releaseStage = config.getEnv();
                 Bugsnag.notifyReleaseStages = config.bugsnag.notifyReleaseStages;
+                Bugsnag.appVersion = "1.6.1.0";
             } else {
                 console.error('intervalChecker: No bugsnag_key found in private config!');
             }
 
-            $ionicPlatform.ready(function() {
-                // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
-                // for form inputs)
-                if (window.cordova && window.cordova.plugins.Keyboard) {
-                    cordova.plugins.Keyboard.hideKeyboardAccessoryBar(false);
-                }
-                if (window.StatusBar) {
-                    // org.apache.cordova.statusbar required
-                    StatusBar.styleDefault();
-                }
-                // Database
-                /*
-                if (!$rootScope.isMobile) {
-                    db = window.openDatabase("my.db", "1.0", "Cordova Demo", 200000);
-                }
-                else {
-                    db = $cordovaSQLite.openDB("my.db");
-                }
-                */
-            });
+
 
             $ionicPlatform.registerBackButtonAction(function (event) {
                 if($ionicHistory.currentStateName() === config.appSettings.defaultState){
@@ -230,7 +244,7 @@ angular.module('starter',
       })
       .state('app.track_factors_category', {
           url: "/track_factors_category/:variableCategoryName",
-          cache:false,
+          //cache:false,
           params: {
               variableCategoryName : null,
               fromState : null,

@@ -16,6 +16,7 @@ angular.module('starter')
         }
 
         $scope.init = function(){
+            Bugsnag.context = "login";
             //$scope.showLoader();
             $ionicLoading.hide();
             if($rootScope.helpPopup){
@@ -63,6 +64,11 @@ angular.module('starter')
                 $rootScope.setUserForBugsnag($rootScope.user);
                 $rootScope.hideNavigationMenu = false;
                 $state.go(config.appSettings.defaultState);
+                if (typeof analytics !== 'undefined')  {
+                    analytics.trackView("Login Controller");
+                    analytics.setUserId(userObject.id);
+                }
+
             }
         };
 

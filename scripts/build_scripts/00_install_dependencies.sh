@@ -36,5 +36,5 @@ npm install -g grunt-cli@0.1.13
 npm install -g cordova@5.4.0
 npm install -g ionic@1.7.10
 
-cd "${INTERMEDIATE_PATH}" && npm install && bower install
+cd "${INTERMEDIATE_PATH}" && npm install && bower install && ionic config build
 #npm rebuild node-sass

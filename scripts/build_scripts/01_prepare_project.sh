@@ -51,11 +51,12 @@ fi
 export LC_CTYPE=C
 export LANG=C
 echo -e "${GREEN}Replacing IONIC_APP_VERSION_NUMBER with ${IONIC_APP_VERSION_NUMBER}...${NC}"
-cd "${INTERMEDIATE_PATH}/apps" && find . -type f -exec sed -i '' -e 's/IONIC_APP_VERSION_NUMBER/'${IONIC_APP_VERSION_NUMBER}'/g' {} \;
+cd "${INTERMEDIATE_PATH}/apps" && find . -type f -exec sed -i '' -e 's/IONIC_APP_VERSION_NUMBER/'${IONIC_APP_VERSION_NUMBER}'/g' {} \; >> /dev/null 2>&1
 export LANG=en_US.UTF-8
 
 echo -e "${GREEN}Copy ${LOWERCASE_APP_NAME} config and resource files${NC}"
 cp -R ${INTERMEDIATE_PATH}/apps/${LOWERCASE_APP_NAME}/*  "${INTERMEDIATE_PATH}"
+ionic config build
 
 cd "${INTERMEDIATE_PATH}"
 #ionic state reset

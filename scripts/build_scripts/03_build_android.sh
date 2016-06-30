@@ -108,6 +108,7 @@ ionic plugin add https://github.com/DrMoriarty/cordova-fabric-crashlytics-plugin
 #cordova plugin add phonegap-plugin-push --variable SENDER_ID="quantimo-do"
 echo "Generating image resources for $LOWERCASE_APP_NAME..."
 ionic resources >/dev/null
+ionic config build
 cordova build --debug android >/dev/null
 cordova build --release android >/dev/null
 mkdir -p ${BUILD_PATH}/${LOWERCASE_APP_NAME}/android
@@ -164,7 +165,13 @@ cp ${SIGNED_APK_PATH} "$DROPBOX_PATH/QuantiModo/apps/${LOWERCASE_APP_NAME}/"
 
 if [ -f ${SIGNED_APK_PATH} ];
 then
-   echo echo "${SIGNED_APK_PATH} is ready in $DROPBOX_PATH/QuantiModo/apps/${LOWERCASE_APP_NAME}/"
+    cd ${INTERMEDIATE_PATH}
+    COMMIT_MESSAGE=$(git log -1 HEAD --pretty=format:%s)
+    ionic upload --email ${IONIC_EMAIL} --password ${IONIC_PASSWORD} --note "$COMMIT_MESSAGE"
+    ionic package build android --email ${IONIC_EMAIL} --password ${IONIC_PASSWORD}
+    ionic package build android --release --profile production --email ${IONIC_EMAIL} --password ${IONIC_PASSWORD}
+    ionic package build ios --release --profile production --email ${IONIC_EMAIL} --password ${IONIC_PASSWORD}
+    echo echo "${SIGNED_APK_PATH} is ready in $DROPBOX_PATH/QuantiModo/apps/${LOWERCASE_APP_NAME}/"
 else
    echo "ERROR: File ${SIGNED_APK_PATH} does not exist. Build FAILED"
    exit 1

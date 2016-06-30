@@ -16,6 +16,29 @@ angular.module('starter')
         $rootScope.isChrome = window.chrome ? true : false;
 	    // populate user data
 
+		var deploy = new Ionic.Deploy();
+
+		// Update app code with new release from Ionic Deploy
+		$scope.doUpdate = function() {
+			deploy.update().then(function(res) {
+				console.log('Ionic Deploy: Update Success! ', res);
+			}, function(err) {
+				console.log('Ionic Deploy: Update error! ', err);
+			}, function(prog) {
+				console.log('Ionic Deploy: Progress... ', prog);
+			});
+		};
+
+		// Check Ionic Deploy for new code
+		$scope.checkForUpdates = function() {
+			console.log('Ionic Deploy: Checking for updates');
+			deploy.check().then(function(hasUpdate) {
+				console.log('Ionic Deploy: Update available: ' + hasUpdate);
+				$scope.hasUpdate = hasUpdate;
+			}, function(err) {
+				console.error('Ionic Deploy: Unable to check for updates', err);
+			});
+		};
 
         // when login is tapped
 	    $scope.loginFromSettings = function(){
@@ -69,15 +92,30 @@ angular.module('starter')
 
 				}, false);
 			} else {
-				console.debug('window.plugins.emailComposer not found!  Generating email normal way.');
-				window.open('mailto:?subject=' + subjectLine + '&body=' + emailBody);
+				var emailUrl = 'mailto:?subject=' + subjectLine + '&body=' + emailBody;
+				if($rootScope.isChromeExtension){
+					console.debug('isChromeExtension so sending to website to share data');
+					var url = config.getURL("api/v2/account/applications", true);
+					var newTab = window.open(url,'_blank');
+					if(!newTab){
+						alert("Please unblock popups and refresh to access the Data Sharing page.");
+					}
+					$rootScope.hideNavigationMenu = false;
+					$state.go(config.appSettings.defaultState);
+
+				} else {
+					console.debug('window.plugins.emailComposer not found!  Generating email normal way.');
+					window.open(emailUrl);
+				}
+
 			}
 		};
 
 
         
 		$scope.init = function(){
-
+			Bugsnag.context = "settings";
+			if (typeof analytics !== 'undefined')  { analytics.trackView("Settings Controller"); }
 	    };
 
 		$scope.contactUs = function(){

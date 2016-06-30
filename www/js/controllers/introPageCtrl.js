@@ -36,6 +36,7 @@ angular.module('starter')
             };
 
             var init = function(){
+                Bugsnag.context = "introPage";
                 $scope.showLoader();
                 $scope.myIntro.ready = true;
                 $ionicLoading.hide();

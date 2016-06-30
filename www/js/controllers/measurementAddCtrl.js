@@ -281,7 +281,7 @@ angular.module('starter')
                 console.debug('done: Adding new variable..');
 
                 // validation
-                if(params.variableName === ""){
+                if(params.variableName == ""){
                     utilsService.showAlert('Please enter a variable name');
                 } else {
                     $scope.showLoader();
@@ -415,6 +415,7 @@ angular.module('starter')
 
         // constructor
         $scope.init = function(){
+            Bugsnag.context = "measurementAdd";
             //$scope.showLoader();
             var isAuthorized = authService.checkAuthOrSendToLogin();
             if(isAuthorized){
@@ -445,6 +446,7 @@ angular.module('starter')
                     }
                 }
                 populateUnits();
+                if (typeof analytics !== 'undefined')  { analytics.trackView("Add Measurement Controller"); }
                 $scope.hideLoader();
             }
         };
@@ -508,7 +510,7 @@ angular.module('starter')
 
         var setupFromReminderStateParameter = function(){
             if($stateParams.reminder !== null && typeof $stateParams.reminder !== "undefined"){
-                setupTrackingByReminder();
+                setupTrackingByReminderNotification();
             }
         };
 
@@ -526,8 +528,10 @@ angular.module('starter')
                 }
                 if($stateParams.variableObject.category){
                     $scope.state.measurement.variableCategoryName = $stateParams.variableObject.category;
+                    $scope.setupVariableCategory($scope.state.measurement.variableCategoryName);
                 } else if($stateParams.variableObject.variableCategoryName) {
                     $scope.state.measurement.variableCategoryName = $stateParams.variableObject.variableCategoryName;
+                    $scope.setupVariableCategory($scope.state.measurement.variableCategoryName);
                 } else {
                     $scope.state.showVariableCategorySelector = true;
                 }
@@ -630,7 +634,7 @@ angular.module('starter')
             $scope.hideLoader();
         };
 
-        var setupTrackingByReminder = function(){
+        var setupTrackingByReminderNotification = function(){
             if($stateParams.reminder !== null && typeof $stateParams.reminder !== "undefined"){
                 $scope.state.title = "Record Measurement";
                 $scope.state.measurement.value = $stateParams.reminder.defaultValue;
@@ -638,7 +642,15 @@ angular.module('starter')
                 $scope.state.measurement.abbreviatedUnitName = $stateParams.reminder.abbreviatedUnitName;
                 $scope.state.measurement.variableCategoryName = $stateParams.reminder.variableCategoryName;
                 $scope.state.measurement.combinationOperation = $stateParams.reminder.combinationOperation;
-                $scope.state.measurement.startTimeEpoch = currentTime.getTime() / 1000;
+                if($stateParams.reminder.trackingReminderNotificationTimeEpoch !== "undefined" && $stateParams.reminder.trackingReminderNotificationTimeEpoch){
+                    $scope.selectedDate = new Date($stateParams.reminder.trackingReminderNotificationTimeEpoch * 1000);
+                    $scope.selectedHours = $scope.selectedDate.getHours();
+                    $scope.selectedMinutes = $scope.selectedDate.getMinutes();
+                    $scope.state.measurement.startTimeEpoch = $stateParams.reminder.trackingReminderNotificationTimeEpoch;
+                } else {
+                    $scope.state.measurement.startTimeEpoch = currentTime.getTime() / 1000;
+                }
+
                 $scope.state.measurementIsSetup = true;
                 setupValueFieldType($stateParams.reminder.abbreviatedUnitName,
                     $stateParams.reminder.variableDescription);
