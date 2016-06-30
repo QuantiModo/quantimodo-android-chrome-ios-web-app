@@ -423,6 +423,19 @@ angular.module('starter',
               }
           }
       })
+      .state('app.positiveNegative', {
+          url: "/positive-negative",
+          cache:false,
+          params: {
+              valence: "negative" // positive or negative
+          },
+          views: {
+              'menuContent': {
+                  templateUrl: "templates/positive-negative.html",
+                  controller: 'PositiveNegativeCtrl'
+              }
+          }
+      })
       .state('app.settings', {
           url: "/settings",
           views: {
