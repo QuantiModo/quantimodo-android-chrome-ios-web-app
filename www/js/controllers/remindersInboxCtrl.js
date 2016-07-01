@@ -180,13 +180,13 @@ angular.module('starter')
 
 			if($rootScope.isAndroid ){
 				if($event && $scope.lastButtonPressTimeStamp > $event.timeStamp - 3000) {
-					console.debug('This is probably a ghost click so not registering.', $event);
+					console.debug('This Track event is probably a ghost click so not registering.', $event);
 					return;
 				} else {
+					console.debug('This Track event is not a ghost click so registering.', $event);
 					$scope.lastButtonPressTimeStamp = $event.timeStamp;
 				}
 
-				console.debug('Track event is ', $event);
 				// Didn't solve ghost click problem
 				if($event && $event.type === "touchend") {return;}
 
@@ -213,13 +213,12 @@ angular.module('starter')
 
 			if($rootScope.isAndroid ){
 				if($event && $scope.lastButtonPressTimeStamp > $event.timeStamp - 3000) {
-					console.debug('This is probably a ghost click so not registering.', $event);
+					console.debug('This skip event is probably a ghost click so not registering.', $event);
 					return;
 				} else {
+					console.debug('This skip event is not a ghost click so registering.', $event);
 					$scope.lastButtonPressTimeStamp = $event.timeStamp;
 				}
-
-				console.debug('Skip event is ', $event);
 				// Didn't solve ghost click problem
 				if($event && $event.type === "touchend") {return;}
 
@@ -246,13 +245,12 @@ angular.module('starter')
 
 			if($rootScope.isAndroid ){
 				if($event && $scope.lastButtonPressTimeStamp > $event.timeStamp - 3000) {
-					console.debug('This is probably a ghost click so not registering.', $event);
+					console.debug('This snooze event is probably a ghost click so not registering.', $event);
 					return;
 				} else {
+					console.debug('This snooze event is not a ghost click so registering.', $event);
 					$scope.lastButtonPressTimeStamp = $event.timeStamp;
 				}
-
-				console.debug('Snooze event is ', $event);
 				// Didn't solve ghost click problem
 				if($event && $event.type === "touchend") {return;}
 
