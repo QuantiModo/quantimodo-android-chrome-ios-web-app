@@ -31,7 +31,9 @@ angular.module('starter')
 			isDisabled : false,
 			title : 'Reminder Inbox',
 			loading : true,
-			lastButtonPressTimeStamp : 0
+			lastButtonPressTimeStamp : 0,
+			lastClientX : 0,
+			lastClientY : 0
 	    };
 
 		if(typeof config.appSettings.remindersInbox.showAddHowIFeelResponseButton !== 'undefined'){
@@ -176,22 +178,29 @@ angular.module('starter')
 			$scope.loading = false;
 		};
 
-	    $scope.track = function(trackingReminderNotification, modifiedReminderValue, $event){
-
-			if($rootScope.isAndroid ){
-				if($event && $scope.lastButtonPressTimeStamp > $event.timeStamp - 3000) {
-					console.debug('This Track event is probably a ghost click so not registering.', $event);
-					return;
+		var isGhostClick = function ($event) {
+			if($rootScope.isMobile ){
+				if($event &&
+					$scope.state.lastButtonPressTimeStamp > $event.timeStamp - 3000 &&
+					$scope.state.lastClientX === $event.clientX &&
+					$scope.state.lastClientY === $event.clientY
+				) {
+					console.debug('This event is probably a ghost click so not registering.', $event);
+					return true;
 				} else {
 					console.debug('This Track event is not a ghost click so registering.', $event);
-					$scope.lastButtonPressTimeStamp = $event.timeStamp;
+					$scope.state.lastButtonPressTimeStamp = $event.timeStamp;
+					$scope.state.lastClientX = $event.clientX;
+					$scope.state.lastClientY = $event.clientY;
+					return false;
 				}
+			}
+		};
 
-				// Didn't solve ghost click problem
-				if($event && $event.type === "touchend") {return;}
+	    $scope.track = function(trackingReminderNotification, modifiedReminderValue, $event){
 
-				// Didn't solve ghost click problem
-				if ($event && $event.type !== 'click') {return;}
+			if(isGhostClick($event)){
+				return;
 			}
 
 			$scope.showLoader();
@@ -211,19 +220,8 @@ angular.module('starter')
 
 	    $scope.skip = function(trackingReminderNotification, $event){
 
-			if($rootScope.isAndroid ){
-				if($event && $scope.lastButtonPressTimeStamp > $event.timeStamp - 3000) {
-					console.debug('This skip event is probably a ghost click so not registering.', $event);
-					return;
-				} else {
-					console.debug('This skip event is not a ghost click so registering.', $event);
-					$scope.lastButtonPressTimeStamp = $event.timeStamp;
-				}
-				// Didn't solve ghost click problem
-				if($event && $event.type === "touchend") {return;}
-
-				// Didn't solve ghost click problem
-				if ($event && $event.type !== 'click') {return;}
+			if(isGhostClick($event)){
+				return;
 			}
 
 			console.debug('Skipping notification', trackingReminderNotification);
@@ -243,19 +241,8 @@ angular.module('starter')
 
 	    $scope.snooze = function(trackingReminderNotification, $event){
 
-			if($rootScope.isAndroid ){
-				if($event && $scope.lastButtonPressTimeStamp > $event.timeStamp - 3000) {
-					console.debug('This snooze event is probably a ghost click so not registering.', $event);
-					return;
-				} else {
-					console.debug('This snooze event is not a ghost click so registering.', $event);
-					$scope.lastButtonPressTimeStamp = $event.timeStamp;
-				}
-				// Didn't solve ghost click problem
-				if($event && $event.type === "touchend") {return;}
-
-				// Didn't solve ghost click problem
-				if ($event && $event.type !== 'click') {return;}
+			if(isGhostClick($event)){
+				return;
 			}
 
 			$scope.showLoader();
@@ -282,7 +269,7 @@ angular.module('starter')
 				//update alarms and local notifications
 				reminderService.getTrackingReminders();
 			}
-			if (typeof cordova != "undefined") {
+			if (typeof cordova !== "undefined") {
 				$ionicPlatform.ready(function () {
 					cordova.plugins.notification.local.clearAll(function () {
 						console.debug("clearAll active notifications");
