@@ -3,7 +3,7 @@ angular.module('starter')
     // Controls the Track Page of the App
     .controller('VariablePageCtrl', function($scope, $q, $ionicModal, $state, $timeout, utilsService, authService,
                                                     measurementService, chartService, $ionicPopup, localStorageService,
-                                                    $rootScope, $ionicLoading, ratingService, $stateParams) {
+                                                    $rootScope, $ionicLoading, ratingService, $stateParams, QuantiModo) {
         $scope.controller_name = "VariablePageCtrl";
         $scope.showBarChart = $rootScope.showBarChart || false;
         $scope.showLineChart = $rootScope.showLineChart || false;
@@ -139,7 +139,6 @@ angular.module('starter')
         var addDataPointAndUpdateCharts = function() {
             $rootScope.variablePage.history = $rootScope.variablePage.history.concat($stateParams.measurementInfo);
 
-
             var startTimeMilliseconds = $stateParams.measurementInfo.startTimeEpoch*1000;
             //if (startTimeMilliseconds >= fromDate && startTimeMilliseconds <= toDate) {
                 var currentValue = Math.ceil($stateParams.measurementInfo.value);
@@ -160,18 +159,19 @@ angular.module('starter')
                 updateBarChart($rootScope.variablePage.barChartData);
             }
         };
+        
 
         var getHistoryForVariable = function(){
             console.log("variablePageCtrl: getHistoryforVariable " + $stateParams.variableName);
             var deferred = $q.defer();
             $scope.showLoader();
-            measurementService.getHistoryMeasurements({
-                offset: $rootScope.variablePage.offset,
-                sort: "-startTimeEpoch",
-                variableName: $stateParams.variableName
+            QuantiModo.getMeasurements({
+                offset: 0,
+                sort: "startTimeEpoch",
+                variableName: $stateParams.variableName,
+                limit: 200
             }).then(function(history){
                 $rootScope.variablePage.history = $rootScope.variablePage.history.concat(history);
-                // Don't need images on this page
                 $scope.hideLoader();
                 deferred.resolve();
             }, function(error){
@@ -179,6 +179,8 @@ angular.module('starter')
                 console.log('error getting measurements', error);
                 $scope.hideLoader();
                 deferred.reject(error);
+            }, function(history) {
+                $rootScope.variablePage.history = $rootScope.variablePage.history.concat(history);
             });
             return deferred.promise;
         };
@@ -197,7 +199,7 @@ angular.module('starter')
                     variableName: $stateParams.variableName,
                     variableCategoryName: null,
                     abbreviatedUnitName: null
-                }
+                };
             }
             $rootScope.variablePage = {
                 history : [],
@@ -206,7 +208,7 @@ angular.module('starter')
                 rangeLength : 0,
                 averageValue : 0,
                 variableObject: variableObject,
-                offset: 0,
+                //offset: 0,
                 showBarChart: false,
                 showLineChart: false,
                 barChartData: null,

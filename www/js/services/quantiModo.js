@@ -156,6 +156,7 @@ angular.module('starter')
                             } else {
                                 response_array = response_array.concat(response);
                                 params.offset+=200;
+                                params.limit = 200;
                                 defer.notify(response);
                                 getMeasurements(params,successCallback,errorCallback);
                             }
