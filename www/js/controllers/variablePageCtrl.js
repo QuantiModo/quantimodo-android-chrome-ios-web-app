@@ -168,7 +168,8 @@ angular.module('starter')
             QuantiModo.getMeasurements({
                 offset: 0,
                 sort: "startTimeEpoch",
-                variableName: $stateParams.variableName
+                variableName: $stateParams.variableName,
+                limit: 200
             }).then(function(history){
                 $rootScope.variablePage.history = $rootScope.variablePage.history.concat(history);
                 $scope.hideLoader();
