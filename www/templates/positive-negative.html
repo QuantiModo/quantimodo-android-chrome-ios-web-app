@@ -15,23 +15,21 @@
                     <div class="list card" collection-repeat="positiveNegative in positivesNegatives" divider-collection-repeat>
                         <ion-item style="border-style:hidden;">
                             <div class="item item-text-wrap card-item">
-                            <h2 style="white-space: normal">{{positiveNegative.cause}}</h2>
-                            <p>{{positiveNegative.predictorExplanation}}</p>
-                            <p ng-if="valence">{{positiveNegative.valuePredictingHighOutcomeExplanation}}</p>
-                            <p ng-if="!valence">{{positiveNegative.valuePredictingLowOutcomeExplanation}}</p>
-                            <!--<p class="like-dislike-buttons"></p>-->
-                            <!--<div class="all-buttons">-->
-                            <div ng-click="upVote(positiveNegative)" class="show-inline">
-                                <img ng-if="positiveNegative.userVote == null || positiveNegative.userVote == 0" src="img/thumb_up_white.png" height="32px" width="32px" />
-                                <img ng-if="positiveNegative.userVote == 1" src="img/thumb_up_black.png" height="32px" width="32px" />
-                            </div>
-                            <div ng-click="positiveNegative(positiveNegative)" class="show-inline">
-                                <img ng-if="positiveNegative.userVote == null || positiveNegative.userVote == 1" src="img/thumb_down_white.png" height="32px" width="32px" />
-                                <img ng-if="positiveNegative.userVote == 0" src="img/thumb_down_black.png" height="32px" width="32px" />
-                            </div>
-                            <div class="show-inline" ng-show="shoppingCartEnabled" ng-click="openStore(positiveNegative.cause)" >
-                                <img src="img/ic_shopping_cart.png" width="32px" height="32px" >
-                            </div>
+                                <h2 style="white-space: normal">{{positiveNegative.cause}}</h2>
+                                <p>{{positiveNegative.predictorExplanation}}</p>
+                                <p ng-if="valence">{{positiveNegative.valuePredictingHighOutcomeExplanation}}</p>
+                                <p ng-if="!valence">{{positiveNegative.valuePredictingLowOutcomeExplanation}}</p>
+                                <div ng-click="upVote(positiveNegative)" class="show-inline">
+                                    <img ng-if="positiveNegative.userVote == null || positiveNegative.userVote == 0" src="img/thumb_up_white.png" height="32px" width="32px" />
+                                    <img ng-if="positiveNegative.userVote == 1" src="img/thumb_up_black.png" height="32px" width="32px" />
+                                </div>
+                                <div ng-click="positiveNegative(positiveNegative)" class="show-inline">
+                                    <img ng-if="positiveNegative.userVote == null || positiveNegative.userVote == 1" src="img/thumb_down_white.png" height="32px" width="32px" />
+                                    <img ng-if="positiveNegative.userVote == 0" src="img/thumb_down_black.png" height="32px" width="32px" />
+                                </div>
+                                <div class="show-inline" ng-show="shoppingCartEnabled" ng-click="openStore(positiveNegative.cause)" >
+                                    <img src="img/ic_shopping_cart.png" width="32px" height="32px" >
+                                </div>
                             </div>
                         </ion-item>
                     </div>
@@ -49,11 +47,13 @@
                     </div>
                 </div>
                 <ion-list>
-                    <div item-width="100%" item-height="100px" collection-repeat="positiveNegative in usersPositiveNegativeFactors" divider-collection-repeat>
+                    <div class="list card" collection-repeat="positiveNegative in usersPositiveNegativeFactors" divider-collection-repeat>
                         <ion-item style="border-style:hidden;">
-                            <h2 class="block" style="white-space: normal">{{positiveNegative.cause}}</h2>
-                            <p class="like-dislike-buttons"></p>
-                            <div class="all-buttons">
+                            <div class="item item-text-wrap card-item">
+                                <h2 style="white-space: normal">{{positiveNegative.cause}}</h2>
+                                <p>{{positiveNegative.predictorExplanation}}</p>
+                                <p ng-if="valence">{{positiveNegative.valuePredictingHighOutcomeExplanation}}</p>
+                                <p ng-if="!valence">{{positiveNegative.valuePredictingLowOutcomeExplanation}}</p>
                                 <div ng-click="upVote(positiveNegative)" class="show-inline">
                                     <img ng-if="positiveNegative.userVote == null || positiveNegative.userVote == 0" src="img/thumb_up_white.png" height="32px" width="32px" />
                                     <img ng-if="positiveNegative.userVote == 1" src="img/thumb_up_black.png" height="32px" width="32px" />
