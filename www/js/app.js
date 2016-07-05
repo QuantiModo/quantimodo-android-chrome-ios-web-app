@@ -424,10 +424,10 @@ angular.module('starter',
           }
       })
       .state('app.positiveNegative', {
-          url: "/positive-negative",
+          url: "/positive-negative/:valence",
           cache:false,
           params: {
-              valence: "negative" // positive or negative
+              //valence: null // positive or negative
           },
           views: {
               'menuContent': {

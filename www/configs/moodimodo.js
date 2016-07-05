@@ -644,14 +644,14 @@ config.appSettings  = {
             title : 'Positive Mood',
             isSubMenuChild : true,
             showSubMenuVariable : 'showPredictorSearchSubMenu',
-            href : '#/app/positive',
+            href : '#/app/positive-negative/positive',
             icon : 'ion-happy-outline'
         },
         {
             title : 'Negative Mood',
             isSubMenuChild : true,
             showSubMenuVariable : 'showPredictorSearchSubMenu',
-            href : '#/app/negative',
+            href : '#/app/positive-negative/negative',
             icon : 'ion-sad-outline'
         },
         {

@@ -48,7 +48,7 @@ angular.module('starter')
                 $scope.templateConfirmationUp = '<label><input type="checkbox" ng-model="$parent.notShowConfirmationPositive" class="show-again-checkbox">Don\'t show this again</label>';
                 $scope.templateConfirmationDown = '<label><input type="checkbox" ng-model="$parent.notShowConfirmationPositiveDown" class="show-again-checkbox">Don\'t show this again</label>';
             }
-            else {
+            else if ($stateParams.valence === "negative") {
                 $scope.valence = false;
                 $scope.title = "Negative Predictors";
                 $scope.increasingDecreasing = "DECREASING";
@@ -57,6 +57,10 @@ angular.module('starter')
                 $scope.showLoader('Fetching negative predictors...');
                 $scope.templateConfirmationUp = '<label><input type="checkbox" ng-model="$parent.notShowConfirmationNegative" class="show-again-checkbox">Don\'t show this again</label>';
                 $scope.templateConfirmationDown = '<label><input type="checkbox" ng-model="$parent.notShowConfirmationNegativeDown" class="show-again-checkbox">Don\'t show this again</label>';
+            }
+            else {
+                // go to default state
+                $state.go(config.appSettings.defaultState);
             }
             var isAuthorized = authService.checkAuthOrSendToLogin();
             if (typeof analytics !== 'undefined')  {
@@ -68,6 +72,7 @@ angular.module('starter')
                         .then(function(correlationObjects){
                             $scope.positivesNegatives = correlationObjects;
                             correlationService.getUsersPositiveFactors().then(function(correlationObjects){
+                            	// FIXME this is where to pull the descriptions from
                                 $scope.usersPositiveNegativeFactors = correlationObjects;
                             });
                             $ionicLoading.hide();
@@ -218,12 +223,17 @@ angular.module('starter')
             window.open('http://www.amazon.com/gp/aw/s/ref=mh_283155_is_s_stripbooks?ie=UTF8&n=283155&k='+name, '_blank', 'location=no');
 	    };
 
+        // Where is this used?
         $scope.changePage = function(){
             if ($scope.valence) {
-                $state.go('app.negative');
+                $state.go('app.positiveNegative', {
+                    valence: "negative"
+                });
             }
             else {
-                $state.go('app.positive');
+                $state.go('app.positiveNegative', {
+                    valence: "positive"
+                });
             }
             $state.reload();
         };

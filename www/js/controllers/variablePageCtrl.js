@@ -197,7 +197,7 @@ angular.module('starter')
                     variableName: $stateParams.variableName,
                     variableCategoryName: null,
                     abbreviatedUnitName: null
-                }
+                };
             }
             $rootScope.variablePage = {
                 history : [],
