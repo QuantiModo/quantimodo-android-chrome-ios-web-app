@@ -1,42 +1,44 @@
 angular.module('starter')
 
     // Controls the Negative Factors page
-    .controller('NegativeCtrl', function($scope,localStorageService, $ionicModal, $timeout, measurementService, 
-                                         $ionicLoading, $ionicPopup, $state, correlationService, $rootScope,
-                                         utilsService, authService) {
+    .controller('NegativeCtrl', function($scope, $ionicModal, $timeout, measurementService,
+                                         $ionicLoading, $state, $ionicPopup, correlationService, $rootScope,
+                                         localStorageService, utilsService, authService) {
 
         $scope.loading = true;
-        /*// redirect if not logged in
+
         if(!$rootScope.user){
-            $state.go(config.appSettings.welcomeState);
+            console.debug("negativeCtrl: not logged in, going to default state");
+            $state.go(config.appSettings.defaultState);
             // app wide signal to sibling controllers that the state has changed
             $rootScope.$broadcast('transition');
-        }*/
+        }
         
-        localStorageService.getItem('notShowConfirmationNegative',function(notShowConfirmationNegative){
-            $scope.notShowConfirmationNegative = notShowConfirmationNegative ? JSON.parse(notShowConfirmationNegative) : false;
+        localStorageService.getItem('notShowConfirmationNegative',function(notShowConfirmation){
+            $scope.notShowConfirmationNegative = notShowConfirmation ? JSON.parse(notShowConfirmation) : false;
         });
         
-        localStorageService.getItem('notShowConfirmationNegativeDown',function(notShowConfirmationNegativeDown){
-           $scope.notShowConfirmationNegativeDown = notShowConfirmationNegativeDown ? JSON.parse(notShowConfirmationNegativeDown) : false;
+        localStorageService.getItem('notShowConfirmationNegativeDown',function(notShowConfirmationDown){
+           $scope.notShowConfirmationNegativeDown = notShowConfirmationDown ?
+               JSON.parse(notShowConfirmationDown) : false;
         });
 
         $scope.controller_name = "NegativeCtrl";
-
         $scope.negatives = false;
         $scope.usersNegativeFactors = false;
-
-
+        
         $scope.init = function(){
             Bugsnag.context = "negativePredictors";
             $scope.showLoader('Fetching negative predictors...');
             var isAuthorized = authService.checkAuthOrSendToLogin();
-            if (typeof analytics !== 'undefined')  { analytics.trackView("Negative Predictors Controller"); }
+            if (typeof analytics !== 'undefined')  { 
+                analytics.trackView("Negative Predictors Controller"); 
+            }
             if(isAuthorized){
                 correlationService.getNegativeFactors()
                     .then(function(correlationObjects){
                         $scope.negatives = correlationObjects;
-                        correlationService.getUsersPositiveFactors().then(function(correlationObjects){
+                        correlationService.getUsersNegativeFactors().then(function(correlationObjects){
                             $scope.usersNegativeFactors = correlationObjects;
                         });
                         $ionicLoading.hide();
@@ -44,10 +46,7 @@ angular.module('starter')
                     }, function(){
                         $ionicLoading.hide();
                         $scope.loading = false;
-                        console.log('negativeCtrl: Could not get correlations.  Going to login page...');
-                        $state.go('app.login', {
-                            fromUrl : window.location.href
-                        });
+                        console.log('negativeCtrl: Could not get correlations');
                     });
             } 
         };
@@ -65,20 +64,18 @@ angular.module('starter')
                         {text: 'Disagree',
                             type: 'button-positive',
                             onTap: function () {
-                                localStorageService.setItem('notShowConfirmationNegativeDown',$scope.notShowConfirmationNegativeDown);
+                                localStorageService.setItem('notShowConfirmationNegativeDown', JSON.stringify($scope.notShowConfirmationNegativeDown));
                                 downVote(factor);
                             }
                         }
                     ]
-
                 });
-            }else{
+            } else {
                 downVote(factor);
             }
         };
 
         function downVote(factor){
-
         	var prevValue = factor.userVote;
             factor.userVote = 0;
             
@@ -96,14 +93,9 @@ angular.module('starter')
                     }, function(){
                         factor.userVote = prevValue;
                         utilsService.showAlert('Downvote Failed!');
-                        
                     });
             } else {
                 factor.userVote = prevValue;
-                /*
-                console.debug("negativeCtrl going to welcome state");
-            	$state.go(config.appSettings.welcomeState);
-            	*/
             	console.debug("negativeCtrl: not logged in, going to default state");
             	$state.go(config.appSettings.defaultState);
             }
@@ -114,40 +106,36 @@ angular.module('starter')
             if(!$scope.notShowConfirmationNegative){
                 $ionicPopup.show({
                     title:'Voting thumbs up indicates',
-                    subTitle: 'you agree that '+factor.cause+' decreases your '+factor.effect+'.',
-                    scope:$scope,
+                    subTitle: 'you agree that '+ factor.cause + ' decreases your ' + factor.effect+'.',
+                    scope: $scope,
                     template:'<label><input type="checkbox" ng-model="$parent.notShowConfirmationNegative" class="show-again-checkbox">Don\'t show this again</label>',
                     buttons:[
                         {text: 'Cancel'},
                         {text: 'Agree',
                             type: 'button-positive',
                             onTap: function(){
-                                localStorageService.setItem('notShowConfirmationNegative',$scope.notShowConfirmationNegative);
+                                localStorageService.setItem('notShowConfirmationNegative',JSON.stringify($scope.notShowConfirmationNegative));
                                 upVote(factor);
                             }
                         }
                     ]
-
                 });
-            }else{
+            } else {
                 upVote(factor);
             }
-
         };
 
         function upVote(factor){
-
         	var prevValue = factor.userVote;
-            factor.userVote =1;
+            factor.userVote = 1;
         
-            // get params
+            // params
             var cause = factor.cause;
             var effect = factor.effect;
             var vote = 1;
             var correlationCoefficient = factor.correlationCoefficient;
 
             if($rootScope.user){
-
                 // call service method for voting
                 correlationService.vote(vote, cause, effect, correlationCoefficient)
                     .then(function(){
@@ -156,28 +144,25 @@ angular.module('starter')
                     	factor.userVote = prevValue;
                         utilsService.showAlert('Upvote Failed!');
                     });
-
             } else {
 				factor.userVote = prevValue;
-				/*
-				console.debug("negativeCtrl going to welcome state");
-            	$state.go(config.appSettings.welcomeState);
-            	*/
             	console.debug("negativeCtrl: not logged in, going to default state");
             	$state.go(config.appSettings.defaultState);
-            	}
+            }
         }
 
         // open store in inAppbrowser
         $scope.openStore = function(name){
             console.log("open store for ", name);
-            
-            // create link
+            // make url
             name = name.split(' ').join('+');
-            
             // launch inAppBrowser
             window.open('http://www.amazon.com/gp/aw/s/ref=mh_283155_is_s_stripbooks?ie=UTF8&n=283155&k='+name, '_blank', 'location=no');
+        };
 
+        $scope.changePage = function(){
+            $state.go('app.positive');
+            $state.reload();
         };
 
         $scope.showLoader = function (loadingText) {
@@ -194,8 +179,7 @@ angular.module('starter')
                 showDelay: 0
             });
         };
-
-
+        
         // when view is changed
         $scope.$on('$ionicView.enter', function(e){
             $scope.init();

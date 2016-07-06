@@ -4,132 +4,36 @@ angular.module('starter')
 	.controller('PositiveCtrl', function($scope, $ionicModal, $timeout, measurementService, $ionicLoading, 
                                          $state, $ionicPopup, correlationService, $rootScope,
                                          localStorageService, utilsService, authService) {
-
-
+        
         $scope.loading = true;
 
         if(!$rootScope.user){
-        	/*
-        	console.debug("postiveCtrl going to welcome state");
-            $state.go(config.appSettings.welcomeState);
-            */
             console.debug("positiveCtrl: not logged in, going to default state");
             $state.go(config.appSettings.defaultState);
             // app wide signal to sibling controllers that the state has changed
             $rootScope.$broadcast('transition');
         }
         
-         localStorageService.getItem('notShowConfirmationPositive',function(val){
-             $scope.notShowConfirmationPositive = val ? JSON.parse(val) : false;
+         localStorageService.getItem('notShowConfirmationPositive',function(notShowConfirmation){
+             $scope.notShowConfirmationPositive = notShowConfirmation ? JSON.parse(notShowConfirmation) : false;
          });
 
-        localStorageService.getItem('notShowConfirmationPositive',function(val){
-            $scope.notShowConfirmationPositiveDown = val ? JSON.parse(val) : false;
+        localStorageService.getItem('notShowConfirmationPositiveDown',function(notShowConfirmationDown){
+            $scope.notShowConfirmationPositiveDown = notShowConfirmationDown ? 
+                JSON.parse(notShowConfirmationDown) : false;
         });        
 
 		$scope.controller_name = "PositiveCtrl";
         $scope.positives = false;
         $scope.usersPositiveFactors = false;
 
-	    $scope.downVote = function(factor){
-
-            if(!$scope.notShowConfirmationPositiveDown){
-                $ionicPopup.show({
-                    title:'Voting thumbs down indicates',
-                    subTitle: 'you disagree that '+factor.cause+' increases your '+factor.effect+'.',
-                    scope:$scope,
-                    template:'<label><input type="checkbox" ng-model="$parent.notShowConfirmationPositiveDown" class="show-again-checkbox">Don\'t show this again</label>',
-                    buttons:[
-                        {text: 'Cancel'},
-                        {text: 'Disagree',
-                            type: 'button-positive',
-                            onTap: function(){
-                                localStorageService.setItem('notShowConfirmationPositiveDown',JSON.stringify($scope.notShowConfirmationPositiveDown));
-                                downVote(factor);
-                            }
-                        }
-                    ]
-
-                });
-
-            } else {
-                downVote(factor);
-            }
-
-
-        };
-
-        function downVote(factor){
-            var prevValue = factor.userVote;
-            factor.userVote = 0;
-            // params
-            var cause = factor.cause;
-            var effect = factor.effect;
-            var vote = 0;
-            var correlationCoefficient = factor.correlationCoefficient;
-
-            // call vote method
-            correlationService.vote(vote, cause, effect, correlationCoefficient)
-                .then(function(){
-                    utilsService.showAlert('Down voted!');
-                }, function(){
-                    utilsService.showAlert('Down vote failed !');
-                });
-        }
-
-	    // when upVoted
-	    $scope.upVote = function(factor){
-
-	    
-            if(!$scope.notShowConfirmationPositive){
-                $ionicPopup.show({
-                    title:'Voting thumbs up indicates',
-                    subTitle: 'it seems likely that '+factor.cause+' increases your '+factor.effect+'.',
-                    scope:$scope,
-                    template:'<label><input type="checkbox" ng-model="$parent.notShowConfirmationPositive" class="show-again-checkbox">Don\'t show this again</label>',
-                    buttons:[
-                        {text: 'Cancel'},
-                        {text: 'Agree',
-                            type: 'button-positive',
-                            onTap: function(){
-                                localStorageService.setItem('notShowConfirmationPositive',JSON.stringify($scope.notShowConfirmationPositive));
-                                upVote(factor);
-                            }
-                        }
-                    ]
-
-                });
-
-            }else{
-                upVote(factor);
-            }
-
-	    };
-
-        function upVote(factor){
-
-        	var prevValue = factor.userVote;
-            factor.userVote = 1;
-            // params
-            var cause = factor.cause;
-            var effect = factor.effect;
-            var vote = 1;
-            var correlationCoefficient = factor.correlationCoefficient;
-            
-            correlationService.vote(vote, cause, effect, correlationCoefficient)
-                .then(function(){
-                    utilsService.showAlert('Upvoted !');
-                }, function(){
-                    utilsService.showAlert('Upvote Failed !');
-                    factor.userVote = prevValue;
-                });
-        }
-        
-	    $scope.init = function(){
+        $scope.init = function(){
             Bugsnag.context = "positivePredictors";
             $scope.showLoader('Fetching positive predictors...');
             var isAuthorized = authService.checkAuthOrSendToLogin();
-            if (typeof analytics !== 'undefined')  { analytics.trackView("Positive Predictors Controller"); }
+            if (typeof analytics !== 'undefined')  {
+                analytics.trackView("Positive Predictors Controller");
+            }
             if(isAuthorized){
                 correlationService.getPositiveFactors()
                     .then(function(correlationObjects){
@@ -142,15 +46,118 @@ angular.module('starter')
                     }, function(){
                         $scope.loading = false;
                         $ionicLoading.hide();
+                        console.log('positiveCtrl: Could not get correlations');
                     });
+            }
+        };
+
+        // when downVoted
+	    $scope.downVote = function(factor){
+            if(!$scope.notShowConfirmationPositiveDown){
+                $ionicPopup.show({
+                    title:'Voting thumbs down indicates',
+                    subTitle: 'you disagree that ' + factor.cause + ' increases your ' + factor.effect + '.',
+                    scope: $scope,
+                    template:'<label><input type="checkbox" ng-model="$parent.notShowConfirmationPositiveDown" class="show-again-checkbox">Don\'t show this again</label>',
+                    buttons:[
+                        {text: 'Cancel'},
+                        {text: 'Disagree',
+                            type: 'button-positive',
+                            onTap: function(){
+                                localStorageService.setItem('notShowConfirmationPositiveDown', JSON.stringify($scope.notShowConfirmationPositiveDown));
+                                downVote(factor);
+                            }
+                        }
+                    ]
+                });
+            } else {
+                downVote(factor);
+            }
+        };
+
+        function downVote(factor){
+            var prevValue = factor.userVote;
+            factor.userVote = 0;
+
+            // params
+            var cause = factor.cause;
+            var effect = factor.effect;
+            var vote = 0;
+            var correlationCoefficient = factor.correlationCoefficient;
+
+            // call service method for voting
+            if($rootScope.user) {
+                correlationService.vote(vote, cause, effect, correlationCoefficient)
+                    .then(function () {
+                        utilsService.showAlert('Down voted!');
+                    }, function () {
+                        factor.userVote = prevValue;
+                        utilsService.showAlert('Down vote failed !');
+                    });
+            } else {
+                factor.userVote = prevValue;
+                console.debug("positiveCtrl: not logged in, going to default state");
+                $state.go(config.appSettings.defaultState);
+            }
+        }
+
+	    // when upVoted
+	    $scope.upVote = function(factor){
+            if(!$scope.notShowConfirmationPositive){
+                $ionicPopup.show({
+                    title:'Voting thumbs up indicates',
+                    subTitle: 'you agree that '+ factor.cause + ' increases your ' + factor.effect + '.',
+                    scope: $scope,
+                    template:'<label><input type="checkbox" ng-model="$parent.notShowConfirmationPositive" class="show-again-checkbox">Don\'t show this again</label>',
+                    buttons:[
+                        {text: 'Cancel'},
+                        {text: 'Agree',
+                            type: 'button-positive',
+                            onTap: function(){
+                                localStorageService.setItem('notShowConfirmationPositive',JSON.stringify($scope.notShowConfirmationPositive));
+                                upVote(factor);
+                            }
+                        }
+                    ]
+                });
+            } else {
+                upVote(factor);
             }
 	    };
 
+        function upVote(factor){
+        	var prevValue = factor.userVote;
+            factor.userVote = 1;
+
+            // params
+            var cause = factor.cause;
+            var effect = factor.effect;
+            var vote = 1;
+            var correlationCoefficient = factor.correlationCoefficient;
+
+            if ($rootScope.user) {
+                // call service method for voting
+                correlationService.vote(vote, cause, effect, correlationCoefficient)
+                    .then(function(){
+                        utilsService.showAlert('Upvoted!');
+                    }, function(){
+                        factor.userVote = prevValue;
+                        utilsService.showAlert('Upvote Failed!');
+                    });
+            } else {
+                factor.userVote = prevValue;
+                console.debug("positiveCtrl: not logged in, going to default state");
+                $state.go(config.appSettings.defaultState);
+            }
+        }
+        
+        // open store in inAppbrowser
 	    $scope.openStore = function(name){
+            console.log("open store for ", name);
 	    	// make url
 	    	name = name.split(' ').join('+');
-	    	// open store
-	       window.open('http://www.amazon.com/gp/aw/s/ref=mh_283155_is_s_stripbooks?ie=UTF8&n=283155&k='+name, '_blank', 'location=no');
+            // launch inAppBrowser
+            window.open('http://www.amazon.com/gp/aw/s/ref=mh_283155_is_s_stripbooks?ie=UTF8&n=283155&k='+name, '_blank', 'location=no');
 	    };
 
         $scope.changePage = function(){
