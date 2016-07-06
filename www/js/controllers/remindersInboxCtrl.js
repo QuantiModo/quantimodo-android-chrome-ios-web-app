@@ -162,22 +162,6 @@ angular.module('starter')
 	    	});
 	    };
 
-		var removeNotificationFromDisplay = function(trackingReminderNotificationId){
-			var notificationsToKeep = [];
-			for(var i = 0; i < $scope.state.trackingRemindersNotifications.length; i++){
-				if($scope.state.trackingRemindersNotifications[i].id !== trackingReminderNotificationId){
-					notificationsToKeep.push($scope.state.trackingRemindersNotifications[i]);
-				} else {
-					console.debug('Removing reminder notification id ' + trackingReminderNotificationId +
-						' from $scope.state.trackingRemindersNotifications');
-				}
-			}
-			$scope.state.trackingRemindersNotifications = notificationsToKeep;
-			$scope.state.filteredReminders = filterViaDates(notificationsToKeep);
-			$ionicLoading.hide();
-			$scope.loading = false;
-		};
-
 		var isGhostClick = function ($event) {
 			if($rootScope.isMobile ){
 				if($event &&
@@ -197,16 +181,16 @@ angular.module('starter')
 			}
 		};
 
-	    $scope.track = function(trackingReminderNotification, modifiedReminderValue, $event){
+
+		$scope.track = function(trackingReminderNotification, modifiedReminderValue, $event, dividerIndex, reminderNotificationIndex){
 
 			if(isGhostClick($event)){
 				return;
 			}
 
-			$scope.showLoader();
+			$scope.state.filteredReminders[dividerIndex].reminders[reminderNotificationIndex].hide = true;
 			console.debug('Tracking notification', trackingReminderNotification);
 			console.log('modifiedReminderValue is ' + modifiedReminderValue);
-			removeNotificationFromDisplay(trackingReminderNotification.id);
 	    	reminderService.trackReminderNotification(trackingReminderNotification.id, modifiedReminderValue)
 	    	.then(function(){
 	    		//$scope.init();
@@ -218,15 +202,16 @@ angular.module('starter')
 	    	});
 	    };
 
-	    $scope.skip = function(trackingReminderNotification, $event){
+	    $scope.skip = function(trackingReminderNotification, $event, dividerIndex, reminderNotificationIndex){
+			
 
 			if(isGhostClick($event)){
 				return;
 			}
 
+			$scope.state.filteredReminders[dividerIndex].reminders[reminderNotificationIndex].hide = true;
+
 			console.debug('Skipping notification', trackingReminderNotification);
-			$scope.showLoader();
-			removeNotificationFromDisplay(trackingReminderNotification.id);
 	    	reminderService.skipReminderNotification(trackingReminderNotification.id)
 	    	.then(function(){
 	    		$scope.hideLoader();
@@ -239,15 +224,15 @@ angular.module('starter')
 	    	});
 	    };
 
-	    $scope.snooze = function(trackingReminderNotification, $event){
+	    $scope.snooze = function(trackingReminderNotification, $event, dividerIndex, reminderNotificationIndex){
 
 			if(isGhostClick($event)){
 				return;
 			}
 
-			$scope.showLoader();
+			$scope.state.filteredReminders[dividerIndex].reminders[reminderNotificationIndex].hide = true;
+
 			console.debug('Snoozing notification', trackingReminderNotification);
-			removeNotificationFromDisplay(trackingReminderNotification.id);
 	    	reminderService.snoozeReminderNotification(trackingReminderNotification.id)
 	    	.then(function(){
 	    		//$scope.init();

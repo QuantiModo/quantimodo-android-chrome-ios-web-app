@@ -136,7 +136,7 @@
 				</div>
 
 				
-				<div class="list card" ng-repeat="reminder in divider.reminders" >
+				<div class="list card" ng-if="!reminder.hide" ng-repeat="reminder in divider.reminders" >
 					<div class="item" style="padding-bottom:0px;">
 						<div class="row">
 							<div class="col" style="padding-top: 0px;">
@@ -149,13 +149,13 @@
 							</div>
 						</div>
 						<div class="button-bar">
-							<button class="button button-clear button-assertive" style="text-overflow: clip; font-size: 12px;" ng-click="skip(reminder, $event)"><i class="ion-android-cancel"> &nbsp; Skip</i></button>
-							<button class="button button-clear button-royal" style="text-overflow: clip; font-size: 12px;" ng-click="snooze(reminder, $event)"><i class="ion-android-notifications-off"> &nbsp; Snooze</i></button>
+							<button class="button button-clear button-assertive" style="text-overflow: clip; font-size: 12px;" ng-click="skip(reminder, $event, $parent.$index, $index)"><i class="ion-android-cancel"> &nbsp; Skip</i></button>
+							<button class="button button-clear button-royal" style="text-overflow: clip; font-size: 12px;" ng-click="snooze(reminder, $event, $parent.$index, $index)"><i class="ion-android-notifications-off"> &nbsp; Snooze</i></button>
 							<button class="button button-clear button-calm" ng-click="editReminderSettings(reminder)" style="text-overflow: clip;  font-size: 12px;"><i class="ion-settings"> &nbsp; Settings</i></button>
 						</div>
 						<div class="row" ng-if="reminder.abbreviatedUnitName !== '/5' " >
 							<div class="button-bar">
-								<button class="button button-clear button-balanced" style="text-overflow: clip; font-size: 14px;" ng-click="track(reminder, null, $event)"><i class="ion-android-done"> &nbsp; Record {{reminder.defaultValue}}&nbsp;{{reminder.unitName.toLowerCase()}}</i></button>
+								<button class="button button-clear button-balanced" style="text-overflow: clip; font-size: 14px;" ng-click="track(reminder, null, $event, $parent.$index, $index)"><i class="ion-android-done"> &nbsp; Record {{reminder.defaultValue}}&nbsp;{{reminder.unitName.toLowerCase()}}</i></button>
 							</div>
 						</div>
 						<div class="row" ng-if="reminder.abbreviatedUnitName !== '/5' " >
@@ -167,7 +167,7 @@
 						 	ng-if="!reminder.description &&	reminder.abbreviatedUnitName === '/5'">
 							<div class="primary-outcome-variable-rating-buttons" >
 								<img ng-repeat="option in numericRatingOptions"
-									 ng-click="track(reminder, option.numericValue, $event)"
+									 ng-click="track(reminder, option.numericValue, $event, $parent.$index, $index)"
 									 ng-src="{{option.img}}">
 							</div>
 							<br>
@@ -177,7 +177,7 @@
 						 	reminder.description.toLowerCase().indexOf('positive') > -1">
 							<div class="primary-outcome-variable-rating-buttons" >
 								<img ng-repeat="option in positiveRatingOptions"
-									 ng-click="track(reminder, option.numericValue, $event)"
+									 ng-click="track(reminder, option.numericValue, $event, $parent.$index, $index)"
 									 ng-src="{{option.img}}">
 								<br>
 							</div>
@@ -188,7 +188,7 @@
 						 	reminder.description.toLowerCase().indexOf('negative') > -1">
 							<div class="primary-outcome-variable-rating-buttons" >
 								<img ng-repeat="option in negativeRatingOptions"
-									 ng-click="track(reminder, option.numericValue, $event)"
+									 ng-click="track(reminder, option.numericValue, $event, $parent.$index, $index)"
 									 ng-src="{{option.img}}">
 								<br>
 							</div>
