@@ -279,7 +279,7 @@ config.appSettings  = {
         },
         {
             title : 'Add Medications',
-            href : '#/app/reminder_add/Treatments',
+            href : '#/app/reminderSearchCategory/Treatments',
             icon : 'ion-ios-alarm-outline'
         },
         {
@@ -323,28 +323,28 @@ config.appSettings  = {
             title : 'Emotions',
             isSubMenuChild : true,
             showSubMenuVariable : 'showReminderSubMenu',
-            href : '#/app/reminder_add/Emotions',
+            href : '#/app/reminders-manage/Emotions',
             icon : 'ion-happy-outline'
         },
         {
             title : 'Responses',
             isSubMenuChild : true,
             showSubMenuVariable : 'showReminderSubMenu',
-            href : '#/app/reminder_add/Symptoms',
+            href : '#/app/reminders-manage/Symptoms',
             icon : 'ion-ios-pulse'
         },
         {
             title : 'Treatments',
             isSubMenuChild : true,
             showSubMenuVariable : 'showReminderSubMenu',
-            href : '#/app/reminder_add/Treatments',
+            href : '#/app/reminders-manage/Treatments',
             icon : 'ion-ios-medkit-outline'
         },
         {
             title : 'Foods',
             isSubMenuChild : true,
             showSubMenuVariable : 'showReminderSubMenu',
-            href : '#/app/reminder_add/Foods',
+            href : '#/app/reminders-manage/Foods',
             icon : 'ion-ios-nutrition-outline'
         },
         {
