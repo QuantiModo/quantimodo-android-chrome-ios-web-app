@@ -282,6 +282,15 @@ angular.module('starter')
                     errorHandler);
             };
 
+            // delete a vote
+            QuantiModo.deleteVote = function(correlationSet, successHandler ,errorHandler){
+                QuantiModo.post('api/v1/votes/delete',
+                    ['cause', 'effect', 'correlation'],
+                    correlationSet,
+                    successHandler,
+                    errorHandler);
+            };
+
             // search for public variables
             QuantiModo.searchVariablesIncludePublic = function(query, successHandler, errorHandler){
                 QuantiModo.get('api/v1/variables/search/' + encodeURIComponent(query),

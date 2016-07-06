@@ -17,13 +17,13 @@
                             <div class="item item-text-wrap card-item">
                                 <h2 style="white-space: normal">{{positiveNegative.cause}}</h2>
                                 <p>{{positiveNegative.predictorExplanation}}</p>
-                                <p ng-if="valence">{{positiveNegative.valuePredictingHighOutcomeExplanation}}</p>
-                                <p ng-if="!valence">{{positiveNegative.valuePredictingLowOutcomeExplanation}}</p>
+                                <p>{{positiveNegative.valuePredictingHighOutcomeExplanation}}</p>
+                                <p>{{positiveNegative.valuePredictingLowOutcomeExplanation}}</p>
                                 <div ng-click="upVote(positiveNegative)" class="show-inline">
                                     <img ng-if="positiveNegative.userVote == null || positiveNegative.userVote == 0" src="img/thumb_up_white.png" height="32px" width="32px" />
                                     <img ng-if="positiveNegative.userVote == 1" src="img/thumb_up_black.png" height="32px" width="32px" />
                                 </div>
-                                <div ng-click="positiveNegative(positiveNegative)" class="show-inline">
+                                <div ng-click="downVote(positiveNegative)" class="show-inline">
                                     <img ng-if="positiveNegative.userVote == null || positiveNegative.userVote == 1" src="img/thumb_down_white.png" height="32px" width="32px" />
                                     <img ng-if="positiveNegative.userVote == 0" src="img/thumb_down_black.png" height="32px" width="32px" />
                                 </div>
@@ -54,8 +54,8 @@
                             <div class="item item-text-wrap card-item">
                                 <h2 style="white-space: normal">{{positiveNegative.cause}}</h2>
                                 <p>{{positiveNegative.predictorExplanation}}</p>
-                                <p ng-if="valence">{{positiveNegative.valuePredictingHighOutcomeExplanation}}</p>
-                                <p ng-if="!valence">{{positiveNegative.valuePredictingLowOutcomeExplanation}}</p>
+                                <p>{{positiveNegative.valuePredictingHighOutcomeExplanation}}</p>
+                                <p>{{positiveNegative.valuePredictingLowOutcomeExplanation}}</p>
                                 <div ng-click="upVote(positiveNegative)" class="show-inline">
                                     <img ng-if="positiveNegative.userVote == null || positiveNegative.userVote == 0" src="img/thumb_up_white.png" height="32px" width="32px" />
                                     <img ng-if="positiveNegative.userVote == 1" src="img/thumb_up_black.png" height="32px" width="32px" />

@@ -2,8 +2,8 @@
  * Created by Abdullah on 7/31/2015.
  */
 angular.module('starter')
-
-    .factory('correlationService', function(QuantiModo,$q) {
+    // Correlation service
+    .factory('correlationService', function(QuantiModo, $q) {
         var positive_factors = [];
         var negative_factors = [];
         var usersPositiveFactors = [];
@@ -125,6 +125,28 @@ angular.module('starter')
                 });
 
                 return deferred.promise;
-            }
+            },
+            
+            deleteVote: function(cause, effect, correlationcoefficient){
+                var deferred = $q.defer();
+
+                console.log(cause, effect, correlationcoefficient);
+                var correlation =
+                {
+                    cause: cause,
+                    effect: effect,
+                    correlation: correlationcoefficient,
+                };
+
+                QuantiModo.deleteVote(correlation, function(response){
+                    console.log("the response beingx", response);
+                    deferred.resolve(true);
+                }, function(response){
+                    console.log("the response beingy", response);
+                    deferred.reject(false);
+                });
+                
+                return deferred.promise;
+            },
         };
     });
