@@ -316,6 +316,14 @@ angular.module('starter')
 	    		utilsService.showAlert('Failed to Delete Reminder, Try again!', 'assertive');
 	    	});
 	    };
+		
+		$scope.goToReminderSearchCategory = function(variableCategoryName) {
+			$state.go('app.reminderSearchCategory',
+				{
+					variableCategoryName : variableCategoryName,
+					fromUrl: window.location.href
+				});
+		};
 
         // when view is changed
     	$scope.$on('$ionicView.enter', function(e){
