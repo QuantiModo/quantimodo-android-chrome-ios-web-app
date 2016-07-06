@@ -34,8 +34,6 @@ angular.module('starter')
         }
         
 		$scope.controller_name = "PositiveNegativeCtrl";
-        $scope.positives = false;
-        $scope.usersPositiveFactors = false;
 
         $scope.init = function(){
             if ($stateParams.valence === "positive") {
@@ -275,6 +273,13 @@ angular.module('starter')
                 showBackdrop: false,
                 maxWidth: 1000,
                 showDelay: 0
+            });
+        };
+
+        $scope.goToStudyPage = function(factor) {
+            $state.go('app.study', {
+                factor: factor.cause,
+                factorObject: factor
             });
         };
 

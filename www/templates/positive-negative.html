@@ -15,7 +15,8 @@
                     <div class="list card" collection-repeat="positiveNegative in positivesNegatives" divider-collection-repeat>
                         <ion-item style="border-style:hidden;">
                             <div class="item item-text-wrap card-item">
-                                <h2 style="white-space: normal">{{positiveNegative.cause}}</h2>
+                                <!--FIXME make h2 link-->
+                                <h2 style="white-space: normal" ng-click="goToStudyPage(positiveNegative)">{{positiveNegative.cause}}</h2>
                                 <p>{{positiveNegative.predictorExplanation}}</p>
                                 <p>{{positiveNegative.valuePredictingHighOutcomeExplanation}}</p>
                                 <p>{{positiveNegative.valuePredictingLowOutcomeExplanation}}</p>

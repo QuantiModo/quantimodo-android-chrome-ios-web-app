@@ -1,0 +1,31 @@
+<ion-view hide-nav-bar="hideNavigationMenu" view-title="{{title}}">
+        <ion-content style="padding-top: 10px">
+            <ion-list ng-show="showStudy">
+                <div class="list card">
+                    <ion-item style="border-style:hidden;">
+                        <div class="item item-text-wrap card-item">
+                            <h1 style="white-space: normal">{{factor.cause}}</h1>
+                                <p>{{factor.predictorExplanation}}</p>
+                                <p>{{factor.valuePredictingHighOutcomeExplanation}}</p>
+                                <p>{{factor.valuePredictingLowOutcomeExplanation}}</p>
+                            <h2>Study Abstract</h2>
+                                <p>{{factor.studyAbstract}}</p>
+                            <h2>Study Background</h2>
+                                <p>{{factor.studyBackground}}</p>
+                            <h2>Study Objective</h2>
+                                <p>{{factor.studyObjective}}</p>
+                            <h2>Study Design</h2>
+                                <p>{{factor.studyDesign}}</p>
+                            <h2>Data Analysis</h2>
+                                <p>{{factor.dataAnalysis}}</p>
+                            <h2>Data Sources</h2>
+                                <!--FIXME links are in html-->
+                                <p ng-bind-html="factor.dataSources"></p>
+                            <h2>Study Limitations</h2>
+                                <p>{{factor.studyLimitations}}</p>
+                        </div>
+                    </ion-item>
+                </div>
+            </ion-list>
+        </ion-content>
+</ion-view>
