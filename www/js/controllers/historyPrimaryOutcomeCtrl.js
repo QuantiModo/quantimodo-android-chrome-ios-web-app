@@ -90,7 +90,6 @@ angular.module('starter')
 			console.debug('history page init');
 			Bugsnag.context = "historyPrimary";
 			
-			console.debug($scope.ratingInfo[1].positiveImage);
 			$scope.showLoader();
 			if($rootScope.user){
 				measurementService.syncPrimaryOutcomeVariableMeasurements()

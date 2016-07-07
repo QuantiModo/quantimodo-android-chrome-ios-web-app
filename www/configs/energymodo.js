@@ -59,6 +59,38 @@ config.appSettings  = {
         '5' 
     ],
 
+    primaryOutcomeVariableRatingOptionLowercaseLabels : [
+        '1',
+        '2',
+        '3',
+        '4',
+        '5'
+    ],
+
+    positiveRatingImages : [
+        'img/rating/ic_face_depressed.png',
+        'img/rating/ic_face_sad.png',
+        'img/rating/ic_face_ok.png',
+        'img/rating/ic_face_happy.png',
+        'img/rating/ic_face_ecstatic.png'
+    ],
+
+    negativeRatingImages : [
+        'img/rating/ic_face_ecstatic.png',
+        'img/rating/ic_face_happy.png',
+        'img/rating/ic_face_ok.png',
+        'img/rating/ic_face_sad.png',
+        'img/rating/ic_face_depressed.png'
+    ],
+
+    numericRatingImages : [
+        'img/rating/ic_1.png',
+        'img/rating/ic_2.png',
+        'img/rating/ic_3.png',
+        'img/rating/ic_4.png',
+        'img/rating/ic_5.png'
+    ],
+
     welcomeText:"Let's start off by reporting your Energy on the card below",
     primaryOutcomeVariableTrackingQuestion:"How is your energy level right now?",
     primaryOutcomeVariableAverageText:"Your average energy level is ",

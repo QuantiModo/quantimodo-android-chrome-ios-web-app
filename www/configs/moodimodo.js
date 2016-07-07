@@ -64,7 +64,42 @@ config.appSettings  = {
         'Happy',
         'Ecstatic'
     ],
-    
+    /* NEW STUFF */
+
+    primaryOutcomeVariableRatingOptionLowercaseLabels : [
+        'depressed',
+        'sad',
+        'ok',
+        'happy',
+        'ecstatic'
+    ],
+
+    positiveRatingImages : [
+        'img/rating/ic_face_depressed.png',
+        'img/rating/ic_face_sad.png',
+        'img/rating/ic_face_ok.png',
+        'img/rating/ic_face_happy.png',
+        'img/rating/ic_face_ecstatic.png'
+    ],
+
+    negativeRatingImages : [
+        'img/rating/ic_face_ecstatic.png',
+        'img/rating/ic_face_happy.png',
+        'img/rating/ic_face_ok.png',
+        'img/rating/ic_face_sad.png',
+        'img/rating/ic_face_depressed.png'
+    ],
+
+    numericRatingImages : [
+        'img/rating/ic_1.png',
+        'img/rating/ic_2.png',
+        'img/rating/ic_3.png',
+        'img/rating/ic_4.png',
+        'img/rating/ic_5.png'
+    ],
+
+    /* END NEW STUFF */
+
     welcomeText : "Let's start off by reporting your first mood on the card below",
     primaryOutcomeVariableTrackingQuestion : "How are you?",
     primaryOutcomeVariableAverageText : "Your average mood is ",
