@@ -157,14 +157,15 @@ angular.module('starter')
 	    };
 
 
-	    $scope.deleteReminder = function(reminder){
-			$scope.showLoader('Deleting ' + reminder.variableName.toLowerCase() + ' reminder...');
+	    $scope.deleteReminder = function(reminder, $index){
+			$scope.state.allReminders[$index].hide = true;
+			//$scope.showLoader('Deleting ' + reminder.variableName.toLowerCase() + ' reminder...');
 			reminderService.deleteReminder(reminder.id)
 	    	.then(function(){
-				$ionicLoading.hide();
-				$scope.loading = false;
-	    		utilsService.showAlert(reminder.variableName + ' reminder deleted');
-	    		$scope.init();
+				//$ionicLoading.hide();
+				//$scope.loading = false;
+	    		//utilsService.showAlert(reminder.variableName + ' reminder deleted');
+	    		//$scope.init();
 	    	}, function(err){
 				Bugsnag.notify(err, JSON.stringify(err), {}, "error");
 	    		$ionicLoading.hide();
