@@ -50,7 +50,9 @@ angular.module('starter')
 
 
 	    var getHistory = function(){
-	    	$scope.showLoader();
+			if($scope.state.history.length < 1){
+				$scope.showLoader();
+			}
 	    	measurementService.getHistoryMeasurements({
     		    offset: $scope.state.offset,
     		    limit: $scope.state.limit,
@@ -102,7 +104,7 @@ angular.module('starter')
         // when view is changed
     	$scope.$on('$ionicView.enter', function(e) {
 			$scope.state.offset = 0;
-    		$scope.state.history = [];
+    		//$scope.state.history = [];
     		$scope.init();
     	});
 

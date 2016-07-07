@@ -89,8 +89,9 @@ angular.module('starter')
 		$scope.init = function(){
 			console.debug('history page init');
 			Bugsnag.context = "historyPrimary";
-			
-			$scope.showLoader();
+			if($scope.state.history.length < 1){
+				$scope.showLoader();
+			}
 			if($rootScope.user){
 				measurementService.syncPrimaryOutcomeVariableMeasurements()
 					.then(function(){
