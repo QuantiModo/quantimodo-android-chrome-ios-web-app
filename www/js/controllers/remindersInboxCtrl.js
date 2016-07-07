@@ -142,7 +142,9 @@ angular.module('starter')
 
 	    var getTrackingReminderNotifications = function(){
 	    	//$scope.showLoader('Fetching reminders...');
-			$scope.showLoader();
+			if($scope.state.filteredReminders.length < 1){
+				$scope.showLoader();
+			}
 
 	    	reminderService.getTrackingReminderNotifications($stateParams.variableCategoryName, $stateParams.today)
 	    	.then(function(trackingReminderNotifications){
@@ -263,7 +265,8 @@ angular.module('starter')
 			}
 	    };
 
-	    $scope.editMeasurement = function(trackingReminderNotification){
+	    $scope.editMeasurement = function(trackingReminderNotification, dividerIndex, reminderNotificationIndex){
+			$scope.state.filteredReminders[dividerIndex].reminders[reminderNotificationIndex].hide = true;
 			reminderService.skipReminderNotification(trackingReminderNotification.id);
 			$state.go('app.measurementAdd',
 				{
