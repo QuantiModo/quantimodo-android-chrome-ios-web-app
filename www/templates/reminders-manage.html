@@ -8,7 +8,7 @@
 			</a>
 		</div>
 		<div ng-hide="loading" class="list card">
-			<div class="list card" ng-repeat="reminder in state.allReminders" >
+			<div class="list card" ng-repeat="reminder in state.allReminders" ng-if="!reminder.hide">
 				<div class="item" style="padding-bottom:0px;">
 					<div class="row">
 						<div class="col" style="padding-top: 0px;">
@@ -21,7 +21,7 @@
 					</div>
 					<div class="row">
 						<div class="button-bar">
-							<a class="button button-clear button-assertive" style="text-overflow: clip;" ng-click="deleteReminder(reminder)"> <i class="ion-trash-b"> &nbsp; Delete</i></a>
+							<a class="button button-clear button-assertive" style="text-overflow: clip;" ng-click="deleteReminder(reminder, $index)"> <i class="ion-trash-b"> &nbsp; Delete</i></a>
 					  		<a class="button button-clear button-calm" ng-click="edit(reminder)" style="text-overflow: clip;"><i class="ion-edit"> &nbsp; Edit</i></a>
 						</div>
 					</div>

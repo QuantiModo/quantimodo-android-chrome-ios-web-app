@@ -260,7 +260,7 @@ angular.module('starter',
       })
         .state('app.reminderSearchCategory', {
             url: "/reminderSearchCategory/:variableCategoryName",
-            cache:false,
+            //cache:false,
             params: {
                 variableCategoryName : null,
                 fromState : null,
@@ -610,7 +610,7 @@ angular.module('starter',
       })
       .state('app.remindersManage', {
           url: "/reminders-manage",
-          cache:false,
+          //cache:false,
           views: {
               'menuContent': {
                   templateUrl: "templates/reminders-manage.html",
@@ -620,7 +620,7 @@ angular.module('starter',
       })
       .state('app.remindersManageCategory', {
           url: "/reminders-manage/:variableCategoryName",
-          cache:false,
+          //cache:false,
           views: {
               'menuContent': {
                   templateUrl: "templates/reminders-manage.html",

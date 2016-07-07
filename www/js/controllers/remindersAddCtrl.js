@@ -192,37 +192,6 @@ angular.module('starter')
             }*/
 	    };
 
-	    $scope.saveModifiedReminder = function(){
-
-            $scope.showLoader('Saving ' + $scope.state.trackingReminder.variableName + ' reminder...');
-            $scope.state.trackingReminder.reminderFrequency = getFrequencyChart()[$scope.state.selectedFrequency];
-            $scope.state.trackingReminder.reminderStartTime = $scope.state.reminderStartTimeStringUtc;
-	    	reminderService.addNewReminder($scope.state.trackingReminder)
-	    	.then(function(){
-
-	    		$ionicLoading.hide();
-                $scope.loading = false;
-	    		if($stateParams.reminder !== null && typeof $stateParams.reminder !== "undefined"){
-                    if($stateParams.fromUrl){
-                        window.location = $stateParams.fromUrl;
-                    } else if ($stateParams.fromState){
-	    				$state.go($stateParams.fromState);
-	    			} else {
-						$state.go('app.remindersManage');
-                    }
-	    		} else {
-					$state.go('app.remindersManage');
-                }
-
-	    	}, function(err){
-
-                $ionicLoading.hide();
-                $scope.loading = false;
-	    		utilsService.showAlert('Failed to add Reminder, Try again!', 'assertive');
-				console.log(err);
-	    	});
-	    };
-
 	    var getFrequencyChart = function(){
 	    	return {
 	    		"Every 12 hours" : 12*60*60,
@@ -247,12 +216,6 @@ angular.module('starter')
                 $scope.state.trackingReminder.defaultValue = 3;
             }
 
-	    	if($stateParams.reminder && $stateParams.reminder !== null){
-                $scope.showLoader();
-	    		$scope.saveModifiedReminder();
-	    		return;
-	    	}
-
             if(!$scope.state.trackingReminder.variableCategoryName) {
                 utilsService.showAlert('Please select a variable category');
                 return;
@@ -275,29 +238,12 @@ angular.module('starter')
 
             $scope.showLoader('Saving ' + $scope.state.trackingReminder.variableName + ' reminder...');
             $scope.state.trackingReminder.reminderFrequency = getFrequencyChart()[$scope.state.selectedFrequency];
+            $scope.state.trackingReminder.valueAndFrequencyTextDescription = $scope.state.selectedFrequency;
             $scope.state.trackingReminder.reminderStartTime = $scope.state.reminderStartTimeStringUtc;
 
 	    	reminderService.addNewReminder($scope.state.trackingReminder)
 	    	.then(function(){
 
-	    		$ionicLoading.hide();
-                $scope.loading = false;
-				if($stateParams.fromUrl){
-					window.location = $stateParams.fromUrl;
-				} 
-				else if ($stateParams.reminder && $stateParams.fromState){
-					$state.go($stateParams.fromState);
-				} else if ($stateParams.fromState && $stateParams.variableObject){
-					var variableName = $stateParams.variableObject.variableName;
-                    var variableObject = $scope.variableObject;
-                    $state.go($stateParams.fromState, {
-                        variableObject: variableObject,
-                        variableName: variableName,
-                        noReload: true,
-                    });
-				} else {
-					$state.go('app.remindersManage');
-				}
 
 	    	}, function(err){
                 console.log(err);
@@ -305,6 +251,18 @@ angular.module('starter')
                 $scope.loading = false;
 	    		utilsService.showAlert('Failed to add Reminder, Try again!', 'assertive');
 	    	});
+            
+            $rootScope.updatedReminder = $scope.state.trackingReminder;
+             if($stateParams.fromUrl && ($stateParams.fromUrl.indexOf('manage') > -1 )){
+             	window.location = $stateParams.fromUrl;
+             } else
+            if ($stateParams.reminder && $stateParams.fromState){
+                $state.go($stateParams.fromState, {
+                    updatedReminder: $stateParams.reminder
+                });
+            } else {
+                $state.go('app.remindersManage');
+            }
 	    };
 
 
