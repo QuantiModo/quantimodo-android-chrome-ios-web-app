@@ -282,25 +282,6 @@ angular.module('starter')
 					fromState : $state.current.name
 				});
 	    };
-
-	    $scope.deleteReminder = function(trackingReminderNotification){
-			$scope.showLoader();
-	    	reminderService.deleteReminder(trackingReminderNotification.id)
-	    	.then(function(){
-
-				$ionicLoading.hide();
-				$scope.loading = false;
-	    		utilsService.showAlert('Reminder Deleted.');
-	    		$scope.init();
-
-	    	}, function(err){
-				Bugsnag.notify(err, JSON.stringify(err), {}, "error");
-				$ionicLoading.hide();
-				$scope.loading = false;
-				console.error(err);
-	    		utilsService.showAlert('Failed to Delete Reminder, Try again!', 'assertive');
-	    	});
-	    };
 		
 		$scope.goToReminderSearchCategory = function(variableCategoryName) {
 			$state.go('app.reminderSearchCategory',
