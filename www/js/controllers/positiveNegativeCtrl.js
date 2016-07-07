@@ -14,49 +14,52 @@ angular.module('starter')
             $rootScope.$broadcast('transition');
         }
         
-        if ($scope.valence) {
-            localStorageService.getItem('notShowConfirmationPositive',function(notShowConfirmation){
-                $scope.notShowConfirmationPositive = notShowConfirmation ? JSON.parse(notShowConfirmation) : false;
-            });
-            localStorageService.getItem('notShowConfirmationPositiveDown',function(notShowConfirmationDown){
-                $scope.notShowConfirmationPositiveDown = notShowConfirmationDown ?
-                    JSON.parse(notShowConfirmationDown) : false;
-            });
+        if ($stateParams.valence === "positive") {
+            $scope.title = "Positive Predictors";
         }
         else {
-            localStorageService.getItem('notShowConfirmationNegative',function(notShowConfirmation){
-                $scope.notShowConfirmationNegative = notShowConfirmation ? JSON.parse(notShowConfirmation) : false;
-            });
-            localStorageService.getItem('notShowConfirmationNegativeDown',function(notShowConfirmationDown){
-                $scope.notShowConfirmationNegativeDown = notShowConfirmationDown ?
-                    JSON.parse(notShowConfirmationDown) : false;
-            });
+            $scope.title = "Negative Predictors";
         }
         
 		$scope.controller_name = "PositiveNegativeCtrl";
-        $scope.positives = false;
-        $scope.usersPositiveFactors = false;
 
         $scope.init = function(){
             if ($stateParams.valence === "positive") {
                 $scope.valence = true;
-                $scope.title = "Positive Predictors";
                 $scope.increasingDecreasing = "INCREASING";
                 $scope.increasesDecreases = "increases";
                 Bugsnag.context = "positivePredictors";
                 $scope.showLoader('Fetching positive predictors...');
                 $scope.templateConfirmationUp = '<label><input type="checkbox" ng-model="$parent.notShowConfirmationPositive" class="show-again-checkbox">Don\'t show this again</label>';
                 $scope.templateConfirmationDown = '<label><input type="checkbox" ng-model="$parent.notShowConfirmationPositiveDown" class="show-again-checkbox">Don\'t show this again</label>';
+
+                localStorageService.getItem('notShowConfirmationPositive',function(notShowConfirmation){
+                    $scope.notShowConfirmationPositive = notShowConfirmation ? JSON.parse(notShowConfirmation) : false;
+                });
+                localStorageService.getItem('notShowConfirmationPositiveDown',function(notShowConfirmationDown){
+                    $scope.notShowConfirmationPositiveDown = notShowConfirmationDown ?
+                        JSON.parse(notShowConfirmationDown) : false;
+                });
+
             }
             else if ($stateParams.valence === "negative") {
                 $scope.valence = false;
-                $scope.title = "Negative Predictors";
                 $scope.increasingDecreasing = "DECREASING";
                 $scope.increasesDecreases = "decreases";
                 Bugsnag.context = "negativePredictors";
                 $scope.showLoader('Fetching negative predictors...');
                 $scope.templateConfirmationUp = '<label><input type="checkbox" ng-model="$parent.notShowConfirmationNegative" class="show-again-checkbox">Don\'t show this again</label>';
                 $scope.templateConfirmationDown = '<label><input type="checkbox" ng-model="$parent.notShowConfirmationNegativeDown" class="show-again-checkbox">Don\'t show this again</label>';
+
+                /*
+                localStorageService.getItem('notShowConfirmationNegative', function (notShowConfirmation) {
+                    $scope.notShowConfirmationNegative = notShowConfirmation ? JSON.parse(notShowConfirmation) : false;
+                });
+                localStorageService.getItem('notShowConfirmationNegativeDown', function (notShowConfirmationDown) {
+                    $scope.notShowConfirmationNegativeDown = notShowConfirmationDown ?
+                        JSON.parse(notShowConfirmationDown) : false;
+                });
+                */
             }
             else {
                 // go to default state
@@ -275,6 +278,13 @@ angular.module('starter')
                 showBackdrop: false,
                 maxWidth: 1000,
                 showDelay: 0
+            });
+        };
+
+        $scope.goToStudyPage = function(factor) {
+            $state.go('app.study', {
+                factor: factor.cause,
+                factorObject: factor
             });
         };
 

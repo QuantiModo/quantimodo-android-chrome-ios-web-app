@@ -436,6 +436,19 @@ angular.module('starter',
               }
           }
       })
+      .state('app.study', {
+          url: "/study/:factor",
+          params: {
+              factor: null,
+              factorObject: null
+          },
+          views: {
+              'menuContent': {
+                  templateUrl: "templates/study-page.html", 
+                  controller: 'StudyCtrl'
+              }
+          }
+      })
       .state('app.settings', {
           url: "/settings",
           views: {
