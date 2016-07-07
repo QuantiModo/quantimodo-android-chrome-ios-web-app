@@ -538,7 +538,7 @@ angular.module('starter',
       })
       .state('app.remindersInbox', {
           url: "/reminders-inbox",
-          cache:false,
+          //cache:false,
           params: {
             unit: null,
             variableName : null,
@@ -555,7 +555,7 @@ angular.module('starter',
       })
         .state('app.remindersInboxToday', {
             url: "/reminders-inbox-today",
-            cache:false,
+            //cache:false,
             params: {
                 unit: null,
                 variableName : null,
@@ -574,7 +574,7 @@ angular.module('starter',
         })
         .state('app.remindersInboxTodayCategory', {
             url: "/reminders-inbox-today/:variableCategoryName",
-            cache:false,
+            //cache:false,
             params: {
                 unit: null,
                 variableName : null,
@@ -593,7 +593,7 @@ angular.module('starter',
         })
       .state('app.remindersInboxCategory', {
           url: "/reminders-inbox/:variableCategoryName",
-          cache:false,
+          //cache:false,
           params: {
             unit: null,
             variableName : null,
