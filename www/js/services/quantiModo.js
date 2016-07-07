@@ -1,7 +1,10 @@
 angular.module('starter')    
     // QuantiModo API implementation
-    .factory('QuantiModo', function($http, $q, authService, localStorageService, $state, $ionicLoading, $rootScope){
+    .factory('QuantiModo', function($http, $q, authService, localStorageService, $state, $ionicLoading,
+                                    $rootScope, $ionicPopup){
             var QuantiModo = {};
+            $rootScope.connectionErrorShowing = false; // to prevent more than one popup
+
 
             QuantiModo.successHandler = function(data){
                 if(!data.success){
@@ -88,6 +91,21 @@ angular.module('starter')
 
                     $http(request).success(successHandler).error(function(data,status,headers,config){
                         QuantiModo.errorHandler(data, status, headers, config, request);
+                        if (!data && !$rootScope.connectionErrorShowing) {
+                            $rootScope.connectionErrorShowing = true;
+                            $ionicPopup.show({
+                                title: 'Not connected:',
+                                subTitle: 'Either you are not connected to the internet or the QuantiModo server cannot be reached.',
+                                buttons:[
+                                    {text: 'OK',
+                                        type: 'button-positive',
+                                        onTap: function(){
+                                            $rootScope.connectionErrorShowing = false;
+                                        }
+                                    }
+                                ]
+                            });
+                        }
                         errorHandler(data);
                     });
 
