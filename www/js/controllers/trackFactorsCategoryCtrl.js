@@ -1,6 +1,6 @@
 angular.module('starter')
 
-    // Controls the Track Factors Page
+    // Controls the Track Factors Page and the search bar
     .controller('TrackFactorsCategoryCtrl', function($scope, $ionicModal, $timeout, $ionicPopup ,$ionicLoading,
                                                      authService, measurementService, $state, $rootScope, $stateParams,
                                                      utilsService, localStorageService, $filter, $ionicScrollDelegate,
@@ -138,9 +138,14 @@ angular.module('starter')
                         });
                 }
             }
+            else {
+                $scope.state.variableSearchResults = null;
+                var reset = true;
+                populateUserVariables(reset);
+            }
         };
 
-        var populateUserVariables = function(){
+        var populateUserVariables = function(reset){
             if($scope.state.variableSearchResults && $scope.state.variableSearchResults.length > 1){
                 return;
             }
@@ -150,7 +155,9 @@ angular.module('starter')
                 $scope.showLoader('Fetching most recent ' +
                     $filter('wordAliases')($stateParams.variableCategoryName.toLowerCase()) + '...');
             } else {
-                $scope.showLoader('Fetching most recent variables...');
+                if (!reset) {
+                    $scope.showLoader('Fetching most recent variables...');
+                }
             }
             
             variableService.getUserVariablesByCategory($scope.state.variableCategoryName)
