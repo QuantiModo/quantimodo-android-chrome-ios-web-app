@@ -5,9 +5,8 @@ angular.module('starter')
                                          $state, $ionicPopup, correlationService, $rootScope,
                                          localStorageService, utilsService, authService, $stateParams) {
 
-        // FIXME add to app.js, make sure study/factor is the url (stateParam required, otherwise go to predictors)
-
         $scope.loading = true;
+        $scope.title = $stateParams.factor;
 
         if(!$rootScope.user){
             console.debug("studyCtrl: not logged in, going to default state");
@@ -30,6 +29,7 @@ angular.module('starter')
                         factor: $stateParams.factorObject
                     };
                     $scope.factor = $rootScope.studyPage.factor;
+                    $scope.title = $scope.factor.cause;
                     $scope.showStudy = true;
                 }
                 else {
