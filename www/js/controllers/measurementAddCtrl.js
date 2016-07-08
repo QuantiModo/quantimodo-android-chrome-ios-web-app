@@ -44,42 +44,6 @@ angular.module('starter')
             ]
         };
 
-        // when a unit is changed
-        var setUnit = function(abbreviatedUnitName){
-            console.log(abbreviatedUnitName);
-
-            // filter the unit object from all units
-            var unitObject = $scope.state.unitObjects.filter(
-                function(x){
-                    return x.abbreviatedName === abbreviatedUnitName;
-                })[0];
-            console.log("unitObject", unitObject);
-
-            // hackish timeout for view to update itself
-            setTimeout(function(){
-                console.log("unitObject.category = ",unitObject.category);
-
-                // update view-model
-                $scope.selectedUnitCategoryName = unitObject.category;
-                $scope.unitSelected(unitObject);
-
-                // redraw view
-                $scope.safeApply();
-
-                // hackish timeout for view to update itself
-                setTimeout(function(){
-                    console.log("unitObject.abbreviatedName == ", unitObject.abbreviatedName);
-
-                    // update viewmodel
-                    $scope.state.measurement.abbreviatedUnitName = unitObject.abbreviatedName;
-
-                    // redraw view
-                    $scope.safeApply();
-                },100);
-
-            },100);
-        };
-
         $scope.openMeasurementStartTimePicker = function() {
 
             var secondsSinceMidnightLocal = ($scope.selectedHours * 60 * 60) + ($scope.selectedMinutes * 60);
@@ -135,8 +99,9 @@ angular.module('starter')
             $scope.state.measurement.variable = "";
             $scope.state.measurement.value = "";
             $scope.state.measurement.note = null;
-            if($scope.state.variableCategoryObject) {
-                setUnit(variableCategoryObject.defaultAbbreviatedUnitName);
+            if($scope.state.variableCategoryObject && $scope.state.variableCategoryObject.defaultAbbreviatedUnitName &&
+                !$scope.state.measurement.abbreviatedUnitName) {
+                $scope.state.measurement.abbreviatedUnitName = $scope.state.variableCategoryObject.defaultAbbreviatedUnitName;
             }
         };
 
@@ -215,8 +180,6 @@ angular.module('starter')
 
         $scope.done = function(){
 
-
-
             if($scope.state.measurement.value === '' || typeof $scope.state.measurement.value === 'undefined'){
                 utilsService.showAlert('Please enter a value');
                 return;
@@ -236,8 +199,6 @@ angular.module('starter')
                 utilsService.showAlert('Please select a unit');
                 return;
             }
-
-
 
             // combine selected date and time
             $scope.state.measurement.startTimeEpoch = $scope.selectedDate.getTime()/1000;
@@ -354,7 +315,9 @@ angular.module('starter')
             }
             $scope.state.measurement.variableCategoryName = variableCategoryName;
             $scope.state.variableCategoryObject = variableCategoryService.getVariableCategoryInfo(variableCategoryName);
-            $scope.state.measurement.abbreviatedUnitName = $scope.state.variableCategoryObject.defaultAbbreviatedUnitName;
+            if(!$scope.state.measurement.abbreviatedUnitName && $scope.state.variableCategoryObject.defaultAbbreviatedUnitName){
+                $scope.state.measurement.abbreviatedUnitName = $scope.state.variableCategoryObject.defaultAbbreviatedUnitName;
+            }
             $scope.state.title = "Add " + $filter('wordAliases')(pluralize(variableCategoryName, 1)) + " Measurement";
             $scope.state.measurementSynonymSingularLowercase = $scope.state.variableCategoryObject.measurementSynonymSingularLowercase;
             if($scope.state.variableCategoryObject.defaultValueLabel){
@@ -365,52 +328,6 @@ angular.module('starter')
             }
             $scope.state.variableSearchPlaceholderText = 'Search for a ' + $filter('wordAliases')(pluralize(variableCategoryName, 1)) + '...';
             setupValueFieldType($scope.state.variableCategoryObject.defaultAbbreviatedUnitName, null);
-        };
-
-        // when a unit category is changed
-        $scope.changeUnitCategory = function(x){
-            $scope.selectedUnitCategoryName = x;
-            console.log('changed', $scope.selectedUnitCategoryName);
-
-            // update the sub unit
-            setTimeout(function(){
-                console.log('changed to ', $scope.state.unitCategories[$scope.selectedUnitCategoryName][0].abbreviatedName);
-                $scope.state.measurement.abbreviatedUnitName = $scope.state.unitCategories[$scope.selectedUnitCategoryName][0].abbreviatedName;
-                $scope.safeApply();
-            }, 100);
-        };
-
-        $scope.unitSearch = function(){
-
-            var unitSearchQuery = $scope.state.measurement.abbreviatedUnitName;
-            if(unitSearchQuery !== ""){
-                $scope.state.showUnits = true;
-                var unitMatches = $scope.state.unitObjects.filter(function(unit) {
-                    return unit.abbreviatedName.toLowerCase().indexOf(unitSearchQuery.toLowerCase()) !== -1;
-                });
-
-                if(unitMatches.length < 1){
-                    unitMatches = $scope.state.unitObjects.filter(function(unit) {
-                        return unit.name.toLowerCase().indexOf(unitSearchQuery.toLowerCase()) !== -1;
-                    });
-                }
-
-                $timeout(function() {
-                    $scope.state.searchedUnits = unitMatches;
-                }, 100);
-
-            } else {
-                $scope.state.showUnits = false;
-            }
-        };
-
-        // when a unit is selected
-        $scope.unitSelected = function(unit){
-            console.log("selecting unit",unit);
-
-            // update view model
-            $scope.state.measurement.abbreviatedUnitName = unit.abbreviatedName;
-            $scope.state.showUnits = false;
         };
 
         // constructor
@@ -445,17 +362,9 @@ angular.module('starter')
                         $state.go(config.appSettings.defaultState);
                     }
                 }
-                populateUnits();
                 if (typeof analytics !== 'undefined')  { analytics.trackView("Add Measurement Controller"); }
                 $scope.hideLoader();
             }
-        };
-
-        var populateUnits = function () {
-            unitService.getUnits().then(function(unitObjects){
-                $scope.state.unitObjects = unitObjects;
-                $scope.hideLoader();
-            });
         };
         
         $scope.selectedDate = new Date();
@@ -523,8 +432,9 @@ angular.module('starter')
                 if (!$scope.state.measurement.variable) {
                     $scope.state.measurement.variable = $stateParams.variableObject.variableName;
                 }
-                if($stateParams.variableObject.abbreviatedUnitName){
+                if(!$scope.state.measurement.abbreviatedUnitName && $stateParams.variableObject.abbreviatedUnitName){
                     $scope.state.measurement.abbreviatedUnitName = $stateParams.variableObject.abbreviatedUnitName;
+                    //$scope.unitObject.abbreviatedName = $stateParams.variableObject.abbreviatedUnitName;
                 }
                 if($stateParams.variableObject.category){
                     $scope.state.measurement.variableCategoryName = $stateParams.variableObject.category;

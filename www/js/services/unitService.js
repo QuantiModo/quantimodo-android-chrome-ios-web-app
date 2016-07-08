@@ -1,6 +1,6 @@
 angular.module('starter')
     // Measurement Service
-    .factory('unitService', function($http, $q, QuantiModo, localStorageService, $rootScope){
+    .factory('unitService', function($http, $q, QuantiModo, localStorageService){
         
         // service methods
         var unitService = {
@@ -44,7 +44,7 @@ angular.module('starter')
                 var query = $scope.state.abbreviatedUnitName;
                 if(query !== ""){
                     $scope.state.showUnits = true;
-                    var matches = $scope.state.unitObjects.filter(function(unit) {
+                    var matches = $rootScope.unitObjects.filter(function(unit) {
                         return unit.abbreviatedName.toLowerCase().indexOf(query.toLowerCase()) !== -1;
                     });
 

@@ -5,7 +5,7 @@ angular.module('starter')
                                     measurementService, $ionicPopover, $ionicLoading, $state, $ionicHistory,
                                     QuantiModo, notificationService, $rootScope, localStorageService, reminderService,
                                     $ionicPopup, $ionicSideMenuDelegate, ratingService, migrationService,
-                                    ionicDatePicker) {
+                                    ionicDatePicker, unitService) {
 
         $rootScope.loaderImagePath = config.appSettings.loaderImagePath;
         $scope.appVersion = 1489;
@@ -288,6 +288,12 @@ angular.module('starter')
                 $state.go(config.appSettings.defaultState);
             }
         };
+
+        $scope.getUnits = function () {
+            unitService.getUnits().then(function (unitObjects) {
+                $rootScope.unitObjects = unitObjects;
+            });
+        };
         
         $scope.init = function () {
             console.log("Main Constructor Start");
@@ -304,6 +310,7 @@ angular.module('starter')
             migrationService.version1466();
             hideNavigationMenuIfSetInUrlParameter();
             //goToWelcomeStateIfNotWelcomed();
+            $scope.getUnits();
             scheduleReminder();
             goToDefaultStateIfLoggedInOnLoginState();
         };

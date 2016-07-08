@@ -87,7 +87,7 @@
                     </div>
                     <select ng-model="state.measurement.abbreviatedUnitName">
                         <option ng-selected="{{unitObject.abbreviatedName === state.measurement.abbreviatedUnitName}}"
-                                ng-repeat="unitObject in state.unitObjects"
+                                ng-repeat="unitObject in unitObjects"
                                 value="{{unitObject.abbreviatedName}}">
                             {{unitObject.name}} ({{unitObject.abbreviatedName}})
                         </option>

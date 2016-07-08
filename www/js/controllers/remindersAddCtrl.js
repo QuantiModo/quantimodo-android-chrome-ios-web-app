@@ -381,7 +381,6 @@ angular.module('starter')
             var isAuthorized = authService.checkAuthOrSendToLogin();
 
             if(isAuthorized){
-                $scope.getUnits();
                 var reminderIdUrlParameter = utilsService.getUrlParameter(window.location.href, 'reminderId');
                 var variableIdUrlParameter = utilsService.getUrlParameter(window.location.href, 'variableId');
 
@@ -411,30 +410,6 @@ angular.module('starter')
     	$scope.$on('$ionicView.enter', function(e){
     		$scope.init();
     	});
-        
-        $scope.unitSearch = function(){
-
-            var unitSearchQuery = $scope.state.trackingReminder.abbreviatedUnitName;
-            if(unitSearchQuery !== ""){
-                $scope.state.showUnits = true;
-                var unitMatches = $scope.state.unitObjects.filter(function(unit) {
-                    return unit.abbreviatedName.toLowerCase().indexOf(unitSearchQuery.toLowerCase()) !== -1;
-                });
-
-                if(unitMatches.length < 1){
-                    unitMatches = $scope.state.unitObjects.filter(function(unit) {
-                        return unit.name.toLowerCase().indexOf(unitSearchQuery.toLowerCase()) !== -1;
-                    });
-                }
-
-                $timeout(function() {
-                    $scope.state.searchedUnits = unitMatches;
-                }, 100);
-
-            } else {
-                $scope.state.showUnits = false;
-            }
-        };
 
         $scope.deleteReminder = function(){
             $scope.showLoader('Deleting ' + $scope.state.trackingReminder.variableName + ' reminder...');
@@ -479,9 +454,5 @@ angular.module('starter')
             $scope.showUnitsDropDown = true;
         };
 
-        $scope.getUnits = function () {
-			unitService.getUnits().then(function (unitObjects) {
-                $scope.state.unitObjects = unitObjects;
-            });
-        };
+
 	});

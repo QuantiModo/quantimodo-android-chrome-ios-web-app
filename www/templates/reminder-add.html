@@ -22,7 +22,7 @@
                     </div>
                     <select ng-model="state.trackingReminder.abbreviatedUnitName">
                         <option ng-selected="{{unitObject.abbreviatedName == state.trackingReminder.abbreviatedUnitName}}"
-                                ng-repeat="unitObject in state.unitObjects"
+                                ng-repeat="unitObject in unitObjects"
                                 value="{{unitObject.abbreviatedName}}">
                             {{unitObject.name}} ({{unitObject.abbreviatedName}})
                         </option>
