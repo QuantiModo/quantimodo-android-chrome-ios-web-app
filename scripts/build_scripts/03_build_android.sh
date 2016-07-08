@@ -82,7 +82,7 @@ echo "ionic platform add android for $LOWERCASE_APP_NAME Android app..."
 ionic platform add android
 
 echo "cordova plugin rm phonegap-facebook-plugin for $LOWERCASE_APP_NAME Android app..."
-cordova plugin rm phonegap-facebook-plugin
+cordova plugin rm phonegap-facebook-plugin || true
 echo "cordova plugin rm cordova-plugin-facebook4 for $LOWERCASE_APP_NAME Android app..."
 cordova plugin rm cordova-plugin-facebook4
 echo "rm -rf ../fbplugin for $LOWERCASE_APP_NAME Android app..."
