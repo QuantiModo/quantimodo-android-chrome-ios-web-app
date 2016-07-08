@@ -10,7 +10,7 @@ angular.module('starter')
         $rootScope.loaderImagePath = config.appSettings.loaderImagePath;
         $scope.appVersion = 1489;
         if(!$rootScope.loaderImagePath){
-            $rootScope.loaderImagePath = 'img/loader.gif';
+            $rootScope.loaderImagePath = 'img/circular-loader.gif';
         }
         $scope.controller_name = "AppCtrl";
         $scope.menu = config.appSettings.menu;
