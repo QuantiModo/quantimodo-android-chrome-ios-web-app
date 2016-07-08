@@ -48,8 +48,7 @@
     "cordova-plugin-datepicker",
     "cordova-plugin-file-opener2",
     "cordova-plugin-ios-non-exempt-encryption",
-    "cordova-plugin-email-composer",
-    "https://github.com/danwilson/google-analytics-plugin.git"
+    "cordova-plugin-email-composer"
   ],
   "cordovaPlatforms": [
     "android"
