@@ -4,8 +4,7 @@ angular.module('starter')
     .controller('MeasurementAddCtrl', function($scope, $ionicModal, $timeout, $ionicPopup ,$ionicLoading,
                                                      authService, measurementService, $state, $rootScope, $stateParams,
                                                      utilsService, localStorageService, $filter, $ionicScrollDelegate,
-                                                        variableCategoryService, ionicTimePicker, ionicDatePicker, variableService,
-                                                        unitService){
+                                                        variableCategoryService, ionicTimePicker, ionicDatePicker){
 
         $scope.controller_name = "MeasurementAddCtrl";
 
@@ -336,6 +335,7 @@ angular.module('starter')
             //$scope.showLoader();
             var isAuthorized = authService.checkAuthOrSendToLogin();
             if(isAuthorized){
+                $scope.getUnits();
                 if(!$scope.state.measurementIsSetup){
                     setupFromUrlParameters();
                 }

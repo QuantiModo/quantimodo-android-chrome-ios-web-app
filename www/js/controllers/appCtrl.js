@@ -306,6 +306,7 @@ angular.module('starter')
             if($rootScope.user){
                     $rootScope.setUserForIntercom($rootScope.user);
                     $rootScope.setUserForBugsnag($rootScope.user);
+                $scope.getUnits();
             }
             migrationService.version1466();
             hideNavigationMenuIfSetInUrlParameter();

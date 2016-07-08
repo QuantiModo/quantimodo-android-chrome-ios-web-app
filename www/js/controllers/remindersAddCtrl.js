@@ -381,6 +381,7 @@ angular.module('starter')
             var isAuthorized = authService.checkAuthOrSendToLogin();
 
             if(isAuthorized){
+                $scope.getUnits();
                 var reminderIdUrlParameter = utilsService.getUrlParameter(window.location.href, 'reminderId');
                 var variableIdUrlParameter = utilsService.getUrlParameter(window.location.href, 'variableId');
 
