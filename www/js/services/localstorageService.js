@@ -5,7 +5,7 @@
 
 angular.module('starter')
 
-    .factory('localStorageService',function(utilsService, $rootScope){
+    .factory('localStorageService',function(utilsService, $rootScope, $q){
 
         return{
 
@@ -19,6 +19,37 @@ angular.module('starter')
                 } else {
                     localStorage.removeItem(keyIdentifier+key);
                 }
+            },
+
+            deleteElementOfItemById : function(localStorageItemName, elementId){
+                var deferred = $q.defer();
+                var localStorageItemArray = JSON.parse(this.getItemSync(localStorageItemName));
+                var elementsToKeep = [];
+                for(var i = 0; i < localStorageItemArray.length; i++){
+                    if(localStorageItemArray[i].id !== elementId){
+                        elementsToKeep.push(localStorageItemArray[i]);
+                    }
+                }
+                this.setItem(localStorageItemName, JSON.stringify(elementsToKeep));
+                deferred.resolve();
+                return deferred.promise;
+            },
+
+            replaceElementOfItemById : function(localStorageItemName, replacementElement){
+                var deferred = $q.defer();
+                var localStorageItemArray = JSON.parse(this.getItemSync(localStorageItemName));
+                var elementsToKeep = [];
+                for(var i = 0; i < localStorageItemArray.length; i++){
+                    if(localStorageItemArray[i].id !== replacementElement.id){
+                        elementsToKeep.push(localStorageItemArray[i]);
+                    }
+                    if(localStorageItemArray[i].id === replacementElement.id){
+                        elementsToKeep.push(replacementElement);
+                    }
+                }
+                this.setItem(localStorageItemName, JSON.stringify(elementsToKeep));
+                deferred.resolve();
+                return deferred.promise;
             },
 
             setItem:function(key, value){

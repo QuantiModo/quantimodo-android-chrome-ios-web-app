@@ -241,6 +241,7 @@ angular.module('starter')
             $scope.state.trackingReminder.valueAndFrequencyTextDescription = $scope.state.selectedFrequency;
             $scope.state.trackingReminder.reminderStartTime = $scope.state.reminderStartTimeStringUtc;
 
+            localStorageService.replaceElementOfItemById('trackingReminders', $scope.state.trackingReminder);
 	    	reminderService.addNewReminder($scope.state.trackingReminder)
 	    	.then(function(){
 

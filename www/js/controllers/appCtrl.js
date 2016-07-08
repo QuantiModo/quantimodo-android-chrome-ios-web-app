@@ -441,12 +441,13 @@ angular.module('starter')
         };
 
         $scope.showLoader = function (loadingText) {
+            $rootScope.isSyncing = true;
             console.debug('Showing Loader');
             if(!loadingText){
                 loadingText = '';
             }
             $scope.loading = true;
-            $ionicLoading.show({
+/*            $ionicLoading.show({
                 template: loadingText+ '<br><br><img src={{loaderImagePath}}>',
                 content: 'Loading',
                 animation: 'fade-in',
@@ -457,7 +458,9 @@ angular.module('starter')
                 hideOnStateChange: true,
                 duration: 15000
             });
+            */
             $timeout(function () {
+                $rootScope.isSyncing = false;
                 $ionicLoading.hide();
 
             }, 15000);
@@ -466,6 +469,7 @@ angular.module('starter')
         
 
         $scope.hideLoader = function () {
+            $rootScope.isSyncing = false;
             $scope.loading = false;
             $ionicLoading.hide();
         };
