@@ -8,6 +8,19 @@ angular.module('starter')
 
         $scope.showCharts = false;
         $scope.showRatingFaces = true;
+        // flags
+        $scope.timeRemaining = false;
+        $scope.averagePrimaryOutcomeVariableImage = false;
+        $scope.averagePrimaryOutcomeVariableValue = false;
+        $scope.lineChartData = null;
+        $scope.barChartData = null;
+        $scope.showRatingFaces = true;
+
+        // chart flags
+        $scope.lineChartConfig = false;
+        $scope.barChartConfig = false;
+        $scope.redrawLineChart = true;
+        $scope.redrawBarChart = true;
 
         $scope.storeRatingLocalAndServerAndUpdateCharts = function (numericRatingValue) {
 
@@ -154,19 +167,6 @@ angular.module('starter')
         $scope.init = function(){
             Bugsnag.context = "trackPrimary";
 
-            // flags
-            $scope.timeRemaining = false;
-            $scope.averagePrimaryOutcomeVariableImage = false;
-            $scope.averagePrimaryOutcomeVariableValue = false;
-            $scope.lineChartData = null;
-            $scope.barChartData = null;
-            $scope.showRatingFaces = true;
-
-            // chart flags
-            $scope.lineChartConfig = false; 
-            $scope.barChartConfig = false;
-            $scope.redrawLineChart = true;
-            $scope.redrawBarChart = true;
             $scope.showHelpInfoPopupIfNecessary();
             if (typeof analytics !== 'undefined')  { analytics.trackView("Track Primary Outcome Controller"); }
             $ionicLoading.hide();

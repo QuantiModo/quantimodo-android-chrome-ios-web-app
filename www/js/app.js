@@ -278,7 +278,7 @@ angular.module('starter',
 
         .state('app.reminderSearch', {
             url: "/reminderSearch",
-            cache:false,
+            //cache:false,
             params: {
                 variableCategoryName : null,
                 fromState : null,
@@ -385,7 +385,7 @@ angular.module('starter',
         })
       .state('app.searchCommonRelationships', {
           url: "/search-common-relationships",
-          cache:false,
+          //cache:false,
           views: {
               'menuContent': {
                   templateUrl: "templates/iframe-embed.html",
@@ -395,7 +395,7 @@ angular.module('starter',
       })
       .state('app.search-user-relationships', {
           url: "/search-user-relationships",
-          cache:false,
+          //cache:false,
           views: {
               'menuContent': {
                   templateUrl: "templates/iframe-embed.html",
@@ -405,7 +405,7 @@ angular.module('starter',
       })
       .state('app.negative', {
           url: "/negative",
-          cache:false,
+          //cache:false,
           views: {
               'menuContent': {
                   templateUrl: "templates/negative.html",
@@ -415,7 +415,7 @@ angular.module('starter',
       })
       .state('app.positive', {
           url: "/positive",
-          cache:false,
+          //cache:false,
           views: {
               'menuContent': {
                   templateUrl: "templates/positive.html",
@@ -509,7 +509,7 @@ angular.module('starter',
       })
         .state('app.historyAll', {
             url: "/history-all",
-            cache: false,
+            //cache: false,
             params: {
                 variableCategoryName : null,
                 fromState : null,
