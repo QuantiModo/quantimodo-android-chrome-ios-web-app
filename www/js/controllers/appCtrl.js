@@ -311,7 +311,6 @@ angular.module('starter')
             migrationService.version1466();
             hideNavigationMenuIfSetInUrlParameter();
             //goToWelcomeStateIfNotWelcomed();
-            $scope.getUnits();
             scheduleReminder();
             goToDefaultStateIfLoggedInOnLoginState();
         };
