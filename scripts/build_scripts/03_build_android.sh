@@ -1,6 +1,6 @@
 #!/bin/bash
 
-mkdir "$DROPBOX_PATH/QuantiModo/apps/$LOWERCASE_APP_NAME"
+mkdir "$DROPBOX_PATH/QuantiModo/apps/$LOWERCASE_APP_NAME"  || true
 
 if [ -z "$LOWERCASE_APP_NAME" ]
   then
