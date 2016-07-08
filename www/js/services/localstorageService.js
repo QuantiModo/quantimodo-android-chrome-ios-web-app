@@ -90,6 +90,28 @@ angular.module('starter')
                 }
             },
 
+            getElementsFromItemWithProperty: function (localStorageItemName, filterPropertyName, filterPropertyValue) {
+                var keyIdentifier = config.appSettings.appStorageIdentifier;
+                var unfilteredElementArray = [];
+                var matchingElements = [];
+                if ($rootScope.isChromeApp) {
+                    // Code running in a Chrome extension (content script, background page, etc.)
+                    chrome.storage.local.get(keyIdentifier+localStorageItemName,function(localStorageItems){
+                        unfilteredElementArray = localStorageItems[keyIdentifier + localStorageItemName];
+                    });
+                } else {
+                    unfilteredElementArray = localStorage.getItem(keyIdentifier + localStorageItemName);
+                }
+
+                for(var i = 0; i < unfilteredElementArray.length; i++){
+                    if(unfilteredElementArray[i][filterPropertyName] === filterPropertyValue){
+                        matchingElements.push(unfilteredElementArray[i]);
+                    }
+                }
+                
+                return matchingElements;
+            },
+
             getItemAsObject: function (key) {
                 var keyIdentifier = config.appSettings.appStorageIdentifier;
                 if ($rootScope.isChromeApp) {
