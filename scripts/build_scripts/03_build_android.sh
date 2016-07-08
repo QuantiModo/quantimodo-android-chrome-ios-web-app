@@ -95,8 +95,8 @@ cordova plugin add cordova-plugin-facebook4@1.7.1 --save --variable APP_ID="${FA
 #echo "gulp addFacebookPlugin for $LOWERCASE_APP_NAME Android app..."
 #gulp addGooglePlusPlugin
 
-echo "cordova plugin add cordova-plugin-googleplus@4.0.8 REVERSED_CLIENT_ID=${REVERSED_CLIENT_ID} for $LOWERCASE_APP_NAME Android app..."
-cordova plugin add cordova-plugin-googleplus@4.0.8 --variable REVERSED_CLIENT_ID=${REVERSED_CLIENT_ID}
+echo "cordova plugin add https://github.com/mikepsinn/cordova-plugin-googleplus.git REVERSED_CLIENT_ID=${REVERSED_CLIENT_ID} for $LOWERCASE_APP_NAME Android app..."
+cordova plugin add https://github.com/mikepsinn/cordova-plugin-googleplus.git --variable REVERSED_CLIENT_ID=${REVERSED_CLIENT_ID}
 
 #echo "cordova plugin add cordova-fabric-plugin --variable FABRIC_API_KEY=${FABRIC_API_KEY} --variable FABRIC_API_SECRET=${FABRIC_API_SECRET} for $LOWERCASE_APP_NAME Android app..."
 #cordova plugin add cordova-fabric-plugin --variable FABRIC_API_KEY=${FABRIC_API_KEY} --variable FABRIC_API_SECRET=${FABRIC_API_SECRET}
