@@ -283,6 +283,7 @@ angular.module('starter')
 				console.log("error", response);
 			});
 		};
+/*
 
 	    // When Export is tapped
 	    $scope.export = function(){
@@ -307,6 +308,7 @@ angular.module('starter')
 				});
 	    	});
 	    };
+*/
 
 	    // call constructor
 	    $scope.init();
