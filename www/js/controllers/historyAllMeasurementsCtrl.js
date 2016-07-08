@@ -90,13 +90,6 @@ angular.module('starter')
 						Bugsnag.notify(err, JSON.stringify(err), {}, "error");
                         console.log("error getting variable categories", err);
                     });
-                unitService.getUnits()
-                    .then(function(units){
-                        $scope.state.unitObjects = units;
-                    }, function(err){
-						Bugsnag.notify(err, JSON.stringify(err), {}, "error");
-                        console.log("error getting units", err);
-                    });
                 getHistory();
 			}
 	    };
