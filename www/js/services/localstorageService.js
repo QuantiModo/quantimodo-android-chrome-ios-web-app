@@ -5,7 +5,7 @@
 
 angular.module('starter')
 
-    .factory('localStorageService',function(utilsService, $rootScope){
+    .factory('localStorageService',function(utilsService, $rootScope, $q){
 
         return{
 
@@ -19,6 +19,37 @@ angular.module('starter')
                 } else {
                     localStorage.removeItem(keyIdentifier+key);
                 }
+            },
+
+            deleteElementOfItemById : function(localStorageItemName, elementId){
+                var deferred = $q.defer();
+                var localStorageItemArray = JSON.parse(this.getItemSync(localStorageItemName));
+                var elementsToKeep = [];
+                for(var i = 0; i < localStorageItemArray.length; i++){
+                    if(localStorageItemArray[i].id !== elementId){
+                        elementsToKeep.push(localStorageItemArray[i]);
+                    }
+                }
+                this.setItem(localStorageItemName, JSON.stringify(elementsToKeep));
+                deferred.resolve();
+                return deferred.promise;
+            },
+
+            replaceElementOfItemById : function(localStorageItemName, replacementElement){
+                var deferred = $q.defer();
+                var localStorageItemArray = JSON.parse(this.getItemSync(localStorageItemName));
+                var elementsToKeep = [];
+                for(var i = 0; i < localStorageItemArray.length; i++){
+                    if(localStorageItemArray[i].id !== replacementElement.id){
+                        elementsToKeep.push(localStorageItemArray[i]);
+                    }
+                    if(localStorageItemArray[i].id === replacementElement.id){
+                        elementsToKeep.push(replacementElement);
+                    }
+                }
+                this.setItem(localStorageItemName, JSON.stringify(elementsToKeep));
+                deferred.resolve();
+                return deferred.promise;
             },
 
             setItem:function(key, value){
@@ -57,6 +88,28 @@ angular.module('starter')
                 } else {
                     return localStorage.getItem(keyIdentifier+key);
                 }
+            },
+
+            getElementsFromItemWithProperty: function (localStorageItemName, filterPropertyName, filterPropertyValue) {
+                var keyIdentifier = config.appSettings.appStorageIdentifier;
+                var unfilteredElementArray = [];
+                var matchingElements = [];
+                if ($rootScope.isChromeApp) {
+                    // Code running in a Chrome extension (content script, background page, etc.)
+                    chrome.storage.local.get(keyIdentifier+localStorageItemName,function(localStorageItems){
+                        unfilteredElementArray = localStorageItems[keyIdentifier + localStorageItemName];
+                    });
+                } else {
+                    unfilteredElementArray = localStorage.getItem(keyIdentifier + localStorageItemName);
+                }
+
+                for(var i = 0; i < unfilteredElementArray.length; i++){
+                    if(unfilteredElementArray[i][filterPropertyName] === filterPropertyValue){
+                        matchingElements.push(unfilteredElementArray[i]);
+                    }
+                }
+                
+                return matchingElements;
             },
 
             getItemAsObject: function (key) {

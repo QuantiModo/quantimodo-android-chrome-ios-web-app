@@ -1,6 +1,6 @@
 angular.module('starter')
 	// Measurement Service
-	.factory('reminderService', function($http, $q, QuantiModo, timeService, notificationService){
+	.factory('reminderService', function($http, $q, QuantiModo, timeService, notificationService, localStorageService){
 
 		// service methods
 		var reminderService = {
@@ -21,11 +21,15 @@ angular.module('starter')
 				return deferred.promise;
 			},
 
-			skipReminderNotification : function(reminderId){
+			skipReminderNotification : function(trackingReminderNotificationId){
 				var deferred = $q.defer();
 
-				QuantiModo.skipTrackingReminder(reminderId, function(response){
-					if(response.success) deferred.resolve();
+				localStorageService.deleteElementOfItemById('trackingReminderNotifications', trackingReminderNotificationId);
+
+				QuantiModo.skipTrackingReminder(trackingReminderNotificationId, function(response){
+					if(response.success) {
+						deferred.resolve();
+                    }
 					else {
 						deferred.reject();
 					}
@@ -37,10 +41,11 @@ angular.module('starter')
 				return deferred.promise;
 			},
 
-			trackReminderNotification : function(reminderId, modifiedReminderValue){
+			trackReminderNotification : function(trackingReminderNotificationId, modifiedReminderValue){
 				var deferred = $q.defer();
+				localStorageService.deleteElementOfItemById('trackingReminderNotifications', trackingReminderNotificationId);
 
-				QuantiModo.trackTrackingReminder(reminderId, modifiedReminderValue, function(response){
+				QuantiModo.trackTrackingReminder(trackingReminderNotificationId, modifiedReminderValue, function(response){
 					if(response.success) {
 						deferred.resolve();
 					}
@@ -55,11 +60,14 @@ angular.module('starter')
 				return deferred.promise;
 			},
 
-			snoozeReminderNotification : function(reminderId){
+			snoozeReminderNotification : function(trackingReminderNotificationId){
 				var deferred = $q.defer();
+				localStorageService.deleteElementOfItemById('trackingReminderNotifications', trackingReminderNotificationId);
 
-				QuantiModo.snoozeTrackingReminder(reminderId, function(response){
-					if(response.success) deferred.resolve();
+				QuantiModo.snoozeTrackingReminder(trackingReminderNotificationId, function(response){
+					if(response.success) {
+						deferred.resolve();
+                    }
 					else {
 						deferred.reject();
 					}
@@ -74,15 +82,16 @@ angular.module('starter')
 			getTrackingReminders : function(category, reminderId){
 
 				var deferred = $q.defer();
-				var params = typeof category != "undefined" && category != "" ? {variableCategoryName : category} : {};
+				var params = typeof category !== "undefined" && category !== "" ? {variableCategoryName : category} : {};
 				if(reminderId){
 					params = {id : reminderId};
 				}
 				QuantiModo.getTrackingReminders(params, function(remindersResponse){
 					var trackingReminders = remindersResponse.data;
 					if(remindersResponse.success) {
-						if(!category){
+						if(!category && !reminderId){
 							notificationService.scheduleAllNotifications(trackingReminders);
+							localStorageService.setItem('trackingReminders', JSON.stringify(trackingReminders));
 						}
 						deferred.resolve(trackingReminders);
 					}
@@ -132,9 +141,13 @@ angular.module('starter')
 				}
 
 				var deferred = $q.defer();
-				QuantiModo.getTrackingReminderNotifications(params, function(reminders){
-					if(reminders.success) {
-						deferred.resolve(reminders.data);
+				QuantiModo.getTrackingReminderNotifications(params, function(trackingReminderNotifications){
+					if(trackingReminderNotifications.success) {
+						if(!today && !category){
+							localStorageService.setItem('trackingReminderNotifications', JSON.stringify(trackingReminderNotifications.data));
+						}
+
+						deferred.resolve(trackingReminderNotifications.data);
 					}
 					else {
 						deferred.reject("error");
@@ -149,6 +162,8 @@ angular.module('starter')
 
 			deleteReminder : function(reminderId){
 				var deferred = $q.defer();
+
+				localStorageService.deleteElementOfItemById('trackingReminders', reminderId);
 
 				QuantiModo.deleteTrackingReminder(reminderId, function(response){
 					if(response.success) {

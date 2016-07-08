@@ -15,10 +15,8 @@ angular.module('starter')
 	    	selectedReminder : false,
 	    	reminderDefaultValue : "",
 	    	selected1to5Value : false,
-	    	allReminders : [
-	    	],
-	    	filteredReminders : [
-	    	],
+	    	allReminders : [],
+	    	filteredReminders : [],
 	    	measurementDate : new Date(),
 	    	slots : {
 				epochTime: new Date().getTime()/1000,
@@ -53,40 +51,41 @@ angular.module('starter')
 
 		};
 
-	    var getTrackingReminders = function(){
-
-			if($scope.state.allReminders.length < 1) {
+		function getTrackingRemindersFromLocalStorage(){
+			$scope.state.allReminders = [];
+			var unfilteredReminders = JSON.parse(localStorageService.getItemSync('trackingReminders'));
+			if(unfilteredReminders) {
 				if($stateParams.variableCategoryName) {
-					$scope.showLoader('Fetching ' + $stateParams.variableCategoryName.toLowerCase() + '...');
+					for(var j = 0; j < unfilteredReminders.length; j++){
+						if($stateParams.variableCategoryName === unfilteredReminders[j].variableCategoryName){
+							$scope.state.allReminders.push(unfilteredReminders[j]);
+						}
+					}
 				} else {
-					//$scope.showLoader('Fetching reminders...');
-					$scope.showLoader();
+					$scope.state.allReminders = unfilteredReminders;
 				}
-
-				reminderService.getTrackingReminders($stateParams.variableCategoryName)
-					.then(function(reminders){
-						reminders = reminderService.addRatingTimesToDailyReminders(reminders);
-						$scope.state.allReminders = reminders;
-						$ionicLoading.hide();
-						$scope.loading = false;
-					}, function(){
-						$ionicLoading.hide();
-						$scope.loading = false;
-						$state.go('app.login');
-					});
 			}
 
-			 if($scope.state.allReminders.length > 0 && $rootScope.updatedReminder){
-			 	var updatedRemindersArray = [];
-				 updatedRemindersArray.push($rootScope.updatedReminder);
-			 	for (var i = 0; i < $scope.state.allReminders.length; i++) {
-			 		if($rootScope.updatedReminder.id !== $scope.state.allReminders[i].id ){
-			 			updatedRemindersArray.push($scope.state.allReminders[i]);
-			 		}
-			 	}
-			 	$scope.state.allReminders = updatedRemindersArray;
-			 	$rootScope.updatedReminder = null;
-			 }
+			if ($stateParams.variableCategoryName) {
+				$scope.showLoader('Fetching ' + $stateParams.variableCategoryName.toLowerCase() + '...');
+			} else {
+				//$scope.showLoader('Fetching reminders...');
+				$scope.showLoader();
+			}
+		}
+
+		var getTrackingReminders = function(){
+
+			reminderService.getTrackingReminders($stateParams.variableCategoryName)
+				.then(function(reminders){
+					reminders = reminderService.addRatingTimesToDailyReminders(reminders);
+					$scope.state.allReminders = reminders;
+					$ionicLoading.hide();
+				}, function(){
+					$ionicLoading.hide();
+					$state.go('app.login');
+				});
+
 	    };
 
 	    $scope.cancel = function(){
@@ -119,6 +118,7 @@ angular.module('starter')
 	    // constructor
 	    $scope.init = function(){
 			Bugsnag.context = "reminderManage";
+			getTrackingRemindersFromLocalStorage();
 			var isAuthorized = authService.checkAuthOrSendToLogin();
 			if (typeof analytics !== 'undefined')  { analytics.trackView("Manage Reminders Controller"); }
 			if(isAuthorized){
@@ -158,14 +158,13 @@ angular.module('starter')
 
 
 	    $scope.deleteReminder = function(reminder, $index){
-			$scope.state.allReminders[$index].hide = true;
-			//$scope.showLoader('Deleting ' + reminder.variableName.toLowerCase() + ' reminder...');
+			localStorageService.deleteElementOfItemById('trackingReminders', reminder.id).then(function(){
+					getTrackingRemindersFromLocalStorage();
+				});
+
 			reminderService.deleteReminder(reminder.id)
 	    	.then(function(){
-				//$ionicLoading.hide();
-				//$scope.loading = false;
-	    		//utilsService.showAlert(reminder.variableName + ' reminder deleted');
-	    		//$scope.init();
+
 	    	}, function(err){
 				Bugsnag.notify(err, JSON.stringify(err), {}, "error");
 	    		$ionicLoading.hide();

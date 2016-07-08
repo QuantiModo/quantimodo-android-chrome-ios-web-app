@@ -84,15 +84,17 @@ angular.module('starter')
         
         $scope.init = function(){
             Bugsnag.context = "variableSearch";
-            $scope.loading = true;
-            $scope.showLoader();
+            //$scope.loading = true;
+            //$scope.showLoader();
             if (typeof analytics !== 'undefined')  { analytics.trackView("Variable Search Controller"); }
             var isAuthorized = authService.checkAuthOrSendToLogin();
             if(isAuthorized){
                 $scope.showHelpInfoPopupIfNecessary();
                 $scope.state.showVariableSearchCard = true;
-                populateUserVariables();
-                $ionicLoading.hide();
+                if($scope.state.variableSearchResults < 10){
+                    populateUserVariables();
+                }
+                //$ionicLoading.hide();
             } 
         };
 
@@ -115,7 +117,7 @@ angular.module('starter')
                             }
                         });
                 }
-                else { // on add reminder or record meausurement search pages; include public variables
+                else { // on add reminder or record measurement search pages; include public variables
                     variableService.searchVariablesIncludePublic($scope.state.variableSearchQuery, $scope.state.variableCategoryName)
                         .then(function(variables){
                             // populate list with results
@@ -151,14 +153,14 @@ angular.module('starter')
             }
             $scope.state.showAddVariableButton = false;
             $scope.state.searching = true;
-            if($stateParams.variableCategoryName){
+/*            if($stateParams.variableCategoryName){
                 $scope.showLoader('Fetching most recent ' +
                     $filter('wordAliases')($stateParams.variableCategoryName.toLowerCase()) + '...');
             } else {
                 if (!reset) {
                     $scope.showLoader('Fetching most recent variables...');
                 }
-            }
+            }*/
             
             variableService.getUserVariablesByCategory($scope.state.variableCategoryName)
                 .then(function(variables){
