@@ -331,10 +331,6 @@ angular.module('starter')
 
         // constructor
         $scope.init = function(){
-            $scope.state.abbreviatedUnitNames = [];
-            for(var i =0; i< $rootScope.unitObjects.length; i++){
-                $scope.state.abbreviatedUnitNames[i] = $rootScope.unitObjects[i].abbreviatedName;
-            }
             Bugsnag.context = "measurementAdd";
             //$scope.showLoader();
             var isAuthorized = authService.checkAuthOrSendToLogin();

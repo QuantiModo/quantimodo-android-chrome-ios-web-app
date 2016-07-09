@@ -290,8 +290,13 @@ angular.module('starter')
         };
 
         $scope.getUnits = function () {
+            $scope.state.abbreviatedUnitNames = [];
             unitService.getUnits().then(function (unitObjects) {
                 $rootScope.unitObjects = unitObjects;
+                console.debug("Got units", $rootScope.unitObjects);
+                for(var i =0; i< $rootScope.unitObjects.length; i++){
+                    $rootScope.abbreviatedUnitNames[i] = $rootScope.unitObjects[i].abbreviatedName;
+                }
             });
         };
         
