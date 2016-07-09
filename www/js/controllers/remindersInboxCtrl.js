@@ -183,10 +183,14 @@ angular.module('starter')
 
 			if($scope.state.filteredReminders.length < 1){
 				$scope.showLoader('Syncing reminder notifications...');
-				getCurrentTrackingReminderNotificationsFromApiQuickly();
+				// Disabled because we could act on a notification and then when the full notification sync completes, the notification would come back
+				// Might be able to solve with a notification sync queue that is sent after a full sync and removes the notifications from local storage
+				//getCurrentTrackingReminderNotificationsFromApiQuickly();1
 			} else {
-				refreshAllReminderNotificationsAndUpdateView();
+				//refreshAllReminderNotificationsAndUpdateView();
 			}
+
+			refreshAllReminderNotificationsAndUpdateView();
 
 			if($scope.state.filteredReminders > 3){
 				$scope.state.showButtons = false;

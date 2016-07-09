@@ -166,17 +166,27 @@ angular.module('starter')
 				}
 
 				var deferred = $q.defer();
-				QuantiModo.getCurrentTrackingReminderNotifications(params, function(trackingReminderNotifications){
-					if(trackingReminderNotifications.success) {
+
+				var successHandler = function(trackingReminderNotifications) {
+					if (trackingReminderNotifications.success) {
 						deferred.resolve(trackingReminderNotifications.data);
 					}
 					else {
 						deferred.reject("error");
 					}
-				}, function(err){
+				};
+
+				var errorHandler = function(err){
 					Bugsnag.notify(err, JSON.stringify(err), {}, "error");
 					deferred.reject(err);
-				});
+				};
+
+
+				QuantiModo.get('api/v1/trackingReminderNotifications',
+					['variableCategoryName', 'id', 'sort', 'limit','offset','updatedAt', 'reminderTime'],
+					params,
+					successHandler,
+					errorHandler);
 
 				return deferred.promise;
 			},

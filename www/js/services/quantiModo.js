@@ -435,22 +435,6 @@ angular.module('starter')
                      errorHandler);
             };
 
-            QuantiModo.getCurrentTrackingReminderNotifications = function(params){
-                var defer = $q.defer();
-                var errorCallback = function(response){
-                    defer.resolve(response);
-                };
-            
-                var successCallback =  function(response){
-                    defer.resolve(response);
-                };
-            
-                getTrackingReminderNotifications(params,successCallback,errorCallback);
-            
-                return defer.promise;
-            };
-        
-
             QuantiModo.getAllTrackingReminderNotifications = function(params){
                 var defer = $q.defer();
                 var responseArray = [];
