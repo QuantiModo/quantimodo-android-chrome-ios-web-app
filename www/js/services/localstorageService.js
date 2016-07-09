@@ -40,18 +40,13 @@ angular.module('starter')
                 var found = false;
                 var localStorageItemArray = JSON.parse(this.getItemSync(localStorageItemName));
                 var elementsToKeep = [];
+                elementsToKeep.push(replacementElement);
                 for(var i = 0; i < localStorageItemArray.length; i++){
                     if(localStorageItemArray[i].id !== replacementElement.id){
                         elementsToKeep.push(localStorageItemArray[i]);
                     }
-                    if(localStorageItemArray[i].id === replacementElement.id){
-                        elementsToKeep.push(replacementElement);
-                        found = true;
-                    }
                 }
-                if(!found){
-                    elementsToKeep.push(replacementElement);
-                }
+                console.log(JSON.stringify(elementsToKeep));
                 this.setItem(localStorageItemName, JSON.stringify(elementsToKeep));
                 deferred.resolve();
                 return deferred.promise;
@@ -107,11 +102,14 @@ angular.module('starter')
                         matchingElements = JSON.parse(localStorageItems[keyIdentifier + localStorageItemName]);
                     });
                 } else {
+                    console.log(localStorage.getItem(keyIdentifier + localStorageItemName));
                     matchingElements = JSON.parse(localStorage.getItem(keyIdentifier + localStorageItemName));
                 }
                 
                 if(filterPropertyName && filterPropertyValue){
-                    unfilteredElementArray = matchingElements;
+                    if(matchingElements){
+                        unfilteredElementArray = matchingElements;
+                    }
                     matchingElements = [];
                     for(var i = 0; i < unfilteredElementArray.length; i++){
                         if(unfilteredElementArray[i][filterPropertyName] === filterPropertyValue){
@@ -121,7 +119,9 @@ angular.module('starter')
                 }
                 
                 if(lessThanPropertyName && lessThanPropertyValue){
-                    unfilteredElementArray = matchingElements;
+                    if(matchingElements){
+                        unfilteredElementArray = matchingElements;
+                    };
                     matchingElements = [];
                     for(i = 0; i < unfilteredElementArray.length; i++){
                         if(unfilteredElementArray[i][lessThanPropertyName] < lessThanPropertyValue){
@@ -131,7 +131,9 @@ angular.module('starter')
                 }
 
                 if(greaterThanPropertyName && greaterThanPropertyValue){
-                    unfilteredElementArray = matchingElements;
+                    if(matchingElements){
+                        unfilteredElementArray = matchingElements;
+                    }
                     matchingElements = [];
                     for(i = 0; i < unfilteredElementArray.length; i++){
                         if(unfilteredElementArray[i][greaterThanPropertyName] > greaterThanPropertyValue){

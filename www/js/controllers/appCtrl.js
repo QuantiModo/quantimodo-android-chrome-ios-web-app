@@ -290,7 +290,7 @@ angular.module('starter')
         };
 
         $scope.getUnits = function () {
-            $scope.state.abbreviatedUnitNames = [];
+            $rootScope.abbreviatedUnitNames = [];
             unitService.getUnits().then(function (unitObjects) {
                 $rootScope.unitObjects = unitObjects;
                 console.debug("Got units", $rootScope.unitObjects);
