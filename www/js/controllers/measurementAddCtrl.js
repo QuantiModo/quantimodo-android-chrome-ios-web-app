@@ -331,6 +331,10 @@ angular.module('starter')
 
         // constructor
         $scope.init = function(){
+            $scope.state.abbreviatedUnitNames = [];
+            for(var i =0; i< $rootScope.unitObjects.length; i++){
+                $scope.state.abbreviatedUnitNames[i] = $rootScope.unitObjects[i].abbreviatedName;
+            }
             Bugsnag.context = "measurementAdd";
             //$scope.showLoader();
             var isAuthorized = authService.checkAuthOrSendToLogin();
@@ -513,31 +517,8 @@ angular.module('starter')
             $scope.selectedDate = new Date(measurementObject.startTimeEpoch * 1000);
             $scope.selectedHours = $scope.selectedDate.getHours();
             $scope.selectedMinutes = $scope.selectedDate.getMinutes();
-
-            // Not used
-            /*
-            $scope.datePickerObj = {
-                inputDate: $scope.selectedDate,
-                setLabel: 'Set',
-                todayLabel: 'Today',
-                closeLabel: 'Cancel',
-                mondayFirst: false,
-                weeksList: ["S", "M", "T", "W", "T", "F", "S"],
-                monthsList: ["Jan", "Feb", "March", "April", "May", "June", "July", "Aug", "Sept", "Oct", "Nov", "Dec"],
-                templateType: 'popup',
-                from: new Date(2012, 8, 1),
-                to: new Date(),
-                showTodayButton: true,
-                dateFormat: 'dd MMMM yyyy',
-                closeOnSelect: false
-            };
-            */
-
-            console.log('track : ' , measurementObject);
-
             $scope.state.title = "Edit Measurement";
             $scope.state.measurement = measurementObject;
-            //$scope.state.measurementDate = moment(measurementObject.startTimeEpoch)._d;
             $scope.state.measurementIsSetup = true;
             setupValueFieldType($scope.state.measurement.abbreviatedUnitName,
                 $scope.state.measurement.variableDescription);
