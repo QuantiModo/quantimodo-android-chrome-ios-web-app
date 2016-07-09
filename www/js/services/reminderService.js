@@ -79,6 +79,31 @@ angular.module('starter')
 				return deferred.promise;
 			},
 
+			refreshTrackingReminders : function(){
+
+				var deferred = $q.defer();
+
+				var params = {};
+
+				QuantiModo.getTrackingReminders(params, function(remindersResponse){
+					var trackingReminders = remindersResponse.data;
+					if(remindersResponse.success) {
+						notificationService.scheduleAllNotifications(trackingReminders);
+						localStorageService.setItem('trackingReminders', JSON.stringify(trackingReminders));
+						deferred.resolve(trackingReminders);
+					}
+					else {
+						deferred.reject("error");
+						Bugsnag.notify(remindersResponse, JSON.stringify(remindersResponse), {}, "error");
+					}
+				}, function(err){
+					Bugsnag.notify(err, JSON.stringify(err), {}, "error");
+					deferred.reject(err);
+				});
+
+				return deferred.promise;
+			},
+
 			getTrackingReminders : function(category, reminderId){
 
 				var deferred = $q.defer();
@@ -136,7 +161,7 @@ angular.module('starter')
 				return trackingReminderNotifications;
 			},			
 
-			getTrackingReminderNotifications : function(){
+			refreshTrackingReminderNotifications : function(){
 				var params = {
 					offset: 0,
 					limit: 200

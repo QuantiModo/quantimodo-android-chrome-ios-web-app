@@ -83,6 +83,19 @@ angular.module('starter')
                 return deferred.promise;
             },
 
+            refreshUserVariables : function(){
+                var deferred = $q.defer();
+
+                QuantiModo.getUserVariables(null, function(userVariables){
+                    localStorageService.setItem('userVariables', JSON.stringify(userVariables));
+                    deferred.resolve(userVariables);
+                }, function(){
+                    deferred.reject(false);
+                });
+
+                return deferred.promise;
+            },
+
             getUserVariables : function(variableCategoryName){
                 var deferred = $q.defer();
 

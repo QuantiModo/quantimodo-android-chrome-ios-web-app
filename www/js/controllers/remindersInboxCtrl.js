@@ -150,7 +150,7 @@ angular.module('starter')
 				$scope.showLoader('Syncing reminder notifications...');
 			}
 
-	    	reminderService.getTrackingReminderNotifications()
+	    	reminderService.refreshTrackingReminderNotifications()
 	    	.then(function(){
 
 				var trackingReminderNotifications =
@@ -259,7 +259,7 @@ angular.module('starter')
 			if (typeof analytics !== 'undefined')  { analytics.trackView("Reminders Inbox Controller"); }
 			if(isAuthorized){
 				$scope.showHelpInfoPopupIfNecessary();
-				getTrackingReminderNotifications();
+				refreshTrackingReminderNotifications();
 				//update alarms and local notifications
 				reminderService.getTrackingReminders();
 			}

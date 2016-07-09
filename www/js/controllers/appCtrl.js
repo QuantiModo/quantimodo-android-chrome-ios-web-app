@@ -5,7 +5,7 @@ angular.module('starter')
                                     measurementService, $ionicPopover, $ionicLoading, $state, $ionicHistory,
                                     QuantiModo, notificationService, $rootScope, localStorageService, reminderService,
                                     $ionicPopup, $ionicSideMenuDelegate, ratingService, migrationService,
-                                    ionicDatePicker, unitService) {
+                                    ionicDatePicker, unitService, variableService) {
 
         $rootScope.loaderImagePath = config.appSettings.loaderImagePath;
         $scope.appVersion = 1489;
@@ -311,7 +311,7 @@ angular.module('starter')
             if($rootScope.user){
                     $rootScope.setUserForIntercom($rootScope.user);
                     $rootScope.setUserForBugsnag($rootScope.user);
-                $scope.getUnits();
+                $scope.syncEverything();
             }
             migrationService.version1466();
             hideNavigationMenuIfSetInUrlParameter();
@@ -479,12 +479,20 @@ angular.module('starter')
             }, 15000);
 
         };
-        
+
 
         $scope.hideLoader = function () {
             $rootScope.isSyncing = false;
             $scope.loading = false;
             $ionicLoading.hide();
+        };
+
+        $scope.syncEverything = function () {
+            measurementService.syncPrimaryOutcomeVariableMeasurementsAndUpdateCharts();
+            reminderService.refreshTrackingReminderNotifications();
+            reminderService.refreshTrackingReminders();
+            variableService.refreshUserVariables();
+            unitService.getUnits();
         };
         
         $scope.init();
