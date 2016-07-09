@@ -51,7 +51,7 @@ angular.module('starter')
         
         // when an old measurement is tapped to remeasure
         $scope.selectVariable = function(variableObject) {
-            localStorageService.replaceElementOfItemById('userVariables', variableObject);
+            //localStorageService.replaceElementOfItemById('userVariables', variableObject);
             if ($stateParams.reminderSearch) {
                 $state.go('app.reminderAdd',
                     {
