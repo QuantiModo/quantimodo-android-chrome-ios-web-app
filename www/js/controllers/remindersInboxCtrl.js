@@ -161,19 +161,19 @@ angular.module('starter')
 		};
 
 		function refreshAllReminderNotificationsAndUpdateView(){
-                    reminderService.refreshTrackingReminderNotifications()
-                        .then(function(){
+				reminderService.refreshTrackingReminderNotifications()
+					.then(function(){
 
-                            var trackingReminderNotifications =
-                                reminderService.getTrackingReminderNotificationsFromLocalStorage($stateParams.variableCategoryName, $stateParams.today);
-                            $scope.state.filteredReminders = filterViaDates(trackingReminderNotifications);
+						var trackingReminderNotifications =
+							reminderService.getTrackingReminderNotificationsFromLocalStorage($stateParams.variableCategoryName, $stateParams.today);
+						$scope.state.filteredReminders = filterViaDates(trackingReminderNotifications);
 
-                            $scope.hideLoader();
-                        }, function(){
-                            $scope.hideLoader();
-                            console.error("failed to get reminders");
-                        });
-                }
+						$scope.hideLoader();
+					}, function(){
+						$scope.hideLoader();
+						console.error("failed to get reminders");
+					});
+			}
 
 		var getTrackingReminderNotificationsFromLocalStorageAndRefresh = function(){
 	    	//$scope.showLoader('Fetching reminders...');

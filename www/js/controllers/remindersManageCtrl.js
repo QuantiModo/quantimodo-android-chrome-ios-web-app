@@ -64,22 +64,21 @@ angular.module('starter')
 				} else {
 					$scope.state.allReminders = unfilteredReminders;
 				}
+				$scope.state.allReminders = reminderService.addRatingTimesToDailyReminders($scope.state.allReminders);
 			}
 
 			if ($stateParams.variableCategoryName) {
 				$scope.showLoader('Fetching ' + $stateParams.variableCategoryName.toLowerCase() + '...');
 			} else {
-				//$scope.showLoader('Fetching reminders...');
 				$scope.showLoader('Fetching your variables...');
 			}
 		}
 
 		var getTrackingReminders = function(){
 
-			reminderService.getTrackingReminders($stateParams.variableCategoryName)
+			reminderService.refreshTrackingRemindersAndScheduleAlarms($stateParams.variableCategoryName)
 				.then(function(reminders){
-					reminders = reminderService.addRatingTimesToDailyReminders(reminders);
-					$scope.state.allReminders = reminders;
+					getTrackingRemindersFromLocalStorage();
 					$ionicLoading.hide();
 				}, function(){
 					$ionicLoading.hide();
