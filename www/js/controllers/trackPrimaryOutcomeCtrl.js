@@ -167,6 +167,7 @@ angular.module('starter')
         $scope.init = function(){
             $ionicLoading.hide();
             Bugsnag.context = "trackPrimary";
+            updateCharts();
 
             $scope.showHelpInfoPopupIfNecessary();
             if (typeof analytics !== 'undefined')  { analytics.trackView("Track Primary Outcome Controller"); }
