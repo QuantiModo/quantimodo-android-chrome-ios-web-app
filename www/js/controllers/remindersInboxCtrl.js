@@ -140,7 +140,7 @@ angular.module('starter')
 	    	return result;
 	    };
 
-	    var getTrackingReminderNotifications = function(){
+	    var getTrackingReminderNotificationsFromLocalStorageAndRefresh = function(){
 	    	//$scope.showLoader('Fetching reminders...');
 			var trackingReminderNotifications =
 				reminderService.getTrackingReminderNotificationsFromLocalStorage($stateParams.variableCategoryName, $stateParams.today);
@@ -259,9 +259,9 @@ angular.module('starter')
 			if (typeof analytics !== 'undefined')  { analytics.trackView("Reminders Inbox Controller"); }
 			if(isAuthorized){
 				$scope.showHelpInfoPopupIfNecessary();
-				refreshTrackingReminderNotifications();
+				getTrackingReminderNotificationsFromLocalStorageAndRefresh();
 				//update alarms and local notifications
-				reminderService.getTrackingReminders();
+				reminderService.refreshTrackingRemindersAndScheduleAlarms();
 			}
 			if (typeof cordova !== "undefined") {
 				$ionicPlatform.ready(function () {

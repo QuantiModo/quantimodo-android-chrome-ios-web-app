@@ -79,7 +79,7 @@ angular.module('starter')
 				return deferred.promise;
 			},
 
-			refreshTrackingReminders : function(){
+			refreshTrackingRemindersAndScheduleAlarms : function(){
 
 				var deferred = $q.defer();
 
