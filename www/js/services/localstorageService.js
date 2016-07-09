@@ -103,7 +103,7 @@ angular.module('starter')
                         matchingElements = JSON.parse(localStorageItems[keyIdentifier + localStorageItemName]);
                     });
                 } else {
-                    console.log(localStorage.getItem(keyIdentifier + localStorageItemName));
+                    //console.log(localStorage.getItem(keyIdentifier + localStorageItemName));
                     matchingElements = JSON.parse(localStorage.getItem(keyIdentifier + localStorageItemName));
                 }
                 
