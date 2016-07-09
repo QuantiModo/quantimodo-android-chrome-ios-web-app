@@ -51,6 +51,7 @@ angular.module('starter')
         
         // when an old measurement is tapped to remeasure
         $scope.selectVariable = function(variableObject) {
+            //TODO: Figure out why this is causing a duplicate error on variable searches
             //localStorageService.replaceElementOfItemById('userVariables', variableObject);
             if ($stateParams.reminderSearch) {
                 $state.go('app.reminderAdd',
