@@ -140,6 +140,25 @@ angular.module('starter')
 	    	return result;
 	    };
 
+		var getTrackingReminderNotificationsFromApiQuickly = function (){
+			reminderService.getTrackingReminderNotificationsFromApi($stateParams.variableCategoryName, $stateParams.today)
+				.then(function(trackingReminderNotifications){
+					if(trackingReminderNotifications.length > 1){
+						$scope.state.showButtons = false;
+					}
+					if(trackingReminderNotifications.length < 2){
+						$scope.state.showButtons = true;
+					}
+
+					$scope.state.trackingRemindersNotifications = trackingReminderNotifications;
+					$scope.state.filteredReminders = filterViaDates(trackingReminderNotifications);
+					$scope.hideLoader();
+				}, function(){
+					$scope.hideLoader();
+					console.error("failed to get reminders");
+				});
+		};
+
 	    var getTrackingReminderNotificationsFromLocalStorageAndRefresh = function(){
 	    	//$scope.showLoader('Fetching reminders...');
 			var trackingReminderNotifications =
@@ -148,6 +167,7 @@ angular.module('starter')
 
 			if($scope.state.filteredReminders.length < 1){
 				$scope.showLoader('Syncing reminder notifications...');
+				getTrackingReminderNotificationsFromApiQuickly();
 			}
 
 	    	reminderService.refreshTrackingReminderNotifications()
