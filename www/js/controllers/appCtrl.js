@@ -489,8 +489,8 @@ angular.module('starter')
 
         $scope.syncEverything = function () {
             measurementService.syncPrimaryOutcomeVariableMeasurementsAndUpdateCharts();
-            reminderService.refreshTrackingReminderNotifications();
-            reminderService.refreshTrackingRemindersAndScheduleAlarms();
+            //reminderService.refreshTrackingReminderNotifications();
+            //reminderService.refreshTrackingRemindersAndScheduleAlarms();
             variableService.refreshUserVariables();
             unitService.getUnits();
         };

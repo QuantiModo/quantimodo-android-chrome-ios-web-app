@@ -140,8 +140,8 @@ angular.module('starter')
 	    	return result;
 	    };
 
-		var getTrackingReminderNotificationsFromApiQuickly = function (){
-			reminderService.getTrackingReminderNotificationsFromApi($stateParams.variableCategoryName, $stateParams.today)
+		var getCurrentTrackingReminderNotificationsFromApiQuickly = function (){
+			reminderService.getCurrentTrackingReminderNotificationsFromApi($stateParams.variableCategoryName, $stateParams.today)
 				.then(function(trackingReminderNotifications){
 					if(trackingReminderNotifications.length > 1){
 						$scope.state.showButtons = false;
@@ -153,13 +153,29 @@ angular.module('starter')
 					$scope.state.trackingRemindersNotifications = trackingReminderNotifications;
 					$scope.state.filteredReminders = filterViaDates(trackingReminderNotifications);
 					$scope.hideLoader();
+					refreshAllReminderNotificationsAndUpdateView();
 				}, function(){
 					$scope.hideLoader();
 					console.error("failed to get reminders");
 				});
 		};
 
-	    var getTrackingReminderNotificationsFromLocalStorageAndRefresh = function(){
+		function refreshAllReminderNotificationsAndUpdateView(){
+                    reminderService.refreshTrackingReminderNotifications()
+                        .then(function(){
+
+                            var trackingReminderNotifications =
+                                reminderService.getTrackingReminderNotificationsFromLocalStorage($stateParams.variableCategoryName, $stateParams.today);
+                            $scope.state.filteredReminders = filterViaDates(trackingReminderNotifications);
+
+                            $scope.hideLoader();
+                        }, function(){
+                            $scope.hideLoader();
+                            console.error("failed to get reminders");
+                        });
+                }
+
+		var getTrackingReminderNotificationsFromLocalStorageAndRefresh = function(){
 	    	//$scope.showLoader('Fetching reminders...');
 			var trackingReminderNotifications =
 				reminderService.getTrackingReminderNotificationsFromLocalStorage($stateParams.variableCategoryName, $stateParams.today);
@@ -167,21 +183,10 @@ angular.module('starter')
 
 			if($scope.state.filteredReminders.length < 1){
 				$scope.showLoader('Syncing reminder notifications...');
-				getTrackingReminderNotificationsFromApiQuickly();
+				getCurrentTrackingReminderNotificationsFromApiQuickly();
+			} else {
+				refreshAllReminderNotificationsAndUpdateView();
 			}
-
-	    	reminderService.refreshTrackingReminderNotifications()
-	    	.then(function(){
-
-				var trackingReminderNotifications =
-					reminderService.getTrackingReminderNotificationsFromLocalStorage($stateParams.variableCategoryName, $stateParams.today);
-				$scope.state.filteredReminders = filterViaDates(trackingReminderNotifications);
-
-				$scope.hideLoader();
-	    	}, function(){
-				$scope.hideLoader();
-	    		console.error("failed to get reminders");
-	    	});
 
 			if($scope.state.filteredReminders > 3){
 				$scope.state.showButtons = false;

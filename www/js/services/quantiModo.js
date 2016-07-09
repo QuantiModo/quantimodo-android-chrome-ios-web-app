@@ -429,13 +429,29 @@ angular.module('starter')
 
             var getTrackingReminderNotifications = function(params, successHandler, errorHandler){
                  QuantiModo.get('api/v1/trackingReminderNotifications',
-                     ['variableCategoryName', 'id', 'sort', 'limit','offset','updatedAt'],
+                     ['variableCategoryName', 'id', 'sort', 'limit','offset','updatedAt', 'reminderTime'],
                      params,
                      successHandler,
                      errorHandler);
             };
 
-            QuantiModo.getTrackingReminderNotifications = function(params){
+            QuantiModo.getCurrentTrackingReminderNotifications = function(params){
+                var defer = $q.defer();
+                var errorCallback = function(response){
+                    defer.resolve(response);
+                };
+            
+                var successCallback =  function(response){
+                    defer.resolve(response);
+                };
+            
+                getTrackingReminderNotifications(params,successCallback,errorCallback);
+            
+                return defer.promise;
+            };
+        
+
+            QuantiModo.getAllTrackingReminderNotifications = function(params){
                 var defer = $q.defer();
                 var responseArray = [];
                 var allReminderNotifications = [];
@@ -444,8 +460,9 @@ angular.module('starter')
                 };
 
                 var successCallback =  function(response){
+                    responseArray.success = response.success;
+                    allReminderNotifications = allReminderNotifications.concat(response.data);
                     if(response.data.length < 200 || typeof response.data === "string" || params.offset >= 3000){
-                        responseArray.success = response.success;
                         responseArray.data = allReminderNotifications;
                         defer.resolve(responseArray);
                     }else{
@@ -453,7 +470,6 @@ angular.module('starter')
                             if(!user){
                                 defer.reject(false);
                             } else {
-                                allReminderNotifications = allReminderNotifications.concat(response.data);
                                 params.offset+=200;
                                 params.limit = 200;
                                 defer.notify(response);

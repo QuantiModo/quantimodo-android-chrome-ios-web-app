@@ -131,7 +131,7 @@ angular.module('starter')
 				return deferred.promise;
 			},
 
-			getTrackingReminderNotificationsFromApi : function(category, today){
+			getCurrentTrackingReminderNotificationsFromApi : function(category, today){
 
 				var localMidnightInUtcString = timeService.getLocalMidnightInUtcString();
 				var currentDateTimeInUtcString = timeService.getCurrentDateTimeInUtcString();
@@ -166,7 +166,7 @@ angular.module('starter')
 				}
 
 				var deferred = $q.defer();
-				QuantiModo.getTrackingReminderNotifications(params, function(trackingReminderNotifications){
+				QuantiModo.getCurrentTrackingReminderNotifications(params, function(trackingReminderNotifications){
 					if(trackingReminderNotifications.success) {
 						deferred.resolve(trackingReminderNotifications.data);
 					}
@@ -219,7 +219,7 @@ angular.module('starter')
 				};
 				var deferred = $q.defer();
 				
-				QuantiModo.getTrackingReminderNotifications(params).then(function(responseArray){
+				QuantiModo.getAllTrackingReminderNotifications(params).then(function(responseArray){
 					if(responseArray.success) {
 						localStorageService.setItem('trackingReminderNotifications', JSON.stringify(responseArray.data));
 						deferred.resolve(responseArray.data);
