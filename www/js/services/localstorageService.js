@@ -96,6 +96,7 @@ angular.module('starter')
                 var keyIdentifier = config.appSettings.appStorageIdentifier;
                 var unfilteredElementArray = [];
                 var matchingElements = [];
+                var i;
                 if ($rootScope.isChromeApp) {
                     // Code running in a Chrome extension (content script, background page, etc.)
                     chrome.storage.local.get(keyIdentifier+localStorageItemName,function(localStorageItems){
@@ -111,7 +112,7 @@ angular.module('starter')
                         unfilteredElementArray = matchingElements;
                     }
                     matchingElements = [];
-                    for(var i = 0; i < unfilteredElementArray.length; i++){
+                    for(i = 0; i < unfilteredElementArray.length; i++){
                         if(unfilteredElementArray[i][filterPropertyName] === filterPropertyValue){
                             matchingElements.push(unfilteredElementArray[i]);
                         }
@@ -121,7 +122,7 @@ angular.module('starter')
                 if(lessThanPropertyName && lessThanPropertyValue){
                     if(matchingElements){
                         unfilteredElementArray = matchingElements;
-                    };
+                    }
                     matchingElements = [];
                     for(i = 0; i < unfilteredElementArray.length; i++){
                         if(unfilteredElementArray[i][lessThanPropertyName] < lessThanPropertyValue){

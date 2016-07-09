@@ -106,47 +106,43 @@ angular.module('starter')
 				return deferred.promise;
 			},
 
-			getTrackingReminderNotifications : function(category, today){
+			getTrackingReminderNotificationsFromLocalStorage : function(category, today){
 
 				var localMidnightInUtcString = timeService.getLocalMidnightInUtcString();
 				var currentDateTimeInUtcString = timeService.getCurrentDateTimeInUtcString();
-				var params = {};
+
 				if(today && !category){
+					var trackingReminderNotifications = localStorageService.getElementsFromItemWithFilters(
+						'trackingReminderNotifications', null, null, null, null, 'reminderTime', localMidnightInUtcString);
 					var reminderTime = '(gt)' + localMidnightInUtcString;
-					params = {
-                        reminderTime : reminderTime,
-                        sort : 'reminderTime'
-                    };
 				}
 
 				if(!today && category){
-					params = {
-						variableCategoryName : category,
-						reminderTime : '(lt)' + currentDateTimeInUtcString
-					};
+					trackingReminderNotifications = localStorageService.getElementsFromItemWithFilters(
+						'trackingReminderNotifications', 'variableCategoryName', category, 'reminderTime', currentDateTimeInUtcString, null, null);
 				}
 
 				if(today && category){
-					params = {
-						reminderTime : '(gt)' + localMidnightInUtcString,
-						variableCategoryName : category,
-                        sort : 'reminderTime'
-					};
+					trackingReminderNotifications = localStorageService.getElementsFromItemWithFilters(
+						'trackingReminderNotifications', 'variableCategoryName', category, null, null, 'reminderTime', localMidnightInUtcString);
 				}
 
 				if(!today && !category){
-					params = {
-						reminderTime : '(lt)' + currentDateTimeInUtcString
-					};
+					trackingReminderNotifications = localStorageService.getElementsFromItemWithFilters(
+						'trackingReminderNotifications', null, null, 'reminderTime', currentDateTimeInUtcString, null, null);
 				}
+				
+				return trackingReminderNotifications;
+			},			
 
+			getTrackingReminderNotifications : function(){
+				
+				var params = {};
 				var deferred = $q.defer();
+				
 				QuantiModo.getTrackingReminderNotifications(params, function(trackingReminderNotifications){
 					if(trackingReminderNotifications.success) {
-						if(!today && !category){
-							localStorageService.setItem('trackingReminderNotifications', JSON.stringify(trackingReminderNotifications.data));
-						}
-
+						localStorageService.setItem('trackingReminderNotifications', JSON.stringify(trackingReminderNotifications.data));
 						deferred.resolve(trackingReminderNotifications.data);
 					}
 					else {

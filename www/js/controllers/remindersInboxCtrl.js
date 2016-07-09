@@ -142,26 +142,33 @@ angular.module('starter')
 
 	    var getTrackingReminderNotifications = function(){
 	    	//$scope.showLoader('Fetching reminders...');
+			var trackingReminderNotifications =
+				reminderService.getTrackingReminderNotificationsFromLocalStorage($stateParams.variableCategoryName, $stateParams.today);
+			$scope.state.filteredReminders = filterViaDates(trackingReminderNotifications);
+
 			if($scope.state.filteredReminders.length < 1){
 				$scope.showLoader();
 			}
 
-	    	reminderService.getTrackingReminderNotifications($stateParams.variableCategoryName, $stateParams.today)
-	    	.then(function(trackingReminderNotifications){
-				if(trackingReminderNotifications.length > 1){
-					$scope.state.showButtons = false;
-				}
-				if(trackingReminderNotifications.length < 2){
-					$scope.state.showButtons = true;
-				}
+	    	reminderService.getTrackingReminderNotifications()
+	    	.then(function(){
 
-	    		$scope.state.trackingRemindersNotifications = trackingReminderNotifications;
-	    		$scope.state.filteredReminders = filterViaDates(trackingReminderNotifications);
+				var trackingReminderNotifications =
+					reminderService.getTrackingReminderNotificationsFromLocalStorage($stateParams.variableCategoryName, $stateParams.today);
+				$scope.state.filteredReminders = filterViaDates(trackingReminderNotifications);
+
 				$scope.hideLoader();
 	    	}, function(){
 				$scope.hideLoader();
 	    		console.error("failed to get reminders");
 	    	});
+
+			if($scope.state.filteredReminders > 3){
+				$scope.state.showButtons = false;
+			}
+			if(trackingReminderNotifications.length < 4){
+				$scope.state.showButtons = true;
+			}
 	    };
 
 		var isGhostClick = function ($event) {
