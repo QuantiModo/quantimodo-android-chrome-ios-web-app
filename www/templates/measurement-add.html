@@ -85,13 +85,15 @@
                     <div class="input-label">
                         Unit
                     </div>
-                    <select ng-model="state.measurement.abbreviatedUnitName">
-                        <option ng-selected="{{unitObject.abbreviatedName === state.measurement.abbreviatedUnitName}}"
-                                ng-repeat="unitObject in unitObjects"
-                                value="{{unitObject.abbreviatedName}}">
-                            {{unitObject.name}} ({{unitObject.abbreviatedName}})
-                        </option>
+                    <select ng-model="state.measurement.abbreviatedUnitName" ng-options="x for x in abbreviatedUnitNames">
                     </select>
+                    <!--<select ng-model="state.measurement.abbreviatedUnitName">-->
+                        <!--<option ng-selected="unitObject.abbreviatedName === state.measurement.abbreviatedUnitName"-->
+                                <!--ng-repeat="unitObject in unitObjects"-->
+                                <!--value="{{unitObject.abbreviatedName}}">-->
+                            <!--{{unitObject.name}} ({{unitObject.abbreviatedName}})-->
+                        <!--</option>-->
+                    <!--</select>-->
                 </label>
                 <div class="row labeled-control">
                     <div class="col col-l">

@@ -56,22 +56,6 @@ angular.module('starter')
 
                 return deferred.promise;
             },
-            
-			// refresh local storage with updated variables from QuantiModo API
-			refreshVariables : function(){
-				var deferred = $q.defer();
-
-				QuantiModo.getVariables(function(vars){
-
-                    localStorageService.setItem('variables', JSON.stringify(vars));
-					deferred.resolve(vars);
-                    
-				}, function(){
-					deferred.reject(false);
-				});
-
-				return deferred.promise;
-			},
 
             getVariablesByName : function(name){
                 var deferred = $q.defer();
@@ -99,31 +83,19 @@ angular.module('starter')
                 return deferred.promise;
             },
 
-
-            // get variables locally
-			getVariables : function(){
-				var deferred = $q.defer();
-
-				// refresh always
-		       	QuantiModo.getVariables(function(vars){
-		       		localStorageService.setItem('variables',JSON.stringify(vars));
-		       		console.log(vars);
-		       		deferred.resolve(vars);
-		       	}, function(){
-		       		deferred.reject(false);
-		       	});
-
-		       return deferred.promise;
-		   	},
-
-            getUserVariablesByCategory : function(category){
+            getUserVariables : function(variableCategoryName){
                 var deferred = $q.defer();
 
-                // refresh always
-                QuantiModo.getUserVariablesByCategory(category,function(vars){
-                    localStorageService.setItem('variables',JSON.stringify(vars));
-                    console.log(vars);
-                    deferred.resolve(vars);
+                var userVariables = localStorageService.getElementsFromItemWithFilters(
+                    'userVariables', 'variableCategoryName', variableCategoryName);
+                if(userVariables && userVariables.length > 0){
+                    deferred.resolve(userVariables);
+                    return deferred.promise;
+                }
+
+                QuantiModo.getUserVariables(variableCategoryName, function(userVariables){
+                    localStorageService.setItem('userVariables', JSON.stringify(userVariables));
+                    deferred.resolve(userVariables);
                 }, function(){
                     deferred.reject(false);
                 });

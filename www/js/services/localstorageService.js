@@ -37,16 +37,16 @@ angular.module('starter')
 
             replaceElementOfItemById : function(localStorageItemName, replacementElement){
                 var deferred = $q.defer();
+                var found = false;
                 var localStorageItemArray = JSON.parse(this.getItemSync(localStorageItemName));
                 var elementsToKeep = [];
+                elementsToKeep.push(replacementElement);
                 for(var i = 0; i < localStorageItemArray.length; i++){
                     if(localStorageItemArray[i].id !== replacementElement.id){
                         elementsToKeep.push(localStorageItemArray[i]);
                     }
-                    if(localStorageItemArray[i].id === replacementElement.id){
-                        elementsToKeep.push(replacementElement);
-                    }
                 }
+                console.log(JSON.stringify(elementsToKeep));
                 this.setItem(localStorageItemName, JSON.stringify(elementsToKeep));
                 deferred.resolve();
                 return deferred.promise;
@@ -90,27 +90,61 @@ angular.module('starter')
                 }
             },
 
-            getElementsFromItemWithProperty: function (localStorageItemName, filterPropertyName, filterPropertyValue) {
+            getElementsFromItemWithFilters: function (localStorageItemName, filterPropertyName, filterPropertyValue, 
+                                                      lessThanPropertyName, lessThanPropertyValue,
+                                                      greaterThanPropertyName, greaterThanPropertyValue) {
                 var keyIdentifier = config.appSettings.appStorageIdentifier;
                 var unfilteredElementArray = [];
                 var matchingElements = [];
                 if ($rootScope.isChromeApp) {
                     // Code running in a Chrome extension (content script, background page, etc.)
                     chrome.storage.local.get(keyIdentifier+localStorageItemName,function(localStorageItems){
-                        unfilteredElementArray = localStorageItems[keyIdentifier + localStorageItemName];
+                        matchingElements = JSON.parse(localStorageItems[keyIdentifier + localStorageItemName]);
                     });
                 } else {
-                    unfilteredElementArray = localStorage.getItem(keyIdentifier + localStorageItemName);
+                    console.log(localStorage.getItem(keyIdentifier + localStorageItemName));
+                    matchingElements = JSON.parse(localStorage.getItem(keyIdentifier + localStorageItemName));
+                }
+                
+                if(filterPropertyName && filterPropertyValue){
+                    if(matchingElements){
+                        unfilteredElementArray = matchingElements;
+                    }
+                    matchingElements = [];
+                    for(var i = 0; i < unfilteredElementArray.length; i++){
+                        if(unfilteredElementArray[i][filterPropertyName] === filterPropertyValue){
+                            matchingElements.push(unfilteredElementArray[i]);
+                        }
+                    }
+                }
+                
+                if(lessThanPropertyName && lessThanPropertyValue){
+                    if(matchingElements){
+                        unfilteredElementArray = matchingElements;
+                    };
+                    matchingElements = [];
+                    for(i = 0; i < unfilteredElementArray.length; i++){
+                        if(unfilteredElementArray[i][lessThanPropertyName] < lessThanPropertyValue){
+                            matchingElements.push(unfilteredElementArray[i]);
+                        }
+                    }
                 }
 
-                for(var i = 0; i < unfilteredElementArray.length; i++){
-                    if(unfilteredElementArray[i][filterPropertyName] === filterPropertyValue){
-                        matchingElements.push(unfilteredElementArray[i]);
+                if(greaterThanPropertyName && greaterThanPropertyValue){
+                    if(matchingElements){
+                        unfilteredElementArray = matchingElements;
+                    }
+                    matchingElements = [];
+                    for(i = 0; i < unfilteredElementArray.length; i++){
+                        if(unfilteredElementArray[i][greaterThanPropertyName] > greaterThanPropertyValue){
+                            matchingElements.push(unfilteredElementArray[i]);
+                        }
                     }
                 }
                 
                 return matchingElements;
             },
+            
 
             getItemAsObject: function (key) {
                 var keyIdentifier = config.appSettings.appStorageIdentifier;
