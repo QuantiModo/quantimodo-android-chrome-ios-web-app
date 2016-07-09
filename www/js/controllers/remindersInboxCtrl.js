@@ -143,7 +143,7 @@ angular.module('starter')
 	    var getTrackingReminderNotifications = function(){
 	    	//$scope.showLoader('Fetching reminders...');
 			if($scope.state.filteredReminders.length < 1){
-				$scope.showLoader();
+				$scope.showLoader('Syncing reminder notifications...');
 			}
 
 	    	reminderService.getTrackingReminderNotifications($stateParams.variableCategoryName, $stateParams.today)

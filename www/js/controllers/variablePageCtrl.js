@@ -164,7 +164,7 @@ angular.module('starter')
         var getHistoryForVariable = function(){
             console.log("variablePageCtrl: getHistoryforVariable " + $stateParams.variableName);
             var deferred = $q.defer();
-            $scope.showLoader();
+            $scope.showLoader('Getting ' + $stateParams.variableName + ' measurements...');
             QuantiModo.getMeasurements({
                 offset: 0,
                 sort: "startTimeEpoch",
