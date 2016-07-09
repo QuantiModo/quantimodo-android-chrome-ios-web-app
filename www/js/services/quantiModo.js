@@ -373,18 +373,18 @@ angular.module('starter')
 
 
         // get user variables
-            QuantiModo.getUserVariablesByCategory = function(category,successHandler, errorHandler){
+            QuantiModo.getUserVariables = function(category, successHandler, errorHandler){
                 if(category){
                     QuantiModo.get('api/v1/variables',
                         ['category', 'limit'],
-                        {category:category, limit:100},
+                        {limit:200},
                         successHandler,
                         errorHandler);
                 }
                 if(!category){
                     QuantiModo.get('api/v1/variables',
                         ['category', 'limit'],
-                        {limit:100},
+                        {limit:200},
                         successHandler,
                         errorHandler);
                 }

@@ -51,6 +51,7 @@ angular.module('starter')
         
         // when an old measurement is tapped to remeasure
         $scope.selectVariable = function(variableObject) {
+            localStorageService.replaceElementOfItemById('userVariables', variableObject);
             if ($stateParams.reminderSearch) {
                 $state.go('app.reminderAdd',
                     {
@@ -84,8 +85,7 @@ angular.module('starter')
         
         $scope.init = function(){
             Bugsnag.context = "variableSearch";
-            //$scope.loading = true;
-            //$scope.showLoader();
+
             if (typeof analytics !== 'undefined')  { analytics.trackView("Variable Search Controller"); }
             var isAuthorized = authService.checkAuthOrSendToLogin();
             if(isAuthorized){
@@ -94,7 +94,6 @@ angular.module('starter')
                 if($scope.state.variableSearchResults < 10){
                     populateUserVariables();
                 }
-                //$ionicLoading.hide();
             } 
         };
 
@@ -102,14 +101,12 @@ angular.module('starter')
         $scope.onVariableSearch = function(){
             console.log("Search: ", $scope.state.variableSearchQuery);
             if($scope.state.variableSearchQuery.length > 2){
-                $scope.state.showResults = true;
                 $scope.state.searching = true;
                 if ($stateParams.variableSearch) { // on variable search page, only show user's variables
                     variableService.searchUserVariables($scope.state.variableSearchQuery, $scope.state.variableCategoryName)
                         .then(function(variables){
                             // populate list with results
                             $scope.state.showAddVariableButton = false;
-                            $scope.state.showResults = true;
                             $scope.state.variableSearchResults = variables;
                             $scope.state.searching = false;
                             if(variables.length < 1){
@@ -122,7 +119,6 @@ angular.module('starter')
                         .then(function(variables){
                             // populate list with results
                             $scope.state.showAddVariableButton = false;
-                            $scope.state.showResults = true;
                             $scope.state.variableSearchResults = variables;
                             $scope.state.searching = false;
                             if(variables.length < 1){
@@ -152,27 +148,17 @@ angular.module('starter')
                 return;
             }
             $scope.state.showAddVariableButton = false;
-            $scope.state.searching = true;
-/*            if($stateParams.variableCategoryName){
-                $scope.showLoader('Fetching most recent ' +
-                    $filter('wordAliases')($stateParams.variableCategoryName.toLowerCase()) + '...');
-            } else {
-                if (!reset) {
-                    $scope.showLoader('Fetching most recent variables...');
-                }
-            }*/
-            
-            variableService.getUserVariablesByCategory($scope.state.variableCategoryName)
-                .then(function(variables){
-                    $scope.state.showResults = true;
-                    $scope.state.variableSearchResults = variables;
+            if(!$scope.state.variableSearchResults || $scope.state.variableSearchResults.length < 1){
+                $scope.state.searching = true;
+            }
+
+            variableService.getUserVariables($scope.state.variableCategoryName)
+                .then(function(userVariables){
+                    $scope.state.variableSearchResults = userVariables;
                     $scope.state.searching = false;
                     if(!$scope.state.variableCategoryName){
                         $scope.state.showVariableCategorySelector = true;
                     }
-                    $ionicLoading.hide();
-                    $scope.loading = false;
-                    $scope.state.showSearchBox = true;
                 });     
             
         };

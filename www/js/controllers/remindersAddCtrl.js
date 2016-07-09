@@ -104,29 +104,6 @@ angular.module('starter')
             });
         };
 
-        var populateUserVariables = function(){
-            if($stateParams.variableCategoryName){
-                $scope.showLoader('Fetching most recent ' +
-                    $filter('wordAliases')($stateParams.variableCategoryName.toLowerCase()) + '...');
-            } else {
-                $scope.showLoader('Fetching most recent variables...');
-            }
-            variableService.getUserVariablesByCategory($scope.state.trackingReminder.variableCategoryName)
-                .then(function(variables){
-                    //$scope.state.showResults = true;
-                    //$scope.state.variableSearchResults = variables;
-                    //$scope.state.searching = false;
-                    /*
-                    if(!$scope.state.trackingReminder.variableCategoryName){
-                        $scope.state.showVariableCategorySelector = true;
-                    }
-                    */
-                    $ionicLoading.hide();
-                    $scope.loading = false;
-                    //$scope.state.showSearchBox = true;
-                });
-        };
-        
 	    // when a search result is selected
 	    $scope.onVariableSelect = function(selectedVariable){
 	    	console.log("Variable Selected: ", selectedVariable);
