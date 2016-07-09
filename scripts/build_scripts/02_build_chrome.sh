@@ -43,12 +43,14 @@ cp -R ${INTERMEDIATE_PATH}/www/*  "${BUILD_PATH}/${LOWERCASE_APP_NAME}/chrome_ex
 rm -rf "${BUILD_PATH}/${LOWERCASE_APP_NAME}/chrome_extension/www/lib/phonegap-facebook-plugin/platforms/android"
 rm -rf "${BUILD_PATH}/${LOWERCASE_APP_NAME}/chrome_extension/www/lib/phonegap-facebook-plugin/platforms/ios"
 cd "${BUILD_PATH}/${LOWERCASE_APP_NAME}/chrome_extension" && zip -r "${BUILD_PATH}/${LOWERCASE_APP_NAME}/${LOWERCASE_APP_NAME}-Chrome-Extension.zip" * >/dev/null
+rm -rf "${BUILD_PATH}/${LOWERCASE_APP_NAME}/chrome_extension"
 cp "${BUILD_PATH}/${LOWERCASE_APP_NAME}/${LOWERCASE_APP_NAME}-Chrome-Extension.zip" "$DROPBOX_PATH/QuantiModo/apps/${LOWERCASE_APP_NAME}/"
 echo "${LOWERCASE_APP_NAME} Chrome extension is ready"
 
 rm -rf "${BUILD_PATH}/${LOWERCASE_APP_NAME}/chrome_app/www/lib/phonegap-facebook-plugin/platforms/android"
 rm -rf "${BUILD_PATH}/${LOWERCASE_APP_NAME}/chrome_app/www/lib/phonegap-facebook-plugin/platforms/ios"
 cd "${BUILD_PATH}/${LOWERCASE_APP_NAME}/chrome_app" && zip -r "${BUILD_PATH}/${LOWERCASE_APP_NAME}/${LOWERCASE_APP_NAME}-Chrome-App.zip" * >/dev/null
+rm -rf "${BUILD_PATH}/${LOWERCASE_APP_NAME}/chrome_app"
 cp "${BUILD_PATH}/${LOWERCASE_APP_NAME}/${LOWERCASE_APP_NAME}-Chrome-App.zip" "$DROPBOX_PATH/QuantiModo/apps/${LOWERCASE_APP_NAME}/"
 echo "${LOWERCASE_APP_NAME} Chrome app is ready"
 
