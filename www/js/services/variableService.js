@@ -93,7 +93,7 @@ angular.module('starter')
                     return deferred.promise;
                 }
 
-                QuantiModo.getUserVariables(category, function(userVariables){
+                QuantiModo.getUserVariables(variableCategoryName, function(userVariables){
                     localStorageService.setItem('userVariables', JSON.stringify(userVariables));
                     console.log(vars);
                     deferred.resolve(vars);
