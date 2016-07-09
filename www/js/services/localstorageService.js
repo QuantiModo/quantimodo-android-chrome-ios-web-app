@@ -46,7 +46,7 @@ angular.module('starter')
                         elementsToKeep.push(localStorageItemArray[i]);
                     }
                 }
-                console.log(JSON.stringify(elementsToKeep));
+                //console.log(JSON.stringify(elementsToKeep));
                 this.setItem(localStorageItemName, JSON.stringify(elementsToKeep));
                 deferred.resolve();
                 return deferred.promise;

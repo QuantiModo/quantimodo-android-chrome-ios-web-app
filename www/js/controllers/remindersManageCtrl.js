@@ -70,7 +70,7 @@ angular.module('starter')
 				$scope.showLoader('Fetching ' + $stateParams.variableCategoryName.toLowerCase() + '...');
 			} else {
 				//$scope.showLoader('Fetching reminders...');
-				$scope.showLoader();
+				$scope.showLoader('Fetching your variables...');
 			}
 		}
 

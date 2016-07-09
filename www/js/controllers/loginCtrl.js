@@ -38,7 +38,7 @@ angular.module('starter')
         // User wants to login
         $scope.login = function(register) {
 
-            $scope.showLoader();
+            $scope.showLoader('Logging you in...');
             localStorageService.setItem('isWelcomed', true);
             $rootScope.isWelcomed = true;
 
@@ -237,7 +237,7 @@ angular.module('starter')
 
         // log in with google
         $scope.googleLogin = function(register){
-            $scope.showLoader();
+            $scope.showLoader('Logging you in...');
             document.addEventListener('deviceready', deviceReady, false);
             function deviceReady() {
                 //I get called when everything's ready for the plugin to be called!
@@ -291,7 +291,7 @@ angular.module('starter')
 
         // login with facebook
         $scope.facebookLogin = function(){
-            $scope.showLoader();
+            $scope.showLoader('Logging you in...');
             $cordovaFacebook.login(["public_profile", "email", "user_friends"])
                 .then(function(success) {
                     // success
@@ -348,7 +348,7 @@ angular.module('starter')
                 var apiUrl = config.getApiUrl();
                 var apiUrlMatchesHostName = apiUrl.indexOf(window.location.hostname);
                 if(apiUrlMatchesHostName > -1 || $rootScope.isChromeExtension) {
-                    $scope.showLoader();
+                    $scope.showLoader('Logging you in...');
                     window.location.replace(loginUrl);
                 } else {
                     alert("API url doesn't match auth base url.  Please make use the same domain in config file");

@@ -14,11 +14,11 @@
         </ion-nav-bar>
         
         <div class="col" ng-if="!hideNavigationMenu" ng-class="{'blink': isSyncing,'sync-indicator':isSyncing}" ng-show="isSyncing">
-            <span>Data is Syncing</span>
+            <span>{{syncDisplayText}}</span>
         </div>
 
         <div class="col" ng-if="hideNavigationMenu" style="top:0px!important;" ng-class="{'blink': isSyncing,'sync-indicator':isSyncing}" ng-show="isSyncing">
-            <span>Data is Syncing</span>
+            <span>{{syncDisplayText}}</span>
         </div>
         <ion-nav-view name="menuContent">
 

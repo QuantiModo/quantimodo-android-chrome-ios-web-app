@@ -454,6 +454,7 @@ angular.module('starter')
 
         $scope.showLoader = function (loadingText) {
             $rootScope.isSyncing = true;
+            $rootScope.syncDisplayText = loadingText;
             console.debug('Showing Loader');
             if(!loadingText){
                 loadingText = '';

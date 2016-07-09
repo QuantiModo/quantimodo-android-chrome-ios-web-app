@@ -6,7 +6,7 @@ angular.module('starter')
                                                     $rootScope, $ionicLoading, ratingService) {
         $scope.controller_name = "TrackPrimaryOutcomeCtrl";
 
-        $scope.showCharts = false;
+        //$scope.showCharts = false;
         $scope.showRatingFaces = true;
         // flags
         $scope.timeRemaining = false;
@@ -165,6 +165,7 @@ angular.module('starter')
         */
 
         $scope.init = function(){
+            $ionicLoading.hide();
             Bugsnag.context = "trackPrimary";
 
             $scope.showHelpInfoPopupIfNecessary();

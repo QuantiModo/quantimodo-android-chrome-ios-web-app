@@ -244,7 +244,7 @@ angular.module('starter')
                 if(params.variableName == ""){
                     utilsService.showAlert('Please enter a variable name');
                 } else {
-                    $scope.showLoader();
+                    $scope.showLoader('Saving measurement...');
                     // add variable
                     measurementService.postTrackingMeasurement(
                         measurementInfo, true)

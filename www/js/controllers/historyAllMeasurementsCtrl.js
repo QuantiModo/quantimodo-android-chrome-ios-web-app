@@ -51,7 +51,7 @@ angular.module('starter')
 
 	    var getHistory = function(){
 			if($scope.state.history.length < 1){
-				$scope.showLoader();
+				$scope.showLoader('Getting your measurements...');
 			}
 	    	measurementService.getHistoryMeasurements({
     		    offset: $scope.state.offset,
