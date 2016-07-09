@@ -155,7 +155,9 @@ angular.module('starter')
 
             variableService.getUserVariables($scope.state.variableCategoryName)
                 .then(function(userVariables){
-                    $scope.state.variableSearchResults = userVariables;
+                    if(!$scope.state.variableSearchQuery){
+                        $scope.state.variableSearchResults = userVariables;
+                    }
                     $scope.state.searching = false;
                     if(!$scope.state.variableCategoryName){
                         $scope.state.showVariableCategorySelector = true;
