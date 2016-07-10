@@ -132,6 +132,24 @@ angular.module('starter')
         
         var helpPopupMessages = config.appSettings.helpPopupMessages || false;
 
+        $scope.showHelpInfoPopup = function(){
+            $rootScope.helpPopup = $ionicPopup.show({
+                title: helpPopupMessages[location.hash],
+                subTitle: '',
+                scope: $scope,
+                template: '<label><input type="checkbox" ng-model="$parent.notShowHelpPopup" class="show-again-checkbox">Don\'t show these tips</label>',
+                buttons: [
+                    {
+                        text: 'OK',
+                        type: 'button-positive',
+                        onTap: function () {
+                            localStorageService.setItem('notShowHelpPopup', JSON.stringify($scope.notShowHelpPopup));
+                        }
+                    }
+                ]
+            });
+        };
+
         $scope.showHelpInfoPopupIfNecessary = function(e) {
             localStorageService.getItem('isWelcomed',function(isWelcomed) {
                 if(isWelcomed  === true || isWelcomed === "true"){
@@ -142,21 +160,7 @@ angular.module('starter')
                             // Had to add "&& e.targetScope !== $scope" to prevent duplicate popups
                             //if (!$scope.notShowHelpPopup && e.targetScope !== $scope) {
                             if (!$scope.notShowHelpPopup) {
-                                $rootScope.helpPopup = $ionicPopup.show({
-                                    title: helpPopupMessages[location.hash],
-                                    subTitle: '',
-                                    scope: $scope,
-                                    template: '<label><input type="checkbox" ng-model="$parent.notShowHelpPopup" class="show-again-checkbox">Don\'t show these tips</label>',
-                                    buttons: [
-                                        {
-                                            text: 'OK',
-                                            type: 'button-positive',
-                                            onTap: function () {
-                                                localStorageService.setItem('notShowHelpPopup', JSON.stringify($scope.notShowHelpPopup));
-                                            }
-                                        }
-                                    ]
-                                });
+                                $scope.showHelpInfoPopup();
                             }
                         });
                     }

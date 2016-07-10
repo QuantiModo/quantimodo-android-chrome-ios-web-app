@@ -533,6 +533,7 @@ img.intro-primary-outcome-variable-rating-buttons {
 }
 */
 
+/* Fixes bottom of text being cut off in dropdown selectors */
 .item-select select {
     padding: 14px 48px 8px 16px;
 }
