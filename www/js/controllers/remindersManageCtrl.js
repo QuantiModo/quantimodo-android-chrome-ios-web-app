@@ -66,26 +66,7 @@ angular.module('starter')
 				}
 				$scope.state.allReminders = reminderService.addRatingTimesToDailyReminders($scope.state.allReminders);
 			}
-
-			if ($stateParams.variableCategoryName) {
-				$scope.showLoader('Fetching ' + $stateParams.variableCategoryName.toLowerCase() + '...');
-			} else {
-				$scope.showLoader('Fetching your variables...');
-			}
 		}
-
-		var getTrackingReminders = function(){
-
-			reminderService.refreshTrackingRemindersAndScheduleAlarms($stateParams.variableCategoryName)
-				.then(function(reminders){
-					getTrackingRemindersFromLocalStorage();
-					$ionicLoading.hide();
-				}, function(){
-					$ionicLoading.hide();
-					$state.go('app.login');
-				});
-
-	    };
 
 	    $scope.cancel = function(){
 	    	$scope.state.showMeasurementBox = !$scope.state.showMeasurementBox;
@@ -123,7 +104,7 @@ angular.module('starter')
 			if(isAuthorized){
 				$scope.state.showButtons = true;
 				$scope.showHelpInfoPopupIfNecessary();
-				getTrackingReminders();
+				reminderService.refreshTrackingRemindersAndScheduleAlarms();
 			} 
 	    };
 

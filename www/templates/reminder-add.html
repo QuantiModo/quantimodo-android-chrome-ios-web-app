@@ -19,10 +19,12 @@
                     <div class="input-label">
                         Unit
                     </div>
+
                     <select
                             ng-model="state.trackingReminder.abbreviatedUnitName" ng-options="x for x in abbreviatedUnitNames">
                     </select>
-<!--                    <select ng-model="state.trackingReminder.abbreviatedUnitName">
+<!--                 Above is a crappier workaround for sometimes empty unit selector
+<select ng-model="state.trackingReminder.abbreviatedUnitName">
                         <option ng-selected="{{unitObject.abbreviatedName == state.trackingReminder.abbreviatedUnitName}}"
                                 ng-repeat="unitObject in unitObjects"
                                 value="{{unitObject.abbreviatedName}}">
