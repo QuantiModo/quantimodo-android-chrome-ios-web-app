@@ -157,10 +157,12 @@ angular.module('starter')
 				responseArray.success = response.success;
 				allReminderNotifications = allReminderNotifications.concat(response.data);
 				localStorageService.setItem('trackingReminderNotifications', JSON.stringify(allReminderNotifications));
-				var trackingReminderNotificationsToDisplay =
-					reminderService.getTrackingReminderNotificationsFromLocalStorage($stateParams.variableCategoryName, $stateParams.today);
-				$scope.state.filteredReminders = filterViaDates(trackingReminderNotificationsToDisplay);
-				if(response.data.length < 200 || typeof response.data === "string" || params.offset >= 3000){
+                if(allReminderNotifications < 300){
+                    var trackingReminderNotificationsToDisplay =
+                        reminderService.getTrackingReminderNotificationsFromLocalStorage($stateParams.variableCategoryName, $stateParams.today);
+                    $scope.state.filteredReminders = filterViaDates(trackingReminderNotificationsToDisplay);
+                }
+				if(response.data.length < 200 || typeof response.data === "string" || params.offset >= 500){
 					responseArray.data = allReminderNotifications;
 					defer.resolve(responseArray);
 				} else {
