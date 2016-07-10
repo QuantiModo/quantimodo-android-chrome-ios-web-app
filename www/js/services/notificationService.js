@@ -56,7 +56,7 @@ angular.module('starter')
                             var existingReminderFoundInApiResponse = false;
                             for (var j = 0; j < trackingRemindersFromApi.length; j++) {
                                 if (trackingRemindersFromApi[j].id === scheduledNotifications[i].id) {
-                                    console.debug('Server returned a reminder matching' + trackingRemindersFromApi[j]);
+                                    //console.debug('Server returned a reminder matching' + trackingRemindersFromApi[j]);
                                     existingReminderFoundInApiResponse = true;
                                 }
                             }
@@ -75,7 +75,7 @@ angular.module('starter')
                 }
 
                 $ionicPlatform.ready(function () {
-                    if (typeof cordova != "undefined") {
+                    if (typeof cordova !== "undefined") {
                         console.debug('cancelIonicNotificationsForDeletedReminders');
                         cancelIonicNotificationsForDeletedReminders(trackingRemindersFromApi);
                     }
@@ -87,7 +87,7 @@ angular.module('starter')
 
                 function createOrUpdateIonicNotificationForTrackingReminder(notificationSettings) {
                     cordova.plugins.notification.local.isPresent(notificationSettings.id, function (present) {
-                        console.debug(notificationSettings.id + present ? "present" : "not found");
+
                         if (!present) {
                             console.debug("Creating notification because not already set for " + JSON.stringify(notificationSettings));
                             cordova.plugins.notification.local.schedule(notificationSettings,
@@ -103,7 +103,7 @@ angular.module('starter')
                         if (present) {
                             cordova.plugins.notification.local.get(notificationSettings.id,
                                 function (existingNotification) {
-                                    console.debug("Notification already set for " + JSON.stringify(existingNotification));
+                                    //console.debug("Notification already set for " + JSON.stringify(existingNotification));
                                     var frequencyChanged = false;
                                     if (existingNotification && existingNotification.every !== notificationSettings.every) {
                                         frequencyChanged = true;
@@ -122,7 +122,7 @@ angular.module('starter')
                                         });
                                     }
                                     if (!frequencyChanged) {
-                                        console.debug("Not creating notification because frequency not changed for " + JSON.stringify(existingNotification));
+                                        //console.debug("Not creating notification because frequency not changed for " + JSON.stringify(existingNotification));
                                     }
                                 }
                             );
@@ -263,7 +263,7 @@ angular.module('starter')
 
                 $ionicPlatform.ready(function () {
                     //console.debug('Ionic is ready to schedule notifications');
-                    if (typeof cordova != "undefined") {
+                    if (typeof cordova !== "undefined") {
                         if (ionic.Platform.isAndroid()) {
                             if (interval && interval !== "never") {
                                 console.debug('Scheduling Android notification for interval ' + interval);
@@ -296,11 +296,11 @@ angular.module('starter')
 
             // cancel all existing notifications
             cancelAllNotifications: function(){
-                if(typeof cordova != "undefined"){
+                if(typeof cordova !== "undefined"){
                     cordova.plugins.notification.local.cancelAll(function(){
                         console.log('notifications cancelled');
                     });
-                }else if(typeof chrome.alarms != "undefined"){
+                }else if(typeof chrome.alarms !== "undefined"){
                     chrome.alarms.clearAll(function (){
                         console.debug('Cleared all Chrome alarms!');
                     });

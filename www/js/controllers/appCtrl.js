@@ -495,6 +495,7 @@ angular.module('starter')
             measurementService.syncPrimaryOutcomeVariableMeasurementsAndUpdateCharts();
             reminderService.refreshTrackingRemindersAndScheduleAlarms();
             variableService.refreshUserVariables();
+            variableService.refreshCommonVariables();
             unitService.getUnits();
         };
         

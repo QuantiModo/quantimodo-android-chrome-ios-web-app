@@ -365,7 +365,6 @@ angular.module('starter')
                 if($stateParams.variableCategoryName){
                     $scope.state.trackingReminder.variableCategoryName = $stateParams.variableCategoryName;
                     $scope.setupVariableCategory($scope.state.trackingReminder.variableCategoryName);
-                    populateUserVariables($stateParams.variableCategoryName);
                 } else if ($stateParams.reminder && $stateParams.reminder !== null) {
                     setupEditReminder($stateParams.reminder);
                 }
@@ -379,7 +378,6 @@ angular.module('starter')
                 }
                 else {
                     $scope.state.title = $filter('wordAliases')('Add Reminder');
-                    populateUserVariables();
                 }
             }
 	    };

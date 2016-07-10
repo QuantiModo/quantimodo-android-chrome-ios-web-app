@@ -355,7 +355,7 @@ angular.module('starter',
               fromState: null,
               fromUrl: null,
               measurement: null,
-              variableSearch: true
+              doNotIncludePublicVariables: true
           },
           views: {
               'menuContent': {

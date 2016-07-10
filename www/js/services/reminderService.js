@@ -8,6 +8,7 @@ angular.module('starter')
 			addNewReminder : function(trackingReminder){
 				
 				var deferred = $q.defer();
+				notificationService.scheduleNotification(null, trackingReminder);
 				
                 QuantiModo.postTrackingReminder(trackingReminder, function(){
 					//update alarms and local notifications
