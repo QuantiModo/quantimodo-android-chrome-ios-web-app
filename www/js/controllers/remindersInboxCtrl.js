@@ -145,70 +145,26 @@ angular.module('starter')
 	    	return result;
 	    };
 
-		var refreshAllReminderNotificationsAndUpdateView = function(){
-			var defer = $q.defer();
-			var responseArray = [];
-			var allReminderNotifications = [];
-			var params = {
-				offset: 0,
-				limit: 200
-			};
+        var getTrackingReminderNotifications = function(){
+            $rootScope.isSyncing = true;
+            $rootScope.syncDisplayText = 'Syncing reminder notifications...';
+            reminderService.getTrackingReminderNotifications($stateParams.variableCategoryName, $stateParams.today)
+                .then(function(trackingReminderNotifications){
+                    $scope.state.trackingRemindersNotifications = trackingReminderNotifications;
+                    $scope.state.filteredReminders = filterViaDates(trackingReminderNotifications);
+                    if($scope.state.numberOfNotificationsInInbox.length > 1){
+                        $scope.state.showButtons = false;
+                    }
+                    if($scope.state.numberOfNotificationsInInbox < 2){
+                        $scope.state.showButtons = true;
+                    }
+                    
+                }, function(){
+                    $scope.hideLoader();
+                    console.error("failed to get reminder notifications!");
+                });
+        };
 
-			var errorHandler = function(response){
-				defer.resolve(response);
-			};
-
-			var successHandler =  function(response){
-				responseArray.success = response.success;
-				allReminderNotifications = allReminderNotifications.concat(response.data);
-				localStorageService.setItem('trackingReminderNotifications', JSON.stringify(allReminderNotifications));
-                if($scope.state.numberOfNotificationsInInbox < 300){
-                    var trackingReminderNotificationsToDisplay =
-                        reminderService.getTrackingReminderNotificationsFromLocalStorage($stateParams.variableCategoryName, $stateParams.today);
-                    $scope.state.filteredReminders = filterViaDates(trackingReminderNotificationsToDisplay);
-                }
-				if(response.data.length < 200 || typeof response.data === "string" || params.offset >= 500){
-					responseArray.data = allReminderNotifications;
-					defer.resolve(responseArray);
-				} else {
-					params.offset += 200;
-					defer.notify(response);
-					QuantiModo.get('api/v1/trackingReminderNotifications',
-						['variableCategoryName', 'id', 'sort', 'limit','offset','updatedAt', 'reminderTime'],
-						params,
-						successHandler,
-						errorHandler);
-				}
-			};
-
-			QuantiModo.get('api/v1/trackingReminderNotifications',
-				['variableCategoryName', 'id', 'sort', 'limit','offset','updatedAt', 'reminderTime'],
-				params,
-				successHandler,
-				errorHandler);
-
-			return defer.promise;
-		};
-
-		var getTrackingReminderNotificationsFromLocalStorageAndRefresh = function(){
-	    	//$scope.showLoader('Fetching reminders...');
-			var trackingReminderNotifications =
-				reminderService.getTrackingReminderNotificationsFromLocalStorage($stateParams.variableCategoryName, $stateParams.today);
-			$scope.state.filteredReminders = filterViaDates(trackingReminderNotifications);
-
-			if($scope.state.filteredReminders.length < 1) {
-				$scope.showLoader('Syncing reminder notifications...');
-			}
-
-			refreshAllReminderNotificationsAndUpdateView();
-
-			if($scope.state.filteredReminders > 3){
-				$scope.state.showButtons = false;
-			}
-			if(trackingReminderNotifications.length < 4){
-				$scope.state.showButtons = true;
-			}
-	    };
 
 		var isGhostClick = function ($event) {
 			if($rootScope.isMobile ){
@@ -298,7 +254,7 @@ angular.module('starter')
 			if (typeof analytics !== 'undefined')  { analytics.trackView("Reminders Inbox Controller"); }
 			if(isAuthorized){
 				$scope.showHelpInfoPopupIfNecessary();
-				getTrackingReminderNotificationsFromLocalStorageAndRefresh();
+                getTrackingReminderNotifications();
 				//update alarms and local notifications
 				reminderService.refreshTrackingRemindersAndScheduleAlarms();
 			}

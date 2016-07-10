@@ -81,6 +81,9 @@ angular.module('starter')
 
 			refreshTrackingRemindersAndScheduleAlarms : function(){
 
+				$rootScope.isSyncing = true;
+				$rootScope.syncDisplayText = 'Syncing reminders...';
+
 				if(!$rootScope.syncingReminders){
 					$rootScope.syncingReminders = true;
 					var deferred = $q.defer();
@@ -95,15 +98,21 @@ angular.module('starter')
 							notificationService.scheduleAllNotifications(trackingReminders);
 							localStorageService.setItem('trackingReminders', JSON.stringify(trackingReminders));
 							$rootScope.syncingReminders = false;
+							$rootScope.isSyncing = false;
+							$rootScope.syncDisplayText = '';
 							deferred.resolve(trackingReminders);
 						}
 						else {
 							$rootScope.syncingReminders = false;
+							$rootScope.isSyncing = false;
+							$rootScope.syncDisplayText = '';
 							deferred.reject("error");
 							Bugsnag.notify(remindersResponse, JSON.stringify(remindersResponse), {}, "error");
 						}
 					}, function(err){
 						$rootScope.syncingReminders = false;
+						$rootScope.isSyncing = false;
+						$rootScope.syncDisplayText = '';
 						Bugsnag.notify(err, JSON.stringify(err), {}, "error");
 						deferred.reject(err);
 					});
@@ -111,6 +120,57 @@ angular.module('starter')
 					return deferred.promise;
 				}
 			},
+
+			getTrackingReminderNotifications : function(category, today){
+
+				var localMidnightInUtcString = timeService.getLocalMidnightInUtcString();
+				var currentDateTimeInUtcString = timeService.getCurrentDateTimeInUtcString();
+				var params = {};
+				if(today && !category){
+					var reminderTime = '(gt)' + localMidnightInUtcString;
+					params = {
+						reminderTime : reminderTime,
+						sort : 'reminderTime'
+					};
+				}
+
+				if(!today && category){
+					params = {
+						variableCategoryName : category,
+						reminderTime : '(lt)' + currentDateTimeInUtcString
+					};
+				}
+
+				if(today && category){
+					params = {
+						reminderTime : '(gt)' + localMidnightInUtcString,
+						variableCategoryName : category,
+						sort : 'reminderTime'
+					};
+				}
+
+				if(!today && !category){
+					params = {
+						reminderTime : '(lt)' + currentDateTimeInUtcString
+					};
+				}
+
+				var deferred = $q.defer();
+				QuantiModo.getTrackingReminderNotifications(params, function(reminders){
+					if(reminders.success) {
+						deferred.resolve(reminders.data);
+					}
+					else {
+						deferred.reject("error");
+					}
+				}, function(err){
+					Bugsnag.notify(err, JSON.stringify(err), {}, "error");
+					deferred.reject(err);
+				});
+
+				return deferred.promise;
+			},
+
 
 			getTrackingReminders : function(category, reminderId){
 				
