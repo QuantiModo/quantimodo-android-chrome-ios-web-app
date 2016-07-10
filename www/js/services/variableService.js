@@ -101,24 +101,39 @@ angular.module('starter')
                 }
             },
 
-            getUserVariables : function(variableCategoryName){
-                var deferred = $q.defer();
+            refreshCommonVariables : function(){
+                if(!$rootScope.syncingCommonVariables){
+                    $rootScope.syncingCommonVariables = true;
+                    var deferred = $q.defer();
 
-                var userVariables = localStorageService.getElementsFromItemWithFilters(
-                    'userVariables', 'variableCategoryName', variableCategoryName);
-                if(userVariables && userVariables.length > 0){
-                    deferred.resolve(userVariables);
+                    var successHandler = function(commonVariables) {
+                        localStorageService.setItem('commonVariables', JSON.stringify(commonVariables));
+                        $rootScope.syncingCommonVariables = false;
+                        deferred.resolve(commonVariables);
+                    };
+
+                    var errorHandler = function(err) {
+                        $rootScope.syncingCommonVariables = false;
+                        console.error(err);
+                        Bugsnag.notify("ERROR: "+ err.message, err, {}, "error");
+                        deferred.reject(false);
+                    };
+                    
+                    var parameters = {
+                        limit: 200,
+                        sort: "-numberOfUserVariables",
+                        numberOfUserVariables: "(gt)5"
+                    };
+                    
+
+                    QuantiModo.get('api/v1/public/variables',
+                        ['category', 'includePublic', 'numberOfUserVariables'],
+                        parameters,
+                        successHandler,
+                        errorHandler);
+
                     return deferred.promise;
-                } else {
-                    this.refreshUserVariables().then(function (){
-                        var userVariables = localStorageService.getElementsFromItemWithFilters(
-                            'userVariables', 'variableCategoryName', variableCategoryName);
-                        deferred.resolve(userVariables);
-                        return deferred.promise;
-                    });
                 }
-
-                return deferred.promise;
             }
 		};
 
