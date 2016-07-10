@@ -16,7 +16,8 @@ angular.module('starter')
 	    	limit : 200,
 	    	history : [],
 			units : [],
-			variableCategories : []
+			variableCategories : [],
+			hideLoadMoreButton : true
 	    };
 
 		$scope.title = 'Measurement History';
@@ -62,6 +63,11 @@ angular.module('starter')
     			$scope.state.history = $scope.state.history.concat(history);
 				$scope.state.history = ratingService.addImagesToMeasurements($scope.state.history);
 				$scope.hideLoader();
+				if(history.length < 200){
+					$scope.state.hideLoadMoreButton = true;
+				} else {
+					$scope.state.hideLoadMoreButton = false;
+				}
 	    	}, function(error){
 				Bugsnag.notify(error, JSON.stringify(error), {}, "error");
 	    		console.log('error getting measurements', error);
