@@ -59,7 +59,10 @@ angular.module('starter')
             // GET method with the added token
             QuantiModo.get = function(baseURL, allowedParams, params, successHandler, errorHandler){
                 authService.getAccessTokenFromAnySource().then(function(tokenObject){
-                    
+                    allowedParams.push('limit');
+                    allowedParams.push('offset');
+                    allowedParams.push('sort');
+                    allowedParams.push('updatedAt');
                     // configure params
                     var urlParams = [];
                     for (var key in params) 
@@ -424,48 +427,6 @@ angular.module('starter')
                     params,
                     successHandler,
                     errorHandler);
-            };
-
-
-            var getTrackingReminderNotifications = function(params, successHandler, errorHandler){
-                 QuantiModo.get('api/v1/trackingReminderNotifications',
-                     ['variableCategoryName', 'id', 'sort', 'limit','offset','updatedAt', 'reminderTime'],
-                     params,
-                     successHandler,
-                     errorHandler);
-            };
-
-            QuantiModo.getAllTrackingReminderNotifications = function(params){
-                var defer = $q.defer();
-                var responseArray = [];
-                var allReminderNotifications = [];
-                var errorCallback = function(response){
-                    defer.resolve(response);
-                };
-
-                var successCallback =  function(response){
-                    responseArray.success = response.success;
-                    allReminderNotifications = allReminderNotifications.concat(response.data);
-                    if(response.data.length < 200 || typeof response.data === "string" || params.offset >= 3000){
-                        responseArray.data = allReminderNotifications;
-                        defer.resolve(responseArray);
-                    }else{
-                        localStorageService.getItem('user', function(user){
-                            if(!user){
-                                defer.reject(false);
-                            } else {
-                                params.offset+=200;
-                                params.limit = 200;
-                                defer.notify(response);
-                                getTrackingReminderNotifications(params,successCallback,errorCallback);
-                            }
-                        });
-                    }
-                };
-
-                getTrackingReminderNotifications(params,successCallback,errorCallback);
-
-                return defer.promise;
             };
 
             // post tracking reminder

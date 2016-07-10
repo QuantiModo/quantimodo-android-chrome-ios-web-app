@@ -2,7 +2,7 @@ angular.module('starter')
 
 	.controller('RemindersInboxCtrl', function($scope, authService, $ionicPopup, localStorageService, $state, 
 											   reminderService, $ionicLoading, measurementService, utilsService, 
-											   $stateParams, $location, $filter, $ionicPlatform, $rootScope){
+											   $stateParams, $location, $filter, $ionicPlatform, $rootScope, $q, QuantiModo){
 
 	    $scope.controller_name = "RemindersInboxCtrl";
 
@@ -140,40 +140,48 @@ angular.module('starter')
 	    	return result;
 	    };
 
-		var getCurrentTrackingReminderNotificationsFromApiQuickly = function (){
-			reminderService.getCurrentTrackingReminderNotificationsFromApi($stateParams.variableCategoryName, $stateParams.today)
-				.then(function(trackingReminderNotifications){
-					if(trackingReminderNotifications.length > 1){
-						$scope.state.showButtons = false;
-					}
-					if(trackingReminderNotifications.length < 2){
-						$scope.state.showButtons = true;
-					}
+		var refreshAllReminderNotificationsAndUpdateView = function(){
+			var defer = $q.defer();
+			var responseArray = [];
+			var allReminderNotifications = [];
+			var params = {
+				offset: 0,
+				limit: 200
+			};
 
-					$scope.state.trackingRemindersNotifications = trackingReminderNotifications;
-					$scope.state.filteredReminders = filterViaDates(trackingReminderNotifications);
-					$scope.hideLoader();
-					refreshAllReminderNotificationsAndUpdateView();
-				}, function(){
-					$scope.hideLoader();
-					console.error("failed to get reminders");
-				});
+			var errorHandler = function(response){
+				defer.resolve(response);
+			};
+
+			var successHandler =  function(response){
+				responseArray.success = response.success;
+				allReminderNotifications = allReminderNotifications.concat(response.data);
+				localStorageService.setItem('trackingReminderNotifications', JSON.stringify(allReminderNotifications));
+				var trackingReminderNotificationsToDisplay =
+					reminderService.getTrackingReminderNotificationsFromLocalStorage($stateParams.variableCategoryName, $stateParams.today);
+				$scope.state.filteredReminders = filterViaDates(trackingReminderNotificationsToDisplay);
+				if(response.data.length < 200 || typeof response.data === "string" || params.offset >= 3000){
+					responseArray.data = allReminderNotifications;
+					defer.resolve(responseArray);
+				} else {
+					params.offset += 200;
+					defer.notify(response);
+					QuantiModo.get('api/v1/trackingReminderNotifications',
+						['variableCategoryName', 'id', 'sort', 'limit','offset','updatedAt', 'reminderTime'],
+						params,
+						successHandler,
+						errorHandler);
+				}
+			};
+
+			QuantiModo.get('api/v1/trackingReminderNotifications',
+				['variableCategoryName', 'id', 'sort', 'limit','offset','updatedAt', 'reminderTime'],
+				params,
+				successHandler,
+				errorHandler);
+
+			return defer.promise;
 		};
-
-		function refreshAllReminderNotificationsAndUpdateView(){
-				reminderService.refreshTrackingReminderNotifications()
-					.then(function(){
-
-						var trackingReminderNotifications =
-							reminderService.getTrackingReminderNotificationsFromLocalStorage($stateParams.variableCategoryName, $stateParams.today);
-						$scope.state.filteredReminders = filterViaDates(trackingReminderNotifications);
-
-						$scope.hideLoader();
-					}, function(){
-						$scope.hideLoader();
-						console.error("failed to get reminders");
-					});
-			}
 
 		var getTrackingReminderNotificationsFromLocalStorageAndRefresh = function(){
 	    	//$scope.showLoader('Fetching reminders...');
@@ -181,13 +189,8 @@ angular.module('starter')
 				reminderService.getTrackingReminderNotificationsFromLocalStorage($stateParams.variableCategoryName, $stateParams.today);
 			$scope.state.filteredReminders = filterViaDates(trackingReminderNotifications);
 
-			if($scope.state.filteredReminders.length < 1){
+			if($scope.state.filteredReminders.length < 1) {
 				$scope.showLoader('Syncing reminder notifications...');
-				// Disabled because we could act on a notification and then when the full notification sync completes, the notification would come back
-				// Might be able to solve with a notification sync queue that is sent after a full sync and removes the notifications from local storage
-				//getCurrentTrackingReminderNotificationsFromApiQuickly();1
-			} else {
-				//refreshAllReminderNotificationsAndUpdateView();
 			}
 
 			refreshAllReminderNotificationsAndUpdateView();

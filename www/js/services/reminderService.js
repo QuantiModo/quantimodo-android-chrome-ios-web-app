@@ -236,36 +236,7 @@ angular.module('starter')
 				
 				return trackingReminderNotifications;
 			},			
-
-			refreshTrackingReminderNotifications : function(){
-				
-				if(!$rootScope.syncingReminderNotifications) {
-					$rootScope.syncingReminderNotifications = true;
-					var params = {
-						offset: 0,
-						limit: 200
-					};
-					var deferred = $q.defer();
-
-					QuantiModo.getAllTrackingReminderNotifications(params).then(function (responseArray) {
-						if (responseArray.success) {
-							localStorageService.setItem('trackingReminderNotifications', JSON.stringify(responseArray.data));
-							$rootScope.syncingReminderNotifications = false;
-							deferred.resolve(responseArray.data);
-						}
-						else {
-							$rootScope.syncingReminderNotifications = false;
-							deferred.reject("error");
-						}
-					}, function (err) {
-						$rootScope.syncingReminderNotifications = false;
-						Bugsnag.notify(err, JSON.stringify(err), {}, "error");
-						deferred.reject(err);
-					});
-
-					return deferred.promise;
-				}
-			},
+			
 
 			deleteReminder : function(reminderId){
 				var deferred = $q.defer();
