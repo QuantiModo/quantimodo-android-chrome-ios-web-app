@@ -82,7 +82,7 @@ angular.module('starter')
 		};
 
 	    var filterViaDates = function(trackingReminderNotifications) {
-
+            $scope.state.numberOfNotificationsInInbox = 0;
 			var result = [];
 			var reference = moment().local();
 			var today = reference.clone().startOf('day');
@@ -95,6 +95,7 @@ angular.module('starter')
 			});
 
 			if (todayResult.length) {
+                $scope.state.numberOfNotificationsInInbox = $scope.state.numberOfNotificationsInInbox + todayResult.length;
 				result.push({name: "Today", reminders: todayResult});
 			}
 
@@ -103,6 +104,7 @@ angular.module('starter')
 	    	});
 
 	    	if(yesterdayResult.length) {
+                $scope.state.numberOfNotificationsInInbox = $scope.state.numberOfNotificationsInInbox + yesterdayResult.length;
 				result.push({ name : "Yesterday", reminders : yesterdayResult });
 			}
 
@@ -114,6 +116,7 @@ angular.module('starter')
 	    	});
 
 	    	if(last7DayResult.length) {
+                $scope.state.numberOfNotificationsInInbox = $scope.state.numberOfNotificationsInInbox + last7DayResult.length;
 				result.push({ name : "Last 7 Days", reminders : last7DayResult });
 			}
 
@@ -126,6 +129,7 @@ angular.module('starter')
 	    	});
 
 	    	if(last30DayResult.length) {
+                $scope.state.numberOfNotificationsInInbox = $scope.state.numberOfNotificationsInInbox + last30DayResult.length;
 				result.push({ name : "Last 30 Days", reminders : last30DayResult });
 			}
 
@@ -134,6 +138,7 @@ angular.module('starter')
 	    	});
 
 	    	if(olderResult.length) {
+                $scope.state.numberOfNotificationsInInbox = $scope.state.numberOfNotificationsInInbox + olderResult.length;
 				result.push({ name : "Older", reminders : olderResult });
 			}
 
@@ -157,10 +162,12 @@ angular.module('starter')
 				responseArray.success = response.success;
 				allReminderNotifications = allReminderNotifications.concat(response.data);
 				localStorageService.setItem('trackingReminderNotifications', JSON.stringify(allReminderNotifications));
-				var trackingReminderNotificationsToDisplay =
-					reminderService.getTrackingReminderNotificationsFromLocalStorage($stateParams.variableCategoryName, $stateParams.today);
-				$scope.state.filteredReminders = filterViaDates(trackingReminderNotificationsToDisplay);
-				if(response.data.length < 200 || typeof response.data === "string" || params.offset >= 3000){
+                if($scope.state.numberOfNotificationsInInbox < 300){
+                    var trackingReminderNotificationsToDisplay =
+                        reminderService.getTrackingReminderNotificationsFromLocalStorage($stateParams.variableCategoryName, $stateParams.today);
+                    $scope.state.filteredReminders = filterViaDates(trackingReminderNotificationsToDisplay);
+                }
+				if(response.data.length < 200 || typeof response.data === "string" || params.offset >= 500){
 					responseArray.data = allReminderNotifications;
 					defer.resolve(responseArray);
 				} else {

@@ -532,3 +532,7 @@ img.intro-primary-outcome-variable-rating-buttons {
     background-size: cover;
 }
 */
+
+.item-select select {
+    padding: 14px 48px 8px 16px;
+}
