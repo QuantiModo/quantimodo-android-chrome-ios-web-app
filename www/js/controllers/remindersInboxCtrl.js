@@ -167,7 +167,7 @@ angular.module('starter')
                         reminderService.getTrackingReminderNotificationsFromLocalStorage($stateParams.variableCategoryName, $stateParams.today);
                     $scope.state.filteredReminders = filterViaDates(trackingReminderNotificationsToDisplay);
                 }
-				if(response.data.length < 200 || typeof response.data === "string" || params.offset >= 500){
+				if(response.data.length < 200 || typeof response.data === "string" || params.offset > 400){
 					responseArray.data = allReminderNotifications;
 					defer.resolve(responseArray);
 				} else {
@@ -195,14 +195,13 @@ angular.module('starter')
 			var trackingReminderNotifications =
 				reminderService.getTrackingReminderNotificationsFromLocalStorage($stateParams.variableCategoryName, $stateParams.today);
 			$scope.state.filteredReminders = filterViaDates(trackingReminderNotifications);
+            
+            if(trackingReminderNotifications.length < 50 || $scope.state.filteredReminders[0].length < 1) {
+                $scope.showLoader('Syncing reminder notifications...');
+                refreshAllReminderNotificationsAndUpdateView();
+            }
 
-			if($scope.state.filteredReminders.length < 1) {
-				$scope.showLoader('Syncing reminder notifications...');
-			}
-
-			refreshAllReminderNotificationsAndUpdateView();
-
-			if($scope.state.filteredReminders > 3){
+			if(trackingReminderNotifications.length > 3){
 				$scope.state.showButtons = false;
 			}
 			if(trackingReminderNotifications.length < 4){
