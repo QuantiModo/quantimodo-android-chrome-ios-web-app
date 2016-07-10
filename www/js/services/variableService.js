@@ -1,6 +1,6 @@
 angular.module('starter')
 	// Measurement Service
-	.factory('variableService', function($http, $q, QuantiModo, localStorageService, authService, utilsService){
+	.factory('variableService', function($http, $q, QuantiModo, localStorageService, $rootScope){
 
         
 		// service methods
@@ -83,6 +83,24 @@ angular.module('starter')
                 return deferred.promise;
             },
 
+            refreshUserVariables : function(){
+                if(!$rootScope.syncingUserVariables){
+                    $rootScope.syncingUserVariables = true;
+                    var deferred = $q.defer();
+
+                    QuantiModo.getUserVariables(null, function(userVariables){
+                        localStorageService.setItem('userVariables', JSON.stringify(userVariables));
+                        $rootScope.syncingUserVariables = false;
+                        deferred.resolve(userVariables);
+                    }, function(){
+                        $rootScope.syncingUserVariables = false;
+                        deferred.reject(false);
+                    });
+
+                    return deferred.promise;
+                }
+            },
+
             getUserVariables : function(variableCategoryName){
                 var deferred = $q.defer();
 
@@ -91,14 +109,14 @@ angular.module('starter')
                 if(userVariables && userVariables.length > 0){
                     deferred.resolve(userVariables);
                     return deferred.promise;
+                } else {
+                    this.refreshUserVariables().then(function (){
+                        var userVariables = localStorageService.getElementsFromItemWithFilters(
+                            'userVariables', 'variableCategoryName', variableCategoryName);
+                        deferred.resolve(userVariables);
+                        return deferred.promise;
+                    });
                 }
-
-                QuantiModo.getUserVariables(variableCategoryName, function(userVariables){
-                    localStorageService.setItem('userVariables', JSON.stringify(userVariables));
-                    deferred.resolve(userVariables);
-                }, function(){
-                    deferred.reject(false);
-                });
 
                 return deferred.promise;
             }

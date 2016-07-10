@@ -59,7 +59,10 @@ angular.module('starter')
             // GET method with the added token
             QuantiModo.get = function(baseURL, allowedParams, params, successHandler, errorHandler){
                 authService.getAccessTokenFromAnySource().then(function(tokenObject){
-                    
+                    allowedParams.push('limit');
+                    allowedParams.push('offset');
+                    allowedParams.push('sort');
+                    allowedParams.push('updatedAt');
                     // configure params
                     var urlParams = [];
                     for (var key in params) 
@@ -165,7 +168,7 @@ angular.module('starter')
                 };
 
                 var successCallback =  function(response){
-                    if(response.length === 0 || typeof response === "string" || params.offset >= 3000){
+                    if(response.length < 200 || typeof response === "string" || params.offset >= 3000){
                         defer.resolve(response_array);
                     }else{
                         localStorageService.getItem('user', function(user){
@@ -421,15 +424,6 @@ angular.module('starter')
             QuantiModo.getTrackingReminders = function(params, successHandler, errorHandler){
                 QuantiModo.get('api/v1/trackingReminders',
                     ['variableCategoryName', 'id'],
-                    params,
-                    successHandler,
-                    errorHandler);
-            };
-
-            // get pending reminders 
-            QuantiModo.getTrackingReminderNotifications = function(params, successHandler, errorHandler){
-                QuantiModo.get('api/v1/trackingReminderNotifications',
-                    ['variableCategoryName', 'reminderTime', 'sort'],
                     params,
                     successHandler,
                     errorHandler);
