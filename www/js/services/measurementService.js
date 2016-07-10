@@ -214,7 +214,7 @@ angular.module('starter')
 
                 if($rootScope.user){
                     $rootScope.isSyncing = true;
-                    console.log('Syncing primary outcome measurements...');
+                    $rootScope.syncDisplayText = 'Syncing ' + config.appSettings.primaryOutcomeVariableDetails.name + ' measurements...';
 
                     measurementService.syncPrimaryOutcomeVariableMeasurements().then(function(){
                         $rootScope.isSyncing = false;
@@ -232,6 +232,8 @@ angular.module('starter')
             // sync the measurements in queue with QuantiModo API
             syncPrimaryOutcomeVariableMeasurements : function(){
                 var defer = $q.defer();
+                $rootScope.isSyncing = true;
+                $rootScope.syncDisplayText = 'Syncing measurements...';
 
                 localStorageService.getItem('measurementsQueue',function(measurementsQueue) {
 
@@ -242,7 +244,6 @@ angular.module('starter')
                         measurementService.getMeasurements().then(function(){
                             defer.resolve();
                         });
-                        //$rootScope.$broadcast('updateCharts');
                     }
 
                     // measurements set
@@ -264,6 +265,8 @@ angular.module('starter')
                         // success
                         measurementService.getMeasurements().then(function() {
                             localStorageService.setItem('measurementsQueue', JSON.stringify([]));
+                            $rootScope.isSyncing = false;
+                            $rootScope.syncDisplayText = '';
                             defer.resolve();
                             console.log("success", response);
                         });
@@ -275,6 +278,8 @@ angular.module('starter')
 
                         // resave queue
                         localStorageService.setItem('measurementsQueue', JSON.stringify(measurementsQueue));
+                        $rootScope.isSyncing = false;
+                        $rootScope.syncDisplayText = '';
                         console.log("error", response);
                         defer.resolve();
 

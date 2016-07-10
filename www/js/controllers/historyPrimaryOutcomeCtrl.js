@@ -45,9 +45,6 @@ angular.module('starter')
 			console.debug('history page init');
 			Bugsnag.context = "historyPrimary";
 			updateHistoryView();
-			if($scope.state.history.length < 1){
-				$scope.showLoader('Syncing measurements...');
-			}
 			if($rootScope.user){
 				measurementService.syncPrimaryOutcomeVariableMeasurements()
 					.then(function(){
