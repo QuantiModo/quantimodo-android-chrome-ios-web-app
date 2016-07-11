@@ -88,6 +88,8 @@ angular.module('starter')
             ionicDatePicker.openDatePicker($scope.state.datePickerConfiguration);
         };
 
+        // Deprecated
+        /*
         // when add new variable is tapped
         $scope.addVariable = function(){
             console.log("add variable");
@@ -102,7 +104,7 @@ angular.module('starter')
                 !$scope.state.measurement.abbreviatedUnitName) {
                 $scope.state.measurement.abbreviatedUnitName = $scope.state.variableCategoryObject.defaultAbbreviatedUnitName;
             }
-        };
+        };*/
 
         // cancel activity
         $scope.cancel = function(){
@@ -179,31 +181,30 @@ angular.module('starter')
 
         $scope.done = function(){
 
+            // Validation
             if($scope.state.measurement.value === '' || typeof $scope.state.measurement.value === 'undefined'){
                 utilsService.showAlert('Please enter a value');
                 return;
             }
-
-            if(!$scope.state.measurement.variable && !$scope.state.measurement.variableName){
+            if((!$scope.state.measurement.variable || $scope.state.measurement.variable === "") &&
+                (!$scope.state.measurement.variableName || $scope.state.measurement.variableName === "")){
                 utilsService.showAlert('Please enter a variable name');
                 return;
             }
-
             if(!$scope.state.measurement.variableCategoryName){
                 utilsService.showAlert('Please select a variable category');
                 return;
             }
-
             if(!$scope.state.measurement.abbreviatedUnitName && !$scope.abbreviatedUnitName){
                 utilsService.showAlert('Please select a unit');
                 return;
             }
 
-            // combine selected date and time
+            // Combine selected date and time
             $scope.state.measurement.startTimeEpoch = $scope.selectedDate.getTime()/1000;
 
-            // populate params
-            var params = {
+            // Populate measurementInfo (formerly params)
+            var measurementInfo = {
                 id : $scope.state.measurement.id,
                 variableName : $scope.state.measurement.variable || jQuery('#variableName').val(),
                 value : $scope.state.measurement.value,
@@ -219,90 +220,32 @@ angular.module('starter')
                 isAvg : $scope.state.sumAvg === "avg"? true : false
             };
 
-            if(!params.value && params.value !== 0){
-                params.value = jQuery('#measurementValue').val();
+            // Assign measurement value if it does not exist
+            if(!measurementInfo.value && measurementInfo.value !== 0){
+                measurementInfo.value = jQuery('#measurementValue').val();
             }
 
-            console.log(params);
+            console.log(measurementInfo);
 
-            var measurementInfo = {
-                id: params.id,
-                prevStartTimeEpoch: params.prevStartTimeEpoch,
-                startTimeEpoch: params.startTimeEpoch,
-                variableName: params.variableName,
-                value: params.value,
-                abbreviatedUnitName: params.abbreviatedUnitName,
-                isAvg: params.isAvg,
-                variableCategoryName: params.variableCategoryName,
-                note: params.note
-            };
+            // Measurement only - post measurement. This is for adding or editing
+            measurementService.postTrackingMeasurement(measurementInfo, true);
+            //.then(function() {});
 
-            if($scope.state.showAddVariable){
-                console.debug('done: Adding new variable..');
-
-                // validation
-                if(params.variableName == ""){
-                    utilsService.showAlert('Please enter a variable name');
-                } else {
-                    $scope.showLoader('Saving measurement...');
-                    // add variable
-                    measurementService.postTrackingMeasurement(
-                        measurementInfo, true)
-                    .then(function(){
-                        utilsService.showAlert('Added Variable');
-
-                        if($stateParams.fromUrl){
-                            window.location = $stateParams.fromUrl;
-                        } else if ($stateParams.fromState){
-                            $state.go($stateParams.fromState);
-                        } else {
-                            $rootScope.hideNavigationMenu = false;
-                            $state.go(config.appSettings.defaultState);
-                        }
-
-                        // refresh the last updated at from api
-                        //setTimeout($scope.init, 200);
-                    }, function(err){
-                        Bugsnag.notify(err, JSON.stringify(err), {}, "error");
-                        utilsService.showAlert(err);
-                    });
-                }
-
+            if($stateParams.fromUrl){
+                window.location = $stateParams.fromUrl;
+            } else if ($stateParams.fromState){
+                var variableName = $scope.state.measurement.variable;
+                var variableObject = $scope.variableObject;
+                $state.go($stateParams.fromState, {
+                    variableObject: variableObject,
+                    variableName: variableName,
+                    measurementInfo: measurementInfo
+                });
             } else {
-
-                // validation
-                if($scope.state.measurement.value === '' || typeof $scope.state.measurement.value === 'undefined'){
-                    utilsService.showAlert('Please enter a value');
-                } else {
-                    // measurement only
-                    // note: this is for adding or editing
-
-                    // post measurement
-                    measurementService.postTrackingMeasurement(measurementInfo, true)
-                    .then(function() {
-
-                    });
-
-                    if($stateParams.fromUrl){
-                        window.location = $stateParams.fromUrl;
-                    } else if ($stateParams.fromState){
-                        var variableName = $scope.state.measurement.variable;
-                        var variableObject = $scope.variableObject;
-                        $state.go($stateParams.fromState, {
-                            variableObject: variableObject,
-                            variableName: variableName,
-                            measurementInfo: measurementInfo
-                        });
-                    } else {
-                        $rootScope.hideNavigationMenu = false;
-                        $state.go(config.appSettings.defaultState);
-                    }
-                    //utilsService.showAlert(params.variableName + ' measurement saved!');
-                    
-                    // refresh data
-                    //setTimeout($scope.init, 200);
-                }
+                $rootScope.hideNavigationMenu = false;
+                $state.go(config.appSettings.defaultState);
             }
+
         };
 
         // setup category view
