@@ -237,7 +237,7 @@ angular.module('starter')
 
             // post new Measurements for user
             QuantiModo.postMeasurementsV2 = function(measurementSet, successHandler, errorHandler){
-                if(!measurementSet.measurements){
+                if(!measurementSet[0].measurements){
                     console.error("No measurementSet.measurements provided to QuantiModo.postMeasurementsV2");
                 } else {
                     QuantiModo.post('api/measurements/v2',
