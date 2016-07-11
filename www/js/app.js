@@ -233,7 +233,8 @@ angular.module('starter',
               reminder : null,
               fromState : null,
               measurement : null,
-              variableObject : null
+              variableObject : null,
+              toState: 'app.measurementAdd'
           },
           views: {
               'menuContent': {
@@ -249,7 +250,8 @@ angular.module('starter',
               variableCategoryName : null,
               fromState : null,
               fromUrl : null,
-              measurement : null
+              measurement : null,
+              toState: 'app.measurementAdd'
           },
           views: {
               'menuContent': {
@@ -266,7 +268,8 @@ angular.module('starter',
                 fromState : null,
                 fromUrl : null,
                 measurement : null,
-                reminderSearch: true
+                reminderSearch: true,
+                toState: 'app.reminderAdd'
             },
             views: {
                 'menuContent': {
@@ -284,7 +287,8 @@ angular.module('starter',
                 fromState : null,
                 fromUrl : null,
                 measurement : null,
-                reminderSearch: true
+                reminderSearch: true,
+                toState: 'app.reminderAdd'
             },
             views: {
                 'menuContent': {
@@ -355,7 +359,8 @@ angular.module('starter',
               fromState: null,
               fromUrl: null,
               measurement: null,
-              doNotIncludePublicVariables: true
+              doNotIncludePublicVariables: true,
+              toState: 'app.variables'
           },
           views: {
               'menuContent': {
