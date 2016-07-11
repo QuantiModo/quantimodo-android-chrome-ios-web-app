@@ -394,7 +394,7 @@ angular.module('starter')
 
                     $ionicLoading.hide();
                     $scope.loading = false;
-                    utilsService.showAlert('Reminder Deleted.');
+                    console.debug('Reminder Deleted.');
                     if($stateParams.fromUrl){
                         window.location=$stateParams.fromUrl;
                     } else if ($stateParams.fromState){
