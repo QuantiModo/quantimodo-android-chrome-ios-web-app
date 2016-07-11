@@ -234,7 +234,7 @@ angular.module('starter',
               fromState : null,
               measurement : null,
               variableObject : null,
-              toState: 'app.measurementAdd'
+              goToState: 'app.measurementAdd'
           },
           views: {
               'menuContent': {
@@ -251,7 +251,7 @@ angular.module('starter',
               fromState : null,
               fromUrl : null,
               measurement : null,
-              toState: 'app.measurementAdd'
+              goToState: 'app.measurementAdd'
           },
           views: {
               'menuContent': {
@@ -269,7 +269,7 @@ angular.module('starter',
                 fromUrl : null,
                 measurement : null,
                 reminderSearch: true,
-                toState: 'app.reminderAdd'
+                goToState: 'app.reminderAdd'
             },
             views: {
                 'menuContent': {
@@ -288,7 +288,7 @@ angular.module('starter',
                 fromUrl : null,
                 measurement : null,
                 reminderSearch: true,
-                toState: 'app.reminderAdd'
+                goToState: 'app.reminderAdd'
             },
             views: {
                 'menuContent': {
@@ -360,7 +360,7 @@ angular.module('starter',
               fromUrl: null,
               measurement: null,
               doNotIncludePublicVariables: true,
-              toState: 'app.variables'
+              goToState: 'app.variables'
           },
           views: {
               'menuContent': {
