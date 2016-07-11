@@ -244,48 +244,47 @@ angular.module('starter')
                         measurementService.getMeasurements().then(function(){
                             defer.resolve();
                         });
-                    }
+                    } else {
+                        // measurements set
+                        var measurements = [
+                            {
+                                variableName: config.appSettings.primaryOutcomeVariableDetails.name,
+                                source: config.get('clientSourceName'),
+                                variableCategoryName: config.appSettings.primaryOutcomeVariableDetails.category,
+                                combinationOperation: config.appSettings.primaryOutcomeVariableDetails.combinationOperation,
+                                abbreviatedUnitName: config.appSettings.primaryOutcomeVariableDetails.abbreviatedUnitName,
+                                measurements: measurementObjects
+                            }
+                        ];
 
-                    // measurements set
-                    var measurements = [
-                        {
-                            variableName: config.appSettings.primaryOutcomeVariableDetails.name,
-                            source: config.get('clientSourceName'),
-                            variableCategoryName: config.appSettings.primaryOutcomeVariableDetails.category,
-                            combinationOperation: config.appSettings.primaryOutcomeVariableDetails.combinationOperation,
-                            abbreviatedUnitName: config.appSettings.primaryOutcomeVariableDetails.abbreviatedUnitName,
-                            measurements: measurementObjects
-                        }
-                    ];
+                        console.debug('Syncing ', measurementObjects);
 
-                    console.debug('Syncing ', measurementObjects);
+                        // send request
+                        QuantiModo.postMeasurementsV2(measurements, function (response) {
+                            // success
+                            measurementService.getMeasurements().then(function() {
+                                localStorageService.setItem('measurementsQueue', JSON.stringify([]));
+                                $rootScope.isSyncing = false;
+                                $rootScope.syncDisplayText = '';
+                                defer.resolve();
+                                console.log("success", response);
+                            });
+                            // clear queue
 
-                    // send request
-                    QuantiModo.postMeasurementsV2(measurements, function (response) {
-                        // success
-                        measurementService.getMeasurements().then(function() {
-                            localStorageService.setItem('measurementsQueue', JSON.stringify([]));
+
+                        }, function (response) {
+                            // error
+
+                            // resave queue
+                            localStorageService.setItem('measurementsQueue', JSON.stringify(measurementsQueue));
                             $rootScope.isSyncing = false;
                             $rootScope.syncDisplayText = '';
+                            console.log("error", response);
                             defer.resolve();
-                            console.log("success", response);
+
+
                         });
-                        // clear queue
-                        
-
-                    }, function (response) {
-                        // error
-
-                        // resave queue
-                        localStorageService.setItem('measurementsQueue', JSON.stringify(measurementsQueue));
-                        $rootScope.isSyncing = false;
-                        $rootScope.syncDisplayText = '';
-                        console.log("error", response);
-                        defer.resolve();
-
-
-                    });
-
+                    }
                 });
 
                 return defer.promise;
