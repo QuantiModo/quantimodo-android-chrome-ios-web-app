@@ -25,7 +25,8 @@ angular.module('starter')
 			skipReminderNotification : function(trackingReminderNotificationId){
 				var deferred = $q.defer();
 
-				localStorageService.deleteElementOfItemById('trackingReminderNotifications', trackingReminderNotificationId);
+				// Not keeping notifications in local storage currently
+				//localStorageService.deleteElementOfItemById('trackingReminderNotifications', trackingReminderNotificationId);
 
 				QuantiModo.skipTrackingReminder(trackingReminderNotificationId, function(response){
 					if(response.success) {
@@ -44,7 +45,8 @@ angular.module('starter')
 
 			trackReminderNotification : function(trackingReminderNotificationId, modifiedReminderValue){
 				var deferred = $q.defer();
-				localStorageService.deleteElementOfItemById('trackingReminderNotifications', trackingReminderNotificationId);
+				// Not keeping notifications in local storage currently
+				//localStorageService.deleteElementOfItemById('trackingReminderNotifications', trackingReminderNotificationId);
 
 				QuantiModo.trackTrackingReminder(trackingReminderNotificationId, modifiedReminderValue, function(response){
 					if(response.success) {
@@ -63,7 +65,8 @@ angular.module('starter')
 
 			snoozeReminderNotification : function(trackingReminderNotificationId){
 				var deferred = $q.defer();
-				localStorageService.deleteElementOfItemById('trackingReminderNotifications', trackingReminderNotificationId);
+				// Not keeping notifications in local storage currently
+				//localStorageService.deleteElementOfItemById('trackingReminderNotifications', trackingReminderNotificationId);
 
 				QuantiModo.snoozeTrackingReminder(trackingReminderNotificationId, function(response){
 					if(response.success) {
