@@ -115,7 +115,7 @@ angular.module('starter')
                     var errorHandler = function(err) {
                         $rootScope.syncingCommonVariables = false;
                         console.error(err);
-                        Bugsnag.notify("ERROR: "+ err.message, err, {}, "error");
+                        Bugsnag.notify("ERROR: "+ err, err, {}, "error");
                         deferred.reject(false);
                     };
                     
