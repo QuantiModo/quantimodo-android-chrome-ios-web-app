@@ -185,7 +185,7 @@ angular.module('starter')
                 ];
             },
             
-            addImagesToMeasurements : function (measurements){
+            addInfoAndImagesToMeasurements : function (measurements){
                 var ratingInfo = ratingService.getRatingInfo();
                 var index;
                 for (index = 0; index < measurements.length; ++index) {
@@ -200,7 +200,15 @@ angular.module('starter')
                         measurements[index].roundedValue = Math.round(measurements[index].value);
                     }
 
-                    measurements[index].valueUnitVariableName = measurements[index].value + measurements[index].abbreviatedUnitName + ' ' + measurements[index].variableName;
+                    if (measurements[index].abbreviatedUnitName.charAt(0) === '/') {
+                        // don't add space between value and unit
+                        measurements[index].valueUnitVariableName = measurements[index].value + measurements[index].abbreviatedUnitName + ' ' + measurements[index].variableName;
+                    }
+                    else {
+                        // add space between value and unit
+                        measurements[index].valueUnitVariableName = measurements[index].value + " " + measurements[index].abbreviatedUnitName + ' ' + measurements[index].variableName;
+                    }
+
                     if(measurements[index].valueUnitVariableName.length > 29){
                         measurements[index].valueUnitVariableName =  measurements[index].valueUnitVariableName.substring(0, 29)+'...';
                     }

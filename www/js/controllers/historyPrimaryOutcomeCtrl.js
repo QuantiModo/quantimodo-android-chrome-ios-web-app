@@ -36,7 +36,7 @@ angular.module('starter')
                                 {return -1;}
                                 return 0;
                             });
-                            $scope.history = ratingService.addImagesToMeasurements(history);
+                            $scope.history = ratingService.addInfoAndImagesToMeasurements(history);
                         }
                     });
                 }
