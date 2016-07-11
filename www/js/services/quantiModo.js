@@ -236,12 +236,16 @@ angular.module('starter')
             };
 
             // post new Measurements for user
-            QuantiModo.postMeasurementsV2 = function(measurementset, successHandler ,errorHandler){
-                QuantiModo.post('api/measurements/v2', 
-                    ['measurements', 'variableName', 'source', 'variableCategoryName', 'combinationOperation', 'abbreviatedUnitName'],
-                    measurementset, 
-                    successHandler,
-                    errorHandler);
+            QuantiModo.postMeasurementsV2 = function(measurementSet, successHandler, errorHandler){
+                if(!measurementSet.measurements){
+                    console.error("No measurementSet.measurements provided to QuantiModo.postMeasurementsV2");
+                } else {
+                    QuantiModo.post('api/measurements/v2',
+                        ['measurements', 'variableName', 'source', 'variableCategoryName', 'combinationOperation', 'abbreviatedUnitName'],
+                        measurementSet,
+                        successHandler,
+                        errorHandler);
+                }
             };
         
             QuantiModo.logoutOfApi = function(successHandler, errorHandler){
