@@ -124,8 +124,8 @@ SIGNED_DEBUG_APK_PATH=${LOWERCASE_APP_NAME}-android-debug-signed.apk
 ANDROID_DEBUG_KEYSTORE_PASSWORD=android
 DEBUG_ALIAS=androiddebugkey
 
-echo "Deleting META-INF folder for ${UNSIGNED_DEBUG_APK_PATH}"
-zip -d ${UNSIGNED_DEBUG_APK_PATH} META-INF/\* >/dev/null
+echo "zip -d ${UNSIGNED_DEBUG_APK_PATH} META-INF/\*"
+zip -d ${UNSIGNED_DEBUG_APK_PATH} META-INF/\*
 echo "Signing ${UNSIGNED_DEBUG_APK_PATH}"
 jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore ${ANDROID_DEBUG_KEYSTORE_PATH} -storepass ${ANDROID_DEBUG_KEYSTORE_PASSWORD} ${UNSIGNED_DEBUG_APK_PATH} ${DEBUG_ALIAS} >/dev/null
 echo "Verifying ${UNSIGNED_DEBUG_APK_PATH}"
@@ -144,8 +144,8 @@ else
    exit 1
 fi
 
-echo "Deleting META-INF folder for ${UNSIGNED_APK_PATH}"
-zip -d ${UNSIGNED_APK_PATH} META-INF/\* >/dev/null
+echo "zip -d ${UNSIGNED_APK_PATH} META-INF/\* "
+zip -d ${UNSIGNED_APK_PATH} META-INF/\*
 
 echo "Signing ${UNSIGNED_APK_PATH}"
 jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore ${ANDROID_KEYSTORE_PATH} -storepass ${ANDROID_KEYSTORE_PASSWORD} ${UNSIGNED_APK_PATH} ${ALIAS} >/dev/null
