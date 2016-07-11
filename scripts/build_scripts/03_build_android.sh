@@ -84,7 +84,7 @@ ionic platform add android
 echo "cordova plugin rm phonegap-facebook-plugin for $LOWERCASE_APP_NAME Android app..."
 cordova plugin rm phonegap-facebook-plugin || true
 echo "cordova plugin rm cordova-plugin-facebook4 for $LOWERCASE_APP_NAME Android app..."
-cordova plugin rm cordova-plugin-facebook4
+cordova plugin rm cordova-plugin-facebook4 || true
 echo "rm -rf ../fbplugin for $LOWERCASE_APP_NAME Android app..."
 rm -rf ../fbplugin
 #echo "gulp addFacebookPlugin for $LOWERCASE_APP_NAME Android app..."
