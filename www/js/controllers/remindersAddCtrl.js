@@ -59,7 +59,8 @@ angular.module('starter')
 				{ id : 7, name : 'Every 2 hours'},
 				{ id : 8, name : 'Hourly'},
 	    		{ id : 9, name : 'Every 30 minutes'},
-	    		{ id : 10, name : 'Never'}
+	    		{ id : 10, name : 'Never'},
+                //{ id : 11, name : 'Minutely'}
 	    	]
 	    };
 
@@ -182,7 +183,8 @@ angular.module('starter')
 	    		"Never": 0,
 	    		"Daily": 24*60*60,
 	    		"Twice a day" : 12*60*60,
-	    		"Three times a day": 8*60*60
+	    		"Three times a day": 8*60*60,
+                "Minutely": 60
 	    	};
 	    };
 
