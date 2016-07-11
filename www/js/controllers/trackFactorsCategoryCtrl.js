@@ -138,15 +138,15 @@ angular.module('starter')
                 }
             }
             else {
-                $scope.state.variableSearchResults = null;
-                var reset = true;
-                populateUserVariables(reset);
+                //$scope.state.variableSearchResults = null;
+                //var reset = true;
+                populateUserVariables();
             }
         };
 
 
         var populateCommonVariables = function(){
-            if($scope.state.variableSearchResults && $scope.state.variableSearchResults.length > 1){
+            if($scope.state.variableSearchQuery.length > 2){
                 return;
             }
             $scope.state.showAddVariableButton = false;
@@ -157,14 +157,14 @@ angular.module('starter')
             var commonVariables = localStorageService.getElementsFromItemWithFilters(
                 'commonVariables', 'variableCategoryName', variableCategoryName);
             if(commonVariables && commonVariables.length > 0){
-                if(!$scope.state.variableSearchQuery && $scope.state.variableSearchResults.length < 1) {
+                if($scope.state.variableSearchQuery.length < 3 && $scope.state.variableSearchResults.length < 1) {
                     $scope.state.variableSearchResults = commonVariables;
                     $scope.state.searching = false;
                 }
             } else {
-                if(!$scope.state.variableSearchQuery && $scope.state.variableSearchResults.length < 1) {
+                if($scope.state.variableSearchQuery.length < 3 && $scope.state.variableSearchResults.length < 1) {
                     variableService.refreshCommonVariables().then(function () {
-                        if (!$scope.state.variableSearchQuery && $scope.state.variableSearchResults.length < 1) {
+                        if ($scope.state.variableSearchQuery.length < 3 && $scope.state.variableSearchResults.length < 1) {
                             $scope.state.variableSearchResults = localStorageService.getElementsFromItemWithFilters(
                                 'commonVariables', 'variableCategoryName', variableCategoryName);
                             $scope.state.searching = false;
@@ -175,7 +175,7 @@ angular.module('starter')
         };
 
         var populateUserVariables = function(reset){
-            if($scope.state.variableSearchResults && $scope.state.variableSearchResults.length > 1){
+            if($scope.state.variableSearchQuery.length > 2){
                 return;
             }
             $scope.state.showAddVariableButton = false;
@@ -186,17 +186,17 @@ angular.module('starter')
             var userVariables = localStorageService.getElementsFromItemWithFilters(
                 'userVariables', 'variableCategoryName', variableCategoryName);
             if(userVariables && userVariables.length > 0){
-                if(!$scope.state.variableSearchQuery && $scope.state.variableSearchResults.length < 1) {
+                if($scope.state.variableSearchQuery.length < 3) {
                     $scope.state.variableSearchResults = userVariables;
                     $scope.state.searching = false;
                 }
             } else {
-                if($scope.state.variableSearchResults.length < 1 && $scope.state.variableSearchResults.length < 1 && !$stateParams.doNotIncludePublicVariables){
+                if($scope.state.variableSearchResults.length < 1 && !$stateParams.doNotIncludePublicVariables){
                     populateCommonVariables();
                 }
-                if(!$scope.state.variableSearchQuery && $scope.state.variableSearchResults.length < 1) {
+                if($scope.state.variableSearchQuery.length < 3 && $scope.state.variableSearchResults.length < 1) {
                     variableService.refreshUserVariables().then(function () {
-                        if (!$scope.state.variableSearchQuery && $scope.state.variableSearchResults.length < 1) {
+                        if ($scope.state.variableSearchQuery.length < 3 && $scope.state.variableSearchResults.length < 1) {
                             $scope.state.variableSearchResults = localStorageService.getElementsFromItemWithFilters(
                                 'userVariables', 'variableCategoryName', variableCategoryName);
                             $scope.state.searching = false;
