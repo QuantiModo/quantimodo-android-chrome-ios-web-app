@@ -50,7 +50,7 @@ angular.module('starter')
 	    };
 
 
-	    var getHistory = function(){
+	    var getHistory = function(concat){
 			if($scope.state.history.length < 1){
 				$scope.showLoader('Getting your measurements...');
 			}
@@ -60,7 +60,12 @@ angular.module('starter')
     		    sort: "-startTimeEpoch",
 				variableCategoryName: $stateParams.variableCategoryName
 	    	}).then(function(history){
-    			$scope.state.history = $scope.state.history.concat(history);
+	    		if (concat) {
+					$scope.state.history = $scope.state.history.concat(history);
+				}
+    			else {
+					$scope.state.history = history;
+				}
 				$scope.state.history = ratingService.addInfoAndImagesToMeasurements($scope.state.history);
 				$scope.hideLoader();
 				if(history.length < 200){
@@ -77,7 +82,7 @@ angular.module('starter')
 
 	    $scope.getNext = function(){
 	    	$scope.state.offset += $scope.state.limit;
-	    	getHistory();
+	    	getHistory(true);
 	    };
 	    
 	    // constructor
