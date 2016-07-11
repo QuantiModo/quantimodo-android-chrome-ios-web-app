@@ -61,7 +61,7 @@ angular.module('starter')
 				variableCategoryName: $stateParams.variableCategoryName
 	    	}).then(function(history){
     			$scope.state.history = $scope.state.history.concat(history);
-				$scope.state.history = ratingService.addImagesToMeasurements($scope.state.history);
+				$scope.state.history = ratingService.addInfoAndImagesToMeasurements($scope.state.history);
 				$scope.hideLoader();
 				if(history.length < 200){
 					$scope.state.hideLoadMoreButton = true;
