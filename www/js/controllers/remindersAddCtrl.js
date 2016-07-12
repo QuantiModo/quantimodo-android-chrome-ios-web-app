@@ -360,28 +360,30 @@ angular.module('starter')
             var isAuthorized = authService.checkAuthOrSendToLogin();
 
             if(isAuthorized){
-                $scope.getUnits();
-                var reminderIdUrlParameter = utilsService.getUrlParameter(window.location.href, 'reminderId');
-                var variableIdUrlParameter = utilsService.getUrlParameter(window.location.href, 'variableId');
+                unitService.getUnits().then(function (unitObjects) {
+                    var reminderIdUrlParameter = utilsService.getUrlParameter(window.location.href, 'reminderId');
+                    var variableIdUrlParameter = utilsService.getUrlParameter(window.location.href, 'variableId');
 
-                if($stateParams.variableCategoryName){
-                    $scope.state.trackingReminder.variableCategoryName = $stateParams.variableCategoryName;
-                    $scope.setupVariableCategory($scope.state.trackingReminder.variableCategoryName);
-                } else if ($stateParams.reminder && $stateParams.reminder !== null) {
-                    setupEditReminder($stateParams.reminder);
-                }
-                else if(reminderIdUrlParameter) {
-                    setupReminderEditingFromUrlParameter(reminderIdUrlParameter);
-                } else if(variableIdUrlParameter){
-                    setupReminderEditingFromVariableId(variableIdUrlParameter);
-                } else if ($stateParams.variableObject) {
-                    $scope.variableObject = $stateParams.variableObject;
-                    $scope.onVariableSelect($stateParams.variableObject);
-                }
-                else {
-                    $scope.state.title = $filter('wordAliases')('Add Reminder');
-                }
+                    if($stateParams.variableCategoryName){
+                        $scope.state.trackingReminder.variableCategoryName = $stateParams.variableCategoryName;
+                        $scope.setupVariableCategory($scope.state.trackingReminder.variableCategoryName);
+                    } else if ($stateParams.reminder && $stateParams.reminder !== null) {
+                        setupEditReminder($stateParams.reminder);
+                    }
+                    else if(reminderIdUrlParameter) {
+                        setupReminderEditingFromUrlParameter(reminderIdUrlParameter);
+                    } else if(variableIdUrlParameter){
+                        setupReminderEditingFromVariableId(variableIdUrlParameter);
+                    } else if ($stateParams.variableObject) {
+                        $scope.variableObject = $stateParams.variableObject;
+                        $scope.onVariableSelect($stateParams.variableObject);
+                    }
+                    else {
+                        $scope.state.title = $filter('wordAliases')('Add Reminder');
+                    }
+                });
             }
+
 	    };
 
         // when view is changed
