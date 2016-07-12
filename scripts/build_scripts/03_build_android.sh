@@ -134,7 +134,8 @@ echo "Zipaligning ${UNSIGNED_DEBUG_APK_PATH}"
 ${ANDROID_BUILD_TOOLS}/zipalign -v 4 ${UNSIGNED_DEBUG_APK_PATH} ${SIGNED_DEBUG_APK_PATH} >/dev/null
 
 echo -e "${GREEN}Copying ${BUILD_PATH}/${LOWERCASE_APP_NAME} to $DROPBOX_PATH/QuantiModo/apps/${LOWERCASE_APP_NAME}/${NC}"
-cp ${SIGNED_DEBUG_APK_PATH} "$DROPBOX_PATH/QuantiModo/apps/${LOWERCASE_APP_NAME}/"
+mkdir "$DROPBOX_PATH/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/"
+cp ${SIGNED_DEBUG_APK_PATH} "$DROPBOX_PATH/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/"
 
 if [ -f ${SIGNED_DEBUG_APK_PATH} ];
 then
@@ -155,7 +156,7 @@ echo "Zipaligning ${UNSIGNED_APK_PATH}"
 ${ANDROID_BUILD_TOOLS}/zipalign -v 4 ${UNSIGNED_APK_PATH} ${SIGNED_APK_PATH} >/dev/null
 
 echo -e "${GREEN}Copying ${BUILD_PATH}/${LOWERCASE_APP_NAME} to $DROPBOX_PATH/QuantiModo/apps/${LOWERCASE_APP_NAME}/${NC}"
-cp ${SIGNED_APK_PATH} "$DROPBOX_PATH/QuantiModo/apps/${LOWERCASE_APP_NAME}/"
+cp ${SIGNED_APK_PATH} "$DROPBOX_PATH/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/"
 
 rm ${BUILD_PATH}/${LOWERCASE_APP_NAME}/android/android-debug.apk
 rm ${BUILD_PATH}/${LOWERCASE_APP_NAME}/android/android-debug-unaligned.apk
