@@ -269,6 +269,7 @@ angular.module('starter')
 
 	    $scope.editMeasurement = function(trackingReminderNotification, dividerIndex, reminderNotificationIndex){
 			$scope.state.filteredReminders[dividerIndex].reminders[reminderNotificationIndex].hide = true;
+			// FIXME this shouldn't skip unless the change is made - user could cancel
 			reminderService.skipReminderNotification(trackingReminderNotification.id);
 			$state.go('app.measurementAdd',
 				{

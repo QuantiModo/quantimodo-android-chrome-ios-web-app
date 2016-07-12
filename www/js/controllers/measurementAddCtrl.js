@@ -280,16 +280,18 @@ angular.module('starter')
             if(isAuthorized){
                 $scope.getUnits();
                 if(!$scope.state.measurementIsSetup){
+                    // FIXME create variableObject - uses setupTrackingByMeasurement
                     setupFromUrlParameters();
                 }
                 if(!$scope.state.measurementIsSetup) {
+                    // FIXME create variableObject - uses setupTrackingByMeasurement
                     setupFromMeasurementStateParameter();
                 }
                 if(!$scope.state.measurementIsSetup) {
                     setupFromVariableStateParameter();
                 }
-
                 if(!$scope.state.measurementIsSetup){
+                    // FIXME create variableObject - uses setupTrackingByMeasurement
                     setMeasurementVariablesByMeasurementId();
                 }
                 if(!$scope.state.measurementIsSetup) {
@@ -444,7 +446,7 @@ angular.module('starter')
         }
         
         var setupTrackingByMeasurement = function(measurementObject){
-
+            /// FIXME create $scope.variableObject
             if(isNaN(measurementObject.startTimeEpoch)){
                 measurementObject.startTimeEpoch = moment(measurementObject.startTimeEpoch).unix();
             }
@@ -485,6 +487,22 @@ angular.module('starter')
                 setupValueFieldType($stateParams.reminder.abbreviatedUnitName,
                     $stateParams.reminder.variableDescription);
                 $scope.hideLoader();
+            }
+            // Create variableObject
+            if (!$scope.variableObject) {
+                if($stateParams.variableObject !== null && typeof $stateParams.variableObject !== "undefined") {
+                    $scope.variableObject = $stateParams.variableObject;
+                }
+                else if ($stateParams.reminder) {
+                    $scope.variableObject = {
+                        abbreviatedUnitName : $stateParams.reminder.abbreviatedUnitName,
+                        combinationOperation : $stateParams.reminder.combinationOperation,
+                        userId : $stateParams.reminder.userId,
+                        variableCategoryName : $stateParams.reminder.variableCategoryName,
+                        id : $stateParams.reminder.variableId,
+                        name : $stateParams.reminder.variableName
+                    };
+                }
             }
         };
 
