@@ -129,7 +129,7 @@
 				</div>
 			</div>
 
-			<div ng-repeat="divider in state.filteredReminders" ng-init="dividerIndex = $index">
+			<div ng-repeat="divider in state.filteredReminders" ng-init="dividerIndex = $index" id="{{divider.name}}Reminders">
 
 				<div class="item item-divider" style="">
 				  {{divider.name}}
