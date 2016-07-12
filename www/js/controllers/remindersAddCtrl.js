@@ -151,10 +151,7 @@ angular.module('starter')
 
 	    // when adding/editing is cancelled
 	    $scope.cancel = function(){
-	    	//if($stateParams.reminder && $stateParams.reminder !== null){
-            if($stateParams.fromUrl){
-                window.location=$stateParams.fromUrl;
-            } else if ($stateParams.fromState){
+            if ($stateParams.fromState){
                 var variableName = $scope.state.trackingReminder.variableName;
                 var variableObject = $scope.variableObject;
                 $state.go($stateParams.fromState, {
@@ -162,8 +159,10 @@ angular.module('starter')
                     variableName: variableName,
                     noReload: true,
                 });
+            } else if ($stateParams.fromUrl) {
+                window.location = $stateParams.fromUrl;
             } else {
-                $state.go('app.remindersManage');
+                    $state.go('app.remindersManage');
             }
 	    	/*} else {
 				$state.reload();
