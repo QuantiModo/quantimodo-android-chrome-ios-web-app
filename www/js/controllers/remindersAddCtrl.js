@@ -154,10 +154,12 @@ angular.module('starter')
             if ($stateParams.fromState){
                 var variableName = $scope.state.trackingReminder.variableName;
                 var variableObject = $scope.variableObject;
+                var measurementObject = $stateParams.measurement;
                 $state.go($stateParams.fromState, {
                     variableObject: variableObject,
                     variableName: variableName,
                     noReload: true,
+                    measurement: measurementObject,
                 });
             } else if ($stateParams.fromUrl) {
                 window.location = $stateParams.fromUrl;

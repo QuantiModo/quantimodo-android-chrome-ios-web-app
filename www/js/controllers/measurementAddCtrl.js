@@ -415,7 +415,8 @@ angular.module('starter')
             $state.go('app.reminderAdd', {
                 variableObject: $scope.variableObject,
                 fromState: $state.current.name,
-                fromUrl: window.location.href
+                fromUrl: window.location.href,
+                measurement: $stateParams.measurement
             });
         };
 
@@ -463,6 +464,27 @@ angular.module('starter')
             $scope.state.measurementIsSetup = true;
             setupValueFieldType($scope.state.measurement.abbreviatedUnitName,
                 $scope.state.measurement.variableDescription);
+            if ($scope.state.measurement.variableName) {
+                $scope.state.measurement.variable = $scope.state.measurement.variableName;
+            }
+
+            // Create variableObject
+            if (!$scope.variableObject) {
+                if($stateParams.variableObject !== null && typeof $stateParams.variableObject !== "undefined") {
+                    $scope.variableObject = $stateParams.variableObject;
+                }
+                else {
+                    $scope.variableObject = {
+                        abbreviatedUnitName : $scope.state.measurement.abbreviatedUnitName,
+                        variableCategoryName : $scope.state.measurement.variableCategoryName ?
+                            $scope.state.measurement.variableCategoryName : null,
+                        id :  $scope.state.measurement.variableId ? $scope.state.measurement.variableId : null,
+                        name : $scope.state.measurement.variable ? $scope.state.measurement.variable : null
+                    };
+                }
+            }
+
+
             $scope.hideLoader();
         };
 
