@@ -228,12 +228,6 @@ angular.module('starter')
             }));
         };
 
-        $scope.$on('updateCharts', function(){
-            $rootScope.isSyncing = false;
-            console.log('track state redrawing event triggered through sibling controllers. Updating charts and syncing..');
-            updateCharts();
-        });
-
         $scope.$on('$ionicView.enter', function(e) {
             $scope.redrawLineChart = true;
             $scope.redrawBarChart = true;
