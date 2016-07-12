@@ -292,17 +292,6 @@ angular.module('starter')
                 $state.go(config.appSettings.defaultState);
             }
         };
-
-        $scope.getUnits = function () {
-            $rootScope.abbreviatedUnitNames = [];
-            unitService.getUnits().then(function (unitObjects) {
-                $rootScope.unitObjects = unitObjects;
-                console.debug("Got units", $rootScope.unitObjects);
-                for(var i =0; i< $rootScope.unitObjects.length; i++){
-                    $rootScope.abbreviatedUnitNames[i] = $rootScope.unitObjects[i].abbreviatedName;
-                }
-            });
-        };
         
         $scope.init = function () {
             console.log("Main Constructor Start");
