@@ -168,9 +168,9 @@ angular.module('starter')
                 };
 
                 var successCallback =  function(response){
-                    if(response.length < 200 || typeof response === "string" || params.offset >= 3000){
+                    if (response.length === 0 || typeof response === "string" || params.offset >= 3000) {
                         defer.resolve(response_array);
-                    }else{
+                    } else {
                         localStorageService.getItem('user', function(user){
                             if(!user){
                                 defer.reject(false);
