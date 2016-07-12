@@ -280,18 +280,15 @@ angular.module('starter')
             if(isAuthorized){
                 $scope.getUnits();
                 if(!$scope.state.measurementIsSetup){
-                    // FIXME create variableObject - uses setupTrackingByMeasurement
                     setupFromUrlParameters();
                 }
                 if(!$scope.state.measurementIsSetup) {
-                    // FIXME create variableObject - uses setupTrackingByMeasurement
                     setupFromMeasurementStateParameter();
                 }
                 if(!$scope.state.measurementIsSetup) {
                     setupFromVariableStateParameter();
                 }
                 if(!$scope.state.measurementIsSetup){
-                    // FIXME create variableObject - uses setupTrackingByMeasurement
                     setMeasurementVariablesByMeasurementId();
                 }
                 if(!$scope.state.measurementIsSetup) {
@@ -447,7 +444,6 @@ angular.module('starter')
         }
         
         var setupTrackingByMeasurement = function(measurementObject){
-            /// FIXME create $scope.variableObject
             if(isNaN(measurementObject.startTimeEpoch)){
                 measurementObject.startTimeEpoch = moment(measurementObject.startTimeEpoch).unix();
             }

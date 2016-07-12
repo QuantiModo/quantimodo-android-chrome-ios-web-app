@@ -34,7 +34,7 @@ angular.module('starter')
                 }
                 else {
                     console.debug("studyCtrl: no factor, going to default state");
-                    // FIXME go to fromUrl or fromState instead?
+                    // FIXME go to fromUrl or fromState instead
                     $state.go(config.appSettings.defaultState);
                     // app wide signal to sibling controllers that the state has changed
                     $rootScope.$broadcast('transition');
