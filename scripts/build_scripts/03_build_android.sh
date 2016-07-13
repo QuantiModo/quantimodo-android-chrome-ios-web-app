@@ -116,7 +116,7 @@ cp -R platforms/android/build/outputs/apk/* ${BUILD_PATH}/${LOWERCASE_APP_NAME}/
 cd ${BUILD_PATH}/${LOWERCASE_APP_NAME}/android
 
 UNSIGNED_APK_FILENAME="android-release-unsigned.apk"
-SIGNED_APK_PATH=${LOWERCASE_APP_NAME}-android-release-signed.apk
+SIGNED_APK_FILENAME=${LOWERCASE_APP_NAME}-android-release-signed.apk
 ALIAS=quantimodo
 
 UNSIGNED_DEBUG_APK_FILENAME="android-debug-unaligned.apk"
@@ -152,7 +152,7 @@ jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore ${ANDROID_KEYST
 echo "Verifying ${UNSIGNED_APK_FILENAME}"
 jarsigner -verify ${UNSIGNED_APK_FILENAME} >/dev/null
 echo "Zipaligning ${UNSIGNED_APK_FILENAME}"
-${ANDROID_BUILD_TOOLS}/zipalign -v 4 ${UNSIGNED_APK_FILENAME} ${SIGNED_APK_PATH} >/dev/null
+${ANDROID_BUILD_TOOLS}/zipalign -v 4 ${UNSIGNED_APK_FILENAME} ${SIGNED_APK_FILENAME} >/dev/null
 
 echo -e "${GREEN}Copying ${SIGNED_APK_FILENAME} to $DROPBOX_PATH/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${SIGNED_APK_FILENAME}${NC}"
 cp ${SIGNED_APK_FILENAME} "$DROPBOX_PATH/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${SIGNED_APK_FILENAME}"
