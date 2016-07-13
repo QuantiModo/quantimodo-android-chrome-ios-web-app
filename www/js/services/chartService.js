@@ -136,7 +136,105 @@ angular.module('starter')
 							enabled: false
 						},
 
-						colors : [ "#000000", "#5D83FF", "#68B107", "#ffbd40", "#CB0000", "#000000", "#5D83FF"]
+						colors : [ "#5D83FF", "#68B107", "#ffbd40", "#CB0000" ]
+					},
+					series: [{
+						name : displayVariableName,
+						data: data
+					}]
+				};
+			},
+
+			configureHourlyChart : function(data, variableName){
+				var maximum = 0;
+				var minimum = 99999999999999999999999999999999;
+				var displayVariableName = variableName + ' by Hour of Day';
+				var xAxisLabels = [
+					'12 AM',
+					'1 AM',
+					'2 AM',
+					'3 AM',
+					'4 AM',
+					'5 AM',
+					'6 AM',
+					'7 AM',
+					'8 AM',
+					'9 AM',
+					'10 AM',
+					'11 AM',
+					'12 PM',
+					'1 PM',
+					'2 PM',
+					'3 PM',
+					'4 PM',
+					'5 PM',
+					'6 PM',
+					'7 PM',
+					'8 PM',
+					'9 PM',
+					'10 PM',
+					'11 PM'
+				];
+
+				for(var i = 0; i < data.length; i++){
+					if(data[i] > maximum){
+						maximum = data[i];
+					}
+					if(data[i] < minimum){
+						minimum = data[i];
+					}
+				}
+				return {
+					options: {
+						chart: {
+							height : 400,
+							type : 'column',
+							renderTo : 'BarContainer',
+							animation: {
+								duration: 1000
+							}
+						},
+						title : {
+							text : displayVariableName
+						},
+						xAxis : {
+							categories : xAxisLabels
+						},
+						yAxis : {
+							title : {
+								text : 'Average Value'
+							},
+							min : minimum,
+							max : maximum
+						},
+						lang: {
+							loading: ''
+						},
+						loading: {
+							style: {
+								background: 'url(/res/loading3.gif) no-repeat center'
+							},
+							hideDuration: 10,
+							showDuration: 10
+						},
+						legend : {
+							enabled : false
+						},
+
+						plotOptions : {
+							column : {
+								pointPadding : 0.2,
+								borderWidth : 0,
+								pointWidth : 40 * 5 / 24,
+								enableMouseTracking : true,
+								colorByPoint : true
+							}
+						},
+						credits: {
+							enabled: false
+						},
+
+						colors : [ "#5D83FF", "#68B107", "#ffbd40", "#CB0000"]
 					},
 					series: [{
 						name : displayVariableName,
