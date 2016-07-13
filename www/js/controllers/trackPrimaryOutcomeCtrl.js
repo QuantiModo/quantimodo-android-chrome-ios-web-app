@@ -74,6 +74,13 @@ angular.module('starter')
             $scope.redrawLineChart = true;
         };
 
+        var updateWeekdayChart = function(weekdayChartData){
+            $scope.redrawWeekdayChart = false;
+            console.log("Configuring line chart...");
+            $scope.weekdayChartConfig = chartService.configureWeekdayChart(weekdayChartData, config.appSettings.primaryOutcomeVariableDetails.name);
+            $scope.redrawWeekdayChart = true;
+        };
+
         // updates all the visual elements on the page
         var updateCharts = function(){
 
@@ -81,6 +88,8 @@ angular.module('starter')
                 var lineArr = [];
                 var barArr = [0, 0, 0, 0, 0];
                 var sum = 0;
+                var weekdayMeasurementArrays = [];
+                var averageValueByWeekday = [];
 
                 if (allMeasurements) {
                     var fromDate = parseInt(localStorageService.getItemSync('fromDate'));
@@ -107,8 +116,29 @@ angular.module('starter')
                                 sum+= allMeasurements[i].value;
                                 rangeLength++;
                             }
+                            if(typeof weekdayMeasurementArrays[moment(startTimeMilliseconds).day()] === "undefined"){
+                                weekdayMeasurementArrays[moment(startTimeMilliseconds).day()] = [];
+                                //console.log("Weekday is" + moment(startTimeMilliseconds).format('dddd'));
+                            }
+                            weekdayMeasurementArrays[moment(startTimeMilliseconds).day()].push(allMeasurements[i]);
                         }
                     }
+
+                    var sumByWeekday = [];
+                    for(var k =0; k < 7; k++){
+                        if(typeof weekdayMeasurementArrays[k] !== "undefined"){
+                            for(var j = 0; j < weekdayMeasurementArrays[k].length; j++){
+                                if(typeof sumByWeekday[k] === "undefined"){
+                                    sumByWeekday[k] = 0;
+                                }
+                                sumByWeekday[k] =  sumByWeekday[k] + weekdayMeasurementArrays[k][j].value;
+                            }
+                            averageValueByWeekday[k] = sumByWeekday[k]/(weekdayMeasurementArrays[k].length);
+                        } else {
+                            console.debug("No data for day " + k);
+                        }
+                    }
+
                     var averagePrimaryOutcomeVariableValue = Math.round(sum/(rangeLength));
                     localStorageService.setItem('averagePrimaryOutcomeVariableValue',averagePrimaryOutcomeVariableValue);
 
@@ -116,9 +146,11 @@ angular.module('starter')
                         updateAveragePrimaryOutcomeRatingView(averagePrimaryOutcomeVariableValue);
                         $scope.lineChartData = lineArr;
                         $scope.barChartData = barArr;
+                        $scope.weekdayData = averageValueByWeekday;
                         if ($scope.lineChartData.length > 0 && $scope.barChartData.length === 5) {
                             updateLineChart($scope.lineChartData);
                             updateBarChart($scope.barChartData);
+                            updateWeekdayChart($scope.weekdayData);
                             $scope.showCharts = true;
                         }
                         if (!$scope.$$phase) {
