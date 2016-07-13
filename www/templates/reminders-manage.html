@@ -7,7 +7,9 @@
 				{{state.addButtonText}}
 			</a>
 		</div>
-		<div class="list card">
+
+
+		<div class="list card" ng-show="state.allReminders.length">
 			<div class="list card" ng-repeat="reminder in state.allReminders" ng-if="!reminder.hide">
 				<div class="item" style="padding-bottom:0px;">
 					<div class="row">
