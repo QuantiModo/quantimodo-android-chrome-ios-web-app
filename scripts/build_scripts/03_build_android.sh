@@ -136,9 +136,9 @@ ${ANDROID_BUILD_TOOLS}/zipalign -v 4 ${UNSIGNED_DEBUG_APK_FILENAME} ${SIGNED_DEB
 echo -e "${GREEN}Copying ${SIGNED_DEBUG_APK_FILENAME} to $DROPBOX_PATH/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${SIGNED_DEBUG_APK_FILENAME}${NC}"
 cp ${SIGNED_DEBUG_APK_FILENAME} "$DROPBOX_PATH/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${SIGNED_DEBUG_APK_FILENAME}"
 
-if [ -f "$DROPBOX_PATH/QuantiModo/apps/${LOWERCASE_APP_NAME}/${SIGNED_DEBUG_APK_FILENAME}" ];
+if [ -f "$DROPBOX_PATH/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${SIGNED_DEBUG_APK_FILENAME}" ];
 then
-   echo echo "${SIGNED_DEBUG_APK_FILENAME} is ready in $DROPBOX_PATH/QuantiModo/apps/${LOWERCASE_APP_NAME}/"
+   echo echo "${SIGNED_DEBUG_APK_FILENAME} is ready in $DROPBOX_PATH/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${SIGNED_DEBUG_APK_FILENAME}"
 else
    echo "ERROR: File ${SIGNED_DEBUG_APK_FILENAME} does not exist. Build FAILED"
    exit 1
@@ -167,7 +167,7 @@ rm ${BUILD_PATH}/${LOWERCASE_APP_NAME}/android/android-release-unsigned.apk
 # Optimize apk
 #${ANDROID_BUILD_TOOLS}/zipalign 4 ${UNSIGNED_APK_FILENAME} ${SIGNED_APK_FILENAME} >/dev/null
 
-if [ -f "$DROPBOX_PATH/QuantiModo/apps/${LOWERCASE_APP_NAME}/${SIGNED_APK_FILENAME}" ];
+if [ -f "$DROPBOX_PATH/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${SIGNED_APK_FILENAME}" ];
 then
     cd ${INTERMEDIATE_PATH}
     COMMIT_MESSAGE=$(git log -1 HEAD --pretty=format:%s)
@@ -175,7 +175,7 @@ then
     ionic package build android --email ${IONIC_EMAIL} --password ${IONIC_PASSWORD}
     ionic package build android --release --profile production --email ${IONIC_EMAIL} --password ${IONIC_PASSWORD}
     ionic package build ios --release --profile production --email ${IONIC_EMAIL} --password ${IONIC_PASSWORD}
-    echo echo "${SIGNED_APK_FILENAME} is ready in $DROPBOX_PATH/QuantiModo/apps/${LOWERCASE_APP_NAME}/"
+    echo echo "${SIGNED_APK_FILENAME} is ready in $DROPBOX_PATH/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${SIGNED_APK_FILENAME}"
 else
    echo "ERROR: File ${SIGNED_APK_FILENAME} does not exist. Build FAILED"
    exit 1
