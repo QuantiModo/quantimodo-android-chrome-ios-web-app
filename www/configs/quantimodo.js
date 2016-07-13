@@ -431,7 +431,7 @@ config.appSettings  = {
         {
             title : 'Reminder Inbox',
             href : '#/app/reminders-inbox',
-            icon : 'ion-android-notifications-none'
+            icon : 'ion-archive'
         },
         {
             title : 'Overall Mood',

@@ -290,6 +290,11 @@ config.appSettings  = {
 
     menu : [
         {
+            title : 'Reminder Inbox',
+            href : '#/app/reminders-inbox',
+            icon : 'ion-archive'
+        },
+        {
             title : 'Add How I Feel Response',
             href : '#/app/track_factors_category/Symptoms',
             icon : 'ion-happy-outline'
@@ -303,11 +308,6 @@ config.appSettings  = {
             title : "Today's Meds",
             href : '#/app/reminders-inbox-today/Treatments',
             icon : 'ion-android-sunny'
-        },
-        {
-            title : 'Show Reminders',
-            href : '#/app/reminders-inbox',
-            icon : 'ion-android-notifications-none'
         },
         {
             title : 'Add Medications',
