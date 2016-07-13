@@ -35,7 +35,7 @@ config.appSettings  = {
 
     defaultState : 'app.remindersInbox',
 
-    welcomeState : 'app.remindersInbox',
+    welcomeState : 'app.login',
 
     settingsPageOptions :
     {

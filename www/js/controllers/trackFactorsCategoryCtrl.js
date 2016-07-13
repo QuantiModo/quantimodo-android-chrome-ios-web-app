@@ -25,7 +25,7 @@ angular.module('starter')
             variableSearchQuery: ''
         };
 
-        if ($stateParams.goToState === "app.reminderAdd") {
+        if ($stateParams.nextState === "app.reminderAdd") {
             if(variableCategoryName){
                 $scope.state.variableSearchPlaceholderText = "Search for a " +  $filter('wordAliases')(pluralize(variableCategoryName, 1).toLowerCase()) + " here...";
                 $scope.state.title = $filter('wordAliases')('Add') + " " + $filter('wordAliases')(pluralize(variableCategoryName, 1)) + " Reminder";
@@ -34,11 +34,11 @@ angular.module('starter')
                 $scope.state.title = $filter('wordAliases')('Add Reminder');
             }
         }
-        else if ($stateParams.doNotIncludePublicVariables || $stateParams.goToState === "app.variables") {
+        else if ($stateParams.doNotIncludePublicVariables || $stateParams.nextState === "app.variables") {
             $scope.state.variableSearchPlaceholderText = "Search for a variable here...";
             $scope.state.title = $filter('wordAliases')('Your Variables');
         }
-        else if ($stateParams.goToState === "app.measurementAdd"){
+        else if ($stateParams.nextState === "app.measurementAdd"){
             if(variableCategoryName){
                 $scope.state.variableSearchPlaceholderText = "Search for a " +  $filter('wordAliases')(pluralize(variableCategoryName, 1).toLowerCase()) + " here...";
                 $scope.state.title = $filter('wordAliases')('Record') + " " + $filter('wordAliases')(variableCategoryName);
@@ -60,10 +60,12 @@ angular.module('starter')
                         fromState: $state.current.name,
                         fromUrl: window.location.href
                     }
-                );
+                ).then(function() {
+                    console.log("Transition to app.variables finished");
+                });
             }
             else {
-                $state.go($stateParams.goToState,
+                $state.go($stateParams.nextState,
                     {
                         variableObject : variableObject,
                         fromState : $state.current.name,
@@ -114,11 +116,11 @@ angular.module('starter')
                             $scope.state.searching = false;
                             if(variables.length < 1){
                                 $scope.state.showAddVariableButton = true;
-                                if ($stateParams.goToState === "app.reminderAdd") {
+                                if ($stateParams.nextState === "app.reminderAdd") {
                                     $scope.state.addNewVariableButtonText = '+ Add ' + $scope.state.variableSearchQuery +
                                         ' reminder';
                                 }
-                                else if ($stateParams.goToState === "app.measurementAdd") {
+                                else if ($stateParams.nextState === "app.measurementAdd") {
                                     $scope.state.addNewVariableButtonText = '+ Add ' + $scope.state.variableSearchQuery +
                                         ' measurement';
                                 }
@@ -209,8 +211,8 @@ angular.module('starter')
                 variableObject.variableCategoryName = $scope.state.variableCategoryName;
             }
 
-            if ($stateParams.goToState) {
-                $state.go($stateParams.goToState,
+            if ($stateParams.nextState) {
+                $state.go($stateParams.nextState,
                     {
                         variableObject : variableObject,
                         fromState : $state.current.name,

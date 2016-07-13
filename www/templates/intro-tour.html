@@ -1,10 +1,9 @@
 <ion-view hide-nav-bar="hideNavigationMenu" view-title="Welcome Tour">
 
 
+    <ion-slide-box on-slide-changed="myIntro.slideChanged(index)" ng-show="myIntro.ready">
 
-    <ion-slide-box on-slide-changed="myIntro.slideChanged(index)" >
-
-        <ion-slide ng-repeat="introConf in introConfiguration" ng-show="myIntro.ready">
+        <ion-slide ng-repeat="introConf in introConfiguration" >
 
             <div ng-click="myIntro.previous()" ng-show="myIntro.slideIndex > 0" class="previous">
                 <span class="ion-chevron-left positive" data-pack="default" data-tags="talk"></span>

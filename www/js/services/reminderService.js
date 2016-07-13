@@ -128,7 +128,7 @@ angular.module('starter')
 			getTrackingReminderNotifications : function(category, today){
 
 				var localMidnightInUtcString = timeService.getLocalMidnightInUtcString();
-				var currentDateTimeInUtcString = timeService.getCurrentDateTimeInUtcString();
+				var currentDateTimeInUtcStringPlus15Min = timeService.getCurrentDateTimeInUtcStringPlus15Min();
 				var params = {};
 				if(today && !category){
 					var reminderTime = '(gt)' + localMidnightInUtcString;
@@ -141,7 +141,7 @@ angular.module('starter')
 				if(!today && category){
 					params = {
 						variableCategoryName : category,
-						reminderTime : '(lt)' + currentDateTimeInUtcString
+						reminderTime : '(lt)' + currentDateTimeInUtcStringPlus15Min
 					};
 				}
 
@@ -155,7 +155,7 @@ angular.module('starter')
 
 				if(!today && !category){
 					params = {
-						reminderTime : '(lt)' + currentDateTimeInUtcString
+						reminderTime : '(lt)' + currentDateTimeInUtcStringPlus15Min
 					};
 				}
 

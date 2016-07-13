@@ -2,7 +2,7 @@
 
 	<ion-content scroll="true" overflow-scroll="true">
 
-		<div class="list card" >
+
 
 			<div class="list card"  ng-hide="hideAddTreatmentRemindersCard">
 				<div class="item" style="padding-bottom:0px;">
@@ -129,6 +129,7 @@
 				</div>
 			</div>
 
+		<div class="list card" ng-if="state.filteredReminders.length">
 			<div ng-repeat="divider in state.filteredReminders" ng-init="dividerIndex = $index" id="{{divider.name}}Reminders">
 
 				<div class="item item-divider" style="">
