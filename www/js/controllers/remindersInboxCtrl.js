@@ -77,7 +77,7 @@ angular.module('starter')
 			}
 
 			if($stateParams.today) {
-				$scope.state.title = 'Upcoming Reminders';
+				$scope.state.title = 'Today';
 			}
 		};
 
