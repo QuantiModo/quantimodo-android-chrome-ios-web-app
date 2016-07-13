@@ -73,6 +73,78 @@ angular.module('starter')
 	            };
 	        },
 
+			configureWeekdayChart : function(data, variableName){
+	        	var maximum = 0;
+				var minimum = 99999999999999999999999999999999;
+				var displayVariableName = variableName + ' by Day of Week';
+				var xAxisLabels = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+				for(var i = 0; i < data.length; i++){
+					if(data[i] > maximum){
+						maximum = data[i];
+					}
+					if(data[i] < minimum){
+						minimum = data[i];
+					}
+				}
+				return {
+					options: {
+						chart: {
+							height : 400,
+							type : 'column',
+							renderTo : 'BarContainer',
+							animation: {
+								duration: 1000
+							}
+						},
+						title : {
+							text : displayVariableName
+						},
+						xAxis : {
+							categories : xAxisLabels
+						},
+						yAxis : {
+							title : {
+								text : 'Average Value'
+							},
+							min : minimum,
+							max : maximum
+						},
+						lang: {
+							loading: ''
+						},
+						loading: {
+							style: {
+								background: 'url(/res/loading3.gif) no-repeat center'
+							},
+							hideDuration: 10,
+							showDuration: 10
+						},
+						legend : {
+							enabled : false
+						},
+
+						plotOptions : {
+							column : {
+								pointPadding : 0.2,
+								borderWidth : 0,
+								pointWidth : 40 * 5 / 7,
+								enableMouseTracking : true,
+								colorByPoint : true
+							}
+						},
+						credits: {
+							enabled: false
+						},
+
+						colors : [ "#000000", "#5D83FF", "#68B107", "#ffbd40", "#CB0000", "#000000", "#5D83FF"]
+					},
+					series: [{
+						name : displayVariableName,
+						data: data
+					}]
+				};
+			},
+
 	        // generate stock chart
 	        configureLineChart : function(data, variableName) {
 				var date = new Date();
