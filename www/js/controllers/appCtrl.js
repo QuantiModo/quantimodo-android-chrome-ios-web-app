@@ -302,8 +302,8 @@ angular.module('starter')
                 $rootScope.getUserAndSetInLocalStorage();
             }
             if($rootScope.user){
-                    $rootScope.setUserForIntercom($rootScope.user);
-                    $rootScope.setUserForBugsnag($rootScope.user);
+                $rootScope.setUserForIntercom($rootScope.user);
+                $rootScope.setUserForBugsnag($rootScope.user);
                 $scope.syncEverything();
             }
             migrationService.version1466();
@@ -481,11 +481,14 @@ angular.module('starter')
         };
 
         $scope.syncEverything = function () {
-            measurementService.syncPrimaryOutcomeVariableMeasurementsAndUpdateCharts();
-            reminderService.refreshTrackingRemindersAndScheduleAlarms();
-            variableService.refreshUserVariables();
-            variableService.refreshCommonVariables();
-            unitService.getUnits();
+            if(!$rootScope.syncedEverything && $rootScope.user){
+                measurementService.syncPrimaryOutcomeVariableMeasurementsAndUpdateCharts();
+                reminderService.refreshTrackingRemindersAndScheduleAlarms();
+                variableService.refreshUserVariables();
+                variableService.refreshCommonVariables();
+                unitService.getUnits();
+                $rootScope.syncedEverything = true;
+            }
         };
         
         $scope.init();
