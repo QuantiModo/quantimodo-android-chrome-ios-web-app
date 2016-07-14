@@ -95,7 +95,7 @@ config.appSettings  = {
     primaryOutcomeVariableTrackingQuestion:"How is your energy level right now?",
     primaryOutcomeVariableAverageText:"Your average energy level is ",
     mobileNotificationImage : "file://img/icons/icon_128.png",
-    mobileNotificationText : "Time to Track",
+    mobileNotificationText : "Time to track!",
     ratingValueToTextConversionDataSet: {
         "1": "1",
         "2": "2",

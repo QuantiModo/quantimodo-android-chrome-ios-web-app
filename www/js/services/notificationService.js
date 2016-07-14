@@ -1,6 +1,6 @@
 angular.module('starter')
 // Handles the Notifications (inapp, push)
-    .factory('notificationService',function($rootScope, $ionicPlatform, $state, localStorageService, $q){
+    .factory('notificationService',function($rootScope, $ionicPlatform, $state, localStorageService, $q, $timeout){
 
 
 
@@ -25,9 +25,10 @@ angular.module('starter')
                 if($rootScope.combineNotifications === "true"){
 
                     console.debug('combineNotifications is true so clearing all alarms and creating one with frequency ' + smallestIntervalInSeconds);
-                    var successHandler = this.scheduleNotification(smallestIntervalInSeconds/60, null);
 
-                    this.cancelAllNotifications().then(successHandler);
+
+                    this.cancelAllNotifications()
+                        .then( this.scheduleNotification(smallestIntervalInSeconds/60, null));
                 }
 
                 if($rootScope.isIOS || $rootScope.isAndroid) {
@@ -110,13 +111,16 @@ angular.module('starter')
                                 }
                             }
                             if(!existingReminderFoundInApiResponse) {
-                                console.debug('Matching API reminder not found. Clearing scheduled notification ' + JSON.stringify(scheduledNotifications[i]));
-                                cordova.plugins.notification.local.cancel(scheduledNotifications[i].id, function (cancelledNotification) {
-                                    console.debug("Canceled notification ", cancelledNotification);
-                                });
+                                if($rootScope.combineNotifications === "false"){
+                                    console.debug('Matching API reminder not found. Clearing scheduled notification ' + JSON.stringify(scheduledNotifications[i]));
+                                    cordova.plugins.notification.local.cancel(scheduledNotifications[i].id, function (cancelledNotification) {
+                                        console.debug("Canceled notification ", cancelledNotification);
+                                    });
+                                }
                             }
                         }
                     });
+
                 }
 
                 if ($rootScope.isChromeExtension || $rootScope.isChromeApp) {
@@ -268,7 +272,7 @@ angular.module('starter')
                 }
 
                 function scheduleGenericChromeExtensionNotification(intervalInMinutes) {
-                    console.log('Reminder notification interval is ' + interval);
+                    console.log('Reminder notification interval is ' + intervalInMinutes + ' minutes');
                     var alarmInfo = {periodInMinutes: intervalInMinutes};
                     chrome.alarms.clear("trackReportAlarm");
                     chrome.alarms.create("trackReportAlarm", alarmInfo);
@@ -339,11 +343,14 @@ angular.module('starter')
 
             // cancel all existing notifications
             cancelAllNotifications: function(){
+                console.log('Cancelling all notifications');
                 var deferred = $q.defer();
                 if(typeof cordova !== "undefined"){
-                    cordova.plugins.notification.local.cancelAll(function(){
-                        console.log('notifications cancelled');
-                        deferred.resolve();
+                    $ionicPlatform.ready(function () {
+                        cordova.plugins.notification.local.cancelAll(function () {
+                            console.log('notifications have been cancelled');
+                            deferred.resolve();
+                        });
                     });
                 } else if (typeof chrome.alarms !== "undefined"){
                     chrome.alarms.clearAll(function (){

@@ -14,15 +14,17 @@ angular.module('starter')
         $rootScope.isChrome = window.chrome ? true : false;
 	    // populate user data
 
-		localStorageService.getItem('combineNotifications', function(combineNotifications){
-			if(combineNotifications === "null"){
-				localStorageService.setItem('combineNotifications', "false");
-				$scope.state.combineNotifications = false;
-			} else {
-				$scope.state.combineNotifications = combineNotifications;
-			}
-			$rootScope.combineNotifications = $scope.state.combineNotifications;
-		});
+		function shouldWeCombineNotifications(){
+			localStorageService.getItem('combineNotifications', function(combineNotifications){
+				if(combineNotifications === "null"){
+					localStorageService.setItem('combineNotifications', "false");
+					$scope.state.combineNotifications = false;
+				} else {
+					$scope.state.combineNotifications = combineNotifications;
+				}
+				$rootScope.combineNotifications = $scope.state.combineNotifications;
+			});
+		}
 
         // when login is tapped
 	    $scope.loginFromSettings = function(){
@@ -97,6 +99,7 @@ angular.module('starter')
 		$scope.init = function(){
 			Bugsnag.context = "settings";
 			if (typeof analytics !== 'undefined')  { analytics.trackView("Settings Controller"); }
+			shouldWeCombineNotifications();
 	    };
 
 		$scope.contactUs = function(){
