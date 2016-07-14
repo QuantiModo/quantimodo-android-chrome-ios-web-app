@@ -18,7 +18,7 @@ angular.module('starter')
 	            return {
 	                options: {
 	                    chart: {
-	                        height : 400,
+	                        height : 300,
 	                        type : 'column',
 	                        renderTo : 'BarContainer',
 	                        animation: {
@@ -89,7 +89,7 @@ angular.module('starter')
 				return {
 					options: {
 						chart: {
-							height : 400,
+							height : 300,
 							type : 'column',
 							renderTo : 'BarContainer',
 							animation: {
@@ -187,7 +187,7 @@ angular.module('starter')
 				return {
 					options: {
 						chart: {
-							height : 400,
+							height : 300,
 							type : 'column',
 							renderTo : 'BarContainer',
 							animation: {
