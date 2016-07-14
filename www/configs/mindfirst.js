@@ -102,7 +102,7 @@ config.appSettings  = {
     primaryOutcomeVariableTrackingQuestion:"How are you?",
     primaryOutcomeVariableAverageText:"Your average mood is ",
     mobileNotificationImage : "file://img/icons/icon_128.png",
-    mobileNotificationText : "Time to Track",
+    mobileNotificationText : "Time to track!",
     ratingValueToTextConversionDataSet: {
         "1": "depressed",
         "2": "sad",
@@ -432,7 +432,7 @@ config.appSettings  = {
         {
             title : 'Reminder Inbox',
             href : '#/app/reminders-inbox',
-            icon : 'ion-android-notifications-none'
+            icon : 'ion-archive'
         },
         {
             title : 'Overall Mood',

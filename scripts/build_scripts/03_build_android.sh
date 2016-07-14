@@ -116,7 +116,7 @@ cp -R platforms/android/build/outputs/apk/* ${BUILD_PATH}/${LOWERCASE_APP_NAME}/
 cd ${BUILD_PATH}/${LOWERCASE_APP_NAME}/android
 
 UNSIGNED_APK_FILENAME="android-release-unsigned.apk"
-SIGNED_APK_PATH=${LOWERCASE_APP_NAME}-android-release-signed.apk
+SIGNED_APK_FILENAME=${LOWERCASE_APP_NAME}-android-release-signed.apk
 ALIAS=quantimodo
 
 UNSIGNED_DEBUG_APK_FILENAME="android-debug-unaligned.apk"
@@ -133,12 +133,12 @@ jarsigner -verify ${UNSIGNED_DEBUG_APK_FILENAME} >/dev/null
 echo "Zipaligning ${UNSIGNED_DEBUG_APK_FILENAME}"
 ${ANDROID_BUILD_TOOLS}/zipalign -v 4 ${UNSIGNED_DEBUG_APK_FILENAME} ${SIGNED_DEBUG_APK_FILENAME} >/dev/null
 
-echo -e "${GREEN}Copying ${BUILD_PATH}/${LOWERCASE_APP_NAME} to $DROPBOX_PATH/QuantiModo/apps/${LOWERCASE_APP_NAME}/${NC}"
-cp ${SIGNED_DEBUG_APK_FILENAME} "$DROPBOX_PATH/QuantiModo/apps/${LOWERCASE_APP_NAME}/"
+echo -e "${GREEN}Copying ${SIGNED_DEBUG_APK_FILENAME} to $DROPBOX_PATH/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${SIGNED_DEBUG_APK_FILENAME}${NC}"
+cp ${SIGNED_DEBUG_APK_FILENAME} "$DROPBOX_PATH/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${SIGNED_DEBUG_APK_FILENAME}"
 
-if [ -f "$DROPBOX_PATH/QuantiModo/apps/${LOWERCASE_APP_NAME}/${SIGNED_DEBUG_APK_FILENAME}" ];
+if [ -f "$DROPBOX_PATH/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${SIGNED_DEBUG_APK_FILENAME}" ];
 then
-   echo echo "${SIGNED_DEBUG_APK_FILENAME} is ready in $DROPBOX_PATH/QuantiModo/apps/${LOWERCASE_APP_NAME}/"
+   echo echo "${SIGNED_DEBUG_APK_FILENAME} is ready in $DROPBOX_PATH/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${SIGNED_DEBUG_APK_FILENAME}"
 else
    echo "ERROR: File ${SIGNED_DEBUG_APK_FILENAME} does not exist. Build FAILED"
    exit 1
@@ -152,10 +152,10 @@ jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore ${ANDROID_KEYST
 echo "Verifying ${UNSIGNED_APK_FILENAME}"
 jarsigner -verify ${UNSIGNED_APK_FILENAME} >/dev/null
 echo "Zipaligning ${UNSIGNED_APK_FILENAME}"
-${ANDROID_BUILD_TOOLS}/zipalign -v 4 ${UNSIGNED_APK_FILENAME} ${SIGNED_APK_PATH} >/dev/null
+${ANDROID_BUILD_TOOLS}/zipalign -v 4 ${UNSIGNED_APK_FILENAME} ${SIGNED_APK_FILENAME} >/dev/null
 
-echo -e "${GREEN}Copying ${BUILD_PATH}/${LOWERCASE_APP_NAME} to $DROPBOX_PATH/QuantiModo/apps/${LOWERCASE_APP_NAME}/${NC}"
-cp ${SIGNED_APK_FILENAME} "$DROPBOX_PATH/QuantiModo/apps/${LOWERCASE_APP_NAME}/"
+echo -e "${GREEN}Copying ${SIGNED_APK_FILENAME} to $DROPBOX_PATH/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${SIGNED_APK_FILENAME}${NC}"
+cp ${SIGNED_APK_FILENAME} "$DROPBOX_PATH/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${SIGNED_APK_FILENAME}"
 
 rm ${BUILD_PATH}/${LOWERCASE_APP_NAME}/android/android-debug.apk
 rm ${BUILD_PATH}/${LOWERCASE_APP_NAME}/android/android-debug-unaligned.apk
@@ -167,7 +167,7 @@ rm ${BUILD_PATH}/${LOWERCASE_APP_NAME}/android/android-release-unsigned.apk
 # Optimize apk
 #${ANDROID_BUILD_TOOLS}/zipalign 4 ${UNSIGNED_APK_FILENAME} ${SIGNED_APK_FILENAME} >/dev/null
 
-if [ -f "$DROPBOX_PATH/QuantiModo/apps/${LOWERCASE_APP_NAME}/${SIGNED_APK_FILENAME}" ];
+if [ -f "$DROPBOX_PATH/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${SIGNED_APK_FILENAME}" ];
 then
     cd ${INTERMEDIATE_PATH}
     COMMIT_MESSAGE=$(git log -1 HEAD --pretty=format:%s)
@@ -175,7 +175,7 @@ then
     ionic package build android --email ${IONIC_EMAIL} --password ${IONIC_PASSWORD}
     ionic package build android --release --profile production --email ${IONIC_EMAIL} --password ${IONIC_PASSWORD}
     ionic package build ios --release --profile production --email ${IONIC_EMAIL} --password ${IONIC_PASSWORD}
-    echo echo "${SIGNED_APK_FILENAME} is ready in $DROPBOX_PATH/QuantiModo/apps/${LOWERCASE_APP_NAME}/"
+    echo echo "${SIGNED_APK_FILENAME} is ready in $DROPBOX_PATH/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${SIGNED_APK_FILENAME}"
 else
    echo "ERROR: File ${SIGNED_APK_FILENAME} does not exist. Build FAILED"
    exit 1

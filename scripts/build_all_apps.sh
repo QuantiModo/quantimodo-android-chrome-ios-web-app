@@ -1,7 +1,7 @@
 #!/bin/bash
 
 export IONIC_APP_VERSION_NUMBER=1.6.5
-export IONIC_IOS_APP_VERSION_NUMBER="1.6.5.0"
+export IONIC_IOS_APP_VERSION_NUMBER="1.6.5.2"
 
 export RED='\033[0;31m'
 export GREEN='\033[0;32m'
@@ -111,11 +111,11 @@ source ${INTERMEDIATE_PATH}/scripts/build_scripts/02_build_chrome.sh
 #source ${INTERMEDIATE_PATH}/scripts/build_scripts/04_build_ios.sh
 #source ${INTERMEDIATE_PATH}/04_reset_workspace.sh
 
-if [ -f ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/${LOWERCASE_APP_NAME}-android-release-signed.apk ];
+if [ -f ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${LOWERCASE_APP_NAME}-android-release-signed.apk ];
 then
-   echo echo "${LOWERCASE_APP_NAME} Android app is ready in $DROPBOX_PATH/QuantiModo/apps/${LOWERCASE_APP_NAME}/"
+   echo echo "${LOWERCASE_APP_NAME} Android app is ready in ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${LOWERCASE_APP_NAME}-android-release-signed.apk"
 else
-   echo "ERROR: File ${LOWERCASE_APP_NAME}-android-release-signed.apk does not exist. Build FAILED"
+   echo "ERROR: File ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${LOWERCASE_APP_NAME}-android-release-signed.apk does not exist. Build FAILED"
    exit 1
 fi
 
@@ -128,11 +128,11 @@ source ${INTERMEDIATE_PATH}/scripts/build_scripts/03_build_android.sh
 source ${INTERMEDIATE_PATH}/scripts/build_scripts/02_build_chrome.sh
 #source ${INTERMEDIATE_PATH}/scripts/build_scripts/04_build_ios.sh
 
-if [ -f ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/${LOWERCASE_APP_NAME}-android-release-signed.apk ];
+if [ -f ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${LOWERCASE_APP_NAME}-android-release-signed.apk ];
 then
-   echo echo "${LOWERCASE_APP_NAME} Android app is ready in $DROPBOX_PATH/QuantiModo/apps/${LOWERCASE_APP_NAME}/"
+   echo echo "${LOWERCASE_APP_NAME} Android app is ready in ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${LOWERCASE_APP_NAME}-android-release-signed.apk"
 else
-   echo "ERROR: File ${LOWERCASE_APP_NAME}-android-release-signed.apk does not exist. Build FAILED"
+   echo "ERROR: File ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${LOWERCASE_APP_NAME}-android-release-signed.apk does not exist. Build FAILED"
    exit 1
 fi
 
@@ -145,11 +145,11 @@ source ${INTERMEDIATE_PATH}/scripts/build_scripts/03_build_android.sh
 source ${INTERMEDIATE_PATH}/scripts/build_scripts/02_build_chrome.sh
 #source ${INTERMEDIATE_PATH}/scripts/build_scripts/04_build_ios.sh
 
-if [ -f ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/${LOWERCASE_APP_NAME}-android-release-signed.apk ];
+if [ -f ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${LOWERCASE_APP_NAME}-android-release-signed.apk ];
 then
-   echo echo "${LOWERCASE_APP_NAME} Android app is ready in $DROPBOX_PATH/QuantiModo/apps/${LOWERCASE_APP_NAME}/"
+   echo echo "${LOWERCASE_APP_NAME} Android app is ready in ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${LOWERCASE_APP_NAME}-android-release-signed.apk"
 else
-   echo "ERROR: File ${LOWERCASE_APP_NAME}-android-release-signed.apk does not exist. Build FAILED"
+   echo "ERROR: File ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${LOWERCASE_APP_NAME}-android-release-signed.apk does not exist. Build FAILED"
    exit 1
 fi
 
@@ -162,11 +162,11 @@ source ${INTERMEDIATE_PATH}/scripts/build_scripts/03_build_android.sh
 source ${INTERMEDIATE_PATH}/scripts/build_scripts/02_build_chrome.sh
 #source ${INTERMEDIATE_PATH}/scripts/build_scripts/04_build_ios.sh
 
-if [ -f ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/${LOWERCASE_APP_NAME}-android-release-signed.apk ];
+if [ -f ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${LOWERCASE_APP_NAME}-android-release-signed.apk ];
 then
-   echo echo "${LOWERCASE_APP_NAME} Android app is ready in $DROPBOX_PATH/QuantiModo/apps/${LOWERCASE_APP_NAME}/"
+   echo echo "${LOWERCASE_APP_NAME} Android app is ready in ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${LOWERCASE_APP_NAME}-android-release-signed.apk"
 else
-   echo "ERROR: File $DROPBOX_PATH/QuantiModo/apps/${LOWERCASE_APP_NAME}/${LOWERCASE_APP_NAME}-android-release-signed.apk does not exist. Build FAILED"
+   echo "ERROR: File ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${LOWERCASE_APP_NAME}-android-release-signed.apk does not exist. Build FAILED"
    exit 1
 fi
 

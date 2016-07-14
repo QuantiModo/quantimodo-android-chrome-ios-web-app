@@ -19,6 +19,8 @@ angular.module('starter')
             Bugsnag.context = "login";
             //$scope.showLoader();
             $ionicLoading.hide();
+            $rootScope.isSyncing = false;
+            $rootScope.syncDisplayText = '';
             if($rootScope.helpPopup){
                 console.log('Closing help popup!');
                 $rootScope.helpPopup.close();

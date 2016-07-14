@@ -541,19 +541,23 @@ angular.module('starter')
             },
 
             getMeasurementById : function(measurementId){
+                var deferred = $q.defer();
                 var params = {id : measurementId};
                 QuantiModo.getV1Measurements(params, function(response){
-                    var measurementArray = response.data;
+                    var measurementArray = response;
                     if(!measurementArray[0]){
                         console.log('Could not get measurement with id: ' + measurementId);
-                        return;
+                        deferred.reject();
                     }
                     var measurementObject = measurementArray[0];
-                    return measurementObject;
+                    deferred.resolve(measurementObject);
                 }, function(error){
                     Bugsnag.notify(error, JSON.stringify(error), {}, "error");
                     console.log(error);
+                    deferred.reject();
                 });
+                return deferred.promise;
+               
             },
 
             deleteMeasurementFromLocalStorage : function(measurement) {

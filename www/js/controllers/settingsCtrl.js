@@ -4,35 +4,31 @@ angular.module('starter')
 	.controller('SettingsCtrl', function($scope,localStorageService, $ionicModal, $timeout, utilsService, authService,
 										 measurementService, chartService, $ionicPopover, $cordovaFile,
 										 $cordovaFileOpener2, $ionicPopup, $state,notificationService, QuantiModo,
-                                         $rootScope) {
+                                         $rootScope, reminderService) {
 		$scope.controller_name = "SettingsCtrl";
+
+		$scope.state = {};
 		$scope.showReminderFrequencySelector = config.appSettings.settingsPageOptions.showReminderFrequencySelector;
-		// populate ratings interval
-        localStorageService.getItem('primaryOutcomeRatingFrequencyDescription', function (primaryOutcomeRatingFrequencyDescription) {
-                $scope.primaryOutcomeRatingFrequencyDescription = primaryOutcomeRatingFrequencyDescription ? primaryOutcomeRatingFrequencyDescription : "hourly";
-        });
 		$rootScope.isIOS = ionic.Platform.isIPad() || ionic.Platform.isIOS();
 		$rootScope.isAndroid = ionic.Platform.isAndroid();
         $rootScope.isChrome = window.chrome ? true : false;
 	    // populate user data
 
+		function shouldWeCombineNotifications(){
+			localStorageService.getItem('combineNotifications', function(combineNotifications){
+				if(combineNotifications === "null"){
+					localStorageService.setItem('combineNotifications', "false");
+					$scope.state.combineNotifications = false;
+				} else {
+					$scope.state.combineNotifications = combineNotifications;
+				}
+				$rootScope.combineNotifications = $scope.state.combineNotifications;
+			});
+		}
 
         // when login is tapped
 	    $scope.loginFromSettings = function(){
 			$state.go('app.login');
-	    };
-        
-	    // when interval is updated
-	    $scope.saveRatingInterval = function(interval){
-	        //schedule notification
-	        //TODO we can pass callback function to check the status of scheduling
-	        notificationService.scheduleNotification(interval);
-	        
-	        localStorageService.setItem('primaryOutcomeRatingFrequencyDescription', interval);
-	        $scope.primaryOutcomeRatingFrequencyDescription = interval;
-	        
-	        // hide popover
-	        $scope.ratingPopover.hide();
 	    };
 
 		function sendWithMailTo(subjectLine, emailBody){
@@ -103,6 +99,7 @@ angular.module('starter')
 		$scope.init = function(){
 			Bugsnag.context = "settings";
 			if (typeof analytics !== 'undefined')  { analytics.trackView("Settings Controller"); }
+			shouldWeCombineNotifications();
 	    };
 
 		$scope.contactUs = function(){
@@ -124,7 +121,13 @@ angular.module('starter')
 				window.open('http://help.quantimo.do/forums/211661-general', '_blank');
 			}
 		};
-		
+
+		$scope.combineNotificationChange = function() {
+			console.log('Combine Notification Change', $scope.state.combineNotifications);
+			$rootScope.combineNotifications = $scope.state.combineNotifications;
+			localStorageService.setItem('combineNotifications', $scope.state.combineNotifications);
+			reminderService.getTrackingRemindersAndScheduleNotifications();
+		};
 
         $scope.logout = function(){
 
@@ -219,14 +222,6 @@ angular.module('starter')
 			var logoutUrl = config.getURL("api/v2/auth/logout");
 			window.open(logoutUrl,'_blank');
         }
-
-        // load rating popover
-	    $ionicPopover.fromTemplateUrl('templates/settings/ask-for-a-rating.html', {
-	    	scope: $scope
-	    }).then(function(popover) {
-	    	$scope.ratingPopover = popover;
-	    });
-
 
 	    // Convert all data Array to a CSV object
 	    var convertToCSV = function(objArray) {
