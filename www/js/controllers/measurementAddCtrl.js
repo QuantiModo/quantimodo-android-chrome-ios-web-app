@@ -1,10 +1,10 @@
 angular.module('starter')
 
     // Controls the Track Factors Page
-    .controller('MeasurementAddCtrl', function($scope, $ionicModal, $timeout, $ionicPopup ,$ionicLoading,
-                                                     authService, measurementService, $state, $rootScope, $stateParams,
-                                                     utilsService, localStorageService, $filter, $ionicScrollDelegate,
-                                                        variableCategoryService, ionicTimePicker, ionicDatePicker, unitService){
+    .controller('MeasurementAddCtrl', function($scope, $q, $ionicModal, $timeout, $ionicPopup ,$ionicLoading,
+                                               authService, measurementService, $state, $rootScope, $stateParams,
+                                               utilsService, localStorageService, $filter, $ionicScrollDelegate,
+                                               variableCategoryService, ionicTimePicker, ionicDatePicker, unitService){
 
         $scope.controller_name = "MeasurementAddCtrl";
 
@@ -305,22 +305,23 @@ angular.module('starter')
                         if(!$scope.state.measurementIsSetup) {
                             setupFromVariableStateParameter();
                         }
-
-                        if(!$scope.state.measurementIsSetup){
-                            setMeasurementVariablesByMeasurementId();
-                        }
                         if(!$scope.state.measurementIsSetup) {
                             setupFromReminderStateParameter();
                         }
                         if(!$scope.state.measurementIsSetup){
-                            if($stateParams.fromUrl){
-                                window.location = $stateParams.fromUrl;
-                            } else if ($stateParams.fromState){
-                                $state.go($stateParams.fromState);
-                            } else {
-                                $rootScope.hideNavigationMenu = false;
-                                $state.go(config.appSettings.defaultState);
-                            }
+                            setMeasurementVariablesByMeasurementId().then(function() {
+                                if(!$scope.state.measurementIsSetup){
+                                    // Not set up, go to different state
+                                    if($stateParams.fromUrl){
+                                        window.location = $stateParams.fromUrl;
+                                    } else if ($stateParams.fromState){
+                                        $state.go($stateParams.fromState);
+                                    } else {
+                                        $rootScope.hideNavigationMenu = false;
+                                        $state.go(config.appSettings.defaultState);
+                                    }
+                                }
+                            });
                         }
                     });
                     if (typeof analytics !== 'undefined')  { analytics.trackView("Add Measurement Controller"); }
@@ -417,12 +418,27 @@ angular.module('starter')
         };
 
         var setMeasurementVariablesByMeasurementId = function(){
+            var deferred = $q.defer();
             var measurementId = utilsService.getUrlParameter(location.href, 'measurementId', true);
             if(measurementId){
-                var measurementObject = measurementService.getMeasurementById(measurementId);
-                setupTrackingByMeasurement(measurementObject);
+                // FIXME this function probably hasn't returned yet; use promise or callback instead
+                var measurementObject;
+                measurementService.getMeasurementById(measurementId).then(
+                    function(response) {
+                        $scope.state.measurementIsSetup = true;
+                        console.log("Success response");
+                        measurementObject = response;
+                        setupTrackingByMeasurement(measurementObject);
+                        deferred.resolve();
+                    },
+                    function(response) {
+                        console.log("Error response");
+                        deferred.resolve();
+                    }
+                );
             }
             $scope.hideLoader();
+            return deferred.promise;
         };
 
         $scope.goToAddReminder = function(){
