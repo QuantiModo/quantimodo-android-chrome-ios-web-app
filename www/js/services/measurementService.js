@@ -543,8 +543,8 @@ angular.module('starter')
             getMeasurementById : function(measurementId){
                 var deferred = $q.defer();
                 var params = {id : measurementId};
-                QuantiModo.getV2Measurements(params, function(response){
-                    var measurementArray = response.data;
+                QuantiModo.getV1Measurements(params, function(response){
+                    var measurementArray = response;
                     if(!measurementArray[0]){
                         console.log('Could not get measurement with id: ' + measurementId);
                         deferred.reject();
