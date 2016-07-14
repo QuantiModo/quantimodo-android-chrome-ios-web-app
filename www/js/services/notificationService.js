@@ -268,7 +268,7 @@ angular.module('starter')
                             ongoing: false,
                             sound: "file://sound/silent.ogg",
                             title: "Track " + trackingReminder.variableName,
-                            text: "Tap to open reminder inbox",
+                            text: "Swipe to open reminder inbox",
                             at: at,
                             every: minuteFrequency,
                             icon: config.appSettings.mobileNotificationImage,
