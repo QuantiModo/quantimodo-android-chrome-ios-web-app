@@ -1,7 +1,7 @@
 <ion-view hide-nav-bar="hideNavigationMenu" view-title="{{title}}">
      <ion-content>
       <ion-list>
-          <div collection-repeat="historyItem in state.history" measurementid="{{historyItem.id}}" divider-collection-repeat>
+          <div collection-repeat="historyItem in state.history" measurementid="{{historyItem.id}}" data-measurementid="{{historyItem.id}}" id="{{historyItem.id}}" divider-collection-repeat>
               <ion-item  ng-click="editMeasurement(historyItem)">
                   <div style="display:inline-block;float:left;margin-left:5px;margin-right:5px;width:50px;text-align:center">
                     <i ng-hide="historyItem.image" class="{{historyItem.icon }}" style="color:#11c1f3;font-size: 50px;"></i>
