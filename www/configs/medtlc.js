@@ -321,8 +321,60 @@ config.appSettings  = {
         },
         {
             title : 'History',
+            click : 'toggleHistorySubMenu',
+            showSubMenuVariable : 'showHistorySubMenu',
+            isSubMenuParent : true,
+            collapsedIcon : 'ion-ios-list-outline',
+            expandedIcon : 'ion-chevron-down'
+        },
+        {
+            title : 'All Measurements',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showHistorySubMenu',
             href : '#/app/history-all',
-            icon : 'ion-ios-paper-outline'
+            icon : 'ion-android-globe'
+        },
+        {
+            title : 'Emotions',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showHistorySubMenu',
+            href : '#/app/history-all/Emotions',
+            icon : 'ion-happy-outline'
+        },
+        {
+            title : 'Foods',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showHistorySubMenu',
+            href : '#/app/history-all/Foods',
+            icon : 'ion-ios-nutrition-outline'
+        },
+        {
+            title : 'Symptoms',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showHistorySubMenu',
+            href : '#/app/history-all/Symptoms',
+            icon : 'ion-sad-outline'
+        },
+        {
+            title : 'Treatments',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showHistorySubMenu',
+            href : '#/app/history-all/Treatments',
+            icon : 'ion-ios-medkit-outline'
+        },
+        {
+            title : 'Physical Activity',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showHistorySubMenu',
+            href : '#/app/history-all/Physical Activity',
+            icon : 'ion-ios-body-outline'
+        },
+        {
+            title : 'Vital Signs',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showHistorySubMenu',
+            href : '#/app/history-all/Vital Signs',
+            icon : 'ion-ios-pulse'
         },
         {
             title : 'Getting Started',
