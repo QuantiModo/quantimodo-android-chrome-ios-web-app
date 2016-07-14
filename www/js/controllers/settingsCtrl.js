@@ -9,10 +9,6 @@ angular.module('starter')
 
 		$scope.state = {};
 		$scope.showReminderFrequencySelector = config.appSettings.settingsPageOptions.showReminderFrequencySelector;
-		// populate ratings interval
-        localStorageService.getItem('primaryOutcomeRatingFrequencyDescription', function (primaryOutcomeRatingFrequencyDescription) {
-                $scope.primaryOutcomeRatingFrequencyDescription = primaryOutcomeRatingFrequencyDescription ? primaryOutcomeRatingFrequencyDescription : "hourly";
-        });
 		$rootScope.isIOS = ionic.Platform.isIPad() || ionic.Platform.isIOS();
 		$rootScope.isAndroid = ionic.Platform.isAndroid();
         $rootScope.isChrome = window.chrome ? true : false;
@@ -31,19 +27,6 @@ angular.module('starter')
         // when login is tapped
 	    $scope.loginFromSettings = function(){
 			$state.go('app.login');
-	    };
-        
-	    // when interval is updated
-	    $scope.saveRatingInterval = function(interval){
-	        //schedule notification
-	        //TODO we can pass callback function to check the status of scheduling
-	        notificationService.scheduleNotification(interval);
-	        
-	        localStorageService.setItem('primaryOutcomeRatingFrequencyDescription', interval);
-	        $scope.primaryOutcomeRatingFrequencyDescription = interval;
-	        
-	        // hide popover
-	        $scope.ratingPopover.hide();
 	    };
 
 		function sendWithMailTo(subjectLine, emailBody){

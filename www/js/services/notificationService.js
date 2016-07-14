@@ -134,10 +134,6 @@ angular.module('starter')
 
             scheduleNotification: function(intervalInMinutes, trackingReminder){
 
-                if(typeof intervals[intervalInMinutes] !== "undefined"){
-                    intervalInMinutes = intervals[intervalInMinutes];
-                }
-
                 function createOrUpdateIonicNotificationForTrackingReminder(notificationSettings) {
                     cordova.plugins.notification.local.isPresent(notificationSettings.id, function (present) {
 
