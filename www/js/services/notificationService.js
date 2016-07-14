@@ -1,6 +1,6 @@
 angular.module('starter')
 // Handles the Notifications (inapp, push)
-    .factory('notificationService',function($rootScope, $ionicPlatform, $state, localStorageService, timeService){
+    .factory('notificationService',function($rootScope, $ionicPlatform, $state, localStorageService, $q){
 
         //Notification intervals in minutes
         var intervals = {
@@ -15,11 +15,26 @@ angular.module('starter')
         return {
 
             scheduleAllNotifications: function(trackingRemindersFromApi) {
+
+                $rootScope.combineNotifications = localStorageService.getItemSync('combineNotifications') ;
+                var smallestIntervalInSeconds = 86400;
                 if($rootScope.isChromeExtension || $rootScope.isIOS || $rootScope.isAndroid) {
                     for (var i = 0; i < trackingRemindersFromApi.length; i++) {
-                        this.scheduleNotification(false, trackingRemindersFromApi[i]);
+                        if(trackingRemindersFromApi[i].reminderFrequency < smallestIntervalInSeconds){
+                            smallestIntervalInSeconds = trackingRemindersFromApi[i].reminderFrequency;
+                        }
+                        if($rootScope.combineNotifications !== "true"){
+                            this.scheduleNotification(false, trackingRemindersFromApi[i]);
+                        }
                     }
                     this.cancelNotificationsForDeletedReminders(trackingRemindersFromApi);
+                }
+
+                if($rootScope.combineNotifications === "true"){
+                    console.debug('combineNotifications is true so clearing all alarms and creating one with frequency ' + smallestIntervalInSeconds);
+                    var successHandler = this.scheduleNotification(smallestIntervalInSeconds, null);
+
+                    this.cancelAllNotifications().then(successHandler);
                 }
 
                 if($rootScope.isIOS || $rootScope.isAndroid) {
@@ -32,71 +47,33 @@ angular.module('starter')
                             $state.go('app.remindersInbox');
                         });
 
-                        console.debug("Creating notification trigger event ");
+                        console.debug("Creating notification trigger event to clear other notifications");
                         cordova.plugins.notification.local.on("trigger", function (currentNotification) {
-                            
+
                             try {
                                 console.debug("just triggered: " + currentNotification.id);
+                                cordova.plugins.notification.local.getAll(function (notifications) {
+                                    console.debug("All notifications ", notifications);
+                                });
 
                                 cordova.plugins.notification.local.getTriggeredIds(function (triggeredNotifications) {
                                     console.debug("found triggered notifications before removing current one: " + JSON.stringify(triggeredNotifications));
-                                    triggeredNotifications.splice(triggeredNotifications.indexOf(currentNotification.id), 1);
-                                    console.debug("found triggered notifications after removing current one: " + JSON.stringify(triggeredNotifications));
-                                    cordova.plugins.notification.local.clear(triggeredNotifications);
                                     if(triggeredNotifications.length < 1){
-                                        console.error("Triggered notifications is empty so maybe it's not working.  Setting timer to clearAll notifications in 1 hour" );
-                                        setTimeout(function () {
-                                            cordova.plugins.notification.local.clearAll(function () {
-                                                console.debug("It has been an hour so clearAll active notifications");
-                                            }, this);
-                                        }, 3600000);
+                                        console.error("Triggered notifications is empty so maybe it's not working.");
+                                        // setTimeout(function () {
+                                        //     cordova.plugins.notification.local.clearAll(function () {
+                                        //         console.debug("It has been an hour so clearAll active notifications");
+                                        //     }, this);
+                                        // }, 3600000);
+                                    } else {
+                                        triggeredNotifications.splice(triggeredNotifications.indexOf(currentNotification.id), 1);
+                                        console.debug("found triggered notifications after removing current one: " + JSON.stringify(triggeredNotifications));
+                                        cordova.plugins.notification.local.clear(triggeredNotifications);
                                     }
                                 });
                             } catch (err) {
                                 console.error(err);
                             }
-
-                            /* Doesn't work on Android
-
-                            function sleepFor( sleepDuration ){
-                                var now = new Date().getTime();
-                                while(new Date().getTime() < now + sleepDuration){ }
-                            }
-
-                            cordova.plugins.notification.local.getAllIds(function (ids) {
-                                console.debug("Clearing all ids individually in a loop" + JSON.stringify(ids));
-                                for (var i = 0; i < ids.length; i++) {
-
-                                    console.debug("Checking if notification id " + ids[i] + " has been triggered." );
-                                    cordova.plugins.notification.local.isTriggered(ids[i], function (present) {
-                                        if(present){
-                                            console.debug("Notification " + ids[i] + " IS triggered");
-                                        } else {
-                                            console.debug("Notification " + ids[i] + " is NOT triggered");
-                                        }
-                                    });
-                                    sleepFor(200);
-                                    if(ids[i] !== currentNotification.id){
-                                        console.debug("Clearing id: " + ids[i]);
-                                        cordova.plugins.notification.local.clear(ids[i]);
-                                    } else {
-                                        console.debug("Not clearing id " + ids[i] + " because it is the currently triggered notification");
-                                    }
-
-                                }
-                            }, cordova.plugins);
-
-*/
-
-                            // cordova.plugins.notification.local.getAllIds(function (ids) {
-                            //     console.debug("a local notification was triggered: clear all others at the same time");
-                            //     console.debug("found notification ids before removing current: " + JSON.stringify(ids));
-                            //     ids.splice(ids.indexOf(currentNotification.id), 1);
-                            //     console.debug("found notification ids after removing current: " + JSON.stringify(ids));
-                            //     cordova.plugins.notification.local.clear(ids);
-                            //
-                            // });
-
                         });
                     });
                 }
@@ -372,16 +349,20 @@ angular.module('starter')
 
             // cancel all existing notifications
             cancelAllNotifications: function(){
+                var deferred = $q.defer();
                 if(typeof cordova !== "undefined"){
                     cordova.plugins.notification.local.cancelAll(function(){
                         console.log('notifications cancelled');
+                        deferred.resolve();
                     });
-                }else if(typeof chrome.alarms !== "undefined"){
+                } else if (typeof chrome.alarms !== "undefined"){
                     chrome.alarms.clearAll(function (){
                         console.debug('Cleared all Chrome alarms!');
+                        deferred.resolve();
                     });
                 }
 
+                return deferred.promise;
             }
         };
     });

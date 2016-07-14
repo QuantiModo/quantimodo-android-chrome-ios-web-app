@@ -4,8 +4,10 @@ angular.module('starter')
 	.controller('SettingsCtrl', function($scope,localStorageService, $ionicModal, $timeout, utilsService, authService,
 										 measurementService, chartService, $ionicPopover, $cordovaFile,
 										 $cordovaFileOpener2, $ionicPopup, $state,notificationService, QuantiModo,
-                                         $rootScope) {
+                                         $rootScope, reminderService) {
 		$scope.controller_name = "SettingsCtrl";
+
+		$scope.state = {};
 		$scope.showReminderFrequencySelector = config.appSettings.settingsPageOptions.showReminderFrequencySelector;
 		// populate ratings interval
         localStorageService.getItem('primaryOutcomeRatingFrequencyDescription', function (primaryOutcomeRatingFrequencyDescription) {
@@ -16,6 +18,15 @@ angular.module('starter')
         $rootScope.isChrome = window.chrome ? true : false;
 	    // populate user data
 
+		localStorageService.getItem('combineNotifications', function(combineNotifications){
+			if(combineNotifications === "null"){
+				localStorageService.setItem('combineNotifications', "false");
+				$scope.state.combineNotifications = false;
+			} else {
+				$scope.state.combineNotifications = combineNotifications;
+			}
+			$rootScope.combineNotifications = $scope.state.combineNotifications;
+		});
 
         // when login is tapped
 	    $scope.loginFromSettings = function(){
@@ -124,7 +135,13 @@ angular.module('starter')
 				window.open('http://help.quantimo.do/forums/211661-general', '_blank');
 			}
 		};
-		
+
+		$scope.combineNotificationChange = function() {
+			console.log('Combine Notification Change', $scope.state.combineNotifications);
+			$rootScope.combineNotifications = $scope.state.combineNotifications;
+			localStorageService.setItem('combineNotifications', $scope.state.combineNotifications);
+			reminderService.getTrackingRemindersAndScheduleNotifications();
+		};
 
         $scope.logout = function(){
 

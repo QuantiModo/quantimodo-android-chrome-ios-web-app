@@ -330,7 +330,7 @@ angular.module('starter')
         }
 
         function setupReminderEditingFromUrlParameter(reminderIdUrlParameter) {
-            reminderService.getTrackingReminders(null, reminderIdUrlParameter)
+            reminderService.getTrackingRemindersAndScheduleNotifications(null, reminderIdUrlParameter)
                 .then(function (reminders) {
                     $scope.state.allReminders = reminders;
                     if (reminders.length !== 1) {

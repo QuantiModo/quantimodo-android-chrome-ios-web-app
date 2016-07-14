@@ -176,7 +176,7 @@ angular.module('starter')
 			},
 
 
-			getTrackingReminders : function(category, reminderId){
+			getTrackingRemindersAndScheduleNotifications : function(category, reminderId){
 				
 				if(!$rootScope.syncingReminders){
 					$rootScope.syncingReminders = true;
