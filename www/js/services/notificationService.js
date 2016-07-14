@@ -2,15 +2,7 @@ angular.module('starter')
 // Handles the Notifications (inapp, push)
     .factory('notificationService',function($rootScope, $ionicPlatform, $state, localStorageService, $q){
 
-        //Notification intervals in minutes
-        var intervals = {
-            'minutely':1,
-            "every five minutes":5,
-            "hourly":60,
-            "every three hours":180,
-            "twice a day": 720,
-            "daily": 1440
-        };
+
 
         return {
 
@@ -31,8 +23,9 @@ angular.module('starter')
                 }
 
                 if($rootScope.combineNotifications === "true"){
+
                     console.debug('combineNotifications is true so clearing all alarms and creating one with frequency ' + smallestIntervalInSeconds);
-                    var successHandler = this.scheduleNotification(smallestIntervalInSeconds, null);
+                    var successHandler = this.scheduleNotification(smallestIntervalInSeconds/60, null);
 
                     this.cancelAllNotifications().then(successHandler);
                 }
@@ -139,7 +132,11 @@ angular.module('starter')
 
             },
 
-            scheduleNotification: function(interval, trackingReminder){
+            scheduleNotification: function(intervalInMinutes, trackingReminder){
+
+                if(typeof intervals[intervalInMinutes] !== "undefined"){
+                    intervalInMinutes = intervals[intervalInMinutes];
+                }
 
                 function createOrUpdateIonicNotificationForTrackingReminder(notificationSettings) {
                     cordova.plugins.notification.local.isPresent(notificationSettings.id, function (present) {
@@ -209,16 +206,16 @@ angular.module('starter')
                     }
                 }
 
-                function scheduleGenericAndroidNotification(interval) {
+                function scheduleGenericAndroidNotification(intervalInMinutes) {
                     cordova.plugins.notification.local.cancel(config.appSettings.primaryOutcomeVariableDetails.id);
                     var notificationSettings = {
                         text: config.appSettings.mobileNotificationText,
-                        every: intervals[interval],
+                        every: intervalInMinutes,
                         icon: 'ic_stat_icon_bw',
                         id: config.appSettings.primaryOutcomeVariableDetails.id,
                         sound: "file://sound/silent.ogg"
                     };
-                    if (interval && interval !== "never") {
+                    if (intervalInMinutes > 0) {
                         cordova.plugins.notification.local.cancel(notificationSettings.id, function() {
                             console.log("Canceled Android notification " + notificationSettings.id);
                         });
@@ -257,16 +254,16 @@ angular.module('starter')
                     }
                 }
 
-                function scheduleGenericIosNotification(interval) {
+                function scheduleGenericIosNotification(intervalInMinutes) {
                     cordova.plugins.notification.local.cancel(config.appSettings.primaryOutcomeVariableDetails.id);
                     var notificationSettings = {
                         text: config.appSettings.mobileNotificationText,
-                        every: interval,
+                        every: intervalInMinutes,
                         icon: config.appSettings.mobileNotificationImage,
                         id: config.appSettings.primaryOutcomeVariableDetails.id,
                         sound: "file://sound/silent.ogg"
                     };
-                    if (interval && interval !== "never") {
+                    if (intervalInMinutes > 0) {
                         cordova.plugins.notification.local.schedule(notificationSettings, function () {
                             console.log('iOS notification scheduled', notificationSettings);
                         });
@@ -277,12 +274,12 @@ angular.module('starter')
                     }
                 }
 
-                function scheduleGenericChromeExtensionNotification(interval) {
+                function scheduleGenericChromeExtensionNotification(intervalInMinutes) {
                     console.log('Reminder notification interval is ' + interval);
-                    var alarmInfo = {periodInMinutes: intervals[interval]};
+                    var alarmInfo = {periodInMinutes: intervalInMinutes};
                     chrome.alarms.clear("trackReportAlarm");
                     chrome.alarms.create("trackReportAlarm", alarmInfo);
-                    console.log("Alarm set, every " + intervals[interval] + " minutes");
+                    console.log("Alarm set, every " + intervalInMinutes + " minutes");
 
                 }
 
@@ -318,25 +315,25 @@ angular.module('starter')
                     //console.debug('Ionic is ready to schedule notifications');
                     if (typeof cordova !== "undefined") {
                         if (ionic.Platform.isAndroid()) {
-                            if (interval && interval !== "never") {
-                                console.debug('Scheduling Android notification for interval ' + interval);
-                                scheduleGenericAndroidNotification(interval);
+                            if (intervalInMinutes > 0) {
+                                console.debug('Scheduling Android notification for every ' + intervalInMinutes + ' minutes');
+                                scheduleGenericAndroidNotification(intervalInMinutes);
                             }
                             if(trackingReminder){
                                 //console.debug('Scheduling Android notification for ' + JSON.stringify(trackingReminder));
                                 scheduleAndroidNotificationByTrackingReminder(trackingReminder);
                             }
                         } else if (ionic.Platform.isIPad() || ionic.Platform.isIOS()) {
-                            if (interval && interval !== "never") {
-                                scheduleGenericIosNotification(interval);
+                            if (intervalInMinutes > 0) {
+                                scheduleGenericIosNotification(intervalInMinutes);
                             }
                             if(trackingReminder){
                                 scheduleIosNotificationByTrackingReminder(trackingReminder);
                             }
                         }
                     } else if ($rootScope.isChromeExtension || $rootScope.isChromeApp) {
-                        if (interval && interval !== "never") {
-                            scheduleGenericChromeExtensionNotification(interval);
+                        if (intervalInMinutes > 0) {
+                            scheduleGenericChromeExtensionNotification(intervalInMinutes);
                         }
                         if(trackingReminder){
                             scheduleChromeExtensionNotificationWithTrackingReminder(trackingReminder);
