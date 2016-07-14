@@ -212,9 +212,6 @@ angular.module('starter')
                         sound: "file://sound/silent.ogg"
                     };
                     if (intervalInMinutes > 0) {
-                        cordova.plugins.notification.local.cancel(notificationSettings.id, function() {
-                            console.log("Canceled Android notification " + notificationSettings.id);
-                        });
                         cordova.plugins.notification.local.schedule(notificationSettings, function () {
                             console.log('notification scheduled', notificationSettings);
                         });
