@@ -220,14 +220,6 @@ angular.module('starter')
 			window.open(logoutUrl,'_blank');
         }
 
-        // load rating popover
-	    $ionicPopover.fromTemplateUrl('templates/settings/ask-for-a-rating.html', {
-	    	scope: $scope
-	    }).then(function(popover) {
-	    	$scope.ratingPopover = popover;
-	    });
-
-
 	    // Convert all data Array to a CSV object
 	    var convertToCSV = function(objArray) {
 	        var array = typeof objArray !== 'object' ? JSON.parse(objArray) : objArray;
