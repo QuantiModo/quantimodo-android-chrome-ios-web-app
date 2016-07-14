@@ -194,21 +194,12 @@ angular.module('starter')
 
             QuantiModo.getV1Measurements = function(params, successHandler, errorHandler){
                 QuantiModo.get('api/v1/measurements',
-                    ['source', 'limit', 'offset', 'sort', 'variableCategoryName', 'variableName'],
+                    ['source', 'limit', 'offset', 'sort', 'id', 'variableCategoryName', 'variableName'],
                     params,
                     successHandler,
                     errorHandler);
             };
-
-            // used for getting measurement by id
-            QuantiModo.getV2Measurements = function(params, successHandler, errorHandler) {
-                QuantiModo.get('api/v2/measurements',
-                    ['id'],
-                    params,
-                    successHandler,
-                    errorHandler);
-            }
-
+        
             QuantiModo.deleteV1Measurements = function(measurements, successHandler, errorHandler){
                 QuantiModo.post('api/v1/measurements/delete',
                     ['variableId', 'variableName', 'startTimeEpoch', 'id'],
