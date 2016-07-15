@@ -6,26 +6,37 @@ angular.module('starter')
 										 $cordovaFileOpener2, $ionicPopup, $state,notificationService, QuantiModo,
                                          $rootScope, reminderService) {
 		$scope.controller_name = "SettingsCtrl";
-
 		$scope.state = {};
 		$scope.showReminderFrequencySelector = config.appSettings.settingsPageOptions.showReminderFrequencySelector;
 		$rootScope.isIOS = ionic.Platform.isIPad() || ionic.Platform.isIOS();
 		$rootScope.isAndroid = ionic.Platform.isAndroid();
         $rootScope.isChrome = window.chrome ? true : false;
 	    // populate user data
+		//$scope.state.combineNotifications = true;
+		$scope.state.combineNotifications = $rootScope.combineNotifications;
+		console.debug('CombineNotifications is '+ $scope.state.combineNotifications);
 
-		function shouldWeCombineNotifications(){
-			localStorageService.getItem('combineNotifications', function(combineNotifications){
-				if(combineNotifications === "null"){
-					localStorageService.setItem('combineNotifications', "false");
-					$scope.state.combineNotifications = false;
-				} else {
-					$scope.state.combineNotifications = combineNotifications;
-				}
-				$rootScope.combineNotifications = $scope.state.combineNotifications;
-			});
-		}
-
+		// populate ratings interval
+		localStorageService.getItem('primaryOutcomeRatingFrequencyDescription', function (primaryOutcomeRatingFrequencyDescription) {
+			$scope.primaryOutcomeRatingFrequencyDescription = primaryOutcomeRatingFrequencyDescription ? primaryOutcomeRatingFrequencyDescription : "hourly";
+		});
+		// load rating popover
+		$ionicPopover.fromTemplateUrl('templates/settings/ask-for-a-rating.html', {
+			scope: $scope
+		}).then(function(popover) {
+			$scope.ratingPopover = popover;
+		});
+		// when interval is updated
+		$scope.saveRatingInterval = function(interval){
+			//schedule notification
+			//TODO we can pass callback function to check the status of scheduling
+			$scope.saveInterval(interval);
+			localStorageService.setItem('primaryOutcomeRatingFrequencyDescription', interval);
+			$scope.primaryOutcomeRatingFrequencyDescription = interval;
+			// hide popover
+			$scope.ratingPopover.hide();
+		};
+		
         // when login is tapped
 	    $scope.loginFromSettings = function(){
 			$state.go('app.login');
@@ -99,7 +110,7 @@ angular.module('starter')
 		$scope.init = function(){
 			Bugsnag.context = "settings";
 			if (typeof analytics !== 'undefined')  { analytics.trackView("Settings Controller"); }
-			shouldWeCombineNotifications();
+			$scope.shouldWeCombineNotifications();
 	    };
 
 		$scope.contactUs = function(){
@@ -123,10 +134,22 @@ angular.module('starter')
 		};
 
 		$scope.combineNotificationChange = function() {
+			
 			console.log('Combine Notification Change', $scope.state.combineNotifications);
 			$rootScope.combineNotifications = $scope.state.combineNotifications;
 			localStorageService.setItem('combineNotifications', $scope.state.combineNotifications);
-			reminderService.getTrackingRemindersAndScheduleNotifications();
+			if($scope.state.combineNotifications){
+				// populate ratings interval
+				notificationService.cancelAllNotifications().then(function() {
+					localStorageService.getItem('primaryOutcomeRatingFrequencyDescription', function (primaryOutcomeRatingFrequencyDescription) {
+						$scope.primaryOutcomeRatingFrequencyDescription = primaryOutcomeRatingFrequencyDescription ? primaryOutcomeRatingFrequencyDescription : "hourly";
+						$scope.saveInterval($scope.primaryOutcomeRatingFrequencyDescription);
+					});
+				});
+			} else {
+				reminderService.getTrackingRemindersAndScheduleNotifications();
+			}
+			
 		};
 
         $scope.logout = function(){
