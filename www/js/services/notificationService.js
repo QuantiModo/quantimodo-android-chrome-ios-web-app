@@ -91,7 +91,7 @@ angular.module('starter')
                             var existingReminderFoundInApiResponse = false;
                             for (var j = 0; j < trackingRemindersFromApi.length; j++) {
                                 if (trackingRemindersFromApi[j].id === scheduledNotifications[i].id) {
-                                    //console.debug('Server returned a reminder matching' + trackingRemindersFromApi[j]);
+                                    console.debug('Server returned a reminder matching' + trackingRemindersFromApi[j]);
                                     existingReminderFoundInApiResponse = true;
                                 }
                             }
@@ -132,42 +132,22 @@ angular.module('starter')
                                 function () {
                                     console.debug('notification scheduled', notificationSettings);
                                 });
-
                         }
 
                         if (present) {
-                            cordova.plugins.notification.local.get(notificationSettings.id,
-                                function (existingNotification) {
-                                    //console.debug("Notification already set for " + JSON.stringify(existingNotification));
-                                    var frequencyChanged = false;
-                                    if (existingNotification && existingNotification.every !== notificationSettings.every) {
-                                        frequencyChanged = true;
-                                    }
-                                    if (frequencyChanged) {
-                                        cordova.plugins.notification.local.cancel(notificationSettings.id, function () {
-                                            console.debug("Canceled notification " + notificationSettings.id);
-                                        });
-                                        cordova.plugins.notification.local.schedule(notificationSettings,
+                            console.debug('Updating notification', notificationSettings);
+                            cordova.plugins.notification.local.update(notificationSettings,
                                             function () {
-                                                console.debug('notification scheduled', notificationSettings);
+                                                console.debug('notification updated', notificationSettings);
                                             });
-                                        cordova.plugins.notification.local.on("click", function (notification) {
-                                            console.debug("$state.go('app.remindersInbox')");
-                                            $state.go('app.remindersInbox');
-                                        });
-                                    }
-                                    if (!frequencyChanged) {
-                                        //console.debug("Not creating notification because frequency not changed for " + JSON.stringify(existingNotification));
-                                    }
-                                }
-                            );
                         }
                     });
                 }
 
                 function scheduleAndroidNotificationByTrackingReminder(trackingReminder) {
                     if (trackingReminder) {
-                        var at = new Date(trackingReminder.nextReminderTimeEpochSeconds*1000);
+                        //var at = new Date(trackingReminder.nextReminderTimeEpochSeconds*1000);
+                        var at = trackingReminder.nextReminderTimeEpochSeconds;
                         var minuteFrequency  = trackingReminder.reminderFrequency / 60;
                         var notificationSettings = {
                             autoClear: true,
@@ -179,12 +159,12 @@ angular.module('starter')
                             ongoing: false,
                             title: "Track " + trackingReminder.variableName,
                             text: "Tap to open reminder inbox",
-                            at: at,
+                            at: at * 1000,
                             every: minuteFrequency,
                             icon: 'ic_stat_icon_bw',
                             id: trackingReminder.id
                         };
-                        //console.debug("Trying to create Android notification for " + JSON.stringify(notificationSettings));
+                        console.debug("Trying to create Android notification for " + JSON.stringify(notificationSettings));
                         //notificationSettings.sound = "res://platform_default";
                         //notificationSettings.smallIcon = 'ic_stat_icon_bw';
                         createOrUpdateIonicNotificationForTrackingReminder(notificationSettings);
@@ -213,7 +193,8 @@ angular.module('starter')
 
                 function scheduleIosNotificationByTrackingReminder(trackingReminder) {
                     if (trackingReminder) {
-                        var at = new Date(trackingReminder.nextReminderTimeEpochSeconds*1000);
+                        //var at = new Date(trackingReminder.nextReminderTimeEpochSeconds*1000);
+                        var at = trackingReminder.nextReminderTimeEpochSeconds;
                         var minuteFrequency  = trackingReminder.reminderFrequency / 60;
                         var notificationSettings = {
                             autoClear: true,
@@ -225,7 +206,7 @@ angular.module('starter')
                             sound: "file://sound/silent.ogg",
                             title: "Track " + trackingReminder.variableName,
                             text: "Swipe to open reminder inbox",
-                            at: at,
+                            at: at * 1000,
                             every: minuteFrequency,
                             icon: config.appSettings.mobileNotificationImage,
                             id: trackingReminder.id
