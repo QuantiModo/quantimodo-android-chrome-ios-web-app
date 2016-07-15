@@ -45,6 +45,7 @@ angular.module('starter')
 			},
 
 			generateV1OAuthUrl: function(register) {
+				register = true;
 				var url = config.getApiUrl() + "/api/oauth2/authorize?";
 				// add params
 				url += "response_type=code";
