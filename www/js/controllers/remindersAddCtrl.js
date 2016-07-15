@@ -220,6 +220,9 @@ angular.module('starter')
             $scope.state.trackingReminder.reminderFrequency = getFrequencyChart()[$scope.state.selectedFrequency];
             $scope.state.trackingReminder.valueAndFrequencyTextDescription = $scope.state.selectedFrequency;
             $scope.state.trackingReminder.reminderStartTime = $scope.state.reminderStartTimeStringUtc;
+            $scope.state.trackingReminder.reminderStartTimeEpochSeconds = $scope.state.reminderStartTimeEpochTime;
+            $scope.state.trackingReminder.nextReminderTimeEpochSeconds = $scope.state.reminderStartTimeEpochTime;
+
 
             localStorageService.replaceElementOfItemById('trackingReminders', $scope.state.trackingReminder);
 	    	reminderService.addNewReminder($scope.state.trackingReminder)
@@ -330,7 +333,7 @@ angular.module('starter')
         }
 
         function setupReminderEditingFromUrlParameter(reminderIdUrlParameter) {
-            reminderService.getTrackingRemindersAndScheduleNotifications(null, reminderIdUrlParameter)
+            reminderService.getTrackingReminderById(reminderIdUrlParameter)
                 .then(function (reminders) {
                     $scope.state.allReminders = reminders;
                     if (reminders.length !== 1) {

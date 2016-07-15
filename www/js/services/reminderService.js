@@ -177,41 +177,22 @@ angular.module('starter')
 				return deferred.promise;
 			},
 
-
-			getTrackingRemindersAndScheduleNotifications : function(category, reminderId){
-				
-				if(!$rootScope.syncingReminders){
-					$rootScope.syncingReminders = true;
-					var deferred = $q.defer();
-					var params = typeof category !== "undefined" && category !== "" ? {variableCategoryName : category} : {};
-					if(reminderId){
-						params = {id : reminderId};
+			getTrackingReminderById : function(reminderId){
+				var deferred = $q.defer();
+				var params = {id : reminderId};
+				QuantiModo.getTrackingReminders(params, function(remindersResponse){
+					var trackingReminders = remindersResponse.data;
+					if(remindersResponse.success) {
+						deferred.resolve(trackingReminders);
 					}
-					QuantiModo.getTrackingReminders(params, function(remindersResponse){
-						var trackingReminders = remindersResponse.data;
-						if(remindersResponse.success) {
-							if(!category && !reminderId){
-								if($rootScope.combineNotifications !== true){
-									notificationService.scheduleAllNotifications(trackingReminders);
-								}
-								localStorageService.setItem('trackingReminders', JSON.stringify(trackingReminders));
-							}
-							$rootScope.syncingReminders = false;
-							deferred.resolve(trackingReminders);
-						}
-						else {
-							$rootScope.syncingReminders = false;
-							deferred.reject("error");
-						}
-					}, function(err){
-						Bugsnag.notify(err, JSON.stringify(err), {}, "error");
-						$rootScope.syncingReminders = false;
-						deferred.reject(err);
-					});
-
-					return deferred.promise;
-				}
-
+					else {
+						deferred.reject("error");
+					}
+				}, function(err){
+					Bugsnag.notify(err, JSON.stringify(err), {}, "error");
+					deferred.reject(err);
+				});
+				return deferred.promise;
 			},
 
 			getCurrentTrackingReminderNotificationsFromApi : function(category, today){
@@ -274,7 +255,6 @@ angular.module('starter')
 				return deferred.promise;
 			},
 
-
 			getTrackingReminderNotificationsFromLocalStorage : function(category, today){
 
 				var localMidnightInUtcString = timeService.getLocalMidnightInUtcString();
@@ -304,7 +284,6 @@ angular.module('starter')
 				
 				return trackingReminderNotifications;
 			},			
-			
 
 			deleteReminder : function(reminderId){
 				var deferred = $q.defer();
