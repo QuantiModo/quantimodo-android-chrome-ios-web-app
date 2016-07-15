@@ -684,11 +684,6 @@ config.appSettings  = {
             icon : 'ion-ios-nutrition-outline'
         },
         {
-            title : 'Import Data',
-            href : '#/app/import',
-            icon : 'ion-ios-cloud-download-outline'
-        },
-        {
             title : 'Settings',
             href : '#/app/settings',
             icon : 'ion-ios-gear-outline'
