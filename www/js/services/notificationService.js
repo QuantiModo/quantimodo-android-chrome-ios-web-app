@@ -6,6 +6,30 @@ angular.module('starter')
 
         return {
 
+            decrementNotificationBadges: function(){
+                if($rootScope.numberOfPendingNotifications > 0){
+                    $rootScope.numberOfPendingNotifications = $rootScope.numberOfPendingNotifications - 1;
+                    this.updateNotificationBadges($rootScope.numberOfPendingNotifications);
+                }
+            },
+
+            updateNotificationBadges: function(numberOfPendingNotifications) {
+                if($rootScope.isIOS || $rootScope.isAndroid) {
+                    $ionicPlatform.ready(function () {
+                        cordova.plugins.notification.local.getAll(function (notifications) {
+                            console.debug("All notifications ", notifications);
+                            for (var i = 0; i < notifications.length; i++) {
+                                console.log('Updating notification', notifications[i]);
+                                cordova.plugins.notification.local.update({
+                                    id: notifications[i].id,
+                                    badge: numberOfPendingNotifications
+                                });
+                            }
+                        });
+                    });
+                }
+            },
+
             scheduleAllNotifications: function(trackingRemindersFromApi) {
                 if($rootScope.isChromeExtension || $rootScope.isIOS || $rootScope.isAndroid) {
                     for (var i = 0; i < trackingRemindersFromApi.length; i++) {
@@ -151,7 +175,7 @@ angular.module('starter')
                         var minuteFrequency  = trackingReminder.reminderFrequency / 60;
                         var notificationSettings = {
                             autoClear: true,
-                            badge: 0,
+                            badge: $rootScope.numberOfPendingNotifications,
                             color: undefined,
                             data: undefined,
                             led: undefined,
@@ -178,7 +202,8 @@ angular.module('starter')
                         every: intervalInMinutes,
                         icon: 'ic_stat_icon_bw',
                         id: config.appSettings.primaryOutcomeVariableDetails.id,
-                        sound: "file://sound/silent.ogg"
+                        sound: "file://sound/silent.ogg",
+                        badge: $rootScope.numberOfPendingNotifications
                     };
                     if (intervalInMinutes > 0) {
                         cordova.plugins.notification.local.schedule(notificationSettings, function () {
@@ -198,7 +223,7 @@ angular.module('starter')
                         var minuteFrequency  = trackingReminder.reminderFrequency / 60;
                         var notificationSettings = {
                             autoClear: true,
-                            badge: 0,
+                            badge: $rootScope.numberOfPendingNotifications,
                             color: undefined,
                             data: undefined,
                             led: undefined,
@@ -224,7 +249,8 @@ angular.module('starter')
                         every: intervalInMinutes,
                         icon: config.appSettings.mobileNotificationImage,
                         id: config.appSettings.primaryOutcomeVariableDetails.id,
-                        sound: "file://sound/silent.ogg"
+                        sound: "file://sound/silent.ogg",
+                        badge: $rootScope.numberOfPendingNotifications
                     };
                     if (intervalInMinutes > 0) {
                         cordova.plugins.notification.local.schedule(notificationSettings, function () {
