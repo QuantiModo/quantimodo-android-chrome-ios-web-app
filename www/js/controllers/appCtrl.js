@@ -5,13 +5,17 @@ angular.module('starter')
                                     measurementService, $ionicPopover, $ionicLoading, $state, $ionicHistory,
                                     QuantiModo, notificationService, $rootScope, localStorageService, reminderService,
                                     $ionicPopup, $ionicSideMenuDelegate, ratingService, migrationService,
-                                    ionicDatePicker, unitService, variableService, $ionicPlatform, $cordovaGeolocation) {
+                                    ionicDatePicker, unitService, variableService, $ionicPlatform, locationService) {
 
         $rootScope.loaderImagePath = config.appSettings.loaderImagePath;
         $scope.appVersion = 1489;
         if(!$rootScope.loaderImagePath){
             $rootScope.loaderImagePath = 'img/circular-loader.gif';
         }
+        $rootScope.trackLocation = false;
+        $rootScope.placeName = null;
+        $rootScope.latitude = null;
+        $rootScope.longitude = null;
         $scope.controller_name = "AppCtrl";
         $scope.menu = config.appSettings.menu;
         $scope.appSettings = config.appSettings;
