@@ -9,7 +9,8 @@
 
             <a id="userName" href="" ng-show="user" ng-click="logout()" class="item ">
                 <i class="icon ion-person"></i>
-              Signed in as {{user.displayName}}
+                &nbsp
+                Signed in as {{user.displayName}}
               <p>Tap to sign out</p>
             </a>
     		
@@ -19,6 +20,7 @@
             <ion-toggle ng-model="state.combineNotifications"
                         ng-change="combineNotificationChange()">
                 <i class="icon ion-android-notifications-none"></i>
+                &nbsp
                 Only show one notification
             </ion-toggle>
 
@@ -58,6 +60,7 @@
         <div class="list card">
             <a ng-click="sendSharingInvitation()" class="item ">
                 <i class="icon ion-email"></i>
+                &nbsp
                 Share Your Data
                 <p>Invite a Physician, Caregiver, or Loved One</p>
             </a>
@@ -65,9 +68,10 @@
         </div>
 
         <div class="list card">
-            <div class="item item-text-wrap">
-
-                <p><i class="icon ion-ios-download"></i> Export Your Data</p>
+            <div class="item">
+                <i class="icon ion-ios-download"></i>
+                &nbsp
+                Export Your Data
             </div>
             <a href="" ng-click="exportPdf()" class="item ">
               Export as PDF File
