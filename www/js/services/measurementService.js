@@ -1,6 +1,6 @@
 angular.module('starter')
 	// Measurement Service
-	.factory('measurementService', function($http, $q, QuantiModo, localStorageService, $rootScope, $ionicLoading){
+	.factory('measurementService', function($http, $q, QuantiModo, localStorageService, $rootScope, $ionicLoading, $ionicPlatform, $cordovaGeolocation){
 
         //flag to indicate if data syncing is in progress
         var isSyncing = false;
@@ -505,6 +505,47 @@ angular.module('starter')
                         note : measurementInfo.note,
                         combinationOperation : measurementInfo.isAvg? "MEAN" : "SUM"
                     };
+
+                    if($rootScope.trackLocation){
+                        $ionicPlatform.ready(function() {
+                            function callback(results, status) {
+                                if (status == google.maps.places.PlacesServiceStatus.OK) {
+                                    for (var i = 0; i < results.length; i++) {
+                                        var place = results[i];
+                                        measurement.location = place.name;
+                                        //createMarker(results[i]);
+                                        console.log("Place is ", place);
+                                    }
+                                }
+                            }
+
+                            var posOptions = {
+                                enableHighAccuracy: true,
+                                timeout: 20000,
+                                maximumAge: 0
+                            };
+
+                            $cordovaGeolocation.getCurrentPosition(posOptions).then(function (position) {
+                                measurement.latitude = position.coords.latitude;
+                                measurement.longitude = position.coords.longitude;
+
+                                var myLatlng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+
+                                measurement.location = position.coords.location;
+                                console.debug("Added location data to measurement: ", measurement);
+                                var request = {
+                                    location: myLatlng,
+                                    radius: '100',
+                                    //types: ['store']
+                                };
+
+                                service = new google.maps.places.PlacesService(map);
+                                service.nearbySearch(request, callback);
+
+                            });
+                        });
+
+                    }
                     
                     // send request
                     QuantiModo.postMeasurementsV2(measurements, function(response){
