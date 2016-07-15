@@ -8,6 +8,7 @@
             </a>
 
             <a id="userName" href="" ng-show="user" ng-click="logout()" class="item ">
+                <i class="icon ion-person"></i>
               Signed in as {{user.displayName}}
               <p>Tap to sign out</p>
             </a>
@@ -55,6 +56,15 @@
         </div>
 
         <div class="list card">
+            <a ng-click="sendSharingInvitation()" class="item ">
+                <i class="icon ion-email"></i>
+                Share Your Data
+                <p>Invite a Physician, Caregiver, or Loved One</p>
+            </a>
+
+        </div>
+
+        <div class="list card">
             <div class="item item-text-wrap">
 
                 <p><i class="icon ion-ios-download"></i> Export Your Data</p>
@@ -70,12 +80,7 @@
             </a>
         </div>
 
-        <div class="list card">
-            <a href="" ng-click="sendSharingInvitation()" class="item ">
-                <i class="icon ion-email"></i>
-                Share Data with a Physician, Caregiver, or Loved One
-            </a>
-        </div>
+
 
         <div class="list card">
             <a ng-click="contactUs()" class="item ">
