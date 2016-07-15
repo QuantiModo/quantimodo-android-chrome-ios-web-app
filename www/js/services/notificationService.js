@@ -14,16 +14,20 @@ angular.module('starter')
             },
 
             updateNotificationBadges: function(numberOfPendingNotifications) {
-                cordova.plugins.notification.local.getAll(function (notifications) {
-                    console.debug("All notifications ", notifications);
-                    for(var i = 0; i < notifications.length; i++){
-                        console.log('Updating notification', notifications[i]);
-                        cordova.plugins.notification.local.update({
-                            id: notifications[i].id,
-                            badge: numberOfPendingNotifications
+                if($rootScope.isIOS || $rootScope.isAndroid) {
+                    $ionicPlatform.ready(function () {
+                        cordova.plugins.notification.local.getAll(function (notifications) {
+                            console.debug("All notifications ", notifications);
+                            for (var i = 0; i < notifications.length; i++) {
+                                console.log('Updating notification', notifications[i]);
+                                cordova.plugins.notification.local.update({
+                                    id: notifications[i].id,
+                                    badge: numberOfPendingNotifications
+                                });
+                            }
                         });
-                    }
-                });
+                    });
+                }
             },
 
             scheduleAllNotifications: function(trackingRemindersFromApi) {
