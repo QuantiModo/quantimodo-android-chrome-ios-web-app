@@ -151,7 +151,7 @@ angular.module('starter')
 			} else {
 				notificationService.cancelAllNotifications().then(function() {
 					console.debug("Cancelled combined notification and now scheduling individual ones");
-					reminderService.getTrackingRemindersAndScheduleNotifications();
+					reminderService.refreshTrackingRemindersAndScheduleAlarms();
 				});
 			}
 			
