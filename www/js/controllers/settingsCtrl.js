@@ -18,7 +18,7 @@ angular.module('starter')
 
 		// populate ratings interval
 		localStorageService.getItem('primaryOutcomeRatingFrequencyDescription', function (primaryOutcomeRatingFrequencyDescription) {
-			$scope.primaryOutcomeRatingFrequencyDescription = primaryOutcomeRatingFrequencyDescription ? primaryOutcomeRatingFrequencyDescription : "hourly";
+			$scope.primaryOutcomeRatingFrequencyDescription = primaryOutcomeRatingFrequencyDescription ? primaryOutcomeRatingFrequencyDescription : "daily";
 		});
 		// load rating popover
 		$ionicPopover.fromTemplateUrl('templates/settings/ask-for-a-rating.html', {
@@ -141,13 +141,18 @@ angular.module('starter')
 			if($scope.state.combineNotifications){
 				// populate ratings interval
 				notificationService.cancelAllNotifications().then(function() {
+
 					localStorageService.getItem('primaryOutcomeRatingFrequencyDescription', function (primaryOutcomeRatingFrequencyDescription) {
-						$scope.primaryOutcomeRatingFrequencyDescription = primaryOutcomeRatingFrequencyDescription ? primaryOutcomeRatingFrequencyDescription : "hourly";
+						console.debug("Cancelled individual notifications and now scheduling combined one with interval: " + primaryOutcomeRatingFrequencyDescription);
+						$scope.primaryOutcomeRatingFrequencyDescription = primaryOutcomeRatingFrequencyDescription ? primaryOutcomeRatingFrequencyDescription : "daily";
 						$scope.saveInterval($scope.primaryOutcomeRatingFrequencyDescription);
 					});
 				});
 			} else {
-				reminderService.getTrackingRemindersAndScheduleNotifications();
+				notificationService.cancelAllNotifications().then(function() {
+					console.debug("Cancelled combined notification and now scheduling individual ones");
+					reminderService.getTrackingRemindersAndScheduleNotifications();
+				});
 			}
 			
 		};
