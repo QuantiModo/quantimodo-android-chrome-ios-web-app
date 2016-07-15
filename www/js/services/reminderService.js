@@ -30,6 +30,7 @@ angular.module('starter')
 
 				QuantiModo.skipTrackingReminder(trackingReminderNotificationId, function(response){
 					if(response.success) {
+						notificationService.decrementNotificationBadges();
 						deferred.resolve();
                     }
 					else {
@@ -50,6 +51,7 @@ angular.module('starter')
 
 				QuantiModo.trackTrackingReminder(trackingReminderNotificationId, modifiedReminderValue, function(response){
 					if(response.success) {
+						notificationService.decrementNotificationBadges();
 						deferred.resolve();
 					}
 					else {
@@ -70,6 +72,7 @@ angular.module('starter')
 
 				QuantiModo.snoozeTrackingReminder(trackingReminderNotificationId, function(response){
 					if(response.success) {
+						notificationService.decrementNotificationBadges();
 						deferred.resolve();
                     }
 					else {
@@ -102,6 +105,8 @@ angular.module('starter')
 							if($rootScope.combineNotifications !== true){
 								notificationService.scheduleAllNotifications(trackingReminders);
 							}
+							//$rootScope.numberOfPendingNotifications = trackingReminders[0].numberOfPendingNotifications;
+							//notificationService.updateNotificationBadges($rootScope.numberOfPendingNotifications);
 							localStorageService.setItem('trackingReminders', JSON.stringify(trackingReminders));
 							$rootScope.syncingReminders = false;
 							$rootScope.isSyncing = false;

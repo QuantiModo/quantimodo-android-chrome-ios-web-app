@@ -2,7 +2,7 @@ angular.module('starter')
 
 	.controller('RemindersInboxCtrl', function($scope, authService, $ionicPopup, localStorageService, $state, 
 											   reminderService, $ionicLoading, measurementService, utilsService, 
-											   $stateParams, $location, $filter, $ionicPlatform, $rootScope, $q, QuantiModo){
+											   $stateParams, $location, $filter, $ionicPlatform, $rootScope, notificationService){
 
 	    $scope.controller_name = "RemindersInboxCtrl";
 
@@ -149,6 +149,8 @@ angular.module('starter')
 			$scope.showLoader('Syncing reminder notifications...');
             reminderService.getTrackingReminderNotifications($stateParams.variableCategoryName, $stateParams.today)
                 .then(function(trackingReminderNotifications){
+                	$rootScope.numberOfPendingNotifications = trackingReminderNotifications.length;
+					notificationService.updateNotificationBadges(trackingReminderNotifications.length);
                     $scope.state.trackingRemindersNotifications = trackingReminderNotifications;
                     $scope.state.filteredReminders = filterViaDates(trackingReminderNotifications);
                     if($scope.state.numberOfNotificationsInInbox.length > 1){
