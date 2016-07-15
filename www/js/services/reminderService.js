@@ -99,7 +99,9 @@ angular.module('starter')
 					QuantiModo.getTrackingReminders(params, function(remindersResponse){
 						var trackingReminders = remindersResponse.data;
 						if(remindersResponse.success) {
-							notificationService.scheduleAllNotifications(trackingReminders);
+							if($rootScope.combineNotifications !== true){
+								notificationService.scheduleAllNotifications(trackingReminders);
+							}
 							localStorageService.setItem('trackingReminders', JSON.stringify(trackingReminders));
 							$rootScope.syncingReminders = false;
 							$rootScope.isSyncing = false;
@@ -189,7 +191,9 @@ angular.module('starter')
 						var trackingReminders = remindersResponse.data;
 						if(remindersResponse.success) {
 							if(!category && !reminderId){
-								notificationService.scheduleAllNotifications(trackingReminders);
+								if($rootScope.combineNotifications !== true){
+									notificationService.scheduleAllNotifications(trackingReminders);
+								}
 								localStorageService.setItem('trackingReminders', JSON.stringify(trackingReminders));
 							}
 							$rootScope.syncingReminders = false;

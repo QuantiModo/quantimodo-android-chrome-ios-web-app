@@ -18,8 +18,41 @@
             <ion-toggle ng-model="state.combineNotifications"
                         ng-change="combineNotificationChange()">
                 <i class="icon ion-android-notifications-none"></i>
-                Combine all notifications
+                Only show one notification
             </ion-toggle>
+
+
+            <div ng-show="state.combineNotifications" class="list card">
+                <div class="item item-text-wrap">
+                    <p>How often would you like to be reminded?</p>
+                </div>
+
+                <a href="" ng-click="ratingPopover.show();" ng-hide="isIos" class="item ">
+                    Remind me {{primaryOutcomeRatingFrequencyDescription}}
+                    <p ng-show="primaryOutcomeRatingFrequencyDescription=='never'">Never</p>
+                    <!--FOR DEVELOPMENT ONLY
+                      <p ng-show="primaryOutcomeRatingFrequencyDescription=='minutely'">Every minute</p>
+                      <p ng-show="primaryOutcomeRatingFrequencyDescription=='every five minutes'">Every five minutes</p>
+                      ---->
+                    <p ng-show="primaryOutcomeRatingFrequencyDescription=='hourly'">Hourly</p>
+                    <p ng-show="primaryOutcomeRatingFrequencyDescription=='every three hours'">Every three hours</p>
+                    <p ng-show="primaryOutcomeRatingFrequencyDescription=='twice a day'">Twice daily</p>
+                    <p ng-show="primaryOutcomeRatingFrequencyDescription=='daily'">Daily</p>
+                </a>
+
+                <a href="" ng-click="ratingPopover.show();" ng-show="isIos" class="item ">
+                    Ask {{primaryOutcomeRatingFrequencyDescription}}ly
+                    <p ng-show="primaryOutcomeRatingFrequencyDescription=='never'">Never</p>
+                    <p ng-show="primaryOutcomeRatingFrequencyDescription=='day'">Daily</p>
+                    <p ng-show="primaryOutcomeRatingFrequencyDescription=='hour'">Hourly</p>
+                </a>
+
+                <!--   		<a href="" ng-click="additionalRatingPopover.show();" class="item ">
+                             Additional required ratings
+                             <p>{{addString}}</p>
+                           </a>-->
+            </div>
+
         </div>
 
         <div class="list card">

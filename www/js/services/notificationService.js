@@ -7,28 +7,13 @@ angular.module('starter')
         return {
 
             scheduleAllNotifications: function(trackingRemindersFromApi) {
-
-                $rootScope.combineNotifications = localStorageService.getItemSync('combineNotifications') ;
-                var smallestIntervalInSeconds = 86400;
                 if($rootScope.isChromeExtension || $rootScope.isIOS || $rootScope.isAndroid) {
                     for (var i = 0; i < trackingRemindersFromApi.length; i++) {
-                        if(trackingRemindersFromApi[i].reminderFrequency < smallestIntervalInSeconds){
-                            smallestIntervalInSeconds = trackingRemindersFromApi[i].reminderFrequency;
-                        }
                         if($rootScope.combineNotifications !== "true"){
                             this.scheduleNotification(false, trackingRemindersFromApi[i]);
                         }
                     }
                     this.cancelNotificationsForDeletedReminders(trackingRemindersFromApi);
-                }
-
-                if($rootScope.combineNotifications === "true"){
-
-                    console.debug('combineNotifications is true so clearing all alarms and creating one with frequency ' + smallestIntervalInSeconds);
-
-
-                    this.cancelAllNotifications()
-                        .then( this.scheduleNotification(smallestIntervalInSeconds/60, null));
                 }
 
                 if($rootScope.isIOS || $rootScope.isAndroid) {
