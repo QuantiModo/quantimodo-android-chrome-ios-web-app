@@ -5,7 +5,7 @@ angular.module('starter')
                                     measurementService, $ionicPopover, $ionicLoading, $state, $ionicHistory,
                                     QuantiModo, notificationService, $rootScope, localStorageService, reminderService,
                                     $ionicPopup, $ionicSideMenuDelegate, ratingService, migrationService,
-                                    ionicDatePicker, unitService, variableService, $ionicPlatform, locationService) {
+                                    ionicDatePicker, unitService, variableService, $ionicPlatform, $cordovaGeolocation) {
 
         $rootScope.loaderImagePath = config.appSettings.loaderImagePath;
         $scope.appVersion = 1489;
@@ -37,43 +37,28 @@ angular.module('starter')
         $scope.hideImportDataCard = localStorageService.getItemSync('hideImportDataCard');
 
         $scope.getLocation = function(){
-            $ionicPlatform.ready(function() {
-
-                $ionicLoading.show({
-                    template: '<ion-spinner icon="bubbles"></ion-spinner><br/>Acquiring location!'
-                });
-
-                var posOptions = {
-                    enableHighAccuracy: true,
-                    timeout: 20000,
-                    maximumAge: 0
-                };
-
-                $cordovaGeolocation.getCurrentPosition(posOptions).then(function (position) {
-                    var lat  = position.coords.latitude;
-                    var long = position.coords.longitude;
-
-                    console.debug("My coordinates are: ", position.coords);
-
-                    var myLatlng = new google.maps.LatLng(lat, long);
-                    console.debug("My coordinates are: ", myLatlng);
-
-                    var mapOptions = {
-                        center: myLatlng,
-                        zoom: 16,
-                        mapTypeId: google.maps.MapTypeId.ROADMAP
+            $scope.shouldWeTrackLocation();
+            if($rootScope.trackLocation){
+                $ionicPlatform.ready(function() {
+                    var posOptions = {
+                        enableHighAccuracy: true,
+                        timeout: 20000,
+                        maximumAge: 0
                     };
 
-                    //var map = new google.maps.Map(document.getElementById("map"), mapOptions);
+                    $cordovaGeolocation.getCurrentPosition(posOptions).then(function (position) {
+                        $rootScope.latitude  = position.coords.latitude;
+                        $rootScope.longitude = position.coords.longitude;
 
-                    //$scope.map = map;
-                    $ionicLoading.hide();
+                        console.debug("My coordinates are: ", position.coords);
+                        $ionicLoading.hide();
 
-                }, function(err) {
-                    $ionicLoading.hide();
-                    console.log(err);
+                    }, function(err) {
+                        $ionicLoading.hide();
+                        console.log(err);
+                    });
                 });
-            });
+            }
         };
 
         //  Calendar and  Date picker
@@ -591,6 +576,7 @@ angular.module('starter')
                 variableService.refreshCommonVariables();
                 unitService.getUnits();
                 $rootScope.syncedEverything = true;
+                $scope.getLocation();
             }
         };
         
