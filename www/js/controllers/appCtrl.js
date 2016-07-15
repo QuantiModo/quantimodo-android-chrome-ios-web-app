@@ -389,6 +389,8 @@ angular.module('starter')
             }
 
             var intervals = {
+                "minutely" : 60,
+                "every five minutes" : 5 * 60,
                 "never" : 0,
                 "hourly": 60 * 60,
                 "hour": 60 * 60,
