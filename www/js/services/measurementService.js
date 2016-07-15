@@ -533,13 +533,23 @@ angular.module('starter')
 
                                 measurement.location = position.coords.location;
                                 console.debug("Added location data to measurement: ", measurement);
+
+                                var mapOptions = {
+                                    center: myLatlng,
+                                    zoom: 16,
+                                    mapTypeId: google.maps.MapTypeId.ROADMAP
+                                };
+
+                                var map = new google.maps.Map(document.getElementById("map"), mapOptions);
+
+                                service = new google.maps.places.PlacesService(map);
+
                                 var request = {
                                     location: myLatlng,
                                     radius: '100',
                                     //types: ['store']
                                 };
 
-                                service = new google.maps.places.PlacesService(map);
                                 service.nearbySearch(request, callback);
 
                             });
