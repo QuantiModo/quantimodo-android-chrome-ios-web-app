@@ -4,7 +4,7 @@ angular.module('starter')
 	.controller('SettingsCtrl', function($scope,localStorageService, $ionicModal, $timeout, utilsService, authService,
 										 measurementService, chartService, $ionicPopover, $cordovaFile,
 										 $cordovaFileOpener2, $ionicPopup, $state,notificationService, QuantiModo,
-                                         $rootScope, reminderService, locationService) {
+                                         $rootScope, reminderService) {
 		$scope.controller_name = "SettingsCtrl";
 		$scope.state = {};
 		$scope.showReminderFrequencySelector = config.appSettings.settingsPageOptions.showReminderFrequencySelector;
@@ -166,7 +166,7 @@ angular.module('starter')
 			$rootScope.trackLocation = $scope.state.trackLocation;
 			localStorageService.setItem('trackLocation', $scope.state.trackLocation);
 			if($scope.state.trackLocation){
-				locationService.setCurrentLocation();
+				$scope.getLocation();
 			} else {
 				console.debug("Do not track location");
 			}
