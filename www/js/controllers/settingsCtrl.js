@@ -156,7 +156,7 @@ angular.module('starter')
 
             var startLogout = function(){
                 console.log('Logging out...');
-                $rootScope.isSyncing = false;
+                $scope.hideLoader();
                 $rootScope.user = null;
                 $rootScope.isMobile = window.cordova;
                 $rootScope.isBrowser = ionic.Platform.platforms[0] === "browser";

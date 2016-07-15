@@ -48,7 +48,7 @@ angular.module('starter')
 			if($rootScope.user){
 				measurementService.syncPrimaryOutcomeVariableMeasurements()
 					.then(function(){
-						$rootScope.isSyncing = false;
+						$scope.hideLoader();
 						updateHistoryView();
 					});
 			}

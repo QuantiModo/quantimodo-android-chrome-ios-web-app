@@ -242,7 +242,7 @@ angular.module('starter')
         $scope.init();
         
         $scope.$on('updateCharts', function(){
-            $rootScope.isSyncing = false;
+            $scope.hideLoader();
             console.log('track state redrawing event triggered through sibling controllers. Updating charts and syncing..');
             updateCharts();
         });

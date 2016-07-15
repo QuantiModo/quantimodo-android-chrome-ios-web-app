@@ -182,7 +182,7 @@ angular.module('starter')
         };
         $scope.showHistorySubMenu = false;
         $scope.shoppingCartEnabled = config.shoppingCartEnabled;
-        $rootScope.isSyncing = false;
+        $scope.hideLoader();
 
         setPlatformVariables();
 
@@ -512,9 +512,7 @@ angular.module('starter')
             });
             */
             $timeout(function () {
-                $rootScope.isSyncing = false;
-                $ionicLoading.hide();
-
+                $scope.hideLoader();
             }, 15000);
 
         };
@@ -522,6 +520,7 @@ angular.module('starter')
 
         $scope.hideLoader = function () {
             $rootScope.isSyncing = false;
+            $rootScope.syncDisplayText = '';
             $scope.loading = false;
             $ionicLoading.hide();
         };

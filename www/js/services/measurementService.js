@@ -143,6 +143,7 @@ angular.module('starter')
                 }, function(response){
                     isSyncing = false;
                     $rootScope.isSyncing = false;
+                    $rootScope.syncDisplayText = '';
                     deferred.reject(false);
                 }, function(response){
                     if(response){
@@ -218,12 +219,15 @@ angular.module('starter')
 
                     measurementService.syncPrimaryOutcomeVariableMeasurements().then(function(){
                         $rootScope.isSyncing = false;
+                        $rootScope.syncDisplayText = '';
                         $ionicLoading.hide();
                         deferred.resolve();
                     });
                 }
                 else {
                     $rootScope.$broadcast('updateCharts');
+                    $rootScope.isSyncing = false;
+                    $rootScope.syncDisplayText = '';
                     deferred.resolve();
                 }
                 return deferred.promise;

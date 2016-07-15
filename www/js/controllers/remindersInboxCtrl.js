@@ -146,8 +146,7 @@ angular.module('starter')
 	    };
 
         var getTrackingReminderNotifications = function(){
-            $rootScope.isSyncing = true;
-            $rootScope.syncDisplayText = 'Syncing reminder notifications...';
+			$scope.showLoader('Syncing reminder notifications...');
             reminderService.getTrackingReminderNotifications($stateParams.variableCategoryName, $stateParams.today)
                 .then(function(trackingReminderNotifications){
                     $scope.state.trackingRemindersNotifications = trackingReminderNotifications;
