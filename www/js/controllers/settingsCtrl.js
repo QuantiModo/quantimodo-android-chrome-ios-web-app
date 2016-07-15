@@ -15,6 +15,8 @@ angular.module('starter')
 		//$scope.state.combineNotifications = true;
 		$scope.state.combineNotifications = $rootScope.combineNotifications;
 		console.debug('CombineNotifications is '+ $scope.state.combineNotifications);
+		$scope.state.trackLocation = $rootScope.trackLocation;
+		console.debug('trackLocation is '+ $scope.state.trackLocation);
 
 		// populate ratings interval
 		localStorageService.getItem('primaryOutcomeRatingFrequencyDescription', function (primaryOutcomeRatingFrequencyDescription) {
@@ -111,6 +113,7 @@ angular.module('starter')
 			Bugsnag.context = "settings";
 			if (typeof analytics !== 'undefined')  { analytics.trackView("Settings Controller"); }
 			$scope.shouldWeCombineNotifications();
+			$scope.shouldWeTrackLocation();
 	    };
 
 		$scope.contactUs = function(){
@@ -155,6 +158,19 @@ angular.module('starter')
 				});
 			}
 			
+		};
+
+		$scope.trackLocationChange = function() {
+
+			console.log('trackLocation', $scope.state.trackLocation);
+			$rootScope.trackLocation = $scope.state.trackLocation;
+			localStorageService.setItem('trackLocation', $scope.state.trackLocation);
+			if($scope.state.trackLocation){
+				$scope.getLocation();
+			} else {
+				console.debug("Do not track location");
+			}
+
 		};
 
         $scope.logout = function(){

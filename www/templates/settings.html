@@ -17,6 +17,15 @@
         </div>
 
         <div class="card sign-in" >
+            <ion-toggle ng-model="state.trackLocation"
+                        ng-change="trackLocationChange()">
+                <i class="icon ion-map"></i>
+                &nbsp
+                Track my location
+            </ion-toggle>
+        </div>
+
+        <div class="card sign-in" >
             <ion-toggle ng-model="state.combineNotifications"
                         ng-change="combineNotificationChange()">
                 <i class="icon ion-android-notifications-none"></i>

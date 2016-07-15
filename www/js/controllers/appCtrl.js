@@ -5,7 +5,7 @@ angular.module('starter')
                                     measurementService, $ionicPopover, $ionicLoading, $state, $ionicHistory,
                                     QuantiModo, notificationService, $rootScope, localStorageService, reminderService,
                                     $ionicPopup, $ionicSideMenuDelegate, ratingService, migrationService,
-                                    ionicDatePicker, unitService, variableService) {
+                                    ionicDatePicker, unitService, variableService, $ionicPlatform, $cordovaGeolocation) {
 
         $rootScope.loaderImagePath = config.appSettings.loaderImagePath;
         $scope.appVersion = 1489;
@@ -31,6 +31,46 @@ angular.module('starter')
         $scope.hideAddSymptomRemindersCard = localStorageService.getItemSync('hideAddSymptomRemindersCard');
         $scope.hideAddEmotionRemindersCard = localStorageService.getItemSync('hideAddEmotionRemindersCard');
         $scope.hideImportDataCard = localStorageService.getItemSync('hideImportDataCard');
+
+        $scope.getLocation = function(){
+            $ionicPlatform.ready(function() {
+
+                $ionicLoading.show({
+                    template: '<ion-spinner icon="bubbles"></ion-spinner><br/>Acquiring location!'
+                });
+
+                var posOptions = {
+                    enableHighAccuracy: true,
+                    timeout: 20000,
+                    maximumAge: 0
+                };
+
+                $cordovaGeolocation.getCurrentPosition(posOptions).then(function (position) {
+                    var lat  = position.coords.latitude;
+                    var long = position.coords.longitude;
+
+                    console.debug("My coordinates are: ", position.coords);
+
+                    var myLatlng = new google.maps.LatLng(lat, long);
+                    console.debug("My coordinates are: ", myLatlng);
+
+                    var mapOptions = {
+                        center: myLatlng,
+                        zoom: 16,
+                        mapTypeId: google.maps.MapTypeId.ROADMAP
+                    };
+
+                    var map = new google.maps.Map(document.getElementById("map"), mapOptions);
+
+                    $scope.map = map;
+                    $ionicLoading.hide();
+
+                }, function(err) {
+                    $ionicLoading.hide();
+                    console.log(err);
+                });
+            });
+        };
 
         //  Calendar and  Date picker
 
@@ -427,6 +467,17 @@ angular.module('starter')
                     $rootScope.combineNotifications = false;
                 }
                 $rootScope.combineNotifications = combineNotifications === "true";
+            });
+        };
+
+        $scope.shouldWeTrackLocation = function(){
+            localStorageService.getItem('trackLocation', function(trackLocation){
+                console.debug("trackLocation from local storage is " + trackLocation);
+                if(trackLocation === "null"){
+                    localStorageService.setItem('trackLocation', false);
+                    $rootScope.trackLocation = false;
+                }
+                $rootScope.trackLocation = trackLocation === "true";
             });
         };
 
