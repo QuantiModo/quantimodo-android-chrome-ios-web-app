@@ -157,7 +157,11 @@ angular.module('starter')
                 if(isWelcomed  === true || isWelcomed === "true"){
                     if (helpPopupMessages && typeof helpPopupMessages[location.hash] !== "undefined") {
                         localStorageService.getItem('notShowHelpPopup', function (val) {
-                            $scope.notShowHelpPopup = val ? JSON.parse(val) : false;
+                            if(typeof val === "undefined" || val === "undefined"){
+                                $scope.notShowHelpPopup = false;
+                            } else {
+                                $scope.notShowHelpPopup = val ? JSON.parse(val) : false;
+                            }
 
                             // Had to add "&& e.targetScope !== $scope" to prevent duplicate popups
                             //if (!$scope.notShowHelpPopup && e.targetScope !== $scope) {
