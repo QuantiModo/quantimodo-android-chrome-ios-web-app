@@ -424,9 +424,9 @@ config.appSettings  = {
             stateAndParameters: "'app.import'"
         },
         button4 : {
-            icon: 'ion-heart-broken',
-            label: 'Record a Symptom',
-            stateAndParameters: "'app.track_factors_category', {variableCategoryName : 'Symptoms'}"
+            icon: 'ion-ios-star',
+            label: 'Go to your favorites',
+            stateAndParameters: "'app.favorites'"
         }
     },
 

@@ -216,6 +216,19 @@ angular.module('starter')
                     return 'ion-speedometer';
                 }
                 
+            },
+            attachVariableCategoryIcons : function(dataArray){
+                var variableCategoryInfo;
+                for(var i = 0; i < dataArray.length; i++){
+                    variableCategoryInfo = this.getVariableCategoryInfo(dataArray[i].variableCategoryName);
+                    if(variableCategoryInfo.icon){
+                        dataArray[i].icon = variableCategoryInfo.icon;
+                    } else {
+                        console.warn('Could not find icon for variableCategoryName ' + dataArray[i].variableCategoryName);
+                        return 'ion-speedometer';
+                    }
+                }
+                return dataArray;
             }
         };
         

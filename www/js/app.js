@@ -515,6 +515,24 @@ angular.module('starter',
         .state('app.remindersInbox', {
             url: "/reminders-inbox",
             params: {
+                reminderFrequency: null,
+                unit: null,
+                variableName : null,
+                dateTime : null,
+                value : null,
+                fromUrl : null
+            },
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/reminders-inbox.html",
+                    controller: 'RemindersInboxCtrl'
+                }
+            }
+        })
+        .state('app.favorites', {
+            url: "/favorites",
+            params: {
+                reminderFrequency: 0,
                 unit: null,
                 variableName : null,
                 dateTime : null,
