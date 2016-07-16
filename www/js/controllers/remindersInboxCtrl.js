@@ -241,8 +241,9 @@ angular.module('starter')
 				if($scope.state.favorites[i].id === trackingReminder.id){
 					if($scope.state.favorites[i].abbreviatedUnitName !== '/5') {
 						$scope.state.favorites[i].total = $scope.state.favorites[i].total + value;
+						$scope.state.favorites[i].displayTotal = $scope.state.favorites[i].total + " " + $scope.state.favorites[i].abbreviatedUnitName;
 					} else {
-						$scope.state.favorites[i].total = modifiedReminderValue + '/5';
+						$scope.state.favorites[i].displayTotal = modifiedReminderValue + '/5';
 					}
 
 				}
