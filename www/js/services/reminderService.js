@@ -10,6 +10,7 @@ angular.module('starter')
 				var deferred = $q.defer();
 				notificationService.scheduleNotification(null, trackingReminder);
 				
+				trackingReminder.timeZoneOffset = new Date().getTimezoneOffset();
                 QuantiModo.postTrackingReminder(trackingReminder, function(){
 					//update alarms and local notifications
 					reminderService.refreshTrackingRemindersAndScheduleAlarms();
