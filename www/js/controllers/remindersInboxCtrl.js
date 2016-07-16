@@ -2,7 +2,7 @@ angular.module('starter')
 
 	.controller('RemindersInboxCtrl', function($scope, authService, $ionicPopup, localStorageService, $state, 
 											   reminderService, $ionicLoading, measurementService, utilsService, 
-											   $stateParams, $location, $filter, $ionicPlatform, $rootScope, notificationService){
+											   $stateParams, $location, $filter, $ionicPlatform, $rootScope, notificationService, variableCategoryService){
 
 	    $scope.controller_name = "RemindersInboxCtrl";
 
@@ -161,7 +161,10 @@ angular.module('starter')
 		function getFavoriteTrackingRemindersFromLocalStorage(){
 			$scope.state.favorites =
 				localStorageService.getElementsFromItemWithFilters('trackingReminders', 'reminderFrequency', 0);
-
+			$scope.state.favorites = variableCategoryService.attachVariableCategoryIcons($scope.state.favorites);
+			for(var i = 0; i < $scope.state.favorites.length; i++){
+				$scope.state.favorites[i].total = 0;
+			}
 		}
 
         var getTrackingReminderNotifications = function(){
@@ -170,7 +173,7 @@ angular.module('starter')
                 .then(function(trackingReminderNotifications){
                 	$rootScope.numberOfPendingNotifications = trackingReminderNotifications.length;
 					notificationService.updateNotificationBadges(trackingReminderNotifications.length);
-                    $scope.state.trackingRemindersNotifications = trackingReminderNotifications;
+                    $scope.state.trackingRemindersNotifications = variableCategoryService.attachVariableCategoryIcons(trackingReminderNotifications);
                     $scope.state.filteredReminderNotifications = filterViaDates(trackingReminderNotifications);
                     if($scope.state.numberOfNotificationsInInbox.length > 1){
                         $scope.state.showButtons = false;
@@ -226,10 +229,25 @@ angular.module('starter')
 	    };
 
 		$scope.trackByReminder = function(trackingReminder, modifiedReminderValue){
-
+			var value = 0;
+			if(modifiedReminderValue){
+				value = modifiedReminderValue;
+			} else {
+				value = trackingReminder.defaultValue;
+			}
 			console.debug('Tracking reminder', trackingReminder);
 			console.log('modifiedReminderValue is ' + modifiedReminderValue);
-			utilsService.showAlert(trackingReminder.variableName + ' measurement saved!');
+			for(var i = 0; i < $scope.state.favorites.length; i++){
+				if($scope.state.favorites[i].id === trackingReminder.id){
+					if($scope.state.favorites[i].abbreviatedUnitName !== '/5') {
+						$scope.state.favorites[i].total = $scope.state.favorites[i].total + value;
+					} else {
+						$scope.state.favorites[i].total = modifiedReminderValue + '/5';
+					}
+
+				}
+			}
+			//utilsService.showAlert(trackingReminder.variableName + ' measurement saved!');
 			measurementService.postMeasurementByReminder(trackingReminder, modifiedReminderValue)
 				.then(function(){
 					//$scope.init();
