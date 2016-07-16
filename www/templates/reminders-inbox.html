@@ -143,7 +143,7 @@
 					<div class="item" style="padding-bottom:0px;">
 						<div class="row">
 							<div class="col" style="padding-top: 0px;">
-								<i style="font-size: 60px;" class="icon positive ion-ios-alarm-outline"></i>
+								<i style="font-size: 60px;" class="icon positive {{reminder.icon}}"></i>
 							</div>
 							<div class="col col-75">
 								<h2 ng-if="reminder.abbreviatedUnitName != '/5'" style="white-space: normal; line-height: normal; ">{{reminder.defaultValue}}&nbsp;{{reminder.unitName.toLowerCase()}} {{reminder.variableName}}</h2>
@@ -215,7 +215,7 @@
             <div class="item" style="padding-bottom:0px;">
                 <div class="row">
                     <div class="col" style="padding-top: 0px;">
-                        <i style="font-size: 60px;" class="icon positive ion-ios-star"></i>
+                        <i style="font-size: 60px;" class="icon positive {{favorite.icon}}"></i>
                     </div>
                     <div class="col col-75">
                         <h2 ng-if="favorite.abbreviatedUnitName != '/5'" style="white-space: normal; line-height: normal; ">{{favorite.defaultValue}}&nbsp;{{favorite.unitName.toLowerCase()}} {{favorite.variableName}}</h2>
