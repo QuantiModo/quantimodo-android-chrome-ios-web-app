@@ -218,8 +218,8 @@
                         <i style="font-size: 60px;" class="icon positive {{favorite.icon}}"></i>
                     </div>
                     <div class="col col-75">
-                        <h2 ng-if="favorite.abbreviatedUnitName != '/5'" style="white-space: normal; line-height: normal; ">{{favorite.defaultValue}}&nbsp;{{favorite.unitName.toLowerCase()}} {{favorite.variableName}}</h2>
-                        <h2 ng-if="favorite.abbreviatedUnitName == '/5'" style="white-space: normal; line-height: normal; ">Rate {{favorite.variableName}}</h2>
+                        <h2 ng-if="favorite.abbreviatedUnitName != '/5'" style="white-space: normal; line-height: normal; ">{{favorite.total}}&nbsp;{{favorite.unitName.toLowerCase()}} {{favorite.variableName}}</h2>
+                        <h2 ng-if="favorite.abbreviatedUnitName == '/5'" style="white-space: normal; line-height: normal; ">{{favorite.total}} {{favorite.variableName}}</h2>
 						<button class="button button-clear button-calm" ng-click="editReminderSettings(favorite)" style="text-overflow: clip;  font-size: 12px;"><i class="ion-settings"> &nbsp; Settings</i></button>
 
 					</div>

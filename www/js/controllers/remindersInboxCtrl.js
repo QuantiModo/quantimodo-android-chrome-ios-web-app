@@ -163,7 +163,7 @@ angular.module('starter')
 				localStorageService.getElementsFromItemWithFilters('trackingReminders', 'reminderFrequency', 0);
 			$scope.state.favorites = variableCategoryService.attachVariableCategoryIcons($scope.state.favorites);
 			for(var i = 0; i < $scope.state.favorites.length; i++){
-				$scope.state.favorites[i].total = 0;
+				$scope.state.favorites[i].total = null;
 			}
 		}
 
