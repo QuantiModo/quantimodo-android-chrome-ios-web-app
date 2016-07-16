@@ -135,50 +135,49 @@ angular.module('starter')
 				}
 			},
 
-			getTrackingReminderNotifications : function(category, today, reminderFrequency){
+			getTrackingReminderNotifications : function(category, today){
 
 				var localMidnightInUtcString = timeService.getLocalMidnightInUtcString();
 				var currentDateTimeInUtcStringPlus5Min = timeService.getCurrentDateTimeInUtcStringPlusMin(5);
 				var params = {};
-				if(reminderFrequency === 0){
+
+				if (today && !category) {
+					var reminderTime = '(gt)' + localMidnightInUtcString;
 					params = {
-						reminderFrequency : 0
+						reminderTime: reminderTime,
+						sort: 'reminderTime'
 					};
-				} else {
-					if (today && !category) {
-						var reminderTime = '(gt)' + localMidnightInUtcString;
-						params = {
-							reminderTime: reminderTime,
-							sort: 'reminderTime'
-						};
-					}
-
-					if (!today && category) {
-						params = {
-							variableCategoryName: category,
-							reminderTime: '(lt)' + currentDateTimeInUtcStringPlus5Min
-						};
-					}
-
-					if (today && category) {
-						params = {
-							reminderTime: '(gt)' + localMidnightInUtcString,
-							variableCategoryName: category,
-							sort: 'reminderTime'
-						};
-					}
-
-					if (!today && !category) {
-						params = {
-							reminderTime: '(lt)' + currentDateTimeInUtcStringPlus5Min
-						};
-					}
 				}
+
+				if (!today && category) {
+					params = {
+						variableCategoryName: category,
+						reminderTime: '(lt)' + currentDateTimeInUtcStringPlus5Min
+					};
+				}
+
+				if (today && category) {
+					params = {
+						reminderTime: '(gt)' + localMidnightInUtcString,
+						variableCategoryName: category,
+						sort: 'reminderTime'
+					};
+				}
+
+				if (!today && !category) {
+					params = {
+						reminderTime: '(lt)' + currentDateTimeInUtcStringPlus5Min
+					};
+				}
+
 
 				var deferred = $q.defer();
 				QuantiModo.getTrackingReminderNotifications(params, function(reminders){
 					if(reminders.success) {
 						deferred.resolve(reminders.data);
+						if($rootScope.combineNotifications !== true){
+							notificationService.scheduleAllNotifications(reminders.data);
+						}
 					}
 					else {
 						deferred.reject("error");

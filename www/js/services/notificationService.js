@@ -121,7 +121,7 @@ angular.module('starter')
                             }
                             if(!existingReminderFoundInApiResponse) {
                                 if($rootScope.combineNotifications === "false"){
-                                    console.debug('Matching API reminder not found. Clearing scheduled notification ' + JSON.stringify(scheduledNotifications[i]));
+                                    console.debug('Matching API reminder not found. Cancelling scheduled notification ' + JSON.stringify(scheduledNotifications[i]));
                                     cordova.plugins.notification.local.cancel(scheduledNotifications[i].id, function (cancelledNotification) {
                                         console.debug("Canceled notification ", cancelledNotification);
                                     });

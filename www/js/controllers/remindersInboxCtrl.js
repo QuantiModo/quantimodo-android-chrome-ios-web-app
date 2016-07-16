@@ -166,7 +166,7 @@ angular.module('starter')
 
         var getTrackingReminderNotifications = function(){
 			$scope.showLoader('Syncing reminder notifications...');
-            reminderService.getTrackingReminderNotifications($stateParams.variableCategoryName, $stateParams.today, $stateParams.reminderFrequency)
+            reminderService.getTrackingReminderNotifications($stateParams.variableCategoryName, $stateParams.today)
                 .then(function(trackingReminderNotifications){
                 	$rootScope.numberOfPendingNotifications = trackingReminderNotifications.length;
 					notificationService.updateNotificationBadges(trackingReminderNotifications.length);
@@ -229,6 +229,7 @@ angular.module('starter')
 
 			console.debug('Tracking reminder', trackingReminder);
 			console.log('modifiedReminderValue is ' + modifiedReminderValue);
+			utilsService.showAlert(trackingReminder.variableName + ' measurement saved!');
 			measurementService.postMeasurementByReminder(trackingReminder, modifiedReminderValue)
 				.then(function(){
 					//$scope.init();
