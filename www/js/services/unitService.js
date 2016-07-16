@@ -18,22 +18,35 @@ angular.module('starter')
                         $rootScope.unitObjects = units;
                         for(var i =0; i< $rootScope.unitObjects.length; i++){
                             $rootScope.abbreviatedUnitNames[i] = $rootScope.unitObjects[i].abbreviatedName;
+                            $rootScope.unitsIndexedByAbbreviatedName[units[i].abbreviatedName] = units[i];
                         }
                         deferred.resolve(units);
                     } else {
-                        QuantiModo.getUnits(function(units){
-                            localStorageService.setItem('units', JSON.stringify(units));
-                            $rootScope.unitObjects = units;
-                            for(var i =0; i< $rootScope.unitObjects.length; i++){
-                                $rootScope.abbreviatedUnitNames[i] = $rootScope.unitObjects[i].abbreviatedName;
-                            }
+                        this.refreshUnits().then(function(){
                             deferred.resolve(units);
-                        }, function(){
-                            deferred.reject(false);
                         });
                     }
                 });
                 
+                return deferred.promise;
+            },
+
+            refreshUnits : function(){
+                var deferred = $q.defer();
+                QuantiModo.getUnits(function(units){
+                    if(typeof $rootScope.abbreviatedUnitNames === "undefined"){
+                        $rootScope.abbreviatedUnitNames = [];
+                    }
+                    localStorageService.setItem('units', JSON.stringify(units));
+                    $rootScope.unitObjects = units;
+                    for(var i =0; i < $rootScope.unitObjects.length; i++){
+                        $rootScope.abbreviatedUnitNames[i] = $rootScope.unitObjects[i].abbreviatedName;
+                        $rootScope.unitsIndexedByAbbreviatedName[units[i].abbreviatedName] = units[i];
+                    }
+                    deferred.resolve(units);
+                }, function(){
+                    deferred.reject(false);
+                });
                 return deferred.promise;
             }
         };
