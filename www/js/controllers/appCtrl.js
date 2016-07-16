@@ -26,6 +26,7 @@ angular.module('starter')
             $ionicSideMenuDelegate.toggleLeft(false);
         };
         $scope.floatingMaterialButton = config.appSettings.floatingMaterialButton;
+        $rootScope.unitsIndexedByAbbreviatedName = [];
         
         $scope.hideAddTreatmentRemindersCard = localStorageService.getItemSync('hideAddTreatmentRemindersCard');
         $scope.hideAddFoodRemindersCard = localStorageService.getItemSync('hideAddFoodRemindersCard');
@@ -535,7 +536,7 @@ angular.module('starter')
                 reminderService.refreshTrackingRemindersAndScheduleAlarms();
                 variableService.refreshUserVariables();
                 variableService.refreshCommonVariables();
-                unitService.getUnits();
+                unitService.refreshUnits();
                 $rootScope.syncedEverything = true;
             }
         };
