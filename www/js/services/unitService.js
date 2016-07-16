@@ -22,7 +22,7 @@ angular.module('starter')
                         }
                         deferred.resolve(units);
                     } else {
-                        this.refreshUnits().then(function(){
+                        unitService.refreshUnits().then(function(){
                             deferred.resolve(units);
                         });
                     }
