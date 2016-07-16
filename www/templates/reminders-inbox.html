@@ -1,8 +1,10 @@
 <ion-view hide-nav-bar="hideNavigationMenu" view-title="{{state.title}}">
-
+	<ion-tabs id="positive-tabs" class="tabs-positive tabs-icon-top">
 	<ion-content scroll="true" overflow-scroll="true">
 
 
+		<ion-tab title="Inbox" icon-on="ion-ios-filing" icon-off="ion-ios-filing-outline">
+			<ion-content style="padding-top: 45px">
 
 			<div class="list card"  ng-hide="hideAddTreatmentRemindersCard">
 				<div class="item" style="padding-bottom:0px;">
@@ -129,8 +131,8 @@
 				</div>
 			</div>
 
-		<div class="list card" ng-if="state.filteredReminders.length">
-			<div ng-repeat="divider in state.filteredReminders" ng-init="dividerIndex = $index" id="{{divider.name}}Reminders">
+		<div class="list card" ng-if="state.filteredReminderNotifications.length">
+			<div ng-repeat="divider in state.filteredReminderNotifications" ng-init="dividerIndex = $index" id="{{divider.name}}Reminders">
 
 				<div class="item item-divider" style="">
 				  {{divider.name}}
@@ -204,6 +206,70 @@
 				<a class="button button-clear button-calm" ng-click="init()" style="text-overflow: clip;"><i class="ion-refresh">  Refresh</i></a>
 			</div>-->
 		</div>
+			</ion-content>
+
+		</ion-tab>
+		<ion-tab title="Favorites" icon-on="ion-ios-star" icon-off="ion-ios-star-outline">
+			<ion-content style="padding-top: 45px">
+        <div class="list card" ng-if="state.favorites.length" ng-repeat="favorite in state.favorites" >
+            <div class="item" style="padding-bottom:0px;">
+                <div class="row">
+                    <div class="col" style="padding-top: 0px;">
+                        <i style="font-size: 60px;" class="icon positive ion-ios-star"></i>
+                    </div>
+                    <div class="col col-75">
+                        <h2 ng-if="favorite.abbreviatedUnitName != '/5'" style="white-space: normal; line-height: normal; ">{{favorite.defaultValue}}&nbsp;{{favorite.unitName.toLowerCase()}} {{favorite.variableName}}</h2>
+                        <h2 ng-if="favorite.abbreviatedUnitName == '/5'" style="white-space: normal; line-height: normal; ">Rate {{favorite.variableName}}</h2>
+						<button class="button button-clear button-calm" ng-click="editReminderSettings(favorite)" style="text-overflow: clip;  font-size: 12px;"><i class="ion-settings"> &nbsp; Settings</i></button>
+
+					</div>
+                </div>
+                <div class="row" ng-if="favorite.abbreviatedUnitName !== '/5' " >
+                    <div class="button-bar">
+                        <button ng-show="favorite.defaultValue" class="button button-clear button-assertive" style="text-overflow: clip; font-size: 14px;" ng-click="trackByReminder(favorite, 0, $event, dividerIndex, favoriteNotificationIndex)"><i class="ion-android-done"> &nbsp; Record 0</i></button>
+                        <button class="button button-clear button-balanced" style="text-overflow: clip; font-size: 14px;" ng-click="trackByReminder(favorite, null, $event, dividerIndex, favoriteNotificationIndex)"><i class="ion-android-done"> &nbsp; Record {{favorite.defaultValue}}&nbsp</i></button>
+                    </div>
+                </div>
+                <div class="row" ng-if="favorite.abbreviatedUnitName !== '/5' " >
+                    <div class="button-bar">
+                        <button class="button button-clear button-calm" style="text-overflow: clip; font-size: 14px;" ng-click="editMeasurement(favorite)"><i class="ion-edit"> &nbsp; Record Different Value/Time</i></button>
+                    </div>
+                </div>
+                <div class="primary-outcome-variable-reporting"
+                     ng-if="!favorite.description &&	favorite.abbreviatedUnitName === '/5'">
+                    <div class="primary-outcome-variable-rating-buttons" >
+                        <img ng-repeat="option in numericRatingOptions"
+                             ng-click="trackByReminder(favorite, option.numericValue)"
+                             ng-src="{{option.img}}">
+                    </div>
+                    <br>
+                </div>
+                <div class="primary-outcome-variable-reporting"
+                     ng-if="favorite.abbreviatedUnitName === '/5' &&
+						 	favorite.description.toLowerCase().indexOf('positive') > -1">
+                    <div class="primary-outcome-variable-rating-buttons" >
+                        <img ng-repeat="option in positiveRatingOptions"
+                             ng-click="trackByReminder(favorite, option.numericValue)"
+                             ng-src="{{option.img}}">
+                        <br>
+                    </div>
+                    <br>
+                </div>
+                <div class="primary-outcome-variable-reporting"
+                     ng-if="favorite.abbreviatedUnitName === '/5' &&
+						 	favorite.description.toLowerCase().indexOf('negative') > -1">
+                    <div class="primary-outcome-variable-rating-buttons" >
+                        <img ng-repeat="option in negativeRatingOptions"
+                             ng-click="trackByReminder(favorite, option.numericValue)"
+                             ng-src="{{option.img}}">
+                        <br>
+                    </div>
+                    <br>
+                </div>
+            </div>
+        </div>
+			</ion-content>
+		</ion-tab>
 
 	</ion-content>
 	<nav mfb-menu position="bl" effect="slidein-spring"
@@ -214,4 +280,5 @@
 		<button mfb-button icon={{floatingMaterialButton.button3.icon}} label={{floatingMaterialButton.button3.label}} ng-click="goToState({{floatingMaterialButton.button3.stateAndParameters}})"></button>
 		<button mfb-button icon={{floatingMaterialButton.button4.icon}} label={{floatingMaterialButton.button4.label}} ng-click="goToState({{floatingMaterialButton.button4.stateAndParameters}})"></button>
 	</nav>
+	</ion-tabs>
 </ion-view>

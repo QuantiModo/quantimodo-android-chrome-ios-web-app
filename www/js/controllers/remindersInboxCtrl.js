@@ -18,7 +18,7 @@ angular.module('starter')
 	    	],
 	    	trackingRemindersNotifications : [
 	    	],
-	    	filteredReminders : [
+	    	filteredReminderNotifications : [
 	    	],
 	    	measurementDate : new Date(),
 	    	slots : {
@@ -35,6 +35,10 @@ angular.module('starter')
 			lastClientX : 0,
 			lastClientY : 0
 	    };
+
+	    if($stateParams.reminderFrequency === 0){
+	    	$scope.state.favorites = true;
+		}
 
 		if(typeof config.appSettings.remindersInbox.showAddHowIFeelResponseButton !== 'undefined'){
 			$scope.state.showAddHowIFeelResponseButton = config.appSettings.remindersInbox.showAddHowIFeelResponseButton;
@@ -79,11 +83,20 @@ angular.module('starter')
 			if($stateParams.today) {
 				$scope.state.title = 'Today';
 			}
+			if($state.includes('app.favorites')){
+				$scope.state.title = 'Your Favorites';
+			}
+
 		};
 
 	    var filterViaDates = function(trackingReminderNotifications) {
+
             $scope.state.numberOfNotificationsInInbox = 0;
 			var result = [];
+			if($state.includes('app.favorites')){
+				result.push({ name : "Favorites", reminders : trackingReminderNotifications });
+				return result;
+			}
 			var reference = moment().local();
 			var today = reference.clone().startOf('day');
 			var yesterday = reference.clone().subtract(1, 'days').startOf('day');
@@ -145,14 +158,20 @@ angular.module('starter')
 	    	return result;
 	    };
 
+		function getFavoriteTrackingRemindersFromLocalStorage(){
+			$scope.state.favorites =
+				localStorageService.getElementsFromItemWithFilters('trackingReminders', 'reminderFrequency', 0);
+
+		}
+
         var getTrackingReminderNotifications = function(){
 			$scope.showLoader('Syncing reminder notifications...');
-            reminderService.getTrackingReminderNotifications($stateParams.variableCategoryName, $stateParams.today)
+            reminderService.getTrackingReminderNotifications($stateParams.variableCategoryName, $stateParams.today, $stateParams.reminderFrequency)
                 .then(function(trackingReminderNotifications){
                 	$rootScope.numberOfPendingNotifications = trackingReminderNotifications.length;
 					notificationService.updateNotificationBadges(trackingReminderNotifications.length);
                     $scope.state.trackingRemindersNotifications = trackingReminderNotifications;
-                    $scope.state.filteredReminders = filterViaDates(trackingReminderNotifications);
+                    $scope.state.filteredReminderNotifications = filterViaDates(trackingReminderNotifications);
                     if($scope.state.numberOfNotificationsInInbox.length > 1){
                         $scope.state.showButtons = false;
                     }
@@ -165,7 +184,6 @@ angular.module('starter')
                     console.error("failed to get reminder notifications!");
                 });
         };
-
 
 		var isGhostClick = function ($event) {
 			if($rootScope.isMobile ){
@@ -193,7 +211,7 @@ angular.module('starter')
 				return;
 			}
 
-			$scope.state.filteredReminders[dividerIndex].reminders[reminderNotificationIndex].hide = true;
+			$scope.state.filteredReminderNotifications[dividerIndex].reminders[reminderNotificationIndex].hide = true;
 			console.debug('Tracking notification', trackingReminderNotification);
 			console.log('modifiedReminderValue is ' + modifiedReminderValue);
 	    	reminderService.trackReminderNotification(trackingReminderNotification.id, modifiedReminderValue)
@@ -207,6 +225,21 @@ angular.module('starter')
 	    	});
 	    };
 
+		$scope.trackByReminder = function(trackingReminder, modifiedReminderValue){
+
+			console.debug('Tracking reminder', trackingReminder);
+			console.log('modifiedReminderValue is ' + modifiedReminderValue);
+			measurementService.postMeasurementByReminder(trackingReminder, modifiedReminderValue)
+				.then(function(){
+					//$scope.init();
+
+				}, function(err){
+					Bugsnag.notify(err, JSON.stringify(err), {}, "error");
+					console.error(err);
+					utilsService.showAlert('Failed to Track Reminder, Try again!', 'assertive');
+				});
+		};
+
 	    $scope.skip = function(trackingReminderNotification, $event, dividerIndex, reminderNotificationIndex){
 			
 
@@ -214,7 +247,7 @@ angular.module('starter')
 				return;
 			}
 
-			$scope.state.filteredReminders[dividerIndex].reminders[reminderNotificationIndex].hide = true;
+			$scope.state.filteredReminderNotifications[dividerIndex].reminders[reminderNotificationIndex].hide = true;
 
 			console.debug('Skipping notification', trackingReminderNotification);
 	    	reminderService.skipReminderNotification(trackingReminderNotification.id)
@@ -235,7 +268,7 @@ angular.module('starter')
 				return;
 			}
 
-			$scope.state.filteredReminders[dividerIndex].reminders[reminderNotificationIndex].hide = true;
+			$scope.state.filteredReminderNotifications[dividerIndex].reminders[reminderNotificationIndex].hide = true;
 
 			console.debug('Snoozing notification', trackingReminderNotification);
 	    	reminderService.snoozeReminderNotification(trackingReminderNotification.id)
@@ -253,9 +286,13 @@ angular.module('starter')
 			setPageTitle();
 			var isAuthorized = authService.checkAuthOrSendToLogin();
 			if (typeof analytics !== 'undefined')  { analytics.trackView("Reminders Inbox Controller"); }
-			if(isAuthorized){
-				$scope.showHelpInfoPopupIfNecessary();
-                getTrackingReminderNotifications();
+			if(isAuthorized) {
+				//if ($state.includes('app.favorites')) {
+					getFavoriteTrackingRemindersFromLocalStorage();
+				//} else {
+					$scope.showHelpInfoPopupIfNecessary();
+					getTrackingReminderNotifications();
+				//}
 				//update alarms and local notifications
 				reminderService.refreshTrackingRemindersAndScheduleAlarms();
 			}
@@ -269,7 +306,7 @@ angular.module('starter')
 	    };
 
 	    $scope.editMeasurement = function(trackingReminderNotification, dividerIndex, reminderNotificationIndex){
-			$scope.state.filteredReminders[dividerIndex].reminders[reminderNotificationIndex].hide = true;
+			$scope.state.filteredReminderNotifications[dividerIndex].reminders[reminderNotificationIndex].hide = true;
 			// FIXME this shouldn't skip unless the change is made - user could cancel
 			reminderService.skipReminderNotification(trackingReminderNotification.id);
 			$state.go('app.measurementAdd',

@@ -189,6 +189,14 @@ angular.module('starter')
 	    	};
 	    };
 
+        $scope.addToFavorites = function(){
+            $scope.state.trackingReminder.reminderFrequency = 0;
+            $scope.state.selectedFrequency = 'Never';
+            $stateParams.fromUrl = null;
+            $stateParams.fromState = 'app.favorites';
+            $scope.save();
+        };
+
 	    // when the reminder is saved/edited
 	    $scope.save = function(){
 

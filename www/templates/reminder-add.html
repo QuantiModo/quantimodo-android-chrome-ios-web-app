@@ -87,6 +87,13 @@
 				</div>
 			</div>
             <div class="row">
+                <button ng-click="addToFavorites()"
+                        class="button icon-left ion-ios-star button-assertive"
+                        style="margin: auto">
+                    Add to Favorites
+                </button>
+            </div>
+            <div class="row">
                 <button ng-show="state.trackingReminder.id" ng-click="deleteReminder()"
                         class="button icon-left ion-trash-a button-assertive"
                         style="margin: auto">
