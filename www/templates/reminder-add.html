@@ -73,6 +73,18 @@
                     </button>
                 </label>
             </div>
+            <div class="list card" ng-if="state.trackingReminder.reminderFrequency < 86400">
+                <label class="item item-input">
+                    <div class="input-label" >
+                        Latest reminder time
+                    </div>
+                    <button class="button button-block up-top"
+                            style="text-align:left;font-size:14px;border:none;color:black;background-color: white;margin-bottom: 0px;margin-top: 0px;padding-left: 0px;"
+                            ng-click="openReminderEndTimePicker()">
+                        {{state.reminderEndTimeEpochTime | fromUnixTimestampToLocalTimeOfDay}}
+                    </button>
+                </label>
+            </div>
             <label class="item item-input" ng-show="state.showInstructionsField">
                 <span class="input-label">Instructions</span>
                 <input type="text" ng-model="state.trackingReminder.instructions" id="instructions" placeholder="Enter instructions here..." >
