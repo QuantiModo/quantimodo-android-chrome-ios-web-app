@@ -1,6 +1,6 @@
 angular.module('starter')
     // Measurement Service
-    .factory('qmLocationService', function($http, $q){
+    .factory('qmLocationService', function($http, $q, $rootScope, localStorageService, measurementService){
         
         // service methods
         var qmLocationService = {
@@ -41,10 +41,10 @@ angular.module('starter')
                 return deferred.promise;
             },
 
-            geocode : function($http) {
+            geocode: function ($http) {
                 var GOOGLE_MAPS_API_KEY = window.private_keys.GOOGLE_MAPS_API_KEY;
 
-                if(!GOOGLE_MAPS_API_KEY){
+                if (!GOOGLE_MAPS_API_KEY) {
                     console.error('Please add GOOGLE_MAPS_API_KEY to private config');
                 }
 
@@ -58,25 +58,67 @@ angular.module('starter')
                 };
             },
 
-           foursquare : function($http) {
+            foursquare: function ($http) {
 
-               var FOURSQUARE_CLIENT_ID = window.private_keys.FOURSQUARE_CLIENT_ID;
-               var FOURSQUARE_CLIENT_SECRET = window.private_keys.FOURSQUARE_CLIENT_SECRET;
+                var FOURSQUARE_CLIENT_ID = window.private_keys.FOURSQUARE_CLIENT_ID;
+                var FOURSQUARE_CLIENT_SECRET = window.private_keys.FOURSQUARE_CLIENT_SECRET;
 
-               if(!FOURSQUARE_CLIENT_ID){
-                   console.error('Please add FOURSQUARE_CLIENT_ID & FOURSQUARE_CLIENT_SECRET to private config');
-               }
+                if (!FOURSQUARE_CLIENT_ID) {
+                    console.error('Please add FOURSQUARE_CLIENT_ID & FOURSQUARE_CLIENT_SECRET to private config');
+                }
 
-               function whatsAt(long,lat) {
-                    return $http.get('https://api.foursquare.com/v2/venues/search?ll='+lat+','+long+
-                        '&intent=browse&radius=30&client_id='+FOURSQUARE_CLIENT_ID+'&client_secret='+
-                        FOURSQUARE_CLIENT_SECRET+'&v=20151201');
+                function whatsAt(long, lat) {
+                    return $http.get('https://api.foursquare.com/v2/venues/search?ll=' + lat + ',' + long +
+                        '&intent=browse&radius=30&client_id=' + FOURSQUARE_CLIENT_ID + '&client_secret=' +
+                        FOURSQUARE_CLIENT_SECRET + '&v=20151201');
                 }
 
                 return {
-                    whatsAt:whatsAt
+                    whatsAt: whatsAt
                 };
             },
+
+            setLocationVariables: function (result, currentTimeEpochSeconds) {
+                if (result.name) {
+                    $rootScope.lastLocationName = result.name;
+                    localStorageService.setItem('lastLocationName', result.name);
+                } else if (result.address) {
+                    $rootScope.lastLocationName = result.address;
+                    localStorageService.setItem('lastLocationName', result.address);
+                }
+                if (result.address) {
+                    $rootScope.lastLocationAddress = result.address;
+                    localStorageService.setItem('lastLocationAddress', result.address);
+                    $rootScope.lastLocationResultType = result.type;
+                    localStorageService.setItem('lastLocationResultType', result.type);
+                    $rootScope.lastLocationUpdateTimeEpochSeconds = currentTimeEpochSeconds;
+                    localStorageService.setItem('lastLocationUpdateTimeEpochSeconds', currentTimeEpochSeconds);
+                }
+            },
+
+            postLocationMeasurementAndSetLocationVariables : function (currentTimeEpochSeconds, result) {
+                var variableName = false;
+                if ($rootScope.lastLocationName) {
+                    variableName = $rootScope.lastLocationName;
+                } else if ($rootScope.lastLocationAddress) {
+                    variableName = $rootScope.lastLocationAddress;
+                }
+                if (variableName && variableName !== "undefined") {
+                    var newMeasurement = {
+                        variableName: 'Time Spent at ' + variableName,
+                        abbreviatedUnitName: 's',
+                        startTimeEpoch: $rootScope.lastLocationUpdateTimeEpochSeconds,
+                        sourceName: $rootScope.lastLocationResultType,
+                        value: currentTimeEpochSeconds - $rootScope.lastLocationUpdateTimeEpochSeconds,
+                        variableCategoryName: 'Location',
+                        note: $rootScope.lastLocationAddress,
+                        combinationOperation: "SUM"
+                    };
+                    measurementService.postTrackingMeasurement(newMeasurement);
+                    qmLocationService.setLocationVariables(result, currentTimeEpochSeconds);
+                }
+            },
+
 
         // get units
             trackLocationInBackground : function(){
