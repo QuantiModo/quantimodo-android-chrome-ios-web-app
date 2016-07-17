@@ -158,13 +158,15 @@ angular.module('starter')
                 }
             } else {
                 if($scope.state.variableSearchQuery.length < 3 && $scope.state.variableSearchResults.length < 1) {
-                    variableService.refreshCommonVariables().then(function () {
-                        if ($scope.state.variableSearchQuery.length < 3 && $scope.state.variableSearchResults.length < 1) {
-                            $scope.state.variableSearchResults = localStorageService.getElementsFromItemWithFilters(
-                                'commonVariables', 'variableCategoryName', variableCategoryName);
-                            $scope.state.searching = false;
-                        }
-                    });
+                    if(!$rootScope.syncingCommonVariables) {
+                        variableService.refreshCommonVariables().then(function () {
+                            if ($scope.state.variableSearchQuery.length < 3 && $scope.state.variableSearchResults.length < 1) {
+                                $scope.state.variableSearchResults = localStorageService.getElementsFromItemWithFilters(
+                                    'commonVariables', 'variableCategoryName', variableCategoryName);
+                                $scope.state.searching = false;
+                            }
+                        });
+                    }
                 }
             }
         };
@@ -190,13 +192,15 @@ angular.module('starter')
                     populateCommonVariables();
                 }
                 if($scope.state.variableSearchQuery.length < 3 && $scope.state.variableSearchResults.length < 1) {
-                    variableService.refreshUserVariables().then(function () {
-                        if ($scope.state.variableSearchQuery.length < 3 && $scope.state.variableSearchResults.length < 1) {
-                            $scope.state.variableSearchResults = localStorageService.getElementsFromItemWithFilters(
-                                'userVariables', 'variableCategoryName', variableCategoryName);
-                            $scope.state.searching = false;
-                        }
-                    });
+                    if(!$rootScope.syncingUserVariables) {
+                        variableService.refreshUserVariables().then(function () {
+                            if ($scope.state.variableSearchQuery.length < 3 && $scope.state.variableSearchResults.length < 1) {
+                                $scope.state.variableSearchResults = localStorageService.getElementsFromItemWithFilters(
+                                    'userVariables', 'variableCategoryName', variableCategoryName);
+                                $scope.state.searching = false;
+                            }
+                        });
+                    }
                 }
             }
             

@@ -537,3 +537,12 @@ img.intro-primary-outcome-variable-rating-buttons {
 .item-select select {
     padding: 14px 48px 8px 16px;
 }
+
+#map {
+    height: 100%;
+    width: 100%;
+}
+
+.scroll {
+    height: 100%;
+}

@@ -33,24 +33,21 @@
 			<div class="row">
                 <div class="col col-50">
                     <button ng-click="addToFavorites()"
-                            class="button button-block icon-left ion-ios-star button-assertive"
+                            class="button button-block icon-left ion-ios-star positive"
                             >
-                        Save Favorite
+                        Save
                     </button>
                 </div>
-			</div>
-            <div class="row">
                 <div class="col col-50">
-                    <button class="button button-block icon-left ion-android-cancel button-assertive" ng-click="cancel()">Cancel</button>
-                </div>
-                <div class="col col-50">
-                    <button ng-show="state.trackingReminder.id" ng-click="deleteReminder()"
-                            class="button button-block icon-left ion-trash-a button-assertive"
-                            >
-                        Delete
+                    <button class="button button-block icon-left ion-android-cancel button-assertive" ng-click="cancel()">
+                        Cancel
                     </button>
                 </div>
             </div>
+            <button ng-show="state.trackingReminder.id" ng-click="deleteReminder()"
+                    class="button button-block icon-left ion-trash-a button-assertive">
+                Delete
+            </button>
         </div>
         
     </ion-content>

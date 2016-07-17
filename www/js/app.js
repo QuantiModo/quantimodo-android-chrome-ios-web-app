@@ -293,7 +293,7 @@ angular.module('starter',
             }
         })
         .state('app.favoriteSearchCategory', {
-            url: "/favoriteSearchCategory/:variableCategoryName",
+            url: "/favorite-search-category/:variableCategoryName",
             params: {
                 variableCategoryName : null,
                 fromState : null,
@@ -310,7 +310,7 @@ angular.module('starter',
             }
         })
         .state('app.favoriteSearch', {
-            url: "/favoriteSearch",
+            url: "/favorite-search",
             params: {
                 variableCategoryName : null,
                 fromState : null,
@@ -469,6 +469,15 @@ angular.module('starter',
                 'menuContent': {
                     templateUrl: "templates/settings.html",
                     controller: 'SettingsCtrl'
+                }
+            }
+        })
+        .state('app.map', {
+            url: "/map",
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/map.html",
+                    controller: 'MapCtrl'
                 }
             }
         })
@@ -687,7 +696,7 @@ angular.module('starter',
             }
         })
         .state('app.favoriteAddCategory', {
-            url: "/favorite_add/:variableCategoryName",
+            url: "/favorite-add/:variableCategoryName",
             cache: false,
             params: {
                 variableCategoryName : null,
@@ -700,12 +709,12 @@ angular.module('starter',
             views: {
                 'menuContent': {
                     templateUrl: "templates/favorite-add.html",
-                    controller: 'favoritesAddCtrl'
+                    controller: 'FavoriteAddCtrl'
                 }
             }
         })
         .state('app.favoriteAdd', {
-            url: "/favorite_add",
+            url: "/favorite-add",
             cache: false,
             params: {
                 variableCategoryName : null,
@@ -718,7 +727,7 @@ angular.module('starter',
             views: {
                 'menuContent': {
                     templateUrl: "templates/favorite-add.html",
-                    controller: 'favoritesAddCtrl'
+                    controller: 'FavoriteAddCtrl'
                 }
             }
         })

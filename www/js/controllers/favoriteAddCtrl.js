@@ -195,7 +195,7 @@ angular.module('starter')
 	    // setup editing view
 	    var setupEditReminder = function(trackingReminder){
             $scope.state.trackingReminder = trackingReminder;
-	    	$scope.state.title = "Edit " +  trackingReminder.variableName + " Reminder";
+	    	$scope.state.title = "Edit " +  trackingReminder.variableName + " to Favorites";
 	    };
 
 	    // setup category view
@@ -207,7 +207,6 @@ angular.module('starter')
             $scope.state.trackingReminder.variableCategoryName = variableCategoryName;
             $scope.state.variableCategoryObject = variableCategoryService.getVariableCategoryInfo(variableCategoryName);
             $scope.state.trackingReminder.abbreviatedUnitName = $scope.state.variableCategoryObject.defaultAbbreviatedUnitName;
-            $scope.state.title = "Add " + $filter('wordAliases')(pluralize(variableCategoryName, 1)) + " Reminder";
             $scope.state.measurementSynonymSingularLowercase = $scope.state.variableCategoryObject.measurementSynonymSingularLowercase;
             if($scope.state.variableCategoryObject.defaultValueLabel){
                 $scope.state.defaultValueLabel = $scope.state.variableCategoryObject.defaultValueLabel;
