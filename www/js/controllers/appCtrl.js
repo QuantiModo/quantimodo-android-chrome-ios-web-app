@@ -41,6 +41,48 @@ angular.module('starter')
 
         $scope.getLocation = function(){
             $scope.shouldWeTrackLocation();
+
+            function setLocationVariables(result, currentTimeEpochSeconds) {
+                if (result.name) {
+                    $rootScope.lastLocationName = result.name;
+                    localStorageService.setItem('lastLocationName', result.name);
+                } else if (result.address) {
+                    $rootScope.lastLocationName = result.address;
+                    localStorageService.setItem('lastLocationName', result.address);
+                }
+                if (result.address) {
+                    $rootScope.lastLocationAddress = result.address;
+                    localStorageService.setItem('lastLocationAddress', result.address);
+                    $rootScope.lastLocationResultType = result.type;
+                    localStorageService.setItem('lastLocationResultType', result.type);
+                    $rootScope.lastLocationUpdateTimeEpochSeconds = currentTimeEpochSeconds;
+                    localStorageService.setItem('lastLocationUpdateTimeEpochSeconds', currentTimeEpochSeconds);
+                }
+            }
+
+            function postLocationMeasurementAndSetLocationVariables(currentTimeEpochSeconds, result) {
+                var variableName = false;
+                if ($rootScope.lastLocationName) {
+                    variableName = $rootScope.lastLocationName;
+                } else if ($rootScope.lastLocationAddress) {
+                    variableName = $rootScope.lastLocationAddress;
+                }
+                if (variableName && variableName !== "undefined") {
+                    var newMeasurement = {
+                        variableName: 'Time Spent at ' + variableName,
+                        abbreviatedUnitName: 's',
+                        startTimeEpoch: $rootScope.lastLocationUpdateTimeEpochSeconds,
+                        sourceName: $rootScope.lastLocationResultType,
+                        value: currentTimeEpochSeconds - $rootScope.lastLocationUpdateTimeEpochSeconds,
+                        variableCategoryName: 'Location',
+                        note: $rootScope.lastLocationAddress,
+                        combinationOperation: "SUM"
+                    };
+                    measurementService.postTrackingMeasurement(newMeasurement);
+                    setLocationVariables(result, currentTimeEpochSeconds);
+                }
+            }
+
             if($rootScope.trackLocation){
 
                 $ionicPlatform.ready(function() {
@@ -72,59 +114,13 @@ angular.module('starter')
 
                             var currentTimeEpochMilliseconds = new Date().getTime();
                             var currentTimeEpochSeconds = currentTimeEpochMilliseconds/1000;
-                            if(!$rootScope.lastLocationUpdateTimeEpochSeconds){
-                                if(result.name){
-                                    $rootScope.lastLocationName = result.name;
-                                    localStorageService.setItem('lastLocationName', result.name);
-                                } else {
-                                    $rootScope.lastLocationName = result.address;
-                                    localStorageService.setItem('lastLocationName', result.address);
-                                }
-                                $rootScope.lastLocationAddress = result.address;
-                                localStorageService.setItem('lastLocationAddress', result.address);
-                                $rootScope.lastLocationResultType = result.type;
-                                localStorageService.setItem('lastLocationResultType', result.type);
-                                $rootScope.lastLocationUpdateTimeEpochSeconds = currentTimeEpochSeconds;
-                                localStorageService.setItem('lastLocationUpdateTimeEpochSeconds', currentTimeEpochSeconds);
-                            } else{
-                                if($rootScope.lastLocationName !== result.name || $rootScope.lastLocationAddress !== result.address ){
-                                    var variableName;
-                                    if ($rootScope.lastLocationName){
-                                        variableName = $rootScope.lastLocationName;
-                                    } else {
-                                        variableName =  $rootScope.lastLocationAddress;
-                                    }
-                                    if(variableName){
-                                        var newMeasurement = {
-                                            variableName: 'Time Spent at ' + variableName,
-                                            abbreviatedUnitName: 's',
-                                            startTimeEpoch:  $rootScope.lastLocationUpdateTimeEpochSeconds,
-                                            sourceName:  $rootScope.lastLocationResultType,
-                                            value: currentTimeEpochSeconds - $rootScope.lastLocationUpdateTimeEpochSeconds,
-                                            variableCategoryName : 'Location',
-                                            note : $rootScope.lastLocationAddress,
-                                            combinationOperation : "SUM"
-                                        };
-                                        measurementService.postTrackingMeasurement(newMeasurement);
-                                        if(result.name){
-                                            $rootScope.lastLocationName = result.name;
-                                        } else{
-                                            $rootScope.lastLocationName = null;
-                                        }
-                                        $rootScope.lastLocationName = result.name;
-                                        localStorageService.setItem('lastLocationName', result.name);
-                                        $rootScope.lastLocationAddress = result.address;
-                                        localStorageService.setItem('lastLocationAddress', result.address);
-                                        $rootScope.lastLocationResultType = result.type;
-                                        localStorageService.setItem('lastLocationResultType', result.type);
-                                        $rootScope.lastLocationUpdateTimeEpochSeconds = currentTimeEpochSeconds;
-                                        localStorageService.setItem('lastLocationUpdateTimeEpochSeconds', currentTimeEpochSeconds);
-                                    }
+                            if(!$rootScope.lastLocationUpdateTimeEpochSeconds && result.address && result.address !== "undefined"){
+                                setLocationVariables(result, currentTimeEpochSeconds);
+                            } else {
+                                if(result.address && result.address !== "undefined" && $rootScope.lastLocationAddress !== result.address ){
+                                    postLocationMeasurementAndSetLocationVariables(currentTimeEpochSeconds, result);
                                 }
                             }
-
-
-
                         });
 
                         console.debug("My coordinates are: ", position.coords);
