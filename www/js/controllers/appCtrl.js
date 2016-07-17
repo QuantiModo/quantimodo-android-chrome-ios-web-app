@@ -15,8 +15,8 @@ angular.module('starter')
         }
         $rootScope.trackLocation = false;
         $rootScope.placeName = null;
-        $rootScope.latitude = null;
-        $rootScope.longitude = null;
+        $rootScope.lastLatitude = null;
+        $rootScope.lastLongitude = null;
         $scope.controller_name = "AppCtrl";
         $scope.menu = config.appSettings.menu;
         $scope.appSettings = config.appSettings;
@@ -42,6 +42,7 @@ angular.module('starter')
         $scope.getLocation = function(){
             $scope.shouldWeTrackLocation();
             if($rootScope.trackLocation){
+
                 $ionicPlatform.ready(function() {
                     var posOptions = {
                         enableHighAccuracy: true,
@@ -50,22 +51,80 @@ angular.module('starter')
                     };
 
                     $cordovaGeolocation.getCurrentPosition(posOptions).then(function (position) {
-                        $rootScope.latitude  = position.coords.latitude;
-                        $rootScope.longitude = position.coords.longitude;
+                        $rootScope.lastLatitude  = position.coords.latitude;
+                        localStorageService.setItem('lastLatitude', position.coords.latitude);
+                        $rootScope.lastLongitude = position.coords.longitude;
+                        localStorageService.setItem('lastLongitude', position.coords.longitude);
 
-                        qmLocationService.getInfo($rootScope.longitude, $rootScope.latitude).then(function(result) {
+                        qmLocationService.getInfo($rootScope.lastLongitude, $rootScope.lastLatitude).then(function(result) {
                             console.log('Result was '+JSON.stringify(result));
                             if(result.type === 'foursquare') {
-                                console.log('Your photo was taken at ' + result.name + ' located at ' + result.address);
+                                console.log('Foursquare location name is ' + result.name + ' located at ' + result.address);
                             } else if (result.type === 'geocode') {
-                                console.log('Your photo appears to have been taken at ' + result.address);
+                                console.log('geocode address is ' + result.address);
                             } else {
                                 var map = 'https://maps.googleapis.com/maps/api/staticmap?center='+
-                                    $rootScope.latitude+','+$rootScope.longitude+
+                                    $rootScope.lastLatitude+','+$rootScope.lastLongitude+
                                     'zoom=13&size=300x300&maptype=roadmap&markers=color:blue%7Clabel:X%7C'+
-                                    $rootScope.latitude+','+$rootScope.longitude;
+                                    $rootScope.lastLatitude+','+$rootScope.lastLongitude;
                                 console.log('Sorry, I\'ve got nothing. But here is a map!');
                             }
+
+                            var currentTimeEpochMilliseconds = new Date().getTime();
+                            var currentTimeEpochSeconds = currentTimeEpochMilliseconds/1000;
+                            if(!$rootScope.lastLocationUpdateTimeEpochSeconds){
+                                if(result.name){
+                                    $rootScope.lastLocationName = result.name;
+                                    localStorageService.setItem('lastLocationName', result.name);
+                                } else {
+                                    $rootScope.lastLocationName = result.address;
+                                    localStorageService.setItem('lastLocationName', result.address);
+                                }
+                                $rootScope.lastLocationAddress = result.address;
+                                localStorageService.setItem('lastLocationAddress', result.address);
+                                $rootScope.lastLocationResultType = result.type;
+                                localStorageService.setItem('lastLocationResultType', result.type);
+                                $rootScope.lastLocationUpdateTimeEpochSeconds = currentTimeEpochSeconds;
+                                localStorageService.setItem('lastLocationUpdateTimeEpochSeconds', currentTimeEpochSeconds);
+                            } else{
+                                if($rootScope.lastLocationName !== result.name || $rootScope.lastLocationAddress !== result.address ){
+                                    var variableName;
+                                    if ($rootScope.lastLocationName){
+                                        variableName = $rootScope.lastLocationName;
+                                    } else {
+                                        variableName =  $rootScope.lastLocationAddress;
+                                    }
+                                    if(variableName){
+                                        var newMeasurement = {
+                                            variableName: 'Time Spent at ' + variableName,
+                                            abbreviatedUnitName: 's',
+                                            startTimeEpoch:  $rootScope.lastLocationUpdateTimeEpochSeconds,
+                                            sourceName:  $rootScope.lastLocationResultType,
+                                            value: currentTimeEpochSeconds - $rootScope.lastLocationUpdateTimeEpochSeconds,
+                                            variableCategoryName : 'Location',
+                                            note : $rootScope.lastLocationAddress,
+                                            combinationOperation : "SUM"
+                                        };
+                                        measurementService.postTrackingMeasurement(newMeasurement);
+                                        if(result.name){
+                                            $rootScope.lastLocationName = result.name;
+                                        } else{
+                                            $rootScope.lastLocationName = null;
+                                        }
+                                        $rootScope.lastLocationName = result.name;
+                                        localStorageService.setItem('lastLocationName', result.name);
+                                        $rootScope.lastLocationAddress = result.address;
+                                        localStorageService.setItem('lastLocationAddress', result.address);
+                                        $rootScope.lastLocationResultType = result.type;
+                                        localStorageService.setItem('lastLocationResultType', result.type);
+                                        $rootScope.lastLocationUpdateTimeEpochSeconds = currentTimeEpochSeconds;
+                                        localStorageService.setItem('lastLocationUpdateTimeEpochSeconds', currentTimeEpochSeconds);
+                                    }
+                                }
+                            }
+
+
+
                         });
 
                         console.debug("My coordinates are: ", position.coords);
@@ -222,6 +281,7 @@ angular.module('starter')
 
         $scope.$on('$ionicView.enter', function(e) {
             //$scope.showHelpInfoPopupIfNecessary(e);
+            $scope.getLocation();
         });
 
         $scope.closeMenuIfNeeded = function(menuItem){
@@ -492,6 +552,12 @@ angular.module('starter')
                 }
                 $rootScope.trackLocation = trackLocation === "true";
             });
+            if($rootScope.trackLocation){
+                $rootScope.lastLocationName = localStorageService.getItemSync('lastLocationName');
+                $rootScope.lastLocationAddress = localStorageService.getItemSync('lastLocationAddress');
+                $rootScope.lastLocationResultType = localStorageService.getItemSync('lastLocationResultType');
+                $rootScope.lastLocationUpdateTimeEpochSeconds = localStorageService.getItemSync('lastLocationUpdateTimeEpochSeconds');;
+            }
         };
 
         $rootScope.getUserAndSetInLocalStorage = function(){

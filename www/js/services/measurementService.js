@@ -352,7 +352,10 @@ angular.module('starter')
                     startTimeEpoch: Math.floor(startTimeEpoch / 1000),
                     abbreviatedUnitName: config.appSettings.primaryOutcomeVariableDetails.abbreviatedUnitName,
                     value: numericRatingValue,
-                    note: ""  
+                    note: "",
+                    latitude: $rootScope.lastLatitude,
+                    longitude: $rootScope.lastLongitude,
+                    location: $rootScope.lastLocationName
                 };
                 return measurementObject;
             },
@@ -374,7 +377,10 @@ angular.module('starter')
                         startTimeEpoch: measurementObject.startTimeEpoch,
                         abbreviatedUnitName: config.appSettings.primaryOutcomeVariableDetails.abbreviatedUnitName,
                         value: measurementObject.value,
-                        note: measurementObject.note
+                        note: measurementObject.note,
+                        latitude: $rootScope.lastLatitude,
+                        longitude: $rootScope.lastLongitude,
+                        location: $rootScope.lastLocationName
                     });
                     //resave queue
                     localStorageService.setItem('measurementsQueue', JSON.stringify(measurementsQueue));
@@ -445,7 +451,10 @@ angular.module('starter')
                             value: measurementInfo.value,
                             variableCategoryName : measurementInfo.variableCategoryName,
                             note : measurementInfo.note,
-                            combinationOperation : measurementInfo.isAvg? "MEAN" : "SUM"
+                            combinationOperation : measurementInfo.isAvg? "MEAN" : "SUM",
+                            latitude: $rootScope.lastLatitude,
+                            longitude: $rootScope.lastLongitude,
+                            location: $rootScope.lastLocationName
                         };
                         measurementService.addToMeasurementsQueue(editedMeasurement);
 
@@ -460,7 +469,10 @@ angular.module('starter')
                             value: measurementInfo.value,
                             variableCategoryName : measurementInfo.variableCategoryName,
                             note : measurementInfo.note,
-                            combinationOperation : measurementInfo.isAvg? "MEAN" : "SUM"
+                            combinationOperation : measurementInfo.isAvg? "MEAN" : "SUM",
+                            latitude: $rootScope.lastLatitude,
+                            longitude: $rootScope.lastLongitude,
+                            location: $rootScope.lastLocationName
                         };
                         measurementService.addToMeasurementsQueue(newMeasurement);
                     }
@@ -475,11 +487,15 @@ angular.module('starter')
                 else {
                     // Non primary outcome variable, post immediately
 
+                    var measurementSourceName = config.get('clientSourceName');
+                    if(measurementInfo.sourceName){
+                        measurementSourceName = measurementInfo.sourceName;
+                    }
                     // measurements set
                     var measurements = [
                         {
                             variableName: measurementInfo.variableName,
-                            source: config.get('clientSourceName'),
+                            source: measurementSourceName,
                             variableCategoryName: measurementInfo.variableCategoryName,
                             abbreviatedUnitName: measurementInfo.abbreviatedUnitName,
                             combinationOperation : measurementInfo.isAvg? "MEAN" : "SUM",
@@ -488,7 +504,10 @@ angular.module('starter')
                                     id: measurementInfo.id,
                                     startTimeEpoch:  measurementInfo.startTimeEpoch,
                                     value: measurementInfo.value,
-                                    note : measurementInfo.note
+                                    note : measurementInfo.note,
+                                    latitude: $rootScope.lastLatitude,
+                                    longitude: $rootScope.lastLongitude,
+                                    location: $rootScope.lastLocationName
                                 }
                             ]
                         }
@@ -503,17 +522,12 @@ angular.module('starter')
                         value: measurementInfo.value,
                         variableCategoryName : measurementInfo.variableCategoryName,
                         note : measurementInfo.note,
-                        combinationOperation : measurementInfo.isAvg? "MEAN" : "SUM"
+                        combinationOperation : measurementInfo.isAvg? "MEAN" : "SUM",
+                        latitude: $rootScope.lastLatitude,
+                        longitude: $rootScope.lastLongitude,
+                        location: $rootScope.lastLocationName
                     };
 
-                    if($rootScope.trackLocation){
-                        console.debug("Adding location data to measurement");
-                        measurement.location = $rootScope.placeName;
-                        measurement.latitude = $rootScope.latitude;
-                        measurement.longitude = $rootScope.longitude;
-                    }
-
-                    
                     // send request
                     QuantiModo.postMeasurementsV2(measurements, function(response){
                         if(response.success) {
