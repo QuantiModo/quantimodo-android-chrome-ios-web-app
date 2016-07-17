@@ -45,6 +45,7 @@ angular.module('starter')
 			},
 
 			generateV1OAuthUrl: function(register) {
+				register = true;
 				var url = config.getApiUrl() + "/api/oauth2/authorize?";
 				// add params
 				url += "response_type=code";
@@ -234,6 +235,10 @@ angular.module('starter')
         getJWTToken: function (provider, accessToken) {
 				var deferred = $q.defer();
 
+				if(!accessToken || accessToken === "null" || accessToken === null){
+					Bugsnag.notify("No accessToken", "accessToken not provided to getJWTToken function", {}, "error");
+					deferred.reject();
+				}
 				var url = config.getURL('api/v2/auth/social/authorizeToken');
 
 				url += "provider=" + provider;

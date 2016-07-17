@@ -5,25 +5,28 @@ angular.module('starter')
                                     measurementService, $ionicPopover, $ionicLoading, $state, $ionicHistory,
                                     QuantiModo, notificationService, $rootScope, localStorageService, reminderService,
                                     $ionicPopup, $ionicSideMenuDelegate, ratingService, migrationService,
-                                    ionicDatePicker) {
+                                    ionicDatePicker, unitService, variableService) {
 
         $rootScope.loaderImagePath = config.appSettings.loaderImagePath;
         $scope.appVersion = 1489;
         if(!$rootScope.loaderImagePath){
-            $rootScope.loaderImagePath = 'img/loader.gif';
+            $rootScope.loaderImagePath = 'img/circular-loader.gif';
         }
         $scope.controller_name = "AppCtrl";
         $scope.menu = config.appSettings.menu;
         $scope.appSettings = config.appSettings;
         $scope.showTrackingSubMenu = false;
         $rootScope.allowOffline = config.appSettings.allowOffline;
+        $rootScope.numberOfPendingNotifications = 0;
         $scope.showReminderSubMenu = false;
         $scope.primaryOutcomeVariableDetails = config.appSettings.primaryOutcomeVariableDetails;
-        $scope.ratingInfo = ratingService.getRatingInfo();
+        // Not used
+        //$scope.ratingInfo = ratingService.getRatingInfo();
         $scope.closeMenu = function() {
             $ionicSideMenuDelegate.toggleLeft(false);
         };
         $scope.floatingMaterialButton = config.appSettings.floatingMaterialButton;
+        $rootScope.unitsIndexedByAbbreviatedName = [];
         
         $scope.hideAddTreatmentRemindersCard = localStorageService.getItemSync('hideAddTreatmentRemindersCard');
         $scope.hideAddFoodRemindersCard = localStorageService.getItemSync('hideAddFoodRemindersCard');
@@ -67,7 +70,11 @@ angular.module('starter')
             to: new Date() //today
         };
 
-        $scope.goToState = function(state, variableCategoryName){
+        $scope.goToState = function(state, stateParameters){
+            var variableCategoryName = null;
+            if(stateParameters &&  stateParameters.variableCategoryName){
+                variableCategoryName =  stateParameters.variableCategoryName;
+            }
             $state.go(state, {
                 fromState: $state.current.name,
                 fromUrl: window.location.href,
@@ -127,31 +134,39 @@ angular.module('starter')
         
         var helpPopupMessages = config.appSettings.helpPopupMessages || false;
 
+        $scope.showHelpInfoPopup = function(){
+            $rootScope.helpPopup = $ionicPopup.show({
+                title: helpPopupMessages[location.hash],
+                subTitle: '',
+                scope: $scope,
+                template: '<label><input type="checkbox" ng-model="$parent.notShowHelpPopup" class="show-again-checkbox">Don\'t show these tips</label>',
+                buttons: [
+                    {
+                        text: 'OK',
+                        type: 'button-positive',
+                        onTap: function () {
+                            localStorageService.setItem('notShowHelpPopup', JSON.stringify($scope.notShowHelpPopup));
+                        }
+                    }
+                ]
+            });
+        };
+
         $scope.showHelpInfoPopupIfNecessary = function(e) {
             localStorageService.getItem('isWelcomed',function(isWelcomed) {
                 if(isWelcomed  === true || isWelcomed === "true"){
                     if (helpPopupMessages && typeof helpPopupMessages[location.hash] !== "undefined") {
                         localStorageService.getItem('notShowHelpPopup', function (val) {
-                            $scope.notShowHelpPopup = val ? JSON.parse(val) : false;
+                            if(typeof val === "undefined" || val === "undefined"){
+                                $scope.notShowHelpPopup = false;
+                            } else {
+                                $scope.notShowHelpPopup = val ? JSON.parse(val) : false;
+                            }
 
                             // Had to add "&& e.targetScope !== $scope" to prevent duplicate popups
                             //if (!$scope.notShowHelpPopup && e.targetScope !== $scope) {
                             if (!$scope.notShowHelpPopup) {
-                                $rootScope.helpPopup = $ionicPopup.show({
-                                    title: helpPopupMessages[location.hash],
-                                    subTitle: '',
-                                    scope: $scope,
-                                    template: '<label><input type="checkbox" ng-model="$parent.notShowHelpPopup" class="show-again-checkbox">Don\'t show these tips</label>',
-                                    buttons: [
-                                        {
-                                            text: 'OK',
-                                            type: 'button-positive',
-                                            onTap: function () {
-                                                localStorageService.setItem('notShowHelpPopup', JSON.stringify($scope.notShowHelpPopup));
-                                            }
-                                        }
-                                    ]
-                                });
+                                $scope.showHelpInfoPopup();
                             }
                         });
                     }
@@ -174,6 +189,9 @@ angular.module('starter')
         $scope.showHistorySubMenu = false;
         $scope.shoppingCartEnabled = config.shoppingCartEnabled;
         $rootScope.isSyncing = false;
+        $rootScope.syncDisplayText = '';
+        $scope.loading = false;
+        $ionicLoading.hide();
 
         setPlatformVariables();
 
@@ -286,6 +304,7 @@ angular.module('starter')
         
         $scope.init = function () {
             console.log("Main Constructor Start");
+            $scope.shouldWeCombineNotifications();
             if(!$rootScope.user){
                 $rootScope.user = localStorageService.getItemAsObject('user');
             }
@@ -293,8 +312,9 @@ angular.module('starter')
                 $rootScope.getUserAndSetInLocalStorage();
             }
             if($rootScope.user){
-                    $rootScope.setUserForIntercom($rootScope.user);
-                    $rootScope.setUserForBugsnag($rootScope.user);
+                $rootScope.setUserForIntercom($rootScope.user);
+                $rootScope.setUserForBugsnag($rootScope.user);
+                $scope.syncEverything();
             }
             migrationService.version1466();
             hideNavigationMenuIfSetInUrlParameter();
@@ -371,6 +391,52 @@ angular.module('starter')
             }
         }
 
+
+        $scope.saveInterval = function(primaryOutcomeRatingFrequencyDescription){
+            if(primaryOutcomeRatingFrequencyDescription){
+                $scope.primaryOutcomeRatingFrequencyDescription = primaryOutcomeRatingFrequencyDescription;
+            }
+
+            var intervals = {
+                "minutely" : 60,
+                "every five minutes" : 5 * 60,
+                "never" : 0,
+                "hourly": 60 * 60,
+                "hour": 60 * 60,
+                "every three hours" : 3 * 60 * 60,
+                "twice a day" : 12 * 60 * 60,
+                "daily" : 24 * 60 * 60,
+                "day" : 24 * 60 * 60
+            };
+
+            notificationService.scheduleNotification(intervals[$scope.primaryOutcomeRatingFrequencyDescription]/60);
+
+            $rootScope.reminderToSchedule = {
+                id: config.appSettings.primaryOutcomeVariableDetails.id,
+                reportedVariableValue: $scope.reportedVariableValue,
+                interval: intervals[$scope.primaryOutcomeRatingFrequencyDescription],
+                variableName: config.appSettings.primaryOutcomeVariableDetails.name,
+                category: config.appSettings.primaryOutcomeVariableDetails.category,
+                unit: config.appSettings.primaryOutcomeVariableDetails.abbreviatedUnitName,
+                combinationOperation : config.appSettings.primaryOutcomeVariableDetails.combinationOperation
+            };
+
+            localStorageService.setItem('primaryOutcomeRatingFrequencyDescription', $scope.primaryOutcomeRatingFrequencyDescription);
+            $scope.showIntervalCard = false;
+        };
+
+        $scope.shouldWeCombineNotifications = function(){
+            localStorageService.getItem('combineNotifications', function(combineNotifications){
+                console.debug("combineNotifications from local storage is " + combineNotifications);
+                if(combineNotifications === "null"){
+                    localStorageService.setItem('combineNotifications', true);
+                    $rootScope.combineNotifications = true;
+                } else {
+                    $rootScope.combineNotifications = combineNotifications === "true";
+                }
+            });
+        };
+
         $rootScope.getUserAndSetInLocalStorage = function(){
             
             var successHandler = function(userObject) {
@@ -436,12 +502,14 @@ angular.module('starter')
         };
 
         $scope.showLoader = function (loadingText) {
+            $rootScope.isSyncing = true;
+            $rootScope.syncDisplayText = loadingText;
             console.debug('Showing Loader');
             if(!loadingText){
                 loadingText = '';
             }
             $scope.loading = true;
-            $ionicLoading.show({
+/*            $ionicLoading.show({
                 template: loadingText+ '<br><br><img src={{loaderImagePath}}>',
                 content: 'Loading',
                 animation: 'fade-in',
@@ -452,17 +520,30 @@ angular.module('starter')
                 hideOnStateChange: true,
                 duration: 15000
             });
+            */
             $timeout(function () {
-                $ionicLoading.hide();
-
+                $scope.hideLoader();
             }, 15000);
 
         };
-        
+
 
         $scope.hideLoader = function () {
+            $rootScope.isSyncing = false;
+            $rootScope.syncDisplayText = '';
             $scope.loading = false;
             $ionicLoading.hide();
+        };
+
+        $scope.syncEverything = function () {
+            if(!$rootScope.syncedEverything && $rootScope.user){
+                measurementService.syncPrimaryOutcomeVariableMeasurementsAndUpdateCharts();
+                reminderService.refreshTrackingRemindersAndScheduleAlarms();
+                variableService.refreshUserVariables();
+                variableService.refreshCommonVariables();
+                unitService.refreshUnits();
+                $rootScope.syncedEverything = true;
+            }
         };
         
         $scope.init();

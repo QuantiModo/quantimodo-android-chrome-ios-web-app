@@ -1,13 +1,26 @@
 angular.module('starter')
 
     // Controls the Track Page of the App
-    .controller('TrackPrimaryOutcomeCtrl', function($scope, $ionicModal, $state, $timeout, utilsService, authService, 
+    .controller('TrackPrimaryOutcomeCtrl', function($scope, $ionicModal, $state, $timeout, utilsService, authService,
                                                     measurementService, chartService, $ionicPopup, localStorageService,
                                                     $rootScope, $ionicLoading, ratingService) {
         $scope.controller_name = "TrackPrimaryOutcomeCtrl";
 
-        $scope.showCharts = false;
+        //$scope.showCharts = false;
         $scope.showRatingFaces = true;
+        // flags
+        $scope.timeRemaining = false;
+        $scope.averagePrimaryOutcomeVariableImage = false;
+        $scope.averagePrimaryOutcomeVariableValue = false;
+        $scope.lineChartData = null;
+        $scope.barChartData = null;
+        $scope.showRatingFaces = true;
+
+        // chart flags
+        $scope.lineChartConfig = false;
+        $scope.barChartConfig = false;
+        $scope.redrawLineChart = true;
+        $scope.redrawBarChart = true;
 
         $scope.storeRatingLocalAndServerAndUpdateCharts = function (numericRatingValue) {
 
@@ -47,15 +60,10 @@ angular.module('starter')
             }
         };
 
-
-        var updateBarChart = function(arr){
+        var updateBarChart = function(barChartData){
             $scope.redrawBarChart = false;
-            console.log("re-drawing bar chart");
-
-            console.log("load config object chartService.configureBarChart");
-            $scope.barChartConfig = chartService.configureBarChart(arr);
-            
-            console.log("redraw chart with new data");
+            console.log("Configuring bar chart...");
+            $scope.barChartConfig = chartService.configureBarChart(barChartData);
             $scope.redrawBarChart = true;
         };
 
@@ -63,21 +71,67 @@ angular.module('starter')
             $scope.redrawLineChart = false;
             console.log("Configuring line chart...");
             $scope.lineChartConfig = chartService.configureLineChart(lineChartData);
-
-
-
-            // redraw chart with new data
             $scope.redrawLineChart = true;
-
         };
 
-        // updates all the visual elements on the page
+        var updateWeekdayChart = function(weekdayChartData){
+            $scope.redrawWeekdayChart = false;
+            $scope.weekdayChartConfig = chartService.configureWeekdayChart(weekdayChartData, config.appSettings.primaryOutcomeVariableDetails.name);
+            $scope.redrawWeekdayChart = true;
+        };
+
+        var updateHourlyChart = function(hourlyChartData){
+            $scope.redrawHourlyChart = false;
+            $scope.hourlyChartConfig = chartService.configureHourlyChart(hourlyChartData, config.appSettings.primaryOutcomeVariableDetails.name);
+            $scope.redrawHourlyChart = true;
+        };
+
+        function calculateAverageValueByWeekday(weekdayMeasurementArrays) {
+            var sumByWeekday = [];
+            for (var k = 0; k < 7; k++) {
+                if (typeof weekdayMeasurementArrays[k] !== "undefined") {
+                    for (var j = 0; j < weekdayMeasurementArrays[k].length; j++) {
+                        if (typeof sumByWeekday[k] === "undefined") {
+                            sumByWeekday[k] = 0;
+                        }
+                        sumByWeekday[k] = sumByWeekday[k] + weekdayMeasurementArrays[k][j].value;
+                    }
+                    $scope.averageValueByWeekday[k] = sumByWeekday[k] / (weekdayMeasurementArrays[k].length);
+                } else {
+                    $scope.averageValueByWeekday[k] = null;
+                    console.debug("No data for day " + k);
+                }
+            }
+        }
+
+        function calculateAverageValueByHour(hourlyMeasurementArrays) {
+            var sumByHour = [];
+            for (var k = 0; k < 23; k++) {
+                if (typeof hourlyMeasurementArrays[k] !== "undefined") {
+                    for (var j = 0; j < hourlyMeasurementArrays[k].length; j++) {
+                        if (typeof sumByHour[k] === "undefined") {
+                            sumByHour[k] = 0;
+                        }
+                        sumByHour[k] = sumByHour[k] + hourlyMeasurementArrays[k][j].value;
+                    }
+                    $scope.averageValueByHour[k] = sumByHour[k] / (hourlyMeasurementArrays[k].length);
+                } else {
+                    $scope.averageValueByHour[k] = null;
+                    console.debug("No data for day " + k);
+                }
+            }
+        }
+
         var updateCharts = function(){
 
             measurementService.getAllLocalMeasurements(false, function(allMeasurements) {
                 var lineArr = [];
                 var barArr = [0, 0, 0, 0, 0];
                 var sum = 0;
+                var weekdayMeasurementArrays = [];
+                var hourlyMeasurementArrays = [];
+                $scope.averageValueByWeekday = [];
+                $scope.averageValueByHour = [];
 
                 if (allMeasurements) {
                     var fromDate = parseInt(localStorageService.getItemSync('fromDate'));
@@ -104,8 +158,20 @@ angular.module('starter')
                                 sum+= allMeasurements[i].value;
                                 rangeLength++;
                             }
+                            if(typeof weekdayMeasurementArrays[moment(startTimeMilliseconds).day()] === "undefined"){
+                                weekdayMeasurementArrays[moment(startTimeMilliseconds).day()] = [];
+                            }
+                            weekdayMeasurementArrays[moment(startTimeMilliseconds).day()].push(allMeasurements[i]);
+                            if(typeof hourlyMeasurementArrays[moment(startTimeMilliseconds).hour()] === "undefined"){
+                                hourlyMeasurementArrays[moment(startTimeMilliseconds).hour()] = [];
+                            }
+                            hourlyMeasurementArrays[moment(startTimeMilliseconds).hour()].push(allMeasurements[i]);
                         }
                     }
+
+                    calculateAverageValueByWeekday(weekdayMeasurementArrays);
+                    calculateAverageValueByHour(hourlyMeasurementArrays);
+
                     var averagePrimaryOutcomeVariableValue = Math.round(sum/(rangeLength));
                     localStorageService.setItem('averagePrimaryOutcomeVariableValue',averagePrimaryOutcomeVariableValue);
 
@@ -116,6 +182,8 @@ angular.module('starter')
                         if ($scope.lineChartData.length > 0 && $scope.barChartData.length === 5) {
                             updateLineChart($scope.lineChartData);
                             updateBarChart($scope.barChartData);
+                            updateWeekdayChart($scope.averageValueByWeekday);
+                            updateHourlyChart($scope.averageValueByHour);
                             $scope.showCharts = true;
                         }
                         if (!$scope.$$phase) {
@@ -162,28 +230,19 @@ angular.module('starter')
         */
 
         $scope.init = function(){
+            $ionicLoading.hide();
+            Bugsnag.context = "trackPrimary";
+            updateCharts();
 
-            // flags
-            $scope.timeRemaining = false;
-            $scope.averagePrimaryOutcomeVariableImage = false;
-            $scope.averagePrimaryOutcomeVariableValue = false;
-            $scope.lineChartData = null;
-            $scope.barChartData = null;
-            $scope.showRatingFaces = true;
-
-            // chart flags
-            $scope.lineChartConfig = false; 
-            $scope.barChartConfig = false;
-            $scope.redrawLineChart = true;
-            $scope.redrawBarChart = true;
             $scope.showHelpInfoPopupIfNecessary();
+            if (typeof analytics !== 'undefined')  { analytics.trackView("Track Primary Outcome Controller"); }
             $ionicLoading.hide();
         };
 
         $scope.init();
         
         $scope.$on('updateCharts', function(){
-            $rootScope.isSyncing = false;
+            $scope.hideLoader();
             console.log('track state redrawing event triggered through sibling controllers. Updating charts and syncing..');
             updateCharts();
         });

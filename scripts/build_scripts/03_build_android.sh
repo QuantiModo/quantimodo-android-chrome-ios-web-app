@@ -1,6 +1,6 @@
 #!/bin/bash
 
-mkdir "$DROPBOX_PATH/QuantiModo/apps/$LOWERCASE_APP_NAME"
+mkdir "$DROPBOX_PATH/QuantiModo/apps/$LOWERCASE_APP_NAME"  || true
 
 if [ -z "$LOWERCASE_APP_NAME" ]
   then
@@ -82,9 +82,9 @@ echo "ionic platform add android for $LOWERCASE_APP_NAME Android app..."
 ionic platform add android
 
 echo "cordova plugin rm phonegap-facebook-plugin for $LOWERCASE_APP_NAME Android app..."
-cordova plugin rm phonegap-facebook-plugin
+cordova plugin rm phonegap-facebook-plugin || true
 echo "cordova plugin rm cordova-plugin-facebook4 for $LOWERCASE_APP_NAME Android app..."
-cordova plugin rm cordova-plugin-facebook4
+cordova plugin rm cordova-plugin-facebook4 || true
 echo "rm -rf ../fbplugin for $LOWERCASE_APP_NAME Android app..."
 rm -rf ../fbplugin
 #echo "gulp addFacebookPlugin for $LOWERCASE_APP_NAME Android app..."
@@ -95,8 +95,8 @@ cordova plugin add cordova-plugin-facebook4@1.7.1 --save --variable APP_ID="${FA
 #echo "gulp addFacebookPlugin for $LOWERCASE_APP_NAME Android app..."
 #gulp addGooglePlusPlugin
 
-echo "cordova plugin add cordova-plugin-googleplus@4.0.8 REVERSED_CLIENT_ID=${REVERSED_CLIENT_ID} for $LOWERCASE_APP_NAME Android app..."
-cordova plugin add cordova-plugin-googleplus@4.0.8 --variable REVERSED_CLIENT_ID=${REVERSED_CLIENT_ID}
+echo "cordova plugin add https://github.com/mikepsinn/cordova-plugin-googleplus.git REVERSED_CLIENT_ID=${REVERSED_CLIENT_ID} for $LOWERCASE_APP_NAME Android app..."
+cordova plugin add https://github.com/mikepsinn/cordova-plugin-googleplus.git --variable REVERSED_CLIENT_ID=${REVERSED_CLIENT_ID}
 
 #echo "cordova plugin add cordova-fabric-plugin --variable FABRIC_API_KEY=${FABRIC_API_KEY} --variable FABRIC_API_SECRET=${FABRIC_API_SECRET} for $LOWERCASE_APP_NAME Android app..."
 #cordova plugin add cordova-fabric-plugin --variable FABRIC_API_KEY=${FABRIC_API_KEY} --variable FABRIC_API_SECRET=${FABRIC_API_SECRET}
@@ -108,65 +108,76 @@ ionic plugin add https://github.com/DrMoriarty/cordova-fabric-crashlytics-plugin
 #cordova plugin add phonegap-plugin-push --variable SENDER_ID="quantimo-do"
 echo "Generating image resources for $LOWERCASE_APP_NAME..."
 ionic resources >/dev/null
+ionic config build
 cordova build --debug android >/dev/null
 cordova build --release android >/dev/null
 mkdir -p ${BUILD_PATH}/${LOWERCASE_APP_NAME}/android
 cp -R platforms/android/build/outputs/apk/* ${BUILD_PATH}/${LOWERCASE_APP_NAME}/android
 cd ${BUILD_PATH}/${LOWERCASE_APP_NAME}/android
 
-UNSIGNED_APK_PATH="android-release-unsigned.apk"
-SIGNED_APK_PATH=${LOWERCASE_APP_NAME}-android-release-signed.apk
+UNSIGNED_APK_FILENAME="android-release-unsigned.apk"
+SIGNED_APK_FILENAME=${LOWERCASE_APP_NAME}-android-release-signed.apk
 ALIAS=quantimodo
 
-UNSIGNED_DEBUG_APK_PATH="android-debug-unaligned.apk"
-SIGNED_DEBUG_APK_PATH=${LOWERCASE_APP_NAME}-android-debug-signed.apk
+UNSIGNED_DEBUG_APK_FILENAME="android-debug-unaligned.apk"
+SIGNED_DEBUG_APK_FILENAME=${LOWERCASE_APP_NAME}-android-debug-signed.apk
 ANDROID_DEBUG_KEYSTORE_PASSWORD=android
 DEBUG_ALIAS=androiddebugkey
 
-echo "Deleting META-INF folder for ${UNSIGNED_DEBUG_APK_PATH}"
-zip -d ${UNSIGNED_DEBUG_APK_PATH} META-INF/\* >/dev/null
-echo "Signing ${UNSIGNED_DEBUG_APK_PATH}"
-jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore ${ANDROID_DEBUG_KEYSTORE_PATH} -storepass ${ANDROID_DEBUG_KEYSTORE_PASSWORD} ${UNSIGNED_DEBUG_APK_PATH} ${DEBUG_ALIAS} >/dev/null
-echo "Verifying ${UNSIGNED_DEBUG_APK_PATH}"
-jarsigner -verify ${UNSIGNED_DEBUG_APK_PATH} >/dev/null
-echo "Zipaligning ${UNSIGNED_DEBUG_APK_PATH}"
-${ANDROID_BUILD_TOOLS}/zipalign -v 4 ${UNSIGNED_DEBUG_APK_PATH} ${SIGNED_DEBUG_APK_PATH} >/dev/null
+echo "zip -d ${UNSIGNED_DEBUG_APK_FILENAME} META-INF/\*"
+zip -d ${UNSIGNED_DEBUG_APK_FILENAME} META-INF/\*
+echo "Signing ${UNSIGNED_DEBUG_APK_FILENAME}"
+jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore ${ANDROID_DEBUG_KEYSTORE_PATH} -storepass ${ANDROID_DEBUG_KEYSTORE_PASSWORD} ${UNSIGNED_DEBUG_APK_FILENAME} ${DEBUG_ALIAS} >/dev/null
+echo "Verifying ${UNSIGNED_DEBUG_APK_FILENAME}"
+jarsigner -verify ${UNSIGNED_DEBUG_APK_FILENAME} >/dev/null
+echo "Zipaligning ${UNSIGNED_DEBUG_APK_FILENAME}"
+${ANDROID_BUILD_TOOLS}/zipalign -v 4 ${UNSIGNED_DEBUG_APK_FILENAME} ${SIGNED_DEBUG_APK_FILENAME} >/dev/null
 
-echo -e "${GREEN}Copying ${BUILD_PATH}/${LOWERCASE_APP_NAME} to $DROPBOX_PATH/QuantiModo/apps/${LOWERCASE_APP_NAME}/${NC}"
-cp ${SIGNED_DEBUG_APK_PATH} "$DROPBOX_PATH/QuantiModo/apps/${LOWERCASE_APP_NAME}/"
+echo -e "${GREEN}Copying ${SIGNED_DEBUG_APK_FILENAME} to $DROPBOX_PATH/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${SIGNED_DEBUG_APK_FILENAME}${NC}"
+cp ${SIGNED_DEBUG_APK_FILENAME} "$DROPBOX_PATH/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${SIGNED_DEBUG_APK_FILENAME}"
 
-if [ -f ${SIGNED_DEBUG_APK_PATH} ];
+if [ -f "$DROPBOX_PATH/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${SIGNED_DEBUG_APK_FILENAME}" ];
 then
-   echo echo "${SIGNED_DEBUG_APK_PATH} is ready in $DROPBOX_PATH/QuantiModo/apps/${LOWERCASE_APP_NAME}/"
+   echo echo "${SIGNED_DEBUG_APK_FILENAME} is ready in $DROPBOX_PATH/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${SIGNED_DEBUG_APK_FILENAME}"
 else
-   echo "ERROR: File ${SIGNED_DEBUG_APK_PATH} does not exist. Build FAILED"
+   echo "ERROR: File ${SIGNED_DEBUG_APK_FILENAME} does not exist. Build FAILED"
    exit 1
 fi
 
-echo "Deleting META-INF folder for ${UNSIGNED_APK_PATH}"
-zip -d ${UNSIGNED_APK_PATH} META-INF/\* >/dev/null
+echo "zip -d ${UNSIGNED_APK_FILENAME} META-INF/\* "
+zip -d ${UNSIGNED_APK_FILENAME} META-INF/\*
 
-echo "Signing ${UNSIGNED_APK_PATH}"
-jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore ${ANDROID_KEYSTORE_PATH} -storepass ${ANDROID_KEYSTORE_PASSWORD} ${UNSIGNED_APK_PATH} ${ALIAS} >/dev/null
-echo "Verifying ${UNSIGNED_APK_PATH}"
-jarsigner -verify ${UNSIGNED_APK_PATH} >/dev/null
-echo "Zipaligning ${UNSIGNED_APK_PATH}"
-${ANDROID_BUILD_TOOLS}/zipalign -v 4 ${UNSIGNED_APK_PATH} ${SIGNED_APK_PATH} >/dev/null
+echo "Signing ${UNSIGNED_APK_FILENAME}"
+jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore ${ANDROID_KEYSTORE_PATH} -storepass ${ANDROID_KEYSTORE_PASSWORD} ${UNSIGNED_APK_FILENAME} ${ALIAS} >/dev/null
+echo "Verifying ${UNSIGNED_APK_FILENAME}"
+jarsigner -verify ${UNSIGNED_APK_FILENAME} >/dev/null
+echo "Zipaligning ${UNSIGNED_APK_FILENAME}"
+${ANDROID_BUILD_TOOLS}/zipalign -v 4 ${UNSIGNED_APK_FILENAME} ${SIGNED_APK_FILENAME} >/dev/null
 
-echo -e "${GREEN}Copying ${BUILD_PATH}/${LOWERCASE_APP_NAME} to $DROPBOX_PATH/QuantiModo/apps/${LOWERCASE_APP_NAME}/${NC}"
-cp ${SIGNED_APK_PATH} "$DROPBOX_PATH/QuantiModo/apps/${LOWERCASE_APP_NAME}/"
+echo -e "${GREEN}Copying ${SIGNED_APK_FILENAME} to $DROPBOX_PATH/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${SIGNED_APK_FILENAME}${NC}"
+cp ${SIGNED_APK_FILENAME} "$DROPBOX_PATH/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${SIGNED_APK_FILENAME}"
+
+rm ${BUILD_PATH}/${LOWERCASE_APP_NAME}/android/android-debug.apk
+rm ${BUILD_PATH}/${LOWERCASE_APP_NAME}/android/android-debug-unaligned.apk
+rm ${BUILD_PATH}/${LOWERCASE_APP_NAME}/android/android-release-unsigned.apk
 
 # Sign the app
-#jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore ${ANDROID_KEYSTORE_PATH} -storepass ${ANDROID_KEYSTORE_PASSWORD} ${UNSIGNED_APK_PATH} ${ALIAS} >/dev/null
+#jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore ${ANDROID_KEYSTORE_PATH} -storepass ${ANDROID_KEYSTORE_PASSWORD} ${UNSIGNED_APK_FILENAME} ${ALIAS} >/dev/null
 
 # Optimize apk
-#${ANDROID_BUILD_TOOLS}/zipalign 4 ${UNSIGNED_APK_PATH} ${SIGNED_APK_PATH} >/dev/null
+#${ANDROID_BUILD_TOOLS}/zipalign 4 ${UNSIGNED_APK_FILENAME} ${SIGNED_APK_FILENAME} >/dev/null
 
-if [ -f ${SIGNED_APK_PATH} ];
+if [ -f "$DROPBOX_PATH/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${SIGNED_APK_FILENAME}" ];
 then
-   echo echo "${SIGNED_APK_PATH} is ready in $DROPBOX_PATH/QuantiModo/apps/${LOWERCASE_APP_NAME}/"
+    cd ${INTERMEDIATE_PATH}
+    COMMIT_MESSAGE=$(git log -1 HEAD --pretty=format:%s)
+    ionic upload --email ${IONIC_EMAIL} --password ${IONIC_PASSWORD} --note "$COMMIT_MESSAGE"
+    ionic package build android --email ${IONIC_EMAIL} --password ${IONIC_PASSWORD}
+    ionic package build android --release --profile production --email ${IONIC_EMAIL} --password ${IONIC_PASSWORD}
+    ionic package build ios --release --profile production --email ${IONIC_EMAIL} --password ${IONIC_PASSWORD}
+    echo echo "${SIGNED_APK_FILENAME} is ready in $DROPBOX_PATH/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${SIGNED_APK_FILENAME}"
 else
-   echo "ERROR: File ${SIGNED_APK_PATH} does not exist. Build FAILED"
+   echo "ERROR: File ${SIGNED_APK_FILENAME} does not exist. Build FAILED"
    exit 1
 fi
 

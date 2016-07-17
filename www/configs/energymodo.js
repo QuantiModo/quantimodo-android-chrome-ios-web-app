@@ -59,11 +59,43 @@ config.appSettings  = {
         '5' 
     ],
 
+    primaryOutcomeVariableRatingOptionLowercaseLabels : [
+        '1',
+        '2',
+        '3',
+        '4',
+        '5'
+    ],
+
+    positiveRatingImages : [
+        'img/rating/ic_face_depressed.png',
+        'img/rating/ic_face_sad.png',
+        'img/rating/ic_face_ok.png',
+        'img/rating/ic_face_happy.png',
+        'img/rating/ic_face_ecstatic.png'
+    ],
+
+    negativeRatingImages : [
+        'img/rating/ic_face_ecstatic.png',
+        'img/rating/ic_face_happy.png',
+        'img/rating/ic_face_ok.png',
+        'img/rating/ic_face_sad.png',
+        'img/rating/ic_face_depressed.png'
+    ],
+
+    numericRatingImages : [
+        'img/rating/ic_1.png',
+        'img/rating/ic_2.png',
+        'img/rating/ic_3.png',
+        'img/rating/ic_4.png',
+        'img/rating/ic_5.png'
+    ],
+
     welcomeText:"Let's start off by reporting your Energy on the card below",
     primaryOutcomeVariableTrackingQuestion:"How is your energy level right now?",
     primaryOutcomeVariableAverageText:"Your average energy level is ",
     mobileNotificationImage : "file://img/icons/icon_128.png",
-    mobileNotificationText : "Time to Track",
+    mobileNotificationText : "Time to track!",
     ratingValueToTextConversionDataSet: {
         "1": "1",
         "2": "2",
@@ -354,8 +386,8 @@ config.appSettings  = {
         "#/app/track_factors_category/Foods": 'You can track your diet on this page. You can also <span class="positive">Add a new Food Variable</span> if you do not find the meal you looked for in the search results.',
         "#/app/track_factors_category/Symptoms": 'You can track any symptom on this page. You can also <span class="positive">Add a new Symptom</span> if you don\'t find the symptom you looked for in the search results.',
         "#/app/track_factors_category/Treatments": 'You can track any treatment on this page. You can also <span class="positive">Add a new Treatment</span> if you don\'t find the treatment you looked for in the search results.',
-        "#/app/positive": 'Positive Predictors are the factors most predictive of <span class="positive">IMPROVING</span> Energy for the average QuantiModo user.',
-        "#/app/negative": 'Negative Predictors are the factors most predictive of <span class="positive">DECREASING</span>Energy for the average QuantiModo user.'
+        "#/app/positive-negative/positive": 'Positive Predictors are the factors most predictive of <span class="positive">IMPROVING</span> Energy for the average QuantiModo user.',
+        "#/app/positive-negative/negative": 'Negative Predictors are the factors most predictive of <span class="positive">DECREASING</span>Energy for the average QuantiModo user.'
     },
 
     remindersInbox : {
@@ -370,7 +402,7 @@ config.appSettings  = {
         button1 : {
             icon: 'ion-android-notifications-none',
             label: 'Add a Reminder',
-            stateAndParameters: "'app.reminderAdd'"
+            stateAndParameters: "'app.reminderSearch'"
         },
         button2 : {
             icon: 'ion-compose',
@@ -421,14 +453,14 @@ config.appSettings  = {
             title : 'Positive Predictors',
             isSubMenuChild : true,
             showSubMenuVariable : 'showPrimaryOutcomeSubMenu',
-            href : '#/app/positive',
+            href : '#/app/positive-negative/positive',
             icon : 'ion-happy-outline'
         },
         {
             title : 'Negative Predictors',
             isSubMenuChild : true,
             showSubMenuVariable : 'showPrimaryOutcomeSubMenu',
-            href : '#/app/negative',
+            href : '#/app/positive-negative/negative',
             icon : 'ion-sad-outline'
         },
         {
@@ -609,7 +641,7 @@ config.appSettings  = {
         },
         {
             title : 'Variables',
-            href : '#app/search-variables',
+            href : '#/app/search-variables',
             icon : 'ion-social-vimeo'
         },
         {
@@ -638,14 +670,14 @@ config.appSettings  = {
             title : 'High Energy',
             isSubMenuChild : true,
             showSubMenuVariable : 'showPredictorSearchSubMenu',
-            href : '#/app/positive',
+            href : '#/app/positive-negative/positive',
             icon : 'ion-happy-outline'
         },
         {
             title : 'Low Energy',
             isSubMenuChild : true,
             showSubMenuVariable : 'showPredictorSearchSubMenu',
-            href : '#/app/negative',
+            href : '#/app/positive-negative/negative',
             icon : 'ion-sad-outline'
         },
         {
@@ -655,7 +687,7 @@ config.appSettings  = {
         },
         {
             title : 'Help & Feedback',
-            href : "#app/feedback",
+            href : "#/app/feedback",
             icon : 'ion-ios-help-outline'
         }
     ]

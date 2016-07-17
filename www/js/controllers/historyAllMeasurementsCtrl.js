@@ -13,10 +13,11 @@ angular.module('starter')
         
 	    $scope.state = {
 	    	offset : 0,
-	    	limit : 50,
+	    	limit : 200,
 	    	history : [],
 			units : [],
-			variableCategories : []
+			variableCategories : [],
+			hideLoadMoreButton : true
 	    };
 
 		$scope.title = 'Measurement History';
@@ -49,32 +50,46 @@ angular.module('starter')
 	    };
 
 
-	    var getHistory = function(){
-	    	$scope.showLoader();
+	    var getHistory = function(concat){
+			if($scope.state.history.length < 1){
+				$scope.showLoader('Getting your measurements...');
+			}
 	    	measurementService.getHistoryMeasurements({
     		    offset: $scope.state.offset,
     		    limit: $scope.state.limit,
     		    sort: "-startTimeEpoch",
 				variableCategoryName: $stateParams.variableCategoryName
 	    	}).then(function(history){
-    			$scope.state.history = $scope.state.history.concat(history);
-				$scope.state.history = ratingService.addImagesToMeasurements($scope.state.history);
+	    		if (concat) {
+					$scope.state.history = $scope.state.history.concat(history);
+				}
+    			else {
+					$scope.state.history = history;
+				}
+				$scope.state.history = ratingService.addInfoAndImagesToMeasurements($scope.state.history);
 				$scope.hideLoader();
+				if(history.length < 200){
+					$scope.state.hideLoadMoreButton = true;
+				} else {
+					$scope.state.hideLoadMoreButton = false;
+				}
 	    	}, function(error){
 				Bugsnag.notify(error, JSON.stringify(error), {}, "error");
 	    		console.log('error getting measurements', error);
 				$scope.hideLoader();
 	    	});
-
 	    };
 
 	    $scope.getNext = function(){
 	    	$scope.state.offset += $scope.state.limit;
-	    	getHistory();
+	    	getHistory(true);
 	    };
 	    
 	    // constructor
 	    $scope.init = function(){
+			if (typeof analytics !== 'undefined')  { analytics.trackView("All Measurements Controller"); }
+			Bugsnag.context = "historyAll";
+			
 			setupVariableCategory();
             var isAuthorized = authService.checkAuthOrSendToLogin();
 			if(isAuthorized){
@@ -86,13 +101,6 @@ angular.module('starter')
 						Bugsnag.notify(err, JSON.stringify(err), {}, "error");
                         console.log("error getting variable categories", err);
                     });
-                unitService.getUnits()
-                    .then(function(units){
-                        $scope.state.unitObjects = units;
-                    }, function(err){
-						Bugsnag.notify(err, JSON.stringify(err), {}, "error");
-                        console.log("error getting units", err);
-                    });
                 getHistory();
 			}
 	    };
@@ -100,7 +108,7 @@ angular.module('starter')
         // when view is changed
     	$scope.$on('$ionicView.enter', function(e) {
 			$scope.state.offset = 0;
-    		$scope.state.history = [];
+    		//$scope.state.history = [];
     		$scope.init();
     	});
 

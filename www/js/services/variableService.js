@@ -1,6 +1,6 @@
 angular.module('starter')
 	// Measurement Service
-	.factory('variableService', function($http, $q, QuantiModo, localStorageService, authService, utilsService){
+	.factory('variableService', function($http, $q, QuantiModo, localStorageService, $rootScope){
 
         
 		// service methods
@@ -30,22 +30,32 @@ angular.module('starter')
                 
 				return deferred.promise;
 			},
-            
-			// refresh local storage with updated variables from QuantiModo API
-			refreshVariables : function(){
-				var deferred = $q.defer();
 
-				QuantiModo.getVariables(function(vars){
 
-                    localStorageService.setItem('variables', JSON.stringify(vars));
-					deferred.resolve(vars);
-                    
-				}, function(){
-					deferred.reject(false);
-				});
+            // get user variables (without public)
+            searchUserVariables : function(variableSearchQuery, variableCategoryName){
+                var deferred = $q.defer();
 
-				return deferred.promise;
-			},
+                if(!variableSearchQuery){
+                    variableSearchQuery = '*';
+                }
+
+                if(variableCategoryName){
+                    QuantiModo.searchUserVariablesByCategory(variableSearchQuery, variableCategoryName, function(vars){
+                        deferred.resolve(vars);
+                    }, function(){
+                        deferred.reject(false);
+                    });
+                } else {
+                    QuantiModo.searchUserVariables(variableSearchQuery, function(vars){
+                        deferred.resolve(vars);
+                    }, function(){
+                        deferred.reject(false);
+                    });
+                }
+
+                return deferred.promise;
+            },
 
             getVariablesByName : function(name){
                 var deferred = $q.defer();
@@ -73,36 +83,57 @@ angular.module('starter')
                 return deferred.promise;
             },
 
+            refreshUserVariables : function(){
+                if(!$rootScope.syncingUserVariables){
+                    $rootScope.syncingUserVariables = true;
+                    var deferred = $q.defer();
 
-            // get variables locally
-			getVariables : function(){
-				var deferred = $q.defer();
+                    QuantiModo.getUserVariables(null, function(userVariables){
+                        localStorageService.setItem('userVariables', JSON.stringify(userVariables));
+                        $rootScope.syncingUserVariables = false;
+                        deferred.resolve(userVariables);
+                    }, function(){
+                        $rootScope.syncingUserVariables = false;
+                        deferred.reject(false);
+                    });
 
-				// refresh always
-		       	QuantiModo.getVariables(function(vars){
-		       		localStorageService.setItem('variables',JSON.stringify(vars));
-		       		console.log(vars);
-		       		deferred.resolve(vars);
-		       	}, function(){
-		       		deferred.reject(false);
-		       	});
+                    return deferred.promise;
+                }
+            },
 
-		       return deferred.promise;
-		   	},
+            refreshCommonVariables : function(){
+                if(!$rootScope.syncingCommonVariables){
+                    $rootScope.syncingCommonVariables = true;
+                    var deferred = $q.defer();
 
-            getUserVariablesByCategory : function(category){
-                var deferred = $q.defer();
+                    var successHandler = function(commonVariables) {
+                        localStorageService.setItem('commonVariables', JSON.stringify(commonVariables));
+                        $rootScope.syncingCommonVariables = false;
+                        deferred.resolve(commonVariables);
+                    };
 
-                // refresh always
-                QuantiModo.getUserVariablesByCategory(category,function(vars){
-                    localStorageService.setItem('variables',JSON.stringify(vars));
-                    console.log(vars);
-                    deferred.resolve(vars);
-                }, function(){
-                    deferred.reject(false);
-                });
+                    var errorHandler = function(err) {
+                        $rootScope.syncingCommonVariables = false;
+                        console.error(err);
+                        Bugsnag.notify("ERROR: "+ err, err, {}, "error");
+                        deferred.reject(false);
+                    };
+                    
+                    var parameters = {
+                        limit: 200,
+                        sort: "-numberOfUserVariables",
+                        numberOfUserVariables: "(gt)5"
+                    };
+                    
 
-                return deferred.promise;
+                    QuantiModo.get('api/v1/public/variables',
+                        ['category', 'includePublic', 'numberOfUserVariables'],
+                        parameters,
+                        successHandler,
+                        errorHandler);
+
+                    return deferred.promise;
+                }
             }
 		};
 

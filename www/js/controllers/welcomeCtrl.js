@@ -30,38 +30,9 @@ angular.module('starter')
 
         $scope.subscribeNotification = true;
 
-        $scope.saveInterval = function(){
-
-            /*TODO schedule notification*/
-            if($scope.subscribeNotification){
-
-                notificationService.scheduleNotification($scope.primaryOutcomeRatingFrequencyDescription);
-
-                var intervals = {
-                    "never" : 0,
-                    "hourly": 60 * 60,
-                    "hour": 60 * 60,
-                    "every three hours" : 3 * 60 * 60,
-                    "twice a day" : 12 * 60 * 60,
-                    "daily" : 24 * 60 * 60,
-                    "day" : 24 * 60 * 60
-                };
-
-                $rootScope.reminderToSchedule = {
-                    id: config.appSettings.primaryOutcomeVariableDetails.id,
-                    reportedVariableValue: $scope.reportedVariableValue,
-                    interval: intervals[$scope.primaryOutcomeRatingFrequencyDescription], 
-                    variableName: config.appSettings.primaryOutcomeVariableDetails.name,
-                    category: config.appSettings.primaryOutcomeVariableDetails.category,
-                    unit: config.appSettings.primaryOutcomeVariableDetails.abbreviatedUnitName,
-                    combinationOperation : config.appSettings.primaryOutcomeVariableDetails.combinationOperation
-                };
-
-                localStorageService.setItem('primaryOutcomeRatingFrequencyDescription', $scope.primaryOutcomeRatingFrequencyDescription);
-                $scope.showIntervalCard = false;
-                console.debug('saveInterval: Going to login state...');
-                $state.go('app.login');
-            }            
+        $scope.saveIntervalAndGoToLogin = function(){
+            $scope.saveInterval();
+            $state.go('app.login');
         };
 
         // skip interval reporting is tapped
@@ -90,7 +61,9 @@ angular.module('starter')
 
 
         $scope.init = function(){
+            Bugsnag.context = "welcome";
             console.log("welcome initialization...");
+            if (typeof analytics !== 'undefined')  { analytics.trackView("Welcome Controller"); }
             
         };
 

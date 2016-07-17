@@ -9,8 +9,10 @@ angular.module('fabric', ['ng']).config(['$provide', function($provide) {
       // sending it to the native bridge
       var stacktrace = exception.stack.toLocaleString();
       Bugsnag.notify("ERROR: "+message, "Stacktrace: "+stacktrace, {}, "error");
-      if(navigator.crashlytics){
+      if(typeof navigator !== 'undefined' && typeof navigator.crashlytics !== 'undefined'){
         navigator.crashlytics.logException("ERROR: "+message+", stacktrace: "+stacktrace);
+      } else {
+        console.debug('navigator.crashlytics is undefined!');
       }
     };
   }]);

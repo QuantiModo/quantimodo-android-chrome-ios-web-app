@@ -8,16 +8,70 @@
             </a>
 
             <a id="userName" href="" ng-show="user" ng-click="logout()" class="item ">
-              Signed in as {{user.displayName}}
+                <i class="icon ion-person"></i>
+                &nbsp
+                Signed in as {{user.displayName}}
               <p>Tap to sign out</p>
             </a>
     		
         </div>
 
-        <div class="list card">
-            <div class="item item-text-wrap">
+        <div class="card sign-in" >
+            <ion-toggle ng-model="state.combineNotifications"
+                        ng-change="combineNotificationChange()">
+                <i class="icon ion-android-notifications-none"></i>
+                &nbsp
+                Only show one notification
+            </ion-toggle>
 
-                <p><i class="icon ion-ios-download"></i> Export Your Data</p>
+
+            <div ng-show="state.combineNotifications" class="list card">
+                <div class="item item-text-wrap">
+                    <p>How often would you like to be reminded?</p>
+                </div>
+
+                <a href="" ng-click="ratingPopover.show();" ng-hide="isIos" class="item ">
+                    Remind me {{primaryOutcomeRatingFrequencyDescription}}
+                    <p ng-show="primaryOutcomeRatingFrequencyDescription=='never'">Never</p>
+                    <!--FOR DEVELOPMENT ONLY ---->
+                      <p ng-show="primaryOutcomeRatingFrequencyDescription=='minutely'">Every minute</p>
+                      <p ng-show="primaryOutcomeRatingFrequencyDescription=='every five minutes'">Every five minutes</p>
+                    <p ng-show="primaryOutcomeRatingFrequencyDescription=='hourly'">Hourly</p>
+                    <p ng-show="primaryOutcomeRatingFrequencyDescription=='every three hours'">Every three hours</p>
+                    <p ng-show="primaryOutcomeRatingFrequencyDescription=='twice a day'">Twice daily</p>
+                    <p ng-show="primaryOutcomeRatingFrequencyDescription=='daily'">Daily</p>
+                </a>
+
+                <a href="" ng-click="ratingPopover.show();" ng-show="isIos" class="item ">
+                    Ask {{primaryOutcomeRatingFrequencyDescription}}ly
+                    <p ng-show="primaryOutcomeRatingFrequencyDescription=='never'">Never</p>
+                    <p ng-show="primaryOutcomeRatingFrequencyDescription=='day'">Daily</p>
+                    <p ng-show="primaryOutcomeRatingFrequencyDescription=='hour'">Hourly</p>
+                </a>
+
+                <!--   		<a href="" ng-click="additionalRatingPopover.show();" class="item ">
+                             Additional required ratings
+                             <p>{{addString}}</p>
+                           </a>-->
+            </div>
+
+        </div>
+
+        <div class="list card">
+            <a ng-click="sendSharingInvitation()" class="item ">
+                <i class="icon ion-email"></i>
+                &nbsp
+                Share Your Data
+                <p>Invite a Physician, Caregiver, or Loved One</p>
+            </a>
+
+        </div>
+
+        <div class="list card">
+            <div class="item">
+                <i class="icon ion-ios-download"></i>
+                &nbsp
+                Export Your Data
             </div>
             <a href="" ng-click="exportPdf()" class="item ">
               Export as PDF File
@@ -30,12 +84,7 @@
             </a>
         </div>
 
-        <div class="list card">
-            <a href="" ng-click="sendSharingInvitation()" class="item ">
-                <i class="icon ion-email"></i>
-                Share Data with a Physician, Caregiver, or Loved One
-            </a>
-        </div>
+
 
         <div class="list card">
             <a ng-click="contactUs()" class="item ">
@@ -43,38 +92,6 @@
                 Help & Feedback
             </a>
         </div>
-
-        <div ng-show='showReminderFrequencySelector' class="list card">
-            <div class="item item-text-wrap">
-                <p>RATING FREQUENCY</p>
-            </div>
-
-            <a href="" ng-click="ratingPopover.show();" ng-hide="isIos" class="item ">
-                Ask for a rating {{primaryOutcomeRatingFrequencyDescription}}
-                <p ng-show="primaryOutcomeRatingFrequencyDescription=='never'">Never</p>
-                <!--FOR DEVELOPMENT ONLY
-                  <p ng-show="primaryOutcomeRatingFrequencyDescription=='minutely'">Every minute</p>
-                  <p ng-show="primaryOutcomeRatingFrequencyDescription=='every five minutes'">Every five minutes</p>
-                  ---->
-                <p ng-show="primaryOutcomeRatingFrequencyDescription=='hourly'">Hourly</p>
-                <p ng-show="primaryOutcomeRatingFrequencyDescription=='every three hours'">Every three hours</p>
-                <p ng-show="primaryOutcomeRatingFrequencyDescription=='twice a day'">Twice daily</p>
-                <p ng-show="primaryOutcomeRatingFrequencyDescription=='daily'">Daily</p>
-            </a>
-
-            <a href="" ng-click="ratingPopover.show();" ng-show="isIos" class="item ">
-                Ask {{primaryOutcomeRatingFrequencyDescription}}ly
-                <p ng-show="primaryOutcomeRatingFrequencyDescription=='never'">Never</p>
-                <p ng-show="primaryOutcomeRatingFrequencyDescription=='day'">Daily</p>
-                <p ng-show="primaryOutcomeRatingFrequencyDescription=='hour'">Hourly</p>
-            </a>
-
-            <!--   		<a href="" ng-click="additionalRatingPopover.show();" class="item ">
-                         Additional required ratings
-                         <p>{{addString}}</p>
-                       </a>-->
-        </div>
-
 
         <div class="card sign-in" >
             <div class="item item-text-wrap">

@@ -1,7 +1,10 @@
 angular.module('starter')    
     // QuantiModo API implementation
-    .factory('QuantiModo', function($http, $q, authService, localStorageService, $state, $ionicLoading, $rootScope){
+    .factory('QuantiModo', function($http, $q, authService, localStorageService, $state, $ionicLoading,
+                                    $rootScope, $ionicPopup){
             var QuantiModo = {};
+            $rootScope.connectionErrorShowing = false; // to prevent more than one popup
+
 
             QuantiModo.successHandler = function(data){
                 if(!data.success){
@@ -56,7 +59,10 @@ angular.module('starter')
             // GET method with the added token
             QuantiModo.get = function(baseURL, allowedParams, params, successHandler, errorHandler){
                 authService.getAccessTokenFromAnySource().then(function(tokenObject){
-                    
+                    allowedParams.push('limit');
+                    allowedParams.push('offset');
+                    allowedParams.push('sort');
+                    allowedParams.push('updatedAt');
                     // configure params
                     var urlParams = [];
                     for (var key in params) 
@@ -88,6 +94,21 @@ angular.module('starter')
 
                     $http(request).success(successHandler).error(function(data,status,headers,config){
                         QuantiModo.errorHandler(data, status, headers, config, request);
+                        if (!data && !$rootScope.connectionErrorShowing) {
+                            $rootScope.connectionErrorShowing = true;
+                            $ionicPopup.show({
+                                title: 'Not connected:',
+                                subTitle: 'Either you are not connected to the internet or the QuantiModo server cannot be reached.',
+                                buttons:[
+                                    {text: 'OK',
+                                        type: 'button-positive',
+                                        onTap: function(){
+                                            $rootScope.connectionErrorShowing = false;
+                                        }
+                                    }
+                                ]
+                            });
+                        }
                         errorHandler(data);
                     });
 
@@ -147,15 +168,16 @@ angular.module('starter')
                 };
 
                 var successCallback =  function(response){
-                    if(response.length === 0 || typeof response === "string" || params.offset >= 3000){
+                    if (response.length === 0 || typeof response === "string" || params.offset >= 3000) {
                         defer.resolve(response_array);
-                    }else{
+                    } else {
                         localStorageService.getItem('user', function(user){
                             if(!user){
                                 defer.reject(false);
                             } else {
                                 response_array = response_array.concat(response);
                                 params.offset+=200;
+                                params.limit = 200;
                                 defer.notify(response);
                                 getMeasurements(params,successCallback,errorCallback);
                             }
@@ -172,12 +194,12 @@ angular.module('starter')
 
             QuantiModo.getV1Measurements = function(params, successHandler, errorHandler){
                 QuantiModo.get('api/v1/measurements',
-                    ['source', 'limit', 'offset', 'sort', 'id', 'variableCategoryName'],
+                    ['source', 'limit', 'offset', 'sort', 'id', 'variableCategoryName', 'variableName'],
                     params,
                     successHandler,
                     errorHandler);
             };
-
+        
             QuantiModo.deleteV1Measurements = function(measurements, successHandler, errorHandler){
                 QuantiModo.post('api/v1/measurements/delete',
                     ['variableId', 'variableName', 'startTimeEpoch', 'id'],
@@ -214,12 +236,16 @@ angular.module('starter')
             };
 
             // post new Measurements for user
-            QuantiModo.postMeasurementsV2 = function(measurementset, successHandler ,errorHandler){
-                QuantiModo.post('api/measurements/v2', 
-                    ['measurements', 'variableName', 'source', 'variableCategoryName', 'combinationOperation', 'abbreviatedUnitName'],
-                    measurementset, 
-                    successHandler,
-                    errorHandler);
+            QuantiModo.postMeasurementsV2 = function(measurementSet, successHandler, errorHandler){
+                if(!measurementSet[0].measurements){
+                    console.error("No measurementSet.measurements provided to QuantiModo.postMeasurementsV2");
+                } else {
+                    QuantiModo.post('api/measurements/v2',
+                        ['measurements', 'variableName', 'source', 'variableCategoryName', 'combinationOperation', 'abbreviatedUnitName'],
+                        measurementSet,
+                        successHandler,
+                        errorHandler);
+                }
             };
         
             QuantiModo.logoutOfApi = function(successHandler, errorHandler){
@@ -282,7 +308,16 @@ angular.module('starter')
                     errorHandler);
             };
 
-            // get public variables
+            // delete a vote
+            QuantiModo.deleteVote = function(correlationSet, successHandler ,errorHandler){
+                QuantiModo.post('api/v1/votes/delete',
+                    ['cause', 'effect', 'correlation'],
+                    correlationSet,
+                    successHandler,
+                    errorHandler);
+            };
+
+            // search for public variables
             QuantiModo.searchVariablesIncludePublic = function(query, successHandler, errorHandler){
                 QuantiModo.get('api/v1/variables/search/' + encodeURIComponent(query),
                     ['limit','includePublic'],
@@ -291,11 +326,29 @@ angular.module('starter')
                     errorHandler);
             };
 
-            // get public variables
+            // search for user variables
+            QuantiModo.searchUserVariables = function(query, successHandler, errorHandler){
+                QuantiModo.get('api/v1/variables/search/' + encodeURIComponent(query),
+                    ['limit','includePublic'],
+                    {'limit' : 100, 'includePublic' : false},
+                    successHandler,
+                    errorHandler);
+            };
+
+            // search for public variables by category
             QuantiModo.searchVariablesByCategoryIncludePublic = function(query, category, successHandler, errorHandler){
                 QuantiModo.get('api/v1/variables/search/'+ encodeURIComponent(query),
                     ['limit','categoryName','includePublic'],
                     {'limit' : 5, 'categoryName': category, 'includePublic': true},
+                    successHandler,
+                    errorHandler);
+            };
+
+            // search user variables by category
+            QuantiModo.searchUserVariablesByCategory = function(query, category, successHandler, errorHandler){
+                QuantiModo.get('api/v1/variables/search/'+ encodeURIComponent(query),
+                    ['limit','categoryName','includePublic'],
+                    {'limit' : 100, 'categoryName': category, 'includePublic': false},
                     successHandler,
                     errorHandler);
             };
@@ -327,18 +380,18 @@ angular.module('starter')
 
 
         // get user variables
-            QuantiModo.getUserVariablesByCategory = function(category,successHandler, errorHandler){
+            QuantiModo.getUserVariables = function(category, successHandler, errorHandler){
                 if(category){
                     QuantiModo.get('api/v1/variables',
                         ['category', 'limit'],
-                        {category:category, limit:5},
+                        {limit:200},
                         successHandler,
                         errorHandler);
                 }
                 if(!category){
                     QuantiModo.get('api/v1/variables',
                         ['category', 'limit'],
-                        {limit:5},
+                        {limit:200},
                         successHandler,
                         errorHandler);
                 }
@@ -371,19 +424,19 @@ angular.module('starter')
                     errorHandler);
             };
 
-            // get reminders
-            QuantiModo.getTrackingReminders = function(params, successHandler, errorHandler){
-                QuantiModo.get('api/v1/trackingReminders',
-                    ['variableCategoryName', 'id'],
+            // get pending reminders
+            QuantiModo.getTrackingReminderNotifications = function(params, successHandler, errorHandler){
+                QuantiModo.get('api/v1/trackingReminderNotifications',
+                    ['variableCategoryName', 'reminderTime', 'sort'],
                     params,
                     successHandler,
                     errorHandler);
             };
 
-            // get pending reminders 
-            QuantiModo.getTrackingReminderNotifications = function(params, successHandler, errorHandler){
-                QuantiModo.get('api/v1/trackingReminderNotifications',
-                    ['variableCategoryName', 'reminderTime', 'sort'],
+            // get reminders
+            QuantiModo.getTrackingReminders = function(params, successHandler, errorHandler){
+                QuantiModo.get('api/v1/trackingReminders',
+                    ['variableCategoryName', 'id'],
                     params,
                     successHandler,
                     errorHandler);
@@ -410,6 +463,9 @@ angular.module('starter')
 
             // delete tracking reminder
             QuantiModo.deleteTrackingReminder = function(reminderId, successHandler, errorHandler){
+                if(!reminderId){
+                    alert('Could not delete this reminder.  Please contact info@quantimo.do.');
+                }
                 QuantiModo.post('api/v1/trackingReminders/delete',
                     ['id'],
                     {id: reminderId},

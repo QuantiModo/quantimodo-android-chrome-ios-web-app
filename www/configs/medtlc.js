@@ -35,7 +35,7 @@ config.appSettings  = {
 
     defaultState : 'app.remindersInbox',
 
-    welcomeState : 'app.remindersInbox',
+    welcomeState : 'app.login',
 
     settingsPageOptions :
     {
@@ -68,11 +68,43 @@ config.appSettings  = {
         'Ecstatic'
     ],
 
+    primaryOutcomeVariableRatingOptionLowercaseLabels : [
+        'depressed',
+        'sad',
+        'ok',
+        'happy',
+        'ecstatic'
+    ],
+
+    positiveRatingImages : [
+        'img/rating/ic_face_depressed.png',
+        'img/rating/ic_face_sad.png',
+        'img/rating/ic_face_ok.png',
+        'img/rating/ic_face_happy.png',
+        'img/rating/ic_face_ecstatic.png'
+    ],
+
+    negativeRatingImages : [
+        'img/rating/ic_face_ecstatic.png',
+        'img/rating/ic_face_happy.png',
+        'img/rating/ic_face_ok.png',
+        'img/rating/ic_face_sad.png',
+        'img/rating/ic_face_depressed.png'
+    ],
+
+    numericRatingImages : [
+        'img/rating/ic_1.png',
+        'img/rating/ic_2.png',
+        'img/rating/ic_3.png',
+        'img/rating/ic_4.png',
+        'img/rating/ic_5.png'
+    ],
+
     welcomeText:"Let's start off by adding your first medication!",
     primaryOutcomeVariableTrackingQuestion:"How are you",
     primaryOutcomeVariableAverageText:"Your average mood is ",
     mobileNotificationImage : "file://img/icons/icon_128.png",
-    mobileNotificationText : "Time to Track",
+    mobileNotificationText : "Time to track!",
     ratingValueToTextConversionDataSet: {
         "1": "depressed",
         "2": "sad",
@@ -242,7 +274,7 @@ config.appSettings  = {
         button2 : {
             icon: 'ion-ios-medkit-outline',
             label: 'Add a medication',
-            stateAndParameters: "'app.reminderAddCategory', {variableCategoryName : 'Treatments'}"
+            stateAndParameters: "'app.reminderSearchCategory', {variableCategoryName : 'Treatments'}"
         },
         button3 : {
             icon: 'ion-ios-pulse',
@@ -257,6 +289,263 @@ config.appSettings  = {
     },
 
     menu : [
+        {
+            title : 'Reminder Inbox',
+            href : '#/app/reminders-inbox',
+            icon : 'ion-archive'
+        },
+        {
+            title : 'Medications',
+            click : 'togglePrimaryOutcomeSubMenu',
+            showSubMenuVariable : 'showPrimaryOutcomeSubMenu',
+            isSubMenuParent : true,
+            collapsedIcon : 'ion-ios-medkit-outline',
+            expandedIcon : 'ion-chevron-down'
+        },
+        {
+            title : "Today's Meds",
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showPrimaryOutcomeSubMenu',
+            href : '#/app/reminders-inbox-today/Treatments',
+            icon : 'ion-android-sunny'
+        },
+        {
+            title : 'Add Medications',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showPrimaryOutcomeSubMenu',
+            href : '#/app/reminderSearchCategory/Treatments',
+            icon : 'ion-ios-alarm-outline'
+        },
+        {
+            title : 'Manage Medications',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showPrimaryOutcomeSubMenu',
+            href : '#/app/reminders-manage/Treatments',
+            icon : 'ion-ios-medkit-outline'
+        },
+        {
+            title : 'History',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showPrimaryOutcomeSubMenu',
+            href : '#/app/history-all/Treatments',
+            icon : 'ion-ios-list-outline'
+        },
+        {
+            title : 'Manage Reminders',
+            click : 'toggleReminderSubMenu',
+            showSubMenuVariable : 'showReminderSubMenu',
+            isSubMenuParent : true,
+            collapsedIcon : 'ion-android-notifications-none',
+            expandedIcon : 'ion-chevron-down'
+        },
+        {
+            title : 'All Reminders',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showReminderSubMenu',
+            href : '#/app/reminders-manage',
+            icon : 'ion-android-globe'
+        },
+        {
+            title : 'Emotions',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showReminderSubMenu',
+            href : '#/app/reminders-manage/Emotions',
+            icon : 'ion-happy-outline'
+        },
+        {
+            title : 'Foods',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showReminderSubMenu',
+            href : '#/app/reminders-manage/Foods',
+            icon : 'ion-ios-nutrition-outline'
+        },
+        {
+            title : 'Physical Activity',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showReminderSubMenu',
+            href : '#/app/reminders-manage/Physical Activity',
+            icon : 'ion-ios-body-outline'
+        },
+        {
+            title : 'Symptoms',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showReminderSubMenu',
+            href : '#/app/reminders-manage/Symptoms',
+            icon : 'ion-sad-outline'
+        },
+        {
+            title : 'Treatments',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showReminderSubMenu',
+            href : '#/app/reminders-manage/Treatments',
+            icon : 'ion-ios-medkit-outline'
+        },
+        {
+            title : 'Vital Signs',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showReminderSubMenu',
+            href : '#/app/reminders-manage/Vital Signs',
+            icon : 'ion-ios-pulse'
+        },
+        {
+            title : 'Record Measurement',
+            click : 'toggleTrackingSubMenu',
+            showSubMenuVariable : 'showTrackingSubMenu',
+            isSubMenuParent : true,
+            collapsedIcon : 'ion-compose',
+            expandedIcon : 'ion-chevron-down'
+        },
+        {
+            title : 'Track Anything',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showTrackingSubMenu',
+            href : '#/app/track_factors',
+            icon : 'ion-android-globe'
+        },
+        {
+            title : 'Record a Meal',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showTrackingSubMenu',
+            href : '#/app/track_factors_category/Foods',
+            icon : 'ion-ios-nutrition-outline'
+        },
+        {
+            title : 'Rate an Emotion',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showTrackingSubMenu',
+            href : '#/app/track_factors_category/Emotions',
+            icon : 'ion-happy-outline'
+        },
+        {
+            title : 'Rate a Symptom',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showTrackingSubMenu',
+            href : '#/app/track_factors_category/Symptoms',
+            icon : 'ion-ios-pulse'
+        },
+        {
+            title : 'Record a Treatment',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showTrackingSubMenu',
+            href : '#/app/track_factors_category/Treatments',
+            icon : 'ion-ios-medkit-outline'
+        },
+        {
+            title : 'Record Activity',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showTrackingSubMenu',
+            href : '#/app/track_factors_category/Physical Activity',
+            icon : 'ion-ios-body-outline'
+        },
+        {
+            title : 'Record Vital Sign',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showTrackingSubMenu',
+            href : '#/app/track_factors_category/Vital Signs',
+            icon : 'ion-ios-pulse'
+        },
+        {
+            title : 'History',
+            click : 'toggleHistorySubMenu',
+            showSubMenuVariable : 'showHistorySubMenu',
+            isSubMenuParent : true,
+            collapsedIcon : 'ion-ios-list-outline',
+            expandedIcon : 'ion-chevron-down'
+        },
+        {
+            title : 'All Measurements',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showHistorySubMenu',
+            href : '#/app/history-all',
+            icon : 'ion-android-globe'
+        },
+        {
+            title : 'Emotions',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showHistorySubMenu',
+            href : '#/app/history-all/Emotions',
+            icon : 'ion-happy-outline'
+        },
+        {
+            title : 'Foods',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showHistorySubMenu',
+            href : '#/app/history-all/Foods',
+            icon : 'ion-ios-nutrition-outline'
+        },
+        {
+            title : 'Symptoms',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showHistorySubMenu',
+            href : '#/app/history-all/Symptoms',
+            icon : 'ion-sad-outline'
+        },
+        {
+            title : 'Treatments',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showHistorySubMenu',
+            href : '#/app/history-all/Treatments',
+            icon : 'ion-ios-medkit-outline'
+        },
+        {
+            title : 'Physical Activity',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showHistorySubMenu',
+            href : '#/app/history-all/Physical Activity',
+            icon : 'ion-ios-body-outline'
+        },
+        {
+            title : 'Vital Signs',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showHistorySubMenu',
+            href : '#/app/history-all/Vital Signs',
+            icon : 'ion-ios-pulse'
+        },
+        // {
+        //     title : 'Import Data',
+        //     href : '#/app/import',
+        //     icon : 'ion-ios-cloud-download-outline'
+        // },
+        // {
+        //     title : 'Strongest Predictors',
+        //     click : 'togglePredictorSearchSubMenu',
+        //     showSubMenuVariable : 'showPredictorSearchSubMenu',
+        //     isSubMenuParent : true,
+        //     collapsedIcon : 'ion-ios-analytics',
+        //     expandedIcon : 'ion-chevron-down'
+        // },
+        // {
+        //     title : 'For Everyone',
+        //     isSubMenuChild : true,
+        //     showSubMenuVariable : 'showPredictorSearchSubMenu',
+        //     href : '#/app/search-common-relationships',
+        //     icon : 'ion-ios-people'
+        // },
+        // {
+        //     title : 'For You',
+        //     isSubMenuChild : true,
+        //     showSubMenuVariable : 'showPredictorSearchSubMenu',
+        //     href : '#/app/search-user-relationships',
+        //     icon : 'ion-person'
+        // },
+        {
+            title : 'Settings',
+            href : '#/app/settings',
+            icon : 'ion-ios-gear-outline'
+        },
+        {
+            title : 'Help & Feedback',
+            href : "#/app/feedback",
+            icon : 'ion-ios-help-outline'
+        }
+    ],
+
+    edsMenu : [
+        {
+            title : 'Reminder Inbox',
+            href : '#/app/reminders-inbox',
+            icon : 'ion-archive'
+        },
         {
             title : 'Add How I Feel Response',
             href : '#/app/track_factors_category/Symptoms',
@@ -273,13 +562,8 @@ config.appSettings  = {
             icon : 'ion-android-sunny'
         },
         {
-            title : 'Show Reminders',
-            href : '#/app/reminders-inbox',
-            icon : 'ion-android-notifications-none'
-        },
-        {
             title : 'Add Medications',
-            href : '#/app/reminder_add/Treatments',
+            href : '#/app/reminderSearchCategory/Treatments',
             icon : 'ion-ios-alarm-outline'
         },
         {
@@ -289,8 +573,60 @@ config.appSettings  = {
         },
         {
             title : 'History',
+            click : 'toggleHistorySubMenu',
+            showSubMenuVariable : 'showHistorySubMenu',
+            isSubMenuParent : true,
+            collapsedIcon : 'ion-ios-list-outline',
+            expandedIcon : 'ion-chevron-down'
+        },
+        {
+            title : 'All Measurements',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showHistorySubMenu',
             href : '#/app/history-all',
-            icon : 'ion-ios-paper-outline'
+            icon : 'ion-android-globe'
+        },
+        {
+            title : 'Emotions',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showHistorySubMenu',
+            href : '#/app/history-all/Emotions',
+            icon : 'ion-happy-outline'
+        },
+        {
+            title : 'Foods',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showHistorySubMenu',
+            href : '#/app/history-all/Foods',
+            icon : 'ion-ios-nutrition-outline'
+        },
+        {
+            title : 'Symptoms',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showHistorySubMenu',
+            href : '#/app/history-all/Symptoms',
+            icon : 'ion-sad-outline'
+        },
+        {
+            title : 'Treatments',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showHistorySubMenu',
+            href : '#/app/history-all/Treatments',
+            icon : 'ion-ios-medkit-outline'
+        },
+        {
+            title : 'Physical Activity',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showHistorySubMenu',
+            href : '#/app/history-all/Physical Activity',
+            icon : 'ion-ios-body-outline'
+        },
+        {
+            title : 'Vital Signs',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showHistorySubMenu',
+            href : '#/app/history-all/Vital Signs',
+            icon : 'ion-ios-pulse'
         },
         {
             title : 'Getting Started',
@@ -323,34 +659,29 @@ config.appSettings  = {
             title : 'Emotions',
             isSubMenuChild : true,
             showSubMenuVariable : 'showReminderSubMenu',
-            href : '#/app/reminder_add/Emotions',
+            href : '#/app/reminders-manage/Emotions',
             icon : 'ion-happy-outline'
         },
         {
             title : 'Responses',
             isSubMenuChild : true,
             showSubMenuVariable : 'showReminderSubMenu',
-            href : '#/app/reminder_add/Symptoms',
+            href : '#/app/reminders-manage/Symptoms',
             icon : 'ion-ios-pulse'
         },
         {
             title : 'Treatments',
             isSubMenuChild : true,
             showSubMenuVariable : 'showReminderSubMenu',
-            href : '#/app/reminder_add/Treatments',
+            href : '#/app/reminders-manage/Treatments',
             icon : 'ion-ios-medkit-outline'
         },
         {
             title : 'Foods',
             isSubMenuChild : true,
             showSubMenuVariable : 'showReminderSubMenu',
-            href : '#/app/reminder_add/Foods',
+            href : '#/app/reminders-manage/Foods',
             icon : 'ion-ios-nutrition-outline'
-        },
-        {
-            title : 'Import Data',
-            href : '#/app/import',
-            icon : 'ion-ios-cloud-download-outline'
         },
         {
             title : 'Settings',

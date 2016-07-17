@@ -1,7 +1,7 @@
 <ion-view hide-nav-bar="hideNavigationMenu" view-title="{{state.title}}">
     <ion-content>
 
-        <div class="card" ng-show="state.showAddVariable">
+        <!--<div class="card" ng-show="state.showAddVariable">
             <div class="list">
                 <p class="heading positive" style="padding:14px;">Add new {{state.variableCategoryObject.variableCategoryNameSingularLowercase | wordAliases}} variable</p>
 
@@ -38,7 +38,7 @@
                     <i class="radio-icon ion-checkmark"></i>
                 </label>
             </div>
-        </div>
+        </div>-->
 
         <div class="card" style="overflow: visible" ng-hide="loading">
             <div class="item item-divider">
@@ -85,13 +85,15 @@
                     <div class="input-label">
                         Unit
                     </div>
-                    <select ng-model="state.measurement.abbreviatedUnitName">
-                        <option ng-selected="{{unitObject.abbreviatedName === state.measurement.abbreviatedUnitName}}"
-                                ng-repeat="unitObject in state.unitObjects"
-                                value="{{unitObject.abbreviatedName}}">
-                            {{unitObject.name}} ({{unitObject.abbreviatedName}})
-                        </option>
+                    <select ng-model="state.measurement.abbreviatedUnitName" ng-options="x for x in abbreviatedUnitNames">
                     </select>
+                    <!--<select ng-model="state.measurement.abbreviatedUnitName">-->
+                        <!--<option ng-selected="unitObject.abbreviatedName === state.measurement.abbreviatedUnitName"-->
+                                <!--ng-repeat="unitObject in unitObjects"-->
+                                <!--value="{{unitObject.abbreviatedName}}">-->
+                            <!--{{unitObject.name}} ({{unitObject.abbreviatedName}})-->
+                        <!--</option>-->
+                    <!--</select>-->
                 </label>
                 <div class="row labeled-control">
                     <div class="col col-l">
@@ -100,14 +102,11 @@
                         </span>
                     </div>
                     <div class="col" style="padding-top: 15px;">
-                        <!--FIXME update this-->
-                        <!--<ionic-datepicker style="width:100%" idate="selectedDate" disablepreviousdates="false" callback="datePickerCallback">-->
-                            <button class="button button-block measure-date up-top"
-                                    style="font-size:14px;border:none;color:black;background-color: white;margin-bottom: 0px;margin-top: 0px;padding-left: 0px; text-align:left;"
-                                    ng-click="openMeasurementDatePicker()">
-                                {{ selectedDate | date:'dd - MMMM - yyyy' }}
-                            </button>
-                        <!--</ionic-datepicker>-->
+                        <button class="button button-block measure-date up-top"
+                                style="font-size:14px;border:none;color:black;background-color: white;margin-bottom: 0px;margin-top: 0px;padding-left: 0px; text-align:left;"
+                                ng-click="openMeasurementDatePicker()">
+                            {{ selectedDate | date:'dd - MMMM - yyyy' }}
+                        </button>
                     </div>
                 </div>
 

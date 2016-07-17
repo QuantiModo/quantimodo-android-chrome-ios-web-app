@@ -51,6 +51,7 @@ angular.module('starter')
     };
 
     var init = function(){
+        Bugsnag.context = "intro";
         
         $scope.showLoader();
         

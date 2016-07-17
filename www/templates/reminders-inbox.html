@@ -2,7 +2,7 @@
 
 	<ion-content scroll="true" overflow-scroll="true">
 
-		<div class="list card" ng-hide="loading">
+
 
 			<div class="list card"  ng-hide="hideAddTreatmentRemindersCard">
 				<div class="item" style="padding-bottom:0px;">
@@ -18,7 +18,7 @@
 					</div>
 					<div class="row" >
 						<div class="button-bar">
-							<button class="button button-clear button-balanced" style="font-size: 14px;" ng-click="goToState('app.reminderAddCategory', 'Treatments')"><i class="ion-plus-round"> &nbsp; Add treatment reminder &nbsp;</i></button>
+							<button class="button button-clear button-balanced" style="font-size: 14px;" ng-click="goToReminderSearchCategory('Treatments')"><i class="ion-plus-round"> &nbsp; Add treatment reminder &nbsp;</i></button>
 						</div>
 					</div>
 					<div class="row" >
@@ -44,7 +44,7 @@
 					</div>
 					<div class="row" >
 						<div class="button-bar">
-							<button class="button button-clear button-balanced" style="font-size: 14px;" ng-click="goToState('app.reminderAddCategory', 'Symptoms')"><i class="ion-plus-round"> &nbsp; Add symptom reminder &nbsp;</i></button>
+							<button class="button button-clear button-balanced" style="font-size: 14px;" ng-click="goToReminderSearchCategory('Symptoms')"><i class="ion-plus-round"> &nbsp; Add symptom reminder &nbsp;</i></button>
 						</div>
 					</div>
 					<div class="row"  >
@@ -69,7 +69,7 @@
 					</div>
 					<div class="row" >
 						<div class="button-bar">
-							<button class="button button-clear button-balanced" style="font-size: 14px;" ng-click="goToState('app.reminderAddCategory', 'Emotions')"><i class="ion-plus-round"> &nbsp; Add an emotion reminder&nbsp;</i></button>
+							<button class="button button-clear button-balanced" style="font-size: 14px;" ng-click="goToReminderSearchCategory('Emotions')"><i class="ion-plus-round"> &nbsp; Add an emotion reminder&nbsp;</i></button>
 						</div>
 					</div>
 					<div class="row"  >
@@ -94,7 +94,7 @@
 					</div>
 					<div class="row" >
 						<div class="button-bar">
-							<button class="button button-clear button-balanced" style="font-size: 14px;" ng-click="goToState('app.reminderAddCategory', 'Foods')"><i class="ion-plus-round"> &nbsp; Add a food reminder &nbsp;</i></button>
+							<button class="button button-clear button-balanced" style="font-size: 14px;" ng-click="goToReminderSearchCategory('Foods')"><i class="ion-plus-round"> &nbsp; Add a food reminder &nbsp;</i></button>
 						</div>
 					</div>
 					<div class="row"  >
@@ -129,14 +129,15 @@
 				</div>
 			</div>
 
-			<div ng-repeat="divider in state.filteredReminders">
+		<div class="list card" ng-if="state.filteredReminders.length">
+			<div ng-repeat="divider in state.filteredReminders" ng-init="dividerIndex = $index" id="{{divider.name}}Reminders">
 
 				<div class="item item-divider" style="">
 				  {{divider.name}}
 				</div>
 
 				
-				<div class="list card" ng-repeat="reminder in divider.reminders" >
+				<div class="list card" ng-if="!reminder.hide" ng-repeat="reminder in divider.reminders" ng-init="reminderNotificationIndex = $index" >
 					<div class="item" style="padding-bottom:0px;">
 						<div class="row">
 							<div class="col" style="padding-top: 0px;">
@@ -149,25 +150,26 @@
 							</div>
 						</div>
 						<div class="button-bar">
-							<button class="button button-clear button-assertive" style="text-overflow: clip; font-size: 12px;" ng-click="skip(reminder, $event)"><i class="ion-android-cancel"> &nbsp; Skip</i></button>
-							<button class="button button-clear button-royal" style="text-overflow: clip; font-size: 12px;" ng-click="snooze(reminder, $event)"><i class="ion-android-notifications-off"> &nbsp; Snooze</i></button>
+							<button class="button button-clear button-assertive" style="text-overflow: clip; font-size: 12px;" ng-click="skip(reminder, $event, dividerIndex, reminderNotificationIndex)"><i class="ion-android-cancel"> &nbsp; Skip</i></button>
+							<button class="button button-clear button-royal" style="text-overflow: clip; font-size: 12px;" ng-click="snooze(reminder, $event, dividerIndex, reminderNotificationIndex)"><i class="ion-android-notifications-off"> &nbsp; Snooze</i></button>
 							<button class="button button-clear button-calm" ng-click="editReminderSettings(reminder)" style="text-overflow: clip;  font-size: 12px;"><i class="ion-settings"> &nbsp; Settings</i></button>
 						</div>
 						<div class="row" ng-if="reminder.abbreviatedUnitName !== '/5' " >
 							<div class="button-bar">
-								<button class="button button-clear button-balanced" style="text-overflow: clip; font-size: 14px;" ng-click="track(reminder, null, $event)"><i class="ion-android-done"> &nbsp; Record {{reminder.defaultValue}}&nbsp;{{reminder.unitName.toLowerCase()}}</i></button>
+								<button ng-show="reminder.defaultValue" class="button button-clear button-assertive" style="text-overflow: clip; font-size: 14px;" ng-click="track(reminder, 0, $event, dividerIndex, reminderNotificationIndex)"><i class="ion-android-done"> &nbsp; Record 0</i></button>
+								<button class="button button-clear button-balanced" style="text-overflow: clip; font-size: 14px;" ng-click="track(reminder, null, $event, dividerIndex, reminderNotificationIndex)"><i class="ion-android-done"> &nbsp; Record {{reminder.defaultValue}}&nbsp</i></button>
 							</div>
 						</div>
 						<div class="row" ng-if="reminder.abbreviatedUnitName !== '/5' " >
 							<div class="button-bar">
-								<button class="button button-clear button-calm" style="text-overflow: clip; font-size: 14px;" ng-click="editMeasurement(reminder)"><i class="ion-edit"> &nbsp; Record Different Value/Time</i></button>
+								<button class="button button-clear button-calm" style="text-overflow: clip; font-size: 14px;" ng-click="editMeasurement(reminder, dividerIndex, reminderNotificationIndex)"><i class="ion-edit"> &nbsp; Record Different Value/Time</i></button>
 							</div>
 						</div>
 						<div class="primary-outcome-variable-reporting"
 						 	ng-if="!reminder.description &&	reminder.abbreviatedUnitName === '/5'">
 							<div class="primary-outcome-variable-rating-buttons" >
 								<img ng-repeat="option in numericRatingOptions"
-									 ng-click="track(reminder, option.numericValue, $event)"
+									 ng-click="track(reminder, option.numericValue, $event, dividerIndex, reminderNotificationIndex)"
 									 ng-src="{{option.img}}">
 							</div>
 							<br>
@@ -177,7 +179,7 @@
 						 	reminder.description.toLowerCase().indexOf('positive') > -1">
 							<div class="primary-outcome-variable-rating-buttons" >
 								<img ng-repeat="option in positiveRatingOptions"
-									 ng-click="track(reminder, option.numericValue, $event)"
+									 ng-click="track(reminder, option.numericValue, $event, dividerIndex, reminderNotificationIndex)"
 									 ng-src="{{option.img}}">
 								<br>
 							</div>
@@ -188,7 +190,7 @@
 						 	reminder.description.toLowerCase().indexOf('negative') > -1">
 							<div class="primary-outcome-variable-rating-buttons" >
 								<img ng-repeat="option in negativeRatingOptions"
-									 ng-click="track(reminder, option.numericValue, $event)"
+									 ng-click="track(reminder, option.numericValue, $event, dividerIndex, reminderNotificationIndex)"
 									 ng-src="{{option.img}}">
 								<br>
 							</div>
@@ -198,9 +200,9 @@
 				</div>
 			</div>
 			
-<!--			<div class="button-bar">
+			<div ng-hide="state.hideLoadMoreButton" class="button-bar">
 				<a class="button button-clear button-calm" ng-click="init()" style="text-overflow: clip;"><i class="ion-refresh">  Refresh</i></a>
-			</div>-->
+			</div>
 		</div>
 
 	</ion-content>

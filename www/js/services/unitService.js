@@ -10,14 +10,20 @@ angular.module('starter')
                 var deferred = $q.defer();
 
                 localStorageService.getItem('units',function(units){
+                    if(typeof $rootScope.abbreviatedUnitNames === "undefined"){
+                        $rootScope.abbreviatedUnitNames = [];
+                    }
                     if(units){
-                        deferred.resolve(JSON.parse(units));
+                        units = JSON.parse(units);
+                        $rootScope.unitObjects = units;
+                        for(var i =0; i< $rootScope.unitObjects.length; i++){
+                            $rootScope.abbreviatedUnitNames[i] = $rootScope.unitObjects[i].abbreviatedName;
+                            $rootScope.unitsIndexedByAbbreviatedName[units[i].abbreviatedName] = units[i];
+                        }
+                        deferred.resolve(units);
                     } else {
-                        QuantiModo.getUnits(function(units){
-                            localStorageService.setItem('units',JSON.stringify(units));
+                        unitService.refreshUnits().then(function(){
                             deferred.resolve(units);
-                        }, function(){
-                            deferred.reject(false);
                         });
                     }
                 });
@@ -25,35 +31,23 @@ angular.module('starter')
                 return deferred.promise;
             },
 
-            // refresh local units with QuantiModo API
             refreshUnits : function(){
-                localStorage.removeItem('units');
                 var deferred = $q.defer();
-
                 QuantiModo.getUnits(function(units){
-                    localStorageService.setItem('units',JSON.stringify(units));
+                    if(typeof $rootScope.abbreviatedUnitNames === "undefined"){
+                        $rootScope.abbreviatedUnitNames = [];
+                    }
+                    localStorageService.setItem('units', JSON.stringify(units));
+                    $rootScope.unitObjects = units;
+                    for(var i =0; i < $rootScope.unitObjects.length; i++){
+                        $rootScope.abbreviatedUnitNames[i] = $rootScope.unitObjects[i].abbreviatedName;
+                        $rootScope.unitsIndexedByAbbreviatedName[units[i].abbreviatedName] = units[i];
+                    }
                     deferred.resolve(units);
                 }, function(){
                     deferred.reject(false);
                 });
-
                 return deferred.promise;
-            },
-
-            searchUnits:function(){
-                var query = $scope.state.abbreviatedUnitName;
-                if(query !== ""){
-                    $scope.state.showUnits = true;
-                    var matches = $scope.state.unitObjects.filter(function(unit) {
-                        return unit.abbreviatedName.toLowerCase().indexOf(query.toLowerCase()) !== -1;
-                    });
-
-                    $timeout(function() {
-                        $scope.state.searchedUnits = matches;
-                    }, 100);
-                } else {
-                    $scope.state.showUnits = false;
-                }
             }
         };
 

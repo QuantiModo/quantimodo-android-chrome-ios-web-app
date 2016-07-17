@@ -18,10 +18,10 @@
     <link href="css/style.css" rel="stylesheet">
     <link href="lib/Ionicons/css/ionicons.css" rel="stylesheet">
 
-    <link href="lib/ng-material-floating-button/mfb/dist/mfb.css" rel="stylesheet"/>
+    <link href="css/mfb.css" rel="stylesheet">
 
 
-    <link rel="shortcut icon" href="img/icons/icon_16.png"/>
+    <link rel="shortcut icon" href="img/icons/icon_16.png">
     <!-- IF using Sass (run gulp sass first), then uncomment below and remove the CSS includes above
     <link href="css/ionic.app.css" rel="stylesheet">
     -->
@@ -32,10 +32,12 @@
 
     <!-- ionic/angularjs js -->
     <script src="lib/ionic/js/ionic.bundle.js"></script>
+<script src="lib/ionic-platform-web-client/dist/ionic.io.bundle.min.js"></script>
     <script src="lib/ngCordova/dist/ng-cordova.js"></script>
 
     <!-- cordova script (this will be a 404 during development) -->
-    <script src="cordova.js"></script>
+    <!-- Cordova is bootstrapped by ionic-platform-web-client, uncomment this if you remove ionic-platform-web-client... -->
+<!-- <script src="cordova.js"></script> -->
 
 
     <script src="lib/oclazyload/dist/ocLazyLoad.min.js"></script>
@@ -95,6 +97,7 @@
     <script src="js/controllers/iframeScreenCtrl.js"></script>
     <script src="js/controllers/positiveCtrl.js"></script>
     <script src="js/controllers/negativeCtrl.js"></script>
+    <script src="js/controllers/positiveNegativeCtrl.js"></script>
     <script src="js/controllers/externalCtrl.js"></script>
     <script src="js/controllers/historyPrimaryOutcomeCtrl.js"></script>
     <script src="js/controllers/historyAllMeasurementsCtrl.js"></script>
@@ -104,6 +107,8 @@
     <script src="js/controllers/remindersManageCtrl.js"></script>
     <script src="js/controllers/remindersAddCtrl.js"></script>
     <script src="js/controllers/measurementAddCtrl.js"></script>
+    <script src="js/controllers/variablePageCtrl.js"></script>
+    <script src="js/controllers/studyCtrl.js"></script>
 
       <script>(function(){var w=window;var ic=w.Intercom;if(typeof ic==="function"){ic('reattach_activator');ic('update',intercomSettings);}else{var d=document;var i=function(){i.c(arguments)};i.q=[];i.c=function(args){i.q.push(args)};w.Intercom=i;function l(){var s=d.createElement('script');s.type='text/javascript';s.async=true;s.src='https://widget.intercom.io/widget/vtynnyja';var x=d.getElementsByTagName('script')[0];x.parentNode.insertBefore(s,x);}if(w.attachEvent){w.attachEvent('onload',l);}else{w.addEventListener('load',l,false);}}})()</script>
 

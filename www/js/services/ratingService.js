@@ -7,34 +7,34 @@ angular.module('starter')
                 var ratingInfo =
                 { 
                     1 : {
-                        displayDescription: 'Depressed',
-                        positiveImage: 'img/rating/ic_face_depressed.png',
-                        negativeImage: 'img/rating/ic_face_ecstatic.png',
-                        numericImage:  'img/rating/ic_1.png'
+                            displayDescription: config.appSettings.primaryOutcomeVariableRatingOptionLabels[0],
+                            positiveImage: config.appSettings.positiveRatingImages[0],
+                            negativeImage: config.appSettings.negativeRatingImages[0],
+                            numericImage:  config.appSettings.numericRatingImages[0],
                         },
-                    2 :  {
-                        displayDescription: 'Sad',
-                        positiveImage: 'img/rating/ic_face_sad.png',
-                        negativeImage: 'img/rating/ic_face_happy.png',
-                        numericImage:  'img/rating/ic_2.png'
+                    2 : {
+                            displayDescription: config.appSettings.primaryOutcomeVariableRatingOptionLabels[1],
+                            positiveImage: config.appSettings.positiveRatingImages[1],
+                            negativeImage: config.appSettings.negativeRatingImages[1],
+                            numericImage:  config.appSettings.numericRatingImages[1],
                         },
                     3 : {
-                        displayDescription: 'OK',
-                        positiveImage: 'img/rating/ic_face_ok.png',
-                        negativeImage: 'img/rating/ic_face_ok.png',
-                        numericImage:  'img/rating/ic_3.png'
+                            displayDescription: config.appSettings.primaryOutcomeVariableRatingOptionLabels[2],
+                            positiveImage: config.appSettings.positiveRatingImages[2],
+                            negativeImage: config.appSettings.negativeRatingImages[2],
+                            numericImage:  config.appSettings.numericRatingImages[2],
                         },
                     4 : {
-                        displayDescription: 'Happy',
-                        positiveImage: 'img/rating/ic_face_happy.png',
-                        negativeImage: 'img/rating/ic_face_sad.png',
-                        numericImage:  'img/rating/ic_4.png'
+                            displayDescription: config.appSettings.primaryOutcomeVariableRatingOptionLabels[3],
+                            positiveImage: config.appSettings.positiveRatingImages[3],
+                            negativeImage: config.appSettings.negativeRatingImages[3],
+                            numericImage:  config.appSettings.numericRatingImages[3],
                         },
                     5 : {
-                        displayDescription: 'Ecstatic',
-                        positiveImage: 'img/rating/ic_face_ecstatic.png',
-                        negativeImage: 'img/rating/ic_face_depressed.png',
-                        numericImage:  'img/rating/ic_5.png'
+                            displayDescription: config.appSettings.primaryOutcomeVariableRatingOptionLabels[4],
+                            positiveImage: config.appSettings.positiveRatingImages[4],
+                            negativeImage: config.appSettings.negativeRatingImages[4],
+                            numericImage:  config.appSettings.numericRatingImages[4],
                         }
                 };
                 return ratingInfo;
@@ -48,10 +48,12 @@ angular.module('starter')
                 }
             },
 
-            getPositiveImageByRatingValue : function(ratingValue){
-                var ratingInfo = this.getRatingInfo();
-                var positiveImage = ratingInfo['ratingValue'];
-            	return positiveImage;
+            getPositiveImageByRatingValue : function(numericValue){
+                var positiveRatingOptions = this.getPositiveRatingOptions();
+                var filteredList = positiveRatingOptions.filter(function(option){
+                    return option.numericValue === numericValue;
+                });
+                return filteredList.length? filteredList[0].img || false : false;
             },
 
             getNegativeImageByRatingValue : function(numericValue){
@@ -92,33 +94,33 @@ angular.module('starter')
                 return [
                     {
                         numericValue: 1,
-                        displayDescription: 'Depressed',
-                        lowerCaseTextDescription: 'depressed',
-                        img: 'img/rating/ic_face_depressed.png'
+                        displayDescription: config.appSettings.primaryOutcomeVariableRatingOptionLabels[0],
+                        lowerCaseTextDescription: config.appSettings.primaryOutcomeVariableRatingOptionLowercaseLabels[0],
+                        img: config.appSettings.positiveRatingImages[0]
                     },
                     {
                         numericValue: 2,
-                        displayDescription: 'Sad',
-                        lowerCaseTextDescription: 'sad',
-                        img: 'img/rating/ic_face_sad.png'
+                        displayDescription: config.appSettings.primaryOutcomeVariableRatingOptionLabels[1],
+                        lowerCaseTextDescription: config.appSettings.primaryOutcomeVariableRatingOptionLowercaseLabels[1],
+                        img: config.appSettings.positiveRatingImages[1]
                     },
                     {
                         numericValue: 3,
-                        displayDescription: 'OK',
-                        lowerCaseTextDescription: 'ok',
-                        img: 'img/rating/ic_face_ok.png'
+                        displayDescription: config.appSettings.primaryOutcomeVariableRatingOptionLabels[2],
+                        lowerCaseTextDescription: config.appSettings.primaryOutcomeVariableRatingOptionLowercaseLabels[2],
+                        img: config.appSettings.positiveRatingImages[2],
                     },
                     {
                         numericValue: 4,
-                        displayDescription: 'Happy',
-                        lowerCaseTextDescription: 'happy',
-                        img: 'img/rating/ic_face_happy.png'
+                        displayDescription: config.appSettings.primaryOutcomeVariableRatingOptionLabels[3],
+                        lowerCaseTextDescription: config.appSettings.primaryOutcomeVariableRatingOptionLowercaseLabels[3],
+                        img: config.appSettings.positiveRatingImages[3]
                     },
                     {
                         numericValue: 5,
-                        displayDescription: 'Ecstatic',
-                        lowerCaseTextDescription: 'ecstatic',
-                        img: 'img/rating/ic_face_ecstatic.png'
+                        displayDescription: config.appSettings.primaryOutcomeVariableRatingOptionLabels[4],
+                        lowerCaseTextDescription: config.appSettings.primaryOutcomeVariableRatingOptionLowercaseLabels[4],
+                        img: config.appSettings.positiveRatingImages[4]
                     }
                 ];
             },
@@ -127,33 +129,33 @@ angular.module('starter')
                 return [
                     {
                         numericValue: 1,
-                        displayDescription: 'Ecstatic',
-                        value: 'ecstatic',
-                        img: 'img/rating/ic_face_ecstatic.png'
+                        displayDescription: config.appSettings.primaryOutcomeVariableRatingOptionLabels[4],
+                        value: config.appSettings.primaryOutcomeVariableRatingOptionLowercaseLabels[4],
+                        img: config.appSettings.negativeRatingImages[0]
                     },
                     {
                         numericValue: 2,
-                        displayDescription: 'Happy',
-                        value: 'happy',
-                        img: 'img/rating/ic_face_happy.png'
+                        displayDescription: config.appSettings.primaryOutcomeVariableRatingOptionLabels[3],
+                        value: config.appSettings.primaryOutcomeVariableRatingOptionLowercaseLabels[3],
+                        img: config.appSettings.negativeRatingImages[1]
                     },
                     {
                         numericValue: 3,
-                        displayDescription: 'OK',
-                        value: 'ok',
-                        img: 'img/rating/ic_face_ok.png'
+                        displayDescription: config.appSettings.primaryOutcomeVariableRatingOptionLabels[2],
+                        value: config.appSettings.primaryOutcomeVariableRatingOptionLowercaseLabels[2],
+                        img: config.appSettings.negativeRatingImages[2]
                     },
                     {
                         numericValue: 4,
-                        displayDescription: 'Sad',
-                        value: 'sad',
-                        img: 'img/rating/ic_face_sad.png'
+                        displayDescription: config.appSettings.primaryOutcomeVariableRatingOptionLabels[1],
+                        value: config.appSettings.primaryOutcomeVariableRatingOptionLowercaseLabels[1],
+                        img: config.appSettings.negativeRatingImages[3]
                     },
                     {
                         numericValue: 5,
-                        displayDescription: 'Depressed',
-                        value: 'depressed',
-                        img: 'img/rating/ic_face_depressed.png'
+                        displayDescription: config.appSettings.primaryOutcomeVariableRatingOptionLabels[0],
+                        value: config.appSettings.primaryOutcomeVariableRatingOptionLowercaseLabels[0],
+                        img: config.appSettings.negativeRatingImages[4]
                     }
                 ];
             },
@@ -162,28 +164,28 @@ angular.module('starter')
                 return [
                     {
                         numericValue: 1,
-                        img: 'img/rating/ic_1.png'
+                        img: config.appSettings.numericRatingImages[0]
                     },
                     {
                         numericValue: 2,
-                        img: 'img/rating/ic_2.png'
+                        img: config.appSettings.numericRatingImages[1]
                     },
                     {
                         numericValue: 3,
-                        img: 'img/rating/ic_3.png'
+                        img: config.appSettings.numericRatingImages[2]
                     },
                     {
                         numericValue: 4,
-                        img: 'img/rating/ic_4.png'
+                        img: config.appSettings.numericRatingImages[3]
                     },
                     {
                         numericValue: 5,
-                        img: 'img/rating/ic_5.png'
+                        img: config.appSettings.numericRatingImages[4]
                     }
                 ];
             },
             
-            addImagesToMeasurements : function (measurements){
+            addInfoAndImagesToMeasurements : function (measurements){
                 var ratingInfo = ratingService.getRatingInfo();
                 var index;
                 for (index = 0; index < measurements.length; ++index) {
@@ -198,7 +200,15 @@ angular.module('starter')
                         measurements[index].roundedValue = Math.round(measurements[index].value);
                     }
 
-                    measurements[index].valueUnitVariableName = measurements[index].value + measurements[index].abbreviatedUnitName + ' ' + measurements[index].variableName;
+                    if (measurements[index].abbreviatedUnitName.charAt(0) === '/') {
+                        // don't add space between value and unit
+                        measurements[index].valueUnitVariableName = measurements[index].value + measurements[index].abbreviatedUnitName + ' ' + measurements[index].variableName;
+                    }
+                    else {
+                        // add space between value and unit
+                        measurements[index].valueUnitVariableName = measurements[index].value + " " + measurements[index].abbreviatedUnitName + ' ' + measurements[index].variableName;
+                    }
+
                     if(measurements[index].valueUnitVariableName.length > 29){
                         measurements[index].valueUnitVariableName =  measurements[index].valueUnitVariableName.substring(0, 29)+'...';
                     }

@@ -490,6 +490,40 @@ img.intro-primary-outcome-variable-rating-buttons {
     color: #FFFFff !important;
 }
 
+/* Positive/negative factors and study page */
+.factorResultList a {
+    white-space: normal;
+    color: #1A0DAB;
+    font-size: 24px;
+    font-family: arial, sans-serif;
+}
+
+.factorResultList h4 {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    font-weight: 700;
+}
+
+.factorResultList h3 {
+    font-size: 24px;
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+
+.factorResultList p a {
+    font-size: 14px;
+}
+
+.factorResultList p {
+    white-space: normal;
+}
+
+.voteButtons {
+    margin-top: 10px;
+    padding-bottom: 10px;
+    /*margin-bottom: 20px;*/
+}
+
 /*
 .pane {
     background-image: url('../img/intro_background.png');
@@ -498,3 +532,8 @@ img.intro-primary-outcome-variable-rating-buttons {
     background-size: cover;
 }
 */
+
+/* Fixes bottom of text being cut off in dropdown selectors */
+.item-select select {
+    padding: 14px 48px 8px 16px;
+}

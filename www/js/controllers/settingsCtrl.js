@@ -4,80 +4,113 @@ angular.module('starter')
 	.controller('SettingsCtrl', function($scope,localStorageService, $ionicModal, $timeout, utilsService, authService,
 										 measurementService, chartService, $ionicPopover, $cordovaFile,
 										 $cordovaFileOpener2, $ionicPopup, $state,notificationService, QuantiModo,
-                                         $rootScope) {
+                                         $rootScope, reminderService) {
 		$scope.controller_name = "SettingsCtrl";
+		$scope.state = {};
 		$scope.showReminderFrequencySelector = config.appSettings.settingsPageOptions.showReminderFrequencySelector;
-		// populate ratings interval
-        localStorageService.getItem('primaryOutcomeRatingFrequencyDescription', function (primaryOutcomeRatingFrequencyDescription) {
-                $scope.primaryOutcomeRatingFrequencyDescription = primaryOutcomeRatingFrequencyDescription ? primaryOutcomeRatingFrequencyDescription : "hourly";
-        });
 		$rootScope.isIOS = ionic.Platform.isIPad() || ionic.Platform.isIOS();
 		$rootScope.isAndroid = ionic.Platform.isAndroid();
         $rootScope.isChrome = window.chrome ? true : false;
 	    // populate user data
+		//$scope.state.combineNotifications = true;
+		$scope.state.combineNotifications = $rootScope.combineNotifications;
+		console.debug('CombineNotifications is '+ $scope.state.combineNotifications);
 
-
+		// populate ratings interval
+		localStorageService.getItem('primaryOutcomeRatingFrequencyDescription', function (primaryOutcomeRatingFrequencyDescription) {
+			$scope.primaryOutcomeRatingFrequencyDescription = primaryOutcomeRatingFrequencyDescription ? primaryOutcomeRatingFrequencyDescription : "daily";
+		});
+		// load rating popover
+		$ionicPopover.fromTemplateUrl('templates/settings/ask-for-a-rating.html', {
+			scope: $scope
+		}).then(function(popover) {
+			$scope.ratingPopover = popover;
+		});
+		// when interval is updated
+		$scope.saveRatingInterval = function(interval){
+			//schedule notification
+			//TODO we can pass callback function to check the status of scheduling
+			$scope.saveInterval(interval);
+			localStorageService.setItem('primaryOutcomeRatingFrequencyDescription', interval);
+			$scope.primaryOutcomeRatingFrequencyDescription = interval;
+			// hide popover
+			$scope.ratingPopover.hide();
+		};
+		
         // when login is tapped
 	    $scope.loginFromSettings = function(){
 			$state.go('app.login');
 	    };
+
+		function sendWithMailTo(subjectLine, emailBody){
+                    var emailUrl = 'mailto:?subject=' + subjectLine + '&body=' + emailBody;
+                    if($rootScope.isChromeExtension){
+                        console.debug('isChromeExtension so sending to website to share data');
+                        var url = config.getURL("api/v2/account/applications", true);
+                        var newTab = window.open(url,'_blank');
+                        if(!newTab){
+                            alert("Please unblock popups and refresh to access the Data Sharing page.");
+                        }
+                        $rootScope.hideNavigationMenu = false;
+                        $state.go(config.appSettings.defaultState);
         
-	    // when interval is updated
-	    $scope.saveRatingInterval = function(interval){
-	        //schedule notification
-	        //TODO we can pass callback function to check the status of scheduling
-	        notificationService.scheduleNotification(interval);
-	        
-	        localStorageService.setItem('primaryOutcomeRatingFrequencyDescription', interval);
-	        $scope.primaryOutcomeRatingFrequencyDescription = interval;
-	        
-	        // hide popover
-	        $scope.ratingPopover.hide();
-	    };
+                    } else {
+                        console.debug('window.plugins.emailComposer not found!  Generating email normal way.');
+						window.location.href = emailUrl;
+                    }
+                }
+
+		function sendWithEmailComposer(subjectLine, emailBody){
+                    document.addEventListener('deviceready', function () {
+                        console.debug('deviceready');
+                        cordova.plugins.email.isAvailable(
+                            function (isAvailable) {
+                                if(isAvailable){
+                                    if(window.plugins && window.plugins.emailComposer) {
+                                        console.debug('Generating email with cordova-plugin-email-composer');
+                                        window.plugins.emailComposer.showEmailComposerWithCallback(function(result) {
+                                                console.log("Response -> " + result);
+                                            },
+                                            subjectLine, // Subject
+                                            emailBody,                      // Body
+                                            null,    // To
+                                            'info@quantimo.do',                    // CC
+                                            null,                    // BCC
+                                            true,                   // isHTML
+                                            null,                    // Attachments
+                                            null);                   // Attachment Data
+                                    } else {
+                                        console.error('window.plugins.emailComposer not available!');
+										sendWithMailTo(subjectLine, emailBody);
+                                    }
+                                } else {
+                                    console.error('Email has not been configured for this device!');
+									sendWithMailTo(subjectLine, emailBody);
+                                }
+                            }
+                        );
+        
+                    }, false);
+                }
 
 		$scope.sendSharingInvitation= function() {
 			var subjectLine = "I%27d%20like%20to%20share%20my%20data%20with%20you%20at%20QuantiModo";
 			var emailBody = "Hi!%20%20%0A%0AI%27m%20tracking%20my%20life%20with%20QuantiModo%20and%20I%27d%20like%20to%20share%20my%20data%20with%20you.%20%20%0A%0APlease%20generate%20a%20data%20authorization%20URL%20at%20https%3A%2F%2Fapp.quantimo.do%2Fapi%2Fv2%2Fphysicians%20and%20email%20it%20to%20me.%20%0A%0AThanks!%20%3AD";
 
 			if($rootScope.isMobile){
-				document.addEventListener('deviceready', function () {
-					console.debug('deviceready');
-					cordova.plugins.email.isAvailable(
-						function (isAvailable) {
-							if(isAvailable){
-								if(window.plugins && window.plugins.emailComposer) {
-									console.debug('Generating email with cordova-plugin-email-composer');
-									window.plugins.emailComposer.showEmailComposerWithCallback(function(result) {
-											console.log("Response -> " + result);
-										},
-										subjectLine, // Subject
-										emailBody,                      // Body
-										null,    // To
-										'info@quantimo.do',                    // CC
-										null,                    // BCC
-										true,                   // isHTML
-										null,                    // Attachments
-										null);                   // Attachment Data
-								} else {
-									console.error('window.plugins.emailComposer not available!');
-								}
-							} else {
-								alert('Email has not been configured for this device!');
-							}
-						}
-					);
-
-				}, false);
+				sendWithEmailComposer(subjectLine, emailBody);
 			} else {
-				console.debug('window.plugins.emailComposer not found!  Generating email normal way.');
-				window.open('mailto:?subject=' + subjectLine + '&body=' + emailBody);
+				sendWithMailTo(subjectLine, emailBody);
+
 			}
 		};
 
 
         
 		$scope.init = function(){
-
+			Bugsnag.context = "settings";
+			if (typeof analytics !== 'undefined')  { analytics.trackView("Settings Controller"); }
+			$scope.shouldWeCombineNotifications();
 	    };
 
 		$scope.contactUs = function(){
@@ -99,13 +132,39 @@ angular.module('starter')
 				window.open('http://help.quantimo.do/forums/211661-general', '_blank');
 			}
 		};
-		
+
+		$scope.combineNotificationChange = function() {
+			
+			console.log('Combine Notification Change', $scope.state.combineNotifications);
+			$rootScope.combineNotifications = $scope.state.combineNotifications;
+			localStorageService.setItem('combineNotifications', $scope.state.combineNotifications);
+			if($scope.state.combineNotifications){
+				// populate ratings interval
+				notificationService.cancelAllNotifications().then(function() {
+
+					localStorageService.getItem('primaryOutcomeRatingFrequencyDescription', function (primaryOutcomeRatingFrequencyDescription) {
+						alert('You will only get one notification at a time instead of a separate notification for each reminder that you create');
+						console.debug("Cancelled individual notifications and now scheduling combined one with interval: " + primaryOutcomeRatingFrequencyDescription);
+						$scope.primaryOutcomeRatingFrequencyDescription = primaryOutcomeRatingFrequencyDescription ? primaryOutcomeRatingFrequencyDescription : "daily";
+						$scope.saveInterval($scope.primaryOutcomeRatingFrequencyDescription);
+					});
+				});
+			} else {
+
+				notificationService.cancelAllNotifications().then(function() {
+					alert('You will get a separate notification for each reminder that you create');
+					console.debug("Cancelled combined notification and now scheduling individual ones");
+					reminderService.refreshTrackingRemindersAndScheduleAlarms();
+				});
+			}
+			
+		};
 
         $scope.logout = function(){
 
             var startLogout = function(){
                 console.log('Logging out...');
-                $rootScope.isSyncing = false;
+                $scope.hideLoader();
                 $rootScope.user = null;
                 $rootScope.isMobile = window.cordova;
                 $rootScope.isBrowser = ionic.Platform.platforms[0] === "browser";
@@ -195,14 +254,6 @@ angular.module('starter')
 			window.open(logoutUrl,'_blank');
         }
 
-        // load rating popover
-	    $ionicPopover.fromTemplateUrl('templates/settings/ask-for-a-rating.html', {
-	    	scope: $scope
-	    }).then(function(popover) {
-	    	$scope.ratingPopover = popover;
-	    });
-
-
 	    // Convert all data Array to a CSV object
 	    var convertToCSV = function(objArray) {
 	        var array = typeof objArray !== 'object' ? JSON.parse(objArray) : objArray;
@@ -268,6 +319,7 @@ angular.module('starter')
 				console.log("error", response);
 			});
 		};
+/*
 
 	    // When Export is tapped
 	    $scope.export = function(){
@@ -292,6 +344,7 @@ angular.module('starter')
 				});
 	    	});
 	    };
+*/
 
 	    // call constructor
 	    $scope.init();

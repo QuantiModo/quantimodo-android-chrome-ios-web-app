@@ -2,7 +2,7 @@ angular.module('starter')
 
 	.controller('RemindersInboxCtrl', function($scope, authService, $ionicPopup, localStorageService, $state, 
 											   reminderService, $ionicLoading, measurementService, utilsService, 
-											   $stateParams, $location, $filter, $ionicPlatform, $rootScope){
+											   $stateParams, $location, $filter, $ionicPlatform, $rootScope, notificationService){
 
 	    $scope.controller_name = "RemindersInboxCtrl";
 
@@ -31,7 +31,10 @@ angular.module('starter')
 			isDisabled : false,
 			title : 'Reminder Inbox',
 			loading : true,
-			lastButtonPressTimeStamp : 0
+			lastButtonPressTimeStamp : 0,
+			lastClientX : 0,
+			lastClientY : 0,
+            hideLoadMoreButton : true
 	    };
 
 		if(typeof config.appSettings.remindersInbox.showAddHowIFeelResponseButton !== 'undefined'){
@@ -75,12 +78,12 @@ angular.module('starter')
 			}
 
 			if($stateParams.today) {
-				$scope.state.title = 'Upcoming Reminders';
+				$scope.state.title = 'Today';
 			}
 		};
 
 	    var filterViaDates = function(trackingReminderNotifications) {
-
+            $scope.state.numberOfNotificationsInInbox = 0;
 			var result = [];
 			var reference = moment().local();
 			var today = reference.clone().startOf('day');
@@ -93,6 +96,7 @@ angular.module('starter')
 			});
 
 			if (todayResult.length) {
+                $scope.state.numberOfNotificationsInInbox = $scope.state.numberOfNotificationsInInbox + todayResult.length;
 				result.push({name: "Today", reminders: todayResult});
 			}
 
@@ -101,6 +105,7 @@ angular.module('starter')
 	    	});
 
 	    	if(yesterdayResult.length) {
+                $scope.state.numberOfNotificationsInInbox = $scope.state.numberOfNotificationsInInbox + yesterdayResult.length;
 				result.push({ name : "Yesterday", reminders : yesterdayResult });
 			}
 
@@ -112,6 +117,7 @@ angular.module('starter')
 	    	});
 
 	    	if(last7DayResult.length) {
+                $scope.state.numberOfNotificationsInInbox = $scope.state.numberOfNotificationsInInbox + last7DayResult.length;
 				result.push({ name : "Last 7 Days", reminders : last7DayResult });
 			}
 
@@ -124,6 +130,7 @@ angular.module('starter')
 	    	});
 
 	    	if(last30DayResult.length) {
+                $scope.state.numberOfNotificationsInInbox = $scope.state.numberOfNotificationsInInbox + last30DayResult.length;
 				result.push({ name : "Last 30 Days", reminders : last30DayResult });
 			}
 
@@ -132,72 +139,66 @@ angular.module('starter')
 	    	});
 
 	    	if(olderResult.length) {
+                $scope.state.numberOfNotificationsInInbox = $scope.state.numberOfNotificationsInInbox + olderResult.length;
 				result.push({ name : "Older", reminders : olderResult });
 			}
 
 	    	return result;
 	    };
 
-	    var getTrackingReminderNotifications = function(){
-	    	//$scope.showLoader('Fetching reminders...');
-			$scope.showLoader();
+        var getTrackingReminderNotifications = function(){
+			$scope.showLoader('Syncing reminder notifications...');
+            reminderService.getTrackingReminderNotifications($stateParams.variableCategoryName, $stateParams.today)
+                .then(function(trackingReminderNotifications){
+                	$rootScope.numberOfPendingNotifications = trackingReminderNotifications.length;
+					notificationService.updateNotificationBadges(trackingReminderNotifications.length);
+                    $scope.state.trackingRemindersNotifications = trackingReminderNotifications;
+                    $scope.state.filteredReminders = filterViaDates(trackingReminderNotifications);
+                    if($scope.state.numberOfNotificationsInInbox.length > 1){
+                        $scope.state.showButtons = false;
+                    }
+                    if($scope.state.numberOfNotificationsInInbox < 2){
+                        $scope.state.showButtons = true;
+                    }
+                    $scope.state.hideLoadMoreButton = false;
+                    
+                }, function(){
+                    $scope.state.hideLoadMoreButton = false;
+                    $scope.hideLoader();
+                    console.error("failed to get reminder notifications!");
+                });
+        };
 
-	    	reminderService.getTrackingReminderNotifications($stateParams.variableCategoryName, $stateParams.today)
-	    	.then(function(trackingReminderNotifications){
-				if(trackingReminderNotifications.length > 1){
-					$scope.state.showButtons = false;
-				}
-				if(trackingReminderNotifications.length < 2){
-					$scope.state.showButtons = true;
-				}
 
-	    		$scope.state.trackingRemindersNotifications = trackingReminderNotifications;
-	    		$scope.state.filteredReminders = filterViaDates(trackingReminderNotifications);
-				$scope.hideLoader();
-	    	}, function(){
-				$scope.hideLoader();
-	    		console.error("failed to get reminders");
-	    	});
-	    };
-
-		var removeNotificationFromDisplay = function(trackingReminderNotificationId){
-			var notificationsToKeep = [];
-			for(var i = 0; i < $scope.state.trackingRemindersNotifications.length; i++){
-				if($scope.state.trackingRemindersNotifications[i].id !== trackingReminderNotificationId){
-					notificationsToKeep.push($scope.state.trackingRemindersNotifications[i]);
+		var isGhostClick = function ($event) {
+			if($rootScope.isMobile ){
+				if($event &&
+					$scope.state.lastButtonPressTimeStamp > $event.timeStamp - 3000 &&
+					$scope.state.lastClientX === $event.clientX &&
+					$scope.state.lastClientY === $event.clientY
+				) {
+					console.debug('This event is probably a ghost click so not registering.', $event);
+					return true;
 				} else {
-					console.debug('Removing reminder notification id ' + trackingReminderNotificationId +
-						' from $scope.state.trackingRemindersNotifications');
+					console.debug('This Track event is not a ghost click so registering.', $event);
+					$scope.state.lastButtonPressTimeStamp = $event.timeStamp;
+					$scope.state.lastClientX = $event.clientX;
+					$scope.state.lastClientY = $event.clientY;
+					return false;
 				}
 			}
-			$scope.state.trackingRemindersNotifications = notificationsToKeep;
-			$scope.state.filteredReminders = filterViaDates(notificationsToKeep);
-			$ionicLoading.hide();
-			$scope.loading = false;
 		};
 
-	    $scope.track = function(trackingReminderNotification, modifiedReminderValue, $event){
 
-			if($rootScope.isAndroid ){
-				if($event && $scope.lastButtonPressTimeStamp > $event.timeStamp - 3000) {
-					console.debug('This is probably a ghost click so not registering.', $event);
-					return;
-				} else {
-					$scope.lastButtonPressTimeStamp = $event.timeStamp;
-				}
+		$scope.track = function(trackingReminderNotification, modifiedReminderValue, $event, dividerIndex, reminderNotificationIndex){
 
-				console.debug('Track event is ', $event);
-				// Didn't solve ghost click problem
-				if($event && $event.type === "touchend") {return;}
-
-				// Didn't solve ghost click problem
-				if ($event && $event.type !== 'click') {return;}
+			if(isGhostClick($event)){
+				return;
 			}
 
-			$scope.showLoader();
+			$scope.state.filteredReminders[dividerIndex].reminders[reminderNotificationIndex].hide = true;
 			console.debug('Tracking notification', trackingReminderNotification);
 			console.log('modifiedReminderValue is ' + modifiedReminderValue);
-			removeNotificationFromDisplay(trackingReminderNotification.id);
 	    	reminderService.trackReminderNotification(trackingReminderNotification.id, modifiedReminderValue)
 	    	.then(function(){
 	    		//$scope.init();
@@ -209,27 +210,16 @@ angular.module('starter')
 	    	});
 	    };
 
-	    $scope.skip = function(trackingReminderNotification, $event){
+	    $scope.skip = function(trackingReminderNotification, $event, dividerIndex, reminderNotificationIndex){
+			
 
-			if($rootScope.isAndroid ){
-				if($event && $scope.lastButtonPressTimeStamp > $event.timeStamp - 3000) {
-					console.debug('This is probably a ghost click so not registering.', $event);
-					return;
-				} else {
-					$scope.lastButtonPressTimeStamp = $event.timeStamp;
-				}
-
-				console.debug('Skip event is ', $event);
-				// Didn't solve ghost click problem
-				if($event && $event.type === "touchend") {return;}
-
-				// Didn't solve ghost click problem
-				if ($event && $event.type !== 'click') {return;}
+			if(isGhostClick($event)){
+				return;
 			}
 
+			$scope.state.filteredReminders[dividerIndex].reminders[reminderNotificationIndex].hide = true;
+
 			console.debug('Skipping notification', trackingReminderNotification);
-			$scope.showLoader();
-			removeNotificationFromDisplay(trackingReminderNotification.id);
 	    	reminderService.skipReminderNotification(trackingReminderNotification.id)
 	    	.then(function(){
 	    		$scope.hideLoader();
@@ -242,27 +232,15 @@ angular.module('starter')
 	    	});
 	    };
 
-	    $scope.snooze = function(trackingReminderNotification, $event){
+	    $scope.snooze = function(trackingReminderNotification, $event, dividerIndex, reminderNotificationIndex){
 
-			if($rootScope.isAndroid ){
-				if($event && $scope.lastButtonPressTimeStamp > $event.timeStamp - 3000) {
-					console.debug('This is probably a ghost click so not registering.', $event);
-					return;
-				} else {
-					$scope.lastButtonPressTimeStamp = $event.timeStamp;
-				}
-
-				console.debug('Snooze event is ', $event);
-				// Didn't solve ghost click problem
-				if($event && $event.type === "touchend") {return;}
-
-				// Didn't solve ghost click problem
-				if ($event && $event.type !== 'click') {return;}
+			if(isGhostClick($event)){
+				return;
 			}
 
-			$scope.showLoader();
+			$scope.state.filteredReminders[dividerIndex].reminders[reminderNotificationIndex].hide = true;
+
 			console.debug('Snoozing notification', trackingReminderNotification);
-			removeNotificationFromDisplay(trackingReminderNotification.id);
 	    	reminderService.snoozeReminderNotification(trackingReminderNotification.id)
 	    	.then(function(){
 	    		//$scope.init();
@@ -274,15 +252,17 @@ angular.module('starter')
 	    };
 
 	    $scope.init = function(){
+			Bugsnag.context = "reminderInbox";
 			setPageTitle();
 			var isAuthorized = authService.checkAuthOrSendToLogin();
+			if (typeof analytics !== 'undefined')  { analytics.trackView("Reminders Inbox Controller"); }
 			if(isAuthorized){
 				$scope.showHelpInfoPopupIfNecessary();
-				getTrackingReminderNotifications();
+                getTrackingReminderNotifications();
 				//update alarms and local notifications
-				reminderService.getTrackingReminders();
+				reminderService.refreshTrackingRemindersAndScheduleAlarms();
 			}
-			if (typeof cordova != "undefined") {
+			if (typeof cordova !== "undefined") {
 				$ionicPlatform.ready(function () {
 					cordova.plugins.notification.local.clearAll(function () {
 						console.debug("clearAll active notifications");
@@ -291,7 +271,9 @@ angular.module('starter')
 			}
 	    };
 
-	    $scope.editMeasurement = function(trackingReminderNotification){
+	    $scope.editMeasurement = function(trackingReminderNotification, dividerIndex, reminderNotificationIndex){
+			$scope.state.filteredReminders[dividerIndex].reminders[reminderNotificationIndex].hide = true;
+			// FIXME this shouldn't skip unless the change is made - user could cancel
 			reminderService.skipReminderNotification(trackingReminderNotification.id);
 			$state.go('app.measurementAdd',
 				{
@@ -310,25 +292,14 @@ angular.module('starter')
 					fromState : $state.current.name
 				});
 	    };
-
-	    $scope.deleteReminder = function(trackingReminderNotification){
-			$scope.showLoader();
-	    	reminderService.deleteReminder(trackingReminderNotification.id)
-	    	.then(function(){
-
-				$ionicLoading.hide();
-				$scope.loading = false;
-	    		utilsService.showAlert('Reminder Deleted.');
-	    		$scope.init();
-
-	    	}, function(err){
-				Bugsnag.notify(err, JSON.stringify(err), {}, "error");
-				$ionicLoading.hide();
-				$scope.loading = false;
-				console.error(err);
-	    		utilsService.showAlert('Failed to Delete Reminder, Try again!', 'assertive');
-	    	});
-	    };
+		
+		$scope.goToReminderSearchCategory = function(variableCategoryName) {
+			$state.go('app.reminderSearchCategory',
+				{
+					variableCategoryName : variableCategoryName,
+					fromUrl: window.location.href
+				});
+		};
 
         // when view is changed
     	$scope.$on('$ionicView.enter', function(e){

@@ -1,0 +1,37 @@
+<ion-view hide-nav-bar="hideNavigationMenu" view-title="{{variableName}}">
+    <ion-content>
+        <div ng-show="showBarChart" class="card primary-outcome-variable-reporting-chart">
+    		<div class="item item-text-wrap">
+                <div ng-if="redrawBarChart">
+                    <highchart id="chart1" config="barChartConfig"></highchart>    
+                </div>
+            </div>
+        </div>
+        <div ng-show="showLineChart" class="card primary-outcome-variable-reporting-chart">
+            <div class="item item-text-wrap">
+                <div ng-if="redrawLineChart">
+                    <highchart id="chart2" config="lineChartConfig"></highchart>    
+                </div>
+            </div>
+        </div>
+        <div class="list card" ng-click="recordMeasurementButtonClick()">
+            <a class="item item-icon-left">
+                <i class="icon ion-plus positive"></i>
+                {{recordMeasurementButtonText}}
+            </a>
+        </div>
+        <div class="list card" ng-click="addNewReminderButtonClick()">
+            <a class="item item-icon-left">
+                <i class="icon ion-plus positive"></i>
+                {{addReminderButtonText}}
+            </a>
+        </div>
+        <div class="list card" ng-click="editSettingsButtonClick()" ng-show="false">
+            <a class="item item-icon-left">
+                <!--Find better icon in blue-->
+                <i class="icon ion-settings"></i>
+                {{editSettingsButtonText}}
+            </a>
+        </div>
+    </ion-content>
+</ion-view>

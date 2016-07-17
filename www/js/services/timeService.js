@@ -41,14 +41,14 @@ angular.module('starter')
             },
 
 			getEpochMillisecondsFromUtcDateTimeString: function (utcDateTimeString) {
-				var timeFormat = 'YYYY-MM-DDTHH:mm:ss';
+				var timeFormat = 'YYYY-MM-DD HH:mm:ss';
 				var epochMilliseconds = 1000 * moment(utcDateTimeString, timeFormat).unix();
 				return epochMilliseconds;
 			},
 
 			getLocalMidnightInUtcString: function () {
 				var localMidnightMoment = moment(0, "HH");
-				var timeFormat = 'YYYY-MM-DDTHH:mm:ss';
+				var timeFormat = 'YYYY-MM-DD HH:mm:ss';
 				var localMidnightInUtcString = localMidnightMoment.utc().format(timeFormat);
 				return localMidnightInUtcString;
 			},
@@ -63,9 +63,16 @@ angular.module('starter')
 
 			getCurrentDateTimeInUtcString: function () {
 				var currentMoment = moment();
-				var timeFormat = 'YYYY-MM-DDTHH:mm:ss';
-				var currentTimeInUtcString = currentMoment.utc().format(timeFormat);
-				return currentTimeInUtcString;
+				var timeFormat = 'YYYY-MM-DD HH:mm:ss';
+				var currentDateTimeInUtcString = currentMoment.utc().format(timeFormat);
+				return currentDateTimeInUtcString;
+			},
+
+			getCurrentDateTimeInUtcStringPlus15Min: function () {
+				var currentMoment = moment().add(15, 'minutes');
+				var timeFormat = 'YYYY-MM-DD HH:mm:ss';
+				var currentDateTimeInUtcStringPlus15Min = currentMoment.utc().format(timeFormat);
+				return currentDateTimeInUtcStringPlus15Min;
 			}
 		};
 

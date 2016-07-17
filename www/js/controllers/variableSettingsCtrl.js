@@ -50,9 +50,11 @@ angular.module('starter')
 
         // constructor
         $scope.init = function(){
+            Bugsnag.context = "variableSettings";
             $scope.loading = true;
             $scope.showLoader();
             var isAuthorized = authService.checkAuthOrSendToLogin();
+            if (typeof analytics !== 'undefined')  { analytics.trackView("Variable Settings Controller"); }
             if(isAuthorized){
                 $scope.showHelpInfoPopupIfNecessary();
                 $scope.loading = true;
