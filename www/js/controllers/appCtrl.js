@@ -41,6 +41,25 @@ angular.module('starter')
 
         $scope.getLocation = function(){
             $scope.shouldWeTrackLocation();
+            
+            function setLocationVariables(result, currentTimeEpochSeconds) {
+                if (result.name) {
+                    $rootScope.lastLocationName = result.name;
+                    localStorageService.setItem('lastLocationName', result.name);
+                } else if (result.address) {
+                    $rootScope.lastLocationName = result.address;
+                    localStorageService.setItem('lastLocationName', result.address);
+                }
+                if (result.address) {
+                    $rootScope.lastLocationAddress = result.address;
+                    localStorageService.setItem('lastLocationAddress', result.address);
+                    $rootScope.lastLocationResultType = result.type;
+                    localStorageService.setItem('lastLocationResultType', result.type);
+                    $rootScope.lastLocationUpdateTimeEpochSeconds = currentTimeEpochSeconds;
+                    localStorageService.setItem('lastLocationUpdateTimeEpochSeconds', currentTimeEpochSeconds);
+                }
+            }
+
             if($rootScope.trackLocation){
 
                 $ionicPlatform.ready(function() {
@@ -73,21 +92,7 @@ angular.module('starter')
                             var currentTimeEpochMilliseconds = new Date().getTime();
                             var currentTimeEpochSeconds = currentTimeEpochMilliseconds/1000;
                             if(!$rootScope.lastLocationUpdateTimeEpochSeconds){
-                                if(result.name){
-                                    $rootScope.lastLocationName = result.name;
-                                    localStorageService.setItem('lastLocationName', result.name);
-                                } else if (result.address) {
-                                    $rootScope.lastLocationName = result.address;
-                                    localStorageService.setItem('lastLocationName', result.address);
-                                }
-                                if (result.address) {
-                                    $rootScope.lastLocationAddress = result.address;
-                                    localStorageService.setItem('lastLocationAddress', result.address);
-                                    $rootScope.lastLocationResultType = result.type;
-                                    localStorageService.setItem('lastLocationResultType', result.type);
-                                    $rootScope.lastLocationUpdateTimeEpochSeconds = currentTimeEpochSeconds;
-                                    localStorageService.setItem('lastLocationUpdateTimeEpochSeconds', currentTimeEpochSeconds);
-                                }
+                                setLocationVariables(result, currentTimeEpochSeconds);
                             } else {
                                 if(result.address && result.address !== "undefined" && $rootScope.lastLocationAddress !== result.address ){
                                     var variableName = false;
@@ -113,14 +118,7 @@ angular.module('starter')
                                         } else{
                                             $rootScope.lastLocationName = null;
                                         }
-                                        $rootScope.lastLocationName = result.name;
-                                        localStorageService.setItem('lastLocationName', result.name);
-                                        $rootScope.lastLocationAddress = result.address;
-                                        localStorageService.setItem('lastLocationAddress', result.address);
-                                        $rootScope.lastLocationResultType = result.type;
-                                        localStorageService.setItem('lastLocationResultType', result.type);
-                                        $rootScope.lastLocationUpdateTimeEpochSeconds = currentTimeEpochSeconds;
-                                        localStorageService.setItem('lastLocationUpdateTimeEpochSeconds', currentTimeEpochSeconds);
+                                        setLocationVariables(result, currentTimeEpochSeconds);
                                     }
                                 }
                             }
