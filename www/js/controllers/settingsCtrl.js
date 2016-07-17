@@ -146,13 +146,16 @@ angular.module('starter')
 				notificationService.cancelAllNotifications().then(function() {
 
 					localStorageService.getItem('primaryOutcomeRatingFrequencyDescription', function (primaryOutcomeRatingFrequencyDescription) {
+						alert('You will only get one notification at a time instead of a separate notification for each reminder that you create');
 						console.debug("Cancelled individual notifications and now scheduling combined one with interval: " + primaryOutcomeRatingFrequencyDescription);
 						$scope.primaryOutcomeRatingFrequencyDescription = primaryOutcomeRatingFrequencyDescription ? primaryOutcomeRatingFrequencyDescription : "daily";
 						$scope.saveInterval($scope.primaryOutcomeRatingFrequencyDescription);
 					});
 				});
 			} else {
+
 				notificationService.cancelAllNotifications().then(function() {
+					alert('You will get a separate notification for each reminder that you create');
 					console.debug("Cancelled combined notification and now scheduling individual ones");
 					reminderService.refreshTrackingRemindersAndScheduleAlarms();
 				});

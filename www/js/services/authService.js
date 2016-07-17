@@ -235,6 +235,10 @@ angular.module('starter')
         getJWTToken: function (provider, accessToken) {
 				var deferred = $q.defer();
 
+				if(!accessToken || accessToken === "null" || accessToken === null){
+					Bugsnag.notify("No accessToken", "accessToken not provided to getJWTToken function", {}, "error");
+					deferred.reject();
+				}
 				var url = config.getURL('api/v2/auth/social/authorizeToken');
 
 				url += "provider=" + provider;
@@ -350,15 +354,27 @@ angular.module('starter')
 
 					// configure request
 					var url = config.getURL(baseURL);
-					var request = {
-						method : 'GET',
-						url: (url + ((urlParams.length == 0) ? '' : urlParams.join('&'))),
-						responseType: 'json',
-						headers : {
-							"Authorization" : "Bearer " + token.accessToken,
-							'Content-Type': "application/json"
-						}
-					};
+					var request = {};
+					if(config.getClientId() !== 'oAuthDisabled') {
+						request = {
+							method : 'GET',
+							url: (url + ((urlParams.length === 0) ? '' : urlParams.join('&'))),
+							responseType: 'json',
+							headers : {
+								"Authorization" : "Bearer " + token.accessToken,
+								'Content-Type': "application/json"
+							}
+						};
+					} else {
+						request = {
+							method: 'GET',
+							url: (url + ((urlParams.length === 0) ? '' : urlParams.join('&'))),
+							responseType: 'json',
+							headers: {
+								'Content-Type': "application/json"
+							}
+						};
+					}
 
 					console.log("Making request with this token " + token.accessToken);
 

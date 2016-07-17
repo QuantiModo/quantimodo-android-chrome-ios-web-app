@@ -101,7 +101,7 @@ config.appSettings  = {
     primaryOutcomeVariableTrackingQuestion : "How are you?",
     primaryOutcomeVariableAverageText : "Your average mood is ",
     mobileNotificationImage : "file://img/icons/icon_128.png",
-    mobileNotificationText : "Time to Track",
+    mobileNotificationText : "Time to track!",
     ratingValueToTextConversionDataSet: {
         "1": "depressed",
         "2": "sad",

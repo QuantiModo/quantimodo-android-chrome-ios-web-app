@@ -21,6 +21,7 @@ angular.module('starter')
         $scope.appSettings = config.appSettings;
         $scope.showTrackingSubMenu = false;
         $rootScope.allowOffline = config.appSettings.allowOffline;
+        $rootScope.numberOfPendingNotifications = 0;
         $scope.showReminderSubMenu = false;
         $scope.primaryOutcomeVariableDetails = config.appSettings.primaryOutcomeVariableDetails;
         // Not used
@@ -29,6 +30,7 @@ angular.module('starter')
             $ionicSideMenuDelegate.toggleLeft(false);
         };
         $scope.floatingMaterialButton = config.appSettings.floatingMaterialButton;
+        $rootScope.unitsIndexedByAbbreviatedName = [];
         
         $scope.hideAddTreatmentRemindersCard = localStorageService.getItemSync('hideAddTreatmentRemindersCard');
         $scope.hideAddFoodRemindersCard = localStorageService.getItemSync('hideAddFoodRemindersCard');
@@ -220,7 +222,11 @@ angular.module('starter')
                 if(isWelcomed  === true || isWelcomed === "true"){
                     if (helpPopupMessages && typeof helpPopupMessages[location.hash] !== "undefined") {
                         localStorageService.getItem('notShowHelpPopup', function (val) {
-                            $scope.notShowHelpPopup = val ? JSON.parse(val) : false;
+                            if(typeof val === "undefined" || val === "undefined"){
+                                $scope.notShowHelpPopup = false;
+                            } else {
+                                $scope.notShowHelpPopup = val ? JSON.parse(val) : false;
+                            }
 
                             // Had to add "&& e.targetScope !== $scope" to prevent duplicate popups
                             //if (!$scope.notShowHelpPopup && e.targetScope !== $scope) {
@@ -488,10 +494,11 @@ angular.module('starter')
             localStorageService.getItem('combineNotifications', function(combineNotifications){
                 console.debug("combineNotifications from local storage is " + combineNotifications);
                 if(combineNotifications === "null"){
-                    localStorageService.setItem('combineNotifications', false);
-                    $rootScope.combineNotifications = false;
+                    localStorageService.setItem('combineNotifications', true);
+                    $rootScope.combineNotifications = true;
+                } else {
+                    $rootScope.combineNotifications = combineNotifications === "true";
                 }
-                $rootScope.combineNotifications = combineNotifications === "true";
             });
         };
 
@@ -610,7 +617,7 @@ angular.module('starter')
                 reminderService.refreshTrackingRemindersAndScheduleAlarms();
                 variableService.refreshUserVariables();
                 variableService.refreshCommonVariables();
-                unitService.getUnits();
+                unitService.refreshUnits();
                 $rootScope.syncedEverything = true;
                 $scope.getLocation();
             }

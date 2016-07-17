@@ -501,33 +501,33 @@ config.appSettings  = {
             href : '#/app/history-all/Vital Signs',
             icon : 'ion-ios-pulse'
         },
-        {
-            title : 'Import Data',
-            href : '#/app/import',
-            icon : 'ion-ios-cloud-download-outline'
-        },
-        {
-            title : 'Strongest Predictors',
-            click : 'togglePredictorSearchSubMenu',
-            showSubMenuVariable : 'showPredictorSearchSubMenu',
-            isSubMenuParent : true,
-            collapsedIcon : 'ion-ios-analytics',
-            expandedIcon : 'ion-chevron-down'
-        },
-        {
-            title : 'For Everyone',
-            isSubMenuChild : true,
-            showSubMenuVariable : 'showPredictorSearchSubMenu',
-            href : '#/app/search-common-relationships',
-            icon : 'ion-ios-people'
-        },
-        {
-            title : 'For You',
-            isSubMenuChild : true,
-            showSubMenuVariable : 'showPredictorSearchSubMenu',
-            href : '#/app/search-user-relationships',
-            icon : 'ion-person'
-        },
+        // {
+        //     title : 'Import Data',
+        //     href : '#/app/import',
+        //     icon : 'ion-ios-cloud-download-outline'
+        // },
+        // {
+        //     title : 'Strongest Predictors',
+        //     click : 'togglePredictorSearchSubMenu',
+        //     showSubMenuVariable : 'showPredictorSearchSubMenu',
+        //     isSubMenuParent : true,
+        //     collapsedIcon : 'ion-ios-analytics',
+        //     expandedIcon : 'ion-chevron-down'
+        // },
+        // {
+        //     title : 'For Everyone',
+        //     isSubMenuChild : true,
+        //     showSubMenuVariable : 'showPredictorSearchSubMenu',
+        //     href : '#/app/search-common-relationships',
+        //     icon : 'ion-ios-people'
+        // },
+        // {
+        //     title : 'For You',
+        //     isSubMenuChild : true,
+        //     showSubMenuVariable : 'showPredictorSearchSubMenu',
+        //     href : '#/app/search-user-relationships',
+        //     icon : 'ion-person'
+        // },
         {
             title : 'Settings',
             href : '#/app/settings',

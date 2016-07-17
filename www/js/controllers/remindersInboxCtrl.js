@@ -2,7 +2,8 @@ angular.module('starter')
 
 	.controller('RemindersInboxCtrl', function($scope, authService, $ionicPopup, localStorageService, $state, 
 											   reminderService, $ionicLoading, measurementService, utilsService, 
-											   $stateParams, $location, $filter, $ionicPlatform, $rootScope){
+											   $stateParams, $location, $filter, $ionicPlatform, $rootScope,
+                                               notificationService, variableCategoryService){
 
 	    $scope.controller_name = "RemindersInboxCtrl";
 
@@ -33,7 +34,9 @@ angular.module('starter')
 			loading : true,
 			lastButtonPressTimeStamp : 0,
 			lastClientX : 0,
-			lastClientY : 0
+			lastClientY : 0,
+            hideLoadMoreButton : true,
+            showAllCaughtUp : false
 	    };
 
 		if(typeof config.appSettings.remindersInbox.showAddHowIFeelResponseButton !== 'undefined'){
@@ -145,22 +148,33 @@ angular.module('starter')
 	    	return result;
 	    };
 
-        var getTrackingReminderNotifications = function(){
+        $scope.getTrackingReminderNotifications = function(){
 			$scope.showLoader('Syncing reminder notifications...');
             reminderService.getTrackingReminderNotifications($stateParams.variableCategoryName, $stateParams.today)
                 .then(function(trackingReminderNotifications){
-                    $scope.state.trackingRemindersNotifications = trackingReminderNotifications;
+                	$rootScope.numberOfPendingNotifications = trackingReminderNotifications.length;
+					notificationService.updateNotificationBadges(trackingReminderNotifications.length);
+                    $scope.state.trackingRemindersNotifications =
+                        variableCategoryService.attachVariableCategoryIcons(trackingReminderNotifications);
                     $scope.state.filteredReminders = filterViaDates(trackingReminderNotifications);
-                    if($scope.state.numberOfNotificationsInInbox.length > 1){
+                    if(trackingReminderNotifications.length > 1){
                         $scope.state.showButtons = false;
+                        $scope.state.showAllCaughtUp = false;
+                    } else {
+                        $scope.state.showAllCaughtUp = true;
                     }
-                    if($scope.state.numberOfNotificationsInInbox < 2){
+                    if(trackingReminderNotifications.length < 2){
                         $scope.state.showButtons = true;
                     }
-                    
+                    $scope.state.hideLoadMoreButton = false;
+                    //Stop the ion-refresher from spinning
+                    $scope.$broadcast('scroll.refreshComplete');
                 }, function(){
+                    $scope.state.hideLoadMoreButton = false;
                     $scope.hideLoader();
                     console.error("failed to get reminder notifications!");
+                    //Stop the ion-refresher from spinning
+                    $scope.$broadcast('scroll.refreshComplete');
                 });
         };
 
@@ -196,8 +210,10 @@ angular.module('starter')
 			console.log('modifiedReminderValue is ' + modifiedReminderValue);
 	    	reminderService.trackReminderNotification(trackingReminderNotification.id, modifiedReminderValue)
 	    	.then(function(){
-	    		//$scope.init();
-
+                notificationService.decrementNotificationBadges();
+                if($rootScope.numberOfPendingNotifications < 2){
+                    init();
+                }
 	    	}, function(err){
 				Bugsnag.notify(err, JSON.stringify(err), {}, "error");
 				console.error(err);
@@ -218,7 +234,10 @@ angular.module('starter')
 	    	reminderService.skipReminderNotification(trackingReminderNotification.id)
 	    	.then(function(){
 	    		$scope.hideLoader();
-	    		//$scope.init();
+                notificationService.decrementNotificationBadges();
+                if($rootScope.numberOfPendingNotifications < 2){
+                    init();
+                }
 	    	}, function(err){
 				Bugsnag.notify(err, JSON.stringify(err), {}, "error");
 	    		$scope.hideLoader();
@@ -238,7 +257,10 @@ angular.module('starter')
 			console.debug('Snoozing notification', trackingReminderNotification);
 	    	reminderService.snoozeReminderNotification(trackingReminderNotification.id)
 	    	.then(function(){
-	    		//$scope.init();
+                notificationService.decrementNotificationBadges();
+                if($rootScope.numberOfPendingNotifications < 2){
+                    init();
+                }
 	    	}, function(err){
 				Bugsnag.notify(err, JSON.stringify(err), {}, "error");
 				console.error(err);
@@ -247,13 +269,14 @@ angular.module('starter')
 	    };
 
 	    $scope.init = function(){
+            $scope.state.hideLoadMoreButton = true;
 			Bugsnag.context = "reminderInbox";
 			setPageTitle();
 			var isAuthorized = authService.checkAuthOrSendToLogin();
 			if (typeof analytics !== 'undefined')  { analytics.trackView("Reminders Inbox Controller"); }
 			if(isAuthorized){
 				$scope.showHelpInfoPopupIfNecessary();
-                getTrackingReminderNotifications();
+                $scope.getTrackingReminderNotifications();
 				//update alarms and local notifications
 				reminderService.refreshTrackingRemindersAndScheduleAlarms();
 			}

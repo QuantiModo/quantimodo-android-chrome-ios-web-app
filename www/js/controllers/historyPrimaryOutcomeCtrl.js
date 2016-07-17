@@ -38,6 +38,8 @@ angular.module('starter')
                             });
                             $scope.history = ratingService.addInfoAndImagesToMeasurements(history);
                         }
+						//Stop the ion-refresher from spinning
+						$scope.$broadcast('scroll.refreshComplete');
                     });
                 }
 

@@ -1,7 +1,7 @@
 <ion-view hide-nav-bar="hideNavigationMenu" view-title="{{state.title}}">
-
-	<ion-content scroll="true" overflow-scroll="true">
-
+    <ion-content>
+	<!--<ion-content scroll="true" overflow-scroll="true">-->
+        <ion-refresher on-refresh="init()"></ion-refresher>
 
 
 			<div class="list card"  ng-hide="hideAddTreatmentRemindersCard">
@@ -141,7 +141,7 @@
 					<div class="item" style="padding-bottom:0px;">
 						<div class="row">
 							<div class="col" style="padding-top: 0px;">
-								<i style="font-size: 60px;" class="icon positive ion-ios-alarm-outline"></i>
+								<i style="font-size: 60px;" class="icon positive {{reminder.icon}}"></i>
 							</div>
 							<div class="col col-75">
 								<h2 ng-if="reminder.abbreviatedUnitName != '/5'" style="white-space: normal; line-height: normal; ">{{reminder.defaultValue}}&nbsp;{{reminder.unitName.toLowerCase()}} {{reminder.variableName}}</h2>
@@ -199,10 +199,30 @@
 					</div>
 				</div>
 			</div>
-			
-<!--			<div class="button-bar">
-				<a class="button button-clear button-calm" ng-click="init()" style="text-overflow: clip;"><i class="ion-refresh">  Refresh</i></a>
-			</div>-->
+		</div>
+
+        <div class="list card"  ng-show="state.showAllCaughtUp">
+            <div class="item" style="padding-bottom:0px;">
+                <p style=" text-align: center; line-height: normal; font-size: 25px;">All caught up!</p>
+
+                <div class="row">
+                    <div class="col" style="padding-top: 0px;">
+                        <i style="text-align: center; font-size: 60px;" class="icon positive ion-android-sunny"></i>
+                    </div>
+                    <div class="col col-75">
+                        <h2 style="white-space: normal; text-align: left; line-height: normal; ">Maybe you should refresh or add some more reminders?</h2>
+                    </div>
+                </div>
+                <div class="row" >
+                    <div class="button-bar">
+                        <button class="button button-clear button-balanced" style="font-size: 14px;" ng-click="goToState('app.reminderSearch')"><i class="ion-plus-round"> &nbsp; Add a reminder &nbsp;</i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+		<div ng-hide="state.hideLoadMoreButton" class="button-bar">
+			<a class="button button-clear button-calm" ng-click="init()" style="text-overflow: clip;"><i class="ion-refresh">  Refresh</i></a>
 		</div>
 
 	</ion-content>

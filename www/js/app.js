@@ -3,7 +3,8 @@
 
 angular.module('starter',
     [
-        'ionic','ionic.service.core', 'ionic.service.analytics',
+        'ionic','ionic.service.core',
+        //'ionic.service.analytics',
         'oc.lazyLoad',
         'highcharts-ng',
         'ngCordova',
@@ -15,12 +16,13 @@ angular.module('starter',
     ]
 )
 
-.run(function($ionicPlatform, $ionicHistory, $state, $rootScope, $ionicAnalytics) {
+.run(function($ionicPlatform, $ionicHistory, $state, $rootScope) {
+//.run(function($ionicPlatform, $ionicHistory, $state, $rootScope, $ionicAnalytics) {
 // Database
 //.run(function($ionicPlatform, $ionicHistory, $state, $rootScope, $cordovaSQLite) {
 
     $ionicPlatform.ready(function() {
-        $ionicAnalytics.register();
+        //$ionicAnalytics.register();
         
         if(typeof analytics !== "undefined") {
             console.log("Configuring Google Analytics");
@@ -70,7 +72,7 @@ angular.module('starter',
                 Bugsnag.apiKey = window.private_keys.bugsnag_key;
                 Bugsnag.releaseStage = config.getEnv();
                 Bugsnag.notifyReleaseStages = config.bugsnag.notifyReleaseStages;
-                Bugsnag.appVersion = "1.6.5.5";
+                Bugsnag.appVersion = "1.6.6.0";
             } else {
                 console.error('intervalChecker: No bugsnag_key found in private config!');
             }

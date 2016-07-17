@@ -10,6 +10,7 @@ angular.module('starter')
 				var deferred = $q.defer();
 				notificationService.scheduleNotification(null, trackingReminder);
 				
+				trackingReminder.timeZoneOffset = new Date().getTimezoneOffset();
                 QuantiModo.postTrackingReminder(trackingReminder, function(){
 					//update alarms and local notifications
 					reminderService.refreshTrackingRemindersAndScheduleAlarms();
@@ -102,6 +103,8 @@ angular.module('starter')
 							if($rootScope.combineNotifications !== true){
 								notificationService.scheduleAllNotifications(trackingReminders);
 							}
+							//$rootScope.numberOfPendingNotifications = trackingReminders[0].numberOfPendingNotifications;
+							//notificationService.updateNotificationBadges($rootScope.numberOfPendingNotifications);
 							localStorageService.setItem('trackingReminders', JSON.stringify(trackingReminders));
 							$rootScope.syncingReminders = false;
 							$rootScope.isSyncing = false;
