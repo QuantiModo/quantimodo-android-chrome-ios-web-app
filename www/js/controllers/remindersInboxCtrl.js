@@ -153,7 +153,8 @@ angular.module('starter')
                 .then(function(trackingReminderNotifications){
                 	$rootScope.numberOfPendingNotifications = trackingReminderNotifications.length;
 					notificationService.updateNotificationBadges(trackingReminderNotifications.length);
-                    $scope.state.trackingRemindersNotifications = trackingReminderNotifications;
+                    $scope.state.trackingRemindersNotifications =
+                        variableCategoryService.attachVariableCategoryIcons(trackingReminderNotifications);
                     $scope.state.filteredReminders = filterViaDates(trackingReminderNotifications);
                     if(trackingReminderNotifications.length > 1){
                         $scope.state.showButtons = false;
