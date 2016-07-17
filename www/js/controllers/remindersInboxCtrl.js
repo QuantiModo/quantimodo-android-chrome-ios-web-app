@@ -82,9 +82,6 @@ angular.module('starter')
 			if($stateParams.today) {
 				$scope.state.title = 'Today';
 			}
-			if($state.includes('app.favorites')){
-				$scope.state.title = 'Your Favorites';
-			}
 
 		};
 
@@ -92,10 +89,6 @@ angular.module('starter')
 
             $scope.state.numberOfNotificationsInInbox = 0;
 			var result = [];
-			if($state.includes('app.favorites')){
-				result.push({ name : "Favorites", reminders : trackingReminderNotifications });
-				return result;
-			}
 			var reference = moment().local();
 			var today = reference.clone().startOf('day');
 			var yesterday = reference.clone().subtract(1, 'days').startOf('day');
@@ -157,14 +150,7 @@ angular.module('starter')
 	    	return result;
 	    };
 
-		function getFavoriteTrackingRemindersFromLocalStorage(){
-			$scope.state.favorites =
-				localStorageService.getElementsFromItemWithFilters('trackingReminders', 'reminderFrequency', 0);
-			$scope.state.favorites = variableCategoryService.attachVariableCategoryIcons($scope.state.favorites);
-			for(var i = 0; i < $scope.state.favorites.length; i++){
-				$scope.state.favorites[i].total = null;
-			}
-		}
+
         $scope.getTrackingReminderNotifications = function(){
 			$scope.showLoader('Syncing reminder notifications...');
             reminderService.getTrackingReminderNotifications($stateParams.variableCategoryName, $stateParams.today)
@@ -238,37 +224,6 @@ angular.module('starter')
 	    	});
 	    };
 
-		$scope.trackByReminder = function(trackingReminder, modifiedReminderValue){
-			var value = 0;
-			if(modifiedReminderValue){
-				value = modifiedReminderValue;
-			} else {
-				value = trackingReminder.defaultValue;
-			}
-			console.debug('Tracking reminder', trackingReminder);
-			console.log('modifiedReminderValue is ' + modifiedReminderValue);
-			for(var i = 0; i < $scope.state.favorites.length; i++){
-				if($scope.state.favorites[i].id === trackingReminder.id){
-					if($scope.state.favorites[i].abbreviatedUnitName !== '/5') {
-						$scope.state.favorites[i].total = $scope.state.favorites[i].total + value;
-						$scope.state.favorites[i].displayTotal = $scope.state.favorites[i].total + " " + $scope.state.favorites[i].abbreviatedUnitName;
-					} else {
-						$scope.state.favorites[i].displayTotal = modifiedReminderValue + '/5';
-					}
-
-				}
-			}
-			//utilsService.showAlert(trackingReminder.variableName + ' measurement saved!');
-			measurementService.postMeasurementByReminder(trackingReminder, modifiedReminderValue)
-				.then(function(){
-					//$scope.init();
-
-				}, function(err){
-					Bugsnag.notify(err, JSON.stringify(err), {}, "error");
-					console.error(err);
-					utilsService.showAlert('Failed to Track Reminder, Try again!', 'assertive');
-				});
-		};
 
 	    $scope.skip = function(trackingReminderNotification, $event, dividerIndex, reminderNotificationIndex){
 			
