@@ -425,8 +425,8 @@ config.appSettings  = {
         },
         button4 : {
             icon: 'ion-ios-star',
-            label: 'Go to your favorites',
-            stateAndParameters: "'app.favorites'"
+            label: 'Add a Favorite Variable',
+            stateAndParameters: "'app.favoriteSearch'"
         }
     },
 
