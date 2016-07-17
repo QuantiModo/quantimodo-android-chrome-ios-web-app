@@ -147,7 +147,7 @@ angular.module('starter')
 	    	return result;
 	    };
 
-        var getTrackingReminderNotifications = function(){
+        $scope.getTrackingReminderNotifications = function(){
 			$scope.showLoader('Syncing reminder notifications...');
             reminderService.getTrackingReminderNotifications($stateParams.variableCategoryName, $stateParams.today)
                 .then(function(trackingReminderNotifications){
@@ -205,8 +205,10 @@ angular.module('starter')
 			console.log('modifiedReminderValue is ' + modifiedReminderValue);
 	    	reminderService.trackReminderNotification(trackingReminderNotification.id, modifiedReminderValue)
 	    	.then(function(){
-	    		//$scope.init();
-
+                notificationService.decrementNotificationBadges();
+                if($rootScope.numberOfPendingNotifications < 2){
+                    init();
+                }
 	    	}, function(err){
 				Bugsnag.notify(err, JSON.stringify(err), {}, "error");
 				console.error(err);
@@ -227,7 +229,10 @@ angular.module('starter')
 	    	reminderService.skipReminderNotification(trackingReminderNotification.id)
 	    	.then(function(){
 	    		$scope.hideLoader();
-	    		//$scope.init();
+                notificationService.decrementNotificationBadges();
+                if($rootScope.numberOfPendingNotifications < 2){
+                    init();
+                }
 	    	}, function(err){
 				Bugsnag.notify(err, JSON.stringify(err), {}, "error");
 	    		$scope.hideLoader();
@@ -247,7 +252,10 @@ angular.module('starter')
 			console.debug('Snoozing notification', trackingReminderNotification);
 	    	reminderService.snoozeReminderNotification(trackingReminderNotification.id)
 	    	.then(function(){
-	    		//$scope.init();
+                notificationService.decrementNotificationBadges();
+                if($rootScope.numberOfPendingNotifications < 2){
+                    init();
+                }
 	    	}, function(err){
 				Bugsnag.notify(err, JSON.stringify(err), {}, "error");
 				console.error(err);
@@ -263,7 +271,7 @@ angular.module('starter')
 			if (typeof analytics !== 'undefined')  { analytics.trackView("Reminders Inbox Controller"); }
 			if(isAuthorized){
 				$scope.showHelpInfoPopupIfNecessary();
-                getTrackingReminderNotifications();
+                $scope.getTrackingReminderNotifications();
 				//update alarms and local notifications
 				reminderService.refreshTrackingRemindersAndScheduleAlarms();
 			}
