@@ -33,7 +33,8 @@ angular.module('starter')
 			loading : true,
 			lastButtonPressTimeStamp : 0,
 			lastClientX : 0,
-			lastClientY : 0
+			lastClientY : 0,
+            hideLoadMoreButton : true
 	    };
 
 		if(typeof config.appSettings.remindersInbox.showAddHowIFeelResponseButton !== 'undefined'){
@@ -159,8 +160,10 @@ angular.module('starter')
                     if($scope.state.numberOfNotificationsInInbox < 2){
                         $scope.state.showButtons = true;
                     }
+                    $scope.state.hideLoadMoreButton = false;
                     
                 }, function(){
+                    $scope.state.hideLoadMoreButton = false;
                     $scope.hideLoader();
                     console.error("failed to get reminder notifications!");
                 });
