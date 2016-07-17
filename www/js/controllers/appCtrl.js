@@ -89,7 +89,7 @@ angular.module('starter')
                                     localStorageService.setItem('lastLocationUpdateTimeEpochSeconds', currentTimeEpochSeconds);
                                 }
                             } else {
-                                if(result.address && $rootScope.lastLocationAddress !== result.address ){
+                                if(result.address && result.address !== "undefined" && $rootScope.lastLocationAddress !== result.address ){
                                     var variableName = false;
                                     if ($rootScope.lastLocationName){
                                         variableName = $rootScope.lastLocationName;
