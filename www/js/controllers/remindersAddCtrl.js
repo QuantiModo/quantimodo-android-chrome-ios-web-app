@@ -159,7 +159,7 @@ angular.module('starter')
             if (selectedVariable.combinationOperation) {
                 $scope.state.trackingReminder.combinationOperation = selectedVariable.combinationOperation;
             }
-            if (selectedVariable.variableId) {
+            if (selectedVariable.id) {
                 $scope.state.trackingReminder.variableId = selectedVariable.id;
             }
             if (selectedVariable.name) {
