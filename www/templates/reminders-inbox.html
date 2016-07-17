@@ -1,7 +1,7 @@
 <ion-view hide-nav-bar="hideNavigationMenu" view-title="{{state.title}}">
-
-	<ion-content scroll="true" overflow-scroll="true">
-
+    <ion-content>
+	<!--<ion-content scroll="true" overflow-scroll="true">-->
+        <ion-refresher on-refresh="init()"></ion-refresher>
 
 
 			<div class="list card"  ng-hide="hideAddTreatmentRemindersCard">

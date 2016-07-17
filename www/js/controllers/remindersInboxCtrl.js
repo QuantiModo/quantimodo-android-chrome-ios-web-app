@@ -165,11 +165,14 @@ angular.module('starter')
                         $scope.state.showButtons = true;
                     }
                     $scope.state.hideLoadMoreButton = false;
-                    
+                    //Stop the ion-refresher from spinning
+                    $scope.$broadcast('scroll.refreshComplete');
                 }, function(){
                     $scope.state.hideLoadMoreButton = false;
                     $scope.hideLoader();
                     console.error("failed to get reminder notifications!");
+                    //Stop the ion-refresher from spinning
+                    $scope.$broadcast('scroll.refreshComplete');
                 });
         };
 
