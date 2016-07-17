@@ -41,7 +41,7 @@ angular.module('starter')
 
         $scope.getLocation = function(){
             $scope.shouldWeTrackLocation();
-            
+
             function setLocationVariables(result, currentTimeEpochSeconds) {
                 if (result.name) {
                     $rootScope.lastLocationName = result.name;
@@ -57,6 +57,29 @@ angular.module('starter')
                     localStorageService.setItem('lastLocationResultType', result.type);
                     $rootScope.lastLocationUpdateTimeEpochSeconds = currentTimeEpochSeconds;
                     localStorageService.setItem('lastLocationUpdateTimeEpochSeconds', currentTimeEpochSeconds);
+                }
+            }
+
+            function postLocationMeasurementAndSetLocationVariables(currentTimeEpochSeconds, result) {
+                var variableName = false;
+                if ($rootScope.lastLocationName) {
+                    variableName = $rootScope.lastLocationName;
+                } else if ($rootScope.lastLocationAddress) {
+                    variableName = $rootScope.lastLocationAddress;
+                }
+                if (variableName && variableName !== "undefined") {
+                    var newMeasurement = {
+                        variableName: 'Time Spent at ' + variableName,
+                        abbreviatedUnitName: 's',
+                        startTimeEpoch: $rootScope.lastLocationUpdateTimeEpochSeconds,
+                        sourceName: $rootScope.lastLocationResultType,
+                        value: currentTimeEpochSeconds - $rootScope.lastLocationUpdateTimeEpochSeconds,
+                        variableCategoryName: 'Location',
+                        note: $rootScope.lastLocationAddress,
+                        combinationOperation: "SUM"
+                    };
+                    measurementService.postTrackingMeasurement(newMeasurement);
+                    setLocationVariables(result, currentTimeEpochSeconds);
                 }
             }
 
@@ -91,35 +114,11 @@ angular.module('starter')
 
                             var currentTimeEpochMilliseconds = new Date().getTime();
                             var currentTimeEpochSeconds = currentTimeEpochMilliseconds/1000;
-                            if(!$rootScope.lastLocationUpdateTimeEpochSeconds){
+                            if(!$rootScope.lastLocationUpdateTimeEpochSeconds && result.address && result.address !== "undefined"){
                                 setLocationVariables(result, currentTimeEpochSeconds);
                             } else {
                                 if(result.address && result.address !== "undefined" && $rootScope.lastLocationAddress !== result.address ){
-                                    var variableName = false;
-                                    if ($rootScope.lastLocationName){
-                                        variableName = $rootScope.lastLocationName;
-                                    } else if ($rootScope.lastLocationAddress) {
-                                        variableName =  $rootScope.lastLocationAddress;
-                                    }
-                                    if(variableName && variableName !== "undefined"){
-                                        var newMeasurement = {
-                                            variableName: 'Time Spent at ' + variableName,
-                                            abbreviatedUnitName: 's',
-                                            startTimeEpoch:  $rootScope.lastLocationUpdateTimeEpochSeconds,
-                                            sourceName:  $rootScope.lastLocationResultType,
-                                            value: currentTimeEpochSeconds - $rootScope.lastLocationUpdateTimeEpochSeconds,
-                                            variableCategoryName : 'Location',
-                                            note : $rootScope.lastLocationAddress,
-                                            combinationOperation : "SUM"
-                                        };
-                                        measurementService.postTrackingMeasurement(newMeasurement);
-                                        if(result.name){
-                                            $rootScope.lastLocationName = result.name;
-                                        } else{
-                                            $rootScope.lastLocationName = null;
-                                        }
-                                        setLocationVariables(result, currentTimeEpochSeconds);
-                                    }
+                                    postLocationMeasurementAndSetLocationVariables(currentTimeEpochSeconds, result);
                                 }
                             }
                         });
