@@ -292,6 +292,40 @@ angular.module('starter',
                 }
             }
         })
+        .state('app.favoriteSearchCategory', {
+            url: "/favoriteSearchCategory/:variableCategoryName",
+            params: {
+                variableCategoryName : null,
+                fromState : null,
+                fromUrl : null,
+                measurement : null,
+                favoriteSearch: true,
+                nextState: 'app.favoriteAdd'
+            },
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/variable-search.html",
+                    controller: 'TrackFactorsCategoryCtrl'
+                }
+            }
+        })
+        .state('app.favoriteSearch', {
+            url: "/favoriteSearch",
+            params: {
+                variableCategoryName : null,
+                fromState : null,
+                fromUrl : null,
+                measurement : null,
+                favoriteSearch: true,
+                nextState: 'app.favoriteAdd'
+            },
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/variable-search.html",
+                    controller: 'TrackFactorsCategoryCtrl'
+                }
+            }
+        })
         .state('app.measurementAdd', {
             url: "/measurement-add/:variableName",
             cache: false,
@@ -651,7 +685,44 @@ angular.module('starter',
                     controller: 'RemindersAddCtrl'
                 }
             }
-        });
+        })
+        .state('app.favoriteAddCategory', {
+            url: "/favorite_add/:variableCategoryName",
+            cache: false,
+            params: {
+                variableCategoryName : null,
+                favorite : null,
+                fromState : null,
+                fromUrl : null,
+                measurement : null,
+                variableObject : null
+            },
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/favorite-add.html",
+                    controller: 'favoritesAddCtrl'
+                }
+            }
+        })
+        .state('app.favoriteAdd', {
+            url: "/favorite_add",
+            cache: false,
+            params: {
+                variableCategoryName : null,
+                favorite : null,
+                fromState : null,
+                fromUrl : null,
+                measurement : null,
+                variableObject : null
+            },
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/favorite-add.html",
+                    controller: 'favoritesAddCtrl'
+                }
+            }
+        })
+    ;
     
       // if none of the above states are matched, use this as the fallback
       $urlRouterProvider.otherwise('/');
