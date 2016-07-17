@@ -22,9 +22,9 @@
                                     <img ng-if="positiveNegative.userVote == 0" src="img/thumb_down_black.png" height="32px" width="32px" />
                                 </div>
                             </div>
-                            <p>{{positiveNegative.predictorExplanation}}</p>
-                            <p>{{positiveNegative.valuePredictingHighOutcomeExplanation}}</p>
-                            <p>{{positiveNegative.valuePredictingLowOutcomeExplanation}}</p>
+                            <p ng-click="goToStudyPage(positiveNegative)">{{positiveNegative.predictorExplanation}}</p>
+                            <p ng-click="goToStudyPage(positiveNegative)">{{positiveNegative.valuePredictingHighOutcomeExplanation}}</p>
+                            <p ng-click="goToStudyPage(positiveNegative)">{{positiveNegative.valuePredictingLowOutcomeExplanation}}</p>
                                 <!--
                                 <div class="show-inline" ng-show="shoppingCartEnabled" ng-click="openStore(positiveNegative.cause)" >
                                     <img src="img/ic_shopping_cart.png" width="32px" height="32px" >
