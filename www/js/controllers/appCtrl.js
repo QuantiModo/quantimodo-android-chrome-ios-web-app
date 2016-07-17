@@ -76,25 +76,27 @@ angular.module('starter')
                                 if(result.name){
                                     $rootScope.lastLocationName = result.name;
                                     localStorageService.setItem('lastLocationName', result.name);
-                                } else {
+                                } else if (result.address) {
                                     $rootScope.lastLocationName = result.address;
                                     localStorageService.setItem('lastLocationName', result.address);
                                 }
-                                $rootScope.lastLocationAddress = result.address;
-                                localStorageService.setItem('lastLocationAddress', result.address);
-                                $rootScope.lastLocationResultType = result.type;
-                                localStorageService.setItem('lastLocationResultType', result.type);
-                                $rootScope.lastLocationUpdateTimeEpochSeconds = currentTimeEpochSeconds;
-                                localStorageService.setItem('lastLocationUpdateTimeEpochSeconds', currentTimeEpochSeconds);
-                            } else{
-                                if($rootScope.lastLocationName !== result.name || $rootScope.lastLocationAddress !== result.address ){
-                                    var variableName;
+                                if (result.address) {
+                                    $rootScope.lastLocationAddress = result.address;
+                                    localStorageService.setItem('lastLocationAddress', result.address);
+                                    $rootScope.lastLocationResultType = result.type;
+                                    localStorageService.setItem('lastLocationResultType', result.type);
+                                    $rootScope.lastLocationUpdateTimeEpochSeconds = currentTimeEpochSeconds;
+                                    localStorageService.setItem('lastLocationUpdateTimeEpochSeconds', currentTimeEpochSeconds);
+                                }
+                            } else {
+                                if(result.address && $rootScope.lastLocationAddress !== result.address ){
+                                    var variableName = false;
                                     if ($rootScope.lastLocationName){
                                         variableName = $rootScope.lastLocationName;
-                                    } else {
+                                    } else if ($rootScope.lastLocationAddress) {
                                         variableName =  $rootScope.lastLocationAddress;
                                     }
-                                    if(variableName){
+                                    if(variableName && variableName !== "undefined"){
                                         var newMeasurement = {
                                             variableName: 'Time Spent at ' + variableName,
                                             abbreviatedUnitName: 's',
@@ -122,9 +124,6 @@ angular.module('starter')
                                     }
                                 }
                             }
-
-
-
                         });
 
                         console.debug("My coordinates are: ", position.coords);
