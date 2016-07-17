@@ -34,7 +34,8 @@ angular.module('starter')
 			lastButtonPressTimeStamp : 0,
 			lastClientX : 0,
 			lastClientY : 0,
-            hideLoadMoreButton : true
+            hideLoadMoreButton : true,
+            showAllCaughtUp : false
 	    };
 
 		if(typeof config.appSettings.remindersInbox.showAddHowIFeelResponseButton !== 'undefined'){
@@ -154,10 +155,13 @@ angular.module('starter')
 					notificationService.updateNotificationBadges(trackingReminderNotifications.length);
                     $scope.state.trackingRemindersNotifications = trackingReminderNotifications;
                     $scope.state.filteredReminders = filterViaDates(trackingReminderNotifications);
-                    if($scope.state.numberOfNotificationsInInbox.length > 1){
+                    if(trackingReminderNotifications.length > 1){
                         $scope.state.showButtons = false;
+                        $scope.state.showAllCaughtUp = false;
+                    } else {
+                        $scope.state.showAllCaughtUp = true;
                     }
-                    if($scope.state.numberOfNotificationsInInbox < 2){
+                    if(trackingReminderNotifications.length < 2){
                         $scope.state.showButtons = true;
                     }
                     $scope.state.hideLoadMoreButton = false;
@@ -252,6 +256,7 @@ angular.module('starter')
 	    };
 
 	    $scope.init = function(){
+            $scope.state.hideLoadMoreButton = true;
 			Bugsnag.context = "reminderInbox";
 			setPageTitle();
 			var isAuthorized = authService.checkAuthOrSendToLogin();
