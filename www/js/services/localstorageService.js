@@ -110,8 +110,8 @@ angular.module('starter')
                     //console.log(localStorage.getItem(keyIdentifier + localStorageItemName));
                     matchingElements = JSON.parse(localStorage.getItem(keyIdentifier + localStorageItemName));
                 }
-                
-                if(filterPropertyName && filterPropertyValue){
+
+                if(filterPropertyName && typeof filterPropertyValue !== "undefined" && filterPropertyValue){
                     if(matchingElements){
                         unfilteredElementArray = matchingElements;
                     }
