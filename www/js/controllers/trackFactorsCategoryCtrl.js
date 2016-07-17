@@ -25,15 +25,29 @@ angular.module('starter')
             variableSearchQuery: ''
         };
 
+        if(variableCategoryName){
+            $scope.state.variableSearchPlaceholderText = "Search for a " +  $filter('wordAliases')(pluralize(variableCategoryName, 1).toLowerCase()) + " here...";
+        } else {
+            $scope.state.variableSearchPlaceholderText = "Search for a variable here...";
+        }
+
         if ($stateParams.nextState === "app.reminderAdd") {
             if(variableCategoryName){
-                $scope.state.variableSearchPlaceholderText = "Search for a " +  $filter('wordAliases')(pluralize(variableCategoryName, 1).toLowerCase()) + " here...";
                 $scope.state.title = $filter('wordAliases')('Add') + " " + $filter('wordAliases')(pluralize(variableCategoryName, 1)) + " Reminder";
             } else {
-                $scope.state.variableSearchPlaceholderText = "Search for a variable here...";
                 $scope.state.title = $filter('wordAliases')('Add Reminder');
             }
         }
+
+        if ($stateParams.nextState === "app.favoriteAdd") {
+            if(variableCategoryName){
+                $scope.state.title = $filter('wordAliases')('Add') + " " + $filter('wordAliases')(pluralize(variableCategoryName, 1)) + " Favorite";
+            } else {
+                $scope.state.title = $filter('wordAliases')('Add Favorite');
+            }
+        }
+
+
         else if ($stateParams.doNotIncludePublicVariables || $stateParams.nextState === "app.variables") {
             $scope.state.variableSearchPlaceholderText = "Search for a variable here...";
             $scope.state.title = $filter('wordAliases')('Your Variables');

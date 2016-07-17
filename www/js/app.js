@@ -300,7 +300,8 @@ angular.module('starter',
                 fromUrl : null,
                 measurement : null,
                 favoriteSearch: true,
-                nextState: 'app.favoriteAdd'
+                nextState: 'app.favoriteAdd',
+                pageTitle: 'Add a favorite'
             },
             views: {
                 'menuContent': {
@@ -317,7 +318,8 @@ angular.module('starter',
                 fromUrl : null,
                 measurement : null,
                 favoriteSearch: true,
-                nextState: 'app.favoriteAdd'
+                nextState: 'app.favoriteAdd',
+                pageTitle: 'Add a favorite'
             },
             views: {
                 'menuContent': {

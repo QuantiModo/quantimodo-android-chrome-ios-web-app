@@ -179,16 +179,8 @@ angular.module('starter')
 	    	});
             
             $rootScope.updatedReminder = $scope.state.trackingReminder;
-             if($stateParams.fromUrl && ($stateParams.fromUrl.indexOf('manage') > -1 )){
-             	window.location = $stateParams.fromUrl;
-             } else
-            if ($stateParams.reminder && $stateParams.fromState){
-                $state.go($stateParams.fromState, {
-                    updatedReminder: $stateParams.reminder
-                });
-            } else {
-                $state.go('app.remindersManage');
-            }
+            $state.go('app.favorites');
+
 	    };
 
 
