@@ -543,7 +543,7 @@ angular.module('starter',
             },
             views: {
                 'menuContent': {
-                    templateUrl: "templates/reminders-inbox.html",
+                    templateUrl: "templates/favorites.html",
                     controller: 'RemindersInboxCtrl'
                 }
             }
