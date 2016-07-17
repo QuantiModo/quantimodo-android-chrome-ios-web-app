@@ -1,0 +1,54 @@
+<ion-view hide-nav-bar="hideNavigationMenu" view-title="{{state.title}}">
+    <ion-content scroll="true" overflow-scroll="true">
+
+        <div class="list card">
+        	<div class="item item-divider">{{state.trackingReminder.variableName}} settings</div>
+            <div class="list">
+                <!--<label class="item item-input item-select" ng-if="state.showAddVariableCard && !state.trackingReminder.variableCategoryName">-->
+                <label class="item item-input item-select" ng-if="state.showAddVariableCard">
+                    <div class="input-label" style="white-space:normal; width: 60%">Select Category</div>
+                    <select ng-model="state.trackingReminder.variableCategoryName" ng-change="setupVariableCategory(state.trackingReminder.variableCategoryName)">
+                        <option ng-repeat="variableCategory in variables.variableCategories" value="{{variableCategory.name}}">{{variableCategory.name}}</option>
+                    </select>
+                </label>
+                <label ng-if="(state.trackingReminder.abbreviatedUnitName !== '/5')" class="item item-input">
+                    <span class="input-label">{{state.defaultValueLabel}}</span>
+                    <input type="number" ng-model="state.trackingReminder.defaultValue" id="defaultValue" placeholder={{state.defaultValuePlaceholderText}} >
+                </label>
+                <label ng-if="(state.trackingReminder.abbreviatedUnitName !== '/5')" class="item item-input item-select">
+                    <div class="input-label">
+                        Unit
+                    </div>
+                    <select
+                            ng-model="state.trackingReminder.abbreviatedUnitName" ng-options="x for x in abbreviatedUnitNames">
+                    </select>
+                </label>
+
+            </div>
+            <label class="item item-input" ng-show="state.showInstructionsField">
+                <span class="input-label">Instructions</span>
+                <input type="text" ng-model="state.trackingReminder.instructions" id="instructions" placeholder="Enter instructions here..." >
+            </label>
+            <br>
+			<div class="row">
+                <div class="col col-50">
+                    <button ng-click="addToFavorites()"
+                            class="button button-block icon-left ion-ios-star positive"
+                            >
+                        Save
+                    </button>
+                </div>
+                <div class="col col-50">
+                    <button class="button button-block icon-left ion-android-cancel button-assertive" ng-click="cancel()">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+            <button ng-show="state.trackingReminder.id" ng-click="deleteReminder()"
+                    class="button button-block icon-left ion-trash-a button-assertive">
+                Delete
+            </button>
+        </div>
+        
+    </ion-content>
+</ion-view>

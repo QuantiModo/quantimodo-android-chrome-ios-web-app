@@ -292,6 +292,40 @@ angular.module('starter',
                 }
             }
         })
+        .state('app.favoriteSearchCategory', {
+            url: "/favorite-search-category/:variableCategoryName",
+            params: {
+                variableCategoryName : null,
+                fromState : null,
+                fromUrl : null,
+                measurement : null,
+                favoriteSearch: true,
+                nextState: 'app.favoriteAdd'
+            },
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/variable-search.html",
+                    controller: 'TrackFactorsCategoryCtrl'
+                }
+            }
+        })
+        .state('app.favoriteSearch', {
+            url: "/favorite-search",
+            params: {
+                variableCategoryName : null,
+                fromState : null,
+                fromUrl : null,
+                measurement : null,
+                favoriteSearch: true,
+                nextState: 'app.favoriteAdd'
+            },
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/variable-search.html",
+                    controller: 'TrackFactorsCategoryCtrl'
+                }
+            }
+        })
         .state('app.measurementAdd', {
             url: "/measurement-add/:variableName",
             cache: false,
@@ -526,6 +560,7 @@ angular.module('starter',
         .state('app.remindersInbox', {
             url: "/reminders-inbox",
             params: {
+                reminderFrequency: null,
                 unit: null,
                 variableName : null,
                 dateTime : null,
@@ -535,6 +570,23 @@ angular.module('starter',
             views: {
                 'menuContent': {
                     templateUrl: "templates/reminders-inbox.html",
+                    controller: 'RemindersInboxCtrl'
+                }
+            }
+        })
+        .state('app.favorites', {
+            url: "/favorites",
+            params: {
+                reminderFrequency: 0,
+                unit: null,
+                variableName : null,
+                dateTime : null,
+                value : null,
+                fromUrl : null
+            },
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/favorites.html",
                     controller: 'RemindersInboxCtrl'
                 }
             }
@@ -642,7 +694,44 @@ angular.module('starter',
                     controller: 'RemindersAddCtrl'
                 }
             }
-        });
+        })
+        .state('app.favoriteAddCategory', {
+            url: "/favorite-add/:variableCategoryName",
+            cache: false,
+            params: {
+                variableCategoryName : null,
+                favorite : null,
+                fromState : null,
+                fromUrl : null,
+                measurement : null,
+                variableObject : null
+            },
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/favorite-add.html",
+                    controller: 'FavoriteAddCtrl'
+                }
+            }
+        })
+        .state('app.favoriteAdd', {
+            url: "/favorite-add",
+            cache: false,
+            params: {
+                variableCategoryName : null,
+                favorite : null,
+                fromState : null,
+                fromUrl : null,
+                measurement : null,
+                variableObject : null
+            },
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/favorite-add.html",
+                    controller: 'FavoriteAddCtrl'
+                }
+            }
+        })
+    ;
     
       // if none of the above states are matched, use this as the fallback
       $urlRouterProvider.otherwise('/');
