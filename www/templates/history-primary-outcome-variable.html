@@ -1,5 +1,6 @@
 <ion-view hide-nav-bar="hideNavigationMenu" view-title="History">
      <ion-content>
+         <ion-refresher on-refresh="init()"></ion-refresher>
       <ion-list>
           <div collection-repeat="historyItem in history" divider-collection-repeat>
               <ion-item ng-click="editMeasurement(historyItem)" >

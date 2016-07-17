@@ -33,7 +33,6 @@ angular.module('starter')
 
 				QuantiModo.skipTrackingReminder(trackingReminderNotificationId, function(response){
 					if(response.success) {
-						notificationService.decrementNotificationBadges();
 						deferred.resolve();
                     }
 					else {
@@ -54,7 +53,6 @@ angular.module('starter')
 
 				QuantiModo.trackTrackingReminder(trackingReminderNotificationId, modifiedReminderValue, function(response){
 					if(response.success) {
-						notificationService.decrementNotificationBadges();
 						deferred.resolve();
 					}
 					else {
@@ -75,7 +73,6 @@ angular.module('starter')
 
 				QuantiModo.snoozeTrackingReminder(trackingReminderNotificationId, function(response){
 					if(response.success) {
-						notificationService.decrementNotificationBadges();
 						deferred.resolve();
                     }
 					else {

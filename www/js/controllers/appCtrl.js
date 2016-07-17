@@ -429,10 +429,11 @@ angular.module('starter')
             localStorageService.getItem('combineNotifications', function(combineNotifications){
                 console.debug("combineNotifications from local storage is " + combineNotifications);
                 if(combineNotifications === "null"){
-                    localStorageService.setItem('combineNotifications', false);
-                    $rootScope.combineNotifications = false;
+                    localStorageService.setItem('combineNotifications', true);
+                    $rootScope.combineNotifications = true;
+                } else {
+                    $rootScope.combineNotifications = combineNotifications === "true";
                 }
-                $rootScope.combineNotifications = combineNotifications === "true";
             });
         };
 

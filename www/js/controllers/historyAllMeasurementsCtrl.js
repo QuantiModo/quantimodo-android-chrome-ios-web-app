@@ -73,9 +73,13 @@ angular.module('starter')
 				} else {
 					$scope.state.hideLoadMoreButton = false;
 				}
+				//Stop the ion-refresher from spinning
+				$scope.$broadcast('scroll.refreshComplete');
 	    	}, function(error){
 				Bugsnag.notify(error, JSON.stringify(error), {}, "error");
 	    		console.log('error getting measurements', error);
+				//Stop the ion-refresher from spinning
+				$scope.$broadcast('scroll.refreshComplete');
 				$scope.hideLoader();
 	    	});
 	    };

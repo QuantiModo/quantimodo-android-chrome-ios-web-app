@@ -1,6 +1,7 @@
 <ion-view hide-nav-bar="hideNavigationMenu" view-title="{{state.title}}">
-	<ion-tabs id="positive-tabs" class="tabs-positive tabs-icon-top">
-	<ion-content scroll="true" overflow-scroll="true">
+    <ion-content>
+	<!--<ion-content scroll="true" overflow-scroll="true">-->
+        <ion-refresher on-refresh="init()"></ion-refresher>
 
 
 		<ion-tab title="Inbox" icon-on="ion-ios-filing" icon-off="ion-ios-filing-outline">
@@ -279,6 +280,10 @@
         </div>
 			</ion-content>
 		</ion-tab>
+
+		<div ng-hide="state.hideLoadMoreButton" class="button-bar">
+			<a class="button button-clear button-calm" ng-click="init()" style="text-overflow: clip;"><i class="ion-refresh">  Refresh</i></a>
+		</div>
 
 	</ion-content>
 	<nav mfb-menu position="bl" effect="slidein-spring"
