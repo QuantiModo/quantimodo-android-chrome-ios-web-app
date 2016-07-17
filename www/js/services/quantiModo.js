@@ -80,15 +80,27 @@ angular.module('starter')
 
                     // configure request
                     var url = config.getURL(baseURL);
-                    var request = {   
-                        method : 'GET', 
-                        url: (url + ((urlParams.length === 0) ? '' : urlParams.join('&'))),
-                        responseType: 'json', 
-                        headers : {
-                            "Authorization" : "Bearer " + tokenObject.accessToken,
-                            'Content-Type': "application/json"
-                        }
-                    };
+                    var request = {};
+                    if(config.getClientId() !== 'oAuthDisabled') {
+                        request = {
+                            method: 'GET',
+                            url: (url + ((urlParams.length === 0) ? '' : urlParams.join('&'))),
+                            responseType: 'json',
+                            headers: {
+                                "Authorization": "Bearer " + tokenObject.accessToken,
+                                'Content-Type': "application/json"
+                            }
+                        };
+                    } else {
+                        request = {
+                            method: 'GET',
+                            url: (url + ((urlParams.length === 0) ? '' : urlParams.join('&'))),
+                            responseType: 'json',
+                            headers: {
+                                'Content-Type': "application/json"
+                            }
+                        };
+                    }
 
                     //console.log("Making this request: " + JSON.stringify(request));
 
@@ -133,16 +145,29 @@ angular.module('starter')
                     }
 
                     // configure request
-                    var request = {   
-                        method : 'POST', 
-                        url: config.getURL(baseURL),
-                        responseType: 'json', 
-                        headers : {
-                            "Authorization" : "Bearer " + token.accessToken,
-                            'Content-Type': "application/json"
-                        },
-                        data : JSON.stringify(items)
-                    };
+                    var request = {};
+                        if(config.getClientId() !== 'oAuthDisabled') {
+                            request = {
+                                method : 'POST',
+                                url: config.getURL(baseURL),
+                                responseType: 'json',
+                                headers : {
+                                    "Authorization" : "Bearer " + token.accessToken,
+                                    'Content-Type': "application/json"
+                                },
+                                data : JSON.stringify(items)
+                            };
+                    } else {
+                            request = {
+                                method : 'POST',
+                                url: config.getURL(baseURL),
+                                responseType: 'json',
+                                headers : {
+                                    'Content-Type': "application/json"
+                                },
+                                data : JSON.stringify(items)
+                            };
+                    }
 
                     $http(request).success(successHandler).error(function(data,status,headers,config){
                         QuantiModo.errorHandler(data,status,headers,config);
