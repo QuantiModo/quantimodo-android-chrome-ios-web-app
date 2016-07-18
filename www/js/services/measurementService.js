@@ -574,7 +574,10 @@ angular.module('starter')
                             {
                                 startTimeEpoch:  startTimeEpochSeconds,
                                 value: value,
-                                note : null
+                                note : null,
+                                latitude: $rootScope.lastLatitude,
+                                longitude: $rootScope.lastLongitude,
+                                location: $rootScope.lastLocationName
                             }
                         ]
                     }
