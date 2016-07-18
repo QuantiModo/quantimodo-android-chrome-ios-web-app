@@ -589,7 +589,7 @@ angular.module('starter',
             views: {
                 'menuContent': {
                     templateUrl: "templates/favorites.html",
-                    controller: 'RemindersInboxCtrl'
+                    controller: 'FavoritesCtrl'
                 }
             }
         })
@@ -697,30 +697,12 @@ angular.module('starter',
                 }
             }
         })
-        .state('app.favoriteAddCategory', {
-            url: "/favorite-add/:variableCategoryName",
-            cache: false,
-            params: {
-                variableCategoryName : null,
-                favorite : null,
-                fromState : null,
-                fromUrl : null,
-                measurement : null,
-                variableObject : null
-            },
-            views: {
-                'menuContent': {
-                    templateUrl: "templates/favorite-add.html",
-                    controller: 'FavoriteAddCtrl'
-                }
-            }
-        })
         .state('app.favoriteAdd', {
             url: "/favorite-add",
             cache: false,
             params: {
                 variableCategoryName : null,
-                favorite : null,
+                reminder : null,
                 fromState : null,
                 fromUrl : null,
                 measurement : null,

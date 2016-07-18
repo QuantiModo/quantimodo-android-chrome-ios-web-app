@@ -11,13 +11,6 @@ angular.module('starter')
 		
 	    $scope.state = {
 	    	selected1to5Value : false,
-	    	measurementDate : new Date(),
-	    	slots : {
-				epochTime: new Date().getTime()/1000,
-				format: 12,
-				step: 1,
-				closeLabel: 'Cancel'
-			},
 			title : 'Favorites',
 			loading : true
 	    };
@@ -81,21 +74,16 @@ angular.module('starter')
 			}
 	    };
 
-	    $scope.editMeasurement = function(trackingReminderNotification, dividerIndex, reminderNotificationIndex){
-			$scope.state.filteredReminders[dividerIndex].reminders[reminderNotificationIndex].hide = true;
-			// FIXME this shouldn't skip unless the change is made - user could cancel
-			reminderService.skipReminderNotification(trackingReminderNotification.id);
+	    $scope.editMeasurement = function(trackingReminder, dividerIndex, reminderNotificationIndex){
 			$state.go('app.measurementAdd',
 				{
-					reminder: trackingReminderNotification,
+					reminder: trackingReminder,
 					fromUrl: window.location.href
 				});
 	    };
 
-	    $scope.editReminderSettings = function(trackingReminderNotification){
-			var trackingReminder = trackingReminderNotification;
-			trackingReminder.id = trackingReminderNotification.trackingReminderId;
-	    	$state.go('app.reminderAdd',
+	    $scope.editReminderSettings = function(trackingReminder){
+	    	$state.go('app.favoriteAdd',
 				{
 					reminder : trackingReminder,
 					fromUrl: window.location.href,
