@@ -506,6 +506,13 @@ config.appSettings  = {
             href : '#/app/history-all/Vital Signs',
             icon : 'ion-ios-pulse'
         },
+        {
+            title : 'Locations',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showHistorySubMenu',
+            href : '#/app/history-all/Location',
+            icon : 'ion-ios-location-outline'
+        },
         // {
         //     title : 'Import Data',
         //     href : '#/app/import',
