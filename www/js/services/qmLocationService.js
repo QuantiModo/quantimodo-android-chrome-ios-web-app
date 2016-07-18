@@ -79,12 +79,14 @@ angular.module('starter')
             },
 
             setLocationVariables: function (result, currentTimeEpochSeconds) {
-                if (result.name) {
+                if (result.name && result.name !== "undefined") {
                     $rootScope.lastLocationName = result.name;
                     localStorageService.setItem('lastLocationName', result.name);
-                } else if (result.address) {
+                } else if (result.address && result.address !== "undefined") {
                     $rootScope.lastLocationName = result.address;
                     localStorageService.setItem('lastLocationName', result.address);
+                } else {
+                    console.error("Where's the damn location info?");
                 }
                 if (result.address) {
                     $rootScope.lastLocationAddress = result.address;
@@ -93,15 +95,23 @@ angular.module('starter')
                     localStorageService.setItem('lastLocationResultType', result.type);
                     $rootScope.lastLocationUpdateTimeEpochSeconds = currentTimeEpochSeconds;
                     localStorageService.setItem('lastLocationUpdateTimeEpochSeconds', currentTimeEpochSeconds);
+                    if($rootScope.lastLocationAddress === $rootScope.lastLocationName){
+                        $rootScope.lastLocationNameAndAddress = $rootScope.lastLocationAddress;
+                    } else{
+                        $rootScope.lastLocationNameAndAddress = $rootScope.lastLocationName + " (" + $rootScope.lastLocationAddress + ")";
+                    }
+                    localStorageService.setItem('lastLocationNameAndAddress', $rootScope.lastLocationNameAndAddress);
                 }
             },
 
             postLocationMeasurementAndSetLocationVariables : function (currentTimeEpochSeconds, result) {
                 var variableName = false;
-                if ($rootScope.lastLocationName) {
+                if ($rootScope.lastLocationName && $rootScope.lastLocationName !== "undefined") {
                     variableName = $rootScope.lastLocationName;
-                } else if ($rootScope.lastLocationAddress) {
+                } else if ($rootScope.lastLocationAddress && $rootScope.lastLocationAddress !== "undefined") {
                     variableName = $rootScope.lastLocationAddress;
+                } else {
+                    console.error("Where's the damn location info?");
                 }
                 if (variableName && variableName !== "undefined") {
                     var newMeasurement = {
@@ -117,47 +127,8 @@ angular.module('starter')
                     measurementService.postTrackingMeasurement(newMeasurement);
                     qmLocationService.setLocationVariables(result, currentTimeEpochSeconds);
                 }
-            },
-
-
-        // get units
-            trackLocationInBackground : function(){
-                /**
-                 * This callback will be executed every time a geolocation is recorded in the background.
-                 */
-                var callbackFn = function(location) {
-                    console.log('[js] BackgroundGeolocation callback:  ' + location.latitude + ',' + location.longitude);
-
-                    // Do your HTTP request here to POST location to your server.
-                    // jQuery.post(url, JSON.stringify(location));
-
-                    /*
-                     IMPORTANT:  You must execute the finish method here to inform the native plugin that you're finished,
-                     and the background-task may be completed.  You must do this regardless if your HTTP request is successful or not.
-                     IF YOU DON'T, ios will CRASH YOUR APP for spending too much time in the background.
-                     */
-                    backgroundGeolocation.finish();
-                };
-
-                var failureFn = function(error) {
-                    console.log('BackgroundGeolocation error');
-                };
-
-                // BackgroundGeolocation is highly configurable. See platform specific configuration options
-                backgroundGeolocation.configure(callbackFn, failureFn, {
-                    desiredAccuracy: 10,
-                    stationaryRadius: 20,
-                    distanceFilter: 30,
-                    debug: true, // <-- enable this hear sounds for background-geolocation life-cycle.
-                    stopOnTerminate: false, // <-- enable this to clear background location settings when the app terminates
-                });
-
-                // Turn ON the background-geolocation system.  The user will be tracked whenever they suspend the app.
-                backgroundGeolocation.start();
-
-                // If you wish to turn OFF background-tracking, call the #stop method.
-                // backgroundGeolocation.stop();
             }
+
         };
 
         return qmLocationService;

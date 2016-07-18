@@ -76,7 +76,8 @@ angular.module('starter')
                             if(!$rootScope.lastLocationUpdateTimeEpochSeconds && result.address && result.address !== "undefined"){
                                 qmLocationService.setLocationVariables(result, currentTimeEpochSeconds);
                             } else {
-                                if(result.address && result.address !== "undefined" && $rootScope.lastLocationAddress !== result.address ){
+                                if(result.address && result.address !== "undefined" &&
+                                    ($rootScope.lastLocationAddress !== result.address || $rootScope.lastLocationName !== result.name)){
                                    qmLocationService.postLocationMeasurementAndSetLocationVariables(currentTimeEpochSeconds, result);
                                 }
                             }
@@ -511,7 +512,8 @@ angular.module('starter')
                 $rootScope.lastLocationName = localStorageService.getItemSync('lastLocationName');
                 $rootScope.lastLocationAddress = localStorageService.getItemSync('lastLocationAddress');
                 $rootScope.lastLocationResultType = localStorageService.getItemSync('lastLocationResultType');
-                $rootScope.lastLocationUpdateTimeEpochSeconds = localStorageService.getItemSync('lastLocationUpdateTimeEpochSeconds');;
+                $rootScope.lastLocationUpdateTimeEpochSeconds = localStorageService.getItemSync('lastLocationUpdateTimeEpochSeconds');
+                $rootScope.lastLocationNameAndAddress = localStorageService.getItemSync('lastLocationNameAndAddress');
             }
         };
 

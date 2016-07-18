@@ -355,7 +355,7 @@ angular.module('starter')
                     note: "",
                     latitude: $rootScope.lastLatitude,
                     longitude: $rootScope.lastLongitude,
-                    location: $rootScope.lastLocationName
+                    location: $rootScope.lastLocationNameAndAddress
                 };
                 return measurementObject;
             },
@@ -380,7 +380,7 @@ angular.module('starter')
                         note: measurementObject.note,
                         latitude: $rootScope.lastLatitude,
                         longitude: $rootScope.lastLongitude,
-                        location: $rootScope.lastLocationName
+                        location: $rootScope.lastLocationNameAndAddress
                     });
                     //resave queue
                     localStorageService.setItem('measurementsQueue', JSON.stringify(measurementsQueue));
@@ -454,7 +454,7 @@ angular.module('starter')
                             combinationOperation : measurementInfo.isAvg? "MEAN" : "SUM",
                             latitude: $rootScope.lastLatitude,
                             longitude: $rootScope.lastLongitude,
-                            location: $rootScope.lastLocationName
+                            location: $rootScope.lastLocationNameAndAddress
                         };
                         measurementService.addToMeasurementsQueue(editedMeasurement);
 
@@ -472,7 +472,7 @@ angular.module('starter')
                             combinationOperation : measurementInfo.isAvg? "MEAN" : "SUM",
                             latitude: $rootScope.lastLatitude,
                             longitude: $rootScope.lastLongitude,
-                            location: $rootScope.lastLocationName
+                            location: $rootScope.lastLocationNameAndAddress
                         };
                         measurementService.addToMeasurementsQueue(newMeasurement);
                     }
@@ -507,7 +507,7 @@ angular.module('starter')
                                     note : measurementInfo.note,
                                     latitude: $rootScope.lastLatitude,
                                     longitude: $rootScope.lastLongitude,
-                                    location: $rootScope.lastLocationName
+                                    location: $rootScope.lastLocationNameAndAddress
                                 }
                             ]
                         }
@@ -525,7 +525,7 @@ angular.module('starter')
                         combinationOperation : measurementInfo.isAvg? "MEAN" : "SUM",
                         latitude: $rootScope.lastLatitude,
                         longitude: $rootScope.lastLongitude,
-                        location: $rootScope.lastLocationName
+                        location: $rootScope.lastLocationNameAndAddress
                     };
 
                     // send request
@@ -577,7 +577,7 @@ angular.module('starter')
                                 note : null,
                                 latitude: $rootScope.lastLatitude,
                                 longitude: $rootScope.lastLongitude,
-                                location: $rootScope.lastLocationName
+                                location: $rootScope.lastLocationNameAndAddress
                             }
                         ]
                     }
