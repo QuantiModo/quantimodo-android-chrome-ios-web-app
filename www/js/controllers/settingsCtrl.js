@@ -96,8 +96,8 @@ angular.module('starter')
                 }
 
 		$scope.sendSharingInvitation= function() {
-			var subjectLine = "I%27d%20like%20to%20share%20my%20data%20with%20you%20at%20QuantiModo";
-			var emailBody = "Hi!%20%20%0A%0AI%27m%20tracking%20my%20life%20with%20QuantiModo%20and%20I%27d%20like%20to%20share%20my%20data%20with%20you.%20%20%0A%0APlease%20generate%20a%20data%20authorization%20URL%20at%20https%3A%2F%2Fapp.quantimo.do%2Fapi%2Fv2%2Fphysicians%20and%20email%20it%20to%20me.%20%0A%0AThanks!%20%3AD";
+			var subjectLine = "I%27d%20like%20to%20share%20my%20data%20with%20you";
+			var emailBody = "Hi!%20%20%0A%0AI%27m%20tracking%20my%20health%20and%20happiness%20with%20an%20app%20and%20I%27d%20like%20to%20share%20my%20data%20with%20you.%20%20%0A%0APlease%20generate%20a%20data%20authorization%20URL%20at%20https%3A%2F%2Fapp.quantimo.do%2Fapi%2Fv2%2Fphysicians%20and%20email%20it%20to%20me.%20%0A%0AThanks!%20%3AD";
 
 			if($rootScope.isMobile){
 				sendWithEmailComposer(subjectLine, emailBody);
