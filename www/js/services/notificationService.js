@@ -120,12 +120,12 @@ angular.module('starter')
                                 }
                             }
                             if(!existingReminderFoundInApiResponse) {
-                                if($rootScope.combineNotifications === "false"){
+                                //if($rootScope.combineNotifications === "false"){
                                     console.debug('Matching API reminder not found. Cancelling scheduled notification ' + JSON.stringify(scheduledNotifications[i]));
                                     cordova.plugins.notification.local.cancel(scheduledNotifications[i].id, function (cancelledNotification) {
                                         console.debug("Canceled notification ", cancelledNotification);
                                     });
-                                }
+                                //}
                             }
                         }
                     });
@@ -218,8 +218,10 @@ angular.module('starter')
 
                 function scheduleIosNotificationByTrackingReminder(trackingReminder) {
                     if (trackingReminder) {
-                        //var at = new Date(trackingReminder.nextReminderTimeEpochSeconds*1000);
-                        var at = trackingReminder.nextReminderTimeEpochSeconds;
+                        var at = new Date(trackingReminder.nextReminderTimeEpochSeconds*1000);
+                        // Using milliseconds might cause app to crash with this error:
+                        // NSInvalidArgumentException·unable to serialize userInfo: Error Domain=NSCocoaErrorDomain Code=3851 "Property list invalid for format: 200 (property lists cannot contain objects of type 'CFNull')" UserInfo={NSDeb
+                        // var at = trackingReminder.nextReminderTimeEpochSeconds;
                         var minuteFrequency  = trackingReminder.reminderFrequency / 60;
                         var notificationSettings = {
                             autoClear: true,
@@ -231,7 +233,8 @@ angular.module('starter')
                             sound: "file://sound/silent.ogg",
                             title: "Track " + trackingReminder.variableName,
                             text: "Swipe to open reminder inbox",
-                            at: at * 1000,
+                            //at: at * 1000,
+                            at: at,
                             every: minuteFrequency,
                             icon: config.appSettings.mobileNotificationImage,
                             id: trackingReminder.id
