@@ -424,31 +424,13 @@ angular.module('starter',
                 }
             }
         })
-        .state('app.negative', {
-            url: "/negative",
-            views: {
-                'menuContent': {
-                    templateUrl: "templates/negative.html",
-                    controller: 'NegativeCtrl'
-                }
-            }
-        })
-        .state('app.positive', {
-            url: "/positive",
-            views: {
-                'menuContent': {
-                    templateUrl: "templates/positive.html",
-                    controller: 'PositiveCtrl'
-                }
-            }
-        })
-        .state('app.positiveNegative', {
-            url: "/positive-negative/:valence",
+        .state('app.predictors', {
+            url: "/predictors/:valence",
             cache: false,
             views: {
                 'menuContent': {
-                  templateUrl: "templates/positive-negative.html",
-                  controller: 'PositiveNegativeCtrl'
+                  templateUrl: "templates/predictors.html",
+                  controller: 'PredictorsCtrl'
                 }
             }
         })

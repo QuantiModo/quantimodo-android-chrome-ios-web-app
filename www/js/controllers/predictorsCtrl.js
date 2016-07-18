@@ -1,14 +1,14 @@
 angular.module('starter')
 	
 	// Controls the Positive Factors page
-	.controller('PositiveNegativeCtrl', function($scope, $ionicModal, $timeout, measurementService, $ionicLoading,
+	.controller('PredictorsCtrl', function($scope, $ionicModal, $timeout, measurementService, $ionicLoading,
                                          $state, $ionicPopup, correlationService, $rootScope,
                                          localStorageService, utilsService, authService, $stateParams) {
         
         $scope.loading = true;
 
         if(!$rootScope.user){
-            console.debug("positiveNegativeCtrl: not logged in, going to default state");
+            console.debug("predictorsCtrl: not logged in, going to default state");
             $state.go(config.appSettings.defaultState);
             // app wide signal to sibling controllers that the state has changed
             $rootScope.$broadcast('transition');
@@ -21,7 +21,7 @@ angular.module('starter')
             $scope.title = "Negative Predictors";
         }
         
-		$scope.controller_name = "PositiveNegativeCtrl";
+		$scope.controller_name = "PredictorsCtrl";
 
         $scope.init = function(){
             if ($stateParams.valence === "positive") {
@@ -67,37 +67,37 @@ angular.module('starter')
             }
             var isAuthorized = authService.checkAuthOrSendToLogin();
             if (typeof analytics !== 'undefined')  {
-                analytics.trackView("PositiveNegative Predictors Controller");
+                analytics.trackView("Predictors Controller");
             }
             if(isAuthorized){
                 if ($scope.valence) {
                     correlationService.getPositiveFactors()
                         .then(function(correlationObjects){
-                            $scope.positivesNegatives = correlationObjects;
+                            $scope.factors = correlationObjects;
                             correlationService.getUsersPositiveFactors().then(function(correlationObjects){
-                                $scope.usersPositiveNegativeFactors = correlationObjects;
+                                $scope.usersFactors = correlationObjects;
                             });
                             $ionicLoading.hide();
                             $scope.loading = false;
                         }, function(){
                             $scope.loading = false;
                             $ionicLoading.hide();
-                            console.log('positiveNegativeCtrl: Could not get positive correlations');
+                            console.log('predictorsCtrl: Could not get positive correlations');
                         });
                 }
                 else {
                     correlationService.getNegativeFactors()
                         .then(function(correlationObjects){
-                            $scope.positivesNegatives = correlationObjects;
+                            $scope.factors = correlationObjects;
                             correlationService.getUsersNegativeFactors().then(function(correlationObjects){
-                                $scope.usersPositiveNegativeFactors = correlationObjects;
+                                $scope.usersFactors = correlationObjects;
                             });
                             $ionicLoading.hide();
                             $scope.loading = false;
                         }, function(){
                             $ionicLoading.hide();
                             $scope.loading = false;
-                            console.log('positiveNegativeCtrl: Could not get negative correlations');
+                            console.log('predictorsCtrl: Could not get negative correlations');
                         });
                 }
 
@@ -155,7 +155,7 @@ angular.module('starter')
                         utilsService.showAlert('Down vote failed !');
                     });
             } else {
-                console.debug("positiveNegativeCtrl: not logged in, going to default state");
+                console.debug("predictorsCtrl: not logged in, going to default state");
                 $state.go(config.appSettings.defaultState);
             }
         }
@@ -214,7 +214,7 @@ angular.module('starter')
 
                     });
             } else {
-                console.debug("positiveNegativeCtrl: not logged in, going to default state");
+                console.debug("predictorsCtrl: not logged in, going to default state");
                 $state.go(config.appSettings.defaultState);
             }
 
@@ -237,7 +237,7 @@ angular.module('starter')
 
                     });
             } else {
-                console.debug("positiveNegativeCtrl: not logged in, going to default state");
+                console.debug("predictorsCtrl: not logged in, going to default state");
                 $state.go(config.appSettings.defaultState);
             }
         }
@@ -254,12 +254,12 @@ angular.module('starter')
         // Where is this used?
         $scope.changePage = function(){
             if ($scope.valence) {
-                $state.go('app.positiveNegative', {
+                $state.go('app.predictors', {
                     valence: "negative"
                 });
             }
             else {
-                $state.go('app.positiveNegative', {
+                $state.go('app.predictors', {
                     valence: "positive"
                 });
             }
