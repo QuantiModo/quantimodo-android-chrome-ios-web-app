@@ -49,8 +49,7 @@
     "cordova-plugin-file-opener2",
     "cordova-plugin-ios-non-exempt-encryption",
     "cordova-plugin-email-composer",
-    "cordova-plugin-geolocation",
-    "cordova-plugin-mauron85-background-geolocation"
+    "cordova-plugin-geolocation"
   ],
   "cordovaPlatforms": [
     "android"
