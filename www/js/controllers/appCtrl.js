@@ -72,7 +72,7 @@ angular.module('starter')
                             }
 
                             var currentTimeEpochMilliseconds = new Date().getTime();
-                            var currentTimeEpochSeconds = currentTimeEpochMilliseconds/1000;
+                            var currentTimeEpochSeconds = Math.round(currentTimeEpochMilliseconds/1000);
                             if(!$rootScope.lastLocationUpdateTimeEpochSeconds && result.address && result.address !== "undefined"){
                                 qmLocationService.setLocationVariables(result, currentTimeEpochSeconds);
                             } else {
