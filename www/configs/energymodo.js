@@ -386,8 +386,8 @@ config.appSettings  = {
         "#/app/track_factors_category/Foods": 'You can track your diet on this page. You can also <span class="positive">Add a new Food Variable</span> if you do not find the meal you looked for in the search results.',
         "#/app/track_factors_category/Symptoms": 'You can track any symptom on this page. You can also <span class="positive">Add a new Symptom</span> if you don\'t find the symptom you looked for in the search results.',
         "#/app/track_factors_category/Treatments": 'You can track any treatment on this page. You can also <span class="positive">Add a new Treatment</span> if you don\'t find the treatment you looked for in the search results.',
-        "#/app/positive-negative/positive": 'Positive Predictors are the factors most predictive of <span class="positive">IMPROVING</span> Energy for the average QuantiModo user.',
-        "#/app/positive-negative/negative": 'Negative Predictors are the factors most predictive of <span class="positive">DECREASING</span>Energy for the average QuantiModo user.'
+        "#/app/predictors/positive": 'Positive Predictors are the factors most predictive of <span class="positive">IMPROVING</span> Energy for the average QuantiModo user.',
+        "#/app/predictors/negative": 'Negative Predictors are the factors most predictive of <span class="positive">DECREASING</span>Energy for the average QuantiModo user.'
     },
 
     remindersInbox : {
@@ -453,14 +453,14 @@ config.appSettings  = {
             title : 'Positive Predictors',
             isSubMenuChild : true,
             showSubMenuVariable : 'showPrimaryOutcomeSubMenu',
-            href : '#/app/positive-negative/positive',
+            href : '#/app/predictors/positive',
             icon : 'ion-happy-outline'
         },
         {
             title : 'Negative Predictors',
             isSubMenuChild : true,
             showSubMenuVariable : 'showPrimaryOutcomeSubMenu',
-            href : '#/app/positive-negative/negative',
+            href : '#/app/predictors/negative',
             icon : 'ion-sad-outline'
         },
         {
@@ -670,14 +670,14 @@ config.appSettings  = {
             title : 'High Energy',
             isSubMenuChild : true,
             showSubMenuVariable : 'showPredictorSearchSubMenu',
-            href : '#/app/positive-negative/positive',
+            href : '#/app/predictors/positive',
             icon : 'ion-happy-outline'
         },
         {
             title : 'Low Energy',
             isSubMenuChild : true,
             showSubMenuVariable : 'showPredictorSearchSubMenu',
-            href : '#/app/positive-negative/negative',
+            href : '#/app/predictors/negative',
             icon : 'ion-sad-outline'
         },
         {
