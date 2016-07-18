@@ -316,7 +316,7 @@ angular.module('starter')
                             console.debug("Setting $scope.state.measurement.abbreviatedUnitName by variableObject: " + $stateParams.variableObject.abbreviatedUnitName);
                             if (jQuery.inArray($stateParams.variableObject.abbreviatedUnitName, $rootScope.abbreviatedUnitNames) === -1)
                             {
-                                throw 'Invalid unit name! allowed parameters: ' + $rootScope.abbreviatedUnitNames.toString();
+                                console.error('Invalid unit name! allowed parameters: ' + $rootScope.abbreviatedUnitNames.toString());
                             }
                             $scope.state.measurement.abbreviatedUnitName = $stateParams.variableObject.abbreviatedUnitName;
                             //$scope.unitObject.abbreviatedName = $stateParams.variableObject.abbreviatedUnitName;
@@ -325,7 +325,7 @@ angular.module('starter')
                             console.debug("Setting $scope.state.measurement.abbreviatedUnitName by reminder: " + $stateParams.reminder.abbreviatedUnitName);
                             if (jQuery.inArray($stateParams.reminder.abbreviatedUnitName, $rootScope.abbreviatedUnitNames) === -1)
                             {
-                                throw 'Invalid unit name! allowed parameters: ' + $rootScope.abbreviatedUnitNames.toString();
+                                console.error('Invalid unit name! allowed parameters: ' + $rootScope.abbreviatedUnitNames.toString());
                             }
                             $scope.state.measurement.abbreviatedUnitName = $stateParams.reminder.abbreviatedUnitName;
                         }
