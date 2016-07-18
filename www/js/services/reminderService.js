@@ -7,8 +7,10 @@ angular.module('starter')
 
 			addNewReminder : function(trackingReminder){
 				
-				var deferred = $q.defer();
-				notificationService.scheduleNotification(null, trackingReminder);
+				var deferred = $q.defer();[]
+				if(trackingReminder.reminderFrequency !== 0){
+					notificationService.scheduleNotification(null, trackingReminder);
+				}
 				
 				trackingReminder.timeZoneOffset = new Date().getTimezoneOffset();
                 QuantiModo.postTrackingReminder(trackingReminder, function(){
@@ -133,41 +135,46 @@ angular.module('starter')
 			getTrackingReminderNotifications : function(category, today){
 
 				var localMidnightInUtcString = timeService.getLocalMidnightInUtcString();
-				var currentDateTimeInUtcStringPlus15Min = timeService.getCurrentDateTimeInUtcStringPlus15Min();
+				var currentDateTimeInUtcStringPlus5Min = timeService.getCurrentDateTimeInUtcStringPlusMin(5);
 				var params = {};
-				if(today && !category){
+
+				if (today && !category) {
 					var reminderTime = '(gt)' + localMidnightInUtcString;
 					params = {
-						reminderTime : reminderTime,
-						sort : 'reminderTime'
+						reminderTime: reminderTime,
+						sort: 'reminderTime'
 					};
 				}
 
-				if(!today && category){
+				if (!today && category) {
 					params = {
-						variableCategoryName : category,
-						reminderTime : '(lt)' + currentDateTimeInUtcStringPlus15Min
+						variableCategoryName: category,
+						reminderTime: '(lt)' + currentDateTimeInUtcStringPlus5Min
 					};
 				}
 
-				if(today && category){
+				if (today && category) {
 					params = {
-						reminderTime : '(gt)' + localMidnightInUtcString,
-						variableCategoryName : category,
-						sort : 'reminderTime'
+						reminderTime: '(gt)' + localMidnightInUtcString,
+						variableCategoryName: category,
+						sort: 'reminderTime'
 					};
 				}
 
-				if(!today && !category){
+				if (!today && !category) {
 					params = {
-						reminderTime : '(lt)' + currentDateTimeInUtcStringPlus15Min
+						reminderTime: '(lt)' + currentDateTimeInUtcStringPlus5Min
 					};
 				}
+
 
 				var deferred = $q.defer();
 				QuantiModo.getTrackingReminderNotifications(params, function(reminders){
 					if(reminders.success) {
 						deferred.resolve(reminders.data);
+						if($rootScope.combineNotifications !== true){
+							notificationService.scheduleAllNotifications(reminders.data);
+						}
 					}
 					else {
 						deferred.reject("error");

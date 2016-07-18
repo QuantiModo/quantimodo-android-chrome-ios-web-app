@@ -68,8 +68,8 @@ angular.module('starter')
 				return currentDateTimeInUtcString;
 			},
 
-			getCurrentDateTimeInUtcStringPlus15Min: function () {
-				var currentMoment = moment().add(15, 'minutes');
+			getCurrentDateTimeInUtcStringPlusMin: function (minutes) {
+				var currentMoment = moment().add(minutes, 'minutes');
 				var timeFormat = 'YYYY-MM-DD HH:mm:ss';
 				var currentDateTimeInUtcStringPlus15Min = currentMoment.utc().format(timeFormat);
 				return currentDateTimeInUtcStringPlus15Min;

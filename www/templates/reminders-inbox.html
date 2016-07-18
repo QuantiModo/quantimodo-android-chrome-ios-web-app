@@ -1,142 +1,142 @@
 <ion-view hide-nav-bar="hideNavigationMenu" view-title="{{state.title}}">
-    <ion-content>
-	<!--<ion-content scroll="true" overflow-scroll="true">-->
-        <ion-refresher on-refresh="init()"></ion-refresher>
+	<ion-content>
+		<!--<ion-content scroll="true" overflow-scroll="true">-->
+		<ion-refresher on-refresh="init()"></ion-refresher>
 
 
-			<div class="list card"  ng-hide="hideAddTreatmentRemindersCard">
-				<div class="item" style="padding-bottom:0px;">
-					<p style=" text-align: center; line-height: normal; font-size: 25px;">Treatment Tracking</p>
+		<div class="list card"  ng-hide="hideAddTreatmentRemindersCard">
+			<div class="item" style="padding-bottom:0px;">
+				<p style=" text-align: center; line-height: normal; font-size: 25px;">Treatment Tracking</p>
 
-					<div class="row">
-						<div class="col" style="padding-top: 0px;">
-							<i style="text-align: center; font-size: 60px;" class="icon positive ion-ios-medkit-outline"></i>
-						</div>
-						<div class="col col-75">
-							<h2 style="white-space: normal; text-align: left; line-height: normal; ">Get reminded to take and record treatments to identify how they might be affecting you.</h2>
-						</div>
+				<div class="row">
+					<div class="col" style="padding-top: 0px;">
+						<i style="text-align: center; font-size: 60px;" class="icon positive ion-ios-medkit-outline"></i>
 					</div>
-					<div class="row" >
-						<div class="button-bar">
-							<button class="button button-clear button-balanced" style="font-size: 14px;" ng-click="goToReminderSearchCategory('Treatments')"><i class="ion-plus-round"> &nbsp; Add treatment reminder &nbsp;</i></button>
-						</div>
-					</div>
-					<div class="row" >
-						<div class="button-bar">
-							<button class="button button-clear button-assertive" style="font-size: 14px;" ng-click="setLocalStorageFlagTrue('hideAddTreatmentRemindersCard')"><i class="ion-close-circled"> &nbsp;Done adding treatments</i></button>
-						</div>
-					</div>
-
-				</div>
-			</div>
-
-			<div class="list card"  ng-hide="hideAddSymptomRemindersCard">
-				<div class="item" >
-					<p style=" text-align: center; line-height: normal; font-size: 25px;">Symptom Ratings</p>
-
-					<div class="row">
-						<div class="col" style="padding-top: 0px;">
-							<i style="font-size: 60px;" class="icon positive ion-sad-outline"></i>
-						</div>
-						<div class="col col-75">
-							<h2 style="white-space: normal; text-align: left; line-height: normal; ">Rate symptoms regularly in order to determine which factors are influencing them. </h2>
-						</div>
-					</div>
-					<div class="row" >
-						<div class="button-bar">
-							<button class="button button-clear button-balanced" style="font-size: 14px;" ng-click="goToReminderSearchCategory('Symptoms')"><i class="ion-plus-round"> &nbsp; Add symptom reminder &nbsp;</i></button>
-						</div>
-					</div>
-					<div class="row"  >
-						<div class="button-bar">
-							<button class="button button-clear button-assertive" style="font-size: 14px;" ng-click="setLocalStorageFlagTrue('hideAddSymptomRemindersCard')"><i class="ion-close-circled"> &nbsp; Done adding symptoms</i></button>
-						</div>
-					</div>
-
-				</div>
-			</div>
-
-			<div class="list card"  ng-hide="hideAddEmotionRemindersCard">
-				<div class="item" style="padding-bottom:0px;">
-					<p style=" text-align: center; line-height: normal; font-size: 25px;">Varying Emotions?</p>
-					<div class="row">
-						<div class="col" style="padding-top: 0px;">
-							<i style="font-size: 60px;" class="icon positive ion-happy-outline"></i>
-						</div>
-						<div class="col col-75">
-							<h2 style="white-space: normal; text-align: left; line-height: normal; ">It's important to rate variable emotions regularly in order to determine which factors are influencing them. </h2>
-						</div>
-					</div>
-					<div class="row" >
-						<div class="button-bar">
-							<button class="button button-clear button-balanced" style="font-size: 14px;" ng-click="goToReminderSearchCategory('Emotions')"><i class="ion-plus-round"> &nbsp; Add an emotion reminder&nbsp;</i></button>
-						</div>
-					</div>
-					<div class="row"  >
-						<div class="button-bar">
-							<button class="button button-clear button-assertive" style="font-size: 14px;" ng-click="setLocalStorageFlagTrue('hideAddEmotionRemindersCard')"><i class="ion-close-circled"> &nbsp; Done adding emotions</i></button>
-						</div>
-					</div>
-
-				</div>
-			</div>
-
-			<div class="list card"  ng-hide="hideAddFoodRemindersCard">
-				<div class="item" style="padding-bottom:0px;">
-					<p style=" text-align: center; line-height: normal; font-size: 25px;">Track Diet</p>
-					<div class="row">
-						<div class="col" style="padding-top: 0px;">
-							<i style="font-size: 60px;" class="icon positive ion-ios-nutrition-outline"></i>
-						</div>
-						<div class="col col-75">
-							<h2 style="white-space: normal; text-align: left; line-height: normal; ">Diet can have a significant impact on your health.  It's important to enter any foods that you regularly eat to see how they might be affecting you. </h2>
-						</div>
-					</div>
-					<div class="row" >
-						<div class="button-bar">
-							<button class="button button-clear button-balanced" style="font-size: 14px;" ng-click="goToReminderSearchCategory('Foods')"><i class="ion-plus-round"> &nbsp; Add a food reminder &nbsp;</i></button>
-						</div>
-					</div>
-					<div class="row"  >
-						<div class="button-bar">
-							<button class="button button-clear button-assertive" style="font-size: 14px;" ng-click="setLocalStorageFlagTrue('hideAddFoodRemindersCard')"><i class="ion-close-circled"> &nbsp; Done adding common foods</i></button>
-						</div>
+					<div class="col col-75">
+						<h2 style="white-space: normal; text-align: left; line-height: normal; ">Get reminded to take and record treatments to identify how they might be affecting you.</h2>
 					</div>
 				</div>
-			</div>
+				<div class="row" >
+					<div class="button-bar">
+						<button class="button button-clear button-balanced" style="font-size: 14px;" ng-click="goToReminderSearchCategory('Treatments')"><i class="ion-plus-round"> &nbsp; Add treatment reminder &nbsp;</i></button>
+					</div>
+				</div>
+				<div class="row" >
+					<div class="button-bar">
+						<button class="button button-clear button-assertive" style="font-size: 14px;" ng-click="setLocalStorageFlagTrue('hideAddTreatmentRemindersCard')"><i class="ion-close-circled"> &nbsp;Done adding treatments</i></button>
+					</div>
+				</div>
 
-			<div class="list card"  ng-hide="hideImportDataCard">
-				<div class="item" style="padding-bottom:0px;">
-					<p style=" text-align: center; line-height: normal; font-size: 25px;">Import Your Data</p>
-					<div class="row">
-						<div class="col" style="padding-top: 0px;">
-							<i style="font-size: 60px;" class="icon positive ion-ios-cloud-download-outline"></i>
-						</div>
-						<div class="col col-75">
-							<h2 style="white-space: normal; text-align: left; line-height: normal; ">Start by scrolling down to the Weather connector and enter your zip code so we can see how the weather might be affecting you. </h2>
-						</div>
+			</div>
+		</div>
+
+		<div class="list card"  ng-hide="hideAddSymptomRemindersCard">
+			<div class="item" >
+				<p style=" text-align: center; line-height: normal; font-size: 25px;">Symptom Ratings</p>
+
+				<div class="row">
+					<div class="col" style="padding-top: 0px;">
+						<i style="font-size: 60px;" class="icon positive ion-sad-outline"></i>
 					</div>
-					<div class="row" >
-						<div class="button-bar">
-							<button class="button button-clear button-balanced" style="font-size: 14px;" ng-click="goToState('app.import')"><i class="ion-plus-round"> &nbsp; Connect an app or device &nbsp;</i></button>
-						</div>
+					<div class="col col-75">
+						<h2 style="white-space: normal; text-align: left; line-height: normal; ">Rate symptoms regularly in order to determine which factors are influencing them. </h2>
 					</div>
-					<div class="row"  >
-						<div class="button-bar">
-							<button class="button button-clear button-assertive" style="font-size: 14px;" ng-click="setLocalStorageFlagTrue('hideImportDataCard')"><i class="ion-close-circled"> &nbsp; Done connecting to sources</i></button>
-						</div>
+				</div>
+				<div class="row" >
+					<div class="button-bar">
+						<button class="button button-clear button-balanced" style="font-size: 14px;" ng-click="goToReminderSearchCategory('Symptoms')"><i class="ion-plus-round"> &nbsp; Add symptom reminder &nbsp;</i></button>
+					</div>
+				</div>
+				<div class="row"  >
+					<div class="button-bar">
+						<button class="button button-clear button-assertive" style="font-size: 14px;" ng-click="setLocalStorageFlagTrue('hideAddSymptomRemindersCard')"><i class="ion-close-circled"> &nbsp; Done adding symptoms</i></button>
+					</div>
+				</div>
+
+			</div>
+		</div>
+
+		<div class="list card"  ng-hide="hideAddEmotionRemindersCard">
+			<div class="item" style="padding-bottom:0px;">
+				<p style=" text-align: center; line-height: normal; font-size: 25px;">Varying Emotions?</p>
+				<div class="row">
+					<div class="col" style="padding-top: 0px;">
+						<i style="font-size: 60px;" class="icon positive ion-happy-outline"></i>
+					</div>
+					<div class="col col-75">
+						<h2 style="white-space: normal; text-align: left; line-height: normal; ">It's important to rate variable emotions regularly in order to determine which factors are influencing them. </h2>
+					</div>
+				</div>
+				<div class="row" >
+					<div class="button-bar">
+						<button class="button button-clear button-balanced" style="font-size: 14px;" ng-click="goToReminderSearchCategory('Emotions')"><i class="ion-plus-round"> &nbsp; Add an emotion reminder&nbsp;</i></button>
+					</div>
+				</div>
+				<div class="row"  >
+					<div class="button-bar">
+						<button class="button button-clear button-assertive" style="font-size: 14px;" ng-click="setLocalStorageFlagTrue('hideAddEmotionRemindersCard')"><i class="ion-close-circled"> &nbsp; Done adding emotions</i></button>
+					</div>
+				</div>
+
+			</div>
+		</div>
+
+		<div class="list card"  ng-hide="hideAddFoodRemindersCard">
+			<div class="item" style="padding-bottom:0px;">
+				<p style=" text-align: center; line-height: normal; font-size: 25px;">Track Diet</p>
+				<div class="row">
+					<div class="col" style="padding-top: 0px;">
+						<i style="font-size: 60px;" class="icon positive ion-ios-nutrition-outline"></i>
+					</div>
+					<div class="col col-75">
+						<h2 style="white-space: normal; text-align: left; line-height: normal; ">Diet can have a significant impact on your health.  It's important to enter any foods that you regularly eat to see how they might be affecting you. </h2>
+					</div>
+				</div>
+				<div class="row" >
+					<div class="button-bar">
+						<button class="button button-clear button-balanced" style="font-size: 14px;" ng-click="goToReminderSearchCategory('Foods')"><i class="ion-plus-round"> &nbsp; Add a food reminder &nbsp;</i></button>
+					</div>
+				</div>
+				<div class="row"  >
+					<div class="button-bar">
+						<button class="button button-clear button-assertive" style="font-size: 14px;" ng-click="setLocalStorageFlagTrue('hideAddFoodRemindersCard')"><i class="ion-close-circled"> &nbsp; Done adding common foods</i></button>
 					</div>
 				</div>
 			</div>
+		</div>
+
+		<div class="list card"  ng-hide="hideImportDataCard">
+			<div class="item" style="padding-bottom:0px;">
+				<p style=" text-align: center; line-height: normal; font-size: 25px;">Import Your Data</p>
+				<div class="row">
+					<div class="col" style="padding-top: 0px;">
+						<i style="font-size: 60px;" class="icon positive ion-ios-cloud-download-outline"></i>
+					</div>
+					<div class="col col-75">
+						<h2 style="white-space: normal; text-align: left; line-height: normal; ">Start by scrolling down to the Weather connector and enter your zip code so we can see how the weather might be affecting you. </h2>
+					</div>
+				</div>
+				<div class="row" >
+					<div class="button-bar">
+						<button class="button button-clear button-balanced" style="font-size: 14px;" ng-click="goToState('app.import')"><i class="ion-plus-round"> &nbsp; Connect an app or device &nbsp;</i></button>
+					</div>
+				</div>
+				<div class="row"  >
+					<div class="button-bar">
+						<button class="button button-clear button-assertive" style="font-size: 14px;" ng-click="setLocalStorageFlagTrue('hideImportDataCard')"><i class="ion-close-circled"> &nbsp; Done connecting to sources</i></button>
+					</div>
+				</div>
+			</div>
+		</div>
 
 		<div class="list card" ng-if="state.filteredReminders.length">
 			<div ng-repeat="divider in state.filteredReminders" ng-init="dividerIndex = $index" id="{{divider.name}}Reminders">
 
 				<div class="item item-divider" style="">
-				  {{divider.name}}
+					{{divider.name}}
 				</div>
 
-				
+
 				<div class="list card" ng-if="!reminder.hide" ng-repeat="reminder in divider.reminders" ng-init="reminderNotificationIndex = $index" >
 					<div class="item" style="padding-bottom:0px;">
 						<div class="row">
@@ -166,7 +166,7 @@
 							</div>
 						</div>
 						<div class="primary-outcome-variable-reporting"
-						 	ng-if="!reminder.description &&	reminder.abbreviatedUnitName === '/5'">
+							 ng-if="!reminder.description &&	reminder.abbreviatedUnitName === '/5'">
 							<div class="primary-outcome-variable-rating-buttons" >
 								<img ng-repeat="option in numericRatingOptions"
 									 ng-click="track(reminder, option.numericValue, $event, dividerIndex, reminderNotificationIndex)"
@@ -201,25 +201,25 @@
 			</div>
 		</div>
 
-        <div class="list card"  ng-show="state.showAllCaughtUp">
-            <div class="item" style="padding-bottom:0px;">
-                <p style=" text-align: center; line-height: normal; font-size: 25px;">All caught up!</p>
+		<div class="list card"  ng-show="state.showAllCaughtUp">
+			<div class="item" style="padding-bottom:0px;">
+				<p style=" text-align: center; line-height: normal; font-size: 25px;">All caught up!</p>
 
-                <div class="row">
-                    <div class="col" style="padding-top: 0px;">
-                        <i style="text-align: center; font-size: 60px;" class="icon positive ion-android-sunny"></i>
-                    </div>
-                    <div class="col col-75">
-                        <h2 style="white-space: normal; text-align: left; line-height: normal; ">Maybe you should refresh or add some more reminders?</h2>
-                    </div>
-                </div>
-                <div class="row" >
-                    <div class="button-bar">
-                        <button class="button button-clear button-balanced" style="font-size: 14px;" ng-click="goToState('app.reminderSearch')"><i class="ion-plus-round"> &nbsp; Add a reminder &nbsp;</i></button>
-                    </div>
-                </div>
-            </div>
-        </div>
+				<div class="row">
+					<div class="col" style="padding-top: 0px;">
+						<i style="text-align: center; font-size: 60px;" class="icon positive ion-android-sunny"></i>
+					</div>
+					<div class="col col-75">
+						<h2 style="white-space: normal; text-align: left; line-height: normal; ">Maybe you should refresh or add some more reminders?</h2>
+					</div>
+				</div>
+				<div class="row" >
+					<div class="button-bar">
+						<button class="button button-clear button-balanced" style="font-size: 14px;" ng-click="goToState('app.reminderSearch')"><i class="ion-plus-round"> &nbsp; Add a reminder &nbsp;</i></button>
+					</div>
+				</div>
+			</div>
+		</div>
 
 		<div ng-hide="state.hideLoadMoreButton" class="button-bar">
 			<a class="button button-clear button-calm" ng-click="init()" style="text-overflow: clip;"><i class="ion-refresh">  Refresh</i></a>

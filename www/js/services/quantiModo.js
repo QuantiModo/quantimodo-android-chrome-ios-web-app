@@ -71,7 +71,7 @@ angular.module('starter')
                         { 
                             throw 'invalid parameter; allowed parameters: ' + allowedParams.toString(); 
                         }
-                        if(params[key]){
+                        if(typeof params[key] !== "undefined"){
                             urlParams.push(encodeURIComponent(key) + '=' + encodeURIComponent(params[key]));
                         }
                     }
@@ -266,7 +266,7 @@ angular.module('starter')
                     console.error("No measurementSet.measurements provided to QuantiModo.postMeasurementsV2");
                 } else {
                     QuantiModo.post('api/measurements/v2',
-                        ['measurements', 'variableName', 'source', 'variableCategoryName', 'combinationOperation', 'abbreviatedUnitName'],
+                        ['measurements', 'variableName', 'source', 'variableCategoryName', 'abbreviatedUnitName'],
                         measurementSet,
                         successHandler,
                         errorHandler);
@@ -452,7 +452,7 @@ angular.module('starter')
             // get pending reminders
             QuantiModo.getTrackingReminderNotifications = function(params, successHandler, errorHandler){
                 QuantiModo.get('api/v1/trackingReminderNotifications',
-                    ['variableCategoryName', 'reminderTime', 'sort'],
+                    ['variableCategoryName', 'reminderTime', 'sort', 'reminderFrequency'],
                     params,
                     successHandler,
                     errorHandler);

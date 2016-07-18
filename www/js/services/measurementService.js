@@ -553,6 +553,50 @@ angular.module('starter')
                 }
             },
 
+            postMeasurementByReminder: function(trackingReminder, modifiedValue) {
+
+                // send request
+                var value = trackingReminder.defaultValue;
+                if(typeof modifiedValue !== "undefined" && modifiedValue !== null){
+                    value = modifiedValue;
+                }
+
+                var startTimeEpochMilliseconds = new Date();
+                var startTimeEpochSeconds = startTimeEpochMilliseconds/1000;
+                // measurements set
+                var measurementSet = [
+                    {
+                        variableName: trackingReminder.variableName,
+                        source: config.get('clientSourceName'),
+                        variableCategoryName: trackingReminder.variableCategoryName,
+                        abbreviatedUnitName: trackingReminder.abbreviatedUnitName,
+                        measurements : [
+                            {
+                                startTimeEpoch:  startTimeEpochSeconds,
+                                value: value,
+                                note : null,
+                                latitude: $rootScope.lastLatitude,
+                                longitude: $rootScope.lastLongitude,
+                                location: $rootScope.lastLocationName
+                            }
+                        ]
+                    }
+                ];
+
+                var deferred = $q.defer();
+
+                QuantiModo.postMeasurementsV2(measurementSet, function(response){
+                    if(response.success) {
+                        console.log("success", response);
+                        deferred.resolve();
+                    } else {
+                        deferred.reject(response.message ? response.message.split('.')[0] : "Can't post measurement right now!");
+                    }
+                });
+
+                return deferred.promise;
+            },
+
             getHistoryMeasurements : function(params){
                 var deferred = $q.defer();
 

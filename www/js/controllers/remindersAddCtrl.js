@@ -224,6 +224,14 @@ angular.module('starter')
 	    	};
 	    };
 
+        $scope.addToFavorites = function(){
+            $scope.state.trackingReminder.reminderFrequency = 0;
+            $scope.state.selectedFrequency = 'Never';
+            $stateParams.fromUrl = null;
+            $stateParams.fromState = 'app.favorites';
+            $scope.save();
+        };
+
 	    // when the reminder is saved/edited
 	    $scope.save = function(){
 
@@ -470,24 +478,24 @@ angular.module('starter')
     	});
 
         $scope.deleteReminder = function(){
-            $scope.showLoader('Deleting ' + $scope.state.trackingReminder.variableName + ' reminder...');
-            reminderService.deleteReminder($scope.state.trackingReminder.id)
+            localStorageService.deleteElementOfItemById('trackingReminders', $scope.state.trackingReminder.id)
                 .then(function(){
-
-                    $ionicLoading.hide();
-                    $scope.loading = false;
-                    console.debug('Reminder Deleted.');
                     if($stateParams.fromUrl){
-                        window.location=$stateParams.fromUrl;
+                        window.location = $stateParams.fromUrl;
                     } else if ($stateParams.fromState){
                         $state.go($stateParams.fromState);
                     } else {
                         $rootScope.hideMenu = false;
                         $state.go('app.remindersManage');
                     }
+                });
 
+            reminderService.deleteReminder($scope.state.trackingReminder.id)
+                .then(function(){
+                    $ionicLoading.hide();
+                    $scope.loading = false;
+                    console.debug('Reminder Deleted');
                 }, function(err){
-
                     $ionicLoading.hide();
                     $scope.loading = false;
                     utilsService.showAlert('Failed to Delete Reminder, Try again!', 'assertive');

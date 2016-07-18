@@ -19,7 +19,7 @@ angular.module('starter')
 	    	],
 	    	trackingRemindersNotifications : [
 	    	],
-	    	filteredReminders : [
+	    	filteredReminderNotifications : [
 	    	],
 	    	measurementDate : new Date(),
 	    	slots : {
@@ -82,9 +82,11 @@ angular.module('starter')
 			if($stateParams.today) {
 				$scope.state.title = 'Today';
 			}
+
 		};
 
 	    var filterViaDates = function(trackingReminderNotifications) {
+
             $scope.state.numberOfNotificationsInInbox = 0;
 			var result = [];
 			var reference = moment().local();
@@ -147,6 +149,7 @@ angular.module('starter')
 
 	    	return result;
 	    };
+
 
         $scope.getTrackingReminderNotifications = function(){
 			$scope.showLoader('Syncing reminder notifications...');
@@ -220,6 +223,7 @@ angular.module('starter')
 	    		utilsService.showAlert('Failed to Track Reminder, Try again!', 'assertive');
 	    	});
 	    };
+
 
 	    $scope.skip = function(trackingReminderNotification, $event, dividerIndex, reminderNotificationIndex){
 			
