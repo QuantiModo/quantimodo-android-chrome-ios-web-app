@@ -72,7 +72,7 @@ angular.module('starter',
                 Bugsnag.apiKey = window.private_keys.bugsnag_key;
                 Bugsnag.releaseStage = config.getEnv();
                 Bugsnag.notifyReleaseStages = config.bugsnag.notifyReleaseStages;
-                Bugsnag.appVersion = "1.6.6.0";
+                Bugsnag.appVersion = "1.6.9.1";
             } else {
                 console.error('intervalChecker: No bugsnag_key found in private config!');
             }
