@@ -1033,7 +1033,7 @@ gulp.task('setVersionNumbersWithEnvs', function(){
 
 	if(!environmentalVariables['IONIC_IOS_APP_VERSION_NUMBER']){
 		//throw new Error('Please set IONIC_IOS_APP_VERSION_NUMBER env!');
-		environmentalVariables['IONIC_IOS_APP_VERSION_NUMBER'] = '1.6.8.6';
+		environmentalVariables['IONIC_IOS_APP_VERSION_NUMBER'] = '1.6.8.7';
 		console.warn('No IONIC_IOS_APP_VERSION_NUMBER env!  Using hardcoded gulp version ' +
 			environmentalVariables['IONIC_IOS_APP_VERSION_NUMBER'])
 	}
