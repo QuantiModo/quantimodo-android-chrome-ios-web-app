@@ -113,13 +113,15 @@ angular.module('starter')
                 } else {
                     console.error("Where's the damn location info?");
                 }
-                if (variableName && variableName !== "undefined") {
+                var secondsAtLocation = currentTimeEpochSeconds - $rootScope.lastLocationUpdateTimeEpochSeconds;
+                var hoursAtLocation = Math.round(secondsAtLocation/3600 * 100) / 100;
+                if (variableName && variableName !== "undefined" && secondsAtLocation > 60) {
                     var newMeasurement = {
-                        variableName: 'Time Spent at ' + variableName,
-                        abbreviatedUnitName: 's',
+                        variableName: variableName,
+                        abbreviatedUnitName: 'h',
                         startTimeEpoch: $rootScope.lastLocationUpdateTimeEpochSeconds,
                         sourceName: $rootScope.lastLocationResultType,
-                        value: currentTimeEpochSeconds - $rootScope.lastLocationUpdateTimeEpochSeconds,
+                        value: hoursAtLocation,
                         variableCategoryName: 'Location',
                         note: $rootScope.lastLocationAddress,
                         combinationOperation: "SUM"
