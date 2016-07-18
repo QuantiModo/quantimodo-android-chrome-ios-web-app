@@ -2,12 +2,13 @@
      <ion-content>
          <ion-refresher on-refresh="init()"></ion-refresher>
       <ion-list>
-          <div collection-repeat="historyItem in history" divider-collection-repeat>
+          <div collection-repeat="historyItem in history" data-measurementid="{{historyItem.id}}" divider-collection-repeat>
               <ion-item ng-click="editMeasurement(historyItem)" >
                   <div style="display:inline-block;float:left;margin-right:15px;">
                     <img ng-src="{{historyItem.image}}" style="width:80px;" />
                   </div>
                   <div class="history-block">
+                      <p ng-hide="true">{{historyItem.id}}</p>
                       <h2 class="" >{{historyItem.value | percentage}}% {{historyItem.value | PrimaryOutcomeVariableByNumber}}</h2>
                       <h2 class="history-time" ng-repeat="line in (historyItem.startTimeEpoch | timeOfDayDayOfWeek) track by $index">
                           {{line}}
