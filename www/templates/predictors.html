@@ -1,11 +1,11 @@
 <ion-view hide-nav-bar="hideNavigationMenu" view-title="{{title}}">
     <ion-tabs id="predictors-tabs" class="tabs-positive tabs-icon-top">
 
-        <ion-tab title="Common" icon-on="ion-ios-pulse" icon-off="ion-ios-pulse-strong">
+        <ion-tab title="Common Predictors" icon-on="ion-ios-pulse" icon-off="ion-ios-pulse-strong">
             <ion-content style="padding-top: 45px">
                 <div class="card card-positive">
                     <div class="item item-text-wrap card-item" >
-                        <p>These are the factors most predictive of <span class="bold">{{increasingDecreasing}}</span> {{primaryOutcomeVariable}} for the average QuantiModo user.</p>
+                        <p>These are the factors most predictive of <span class="bold">{{increasingDecreasing}}</span> {{primaryOutcomeVariable}} for the average user.  Press "Your Predictors" at the bottom to see ones based on your own data.</p>
                     </div>
                 </div>
                 <ion-list>
@@ -36,11 +36,11 @@
             </ion-content>
         </ion-tab>
 
-        <ion-tab title="Yours" icon-on="ion-ios-person" icon-off="ion-ios-person-outline">
+        <ion-tab title="Your Predictors" icon-on="ion-ios-person" icon-off="ion-ios-person-outline">
             <ion-content style="padding-top: 45px">
                 <div class="card card-positive">
                     <div class="item item-text-wrap card-item" >
-                        <p>Our analysis suggests that these are the factors most predictive of <b>{{increasingDecreasing}}</b> your {{primaryOutcomeVariable}} based on your own data. Want more accurate results? Start <a ui-sref="app.track_factors">tracking!</a></p>
+                        <p>Our analysis suggests that these are the factors most predictive of <b>{{increasingDecreasing}}</b> your {{primaryOutcomeVariable}} based on your own data. Want more accurate results? Add some reminders and start tracking!</a></p>
                     </div>
                 </div>
                 <ion-list>
