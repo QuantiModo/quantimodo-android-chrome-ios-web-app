@@ -32,6 +32,7 @@ angular.module('starter')
             $scope.setupVariableCategory(selectedVariable.variableCategoryName);
             if (selectedVariable.id) {
                 $scope.state.trackingReminder.variableId = selectedVariable.id;
+                $scope.state.trackingReminder.id = null;
             }
             if (selectedVariable.name) {
                 $scope.state.trackingReminder.variableName = selectedVariable.name;

@@ -295,6 +295,11 @@ config.appSettings  = {
             icon : 'ion-archive'
         },
         {
+            title : 'As Needed',
+            href : '#/app/favorites',
+            icon : 'ion-ios-star'
+        },
+        {
             title : 'Medications',
             click : 'togglePrimaryOutcomeSubMenu',
             showSubMenuVariable : 'showPrimaryOutcomeSubMenu',

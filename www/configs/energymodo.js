@@ -428,6 +428,11 @@ config.appSettings  = {
             icon : 'ion-android-notifications-none'
         },
         {
+            title : 'Favorites',
+            href : '#/app/favorites',
+            icon : 'ion-ios-star'
+        },
+        {
             title : 'Energy Level',
             click : 'togglePrimaryOutcomeSubMenu',
             showSubMenuVariable : 'showPrimaryOutcomeSubMenu',

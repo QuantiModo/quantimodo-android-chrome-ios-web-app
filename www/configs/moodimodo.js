@@ -437,6 +437,11 @@ config.appSettings  = {
             icon : 'ion-archive'
         },
         {
+            title : 'Favorites',
+            href : '#/app/favorites',
+            icon : 'ion-ios-star'
+        },
+        {
             title : 'Overall Mood',
             click : 'togglePrimaryOutcomeSubMenu',
             showSubMenuVariable : 'showPrimaryOutcomeSubMenu',

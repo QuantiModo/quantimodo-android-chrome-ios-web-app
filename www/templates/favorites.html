@@ -10,8 +10,8 @@
                     <div ng-click="favorite.showMore = !favorite.showMore;" class="col" style="padding-top: 0px;">
                         <i style="font-size: 60px;" class="icon positive {{favorite.icon}}"></i>
                     </div>
-                    <div class="col col-75">
-                        <h2 ng-click="favorite.showMore = !favorite.showMore;" ng-if="favorite.abbreviatedUnitName != '/5'" style="white-space: normal; line-height: normal; ">{{favorite.displayTotal}}&nbsp;{{favorite.unitName.toLowerCase()}} {{favorite.variableName}}</h2>
+                    <div class="col col-65">
+                        <h2 ng-click="favorite.showMore = !favorite.showMore;" ng-if="favorite.abbreviatedUnitName !== '/5'" style="white-space: normal; line-height: normal; ">{{favorite.displayTotal}}&nbsp{{favorite.variableName}}</h2>
                         <h2 ng-click="favorite.showMore = !favorite.showMore;" ng-if="favorite.abbreviatedUnitName == '/5'" style="white-space: normal; line-height: normal; ">{{favorite.displayTotal}} {{favorite.variableName}}</h2>
 						<button ng-show="favorite.showMore" ng-if="favorite.abbreviatedUnitName == '/5'" class="button button-clear button-calm" ng-click="editReminderSettings(favorite)" style="text-overflow: clip;  font-size: 12px;">
 							<i class="ion-settings"> &nbsp; Settings</i>
@@ -20,6 +20,9 @@
 							<i class="ion-android-done"> &nbsp; Record {{favorite.defaultValue}} {{favorite.abbreviatedUnitName}}</i>
 						</button>
 					</div>
+                    <div ng-click="favorite.showMore = !favorite.showMore;" class="col col-10">
+                        <i style="font-size: 10px;" class="icon positive ion-more"></i>
+                    </div>
                 </div>
                 <div ng-show="favorite.showMore" class="row" ng-if="favorite.abbreviatedUnitName !== '/5' " >
                     <div class="button-bar">
@@ -70,7 +73,34 @@
                 </div>
             </div>
         </div>
+            <div class="list card" ng-hide="state.favorites.length" >
+                <div class="item" style="padding-bottom:0px;">
+                    <div class="row">
+                        <div class="col col-25" style="padding-top: 0px;">
+                            <i style="text-align: center; font-size: 40px;" class="icon positive ion-ios-star"></i>
+                        </div>
+                        <div class="col col-75">
+                            <p style=" text-align: left; line-height: normal; font-size: 25px;">Favorite Variables</p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <h2 style="white-space: normal; text-align: center; line-height: normal; ">
+                            Favorites are variables that you might want to track on a frequent but irregular basis.  Examples might be as-needed medications or glasses of water.
+                            <br><br>
+                            Tip: I recommend using reminders instead of favorites whenever possible because they allow you to record regular 0 values as well.  Having measurements indicating when
+                            you didn't take a medication or eat something for instance lead to much more accurate correctional analysis.
+                            <br><br>
+                        </h2>
+                    </div>
+                </div>
+            </div>
 
+            <div class="list card" ng-click="goToState('app.favoriteSearch')">
+                <a class="item item-icon-left">
+                    <i class="icon ion-plus positive"></i>
+                    Add a Favorite Variable
+                </a>
+            </div>
 		</ion-content>
 
 
