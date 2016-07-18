@@ -10,7 +10,6 @@ angular.module('starter')
 		console.log('Loading ' + $scope.controller_name);
 		
 	    $scope.state = {
-			showButtons : false,
 	    	showMeasurementBox : false,
 	    	selectedReminder : false,
 	    	reminderDefaultValue : "",
@@ -160,14 +159,10 @@ angular.module('starter')
                     $scope.state.trackingRemindersNotifications =
                         variableCategoryService.attachVariableCategoryIcons(trackingReminderNotifications);
                     $scope.state.filteredReminders = filterViaDates(trackingReminderNotifications);
-                    if(trackingReminderNotifications.length > 1){
-                        $scope.state.showButtons = false;
+                    if(trackingReminderNotifications.length > 0){
                         $scope.state.showAllCaughtUp = false;
                     } else {
                         $scope.state.showAllCaughtUp = true;
-                    }
-                    if(trackingReminderNotifications.length < 2){
-                        $scope.state.showButtons = true;
                     }
                     $scope.state.hideLoadMoreButton = false;
                     //Stop the ion-refresher from spinning
