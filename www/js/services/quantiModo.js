@@ -169,6 +169,12 @@ angular.module('starter')
                             };
                     }
 
+                    if($rootScope.trackLocation){
+                        request.headers.LOCATION = $rootScope.lastLocationNameAndAddress;
+                        request.headers.LATITUDE = $rootScope.lastLatitude;
+                        request.headers.LONGITUDE = $rootScope.lastLongitude;
+                    }
+
                     $http(request).success(successHandler).error(function(data,status,headers,config){
                         QuantiModo.errorHandler(data,status,headers,config);
                     });
