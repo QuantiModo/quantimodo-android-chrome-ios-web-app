@@ -215,7 +215,7 @@ angular.module('starter')
 	    	.then(function(){
                 notificationService.decrementNotificationBadges();
                 if($rootScope.numberOfPendingNotifications < 2){
-                    init();
+                    $scope.init();
                 }
 	    	}, function(err){
 				Bugsnag.notify(err, JSON.stringify(err), {}, "error");
@@ -240,7 +240,7 @@ angular.module('starter')
 	    		$scope.hideLoader();
                 notificationService.decrementNotificationBadges();
                 if($rootScope.numberOfPendingNotifications < 2){
-                    init();
+                    $scope.init();
                 }
 	    	}, function(err){
 				Bugsnag.notify(err, JSON.stringify(err), {}, "error");
@@ -263,7 +263,7 @@ angular.module('starter')
 	    	.then(function(){
                 notificationService.decrementNotificationBadges();
                 if($rootScope.numberOfPendingNotifications < 2){
-                    init();
+                    $scope.init();
                 }
 	    	}, function(err){
 				Bugsnag.notify(err, JSON.stringify(err), {}, "error");
