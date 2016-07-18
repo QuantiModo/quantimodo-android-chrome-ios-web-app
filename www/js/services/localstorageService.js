@@ -1,8 +1,3 @@
-/**
- * Created by Abdullah on 8/14/2015.
- * //
- */
-
 angular.module('starter')
 
     .factory('localStorageService',function(utilsService, $rootScope, $q){

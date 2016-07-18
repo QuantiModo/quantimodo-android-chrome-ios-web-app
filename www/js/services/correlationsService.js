@@ -1,6 +1,3 @@
-/**
- * Created by Abdullah on 7/31/2015.
- */
 angular.module('starter')
     // Correlation service
     .factory('correlationService', function(QuantiModo, $q) {
