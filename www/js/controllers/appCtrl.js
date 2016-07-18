@@ -37,7 +37,9 @@ angular.module('starter')
         $scope.hideAddFoodRemindersCard = localStorageService.getItemSync('hideAddFoodRemindersCard');
         $scope.hideAddSymptomRemindersCard = localStorageService.getItemSync('hideAddSymptomRemindersCard');
         $scope.hideAddEmotionRemindersCard = localStorageService.getItemSync('hideAddEmotionRemindersCard');
+        $scope.hideHistoryPageInstructionsCard = localStorageService.getItemSync('hideHistoryPageInstructionsCard');
         $scope.hideImportDataCard = localStorageService.getItemSync('hideImportDataCard');
+        $scope.hideRecordMeasurementInfoCard = localStorageService.getItemSync('hideRecordMeasurementInfoCard');
 
         $scope.getLocation = function(){
             $scope.shouldWeTrackLocation();

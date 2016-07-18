@@ -74,7 +74,7 @@ angular.module('starter')
 			}
 	    };
 
-	    $scope.editMeasurement = function(trackingReminder, dividerIndex, reminderNotificationIndex){
+	    $scope.editMeasurement = function(trackingReminder){
 			$state.go('app.measurementAdd',
 				{
 					reminder: trackingReminder,

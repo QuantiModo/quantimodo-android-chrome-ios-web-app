@@ -8,7 +8,29 @@
                  &nbsp
                  Track my location
              </ion-toggle>
+          </div>
+
+         <div class="list card"  ng-hide="hideHistoryPageInstructionsCard">
+             <div class="item" >
+                 <p style=" text-align: center; line-height: normal; font-size: 25px;">Past Data</p>
+
+                 <div class="row">
+                     <div class="col" style="padding-top: 0px;">
+                         <i style="font-size: 60px;" class="icon positive ion-calendar"></i>
+                     </div>
+                     <div class="col col-75">
+                         <h2 style="white-space: normal; text-align: left; line-height: normal; ">'You can see and edit your past data and add notes by tapping on any item in the list.</h2>
+                     </div>
+                 </div>
+                 <div class="row"  >
+                     <div class="button-bar">
+                         <button class="button button-clear button-balanced" style="font-size: 14px;" ng-click="setLocalStorageFlagTrue('hideHistoryPageInstructionsCard')"><i class="ion-checkmark"> &nbsp; Got it!</i></button>
+                     </div>
+                 </div>
+
+             </div>
          </div>
+
       <ion-list>
           <div collection-repeat="historyItem in state.history" data-measurementid="{{historyItem.id}}" divider-collection-repeat>
               <ion-item  ng-click="editMeasurement(historyItem)">

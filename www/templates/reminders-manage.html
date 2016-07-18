@@ -1,6 +1,60 @@
 <ion-view hide-nav-bar="hideNavigationMenu" view-title="{{state.title}}">
 	<ion-content>
 		<ion-refresher on-refresh="init()"></ion-refresher>
+
+		<div class="list card" ng-if="state.showTreatmentInfoCard" >
+			<div class="item" style="padding-bottom:0px;">
+				<div class="row">
+					<div class="col col-25" style="padding-top: 0px;">
+						<i style="text-align: center; font-size: 40px;" class="icon positive ion-ios-medkit-outline"></i>
+					</div>
+					<div class="col col-75">
+						<p style=" text-align: left; line-height: normal; font-size: 25px;">Medication Reminders</p>
+					</div>
+				</div>
+				<div class="row">
+					<h2 style="white-space: normal; text-align: center; line-height: normal; ">
+						You don't have any medication or treatment reminders yet!  Once you add some, you'll be able to modify or delete them here.
+						<br><br>
+					</h2>
+				</div>
+			</div>
+		</div>
+
+		<div class="list card" ng-if="state.showSymptomInfoCard" >
+			<div class="item" >
+				<p style=" text-align: center; line-height: normal; font-size: 25px;">Symptom Ratings</p>
+
+				<div class="row">
+					<div class="col" style="padding-top: 0px;">
+						<i style="font-size: 60px;" class="icon positive ion-sad-outline"></i>
+					</div>
+					<div class="col col-75">
+						<h2 style="white-space: normal; text-align: center; line-height: normal; ">
+							Here, you can add or delete existing symptom or side effect rating reminders.
+						</h2>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col" style="padding-top: 0px;">
+						<br>
+						<h2 style="white-space: normal; text-align: center; line-height: normal; ">
+							Then you'll be able to quickly record ratings in the Reminder Inbox.
+						</h2>
+					</div>
+				</div>
+				<div class="row">
+
+					<h2 style="white-space: normal; text-align: center; line-height: normal; ">
+						<br>
+						This data combined with machine learning algorithms can help you and your physician discover hidden factors that might be improving or exacerbating your symptoms.
+						<br>
+					</h2>
+				</div>
+
+			</div>
+		</div>
+		
 		<div ng-show="state.showButtons" class="list card" ng-click="addNewReminderButtonClick()">
 			<a class="item item-icon-left">
 				<i class="icon ion-plus positive"></i>

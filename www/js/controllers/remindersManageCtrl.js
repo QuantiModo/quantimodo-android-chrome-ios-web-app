@@ -26,8 +26,11 @@ angular.module('starter')
 			},
 			variable : {},
 			isDisabled : false,
-			loading : true
+			loading : true,
+			showTreatmentInfoCard : false,
+			showSymptomInfoCard : false
 	    };
+
 
 		if($stateParams.variableCategoryName){
 			$scope.state.title = "Manage " + pluralize($filter('wordAliases')($stateParams.variableCategoryName), 1) + " Reminders";
@@ -51,6 +54,11 @@ angular.module('starter')
 
 		};
 
+		function showAppropriateHelpInfoCards(){
+			$scope.state.showTreatmentInfoCard = (!$scope.state.allReminders.length) && (window.location.href.indexOf('Treatments') > -1);
+			$scope.state.showSymptomInfoCard = (!$scope.state.allReminders.length) && (window.location.href.indexOf('Symptom') > -1);
+		}
+
 		function getTrackingRemindersFromLocalStorage(){
 			$scope.state.allReminders = [];
 			var unfilteredReminders = JSON.parse(localStorageService.getItemSync('trackingReminders'));
@@ -61,10 +69,14 @@ angular.module('starter')
 							$scope.state.allReminders.push(unfilteredReminders[j]);
 						}
 					}
+					showAppropriateHelpInfoCards();
 				} else {
 					$scope.state.allReminders = unfilteredReminders;
+					showAppropriateHelpInfoCards();
 				}
 				$scope.state.allReminders = reminderService.addRatingTimesToDailyReminders($scope.state.allReminders);
+			} else {
+				showAppropriateHelpInfoCards();
 			}
 		}
 
