@@ -2,7 +2,7 @@
     <ion-content scroll="true" overflow-scroll="true">
 
         <div class="list card">
-        	<div class="item item-divider">{{state.trackingReminder.variableName}} settings</div>
+        	<div class="item item-divider">{{state.trackingReminder.variableName}} favorite default settings</div>
             <div class="list">
                 <!--<label class="item item-input item-select" ng-if="state.showAddVariableCard && !state.trackingReminder.variableCategoryName">-->
                 <label class="item item-input item-select" ng-if="state.showAddVariableCard">
@@ -37,7 +37,7 @@
                     </button>
                 </div>
                 <div class="col col-50">
-                    <button ng-click="addToFavorites()"
+                    <button ng-click="save()"
                             class="button button-block icon-left ion-ios-star positive">
                         Save
                     </button>

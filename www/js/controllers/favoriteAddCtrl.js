@@ -20,51 +20,25 @@ angular.module('starter')
             selectedReminder : false,
             defaultValueLabel : 'Default Value',
             defaultValuePlaceholderText : 'Enter typical value',
-            showInstructionsField : false
-        };
-
-        $scope.loading = true;
-
-        $scope.goToAddMeasurement = function(){
-            $state.go('app.measurementAdd', {
-                variableObject: $scope.variableObject,
-                fromState: $state.current.name,
-                fromUrl: window.location.href
-            });
+            showInstructionsField : false,
+            title : "Add Favorite"
         };
 
 	    // when a search result is selected
 	    $scope.onVariableSelect = function(selectedVariable){
 	    	console.log("Variable Selected: ", selectedVariable);
 
-	    	if(!selectedVariable.variableCategoryName){
-	    		selectedVariable.variableCategoryName = selectedVariable.category;
-	    	}
-	    	if (!selectedVariable.variableCategoryName) {
-	    		$scope.state.showAddVariableCard = true;
-	    	}
-	    	$scope.variableObject=selectedVariable;
-
+            $scope.state.trackingReminder = $stateParams.variableObject;
             $scope.setupVariableCategory(selectedVariable.variableCategoryName);
-            if (selectedVariable.abbreviatedUnitName) {
-                $scope.state.trackingReminder.abbreviatedUnitName = selectedVariable.abbreviatedUnitName;
-            }
-            if (selectedVariable.combinationOperation) {
-                $scope.state.trackingReminder.combinationOperation = selectedVariable.combinationOperation;
-            }
             if (selectedVariable.id) {
                 $scope.state.trackingReminder.variableId = selectedVariable.id;
             }
             if (selectedVariable.name) {
                 $scope.state.trackingReminder.variableName = selectedVariable.name;
             }
-            if (selectedVariable.variableName) {
-                $scope.state.trackingReminder.variableName = selectedVariable.variableName;
-            }
             if (selectedVariable.description) {
                 $scope.state.trackingReminder.variableDescription = selectedVariable.description;
             }
-
             if ($scope.state.trackingReminder.abbreviatedUnitName === "/5") {
                 $scope.state.trackingReminder.defaultValue = 3;
             }
@@ -84,12 +58,6 @@ angular.module('starter')
                     $state.go('app.favorites');
             }
 	    };
-
-        $scope.addToFavorites = function(){
-            $stateParams.fromUrl = null;
-            $stateParams.fromState = 'app.favorites';
-            $scope.save();
-        };
 
 	    // when the reminder is saved/edited
 	    $scope.save = function(){
@@ -255,7 +223,6 @@ angular.module('starter')
                     } else if(variableIdUrlParameter){
                         setupReminderEditingFromVariableId(variableIdUrlParameter);
                     } else if ($stateParams.variableObject) {
-                        $scope.variableObject = $stateParams.variableObject;
                         $scope.onVariableSelect($stateParams.variableObject);
                     }
                 });
