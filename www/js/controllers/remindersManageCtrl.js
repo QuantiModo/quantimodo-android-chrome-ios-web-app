@@ -104,7 +104,15 @@ angular.module('starter')
 			if(isAuthorized){
 				$scope.state.showButtons = true;
 				$scope.showHelpInfoPopupIfNecessary();
-				reminderService.refreshTrackingRemindersAndScheduleAlarms();
+				if(!$rootScope.syncingReminders) {
+					reminderService.refreshTrackingRemindersAndScheduleAlarms().then(function () {
+						getTrackingRemindersFromLocalStorage();
+						//Stop the ion-refresher from spinning
+						$scope.$broadcast('scroll.refreshComplete');
+					});
+				} else {
+					$scope.$broadcast('scroll.refreshComplete');
+				}
 			} 
 	    };
 
