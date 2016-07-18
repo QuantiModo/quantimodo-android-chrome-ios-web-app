@@ -2,12 +2,9 @@ angular.module('starter')
 
 	// Controls the History Page of the App.
 	.controller('historyAllMeasurementsCtrl', function($scope, $state, $ionicModal, $timeout, $ionicLoading,
-										   authService, $ionicPopover, 
-                                           measurementService,
-										   $ionicPopup, 
-                                           variableCategoryService, 
-                                           unitService,
-                                            utilsService, $stateParams, ratingService){
+													   authService, $ionicPopover, measurementService, $ionicPopup,
+													   variableCategoryService, unitService, utilsService,
+													   $stateParams, ratingService, $rootScope, localStorageService){
 
 	    $scope.controller_name = "historyAllMeasurementsCtrl";
         
@@ -17,7 +14,9 @@ angular.module('starter')
 	    	history : [],
 			units : [],
 			variableCategories : [],
-			hideLoadMoreButton : true
+			hideLoadMoreButton : true,
+			trackLocation : $rootScope.trackLocation,
+			showLocationToggle: false
 	    };
 
 		$scope.title = 'Measurement History';
@@ -25,6 +24,12 @@ angular.module('starter')
 		var setupVariableCategory = function () {
 			if($stateParams.variableCategoryName){
 				$scope.title = $stateParams.variableCategoryName + ' History';
+				if ($stateParams.variableCategoryName === "Location") {
+					$scope.state.showLocationToggle = true;
+				}
+				else {
+					$scope.state.showLocationToggle = false;
+				}
 			}
 		};
 
@@ -88,6 +93,19 @@ angular.module('starter')
 	    	$scope.state.offset += $scope.state.limit;
 	    	getHistory(true);
 	    };
+
+		$scope.trackLocationChange = function() {
+
+			console.log('trackLocation', $scope.state.trackLocation);
+			$rootScope.trackLocation = $scope.state.trackLocation;
+			localStorageService.setItem('trackLocation', $scope.state.trackLocation);
+			if($scope.state.trackLocation){
+				$scope.getLocation();
+			} else {
+				console.debug("Do not track location");
+			}
+
+		};
 	    
 	    // constructor
 	    $scope.init = function(){
@@ -113,6 +131,7 @@ angular.module('starter')
     	$scope.$on('$ionicView.enter', function(e) {
 			$scope.state.offset = 0;
     		//$scope.state.history = [];
+			$scope.state.trackLocation = $rootScope.trackLocation;
     		$scope.init();
     	});
 

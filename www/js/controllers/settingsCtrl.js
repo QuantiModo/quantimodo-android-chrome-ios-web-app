@@ -335,6 +335,11 @@ angular.module('starter')
 				console.log("error", response);
 			});
 		};
+
+		// when view is changed
+		$scope.$on('$ionicView.enter', function(e) {
+			$scope.state.trackLocation = $rootScope.trackLocation;
+		});
 /*
 
 	    // When Export is tapped
