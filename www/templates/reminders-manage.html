@@ -1,5 +1,6 @@
 <ion-view hide-nav-bar="hideNavigationMenu" view-title="{{state.title}}">
-	<ion-content scroll="true" overflow-scroll="true">
+	<ion-content>
+		<ion-refresher on-refresh="init()"></ion-refresher>
 
 		<div class="list card" ng-if="state.showTreatmentInfoCard" >
 			<div class="item" style="padding-bottom:0px;">
