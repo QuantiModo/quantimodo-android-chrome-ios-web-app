@@ -311,7 +311,7 @@ angular.module('starter')
                                 console.debug('Scheduling Android notification for every ' + intervalInMinutes + ' minutes');
                                 scheduleGenericAndroidNotification(intervalInMinutes);
                             }
-                            if(trackingReminder){
+                            if(trackingReminder && trackingReminder.reminderFrequency > 0){
                                 //console.debug('Scheduling Android notification for ' + JSON.stringify(trackingReminder));
                                 scheduleAndroidNotificationByTrackingReminder(trackingReminder);
                             }
@@ -319,7 +319,7 @@ angular.module('starter')
                             if (intervalInMinutes > 0) {
                                 scheduleGenericIosNotification(intervalInMinutes);
                             }
-                            if(trackingReminder){
+                            if(trackingReminder && trackingReminder.reminderFrequency > 0){
                                 scheduleIosNotificationByTrackingReminder(trackingReminder);
                             }
                         }
@@ -327,7 +327,7 @@ angular.module('starter')
                         if (intervalInMinutes > 0) {
                             scheduleGenericChromeExtensionNotification(intervalInMinutes);
                         }
-                        if(trackingReminder){
+                        if(trackingReminder && trackingReminder.reminderFrequency > 0){
                             scheduleChromeExtensionNotificationWithTrackingReminder(trackingReminder);
                         }
                     } else {
