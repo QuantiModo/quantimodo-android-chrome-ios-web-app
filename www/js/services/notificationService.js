@@ -197,7 +197,8 @@ angular.module('starter')
                 }
 
                 function scheduleAndroidNotificationByTrackingReminder(trackingReminder) {
-                    //var at = new Date(trackingReminder.at*1000);
+                    // var at = new Date(0); // The 0 there is the key, which sets the date to the epoch
+                    // at.setUTCSeconds(trackingReminder.at);
                     var minuteFrequency  = trackingReminder.reminderFrequency / 60;
                     var notificationSettings = {
                         autoClear: true,
@@ -223,7 +224,9 @@ angular.module('starter')
                 }
 
                 function scheduleIosNotificationByTrackingReminder(trackingReminder) {
-                    var at = new Date(trackingReminder.at*1000);
+
+                    var at = new Date(0); // The 0 there is the key, which sets the date to the epoch
+                    at.setUTCSeconds(trackingReminder.at);
                     // Using milliseconds might cause app to crash with this error:
                     // NSInvalidArgumentException·unable to serialize userInfo: Error Domain=NSCocoaErrorDomain Code=3851 "Property list invalid for format: 200 (property lists cannot contain objects of type 'CFNull')" UserInfo={NSDeb
                     // var at = trackingReminder.nextReminderTimeEpochSeconds;
