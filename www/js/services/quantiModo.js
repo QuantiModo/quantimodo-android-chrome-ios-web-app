@@ -505,28 +505,28 @@ angular.module('starter')
             };
 
             // snooze tracking reminder
-            QuantiModo.snoozeTrackingReminder = function(reminderId, successHandler, errorHandler){
+            QuantiModo.snoozeTrackingReminder = function(params, successHandler, errorHandler){
                 QuantiModo.post('api/v1/trackingReminderNotifications/snooze',
-                    ['id'],
-                    {id: reminderId},
+                    ['id', 'trackingReminderNotificationId', 'trackingReminderId'],
+                    params,
                     successHandler,
                     errorHandler);
             };
 
             // skip tracking reminder
-            QuantiModo.skipTrackingReminder = function(reminderId, successHandler, errorHandler){
+            QuantiModo.skipTrackingReminder = function(params, successHandler, errorHandler){
                 QuantiModo.post('api/v1/trackingReminderNotifications/skip',
-                    ['id'],
-                    {id: reminderId},
+                    ['id', 'trackingReminderNotificationId', 'trackingReminderId'],
+                    params,
                     successHandler,
                     errorHandler);
             };
 
             // track tracking reminder with default value
-            QuantiModo.trackTrackingReminder = function(reminderId, modifiedValue, successHandler, errorHandler){
+            QuantiModo.trackTrackingReminder = function(params, successHandler, errorHandler){
                 QuantiModo.post('api/v1/trackingReminderNotifications/track',
-                    ['id'],
-                    {id: reminderId, modifiedValue: modifiedValue},
+                    ['id', 'trackingReminderNotificationId', 'trackingReminderId', 'modifiedValue'],
+                    params,
                     successHandler,
                     errorHandler);
             };
