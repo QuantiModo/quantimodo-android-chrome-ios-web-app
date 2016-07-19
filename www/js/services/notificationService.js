@@ -271,19 +271,22 @@ angular.module('starter')
                     trackingReminder.repeating = false;
                 }
 
-                $ionicPlatform.ready(function () {
-                    //console.debug('Ionic is ready to schedule notifications');
-                    if (typeof cordova !== "undefined") {
-                        if (ionic.Platform.isAndroid()) {
-                            scheduleAndroidNotificationByTrackingReminder(trackingReminder, repeating);
-                        } else if (ionic.Platform.isIPad() || ionic.Platform.isIOS()) {
-                            scheduleIosNotificationByTrackingReminder(trackingReminder, repeating);
+                if(trackingReminder.reminderFrequency > 0){
+                    $ionicPlatform.ready(function () {
+                        //console.debug('Ionic is ready to schedule notifications');
+                        if (typeof cordova !== "undefined") {
+                            if (ionic.Platform.isAndroid()) {
+                                scheduleAndroidNotificationByTrackingReminder(trackingReminder, repeating);
+                            } else if (ionic.Platform.isIPad() || ionic.Platform.isIOS()) {
+                                scheduleIosNotificationByTrackingReminder(trackingReminder, repeating);
+                            }
                         }
+                    });
+                    if ($rootScope.isChromeExtension || $rootScope.isChromeApp) {
+                        scheduleChromeExtensionNotificationWithTrackingReminder(trackingReminder, repeating);
                     }
-                });
-                if ($rootScope.isChromeExtension || $rootScope.isChromeApp) {
-                    scheduleChromeExtensionNotificationWithTrackingReminder(trackingReminder, repeating);
                 }
+
             },
 
             scheduleGenericNotification: function(intervalInMinutes){
