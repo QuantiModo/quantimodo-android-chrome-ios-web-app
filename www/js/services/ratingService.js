@@ -209,9 +209,12 @@ angular.module('starter')
                         measurements[index].valueUnitVariableName = measurements[index].value + " " + measurements[index].abbreviatedUnitName + ' ' + measurements[index].variableName;
                     }
 
+                    // Don't truncate
+                    /*
                     if(measurements[index].valueUnitVariableName.length > 29){
                         measurements[index].valueUnitVariableName =  measurements[index].valueUnitVariableName.substring(0, 29)+'...';
                     }
+                    */
 
                     // if (measurements[index].abbreviatedUnitName === '%') {
                     //     measurements[index].roundedValue = Math.round(measurements[index].value / 25 + 1);
