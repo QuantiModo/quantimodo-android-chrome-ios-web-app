@@ -21,6 +21,15 @@ angular.module('starter')
 		// populate ratings interval
 		localStorageService.getItem('primaryOutcomeRatingFrequencyDescription', function (primaryOutcomeRatingFrequencyDescription) {
 			$scope.primaryOutcomeRatingFrequencyDescription = primaryOutcomeRatingFrequencyDescription ? primaryOutcomeRatingFrequencyDescription : "daily";
+			if($rootScope.isIOS){
+				if($scope.primaryOutcomeRatingFrequencyDescription !== 'hour' &&
+					$scope.primaryOutcomeRatingFrequencyDescription !== 'day' &&
+					$scope.primaryOutcomeRatingFrequencyDescription !== 'never'
+				) {
+					$scope.primaryOutcomeRatingFrequencyDescription = 'day';
+					localStorageService.setItem('primaryOutcomeRatingFrequencyDescription', 'day');
+				}
+			}
 		});
 		// load rating popover
 		$ionicPopover.fromTemplateUrl('templates/settings/ask-for-a-rating.html', {

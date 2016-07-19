@@ -41,26 +41,25 @@
 
             <div ng-show="state.combineNotifications" class="list card">
                 <div class="item item-text-wrap">
-                    <p>How often would you like to be reminded?</p>
+                    <p>Reminder me every</p>
                 </div>
 
                 <a href="" ng-click="ratingPopover.show();" ng-hide="isIos" class="item ">
-                    Remind me {{primaryOutcomeRatingFrequencyDescription}}
-                    <p ng-show="primaryOutcomeRatingFrequencyDescription=='never'">Never</p>
+                    {{primaryOutcomeRatingFrequencyDescription}}
+                    <p ng-show="primaryOutcomeRatingFrequencyDescription=='never'">never</p>
                     <!--FOR DEVELOPMENT ONLY ---->
-                      <p ng-show="primaryOutcomeRatingFrequencyDescription=='minutely'">Every minute</p>
-                      <p ng-show="primaryOutcomeRatingFrequencyDescription=='every five minutes'">Every five minutes</p>
-                    <p ng-show="primaryOutcomeRatingFrequencyDescription=='hourly'">Hourly</p>
-                    <p ng-show="primaryOutcomeRatingFrequencyDescription=='every three hours'">Every three hours</p>
-                    <p ng-show="primaryOutcomeRatingFrequencyDescription=='twice a day'">Twice daily</p>
-                    <p ng-show="primaryOutcomeRatingFrequencyDescription=='daily'">Daily</p>
+                      <p ng-show="primaryOutcomeRatingFrequencyDescription=='minutely'">minute</p>
+                      <p ng-show="primaryOutcomeRatingFrequencyDescription=='every five minutes'">five minutes</p>
+                    <p ng-show="primaryOutcomeRatingFrequencyDescription=='hourly'">hour</p>
+                    <p ng-show="primaryOutcomeRatingFrequencyDescription=='every three hours'">three hours</p>
+                    <p ng-show="primaryOutcomeRatingFrequencyDescription=='twice a day'">12 hours</p>
+                    <p ng-show="primaryOutcomeRatingFrequencyDescription=='daily'">day</p>
                 </a>
 
                 <a href="" ng-click="ratingPopover.show();" ng-show="isIos" class="item ">
-                    Ask {{primaryOutcomeRatingFrequencyDescription}}ly
-                    <p ng-show="primaryOutcomeRatingFrequencyDescription=='never'">Never</p>
-                    <p ng-show="primaryOutcomeRatingFrequencyDescription=='day'">Daily</p>
-                    <p ng-show="primaryOutcomeRatingFrequencyDescription=='hour'">Hourly</p>
+                    <p ng-show="primaryOutcomeRatingFrequencyDescription=='never'">never</p>
+                    <p ng-show="primaryOutcomeRatingFrequencyDescription=='day'">day</p>
+                    <p ng-show="primaryOutcomeRatingFrequencyDescription=='hour'">hour</p>
                 </a>
 
                 <!--   		<a href="" ng-click="additionalRatingPopover.show();" class="item ">
