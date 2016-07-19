@@ -117,6 +117,7 @@ angular.module('starter')
 				$scope.state.showButtons = true;
 				$scope.showHelpInfoPopupIfNecessary();
 				if(!$rootScope.syncingReminders) {
+					console.debug("ReminderMange init: calling refreshTrackingRemindersAndScheduleAlarms");
 					reminderService.refreshTrackingRemindersAndScheduleAlarms().then(function () {
 						getTrackingRemindersFromLocalStorage();
 						//Stop the ion-refresher from spinning

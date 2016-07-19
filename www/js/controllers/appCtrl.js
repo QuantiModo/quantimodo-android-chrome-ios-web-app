@@ -621,6 +621,7 @@ angular.module('starter')
             if(!$rootScope.syncedEverything && $rootScope.user){
                 measurementService.syncPrimaryOutcomeVariableMeasurementsAndUpdateCharts();
                 reminderService.refreshTrackingRemindersAndScheduleAlarms();
+                console.debug("syncEverything: calling refreshTrackingRemindersAndScheduleAlarms");
                 variableService.refreshUserVariables();
                 variableService.refreshCommonVariables();
                 unitService.refreshUnits();

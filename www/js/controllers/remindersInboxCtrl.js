@@ -285,6 +285,7 @@ angular.module('starter')
 				$scope.showHelpInfoPopupIfNecessary();
                 $scope.getTrackingReminderNotifications();
 				//update alarms and local notifications
+				console.debug("reminderInbox init: calling refreshTrackingRemindersAndScheduleAlarms");
 				reminderService.refreshTrackingRemindersAndScheduleAlarms();
 			}
 			if (typeof cordova !== "undefined") {

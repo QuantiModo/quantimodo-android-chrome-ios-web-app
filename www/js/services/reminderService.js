@@ -15,6 +15,7 @@ angular.module('starter')
 				trackingReminder.timeZoneOffset = new Date().getTimezoneOffset();
                 QuantiModo.postTrackingReminder(trackingReminder, function(){
 					//update alarms and local notifications
+					console.debug("remindersService:  Finished postTrackingReminder so now refreshTrackingRemindersAndScheduleAlarms");
 					reminderService.refreshTrackingRemindersAndScheduleAlarms();
                 	deferred.resolve();
                 }, function(err){
@@ -103,7 +104,7 @@ angular.module('starter')
 						var trackingReminders = remindersResponse.data;
 						if(remindersResponse.success) {
 							if($rootScope.combineNotifications !== true){
-								//notificationService.scheduleAllNotifications(trackingReminders);
+								notificationService.scheduleAllNotifications(trackingReminders);
 							}
 							//$rootScope.numberOfPendingNotifications = trackingReminders[0].numberOfPendingNotifications;
 							//notificationService.updateNotificationBadges($rootScope.numberOfPendingNotifications);
@@ -303,6 +304,7 @@ angular.module('starter')
 				QuantiModo.deleteTrackingReminder(reminderId, function(response){
 					if(response.success) {
 						//update alarms and local notifications
+						console.debug("remindersService:  Finished deleteReminder so now refreshTrackingRemindersAndScheduleAlarms");
 						reminderService.refreshTrackingRemindersAndScheduleAlarms();
 						deferred.resolve();
 					}
