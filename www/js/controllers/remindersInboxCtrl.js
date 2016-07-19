@@ -206,7 +206,11 @@ angular.module('starter')
 			$scope.state.filteredReminders[dividerIndex].reminders[reminderNotificationIndex].hide = true;
 			console.debug('Tracking notification', trackingReminderNotification);
 			console.log('modifiedReminderValue is ' + modifiedReminderValue);
-	    	reminderService.trackReminderNotification(trackingReminderNotification.id, modifiedReminderValue)
+			var params = {
+				trackingReminderNotificationId: trackingReminderNotification.id,
+				modifiedValue: modifiedReminderValue
+			};
+	    	reminderService.trackReminderNotification(params)
 	    	.then(function(){
                 notificationService.decrementNotificationBadges();
                 if($rootScope.numberOfPendingNotifications < 2){
@@ -219,9 +223,7 @@ angular.module('starter')
 	    	});
 	    };
 
-
 	    $scope.skip = function(trackingReminderNotification, $event, dividerIndex, reminderNotificationIndex){
-			
 
 			if(isGhostClick($event)){
 				return;
@@ -230,7 +232,10 @@ angular.module('starter')
 			$scope.state.filteredReminders[dividerIndex].reminders[reminderNotificationIndex].hide = true;
 
 			console.debug('Skipping notification', trackingReminderNotification);
-	    	reminderService.skipReminderNotification(trackingReminderNotification.id)
+			var params = {
+				trackingReminderNotificationId: trackingReminderNotification.id
+			};
+	    	reminderService.skipReminderNotification(params)
 	    	.then(function(){
 	    		$scope.hideLoader();
                 notificationService.decrementNotificationBadges();
@@ -254,7 +259,10 @@ angular.module('starter')
 			$scope.state.filteredReminders[dividerIndex].reminders[reminderNotificationIndex].hide = true;
 
 			console.debug('Snoozing notification', trackingReminderNotification);
-	    	reminderService.snoozeReminderNotification(trackingReminderNotification.id)
+			var params = {
+				trackingReminderNotificationId: trackingReminderNotification.id
+			};
+	    	reminderService.snoozeReminderNotification(params)
 	    	.then(function(){
                 notificationService.decrementNotificationBadges();
                 if($rootScope.numberOfPendingNotifications < 2){
@@ -291,7 +299,10 @@ angular.module('starter')
 	    $scope.editMeasurement = function(trackingReminderNotification, dividerIndex, reminderNotificationIndex){
 			$scope.state.filteredReminders[dividerIndex].reminders[reminderNotificationIndex].hide = true;
 			// FIXME this shouldn't skip unless the change is made - user could cancel
-			reminderService.skipReminderNotification(trackingReminderNotification.id);
+			var params = {
+				trackingReminderNotificationId: trackingReminderNotification.id
+			};
+			reminderService.skipReminderNotification(params);
 			$state.go('app.measurementAdd',
 				{
 					reminder: trackingReminderNotification,

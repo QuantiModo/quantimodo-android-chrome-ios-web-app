@@ -41,12 +41,33 @@ angular.module('starter')
                 }
 
                 function setOnClickAction() {
+                    var params = {};
                     cordova.plugins.notification.local.on("click", function (notification) {
                         cordova.plugins.notification.local.clearAll(function () {
                             console.debug("clearAll active notifications");
                         }, this);
-                        console.debug("$state.go('app.remindersInbox')");
-                        $state.go('app.remindersInbox');
+
+                        if(notification.data.trackingReminderNotificationId){
+                            params = {
+                                trackingReminderNotificationId: notification.data.trackingReminderNotificationId
+                            };
+                        } else if (notification.data.trackingReminderId) {
+                            params = {
+                                trackingReminderNotificationId: notification.data.trackingReminderNotificationId
+                            };
+                        }
+                        reminderService.skipReminderNotification(params);
+
+                        if(notification.data && notification.data.id){
+                            notificationService.decrementNotificationBadges();
+                            $state.go('app.measurementAdd',
+                                {
+                                    reminder: notification.data,
+                                    fromState: 'app.remindersInbox'
+                                });
+                        } else {
+                            $state.go('app.remindersInbox');
+                        }
                     });
                 }
 
@@ -182,7 +203,7 @@ angular.module('starter')
                         autoClear: true,
                         badge: $rootScope.numberOfPendingNotifications,
                         color: undefined,
-                        data: undefined,
+                        data: trackingReminder,
                         led: undefined,
                         sound: "file://sound/silent.ogg",
                         ongoing: false,
@@ -211,7 +232,7 @@ angular.module('starter')
                         autoClear: true,
                         badge: $rootScope.numberOfPendingNotifications,
                         color: undefined,
-                        data: undefined,
+                        data: trackingReminder,
                         led: undefined,
                         ongoing: false,
                         sound: "file://sound/silent.ogg",
@@ -238,6 +259,8 @@ angular.module('starter')
                     var alarmName = {
                         reminderId: trackingReminder.id,
                         variableName: trackingReminder.variableName,
+                        defaultValue: trackingReminder.defaultValue,
+                        abbreviatedUnitName: trackingReminder.abbreviatedUnitName,
                         periodInMinutes: trackingReminder.reminderFrequency / 60,
                         reminderStartTime: trackingReminder.reminderStartTime,
                         startTrackingDate: trackingReminder.startTrackingDate
