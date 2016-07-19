@@ -232,7 +232,7 @@ angular.module('starter')
                             ongoing: false,
                             sound: "file://sound/silent.ogg",
                             title: "Track " + trackingReminder.variableName,
-                            text: "Swipe to open reminder inbox",
+                            text: "Open reminder inbox",
                             //at: at * 1000,
                             at: at,
                             every: minuteFrequency,
