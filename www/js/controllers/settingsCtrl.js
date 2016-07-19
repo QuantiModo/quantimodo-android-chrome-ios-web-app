@@ -151,20 +151,27 @@ angular.module('starter')
 			$rootScope.combineNotifications = $scope.state.combineNotifications;
 			localStorageService.setItem('combineNotifications', $scope.state.combineNotifications);
 			if($scope.state.combineNotifications){
-				// populate ratings interval
+				$ionicPopup.alert({
+					title: 'Disable Multiple Notifications',
+					template: 'You will only get one notification at a time instead of a separate notification for each reminder that you create.'
+				});
+
 				notificationService.cancelAllNotifications().then(function() {
 
 					localStorageService.getItem('primaryOutcomeRatingFrequencyDescription', function (primaryOutcomeRatingFrequencyDescription) {
-						alert('You will only get one notification at a time instead of a separate notification for each reminder that you create');
 						console.debug("Cancelled individual notifications and now scheduling combined one with interval: " + primaryOutcomeRatingFrequencyDescription);
 						$scope.primaryOutcomeRatingFrequencyDescription = primaryOutcomeRatingFrequencyDescription ? primaryOutcomeRatingFrequencyDescription : "daily";
 						$scope.saveInterval($scope.primaryOutcomeRatingFrequencyDescription);
 					});
 				});
 			} else {
+				$ionicPopup.alert({
+					title: 'Enable Multiple Notifications',
+					template: 'You will get a separate notification for each reminder that you create.'
+				});
 
 				notificationService.cancelAllNotifications().then(function() {
-					alert('You will get a separate notification for each reminder that you create');
+					$scope.oneNotificationDisabledPopup();
 					console.debug("Cancelled combined notification and now scheduling individual ones");
 					reminderService.refreshTrackingRemindersAndScheduleAlarms();
 				});
@@ -299,10 +306,14 @@ angular.module('starter')
 
 		// When Export is tapped
 		$scope.exportCsv = function(){
+			$ionicPopup.alert({
+				title: 'Export Request Sent!',
+				template: 'Your data will be emailed to you.  Enjoy your life! So do we!'
+			});
 
 			QuantiModo.postMeasurementsCsvExport(function(response){
 				if(response.success) {
-					alert("Your measurements will be emailed to you.");
+
 				} else {
 					alert("Could not export measurements.");
 					console.log("error", response);
@@ -315,10 +326,14 @@ angular.module('starter')
 
 		// When Export is tapped
 		$scope.exportPdf = function(){
+			$ionicPopup.alert({
+				title: 'Export Request Sent!',
+				template: 'Your data will be emailed to you.  Enjoy your life! So do we!'
+			});
 
 			QuantiModo.postMeasurementsPdfExport(function(response){
 				if(response.success) {
-					alert("Your measurements will be emailed to you.");
+
 				} else {
 					alert("Could not export measurements.");
 					console.log("error", response);
@@ -331,10 +346,15 @@ angular.module('starter')
 
 		// When Export is tapped
 		$scope.exportXls = function(){
-
+			$ionicPopup.alert({
+				title: 'Export Request Sent!',
+				template: 'Your data will be emailed to you.  Enjoy your life! So do we!'
+			});
+			
 			QuantiModo.postMeasurementsXlsExport(function(response){
 				if(response.success) {
-					alert("Your measurements will be emailed to you.");
+
+
 				} else {
 					alert("Could not export measurements.");
 					console.log("error", response);

@@ -44,8 +44,8 @@
                     <p>Reminder me every</p>
                 </div>
 
-                <a href="" ng-click="ratingPopover.show();" ng-hide="isIos" class="item ">
-                    {{primaryOutcomeRatingFrequencyDescription}}
+                <a href="" ng-click="ratingPopover.show();" class="item ">
+                    <!--{{primaryOutcomeRatingFrequencyDescription}}-->
                     <p ng-show="primaryOutcomeRatingFrequencyDescription=='never'">never</p>
                     <!--FOR DEVELOPMENT ONLY ---->
                       <p ng-show="primaryOutcomeRatingFrequencyDescription=='minutely'">minute</p>
@@ -54,10 +54,7 @@
                     <p ng-show="primaryOutcomeRatingFrequencyDescription=='every three hours'">three hours</p>
                     <p ng-show="primaryOutcomeRatingFrequencyDescription=='twice a day'">12 hours</p>
                     <p ng-show="primaryOutcomeRatingFrequencyDescription=='daily'">day</p>
-                </a>
 
-                <a href="" ng-click="ratingPopover.show();" ng-show="isIos" class="item ">
-                    <p ng-show="primaryOutcomeRatingFrequencyDescription=='never'">never</p>
                     <p ng-show="primaryOutcomeRatingFrequencyDescription=='day'">day</p>
                     <p ng-show="primaryOutcomeRatingFrequencyDescription=='hour'">hour</p>
                 </a>

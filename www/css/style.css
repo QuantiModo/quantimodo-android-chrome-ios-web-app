@@ -231,6 +231,7 @@ label.item.item-input.item-text > input[type="text"] {
 
 .alert-popup .popup {
     width: 285px;
+    text-align: center;
 }
 
 
@@ -375,6 +376,7 @@ img.intro-primary-outcome-variable-rating-buttons {
 .popup {
   border: 1px solid gray !important;
   background-color: white!important;
+    text-align: center;
 }
 
  #qm-loader {
