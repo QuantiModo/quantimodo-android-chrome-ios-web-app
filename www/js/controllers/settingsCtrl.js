@@ -171,7 +171,6 @@ angular.module('starter')
 				});
 
 				notificationService.cancelAllNotifications().then(function() {
-					$scope.oneNotificationDisabledPopup();
 					console.debug("Cancelled combined notification and now scheduling individual ones");
 					reminderService.refreshTrackingRemindersAndScheduleAlarms();
 				});
