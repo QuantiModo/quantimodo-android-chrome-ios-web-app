@@ -1,8 +1,6 @@
 angular.module('starter')
 // Handles the Notifications (inapp, push)
-    .factory('notificationService',function($rootScope, $ionicPlatform, $state, localStorageService, $q, $timeout){
-
-
+    .factory('notificationService',function($rootScope, $ionicPlatform, $state, localStorageService, $q){
 
         return {
 
@@ -302,14 +300,14 @@ angular.module('starter')
                         //console.debug('Ionic is ready to schedule notifications');
                         if (typeof cordova !== "undefined") {
                             if (ionic.Platform.isAndroid()) {
-                                scheduleAndroidNotificationByTrackingReminder(trackingReminder, repeating);
+                                scheduleAndroidNotificationByTrackingReminder(trackingReminder);
                             } else if (ionic.Platform.isIPad() || ionic.Platform.isIOS()) {
-                                scheduleIosNotificationByTrackingReminder(trackingReminder, repeating);
+                                scheduleIosNotificationByTrackingReminder(trackingReminder);
                             }
                         }
                     });
                     if ($rootScope.isChromeExtension || $rootScope.isChromeApp) {
-                        scheduleChromeExtensionNotificationWithTrackingReminder(trackingReminder, repeating);
+                        scheduleChromeExtensionNotificationWithTrackingReminder(trackingReminder);
                     }
                 }
 
