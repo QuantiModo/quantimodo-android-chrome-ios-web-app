@@ -9,7 +9,7 @@ angular.module('starter')
 				
 				var deferred = $q.defer();[]
 				if(trackingReminder.reminderFrequency !== 0){
-					notificationService.scheduleNotification(null, trackingReminder);
+					notificationService.scheduleNotificationByReminder(trackingReminder);
 				}
 				
 				trackingReminder.timeZoneOffset = new Date().getTimezoneOffset();
@@ -103,7 +103,7 @@ angular.module('starter')
 						var trackingReminders = remindersResponse.data;
 						if(remindersResponse.success) {
 							if($rootScope.combineNotifications !== true){
-								notificationService.scheduleAllNotifications(trackingReminders);
+								//notificationService.scheduleAllNotifications(trackingReminders);
 							}
 							//$rootScope.numberOfPendingNotifications = trackingReminders[0].numberOfPendingNotifications;
 							//notificationService.updateNotificationBadges($rootScope.numberOfPendingNotifications);
