@@ -473,7 +473,7 @@ angular.module('starter')
                 "day" : 24 * 60 * 60
             };
 
-            notificationService.scheduleNotification(intervals[$scope.primaryOutcomeRatingFrequencyDescription]/60);
+            notificationService.scheduleGenericNotification(intervals[$scope.primaryOutcomeRatingFrequencyDescription]/60);
 
             $rootScope.reminderToSchedule = {
                 id: config.appSettings.primaryOutcomeVariableDetails.id,
