@@ -4,6 +4,79 @@ angular.module('starter')
 
         return {
 
+            setOnClickAction: function(QuantiModo) {
+                var params = {};
+                cordova.plugins.notification.local.on("click", function (notification) {
+
+                    var notificationData = JSON.parse(notification.data);
+                    console.debug("onClick: Notification data : ", notificationData);
+
+                    cordova.plugins.notification.local.clearAll(function () {
+                        console.debug("onClick: onClick: clearAll active notifications");
+                    }, this);
+
+                    if(notificationData.trackingReminderNotificationId){
+                        console.debug("onClick: Notification was a reminder notification not reminder.  Skipping notification with id: " + notificationData.trackingReminderNotificationId);
+                        params = {
+                            trackingReminderNotificationId: notificationData.trackingReminderNotificationId
+                        };
+                    } else if (notificationData.id) {
+                        console.debug("onClick: Notification was a reminder not a reminder notification.  Skipping next notification for reminder id: " + notificationData.id);
+                        params = {
+                            trackingReminderId: notificationData.id
+                        };
+                    }
+
+                    //QuantiModo.skipTrackingReminder(params);
+
+                    QuantiModo.skipTrackingReminder(params, function(response){
+                        console.debug(response);
+                    }, function(err){
+                        console.error(err);
+                        Bugsnag.notify(err, JSON.stringify(err), {}, "error");
+                    });
+
+                    if(notificationData && notificationData.id){
+                        console.debug("onClick: Notification data provided. Going to addMeasurement page. Data: ", notificationData);
+                        //notificationService.decrementNotificationBadges();
+                        $state.go('app.measurementAdd',
+                            {
+                                reminder: notificationData,
+                                fromState: 'app.remindersInbox'
+                            });
+                    } else {
+                        console.debug("No notification data provided. Going to remindersInbox page.");
+                        $state.go('app.remindersInbox');
+                    }
+                });
+            },
+
+            setOnTriggerAction: function() {
+                console.debug("Creating notification trigger event to clear other notifications");
+                cordova.plugins.notification.local.on("trigger", function (currentNotification) {
+
+                    try {
+                        console.debug("just triggered this notification: ",  currentNotification);
+                        cordova.plugins.notification.local.getAll(function (notifications) {
+                            console.debug("All notifications ", notifications);
+                        });
+
+                        cordova.plugins.notification.local.getTriggeredIds(function (triggeredNotifications) {
+                            console.debug("found triggered notifications before removing current one: " + JSON.stringify(triggeredNotifications));
+                            if (triggeredNotifications.length < 1) {
+                                console.warn("Triggered notifications is empty so maybe it's not working.");
+                            } else {
+                                triggeredNotifications.splice(triggeredNotifications.indexOf(currentNotification.id), 1);
+                                console.debug("found triggered notifications after removing current one: " + JSON.stringify(triggeredNotifications));
+                                cordova.plugins.notification.local.clear(triggeredNotifications);
+                            }
+                        });
+                    } catch (err) {
+                        console.error(err);
+                    }
+                });
+            },
+
             decrementNotificationBadges: function(){
                 if($rootScope.numberOfPendingNotifications > 0){
                     $rootScope.numberOfPendingNotifications = $rootScope.numberOfPendingNotifications - 1;
@@ -36,79 +109,6 @@ angular.module('starter')
                         }
                     }
                     this.cancelNotificationsForDeletedReminders(trackingRemindersFromApi);
-                }
-
-                function setOnClickAction(notificationService, QuantiModo) {
-                    var params = {};
-                    cordova.plugins.notification.local.on("click", function (notification) {
-
-                        var notificationData = JSON.parse(notification.data);
-                        console.debug("onClick: Notification data : ", notificationData);
-
-                        // cordova.plugins.notification.local.clearAll(function () {
-                        //     console.debug("clearAll active notifications");
-                        // }, this);
-
-                        if(notificationData.trackingReminderNotificationId){
-                            console.debug("onClick: Notification was a reminder notification not reminder.  Skippin notification with id: " + notificationData.trackingReminderNotificationId);
-                            params = {
-                                trackingReminderNotificationId: notificationData.trackingReminderNotificationId
-                            };
-                        } else if (notificationData.id) {
-                            console.debug("onClick: Notification was a reminder not a reminder notification.  Skipping next notification for reminder id: " + notificationData.id);
-                            params = {
-                                trackingReminderId: notificationData.id
-                            };
-                        }
-
-                        QuantiModo.skipTrackingReminder(params);
-
-                        if(notificationData && notificationData.id){
-                            console.debug("onClick: Notification data provided. Going to addMeasurement page. Data: ", notificationData);
-                            //notificationService.decrementNotificationBadges();
-                            $state.go('app.measurementAdd',
-                                {
-                                    reminder: notificationData,
-                                    fromState: 'app.remindersInbox'
-                                });
-                        } else {
-                            console.debug("No notification data provided. Going to remindersInbox page.");
-                            $state.go('app.remindersInbox');
-                        }
-                    });
-                }
-
-                function setOnTriggerAction() {
-                    console.debug("Creating notification trigger event to clear other notifications");
-                    cordova.plugins.notification.local.on("trigger", function (currentNotification) {
-
-                        try {
-                            console.debug("just triggered this notification: ",  currentNotification);
-                            cordova.plugins.notification.local.getAll(function (notifications) {
-                                console.debug("All notifications ", notifications);
-                            });
-
-                            cordova.plugins.notification.local.getTriggeredIds(function (triggeredNotifications) {
-                                console.debug("found triggered notifications before removing current one: " + JSON.stringify(triggeredNotifications));
-                                if (triggeredNotifications.length < 1) {
-                                    console.warn("Triggered notifications is empty so maybe it's not working.");
-                                } else {
-                                    triggeredNotifications.splice(triggeredNotifications.indexOf(currentNotification.id), 1);
-                                    console.debug("found triggered notifications after removing current one: " + JSON.stringify(triggeredNotifications));
-                                    cordova.plugins.notification.local.clear(triggeredNotifications);
-                                }
-                            });
-                        } catch (err) {
-                            console.error(err);
-                        }
-                    });
-                }
-
-                if($rootScope.isIOS || $rootScope.isAndroid) {
-                    $ionicPlatform.ready(function () {
-                        setOnClickAction(this, QuantiModo);
-                        setOnTriggerAction();
-                    });
                 }
             },
 
@@ -211,7 +211,7 @@ angular.module('starter')
                         sound: "file://sound/silent.ogg",
                         ongoing: false,
                         title: "Track " + trackingReminder.variableName,
-                        text: "Tap to open reminder inbox",
+                        text: "Tap to record or modify measurement",
                         at: trackingReminder.at * 1000,
                         icon: 'ic_stat_icon_bw',
                         id: trackingReminder.id
@@ -242,7 +242,7 @@ angular.module('starter')
                         ongoing: false,
                         sound: "file://sound/silent.ogg",
                         title: "Track " + trackingReminder.variableName,
-                        text: "Swipe to open reminder inbox",
+                        text: "Record or modify measurement",
                         at: at,
                         icon: config.appSettings.mobileNotificationImage,
                         id: trackingReminder.id
