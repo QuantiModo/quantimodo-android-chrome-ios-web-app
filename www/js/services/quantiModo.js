@@ -495,7 +495,7 @@ angular.module('starter')
             // delete tracking reminder
             QuantiModo.deleteTrackingReminder = function(reminderId, successHandler, errorHandler){
                 if(!reminderId){
-                    alert('Could not delete this reminder.  Please contact info@quantimo.do.');
+                    console.warn('No reminder id to delete with!  Maybe it has only been stored locally and has not updated from server yet.');
                 }
                 QuantiModo.post('api/v1/trackingReminders/delete',
                     ['id'],
