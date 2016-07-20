@@ -113,8 +113,8 @@ angular.module('starter')
 			// Show the action sheet
 			var hideSheet = $ionicActionSheet.show({
 				buttons: [
-					{ text: '<i class="icon ion-edit"></i> Change Default Value' },
-					{ text: '<i class="icon ion-gear-a"></i>Record Different Value/Time' },
+					{ text: '<i class="icon ion-gear-a"></i>Change Default Value' },
+					{ text: '<i class="icon ion-edit"></i>Different Value/Time' },
 					{ text: '<i class="icon ion-arrow-graph-up-right"></i>See Charts'},
 					{ text: '<i class="icon ion-android-notifications-none"></i>Add a Reminder'}
 				],
