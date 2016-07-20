@@ -392,12 +392,13 @@ angular.module('starter',
             url: "/variables/:variableName",
             cache: false,
             params: {
+                trackingReminder : null,
                 variableName : null,
                 variableObject: null,
                 measurementInfo: null,
                 noReload: false,
                 fromState : null,
-                fromUrl : null,
+                fromUrl : null
             },
             views: {
                 'menuContent': {
