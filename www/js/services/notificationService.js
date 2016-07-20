@@ -27,7 +27,14 @@ angular.module('starter')
                         };
                     }
 
-                    QuantiModo.skipTrackingReminder(params);
+                    //QuantiModo.skipTrackingReminder(params);
+
+                    QuantiModo.skipTrackingReminder(params, function(response){
+                        console.debug(response);
+                    }, function(err){
+                        console.error(err);
+                        Bugsnag.notify(err, JSON.stringify(err), {}, "error");
+                    });
 
                     if(notificationData && notificationData.id){
                         console.debug("onClick: Notification data provided. Going to addMeasurement page. Data: ", notificationData);
@@ -204,7 +211,7 @@ angular.module('starter')
                         sound: "file://sound/silent.ogg",
                         ongoing: false,
                         title: "Track " + trackingReminder.variableName,
-                        text: "Tap to open reminder inbox",
+                        text: "Tap to record or modify measurement",
                         at: trackingReminder.at * 1000,
                         icon: 'ic_stat_icon_bw',
                         id: trackingReminder.id
@@ -235,7 +242,7 @@ angular.module('starter')
                         ongoing: false,
                         sound: "file://sound/silent.ogg",
                         title: "Track " + trackingReminder.variableName,
-                        text: "Swipe to open reminder inbox",
+                        text: "Record or modify measurement",
                         at: at,
                         icon: config.appSettings.mobileNotificationImage,
                         id: trackingReminder.id
