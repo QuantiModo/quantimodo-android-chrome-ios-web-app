@@ -4,6 +4,72 @@ angular.module('starter')
 
         return {
 
+            setOnClickAction: function(QuantiModo) {
+                var params = {};
+                cordova.plugins.notification.local.on("click", function (notification) {
+
+                    var notificationData = JSON.parse(notification.data);
+                    console.debug("onClick: Notification data : ", notificationData);
+
+                    // cordova.plugins.notification.local.clearAll(function () {
+                    //     console.debug("clearAll active notifications");
+                    // }, this);
+
+                    if(notificationData.trackingReminderNotificationId){
+                        console.debug("onClick: Notification was a reminder notification not reminder.  Skipping notification with id: " + notificationData.trackingReminderNotificationId);
+                        params = {
+                            trackingReminderNotificationId: notificationData.trackingReminderNotificationId
+                        };
+                    } else if (notificationData.id) {
+                        console.debug("onClick: Notification was a reminder not a reminder notification.  Skipping next notification for reminder id: " + notificationData.id);
+                        params = {
+                            trackingReminderId: notificationData.id
+                        };
+                    }
+
+                    QuantiModo.skipTrackingReminder(params);
+
+                    if(notificationData && notificationData.id){
+                        console.debug("onClick: Notification data provided. Going to addMeasurement page. Data: ", notificationData);
+                        //notificationService.decrementNotificationBadges();
+                        $state.go('app.measurementAdd',
+                            {
+                                reminder: notificationData,
+                                fromState: 'app.remindersInbox'
+                            });
+                    } else {
+                        console.debug("No notification data provided. Going to remindersInbox page.");
+                        $state.go('app.remindersInbox');
+                    }
+                });
+            },
+
+            setOnTriggerAction: function() {
+                console.debug("Creating notification trigger event to clear other notifications");
+                cordova.plugins.notification.local.on("trigger", function (currentNotification) {
+
+                    try {
+                        console.debug("just triggered this notification: ",  currentNotification);
+                        cordova.plugins.notification.local.getAll(function (notifications) {
+                            console.debug("All notifications ", notifications);
+                        });
+
+                        cordova.plugins.notification.local.getTriggeredIds(function (triggeredNotifications) {
+                            console.debug("found triggered notifications before removing current one: " + JSON.stringify(triggeredNotifications));
+                            if (triggeredNotifications.length < 1) {
+                                console.warn("Triggered notifications is empty so maybe it's not working.");
+                            } else {
+                                triggeredNotifications.splice(triggeredNotifications.indexOf(currentNotification.id), 1);
+                                console.debug("found triggered notifications after removing current one: " + JSON.stringify(triggeredNotifications));
+                                cordova.plugins.notification.local.clear(triggeredNotifications);
+                            }
+                        });
+                    } catch (err) {
+                        console.error(err);
+                    }
+                });
+            },
+
             decrementNotificationBadges: function(){
                 if($rootScope.numberOfPendingNotifications > 0){
                     $rootScope.numberOfPendingNotifications = $rootScope.numberOfPendingNotifications - 1;
@@ -36,79 +102,6 @@ angular.module('starter')
                         }
                     }
                     this.cancelNotificationsForDeletedReminders(trackingRemindersFromApi);
-                }
-
-                function setOnClickAction(notificationService, QuantiModo) {
-                    var params = {};
-                    cordova.plugins.notification.local.on("click", function (notification) {
-
-                        var notificationData = JSON.parse(notification.data);
-                        console.debug("onClick: Notification data : ", notificationData);
-
-                        // cordova.plugins.notification.local.clearAll(function () {
-                        //     console.debug("clearAll active notifications");
-                        // }, this);
-
-                        if(notificationData.trackingReminderNotificationId){
-                            console.debug("onClick: Notification was a reminder notification not reminder.  Skippin notification with id: " + notificationData.trackingReminderNotificationId);
-                            params = {
-                                trackingReminderNotificationId: notificationData.trackingReminderNotificationId
-                            };
-                        } else if (notificationData.id) {
-                            console.debug("onClick: Notification was a reminder not a reminder notification.  Skipping next notification for reminder id: " + notificationData.id);
-                            params = {
-                                trackingReminderId: notificationData.id
-                            };
-                        }
-
-                        QuantiModo.skipTrackingReminder(params);
-
-                        if(notificationData && notificationData.id){
-                            console.debug("onClick: Notification data provided. Going to addMeasurement page. Data: ", notificationData);
-                            //notificationService.decrementNotificationBadges();
-                            $state.go('app.measurementAdd',
-                                {
-                                    reminder: notificationData,
-                                    fromState: 'app.remindersInbox'
-                                });
-                        } else {
-                            console.debug("No notification data provided. Going to remindersInbox page.");
-                            $state.go('app.remindersInbox');
-                        }
-                    });
-                }
-
-                function setOnTriggerAction() {
-                    console.debug("Creating notification trigger event to clear other notifications");
-                    cordova.plugins.notification.local.on("trigger", function (currentNotification) {
-
-                        try {
-                            console.debug("just triggered this notification: ",  currentNotification);
-                            cordova.plugins.notification.local.getAll(function (notifications) {
-                                console.debug("All notifications ", notifications);
-                            });
-
-                            cordova.plugins.notification.local.getTriggeredIds(function (triggeredNotifications) {
-                                console.debug("found triggered notifications before removing current one: " + JSON.stringify(triggeredNotifications));
-                                if (triggeredNotifications.length < 1) {
-                                    console.warn("Triggered notifications is empty so maybe it's not working.");
-                                } else {
-                                    triggeredNotifications.splice(triggeredNotifications.indexOf(currentNotification.id), 1);
-                                    console.debug("found triggered notifications after removing current one: " + JSON.stringify(triggeredNotifications));
-                                    cordova.plugins.notification.local.clear(triggeredNotifications);
-                                }
-                            });
-                        } catch (err) {
-                            console.error(err);
-                        }
-                    });
-                }
-
-                if($rootScope.isIOS || $rootScope.isAndroid) {
-                    $ionicPlatform.ready(function () {
-                        setOnClickAction(this, QuantiModo);
-                        setOnTriggerAction();
-                    });
                 }
             },
 

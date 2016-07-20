@@ -384,6 +384,12 @@ angular.module('starter')
             hideNavigationMenuIfSetInUrlParameter();
             //goToWelcomeStateIfNotWelcomed();
             scheduleReminder();
+            if($rootScope.isIOS || $rootScope.isAndroid) {
+                $ionicPlatform.ready(function(){
+                    notificationService.setOnTriggerAction();
+                    notificationService.setOnClickAction(QuantiModo);
+                });
+            }
             goToDefaultStateIfLoggedInOnLoginState();
         };
 
