@@ -134,7 +134,7 @@ angular.module('starter')
                     if(index === 2){
 						$state.go('app.variables',
 							{
-								variableObject: $scope.state.trackingReminder,
+								trackingReminder: $scope.state.trackingReminder,
 								fromState: $state.current.name,
 								fromUrl: window.location.href
 							});
