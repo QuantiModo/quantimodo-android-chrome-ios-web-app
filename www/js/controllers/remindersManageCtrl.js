@@ -61,17 +61,23 @@ angular.module('starter')
 
 		function getTrackingRemindersFromLocalStorage(){
 			$scope.state.allReminders = [];
+			var nonFavoriteReminders = [];
 			var unfilteredReminders = JSON.parse(localStorageService.getItemSync('trackingReminders'));
 			if(unfilteredReminders) {
+				for(var k = 0; k < unfilteredReminders.length; k++){
+					if(unfilteredReminders[k].reminderFrequency !== 0){
+						nonFavoriteReminders.push(unfilteredReminders[k]);
+					}
+				}
 				if($stateParams.variableCategoryName) {
-					for(var j = 0; j < unfilteredReminders.length; j++){
-						if($stateParams.variableCategoryName === unfilteredReminders[j].variableCategoryName){
-							$scope.state.allReminders.push(unfilteredReminders[j]);
+					for(var j = 0; j < nonFavoriteReminders.length; j++){
+						if($stateParams.variableCategoryName === nonFavoriteReminders[j].variableCategoryName){
+							$scope.state.allReminders.push(nonFavoriteReminders[j]);
 						}
 					}
 					showAppropriateHelpInfoCards();
 				} else {
-					$scope.state.allReminders = unfilteredReminders;
+					$scope.state.allReminders = nonFavoriteReminders;
 					showAppropriateHelpInfoCards();
 				}
 				$scope.state.allReminders = reminderService.addRatingTimesToDailyReminders($scope.state.allReminders);
