@@ -427,9 +427,6 @@ angular.module('starter',
         .state('app.predictors', {
             url: "/predictors/:valence",
             cache: false,
-            params: {
-                variableObject: null
-            },
             views: {
                 'menuContent': {
                   templateUrl: "templates/predictors.html",
