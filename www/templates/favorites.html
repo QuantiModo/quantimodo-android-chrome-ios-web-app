@@ -11,9 +11,9 @@
                         <i style="font-size: 60px;" class="icon positive {{favorite.icon}}"></i>
                     </div>
                     <div class="col col-70">
-                        <h2 ng-click="showActionSheet(favorite, $index)" ng-if="favorite.abbreviatedUnitName !== '/5'" style="white-space: normal; line-height: normal; ">{{favorite.displayTotal}}&nbsp{{favorite.variableName}}</h2>
-                        <h2 ng-click="showActionSheet(favorite, $index)" ng-if="favorite.abbreviatedUnitName == '/5'" style="white-space: normal; line-height: normal; ">{{favorite.displayTotal}} {{favorite.variableName}}</h2>
-						<button ng-if="favorite.abbreviatedUnitName != '/5'" class="button button-clear button-balanced" style="text-overflow: clip; font-size: 14px;" ng-click="trackByReminder(favorite, null)">
+                        <h2 ng-click="showActionSheet(favorite, $index)" ng-if="favorite.abbreviatedUnitName !== '/5'" style="white-space: normal; line-height: normal; text-align: center; ">{{favorite.displayTotal}}&nbsp{{favorite.variableName}}</h2>
+                        <h2 ng-click="showActionSheet(favorite, $index)" ng-if="favorite.abbreviatedUnitName == '/5'" style="white-space: normal; line-height: normal; text-align: center; ">{{favorite.displayTotal}} {{favorite.variableName}}</h2>
+						<button ng-if="favorite.abbreviatedUnitName != '/5'" class="button button-clear button-balanced" style="text-overflow: clip; font-size: 14px; width:100%; " ng-click="trackByReminder(favorite, null)">
 							<i class="ion-android-done"> &nbsp; Record {{favorite.defaultValue}} {{favorite.abbreviatedUnitName}}</i>
 						</button>
 					</div>
