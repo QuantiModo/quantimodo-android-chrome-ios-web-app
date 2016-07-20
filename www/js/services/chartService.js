@@ -3,6 +3,71 @@ angular.module('starter')
 	.factory('chartService', function(ratingService){
 	    var chartService = {
 
+	    	generateWeekdayMeasurementArray : function(allMeasurements){
+				var weekdayMeasurementArrays = [];
+				var startTimeMilliseconds = null;
+				for (var i = 0; i < allMeasurements.length; i++) {
+					startTimeMilliseconds = allMeasurements[i].startTimeEpoch * 1000;
+					if(typeof weekdayMeasurementArrays[moment(startTimeMilliseconds).day()] === "undefined"){
+						weekdayMeasurementArrays[moment(startTimeMilliseconds).day()] = [];
+					}
+					weekdayMeasurementArrays[moment(startTimeMilliseconds).day()].push(allMeasurements[i]);
+				}
+				return weekdayMeasurementArrays;
+			},
+
+			generateHourlyMeasurementArray : function(allMeasurements){
+				var hourlyMeasurementArrays = [];
+				for (var i = 0; i < allMeasurements.length; i++) {
+					var startTimeMilliseconds = allMeasurements[i].startTimeEpoch * 1000;
+					if (typeof hourlyMeasurementArrays[moment(startTimeMilliseconds).hour()] === "undefined") {
+						hourlyMeasurementArrays[moment(startTimeMilliseconds).hour()] = [];
+					}
+					hourlyMeasurementArrays[moment(startTimeMilliseconds).hour()].push(allMeasurements[i]);
+				}
+				return hourlyMeasurementArrays;
+			},
+
+			calculateAverageValueByHour: function(hourlyMeasurementArrays) {
+				var sumByHour = [];
+				var averageValueByHourArray = [];
+				for (var k = 0; k < 23; k++) {
+					if (typeof hourlyMeasurementArrays[k] !== "undefined") {
+						for (var j = 0; j < hourlyMeasurementArrays[k].length; j++) {
+							if (typeof sumByHour[k] === "undefined") {
+								sumByHour[k] = 0;
+							}
+							sumByHour[k] = sumByHour[k] + hourlyMeasurementArrays[k][j].value;
+						}
+						averageValueByHourArray[k] = sumByHour[k] / (hourlyMeasurementArrays[k].length);
+					} else {
+						averageValueByHourArray[k] = null;
+						console.debug("No data for hour " + k);
+					}
+				}
+				return averageValueByHourArray;
+			},
+
+			calculateAverageValueByWeekday : function(weekdayMeasurementArrays) {
+				var sumByWeekday = [];
+				var averageValueByWeekdayArray = [];
+				for (var k = 0; k < 7; k++) {
+					if (typeof weekdayMeasurementArrays[k] !== "undefined") {
+						for (var j = 0; j < weekdayMeasurementArrays[k].length; j++) {
+							if (typeof sumByWeekday[k] === "undefined") {
+								sumByWeekday[k] = 0;
+							}
+							sumByWeekday[k] = sumByWeekday[k] + weekdayMeasurementArrays[k][j].value;
+						}
+						averageValueByWeekdayArray[k] = sumByWeekday[k] / (weekdayMeasurementArrays[k].length);
+					} else {
+						averageValueByWeekdayArray[k] = null;
+						console.debug("No data for day " + k);
+					}
+				}
+				return averageValueByWeekdayArray;
+			},
+
 	    	// generate bar chart stub with data
 	        configureBarChart : function(data, variableName){
 				var displayVariableName;
@@ -73,17 +138,29 @@ angular.module('starter')
 	            };
 	        },
 
-			configureWeekdayChart : function(data, variableName){
+			processDataAndConfigureWeekdayChart : function(measurements, variableObject) {
+				var weekdayMeasurementArray = this.generateWeekdayMeasurementArray(measurements);
+				var averageValueByWeekdayArray = this.calculateAverageValueByWeekday(weekdayMeasurementArray);
+				return this.configureWeekdayChart(averageValueByWeekdayArray, variableObject);
+
+			},
+
+			processDataAndConfigureHourlyChart : function(measurements, variableObject) {
+				var hourlyMeasurementArray = this.generateHourlyMeasurementArray(measurements);
+				var averageValueByHourArray = this.calculateAverageValueByHour(hourlyMeasurementArray);
+				return this.configureHourlyChart(averageValueByHourArray, variableObject);
+			},
+
+			configureWeekdayChart : function(averageValueByWeekdayArray, variableObject){
 	        	var maximum = 0;
 				var minimum = 99999999999999999999999999999999;
-				var displayVariableName = variableName + ' by Day of Week';
 				var xAxisLabels = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-				for(var i = 0; i < data.length; i++){
-					if(data[i] > maximum){
-						maximum = data[i];
+				for(var i = 0; i < averageValueByWeekdayArray.length; i++){
+					if(averageValueByWeekdayArray[i] > maximum){
+						maximum = averageValueByWeekdayArray[i];
 					}
-					if(data[i] < minimum){
-						minimum = data[i];
+					if(averageValueByWeekdayArray[i] < minimum){
+						minimum = averageValueByWeekdayArray[i];
 					}
 				}
 				return {
@@ -97,14 +174,14 @@ angular.module('starter')
 							}
 						},
 						title : {
-							text : displayVariableName
+							text : variableObject.variableName + ' by Day of Week'
 						},
 						xAxis : {
 							categories : xAxisLabels
 						},
 						yAxis : {
 							title : {
-								text : 'Average Value'
+								text : 'Average Value (' + variableObject.unitName + ')'
 							},
 							min : minimum,
 							max : maximum
@@ -139,16 +216,16 @@ angular.module('starter')
 						colors : [ "#5D83FF", "#68B107", "#ffbd40", "#CB0000" ]
 					},
 					series: [{
-						name : displayVariableName,
-						data: data
+						name : variableObject.variableName + ' by Day of Week',
+						data: averageValueByWeekdayArray
 					}]
 				};
 			},
 
-			configureHourlyChart : function(data, variableName){
+			configureHourlyChart : function(averageValueByHourArray, variableObject){
+
 				var maximum = 0;
 				var minimum = 99999999999999999999999999999999;
-				var displayVariableName = variableName + ' by Hour of Day';
 				var xAxisLabels = [
 					'12 AM',
 					'1 AM',
@@ -176,12 +253,12 @@ angular.module('starter')
 					'11 PM'
 				];
 
-				for(var i = 0; i < data.length; i++){
-					if(data[i] > maximum){
-						maximum = data[i];
+				for(var i = 0; i < averageValueByHourArray.length; i++){
+					if(averageValueByHourArray[i] > maximum){
+						maximum = averageValueByHourArray[i];
 					}
-					if(data[i] < minimum){
-						minimum = data[i];
+					if(averageValueByHourArray[i] < minimum){
+						minimum = averageValueByHourArray[i];
 					}
 				}
 				return {
@@ -195,14 +272,14 @@ angular.module('starter')
 							}
 						},
 						title : {
-							text : displayVariableName
+							text : variableObject.variableName + ' by Hour of Day'
 						},
 						xAxis : {
 							categories : xAxisLabels
 						},
 						yAxis : {
 							title : {
-								text : 'Average Value'
+								text : 'Average Value (' + variableObject.unitName + ')'
 							},
 							min : minimum,
 							max : maximum
@@ -237,8 +314,8 @@ angular.module('starter')
 						colors : [ "#5D83FF", "#68B107", "#ffbd40", "#CB0000"]
 					},
 					series: [{
-						name : displayVariableName,
-						data: data
+						name : variableObject.variableName + ' by Hour of Day',
+						data: averageValueByHourArray
 					}]
 				};
 			},
