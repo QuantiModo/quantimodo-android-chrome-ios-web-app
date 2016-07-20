@@ -40,7 +40,8 @@ angular.module('starter')
                 { id : 6, name : 'Physical Activity' },
                 { id : 7, name : 'Sleep' },
                 { id : 8, name : 'Miscellaneous' }
-            ]
+            ],
+            hideReminderMeButton : false
         };
 
         $scope.openMeasurementStartTimePicker = function() {
@@ -555,6 +556,7 @@ angular.module('starter')
         var setupTrackingByReminderNotification = function(){
             if($stateParams.reminder !== null && typeof $stateParams.reminder !== "undefined"){
                 $scope.state.title = "Record Measurement";
+                $scope.state.hideRemindMeButton = true;
                 $scope.state.measurement.value = $stateParams.reminder.defaultValue;
                 $scope.state.measurement.variable = $stateParams.reminder.variableName;
 
