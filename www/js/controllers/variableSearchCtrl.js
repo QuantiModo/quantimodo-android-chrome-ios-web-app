@@ -1,12 +1,12 @@
 angular.module('starter')
 
     // Controls the Track Factors Page and the search bar
-    .controller('TrackFactorsCategoryCtrl', function($scope, $ionicModal, $timeout, $ionicPopup ,$ionicLoading,
+    .controller('VariableSearchCtrl', function($scope, $ionicModal, $timeout, $ionicPopup ,$ionicLoading,
                                                      authService, measurementService, $state, $rootScope, $stateParams,
                                                      utilsService, localStorageService, $filter, $ionicScrollDelegate,
                                                         variableCategoryService, ionicTimePicker, variableService){
 
-        $scope.controller_name = "TrackFactorsCategoryCtrl";
+        $scope.controller_name = "VariableSearchCtrl";
 
         var variableCategoryName = $stateParams.variableCategoryName;
         var variableCategoryObject = variableCategoryService.getVariableCategoryInfo(variableCategoryName);

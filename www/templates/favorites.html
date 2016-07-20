@@ -4,40 +4,21 @@
 	<!--<ion-content scroll="true" overflow-scroll="true">-->
 
 		<ion-content >
-        <div class="list card" ng-if="state.favorites.length" ng-repeat="favorite in state.favorites" >
+        <div class="list card" ng-if="state.favorites.length" ng-repeat="favorite in state.favorites" on-hold="showActionSheet(favorite, $index)">
             <div class="item" style="padding-bottom:0px;">
                 <div class="row">
-                    <div ng-click="favorite.showMore = !favorite.showMore;" class="col col-20" style="padding-top: 0px;">
+                    <div ng-click="showActionSheet(favorite, $index)" class="col col-20" style="padding-top: 0px;">
                         <i style="font-size: 60px;" class="icon positive {{favorite.icon}}"></i>
                     </div>
                     <div class="col col-70">
-                        <h2 ng-click="favorite.showMore = !favorite.showMore;" ng-if="favorite.abbreviatedUnitName !== '/5'" style="white-space: normal; line-height: normal; ">{{favorite.displayTotal}}&nbsp{{favorite.variableName}}</h2>
-                        <h2 ng-click="favorite.showMore = !favorite.showMore;" ng-if="favorite.abbreviatedUnitName == '/5'" style="white-space: normal; line-height: normal; ">{{favorite.displayTotal}} {{favorite.variableName}}</h2>
-						<button ng-show="favorite.showMore" ng-if="favorite.abbreviatedUnitName == '/5'" class="button button-clear button-calm" ng-click="editReminderSettings(favorite)" style="text-overflow: clip;  font-size: 12px;">
-							<i class="ion-settings"> &nbsp; Settings</i>
-						</button>
+                        <h2 ng-click="showActionSheet(favorite, $index)" ng-if="favorite.abbreviatedUnitName !== '/5'" style="white-space: normal; line-height: normal; ">{{favorite.displayTotal}}&nbsp{{favorite.variableName}}</h2>
+                        <h2 ng-click="showActionSheet(favorite, $index)" ng-if="favorite.abbreviatedUnitName == '/5'" style="white-space: normal; line-height: normal; ">{{favorite.displayTotal}} {{favorite.variableName}}</h2>
 						<button ng-if="favorite.abbreviatedUnitName != '/5'" class="button button-clear button-balanced" style="text-overflow: clip; font-size: 14px;" ng-click="trackByReminder(favorite, null)">
 							<i class="ion-android-done"> &nbsp; Record {{favorite.defaultValue}} {{favorite.abbreviatedUnitName}}</i>
 						</button>
 					</div>
-                    <div ng-click="favorite.showMore = !favorite.showMore;" class="col col-10">
+                    <div ng-click="showActionSheet(favorite, $index)" class="col col-10">
                         <i style="font-size: 10px;" class="icon positive ion-more"></i>
-                    </div>
-                </div>
-                <div ng-show="favorite.showMore" class="row" ng-if="favorite.abbreviatedUnitName !== '/5' " >
-                    <div class="button-bar">
-                        <button ng-show="favorite.defaultValue" class="button button-clear button-assertive" style="text-overflow: clip; font-size: 14px;" ng-click="trackByReminder(favorite, 0)">
-							<i class="ion-android-done"> &nbsp; Record 0</i>
-						</button>
-						<button ng-show="favorite.showMore" class="button button-clear button-calm" ng-click="editReminderSettings(favorite)" style="text-overflow: clip;  font-size: 12px;">
-							<i class="ion-settings"> &nbsp; Settings</i>
-						</button>
-                    </div>
-                </div>
-                <div ng-show="favorite.showMore" class="row" ng-if="favorite.abbreviatedUnitName !== '/5' " >
-                    <div class="button-bar">
-                        <button class="button button-clear button-calm" style="text-overflow: clip; font-size: 14px;" ng-click="editMeasurement(favorite)">
-							<i class="ion-edit"> &nbsp; Record Different Value/Time</i></button>
                     </div>
                 </div>
                 <div class="primary-outcome-variable-reporting"
