@@ -3,9 +3,17 @@ angular.module('starter')
 	// Controls the Positive Factors page
 	.controller('PredictorsCtrl', function($scope, $ionicModal, $timeout, measurementService, $ionicLoading,
                                          $state, $ionicPopup, correlationService, $rootScope,
-                                         localStorageService, utilsService, authService, $stateParams) {
+                                         localStorageService, utilsService, authService, $stateParams, QuantiModo) {
         
         $scope.loading = true;
+
+        $scope.state = {
+            commonPositiveFactors: [],
+            commonNegativeFactors: [],
+            userPositiveFactors: [],
+            userNegativeFactors: [],
+            variableName: null
+        };
 
         if(!$rootScope.user){
             console.debug("predictorsCtrl: not logged in, going to default state");
@@ -23,13 +31,65 @@ angular.module('starter')
         
 		$scope.controller_name = "PredictorsCtrl";
 
+        function populateFactorsLists(params) {
+            $scope.showLoader('Fetching predictors...');
+            QuantiModo.getCommonCauses(params, function (correlationObjects) {
+                // populate positives & Negatives
+                for (var i in correlationObjects) {
+                    if (correlationObjects[i].correlationCoefficient > 0) {
+                        $scope.state.commonPositiveFactors.push(correlationObjects[i]);
+                    } else {
+                        $scope.state.commonNegativeFactors.push(correlationObjects[i]);
+                    }
+                }
+                if ($stateParams.valence === "positive") {
+                    $scope.commonFactors = $scope.state.commonPositiveFactors;
+                } else if ($stateParams.valence === "negative") {
+                    $scope.commonFactors = $scope.state.commonNegativeFactors;
+                } else {
+                    $scope.commonFactors = correlationObjects;
+                }
+                $scope.hideLoader();
+            }, function (error) {
+                Bugsnag.notify(error, JSON.stringify(error), {}, "error");
+            });
+
+            QuantiModo.getUsersCauses(params, function (correlationObjects) {
+                // populate positives & Negatives
+                for (var i in correlationObjects) {
+                    if (correlationObjects[i].correlationCoefficient > 0) {
+                        $scope.state.userPositiveFactors.push(correlationObjects[i]);
+                    } else {
+                        $scope.state.userNegativeFactors.push(correlationObjects[i]);
+                    }
+                }
+                if ($stateParams.valence === "positive") {
+                    $scope.usersFactors = $scope.state.userPositiveFactors;
+                } else if ($stateParams.valence === "negative") {
+                    $scope.usersFactors = $scope.state.userNegativeFactors;
+                } else {
+                    $scope.usersFactors = correlationObjects;
+                }
+
+            }, function (error) {
+                Bugsnag.notify(error, JSON.stringify(error), {}, "error");
+            });
+        }
+
         $scope.init = function(){
+
+            var params = {};
+            if($stateParams.variableObject){
+                params.variableName = $stateParams.variableObject.name ?
+                    $stateParams.variableObject.name : $stateParams.variableObject.variableName;
+            }
+            populateFactorsLists(params);
+
             if ($stateParams.valence === "positive") {
-                $scope.valence = true;
                 $scope.increasingDecreasing = "INCREASING";
                 $scope.increasesDecreases = "increases";
                 Bugsnag.context = "positivePredictors";
-                $scope.showLoader('Fetching positive predictors...');
+
                 $scope.templateConfirmationUp = '<label><input type="checkbox" ng-model="$parent.notShowConfirmationPositive" class="show-again-checkbox">Don\'t show this again</label>';
                 $scope.templateConfirmationDown = '<label><input type="checkbox" ng-model="$parent.notShowConfirmationPositiveDown" class="show-again-checkbox">Don\'t show this again</label>';
 
@@ -43,72 +103,27 @@ angular.module('starter')
 
             }
             else if ($stateParams.valence === "negative") {
-                $scope.valence = false;
                 $scope.increasingDecreasing = "DECREASING";
                 $scope.increasesDecreases = "decreases";
                 Bugsnag.context = "negativePredictors";
                 $scope.showLoader('Fetching negative predictors...');
                 $scope.templateConfirmationUp = '<label><input type="checkbox" ng-model="$parent.notShowConfirmationNegative" class="show-again-checkbox">Don\'t show this again</label>';
                 $scope.templateConfirmationDown = '<label><input type="checkbox" ng-model="$parent.notShowConfirmationNegativeDown" class="show-again-checkbox">Don\'t show this again</label>';
-
-                /*
-                localStorageService.getItem('notShowConfirmationNegative', function (notShowConfirmation) {
-                    $scope.notShowConfirmationNegative = notShowConfirmation ? JSON.parse(notShowConfirmation) : false;
-                });
-                localStorageService.getItem('notShowConfirmationNegativeDown', function (notShowConfirmationDown) {
-                    $scope.notShowConfirmationNegativeDown = notShowConfirmationDown ?
-                        JSON.parse(notShowConfirmationDown) : false;
-                });
-                */
             }
             else {
-                // go to default state
-                $state.go(config.appSettings.defaultState);
+
+
             }
-            var isAuthorized = authService.checkAuthOrSendToLogin();
             if (typeof analytics !== 'undefined')  {
                 analytics.trackView("Predictors Controller");
-            }
-            if(isAuthorized){
-                if ($scope.valence) {
-                    correlationService.getPositiveFactors()
-                        .then(function(correlationObjects){
-                            $scope.factors = correlationObjects;
-                            correlationService.getUsersPositiveFactors().then(function(correlationObjects){
-                                $scope.usersFactors = correlationObjects;
-                            });
-                            $ionicLoading.hide();
-                            $scope.loading = false;
-                        }, function(){
-                            $scope.loading = false;
-                            $ionicLoading.hide();
-                            console.log('predictorsCtrl: Could not get positive correlations');
-                        });
-                }
-                else {
-                    correlationService.getNegativeFactors()
-                        .then(function(correlationObjects){
-                            $scope.factors = correlationObjects;
-                            correlationService.getUsersNegativeFactors().then(function(correlationObjects){
-                                $scope.usersFactors = correlationObjects;
-                            });
-                            $ionicLoading.hide();
-                            $scope.loading = false;
-                        }, function(){
-                            $ionicLoading.hide();
-                            $scope.loading = false;
-                            console.log('predictorsCtrl: Could not get negative correlations');
-                        });
-                }
-
             }
         };
 
         // when downVoted
 	    $scope.downVote = function(factor){
             if (factor.userVote !== 0) {
-                if (($scope.valence && !$scope.notShowConfirmationPositiveDown) ||
-                    (!$scope.valence && !$scope.notShowConfirmationNegativeDown)) {
+                if (($stateParams.valence === "positive" && !$scope.notShowConfirmationPositiveDown) ||
+                    ($stateParams.valence === "negative" && !$scope.notShowConfirmationNegativeDown)) {
                     $ionicPopup.show({
                         title:'Voting thumbs down indicates',
                         subTitle: 'you disagree that ' + factor.cause + ' ' + $scope.increasesDecreases + ' your ' + factor.effect + '.',
@@ -119,7 +134,7 @@ angular.module('starter')
                             {text: 'Disagree',
                                 type: 'button-positive',
                                 onTap: function(){
-                                    if ($scope.valence) {
+                                    if ($stateParams.valence === "positive") {
                                         localStorageService.setItem('notShowConfirmationPositiveDown', JSON.stringify($scope.notShowConfirmationPositiveDown));
                                     }
                                     else {
@@ -163,8 +178,8 @@ angular.module('starter')
 	    // when upVoted
 	    $scope.upVote = function(factor){
             if (factor.userVote !== 1) {
-                if (($scope.valence && !$scope.notShowConfirmationPositive) ||
-                    (!$scope.valence && !$scope.notShowConfirmationNegative)) {
+                if (($stateParams.valence === "positive" && !$scope.notShowConfirmationPositive) ||
+                    ($stateParams.valence === "negative" && !$scope.notShowConfirmationNegative)) {
                     $ionicPopup.show({
                         title:'Voting thumbs up indicates',
                         subTitle: 'you agree that '+ factor.cause + ' ' + $scope.increasesDecreases + ' your ' + factor.effect + '.',
@@ -175,7 +190,7 @@ angular.module('starter')
                             {text: 'Agree',
                                 type: 'button-positive',
                                 onTap: function(){
-                                    if ($scope.valence) {
+                                    if ($stateParams.valence === "positive") {
                                         localStorageService.setItem('notShowConfirmationPositive',JSON.stringify($scope.notShowConfirmationPositive));
                                     }
                                     else {
@@ -253,7 +268,7 @@ angular.module('starter')
 
         // Where is this used?
         $scope.changePage = function(){
-            if ($scope.valence) {
+            if ($stateParams.valence === "positive") {
                 $state.go('app.predictors', {
                     valence: "negative"
                 });
