@@ -290,9 +290,14 @@ angular.module('starter')
             };
 
             // get positive list
-            QuantiModo.getCauses = function(successHandler, errorHandler){
-                var primaryOutcomeVariable = config.appSettings.primaryOutcomeVariableDetails.name.replace(' ','%20');
-                QuantiModo.get('api/v1/variables/'+primaryOutcomeVariable+'/public/causes',
+            QuantiModo.getCommonCauses = function(params, successHandler, errorHandler){
+                var variableName;
+                if(params.variableName){
+                    variableName = encodeURIComponent(params.variableName);
+                } else {
+                    variableName = encodeURIComponent(config.appSettings.primaryOutcomeVariableDetails.name);
+                }
+                QuantiModo.get('api/v1/variables/'+variableName+'/public/causes',
                     [],
                     {},
                     successHandler,
@@ -300,25 +305,20 @@ angular.module('starter')
             };
 
             //get User's causes
-            QuantiModo.getUsersCauses = function (successHandler,errorHandler) {
-                var primaryOutcomeVariable = config.appSettings.primaryOutcomeVariableDetails.name.replace(' ','%20');
-                QuantiModo.get('api/v1/variables/'+primaryOutcomeVariable+'/causes',
+            QuantiModo.getUsersCauses = function (params, successHandler,errorHandler) {
+                var variableName;
+                if(params.variableName){
+                    variableName = encodeURIComponent(params.variableName);
+                } else {
+                    variableName = encodeURIComponent(config.appSettings.primaryOutcomeVariableDetails.name);
+                }
+                QuantiModo.get('api/v1/variables/'+variableName+'/causes',
                     [],
                     {},
                     successHandler,
                     errorHandler
 
                 );
-            };
-
-            // get negative list
-            QuantiModo.getNegativeList = function(successHandler, errorHandler){
-                var primaryOutcomeVariable = config.appSettings.primaryOutcomeVariableDetails.name.replace(' ','%20');
-                QuantiModo.get('api/v1/variables/'+primaryOutcomeVariable+'/public/effects',
-                    [],
-                    {},
-                    successHandler,
-                    errorHandler);
             };
 
             // post new correlation for user
