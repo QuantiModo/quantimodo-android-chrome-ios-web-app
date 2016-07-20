@@ -13,6 +13,9 @@ angular.module('starter')
         $scope.lineChartConfig = false;
         $scope.barChartConfig = false;
         $scope.variableName = $stateParams.variableName;
+        $scope.state = {
+            offset: 0
+        };
 
         $scope.addNewReminderButtonClick = function() {
             console.log("addNewReminderButtonClick");
@@ -161,17 +164,23 @@ angular.module('starter')
         };
         
 
-        var getHistoryForVariable = function(){
+        var getHistoryForVariable = function(params){
             console.log("variablePageCtrl: getHistoryforVariable " + $stateParams.variableName);
             var deferred = $q.defer();
             $scope.showLoader('Getting ' + $stateParams.variableName + ' measurements...');
-            QuantiModo.getMeasurements({
-                offset: 0,
-                sort: "startTimeEpoch",
-                variableName: $stateParams.variableName,
-                limit: 200
-            }).then(function(history){
+
+            QuantiModo.getV1Measurements(params, function(history){
                 $rootScope.variablePage.history = $rootScope.variablePage.history.concat(history);
+                if(history.length === 200){
+                    $scope.state.offset = $scope.state.offset + 200;
+                    params = {
+                        offset: $scope.state.offset,
+                        sort: "startTimeEpoch",
+                        variableName: $stateParams.variableName,
+                        limit: 200
+                    };
+                    getHistoryForVariable(params)
+                }
                 $scope.hideLoader();
                 deferred.resolve();
             }, function(error){
@@ -217,7 +226,14 @@ angular.module('starter')
 
             $ionicLoading.hide();
 
-            getHistoryForVariable().then((function() {
+            var params = {
+                offset: $scope.state.offset,
+                sort: "startTimeEpoch",
+                variableName: $stateParams.variableName,
+                limit: 200
+            };
+
+            getHistoryForVariable(params).then((function() {
                 if ($rootScope.variablePage.history.length > 0) {
                     $rootScope.variablePage.variableObject.variableCategoryName = $rootScope.variablePage.history[0].variableCategoryName;
                     $rootScope.variablePage.variableObject.abbreviatedUnitName = $rootScope.variablePage.history[0].abbreviatedUnitName;

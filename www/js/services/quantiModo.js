@@ -191,7 +191,7 @@ angular.module('starter')
                     errorHandler);
             };
 
-            QuantiModo.getMeasurements = function(params){
+            QuantiModo.getMeasurementsLooping = function(params, doNotLoop){
                 var defer = $q.defer();
                 var response_array = [];
                 var errorCallback = function(){

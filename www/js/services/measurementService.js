@@ -124,7 +124,7 @@ angular.module('starter')
                 });
 
                 // send request
-                QuantiModo.getMeasurements(params).then(function(response){
+                QuantiModo.getMeasurementsLooping(params).then(function(response){
                     if(response){
                         localStorageService.setItem('lastSyncTime',moment.utc().format('YYYY-MM-DDTHH:mm:ss'));
                         localStorageService.getItem('lastSyncTime',function(val){
