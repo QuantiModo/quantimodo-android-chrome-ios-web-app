@@ -171,7 +171,7 @@ angular.module('starter')
 				});
 
 				notificationService.cancelAllNotifications().then(function() {
-					console.debug("Cancelled combined notification and now scheduling individual ones");
+					console.debug("SettingsCtrl combineNotificationChange: Cancelled combined notification and now refreshTrackingRemindersAndScheduleAlarms");
 					reminderService.refreshTrackingRemindersAndScheduleAlarms();
 				});
 			}

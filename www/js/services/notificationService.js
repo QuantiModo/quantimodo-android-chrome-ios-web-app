@@ -1,6 +1,6 @@
 angular.module('starter')
 // Handles the Notifications (inapp, push)
-    .factory('notificationService',function($rootScope, $ionicPlatform, $state, localStorageService, $q){
+    .factory('notificationService',function($rootScope, $ionicPlatform, $state, localStorageService, $q, QuantiModo){
 
         return {
 
@@ -38,32 +38,41 @@ angular.module('starter')
                     this.cancelNotificationsForDeletedReminders(trackingRemindersFromApi);
                 }
 
-                function setOnClickAction() {
+                function setOnClickAction(notificationService, QuantiModo) {
                     var params = {};
                     cordova.plugins.notification.local.on("click", function (notification) {
-                        cordova.plugins.notification.local.clearAll(function () {
-                            console.debug("clearAll active notifications");
-                        }, this);
 
-                        if(notification.data.trackingReminderNotificationId){
+                        var notificationData = JSON.parse(notification.data);
+                        console.debug("onClick: Notification data : ", notificationData);
+
+                        // cordova.plugins.notification.local.clearAll(function () {
+                        //     console.debug("clearAll active notifications");
+                        // }, this);
+
+                        if(notificationData.trackingReminderNotificationId){
+                            console.debug("onClick: Notification was a reminder notification not reminder.  Skippin notification with id: " + notificationData.trackingReminderNotificationId);
                             params = {
-                                trackingReminderNotificationId: notification.data.trackingReminderNotificationId
+                                trackingReminderNotificationId: notificationData.trackingReminderNotificationId
                             };
-                        } else if (notification.data.trackingReminderId) {
+                        } else if (notificationData.id) {
+                            console.debug("onClick: Notification was a reminder not a reminder notification.  Skipping next notification for reminder id: " + notificationData.id);
                             params = {
-                                trackingReminderNotificationId: notification.data.trackingReminderNotificationId
+                                trackingReminderId: notificationData.id
                             };
                         }
-                        reminderService.skipReminderNotification(params);
 
-                        if(notification.data && notification.data.id){
-                            notificationService.decrementNotificationBadges();
+                        QuantiModo.skipTrackingReminder(params);
+
+                        if(notificationData && notificationData.id){
+                            console.debug("onClick: Notification data provided. Going to addMeasurement page. Data: ", notificationData);
+                            //notificationService.decrementNotificationBadges();
                             $state.go('app.measurementAdd',
                                 {
-                                    reminder: notification.data,
+                                    reminder: notificationData,
                                     fromState: 'app.remindersInbox'
                                 });
                         } else {
+                            console.debug("No notification data provided. Going to remindersInbox page.");
                             $state.go('app.remindersInbox');
                         }
                     });
@@ -74,7 +83,7 @@ angular.module('starter')
                     cordova.plugins.notification.local.on("trigger", function (currentNotification) {
 
                         try {
-                            console.debug("just triggered: " + currentNotification.id);
+                            console.debug("just triggered this notification: ",  currentNotification);
                             cordova.plugins.notification.local.getAll(function (notifications) {
                                 console.debug("All notifications ", notifications);
                             });
@@ -82,12 +91,7 @@ angular.module('starter')
                             cordova.plugins.notification.local.getTriggeredIds(function (triggeredNotifications) {
                                 console.debug("found triggered notifications before removing current one: " + JSON.stringify(triggeredNotifications));
                                 if (triggeredNotifications.length < 1) {
-                                    console.error("Triggered notifications is empty so maybe it's not working.");
-                                    // setTimeout(function () {
-                                    //     cordova.plugins.notification.local.clearAll(function () {
-                                    //         console.debug("It has been an hour so clearAll active notifications");
-                                    //     }, this);
-                                    // }, 3600000);
+                                    console.warn("Triggered notifications is empty so maybe it's not working.");
                                 } else {
                                     triggeredNotifications.splice(triggeredNotifications.indexOf(currentNotification.id), 1);
                                     console.debug("found triggered notifications after removing current one: " + JSON.stringify(triggeredNotifications));
@@ -102,7 +106,7 @@ angular.module('starter')
 
                 if($rootScope.isIOS || $rootScope.isAndroid) {
                     $ionicPlatform.ready(function () {
-                        setOnClickAction();
+                        setOnClickAction(this, QuantiModo);
                         setOnTriggerAction();
                     });
                 }
