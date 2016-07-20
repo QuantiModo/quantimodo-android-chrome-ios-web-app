@@ -103,7 +103,7 @@ angular.module('starter')
 					QuantiModo.getTrackingReminders(params, function(remindersResponse){
 						var trackingReminders = remindersResponse.data;
 						if(remindersResponse.success) {
-							if($rootScope.combineNotifications !== true){
+							if($rootScope.onlyShowOneNotification !== true){
 								notificationService.scheduleAllNotifications(trackingReminders);
 							}
 							//$rootScope.numberOfPendingNotifications = trackingReminders[0].numberOfPendingNotifications;
@@ -173,7 +173,7 @@ angular.module('starter')
 				QuantiModo.getTrackingReminderNotifications(params, function(reminders){
 					if(reminders.success) {
 						deferred.resolve(reminders.data);
-						if($rootScope.combineNotifications !== true){
+						if($rootScope.onlyShowOneNotification !== true){
 							notificationService.scheduleAllNotifications(reminders.data);
 						}
 					}

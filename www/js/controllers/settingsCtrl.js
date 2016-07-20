@@ -12,9 +12,9 @@ angular.module('starter')
 		$rootScope.isAndroid = ionic.Platform.isAndroid();
         $rootScope.isChrome = window.chrome ? true : false;
 	    // populate user data
-		//$scope.state.combineNotifications = true;
-		$scope.state.combineNotifications = $rootScope.combineNotifications;
-		console.debug('CombineNotifications is '+ $scope.state.combineNotifications);
+		//$scope.state.onlyShowOneNotification = true;
+		$scope.state.onlyShowOneNotification = $rootScope.onlyShowOneNotification;
+		console.debug('CombineNotifications is '+ $scope.state.onlyShowOneNotification);
 		$scope.state.trackLocation = $rootScope.trackLocation;
 		console.debug('trackLocation is '+ $scope.state.trackLocation);
 
@@ -147,10 +147,10 @@ angular.module('starter')
 
 		$scope.combineNotificationChange = function() {
 			
-			console.log('Combine Notification Change', $scope.state.combineNotifications);
-			$rootScope.combineNotifications = $scope.state.combineNotifications;
-			localStorageService.setItem('combineNotifications', $scope.state.combineNotifications);
-			if($scope.state.combineNotifications){
+			console.log('Combine Notification Change', $scope.state.onlyShowOneNotification);
+			$rootScope.onlyShowOneNotification = $scope.state.onlyShowOneNotification;
+			localStorageService.setItem('onlyShowOneNotification', $scope.state.onlyShowOneNotification);
+			if($scope.state.onlyShowOneNotification){
 				$ionicPopup.alert({
 					title: 'Disable Multiple Notifications',
 					template: 'You will only get one notification at a time instead of a separate notification for each reminder that you create.'

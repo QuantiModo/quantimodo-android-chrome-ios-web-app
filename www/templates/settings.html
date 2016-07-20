@@ -31,7 +31,7 @@
         </div>
 
         <div class="card sign-in" >
-            <ion-toggle ng-model="state.combineNotifications"
+            <ion-toggle ng-model="state.onlyShowOneNotification"
                         ng-change="combineNotificationChange()">
                 <i class="icon ion-android-notifications-none"></i>
                 &nbsp
@@ -39,7 +39,7 @@
             </ion-toggle>
 
 
-            <div ng-show="state.combineNotifications" class="list card">
+            <div ng-show="state.onlyShowOneNotification" class="list card">
                 <div class="item item-text-wrap">
                     <p>Reminder me every</p>
                 </div>

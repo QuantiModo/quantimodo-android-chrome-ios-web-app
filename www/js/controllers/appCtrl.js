@@ -496,13 +496,22 @@ angular.module('starter')
         };
 
         $scope.shouldWeCombineNotifications = function(){
-            localStorageService.getItem('combineNotifications', function(combineNotifications){
-                console.debug("combineNotifications from local storage is " + combineNotifications);
-                if(combineNotifications === "null"){
-                    localStorageService.setItem('combineNotifications', true);
-                    $rootScope.combineNotifications = true;
+            localStorageService.getItem('onlyShowOneNotification', function(onlyShowOneNotification){
+                console.debug("onlyShowOneNotification from local storage is " + onlyShowOneNotification);
+                if(onlyShowOneNotification === "null"){
+                    localStorageService.setItem('onlyShowOneNotification', true);
+                    $rootScope.onlyShowOneNotification = true;
+
+                    notificationService.cancelAllNotifications().then(function() {
+
+                        localStorageService.getItem('primaryOutcomeRatingFrequencyDescription', function (primaryOutcomeRatingFrequencyDescription) {
+                            console.debug("Cancelled individual notifications and now scheduling combined one with interval: " + primaryOutcomeRatingFrequencyDescription);
+                            $scope.primaryOutcomeRatingFrequencyDescription = primaryOutcomeRatingFrequencyDescription ? primaryOutcomeRatingFrequencyDescription : "daily";
+                            $scope.saveInterval($scope.primaryOutcomeRatingFrequencyDescription);
+                        });
+                    });
                 } else {
-                    $rootScope.combineNotifications = combineNotifications === "true";
+                    $rootScope.onlyShowOneNotification = onlyShowOneNotification === "true";
                 }
             });
         };
