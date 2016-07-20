@@ -238,7 +238,7 @@ angular.module('starter',
             views: {
                 'menuContent': {
                   templateUrl: "templates/variable-search.html",
-                  controller: 'TrackFactorsCategoryCtrl'
+                  controller: 'VariableSearchCtrl'
                 }
             }
         })
@@ -254,7 +254,7 @@ angular.module('starter',
             views: {
                 'menuContent': {
                     templateUrl: "templates/variable-search.html",
-                    controller: 'TrackFactorsCategoryCtrl'
+                    controller: 'VariableSearchCtrl'
                 }
             }
         })
@@ -271,7 +271,7 @@ angular.module('starter',
             views: {
                 'menuContent': {
                     templateUrl: "templates/variable-search.html",
-                    controller: 'TrackFactorsCategoryCtrl'
+                    controller: 'VariableSearchCtrl'
                 }
             }
         })
@@ -288,7 +288,7 @@ angular.module('starter',
             views: {
                 'menuContent': {
                     templateUrl: "templates/variable-search.html",
-                    controller: 'TrackFactorsCategoryCtrl'
+                    controller: 'VariableSearchCtrl'
                 }
             }
         })
@@ -306,7 +306,7 @@ angular.module('starter',
             views: {
                 'menuContent': {
                     templateUrl: "templates/variable-search.html",
-                    controller: 'TrackFactorsCategoryCtrl'
+                    controller: 'VariableSearchCtrl'
                 }
             }
         })
@@ -324,7 +324,7 @@ angular.module('starter',
             views: {
                 'menuContent': {
                     templateUrl: "templates/variable-search.html",
-                    controller: 'TrackFactorsCategoryCtrl'
+                    controller: 'VariableSearchCtrl'
                 }
             }
         })
@@ -384,7 +384,7 @@ angular.module('starter',
             views: {
                 'menuContent': {
                     templateUrl: "templates/variable-search.html",
-                    controller: 'TrackFactorsCategoryCtrl'
+                    controller: 'VariableSearchCtrl'
                 }
             }
         })
