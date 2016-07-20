@@ -27,6 +27,7 @@ window.config = {
 
 config.appSettings  = {
     appName : 'Mind First Mood Tracker',
+    linkToChromeExtension : "https://chrome.google.com/webstore/detail/quantimodo-life-tracking/koghchdnkopobpmmhfelgmfelcjichhh",
     allowOffline : true,
     loaderImagePath : 'img/pop-tart-cat.gif',
     defaultState : 'app.remindersInbox',

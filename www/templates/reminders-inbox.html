@@ -175,6 +175,32 @@
 			</div>
 		</div>
 
+		<div class="list card"  ng-if="isMobile && !hideChromeExtensionInfoCard">
+			<div class="item" style="padding-bottom:0px;">
+				<p style=" text-align: center; line-height: normal; font-size: 25px;">Track on the Computer</p>
+				<div class="row">
+					<div class="col" style="padding-top: 0px;">
+						<i style="font-size: 60px;" class="icon positive ion-social-chrome"></i>
+					</div>
+					<div class="col col-75">
+						<h2 style="white-space: normal; text-align: left; line-height: normal; ">Did you know that you can easily track everything on your laptop and desktop with our Google Chrome browser extension?  Your data is synced between devices so you'll never have to track twice!</h2>
+					</div>
+				</div>
+				<div class="row" >
+					<div class="button-bar">
+						<button class="button button-clear button-balanced" style="font-size: 14px;" ng-click="sendChromeEmailLink()"><i class="ion-email"> &nbsp; Send Yourself a Link &nbsp;</i></button>
+					</div>
+				</div>
+				<div class="row" >
+					<div class="button-bar">
+						<button class="button button-clear button-assertive" style="font-size: 14px;" ng-click="setLocalStorageFlagTrue('hideLocationTrackingInfoCard')"><i class="ion-close-circled"> &nbsp;No, thanks</i></button>
+					</div>
+				</div>
+
+			</div>
+		</div>
+
+
 		<div class="list card"  ng-hide="hideImportDataCard">
 			<div class="item" style="padding-bottom:0px;">
 				<p style=" text-align: center; line-height: normal; font-size: 25px;">Import Your Data</p>

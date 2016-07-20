@@ -27,6 +27,7 @@ window.config = {
 
 config.appSettings  = {
     appName : 'MedTLC',
+    linkToChromeExtension : "https://chrome.google.com/webstore/detail/quantimodo-life-tracking/nojnjdgmjaejpnpehgioddbimopnblga",
     allowOffline : false,
 
     primaryOutcomeVariable : 'Mood',

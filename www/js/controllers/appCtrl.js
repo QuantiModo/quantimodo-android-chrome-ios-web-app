@@ -42,6 +42,7 @@ angular.module('starter')
         $scope.hideRecordMeasurementInfoCard = localStorageService.getItemSync('hideRecordMeasurementInfoCard');
         $scope.hideNotificationSettingsInfoCard = localStorageService.getItemSync('hideNotificationSettingsInfoCard');
         $scope.hideLocationTrackingInfoCard = localStorageService.getItemSync('hideLocationTrackingInfoCard');
+        $scope.hideChromeExtensionInfoCard = localStorageService.getItemSync('hideChromeExtensionInfoCard');
 
         $scope.getLocation = function(){
             $scope.shouldWeTrackLocation();
@@ -622,7 +623,7 @@ angular.module('starter')
             */
             $timeout(function () {
                 $scope.hideLoader();
-            }, 15000);
+            }, 30000);
 
         };
 
@@ -645,6 +646,57 @@ angular.module('starter')
                 $rootScope.syncedEverything = true;
                 $scope.getLocation();
             }
+        };
+
+        $scope.sendWithMailTo = function(subjectLine, emailBody){
+            var emailUrl = 'mailto:?subject=' + subjectLine + '&body=' + emailBody;
+            if($rootScope.isChromeExtension){
+                console.debug('isChromeExtension so sending to website to share data');
+                var url = config.getURL("api/v2/account/applications", true);
+                var newTab = window.open(url,'_blank');
+                if(!newTab){
+                    alert("Please unblock popups and refresh to access the Data Sharing page.");
+                }
+                $rootScope.hideNavigationMenu = false;
+                $state.go(config.appSettings.defaultState);
+
+            } else {
+                console.debug('window.plugins.emailComposer not found!  Generating email normal way.');
+                window.location.href = emailUrl;
+            }
+        };
+
+        $scope.sendWithEmailComposer = function(subjectLine, emailBody){
+            document.addEventListener('deviceready', function () {
+                console.debug('deviceready');
+                cordova.plugins.email.isAvailable(
+                    function (isAvailable) {
+                        if(isAvailable){
+                            if(window.plugins && window.plugins.emailComposer) {
+                                console.debug('Generating email with cordova-plugin-email-composer');
+                                window.plugins.emailComposer.showEmailComposerWithCallback(function(result) {
+                                        console.log("Response -> " + result);
+                                    },
+                                    subjectLine, // Subject
+                                    emailBody,                      // Body
+                                    null,    // To
+                                    'info@quantimo.do',                    // CC
+                                    null,                    // BCC
+                                    true,                   // isHTML
+                                    null,                    // Attachments
+                                    null);                   // Attachment Data
+                            } else {
+                                console.error('window.plugins.emailComposer not available!');
+                                $scope.sendWithMailTo(subjectLine, emailBody);
+                            }
+                        } else {
+                            console.error('Email has not been configured for this device!');
+                            $scope.sendWithMailTo(subjectLine, emailBody);
+                        }
+                    }
+                );
+
+            }, false);
         };
         
         $scope.init();
