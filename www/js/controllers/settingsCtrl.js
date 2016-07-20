@@ -12,9 +12,9 @@ angular.module('starter')
 		$rootScope.isAndroid = ionic.Platform.isAndroid();
         $rootScope.isChrome = window.chrome ? true : false;
 	    // populate user data
-		//$scope.state.combineNotifications = true;
-		$scope.state.combineNotifications = $rootScope.combineNotifications;
-		console.debug('CombineNotifications is '+ $scope.state.combineNotifications);
+		//$scope.state.onlyShowOneNotification = true;
+		$scope.state.onlyShowOneNotification = $rootScope.onlyShowOneNotification;
+		console.debug('CombineNotifications is '+ $scope.state.onlyShowOneNotification);
 		$scope.state.trackLocation = $rootScope.trackLocation;
 		console.debug('trackLocation is '+ $scope.state.trackLocation);
 
@@ -53,69 +53,17 @@ angular.module('starter')
 			$state.go('app.login');
 	    };
 
-		function sendWithMailTo(subjectLine, emailBody){
-                    var emailUrl = 'mailto:?subject=' + subjectLine + '&body=' + emailBody;
-                    if($rootScope.isChromeExtension){
-                        console.debug('isChromeExtension so sending to website to share data');
-                        var url = config.getURL("api/v2/account/applications", true);
-                        var newTab = window.open(url,'_blank');
-                        if(!newTab){
-                            alert("Please unblock popups and refresh to access the Data Sharing page.");
-                        }
-                        $rootScope.hideNavigationMenu = false;
-                        $state.go(config.appSettings.defaultState);
-        
-                    } else {
-                        console.debug('window.plugins.emailComposer not found!  Generating email normal way.');
-						window.location.href = emailUrl;
-                    }
-                }
-
-		function sendWithEmailComposer(subjectLine, emailBody){
-                    document.addEventListener('deviceready', function () {
-                        console.debug('deviceready');
-                        cordova.plugins.email.isAvailable(
-                            function (isAvailable) {
-                                if(isAvailable){
-                                    if(window.plugins && window.plugins.emailComposer) {
-                                        console.debug('Generating email with cordova-plugin-email-composer');
-                                        window.plugins.emailComposer.showEmailComposerWithCallback(function(result) {
-                                                console.log("Response -> " + result);
-                                            },
-                                            subjectLine, // Subject
-                                            emailBody,                      // Body
-                                            null,    // To
-                                            'info@quantimo.do',                    // CC
-                                            null,                    // BCC
-                                            true,                   // isHTML
-                                            null,                    // Attachments
-                                            null);                   // Attachment Data
-                                    } else {
-                                        console.error('window.plugins.emailComposer not available!');
-										sendWithMailTo(subjectLine, emailBody);
-                                    }
-                                } else {
-                                    console.error('Email has not been configured for this device!');
-									sendWithMailTo(subjectLine, emailBody);
-                                }
-                            }
-                        );
-        
-                    }, false);
-                }
 
 		$scope.sendSharingInvitation= function() {
 			var subjectLine = "I%27d%20like%20to%20share%20my%20data%20with%20you";
 			var emailBody = "Hi!%20%20%0A%0AI%27m%20tracking%20my%20health%20and%20happiness%20with%20an%20app%20and%20I%27d%20like%20to%20share%20my%20data%20with%20you.%20%20%0A%0APlease%20generate%20a%20data%20authorization%20URL%20at%20https%3A%2F%2Fapp.quantimo.do%2Fapi%2Fv2%2Fphysicians%20and%20email%20it%20to%20me.%20%0A%0AThanks!%20%3AD";
 
 			if($rootScope.isMobile){
-				sendWithEmailComposer(subjectLine, emailBody);
+				$scope.sendWithEmailComposer(subjectLine, emailBody);
 			} else {
-				sendWithMailTo(subjectLine, emailBody);
-
+				$scope.sendWithMailTo(subjectLine, emailBody);
 			}
 		};
-
 
         
 		$scope.init = function(){
@@ -147,10 +95,10 @@ angular.module('starter')
 
 		$scope.combineNotificationChange = function() {
 			
-			console.log('Combine Notification Change', $scope.state.combineNotifications);
-			$rootScope.combineNotifications = $scope.state.combineNotifications;
-			localStorageService.setItem('combineNotifications', $scope.state.combineNotifications);
-			if($scope.state.combineNotifications){
+			console.log('Combine Notification Change', $scope.state.onlyShowOneNotification);
+			$rootScope.onlyShowOneNotification = $scope.state.onlyShowOneNotification;
+			localStorageService.setItem('onlyShowOneNotification', $scope.state.onlyShowOneNotification);
+			if($scope.state.onlyShowOneNotification){
 				$ionicPopup.alert({
 					title: 'Disable Multiple Notifications',
 					template: 'You will only get one notification at a time instead of a separate notification for each reminder that you create.'

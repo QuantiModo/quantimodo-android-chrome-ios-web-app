@@ -4,7 +4,7 @@ angular.module('starter')
     .controller('VariableSearchCtrl', function($scope, $ionicModal, $timeout, $ionicPopup ,$ionicLoading,
                                                      authService, measurementService, $state, $rootScope, $stateParams,
                                                      utilsService, localStorageService, $filter, $ionicScrollDelegate,
-                                                        variableCategoryService, ionicTimePicker, variableService){
+                                                        variableCategoryService, ionicTimePicker, variableService, reminderService){
 
         $scope.controller_name = "VariableSearchCtrl";
 
@@ -22,7 +22,8 @@ angular.module('starter')
             // variables
             variableName : "",
             helpText: variableCategoryObject.helpText,
-            variableSearchQuery: ''
+            variableSearchQuery: '',
+            trackingReminder: {}
         };
 
         if(variableCategoryName){
@@ -65,8 +66,44 @@ angular.module('starter')
         
         // when an old measurement is tapped to remeasure
         $scope.selectVariable = function(variableObject) {
-            //TODO: Figure out why this is causing a duplicate error on variable searches
-            if ($stateParams.doNotIncludePublicVariables) { // implies going to variable page
+
+            if($state.current.name === 'app.favoriteSearch'){
+                $scope.state.trackingReminder.variableId = variableObject.id;
+                $scope.state.trackingReminder.reminderFrequency = 0;
+                $scope.state.trackingReminder.variableName = variableObject.name;
+                $scope.state.trackingReminder.abbreviatedUnitName = variableObject.abbreviatedUnitName;
+                $scope.state.trackingReminder.variableDescription = variableObject.description;
+                $scope.state.trackingReminder.variableCategoryName = variableObject.variableCategoryName;
+
+
+                if($scope.state.trackingReminder.abbreviatedUnitName === '/5'){
+                    $scope.state.trackingReminder.defaultValue = 3;
+                    localStorageService.replaceElementOfItemById('trackingReminders', $scope.state.trackingReminder);
+                    reminderService.addNewReminder($scope.state.trackingReminder)
+                        .then(function(){
+                            console.debug("Saved Reminder", $scope.state.trackingReminder)
+                        }, function(err){
+                            console.error('Failed to add Reminder!',  $scope.state.trackingReminder);
+                        });
+                    $state.go('app.favorites',
+                        {
+                            trackingReminder : $scope.state.trackingReminder,
+                            fromState : $state.current.name,
+                            fromUrl: window.location.href
+                        }
+                    );
+                } else {
+                    $state.go($stateParams.nextState,
+                        {
+                            variableObject : variableObject,
+                            fromState : $state.current.name,
+                            fromUrl: window.location.href
+                        }
+                    );
+                }
+
+            } else if ($stateParams.doNotIncludePublicVariables) { // implies going to variable page
+                //TODO: Figure out why this is causing a duplicate error on variable searches
                 $state.go('app.variables',
                     {
                         variableName: variableObject.name,

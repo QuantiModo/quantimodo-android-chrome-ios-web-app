@@ -104,7 +104,7 @@ angular.module('starter')
             scheduleAllNotifications: function(trackingRemindersFromApi) {
                 if($rootScope.isChromeExtension || $rootScope.isIOS || $rootScope.isAndroid) {
                     for (var i = 0; i < trackingRemindersFromApi.length; i++) {
-                        if($rootScope.combineNotifications !== "true"){
+                        if($rootScope.onlyShowOneNotification !== "true"){
                             this.scheduleNotificationByReminder(trackingRemindersFromApi[i]);
                         }
                     }
@@ -150,7 +150,7 @@ angular.module('starter')
                                 }
                             }
                             if(!existingReminderFoundInApiResponse) {
-                                //if($rootScope.combineNotifications === "false"){
+                                //if($rootScope.onlyShowOneNotification === "false"){
                                     console.debug('Matching API reminder not found. Cancelling scheduled notification ' + JSON.stringify(scheduledNotifications[i]));
                                     cordova.plugins.notification.local.cancel(scheduledNotifications[i].id, function (cancelledNotification) {
                                         console.debug("Canceled notification ", cancelledNotification);

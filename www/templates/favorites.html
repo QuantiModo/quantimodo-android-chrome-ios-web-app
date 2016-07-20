@@ -22,7 +22,7 @@
                     </div>
                 </div>
                 <div class="primary-outcome-variable-reporting"
-                     ng-if="!favorite.description &&	favorite.abbreviatedUnitName === '/5'">
+                     ng-if="!favorite.variableDescription && favorite.abbreviatedUnitName === '/5'">
                     <div class="primary-outcome-variable-rating-buttons" >
                         <img ng-repeat="option in numericRatingOptions"
                              ng-click="trackByReminder(favorite, option.numericValue)"
@@ -32,7 +32,7 @@
                 </div>
                 <div class="primary-outcome-variable-reporting"
                      ng-if="favorite.abbreviatedUnitName === '/5' &&
-						 	favorite.description.toLowerCase().indexOf('positive') > -1">
+						 	favorite.variableDescription.toLowerCase().indexOf('positive') > -1">
                     <div class="primary-outcome-variable-rating-buttons" >
                         <img ng-repeat="option in positiveRatingOptions"
                              ng-click="trackByReminder(favorite, option.numericValue)"
@@ -43,7 +43,7 @@
                 </div>
                 <div class="primary-outcome-variable-reporting"
                      ng-if="favorite.abbreviatedUnitName === '/5' &&
-						 	favorite.description.toLowerCase().indexOf('negative') > -1">
+						 	favorite.variableDescription.toLowerCase().indexOf('negative') > -1">
                     <div class="primary-outcome-variable-rating-buttons" >
                         <img ng-repeat="option in negativeRatingOptions"
                              ng-click="trackByReminder(favorite, option.numericValue)"
