@@ -3,7 +3,8 @@ angular.module('starter')
 	.controller('FavoritesCtrl', function($scope, authService, $ionicPopup, localStorageService, $state,
 											   reminderService, $ionicLoading, measurementService, utilsService,
 											   $stateParams, $location, $filter, $ionicPlatform, $rootScope,
-                                               notificationService, variableCategoryService){
+                                               notificationService, variableCategoryService, $ionicActionSheet,
+										  $timeout){
 
 	    $scope.controller_name = "FavoritesCtrl";
 
@@ -12,7 +13,8 @@ angular.module('starter')
 	    $scope.state = {
 	    	selected1to5Value : false,
 			title : 'Favorites',
-			loading : true
+			loading : true,
+            trackingReminder : null
 	    };
 
 	    $scope.selectPrimaryOutcomeVariableValue = function($event, val){
@@ -103,5 +105,77 @@ angular.module('starter')
     	$scope.$on('$ionicView.enter', function(e){
     		$scope.init();
     	});
+
+		// Triggered on a button click, or some other target
+		$scope.showActionSheet = function(favorite, $index) {
+
+		    $scope.state.trackingReminder = favorite;
+			// Show the action sheet
+			var hideSheet = $ionicActionSheet.show({
+				buttons: [
+					{ text: 'Change Default Value' },
+					{ text: 'Record Different Value/Time' },
+					{ text: 'See Charts'},
+					{ text: 'Add a Reminder'}
+				],
+				destructiveText: 'Delete From Favorites',
+				cancelText: 'Cancel',
+				cancel: function() {
+					console.log('CANCELLED');
+				},
+				buttonClicked: function(index) {
+					console.log('BUTTON CLICKED', index);
+					if(index === 0){
+						$scope.editReminderSettings($scope.state.trackingReminder);
+					}
+					if(index === 1){
+						$scope.editMeasurement($scope.state.trackingReminder);
+					}
+                    if(index === 2){
+						$state.go('app.variables',
+							{
+								variableObject: $scope.state.trackingReminder,
+								fromState: $state.current.name,
+								fromUrl: window.location.href
+							});
+                    }
+					if(index === 3){
+						$state.go('app.reminderAdd',
+							{
+								variableObject: $scope.state.trackingReminder,
+								fromState: $state.current.name,
+								fromUrl: window.location.href
+							});
+					}
+					if(index === 4){
+						$state.go('app.predictors',
+							{
+								variableObject: $scope.state.trackingReminder
+							});
+					}
+
+					return true;
+				},
+				destructiveButtonClicked: function() {
+                    reminderService.deleteReminder($scope.state.trackingReminder.id)
+                        .then(function(){
+                            console.debug('Reminder Deleted');
+                        }, function(err){
+                            console.error('Failed to Delete Reminder, Try again!', 'assertive');
+                        });
+                    localStorageService.deleteElementOfItemById('trackingReminders', $scope.state.trackingReminder.id)
+                        .then(function(){
+                            $scope.init();
+                        });
+					return true;
+				}
+			});
+
+
+			$timeout(function() {
+				hideSheet();
+			}, 20000);
+
+		};
 		
 	});
