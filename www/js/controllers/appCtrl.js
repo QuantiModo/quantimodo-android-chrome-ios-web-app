@@ -40,6 +40,8 @@ angular.module('starter')
         $scope.hideHistoryPageInstructionsCard = localStorageService.getItemSync('hideHistoryPageInstructionsCard');
         $scope.hideImportDataCard = localStorageService.getItemSync('hideImportDataCard');
         $scope.hideRecordMeasurementInfoCard = localStorageService.getItemSync('hideRecordMeasurementInfoCard');
+        $scope.hideNotificationSettingsInfoCard = localStorageService.getItemSync('hideNotificationSettingsInfoCard');
+        $scope.hideLocationTrackingInfoCard = localStorageService.getItemSync('hideLocationTrackingInfoCard');
 
         $scope.getLocation = function(){
             $scope.shouldWeTrackLocation();
