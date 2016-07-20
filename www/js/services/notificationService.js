@@ -11,9 +11,9 @@ angular.module('starter')
                     var notificationData = JSON.parse(notification.data);
                     console.debug("onClick: Notification data : ", notificationData);
 
-                    // cordova.plugins.notification.local.clearAll(function () {
-                    //     console.debug("clearAll active notifications");
-                    // }, this);
+                    cordova.plugins.notification.local.clearAll(function () {
+                        console.debug("onClick: onClick: clearAll active notifications");
+                    }, this);
 
                     if(notificationData.trackingReminderNotificationId){
                         console.debug("onClick: Notification was a reminder notification not reminder.  Skipping notification with id: " + notificationData.trackingReminderNotificationId);
