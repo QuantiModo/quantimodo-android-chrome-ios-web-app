@@ -7,36 +7,41 @@ angular.module('starter')
             setOnClickAction: function(QuantiModo) {
                 var params = {};
                 cordova.plugins.notification.local.on("click", function (notification) {
-
-                    var notificationData = JSON.parse(notification.data);
-                    console.debug("onClick: Notification data : ", notificationData);
+                    console.debug("onClick: notification: ", notification);
+                    var notificationData = null;
+                    if(notification && notification.data){
+                        notificationData = JSON.parse(notification.data);
+                        console.debug("onClick: notification.data : ", notificationData);
+                    } else {
+                        console.debug("onClick: No notification.data provided");
+                    }
 
                     cordova.plugins.notification.local.clearAll(function () {
                         console.debug("onClick: onClick: clearAll active notifications");
                     }, this);
 
-                    if(notificationData.trackingReminderNotificationId){
+                    if(notificationData && notificationData.trackingReminderNotificationId){
                         console.debug("onClick: Notification was a reminder notification not reminder.  Skipping notification with id: " + notificationData.trackingReminderNotificationId);
                         params = {
                             trackingReminderNotificationId: notificationData.trackingReminderNotificationId
                         };
-                    } else if (notificationData.id) {
+                    } else if (notificationData && notificationData.id) {
                         console.debug("onClick: Notification was a reminder not a reminder notification.  Skipping next notification for reminder id: " + notificationData.id);
                         params = {
                             trackingReminderId: notificationData.id
                         };
+                    } else {
+                        console.debug("onClick: No notification data provided. Going to remindersInbox page.");
+                        $state.go('app.remindersInbox');
                     }
 
-                    //QuantiModo.skipTrackingReminder(params);
-
-                    QuantiModo.skipTrackingReminder(params, function(response){
-                        console.debug(response);
-                    }, function(err){
-                        console.error(err);
-                        Bugsnag.notify(err, JSON.stringify(err), {}, "error");
-                    });
-
-                    if(notificationData && notificationData.id){
+                    if(params.trackingReminderId || params.trackingReminderNotificationId ){
+                        QuantiModo.skipTrackingReminder(params, function(response){
+                            console.debug(response);
+                        }, function(err){
+                            console.error(err);
+                            Bugsnag.notify(err, JSON.stringify(err), {}, "error");
+                        });
                         console.debug("onClick: Notification data provided. Going to addMeasurement page. Data: ", notificationData);
                         //notificationService.decrementNotificationBadges();
                         $state.go('app.measurementAdd',
@@ -45,8 +50,7 @@ angular.module('starter')
                                 fromState: 'app.remindersInbox'
                             });
                     } else {
-                        console.debug("No notification data provided. Going to remindersInbox page.");
-                        $state.go('app.remindersInbox');
+                        console.debug("onClick: No params.trackingReminderId || params.trackingReminderNotificationId. Should have already gone to remindersInbox page.");
                     }
                 });
             },
