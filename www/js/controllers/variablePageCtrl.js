@@ -195,7 +195,7 @@ angular.module('starter')
                         variableName: $scope.state.variableObject.variableName,
                         limit: 200
                     };
-                    getHistoryForVariable(params)
+                    getHistoryForVariable(params);
                 }
                 $scope.hideLoader();
                 deferred.resolve();
