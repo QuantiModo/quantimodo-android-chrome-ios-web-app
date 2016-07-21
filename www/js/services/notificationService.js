@@ -400,7 +400,7 @@ angular.module('starter')
 
             // cancel all existing notifications
             cancelAllNotifications: function(){
-                console.log('Cancelling all notifications');
+
                 var deferred = $q.defer();
                 if(typeof cordova !== "undefined"){
                     $ionicPlatform.ready(function () {
@@ -409,11 +409,13 @@ angular.module('starter')
                             deferred.resolve();
                         });
                     });
-                } else if (typeof chrome.alarms !== "undefined"){
+                } else if (typeof chrome !== "undefined" && typeof chrome.alarms !== "undefined"){
                     chrome.alarms.clearAll(function (){
                         console.debug('Cleared all Chrome alarms!');
                         deferred.resolve();
                     });
+                } else {
+                    console.debug('cancelAllNotifications: Chrome and cordova are not defined.');
                 }
 
                 return deferred.promise;
