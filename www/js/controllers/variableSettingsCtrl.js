@@ -18,16 +18,21 @@ angular.module('starter')
         $scope.state.variableName = $stateParams.variableName;
             
         $scope.updateDisplayedVariableSettings = function(selectedVariable){
+            // FIXME Write this function
 
         };
 
         // cancel activity
         $scope.cancel = function(){
             $ionicHistory.goBack();
+            // FIXME Test this
         };
 
 
         $scope.done = function(){
+            // FIXME This doesn't actually submit anything to API
+            // FIXME Call updateDisplayedVariableSettings (and rename)
+            // FIXME And we need more params
 
             // populate params
             var params = {
@@ -58,14 +63,35 @@ angular.module('starter')
             if(isAuthorized){
                 $scope.showHelpInfoPopupIfNecessary();
                 $scope.loading = true;
-                $scope.state.sumAvg = "avg";
+                $scope.state.sumAvg = "avg"; // FIXME should this be the default?
                 variableService.getVariablesByName($stateParams.variableName).then(function(variableObject){
                     $scope.state.variableObject = variableObject;
                     console.log(variableObject);
                     $scope.item = variableObject;
                     $scope.state.sumAvg = variableObject.combinationOperation === "MEAN"? "avg" : "sum";
                     $scope.state.variableCategory = variableObject.category;
-                    $scope.state.selectedUnitAbbreviatedName = variableObject.abbreviatedUnitName;
+                    if (variableObject.abbreviatedUnitName === "/5") {
+                        // FIXME hide other fixed range variables as well
+                        $scope.state.hideMinMax = true;
+                    }
+                    else {
+                        if (variableObject.minimumAllowedValue !== "-Infinity") {
+                            $scope.state.minimumAllowedValue = variableObject.minimumAllowedValue;
+                        }
+                        else {
+                            $scope.state.minimumAllowedValue = "";
+                        }
+                        if (variableObject.maximumAllowedValue !== "Infinity") {
+                            $scope.state.maximumAllowedValue = variableObject.maximumAllowedValue;
+                        }
+                        else {
+                            $scope.state.maximumAllowedValue = "";
+                        }
+                    }
+
+                    $scope.state.delayBeforeOnset = variableObject.onsetDelay/(60*60); // seconds -> hours
+                    $scope.state.durationOfAction = variableObject.durationOfAction/(60*60); // seconds - > hours
+
                 });
                 $ionicLoading.hide();
             } 

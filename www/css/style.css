@@ -572,3 +572,18 @@ img.intro-primary-outcome-variable-rating-buttons {
     padding-right: 10px;
     width: 100%;
 }
+
+.variable-settings ::-webkit-input-placeholder { /* WebKit, Blink, Edge */
+    color:    #111;
+}
+.variable-settings :-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+    color:    #111;
+    opacity:  1;
+}
+.variable-settings ::-moz-placeholder { /* Mozilla Firefox 19+ */
+    color:    #111;
+    opacity:  1;
+}
+.variable-settings :-ms-input-placeholder { /* Internet Explorer 10-11 */
+    color:    #111;
+}

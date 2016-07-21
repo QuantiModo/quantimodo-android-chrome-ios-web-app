@@ -2,20 +2,20 @@
     <ion-content>
 
         <div class="card variable-settings" >
-            <div class="item item-divider ng-binding">Properties</div>
             <div class="list">
-                <label class="item item-input">
-                    <span class="input-label">Variable Name:</span>
-                    <input class="right-input" type="text" ng-model="state.variableName" id="variableName" placeholder="Variable name">
-                </label>
-                <label class="item item-content" style="padding: 6px 0px 5px 16px;"ng-if="!state.showVariableCategorySelector">
-                    <span style="float: left;" class="input-label">Variable Category:</span>
-                    <span class="input-label right-text ">{{state.variableObject.category}}</span>
-                </label>
-                <label class="item item-content" style="padding: 6px 0px 5px 16px;" ng-if="(state.variableCategoryName != 'Emotions' && state.variableCategoryName != 'Symptoms')">
-                    <span style="float: left;" class="input-label">Unit:</span>
-                    <span class="input-label right-text ">{{state.variableObject.abbreviatedUnitName}}</span>
-                </label>
+                <div class="item item-divider ng-binding">Properties</div>
+                    <label class="item item-input">
+                        <span class="input-label">Variable Name:</span>
+                        <input class="right-input" type="text" ng-model="state.variableName" id="variableName" placeholder="Variable name">
+                    </label>
+                    <label class="item item-content" style="padding: 6px 0px 5px 16px;"ng-if="!state.showVariableCategorySelector">
+                        <span style="float: left;" class="input-label">Variable Category:</span>
+                        <span class="input-label right-text ">{{state.variableObject.category}}</span>
+                    </label>
+                    <label class="item item-content" style="padding: 6px 0px 5px 16px;" ng-if="(state.variableCategoryName != 'Emotions' && state.variableCategoryName != 'Symptoms')">
+                        <span style="float: left;" class="input-label">Unit:</span>
+                        <span class="input-label right-text ">{{state.variableObject.abbreviatedUnitName}}</span>
+                    </label>
                 <div class="item item-divider ng-binding">Data Optimization</div>
                     <label class="item item-input item-select">
                         <div class="input-label" style="white-space:normal; width: 60%">Combination method:</div>
@@ -24,27 +24,34 @@
                             <option value="avg" name="group">Avg</option>
                         </select>
                     </label>
-                    <label class="item item-input">
+                    <label ng-hide="state.hideMinMax" class="item item-input">
                         <span class="input-label">Minimum value:</span>
-                        <input class="right-input" type="number" placeholder="Minimum value">
+                        <input ng-model="state.minimumAllowedValue" class="right-input" type="number" placeholder="-Infinity">
                     </label>
-                <label class="item item-input">
-                    <span class="input-label">Maximum value:</span>
-                    <input class="right-input" type="number" placeholder="Maximum value">
-                </label>
-                <label class="item item-input">
-                    <!--FIXME add "of action" - throws off display right now due to width=35%-->
-                    <span class="input-label">Delay before onset (hrs)</span>
-                    <input class="right-input" type="number" placeholder="Delay (hrs)">
-                </label>
-                <label class="item item-input">
-                    <span class="input-label">Duration of action (hrs)</span>
-                    <input class="right-input" type="number" placeholder="Duration (hrs)">
-                </label>
+                    <label ng-hide="state.hideMinMax" class="item item-input">
+                        <span class="input-label">Maximum value:</span>
+                        <input ng-model="state.maximumAllowedValue" class="right-input" type="number" placeholder="Infinity">
+                    </label>
+                    <label class="item item-input">
+                        <span class="input-label">Delay before onset (hrs)</span>
+                        <input ng-model="state.delayBeforeOnset" class="right-input" type="number" placeholder="Delay (hrs)">
+                    </label>
+                    <label class="item item-input">
+                        <span class="input-label">Duration of action (hrs)</span>
+                        <input ng-model="state.durationOfAction" class="right-input" type="number" placeholder="Duration (hrs)">
+                    </label>
+                <!--<div class="item item-divider ng-binding">When there's no data</div>-->
+
             </div>
         </div>
 
         <div class="card" >
+                    <!--<button ng-click="" class="button assertive button-block">
+                        Reset to default {{state.variableName}} settings
+                    </button>-->
+                    <!--<button ng-click="" class="button button-assertive button-block">
+                        Delete all measurements for {{state.variableName}}
+                    </button>-->
                     <button ng-click="cancel()" class="button button-assertive button-block">
                         Cancel
                     </button>
