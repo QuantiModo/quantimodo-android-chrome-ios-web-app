@@ -1,5 +1,5 @@
 angular.module('starter')
-.controller('IntroCtrl', function($scope, $state, localStorageService, $ionicSlideBoxDelegate, $ionicLoading) {
+.controller('IntroCtrl', function($scope, $state, localStorageService, $ionicSlideBoxDelegate, $ionicLoading, $rootScope) {
     
     $scope.viewTitle = config.appSettings.appName;
     $scope.primaryOutcomeVariable = config.appSettings.primaryOutcomeVariable;
@@ -11,6 +11,7 @@ angular.module('starter')
         slideIndex : 0,
         // Called to navigate to the main app
         startApp : function() {
+            $rootScope.introSeen = true;
             localStorageService.setItem('introSeen', true);
             console.debug('startApp: Going to welcome state...');
             $state.go(config.appSettings.welcomeState);
@@ -51,20 +52,23 @@ angular.module('starter')
     };
 
     var init = function(){
-        Bugsnag.context = "intro";
-        
-        $scope.showLoader();
-        
-        localStorageService.getItem('introSeen', function(introSeen){
-            if(introSeen){
-                console.debug('introCtrl init: Going to default state...');
-                $state.go(config.appSettings.defaultState);
-            } else {
-                $scope.myIntro.ready = true;
-            }
-            $scope.hideLoader();
-        });
-        
+        if($rootScope.user || $rootScope.introSeen){
+            $state.go(config.appSettings.defaultState);
+        } else {
+            Bugsnag.context = "intro";
+
+            $scope.showLoader();
+
+            localStorageService.getItem('introSeen', function(introSeen){
+                if(introSeen){
+                    console.debug('introCtrl init: Going to default state...');
+                    $state.go(config.appSettings.defaultState);
+                } else {
+                    $scope.myIntro.ready = true;
+                }
+                $scope.hideLoader();
+            });
+        }
     };
 
 
