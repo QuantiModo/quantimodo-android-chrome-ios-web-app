@@ -211,7 +211,8 @@ angular.module('starter')
                 };
 
                 var successCallback =  function(response){
-                    if (response.length === 0 || typeof response === "string" || params.offset >= 3000) {
+                    // Get a maximum of 2000 measurements to avoid exceeding localstorage quota
+                    if (response.length === 0 || typeof response === "string" || params.offset >= 2000) {
                         defer.resolve(response_array);
                     } else {
                         localStorageService.getItem('user', function(user){
