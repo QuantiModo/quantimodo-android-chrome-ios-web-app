@@ -54,6 +54,7 @@ config.appSettings  = {
     primaryOutcomeVariableDetails : {
         id : 1398,
         name : "Overall Mood",
+        variableName: "Overall Mood",
         category : "Mood",
         abbreviatedUnitName : "/5",
         unitId : 10,
