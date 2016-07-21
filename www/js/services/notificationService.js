@@ -4,6 +4,22 @@ angular.module('starter')
 
         return {
 
+            convertMinuteIntervalToString: function(minuteFrequency) {
+                var everyString = 'minute';
+                if (minuteFrequency > 1) {
+                    everyString = 'hour';
+                }
+                if (minuteFrequency > 60) {
+                    everyString = 'day';
+                }
+                if (minuteFrequency > 1440) {
+                    everyString = 'day';
+                }
+                console.debug("iOS requires second, minute, hour, day, week, month, year so converting " +
+                    minuteFrequency + " minutes to string: " + everyString);
+                return everyString;
+            },
+
             setOnClickAction: function(QuantiModo) {
                 var params = {};
                 cordova.plugins.notification.local.on("click", function (notification) {
@@ -233,6 +249,7 @@ angular.module('starter')
                     // NSInvalidArgumentException·unable to serialize userInfo: Error Domain=NSCocoaErrorDomain Code=3851 "Property list invalid for format: 200 (property lists cannot contain objects of type 'CFNull')" UserInfo={NSDeb
                     // var at = trackingReminder.nextReminderTimeEpochSeconds;
                     var minuteFrequency  = trackingReminder.reminderFrequency / 60;
+                    var everyString = this.convertMinuteIntervalToString(minuteFrequency);
                     var notificationSettings = {
                         autoClear: true,
                         badge: $rootScope.numberOfPendingNotifications,
@@ -248,7 +265,7 @@ angular.module('starter')
                         id: trackingReminder.id
                     };
                     if(trackingReminder.repeating){
-                        notificationSettings.every = minuteFrequency;
+                        notificationSettings.every = everyString;
                     }
                     //notificationSettings.sound = "res://platform_default";
                     //notificationSettings.smallIcon = 'ic_stat_icon_bw';
@@ -341,11 +358,13 @@ angular.module('starter')
                 }
 
                 function scheduleGenericIosNotification(intervalInMinutes) {
+                    var everyString = this.convertMinuteIntervalToString(intervalInMinutes);
                     cordova.plugins.notification.local.cancel(config.appSettings.primaryOutcomeVariableDetails.id);
                     var notificationSettings = {
                         text: config.appSettings.mobileNotificationText,
-                        every: intervalInMinutes,
-                        icon: config.appSettings.mobileNotificationImage,
+                        every: everyString,
+                        // Commneted because I keep seeing "Unknown property: icon" in Safari console
+                        //icon: config.appSettings.mobileNotificationImage,
                         id: config.appSettings.primaryOutcomeVariableDetails.id,
                         sound: "file://sound/silent.ogg",
                         badge: $rootScope.numberOfPendingNotifications
