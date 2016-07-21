@@ -201,7 +201,7 @@ angular.module('starter')
                 function scheduleAndroidNotificationByTrackingReminder(trackingReminder) {
                     // var at = new Date(0); // The 0 there is the key, which sets the date to the epoch
                     // at.setUTCSeconds(trackingReminder.at);
-                    var minuteFrequency  = trackingReminder.reminderFrequency / 60;
+                    var intervalInMinutes  = trackingReminder.reminderFrequency / 60;
                     var notificationSettings = {
                         autoClear: true,
                         badge: $rootScope.numberOfPendingNotifications,
@@ -217,7 +217,7 @@ angular.module('starter')
                         id: trackingReminder.id
                     };
                     if(trackingReminder.repeating){
-                        notificationSettings.every = minuteFrequency;
+                        notificationSettings.every = intervalInMinutes;
                     }
                     console.debug("Trying to create Android notification for " + JSON.stringify(notificationSettings));
                     //notificationSettings.sound = "res://platform_default";
@@ -232,12 +232,12 @@ angular.module('starter')
                     // Using milliseconds might cause app to crash with this error:
                     // NSInvalidArgumentException·unable to serialize userInfo: Error Domain=NSCocoaErrorDomain Code=3851 "Property list invalid for format: 200 (property lists cannot contain objects of type 'CFNull')" UserInfo={NSDeb
                     // var at = trackingReminder.nextReminderTimeEpochSeconds;
-                    var minuteFrequency  = trackingReminder.reminderFrequency / 60;
+                    var intervalInMinutes  = trackingReminder.reminderFrequency / 60;
                     var everyString = 'minute';
-                    if (minuteFrequency > 1) {everyString = 'hour';}
-                    if (minuteFrequency > 60) {everyString = 'day';}
+                    if (intervalInMinutes > 1) {everyString = 'hour';}
+                    if (intervalInMinutes > 60) {everyString = 'day';}
                     console.debug("iOS requires second, minute, hour, day, week, month, year so converting " +
-                        minuteFrequency + " minutes to string: " + everyString);
+                        intervalInMinutes + " minutes to string: " + everyString);
                     var notificationSettings = {
                         autoClear: true,
                         badge: $rootScope.numberOfPendingNotifications,
@@ -350,12 +350,12 @@ angular.module('starter')
                     if (intervalInMinutes > 1) {everyString = 'hour';}
                     if (intervalInMinutes > 60) {everyString = 'day';}
                     console.debug("iOS requires second, minute, hour, day, week, month, year so converting " +
-                        minuteFrequency + " minutes to string: " + everyString);
+                        intervalInMinutes + " minutes to string: " + everyString);
                     cordova.plugins.notification.local.cancel(config.appSettings.primaryOutcomeVariableDetails.id);
                     var notificationSettings = {
                         text: config.appSettings.mobileNotificationText,
                         every: everyString,
-                        // Commneted because I keep seeing "Unknown property: icon" in Safari console
+                        // Commented icon because I keep seeing "Unknown property: icon" in Safari console
                         //icon: config.appSettings.mobileNotificationImage,
                         id: config.appSettings.primaryOutcomeVariableDetails.id,
                         sound: "file://sound/silent.ogg",
