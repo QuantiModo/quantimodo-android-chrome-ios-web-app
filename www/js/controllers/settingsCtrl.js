@@ -12,9 +12,9 @@ angular.module('starter')
 		$rootScope.isAndroid = ionic.Platform.isAndroid();
         $rootScope.isChrome = window.chrome ? true : false;
 	    // populate user data
-		//$scope.state.onlyShowOneNotification = true;
-		$scope.state.onlyShowOneNotification = $rootScope.onlyShowOneNotification;
-		console.debug('CombineNotifications is '+ $scope.state.onlyShowOneNotification);
+		//$scope.state.showOnlyOneNotification = true;
+		$scope.state.showOnlyOneNotification = $rootScope.showOnlyOneNotification;
+		console.debug('CombineNotifications is '+ $scope.state.showOnlyOneNotification);
 		$scope.state.trackLocation = $rootScope.trackLocation;
 		console.debug('trackLocation is '+ $scope.state.trackLocation);
 
@@ -95,10 +95,10 @@ angular.module('starter')
 
 		$scope.combineNotificationChange = function() {
 			
-			console.log('Combine Notification Change', $scope.state.onlyShowOneNotification);
-			$rootScope.onlyShowOneNotification = $scope.state.onlyShowOneNotification;
-			localStorageService.setItem('onlyShowOneNotification', $scope.state.onlyShowOneNotification);
-			if($scope.state.onlyShowOneNotification){
+			console.log('Combine Notification Change', $scope.state.showOnlyOneNotification);
+			$rootScope.showOnlyOneNotification = $scope.state.showOnlyOneNotification;
+			localStorageService.setItem('showOnlyOneNotification', $scope.state.showOnlyOneNotification);
+			if($scope.state.showOnlyOneNotification){
 				$ionicPopup.alert({
 					title: 'Disable Multiple Notifications',
 					template: 'You will only get one notification at a time instead of a separate notification for each reminder that you create.'
@@ -115,7 +115,7 @@ angular.module('starter')
 			} else {
 				$ionicPopup.alert({
 					title: 'Enable Multiple Notifications',
-					template: 'You will get a separate notification for each reminder that you create.'
+					template: 'You will get a separate notification for each reminder that you create.  Note: This is an experimental feature.  Please revert back to a single notification if you experience any performance issues.'
 				});
 
 				notificationService.cancelAllNotifications().then(function() {

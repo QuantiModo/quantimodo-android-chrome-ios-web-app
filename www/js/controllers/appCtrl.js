@@ -499,11 +499,14 @@ angular.module('starter')
         };
 
         $scope.shouldWeCombineNotifications = function(){
-            localStorageService.getItem('onlyShowOneNotification', function(onlyShowOneNotification){
-                console.debug("onlyShowOneNotification from local storage is " + onlyShowOneNotification);
-                if(onlyShowOneNotification === "null"){
-                    localStorageService.setItem('onlyShowOneNotification', true);
-                    $rootScope.onlyShowOneNotification = true;
+            localStorageService.getItem('showOnlyOneNotification', function(showOnlyOneNotification){
+                if(showOnlyOneNotification === "false") {
+                    console.debug("showOnlyOneNotification from local storage is a false string: " + showOnlyOneNotification);
+                    $rootScope.showOnlyOneNotification = false;
+                } else {
+                    console.debug("showOnlyOneNotification from local storage is not a false string");
+                    localStorageService.setItem('showOnlyOneNotification', true);
+                    $rootScope.showOnlyOneNotification = true;
 
                     notificationService.cancelAllNotifications().then(function() {
 
@@ -513,8 +516,6 @@ angular.module('starter')
                             $scope.saveInterval($scope.primaryOutcomeRatingFrequencyDescription);
                         });
                     });
-                } else {
-                    $rootScope.onlyShowOneNotification = onlyShowOneNotification === "true";
                 }
             });
         };
