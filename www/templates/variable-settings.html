@@ -1,55 +1,46 @@
 <ion-view hide-nav-bar="hideNavigationMenu" view-title="{{state.title}}">
     <ion-content>
 
-        <div class="card" >
+        <div class="card variable-settings" >
+            <div class="item item-divider ng-binding">Properties</div>
             <div class="list">
-                <label class="item item-input item-stacked-label" >
-                    <span class="input-label">Variable Name</span>
-                    <input type="text" ng-model="state.variableName" readonly id="variableName" placeholder="Variable name">
+                <label class="item item-input">
+                    <span class="input-label">Variable Name:</span>
+                    <input class="right-input" type="text" ng-model="state.variableName" id="variableName" placeholder="Variable name">
                 </label>
-
-                <label class="item item-input item-stacked-label" ng-if="!state.showVariableCategorySelector">
-                    <span class="input-label">Variable Category</span>
-                    <input type="text" ng-model="state.variableObject.category" readonly id="category_name" placeholder="Category name">
+                <label class="item item-content" style="padding: 6px 0px 5px 16px;"ng-if="!state.showVariableCategorySelector">
+                    <span style="float: left;" class="input-label">Variable Category:</span>
+                    <span class="input-label right-text ">{{state.variableObject.category}}</span>
                 </label>
-            </div>
-        </div>
-
-        <div class="card" style="overflow: visible">
-            <p class="heading positive" style="padding:14px;">Combination Method</p>
-                <div class="list">
-                    <label class="item item-radio">
-                        <input type="radio" ng-model="state.sumAvg" value="sum" name="group">
-                        <div class="item-content">
-                            Sum
-                        </div>
-                        <i class="radio-icon ion-checkmark"></i>
+                <label class="item item-content" style="padding: 6px 0px 5px 16px;" ng-if="(state.variableCategoryName != 'Emotions' && state.variableCategoryName != 'Symptoms')">
+                    <span style="float: left;" class="input-label">Unit:</span>
+                    <span class="input-label right-text ">{{state.variableObject.abbreviatedUnitName}}</span>
+                </label>
+                <div class="item item-divider ng-binding">Data Optimization</div>
+                    <label class="item item-input item-select">
+                        <div class="input-label" style="white-space:normal; width: 60%">Combination method:</div>
+                        <select ng-model="state.sumAvg">
+                            <option value="sum" name="group">Sum</option>
+                            <option value="avg" name="group">Avg</option>
+                        </select>
                     </label>
-
-                    <label class="item item-radio">
-                        <input type="radio" ng-model="state.sumAvg" value="avg" name="group">
-                        <div class="item-content">
-                            Average
-                        </div>
-                        <i class="radio-icon ion-checkmark"></i>
+                    <label class="item item-input">
+                        <span class="input-label">Minimum value:</span>
+                        <input class="right-input" type="number" placeholder="Minimum value">
                     </label>
-                </div>
-            </div>
-
-        <div class="row labeled-control" ng-if="(state.variableCategoryName != 'Emotions' && state.variableCategoryName != 'Symptoms')">
-            <div class="col col-l">
-                <span class="input-label">Unit</span>
-            </div>
-            <div class="col">
-                <div class="row up-top" style="padding-left:0px;">
-                    <div class="col" style="padding-top:5px;">
-
-                        <!-- Lock to default unit when tracking measurement for existing variable-->
-                        <span>{{state.variableObject.abbreviatedUnitName}}</span>
-
-                    </div>
-
-                </div>
+                <label class="item item-input">
+                    <span class="input-label">Maximum value:</span>
+                    <input class="right-input" type="number" placeholder="Maximum value">
+                </label>
+                <label class="item item-input">
+                    <!--FIXME add "of action" - throws off display right now due to width=35%-->
+                    <span class="input-label">Delay before onset (hrs)</span>
+                    <input class="right-input" type="number" placeholder="Delay (hrs)">
+                </label>
+                <label class="item item-input">
+                    <span class="input-label">Duration of action (hrs)</span>
+                    <input class="right-input" type="number" placeholder="Duration (hrs)">
+                </label>
             </div>
         </div>
 
@@ -60,9 +51,6 @@
                     <button ng-click="done()" class="button button-positive button-block">
                         Done
                     </button>
-                </div>
-            </div>
         </div>
-
     </ion-content>
 </ion-view>
