@@ -4,22 +4,6 @@ angular.module('starter')
 
         return {
 
-            convertMinuteIntervalToString: function(minuteFrequency) {
-                var everyString = 'minute';
-                if (minuteFrequency > 1) {
-                    everyString = 'hour';
-                }
-                if (minuteFrequency > 60) {
-                    everyString = 'day';
-                }
-                if (minuteFrequency > 1440) {
-                    everyString = 'day';
-                }
-                console.debug("iOS requires second, minute, hour, day, week, month, year so converting " +
-                    minuteFrequency + " minutes to string: " + everyString);
-                return everyString;
-            },
-
             setOnClickAction: function(QuantiModo) {
                 var params = {};
                 cordova.plugins.notification.local.on("click", function (notification) {
@@ -249,7 +233,11 @@ angular.module('starter')
                     // NSInvalidArgumentException·unable to serialize userInfo: Error Domain=NSCocoaErrorDomain Code=3851 "Property list invalid for format: 200 (property lists cannot contain objects of type 'CFNull')" UserInfo={NSDeb
                     // var at = trackingReminder.nextReminderTimeEpochSeconds;
                     var minuteFrequency  = trackingReminder.reminderFrequency / 60;
-                    var everyString = this.convertMinuteIntervalToString(minuteFrequency);
+                    var everyString = 'minute';
+                    if (minuteFrequency > 1) {everyString = 'hour';}
+                    if (minuteFrequency > 60) {everyString = 'day';}
+                    console.debug("iOS requires second, minute, hour, day, week, month, year so converting " +
+                        minuteFrequency + " minutes to string: " + everyString);
                     var notificationSettings = {
                         autoClear: true,
                         badge: $rootScope.numberOfPendingNotifications,
@@ -358,7 +346,11 @@ angular.module('starter')
                 }
 
                 function scheduleGenericIosNotification(intervalInMinutes) {
-                    var everyString = this.convertMinuteIntervalToString(intervalInMinutes);
+                    var everyString = 'minute';
+                    if (intervalInMinutes > 1) {everyString = 'hour';}
+                    if (intervalInMinutes > 60) {everyString = 'day';}
+                    console.debug("iOS requires second, minute, hour, day, week, month, year so converting " +
+                        minuteFrequency + " minutes to string: " + everyString);
                     cordova.plugins.notification.local.cancel(config.appSettings.primaryOutcomeVariableDetails.id);
                     var notificationSettings = {
                         text: config.appSettings.mobileNotificationText,
