@@ -88,7 +88,10 @@ angular.module('starter')
                             responseType: 'json',
                             headers: {
                                 "Authorization": "Bearer " + tokenObject.accessToken,
-                                'Content-Type': "application/json"
+                                'Content-Type': "application/json",
+                                'X-App-Name': config.appSettings.appName,
+                                'X-Platform': $rootScope.currentPlatform,
+                                'X-App-Version': $rootScope.appVersion
                             }
                         };
                     } else {
@@ -97,7 +100,10 @@ angular.module('starter')
                             url: (url + ((urlParams.length === 0) ? '' : urlParams.join('&'))),
                             responseType: 'json',
                             headers: {
-                                'Content-Type': "application/json"
+                                'Content-Type': "application/json",
+                                'X-App-Name': config.appSettings.appName,
+                                'X-Platform': $rootScope.currentPlatform,
+                                'X-App-Version': $rootScope.appVersion
                             }
                         };
                     }
@@ -153,7 +159,10 @@ angular.module('starter')
                                 responseType: 'json',
                                 headers : {
                                     "Authorization" : "Bearer " + token.accessToken,
-                                    'Content-Type': "application/json"
+                                    'Content-Type': "application/json",
+                                    'X-App-Name': config.appSettings.appName,
+                                    'X-Platform': $rootScope.currentPlatform,
+                                    'X-App-Version': $rootScope.appVersion
                                 },
                                 data : JSON.stringify(items)
                             };
@@ -163,7 +172,10 @@ angular.module('starter')
                                 url: config.getURL(baseURL),
                                 responseType: 'json',
                                 headers : {
-                                    'Content-Type': "application/json"
+                                    'Content-Type': "application/json",
+                                    'X-App-Name': config.appSettings.appName,
+                                    'X-Platform': $rootScope.currentPlatform,
+                                    'X-App-Version': $rootScope.appVersion
                                 },
                                 data : JSON.stringify(items)
                             };
