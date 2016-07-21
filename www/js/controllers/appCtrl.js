@@ -450,6 +450,8 @@ angular.module('starter')
             $rootScope.isAndroid = ionic.Platform.isAndroid();
             $rootScope.isMobile = ionic.Platform.isAndroid() || ionic.Platform.isIPad() || ionic.Platform.isIOS();
             $rootScope.isChrome = window.chrome ? true : false;
+            $rootScope.currentPlatform = ionic.Platform.platform();
+            $rootScope.currentPlatformVersion = ionic.Platform.version();
 
             var currentUrl =  window.location.href;
             console.log('currentUrl is ' + currentUrl );
@@ -575,7 +577,11 @@ angular.module('starter')
                     app_id: "uwtx2m33",
                     name: userObject.displayName,
                     email: userObject.email,
-                    user_id: userObject.id
+                    user_id: userObject.id,
+                    app_name: config.appSettings.appName,
+                    app_version: $rootScope.appVersion,
+                    platform: $rootScope.currentPlatform,
+                    platform_version: $rootScope.currentPlatformVersion
                 };
             }
             return userObject;

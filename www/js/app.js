@@ -66,13 +66,20 @@ angular.module('starter',
                 return;
             }
 
+            $rootScope.appVersion = "1.7.2.4";
+
             if(window.private_keys.bugsnag_key) {
                 //Set Bugsnag Release Stage
                 $rootScope.bugsnagApiKey = window.private_keys.bugsnag_key;
                 Bugsnag.apiKey = window.private_keys.bugsnag_key;
                 Bugsnag.releaseStage = config.getEnv();
                 Bugsnag.notifyReleaseStages = config.bugsnag.notifyReleaseStages;
-                Bugsnag.appVersion = "1.7.2.4";
+                Bugsnag.appVersion = $rootScope.appVersion;
+                Bugsnag.metaData = {
+                    platform: ionic.Platform.platform(),
+                    platformVersion: ionic.Platform.version(),
+                    appName: config.appSettings.appName
+                };
             } else {
                 console.error('intervalChecker: No bugsnag_key found in private config!');
             }
