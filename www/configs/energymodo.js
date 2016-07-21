@@ -46,6 +46,7 @@ config.appSettings  = {
     primaryOutcomeVariableDetails : {
         id : 108092,
         name : "Energy Rating",
+        variableName: "Energy Rating",
         category : "Emotions",
         abbreviatedUnitName : "/5",
         combinationOperation: "MEAN",
