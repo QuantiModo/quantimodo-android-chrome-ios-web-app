@@ -654,9 +654,9 @@ config.appSettings  = {
             icon : 'ion-ios-cloud-download-outline'
         },
         {
-            title : 'Variables',
+            title : 'Charts',
             href : '#/app/search-variables',
-            icon : 'ion-social-vimeo'
+            icon : 'ion-arrow-graph-up-right'
         },
         {
             title : 'Strongest Predictors',

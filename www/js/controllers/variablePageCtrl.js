@@ -5,8 +5,6 @@ angular.module('starter')
                                                     measurementService, chartService, $ionicPopup, localStorageService,
                                                     $rootScope, $ionicLoading, ratingService, $stateParams, QuantiModo) {
         $scope.controller_name = "VariablePageCtrl";
-        $scope.showBarChart = $rootScope.showBarChart || false;
-        $scope.showLineChart = $rootScope.showLineChart || false;
         $scope.addReminderButtonText = "Add Reminder";
         $scope.recordMeasurementButtonText = "Record Measurement";
         $scope.editSettingsButtonText = "Edit Variable Settings";
@@ -20,6 +18,8 @@ angular.module('starter')
             offset: 0,
             showBarChart: false,
             showLineChart: false,
+            showHourlyChart: false,
+            showWeekdayChart: false,
             barChartData: null,
             lineChartData: null
         };
@@ -44,29 +44,29 @@ angular.module('starter')
         };
 
         var updateBarChart = function(barChartData){
-            $scope.redrawBarChart = false;
             console.log("Configuring bar chart...");
             $scope.barChartConfig = chartService.configureBarChart(barChartData, $scope.state.variableObject.variableName);
-            $scope.redrawBarChart = true;
-            showBarChart(true);
+            $scope.state.showBarChart = true;
         };
+
+
+        var updateWeekdayChart = function(measurementsToChart){
+            console.log("Configuring Weekday chart...");
+            $scope.weekdayChartConfig = chartService.processDataAndConfigureWeekdayChart(measurementsToChart, $scope.state.variableObject);
+            $scope.state.showWeekdayChart = true;
+        };
+
+        var updateHourlyChart = function(measurementsToChart){
+            console.log("Configuring Hourly chart...");
+            $scope.hourlyChartConfig = chartService.processDataAndConfigureHourlyChart(measurementsToChart, $scope.state.variableObject);
+            $scope.state.showHourlyChart = true;
+        };
+
 
         var updateLineChart = function(lineChartData){
-            $scope.redrawLineChart = false;
             console.log("Configuring line chart...");
             $scope.lineChartConfig = chartService.configureLineChart(lineChartData, $scope.state.variableObject.variableName);
-            $scope.redrawLineChart = true;
-            showLineChart(true);
-        };
-
-        var showLineChart = function(show) {
-            $scope.state.showLineChart = show;
-            $scope.showLineChart = show;
-        };
-
-        var showBarChart = function(show) {
-            $scope.state.showBarChart = show;
-            $scope.showBarChart = show;
+            $scope.state.showLineChart = true;
         };
 
         var windowResize = function() {
@@ -82,6 +82,7 @@ angular.module('starter')
 
         // updates all the visual elements on the page
         var updateCharts = function(){
+
             var lineArr = [];
             var barArr = []; // only if /5 unit
             if ($scope.state.history[0].abbreviatedUnitName === '/5') {
@@ -102,11 +103,13 @@ angular.module('starter')
 
                 var fromDate = 0;
                 var toDate = Date.now();
+                var measurementsToChart = [];
 
                 for (var i = 0; i < $scope.state.history.length; i++) {
                     var currentValue = Math.ceil($scope.state.history[i].value); // Math.ceil was used before -- why?
                     var startTimeMilliseconds = $scope.state.history[i].startTimeEpoch * 1000;
                     if (startTimeMilliseconds >= fromDate && startTimeMilliseconds <= toDate) {
+                        measurementsToChart.push($scope.state.history[i]);
                         var lineChartItem = [startTimeMilliseconds, currentValue];
                         lineArr.push(lineChartItem);
                         if ($scope.state.variableObject.abbreviatedUnitName === '/5') {
@@ -116,6 +119,8 @@ angular.module('starter')
                         $scope.state.rangeLength++;
                     }
                 }
+                updateHourlyChart(measurementsToChart);
+                updateWeekdayChart(measurementsToChart);
                 $scope.state.averageValue = Math.round($scope.state.sum/($scope.state.rangeLength));
                 console.log("variablePageCtrl: update charts, logging lineArr");
                 console.log(lineArr);
@@ -132,14 +137,14 @@ angular.module('starter')
                             }
                         }
                         else {
-                            showBarChart(false);
+                            $scope.state.showBarChart = false;
                         }
                         if (!$scope.$$phase) {
                             $scope.safeApply();
                         }
                     }
                     else {
-                        showLineChart(false);
+                        $scope.state.showLineChart = false;
                     }
                 }
                 windowResize();
@@ -148,6 +153,7 @@ angular.module('starter')
 
         var addDataPointAndUpdateCharts = function() {
             $scope.state.history = $scope.state.history.concat($stateParams.measurementInfo);
+
 
             var startTimeMilliseconds = $stateParams.measurementInfo.startTimeEpoch*1000;
             //if (startTimeMilliseconds >= fromDate && startTimeMilliseconds <= toDate) {
@@ -240,8 +246,6 @@ angular.module('starter')
         };
 
         $scope.$on('$ionicView.enter', function(e) {
-            $scope.redrawLineChart = true;
-            $scope.redrawBarChart = true;
             console.log("variablePageCtrl: ionicView.enter");
             if (!$scope.state) {
                 console.log("about to call init from enter: no $scope.state");
