@@ -110,7 +110,7 @@ angular.module('starter')
                 var paramTime = moment($rootScope.lastSyncTime).subtract(15, 'minutes').format("YYYY-MM-DDTHH:mm:ss");
                 params = {
                     variableName : config.appSettings.primaryOutcomeVariableDetails.name,
-                    'lastUpdated':'(ge)'+ paramTime ,
+                    'updatedAt':'(ge)'+ paramTime ,
                     sort : '-startTimeEpoch',
                     limit:200,
                     offset:0
@@ -123,6 +123,94 @@ angular.module('starter')
                     }
                 });
 
+                var getPrimaryOutcomeVariableMeasurements = function(params) {
+                    QuantiModo.getV1Measurements(params, function(response){
+                        // Do the stuff with adding to allMeasurements
+                        if (response.length > 0 && response.length <= 200) {
+                            // Update local data
+                            var allMeasurements;
+                            localStorageService.getItem('allMeasurements',function(allMeasurements){
+                                allMeasurements = allMeasurements ? JSON.parse(allMeasurements) : [];
+
+                                var filteredStoredMeasurements = [];
+                                allMeasurements.forEach(function(storedMeasurement) {
+                                    var found = false;
+                                    var i = 0;
+                                    while (!found && i < response.length) {
+                                        var responseMeasurement = response[i];
+                                        if (storedMeasurement.startTimeEpoch === responseMeasurement.startTimeEpoch &&
+                                            storedMeasurement.id === responseMeasurement.id) {
+                                            found = true;
+                                        }
+                                        i++;
+                                    }
+                                    if (!found) {
+                                        filteredStoredMeasurements.push(storedMeasurement);
+                                    }
+                                });
+                                allMeasurements = filteredStoredMeasurements.concat(response);
+
+                                var s  = 9999999999999;
+                                allMeasurements.forEach(function(x){
+                                    if(!x.startTimeEpoch){
+                                        x.startTimeEpoch = x.timestamp;
+                                    }
+                                    if(x.startTimeEpoch <= s){
+                                        s = x.startTimeEpoch;
+                                    }
+                                });
+
+                                // FIXME Is this right? Doesn't do what is described
+                                // updating last updated time and data in local storage so that we syncing should continue from this point
+                                // if user restarts the app or refreshes the page.
+                                measurementService.setDates(new Date().getTime(),s*1000);
+
+                                localStorageService.setItem('allMeasurements',JSON.stringify(allMeasurements));
+                                $rootScope.$broadcast('updateCharts');
+                            });
+                        }
+
+                        if (response.length < 200) {
+                            // Finished
+                            localStorageService.setItem('lastSyncTime',moment.utc().format('YYYY-MM-DDTHH:mm:ss'));
+                            localStorageService.getItem('lastSyncTime',function(val){
+                                $rootScope.lastSyncTime = val;
+                                console.log("lastSyncTime is " + $rootScope.lastSyncTime);
+                            });
+                            // set flag
+                            console.log("Measurement sync complete!");
+                            isSyncing = false;
+                            deferred.resolve(response);
+                            $rootScope.$broadcast('updateCharts');
+                        }
+                        else if (response.length === 200) {
+                            // Keep querying
+                            params = {
+                                variableName: config.appSettings.primaryOutcomeVariableDetails.name,
+                                'updatedAt':'(ge)'+ paramTime ,
+                                sort : '-startTimeEpoch',
+                                limit: 200,
+                                offset: params.offset + 200
+                            };
+                            getPrimaryOutcomeVariableMeasurements(params);
+                        }
+                        else {
+                            // More than 200 measurements returned, something is wrong
+                            deferred.reject(false);
+                        }
+
+                    }, function(error){
+                        isSyncing = false;
+                        $rootScope.isSyncing = false;
+                        $rootScope.syncDisplayText = '';
+                        deferred.reject(error);
+                    });
+                };
+
+                getPrimaryOutcomeVariableMeasurements(params);
+
+                /* Old version */
+                /*
                 // send request
                 QuantiModo.getMeasurementsLooping(params).then(function(response){
                     if(response){
@@ -188,11 +276,6 @@ angular.module('starter')
                                 //if user restarts the app or refreshes the page.
                                 localStorageService.setItem('allMeasurements',JSON.stringify(allMeasurements));
                                 $rootScope.$broadcast('updateCharts');
-                                /*
-                                $rootScope.lastSyncTime = moment.utc().format('YYYY-MM-DDTHH:mm:ss');
-                                localStorageService.setItem('lastSyncTime', $rootScope.lastSyncTime);
-                                console.log("lastSyncTime is " + $rootScope.lastSyncTime);
-                                */
 
                             });
 
@@ -206,6 +289,7 @@ angular.module('starter')
                         });
                     }
                 });
+                */
                 
                 return deferred.promise;
             },
