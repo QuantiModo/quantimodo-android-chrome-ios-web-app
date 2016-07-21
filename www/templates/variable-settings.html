@@ -52,12 +52,21 @@
                     <!--<button ng-click="" class="button button-assertive button-block">
                         Delete all measurements for {{state.variableName}}
                     </button>-->
-                    <button ng-click="cancel()" class="button button-assertive button-block">
+                    <!--<button ng-click="cancel()" class="button button-assertive button-block">
                         Cancel
                     </button>
                     <button ng-click="done()" class="button button-positive button-block">
                         Done
-                    </button>
+                    </button>-->
+
+                    <div class="row">
+                        <div class="col col-50">
+                            <button class="button button-block icon-left ion-android-cancel button-assertive" ng-click="cancel()">Cancel</button>
+                        </div>
+                        <div class="col col-50">
+                            <button class="button button-block icon-left ion-android-done button-positive" ng-click="done()">Save</button>
+                        </div>
+                    </div>
         </div>
     </ion-content>
 </ion-view>
