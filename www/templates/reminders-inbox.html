@@ -151,7 +151,7 @@
             </div>
         </div>
 
-		<div class="list card"  ng-hide="hideLocationTrackingInfoCard">
+		<div class="list card"  ng-if="!hideLocationTrackingInfoCard && !trackLocation">
 			<div class="item" style="padding-bottom:0px;">
 				<p style=" text-align: center; line-height: normal; font-size: 25px;">Location Tracking</p>
 				<div class="row">
