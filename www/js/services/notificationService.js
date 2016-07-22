@@ -2,6 +2,20 @@ angular.module('starter')
 // Handles the Notifications (inapp, push)
     .factory('notificationService',function($rootScope, $ionicPlatform, $state, localStorageService, $q, QuantiModo){
 
+        function createChromeAlarmNameFromTrackingReminder(trackingReminder) {
+            var alarmName = {
+                reminderId: trackingReminder.id,
+                variableName: trackingReminder.variableName,
+                defaultValue: trackingReminder.defaultValue,
+                abbreviatedUnitName: trackingReminder.abbreviatedUnitName,
+                periodInMinutes: trackingReminder.reminderFrequency / 60,
+                reminderStartTime: trackingReminder.reminderStartTime,
+                startTrackingDate: trackingReminder.startTrackingDate,
+                variableCategoryName: trackingReminder.variableCategoryName
+            };
+            return alarmName;
+        }
+
         return {
 
             setOnClickAction: function(QuantiModo) {
@@ -123,13 +137,7 @@ angular.module('starter')
                         for (var i = 0; i < scheduledTrackingReminders.length; i++) {
                             var existingReminderFoundInApiResponse = false;
                             for (var j = 0; j < trackingRemindersFromApi.length; j++) {
-                                var alarmName = {
-                                    reminderId: trackingRemindersFromApi[j].id,
-                                    variableName: trackingRemindersFromApi[j].variableName,
-                                    periodInMinutes: trackingRemindersFromApi[j].reminderFrequency / 60,
-                                    reminderStartTime: trackingRemindersFromApi[j].reminderStartTime,
-                                    startTrackingDate: trackingRemindersFromApi[j].startTrackingDate
-                                };
+                                var alarmName = createChromeAlarmNameFromTrackingReminder(trackingRemindersFromApi[j]);
                                 if (JSON.stringify(alarmName) === scheduledTrackingReminders[i].name) {
                                     console.debug('Server has a reminder matching alarm ' + JSON.stringify(scheduledTrackingReminders[i]));
                                     existingReminderFoundInApiResponse = true;
@@ -270,15 +278,8 @@ angular.module('starter')
                     if(trackingReminder.repeating){
                         alarmInfo.periodInMinutes = trackingReminder.reminderFrequency / 60;
                     }
-                    var alarmName = {
-                        reminderId: trackingReminder.id,
-                        variableName: trackingReminder.variableName,
-                        defaultValue: trackingReminder.defaultValue,
-                        abbreviatedUnitName: trackingReminder.abbreviatedUnitName,
-                        periodInMinutes: trackingReminder.reminderFrequency / 60,
-                        reminderStartTime: trackingReminder.reminderStartTime,
-                        startTrackingDate: trackingReminder.startTrackingDate
-                    };
+
+                    var alarmName = createChromeAlarmNameFromTrackingReminder(trackingReminder);
 
                     alarmName = JSON.stringify(alarmName);
 

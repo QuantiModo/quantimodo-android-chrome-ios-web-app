@@ -4,7 +4,8 @@ angular.module('starter')
     .controller('MeasurementAddCtrl', function($scope, $q, $ionicModal, $timeout, $ionicPopup ,$ionicLoading,
                                                authService, measurementService, $state, $rootScope, $stateParams,
                                                utilsService, localStorageService, $filter, $ionicScrollDelegate,
-                                               variableCategoryService, ionicTimePicker, ionicDatePicker, unitService){
+                                               variableCategoryService, ionicTimePicker, ionicDatePicker, unitService,
+                                               QuantiModo){
 
         $scope.controller_name = "MeasurementAddCtrl";
 
@@ -341,6 +342,9 @@ angular.module('starter')
                             setupFromVariableStateParameter();
                         }
                         if(!$scope.state.measurementIsSetup) {
+                            setupFromReminderObjectInUrl();
+                        }
+                        if(!$scope.state.measurementIsSetup) {
                             setupFromReminderStateParameter();
                         }
                         if(!$scope.state.measurementIsSetup){
@@ -419,6 +423,27 @@ angular.module('starter')
         var setupFromReminderStateParameter = function(){
             if($stateParams.reminder !== null && typeof $stateParams.reminder !== "undefined"){
                 setupTrackingByReminderNotification();
+            }
+        };
+
+        var setupFromReminderObjectInUrl = function(){
+            console.debug("setupFromReminderObjectInUrl: ");
+            if(!$stateParams.reminder){
+                var reminderFromURL =  utilsService.getUrlParameter(window.location.href, 'trackingReminderObject', true);
+                if(reminderFromURL){
+                    $stateParams.reminder = JSON.parse(reminderFromURL);
+                    console.debug("setupFromReminderObjectInUrl: ", $stateParams.reminder);
+                    setupTrackingByReminderNotification();
+                    var params = {
+                        trackingReminderId: $stateParams.reminder.id
+                    };
+                    QuantiModo.skipTrackingReminder(params, function(response){
+                        console.debug(response);
+                    }, function(err){
+                        console.error(err);
+                        Bugsnag.notify(err, JSON.stringify(err), {}, "error");
+                    });
+                }
             }
         };
 
@@ -556,6 +581,9 @@ angular.module('starter')
         var setupTrackingByReminderNotification = function(){
             if($stateParams.reminder !== null && typeof $stateParams.reminder !== "undefined"){
                 $scope.state.title = "Record Measurement";
+                if(!$scope.state.measurement.abbreviatedUnitName){
+                    $scope.state.measurement.abbreviatedUnitName = $stateParams.reminder.abbreviatedUnitName;
+                }
                 $scope.state.hideRemindMeButton = true;
                 $scope.state.measurement.value = $stateParams.reminder.defaultValue;
                 $scope.state.measurement.variable = $stateParams.reminder.variableName;
