@@ -68,10 +68,18 @@ chrome.alarms.onAlarm.addListener(function(alarm)
 */
 chrome.notifications.onClicked.addListener(function(notificationId)
 {
-    var windowParams;
-
+    console.log('onClicked: notificationId:', notificationId);
 	var badgeParams = {text:""};
 	chrome.browserAction.setBadgeText(badgeParams);
+
+    var windowParams = {
+        url: "/www/index.html#/app/reminders-inbox",
+        type: 'panel',
+        top: 0.2 * screen.height,
+        left: 0.4 * screen.width,
+        width: 450,
+        height: 750
+    };
 
 	if(notificationId === "moodReportNotification")
 	{
@@ -82,39 +90,14 @@ chrome.notifications.onClicked.addListener(function(notificationId)
 							width: 371,
 							height: 70
 						   };
-		chrome.windows.create(windowParams);
-	} else if(notificationId === "trackingInboxNotification")
-    {
-        windowParams = {
-            url: "/www/index.html#/app/reminders-inbox",
-            type: 'panel',
-            top: 0.2 * screen.height,
-            left: 0.4 * screen.width,
-            width: 450,
-            height: 750
-        };
-        chrome.windows.create(windowParams);
-    } else {
+	} else if (IsJsonString(notificationId)) {
+		windowParams.url = "/www/index.html#/app/measurement-add/?trackingReminderObject=" + notificationId;
+	} else {
+        console.error('notificationId is not a json object and is not moodReportNotification. Opening Reminder Inbox', notificationId);
+    }
 
-        if (IsJsonString(notificationId)) {
-            console.log('notificationId IsJsonString', notificationId);
-        } else {
-            console.log('notificationId is not a json object', notificationId);
-        }
-		windowParams = {
-			url: "/www/index.html#/app/measurement-add/?trackingReminderObject=" + notificationId,
-			type: 'panel',
-			top: 0.2 * screen.height,
-			left: 0.4 * screen.width,
-			width: 450,
-			height: 750
-		};
-		chrome.windows.create(windowParams);
-	}
-
-
+    chrome.windows.create(windowParams);
 	chrome.notifications.clear(notificationId);
-
 
 	// chrome.notifications.getAll(function (notifications){
 	// 	console.log('Got all notifications ', notifications);
