@@ -9,7 +9,7 @@
                     </div>
                 </div>
                 <ion-list>
-                    <div class="list card correlationResultList" ng-repeat="correlationObject in correlationObjects">
+                    <div on-hold="goToStudyPage(correlationObject)" class="list card correlationResultList" ng-repeat="correlationObject in correlationObjects">
                         <ion-item class="item item-text-wrap card-item" style="border-style:hidden;">
                             <h4><a ng-click="goToStudyPage(correlationObject)">{{correlationObject.cause}}</a></h4>
                             <div class="voteButtons">
