@@ -5,14 +5,10 @@ angular.module('starter')
                                          localStorageService, utilsService, authService, $stateParams) {
         
         $scope.loading = true;
+        $scope.state = {
+            variableName: config.appSettings.primaryOutcomeVariableDetails.name
+        };
 
-        if(!$rootScope.user){
-            console.debug("predictorsCtrl: not logged in, going to default state");
-            $state.go(config.appSettings.defaultState);
-            // app wide signal to sibling controllers that the state has changed
-            $rootScope.$broadcast('transition');
-        }
-        
         if ($stateParams.valence === "positive") {
             $scope.title = "Positive Predictors";
         }
@@ -25,8 +21,11 @@ angular.module('starter')
         $scope.init = function(){
             if($stateParams.variableObject){
                 $scope.state.variableName = $stateParams.variableObject.name;
-            } else {
-                $scope.state.variableName = config.appSettings.primaryOutcomeVariableDetails.name;
+                if ($stateParams.valence === "positive") {
+                    $scope.title = "Positive Predictors of " + $scope.state.variableName;
+                } else {
+                    $scope.title = "Negative Predictors of " + $scope.state.variableName;
+                }
             }
             if ($stateParams.valence === "positive") {
                 $scope.valence = true;
