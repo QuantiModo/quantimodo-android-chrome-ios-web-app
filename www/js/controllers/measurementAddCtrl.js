@@ -1,6 +1,5 @@
 angular.module('starter')
 
-    // Controls the Track Factors Page
     .controller('MeasurementAddCtrl', function($scope, $q, $ionicModal, $timeout, $ionicPopup ,$ionicLoading,
                                                authService, measurementService, $state, $rootScope, $stateParams,
                                                utilsService, localStorageService, $filter, $ionicScrollDelegate,

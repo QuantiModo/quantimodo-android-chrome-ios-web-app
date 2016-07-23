@@ -1,6 +1,4 @@
 angular.module('starter')
-
-    // Controls the Track Factors Page and the search bar
     .controller('VariableSearchCtrl', function($scope, $ionicModal, $timeout, $ionicPopup ,$ionicLoading,
                                                      authService, measurementService, $state, $rootScope, $stateParams,
                                                      utilsService, localStorageService, $filter, $ionicScrollDelegate,

@@ -3,8 +3,8 @@ angular.module('starter')
     .factory('correlationService', function(QuantiModo, $q) {
         var positive_factors = [];
         var negative_factors = [];
-        var usersPositiveFactors = [];
-        var usersNegativeFactors = [];
+        var usersPositivePredictors = [];
+        var usersNegativePredictors = [];
         return {
             // get Positive correlationObjects
             getCauses : function(variableName){
@@ -36,10 +36,10 @@ angular.module('starter')
                     // populate positives & Negatives
                     for(var i in correlationObjects){
                         if(correlationObjects[i].correlationCoefficient > 0){
-                            usersPositiveFactors.push(correlationObjects[i]);
+                            usersPositivePredictors.push(correlationObjects[i]);
                         }
                         else if(correlationObjects[i].correlationCoefficient < 0){
-                            usersNegativeFactors.push(correlationObjects[i]);
+                            usersNegativePredictors.push(correlationObjects[i]);
                         }
                     }
 
@@ -51,10 +51,10 @@ angular.module('starter')
                 return deferred.promise;
             },
 
-            getPositiveFactors: function(variableName){
+            getPositivePredictors: function(variableName){
                 var deferred = $q.defer();
                 if(positive_factors.length===0){
-                    this.getCauses().then(function () {
+                    this.getCauses(variableName).then(function () {
                         deferred.resolve(positive_factors);
                     });
                 }else{
@@ -63,22 +63,22 @@ angular.module('starter')
                 return deferred.promise;
             },
 
-            getUsersPositiveFactors: function(variableName){
+            getUsersPositivePredictors: function(variableName){
                 var deferred = $q.defer();
-                if(usersPositiveFactors.length===0){
-                    this.getUserCauses().then(function () {
-                        deferred.resolve(usersPositiveFactors);
+                if(usersPositivePredictors.length===0){
+                    this.getUserCauses(variableName).then(function () {
+                        deferred.resolve(usersPositivePredictors);
                     });
                 }else{
-                    deferred.resolve(usersPositiveFactors);
+                    deferred.resolve(usersPositivePredictors);
                 }
                 return deferred.promise;
             },
 
-            getNegativeFactors: function(variableName){
+            getNegativePredictors: function(variableName){
                 var deferred = $q.defer();
                 if(negative_factors.length===0){
-                    this.getCauses().then(function () {
+                    this.getCauses(variableName).then(function () {
                         deferred.resolve(negative_factors);
                     });
                 }else{
@@ -87,14 +87,14 @@ angular.module('starter')
                 return deferred.promise;
             },
 
-            getUsersNegativeFactors: function(variableName){
+            getUsersNegativePredictors: function(variableName){
                 var deferred = $q.defer();
-                if(usersNegativeFactors.length===0){
+                if(usersNegativePredictors.length===0){
                     this.getUserCauses(variableName).then(function () {
-                        deferred.resolve(usersNegativeFactors);
+                        deferred.resolve(usersNegativePredictors);
                     });
                 }else{
-                    deferred.resolve(usersNegativeFactors);
+                    deferred.resolve(usersNegativePredictors);
                 }
                 return deferred.promise;
             },
