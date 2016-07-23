@@ -446,10 +446,9 @@ angular.module('starter',
             }
         })
         .state('app.study', {
-            url: "/study/:factor",
+            url: "/study",
             params: {
-                factor: null,
-                factorObject: null
+                correlationObject: null
             },
             views: {
                 'menuContent': {

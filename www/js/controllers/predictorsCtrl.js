@@ -286,10 +286,9 @@ angular.module('starter')
             });
         };
 
-        $scope.goToStudyPage = function(factor) {
+        $scope.goToStudyPage = function(correlationObject) {
             $state.go('app.study', {
-                factor: factor.cause,
-                factorObject: factor
+                correlationObject: correlationObject
             });
         };
 
