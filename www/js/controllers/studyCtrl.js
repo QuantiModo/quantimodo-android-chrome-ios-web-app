@@ -19,7 +19,6 @@ angular.module('starter')
         };
 
         $scope.$on('$ionicView.enter', function(e){
-            console.log("about to call init from enter: else");
             $scope.init();
         });
 	});
