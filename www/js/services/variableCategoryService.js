@@ -218,6 +218,9 @@ angular.module('starter')
                 
             },
             attachVariableCategoryIcons : function(dataArray){
+                if(!dataArray){
+                    return;
+                }
                 var variableCategoryInfo;
                 for(var i = 0; i < dataArray.length; i++){
                     variableCategoryInfo = this.getVariableCategoryInfo(dataArray[i].variableCategoryName);
