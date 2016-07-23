@@ -61,7 +61,7 @@ angular.module('starter')
 
 	    var getHistory = function(concat){
 			if($scope.state.history.length < 1){
-				$scope.showLoader('Getting your measurements...');
+				$scope.showLoader('Squirrels retrieving measurements...');
 			}
 			var params = {
 				offset: $scope.state.offset,

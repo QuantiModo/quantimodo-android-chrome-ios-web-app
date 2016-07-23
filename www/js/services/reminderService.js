@@ -90,7 +90,7 @@ angular.module('starter')
 			refreshTrackingRemindersAndScheduleAlarms : function(){
 
 				$rootScope.isSyncing = true;
-				$rootScope.syncDisplayText = 'Syncing reminders...';
+				$rootScope.syncDisplayText = 'Reminders coming down the pipes...';
 
 				if(!$rootScope.syncingReminders){
 					$rootScope.syncingReminders = true;

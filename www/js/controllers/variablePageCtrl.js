@@ -179,14 +179,17 @@ angular.module('starter')
         
 
         var getHistoryForVariable = function(params){
-            console.log("variablePageCtrl: getHistoryforVariable " + $scope.state.variableObject.variableName);
+            console.log("variablePageCtrl: getHistoryForVariable " + $scope.state.variableObject.variableName);
             var deferred = $q.defer();
             $scope.showLoader('Getting ' + $scope.state.variableObject.variableName + ' measurements...');
 
             QuantiModo.getV1Measurements(params, function(history){
                 $scope.state.history = $scope.state.history.concat(history);
                 if(!$scope.state.variableObject.abbreviatedUnitName){
-                    $scope.state.variableObject = history[0];
+                    $scope.state.variableObject.abbreviatedUnitName = history[0].abbreviatedUnitName;
+                }
+                if(!$scope.state.variableObject.unitName){
+                    $scope.state.variableObject.unitName = history[0].unitName;
                 }
                 if(history.length === 200){
                     $scope.state.offset = $scope.state.offset + 200;

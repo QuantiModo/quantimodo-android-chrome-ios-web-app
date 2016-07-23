@@ -240,6 +240,15 @@ angular.module('starter')
             });
         };
 
+        $scope.goToAddMeasurementForVariableObject = function(variableObject){
+            $state.go('app.measurementAdd',
+                {
+                    variableObject: variableObject,
+                    fromState: $state.current.name,
+                    fromUrl: window.location.href
+                });
+        };
+
         $scope.goToHistoryForVariableObject = function(variableObject){
             $state.go('app.historyAll',
                 {
