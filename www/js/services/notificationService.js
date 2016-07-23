@@ -343,10 +343,6 @@ angular.module('starter')
                         cordova.plugins.notification.local.schedule(notificationSettings, function () {
                             console.log('notification scheduled', notificationSettings);
                         });
-                        cordova.plugins.notification.local.on("click", function (notification) {
-                            console.log("$state.go('app.remindersInbox')");
-                            $state.go('app.remindersInbox');
-                        });
                     }
                 }
 
@@ -369,10 +365,6 @@ angular.module('starter')
                     if (intervalInMinutes > 0) {
                         cordova.plugins.notification.local.schedule(notificationSettings, function () {
                             console.log('iOS notification scheduled', notificationSettings);
-                        });
-                        cordova.plugins.notification.local.on("click", function (notification) {
-                            console.log("$state.go('app.remindersInbox')");
-                            $state.go('app.remindersInbox');
                         });
                     }
                 }
