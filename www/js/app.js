@@ -434,6 +434,9 @@ angular.module('starter',
         })
         .state('app.predictors', {
             url: "/predictors/:valence",
+            params: {
+                variableObject: null
+            },
             cache: false,
             views: {
                 'menuContent': {
