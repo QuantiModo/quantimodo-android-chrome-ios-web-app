@@ -526,7 +526,8 @@ angular.module('starter',
             params: {
                 variableCategoryName : null,
                 fromState : null,
-                fromUrl : null
+                fromUrl : null,
+                variableObject : null
             },
             views: {
                 'menuContent': {

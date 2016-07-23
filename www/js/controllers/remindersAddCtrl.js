@@ -5,7 +5,7 @@ angular.module('starter')
 											 $stateParams, measurementService, reminderService, $ionicLoading,
 											 utilsService, $filter, ionicTimePicker, $timeout, 
 											 variableCategoryService, variableService, unitService, timeService,
-                                             $rootScope){
+                                             $rootScope, $ionicActionSheet){
 
 	    $scope.controller_name = "RemindersAddCtrl";
 
@@ -62,7 +62,7 @@ angular.module('starter')
 				{ id : 8, name : 'Hourly'},
 	    		{ id : 9, name : 'Every 30 minutes'},
 	    		{ id : 10, name : 'Never'},
-                //{ id : 11, name : 'Minutely'}
+                { id : 11, name : 'Minutely'}
 	    	]
 	    };
 
@@ -520,5 +520,55 @@ angular.module('starter')
             $scope.showUnitsDropDown = true;
         };
 
+        $rootScope.showActionSheet = function() {
+
+            console.debug("Show the action sheet!  $scope.state.variableObject: ", $scope.state.variableObject);
+            var hideSheet = $ionicActionSheet.show({
+                buttons: [
+                    { text: '<i class="icon ion-ios-list-outline"></i>See History' },
+                    { text: '<i class="icon ion-ios-star"></i>Add to Favorites' },
+                    { text: '<i class="icon ion-arrow-graph-up-right"></i>See Charts'},
+                    { text: '<i class="icon ion-compose"></i>Add a Measurement'}
+                ],
+                destructiveText: '<i class="icon ion-trash-a"></i>Delete Favorite',
+                cancelText: '<i class="icon ion-ios-close"></i>Cancel',
+                cancel: function() {
+                    console.log('CANCELLED');
+                },
+                buttonClicked: function(index) {
+                    console.log('BUTTON CLICKED', index);
+                    if(index === 0) {
+                        $scope.goToHistoryForVariableObject($scope.state.variableObject);
+                    }
+                    if(index === 1){
+                        $scope.addToFavoritesUsingStateVariableObject($scope.state.variableObject);
+                    }
+                    if(index === 2){
+                        $scope.goToChartsPageForVariableObject($scope.state.variableObject);
+                    }
+                    if(index === 3){
+                        $scope.goToAddMeasurement();
+                    }
+                    if(index === 4){
+                        $state.go('app.predictors',
+                            {
+                                variableObject: $scope.state.variableObject
+                            });
+                    }
+
+                    return true;
+                },
+                destructiveButtonClicked: function() {
+                    $scope.deleteReminder();
+                    return true;
+                }
+            });
+
+
+            $timeout(function() {
+                hideSheet();
+            }, 20000);
+
+        };
 
 	});

@@ -240,6 +240,69 @@ angular.module('starter')
             });
         };
 
+        $scope.goToHistoryForVariableObject = function(variableObject){
+            $state.go('app.historyAll',
+                {
+                    variableObject: variableObject,
+                    fromState: $state.current.name,
+                    fromUrl: window.location.href
+                });
+        };
+
+        $scope.goToChartsPageForVariableObject = function(variableObject){
+            $state.go('app.variables',
+                {
+                    variableObject: variableObject,
+                    fromState: $state.current.name,
+                    fromUrl: window.location.href
+                });
+        };
+
+        $scope.goToAddReminderForVariableObject = function(variableObject){
+            $state.go('app.reminderAdd',
+                {
+                    variableObject: variableObject,
+                    fromState: $state.current.name,
+                    fromUrl: window.location.href
+                });
+        };
+
+        $scope.addToFavoritesUsingStateVariableObject = function(variableObject){
+            var trackingReminder = {};
+            trackingReminder.variableId = variableObject.id;
+            trackingReminder.reminderFrequency = 0;
+            trackingReminder.variableName = variableObject.name;
+            trackingReminder.abbreviatedUnitName = variableObject.abbreviatedUnitName;
+            trackingReminder.variableDescription = variableObject.description;
+            trackingReminder.variableCategoryName = variableObject.variableCategoryName;
+
+            if (trackingReminder.abbreviatedUnitName === '/5') {
+                trackingReminder.defaultValue = 3;
+                localStorageService.replaceElementOfItemById('trackingReminders', trackingReminder);
+                reminderService.addNewReminder(trackingReminder)
+                    .then(function () {
+                        console.debug("Saved Reminder", trackingReminder)
+                    }, function (err) {
+                        console.error('Failed to add Reminder!', trackingReminder);
+                    });
+                $state.go('app.favorites',
+                    {
+                        trackingReminder: trackingReminder,
+                        fromState: $state.current.name,
+                        fromUrl: window.location.href
+                    }
+                );
+            } else {
+                $state.go('app.favoriteAdd',
+                    {
+                        variableObject: variableObject,
+                        fromState: $state.current.name,
+                        fromUrl: window.location.href
+                    }
+                );
+            }
+        };
+
         $scope.$on('$ionicView.enter', function(e) {
             //$scope.showHelpInfoPopupIfNecessary(e);
             $scope.getLocation();
@@ -279,6 +342,17 @@ angular.module('starter')
                 $scope.showCalendarButton = true;
             } else {
                 $scope.showCalendarButton = false;
+            }
+
+            if(e.targetScope && e.targetScope.controller_name &&
+                e.targetScope.controller_name === "MeasurementAddCtrl" ||
+                e.targetScope.controller_name === "RemindersAddCtrl" ||
+                e.targetScope.controller_name === "FavoriteAddCtrl" ||
+                e.targetScope.controller_name === "VariablePageCtrl"
+            ){
+                $scope.showMoreMenuButton = true;
+            } else {
+                $scope.showMoreMenuButton = false;
             }
         });
 
