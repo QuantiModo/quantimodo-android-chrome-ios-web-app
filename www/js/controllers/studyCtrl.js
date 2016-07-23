@@ -1,6 +1,4 @@
 angular.module('starter')
-	
-	// Controls the Positive Factors page
 	.controller('StudyCtrl', function($scope, $ionicModal, $timeout, measurementService, $ionicLoading,
                                          $state, $ionicPopup, correlationService, $rootScope,
                                          localStorageService, utilsService, authService, $stateParams, $ionicHistory) {

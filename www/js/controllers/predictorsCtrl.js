@@ -1,6 +1,5 @@
 angular.module('starter')
-	
-	// Controls the Positive Factors page
+
 	.controller('PredictorsCtrl', function($scope, $ionicModal, $timeout, measurementService, $ionicLoading,
                                          $state, $ionicPopup, correlationService, $rootScope,
                                          localStorageService, utilsService, authService, $stateParams) {
@@ -66,11 +65,11 @@ angular.module('starter')
             }
             if(isAuthorized){
                 if ($scope.valence) {
-                    correlationService.getPositiveFactors($scope.state.variableName)
+                    correlationService.getPositivePredictors($scope.state.variableName)
                         .then(function(correlationObjects){
                             $scope.correlationObjects = correlationObjects;
-                            correlationService.getUsersPositiveFactors($scope.state.variableName).then(function(correlationObjects){
-                                $scope.usersFactors = correlationObjects;
+                            correlationService.getUsersPositivePredictors($scope.state.variableName).then(function(correlationObjects){
+                                $scope.usersCorrelationObjects = correlationObjects;
                             });
                             $ionicLoading.hide();
                             $scope.loading = false;
@@ -81,11 +80,11 @@ angular.module('starter')
                         });
                 }
                 else {
-                    correlationService.getNegativeFactors($scope.state.variableName)
+                    correlationService.getNegativePredictors($scope.state.variableName)
                         .then(function(correlationObjects){
                             $scope.correlationObjects = correlationObjects;
-                            correlationService.getUsersNegativeFactors($scope.state.variableName).then(function(correlationObjects){
-                                $scope.usersFactors = correlationObjects;
+                            correlationService.getUsersNegativePredictors($scope.state.variableName).then(function(correlationObjects){
+                                $scope.usersCorrelationObjects = correlationObjects;
                             });
                             $ionicLoading.hide();
                             $scope.loading = false;
