@@ -649,10 +649,10 @@ angular.module('starter')
             console.debug("Show the action sheet!  $scope.state.variableObject: ", $scope.state.variableObject);
             var hideSheet = $ionicActionSheet.show({
                 buttons: [
-                    { text: '<i class="icon ion-ios-list-outline"></i>See History' },
+                    { text: '<i class="icon ion-ios-list-outline"></i>' + $scope.state.variableObject.name + ' History' },
                     { text: '<i class="icon ion-ios-star"></i>Add to Favorites' },
-                    { text: '<i class="icon ion-arrow-graph-up-right"></i>See Charts'},
-                    { text: '<i class="icon ion-android-notifications-none"></i>Add a Reminder'}
+                    { text: '<i class="icon ion-arrow-graph-up-right"></i>' + $scope.state.variableObject.name + ' Visualized'},
+                    { text: '<i class="icon ion-android-notifications-none"></i>Add ' + $scope.state.variableObject.name + ' Reminder'}
                 ],
                 destructiveText: '<i class="icon ion-trash-a"></i>Delete Measurement',
                 cancelText: '<i class="icon ion-ios-close"></i>Cancel',
