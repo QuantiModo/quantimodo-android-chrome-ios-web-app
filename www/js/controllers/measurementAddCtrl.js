@@ -339,6 +339,9 @@ angular.module('starter')
                             setupFromMeasurementStateParameter();
                         }
                         if(!$scope.state.measurementIsSetup) {
+                            setupFromMeasurementObjectInUrl();
+                        }
+                        if(!$scope.state.measurementIsSetup) {
                             setupFromVariableStateParameter();
                         }
                         if(!$scope.state.measurementIsSetup) {
@@ -443,6 +446,18 @@ angular.module('starter')
                         console.error(err);
                         Bugsnag.notify(err, JSON.stringify(err), {}, "error");
                     });
+                }
+            }
+        };
+        
+        var setupFromMeasurementObjectInUrl = function(){
+            console.debug("setupFromMeasurementObjectInUrl: ");
+            if(!$stateParams.measurement){
+                var measurementFromURL =  utilsService.getUrlParameter(window.location.href, 'measurementObject', true);
+                if(measurementFromURL){
+                    measurementFromURL = JSON.parse(measurementFromURL);
+                    console.debug("setupFromMeasurementObjectInUrl: ", measurementFromURL);
+                    setupTrackingByMeasurement(measurementFromURL);
                 }
             }
         };
