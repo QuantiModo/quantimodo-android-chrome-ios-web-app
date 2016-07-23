@@ -45,7 +45,6 @@ angular.module('starter')
                     $scope.notShowConfirmationPositiveDown = notShowConfirmationDown ?
                         JSON.parse(notShowConfirmationDown) : false;
                 });
-
             }
             else if ($stateParams.valence === "negative") {
                 $scope.valence = false;
@@ -56,15 +55,6 @@ angular.module('starter')
                 $scope.templateConfirmationUp = '<label><input type="checkbox" ng-model="$parent.notShowConfirmationNegative" class="show-again-checkbox">Don\'t show this again</label>';
                 $scope.templateConfirmationDown = '<label><input type="checkbox" ng-model="$parent.notShowConfirmationNegativeDown" class="show-again-checkbox">Don\'t show this again</label>';
 
-                /*
-                localStorageService.getItem('notShowConfirmationNegative', function (notShowConfirmation) {
-                    $scope.notShowConfirmationNegative = notShowConfirmation ? JSON.parse(notShowConfirmation) : false;
-                });
-                localStorageService.getItem('notShowConfirmationNegativeDown', function (notShowConfirmationDown) {
-                    $scope.notShowConfirmationNegativeDown = notShowConfirmationDown ?
-                        JSON.parse(notShowConfirmationDown) : false;
-                });
-                */
             }
             else {
                 // go to default state
@@ -78,7 +68,7 @@ angular.module('starter')
                 if ($scope.valence) {
                     correlationService.getPositiveFactors($scope.state.variableName)
                         .then(function(correlationObjects){
-                            $scope.factors = correlationObjects;
+                            $scope.correlationObjects = correlationObjects;
                             correlationService.getUsersPositiveFactors($scope.state.variableName).then(function(correlationObjects){
                                 $scope.usersFactors = correlationObjects;
                             });
@@ -93,7 +83,7 @@ angular.module('starter')
                 else {
                     correlationService.getNegativeFactors($scope.state.variableName)
                         .then(function(correlationObjects){
-                            $scope.factors = correlationObjects;
+                            $scope.correlationObjects = correlationObjects;
                             correlationService.getUsersNegativeFactors($scope.state.variableName).then(function(correlationObjects){
                                 $scope.usersFactors = correlationObjects;
                             });
@@ -110,13 +100,13 @@ angular.module('starter')
         };
 
         // when downVoted
-	    $scope.downVote = function(factor){
-            if (factor.userVote !== 0) {
+	    $scope.downVote = function(correlationObject){
+            if (correlationObject.userVote !== 0) {
                 if (($scope.valence && !$scope.notShowConfirmationPositiveDown) ||
                     (!$scope.valence && !$scope.notShowConfirmationNegativeDown)) {
                     $ionicPopup.show({
                         title:'Voting thumbs down indicates',
-                        subTitle: 'you disagree that ' + factor.cause + ' ' + $scope.increasesDecreases + ' your ' + factor.effect + '.',
+                        subTitle: 'you disagree that ' + correlationObject.cause + ' ' + $scope.increasesDecreases + ' your ' + correlationObject.effect + '.',
                         scope: $scope,
                         template: $scope.templateConfirmatioDown,
                         buttons:[
@@ -130,49 +120,38 @@ angular.module('starter')
                                     else {
                                         localStorageService.setItem('notShowConfirmationNegativeDown', JSON.stringify($scope.notShowConfirmationNegativeDown));
                                     }
-                                    downVote(factor);
+                                    downVote(correlationObject);
                                 }
                             }
                         ]
                     });
                 } else {
-                    downVote(factor);
+                    downVote(correlationObject);
                 }
             } else {
-                deleteVote(factor);
+                deleteVote(correlationObject);
             }
         };
 
-        function downVote(factor){
-            // params
-            var cause = factor.cause;
-            var effect = factor.effect;
+        function downVote(correlationObject){
             var vote = 0;
-            var correlationCoefficient = factor.correlationCoefficient;
-
-            // call service method for voting
-            if($rootScope.user) {
-                correlationService.vote(vote, cause, effect, correlationCoefficient)
-                    .then(function () {
-                        factor.userVote = vote;
-                        utilsService.showAlert('Down voted!');
-                    }, function () {
-                        utilsService.showAlert('Down vote failed !');
-                    });
-            } else {
-                console.debug("predictorsCtrl: not logged in, going to default state");
-                $state.go(config.appSettings.defaultState);
-            }
+            correlationService.vote(vote, correlationObject.cause, correlationObject.effect, correlationObject.correlationCoefficient)
+                .then(function () {
+                    correlationObject.userVote = vote;
+                    utilsService.showAlert('Down voted!');
+                }, function () {
+                    utilsService.showAlert('Down vote failed !');
+                });
         }
 
 	    // when upVoted
-	    $scope.upVote = function(factor){
-            if (factor.userVote !== 1) {
+	    $scope.upVote = function(correlationObject){
+            if (correlationObject.userVote !== 1) {
                 if (($scope.valence && !$scope.notShowConfirmationPositive) ||
                     (!$scope.valence && !$scope.notShowConfirmationNegative)) {
                     $ionicPopup.show({
                         title:'Voting thumbs up indicates',
-                        subTitle: 'you agree that '+ factor.cause + ' ' + $scope.increasesDecreases + ' your ' + factor.effect + '.',
+                        subTitle: 'you agree that '+ correlationObject.cause + ' ' + $scope.increasesDecreases + ' your ' + correlationObject.effect + '.',
                         scope: $scope,
                         template: $scope.templateConfirmationUp,
                         buttons:[
@@ -186,65 +165,42 @@ angular.module('starter')
                                     else {
                                         localStorageService.setItem('notShowConfirmationNegative',JSON.stringify($scope.notShowConfirmationNegative));
                                     }
-                                    upVote(factor);
+                                    upVote(correlationObject);
                                 }
                             }
                         ]
                     });
                 } else {
-                    upVote(factor);
+                    upVote(correlationObject);
                 }
             }
             else {
-                deleteVote(factor);
+                deleteVote(correlationObject);
             }
 
 	    };
 
-        function upVote(factor){
-            if ($rootScope.user) {
-                // params
-                var cause = factor.cause;
-                var effect = factor.effect;
-                var correlationCoefficient = factor.correlationCoefficient;
-                var vote = 1; // true
+        function upVote(correlationObject){
+            var vote = 1; // true
+            correlationService.vote(vote, correlationObject.cause, correlationObject.effect, correlationObject.correlationCoefficient)
+                .then(function () {
+                    correlationObject.userVote = vote;
+                    utilsService.showAlert('Upvoted!');
+                }, function () {
+                    utilsService.showAlert('Upvote Failed!');
 
-                // call service method for voting
-                correlationService.vote(vote, cause, effect, correlationCoefficient)
-                    .then(function () {
-                        factor.userVote = vote;
-                        utilsService.showAlert('Upvoted!');
-                    }, function () {
-                        utilsService.showAlert('Upvote Failed!');
-
-                    });
-            } else {
-                console.debug("predictorsCtrl: not logged in, going to default state");
-                $state.go(config.appSettings.defaultState);
-            }
-
+                });
         }
 
-        function deleteVote(factor) {
-            if ($rootScope.user) {
-                // params
-                var cause = factor.cause;
-                var effect = factor.effect;
-                var correlationCoefficient = factor.correlationCoefficient;
+        function deleteVote(correlationObject) {
+            correlationService.deleteVote(correlationObject.cause, correlationObject.effect, correlationObject.correlationCoefficient)
+                .then(function () {
+                    correlationObject.userVote = null;
+                    utilsService.showAlert('Vote Undone!');
+                }, function () {
+                    utilsService.showAlert('Undo Vote Failed!');
 
-                // call service method for voting
-                correlationService.deleteVote(cause, effect, correlationCoefficient)
-                    .then(function () {
-                        factor.userVote = null;
-                        utilsService.showAlert('Vote Undone!');
-                    }, function () {
-                        utilsService.showAlert('Undo Vote Failed!');
-
-                    });
-            } else {
-                console.debug("predictorsCtrl: not logged in, going to default state");
-                $state.go(config.appSettings.defaultState);
-            }
+                });
         }
 
         // open store in inAppbrowser

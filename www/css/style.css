@@ -493,30 +493,30 @@ img.intro-primary-outcome-variable-rating-buttons {
 }
 
 /* Positive/negative factors and study page */
-.factorResultList a {
+.correlationResultList a {
     white-space: normal;
     color: #1A0DAB;
     font-size: 24px;
     font-family: arial, sans-serif;
 }
 
-.factorResultList h4 {
+.correlationResultList h4 {
     margin-top: 10px;
     margin-bottom: 10px;
     font-weight: 700;
 }
 
-.factorResultList h3 {
+.correlationResultList h3 {
     font-size: 24px;
     margin-top: 20px;
     margin-bottom: 10px;
 }
 
-.factorResultList p a {
+.correlationResultList p a {
     font-size: 14px;
 }
 
-.factorResultList p {
+.correlationResultList p {
     white-space: normal;
 }
 
