@@ -7,9 +7,9 @@ angular.module('starter')
         var usersNegativeFactors = [];
         return {
             // get Positive correlationObjects
-            getCauses : function(){
+            getCauses : function(variableName){
                 var deferred = $q.defer();
-                    QuantiModo.getCauses(function(correlationObjects){
+                    QuantiModo.getCauses(variableName, function(correlationObjects){
 
                         // populate positives & Negatives
                         for(var i in correlationObjects){
@@ -29,9 +29,9 @@ angular.module('starter')
                 return deferred.promise;
             },
 
-            getUserCauses: function () {
+            getUserCauses: function (variableName) {
                 var deferred = $q.defer();
-                QuantiModo.getUsersCauses(function(correlationObjects){
+                QuantiModo.getUsersCauses(variableName, function(correlationObjects){
 
                     // populate positives & Negatives
                     for(var i in correlationObjects){
@@ -51,7 +51,7 @@ angular.module('starter')
                 return deferred.promise;
             },
 
-            getPositiveFactors: function(){
+            getPositiveFactors: function(variableName){
                 var deferred = $q.defer();
                 if(positive_factors.length===0){
                     this.getCauses().then(function () {
@@ -63,7 +63,7 @@ angular.module('starter')
                 return deferred.promise;
             },
 
-            getUsersPositiveFactors: function(){
+            getUsersPositiveFactors: function(variableName){
                 var deferred = $q.defer();
                 if(usersPositiveFactors.length===0){
                     this.getUserCauses().then(function () {
@@ -75,7 +75,7 @@ angular.module('starter')
                 return deferred.promise;
             },
 
-            getNegativeFactors: function(){
+            getNegativeFactors: function(variableName){
                 var deferred = $q.defer();
                 if(negative_factors.length===0){
                     this.getCauses().then(function () {
@@ -87,10 +87,10 @@ angular.module('starter')
                 return deferred.promise;
             },
 
-            getUsersNegativeFactors: function(){
+            getUsersNegativeFactors: function(variableName){
                 var deferred = $q.defer();
                 if(usersNegativeFactors.length===0){
-                    this.getUserCauses().then(function () {
+                    this.getUserCauses(variableName).then(function () {
                         deferred.resolve(usersNegativeFactors);
                     });
                 }else{
@@ -101,23 +101,23 @@ angular.module('starter')
 
 
             // up/down vote
-            vote : function(vote, cause, effect, correlationcoefficient){
+            vote : function(vote, cause, effect, correlationCoefficient){
                 var deferred = $q.defer();
 
-                console.log(vote, cause, effect, correlationcoefficient);
+                console.log(vote, cause, effect, correlationCoefficient);
                 var correlation =
                 {
                     cause: cause,
                     effect: effect,
-                    correlation: correlationcoefficient,
+                    correlation: correlationCoefficient,
                     vote: vote
                 };
 
                 QuantiModo.postVote(correlation, function(response){
-                    console.log("the response beingx", response);
+                    console.log("postVote response", response);
                     deferred.resolve(true);
                 }, function(response){
-                    console.log("the response beingy", response);
+                    console.log("postVote response", response);
                     deferred.reject(false);
                 });
 
@@ -136,10 +136,10 @@ angular.module('starter')
                 };
 
                 QuantiModo.deleteVote(correlation, function(response){
-                    console.log("the response beingx", response);
+                    console.log("deleteVote response", response);
                     deferred.resolve(true);
                 }, function(response){
-                    console.log("the response beingy", response);
+                    console.log("deleteVote response", response);
                     deferred.reject(false);
                 });
                 

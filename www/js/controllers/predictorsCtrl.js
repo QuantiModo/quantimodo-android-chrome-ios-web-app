@@ -24,6 +24,11 @@ angular.module('starter')
 		$scope.controller_name = "PredictorsCtrl";
 
         $scope.init = function(){
+            if($stateParams.variableObject){
+                $scope.state.variableName = $stateParams.variableObject.name;
+            } else {
+                $scope.state.variableName = config.appSettings.primaryOutcomeVariableDetails.name;
+            }
             if ($stateParams.valence === "positive") {
                 $scope.valence = true;
                 $scope.increasingDecreasing = "INCREASING";
@@ -71,10 +76,10 @@ angular.module('starter')
             }
             if(isAuthorized){
                 if ($scope.valence) {
-                    correlationService.getPositiveFactors()
+                    correlationService.getPositiveFactors($scope.state.variableName)
                         .then(function(correlationObjects){
                             $scope.factors = correlationObjects;
-                            correlationService.getUsersPositiveFactors().then(function(correlationObjects){
+                            correlationService.getUsersPositiveFactors($scope.state.variableName).then(function(correlationObjects){
                                 $scope.usersFactors = correlationObjects;
                             });
                             $ionicLoading.hide();
@@ -86,10 +91,10 @@ angular.module('starter')
                         });
                 }
                 else {
-                    correlationService.getNegativeFactors()
+                    correlationService.getNegativeFactors($scope.state.variableName)
                         .then(function(correlationObjects){
                             $scope.factors = correlationObjects;
-                            correlationService.getUsersNegativeFactors().then(function(correlationObjects){
+                            correlationService.getUsersNegativeFactors($scope.state.variableName).then(function(correlationObjects){
                                 $scope.usersFactors = correlationObjects;
                             });
                             $ionicLoading.hide();
