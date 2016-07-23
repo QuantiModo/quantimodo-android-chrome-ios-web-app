@@ -13,6 +13,8 @@ angular.module('starter')
 		$scope.controller_name = "PredictorsCtrl";
 
         $scope.init = function(){
+            $scope.state.correlationObjects = null;
+            $scope.state.usersCorrelationObjects = null;
             authService.checkAuthOrSendToLogin();
             if (typeof analytics !== 'undefined')  {analytics.trackView("Predictors Controller");}
             if($stateParams.variableObject){
@@ -37,9 +39,9 @@ angular.module('starter')
                 });
                 correlationService.getPositivePredictors($scope.state.variableName)
                     .then(function(correlationObjects){
-                        $scope.correlationObjects = correlationObjects;
+                        $scope.state.correlationObjects = correlationObjects;
                         correlationService.getUsersPositivePredictors($scope.state.variableName).then(function(correlationObjects){
-                            $scope.usersCorrelationObjects = correlationObjects;
+                            $scope.state.usersCorrelationObjects = correlationObjects;
                         });
                         $ionicLoading.hide();
                         $scope.loading = false;
@@ -59,9 +61,9 @@ angular.module('starter')
                 $scope.templateConfirmationDown = '<label><input type="checkbox" ng-model="$parent.notShowConfirmationNegativeDown" class="show-again-checkbox">Don\'t show this again</label>';
                 correlationService.getNegativePredictors($scope.state.variableName)
                     .then(function(correlationObjects){
-                        $scope.correlationObjects = correlationObjects;
+                        $scope.state.correlationObjects = correlationObjects;
                         correlationService.getUsersNegativePredictors($scope.state.variableName).then(function(correlationObjects){
-                            $scope.usersCorrelationObjects = correlationObjects;
+                            $scope.state.usersCorrelationObjects = correlationObjects;
                         });
                         $ionicLoading.hide();
                         $scope.loading = false;
