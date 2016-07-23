@@ -51,7 +51,6 @@ angular.module('starter')
             }
             else if ($stateParams.valence === "negative") {
                 $scope.state.title = "Negative Predictors of " + $scope.state.variableName;
-                $scope.valence = false;
                 $scope.increasingDecreasing = "DECREASING";
                 $scope.increasesDecreases = "decreases";
                 Bugsnag.context = "negativePredictors";
@@ -81,19 +80,19 @@ angular.module('starter')
         // when downVoted
 	    $scope.downVote = function(correlationObject){
             if (correlationObject.userVote !== 0) {
-                if (($scope.valence && !$scope.notShowConfirmationPositiveDown) ||
-                    (!$scope.valence && !$scope.notShowConfirmationNegativeDown)) {
+                if (($stateParams.valence === "positive" && !$scope.notShowConfirmationPositiveDown) ||
+                    ($stateParams.valence === "negative" && !$scope.notShowConfirmationNegativeDown)) {
                     $ionicPopup.show({
-                        title:'Voting thumbs down indicates',
-                        subTitle: 'you disagree that ' + correlationObject.cause + ' ' + $scope.increasesDecreases + ' your ' + correlationObject.effect + '.',
+                        title:'Implausible relationship?',
+                        subTitle: 'Do you think is is IMPOSSIBLE that ' + correlationObject.cause + ' ' + $scope.increasesDecreases + ' your ' + correlationObject.effect + '?',
                         scope: $scope,
                         template: $scope.templateConfirmatioDown,
                         buttons:[
-                            {text: 'Cancel'},
-                            {text: 'Disagree',
+                            {text: 'No'},
+                            {text: 'Yes',
                                 type: 'button-positive',
                                 onTap: function(){
-                                    if ($scope.valence) {
+                                    if ($stateParams.valence === "positive") {
                                         localStorageService.setItem('notShowConfirmationPositiveDown', JSON.stringify($scope.notShowConfirmationPositiveDown));
                                     }
                                     else {
@@ -126,19 +125,19 @@ angular.module('starter')
 	    // when upVoted
 	    $scope.upVote = function(correlationObject){
             if (correlationObject.userVote !== 1) {
-                if (($scope.valence && !$scope.notShowConfirmationPositive) ||
-                    (!$scope.valence && !$scope.notShowConfirmationNegative)) {
+                if (($stateParams.valence === "positive" && !$scope.notShowConfirmationPositive) ||
+                    ($stateParams.valence === "negative" && !$scope.notShowConfirmationNegative)) {
                     $ionicPopup.show({
-                        title:'Voting thumbs up indicates',
-                        subTitle: 'you agree that '+ correlationObject.cause + ' ' + $scope.increasesDecreases + ' your ' + correlationObject.effect + '.',
+                        title:'Plausible relationship?',
+                        subTitle: 'Do you think it is POSSIBLE that '+ correlationObject.cause + ' ' + $scope.increasesDecreases + ' your ' + correlationObject.effect + '?',
                         scope: $scope,
                         template: $scope.templateConfirmationUp,
                         buttons:[
-                            {text: 'Cancel'},
-                            {text: 'Agree',
+                            {text: 'No'},
+                            {text: 'Yes',
                                 type: 'button-positive',
                                 onTap: function(){
-                                    if ($scope.valence) {
+                                    if ($stateParams.valence === "positive") {
                                         localStorageService.setItem('notShowConfirmationPositive',JSON.stringify($scope.notShowConfirmationPositive));
                                     }
                                     else {
@@ -177,8 +176,7 @@ angular.module('starter')
                     correlationObject.userVote = null;
                     utilsService.showAlert('Vote Undone!');
                 }, function () {
-                    utilsService.showAlert('Undo Vote Failed!');
-
+                    console.error('Undo Vote Failed!');
                 });
         }
 
@@ -190,21 +188,6 @@ angular.module('starter')
             // launch inAppBrowser
             window.open('http://www.amazon.com/gp/aw/s/ref=mh_283155_is_s_stripbooks?ie=UTF8&n=283155&k='+name, '_blank', 'location=no');
 	    };
-
-        // Where is this used?
-        $scope.changePage = function(){
-            if ($scope.valence) {
-                $state.go('app.predictors', {
-                    valence: "negative"
-                });
-            }
-            else {
-                $state.go('app.predictors', {
-                    valence: "positive"
-                });
-            }
-            $state.reload();
-        };
 
         $scope.showLoader = function (loadingText) {
             if(!loadingText){
