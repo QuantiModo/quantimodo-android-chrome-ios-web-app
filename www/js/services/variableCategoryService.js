@@ -117,7 +117,7 @@ angular.module('starter')
                         variableCategoryName: "Symptoms",
                         variableCategoryNameSingularLowercase: "symptom",
                         measurementSynonymSingularLowercase : "rating",
-                        icon: "ion-ios-pulse"
+                        icon: "ion-sad-outline"
                     },
                     "Treatments": {
                         defaultAbbreviatedUnitName : "mg",

@@ -2,7 +2,8 @@ angular.module('starter')
 
 	.controller('RemindersManageCtrl', function($scope, authService, $ionicPopup, localStorageService, $state,
 												reminderService, $ionicLoading, measurementService, utilsService,
-												$stateParams, $filter, $rootScope, $ionicActionSheet, $timeout){
+												$stateParams, $filter, $rootScope, $ionicActionSheet, $timeout,
+												variableCategoryService){
 
 	    $scope.controller_name = "RemindersManageCtrl";
 
@@ -63,6 +64,8 @@ angular.module('starter')
 			$scope.state.allReminders = [];
 			var nonFavoriteReminders = [];
 			var unfilteredReminders = JSON.parse(localStorageService.getItemSync('trackingReminders'));
+			unfilteredReminders =
+				variableCategoryService.attachVariableCategoryIcons(unfilteredReminders);
 			if(unfilteredReminders) {
 				for(var k = 0; k < unfilteredReminders.length; k++){
 					if(unfilteredReminders[k].reminderFrequency !== 0){
