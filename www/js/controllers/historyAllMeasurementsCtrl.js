@@ -70,7 +70,7 @@ angular.module('starter')
 			};
 
 			if($stateParams.variableCategoryName){
-				params.variableName = $stateParams.variableCategoryName;
+				params.variableCategoryName = $stateParams.variableCategoryName;
 			}
 
 			if($stateParams.variableObject){
