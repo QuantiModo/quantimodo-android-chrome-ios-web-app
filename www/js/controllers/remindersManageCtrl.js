@@ -2,7 +2,7 @@ angular.module('starter')
 
 	.controller('RemindersManageCtrl', function($scope, authService, $ionicPopup, localStorageService, $state,
 												reminderService, $ionicLoading, measurementService, utilsService,
-												$stateParams, $filter, $rootScope){
+												$stateParams, $filter, $rootScope, $ionicActionSheet, $timeout){
 
 	    $scope.controller_name = "RemindersManageCtrl";
 
@@ -184,5 +184,65 @@ angular.module('starter')
     	$scope.$on('$ionicView.enter', function(e){
     		$scope.init();
     	});
+
+		// Triggered on a button click, or some other target
+		$scope.showActionSheet = function(trackingReminder, $index) {
+
+			$scope.state.trackingReminder = trackingReminder;
+			$scope.state.variableObject = trackingReminder;
+			$scope.state.variableObject.id = trackingReminder.variableId;
+			$scope.state.variableObject.name = trackingReminder.variableName;
+			// Show the action sheet
+			var hideSheet = $ionicActionSheet.show({
+				buttons: [
+					{ text: '<i class="icon ion-android-notifications-none"></i>Edit Reminder'},
+					{ text: '<i class="icon ion-ios-star"></i>Add ' + ' to Favorites' },
+					{ text: '<i class="icon ion-edit"></i>Record ' + ' Measurement' },
+					{ text: '<i class="icon ion-arrow-graph-up-right"></i>' + $scope.state.variableObject.name + ' Visualized'},
+					{ text: '<i class="icon ion-ios-list-outline"></i>' + $scope.state.variableObject.name + ' History'}
+				],
+				destructiveText: '<i class="icon ion-trash-a"></i>Delete Reminder',
+				cancelText: '<i class="icon ion-ios-close"></i>Cancel',
+				cancel: function() {
+					console.log('CANCELLED');
+				},
+				buttonClicked: function(index) {
+					console.log('BUTTON CLICKED', index);
+					if(index === 0){
+						$scope.edit(trackingReminder);
+					}
+					if(index === 1){
+						$scope.addToFavoritesUsingStateVariableObject($scope.state.variableObject);
+					}
+					if(index === 2){
+						$scope.goToAddMeasurementForVariableObject($scope.state.variableObject);
+					}
+					if(index === 3){
+						$scope.goToChartsPageForVariableObject($scope.state.variableObject);
+					}
+					if(index === 4){
+						$scope.goToHistoryForVariableObject($scope.state.variableObject);
+					}
+					if(index === 5){
+						$state.go('app.predictors',
+							{
+								variableObject: $scope.state.trackingReminder
+							});
+					}
+
+					return true;
+				},
+				destructiveButtonClicked: function() {
+					$scope.deleteReminder($scope.state.trackingReminder);
+					return true;
+				}
+			});
+
+
+			$timeout(function() {
+				hideSheet();
+			}, 20000);
+
+		};
 		
 	});

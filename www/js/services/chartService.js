@@ -139,6 +139,14 @@ angular.module('starter')
 	        },
 
 			processDataAndConfigureWeekdayChart : function(measurements, variableObject) {
+	        	if(!variableObject.unitName){
+					variableObject.unitName = measurements[0].unitName;
+					console.error("Please provide unit name with variable object!");
+				}
+				if(!variableObject.unitName){
+					variableObject.unitName = measurements[0].abbreviatedUnitName;
+					console.error("Please provide unit name with variable object!");
+				}
 				var weekdayMeasurementArray = this.generateWeekdayMeasurementArray(measurements);
 				var averageValueByWeekdayArray = this.calculateAverageValueByWeekday(weekdayMeasurementArray);
 				return this.configureWeekdayChart(averageValueByWeekdayArray, variableObject);
@@ -146,6 +154,12 @@ angular.module('starter')
 			},
 
 			processDataAndConfigureHourlyChart : function(measurements, variableObject) {
+				if(!variableObject.unitName){
+					variableObject.unitName = measurements[0].unitName;
+				}
+				if(!variableObject.unitName){
+					variableObject.unitName = measurements[0].abbreviatedUnitName;
+				}
 				var hourlyMeasurementArray = this.generateHourlyMeasurementArray(measurements);
 				var averageValueByHourArray = this.calculateAverageValueByHour(hourlyMeasurementArray);
 				return this.configureHourlyChart(averageValueByHourArray, variableObject);
