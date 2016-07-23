@@ -1,26 +1,26 @@
-<ion-view hide-nav-bar="hideNavigationMenu" view-title="{{title}}">
+<ion-view hide-nav-bar="hideNavigationMenu" view-title="{{state.correlationObject.predictorExplanation}}">
         <ion-content>
-            <ion-list class="factorResultList" ng-show="showStudy">
+            <ion-list class="factorResultList" ng-show="state.correlationObject">
                 <div class="list card">
                     <ion-item style="border-style:hidden;">
                         <div class="item item-text-wrap card-item">
-                            <h3>{{factor.predictorExplanation}}</h3>
-                                <p>{{factor.valuePredictingHighOutcomeExplanation}}</p>
-                                <p>{{factor.valuePredictingLowOutcomeExplanation}}</p>
+                            <h3>{{state.correlationObject.predictorExplanation}}</h3>
+                                <p>{{state.correlationObject.valuePredictingHighOutcomeExplanation}}</p>
+                                <p>{{state.correlationObject.valuePredictingLowOutcomeExplanation}}</p>
                             <h3>Study Abstract</h3>
-                               <p>{{factor.studyAbstract}}</p>
+                               <p>{{state.correlationObject.studyAbstract}}</p>
                             <h3>Study Background</h3>
-                               <p>{{factor.studyBackground}}</p>
+                               <p>{{state.correlationObject.studyBackground}}</p>
                             <h3>Study Objective</h3>
-                               <p>{{factor.studyObjective}}</p>
+                               <p>{{state.correlationObject.studyObjective}}</p>
                             <h3>Study Design</h3>
-                               <p>{{factor.studyDesign}}</p>
+                               <p>{{state.correlationObject.studyDesign}}</p>
                             <h3>Data Analysis</h3>
-                               <p>{{factor.dataAnalysis}}</p>
+                               <p>{{state.correlationObject.dataAnalysis}}</p>
                             <h3>Data Sources</h3>
-                               <p ng-bind-html="factor.dataSources"></p>
+                               <p ng-bind-html="state.correlationObject.dataSources"></p>
                             <h3>Study Limitations</h3>
-                                <p>{{factor.studyLimitations}}</p>
+                                <p>{{state.correlationObject.studyLimitations}}</p>
                         </div>
                     </ion-item>
                 </div>
