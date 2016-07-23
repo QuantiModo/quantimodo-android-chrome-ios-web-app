@@ -270,5 +270,55 @@ angular.module('starter')
             $scope.showUnitsDropDown = true;
         };
 
+        $rootScope.showActionSheet = function() {
+
+            console.debug("Show the action sheet!  $scope.state.variableObject: ", $scope.state.variableObject);
+            var hideSheet = $ionicActionSheet.show({
+                buttons: [
+                    { text: '<i class="icon ion-ios-list-outline"></i>See History' },
+                    { text: '<i class="icon ion-android-notifications-none"></i>Add a Reminder' },
+                    { text: '<i class="icon ion-arrow-graph-up-right"></i>See Charts'},
+                    { text: '<i class="icon ion-compose"></i>Add a Measurement'}
+                ],
+                destructiveText: '<i class="icon ion-trash-a"></i>Delete Reminder',
+                cancelText: '<i class="icon ion-ios-close"></i>Cancel',
+                cancel: function() {
+                    console.log('CANCELLED');
+                },
+                buttonClicked: function(index) {
+                    console.log('BUTTON CLICKED', index);
+                    if(index === 0) {
+                        $scope.goToHistoryForVariableObject($scope.state.variableObject);
+                    }
+                    if(index === 1){
+                        $scope.goToAddReminderForVariableObject($scope.state.variableObject);
+                    }
+                    if(index === 2){
+                        $scope.goToChartsPageForVariableObject($scope.state.variableObject);
+                    }
+                    if(index === 3){
+                        $scope.goToAddMeasurement();
+                    }
+                    if(index === 4){
+                        $state.go('app.predictors',
+                            {
+                                variableObject: $scope.state.variableObject
+                            });
+                    }
+
+                    return true;
+                },
+                destructiveButtonClicked: function() {
+                    $scope.deleteReminder();
+                    return true;
+                }
+            });
+
+
+            $timeout(function() {
+                hideSheet();
+            }, 20000);
+
+        };
 
 	});

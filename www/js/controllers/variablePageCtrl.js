@@ -3,7 +3,8 @@ angular.module('starter')
     // Controls the Track Page of the App
     .controller('VariablePageCtrl', function($scope, $q, $ionicModal, $state, $timeout, utilsService, authService,
                                                     measurementService, chartService, $ionicPopup, localStorageService,
-                                                    $rootScope, $ionicLoading, ratingService, $stateParams, QuantiModo) {
+                                                    $rootScope, $ionicLoading, ratingService, $stateParams, QuantiModo,
+                                             $ionicActionSheet, variableService) {
         $scope.controller_name = "VariablePageCtrl";
         $scope.addReminderButtonText = "Add Reminder";
         $scope.recordMeasurementButtonText = "Record Measurement";
@@ -217,14 +218,25 @@ angular.module('starter')
             console.log("variablePageCtrl: init");
             if($stateParams.variableObject){
                 $scope.state.variableObject = $stateParams.variableObject;
-                $scope.state.variableObject.variableName = $stateParams.variableObject.name;
+                if($stateParams.variableObject.name){
+                    $scope.state.variableObject.variableName = $stateParams.variableObject.name;
+                }
             } else if ($stateParams.trackingReminder){
                 $scope.state.variableObject = $stateParams.trackingReminder;
             } else if ($stateParams.variableName){
                 $scope.state.variableObject = {};
                 $scope.state.variableObject.variableName = $stateParams.variableName;
+                variableService.getVariablesByName($stateParams.variableName).then(function(variableObject){
+                    $scope.state.variableObject = variableObject;
+                    $scope.state.variableObject.variableName = variableObject.name;
+                });
+
             } else {
                 console.error("No variable name provided to variable page controller!");
+            }
+
+            if(!$scope.state.variableObject.abbreviatedUnitName){
+
             }
 
             $ionicLoading.hide();
@@ -274,4 +286,55 @@ angular.module('starter')
             }
 
         });
+
+        $rootScope.showActionSheet = function() {
+
+            console.debug("Show the action sheet!  $scope.state.variableObject: ", $scope.state.variableObject);
+            var hideSheet = $ionicActionSheet.show({
+                buttons: [
+                    { text: '<i class="icon ion-ios-list-outline"></i>See History' },
+                    { text: '<i class="icon ion-ios-star"></i>Add to Favorites' },
+                    { text: '<i class="icon ion-android-notifications-none"></i>Add a Reminder'},
+                    { text: '<i class="icon ion-compose"></i>Add a Measurement'}
+                ],
+                //destructiveText: '<i class="icon ion-trash-a"></i>Delete Favorite',
+                cancelText: '<i class="icon ion-ios-close"></i>Cancel',
+                cancel: function() {
+                    console.log('CANCELLED');
+                },
+                buttonClicked: function(index) {
+                    console.log('BUTTON CLICKED', index);
+                    if(index === 0) {
+                        $scope.goToHistoryForVariableObject($scope.state.variableObject);
+                    }
+                    if(index === 1){
+                        $scope.addToFavoritesUsingStateVariableObject($scope.state.variableObject);
+                    }
+                    if(index === 2){
+                        $scope.goToAddReminderForVariableObject($scope.state.variableObject);
+                    }
+                    if(index === 3){
+                        $scope.goToAddMeasurement();
+                    }
+                    if(index === 4){
+                        $state.go('app.predictors',
+                            {
+                                variableObject: $scope.state.variableObject
+                            });
+                    }
+
+                    return true;
+                },
+                destructiveButtonClicked: function() {
+                    $scope.deleteReminder();
+                    return true;
+                }
+            });
+
+
+            $timeout(function() {
+                hideSheet();
+            }, 20000);
+
+        };
     });
