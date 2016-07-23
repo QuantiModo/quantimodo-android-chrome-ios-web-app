@@ -9,26 +9,18 @@ angular.module('starter')
             variableName: config.appSettings.primaryOutcomeVariableDetails.name
         };
 
-        if ($stateParams.valence === "positive") {
-            $scope.title = "Positive Predictors";
-        }
-        else {
-            $scope.title = "Negative Predictors";
-        }
-        
+
 		$scope.controller_name = "PredictorsCtrl";
 
         $scope.init = function(){
+            authService.checkAuthOrSendToLogin();
+            if (typeof analytics !== 'undefined')  {analytics.trackView("Predictors Controller");}
             if($stateParams.variableObject){
                 $scope.state.variableName = $stateParams.variableObject.name;
-                if ($stateParams.valence === "positive") {
-                    $scope.title = "Positive Predictors of " + $scope.state.variableName;
-                } else {
-                    $scope.title = "Negative Predictors of " + $scope.state.variableName;
-                }
             }
+            
             if ($stateParams.valence === "positive") {
-                $scope.valence = true;
+                $scope.state.title = "Positive Predictors of " + $scope.state.variableName;
                 $scope.increasingDecreasing = "INCREASING";
                 $scope.increasesDecreases = "increases";
                 Bugsnag.context = "positivePredictors";
@@ -43,8 +35,22 @@ angular.module('starter')
                     $scope.notShowConfirmationPositiveDown = notShowConfirmationDown ?
                         JSON.parse(notShowConfirmationDown) : false;
                 });
+                correlationService.getPositivePredictors($scope.state.variableName)
+                    .then(function(correlationObjects){
+                        $scope.correlationObjects = correlationObjects;
+                        correlationService.getUsersPositivePredictors($scope.state.variableName).then(function(correlationObjects){
+                            $scope.usersCorrelationObjects = correlationObjects;
+                        });
+                        $ionicLoading.hide();
+                        $scope.loading = false;
+                    }, function(){
+                        $scope.loading = false;
+                        $ionicLoading.hide();
+                        console.log('predictorsCtrl: Could not get positive correlations');
+                    });
             }
             else if ($stateParams.valence === "negative") {
+                $scope.state.title = "Negative Predictors of " + $scope.state.variableName;
                 $scope.valence = false;
                 $scope.increasingDecreasing = "DECREASING";
                 $scope.increasesDecreases = "decreases";
@@ -52,49 +58,24 @@ angular.module('starter')
                 $scope.showLoader('Fetching negative predictors...');
                 $scope.templateConfirmationUp = '<label><input type="checkbox" ng-model="$parent.notShowConfirmationNegative" class="show-again-checkbox">Don\'t show this again</label>';
                 $scope.templateConfirmationDown = '<label><input type="checkbox" ng-model="$parent.notShowConfirmationNegativeDown" class="show-again-checkbox">Don\'t show this again</label>';
-
+                correlationService.getNegativePredictors($scope.state.variableName)
+                    .then(function(correlationObjects){
+                        $scope.correlationObjects = correlationObjects;
+                        correlationService.getUsersNegativePredictors($scope.state.variableName).then(function(correlationObjects){
+                            $scope.usersCorrelationObjects = correlationObjects;
+                        });
+                        $ionicLoading.hide();
+                        $scope.loading = false;
+                    }, function(){
+                        $ionicLoading.hide();
+                        $scope.loading = false;
+                        console.log('predictorsCtrl: Could not get negative correlations');
+                    });
             }
             else {
-                // go to default state
                 $state.go(config.appSettings.defaultState);
             }
-            var isAuthorized = authService.checkAuthOrSendToLogin();
-            if (typeof analytics !== 'undefined')  {
-                analytics.trackView("Predictors Controller");
-            }
-            if(isAuthorized){
-                if ($scope.valence) {
-                    correlationService.getPositivePredictors($scope.state.variableName)
-                        .then(function(correlationObjects){
-                            $scope.correlationObjects = correlationObjects;
-                            correlationService.getUsersPositivePredictors($scope.state.variableName).then(function(correlationObjects){
-                                $scope.usersCorrelationObjects = correlationObjects;
-                            });
-                            $ionicLoading.hide();
-                            $scope.loading = false;
-                        }, function(){
-                            $scope.loading = false;
-                            $ionicLoading.hide();
-                            console.log('predictorsCtrl: Could not get positive correlations');
-                        });
-                }
-                else {
-                    correlationService.getNegativePredictors($scope.state.variableName)
-                        .then(function(correlationObjects){
-                            $scope.correlationObjects = correlationObjects;
-                            correlationService.getUsersNegativePredictors($scope.state.variableName).then(function(correlationObjects){
-                                $scope.usersCorrelationObjects = correlationObjects;
-                            });
-                            $ionicLoading.hide();
-                            $scope.loading = false;
-                        }, function(){
-                            $ionicLoading.hide();
-                            $scope.loading = false;
-                            console.log('predictorsCtrl: Could not get negative correlations');
-                        });
-                }
 
-            }
         };
 
         // when downVoted
