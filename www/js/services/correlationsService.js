@@ -2,9 +2,9 @@ angular.module('starter')
     // Correlation service
     .factory('correlationService', function(QuantiModo, $q) {
         return {
-            getPublicCauses : function(variableName, params){
+            getAggregatedCorrelations : function(params){
                 var deferred = $q.defer();
-                    QuantiModo.getPublicCauses(variableName, params, function(correlationObjects){
+                    QuantiModo.getAggregatedCorrelations(params, function(correlationObjects){
                         deferred.resolve(correlationObjects);
                     }, function(error){
                         Bugsnag.notify(error, JSON.stringify(error), {}, "error");
@@ -13,9 +13,9 @@ angular.module('starter')
                 return deferred.promise;
             },
 
-            getUserCauses: function (variableName, params) {
+            getUserCorrelations: function (params) {
                 var deferred = $q.defer();
-                QuantiModo.getUsersCauses(variableName, params, function(correlationObjects){
+                QuantiModo.getUserCorrelations(params, function(correlationObjects){
                     deferred.resolve(correlationObjects);
                 }, function(error){
                     Bugsnag.notify(error, JSON.stringify(error), {}, "error");

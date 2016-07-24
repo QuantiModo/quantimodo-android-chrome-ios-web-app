@@ -71,8 +71,10 @@ angular.module('starter')
                         { 
                             throw 'invalid parameter; allowed parameters: ' + allowedParams.toString(); 
                         }
-                        if(typeof params[key] !== "undefined"){
+                        if(typeof params[key] !== "undefined" && params[key] !== null){
                             urlParams.push(encodeURIComponent(key) + '=' + encodeURIComponent(params[key]));
+                        } else {
+                            console.warn("Not including parameter " + key + " in request because it is null or undefined");
                         }
                     }
                     //We can't append access token to Ionic requests for some reason
@@ -291,26 +293,18 @@ angular.module('starter')
             };
 
 
-            QuantiModo.getPublicCauses = function(variableName, params, successHandler, errorHandler){
-                if(!variableName){
-                    variableName = config.appSettings.primaryOutcomeVariableDetails.name;
-                }
-                variableName = encodeURIComponent(variableName);
-                QuantiModo.get('api/v1/variables/'+variableName+'/public/causes',
-                    ['correlationCoefficient'],
+            QuantiModo.getAggregatedCorrelations = function(params, successHandler, errorHandler){
+                QuantiModo.get('api/v1/aggregatedCorrelations',
+                    ['correlationCoefficient', 'cause', 'effect'],
                     params,
                     successHandler,
                     errorHandler);
             };
 
 
-            QuantiModo.getUsersCauses = function (variableName, params, successHandler, errorHandler) {
-                if(!variableName){
-                    variableName = config.appSettings.primaryOutcomeVariableDetails.name;
-                }
-                variableName = encodeURIComponent(variableName);
-                QuantiModo.get('api/v1/variables/' + variableName + '/causes',
-                    ['correlationCoefficient'],
+            QuantiModo.getUserCorrelations = function (params, successHandler, errorHandler) {
+                QuantiModo.get('api/v1/correlations',
+                    ['correlationCoefficient', 'cause', 'effect'],
                     params,
                     successHandler,
                     errorHandler
