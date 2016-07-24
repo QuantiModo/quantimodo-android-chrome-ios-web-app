@@ -293,8 +293,9 @@ angular.module('starter')
 
             QuantiModo.getPublicCauses = function(variableName, params, successHandler, errorHandler){
                 if(!variableName){
-                    variableName = encodeURIComponent(config.appSettings.primaryOutcomeVariableDetails.name);
+                    variableName = config.appSettings.primaryOutcomeVariableDetails.name;
                 }
+                variableName = encodeURIComponent(variableName);
                 QuantiModo.get('api/v1/variables/'+variableName+'/public/causes',
                     ['correlationCoefficient'],
                     params,
@@ -305,24 +306,15 @@ angular.module('starter')
 
             QuantiModo.getUsersCauses = function (variableName, params, successHandler, errorHandler) {
                 if(!variableName){
-                    variableName = encodeURIComponent(config.appSettings.primaryOutcomeVariableDetails.name);
+                    variableName = config.appSettings.primaryOutcomeVariableDetails.name;
                 }
-                QuantiModo.get('api/v1/variables/'+variableName+'/causes',
+                variableName = encodeURIComponent(variableName);
+                QuantiModo.get('api/v1/variables/' + variableName + '/causes',
                     ['correlationCoefficient'],
                     params,
                     successHandler,
                     errorHandler
                 );
-            };
-
-            // get negative list
-            QuantiModo.getNegativeList = function(successHandler, errorHandler){
-                var primaryOutcomeVariable = config.appSettings.primaryOutcomeVariableDetails.name.replace(' ','%20');
-                QuantiModo.get('api/v1/variables/'+primaryOutcomeVariable+'/public/effects',
-                    [],
-                    {},
-                    successHandler,
-                    errorHandler);
             };
 
             // post new correlation for user

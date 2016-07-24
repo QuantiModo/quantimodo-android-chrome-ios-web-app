@@ -6,7 +6,7 @@ angular.module('starter')
                                     QuantiModo, notificationService, $rootScope, localStorageService, reminderService,
                                     $ionicPopup, $ionicSideMenuDelegate, ratingService, migrationService,
                                     ionicDatePicker, unitService, variableService, $ionicPlatform, $cordovaGeolocation,
-                                    qmLocationService) {
+                                    qmLocationService, variableCategoryService) {
 
         $rootScope.loaderImagePath = config.appSettings.loaderImagePath;
         $scope.appVersion = 1489;
@@ -527,6 +527,88 @@ angular.module('starter')
         $scope.toggleReminderSubMenu = function(){
             $scope.showReminderSubMenu = !$scope.showReminderSubMenu;
         };
+
+        $rootScope.getTrackingReminderNotifications = function(params){
+            if(!params){
+                params = {};
+            }
+
+            var groupTrackingReminderNotificationsByDateRange = function(trackingReminderNotifications) {
+                var result = [];
+                var reference = moment().local();
+                var today = reference.clone().startOf('day');
+                var yesterday = reference.clone().subtract(1, 'days').startOf('day');
+                var weekold = reference.clone().subtract(7, 'days').startOf('day');
+                var monthold = reference.clone().subtract(30, 'days').startOf('day');
+
+                var todayResult = trackingReminderNotifications.filter(function (trackingReminderNotification) {
+                    return moment.utc(trackingReminderNotification.trackingReminderNotificationTime).local().isSame(today, 'd') === true;
+                });
+
+                if (todayResult.length) {
+                    result.push({name: "Today", trackingReminderNotifications: todayResult});
+                }
+
+                var yesterdayResult = trackingReminderNotifications.filter(function(trackingReminderNotification){
+                    return moment.utc(trackingReminderNotification.trackingReminderNotificationTime).local().isSame(yesterday, 'd') === true;
+                });
+
+                if(yesterdayResult.length) {
+                    result.push({ name : "Yesterday", trackingReminderNotifications : yesterdayResult });
+                }
+
+                var last7DayResult = trackingReminderNotifications.filter(function(trackingReminderNotification){
+                    var date = moment.utc(trackingReminderNotification.trackingReminderNotificationTime).local();
+
+                    return date.isAfter(weekold) === true && date.isSame(yesterday, 'd') !== true &&
+                        date.isSame(today, 'd') !== true;
+                });
+
+                if(last7DayResult.length) {
+                    result.push({ name : "Last 7 Days", trackingReminderNotifications : last7DayResult });
+                }
+
+                var last30DayResult = trackingReminderNotifications.filter(function(trackingReminderNotification){
+
+                    var date = moment.utc(trackingReminderNotification.trackingReminderNotificationTime).local();
+
+                    return date.isAfter(monthold) === true && date.isBefore(weekold) === true &&
+                        date.isSame(yesterday, 'd') !== true && date.isSame(today, 'd') !== true;
+                });
+
+                if(last30DayResult.length) {
+                    result.push({ name : "Last 30 Days", trackingReminderNotifications : last30DayResult });
+                }
+
+                var olderResult = trackingReminderNotifications.filter(function(trackingReminderNotification){
+                    return moment.utc(trackingReminderNotification.trackingReminderNotificationTime).local().isBefore(monthold) === true;
+                });
+
+                if(olderResult.length) {
+                    result.push({ name : "Older", trackingReminderNotifications : olderResult });
+                }
+
+                return result;
+            };
+
+            $scope.showLoader('Syncing reminder notifications...');
+            reminderService.getTrackingReminderNotifications(params.variableCategoryName, params.today)
+                .then(function(trackingReminderNotifications){
+                    $rootScope.numberOfPendingNotifications = trackingReminderNotifications.length;
+                    notificationService.updateNotificationBadges(trackingReminderNotifications.length);
+                    $rootScope.trackingRemindersNotifications =
+                        variableCategoryService.attachVariableCategoryIcons(trackingReminderNotifications);
+                    $rootScope.filteredTrackingReminderNotifications = groupTrackingReminderNotificationsByDateRange(trackingReminderNotifications);
+                    //Stop the ion-refresher from spinning
+                    $scope.$broadcast('scroll.refreshComplete');
+                }, function(){
+                    $scope.hideLoader();
+                    console.error("failed to get reminder notifications!");
+                    //Stop the ion-refresher from spinning
+                    $scope.$broadcast('scroll.refreshComplete');
+                });
+        };
+
 
         function setPlatformVariables() {
             $rootScope.isIOS = ionic.Platform.isIPad() || ionic.Platform.isIOS();

@@ -69,11 +69,28 @@ angular.module('starter')
                 });
             },
 
-            setOnTriggerAction: function() {
+            setOnTriggerAction: function(reminderService) {
                 console.debug("Creating notification trigger event to clear other notifications");
                 cordova.plugins.notification.local.on("trigger", function (currentNotification) {
 
                     try {
+                        reminderService.getTrackingReminderNotifications()
+                            .then(function(trackingReminderNotifications){
+                                $rootScope.trackingRemindersNotifications = trackingReminderNotifications;
+                                $rootScope.numberOfPendingNotifications = trackingReminderNotifications.length;
+                                notificationService.updateNotificationBadges(trackingReminderNotifications.length);
+                                if(!$rootScope.numberOfPendingNotifications){
+                                    console.debug("onTrigger: onClick: No notifications from API so clearAll active notifications");
+                                    cordova.plugins.notification.local.clearAll(function () {
+                                        console.debug("onTrigger: onClick: clearAll active notifications");
+                                    }, this);
+                                } else {
+                                    console.debug("onTrigger: notifications from API", trackingReminderNotifications);
+                                }
+                            }, function(){
+                                console.error("failed to get reminder notifications!");
+                            });
+
                         console.debug("just triggered this notification: ",  currentNotification);
                         cordova.plugins.notification.local.getAll(function (notifications) {
                             console.debug("All notifications ", notifications);
