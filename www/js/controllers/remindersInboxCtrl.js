@@ -3,7 +3,7 @@ angular.module('starter')
 	.controller('RemindersInboxCtrl', function($scope, authService, $ionicPopup, localStorageService, $state, 
 											   reminderService, $ionicLoading, measurementService, utilsService, 
 											   $stateParams, $location, $filter, $ionicPlatform, $rootScope,
-                                               notificationService, variableCategoryService){
+                                               notificationService, variableCategoryService, $ionicActionSheet, $timeout){
 
 	    $scope.controller_name = "RemindersInboxCtrl";
 
@@ -346,5 +346,77 @@ angular.module('starter')
     	$scope.$on('$ionicView.enter', function(e){
     		$scope.init();
     	});
+
+		// Triggered on a button click, or some other target
+		$scope.showActionSheet = function(trackingReminderNotification, $index) {
+
+			$scope.state.trackingRemindersNotification = trackingReminderNotification;
+			$scope.state.trackingReminder = trackingReminderNotification;
+			$scope.state.trackingReminder.id = trackingReminderNotification.trackingReminderId;
+			$scope.state.variableObject = trackingReminderNotification;
+			$scope.state.variableObject.id = trackingReminderNotification.variableId;
+			$scope.state.variableObject.name = trackingReminderNotification.variableName;
+			// Show the action sheet
+			var hideSheet = $ionicActionSheet.show({
+				buttons: [
+					{ text: '<i class="icon ion-android-notifications-none"></i>Edit Reminder'},
+					{ text: '<i class="icon ion-ios-star"></i>Add ' + ' to Favorites' },
+					{ text: '<i class="icon ion-edit"></i>Record ' + ' Measurement' },
+					{ text: '<i class="icon ion-arrow-graph-up-right"></i>' + $scope.state.variableObject.name + ' Visualized'},
+					{ text: '<i class="icon ion-ios-list-outline"></i>' + $scope.state.variableObject.name + ' History'},
+					{ text: '<i class="icon ion-arrow-up-a"></i>Positive Predictors'},
+					{ text: '<i class="icon ion-arrow-down-a"></i>Negative Predictors'}
+				],
+				destructiveText: '<i class="icon ion-trash-a"></i>Delete Reminder',
+				cancelText: '<i class="icon ion-ios-close"></i>Cancel',
+				cancel: function() {
+					console.log('CANCELLED');
+				},
+				buttonClicked: function(index) {
+					console.log('BUTTON CLICKED', index);
+					if(index === 0){
+						$scope.editReminderSettings($scope.state.trackingRemindersNotification);
+					}
+					if(index === 1){
+						$scope.addToFavoritesUsingStateVariableObject($scope.state.variableObject);
+					}
+					if(index === 2){
+						$scope.goToAddMeasurementForVariableObject($scope.state.variableObject);
+					}
+					if(index === 3){
+						$scope.goToChartsPageForVariableObject($scope.state.variableObject);
+					}
+					if(index === 4){
+						$scope.goToHistoryForVariableObject($scope.state.variableObject);
+					}
+					if(index === 5){
+						$state.go('app.predictors',
+							{
+								variableObject: $scope.state.variableObject,
+								valence: "positive"
+							});
+					}
+					if(index === 6){
+						$state.go('app.predictors',
+							{
+								variableObject: $scope.state.variableObject,
+								valence: "negative"
+							});
+					}
+
+					return true;
+				},
+				destructiveButtonClicked: function() {
+					$scope.deleteReminder($scope.state.trackingReminder);
+					return true;
+				}
+			});
+
+
+			$timeout(function() {
+				hideSheet();
+			}, 20000);
+
+		};
 		
 	});
