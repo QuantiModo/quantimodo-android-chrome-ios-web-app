@@ -223,8 +223,8 @@
 			</div>
 		</div>
 
-		<div class="list card" ng-if="state.filteredTrackingReminderNotifications.length">
-			<div ng-repeat="divider in state.filteredTrackingReminderNotifications" ng-init="dividerIndex = $index" id="{{divider.name}}Reminders">
+		<div class="list card" ng-if="filteredTrackingReminderNotifications.length">
+			<div ng-repeat="divider in filteredTrackingReminderNotifications" ng-init="dividerIndex = $index" id="{{divider.name}}Reminders">
 
 				<div class="item item-divider" style="">
 					{{divider.name}}
