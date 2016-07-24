@@ -32,7 +32,7 @@ angular.module('starter')
 				// Not keeping notifications in local storage currently
 				//localStorageService.deleteElementOfItemById('trackingReminderNotifications', trackingReminderNotificationId);
 
-				QuantiModo.skipTrackingReminder(params, function(response){
+				QuantiModo.skipTrackingReminderNotification(params, function(response){
 					if(response.success) {
 						deferred.resolve();
                     }
@@ -47,12 +47,29 @@ angular.module('starter')
 				return deferred.promise;
 			},
 
+			skipAllReminderNotifications : function(params){
+				var deferred = $q.defer();
+				QuantiModo.skipAllTrackingReminderNotifications(params, function(response){
+					if(response.success) {
+						deferred.resolve();
+					}
+					else {
+						deferred.reject();
+					}
+				}, function(err){
+					Bugsnag.notify(err, JSON.stringify(err), {}, "error");
+					deferred.reject(err);
+				});
+
+				return deferred.promise;
+			},
+
 			trackReminderNotification : function(params){
 				var deferred = $q.defer();
 				// Not keeping notifications in local storage currently
 				//localStorageService.deleteElementOfItemById('trackingReminderNotifications', trackingReminderNotificationId);
 
-				QuantiModo.trackTrackingReminder(params, function(response){
+				QuantiModo.trackTrackingReminderNotification(params, function(response){
 					if(response.success) {
 						deferred.resolve();
 					}
@@ -72,7 +89,7 @@ angular.module('starter')
 				// Not keeping notifications in local storage currently
 				//localStorageService.deleteElementOfItemById('trackingReminderNotifications', trackingReminderNotificationId);
 
-				QuantiModo.snoozeTrackingReminder(params, function(response){
+				QuantiModo.snoozeTrackingReminderNotification(params, function(response){
 					if(response.success) {
 						deferred.resolve();
                     }

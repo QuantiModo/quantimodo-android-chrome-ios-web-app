@@ -3,7 +3,8 @@ angular.module('starter')
 	.controller('RemindersInboxCtrl', function($scope, authService, $ionicPopup, localStorageService, $state, 
 											   reminderService, $ionicLoading, measurementService, utilsService, 
 											   $stateParams, $location, $filter, $ionicPlatform, $rootScope,
-                                               notificationService, variableCategoryService, $ionicActionSheet, $timeout){
+                                               notificationService, variableCategoryService, $ionicActionSheet,
+											   $timeout, QuantiModo){
 
 	    $scope.controller_name = "RemindersInboxCtrl";
 
@@ -85,7 +86,7 @@ angular.module('starter')
 		};
 
 		var isGhostClick = function ($event) {
-			if($rootScope.isMobile ){
+
 				if($event &&
 					$scope.state.lastButtonPressTimeStamp > $event.timeStamp - 3000 &&
 					$scope.state.lastClientX === $event.clientX &&
@@ -100,7 +101,7 @@ angular.module('starter')
 					$scope.state.lastClientY = $event.clientY;
 					return false;
 				}
-			}
+
 		};
 
 		$scope.sendChromeEmailLink = function(){
@@ -230,7 +231,7 @@ angular.module('starter')
 				});
 	    };
 
-	    $scope.editReminderSettings = function(trackingReminderNotification){
+	    $scope.editReminderSettingsByNotification = function(trackingReminderNotification){
 			var trackingReminder = trackingReminderNotification;
 			trackingReminder.id = trackingReminderNotification.trackingReminderId;
 	    	$state.go('app.reminderAdd',
@@ -255,16 +256,21 @@ angular.module('starter')
     	});
 
 		// Triggered on a button click, or some other target
-		$scope.showActionSheet = function(trackingReminderNotification, $index) {
+		$scope.showActionSheetForNotification = function(trackingReminderNotification, $event) {
 
-			$scope.state.trackingRemindersNotification = trackingReminderNotification;
+			if(isGhostClick($event)){
+				return;
+			}
+
+
+			$scope.state.trackingReminderNotification = trackingReminderNotification;
 			$scope.state.trackingReminder = trackingReminderNotification;
 			$scope.state.trackingReminder.id = trackingReminderNotification.trackingReminderId;
 			$scope.state.variableObject = trackingReminderNotification;
 			$scope.state.variableObject.id = trackingReminderNotification.variableId;
 			$scope.state.variableObject.name = trackingReminderNotification.variableName;
 			// Show the action sheet
-			var hideSheet = $ionicActionSheet.show({
+			var hideSheetForNotification = $ionicActionSheet.show({
 				buttons: [
 					{ text: '<i class="icon ion-android-notifications-none"></i>Edit Reminder'},
 					{ text: '<i class="icon ion-ios-star"></i>Add ' + ' to Favorites' },
@@ -274,7 +280,7 @@ angular.module('starter')
 					{ text: '<i class="icon ion-arrow-up-a"></i>Positive Predictors'},
 					{ text: '<i class="icon ion-arrow-down-a"></i>Negative Predictors'}
 				],
-				destructiveText: '<i class="icon ion-trash-a"></i>Delete Reminder',
+				destructiveText: '<i class="icon ion-trash-a"></i>Skip All Notifications',
 				cancelText: '<i class="icon ion-ios-close"></i>Cancel',
 				cancel: function() {
 					console.log('CANCELLED');
@@ -282,7 +288,7 @@ angular.module('starter')
 				buttonClicked: function(index) {
 					console.log('BUTTON CLICKED', index);
 					if(index === 0){
-						$scope.editReminderSettings($scope.state.trackingRemindersNotification);
+						$scope.editReminderSettingsByNotification($scope.state.trackingReminderNotification);
 					}
 					if(index === 1){
 						$scope.addToFavoritesUsingStateVariableObject($scope.state.variableObject);
@@ -320,7 +326,59 @@ angular.module('starter')
 					return true;
 				},
 				destructiveButtonClicked: function() {
-					$scope.deleteReminder($scope.state.trackingReminder);
+					console.debug("Skipping all notifications for trackingReminder", $scope.state.trackingReminderNotification);
+					var params = {
+						trackingReminderId : $scope.state.trackingReminderNotification.trackingReminderId
+					};
+					reminderService.skipAllReminderNotifications(params)
+						.then(function(){
+							//notificationService.setNotificationBadge(0);
+							$scope.init();
+						}, function(err){
+							Bugsnag.notify(err, JSON.stringify(err), {}, "error");
+							console.error(err);
+							utilsService.showAlert('Failed to skip all notifications for , Try again!', 'assertive');
+						});
+					return true;
+				}
+			});
+
+
+			$timeout(function() {
+				hideSheetForNotification();
+			}, 20000);
+
+		};
+
+		// Triggered on a button click, or some other target
+		$rootScope.showActionSheetMenu = function() {
+			// Show the action sheet
+			var hideSheet = $ionicActionSheet.show({
+				buttons: [
+
+				],
+				destructiveText: '<i class="icon ion-trash-a"></i>Clear All Notifications',
+				cancelText: '<i class="icon ion-ios-close"></i>Cancel',
+				cancel: function() {
+					console.log('CANCELLED');
+				},
+				buttonClicked: function(index) {
+					console.log('BUTTON CLICKED', index);
+					if(index === 0){
+
+					}
+					return true;
+				},
+				destructiveButtonClicked: function() {
+					reminderService.skipAllReminderNotifications()
+						.then(function(){
+							notificationService.setNotificationBadge(0);
+							$scope.init();
+					}, function(err){
+						Bugsnag.notify(err, JSON.stringify(err), {}, "error");
+						console.error(err);
+						utilsService.showAlert('Failed to skip all notifications, Try again!', 'assertive');
+					});
 					return true;
 				}
 			});
@@ -331,5 +389,6 @@ angular.module('starter')
 			}, 20000);
 
 		};
-		
+
+
 	});

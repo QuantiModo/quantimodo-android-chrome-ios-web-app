@@ -9,11 +9,6 @@ angular.module('starter')
 
 	    $scope.controller_name = "FavoriteAddCtrl";
 
-		console.log('Loading ' + $scope.controller_name);
-
-        var currentTime = new Date();
-
-        // state
 	    $scope.state = {
             showAddVariableCard : false,
             showUnits: false,
@@ -270,7 +265,7 @@ angular.module('starter')
             $scope.showUnitsDropDown = true;
         };
 
-        $rootScope.showActionSheet = function() {
+        $rootScope.showActionSheetMenu = function() {
 
             console.debug("Show the action sheet!  $scope.state.variableObject: ", $scope.state.variableObject);
             var hideSheet = $ionicActionSheet.show({
