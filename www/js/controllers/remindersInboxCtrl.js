@@ -122,7 +122,7 @@ angular.module('starter')
 				return;
 			}
 
-			$rootScope.filteredTrackingReminderNotifications[dividerIndex].reminders[reminderNotificationIndex].hide = true;
+			$rootScope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications[reminderNotificationIndex].hide = true;
 			console.debug('Tracking notification', trackingReminderNotification);
 			console.log('modifiedReminderValue is ' + modifiedReminderValue);
 			var params = {
@@ -148,7 +148,7 @@ angular.module('starter')
 				return;
 			}
 
-			$rootScope.filteredTrackingReminderNotifications[dividerIndex].reminders[reminderNotificationIndex].hide = true;
+			$rootScope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications[reminderNotificationIndex].hide = true;
 
 			console.debug('Skipping notification', trackingReminderNotification);
 			var params = {
@@ -175,7 +175,7 @@ angular.module('starter')
 				return;
 			}
 
-			$rootScope.filteredTrackingReminderNotifications[dividerIndex].reminders[reminderNotificationIndex].hide = true;
+			$rootScope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications[reminderNotificationIndex].hide = true;
 
 			console.debug('Snoozing notification', trackingReminderNotification);
 			var params = {
@@ -217,7 +217,7 @@ angular.module('starter')
 	    };
 
 	    $scope.editMeasurement = function(trackingReminderNotification, dividerIndex, reminderNotificationIndex){
-			$rootScope.filteredTrackingReminderNotifications[dividerIndex].reminders[reminderNotificationIndex].hide = true;
+			$rootScope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications[reminderNotificationIndex].hide = true;
 			// FIXME this shouldn't skip unless the change is made - user could cancel
 			var params = {
 				trackingReminderNotificationId: trackingReminderNotification.id
