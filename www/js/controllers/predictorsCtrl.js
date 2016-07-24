@@ -9,10 +9,10 @@ angular.module('starter')
             variableName: config.appSettings.primaryOutcomeVariableDetails.name
         };
 
-
 		$scope.controller_name = "PredictorsCtrl";
 
         $scope.init = function(){
+            var requestParams = {};
             $scope.state.correlationObjects = null;
             $scope.state.usersCorrelationObjects = null;
             authService.checkAuthOrSendToLogin();
@@ -24,162 +24,132 @@ angular.module('starter')
             if ($stateParams.valence === "positive") {
                 $scope.state.title = "Positive Predictors of " + $scope.state.variableName;
                 $scope.increasingDecreasing = "INCREASING";
-                $scope.increasesDecreases = "increases";
                 Bugsnag.context = "positivePredictors";
                 $scope.showLoader('Fetching positive predictors...');
-                $scope.templateConfirmationUp = '<label><input type="checkbox" ng-model="$parent.notShowConfirmationPositive" class="show-again-checkbox">Don\'t show this again</label>';
-                $scope.templateConfirmationDown = '<label><input type="checkbox" ng-model="$parent.notShowConfirmationPositiveDown" class="show-again-checkbox">Don\'t show this again</label>';
-
-                localStorageService.getItem('notShowConfirmationPositive',function(notShowConfirmation){
-                    $scope.notShowConfirmationPositive = notShowConfirmation ? JSON.parse(notShowConfirmation) : false;
-                });
-                localStorageService.getItem('notShowConfirmationPositiveDown',function(notShowConfirmationDown){
-                    $scope.notShowConfirmationPositiveDown = notShowConfirmationDown ?
-                        JSON.parse(notShowConfirmationDown) : false;
-                });
-                correlationService.getPositivePredictors($scope.state.variableName)
-                    .then(function(correlationObjects){
-                        $scope.state.correlationObjects = correlationObjects;
-                        correlationService.getUsersPositivePredictors($scope.state.variableName).then(function(correlationObjects){
-                            $scope.state.usersCorrelationObjects = correlationObjects;
-                        });
-                        $ionicLoading.hide();
-                        $scope.loading = false;
-                    }, function(){
-                        $scope.loading = false;
-                        $ionicLoading.hide();
-                        console.log('predictorsCtrl: Could not get positive correlations');
-                    });
+                requestParams.correlationCoefficient = '(gt)0';
             }
-            else if ($stateParams.valence === "negative") {
+
+            if ($stateParams.valence === "negative") {
                 $scope.state.title = "Negative Predictors of " + $scope.state.variableName;
                 $scope.increasingDecreasing = "DECREASING";
-                $scope.increasesDecreases = "decreases";
                 Bugsnag.context = "negativePredictors";
                 $scope.showLoader('Fetching negative predictors...');
-                $scope.templateConfirmationUp = '<label><input type="checkbox" ng-model="$parent.notShowConfirmationNegative" class="show-again-checkbox">Don\'t show this again</label>';
-                $scope.templateConfirmationDown = '<label><input type="checkbox" ng-model="$parent.notShowConfirmationNegativeDown" class="show-again-checkbox">Don\'t show this again</label>';
-                correlationService.getNegativePredictors($scope.state.variableName)
-                    .then(function(correlationObjects){
-                        $scope.state.correlationObjects = correlationObjects;
-                        correlationService.getUsersNegativePredictors($scope.state.variableName).then(function(correlationObjects){
+                requestParams.correlationCoefficient = '(lt)0';
+            }
+
+            correlationService.getPublicCauses($scope.state.variableName, requestParams)
+                .then(function(correlationObjects){
+                    $scope.state.correlationObjects = correlationObjects;
+                    correlationService.getUserCauses($scope.state.variableName, requestParams)
+                        .then(function(correlationObjects){
                             $scope.state.usersCorrelationObjects = correlationObjects;
                         });
-                        $ionicLoading.hide();
-                        $scope.loading = false;
-                    }, function(){
-                        $ionicLoading.hide();
-                        $scope.loading = false;
-                        console.log('predictorsCtrl: Could not get negative correlations');
-                    });
-            }
-            else {
-                $state.go(config.appSettings.defaultState);
-            }
-
+                    $ionicLoading.hide();
+                    $scope.loading = false;
+                }, function(){
+                    $ionicLoading.hide();
+                    $scope.loading = false;
+                    console.error('predictorsCtrl: Could not get correlations');
+                });
         };
 
-        // when downVoted
-	    $scope.downVote = function(correlationObject){
-            if (correlationObject.userVote !== 0) {
-                if (($stateParams.valence === "positive" && !$scope.notShowConfirmationPositiveDown) ||
-                    ($stateParams.valence === "negative" && !$scope.notShowConfirmationNegativeDown)) {
-                    $ionicPopup.show({
-                        title:'Implausible relationship?',
-                        subTitle: 'Do you think is is IMPOSSIBLE that ' + correlationObject.cause + ' ' + $scope.increasesDecreases + ' your ' + correlationObject.effect + '?',
-                        scope: $scope,
-                        template: $scope.templateConfirmatioDown,
-                        buttons:[
-                            {text: 'No'},
-                            {text: 'Yes',
-                                type: 'button-positive',
-                                onTap: function(){
-                                    if ($stateParams.valence === "positive") {
-                                        localStorageService.setItem('notShowConfirmationPositiveDown', JSON.stringify($scope.notShowConfirmationPositiveDown));
-                                    }
-                                    else {
-                                        localStorageService.setItem('notShowConfirmationNegativeDown', JSON.stringify($scope.notShowConfirmationNegativeDown));
-                                    }
-                                    downVote(correlationObject);
-                                }
-                            }
-                        ]
-                    });
-                } else {
-                    downVote(correlationObject);
-                }
+	    $scope.downVote = function(correlationObject, $index, userOrPublic){
+            if (correlationObject.correlationCoefficient > 0) {
+                $scope.increasesDecreases = "increases";
             } else {
-                deleteVote(correlationObject);
+                $scope.increasesDecreases = "decreases";
+            }
+
+            if (correlationObject.userVote !== 0) {
+                $ionicPopup.show({
+                    title:'Implausible relationship?',
+                    subTitle: 'Do you think is is IMPOSSIBLE that ' + correlationObject.cause + ' ' + $scope.increasesDecreases + ' your ' + correlationObject.effect + '?',
+                    scope: $scope,
+                    template: $scope.templateConfirmatioDown,
+                    buttons:[
+                        {text: 'No'},
+                        {text: 'Yes',
+                            type: 'button-positive',
+                            onTap: function(){
+                                downVote(correlationObject, $index, userOrPublic);
+                            }
+                        }
+                    ]
+                });
+            } else {
+                deleteVote(correlationObject, $index, userOrPublic);
             }
         };
 
-        function downVote(correlationObject){
-            var vote = 0;
-            correlationService.vote(vote, correlationObject.cause, correlationObject.effect, correlationObject.correlationCoefficient)
+        function downVote(correlationObject, $index, userOrPublic){
+            if(userOrPublic === 'user'){
+                $scope.state.usersCorrelationObjects[$index].userVote = 0;
+            } else {
+                $scope.state.correlationObjects[$index].userVote = 0;
+            }
+            correlationObject.vote = 0;
+            correlationService.vote(correlationObject)
                 .then(function () {
-                    correlationObject.userVote = vote;
-                    utilsService.showAlert('Down voted!');
+                    console.debug('Down voted!');
                 }, function () {
-                    utilsService.showAlert('Down vote failed !');
+                    console.error('Down vote failed!');
                 });
         }
 
-	    // when upVoted
-	    $scope.upVote = function(correlationObject){
+	    $scope.upVote = function(correlationObject, $index, userOrPublic){
+            if (correlationObject.correlationCoefficient > 0) {
+                $scope.increasesDecreases = "increases";
+            } else {
+                $scope.increasesDecreases = "decreases";
+            }
             if (correlationObject.userVote !== 1) {
-                if (($stateParams.valence === "positive" && !$scope.notShowConfirmationPositive) ||
-                    ($stateParams.valence === "negative" && !$scope.notShowConfirmationNegative)) {
-                    $ionicPopup.show({
-                        title:'Plausible relationship?',
-                        subTitle: 'Do you think it is POSSIBLE that '+ correlationObject.cause + ' ' + $scope.increasesDecreases + ' your ' + correlationObject.effect + '?',
-                        scope: $scope,
-                        template: $scope.templateConfirmationUp,
-                        buttons:[
-                            {text: 'No'},
-                            {text: 'Yes',
-                                type: 'button-positive',
-                                onTap: function(){
-                                    if ($stateParams.valence === "positive") {
-                                        localStorageService.setItem('notShowConfirmationPositive',JSON.stringify($scope.notShowConfirmationPositive));
-                                    }
-                                    else {
-                                        localStorageService.setItem('notShowConfirmationNegative',JSON.stringify($scope.notShowConfirmationNegative));
-                                    }
-                                    upVote(correlationObject);
-                                }
+                $ionicPopup.show({
+                    title:'Plausible relationship?',
+                    subTitle: 'Do you think it is POSSIBLE that '+ correlationObject.cause + ' ' + $scope.increasesDecreases + ' your ' + correlationObject.effect + '?',
+                    scope: $scope,
+                    template: $scope.templateConfirmationUp,
+                    buttons:[
+                        {text: 'No'},
+                        {text: 'Yes',
+                            type: 'button-positive',
+                            onTap: function(){
+                                upVote(correlationObject, $index, userOrPublic);
                             }
-                        ]
-                    });
-                } else {
-                    upVote(correlationObject);
-                }
-            }
-            else {
-                deleteVote(correlationObject);
-            }
+                        }
+                    ]
+                });
+            } else {
 
+                deleteVote(correlationObject, $index, userOrPublic);
+            }
 	    };
 
-        function upVote(correlationObject){
-            var vote = 1; // true
-            correlationService.vote(vote, correlationObject.cause, correlationObject.effect, correlationObject.correlationCoefficient)
+        function upVote(correlationObject, $index, userOrPublic){
+            if(userOrPublic === 'user'){
+                $scope.state.usersCorrelationObjects[$index].userVote = 1;
+            } else {
+                $scope.state.correlationObjects[$index].userVote = 1;
+            }
+            correlationObject.vote = 1;
+            correlationService.vote(correlationObject)
                 .then(function () {
-                    correlationObject.userVote = vote;
-                    utilsService.showAlert('Upvoted!');
+                    console.debug('upVote');
                 }, function () {
-                    utilsService.showAlert('Upvote Failed!');
-
+                    console.error('upVote failed!');
                 });
         }
 
-        function deleteVote(correlationObject) {
-            correlationService.deleteVote(correlationObject.cause, correlationObject.effect, correlationObject.correlationCoefficient)
-                .then(function () {
-                    correlationObject.userVote = null;
-                    utilsService.showAlert('Vote Undone!');
-                }, function () {
-                    console.error('Undo Vote Failed!');
-                });
+        function deleteVote(correlationObject, $index, userOrPublic) {
+            if(userOrPublic === 'user'){
+                $scope.state.usersCorrelationObjects[$index].userVote = null;
+            } else {
+                $scope.state.correlationObjects[$index].userVote = null;
+            }
+            correlationService.deleteVote(correlationObject, function(response){
+                console.debug("deleteVote response", response);
+            }, function(response){
+                console.error("deleteVote response", response);
+            });
         }
 
         // open store in inAppbrowser

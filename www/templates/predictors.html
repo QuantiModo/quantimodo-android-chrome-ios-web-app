@@ -13,13 +13,13 @@
                         <ion-item class="item item-text-wrap card-item" style="border-style:hidden;">
                             <h4><a ng-click="goToStudyPage(correlationObject)">{{correlationObject.cause}}</a></h4>
                             <div class="voteButtons">
-                                <div ng-click="upVote(correlationObject)" class="show-inline">
-                                    <img ng-if="correlationObject.userVote == null || correlationObject.userVote == 0" src="img/thumb_up_white.png" height="32px" width="32px" />
-                                    <img ng-if="correlationObject.userVote == 1" src="img/thumb_up_black.png" height="32px" width="32px" />
+                                <div ng-click="upVote(correlationObject, $index, 'public')" class="show-inline">
+                                    <img ng-if="correlationObject.userVote === null || correlationObject.userVote === 0" src="img/thumb_up_white.png" height="32px" width="32px" />
+                                    <img ng-if="correlationObject.userVote === 1" src="img/thumb_up_black.png" height="32px" width="32px" />
                                 </div>
-                                <div ng-click="downVote(correlationObject)" class="show-inline">
-                                    <img ng-if="correlationObject.userVote == null || correlationObject.userVote == 1" src="img/thumb_down_white.png" height="32px" width="32px" />
-                                    <img ng-if="correlationObject.userVote == 0" src="img/thumb_down_black.png" height="32px" width="32px" />
+                                <div ng-click="downVote(correlationObject, $index, 'public')" class="show-inline">
+                                    <img ng-if="correlationObject.userVote === null || correlationObject.userVote === 1" src="img/thumb_down_white.png" height="32px" width="32px" />
+                                    <img ng-if="correlationObject.userVote === 0" src="img/thumb_down_black.png" height="32px" width="32px" />
                                 </div>
                             </div>
                             <p ng-click="goToStudyPage(correlationObject)">{{correlationObject.predictorExplanation}}</p>
@@ -84,13 +84,13 @@
                         <ion-item class="item item-text-wrap card-item" style="border-style:hidden;">
                             <h4><a ng-click="goToStudyPage(correlationObject)">{{correlationObject.cause}}</a></h4>
                             <div class="voteButtons">
-                                <div ng-click="upVote(correlationObject)" class="show-inline">
-                                    <img ng-if="correlationObject.userVote == null || correlationObject.userVote == 0" src="img/thumb_up_white.png" height="32px" width="32px" />
-                                    <img ng-if="correlationObject.userVote == 1" src="img/thumb_up_black.png" height="32px" width="32px" />
+                                <div ng-click="upVote(correlationObject, $index, 'user')" class="show-inline">
+                                    <img ng-if="correlationObject.userVote === null || correlationObject.userVote === 0" src="img/thumb_up_white.png" height="32px" width="32px" />
+                                    <img ng-if="correlationObject.userVote === 1" src="img/thumb_up_black.png" height="32px" width="32px" />
                                 </div>
-                                <div ng-click="downVote(correlationObject)" class="show-inline">
-                                    <img ng-if="correlationObject.userVote == null || correlationObject.userVote == 1" src="img/thumb_down_white.png" height="32px" width="32px" />
-                                    <img ng-if="correlationObject.userVote == 0" src="img/thumb_down_black.png" height="32px" width="32px" />
+                                <div ng-click="downVote(correlationObject, $index, 'user')" class="show-inline">
+                                    <img ng-if="correlationObject.userVote === null || correlationObject.userVote === 1" src="img/thumb_down_white.png" height="32px" width="32px" />
+                                    <img ng-if="correlationObject.userVote === 0" src="img/thumb_down_black.png" height="32px" width="32px" />
                                 </div>
                             </div>
                             <p>{{correlationObject.predictorExplanation}}</p>
