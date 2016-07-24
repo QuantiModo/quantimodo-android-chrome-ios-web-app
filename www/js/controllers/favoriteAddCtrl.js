@@ -5,7 +5,7 @@ angular.module('starter')
 											 $stateParams, measurementService, reminderService, $ionicLoading,
 											 utilsService, $filter, ionicTimePicker, $timeout, 
 											 variableCategoryService, variableService, unitService, timeService,
-                                             $rootScope){
+                                             $rootScope, $ionicActionSheet){
 
 	    $scope.controller_name = "FavoriteAddCtrl";
 
