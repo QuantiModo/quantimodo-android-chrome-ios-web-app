@@ -440,7 +440,7 @@ angular.module('starter')
                     var params = {
                         trackingReminderId: $stateParams.reminder.id
                     };
-                    QuantiModo.skipTrackingReminder(params, function(response){
+                    QuantiModo.skipTrackingReminderNotification(params, function(response){
                         console.debug(response);
                     }, function(err){
                         console.error(err);
@@ -643,7 +643,7 @@ angular.module('starter')
             }
         };
 
-        $rootScope.showActionSheet = function() {
+        $rootScope.showActionSheetMenu = function() {
 
             console.debug("Show the action sheet!  $scope.state.variableObject: ", $scope.state.variableObject);
             var hideSheet = $ionicActionSheet.show({

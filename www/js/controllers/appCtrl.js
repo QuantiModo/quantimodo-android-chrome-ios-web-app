@@ -358,6 +358,8 @@ angular.module('starter')
                 e.targetScope.controller_name === "RemindersAddCtrl" ||
                 e.targetScope.controller_name === "FavoriteAddCtrl" ||
                 e.targetScope.controller_name === "VariablePageCtrl"
+                // Disabled until we decide if we should allow skipping all notifications
+                //|| e.targetScope.controller_name === "RemindersInboxCtrl"
             ){
                 $scope.showMoreMenuButton = true;
             } else {

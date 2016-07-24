@@ -520,7 +520,7 @@ angular.module('starter')
             $scope.showUnitsDropDown = true;
         };
 
-        $rootScope.showActionSheet = function() {
+        $rootScope.showActionSheetMenu = function() {
 
             console.debug("Show the action sheet!  $scope.state.variableObject: ", $scope.state.variableObject);
             var hideSheet = $ionicActionSheet.show({
