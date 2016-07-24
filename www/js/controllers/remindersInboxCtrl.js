@@ -202,7 +202,7 @@ angular.module('starter')
 			if (typeof analytics !== 'undefined')  { analytics.trackView("Reminders Inbox Controller"); }
 			if(isAuthorized){
 				$scope.showHelpInfoPopupIfNecessary();
-                $scope.getTrackingReminderNotifications();
+                $rootScope.getTrackingReminderNotifications();
 				//update alarms and local notifications
 				console.debug("reminderInbox init: calling refreshTrackingRemindersAndScheduleAlarms");
 				reminderService.refreshTrackingRemindersAndScheduleAlarms();
