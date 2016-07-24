@@ -202,7 +202,9 @@ angular.module('starter')
 					{ text: '<i class="icon ion-ios-star"></i>Add ' + ' to Favorites' },
 					{ text: '<i class="icon ion-edit"></i>Record ' + ' Measurement' },
 					{ text: '<i class="icon ion-arrow-graph-up-right"></i>' + $scope.state.variableObject.name + ' Visualized'},
-					{ text: '<i class="icon ion-ios-list-outline"></i>' + $scope.state.variableObject.name + ' History'}
+					{ text: '<i class="icon ion-ios-list-outline"></i>' + $scope.state.variableObject.name + ' History'},
+					{ text: '<i class="icon ion-arrow-up-a"></i>Positive Predictors'},
+					{ text: '<i class="icon ion-arrow-down-a"></i>Negative Predictors'}
 				],
 				destructiveText: '<i class="icon ion-trash-a"></i>Delete Reminder',
 				cancelText: '<i class="icon ion-ios-close"></i>Cancel',
@@ -212,7 +214,7 @@ angular.module('starter')
 				buttonClicked: function(index) {
 					console.log('BUTTON CLICKED', index);
 					if(index === 0){
-						$scope.edit(trackingReminder);
+						$scope.edit($scope.state.trackingReminder);
 					}
 					if(index === 1){
 						$scope.addToFavoritesUsingStateVariableObject($scope.state.variableObject);
@@ -226,10 +228,18 @@ angular.module('starter')
 					if(index === 4){
 						$scope.goToHistoryForVariableObject($scope.state.variableObject);
 					}
+					if(index === 4){
+						$state.go('app.predictors',
+							{
+								variableObject: $scope.state.variableObject,
+								valence: "positive"
+							});
+					}
 					if(index === 5){
 						$state.go('app.predictors',
 							{
-								variableObject: $scope.state.trackingReminder
+								variableObject: $scope.state.variableObject,
+								valence: "negative"
 							});
 					}
 

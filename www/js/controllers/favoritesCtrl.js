@@ -110,13 +110,18 @@ angular.module('starter')
 		$scope.showActionSheet = function(favorite, $index) {
 
 		    $scope.state.trackingReminder = favorite;
+			$scope.state.variableObject = favorite;
+			$scope.state.variableObject.id = favorite.variableId;
+			$scope.state.variableObject.name = favorite.variableName;
 			// Show the action sheet
 			var hideSheet = $ionicActionSheet.show({
 				buttons: [
 					{ text: '<i class="icon ion-gear-a"></i>Change Default Value' },
 					{ text: '<i class="icon ion-edit"></i>Different Value/Time' },
-					{ text: '<i class="icon ion-arrow-graph-up-right"></i>See Charts'},
-					{ text: '<i class="icon ion-android-notifications-none"></i>Add a Reminder'}
+					{ text: '<i class="icon ion-arrow-graph-up-right"></i>Visualize ' + $scope.state.trackingReminder.variableName},
+					{ text: '<i class="icon ion-android-notifications-none"></i>Add ' + $scope.state.trackingReminder.variableName + ' Reminder'},
+					{ text: '<i class="icon ion-arrow-up-a"></i>Positive Predictors'},
+					{ text: '<i class="icon ion-arrow-down-a"></i>Negative Predictors'}
 				],
 				destructiveText: '<i class="icon ion-trash-a"></i>Delete From Favorites',
 				cancelText: '<i class="icon ion-ios-close"></i>Cancel',
@@ -129,7 +134,7 @@ angular.module('starter')
 						$scope.editReminderSettings($scope.state.trackingReminder);
 					}
 					if(index === 1){
-						$scope.editMeasurement($scope.state.trackingReminder);
+						$scope.editMeasurement($scope.state.variableObject);
 					}
                     if(index === 2){
 						$state.go('app.variables',
@@ -142,7 +147,7 @@ angular.module('starter')
 					if(index === 3){
 						$state.go('app.reminderAdd',
 							{
-								variableObject: $scope.state.trackingReminder,
+								variableObject: $scope.state.variableObject,
 								fromState: $state.current.name,
 								fromUrl: window.location.href
 							});
@@ -150,7 +155,15 @@ angular.module('starter')
 					if(index === 4){
 						$state.go('app.predictors',
 							{
-								variableObject: $scope.state.trackingReminder
+								variableObject: $scope.state.variableObject,
+								valence: "positive"
+							});
+					}
+					if(index === 5){
+						$state.go('app.predictors',
+							{
+								variableObject: $scope.state.variableObject,
+								valence: "negative"
 							});
 					}
 
@@ -159,9 +172,9 @@ angular.module('starter')
 				destructiveButtonClicked: function() {
                     reminderService.deleteReminder($scope.state.trackingReminder.id)
                         .then(function(){
-                            console.debug('Reminder Deleted');
+                            console.debug('Favorite Deleted');
                         }, function(err){
-                            console.error('Failed to Delete Reminder, Try again!', 'assertive');
+                            console.error('Failed to Delete Favorite, Try again!', 'assertive');
                         });
                     localStorageService.deleteElementOfItemById('trackingReminders', $scope.state.trackingReminder.id)
                         .then(function(){

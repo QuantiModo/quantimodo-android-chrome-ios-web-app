@@ -278,7 +278,9 @@ angular.module('starter')
                     { text: '<i class="icon ion-ios-list-outline"></i>' + $scope.state.variableObject.name + ' History' },
                     { text: '<i class="icon ion-android-notifications-none"></i>Add ' + $scope.state.variableObject.name + ' Reminder' },
                     { text: '<i class="icon ion-arrow-graph-up-right"></i>' + $scope.state.variableObject.name + ' Charts'},
-                    { text: '<i class="icon ion-compose"></i>Add ' + $scope.state.variableObject.name + ' Measurement'}
+                    { text: '<i class="icon ion-compose"></i>Add ' + $scope.state.variableObject.name + ' Measurement'},
+                    { text: '<i class="icon ion-arrow-up-a"></i>Positive Predictors'},
+                    { text: '<i class="icon ion-arrow-down-a"></i>Negative Predictors'}
                 ],
                 destructiveText: '<i class="icon ion-trash-a"></i>Delete Reminder',
                 cancelText: '<i class="icon ion-ios-close"></i>Cancel',
@@ -302,7 +304,15 @@ angular.module('starter')
                     if(index === 4){
                         $state.go('app.predictors',
                             {
-                                variableObject: $scope.state.variableObject
+                                variableObject: $scope.state.variableObject,
+                                valence: "positive"
+                            });
+                    }
+                    if(index === 5){
+                        $state.go('app.predictors',
+                            {
+                                variableObject: $scope.state.variableObject,
+                                valence: "negative"
                             });
                     }
 
