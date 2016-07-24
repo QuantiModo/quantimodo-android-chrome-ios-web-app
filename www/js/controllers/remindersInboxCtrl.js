@@ -158,7 +158,7 @@ angular.module('starter')
 					notificationService.updateNotificationBadges(trackingReminderNotifications.length);
                     $scope.state.trackingRemindersNotifications =
                         variableCategoryService.attachVariableCategoryIcons(trackingReminderNotifications);
-                    $scope.state.filteredReminders = filterViaDates(trackingReminderNotifications);
+                    $scope.state.filteredTrackingReminderNotifications = filterViaDates(trackingReminderNotifications);
                     if(trackingReminderNotifications.length > 0){
                         $scope.state.showAllCaughtUp = false;
                     } else {
@@ -215,7 +215,7 @@ angular.module('starter')
 				return;
 			}
 
-			$scope.state.filteredReminders[dividerIndex].reminders[reminderNotificationIndex].hide = true;
+			$scope.state.filteredTrackingReminderNotifications[dividerIndex].reminders[reminderNotificationIndex].hide = true;
 			console.debug('Tracking notification', trackingReminderNotification);
 			console.log('modifiedReminderValue is ' + modifiedReminderValue);
 			var params = {
@@ -241,7 +241,7 @@ angular.module('starter')
 				return;
 			}
 
-			$scope.state.filteredReminders[dividerIndex].reminders[reminderNotificationIndex].hide = true;
+			$scope.state.filteredTrackingReminderNotifications[dividerIndex].reminders[reminderNotificationIndex].hide = true;
 
 			console.debug('Skipping notification', trackingReminderNotification);
 			var params = {
@@ -268,7 +268,7 @@ angular.module('starter')
 				return;
 			}
 
-			$scope.state.filteredReminders[dividerIndex].reminders[reminderNotificationIndex].hide = true;
+			$scope.state.filteredTrackingReminderNotifications[dividerIndex].reminders[reminderNotificationIndex].hide = true;
 
 			console.debug('Snoozing notification', trackingReminderNotification);
 			var params = {
@@ -310,7 +310,7 @@ angular.module('starter')
 	    };
 
 	    $scope.editMeasurement = function(trackingReminderNotification, dividerIndex, reminderNotificationIndex){
-			$scope.state.filteredReminders[dividerIndex].reminders[reminderNotificationIndex].hide = true;
+			$scope.state.filteredTrackingReminderNotifications[dividerIndex].reminders[reminderNotificationIndex].hide = true;
 			// FIXME this shouldn't skip unless the change is made - user could cancel
 			var params = {
 				trackingReminderNotificationId: trackingReminderNotification.id
