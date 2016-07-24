@@ -8,7 +8,7 @@ angular.module('starter')
 			addNewReminder : function(trackingReminder){
 				
 				var deferred = $q.defer();
-				if(trackingReminder.reminderFrequency !== 0){
+				if(trackingReminder.reminderFrequency !== 0 && !$rootScope.showOnlyOneNotification){
 					notificationService.scheduleNotificationByReminder(trackingReminder);
 				}
 				
