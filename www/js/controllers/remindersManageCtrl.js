@@ -228,18 +228,24 @@ angular.module('starter')
 					if(index === 4){
 						$scope.goToHistoryForVariableObject($scope.state.variableObject);
 					}
-					if(index === 4){
-						$state.go('app.predictors',
-							{
-								variableObject: $scope.state.variableObject,
-								valence: "positive"
-							});
-					}
 					if(index === 5){
 						$state.go('app.predictors',
 							{
 								variableObject: $scope.state.variableObject,
-								valence: "negative"
+								requestParams: {
+									effect:  $scope.state.variableObject.name,
+									correlationCoefficient: "(gt)0"
+								}
+							});
+					}
+					if(index === 6){
+						$state.go('app.predictors',
+							{
+								variableObject: $scope.state.variableObject,
+								requestParams: {
+									effect:  $scope.state.variableObject.name,
+									correlationCoefficient: "(lt)0"
+								}
 							});
 					}
 

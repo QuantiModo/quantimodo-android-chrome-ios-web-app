@@ -3,52 +3,83 @@ angular.module('starter')
 	.controller('PredictorsCtrl', function($scope, $ionicModal, $timeout, measurementService, $ionicLoading,
                                          $state, $ionicPopup, correlationService, $rootScope,
                                          localStorageService, utilsService, authService, $stateParams) {
-        
-        $scope.loading = true;
-        $scope.state = {
-            variableName: config.appSettings.primaryOutcomeVariableDetails.name
-        };
 
 		$scope.controller_name = "PredictorsCtrl";
+        $scope.state = {
+            requestParams: {
+                cause: null,
+                effect: config.appSettings.primaryOutcomeVariableDetails.name
+            }
+        };
+
+        function showPositivePredictors() {
+            $scope.state.title = "Positive Predictors of " + $stateParams.variableObject.name;
+            $scope.increasingDecreasing = "INCREASING";
+            Bugsnag.context = "positivePredictors";
+            $scope.showLoader('Fetching positive predictors...');
+        }
+
+        function showNegativePredictors() {
+            $scope.state.title = "Negative Predictors of " + $stateParams.variableObject.name;
+            $scope.increasingDecreasing = "DECREASING";
+            Bugsnag.context = "negativePredictors";
+            $scope.showLoader('Fetching negative predictors...');
+        }
+
+        function showPredictors() {
+            $scope.state.title = "Predictors of " + $stateParams.variableObject.name;
+            Bugsnag.context = "predictors";
+            $scope.showLoader('Fetching predictors...');
+
+        }
+
+        function showOutcomes() {
+            $scope.state.title = "Likely Outcomes of " + $stateParams.variableObject.name;
+            Bugsnag.context = "outcomes";
+            $scope.showLoader('Fetching outcomes...');
+        }
 
         $scope.init = function(){
-            var requestParams = {};
             $scope.state.correlationObjects = null;
             $scope.state.usersCorrelationObjects = null;
+            if(!$stateParams.variableObject){
+                $stateParams.variableObject = config.appSettings.primaryOutcomeVariableDetails;
+            }
+            if($stateParams.requestParams.cause || $stateParams.requestParams.effect){
+                $scope.state.requestParams = $stateParams.requestParams;
+            }
+            if($stateParams.valence === 'positive'){
+                $scope.state.requestParams.correlationCoefficient = "(gt)0";
+            }
+            if($stateParams.valence === 'negative'){
+                $scope.state.requestParams.correlationCoefficient = "(lt)0";
+            }
             authService.checkAuthOrSendToLogin();
             if (typeof analytics !== 'undefined')  {analytics.trackView("Predictors Controller");}
-            if($stateParams.variableObject){
-                $scope.state.variableName = $stateParams.variableObject.name;
-            }
-            
-            if ($stateParams.valence === "positive") {
-                $scope.state.title = "Positive Predictors of " + $scope.state.variableName;
-                $scope.increasingDecreasing = "INCREASING";
-                Bugsnag.context = "positivePredictors";
-                $scope.showLoader('Fetching positive predictors...');
-                requestParams.correlationCoefficient = '(gt)0';
-            }
-
-            if ($stateParams.valence === "negative") {
-                $scope.state.title = "Negative Predictors of " + $scope.state.variableName;
-                $scope.increasingDecreasing = "DECREASING";
-                Bugsnag.context = "negativePredictors";
-                $scope.showLoader('Fetching negative predictors...');
-                requestParams.correlationCoefficient = '(lt)0';
+            if($scope.state.requestParams.effect){
+                if ($scope.state.requestParams.correlationCoefficient === "(lt)0") {
+                    showNegativePredictors();
+                } else if ($scope.state.requestParams.correlationCoefficient === "(gt)0") {
+                    showPositivePredictors();
+                } else{
+                    showPredictors();
+                }
+            } else if ($scope.state.requestParams.cause){
+                showOutcomes();
+            } else {
+                console.error("Please provide a $stateParams.requestParams.cause or $scope.state.requestParams.effect variable name.");
             }
 
-            correlationService.getPublicCauses($scope.state.variableName, requestParams)
+            correlationService.getAggregatedCorrelations($scope.state.requestParams)
                 .then(function(correlationObjects){
                     $scope.state.correlationObjects = correlationObjects;
-                    correlationService.getUserCauses($scope.state.variableName, requestParams)
+                    correlationService.getUserCorrelations($scope.state.requestParams)
                         .then(function(correlationObjects){
                             $scope.state.usersCorrelationObjects = correlationObjects;
                         });
                     $ionicLoading.hide();
-                    $scope.loading = false;
                 }, function(){
                     $ionicLoading.hide();
-                    $scope.loading = false;
                     console.error('predictorsCtrl: Could not get correlations');
                 });
         };
@@ -65,7 +96,7 @@ angular.module('starter')
                     title:'Implausible relationship?',
                     subTitle: 'Do you think is is IMPOSSIBLE that ' + correlationObject.cause + ' ' + $scope.increasesDecreases + ' your ' + correlationObject.effect + '?',
                     scope: $scope,
-                    template: $scope.templateConfirmatioDown,
+                    template: $scope.templateConfirmationDown,
                     buttons:[
                         {text: 'No'},
                         {text: 'Yes',

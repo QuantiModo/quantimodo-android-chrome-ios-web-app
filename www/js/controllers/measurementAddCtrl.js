@@ -678,14 +678,20 @@ angular.module('starter')
                         $state.go('app.predictors',
                             {
                                 variableObject: $scope.state.variableObject,
-                                valence: "positive"
+                                requestParams: {
+                                    effect:  $scope.state.variableObject.name,
+                                    correlationCoefficient: "(gt)0"
+                                }
                             });
                     }
                     if(index === 5){
                         $state.go('app.predictors',
                             {
                                 variableObject: $scope.state.variableObject,
-                                valence: "negative"
+                                requestParams: {
+                                    effect:  $scope.state.variableObject.name,
+                                    correlationCoefficient: "(lt)0"
+                                }
                             });
                     }
 

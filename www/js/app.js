@@ -435,7 +435,12 @@ angular.module('starter',
         .state('app.predictors', {
             url: "/predictors/:valence",
             params: {
-                variableObject: null
+                variableObject : null,
+                requestParams : {
+                    cause: null,
+                    effect: null,
+                    correlationCoefficient: null
+                }
             },
             cache: false,
             views: {
