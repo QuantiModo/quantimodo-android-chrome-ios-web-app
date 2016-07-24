@@ -290,29 +290,28 @@ angular.module('starter')
                     errorHandler);
             };
 
-            // get positive list
-            QuantiModo.getCauses = function(variableName, successHandler, errorHandler){
+
+            QuantiModo.getPublicCauses = function(variableName, params, successHandler, errorHandler){
                 if(!variableName){
                     variableName = encodeURIComponent(config.appSettings.primaryOutcomeVariableDetails.name);
                 }
                 QuantiModo.get('api/v1/variables/'+variableName+'/public/causes',
-                    [],
-                    {},
+                    ['correlationCoefficient'],
+                    params,
                     successHandler,
                     errorHandler);
             };
 
-            //get User's causes
-            QuantiModo.getUsersCauses = function (variableName, successHandler, errorHandler) {
+
+            QuantiModo.getUsersCauses = function (variableName, params, successHandler, errorHandler) {
                 if(!variableName){
                     variableName = encodeURIComponent(config.appSettings.primaryOutcomeVariableDetails.name);
                 }
                 QuantiModo.get('api/v1/variables/'+variableName+'/causes',
-                    [],
-                    {},
+                    ['correlationCoefficient'],
+                    params,
                     successHandler,
                     errorHandler
-
                 );
             };
 
