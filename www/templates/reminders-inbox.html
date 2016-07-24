@@ -223,8 +223,8 @@
 			</div>
 		</div>
 
-		<div  class="list card" ng-if="state.filteredTrackingReminderNotifications.length">
-			<div ng-repeat="divider in state.filteredTrackingReminderNotifications" ng-init="dividerIndex = $index" id="{{divider.name}}Reminders">
+		<div  class="list card" ng-if="filteredTrackingReminderNotifications.length">
+			<div ng-repeat="divider in filteredTrackingReminderNotifications" ng-init="dividerIndex = $index" id="{{divider.name}}Reminders">
 
 				<div class="item item-divider" style="">
 					{{divider.name}}
@@ -295,7 +295,7 @@
 			</div>
 		</div>
 
-		<div class="list card"  ng-show="state.showAllCaughtUp">
+		<div class="list card"  ng-hide="isSyncing">
 			<div class="item" style="padding-bottom:0px;">
 				<p style=" text-align: center; line-height: normal; font-size: 25px;">All caught up!</p>
 
@@ -315,7 +315,7 @@
 			</div>
 		</div>
 
-		<div ng-hide="state.hideLoadMoreButton" class="button-bar">
+		<div ng-hide="isSyncing" class="button-bar">
 			<a class="button button-clear button-calm" ng-click="init()" style="text-overflow: clip;"><i class="ion-refresh">  Refresh</i></a>
 		</div>
 

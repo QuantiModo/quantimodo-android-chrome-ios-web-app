@@ -6,7 +6,7 @@ angular.module('starter')
                                     QuantiModo, notificationService, $rootScope, localStorageService, reminderService,
                                     $ionicPopup, $ionicSideMenuDelegate, ratingService, migrationService,
                                     ionicDatePicker, unitService, variableService, $ionicPlatform, $cordovaGeolocation,
-                                    qmLocationService) {
+                                    qmLocationService, variableCategoryService) {
 
         $rootScope.loaderImagePath = config.appSettings.loaderImagePath;
         $scope.appVersion = 1489;
@@ -528,11 +528,12 @@ angular.module('starter')
             $scope.showReminderSubMenu = !$scope.showReminderSubMenu;
         };
 
-        $rootScope.getTrackingReminderNotifications = function(){
+        $rootScope.getTrackingReminderNotifications = function(params){
+            if(!params){
+                params = {};
+            }
 
             var groupTrackingReminderNotificationsByDateRange = function(trackingReminderNotifications) {
-
-                $scope.state.numberOfNotificationsInInbox = 0;
                 var result = [];
                 var reference = moment().local();
                 var today = reference.clone().startOf('day');
@@ -545,8 +546,7 @@ angular.module('starter')
                 });
 
                 if (todayResult.length) {
-                    $scope.state.numberOfNotificationsInInbox = $scope.state.numberOfNotificationsInInbox + todayResult.length;
-                    result.push({name: "Today", reminders: todayResult});
+                    result.push({name: "Today", trackingReminderNotifications: todayResult});
                 }
 
                 var yesterdayResult = trackingReminderNotifications.filter(function(trackingReminderNotification){
@@ -554,8 +554,7 @@ angular.module('starter')
                 });
 
                 if(yesterdayResult.length) {
-                    $scope.state.numberOfNotificationsInInbox = $scope.state.numberOfNotificationsInInbox + yesterdayResult.length;
-                    result.push({ name : "Yesterday", reminders : yesterdayResult });
+                    result.push({ name : "Yesterday", trackingReminderNotifications : yesterdayResult });
                 }
 
                 var last7DayResult = trackingReminderNotifications.filter(function(trackingReminderNotification){
@@ -566,8 +565,7 @@ angular.module('starter')
                 });
 
                 if(last7DayResult.length) {
-                    $scope.state.numberOfNotificationsInInbox = $scope.state.numberOfNotificationsInInbox + last7DayResult.length;
-                    result.push({ name : "Last 7 Days", reminders : last7DayResult });
+                    result.push({ name : "Last 7 Days", trackingReminderNotifications : last7DayResult });
                 }
 
                 var last30DayResult = trackingReminderNotifications.filter(function(trackingReminderNotification){
@@ -579,8 +577,7 @@ angular.module('starter')
                 });
 
                 if(last30DayResult.length) {
-                    $scope.state.numberOfNotificationsInInbox = $scope.state.numberOfNotificationsInInbox + last30DayResult.length;
-                    result.push({ name : "Last 30 Days", reminders : last30DayResult });
+                    result.push({ name : "Last 30 Days", trackingReminderNotifications : last30DayResult });
                 }
 
                 var olderResult = trackingReminderNotifications.filter(function(trackingReminderNotification){
@@ -588,31 +585,23 @@ angular.module('starter')
                 });
 
                 if(olderResult.length) {
-                    $scope.state.numberOfNotificationsInInbox = $scope.state.numberOfNotificationsInInbox + olderResult.length;
-                    result.push({ name : "Older", reminders : olderResult });
+                    result.push({ name : "Older", trackingReminderNotifications : olderResult });
                 }
 
                 return result;
             };
 
             $scope.showLoader('Syncing reminder notifications...');
-            reminderService.getTrackingReminderNotifications($stateParams.variableCategoryName, $stateParams.today)
+            reminderService.getTrackingReminderNotifications(params.variableCategoryName, params.today)
                 .then(function(trackingReminderNotifications){
                     $rootScope.numberOfPendingNotifications = trackingReminderNotifications.length;
                     notificationService.updateNotificationBadges(trackingReminderNotifications.length);
                     $rootScope.trackingRemindersNotifications =
                         variableCategoryService.attachVariableCategoryIcons(trackingReminderNotifications);
                     $rootScope.filteredTrackingReminderNotifications = groupTrackingReminderNotificationsByDateRange(trackingReminderNotifications);
-                    if(trackingReminderNotifications.length > 0){
-                        $scope.state.showAllCaughtUp = false;
-                    } else {
-                        $scope.state.showAllCaughtUp = true;
-                    }
-                    $scope.state.hideLoadMoreButton = false;
                     //Stop the ion-refresher from spinning
                     $scope.$broadcast('scroll.refreshComplete');
                 }, function(){
-                    $scope.state.hideLoadMoreButton = false;
                     $scope.hideLoader();
                     console.error("failed to get reminder notifications!");
                     //Stop the ion-refresher from spinning
