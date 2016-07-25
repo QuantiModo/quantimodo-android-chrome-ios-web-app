@@ -89,11 +89,6 @@ angular.module('starter')
 			}
 		}
 
-	    $scope.cancel = function(){
-	    	$scope.state.showMeasurementBox = !$scope.state.showMeasurementBox;
-	    };
-
-
 	    // when date is updated
 	    $scope.currentDatePickerCallback = function (val) {
 	    	if(typeof(val)==='undefined'){

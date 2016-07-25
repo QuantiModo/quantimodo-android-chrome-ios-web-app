@@ -4,7 +4,7 @@ angular.module('starter')
                                                authService, measurementService, $state, $rootScope, $stateParams,
                                                utilsService, localStorageService, $filter, $ionicScrollDelegate,
                                                variableCategoryService, ionicTimePicker, ionicDatePicker, unitService,
-                                               QuantiModo, $ionicActionSheet){
+                                               QuantiModo, $ionicActionSheet, $ionicHistory){
 
         $scope.controller_name = "MeasurementAddCtrl";
 
@@ -110,21 +110,7 @@ angular.module('starter')
 
         // cancel activity
         $scope.cancel = function(){
-            var variableName = $scope.state.measurement.variable;
-            var variableObject = $scope.state.variableObject;
-            if($stateParams.fromUrl){
-                window.location = $stateParams.fromUrl;
-            } else if
-            ($stateParams.fromState){
-                $state.go($stateParams.fromState, {
-                    variableObject: variableObject,
-                    variableName: variableName,
-                    noReload: true
-                });
-            } else {
-                $rootScope.hideNavigationMenu = false;
-                $state.go(config.appSettings.defaultState);
-            }
+            $ionicHistory.goBack();
         };
 
         // delete measurement

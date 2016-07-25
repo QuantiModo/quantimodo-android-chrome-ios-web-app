@@ -5,7 +5,7 @@ angular.module('starter')
 											 $stateParams, measurementService, reminderService, $ionicLoading,
 											 utilsService, $filter, ionicTimePicker, $timeout, 
 											 variableCategoryService, variableService, unitService, timeService,
-                                             $rootScope, $ionicActionSheet){
+                                             $rootScope, $ionicActionSheet, $ionicHistory){
 
 	    $scope.controller_name = "FavoriteAddCtrl";
 
@@ -40,19 +40,8 @@ angular.module('starter')
             }
 	    };
 
-	    // when adding/editing is cancelled
 	    $scope.cancel = function(){
-            if ($stateParams.fromState){
-                $state.go($stateParams.fromState, {
-                    variableObject: $scope.variableObject,
-                    noReload: true,
-                    measurement: $stateParams.measurement
-                });
-            } else if ($stateParams.fromUrl) {
-                window.location = $stateParams.fromUrl;
-            } else {
-                    $state.go('app.favorites');
-            }
+            $ionicHistory.goBack();
 	    };
 
 	    // when the reminder is saved/edited

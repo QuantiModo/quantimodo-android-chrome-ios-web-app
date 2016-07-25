@@ -8,9 +8,7 @@ angular.module('starter')
 
         $scope.controller_name = "VariableSettingsCtrl";
 
-        // state
         $scope.state = {
-            // category object,
             unitCategories : {},
             searchedUnits : []
         };
@@ -21,11 +19,9 @@ angular.module('starter')
 
         };
 
-        // cancel activity
         $scope.cancel = function(){
             $ionicHistory.goBack();
         };
-
 
         $scope.done = function(){
 
@@ -43,12 +39,10 @@ angular.module('starter')
             if (params.variableName === "") {
                 utilsService.showAlert('Variable Name missing');
             } else {
-                // add variable
                 $ionicHistory.goBack();
             }
         };
 
-        // constructor
         $scope.init = function(){
             Bugsnag.context = "variableSettings";
             $scope.loading = true;
