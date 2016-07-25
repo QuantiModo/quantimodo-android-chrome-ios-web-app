@@ -473,10 +473,14 @@ angular.module('starter')
             //goToWelcomeStateIfNotWelcomed();
             scheduleReminder();
             if($rootScope.isIOS || $rootScope.isAndroid) {
+                console.debug("Going to try setting on trigger and on click actions for notifications when device is ready");
                 $ionicPlatform.ready(function(){
+                    console.debug("Setting on trigger and on click actions for notifications");
                     notificationService.setOnTriggerAction();
                     notificationService.setOnClickAction(QuantiModo);
                 });
+            } else {
+                console.debug("Not setting on trigger and on click actions for notifications because is not ios or android.");
             }
             goToDefaultStateIfLoggedInOnLoginState();
         };
