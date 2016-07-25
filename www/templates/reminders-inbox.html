@@ -114,8 +114,29 @@
 						<i style="text-align: center; font-size: 60px;" class="icon positive ion-android-notifications-none"></i>
 					</div>
 					<div class="col col-75">
-						<h2 ng-show="showOnlyOneNotification" style="white-space: normal; text-align: left; line-height: normal; ">Currently, you will only get one general repeating notification on your device at a time. However it is possible to instead get a separate notification for each reminder that you create.  You can change this setting or update the notification frequency on the settings page. Either way you should still see all of your tracking reminder notifications waiting in the Reminder Inbox.</h2>
-						<h2 ng-hide="showOnlyOneNotification" style="white-space: normal; text-align: left; line-height: normal; ">Currently, you will get a separate device notification for each reminder that you create. If you would prefer to only get one general repeating device notification at a time, you can change this setting and set the notification frequency on the settings page.  Either way you should still see all of your tracking reminder notifications waiting in the Reminder Inbox.</h2>
+						<h2 ng-show="showOnlyOneNotification" style="white-space: normal; text-align: left; line-height: normal; ">
+							Currently, you will only get one general repeating <b>device notification</b> at a time.
+						</h2>
+						<h2 ng-hide="showOnlyOneNotification" style="white-space: normal; text-align: left; line-height: normal; ">
+							Currently, you will get a separate <b>device notification</b> for each <b>reminder</b> that you create.
+						</h2>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col">
+						<h2 ng-show="showOnlyOneNotification" style="white-space: normal; text-align: justify; line-height: normal; ">
+							However it is possible to instead get a separate <b>device notification</b> for each specific
+							<b>reminder</b> that you create.
+							You can change this setting or update the <b>device notification</b> frequency on the settings page.
+							Either way you should still see all of your <b>tracking reminder notifications</b> waiting
+							in the Reminder Inbox at the frequency specified when creating/editing the specific <b>reminder</b>.
+						</h2>
+						<h2 ng-hide="showOnlyOneNotification" style="white-space: normal; text-align: justify; line-height: normal; ">
+							If you would prefer to only get one general repeating <b>device notification<b></b> at a time,
+							you can change this setting and set the <b>device notification</b> frequency on the settings page.
+							Either way you should still see all of your <b>tracking reminder notifications</b> waiting
+							in the Reminder Inbox at the frequency specified when creating/editing the specific <b>reminder</b>.
+						</h2>
 					</div>
 				</div>
 				<div class="row" >
