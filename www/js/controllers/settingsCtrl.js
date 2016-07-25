@@ -100,8 +100,8 @@ angular.module('starter')
 			localStorageService.setItem('showOnlyOneNotification', $scope.state.showOnlyOneNotification);
 			if($scope.state.showOnlyOneNotification){
 				$ionicPopup.alert({
-					title: 'Disable Multiple Notifications',
-					template: 'You will only get one notification at a time instead of a separate notification for each reminder that you create.'
+					title: 'Disabled Multiple Notifications',
+					template: 'You will only get a single generic repeating device notification at the specified frequency instead of a separate device notification for each reminder that you create.  All tracking reminder notifications for specific reminders will still show up in your Reminder Inbox.'
 				});
 
 				notificationService.cancelAllNotifications().then(function() {
@@ -114,8 +114,8 @@ angular.module('starter')
 				});
 			} else {
 				$ionicPopup.alert({
-					title: 'Enable Multiple Notifications',
-					template: 'You will get a separate notification for each reminder that you create.  Note: This is an experimental feature.  Please revert back to a single notification if you experience any performance issues.'
+					title: 'Enabled Multiple Notifications',
+					template: 'You will get a separate device notification for each reminder that you create.'
 				});
 
 				notificationService.cancelAllNotifications().then(function() {

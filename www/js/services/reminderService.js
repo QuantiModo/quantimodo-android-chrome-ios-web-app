@@ -189,10 +189,6 @@ angular.module('starter')
 				var deferred = $q.defer();
 				QuantiModo.getTrackingReminderNotifications(params, function(response){
 					if(response.success) {
-						if($rootScope.showOnlyOneNotification !== true){
-							//We're currently scheduling notifications with trackingReminders, not trackingReminderNotifications
-							//notificationService.scheduleAllNotifications(response.data);
-						}
 						deferred.resolve(response.data);
 					}
 					else {
