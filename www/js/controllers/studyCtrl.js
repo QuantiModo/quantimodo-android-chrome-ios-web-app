@@ -3,16 +3,16 @@ angular.module('starter')
                                          $state, $ionicPopup, correlationService, $rootScope,
                                          localStorageService, utilsService, authService, $stateParams, $ionicHistory) {
 
-        $scope.state = {
-            correlationObject: $stateParams.correlationObject
-        };
 		$scope.controller_name = "StudyCtrl";
         
         $scope.init = function(){
+            $scope.state = {
+                correlationObject: $stateParams.correlationObject
+            };
             authService.checkAuthOrSendToLogin();
             if (typeof analytics !== 'undefined')  {analytics.trackView("Study Controller");}
             if(!$scope.state.correlationObject) {
-                $ionicHistory.backView();
+                $ionicHistory.goBack();
             }
         };
 
