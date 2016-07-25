@@ -4,14 +4,16 @@ angular.module('starter')
 
         function createChromeAlarmNameFromTrackingReminder(trackingReminder) {
             var alarmName = {
-                reminderId: trackingReminder.id,
+                trackingReminderId: trackingReminder.id,
                 variableName: trackingReminder.variableName,
                 defaultValue: trackingReminder.defaultValue,
                 abbreviatedUnitName: trackingReminder.abbreviatedUnitName,
                 periodInMinutes: trackingReminder.reminderFrequency / 60,
                 reminderStartTime: trackingReminder.reminderStartTime,
                 startTrackingDate: trackingReminder.startTrackingDate,
-                variableCategoryName: trackingReminder.variableCategoryName
+                variableCategoryName: trackingReminder.variableCategoryName,
+                variableDescription: trackingReminder.variableDescription,
+                reminderEndTime: trackingReminder.reminderEndTime
             };
             return alarmName;
         }
