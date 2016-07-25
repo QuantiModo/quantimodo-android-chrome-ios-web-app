@@ -21,6 +21,10 @@ angular.module('starter')
 
 		$scope.title = 'Measurement History';
 
+		if($stateParams.variableObject){
+			$scope.title = $stateParams.variableObject.name + ' History';
+		}
+
 		var setupVariableCategory = function () {
 			if($stateParams.variableCategoryName){
 				$scope.title = $stateParams.variableCategoryName + ' History';
@@ -57,14 +61,23 @@ angular.module('starter')
 
 	    var getHistory = function(concat){
 			if($scope.state.history.length < 1){
-				$scope.showLoader('Getting your measurements...');
+				$scope.showLoader('Squirrels retrieving measurements...');
 			}
-	    	measurementService.getHistoryMeasurements({
-    		    offset: $scope.state.offset,
-    		    limit: $scope.state.limit,
-    		    sort: "-startTimeEpoch",
-				variableCategoryName: $stateParams.variableCategoryName
-	    	}).then(function(history){
+			var params = {
+				offset: $scope.state.offset,
+				limit: $scope.state.limit,
+				sort: "-startTimeEpoch"
+			};
+
+			if($stateParams.variableCategoryName){
+				params.variableCategoryName = $stateParams.variableCategoryName;
+			}
+
+			if($stateParams.variableObject){
+				params.variableName = $stateParams.variableObject.name;
+			}
+
+	    	measurementService.getHistoryMeasurements(params).then(function(history){
 	    		if (concat) {
 					$scope.state.history = $scope.state.history.concat(history);
 				}

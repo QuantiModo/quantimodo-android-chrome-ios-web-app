@@ -26,7 +26,7 @@
 						<button class="button button-clear button-assertive" style="font-size: 14px;" ng-click="setLocalStorageFlagTrue('hideAddTreatmentRemindersCard')"><i class="ion-close-circled"> &nbsp;Done adding treatments</i></button>
 					</div>
 				</div>
-
+				<br>
 			</div>
 		</div>
 
@@ -52,7 +52,6 @@
 						<button class="button button-clear button-assertive" style="font-size: 14px;" ng-click="setLocalStorageFlagTrue('hideAddSymptomRemindersCard')"><i class="ion-close-circled"> &nbsp; Done adding symptoms</i></button>
 					</div>
 				</div>
-
 			</div>
 		</div>
 
@@ -77,7 +76,7 @@
 						<button class="button button-clear button-assertive" style="font-size: 14px;" ng-click="setLocalStorageFlagTrue('hideAddEmotionRemindersCard')"><i class="ion-close-circled"> &nbsp; Done adding emotions</i></button>
 					</div>
 				</div>
-
+				<br>
 			</div>
 		</div>
 
@@ -102,6 +101,54 @@
 						<button class="button button-clear button-assertive" style="font-size: 14px;" ng-click="setLocalStorageFlagTrue('hideAddFoodRemindersCard')"><i class="ion-close-circled"> &nbsp; Done adding common foods</i></button>
 					</div>
 				</div>
+				<br>
+			</div>
+		</div>
+
+		<div class="list card"  ng-hide="hideNotificationSettingsInfoCard">
+			<div class="item" style="padding-bottom:0px;">
+				<p style=" text-align: center; line-height: normal; font-size: 25px;">Notification Settings</p>
+
+				<div class="row">
+					<div class="col" style="padding-top: 0px;">
+						<i style="text-align: center; font-size: 60px;" class="icon positive ion-android-notifications-none"></i>
+					</div>
+					<div class="col col-75">
+						<h2 ng-show="showOnlyOneNotification" style="white-space: normal; text-align: left; line-height: normal; ">
+							Currently, you will only get one general repeating <b>device notification</b> at a time.
+						</h2>
+						<h2 ng-hide="showOnlyOneNotification" style="white-space: normal; text-align: left; line-height: normal; ">
+							Currently, you will get a separate <b>device notification</b> for each <b>reminder</b> that you create.
+						</h2>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col">
+						<h2 ng-show="showOnlyOneNotification" style="white-space: normal; text-align: justify; line-height: normal; ">
+							However it is possible to instead get a separate <b>device notification</b> for each specific
+							<b>reminder</b> that you create.
+							You can change this setting or update the <b>device notification</b> frequency on the settings page.
+							Either way you should still see all of your <b>tracking reminder notifications</b> waiting
+							in the Reminder Inbox at the frequency specified when creating/editing the specific <b>reminder</b>.
+						</h2>
+						<h2 ng-hide="showOnlyOneNotification" style="white-space: normal; text-align: justify; line-height: normal; ">
+							If you would prefer to only get one general repeating <b>device notification<b></b> at a time,
+							you can change this setting and set the <b>device notification</b> frequency on the settings page.
+							Either way you should still see all of your <b>tracking reminder notifications</b> waiting
+							in the Reminder Inbox at the frequency specified when creating/editing the specific <b>reminder</b>.
+						</h2>
+					</div>
+				</div>
+				<div class="row" >
+					<div class="button-bar">
+						<button class="button button-clear button-balanced" style="font-size: 14px;" ng-click="goToState('app.settings')"><i class="ion-gear-a"> &nbsp; Go to settings &nbsp;</i></button>
+					</div>
+				</div>
+				<div class="row" >
+					<div class="button-bar">
+						<button class="button button-clear button-assertive" style="font-size: 14px;" ng-click="setLocalStorageFlagTrue('hideNotificationSettingsInfoCard')"><i class="ion-close-circled"> &nbsp;That's fine</i></button>
+					</div>
+				</div>
 			</div>
 		</div>
 
@@ -124,6 +171,55 @@
             </div>
         </div>
 
+		<div class="list card"  ng-if="!hideLocationTrackingInfoCard && !trackLocation">
+			<div class="item" style="padding-bottom:0px;">
+				<p style=" text-align: center; line-height: normal; font-size: 25px;">Location Tracking</p>
+				<div class="row">
+					<div class="col" style="padding-top: 0px;">
+						<i style="font-size: 60px;" class="icon positive ion-ios-location"></i>
+					</div>
+					<div class="col col-75">
+						<h2 style="white-space: normal; text-align: left; line-height: normal; ">To determine how the amount of time spent at work, restaurants, the gym, or doctor's offices might be influencing you, you can enable automatic location tracking in the Settings page. </h2>
+					</div>
+				</div>
+				<div class="row" >
+					<div class="button-bar">
+						<button class="button button-clear button-balanced" style="font-size: 14px;" ng-click="goToState('app.settings')"><i class="ion-gear-a"> &nbsp; Go to settings &nbsp;</i></button>
+					</div>
+				</div>
+				<div class="row" >
+					<div class="button-bar">
+						<button class="button button-clear button-assertive" style="font-size: 14px;" ng-click="setLocalStorageFlagTrue('hideLocationTrackingInfoCard')"><i class="ion-close-circled"> &nbsp;Dismiss</i></button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="list card"  ng-if="isMobile && !hideChromeExtensionInfoCard">
+			<div class="item" style="padding-bottom:0px;">
+				<p style=" text-align: center; line-height: normal; font-size: 25px;">Track on the Computer</p>
+				<div class="row">
+					<div class="col" style="padding-top: 0px;">
+						<i style="font-size: 60px;" class="icon positive ion-social-chrome"></i>
+					</div>
+					<div class="col col-75">
+						<h2 style="white-space: normal; text-align: left; line-height: normal; ">Did you know that you can easily track everything on your laptop and desktop with our Google Chrome browser extension?  Your data is synced between devices so you'll never have to track twice!</h2>
+					</div>
+				</div>
+				<div class="row" >
+					<div class="button-bar">
+						<button class="button button-clear button-balanced" style="font-size: 14px;" ng-click="sendChromeEmailLink()"><i class="ion-email"> &nbsp; Send Yourself a Link &nbsp;</i></button>
+					</div>
+				</div>
+				<div class="row" >
+					<div class="button-bar">
+						<button class="button button-clear button-assertive" style="font-size: 14px;" ng-click="setLocalStorageFlagTrue('hideChromeExtensionInfoCard')"><i class="ion-close-circled"> &nbsp; Dismiss</i></button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+
 		<div class="list card"  ng-hide="hideImportDataCard">
 			<div class="item" style="padding-bottom:0px;">
 				<p style=" text-align: center; line-height: normal; font-size: 25px;">Import Your Data</p>
@@ -142,74 +238,74 @@
 				</div>
 				<div class="row"  >
 					<div class="button-bar">
-						<button class="button button-clear button-assertive" style="font-size: 14px;" ng-click="setLocalStorageFlagTrue('hideImportDataCard')"><i class="ion-close-circled"> &nbsp; Done connecting to sources</i></button>
+						<button class="button button-clear button-assertive" style="font-size: 14px;" ng-click="setLocalStorageFlagTrue('hideImportDataCard')"><i class="ion-close-circled"> &nbsp; Done connecting data sources</i></button>
 					</div>
 				</div>
 			</div>
 		</div>
 
-		<div class="list card" ng-if="state.filteredReminders.length">
-			<div ng-repeat="divider in state.filteredReminders" ng-init="dividerIndex = $index" id="{{divider.name}}Reminders">
+		<div  class="list card" ng-if="filteredTrackingReminderNotifications.length">
+			<div ng-repeat="divider in filteredTrackingReminderNotifications" ng-init="dividerIndex = $index" id="{{divider.name}}Reminders">
 
 				<div class="item item-divider" style="">
 					{{divider.name}}
 				</div>
 
 
-				<div class="list card" ng-if="!reminder.hide" ng-repeat="reminder in divider.reminders" ng-init="reminderNotificationIndex = $index" >
+				<div on-hold="showActionSheetForNotification(trackingReminderNotification, $event)" class="list card" ng-if="!trackingReminderNotification.hide" ng-repeat="trackingReminderNotification in divider.trackingReminderNotifications" ng-init="trackingReminderNotificationNotificationIndex = $index" >
 					<div class="item" style="padding-bottom:0px;">
-						<div class="row">
+						<div ng-click="showActionSheetForNotification(trackingReminderNotification, $event)" class="row">
 							<div class="col" style="padding-top: 0px;">
-								<i style="font-size: 60px;" class="icon positive {{reminder.icon}}"></i>
+								<i style="font-size: 60px;" class="icon positive {{trackingReminderNotification.icon}}"></i>
 							</div>
-							<div class="col col-75">
-								<h2 ng-if="reminder.abbreviatedUnitName != '/5'" style="white-space: normal; line-height: normal; ">{{reminder.defaultValue}}&nbsp;{{reminder.unitName.toLowerCase()}} {{reminder.variableName}}</h2>
-								<h2 ng-if="reminder.abbreviatedUnitName == '/5'" style="white-space: normal; line-height: normal; ">Rate {{reminder.variableName}}</h2>
-								<p style="white-space: normal;">{{ reminder.trackingReminderNotificationTime | fromUtcToLocalDateAndTime}} </p>
+							<div ng-click="showActionSheetForNotification(trackingReminderNotification, $event)" class="col col-75">
+								<h2 ng-if="trackingReminderNotification.abbreviatedUnitName != '/5'" style="white-space: normal; line-height: normal; ">{{trackingReminderNotification.defaultValue}}&nbsp;{{trackingReminderNotification.unitName.toLowerCase()}} {{trackingReminderNotification.variableName}}</h2>
+								<h2 ng-if="trackingReminderNotification.abbreviatedUnitName == '/5'" style="white-space: normal; line-height: normal; ">Rate {{trackingReminderNotification.variableName}}</h2>
+								<p style="white-space: normal;">{{ trackingReminderNotification.trackingReminderNotificationTime | fromUtcToLocalDateAndTime}} </p>
 							</div>
 						</div>
 						<div class="button-bar">
-							<button class="button button-clear button-assertive" style="text-overflow: clip; font-size: 12px;" ng-click="skip(reminder, $event, dividerIndex, reminderNotificationIndex)"><i class="ion-android-cancel"> &nbsp; Skip</i></button>
-							<button class="button button-clear button-royal" style="text-overflow: clip; font-size: 12px;" ng-click="snooze(reminder, $event, dividerIndex, reminderNotificationIndex)"><i class="ion-android-notifications-off"> &nbsp; Snooze</i></button>
-							<button class="button button-clear button-calm" ng-click="editReminderSettings(reminder)" style="text-overflow: clip;  font-size: 12px;"><i class="ion-settings"> &nbsp; Settings</i></button>
+							<button class="button button-clear button-assertive" style="text-overflow: clip; font-size: 12px;" ng-click="skip(trackingReminderNotification, $event, dividerIndex, trackingReminderNotificationNotificationIndex)"><i class="ion-android-cancel"> &nbsp; Skip</i></button>
+							<button class="button button-clear button-royal" style="text-overflow: clip; font-size: 12px;" ng-click="snooze(trackingReminderNotification, $event, dividerIndex, trackingReminderNotificationNotificationIndex)"><i class="ion-android-notifications-off"> &nbsp; Snooze</i></button>
+							<button class="button button-clear button-calm" ng-click="editReminderSettingsByNotification(trackingReminderNotification)" style="text-overflow: clip;  font-size: 12px;"><i class="ion-settings"> &nbsp; Settings</i></button>
 						</div>
-						<div class="row" ng-if="reminder.abbreviatedUnitName !== '/5' " >
+						<div class="row" ng-if="trackingReminderNotification.abbreviatedUnitName !== '/5' " >
 							<div class="button-bar">
-								<button ng-show="reminder.defaultValue" class="button button-clear button-assertive" style="text-overflow: clip; font-size: 14px;" ng-click="track(reminder, 0, $event, dividerIndex, reminderNotificationIndex)"><i class="ion-android-done"> &nbsp; Record 0</i></button>
-								<button class="button button-clear button-balanced" style="text-overflow: clip; font-size: 14px;" ng-click="track(reminder, null, $event, dividerIndex, reminderNotificationIndex)"><i class="ion-android-done"> &nbsp; Record {{reminder.defaultValue}}&nbsp</i></button>
+								<button ng-show="trackingReminderNotification.defaultValue" class="button button-clear button-assertive" style="text-overflow: clip; font-size: 14px;" ng-click="track(trackingReminderNotification, 0, $event, dividerIndex, trackingReminderNotificationNotificationIndex)"><i class="ion-android-done"> &nbsp; Record 0</i></button>
+								<button class="button button-clear button-balanced" style="text-overflow: clip; font-size: 14px;" ng-click="track(trackingReminderNotification, null, $event, dividerIndex, trackingReminderNotificationNotificationIndex)"><i class="ion-android-done"> &nbsp; Record {{trackingReminderNotification.defaultValue}}&nbsp</i></button>
 							</div>
 						</div>
-						<div class="row" ng-if="reminder.abbreviatedUnitName !== '/5' " >
+						<div class="row" ng-if="trackingReminderNotification.abbreviatedUnitName !== '/5' " >
 							<div class="button-bar">
-								<button class="button button-clear button-calm" style="text-overflow: clip; font-size: 14px;" ng-click="editMeasurement(reminder, dividerIndex, reminderNotificationIndex)"><i class="ion-edit"> &nbsp; Record Different Value/Time</i></button>
+								<button class="button button-clear button-calm" style="text-overflow: clip; font-size: 14px;" ng-click="editMeasurement(trackingReminderNotification, dividerIndex, trackingReminderNotificationNotificationIndex)"><i class="ion-edit"> &nbsp; Record Different Value/Time</i></button>
 							</div>
 						</div>
 						<div class="primary-outcome-variable-reporting"
-							 ng-if="!reminder.description &&	reminder.abbreviatedUnitName === '/5'">
+							 ng-if="!trackingReminderNotification.description &&	trackingReminderNotification.abbreviatedUnitName === '/5'">
 							<div class="primary-outcome-variable-rating-buttons" >
 								<img ng-repeat="option in numericRatingOptions"
-									 ng-click="track(reminder, option.numericValue, $event, dividerIndex, reminderNotificationIndex)"
+									 ng-click="track(trackingReminderNotification, option.numericValue, $event, dividerIndex, trackingReminderNotificationNotificationIndex)"
 									 ng-src="{{option.img}}">
 							</div>
 							<br>
 						</div>
 						<div class="primary-outcome-variable-reporting"
-							 ng-if="reminder.abbreviatedUnitName === '/5' &&
-						 	reminder.description.toLowerCase().indexOf('positive') > -1">
+							 ng-if="trackingReminderNotification.abbreviatedUnitName === '/5' &&
+						 	trackingReminderNotification.description.toLowerCase().indexOf('positive') > -1">
 							<div class="primary-outcome-variable-rating-buttons" >
 								<img ng-repeat="option in positiveRatingOptions"
-									 ng-click="track(reminder, option.numericValue, $event, dividerIndex, reminderNotificationIndex)"
+									 ng-click="track(trackingReminderNotification, option.numericValue, $event, dividerIndex, trackingReminderNotificationIndex)"
 									 ng-src="{{option.img}}">
 								<br>
 							</div>
 							<br>
 						</div>
 						<div class="primary-outcome-variable-reporting"
-							 ng-if="reminder.abbreviatedUnitName === '/5' &&
-						 	reminder.description.toLowerCase().indexOf('negative') > -1">
+							 ng-if="trackingReminderNotification.abbreviatedUnitName === '/5' &&
+						 	trackingReminderNotification.description.toLowerCase().indexOf('negative') > -1">
 							<div class="primary-outcome-variable-rating-buttons" >
 								<img ng-repeat="option in negativeRatingOptions"
-									 ng-click="track(reminder, option.numericValue, $event, dividerIndex, reminderNotificationIndex)"
+									 ng-click="track(trackingReminderNotification, option.numericValue, $event, dividerIndex, trackingReminderNotificationIndex)"
 									 ng-src="{{option.img}}">
 								<br>
 							</div>
@@ -220,7 +316,7 @@
 			</div>
 		</div>
 
-		<div class="list card"  ng-show="state.showAllCaughtUp">
+		<div class="list card"  ng-hide="isSyncing">
 			<div class="item" style="padding-bottom:0px;">
 				<p style=" text-align: center; line-height: normal; font-size: 25px;">All caught up!</p>
 
@@ -240,7 +336,7 @@
 			</div>
 		</div>
 
-		<div ng-hide="state.hideLoadMoreButton" class="button-bar">
+		<div ng-hide="isSyncing" class="button-bar">
 			<a class="button button-clear button-calm" ng-click="init()" style="text-overflow: clip;"><i class="ion-refresh">  Refresh</i></a>
 		</div>
 

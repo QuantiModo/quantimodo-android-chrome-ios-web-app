@@ -117,7 +117,7 @@ angular.module('starter')
                         variableCategoryName: "Symptoms",
                         variableCategoryNameSingularLowercase: "symptom",
                         measurementSynonymSingularLowercase : "rating",
-                        icon: "ion-ios-pulse"
+                        icon: "ion-sad-outline"
                     },
                     "Treatments": {
                         defaultAbbreviatedUnitName : "mg",
@@ -218,6 +218,9 @@ angular.module('starter')
                 
             },
             attachVariableCategoryIcons : function(dataArray){
+                if(!dataArray){
+                    return;
+                }
                 var variableCategoryInfo;
                 for(var i = 0; i < dataArray.length; i++){
                     variableCategoryInfo = this.getVariableCategoryInfo(dataArray[i].variableCategoryName);

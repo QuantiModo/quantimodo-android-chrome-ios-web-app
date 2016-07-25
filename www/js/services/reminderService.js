@@ -8,7 +8,7 @@ angular.module('starter')
 			addNewReminder : function(trackingReminder){
 				
 				var deferred = $q.defer();
-				if(trackingReminder.reminderFrequency !== 0){
+				if(trackingReminder.reminderFrequency !== 0 && !$rootScope.showOnlyOneNotification){
 					notificationService.scheduleNotificationByReminder(trackingReminder);
 				}
 				
@@ -32,7 +32,7 @@ angular.module('starter')
 				// Not keeping notifications in local storage currently
 				//localStorageService.deleteElementOfItemById('trackingReminderNotifications', trackingReminderNotificationId);
 
-				QuantiModo.skipTrackingReminder(params, function(response){
+				QuantiModo.skipTrackingReminderNotification(params, function(response){
 					if(response.success) {
 						deferred.resolve();
                     }
@@ -47,12 +47,29 @@ angular.module('starter')
 				return deferred.promise;
 			},
 
+			skipAllReminderNotifications : function(params){
+				var deferred = $q.defer();
+				QuantiModo.skipAllTrackingReminderNotifications(params, function(response){
+					if(response.success) {
+						deferred.resolve();
+					}
+					else {
+						deferred.reject();
+					}
+				}, function(err){
+					Bugsnag.notify(err, JSON.stringify(err), {}, "error");
+					deferred.reject(err);
+				});
+
+				return deferred.promise;
+			},
+
 			trackReminderNotification : function(params){
 				var deferred = $q.defer();
 				// Not keeping notifications in local storage currently
 				//localStorageService.deleteElementOfItemById('trackingReminderNotifications', trackingReminderNotificationId);
 
-				QuantiModo.trackTrackingReminder(params, function(response){
+				QuantiModo.trackTrackingReminderNotification(params, function(response){
 					if(response.success) {
 						deferred.resolve();
 					}
@@ -72,7 +89,7 @@ angular.module('starter')
 				// Not keeping notifications in local storage currently
 				//localStorageService.deleteElementOfItemById('trackingReminderNotifications', trackingReminderNotificationId);
 
-				QuantiModo.snoozeTrackingReminder(params, function(response){
+				QuantiModo.snoozeTrackingReminderNotification(params, function(response){
 					if(response.success) {
 						deferred.resolve();
                     }
@@ -90,7 +107,7 @@ angular.module('starter')
 			refreshTrackingRemindersAndScheduleAlarms : function(){
 
 				$rootScope.isSyncing = true;
-				$rootScope.syncDisplayText = 'Syncing reminders...';
+				$rootScope.syncDisplayText = 'Reminders coming down the pipes...';
 
 				if(!$rootScope.syncingReminders){
 					$rootScope.syncingReminders = true;
@@ -103,7 +120,7 @@ angular.module('starter')
 					QuantiModo.getTrackingReminders(params, function(remindersResponse){
 						var trackingReminders = remindersResponse.data;
 						if(remindersResponse.success) {
-							if($rootScope.combineNotifications !== true){
+							if($rootScope.showOnlyOneNotification !== true){
 								notificationService.scheduleAllNotifications(trackingReminders);
 							}
 							//$rootScope.numberOfPendingNotifications = trackingReminders[0].numberOfPendingNotifications;
@@ -170,12 +187,9 @@ angular.module('starter')
 
 
 				var deferred = $q.defer();
-				QuantiModo.getTrackingReminderNotifications(params, function(reminders){
-					if(reminders.success) {
-						deferred.resolve(reminders.data);
-						if($rootScope.combineNotifications !== true){
-							notificationService.scheduleAllNotifications(reminders.data);
-						}
+				QuantiModo.getTrackingReminderNotifications(params, function(response){
+					if(response.success) {
+						deferred.resolve(response.data);
 					}
 					else {
 						deferred.reject("error");

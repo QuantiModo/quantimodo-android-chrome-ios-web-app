@@ -76,51 +76,15 @@ angular.module('starter')
 
         var updateWeekdayChart = function(weekdayChartData){
             $scope.redrawWeekdayChart = false;
-            $scope.weekdayChartConfig = chartService.configureWeekdayChart(weekdayChartData, config.appSettings.primaryOutcomeVariableDetails.name);
+            $scope.weekdayChartConfig = chartService.configureWeekdayChart(weekdayChartData, config.appSettings.primaryOutcomeVariableDetails);
             $scope.redrawWeekdayChart = true;
         };
 
         var updateHourlyChart = function(hourlyChartData){
             $scope.redrawHourlyChart = false;
-            $scope.hourlyChartConfig = chartService.configureHourlyChart(hourlyChartData, config.appSettings.primaryOutcomeVariableDetails.name);
+            $scope.hourlyChartConfig = chartService.configureHourlyChart(hourlyChartData, config.appSettings.primaryOutcomeVariableDetails);
             $scope.redrawHourlyChart = true;
         };
-
-        function calculateAverageValueByWeekday(weekdayMeasurementArrays) {
-            var sumByWeekday = [];
-            for (var k = 0; k < 7; k++) {
-                if (typeof weekdayMeasurementArrays[k] !== "undefined") {
-                    for (var j = 0; j < weekdayMeasurementArrays[k].length; j++) {
-                        if (typeof sumByWeekday[k] === "undefined") {
-                            sumByWeekday[k] = 0;
-                        }
-                        sumByWeekday[k] = sumByWeekday[k] + weekdayMeasurementArrays[k][j].value;
-                    }
-                    $scope.averageValueByWeekday[k] = sumByWeekday[k] / (weekdayMeasurementArrays[k].length);
-                } else {
-                    $scope.averageValueByWeekday[k] = null;
-                    console.debug("No data for day " + k);
-                }
-            }
-        }
-
-        function calculateAverageValueByHour(hourlyMeasurementArrays) {
-            var sumByHour = [];
-            for (var k = 0; k < 23; k++) {
-                if (typeof hourlyMeasurementArrays[k] !== "undefined") {
-                    for (var j = 0; j < hourlyMeasurementArrays[k].length; j++) {
-                        if (typeof sumByHour[k] === "undefined") {
-                            sumByHour[k] = 0;
-                        }
-                        sumByHour[k] = sumByHour[k] + hourlyMeasurementArrays[k][j].value;
-                    }
-                    $scope.averageValueByHour[k] = sumByHour[k] / (hourlyMeasurementArrays[k].length);
-                } else {
-                    $scope.averageValueByHour[k] = null;
-                    console.debug("No data for day " + k);
-                }
-            }
-        }
 
         var updateCharts = function(){
 
@@ -169,8 +133,8 @@ angular.module('starter')
                         }
                     }
 
-                    calculateAverageValueByWeekday(weekdayMeasurementArrays);
-                    calculateAverageValueByHour(hourlyMeasurementArrays);
+                    $scope.averageValueByWeekday = chartService.calculateAverageValueByWeekday(weekdayMeasurementArrays);
+                    $scope.averageValueByHour = chartService.calculateAverageValueByHour(hourlyMeasurementArrays);
 
                     var averagePrimaryOutcomeVariableValue = Math.round(sum/(rangeLength));
                     localStorageService.setItem('averagePrimaryOutcomeVariableValue',averagePrimaryOutcomeVariableValue);

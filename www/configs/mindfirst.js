@@ -27,6 +27,7 @@ window.config = {
 
 config.appSettings  = {
     appName : 'Mind First Mood Tracker',
+    linkToChromeExtension : "https://chrome.google.com/webstore/detail/quantimodo-life-tracking/koghchdnkopobpmmhfelgmfelcjichhh",
     allowOffline : true,
     loaderImagePath : 'img/pop-tart-cat.gif',
     defaultState : 'app.remindersInbox',
@@ -52,6 +53,7 @@ config.appSettings  = {
     primaryOutcomeVariableDetails : {
         id : 1398,
         name : "Overall Mood",
+        variableName: "Overall Mood",
         category : "Mood",
         abbreviatedUnitName : "/5",
         combinationOperation: "MEAN",
@@ -145,220 +147,6 @@ config.appSettings  = {
                 }
             }
         },
-        // screen 3
-        {
-            img : {
-                width : '140',
-                height : '220',
-                url : 'img/track_moods.png'
-            },
-            content : {
-
-                firstP : {
-                    visible : true,
-                    content : 'Track Mood',
-                    classes : 'intro-header positive'
-                },                 
-                logoDiv : {
-                    visible : true,
-                    id : ''
-                },
-                showSecondBr : true,
-                finalP: {
-                    visible : true,
-                    content : 'On the <span class="positive">Track Mood</span> page, you can view your <span class="positive">average Mood</span> as well as charts illustrating how it changes over time.',
-                    classes : 'intro-paragraph-small',
-                    buttonBarVisible : true
-                }
-            }
-        },
-        // screen 4
-        {
-            img : {
-                width : '200',
-                height : '150',
-                url : 'img/history_page.png'
-            },
-            content : {
-                firstP : {
-                    visible : true,
-                    content : 'History',
-                    classes : 'intro-header positive'
-                }, 
-                showFirstBr : true,
-                logoDiv : {
-                    visible : true,
-                    id : 'logo'
-                },
-                showSecondBr : true,
-                finalP: {
-                    visible : true,
-                    content : 'You can see and edit your past mood ratings and notes by opening the <span class="positive">History</span> page.',
-                    classes : 'intro-paragraph',
-                    buttonBarVisible : true
-                }
-            }
-        },
-        // screen 5
-        {
-            img : {
-                width : '220',
-                height : '200',
-                url : 'img/mood_note.png'
-            },
-            content : {
-                firstP : {
-                    visible : true,
-                    content : 'Add a Note',
-                    classes : 'intro-header positive'
-                }, 
-                logoDiv : {
-                    visible : true,
-                    id : 'logo'
-                },
-                finalP: {
-                    visible : true,
-                    content : 'Add a note by tapping on a mood rating in the <span class="positive">History</span> page. You can also <span class="positive">Edit</span> your Mood there too.',
-                    classes : 'intro-paragraph',
-                    buttonBarVisible : true
-                }
-            }
-        },
-        // screen 6
-        {
-            img : {
-                width : '220',
-                height : '190',
-                url : 'img/track_foods.png'
-            },
-            content : {
-                firstP : {
-                    visible : true,
-                    content : 'Record a Meal',
-                    classes : 'intro-header positive'
-                }, 
-                logoDiv : {
-                    visible : true,
-                    id : 'logo'
-                },
-                finalP: {
-                    visible : true,
-                    content : 'Track your diet on the <span class="positive">Record a Meal</span> page. You can also <span class="positive">Add a new Food Variable</span> if you don\'t find the meal you looked for in the search results.',
-                    classes : 'intro-paragraph-small',
-                    buttonBarVisible : true
-                }
-            }
-        },
-        // screen 7
-        {
-            img : {
-                width : '190',
-                height : '180',
-                url : 'img/track_symptoms.png'
-            },
-            content : {
-
-                firstP : {
-                    visible : true,
-                    content : 'Track Symptoms',
-                    classes : 'intro-header positive'
-                }, 
-                
-                logoDiv : {
-                    visible : true,
-                    id : 'logo'
-                },
-                
-                finalP: {
-                    visible : true,
-                    content : 'Track any symptom on the <span class="positive">Track Symptoms</span> page. You can also <span class="positive">Add a new Symptom</span> if you don\'t find the symptom you looked for in the search results.',
-                    classes : 'intro-paragraph-small',
-                    buttonBarVisible : true
-                }   
-            }
-        },
-        // screen 8
-        {
-            img : {
-                width : '210',
-                height : '180',
-                url : 'img/track_treatments.png'
-            },
-            content : {
-                firstP : {
-                    visible : true,
-                    content : 'Track Treatments',
-                    classes : 'intro-header positive'
-                },                 
-                logoDiv : {
-                    visible : true,
-                    id : 'logo'
-                },
-                finalP: {
-                    visible : true,
-                    content : 'Track your treatments on the <span class="positive">Track Treatments</span> page. You can also <span class="positive">Add a new Treatment</span> if you don\'t find the treatment you looked for in the search results.',
-                    classes : 'intro-paragraph-small',
-                    buttonBarVisible : true
-                }
-            }
-        },
-        // screen 9
-        {
-            img : {
-                width : '220',
-                height : '200',
-                url : 'img/positive_predictors.png'
-            },
-            content : {
-
-                firstP : {
-                    visible : true,
-                    content : 'Positive Predictors',
-                    classes : 'intro-header positive'
-                }, 
-                
-                logoDiv : {
-                    visible : true,
-                    id : 'logo'
-                },
-                
-                finalP: {
-                    visible : true,
-                    content : 'Positive Predictors are the factors most predictive of <span class="positive">IMPROVING</span> Mood for the average QuantiModo user.',
-                    classes : 'intro-paragraph-small',
-                    buttonBarVisible : true
-                }
-            }
-        },
-        // screen 10
-        {
-            img : {
-                width : '220',
-                height : '200',
-                url : 'img/negative_predictors.png'
-            },
-            content : {
-
-                firstP : {
-                    visible : true,
-                    content : 'Negative Predictors',
-                    classes : 'intro-header positive'
-                },
-                
-                logoDiv : {
-                    visible : true,
-                    id : 'logo'
-                },
-                
-                finalP: {
-                    visible : true,
-                    content : 'Negative Predictors are the factors most predictive of <span class="positive">DECREASING</span> Mood for the average QuantiModo user.',
-                    classes : 'intro-paragraph-small',
-                    buttonBarVisible : true
-                }  
-            }
-        },
-        // screen 11
         {
             img : {
                 width : '180',
@@ -653,9 +441,9 @@ config.appSettings  = {
             icon : 'ion-ios-cloud-download-outline'
         },
         {
-            title : 'Variables',
+            title : 'Charts',
             href : '#/app/search-variables',
-            icon : 'ion-social-vimeo'
+            icon : 'ion-arrow-graph-up-right'
         },
         {
             title : 'Strongest Predictors',

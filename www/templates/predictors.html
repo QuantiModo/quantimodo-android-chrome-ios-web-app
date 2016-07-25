@@ -1,73 +1,133 @@
-<ion-view hide-nav-bar="hideNavigationMenu" view-title="{{title}}">
+<ion-view hide-nav-bar="hideNavigationMenu" view-title="{{state.title}}">
     <ion-tabs id="predictors-tabs" class="tabs-positive tabs-icon-top">
 
         <ion-tab title="Common Predictors" icon-on="ion-ios-pulse" icon-off="ion-ios-pulse-strong">
             <ion-content style="padding-top: 45px">
-                <div class="card card-positive">
+                <div ng-show="state.correlationObjects.length" class="card card-positive">
                     <div class="item item-text-wrap card-item" >
-                        <p>These are the factors most predictive of <span class="bold">{{increasingDecreasing}}</span> {{primaryOutcomeVariable}} for the average user.  Press "Your Predictors" at the bottom to see ones based on your own data.</p>
+                        <p>These are the factors most predictive of <span class="bold">{{increasingDecreasing}}</span> {{variableObject.name}} for the average user.  Press "Your Predictors" at the bottom to see ones based on your own data.</p>
                     </div>
                 </div>
                 <ion-list>
-                    <div class="list card factorResultList" ng-repeat="factor in factors">
+                    <div on-hold="goToStudyPage(correlationObject)" class="list card correlationResultList" ng-repeat="correlationObject in state.correlationObjects">
                         <ion-item class="item item-text-wrap card-item" style="border-style:hidden;">
-                            <h4><a ng-click="goToStudyPage(factor)">{{factor.cause}}</a></h4>
+                            <h4 ng-show="state.requestParams.cause"><a ng-click="goToStudyPage(correlationObject)">{{correlationObject.effect}}</a></h4>
+                            <h4 ng-show="state.requestParams.effect"><a ng-click="goToStudyPage(correlationObject)">{{correlationObject.cause}}</a></h4>
                             <div class="voteButtons">
-                                <div ng-click="upVote(factor)" class="show-inline">
-                                    <img ng-if="factor.userVote == null || factor.userVote == 0" src="img/thumb_up_white.png" height="32px" width="32px" />
-                                    <img ng-if="factor.userVote == 1" src="img/thumb_up_black.png" height="32px" width="32px" />
+                                <div ng-click="upVote(correlationObject, $index, 'public')" class="show-inline">
+                                    <img ng-if="correlationObject.userVote === null || correlationObject.userVote === 0" src="img/thumb_up_white.png" height="32px" width="32px" />
+                                    <img ng-if="correlationObject.userVote === 1" src="img/thumb_up_black.png" height="32px" width="32px" />
                                 </div>
-                                <div ng-click="downVote(factor)" class="show-inline">
-                                    <img ng-if="factor.userVote == null || factor.userVote == 1" src="img/thumb_down_white.png" height="32px" width="32px" />
-                                    <img ng-if="factor.userVote == 0" src="img/thumb_down_black.png" height="32px" width="32px" />
+                                <div ng-click="downVote(correlationObject, $index, 'public')" class="show-inline">
+                                    <img ng-if="correlationObject.userVote === null || correlationObject.userVote === 1" src="img/thumb_down_white.png" height="32px" width="32px" />
+                                    <img ng-if="correlationObject.userVote === 0" src="img/thumb_down_black.png" height="32px" width="32px" />
                                 </div>
                             </div>
-                            <p ng-click="goToStudyPage(factor)">{{factor.predictorExplanation}}</p>
-                            <p ng-click="goToStudyPage(factor)">{{factor.valuePredictingHighOutcomeExplanation}}</p>
-                            <p ng-click="goToStudyPage(factor)">{{factor.valuePredictingLowOutcomeExplanation}}</p>
+                            <p ng-click="goToStudyPage(correlationObject)">{{correlationObject.predictorExplanation}}</p>
+                            <p ng-click="goToStudyPage(correlationObject)">{{correlationObject.valuePredictingHighOutcomeExplanation}}</p>
+                            <p ng-click="goToStudyPage(correlationObject)">{{correlationObject.valuePredictingLowOutcomeExplanation}}</p>
                                 <!--
-                                <div class="show-inline" ng-show="shoppingCartEnabled" ng-click="openStore(factor.cause)" >
+                                <div class="show-inline" ng-show="shoppingCartEnabled" ng-click="openStore(correlationObject.cause)" >
                                     <img src="img/ic_shopping_cart.png" width="32px" height="32px" >
                                 </div>
                                 -->
                         </ion-item>
                     </div>
                 </ion-list>
+                <div class="list card"  ng-show="state.correlationObjects.length === 0">
+                    <div class="item" style="padding-bottom:0px;">
+                        <p style=" text-align: center; line-height: normal; font-size: 25px;">Not enough data!</p>
+
+                        <div class="row">
+                            <div class="col" style="padding-top: 0px;">
+                                <i style="text-align: center; font-size: 60px;" class="icon positive ion-sad-outline"></i>
+                            </div>
+                            <div class="col col-75">
+                                <h2 style="white-space: normal; text-align: left; line-height: normal; ">
+                                    We still don't have enough data to determine the strongest predictors of {{state.variableName}}.
+                                </h2>
+                                <br>
+                            </div>
+                        </div>
+                        <div class="row" >
+                            <h2 style="white-space: normal; text-align: left; line-height: normal; ">
+                                We generally need about a month of data and 30 measurements with some variability in order to perform an analysis.
+                                If you haven't already, please add a reminder and start tracking.
+                            </h2>
+                            <br>
+                        </div>
+                        <div class="row" >
+                            <br>
+                            <h2 style="white-space: normal; text-align: left; line-height: normal; ">
+                                Please create a ticket at http://help.quantimo.do if you think you should already have enough data.
+                            </h2>
+                            <br>
+                        </div>
+                        <div class="row" >
+                            <div class="button-bar">
+                                <button class="button button-clear button-balanced" style="font-size: 14px;" ng-click="goToState('app.reminderSearch')"><i class="ion-plus-round"> &nbsp; Add a reminder &nbsp;</i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </ion-content>
         </ion-tab>
 
         <ion-tab title="Your Predictors" icon-on="ion-ios-person" icon-off="ion-ios-person-outline">
             <ion-content style="padding-top: 45px">
                 <div class="card card-positive">
-                    <div class="item item-text-wrap card-item" >
-                        <p>Our analysis suggests that these are the factors most predictive of <b>{{increasingDecreasing}}</b> your {{primaryOutcomeVariable}} based on your own data. Want more accurate results? Add some reminders and start tracking!</a></p>
+                    <div ng-show="state.usersCorrelationObjects.length" class="item item-text-wrap card-item" >
+                        <p>Our analysis suggests that these are the factors most predictive of <b>{{increasingDecreasing}}</b> your {{state.variableName}} based on your own data. Want more accurate results? Add some reminders and start tracking!</a></p>
                     </div>
                 </div>
                 <ion-list>
-                    <div class="list card factorResultList" ng-repeat="factor in usersFactors">
+                    <div class="list card correlationResultList" ng-repeat="correlationObject in state.usersCorrelationObjects">
                         <ion-item class="item item-text-wrap card-item" style="border-style:hidden;">
-                            <h4><a ng-click="goToStudyPage(factor)">{{factor.cause}}</a></h4>
+                            <h4><a ng-click="goToStudyPage(correlationObject)">{{correlationObject.cause}}</a></h4>
                             <div class="voteButtons">
-                                <div ng-click="upVote(factor)" class="show-inline">
-                                    <img ng-if="factor.userVote == null || factor.userVote == 0" src="img/thumb_up_white.png" height="32px" width="32px" />
-                                    <img ng-if="factor.userVote == 1" src="img/thumb_up_black.png" height="32px" width="32px" />
+                                <div ng-click="upVote(correlationObject, $index, 'user')" class="show-inline">
+                                    <img ng-if="correlationObject.userVote === null || correlationObject.userVote === 0" src="img/thumb_up_white.png" height="32px" width="32px" />
+                                    <img ng-if="correlationObject.userVote === 1" src="img/thumb_up_black.png" height="32px" width="32px" />
                                 </div>
-                                <div ng-click="downVote(factor)" class="show-inline">
-                                    <img ng-if="factor.userVote == null || factor.userVote == 1" src="img/thumb_down_white.png" height="32px" width="32px" />
-                                    <img ng-if="factor.userVote == 0" src="img/thumb_down_black.png" height="32px" width="32px" />
+                                <div ng-click="downVote(correlationObject, $index, 'user')" class="show-inline">
+                                    <img ng-if="correlationObject.userVote === null || correlationObject.userVote === 1" src="img/thumb_down_white.png" height="32px" width="32px" />
+                                    <img ng-if="correlationObject.userVote === 0" src="img/thumb_down_black.png" height="32px" width="32px" />
                                 </div>
                             </div>
-                            <p>{{factor.predictorExplanation}}</p>
-                            <p>{{factor.valuePredictingHighOutcomeExplanation}}</p>
-                            <p>{{factor.valuePredictingLowOutcomeExplanation}}</p>
+                            <p>{{correlationObject.predictorExplanation}}</p>
+                            <p>{{correlationObject.valuePredictingHighOutcomeExplanation}}</p>
+                            <p>{{correlationObject.valuePredictingLowOutcomeExplanation}}</p>
                             <!--
-                            <div class="show-inline" ng-show="shoppingCartEnabled" ng-click="openStore(factor.cause)" >
+                            <div class="show-inline" ng-show="shoppingCartEnabled" ng-click="openStore(correlationObject.cause)" >
                                 <img src="img/ic_shopping_cart.png" width="32px" height="32px" >
                             </div>
                             -->
                         </ion-item>
                     </div>
                 </ion-list>
+                <div class="list card"  ng-show="state.usersCorrelationObjects.length === 0">
+                    <div class="item" style="padding-bottom:0px;">
+                        <p style=" text-align: center; line-height: normal; font-size: 25px;">Not enough data!</p>
+
+                        <div class="row">
+                            <div class="col" style="padding-top: 0px;">
+                                <i style="text-align: center; font-size: 60px;" class="icon positive ion-sad-outline"></i>
+                            </div>
+                            <div class="col col-75">
+                                <h2 style="white-space: normal; text-align: left; line-height: normal; ">We still don't have enough data to determine the strongest predictors of your {{state.variableName}}.
+                                    We generally need about a months worth of data and 30 measurements in order to perform an analysis.
+                                    If you haven't already, please add a reminder and start tracking.
+                                    Please create a ticket at http://help.quantimo.do if you think you should already have enough data.
+                                </h2>
+                            </div>
+                        </div>
+                        <div class="row" >
+                            <div class="button-bar">
+                                <button class="button button-clear button-balanced" style="font-size: 14px;" ng-click="goToState('app.reminderSearch')"><i class="ion-plus-round"> &nbsp; Add a reminder &nbsp;</i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </ion-content>
         </ion-tab>
 

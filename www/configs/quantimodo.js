@@ -26,6 +26,7 @@ window.config = {
 
 config.appSettings  = {
     appName : 'QuantiModo',
+    linkToChromeExtension : "https://chrome.google.com/webstore/detail/quantimodo-life-tracking/jioloifallegdkgjklafkkbniianjbgi",
     allowOffline : true,
     loaderImagePath : 'img/pop-tart-cat.gif',
     
@@ -51,6 +52,7 @@ config.appSettings  = {
     primaryOutcomeVariableDetails : {
         id : 1398,
         name : "Overall Mood",
+        variableName: "Overall Mood",
         category : "Mood",
         abbreviatedUnitName : "/5",
         combinationOperation: "MEAN",
@@ -438,9 +440,9 @@ config.appSettings  = {
             icon : 'ion-ios-cloud-download-outline'
         },
         {
-            title : 'Variables',
+            title : 'Charts',
             href : '#/app/search-variables',
-            icon : 'ion-social-vimeo'
+            icon : 'ion-arrow-graph-up-right'
         },
         {
             title : 'Strongest Predictors',

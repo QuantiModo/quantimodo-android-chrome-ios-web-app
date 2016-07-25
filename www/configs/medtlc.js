@@ -27,6 +27,7 @@ window.config = {
 
 config.appSettings  = {
     appName : 'MedTLC',
+    linkToChromeExtension : "https://chrome.google.com/webstore/detail/quantimodo-life-tracking/nojnjdgmjaejpnpehgioddbimopnblga",
     allowOffline : false,
 
     primaryOutcomeVariable : 'Mood',
@@ -53,6 +54,7 @@ config.appSettings  = {
     primaryOutcomeVariableDetails : {
         id : 1398,
         name : "Overall Mood",
+        variableName: "Overall Mood",
         category : "Mood",
         abbreviatedUnitName : "/5",
         unitId : 10,

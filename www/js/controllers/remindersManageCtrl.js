@@ -2,7 +2,8 @@ angular.module('starter')
 
 	.controller('RemindersManageCtrl', function($scope, authService, $ionicPopup, localStorageService, $state,
 												reminderService, $ionicLoading, measurementService, utilsService,
-												$stateParams, $filter, $rootScope){
+												$stateParams, $filter, $rootScope, $ionicActionSheet, $timeout,
+												variableCategoryService){
 
 	    $scope.controller_name = "RemindersManageCtrl";
 
@@ -61,17 +62,25 @@ angular.module('starter')
 
 		function getTrackingRemindersFromLocalStorage(){
 			$scope.state.allReminders = [];
+			var nonFavoriteReminders = [];
 			var unfilteredReminders = JSON.parse(localStorageService.getItemSync('trackingReminders'));
+			unfilteredReminders =
+				variableCategoryService.attachVariableCategoryIcons(unfilteredReminders);
 			if(unfilteredReminders) {
+				for(var k = 0; k < unfilteredReminders.length; k++){
+					if(unfilteredReminders[k].reminderFrequency !== 0){
+						nonFavoriteReminders.push(unfilteredReminders[k]);
+					}
+				}
 				if($stateParams.variableCategoryName) {
-					for(var j = 0; j < unfilteredReminders.length; j++){
-						if($stateParams.variableCategoryName === unfilteredReminders[j].variableCategoryName){
-							$scope.state.allReminders.push(unfilteredReminders[j]);
+					for(var j = 0; j < nonFavoriteReminders.length; j++){
+						if($stateParams.variableCategoryName === nonFavoriteReminders[j].variableCategoryName){
+							$scope.state.allReminders.push(nonFavoriteReminders[j]);
 						}
 					}
 					showAppropriateHelpInfoCards();
 				} else {
-					$scope.state.allReminders = unfilteredReminders;
+					$scope.state.allReminders = nonFavoriteReminders;
 					showAppropriateHelpInfoCards();
 				}
 				$scope.state.allReminders = reminderService.addRatingTimesToDailyReminders($scope.state.allReminders);
@@ -79,11 +88,6 @@ angular.module('starter')
 				showAppropriateHelpInfoCards();
 			}
 		}
-
-	    $scope.cancel = function(){
-	    	$scope.state.showMeasurementBox = !$scope.state.showMeasurementBox;
-	    };
-
 
 	    // when date is updated
 	    $scope.currentDatePickerCallback = function (val) {
@@ -159,7 +163,7 @@ angular.module('starter')
 
 
 	    $scope.deleteReminder = function(reminder, $index){
-			localStorageService.deleteElementOfItemById('trackingReminders', reminder.id).then(function(){
+			localStorageService.deleteElementOfItemById('trackingReminders', reminder.trackingReminderId).then(function(){
 					getTrackingRemindersFromLocalStorage();
 				});
 
@@ -178,5 +182,81 @@ angular.module('starter')
     	$scope.$on('$ionicView.enter', function(e){
     		$scope.init();
     	});
+
+		// Triggered on a button click, or some other target
+		$scope.showActionSheet = function(trackingReminder, $index) {
+
+			$scope.state.trackingReminder = trackingReminder;
+			$scope.state.variableObject = trackingReminder;
+			$scope.state.variableObject.id = trackingReminder.variableId;
+			$scope.state.variableObject.name = trackingReminder.variableName;
+			// Show the action sheet
+			var hideSheet = $ionicActionSheet.show({
+				buttons: [
+					{ text: '<i class="icon ion-android-notifications-none"></i>Edit Reminder'},
+					{ text: '<i class="icon ion-ios-star"></i>Add ' + ' to Favorites' },
+					{ text: '<i class="icon ion-edit"></i>Record ' + ' Measurement' },
+					{ text: '<i class="icon ion-arrow-graph-up-right"></i>' + $scope.state.variableObject.name + ' Visualized'},
+					{ text: '<i class="icon ion-ios-list-outline"></i>' + $scope.state.variableObject.name + ' History'},
+					{ text: '<i class="icon ion-arrow-up-a"></i>Positive Predictors'},
+					{ text: '<i class="icon ion-arrow-down-a"></i>Negative Predictors'}
+				],
+				destructiveText: '<i class="icon ion-trash-a"></i>Delete Reminder',
+				cancelText: '<i class="icon ion-ios-close"></i>Cancel',
+				cancel: function() {
+					console.log('CANCELLED');
+				},
+				buttonClicked: function(index) {
+					console.log('BUTTON CLICKED', index);
+					if(index === 0){
+						$scope.edit($scope.state.trackingReminder);
+					}
+					if(index === 1){
+						$scope.addToFavoritesUsingStateVariableObject($scope.state.variableObject);
+					}
+					if(index === 2){
+						$scope.goToAddMeasurementForVariableObject($scope.state.variableObject);
+					}
+					if(index === 3){
+						$scope.goToChartsPageForVariableObject($scope.state.variableObject);
+					}
+					if(index === 4){
+						$scope.goToHistoryForVariableObject($scope.state.variableObject);
+					}
+					if(index === 5){
+						$state.go('app.predictors',
+							{
+								variableObject: $scope.state.variableObject,
+								requestParams: {
+									effect:  $scope.state.variableObject.name,
+									correlationCoefficient: "(gt)0"
+								}
+							});
+					}
+					if(index === 6){
+						$state.go('app.predictors',
+							{
+								variableObject: $scope.state.variableObject,
+								requestParams: {
+									effect:  $scope.state.variableObject.name,
+									correlationCoefficient: "(lt)0"
+								}
+							});
+					}
+
+					return true;
+				},
+				destructiveButtonClicked: function() {
+					$scope.deleteReminder($scope.state.trackingReminder);
+					return true;
+				}
+			});
+
+
+			$timeout(function() {
+				hideSheet();
+			}, 20000);
+
+		};
 		
 	});

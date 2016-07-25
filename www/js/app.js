@@ -66,13 +66,20 @@ angular.module('starter',
                 return;
             }
 
+            $rootScope.appVersion = "1.7.8.0";
+
             if(window.private_keys.bugsnag_key) {
                 //Set Bugsnag Release Stage
                 $rootScope.bugsnagApiKey = window.private_keys.bugsnag_key;
                 Bugsnag.apiKey = window.private_keys.bugsnag_key;
                 Bugsnag.releaseStage = config.getEnv();
                 Bugsnag.notifyReleaseStages = config.bugsnag.notifyReleaseStages;
-                Bugsnag.appVersion = "1.7.0.7";
+                Bugsnag.appVersion = $rootScope.appVersion;
+                Bugsnag.metaData = {
+                    platform: ionic.Platform.platform(),
+                    platformVersion: ionic.Platform.version(),
+                    appName: config.appSettings.appName
+                };
             } else {
                 console.error('intervalChecker: No bugsnag_key found in private config!');
             }
@@ -392,12 +399,13 @@ angular.module('starter',
             url: "/variables/:variableName",
             cache: false,
             params: {
+                trackingReminder : null,
                 variableName : null,
                 variableObject: null,
                 measurementInfo: null,
                 noReload: false,
                 fromState : null,
-                fromUrl : null,
+                fromUrl : null
             },
             views: {
                 'menuContent': {
@@ -426,6 +434,14 @@ angular.module('starter',
         })
         .state('app.predictors', {
             url: "/predictors/:valence",
+            params: {
+                variableObject : null,
+                requestParams : {
+                    cause: null,
+                    effect: null,
+                    correlationCoefficient: null
+                }
+            },
             cache: false,
             views: {
                 'menuContent': {
@@ -435,10 +451,10 @@ angular.module('starter',
             }
         })
         .state('app.study', {
-            url: "/study/:factor",
+            cache: false,
+            url: "/study",
             params: {
-                factor: null,
-                factorObject: null
+                correlationObject: null
             },
             views: {
                 'menuContent': {
@@ -518,7 +534,8 @@ angular.module('starter',
             params: {
                 variableCategoryName : null,
                 fromState : null,
-                fromUrl : null
+                fromUrl : null,
+                variableObject : null
             },
             views: {
                 'menuContent': {

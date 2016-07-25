@@ -5,15 +5,10 @@ angular.module('starter')
 											 $stateParams, measurementService, reminderService, $ionicLoading,
 											 utilsService, $filter, ionicTimePicker, $timeout, 
 											 variableCategoryService, variableService, unitService, timeService,
-                                             $rootScope){
+                                             $rootScope, $ionicActionSheet, $ionicHistory){
 
 	    $scope.controller_name = "FavoriteAddCtrl";
 
-		console.log('Loading ' + $scope.controller_name);
-
-        var currentTime = new Date();
-
-        // state
 	    $scope.state = {
             showAddVariableCard : false,
             showUnits: false,
@@ -45,19 +40,8 @@ angular.module('starter')
             }
 	    };
 
-	    // when adding/editing is cancelled
 	    $scope.cancel = function(){
-            if ($stateParams.fromState){
-                $state.go($stateParams.fromState, {
-                    variableObject: $scope.variableObject,
-                    noReload: true,
-                    measurement: $stateParams.measurement
-                });
-            } else if ($stateParams.fromUrl) {
-                window.location = $stateParams.fromUrl;
-            } else {
-                    $state.go('app.favorites');
-            }
+            $ionicHistory.goBack();
 	    };
 
 	    // when the reminder is saved/edited
@@ -270,5 +254,72 @@ angular.module('starter')
             $scope.showUnitsDropDown = true;
         };
 
+        $rootScope.showActionSheetMenu = function() {
+
+            console.debug("Show the action sheet!  $scope.state.variableObject: ", $scope.state.variableObject);
+            var hideSheet = $ionicActionSheet.show({
+                buttons: [
+                    { text: '<i class="icon ion-ios-list-outline"></i>' + $scope.state.variableObject.name + ' History' },
+                    { text: '<i class="icon ion-android-notifications-none"></i>Add ' + $scope.state.variableObject.name + ' Reminder' },
+                    { text: '<i class="icon ion-arrow-graph-up-right"></i>' + $scope.state.variableObject.name + ' Charts'},
+                    { text: '<i class="icon ion-compose"></i>Add ' + $scope.state.variableObject.name + ' Measurement'},
+                    { text: '<i class="icon ion-arrow-up-a"></i>Positive Predictors'},
+                    { text: '<i class="icon ion-arrow-down-a"></i>Negative Predictors'},
+                    { text: '<i class="icon ion-arrow-down-a"></i>Likely Effects'},
+                ],
+                destructiveText: '<i class="icon ion-trash-a"></i>Delete Reminder',
+                cancelText: '<i class="icon ion-ios-close"></i>Cancel',
+                cancel: function() {
+                    console.log('CANCELLED');
+                },
+                buttonClicked: function(index) {
+                    console.log('BUTTON CLICKED', index);
+                    if(index === 0) {
+                        $scope.goToHistoryForVariableObject($scope.state.variableObject);
+                    }
+                    if(index === 1){
+                        $scope.goToAddReminderForVariableObject($scope.state.variableObject);
+                    }
+                    if(index === 2){
+                        $scope.goToChartsPageForVariableObject($scope.state.variableObject);
+                    }
+                    if(index === 3){
+                        $scope.goToAddMeasurement();
+                    }
+                    if(index === 4){
+                        $state.go('app.predictors',
+                            {
+                                variableObject: $scope.state.variableObject,
+                                requestParams: {
+                                    effect:  $scope.state.variableObject.name,
+                                    correlationCoefficient: "(gt)0"
+                                }
+                            });
+                    }
+                    if(index === 5){
+                        $state.go('app.predictors',
+                            {
+                                variableObject: $scope.state.variableObject,
+                                requestParams: {
+                                    effect:  $scope.state.variableObject.name,
+                                    correlationCoefficient: "(lt)0"
+                                }
+                            });
+                    }
+
+                    return true;
+                },
+                destructiveButtonClicked: function() {
+                    $scope.deleteReminder();
+                    return true;
+                }
+            });
+
+
+            $timeout(function() {
+                hideSheet();
+            }, 20000);
+
+        };
 
 	});

@@ -6,7 +6,7 @@ angular.module('starter')
                                     QuantiModo, notificationService, $rootScope, localStorageService, reminderService,
                                     $ionicPopup, $ionicSideMenuDelegate, ratingService, migrationService,
                                     ionicDatePicker, unitService, variableService, $ionicPlatform, $cordovaGeolocation,
-                                    qmLocationService) {
+                                    qmLocationService, variableCategoryService) {
 
         $rootScope.loaderImagePath = config.appSettings.loaderImagePath;
         $scope.appVersion = 1489;
@@ -40,6 +40,9 @@ angular.module('starter')
         $scope.hideHistoryPageInstructionsCard = localStorageService.getItemSync('hideHistoryPageInstructionsCard');
         $scope.hideImportDataCard = localStorageService.getItemSync('hideImportDataCard');
         $scope.hideRecordMeasurementInfoCard = localStorageService.getItemSync('hideRecordMeasurementInfoCard');
+        $scope.hideNotificationSettingsInfoCard = localStorageService.getItemSync('hideNotificationSettingsInfoCard');
+        $scope.hideLocationTrackingInfoCard = localStorageService.getItemSync('hideLocationTrackingInfoCard');
+        $scope.hideChromeExtensionInfoCard = localStorageService.getItemSync('hideChromeExtensionInfoCard');
 
         $scope.getLocation = function(){
             $scope.shouldWeTrackLocation();
@@ -237,6 +240,78 @@ angular.module('starter')
             });
         };
 
+        $scope.goToAddMeasurementForVariableObject = function(variableObject){
+            $state.go('app.measurementAdd',
+                {
+                    variableObject: variableObject,
+                    fromState: $state.current.name,
+                    fromUrl: window.location.href
+                });
+        };
+
+        $scope.goToHistoryForVariableObject = function(variableObject){
+            $state.go('app.historyAll',
+                {
+                    variableObject: variableObject,
+                    fromState: $state.current.name,
+                    fromUrl: window.location.href
+                });
+        };
+
+        $scope.goToChartsPageForVariableObject = function(variableObject){
+            $state.go('app.variables',
+                {
+                    variableObject: variableObject,
+                    fromState: $state.current.name,
+                    fromUrl: window.location.href
+                });
+        };
+
+        $scope.goToAddReminderForVariableObject = function(variableObject){
+            $state.go('app.reminderAdd',
+                {
+                    variableObject: variableObject,
+                    fromState: $state.current.name,
+                    fromUrl: window.location.href
+                });
+        };
+
+        $scope.addToFavoritesUsingStateVariableObject = function(variableObject){
+            var trackingReminder = {};
+            trackingReminder.variableId = variableObject.id;
+            trackingReminder.reminderFrequency = 0;
+            trackingReminder.variableName = variableObject.name;
+            trackingReminder.abbreviatedUnitName = variableObject.abbreviatedUnitName;
+            trackingReminder.variableDescription = variableObject.description;
+            trackingReminder.variableCategoryName = variableObject.variableCategoryName;
+
+            if (trackingReminder.abbreviatedUnitName === '/5') {
+                trackingReminder.defaultValue = 3;
+                localStorageService.replaceElementOfItemById('trackingReminders', trackingReminder);
+                reminderService.addNewReminder(trackingReminder)
+                    .then(function () {
+                        console.debug("Saved Reminder", trackingReminder)
+                    }, function (err) {
+                        console.error('Failed to add Reminder!', trackingReminder);
+                    });
+                $state.go('app.favorites',
+                    {
+                        trackingReminder: trackingReminder,
+                        fromState: $state.current.name,
+                        fromUrl: window.location.href
+                    }
+                );
+            } else {
+                $state.go('app.favoriteAdd',
+                    {
+                        variableObject: variableObject,
+                        fromState: $state.current.name,
+                        fromUrl: window.location.href
+                    }
+                );
+            }
+        };
+
         $scope.$on('$ionicView.enter', function(e) {
             //$scope.showHelpInfoPopupIfNecessary(e);
             $scope.getLocation();
@@ -276,6 +351,19 @@ angular.module('starter')
                 $scope.showCalendarButton = true;
             } else {
                 $scope.showCalendarButton = false;
+            }
+
+            if(e.targetScope && e.targetScope.controller_name &&
+                e.targetScope.controller_name === "MeasurementAddCtrl" ||
+                e.targetScope.controller_name === "RemindersAddCtrl" ||
+                e.targetScope.controller_name === "FavoriteAddCtrl" ||
+                e.targetScope.controller_name === "VariablePageCtrl"
+                // Disabled until we decide if we should allow skipping all notifications
+                //|| e.targetScope.controller_name === "RemindersInboxCtrl"
+            ){
+                $scope.showMoreMenuButton = true;
+            } else {
+                $scope.showMoreMenuButton = false;
             }
         });
 
@@ -385,10 +473,14 @@ angular.module('starter')
             //goToWelcomeStateIfNotWelcomed();
             scheduleReminder();
             if($rootScope.isIOS || $rootScope.isAndroid) {
+                console.debug("Going to try setting on trigger and on click actions for notifications when device is ready");
                 $ionicPlatform.ready(function(){
+                    console.debug("Setting on trigger and on click actions for notifications");
                     notificationService.setOnTriggerAction();
                     notificationService.setOnClickAction(QuantiModo);
                 });
+            } else {
+                console.debug("Not setting on trigger and on click actions for notifications because is not ios or android.");
             }
             goToDefaultStateIfLoggedInOnLoginState();
         };
@@ -442,11 +534,95 @@ angular.module('starter')
             $scope.showReminderSubMenu = !$scope.showReminderSubMenu;
         };
 
+        $rootScope.getTrackingReminderNotifications = function(params){
+            if(!params){
+                params = {};
+            }
+
+            var groupTrackingReminderNotificationsByDateRange = function(trackingReminderNotifications) {
+                var result = [];
+                var reference = moment().local();
+                var today = reference.clone().startOf('day');
+                var yesterday = reference.clone().subtract(1, 'days').startOf('day');
+                var weekold = reference.clone().subtract(7, 'days').startOf('day');
+                var monthold = reference.clone().subtract(30, 'days').startOf('day');
+
+                var todayResult = trackingReminderNotifications.filter(function (trackingReminderNotification) {
+                    return moment.utc(trackingReminderNotification.trackingReminderNotificationTime).local().isSame(today, 'd') === true;
+                });
+
+                if (todayResult.length) {
+                    result.push({name: "Today", trackingReminderNotifications: todayResult});
+                }
+
+                var yesterdayResult = trackingReminderNotifications.filter(function(trackingReminderNotification){
+                    return moment.utc(trackingReminderNotification.trackingReminderNotificationTime).local().isSame(yesterday, 'd') === true;
+                });
+
+                if(yesterdayResult.length) {
+                    result.push({ name : "Yesterday", trackingReminderNotifications : yesterdayResult });
+                }
+
+                var last7DayResult = trackingReminderNotifications.filter(function(trackingReminderNotification){
+                    var date = moment.utc(trackingReminderNotification.trackingReminderNotificationTime).local();
+
+                    return date.isAfter(weekold) === true && date.isSame(yesterday, 'd') !== true &&
+                        date.isSame(today, 'd') !== true;
+                });
+
+                if(last7DayResult.length) {
+                    result.push({ name : "Last 7 Days", trackingReminderNotifications : last7DayResult });
+                }
+
+                var last30DayResult = trackingReminderNotifications.filter(function(trackingReminderNotification){
+
+                    var date = moment.utc(trackingReminderNotification.trackingReminderNotificationTime).local();
+
+                    return date.isAfter(monthold) === true && date.isBefore(weekold) === true &&
+                        date.isSame(yesterday, 'd') !== true && date.isSame(today, 'd') !== true;
+                });
+
+                if(last30DayResult.length) {
+                    result.push({ name : "Last 30 Days", trackingReminderNotifications : last30DayResult });
+                }
+
+                var olderResult = trackingReminderNotifications.filter(function(trackingReminderNotification){
+                    return moment.utc(trackingReminderNotification.trackingReminderNotificationTime).local().isBefore(monthold) === true;
+                });
+
+                if(olderResult.length) {
+                    result.push({ name : "Older", trackingReminderNotifications : olderResult });
+                }
+
+                return result;
+            };
+
+            $scope.showLoader('Syncing reminder notifications...');
+            reminderService.getTrackingReminderNotifications(params.variableCategoryName, params.today)
+                .then(function(trackingReminderNotifications){
+                    $rootScope.numberOfPendingNotifications = trackingReminderNotifications.length;
+                    notificationService.updateNotificationBadges(trackingReminderNotifications.length);
+                    $rootScope.trackingRemindersNotifications =
+                        variableCategoryService.attachVariableCategoryIcons(trackingReminderNotifications);
+                    $rootScope.filteredTrackingReminderNotifications = groupTrackingReminderNotificationsByDateRange(trackingReminderNotifications);
+                    //Stop the ion-refresher from spinning
+                    $scope.$broadcast('scroll.refreshComplete');
+                }, function(){
+                    $scope.hideLoader();
+                    console.error("failed to get reminder notifications!");
+                    //Stop the ion-refresher from spinning
+                    $scope.$broadcast('scroll.refreshComplete');
+                });
+        };
+
+
         function setPlatformVariables() {
             $rootScope.isIOS = ionic.Platform.isIPad() || ionic.Platform.isIOS();
             $rootScope.isAndroid = ionic.Platform.isAndroid();
             $rootScope.isMobile = ionic.Platform.isAndroid() || ionic.Platform.isIPad() || ionic.Platform.isIOS();
             $rootScope.isChrome = window.chrome ? true : false;
+            $rootScope.currentPlatform = ionic.Platform.platform();
+            $rootScope.currentPlatformVersion = ionic.Platform.version();
 
             var currentUrl =  window.location.href;
             console.log('currentUrl is ' + currentUrl );
@@ -496,13 +672,24 @@ angular.module('starter')
         };
 
         $scope.shouldWeCombineNotifications = function(){
-            localStorageService.getItem('combineNotifications', function(combineNotifications){
-                console.debug("combineNotifications from local storage is " + combineNotifications);
-                if(combineNotifications === "null"){
-                    localStorageService.setItem('combineNotifications', true);
-                    $rootScope.combineNotifications = true;
+            localStorageService.getItem('showOnlyOneNotification', function(showOnlyOneNotification){
+                if(showOnlyOneNotification === "false") {
+                    console.debug("showOnlyOneNotification from local storage is a false string: " + showOnlyOneNotification);
+                    $rootScope.showOnlyOneNotification = false;
+                } else if (showOnlyOneNotification === "true") {
+                    $rootScope.showOnlyOneNotification = true;
                 } else {
-                    $rootScope.combineNotifications = combineNotifications === "true";
+                    console.debug("showOnlyOneNotification from local storage is not a false string");
+                    localStorageService.setItem('showOnlyOneNotification', false);
+                    $rootScope.showOnlyOneNotification = false;
+
+                    // notificationService.cancelAllNotifications().then(function() {
+                    //     localStorageService.getItem('primaryOutcomeRatingFrequencyDescription', function (primaryOutcomeRatingFrequencyDescription) {
+                    //         console.debug("Cancelled individual notifications and now scheduling combined one with interval: " + primaryOutcomeRatingFrequencyDescription);
+                    //         $scope.primaryOutcomeRatingFrequencyDescription = primaryOutcomeRatingFrequencyDescription ? primaryOutcomeRatingFrequencyDescription : "daily";
+                    //         $scope.saveInterval($scope.primaryOutcomeRatingFrequencyDescription);
+                    //     });
+                    // });
                 }
             });
         };
@@ -562,7 +749,11 @@ angular.module('starter')
                     app_id: "uwtx2m33",
                     name: userObject.displayName,
                     email: userObject.email,
-                    user_id: userObject.id
+                    user_id: userObject.id,
+                    app_name: config.appSettings.appName,
+                    app_version: $rootScope.appVersion,
+                    platform: $rootScope.currentPlatform,
+                    platform_version: $rootScope.currentPlatformVersion
                 };
             }
             return userObject;
@@ -611,7 +802,7 @@ angular.module('starter')
             */
             $timeout(function () {
                 $scope.hideLoader();
-            }, 15000);
+            }, 30000);
 
         };
 
@@ -634,6 +825,57 @@ angular.module('starter')
                 $rootScope.syncedEverything = true;
                 $scope.getLocation();
             }
+        };
+
+        $scope.sendWithMailTo = function(subjectLine, emailBody){
+            var emailUrl = 'mailto:?subject=' + subjectLine + '&body=' + emailBody;
+            if($rootScope.isChromeExtension){
+                console.debug('isChromeExtension so sending to website to share data');
+                var url = config.getURL("api/v2/account/applications", true);
+                var newTab = window.open(url,'_blank');
+                if(!newTab){
+                    alert("Please unblock popups and refresh to access the Data Sharing page.");
+                }
+                $rootScope.hideNavigationMenu = false;
+                $state.go(config.appSettings.defaultState);
+
+            } else {
+                console.debug('window.plugins.emailComposer not found!  Generating email normal way.');
+                window.location.href = emailUrl;
+            }
+        };
+
+        $scope.sendWithEmailComposer = function(subjectLine, emailBody){
+            document.addEventListener('deviceready', function () {
+                console.debug('deviceready');
+                cordova.plugins.email.isAvailable(
+                    function (isAvailable) {
+                        if(isAvailable){
+                            if(window.plugins && window.plugins.emailComposer) {
+                                console.debug('Generating email with cordova-plugin-email-composer');
+                                window.plugins.emailComposer.showEmailComposerWithCallback(function(result) {
+                                        console.log("Response -> " + result);
+                                    },
+                                    subjectLine, // Subject
+                                    emailBody,                      // Body
+                                    null,    // To
+                                    'info@quantimo.do',                    // CC
+                                    null,                    // BCC
+                                    true,                   // isHTML
+                                    null,                    // Attachments
+                                    null);                   // Attachment Data
+                            } else {
+                                console.error('window.plugins.emailComposer not available!');
+                                $scope.sendWithMailTo(subjectLine, emailBody);
+                            }
+                        } else {
+                            console.error('Email has not been configured for this device!');
+                            $scope.sendWithMailTo(subjectLine, emailBody);
+                        }
+                    }
+                );
+
+            }, false);
         };
         
         $scope.init();

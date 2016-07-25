@@ -1,16 +1,30 @@
-<ion-view hide-nav-bar="hideNavigationMenu" view-title="{{variableName}}">
+<ion-view hide-nav-bar="hideNavigationMenu" view-title="{{state.variableObject.variableName}} Visualized">
     <ion-content>
-        <div ng-show="showBarChart" class="card primary-outcome-variable-reporting-chart">
+        <div ng-show="state.showBarChart" class="card primary-outcome-variable-reporting-chart">
     		<div class="item item-text-wrap">
-                <div ng-if="redrawBarChart">
+                <div >
                     <highchart id="chart1" config="barChartConfig"></highchart>    
                 </div>
             </div>
         </div>
-        <div ng-show="showLineChart" class="card primary-outcome-variable-reporting-chart">
+        <div ng-show="state.showLineChart" class="card primary-outcome-variable-reporting-chart">
             <div class="item item-text-wrap">
-                <div ng-if="redrawLineChart">
+                <div >
                     <highchart id="chart2" config="lineChartConfig"></highchart>    
+                </div>
+            </div>
+        </div>
+        <div ng-show="state.showHourlyChart" class="card primary-outcome-variable-reporting-chart">
+            <div class="item item-text-wrap">
+                <div >
+                    <highchart id="chart3" config="hourlyChartConfig"></highchart>
+                </div>
+            </div>
+        </div>
+        <div ng-show="state.showWeekdayChart" class="card primary-outcome-variable-reporting-chart">
+            <div class="item item-text-wrap">
+                <div>
+                    <highchart id="chart4" config="weekdayChartConfig"></highchart>
                 </div>
             </div>
         </div>

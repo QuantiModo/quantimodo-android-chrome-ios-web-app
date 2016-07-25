@@ -71,8 +71,10 @@ angular.module('starter')
                         { 
                             throw 'invalid parameter; allowed parameters: ' + allowedParams.toString(); 
                         }
-                        if(typeof params[key] !== "undefined"){
+                        if(typeof params[key] !== "undefined" && params[key] !== null){
                             urlParams.push(encodeURIComponent(key) + '=' + encodeURIComponent(params[key]));
+                        } else {
+                            console.warn("Not including parameter " + key + " in request because it is null or undefined");
                         }
                     }
                     //We can't append access token to Ionic requests for some reason
@@ -191,7 +193,7 @@ angular.module('starter')
                     errorHandler);
             };
 
-            QuantiModo.getMeasurements = function(params){
+            QuantiModo.getMeasurementsLooping = function(params, doNotLoop){
                 var defer = $q.defer();
                 var response_array = [];
                 var errorCallback = function(){
@@ -199,7 +201,8 @@ angular.module('starter')
                 };
 
                 var successCallback =  function(response){
-                    if (response.length === 0 || typeof response === "string" || params.offset >= 3000) {
+                    // Get a maximum of 2000 measurements to avoid exceeding localstorage quota
+                    if (response.length === 0 || typeof response === "string" || params.offset >= 2000) {
                         defer.resolve(response_array);
                     } else {
                         localStorageService.getItem('user', function(user){
@@ -289,36 +292,23 @@ angular.module('starter')
                     errorHandler);
             };
 
-            // get positive list
-            QuantiModo.getCauses = function(successHandler, errorHandler){
-                var primaryOutcomeVariable = config.appSettings.primaryOutcomeVariableDetails.name.replace(' ','%20');
-                QuantiModo.get('api/v1/variables/'+primaryOutcomeVariable+'/public/causes',
-                    [],
-                    {},
+
+            QuantiModo.getAggregatedCorrelations = function(params, successHandler, errorHandler){
+                QuantiModo.get('api/v1/aggregatedCorrelations',
+                    ['correlationCoefficient', 'cause', 'effect'],
+                    params,
                     successHandler,
                     errorHandler);
             };
 
-            //get User's causes
-            QuantiModo.getUsersCauses = function (successHandler,errorHandler) {
-                var primaryOutcomeVariable = config.appSettings.primaryOutcomeVariableDetails.name.replace(' ','%20');
-                QuantiModo.get('api/v1/variables/'+primaryOutcomeVariable+'/causes',
-                    [],
-                    {},
+
+            QuantiModo.getUserCorrelations = function (params, successHandler, errorHandler) {
+                QuantiModo.get('api/v1/correlations',
+                    ['correlationCoefficient', 'cause', 'effect'],
+                    params,
                     successHandler,
                     errorHandler
-
                 );
-            };
-
-            // get negative list
-            QuantiModo.getNegativeList = function(successHandler, errorHandler){
-                var primaryOutcomeVariable = config.appSettings.primaryOutcomeVariableDetails.name.replace(' ','%20');
-                QuantiModo.get('api/v1/variables/'+primaryOutcomeVariable+'/public/effects',
-                    [],
-                    {},
-                    successHandler,
-                    errorHandler);
             };
 
             // post new correlation for user
@@ -525,7 +515,7 @@ angular.module('starter')
             };
 
             // snooze tracking reminder
-            QuantiModo.snoozeTrackingReminder = function(params, successHandler, errorHandler){
+            QuantiModo.snoozeTrackingReminderNotification = function(params, successHandler, errorHandler){
                 QuantiModo.post('api/v1/trackingReminderNotifications/snooze',
                     ['id', 'trackingReminderNotificationId', 'trackingReminderId'],
                     params,
@@ -534,7 +524,7 @@ angular.module('starter')
             };
 
             // skip tracking reminder
-            QuantiModo.skipTrackingReminder = function(params, successHandler, errorHandler){
+            QuantiModo.skipTrackingReminderNotification = function(params, successHandler, errorHandler){
                 QuantiModo.post('api/v1/trackingReminderNotifications/skip',
                     ['id', 'trackingReminderNotificationId', 'trackingReminderId'],
                     params,
@@ -542,8 +532,17 @@ angular.module('starter')
                     errorHandler);
             };
 
+            // skip tracking reminder
+            QuantiModo.skipAllTrackingReminderNotifications = function(params, successHandler, errorHandler){
+                QuantiModo.post('api/v1/trackingReminderNotifications/skip/all',
+                    ['trackingReminderId'],
+                    params,
+                    successHandler,
+                    errorHandler);
+            };
+
             // track tracking reminder with default value
-            QuantiModo.trackTrackingReminder = function(params, successHandler, errorHandler){
+            QuantiModo.trackTrackingReminderNotification = function(params, successHandler, errorHandler){
                 QuantiModo.post('api/v1/trackingReminderNotifications/track',
                     ['id', 'trackingReminderNotificationId', 'trackingReminderId', 'modifiedValue'],
                     params,

@@ -18,11 +18,11 @@
 						</button>
 					</div>
                     <div ng-click="showActionSheet(favorite, $index)" class="col col-10">
-                        <i style="font-size: 10px;" class="icon positive ion-more"></i>
+                        <i style="font-size: 20px;" class="icon positive ion-more"></i>
                     </div>
                 </div>
                 <div class="primary-outcome-variable-reporting"
-                     ng-if="!favorite.description &&	favorite.abbreviatedUnitName === '/5'">
+                     ng-if="!favorite.variableDescription && favorite.abbreviatedUnitName === '/5'">
                     <div class="primary-outcome-variable-rating-buttons" >
                         <img ng-repeat="option in numericRatingOptions"
                              ng-click="trackByReminder(favorite, option.numericValue)"
@@ -32,7 +32,7 @@
                 </div>
                 <div class="primary-outcome-variable-reporting"
                      ng-if="favorite.abbreviatedUnitName === '/5' &&
-						 	favorite.description.toLowerCase().indexOf('positive') > -1">
+						 	favorite.variableDescription.toLowerCase().indexOf('positive') > -1">
                     <div class="primary-outcome-variable-rating-buttons" >
                         <img ng-repeat="option in positiveRatingOptions"
                              ng-click="trackByReminder(favorite, option.numericValue)"
@@ -43,7 +43,7 @@
                 </div>
                 <div class="primary-outcome-variable-reporting"
                      ng-if="favorite.abbreviatedUnitName === '/5' &&
-						 	favorite.description.toLowerCase().indexOf('negative') > -1">
+						 	favorite.variableDescription.toLowerCase().indexOf('negative') > -1">
                     <div class="primary-outcome-variable-rating-buttons" >
                         <img ng-repeat="option in negativeRatingOptions"
                              ng-click="trackByReminder(favorite, option.numericValue)"
@@ -60,7 +60,7 @@
                     Add a Favorite Variable
                 </a>
             </div>
-            <div class="list card" ng-hide="state.favorites.length" >
+            <div class="list card" ng-if="state.favorites.length === 0" >
                 <div class="item" style="padding-bottom:0px;">
                     <div class="row">
                         <h2 style="white-space: normal; text-align: center; line-height: normal; ">

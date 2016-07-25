@@ -31,15 +31,15 @@
         </div>
 
         <div class="card sign-in" >
-            <ion-toggle ng-model="state.combineNotifications"
+            <ion-toggle ng-model="state.showOnlyOneNotification"
                         ng-change="combineNotificationChange()">
                 <i class="icon ion-android-notifications-none"></i>
                 &nbsp
-                Only show one notification
+                Single Device Notification
             </ion-toggle>
 
 
-            <div ng-show="state.combineNotifications" class="list card">
+            <div ng-click="ratingPopover.show();" ng-show="state.showOnlyOneNotification" class="list card">
                 <div class="item item-text-wrap">
                     <p>Reminder me every</p>
                 </div>
