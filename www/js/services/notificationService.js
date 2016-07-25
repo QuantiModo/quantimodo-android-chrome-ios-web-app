@@ -314,7 +314,7 @@ angular.module('starter')
                         sound: "file://sound/silent.ogg",
                         ongoing: false,
                         title: "Track " + trackingReminder.variableName,
-                        text: "Tap to record or modify measurement",
+                        text: "Tap to record measurement",
                         at: trackingReminder.at * 1000,
                         icon: 'ic_stat_icon_bw',
                         id: trackingReminder.id
