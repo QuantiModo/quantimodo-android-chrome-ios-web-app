@@ -117,13 +117,13 @@ angular.module('starter')
 		};
 
 
-		$scope.track = function(trackingReminderNotification, modifiedReminderValue, $event, dividerIndex, reminderNotificationIndex){
+		$scope.track = function(trackingReminderNotification, modifiedReminderValue, $event, dividerIndex, trackingReminderNotificationNotificationIndex){
 
 			if(isGhostClick($event)){
 				return;
 			}
 
-			$rootScope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications[reminderNotificationIndex].hide = true;
+			$rootScope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications[trackingReminderNotificationNotificationIndex].hide = true;
 			console.debug('Tracking notification', trackingReminderNotification);
 			console.log('modifiedReminderValue is ' + modifiedReminderValue);
 			var params = {
@@ -143,13 +143,13 @@ angular.module('starter')
 	    	});
 	    };
 
-	    $scope.skip = function(trackingReminderNotification, $event, dividerIndex, reminderNotificationIndex){
+	    $scope.skip = function(trackingReminderNotification, $event, dividerIndex, trackingReminderNotificationNotificationIndex){
 
 			if(isGhostClick($event)){
 				return;
 			}
 
-			$rootScope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications[reminderNotificationIndex].hide = true;
+			$rootScope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications[trackingReminderNotificationNotificationIndex].hide = true;
 
 			console.debug('Skipping notification', trackingReminderNotification);
 			var params = {
@@ -170,13 +170,13 @@ angular.module('starter')
 	    	});
 	    };
 
-	    $scope.snooze = function(trackingReminderNotification, $event, dividerIndex, reminderNotificationIndex){
+	    $scope.snooze = function(trackingReminderNotification, $event, dividerIndex, trackingReminderNotificationNotificationIndex){
 
 			if(isGhostClick($event)){
 				return;
 			}
 
-			$rootScope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications[reminderNotificationIndex].hide = true;
+			$rootScope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications[trackingReminderNotificationNotificationIndex].hide = true;
 
 			console.debug('Snoozing notification', trackingReminderNotification);
 			var params = {
@@ -217,8 +217,8 @@ angular.module('starter')
 			}
 	    };
 
-	    $scope.editMeasurement = function(trackingReminderNotification, dividerIndex, reminderNotificationIndex){
-			$rootScope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications[reminderNotificationIndex].hide = true;
+	    $scope.editMeasurement = function(trackingReminderNotification, dividerIndex, trackingReminderNotificationNotificationIndex){
+			$rootScope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications[trackingReminderNotificationNotificationIndex].hide = true;
 			// FIXME this shouldn't skip unless the change is made - user could cancel
 			var params = {
 				trackingReminderNotificationId: trackingReminderNotification.id
