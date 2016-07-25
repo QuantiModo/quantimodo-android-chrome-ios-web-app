@@ -451,6 +451,7 @@ angular.module('starter',
             }
         })
         .state('app.study', {
+            cache: false,
             url: "/study",
             params: {
                 correlationObject: null
