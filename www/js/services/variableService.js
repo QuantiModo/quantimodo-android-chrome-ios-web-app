@@ -70,6 +70,17 @@ angular.module('starter')
                 return deferred.promise;
             },
 
+            // post changes to user variable settings
+            postUserVariable : function(userVariable) {
+                var deferred = $q.defer();
+                QuantiModo.postUserVariable(userVariable, function(userVariable) {
+                    deferred.resolve(userVariable);
+                }, function(){
+                    deferred.reject(false);
+                });
+                return deferred.promise;
+            },
+
             getVariableById : function(variableId){
                 var deferred = $q.defer();
 

@@ -8,41 +8,64 @@ angular.module('starter')
 
         $scope.controller_name = "VariableSettingsCtrl";
 
+        // state
         $scope.state = {
+            // category object,
             unitCategories : {},
             searchedUnits : []
         };
         $scope.state.title = $stateParams.variableName + ' Variable Settings';
         $scope.state.variableName = $stateParams.variableName;
-            
-        $scope.updateDisplayedVariableSettings = function(selectedVariable){
 
-        };
-
+        // cancel activity
         $scope.cancel = function(){
             $ionicHistory.goBack();
+            // FIXME Test this
         };
 
-        $scope.done = function(){
+        $scope.resetToDefaultSettings = function() {
+            // FIXME get default settings from API
+        };
+
+        $scope.deleteAllMeasurementsForVariable = function() {
+            // FIXME prompt to confirm or cancel
+            // FIXME delete all variables from server
+        };
+
+        $scope.save = function(){
+            var maximumAllowedValue = $scope.state.maximumAllowedValue;
+            var minimumAllowedValue = $scope.state.minimumAllowedValue;
+            if (maximumAllowedValue === "" || maximumAllowedValue === null) {
+                maximumAllowedValue = "Infinity";
+            }
+            if (minimumAllowedValue === "" || minimumAllowedValue === null) {
+                minimumAllowedValue = "-Infinity";
+            }
 
             // populate params
             var params = {
-                variable : $scope.state.variableName || jQuery('#variableName').val(),
-                unit : $scope.state.abbreviatedUnitName,
-                category : $scope.state.variableCategory,
-                isAvg : $scope.state.sumAvg === "avg"
+                user: $scope.variableObject.userId,
+                variableId: $scope.variableObject.id,
+                durationOfAction: $scope.state.durationOfAction*60*60,
+                //fillingValue
+                //joinWith
+                maximumAllowedValue: maximumAllowedValue,
+                minimumAllowedValue: minimumAllowedValue,
+                onsetDelay: $scope.state.delayBeforeOnset*60*60,
+                //experimentStartTime
+                //experimentEndTime
             };
-
             console.log(params);
+            variableService.postUserVariable(params).then(function() {
+                console.log("success");
+            },
+            function() {
+                console.log("error");
+            });
 
-            // validation
-            if (params.variableName === "") {
-                utilsService.showAlert('Variable Name missing');
-            } else {
-                $ionicHistory.goBack();
-            }
         };
 
+        // constructor
         $scope.init = function(){
             Bugsnag.context = "variableSettings";
             $scope.loading = true;
@@ -52,14 +75,35 @@ angular.module('starter')
             if(isAuthorized){
                 $scope.showHelpInfoPopupIfNecessary();
                 $scope.loading = true;
-                $scope.state.sumAvg = "avg";
+                $scope.state.sumAvg = "avg"; // FIXME should this be the default?
                 variableService.getVariablesByName($stateParams.variableName).then(function(variableObject){
                     $scope.state.variableObject = variableObject;
                     console.log(variableObject);
-                    $scope.item = variableObject;
+                    $scope.variableObject = variableObject;
                     $scope.state.sumAvg = variableObject.combinationOperation === "MEAN"? "avg" : "sum";
                     $scope.state.variableCategory = variableObject.category;
-                    $scope.state.selectedUnitAbbreviatedName = variableObject.abbreviatedUnitName;
+                    if (variableObject.abbreviatedUnitName === "/5") {
+                        // FIXME hide other fixed range variables as well
+                        $scope.state.hideMinMax = true;
+                    }
+                    else {
+                        if (variableObject.minimumAllowedValue !== "-Infinity") {
+                            $scope.state.minimumAllowedValue = variableObject.minimumAllowedValue;
+                        }
+                        else {
+                            $scope.state.minimumAllowedValue = "";
+                        }
+                        if (variableObject.maximumAllowedValue !== "Infinity") {
+                            $scope.state.maximumAllowedValue = variableObject.maximumAllowedValue;
+                        }
+                        else {
+                            $scope.state.maximumAllowedValue = "";
+                        }
+                    }
+
+                    $scope.state.delayBeforeOnset = variableObject.onsetDelay/(60*60); // seconds -> hours
+                    $scope.state.durationOfAction = variableObject.durationOfAction/(60*60); // seconds - > hours
+
                 });
                 $ionicLoading.hide();
             } 
