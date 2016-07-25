@@ -5,7 +5,7 @@ angular.module('starter')
 											 $stateParams, measurementService, reminderService, $ionicLoading,
 											 utilsService, $filter, ionicTimePicker, $timeout, 
 											 variableCategoryService, variableService, unitService, timeService,
-                                             $rootScope, $ionicActionSheet){
+                                             $rootScope, $ionicActionSheet, $ionicHistory){
 
 	    $scope.controller_name = "RemindersAddCtrl";
 
@@ -186,24 +186,7 @@ angular.module('starter')
 
 	    // when adding/editing is cancelled
 	    $scope.cancel = function(){
-            if ($stateParams.fromState){
-                var variableName = $scope.state.trackingReminder.variableName;
-                var variableObject = $scope.variableObject;
-                var measurementObject = $stateParams.measurement;
-                $state.go($stateParams.fromState, {
-                    variableObject: variableObject,
-                    variableName: variableName,
-                    noReload: true,
-                    measurement: measurementObject,
-                });
-            } else if ($stateParams.fromUrl) {
-                window.location = $stateParams.fromUrl;
-            } else {
-                    $state.go('app.remindersManage');
-            }
-	    	/*} else {
-				$state.reload();
-            }*/
+            $ionicHistory.goBack();
 	    };
 
 	    var getFrequencyChart = function(){
