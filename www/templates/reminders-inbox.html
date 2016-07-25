@@ -23,7 +23,7 @@
 				</div>
 				<div class="row" >
 					<div class="button-bar">
-						<button class="button button-clear button-assertive" style="font-size: 14px;" ng-click="setLocalStorageFlagTrue('hideAddTreatmentRemindersCard')"><i class="ion-close-circled"> &nbsp;Done adding treatments</i></button>
+						<button id="hideAddTreatmentRemindersCardButton" class="button button-clear button-assertive" style="font-size: 14px;" ng-click="setLocalStorageFlagTrue('hideAddTreatmentRemindersCard')"><i class="ion-close-circled"> &nbsp;Done adding treatments</i></button>
 					</div>
 				</div>
 				<br>
@@ -49,7 +49,7 @@
 				</div>
 				<div class="row"  >
 					<div class="button-bar">
-						<button class="button button-clear button-assertive" style="font-size: 14px;" ng-click="setLocalStorageFlagTrue('hideAddSymptomRemindersCard')"><i class="ion-close-circled"> &nbsp; Done adding symptoms</i></button>
+						<button id="hideAddSymptomRemindersCardButton" class="button button-clear button-assertive" style="font-size: 14px;" ng-click="setLocalStorageFlagTrue('hideAddSymptomRemindersCard')"><i class="ion-close-circled"> &nbsp; Done adding symptoms</i></button>
 					</div>
 				</div>
 			</div>
@@ -73,7 +73,7 @@
 				</div>
 				<div class="row"  >
 					<div class="button-bar">
-						<button class="button button-clear button-assertive" style="font-size: 14px;" ng-click="setLocalStorageFlagTrue('hideAddEmotionRemindersCard')"><i class="ion-close-circled"> &nbsp; Done adding emotions</i></button>
+						<button id="hideAddEmotionRemindersCardButton" class="button button-clear button-assertive" style="font-size: 14px;" ng-click="setLocalStorageFlagTrue('hideAddEmotionRemindersCard')"><i class="ion-close-circled"> &nbsp; Done adding emotions</i></button>
 					</div>
 				</div>
 				<br>
@@ -98,7 +98,7 @@
 				</div>
 				<div class="row"  >
 					<div class="button-bar">
-						<button class="button button-clear button-assertive" style="font-size: 14px;" ng-click="setLocalStorageFlagTrue('hideAddFoodRemindersCard')"><i class="ion-close-circled"> &nbsp; Done adding common foods</i></button>
+						<button id="hideAddFoodRemindersCardButton" class="button button-clear button-assertive" style="font-size: 14px;" ng-click="setLocalStorageFlagTrue('hideAddFoodRemindersCard')"><i class="ion-close-circled"> &nbsp; Done adding common foods</i></button>
 					</div>
 				</div>
 				<br>
@@ -146,7 +146,7 @@
 				</div>
 				<div class="row" >
 					<div class="button-bar">
-						<button class="button button-clear button-assertive" style="font-size: 14px;" ng-click="setLocalStorageFlagTrue('hideNotificationSettingsInfoCard')"><i class="ion-close-circled"> &nbsp;That's fine</i></button>
+						<button id="hideNotificationSettingsInfoCardButton" class="button button-clear button-assertive" style="font-size: 14px;" ng-click="setLocalStorageFlagTrue('hideNotificationSettingsInfoCard')"><i class="ion-close-circled"> &nbsp;That's fine</i></button>
 					</div>
 				</div>
 			</div>
@@ -165,7 +165,7 @@
                 </div>
                 <div class="row" >
                     <div class="button-bar">
-                        <button class="button button-clear button-balanced" style="font-size: 14px;" ng-click="setLocalStorageFlagTrue('hideRecordMeasurementInfoCard')"><i class="ion-checkmark"> &nbsp; Got it!</i></button>
+                        <button id="hideRecordMeasurementInfoCardButton" class="button button-clear button-balanced" style="font-size: 14px;" ng-click="setLocalStorageFlagTrue('hideRecordMeasurementInfoCard')"><i class="ion-checkmark"> &nbsp; Got it!</i></button>
                     </div>
                 </div>
             </div>
@@ -189,7 +189,7 @@
 				</div>
 				<div class="row" >
 					<div class="button-bar">
-						<button class="button button-clear button-assertive" style="font-size: 14px;" ng-click="setLocalStorageFlagTrue('hideLocationTrackingInfoCard')"><i class="ion-close-circled"> &nbsp;Dismiss</i></button>
+						<button id="hideLocationTrackingInfoCardButton" class="button button-clear button-assertive" style="font-size: 14px;" ng-click="setLocalStorageFlagTrue('hideLocationTrackingInfoCard')"><i class="ion-close-circled"> &nbsp;Dismiss</i></button>
 					</div>
 				</div>
 			</div>
@@ -213,7 +213,7 @@
 				</div>
 				<div class="row" >
 					<div class="button-bar">
-						<button class="button button-clear button-assertive" style="font-size: 14px;" ng-click="setLocalStorageFlagTrue('hideChromeExtensionInfoCard')"><i class="ion-close-circled"> &nbsp; Dismiss</i></button>
+						<button id="hideChromeExtensionInfoCardButton" class="button button-clear button-assertive" style="font-size: 14px;" ng-click="setLocalStorageFlagTrue('hideChromeExtensionInfoCard')"><i class="ion-close-circled"> &nbsp; Dismiss</i></button>
 					</div>
 				</div>
 			</div>
@@ -238,7 +238,7 @@
 				</div>
 				<div class="row"  >
 					<div class="button-bar">
-						<button class="button button-clear button-assertive" style="font-size: 14px;" ng-click="setLocalStorageFlagTrue('hideImportDataCard')"><i class="ion-close-circled"> &nbsp; Done connecting data sources</i></button>
+						<button id="hideImportDataCardButton" class="button button-clear button-assertive" style="font-size: 14px;" ng-click="setLocalStorageFlagTrue('hideImportDataCard')"><i class="ion-close-circled"> &nbsp; Done connecting data sources</i></button>
 					</div>
 				</div>
 			</div>
@@ -252,7 +252,7 @@
 				</div>
 
 
-				<div on-hold="showActionSheetForNotification(trackingReminderNotification, $event)" class="list card" ng-if="!trackingReminderNotification.hide" ng-repeat="trackingReminderNotification in divider.trackingReminderNotifications" ng-init="trackingReminderNotificationNotificationIndex = $index" >
+				<div on-hold="showActionSheetForNotification(trackingReminderNotification, $event)" class="list card" ng-if="!trackingReminderNotification.hide" ng-repeat="trackingReminderNotification in divider.trackingReminderNotifications" ng-init="trackingReminderNotificationIndex = $index" >
 					<div class="item" style="padding-bottom:0px;">
 						<div ng-click="showActionSheetForNotification(trackingReminderNotification, $event)" class="row">
 							<div class="col" style="padding-top: 0px;">
@@ -265,26 +265,26 @@
 							</div>
 						</div>
 						<div class="button-bar">
-							<button class="button button-clear button-assertive" style="text-overflow: clip; font-size: 12px;" ng-click="skip(trackingReminderNotification, $event, dividerIndex, trackingReminderNotificationNotificationIndex)"><i class="ion-android-cancel"> &nbsp; Skip</i></button>
-							<button class="button button-clear button-royal" style="text-overflow: clip; font-size: 12px;" ng-click="snooze(trackingReminderNotification, $event, dividerIndex, trackingReminderNotificationNotificationIndex)"><i class="ion-android-notifications-off"> &nbsp; Snooze</i></button>
+							<button class="button button-clear button-assertive" style="text-overflow: clip; font-size: 12px;" ng-click="skip(trackingReminderNotification, $event, dividerIndex, trackingReminderNotificationIndex)"><i class="ion-android-cancel"> &nbsp; Skip</i></button>
+							<button class="button button-clear button-royal" style="text-overflow: clip; font-size: 12px;" ng-click="snooze(trackingReminderNotification, $event, dividerIndex, trackingReminderNotificationIndex)"><i class="ion-android-notifications-off"> &nbsp; Snooze</i></button>
 							<button class="button button-clear button-calm" ng-click="editReminderSettingsByNotification(trackingReminderNotification)" style="text-overflow: clip;  font-size: 12px;"><i class="ion-settings"> &nbsp; Settings</i></button>
 						</div>
 						<div class="row" ng-if="trackingReminderNotification.abbreviatedUnitName !== '/5' " >
 							<div class="button-bar">
-								<button ng-show="trackingReminderNotification.defaultValue" class="button button-clear button-assertive" style="text-overflow: clip; font-size: 14px;" ng-click="track(trackingReminderNotification, 0, $event, dividerIndex, trackingReminderNotificationNotificationIndex)"><i class="ion-android-done"> &nbsp; Record 0</i></button>
-								<button class="button button-clear button-balanced" style="text-overflow: clip; font-size: 14px;" ng-click="track(trackingReminderNotification, null, $event, dividerIndex, trackingReminderNotificationNotificationIndex)"><i class="ion-android-done"> &nbsp; Record {{trackingReminderNotification.defaultValue}}&nbsp</i></button>
+								<button ng-show="trackingReminderNotification.defaultValue" class="button button-clear button-assertive" style="text-overflow: clip; font-size: 14px;" ng-click="track(trackingReminderNotification, 0, $event, dividerIndex, trackingReminderNotificationIndex)"><i class="ion-android-done"> &nbsp; Record 0</i></button>
+								<button class="button button-clear button-balanced" style="text-overflow: clip; font-size: 14px;" ng-click="track(trackingReminderNotification, null, $event, dividerIndex, trackingReminderNotificationIndex)"><i class="ion-android-done"> &nbsp; Record {{trackingReminderNotification.defaultValue}}&nbsp</i></button>
 							</div>
 						</div>
 						<div class="row" ng-if="trackingReminderNotification.abbreviatedUnitName !== '/5' " >
 							<div class="button-bar">
-								<button class="button button-clear button-calm" style="text-overflow: clip; font-size: 14px;" ng-click="editMeasurement(trackingReminderNotification, dividerIndex, trackingReminderNotificationNotificationIndex)"><i class="ion-edit"> &nbsp; Record Different Value/Time</i></button>
+								<button class="button button-clear button-calm" style="text-overflow: clip; font-size: 14px;" ng-click="editMeasurement(trackingReminderNotification, dividerIndex, trackingReminderNotificationIndex)"><i class="ion-edit"> &nbsp; Record Different Value/Time</i></button>
 							</div>
 						</div>
 						<div class="primary-outcome-variable-reporting"
 							 ng-if="!trackingReminderNotification.description &&	trackingReminderNotification.abbreviatedUnitName === '/5'">
 							<div class="primary-outcome-variable-rating-buttons" >
 								<img ng-repeat="option in numericRatingOptions"
-									 ng-click="track(trackingReminderNotification, option.numericValue, $event, dividerIndex, trackingReminderNotificationNotificationIndex)"
+									 ng-click="track(trackingReminderNotification, option.numericValue, $event, dividerIndex, trackingReminderNotificationIndex)"
 									 ng-src="{{option.img}}">
 							</div>
 							<br>
@@ -341,9 +341,13 @@
 		</div>
 
 	</ion-content>
-	<nav mfb-menu position="bl" effect="slidein-spring"
-		 active-icon="ion-minus-round" resting-icon="ion-plus-round"
-		 toggling-method="click" ng-hide="hideNavigationMenu || (hideNavigationMenu && !isWelcomed)">
+	<nav id="floatingMaterialButton"
+		 mfb-menu position="bl"
+		 effect="slidein-spring"
+		 active-icon="ion-minus-round"
+		 resting-icon="ion-plus-round"
+		 toggling-method="click"
+		 ng-hide="hideNavigationMenu || (hideNavigationMenu && !isWelcomed)">
 		<button mfb-button icon={{floatingMaterialButton.button1.icon}} label={{floatingMaterialButton.button1.label}} ng-click="goToState({{floatingMaterialButton.button1.stateAndParameters}})"></button>
 		<button mfb-button icon={{floatingMaterialButton.button2.icon}} label={{floatingMaterialButton.button2.label}} ng-click="goToState({{floatingMaterialButton.button2.stateAndParameters}})"></button>
 		<button mfb-button icon={{floatingMaterialButton.button3.icon}} label={{floatingMaterialButton.button3.label}} ng-click="goToState({{floatingMaterialButton.button3.stateAndParameters}})"></button>

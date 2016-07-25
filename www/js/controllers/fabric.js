@@ -1,5 +1,5 @@
 angular.module('fabric', ['ng']).config(['$provide', function($provide) {
-  $provide.decorator("$exceptionHandler", ['$delegate', function($delegate) {
+  $provide.decorator("$exceptionHandler", ['$delegate', function($delegate, $ionicHistory, $state) {
     return function(exception, cause) {
       $delegate(exception, cause);
 
@@ -13,6 +13,9 @@ angular.module('fabric', ['ng']).config(['$provide', function($provide) {
       } else {
          stacktrace = "No stack trace provided with exception";
       }
+        Bugsnag.apiKey = window.private_keys.bugsnag_key;
+        var ionicViewHistory = $ionicHistory.viewHistory();
+        Bugsnag.notify("ERROR: "+$state.current.name, "ionic history backView: "+ JSON.stringify(ionicViewHistory), ionicViewHistory, "error");
       Bugsnag.notify("ERROR: "+message, "Stacktrace: "+stacktrace, {}, "error");
       if(typeof navigator !== 'undefined' && typeof navigator.crashlytics !== 'undefined'){
         navigator.crashlytics.logException("ERROR: "+message+", stacktrace: "+stacktrace);
