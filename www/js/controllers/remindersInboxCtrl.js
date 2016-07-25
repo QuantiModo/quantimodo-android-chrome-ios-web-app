@@ -275,8 +275,8 @@ angular.module('starter')
 					{ text: '<i class="icon ion-android-notifications-none"></i>Edit Reminder'},
 					{ text: '<i class="icon ion-ios-star"></i>Add ' + ' to Favorites' },
 					{ text: '<i class="icon ion-edit"></i>Record ' + ' Measurement' },
-					{ text: '<i class="icon ion-arrow-graph-up-right"></i>' + $scope.state.variableObject.name + ' Visualized'},
-					{ text: '<i class="icon ion-ios-list-outline"></i>' + $scope.state.variableObject.name + ' History'},
+					{ text: '<i class="icon ion-arrow-graph-up-right"></i>' + 'Visualize'},
+					{ text: '<i class="icon ion-ios-list-outline"></i>' + 'History'},
 					{ text: '<i class="icon ion-arrow-up-a"></i>Positive Predictors'},
 					{ text: '<i class="icon ion-arrow-down-a"></i>Negative Predictors'}
 				],

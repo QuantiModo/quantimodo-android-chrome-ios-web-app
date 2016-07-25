@@ -7,8 +7,8 @@
         <div class="list card" ng-if="state.favorites.length" ng-repeat="favorite in state.favorites" on-hold="showActionSheet(favorite, $index)">
             <div class="item" style="padding-bottom:0px;">
                 <div class="row">
-                    <div ng-click="showActionSheet(favorite, $index)" class="col col-20" style="padding-top: 0px;">
-                        <i style="font-size: 60px;" class="icon positive {{favorite.icon}}"></i>
+                    <div ng-click="showActionSheet(favorite, $index)" class="col col-10" style="padding-top: 0px; text-align: center;">
+                        <i style="font-size: 40px;" class="icon positive {{favorite.icon}}"></i>
                     </div>
                     <div class="col col-70">
                         <h2 ng-click="showActionSheet(favorite, $index)" ng-if="favorite.abbreviatedUnitName !== '/5'" style="white-space: normal; line-height: normal; text-align: center; ">{{favorite.displayTotal}}&nbsp{{favorite.variableName}}</h2>
