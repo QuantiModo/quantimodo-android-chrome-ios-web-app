@@ -16,11 +16,6 @@ angular.module('starter')
         };
         $scope.state.title = $stateParams.variableName + ' Variable Settings';
         $scope.state.variableName = $stateParams.variableName;
-            
-        $scope.updateDisplayedVariableSettings = function(selectedVariable){
-            // FIXME Write this function
-
-        };
 
         // cancel activity
         $scope.cancel = function(){
@@ -28,29 +23,46 @@ angular.module('starter')
             // FIXME Test this
         };
 
+        $scope.resetToDefaultSettings = function() {
+            // FIXME get default settings from API
+        };
 
-        $scope.done = function(){
-            // FIXME This doesn't actually submit anything to API
-            // FIXME Call updateDisplayedVariableSettings (and rename)
-            // FIXME And we need more params
+        $scope.deleteAllMeasurementsForVariable = function() {
+            // FIXME prompt to confirm or cancel
+            // FIXME delete all variables from server
+        };
+
+        $scope.save = function(){
+            var maximumAllowedValue = $scope.state.maximumAllowedValue;
+            var minimumAllowedValue = $scope.state.minimumAllowedValue;
+            if (maximumAllowedValue === "" || maximumAllowedValue === null) {
+                maximumAllowedValue = "Infinity";
+            }
+            if (minimumAllowedValue === "" || minimumAllowedValue === null) {
+                minimumAllowedValue = "-Infinity";
+            }
 
             // populate params
             var params = {
-                variable : $scope.state.variableName || jQuery('#variableName').val(),
-                unit : $scope.state.abbreviatedUnitName,
-                category : $scope.state.variableCategory,
-                isAvg : $scope.state.sumAvg === "avg"
+                user: $scope.variableObject.userId,
+                variableId: $scope.variableObject.id,
+                durationOfAction: $scope.state.durationOfAction*60*60,
+                //fillingValue
+                //joinWith
+                maximumAllowedValue: maximumAllowedValue,
+                minimumAllowedValue: minimumAllowedValue,
+                onsetDelay: $scope.state.delayBeforeOnset*60*60,
+                //experimentStartTime
+                //experimentEndTime
             };
-
             console.log(params);
+            variableService.postUserVariable(params).then(function() {
+                console.log("success");
+            },
+            function() {
+                console.log("error");
+            });
 
-            // validation
-            if (params.variableName === "") {
-                utilsService.showAlert('Variable Name missing');
-            } else {
-                // add variable
-                $ionicHistory.goBack();
-            }
         };
 
         // constructor
@@ -67,7 +79,7 @@ angular.module('starter')
                 variableService.getVariablesByName($stateParams.variableName).then(function(variableObject){
                     $scope.state.variableObject = variableObject;
                     console.log(variableObject);
-                    $scope.item = variableObject;
+                    $scope.variableObject = variableObject;
                     $scope.state.sumAvg = variableObject.combinationOperation === "MEAN"? "avg" : "sum";
                     $scope.state.variableCategory = variableObject.category;
                     if (variableObject.abbreviatedUnitName === "/5") {

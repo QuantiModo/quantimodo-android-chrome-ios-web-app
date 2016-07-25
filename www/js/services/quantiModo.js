@@ -410,7 +410,7 @@ angular.module('starter')
             };
 
 
-        // get user variables
+            // get user variables
             QuantiModo.getUserVariables = function(category, successHandler, errorHandler){
                 if(category){
                     QuantiModo.get('api/v1/variables',
@@ -426,6 +426,26 @@ angular.module('starter')
                         successHandler,
                         errorHandler);
                 }
+            };
+
+            // post changes to user variable
+            QuantiModo.postUserVariable = function(userVariable, successHandler, errorHandler) {
+                QuantiModo.post('api/v1/userVariables',
+                    [
+                        'user',
+                        'variableId',
+                        'durationOfAction',
+                        'fillingValue',
+                        'joinWith',
+                        'maximumAllowedValue',
+                        'minimumAllowedValue',
+                        'onsetDelay',
+                        'experimentStartTime',
+                        'experimentEndTime'
+                    ],
+                    userVariable,
+                    successHandler,
+                    errorHandler);
             };
 
             // get variable categories
