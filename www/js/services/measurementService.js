@@ -350,9 +350,9 @@ angular.module('starter')
 
                         // send request
                         QuantiModo.postMeasurementsV2(measurements, function (response) {
+                            localStorageService.setItem('measurementsQueue', JSON.stringify([]));
                             // success
                             measurementService.getMeasurements().then(function() {
-                                localStorageService.setItem('measurementsQueue', JSON.stringify([]));
                                 $rootScope.isSyncing = false;
                                 $rootScope.syncDisplayText = '';
                                 defer.resolve();
