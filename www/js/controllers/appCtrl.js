@@ -676,19 +676,20 @@ angular.module('starter')
                 if(showOnlyOneNotification === "false") {
                     console.debug("showOnlyOneNotification from local storage is a false string: " + showOnlyOneNotification);
                     $rootScope.showOnlyOneNotification = false;
+                } else if (showOnlyOneNotification === "true") {
+                    $rootScope.showOnlyOneNotification = true;
                 } else {
                     console.debug("showOnlyOneNotification from local storage is not a false string");
-                    localStorageService.setItem('showOnlyOneNotification', true);
-                    $rootScope.showOnlyOneNotification = true;
+                    localStorageService.setItem('showOnlyOneNotification', false);
+                    $rootScope.showOnlyOneNotification = false;
 
-                    notificationService.cancelAllNotifications().then(function() {
-
-                        localStorageService.getItem('primaryOutcomeRatingFrequencyDescription', function (primaryOutcomeRatingFrequencyDescription) {
-                            console.debug("Cancelled individual notifications and now scheduling combined one with interval: " + primaryOutcomeRatingFrequencyDescription);
-                            $scope.primaryOutcomeRatingFrequencyDescription = primaryOutcomeRatingFrequencyDescription ? primaryOutcomeRatingFrequencyDescription : "daily";
-                            $scope.saveInterval($scope.primaryOutcomeRatingFrequencyDescription);
-                        });
-                    });
+                    // notificationService.cancelAllNotifications().then(function() {
+                    //     localStorageService.getItem('primaryOutcomeRatingFrequencyDescription', function (primaryOutcomeRatingFrequencyDescription) {
+                    //         console.debug("Cancelled individual notifications and now scheduling combined one with interval: " + primaryOutcomeRatingFrequencyDescription);
+                    //         $scope.primaryOutcomeRatingFrequencyDescription = primaryOutcomeRatingFrequencyDescription ? primaryOutcomeRatingFrequencyDescription : "daily";
+                    //         $scope.saveInterval($scope.primaryOutcomeRatingFrequencyDescription);
+                    //     });
+                    // });
                 }
             });
         };
