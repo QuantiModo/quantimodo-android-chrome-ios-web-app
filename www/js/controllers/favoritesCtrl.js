@@ -118,8 +118,8 @@ angular.module('starter')
 				buttons: [
 					{ text: '<i class="icon ion-gear-a"></i>Change Default Value' },
 					{ text: '<i class="icon ion-edit"></i>Different Value/Time' },
-					{ text: '<i class="icon ion-arrow-graph-up-right"></i>Visualize ' + $scope.state.trackingReminder.variableName},
-					{ text: '<i class="icon ion-android-notifications-none"></i>Add ' + $scope.state.trackingReminder.variableName + ' Reminder'},
+					{ text: '<i class="icon ion-arrow-graph-up-right"></i>Visualize'},
+					{ text: '<i class="icon ion-android-notifications-none"></i>Add Reminder'},
 					{ text: '<i class="icon ion-arrow-up-a"></i>Positive Predictors'},
 					{ text: '<i class="icon ion-arrow-down-a"></i>Negative Predictors'}
 				],

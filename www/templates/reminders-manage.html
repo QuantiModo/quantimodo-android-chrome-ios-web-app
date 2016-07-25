@@ -95,13 +95,16 @@
 			<div on-hold="showActionSheet(reminder)" class="list card" ng-repeat="reminder in state.allReminders" ng-if="!reminder.hide">
 				<div class="item" style="padding-bottom:0px;">
 					<div class="row">
-						<div ng-click="showActionSheet(reminder)" class="col" style="padding-top: 0px;">
-							<i style="font-size: 60px;" class="icon positive {{reminder.icon}}"></i>
+						<div ng-click="showActionSheet(reminder)" class="col col-20" style="padding-top: 0px;">
+							<i style="font-size: 40px;" class="icon positive {{reminder.icon}}"></i>
 						</div>
-						<div ng-click="showActionSheet(reminder)" class="col col-75">
+						<div ng-click="showActionSheet(reminder)" class="col col-70">
 							<h2 style="white-space: normal;">{{reminder.variableName}}</h2>
 							<p style="white-space: normal;">{{reminder.valueAndFrequencyTextDescription}}</p>
-						</div>							
+						</div>
+						<div ng-click="showActionSheet(reminder)" class="col col-10">
+							<i style="font-size: 20px;" class="icon positive ion-more"></i>
+						</div>
 					</div>
 					<div class="row">
 						<div class="button-bar">
