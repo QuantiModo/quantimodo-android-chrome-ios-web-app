@@ -276,6 +276,15 @@ angular.module('starter')
                 });
         };
 
+        $scope.goToSettingsForVariableObject = function(variableObject) {
+            $state.go('app.variableSettings',
+                {
+                    variableName: variableObject.variableName,
+                    fromState: $state.current.name,
+                    fromUrl: window.location.href
+                });
+        };
+
         $scope.addToFavoritesUsingStateVariableObject = function(variableObject){
             var trackingReminder = {};
             trackingReminder.variableId = variableObject.id;

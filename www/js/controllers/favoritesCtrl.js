@@ -120,6 +120,7 @@ angular.module('starter')
 					{ text: '<i class="icon ion-edit"></i>Different Value/Time' },
 					{ text: '<i class="icon ion-arrow-graph-up-right"></i>Visualize'},
 					{ text: '<i class="icon ion-ios-list-outline"></i>' + 'History'},
+					{ text: '<i class="icon ion-settings"></i>' + 'Settings'},
 					{ text: '<i class="icon ion-android-notifications-none"></i>Add Reminder'},
 					{ text: '<i class="icon ion-arrow-up-a"></i>Positive Predictors'},
 					{ text: '<i class="icon ion-arrow-down-a"></i>Negative Predictors'}
@@ -148,7 +149,10 @@ angular.module('starter')
 					if (index === 3) {
 						$scope.goToHistoryForVariableObject($scope.state.variableObject);
 					}
-					if(index === 4){
+					if (index === 4) {
+						$scope.goToSettingsForVariableObject($scope.state.variableObject);
+					}
+					if(index === 5){
 						$state.go('app.reminderAdd',
 							{
 								variableObject: $scope.state.variableObject,
@@ -156,7 +160,7 @@ angular.module('starter')
 								fromUrl: window.location.href
 							});
 					}
-					if(index === 5){
+					if(index === 6){
 						$state.go('app.predictors',
 							{
 								variableObject: $scope.state.variableObject,
