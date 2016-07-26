@@ -159,7 +159,7 @@ config.appSettings  = {
 
                 firstP : {
                     visible : true,
-                    content : 'We are feeling ecstatic that you\'re helping us derive a mathematical equation for happiness!',
+                    content : 'Thank you for helping us derive a mathematical equation for happiness!',
                     classes : 'intro-paragraph positive'
                 }, 
                 
