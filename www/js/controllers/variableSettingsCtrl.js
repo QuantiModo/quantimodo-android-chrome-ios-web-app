@@ -21,7 +21,6 @@ angular.module('starter')
         // cancel activity
         $scope.cancel = function(){
             $ionicHistory.goBack();
-            // FIXME Test this
         };
 
         $scope.resetToDefaultSettings = function() {
@@ -36,13 +35,13 @@ angular.module('starter')
                 scope: $scope,
                 buttons:[
                     {
-                        text: 'No',
-                        type: 'button-assertive',
-                    },
-                    {
                         text: 'Yes',
                         type: 'button-positive',
                         onTap: $scope.deleteAllMeasurementsForVariable
+                    },
+                    {
+                        text: 'No',
+                        type: 'button-assertive',
                     }
                 ]
 
@@ -108,11 +107,15 @@ angular.module('starter')
         $scope.save = function(){
             var maximumAllowedValue = $scope.state.maximumAllowedValue;
             var minimumAllowedValue = $scope.state.minimumAllowedValue;
+            var fillingValue = $scope.state.fillingValue;
             if (maximumAllowedValue === "" || maximumAllowedValue === null) {
                 maximumAllowedValue = "Infinity";
             }
             if (minimumAllowedValue === "" || minimumAllowedValue === null) {
                 minimumAllowedValue = "-Infinity";
+            }
+            if (fillingValue === "" || fillingValue === null) {
+                fillingValue = -1;
             }
 
             // populate params
@@ -120,7 +123,7 @@ angular.module('starter')
                 user: $scope.variableObject.userId,
                 variableId: $scope.variableObject.id,
                 durationOfAction: $scope.state.durationOfAction*60*60,
-                //fillingValue
+                fillingValue: fillingValue,
                 //joinWith
                 maximumAllowedValue: maximumAllowedValue,
                 minimumAllowedValue: minimumAllowedValue,
@@ -135,6 +138,8 @@ angular.module('starter')
             function() {
                 console.log("error");
             });
+
+            $ionicHistory.goBack();
 
         };
 
@@ -172,6 +177,12 @@ angular.module('starter')
                         else {
                             $scope.state.maximumAllowedValue = "";
                         }
+                    }
+                    if (variableObject.fillingValue === null) {
+                        $scope.state.fillingValue = "";
+                    }
+                    else {
+                        $scope.state.fillingValue = variableObject.fillingValue;
                     }
 
                     $scope.state.delayBeforeOnset = variableObject.onsetDelay/(60*60); // seconds -> hours
