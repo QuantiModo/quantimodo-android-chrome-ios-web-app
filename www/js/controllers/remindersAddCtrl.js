@@ -132,14 +132,6 @@ angular.module('starter')
             ionicTimePicker.openTimePicker($scope.state.reminderEndTimePickerConfiguration);
         };
 
-        $scope.goToAddMeasurement = function(){
-            $state.go('app.measurementAdd', {
-                variableObject: $scope.variableObject,
-                fromState: $state.current.name,
-                fromUrl: window.location.href
-            });
-        };
-
 	    // when a search result is selected
 	    $scope.onVariableSelect = function(selectedVariable){
 	    	console.log("Variable Selected: ", selectedVariable);
@@ -530,7 +522,7 @@ angular.module('starter')
                         $scope.addToFavoritesUsingStateVariableObject($scope.state.variableObject);
                     }
                     if(index === 1){
-                        $scope.goToAddMeasurement();
+                        $scope.goToAddMeasurementForVariableObject($scope.state.variableObject);
                     }
                     if(index === 2){
                         $scope.goToChartsPageForVariableObject($scope.state.variableObject);
