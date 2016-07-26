@@ -93,11 +93,15 @@ angular.module('starter')
                                 $ionicPlatform.ready(function () {
                                     cordova.plugins.notification.local.getAll(function (notifications) {
                                         console.debug("All notifications ", notifications);
+                                        var numberOfPendingNotifications = 0;
+                                        if($rootScope.numberOfPendingNotifications){
+                                            numberOfPendingNotifications = $rootScope.numberOfPendingNotifications;
+                                        }
                                         for (var i = 0; i < notifications.length; i++) {
                                             console.log('Updating notification', notifications[i]);
                                             cordova.plugins.notification.local.update({
                                                 id: notifications[i].id,
-                                                badge: $rootScope.numberOfPendingNotifications
+                                                badge: numberOfPendingNotifications
                                             });
                                         }
                                     });
@@ -315,9 +319,13 @@ angular.module('starter')
                     // var at = new Date(0); // The 0 there is the key, which sets the date to the epoch
                     // at.setUTCSeconds(trackingReminder.at);
                     var intervalInMinutes  = trackingReminder.reminderFrequency / 60;
+                    var numberOfPendingNotifications = 0;
+                    if($rootScope.numberOfPendingNotifications){
+                        numberOfPendingNotifications = $rootScope.numberOfPendingNotifications;
+                    }
                     var notificationSettings = {
                         autoClear: true,
-                        badge: $rootScope.numberOfPendingNotifications,
+                        badge: numberOfPendingNotifications,
                         color: undefined,
                         data: trackingReminder,
                         led: undefined,
@@ -351,9 +359,13 @@ angular.module('starter')
                     if (intervalInMinutes > 60) {everyString = 'day';}
                     console.debug("iOS requires second, minute, hour, day, week, month, year so converting " +
                         intervalInMinutes + " minutes to string: " + everyString);
+                    var numberOfPendingNotifications = 0;
+                    if($rootScope.numberOfPendingNotifications){
+                        numberOfPendingNotifications = $rootScope.numberOfPendingNotifications;
+                    }
                     var notificationSettings = {
                         autoClear: true,
-                        badge: $rootScope.numberOfPendingNotifications,
+                        badge: numberOfPendingNotifications,
                         color: undefined,
                         data: trackingReminder,
                         led: undefined,
@@ -454,6 +466,10 @@ angular.module('starter')
                     console.debug("iOS requires second, minute, hour, day, week, month, year so converting " +
                         intervalInMinutes + " minutes to string: " + everyString);
                     cordova.plugins.notification.local.cancel(config.appSettings.primaryOutcomeVariableDetails.id);
+                    var numberOfPendingNotifications = 0;
+                    if($rootScope.numberOfPendingNotifications){
+                        numberOfPendingNotifications = $rootScope.numberOfPendingNotifications;
+                    }
                     var notificationSettings = {
                         text: config.appSettings.mobileNotificationText,
                         every: everyString,
@@ -461,7 +477,7 @@ angular.module('starter')
                         //icon: config.appSettings.mobileNotificationImage,
                         id: config.appSettings.primaryOutcomeVariableDetails.id,
                         sound: "file://sound/silent.ogg",
-                        badge: $rootScope.numberOfPendingNotifications
+                        badge: numberOfPendingNotifications
                     };
                     if (intervalInMinutes > 0) {
                         cordova.plugins.notification.local.schedule(notificationSettings, function () {
