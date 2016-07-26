@@ -47,7 +47,7 @@ config.appSettings  = {
     features: [
         ' - Automatically backup and sync your data across devices',
         ' - Track diet, treatments, symptoms, and anything else',
-        ' - Analyze your data to see the top predictors for your Mood'
+        ' - Analyze your data to see the strongest predictors of your mood'
     ],
       
     primaryOutcomeVariableDetails : {
