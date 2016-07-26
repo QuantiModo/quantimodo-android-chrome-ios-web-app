@@ -277,12 +277,23 @@ angular.module('starter')
         };
 
         $scope.goToSettingsForVariableObject = function(variableObject) {
-            $state.go('app.variableSettings',
-                {
-                    variableName: variableObject.variableName,
-                    fromState: $state.current.name,
-                    fromUrl: window.location.href
-                });
+            if (variableObject.variableName) {
+                $state.go('app.variableSettings',
+                    {
+                        variableName: variableObject.variableName,
+                        fromState: $state.current.name,
+                        fromUrl: window.location.href
+                    });
+            }
+            else if (variableObject.name) {
+                $state.go('app.variableSettings',
+                    {
+                        variableName: variableObject.name,
+                        fromState: $state.current.name,
+                        fromUrl: window.location.href
+                    });
+            }
+
         };
 
         $scope.addToFavoritesUsingStateVariableObject = function(variableObject){
