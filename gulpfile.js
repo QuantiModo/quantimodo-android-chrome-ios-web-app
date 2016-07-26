@@ -983,8 +983,6 @@ gulp.task('makeIosAppOnJenkins', function(callback){
 		'enableBitCode',
 		'addInheritedToOtherLinkerFlags',
 		'addDeploymentTarget',
-		'addPodfile',
-		'installPods',
 		callback);
 });
 
