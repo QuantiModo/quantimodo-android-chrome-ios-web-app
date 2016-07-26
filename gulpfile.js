@@ -975,7 +975,6 @@ gulp.task('makeIosApp', function(callback){
 gulp.task('makeIosAppOnJenkins', function(callback){
 	runSequence(
 		'readKeysForCurrentApp',
-		'addFacebookPlugin',
 		'fixResourcesPlist',
 		'enableBitCode',
 		'addInheritedToOtherLinkerFlags',
