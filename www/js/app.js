@@ -532,6 +532,7 @@ angular.module('starter',
         })
         .state('app.historyAll', {
             url: "/history-all",
+            cache: false,
             params: {
                 variableCategoryName : null,
                 fromState : null,
