@@ -1,6 +1,7 @@
 angular.module('starter')
 // Handles the Notifications (inapp, push)
-    .factory('notificationService',function($rootScope, $ionicPlatform, $state, localStorageService, $q, QuantiModo, timeService){
+    .factory('notificationService',function($rootScope, $ionicPlatform, $state, localStorageService, $q, QuantiModo,
+                                            timeService, bugsnagService){
 
         function createChromeAlarmNameFromTrackingReminder(trackingReminder) {
             var alarmName = {
@@ -177,6 +178,7 @@ angular.module('starter')
                         clearOtherLocalNotifications(currentNotification);
                     } catch (err) {
                         console.error('onTrigger error');
+                        bugsnagService.reportError(err);
                         console.error(err);
                     }
                 });
@@ -216,7 +218,13 @@ angular.module('starter')
                 if($rootScope.isChromeExtension || $rootScope.isIOS || $rootScope.isAndroid) {
                     for (var i = 0; i < trackingRemindersFromApi.length; i++) {
                         if($rootScope.showOnlyOneNotification !== "true"){
-                            this.scheduleNotificationByReminder(trackingRemindersFromApi[i]);
+                            try {
+                                this.scheduleNotificationByReminder(trackingRemindersFromApi[i]);
+                            } catch (err) {
+                                console.error('scheduleAllNotifications error');
+                                bugsnagService.reportError(err);
+                                console.error(err);
+                            }
                         }
                     }
                     this.cancelNotificationsForDeletedReminders(trackingRemindersFromApi);

@@ -6,7 +6,7 @@ angular.module('starter')
                                     QuantiModo, notificationService, $rootScope, localStorageService, reminderService,
                                     $ionicPopup, $ionicSideMenuDelegate, ratingService, migrationService,
                                     ionicDatePicker, unitService, variableService, $ionicPlatform, $cordovaGeolocation,
-                                    qmLocationService, variableCategoryService) {
+                                    qmLocationService, variableCategoryService, bugsnagService) {
 
         $rootScope.loaderImagePath = config.appSettings.loaderImagePath;
         $rootScope.appMigrationVersion = 1489;
@@ -677,7 +677,14 @@ angular.module('starter')
                 "day" : 24 * 60 * 60
             };
 
-            notificationService.scheduleGenericNotification(intervals[$scope.primaryOutcomeRatingFrequencyDescription]/60);
+
+            try {
+                notificationService.scheduleGenericNotification(intervals[$scope.primaryOutcomeRatingFrequencyDescription]/60);
+            } catch (err) {
+                console.error('scheduleAllNotifications error');
+                bugsnagService.reportError(err);
+                console.error(err);
+            }
 
             $rootScope.reminderToSchedule = {
                 id: config.appSettings.primaryOutcomeVariableDetails.id,
