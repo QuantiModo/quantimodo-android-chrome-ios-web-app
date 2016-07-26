@@ -67,6 +67,7 @@ angular.module('starter',
             }
 
             $rootScope.appVersion = "1.7.8.4";
+            $rootScope.appName = config.appSettings.appName;
 
             if(window.private_keys.bugsnag_key) {
                 //Set Bugsnag Release Stage

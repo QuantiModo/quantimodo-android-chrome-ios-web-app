@@ -8,7 +8,7 @@ angular.module('starter')
 			version1466 : function(){
                 var storedVersion = localStorageService.getItemAsObject('appVersion');
                 if (!$rootScope.user && !storedVersion) {
-                    localStorageService.setItem('appVersion', 1489);
+                    localStorageService.setItem('appMigrationVersion', 1489);
                 }
                 else if (storedVersion < 1489){
                     console.debug('Running migration version version1489...');
@@ -24,7 +24,7 @@ angular.module('starter')
                         $rootScope.isSyncing = false;
                         $rootScope.syncDisplayText = '';
                     });
-                    localStorageService.setItem('appVersion', 1489);
+                    localStorageService.setItem('appMigrationVersion', 1489);
                 }
 			}
 		};
