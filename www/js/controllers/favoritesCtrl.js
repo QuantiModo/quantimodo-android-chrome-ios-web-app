@@ -176,13 +176,13 @@ angular.module('starter')
 					return true;
 				},
 				destructiveButtonClicked: function() {
-                    reminderService.deleteReminder($scope.state.trackingReminder.id)
+                    reminderService.deleteReminder($scope.state.trackingReminder.trackingReminderId)
                         .then(function(){
                             console.debug('Favorite Deleted');
                         }, function(err){
                             console.error('Failed to Delete Favorite, Try again!', 'assertive');
                         });
-                    localStorageService.deleteElementOfItemById('trackingReminders', $scope.state.trackingReminder.id)
+                    localStorageService.deleteElementOfItemById('trackingReminders', $scope.state.trackingReminder.trackingReminderId)
                         .then(function(){
                             $scope.init();
                         });
