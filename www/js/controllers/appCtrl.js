@@ -9,7 +9,7 @@ angular.module('starter')
                                     qmLocationService, variableCategoryService) {
 
         $rootScope.loaderImagePath = config.appSettings.loaderImagePath;
-        $scope.appVersion = 1489;
+        $rootScope.appMigrationVersion = 1489;
         if(!$rootScope.loaderImagePath){
             $rootScope.loaderImagePath = 'img/circular-loader.gif';
         }
