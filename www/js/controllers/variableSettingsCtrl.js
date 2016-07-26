@@ -155,9 +155,10 @@ angular.module('starter')
                     { text: '<i class="icon ion-arrow-graph-up-right"></i>' + 'Visualize'},
                     { text: '<i class="icon ion-ios-list-outline"></i>History'},
                     { text: '<i class="icon ion-arrow-up-a"></i>Positive Predictors'},
-                    { text: '<i class="icon ion-arrow-down-a"></i>Negative Predictors'}
+                    { text: '<i class="icon ion-arrow-down-a"></i>Negative Predictors'},
+
                 ],
-                //destructiveText: '<i class="icon ion-trash-a"></i>Delete Favorite',
+                destructiveText: '<i class="icon ion-trash-a"></i>Delete All',
                 cancelText: '<i class="icon ion-ios-close"></i>Cancel',
                 cancel: function() {
                     console.log('CANCELLED');
@@ -203,7 +204,7 @@ angular.module('starter')
                     return true;
                 },
                 destructiveButtonClicked: function() {
-                    $scope.deleteReminder();
+                    $scope.showDeleteAllMeasurementsForVariablePopup();
                     return true;
                 }
             });
