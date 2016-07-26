@@ -973,10 +973,7 @@ gulp.task('makeIosApp', function(callback){
 });
 
 gulp.task('makeIosAppOnJenkins', function(callback){
-	runSequence('deleteIOSApp',
-		'deleteFacebookPlugin',
-		'addIOSApp',
-		'ionicResources',
+	runSequence(
 		'readKeysForCurrentApp',
 		'addFacebookPlugin',
 		'fixResourcesPlist',
