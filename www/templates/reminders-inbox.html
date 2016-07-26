@@ -319,7 +319,7 @@
 			</div>
 		</div>
 
-		<div class="list card"  ng-hide="isSyncing">
+		<div class="list card"  ng-if="numberOfPendingNotifications === 0">
 			<div class="item" style="padding-bottom:0px;">
 				<p style=" text-align: center; line-height: normal; font-size: 25px;">All caught up!</p>
 
@@ -339,7 +339,7 @@
 			</div>
 		</div>
 
-		<div ng-hide="isSyncing" class="button-bar">
+		<div ng-if="!isSyncing && numberOfPendingNotifications !== null" class="button-bar">
 			<a class="button button-clear button-calm" ng-click="init()" style="text-overflow: clip;"><i class="ion-refresh">  Refresh</i></a>
 		</div>
 

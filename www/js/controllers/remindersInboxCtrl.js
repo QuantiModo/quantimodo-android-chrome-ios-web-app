@@ -4,7 +4,7 @@ angular.module('starter')
 											   reminderService, $ionicLoading, measurementService, utilsService, 
 											   $stateParams, $location, $filter, $ionicPlatform, $rootScope,
                                                notificationService, variableCategoryService, $ionicActionSheet,
-											   $timeout, QuantiModo){
+											   $timeout){
 
 	    $scope.controller_name = "RemindersInboxCtrl";
 
@@ -34,9 +34,7 @@ angular.module('starter')
 			loading : true,
 			lastButtonPressTimeStamp : 0,
 			lastClientX : 0,
-			lastClientY : 0,
-            hideLoadMoreButton : true,
-            showAllCaughtUp : false
+			lastClientY : 0
 	    };
 
 		if(typeof config.appSettings.remindersInbox.showAddHowIFeelResponseButton !== 'undefined'){
@@ -196,7 +194,6 @@ angular.module('starter')
 	    };
 
 	    $scope.init = function(){
-            $scope.state.hideLoadMoreButton = true;
 			Bugsnag.context = "reminderInbox";
 			setPageTitle();
 			var isAuthorized = authService.checkAuthOrSendToLogin();
@@ -334,9 +331,9 @@ angular.module('starter')
 					var params = {
 						trackingReminderId : $scope.state.trackingReminderNotification.trackingReminderId
 					};
+					$scope.showLoader('Skipping all ' + $scope.state.variableObject.name + ' reminder notifications...');
 					reminderService.skipAllReminderNotifications(params)
 						.then(function(){
-							//notificationService.setNotificationBadge(0);
 							$scope.init();
 						}, function(err){
 							Bugsnag.notify(err, JSON.stringify(err), {}, "error");
@@ -374,6 +371,7 @@ angular.module('starter')
 					return true;
 				},
 				destructiveButtonClicked: function() {
+					$scope.showLoader('Skipping all reminder notifications...');
 					reminderService.skipAllReminderNotifications()
 						.then(function(){
 							notificationService.setNotificationBadge(0);

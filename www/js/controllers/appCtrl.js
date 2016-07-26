@@ -22,7 +22,7 @@ angular.module('starter')
         $scope.appSettings = config.appSettings;
         $scope.showTrackingSubMenu = false;
         $rootScope.allowOffline = config.appSettings.allowOffline;
-        $rootScope.numberOfPendingNotifications = 0;
+        $rootScope.numberOfPendingNotifications = null;
         $scope.showReminderSubMenu = false;
         $scope.primaryOutcomeVariableDetails = config.appSettings.primaryOutcomeVariableDetails;
         // Not used
