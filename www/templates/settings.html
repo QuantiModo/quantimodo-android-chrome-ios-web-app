@@ -30,15 +30,17 @@
             </div>-->
         </div>
 
-        <div class="card sign-in" >
-            <ion-toggle ng-model="state.showOnlyOneNotification"
-                        ng-change="combineNotificationChange()">
+        <div class="card" >
+            <div class="item item-divider">
                 <i class="icon ion-android-notifications-none"></i>
                 &nbsp
-                Single Device Notification
+                Device Notifications
+            </div>
+            <ion-toggle ng-model="state.showOnlyOneNotification"
+                        ng-change="combineNotificationChange()">
+                Single Repeating
             </ion-toggle>
-
-
+            
             <div ng-click="ratingPopover.show();" ng-show="state.showOnlyOneNotification" class="list card">
                 <div class="item item-text-wrap">
                     <p>Remind me every</p>
@@ -78,7 +80,7 @@
         </div>
 
         <div class="list card">
-            <div class="item">
+            <div class="item item-divider">
                 <i class="icon ion-ios-download"></i>
                 &nbsp
                 Export Your Data
