@@ -9,7 +9,8 @@ angular.module('starter')
             requestParams: {
                 cause: null,
                 effect: config.appSettings.primaryOutcomeVariableDetails.name
-            }
+            },
+            variableObject: null
         };
 
         function showPositivePredictors() {
@@ -54,6 +55,7 @@ angular.module('starter')
             if($stateParams.valence === 'negative'){
                 $scope.state.requestParams.correlationCoefficient = "(lt)0";
             }
+            $scope.state.variableObject = $stateParams.variableObject;
             authService.checkAuthOrSendToLogin();
             if (typeof analytics !== 'undefined')  {analytics.trackView("Predictors Controller");}
             if($scope.state.requestParams.effect){
