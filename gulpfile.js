@@ -972,6 +972,22 @@ gulp.task('makeIosApp', function(callback){
 	callback);
 });
 
+gulp.task('makeIosAppOnJenkins', function(callback){
+	runSequence('deleteIOSApp',
+		'deleteFacebookPlugin',
+		'addIOSApp',
+		'ionicResources',
+		'readKeysForCurrentApp',
+		'addFacebookPlugin',
+		'fixResourcesPlist',
+		'enableBitCode',
+		'addInheritedToOtherLinkerFlags',
+		'addDeploymentTarget',
+		'addPodfile',
+		'installPods',
+		callback);
+});
+
 gulp.task('bumpVersion', function(){
 	var deferred = q.defer();
 
