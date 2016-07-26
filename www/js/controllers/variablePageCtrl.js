@@ -8,7 +8,6 @@ angular.module('starter')
         $scope.controller_name = "VariablePageCtrl";
         $scope.addReminderButtonText = "Add Reminder";
         $scope.recordMeasurementButtonText = "Record Measurement";
-        $scope.editSettingsButtonText = "Edit Variable Settings";
         $scope.lineChartConfig = false;
         $scope.barChartConfig = false;
         $scope.state = {
@@ -41,7 +40,7 @@ angular.module('starter')
         };
 
         $scope.editSettingsButtonClick = function() {
-
+            $scope.goToSettingsForVariableObject($scope.state.variableObject);
         };
 
         var updateBarChart = function(barChartData){
