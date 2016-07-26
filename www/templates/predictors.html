@@ -5,7 +5,7 @@
             <ion-content style="padding-top: 45px">
                 <div ng-show="state.correlationObjects.length" class="card card-positive">
                     <div class="item item-text-wrap card-item" >
-                        <p>These are the factors most predictive of <span class="bold">{{increasingDecreasing}}</span> {{variableObject.name}} for the average user.  Press "Your Predictors" at the bottom to see ones based on your own data.</p>
+                        <p>These are the factors most predictive of <span class="bold">{{increasingDecreasing}}</span> {{state.variableObject.name}} for the average user.  Press "Your Predictors" at the bottom to see ones based on your own data.</p>
                     </div>
                 </div>
                 <ion-list>
@@ -44,7 +44,7 @@
                             </div>
                             <div class="col col-75">
                                 <h2 style="white-space: normal; text-align: left; line-height: normal; ">
-                                    We still don't have enough data to determine the strongest predictors of {{state.variableName}}.
+                                    We still don't have enough data to determine the strongest predictors of {{state.variableObject.name}}.
                                 </h2>
                                 <br>
                             </div>
@@ -77,7 +77,7 @@
             <ion-content style="padding-top: 45px">
                 <div class="card card-positive">
                     <div ng-show="state.usersCorrelationObjects.length" class="item item-text-wrap card-item" >
-                        <p>Our analysis suggests that these are the factors most predictive of <b>{{increasingDecreasing}}</b> your {{state.variableName}} based on your own data. Want more accurate results? Add some reminders and start tracking!</a></p>
+                        <p>Our analysis suggests that these are the factors most predictive of <b>{{increasingDecreasing}}</b> your {{state.variableObject.name}} based on your own data. Want more accurate results? Add some reminders and start tracking!</a></p>
                     </div>
                 </div>
                 <ion-list>
@@ -114,7 +114,7 @@
                                 <i style="text-align: center; font-size: 60px;" class="icon positive ion-sad-outline"></i>
                             </div>
                             <div class="col col-75">
-                                <h2 style="white-space: normal; text-align: left; line-height: normal; ">We still don't have enough data to determine the strongest predictors of your {{state.variableName}}.
+                                <h2 style="white-space: normal; text-align: left; line-height: normal; ">We still don't have enough data to determine the strongest predictors of your {{state.variableObject.name}}.
                                     We generally need about a months worth of data and 30 measurements in order to perform an analysis.
                                     If you haven't already, please add a reminder and start tracking.
                                     Please create a ticket at http://help.quantimo.do if you think you should already have enough data.
