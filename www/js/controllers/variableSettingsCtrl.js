@@ -3,8 +3,9 @@ angular.module('starter')
     // Controls the variable settings editing Page
     .controller('VariableSettingsCtrl',
         function($scope, $ionicModal, $timeout, $ionicPopup ,$ionicLoading, authService,
-                                             measurementService, $state, $rootScope, utilsService, localStorageService,
-                                                $filter, $stateParams, $ionicHistory, variableService, $q, QuantiModo){
+                                                measurementService, $state, $rootScope, utilsService,
+                                                localStorageService, $filter, $stateParams, $ionicHistory,
+                                                variableService, $q, QuantiModo, $ionicActionSheet){
 
         $scope.controller_name = "VariableSettingsCtrl";
 
@@ -140,6 +141,77 @@ angular.module('starter')
             });
 
             $ionicHistory.goBack();
+
+        };
+
+        $rootScope.showActionSheetMenu = function() {
+
+            console.debug("Show the action sheet!  $scope.state.variableObject: ", $scope.state.variableObject);
+            var hideSheet = $ionicActionSheet.show({
+                buttons: [
+                    { text: '<i class="icon ion-ios-star"></i>Add to Favorites'},
+                    { text: '<i class="icon ion-compose"></i>Record Measurement'},
+                    { text: '<i class="icon ion-android-notifications-none"></i>Add Reminder'},
+                    { text: '<i class="icon ion-arrow-graph-up-right"></i>' + 'Visualize'},
+                    { text: '<i class="icon ion-ios-list-outline"></i>History'},
+                    { text: '<i class="icon ion-arrow-up-a"></i>Positive Predictors'},
+                    { text: '<i class="icon ion-arrow-down-a"></i>Negative Predictors'}
+                ],
+                //destructiveText: '<i class="icon ion-trash-a"></i>Delete Favorite',
+                cancelText: '<i class="icon ion-ios-close"></i>Cancel',
+                cancel: function() {
+                    console.log('CANCELLED');
+                },
+                buttonClicked: function(index) {
+                    console.log('BUTTON CLICKED', index);
+                    if(index === 0){
+                        $scope.addToFavoritesUsingStateVariableObject($scope.state.variableObject);
+                    }
+                    if(index === 1){
+                        $scope.goToAddMeasurement();
+                    }
+                    if(index === 2){
+                        $scope.goToAddReminderForVariableObject($scope.state.variableObject);
+                    }
+                    if (index === 3) {
+                        $scope.goToChartsPageForVariableObject($scope.state.variableObject);
+                    }
+                    if(index === 4) {
+                        $scope.goToHistoryForVariableObject($scope.state.variableObject);
+                    }
+                    if(index === 5){
+                        $state.go('app.predictors',
+                            {
+                                variableObject: $scope.state.variableObject,
+                                requestParams: {
+                                    effect:  $scope.state.variableObject.name,
+                                    correlationCoefficient: "(gt)0"
+                                }
+                            });
+                    }
+                    if(index === 6){
+                        $state.go('app.predictors',
+                            {
+                                variableObject: $scope.state.variableObject,
+                                requestParams: {
+                                    effect:  $scope.state.variableObject.name,
+                                    correlationCoefficient: "(lt)0"
+                                }
+                            });
+                    }
+
+                    return true;
+                },
+                destructiveButtonClicked: function() {
+                    $scope.deleteReminder();
+                    return true;
+                }
+            });
+
+
+            $timeout(function() {
+                hideSheet();
+            }, 20000);
 
         };
 

@@ -362,11 +362,13 @@ angular.module('starter')
                 $scope.showCalendarButton = false;
             }
 
+            // Show "..." button on top rigt
             if(e.targetScope && e.targetScope.controller_name &&
                 e.targetScope.controller_name === "MeasurementAddCtrl" ||
                 e.targetScope.controller_name === "RemindersAddCtrl" ||
                 e.targetScope.controller_name === "FavoriteAddCtrl" ||
-                e.targetScope.controller_name === "VariablePageCtrl"
+                e.targetScope.controller_name === "VariablePageCtrl" ||
+                e.targetScope.controller_name === "VariableSettingsCtrl"
                 // Disabled until we decide if we should allow skipping all notifications
                 //|| e.targetScope.controller_name === "RemindersInboxCtrl"
             ){
