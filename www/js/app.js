@@ -66,7 +66,7 @@ angular.module('starter',
                 return;
             }
 
-            $rootScope.appVersion = "1.7.9.1";
+            $rootScope.appVersion = "1.7.9.2";
             $rootScope.appName = config.appSettings.appName;
 
             if(window.private_keys.bugsnag_key) {
