@@ -16,7 +16,8 @@ angular.module('starter')
 			variableCategories : [],
 			hideLoadMoreButton : true,
 			trackLocation : $rootScope.trackLocation,
-			showLocationToggle: false
+			showLocationToggle: false,
+			noHistory: false
 	    };
 
 		$scope.title = 'Measurement History';
@@ -88,6 +89,9 @@ angular.module('starter')
 				$scope.hideLoader();
 				if(history.length < 200){
 					$scope.state.hideLoadMoreButton = true;
+					if (history.length === 0) {
+						$scope.state.noHistory = true;
+					}
 				} else {
 					$scope.state.hideLoadMoreButton = false;
 				}
