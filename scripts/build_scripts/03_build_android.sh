@@ -80,6 +80,7 @@ echo "ionic platform remove android for $LOWERCASE_APP_NAME Android app..."
 ionic platform remove android
 echo "ionic platform add android for $LOWERCASE_APP_NAME Android app..."
 ionic platform add android
+source scripts/create_icons.sh
 
 echo "cordova plugin rm phonegap-facebook-plugin for $LOWERCASE_APP_NAME Android app..."
 cordova plugin rm phonegap-facebook-plugin || true
