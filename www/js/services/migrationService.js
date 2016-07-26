@@ -6,7 +6,7 @@ angular.module('starter')
 		var migrationService = {
 			// get public variables
 			version1466 : function(){
-                var storedVersion = localStorageService.getItemAsObject('appVersion');
+                var storedVersion = localStorageService.getItemAsObject('appMigrationVersion');
                 if (!$rootScope.user && !storedVersion) {
                     localStorageService.setItem('appMigrationVersion', 1489);
                 }
