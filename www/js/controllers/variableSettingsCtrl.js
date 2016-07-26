@@ -4,7 +4,7 @@ angular.module('starter')
     .controller('VariableSettingsCtrl',
         function($scope, $ionicModal, $timeout, $ionicPopup ,$ionicLoading, authService,
                                              measurementService, $state, $rootScope, utilsService, localStorageService,
-                                                $filter, $stateParams, $ionicHistory, variableService){
+                                                $filter, $stateParams, $ionicHistory, variableService, $q, QuantiModo){
 
         $scope.controller_name = "VariableSettingsCtrl";
 
@@ -12,7 +12,8 @@ angular.module('starter')
         $scope.state = {
             // category object,
             unitCategories : {},
-            searchedUnits : []
+            searchedUnits : [],
+            offset : 0
         };
         $scope.state.title = $stateParams.variableName + ' Variable Settings';
         $scope.state.variableName = $stateParams.variableName;
@@ -24,12 +25,84 @@ angular.module('starter')
         };
 
         $scope.resetToDefaultSettings = function() {
-            // FIXME get default settings from API
+            // Use v1/variables, then populate fields
+            // User still has to press "save"
+        };
+
+        $scope.showDeleteAllMeasurementsForVariablePopup = function(){
+            $ionicPopup.show({
+                title:'Delete all ' + $scope.state.variableName + " measurements?",
+                subTitle: 'This cannot be undone!',
+                scope: $scope,
+                buttons:[
+                    {
+                        text: 'No',
+                        type: 'button-assertive',
+                    },
+                    {
+                        text: 'Yes',
+                        type: 'button-positive',
+                        onTap: $scope.deleteAllMeasurementsForVariable
+                    }
+                ]
+
+            });
         };
 
         $scope.deleteAllMeasurementsForVariable = function() {
-            // FIXME prompt to confirm or cancel
-            // FIXME delete all variables from server
+            // Get measurements from server and delete
+            // If primary outcome variable, also clear local storage
+
+            var params = {
+                offset: $scope.state.offset,
+                sort: "startTimeEpoch",
+                variableName: $scope.state.variableName,
+                limit: 200
+            };
+
+            $scope.getMeasurementsAndDelete(params).then(function() {
+                if ($scope.state.variableName === config.appSettings.primaryOutcomeVariableDetails.name) {
+                    // Delete local storage measurements
+                    localStorageService.setItem('allMeasurements',[]);
+                    localStorageService.setItem('measurementsQueue',[]);
+                    localStorageService.setItem('averagePrimaryOutcomeVariableValue',0);
+                    localStorageService.setItem('lastSyncTime',0);
+                }
+                console.log("All measurements for " + $scope.state.variableName + " deleted!");
+            }, function(error) {
+                console.log('Error deleting measurements: ', error);
+            });
+        };
+
+        $scope.getMeasurementsAndDelete = function(params) {
+            var deferred = $q.defer();
+            QuantiModo.getV1Measurements(params, function(measurements){
+                var i;
+                for (i in measurements) {
+                    var measurementToDelete = {
+                        id : measurements[i].id,
+                        variableName : measurements[i].variable,
+                        startTimeEpoch : measurements[i].startTimeEpoch
+                    };
+                    measurementService.deleteMeasurementFromServer(measurementToDelete);
+                }
+                if(measurements.length === 200){
+                    $scope.state.offset = $scope.state.offset + 200;
+                    params = {
+                        offset: $scope.state.offset,
+                        sort: "startTimeEpoch",
+                        variableName: $scope.state.variableName,
+                        limit: 200
+                    };
+                    $scope.getMeasurementsAndDelete(params);
+                }
+                deferred.resolve();
+            }, function(error) {
+                Bugsnag.notify(error, JSON.stringify(error), {}, "error");
+                console.log('Error getting measurements and deleting: ', error);
+                deferred.reject(error);
+            });
+            return deferred.promise;
         };
 
         $scope.save = function(){

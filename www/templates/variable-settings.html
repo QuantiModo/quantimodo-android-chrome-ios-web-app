@@ -4,9 +4,16 @@
         <div class="card variable-settings" >
             <div class="list">
                 <div class="item item-divider ng-binding">Properties</div>
+                <!--FIXME Use this once variable aliasing is implemented-->
+                <!--
                     <label class="item item-input">
                         <span class="input-label">Variable Name:</span>
                         <input class="right-input" type="text" ng-model="state.variableName" id="variableName" placeholder="Variable name">
+                    </label>
+                -->
+                    <label class="item item-content" style="padding: 6px 0px 5px 16px;">
+                        <span style="float: left;" class="input-label">Variable Name:</span>
+                        <span class="input-label right-text " id="variableName">{{state.variableName}}</span>
                     </label>
                     <label class="item item-content" style="padding: 6px 0px 5px 16px;"ng-if="!state.showVariableCategorySelector">
                         <span style="float: left;" class="input-label">Variable Category:</span>
@@ -42,18 +49,24 @@
                         <span class="input-label">Duration of action (hrs)</span>
                         <input ng-model="state.durationOfAction" class="right-input" type="number" placeholder="Duration (hrs)">
                     </label>
+                <div class="item item-divider ng-binding">Actions</div>
+                    <!--FIXME Use this once default settings reset is implemented-->
+                    <!--
+                    <button ng-click="" class="button button-positive button-block icon-left ion-android-cancel">
+                            Reset to default {{state.variableName}} settings
+                    </button>
+                    -->
+                    <button ng-click="showDeleteAllMeasurementsForVariablePopup()" class="button button-block icon-left ion-trash-a button-assertive">
+                        Delete all measurements for {{state.variableName}}
+                    </button>
+
                 <!--<div class="item item-divider ng-binding">When there's no data</div>-->
 
             </div>
         </div>
 
         <div class="card" >
-                    <!--<button ng-click="" class="button assertive button-block">
-                        Reset to default {{state.variableName}} settings
-                    </button>-->
-                    <!--<button ng-click="" class="button button-assertive button-block">
-                        Delete all measurements for {{state.variableName}}
-                    </button>-->
+
 
                     <div class="row">
                         <div class="col col-50">
