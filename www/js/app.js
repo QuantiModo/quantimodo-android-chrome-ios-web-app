@@ -352,14 +352,15 @@ angular.module('starter',
                 }
             }
         })
-        .state('app.variable_settings', {
+        .state('app.variableSettings', {
             url: "/variable_settings/:variableName",
+            cache: false,
             params: {
                 reminder : null,
                 fromState : null,
                 fromUrl : null,
                 measurement : null,
-                variableObject : null
+                variableName : null
             },
             views: {
                 'menuContent': {
@@ -531,6 +532,7 @@ angular.module('starter',
         })
         .state('app.historyAll', {
             url: "/history-all",
+            cache: false,
             params: {
                 variableCategoryName : null,
                 fromState : null,

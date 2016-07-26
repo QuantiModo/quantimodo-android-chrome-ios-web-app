@@ -276,6 +276,26 @@ angular.module('starter')
                 });
         };
 
+        $scope.goToSettingsForVariableObject = function(variableObject) {
+            if (variableObject.variableName) {
+                $state.go('app.variableSettings',
+                    {
+                        variableName: variableObject.variableName,
+                        fromState: $state.current.name,
+                        fromUrl: window.location.href
+                    });
+            }
+            else if (variableObject.name) {
+                $state.go('app.variableSettings',
+                    {
+                        variableName: variableObject.name,
+                        fromState: $state.current.name,
+                        fromUrl: window.location.href
+                    });
+            }
+
+        };
+
         $scope.addToFavoritesUsingStateVariableObject = function(variableObject){
             var trackingReminder = {};
             trackingReminder.variableId = variableObject.id;
@@ -353,11 +373,13 @@ angular.module('starter')
                 $scope.showCalendarButton = false;
             }
 
+            // Show "..." button on top rigt
             if(e.targetScope && e.targetScope.controller_name &&
                 e.targetScope.controller_name === "MeasurementAddCtrl" ||
                 e.targetScope.controller_name === "RemindersAddCtrl" ||
                 e.targetScope.controller_name === "FavoriteAddCtrl" ||
-                e.targetScope.controller_name === "VariablePageCtrl"
+                e.targetScope.controller_name === "VariablePageCtrl" ||
+                e.targetScope.controller_name === "VariableSettingsCtrl"
                 // Disabled until we decide if we should allow skipping all notifications
                 //|| e.targetScope.controller_name === "RemindersInboxCtrl"
             ){

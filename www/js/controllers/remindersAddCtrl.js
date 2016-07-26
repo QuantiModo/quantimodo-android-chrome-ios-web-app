@@ -132,14 +132,6 @@ angular.module('starter')
             ionicTimePicker.openTimePicker($scope.state.reminderEndTimePickerConfiguration);
         };
 
-        $scope.goToAddMeasurement = function(){
-            $state.go('app.measurementAdd', {
-                variableObject: $scope.variableObject,
-                fromState: $state.current.name,
-                fromUrl: window.location.href
-            });
-        };
-
 	    // when a search result is selected
 	    $scope.onVariableSelect = function(selectedVariable){
 	    	console.log("Variable Selected: ", selectedVariable);
@@ -510,10 +502,11 @@ angular.module('starter')
             console.debug("Show the action sheet!  $scope.state.variableObject: ", $scope.state.variableObject);
             var hideSheet = $ionicActionSheet.show({
                 buttons: [
-                    { text: '<i class="icon ion-ios-list-outline"></i>' + $scope.state.variableObject.name + ' History' },
                     { text: '<i class="icon ion-ios-star"></i>Add to Favorites' },
-                    { text: '<i class="icon ion-arrow-graph-up-right"></i>' + $scope.state.variableObject.name + ' Charts'},
-                    { text: '<i class="icon ion-compose"></i>Add ' + $scope.state.variableObject.name + ' Measurement'},
+                    { text: '<i class="icon ion-android-notifications-none"></i>Record Measurement'},
+                    { text: '<i class="icon ion-arrow-graph-up-right"></i>Visualize'},
+                    { text: '<i class="icon ion-ios-list-outline"></i>History' },
+                    { text: '<i class="icon ion-settings"></i>' + 'Variable Settings'},
                     { text: '<i class="icon ion-arrow-up-a"></i>Positive Predictors'},
                     { text: '<i class="icon ion-arrow-down-a"></i>Negative Predictors'}
                 ],
@@ -524,19 +517,23 @@ angular.module('starter')
                 },
                 buttonClicked: function(index) {
                     console.log('BUTTON CLICKED', index);
-                    if(index === 0) {
-                        $scope.goToHistoryForVariableObject($scope.state.variableObject);
+
+                    if(index === 0){
+                        $scope.addToFavoritesUsingStateVariableObject($scope.state.variableObject);
                     }
                     if(index === 1){
-                        $scope.addToFavoritesUsingStateVariableObject($scope.state.variableObject);
+                        $scope.goToAddMeasurementForVariableObject($scope.state.variableObject);
                     }
                     if(index === 2){
                         $scope.goToChartsPageForVariableObject($scope.state.variableObject);
                     }
-                    if(index === 3){
-                        $scope.goToAddMeasurement();
+                    if(index === 3) {
+                        $scope.goToHistoryForVariableObject($scope.state.variableObject);
                     }
-                    if(index === 4){
+                    if (index === 4) {
+                        $scope.goToSettingsForVariableObject($scope.state.variableObject);
+                    }
+                    if(index === 5){
                         $state.go('app.predictors',
                             {
                                 variableObject: $scope.state.variableObject,
@@ -546,7 +543,7 @@ angular.module('starter')
                                 }
                             });
                     }
-                    if(index === 5){
+                    if(index === 6){
                         $state.go('app.predictors',
                             {
                                 variableObject: $scope.state.variableObject,
