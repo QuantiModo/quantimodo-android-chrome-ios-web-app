@@ -1,7 +1,7 @@
 #!/bin/bash
 
 export IONIC_APP_VERSION_NUMBER=1.7.9
-export IONIC_IOS_APP_VERSION_NUMBER="1.7.9.0"
+export IONIC_IOS_APP_VERSION_NUMBER="1.7.9.1"
 
 export RED='\033[0;31m'
 export GREEN='\033[0;32m'
