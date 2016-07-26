@@ -313,7 +313,7 @@ angular.module('starter')
                         $scope.addToFavoritesUsingStateVariableObject($scope.state.variableObject);
                     }
                     if(index === 1){
-                        $scope.goToAddMeasurement();
+                        $scope.goToAddMeasurementForVariableObject($scope.state.variableObject);
                     }
                     if(index === 2){
                         $scope.goToAddReminderForVariableObject($scope.state.variableObject);
