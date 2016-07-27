@@ -34,8 +34,8 @@ dependencies:
 test:
   override:
     - chmod +x do-exclusively
-    - echo "Going to sleep 7 minutes while previous build's GI tests run because do-exclusively interferes with storing test results"
-    - ./do-exclusively sleep 420
+    #- echo "Going to sleep 7 minutes while previous build's GI tests run because do-exclusively interferes with storing test results"
+    #- ./do-exclusively sleep 420
     - ./do-exclusively git push git@heroku.com:qm-ionic.git $CIRCLE_SHA1:refs/heads/master --force
     - echo "This line is to prevent automatic test detection."
     - curl "https://api.ghostinspector.com/v1/suites/56f5b92519d90d942760ea96/execute/?apiKey=f5b531ccd55da08abf35fadabd7b7b04f3d64312&commit="$(git rev-parse HEAD) > ghostinspector.json
