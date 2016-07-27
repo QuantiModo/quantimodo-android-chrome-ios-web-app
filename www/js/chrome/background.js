@@ -114,7 +114,7 @@ chrome.notifications.onClicked.addListener(function(notificationId)
 chrome.extension.onMessage.addListener(function(request, sender, sendResponse)
 {
 	console.log("Received request: " + request.message);
-	if(request.message == "uploadMeasurements")
+	if(request.message === "uploadMeasurements")
 	{
 		pushMeasurements(request.payload, null);
 	}
@@ -158,8 +158,9 @@ function objectLength(obj) {
     return result;
 }
 
-function checkForNotifications()
+function showGenericTrackingNotification(alarm)
 {
+
     var xhr = new XMLHttpRequest();
     xhr.open("GET", "https://app.quantimo.do:443/api/v1/trackingReminderNotifications", false);
     xhr.onreadystatechange = function()
@@ -169,7 +170,15 @@ function checkForNotifications()
             var notificationsObject = JSON.parse(xhr.responseText);
             var numberOfWaitingNotifications = objectLength(notificationsObject.data);
             if(numberOfWaitingNotifications > 0) {
-                showTrackingInboxNotification();
+				var notificationParams = {
+					type: "basic",
+					title: numberOfWaitingNotifications + " new tracking reminder notifications!",
+					message: "Click to open reminder inbox",
+					iconUrl: "www/img/icons/icon_700.png",
+					priority: 2
+				};
+				var notificationId = alarm.name;
+				chrome.notifications.create(notificationId, notificationParams, function(id){});
             }
         }
     };
@@ -200,7 +209,9 @@ function showTrackingInboxNotification(alarm){
 
     var notificationId = "trackingInboxNotification";
 
-    if (IsJsonString(alarm.name)) {
+	if(alarm.name === "genericTrackingReminderNotificationAlarm"){
+		showGenericTrackingNotification(alarm);
+	} else if (IsJsonString(alarm.name)) {
 		console.log('alarm.name IsJsonString', alarm);
 		var trackingReminder = JSON.parse(alarm.name);
 		notificationParams.title = 'Time to track ' + trackingReminder.variableName + '!';

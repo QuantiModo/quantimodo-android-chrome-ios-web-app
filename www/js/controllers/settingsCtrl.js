@@ -105,12 +105,13 @@ angular.module('starter')
 				});
 
 				notificationService.cancelAllNotifications().then(function() {
-
-					localStorageService.getItem('primaryOutcomeRatingFrequencyDescription', function (primaryOutcomeRatingFrequencyDescription) {
-						console.debug("Cancelled individual notifications and now scheduling combined one with interval: " + primaryOutcomeRatingFrequencyDescription);
-						$scope.primaryOutcomeRatingFrequencyDescription = primaryOutcomeRatingFrequencyDescription ? primaryOutcomeRatingFrequencyDescription : "daily";
-						$scope.saveInterval($scope.primaryOutcomeRatingFrequencyDescription);
-					});
+					var intervalToCheckForNotificationsInMinutes = 15;
+					notificationService.scheduleGenericNotification(intervalToCheckForNotificationsInMinutes);
+					// localStorageService.getItem('primaryOutcomeRatingFrequencyDescription', function (primaryOutcomeRatingFrequencyDescription) {
+					// 	console.debug("Cancelled individual notifications and now scheduling combined one with interval: " + primaryOutcomeRatingFrequencyDescription);
+					// 	$scope.primaryOutcomeRatingFrequencyDescription = primaryOutcomeRatingFrequencyDescription ? primaryOutcomeRatingFrequencyDescription : "daily";
+					// 	$scope.saveInterval($scope.primaryOutcomeRatingFrequencyDescription);
+					// });
 				});
 			} else {
 				$ionicPopup.alert({
@@ -137,7 +138,6 @@ angular.module('starter')
 					template: 'Location tracking is an experimental feature.  You may see location logging notifications periodically which are necessary to log location on an ongoing basis.  You may dismiss these notifications if they appear. Please disable or create a ticket at help.quantimo.do if you are experiencing issues with this feature.'
 				});
 				qmLocationService.updateLocationVariablesAndPostMeasurementIfChanged();
-				notificationService.scheduleOrCancelLocationTrackingNotification();
 			} else {
 				console.debug("Do not track location");
 			}
