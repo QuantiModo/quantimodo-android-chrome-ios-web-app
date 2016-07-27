@@ -141,7 +141,7 @@ config.appSettings  = {
                 },
                 finalP : {
                     visible : true,
-                    content : 'Mind First Mood Tracker allows you track your <span class="positive">Mood</span> and identify the hidden factors which may most influence it.',
+                    content : 'Mind First Mood Tracker allows you track your <span class="positive">mood</span> and identify the hidden factors which may most influence it.',
                     classes : 'intro-paragraph',
                     buttonBarVisible : true   
                 }

@@ -143,7 +143,7 @@ config.appSettings  = {
                 },
                 finalP : {
                     visible : true,
-                    content : 'MoodiModo allows you track your <span class="positive">Mood</span> and identify the hidden factors which may most influence it.',
+                    content : 'MoodiModo allows you track your <span class="positive">mood</span> and identify the hidden factors which may most influence it.',
                     classes : 'intro-paragraph',
                     buttonBarVisible : true   
                 }

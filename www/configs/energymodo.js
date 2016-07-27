@@ -134,7 +134,7 @@ config.appSettings  = {
                 },
                 finalP : {
                     visible : true,
-                    content : 'EnergyModo allows you track your <span class="positive">Energy</span> and identify the hidden factors which may most influence it.',
+                    content : 'EnergyModo allows you track your <span class="positive">energy level</span> and identify the hidden factors which may most influence it.',
                     classes : 'intro-paragraph',
                     buttonBarVisible : true   
                 }
