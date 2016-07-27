@@ -166,12 +166,12 @@ angular.module('starter')
                                 measurementService.setDates(new Date().getTime(),s*1000);
                                 console.debug("getPrimaryOutcomeVariableMeasurements: allMeasurements length is " + allMeasurements.length);
                                 console.debug("getPrimaryOutcomeVariableMeasurements:  Setting allMeasurements to: ", allMeasurements);
-                                localStorageService.setItem('allMeasurements',JSON.stringify(allMeasurements));
+                                localStorageService.setItem('allMeasurements', JSON.stringify(allMeasurements));
                                 $rootScope.$broadcast('updateCharts');
                             });
                         }
 
-                        if (response.length < 200 || params.offset > 3000) {
+                        if (response.length < 200 || params.offset > 2000) {
                             // Finished
                             localStorageService.setItem('lastSyncTime',moment.utc().format('YYYY-MM-DDTHH:mm:ss'));
                             localStorageService.getItem('lastSyncTime',function(val){
@@ -184,7 +184,7 @@ angular.module('starter')
                             deferred.resolve(response);
                             $rootScope.$broadcast('updateCharts');
                         }
-                        else if (response.length === 200 && params.offset < 3001) {
+                        else if (response.length === 200 && params.offset < 2001) {
                             // Keep querying
                             params = {
                                 variableName: config.appSettings.primaryOutcomeVariableDetails.name,
