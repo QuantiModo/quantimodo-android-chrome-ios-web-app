@@ -132,7 +132,12 @@ angular.module('starter')
 			$rootScope.trackLocation = $scope.state.trackLocation;
 			localStorageService.setItem('trackLocation', $scope.state.trackLocation);
 			if($scope.state.trackLocation){
+				$ionicPopup.alert({
+					title: 'Location Tracking Enabled',
+					template: 'Location tracking is an experimental feature.  You may see location logging notifications periodically which are necessary to log location on an ongoing basis.  You may dismiss these notifications if they appear. Please disable or create a ticket at help.quantimo.do if you are experiencing issues with this feature.'
+				});
 				qmLocationService.updateLocationVariablesAndPostMeasurementIfChanged();
+				notificationService.scheduleOrCancelLocationTrackingNotification();
 			} else {
 				console.debug("Do not track location");
 			}

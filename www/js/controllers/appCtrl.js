@@ -258,7 +258,7 @@ angular.module('starter')
                 localStorageService.replaceElementOfItemById('trackingReminders', trackingReminder);
                 reminderService.addNewReminder(trackingReminder)
                     .then(function () {
-                        console.debug("Saved Reminder", trackingReminder)
+                        console.debug("Saved Reminder", trackingReminder);
                     }, function (err) {
                         console.error('Failed to add Reminder!', trackingReminder);
                     });
@@ -283,6 +283,7 @@ angular.module('starter')
         $scope.$on('$ionicView.enter', function(e) {
             //$scope.showHelpInfoPopupIfNecessary(e);
             qmLocationService.updateLocationVariablesAndPostMeasurementIfChanged();
+            notificationService.scheduleOrCancelLocationTrackingNotification();
         });
 
         $scope.closeMenuIfNeeded = function(menuItem){
@@ -453,6 +454,7 @@ angular.module('starter')
                 console.debug("Not setting on trigger and on click actions for notifications because is not ios or android.");
             }
             goToDefaultStateIfLoggedInOnLoginState();
+            notificationService.scheduleOrCancelLocationTrackingNotification();
         };
 
         $scope.$on('callAppCtrlInit', function(){
@@ -783,6 +785,7 @@ angular.module('starter')
                 unitService.refreshUnits();
                 $rootScope.syncedEverything = true;
                 qmLocationService.updateLocationVariablesAndPostMeasurementIfChanged();
+                notificationService.scheduleOrCancelLocationTrackingNotification();
             }
         };
 
