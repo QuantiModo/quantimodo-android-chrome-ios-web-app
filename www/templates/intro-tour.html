@@ -45,16 +45,16 @@
                     <br>
                     <div ng-if="introConf.content.finalP && introConf.content.finalP.buttonBarVisible">
                         <div class="button-bar">
-                            <a class="button button-positive" ng-show="myIntro.slideIndex != introConfiguration.length-1 " ng-click="myIntro.startApp()">
+                            <a id="skipButton" class="button button-positive" ng-show="myIntro.slideIndex != introConfiguration.length-1 " ng-click="myIntro.startApp()">
                                 Skip
                             </a>
-                            <a class="button button-positive" ng-show="myIntro.slideIndex > 0 && myIntro.slideIndex < introConfiguration.length-1" ng-click="myIntro.previous()">
+                            <a id="backButton" class="button button-positive" ng-show="myIntro.slideIndex > 0 && myIntro.slideIndex < introConfiguration.length-1" ng-click="myIntro.previous()">
                                 Back
                             </a>
-                            <a class="button button-positive" ng-show="myIntro.slideIndex != introConfiguration.length-1 && myIntro.slideIndex != introConfiguration.length-1" ng-click="myIntro.next()">
+                            <a id="nextButton" class="button button-positive" ng-show="myIntro.slideIndex != introConfiguration.length-1 && myIntro.slideIndex != introConfiguration.length-1" ng-click="myIntro.next()">
                                 Next
                             </a>
-                            <a class="button button-positive" ng-show="myIntro.slideIndex == introConfiguration.length-1" ng-click="myIntro.startApp()">
+                            <a id="goButton" class="button button-positive" ng-show="myIntro.slideIndex == introConfiguration.length-1" ng-click="myIntro.startApp()">
                                 Go
                             </a>
                         </div>
