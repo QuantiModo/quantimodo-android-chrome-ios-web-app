@@ -34,6 +34,11 @@ angular.module('starter')
             }
         };
 
+        $scope.register = function() {
+            var register = true;
+            $scope.login(register);
+        };
+
         // User wants to login
         $scope.login = function(register) {
 
