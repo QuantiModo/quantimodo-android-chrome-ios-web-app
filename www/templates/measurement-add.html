@@ -46,7 +46,7 @@
                     <div class="input-label">
                         Unit
                     </div>
-                    <select ng-model="state.measurement.abbreviatedUnitName" ng-options="x for x in abbreviatedUnitNames">
+                    <select id="unitSelector" ng-model="state.measurement.abbreviatedUnitName" ng-options="x for x in abbreviatedUnitNames">
                     </select>
                     <!--<select ng-model="state.measurement.abbreviatedUnitName">-->
                         <!--<option ng-selected="unitObject.abbreviatedName === state.measurement.abbreviatedUnitName"-->
@@ -107,7 +107,7 @@
                 </div>
             </div>
             <div ng-hide="state.hideRemindMeButton" class="row">
-                <button ng-click="goToAddReminder()" class="button icon-left ion-android-notifications button-positive button-block">
+                <button id="reminderButton" ng-click="goToAddReminder()" class="button icon-left ion-android-notifications button-positive button-block">
                     Remind me to track
                 </button>
             </div>
