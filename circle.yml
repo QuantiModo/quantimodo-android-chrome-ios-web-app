@@ -22,6 +22,9 @@ dependencies:
 #    - "curl -X POST --data-urlencode 'payload={\"channel\": \"#web\", \"username\": \"CircleCI\", \"text\": \"Branch $CIRCLE_BRANCH has just been deployed to Heroku and is being tested by GhostInspector. You'll have to go here (https://github.com/Abolitionist-Project/QM-Docker/commits/develop) to look up which branch this is using the version number above until someone figures out how to include $CIRCLE_BRANCH in this message in circle.yml.  \", \"icon_emoji\": \":ghost:\"}' https://hooks.slack.com/services/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"
 
   override:
+    - sudo apt-add-repository -y ppa:duggan/bats
+    - sudo apt-get update; sudo apt-get install -y bats
+    - curl -L -o ~/bin/jq https://github.com/stedolan/jq/releases/download/jq-1.5rc1/jq-linux-x86_64-static && chmod +x ~/bin/jq
     - echo "This line is to prevent automatic dependency installation."
     # docker run -v /home/ubuntu/QM-Docker:/data --name qm-data maxexcloo/data
     # docker run -d --name qm-web -p 443:443 -p 80:80 --link mysql:mysql --volumes-from qm-data --env-file .env -e "DH_SIZE=512" quantimodo/web:develop
