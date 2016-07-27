@@ -18,7 +18,6 @@
          <div class="list card"  ng-hide="hideHistoryPageInstructionsCard">
              <div class="item" >
                  <p style=" text-align: center; line-height: normal; font-size: 25px;">Past Data</p>
-
                  <div class="row">
                      <div class="col" style="padding-top: 0px;">
                          <i style="font-size: 60px;" class="icon positive ion-calendar"></i>
@@ -29,24 +28,22 @@
                  </div>
                  <div class="row"  >
                      <div class="button-bar">
-                         <button class="button button-clear button-balanced" style="font-size: 14px;" ng-click="setLocalStorageFlagTrue('hideHistoryPageInstructionsCard')"><i class="ion-checkmark"> &nbsp; Got it!</i></button>
+                         <button id="gotItButton" class="button button-clear button-balanced" style="font-size: 14px;" ng-click="setLocalStorageFlagTrue('hideHistoryPageInstructionsCard')"><i class="ion-checkmark"> &nbsp; Got it!</i></button>
                      </div>
                  </div>
 
              </div>
          </div>
 
-      <ion-list>
+      <ion-list id="historyList">
           <div ng-repeat="historyItem in state.history" data-measurementid="{{historyItem.id}}" divider-collection-repeat>
               <ion-item  ng-click="editMeasurement(historyItem)">
                   <div style="display:inline-block;float:left;margin-left:5px;margin-right:5px;width:50px;text-align:center">
                     <i ng-hide="historyItem.image" class="{{historyItem.icon }}" style="color:#11c1f3;font-size: 50px;"></i>
                       <img ng-show="historyItem.image" ng-src="{{historyItem.image}}" style="width:50px;" />
-<!--                      <p style="font-weight:bold;white-space:normal">{{historyItem.variable}}</p>-->
                   </div>
                   <div class="history-block" style="margin-left:5px;">
                       <p ng-hide="true">{{historyItem.id}}</p>
-                      <!--<p>{{historyItem.id}}</p>-->
                       <h2 style="font-weight:bold;white-space:normal"> {{historyItem.valueUnitVariableName}}</h2>
                     <h2 class="history-time" ng-repeat="line in (historyItem.startTimeEpoch | timeOfDayDayOfWeek) track by $index">
                       {{line}}
