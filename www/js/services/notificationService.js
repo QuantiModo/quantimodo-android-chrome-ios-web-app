@@ -1,7 +1,7 @@
 angular.module('starter')
 // Handles the Notifications (inapp, push)
     .factory('notificationService',function($rootScope, $ionicPlatform, $state, localStorageService, $q, QuantiModo,
-                                            timeService, bugsnagService){
+                                            timeService, bugsnagService, qmLocationService){
 
         function createChromeAlarmNameFromTrackingReminder(trackingReminder) {
             var alarmName = {
@@ -158,6 +158,7 @@ angular.module('starter')
                 }
 
                 cordova.plugins.notification.local.on("trigger", function (currentNotification) {
+                    qmLocationService.updateLocationVariablesAndPostMeasurementIfChanged();
 
                     try {
                         console.debug("just triggered this notification: ",  currentNotification);

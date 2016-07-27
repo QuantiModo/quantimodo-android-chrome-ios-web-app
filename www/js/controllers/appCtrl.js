@@ -45,59 +45,7 @@ angular.module('starter')
         $scope.hideChromeExtensionInfoCard = localStorageService.getItemSync('hideChromeExtensionInfoCard');
 
         $scope.getLocation = function(){
-            $scope.shouldWeTrackLocation();
 
-            if($rootScope.trackLocation){
-
-                $ionicPlatform.ready(function() {
-                    var posOptions = {
-                        enableHighAccuracy: true,
-                        timeout: 20000,
-                        maximumAge: 0
-                    };
-
-                    $cordovaGeolocation.getCurrentPosition(posOptions).then(function (position) {
-                        $rootScope.lastLatitude  = position.coords.latitude;
-                        localStorageService.setItem('lastLatitude', position.coords.latitude);
-                        $rootScope.lastLongitude = position.coords.longitude;
-                        localStorageService.setItem('lastLongitude', position.coords.longitude);
-
-                        qmLocationService.getInfo($rootScope.lastLongitude, $rootScope.lastLatitude).then(function(result) {
-                            console.log('Result was '+JSON.stringify(result));
-                            if(result.type === 'foursquare') {
-                                console.log('Foursquare location name is ' + result.name + ' located at ' + result.address);
-                            } else if (result.type === 'geocode') {
-                                console.log('geocode address is ' + result.address);
-                            } else {
-                                var map = 'https://maps.googleapis.com/maps/api/staticmap?center='+
-                                    $rootScope.lastLatitude+','+$rootScope.lastLongitude+
-                                    'zoom=13&size=300x300&maptype=roadmap&markers=color:blue%7Clabel:X%7C'+
-                                    $rootScope.lastLatitude+','+$rootScope.lastLongitude;
-                                console.log('Sorry, I\'ve got nothing. But here is a map!');
-                            }
-
-                            var currentTimeEpochMilliseconds = new Date().getTime();
-                            var currentTimeEpochSeconds = Math.round(currentTimeEpochMilliseconds/1000);
-                            if(!$rootScope.lastLocationUpdateTimeEpochSeconds && result.address && result.address !== "undefined"){
-                                qmLocationService.setLocationVariables(result, currentTimeEpochSeconds);
-                            } else {
-                                if(result.address && result.address !== "undefined" &&
-                                    ($rootScope.lastLocationAddress !== result.address || $rootScope.lastLocationName !== result.name)){
-                                   qmLocationService.postLocationMeasurementAndSetLocationVariables(currentTimeEpochSeconds, result);
-                                }
-                            }
-                        });
-
-                        console.debug("My coordinates are: ", position.coords);
-                        $ionicLoading.hide();
-
-                    }, function(err) {
-                        $ionicLoading.hide();
-                        console.log(err);
-                    });
-
-                });
-            }
         };
 
         //  Calendar and  Date picker
@@ -334,7 +282,7 @@ angular.module('starter')
 
         $scope.$on('$ionicView.enter', function(e) {
             //$scope.showHelpInfoPopupIfNecessary(e);
-            $scope.getLocation();
+            qmLocationService.updateLocationVariablesAndPostMeasurementIfChanged();
         });
 
         $scope.closeMenuIfNeeded = function(menuItem){
@@ -723,24 +671,6 @@ angular.module('starter')
             });
         };
 
-        $scope.shouldWeTrackLocation = function(){
-            localStorageService.getItem('trackLocation', function(trackLocation){
-                console.debug("trackLocation from local storage is " + trackLocation);
-                if(trackLocation === "null"){
-                    localStorageService.setItem('trackLocation', false);
-                    $rootScope.trackLocation = false;
-                }
-                $rootScope.trackLocation = trackLocation === "true";
-            });
-            if($rootScope.trackLocation){
-                $rootScope.lastLocationName = localStorageService.getItemSync('lastLocationName');
-                $rootScope.lastLocationAddress = localStorageService.getItemSync('lastLocationAddress');
-                $rootScope.lastLocationResultType = localStorageService.getItemSync('lastLocationResultType');
-                $rootScope.lastLocationUpdateTimeEpochSeconds = localStorageService.getItemSync('lastLocationUpdateTimeEpochSeconds');
-                $rootScope.lastLocationNameAndAddress = localStorageService.getItemSync('lastLocationNameAndAddress');
-            }
-        };
-
         $rootScope.getUserAndSetInLocalStorage = function(){
             
             var successHandler = function(userObject) {
@@ -852,7 +782,7 @@ angular.module('starter')
                 variableService.refreshCommonVariables();
                 unitService.refreshUnits();
                 $rootScope.syncedEverything = true;
-                $scope.getLocation();
+                qmLocationService.updateLocationVariablesAndPostMeasurementIfChanged();
             }
         };
 

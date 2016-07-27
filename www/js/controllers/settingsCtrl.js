@@ -4,7 +4,7 @@ angular.module('starter')
 	.controller('SettingsCtrl', function($scope,localStorageService, $ionicModal, $timeout, utilsService, authService,
 										 measurementService, chartService, $ionicPopover, $cordovaFile,
 										 $cordovaFileOpener2, $ionicPopup, $state,notificationService, QuantiModo,
-                                         $rootScope, reminderService) {
+                                         $rootScope, reminderService, qmLocationService) {
 		$scope.controller_name = "SettingsCtrl";
 		$scope.state = {};
 		$scope.showReminderFrequencySelector = config.appSettings.settingsPageOptions.showReminderFrequencySelector;
@@ -70,7 +70,7 @@ angular.module('starter')
 			Bugsnag.context = "settings";
 			if (typeof analytics !== 'undefined')  { analytics.trackView("Settings Controller"); }
 			$scope.shouldWeCombineNotifications();
-			$scope.shouldWeTrackLocation();
+			qmLocationService.getLocationVariablesFromLocalStorage();
 	    };
 
 		$scope.contactUs = function(){
@@ -132,7 +132,7 @@ angular.module('starter')
 			$rootScope.trackLocation = $scope.state.trackLocation;
 			localStorageService.setItem('trackLocation', $scope.state.trackLocation);
 			if($scope.state.trackLocation){
-				$scope.getLocation();
+				qmLocationService.updateLocationVariablesAndPostMeasurementIfChanged();
 			} else {
 				console.debug("Do not track location");
 			}

@@ -4,7 +4,8 @@ angular.module('starter')
 	.controller('historyAllMeasurementsCtrl', function($scope, $state, $ionicModal, $timeout, $ionicLoading,
 													   authService, $ionicPopover, measurementService, $ionicPopup,
 													   variableCategoryService, unitService, utilsService,
-													   $stateParams, ratingService, $rootScope, localStorageService){
+													   $stateParams, ratingService, $rootScope, localStorageService,
+													   qmLocationService){
 
 	    $scope.controller_name = "historyAllMeasurementsCtrl";
         
@@ -117,7 +118,7 @@ angular.module('starter')
 			$rootScope.trackLocation = $scope.state.trackLocation;
 			localStorageService.setItem('trackLocation', $scope.state.trackLocation);
 			if($scope.state.trackLocation){
-				$scope.getLocation();
+				qmLocationService.updateLocationVariablesAndPostMeasurementIfChanged();
 			} else {
 				console.debug("Do not track location");
 			}
