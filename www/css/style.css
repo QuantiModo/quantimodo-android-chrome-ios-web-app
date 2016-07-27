@@ -559,9 +559,16 @@ img.intro-primary-outcome-variable-rating-buttons {
 
 }
 
+.variable-settings .item-input {
+    padding-right: 10px;
+}
+.variable-settings .item-content {
+    padding-right: 10px;
+}
+
 .variable-settings .right-text {
     text-align: right;
-    padding-right: 10px;
+    padding-right: 0px;
     font-size: 14px;
     float: right;
     font-style: italic;
@@ -569,7 +576,7 @@ img.intro-primary-outcome-variable-rating-buttons {
 
 .variable-settings .right-input {
     text-align: right;
-    padding-right: 10px;
+    padding-right: 0px;
     width: 100%;
 }
 

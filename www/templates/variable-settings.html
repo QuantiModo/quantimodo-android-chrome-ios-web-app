@@ -11,15 +11,15 @@
                         <input class="right-input" type="text" ng-model="state.variableName" id="variableName" placeholder="Variable name">
                     </label>
                 -->
-                    <label class="item item-content" style="padding: 6px 0px 5px 16px;">
+                    <label class="item item-content" style="padding: 6px 10px 5px 16px;">
                         <span style="float: left;" class="input-label">Variable Name:</span>
                         <span class="input-label right-text " id="variableName">{{state.variableName}}</span>
                     </label>
-                    <label class="item item-content" style="padding: 6px 0px 5px 16px;"ng-if="!state.showVariableCategorySelector">
+                    <label class="item item-content" style="padding: 6px 10px 5px 16px;"ng-if="!state.showVariableCategorySelector">
                         <span style="float: left;" class="input-label">Variable Category:</span>
                         <span class="input-label right-text ">{{state.variableObject.category}}</span>
                     </label>
-                    <label class="item item-content" style="padding: 6px 0px 5px 16px;" ng-if="(state.variableCategoryName != 'Emotions' && state.variableCategoryName != 'Symptoms')">
+                    <label class="item item-content" style="padding: 6px 10px 5px 16px;" ng-if="(state.variableCategoryName != 'Emotions' && state.variableCategoryName != 'Symptoms')">
                         <span style="float: left;" class="input-label">Unit:</span>
                         <span class="input-label right-text ">{{state.variableObject.abbreviatedUnitName}}</span>
                     </label>
@@ -43,11 +43,11 @@
                     </label>
                     <label class="item item-input">
                         <span class="input-label">Delay before onset (hrs)</span>
-                        <input ng-model="state.delayBeforeOnset" class="right-input" type="number" placeholder="Delay (hrs)">
+                        <input ng-model="state.delayBeforeOnset" class="right-input" type="number" placeholder="Hours">
                     </label>
                     <label class="item item-input">
                         <span class="input-label">Duration of action (hrs)</span>
-                        <input ng-model="state.durationOfAction" class="right-input" type="number" placeholder="Duration (hrs)">
+                        <input ng-model="state.durationOfAction" class="right-input" type="number" placeholder="Hours">
                     </label>
                     <label class="item item-input">
                         <span class="input-label">Filling value</span>

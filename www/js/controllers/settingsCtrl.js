@@ -219,8 +219,6 @@ angular.module('starter')
         // when user is logging out
         function clearTokensFromLocalStorage() {
             //Set out local storage flag for welcome screen variables
-            localStorageService.setItem('isLoggedIn', false);
-
             localStorageService.setItem('primaryOutcomeVariableReportedWelcomeScreen', true);
             localStorageService.deleteItem('accessToken');
             localStorageService.deleteItem('refreshToken');
