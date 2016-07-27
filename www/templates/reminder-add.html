@@ -7,7 +7,7 @@
                 <!--<label class="item item-input item-select" ng-if="state.showAddVariableCard && !state.trackingReminder.variableCategoryName">-->
                 <label class="item item-input item-select" ng-if="state.showAddVariableCard">
                     <div class="input-label" style="white-space:normal; width: 60%">Select Category</div>
-                    <select ng-model="state.trackingReminder.variableCategoryName" ng-change="setupVariableCategory(state.trackingReminder.variableCategoryName)">
+                    <select id="variableCategorySelector" ng-model="state.trackingReminder.variableCategoryName" ng-change="setupVariableCategory(state.trackingReminder.variableCategoryName)">
                         <option ng-repeat="variableCategory in variables.variableCategories" value="{{variableCategory.name}}">{{variableCategory.name}}</option>
                     </select>
                 </label>
@@ -20,7 +20,7 @@
                         Unit
                     </div>
 
-                    <select
+                    <select id="unitSelector"
                             ng-model="state.trackingReminder.abbreviatedUnitName" ng-options="x for x in abbreviatedUnitNames">
                     </select>
 <!--                 Above is a crappier workaround for sometimes empty unit selector
@@ -44,7 +44,7 @@
                     <div class="input-label">
                         Frequency
                     </div>
-                    <select ng-change="onFrequencyChange()" ng-model="state.selectedFrequency">
+                    <select id="frequencySelector" ng-change="onFrequencyChange()" ng-model="state.selectedFrequency">
                         <option ng-repeat="frequency in variables.frequencyVariables">{{frequency.name}}</option>
                     </select>
                 </label>
@@ -94,7 +94,7 @@
                     <button id="cancelButton" class="button button-block icon-left ion-android-cancel button-assertive" ng-click="cancel()">Cancel</button>
                 </div>
                 <div class="col col-50">
-                    <button class="button button-block icon-left ion-android-done button-positive" ng-click="save()">Save</button>
+                    <button id="saveButton" class="button button-block icon-left ion-android-done button-positive" ng-click="save()">Save</button>
                 </div>
             </div>
             <div class="row">
