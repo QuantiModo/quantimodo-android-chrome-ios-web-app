@@ -35,7 +35,7 @@
              </div>
          </div>
 
-      <ion-list>
+      <ion-list id="historyList">
           <div ng-repeat="historyItem in state.history" data-measurementid="{{historyItem.id}}" divider-collection-repeat>
               <ion-item  ng-click="editMeasurement(historyItem)">
                   <div style="display:inline-block;float:left;margin-left:5px;margin-right:5px;width:50px;text-align:center">
