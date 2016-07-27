@@ -372,7 +372,7 @@ angular.module('starter')
                         ongoing: false,
                         sound: "file://sound/silent.ogg",
                         title: "Track " + trackingReminder.variableName,
-                        text: "Record or modify measurement",
+                        text: "Record a measurement",
                         at: at,
                         icon: config.appSettings.mobileNotificationImage,
                         id: trackingReminder.id
