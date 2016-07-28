@@ -52,7 +52,7 @@ angular.module('starter')
                 }
 
                 $scope.state.sumAvg = originalVariableObject.combinationOperation === "MEAN"? "avg" : "sum";
-                $scope.state.delayBeforeOnset = originalVariableObject.onsetDelay/(60*60); // seconds -> hours
+                $scope.state.onsetDelay = originalVariableObject.onsetDelay/(60*60); // seconds -> hours
                 $scope.state.durationOfAction = originalVariableObject.durationOfAction/(60*60); // seconds - > hours
             });
 
@@ -76,6 +76,58 @@ angular.module('starter')
                 ]
 
             });
+        };
+
+        $scope.showExplanationsPopup = function(setting) {
+            var explanationText = "";
+            if (setting === "Minimum value") {
+                explanationText = "The minimum allowed value for measurements. " +
+                    "While you can record a value below this minimum, it will be " +
+                    "excluded from the correlation analysis.";
+            }
+            else if (setting === "Maximum value") {
+                explanationText = "The maximum allowed value for measurements. " +
+                    "While you can record a value above this maximum, it will be " +
+                    "excluded from the correlation analysis.";
+            }
+            else if (setting === "Onset delay") {
+                explanationText = "An outcome is always preceded by the predictor or stimulus. " +
+                    "The amount of time that elapses after the predictor/stimulus event " +
+                    "before the outcome as perceived by a self-tracker is known as the “onset delay”.  " +
+                    "For example, the “onset delay” between the time a person takes an aspirin " +
+                    "(predictor/stimulus event) and the time a person perceives a change in their" +
+                    " headache severity (outcome) is approximately 30 minutes.";
+
+            }
+            else if (setting === "Duration of action") {
+                explanationText = "The duration of action is the amount of time over " +
+                    "which a predictor/stimulus event can exert an observable influence " +
+                    "on an outcome variable’s value.  For instance, aspirin (stimulus/predictor) " +
+                    "typically decreases headache severity for approximately four hours" +
+                    " (duration of action) following the onset delay.";
+
+            }
+            else if (setting === "Filling value") {
+                explanationText = "When it comes to analysis to determine the effects of this variable," +
+                    " knowing when it did not occur is as important as knowing when it did occur. " +
+                    "For example, if you are tracking a medication, it is important to know " +
+                    "when you did not take it, but you do not have to log zero values for " +
+                    "all the days when you haven't taken it. Hence, you can specify a filling value " +
+                    "(typically 0) to insert whenever data is missing.";
+            }
+
+            $ionicPopup.show({
+                title: setting,
+                subTitle: explanationText,
+                scope: $scope,
+                buttons: [
+                    {
+                        text: 'OK',
+                        type: 'button-positive'
+                    }
+                ]
+            });
+
         };
 
         $scope.deleteAllMeasurementsForVariable = function() {
@@ -157,7 +209,7 @@ angular.module('starter')
                 //joinWith
                 maximumAllowedValue: maximumAllowedValue,
                 minimumAllowedValue: minimumAllowedValue,
-                onsetDelay: $scope.state.delayBeforeOnset*60*60,
+                onsetDelay: $scope.state.onsetDelay*60*60,
                 //experimentStartTime
                 //experimentEndTime
             };
@@ -287,7 +339,7 @@ angular.module('starter')
                         $scope.state.fillingValue = variableObject.fillingValue;
                     }
 
-                    $scope.state.delayBeforeOnset = variableObject.onsetDelay/(60*60); // seconds -> hours
+                    $scope.state.onsetDelay = variableObject.onsetDelay/(60*60); // seconds -> hours
                     $scope.state.durationOfAction = variableObject.durationOfAction/(60*60); // seconds - > hours
 
                 });
