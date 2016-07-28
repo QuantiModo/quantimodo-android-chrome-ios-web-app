@@ -133,6 +133,32 @@ angular.module('starter')
 			} 
 	    };
 
+		$scope.showMoreNotificationInfoPopup = function(){
+			var moreNotificationInfoPopup = $ionicPopup.show({
+				title: "Individual Notifications Disabled",
+				subTitle: 'Currently, you will only get one non-specific repeating device notification at a time.',
+				scope: $scope,
+				template: "It is possible to instead get a separate device notification for each tracking reminder that you create.  You can change this setting or update the notification frequency on the settings page.",
+				buttons:[
+					{
+						text: 'Settings',
+						type: 'button-positive',
+						onTap: function(e) {
+							$state.go('app.settings');
+						}
+					},
+					{
+						text: 'OK',
+						type: 'button-assertive'
+					}
+				]
+
+			});
+
+			moreNotificationInfoPopup.then(function(res) {
+				console.log('Tapped!', res);
+			});
+		};
 
 	    $scope.edit = function(reminder){
 	    	reminder.fromState = $state.current.name;
