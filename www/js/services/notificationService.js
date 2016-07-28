@@ -337,13 +337,13 @@ angular.module('starter')
                         ongoing: false,
                         title: "Track " + trackingReminder.variableName,
                         text: "Tap to record measurement",
-                        at: trackingReminder.at * 1000,
+                        at: trackingReminder.nextReminderTimeEpochSeconds * 1000,
                         icon: 'ic_stat_icon_bw',
                         id: trackingReminder.id
                     };
-                    if(trackingReminder.repeating){
-                        notificationSettings.every = intervalInMinutes;
-                    }
+
+                    notificationSettings.every = intervalInMinutes;
+
                     console.debug("Trying to create Android notification for " + JSON.stringify(notificationSettings));
                     //notificationSettings.sound = "res://platform_default";
                     //notificationSettings.smallIcon = 'ic_stat_icon_bw';
@@ -353,10 +353,9 @@ angular.module('starter')
                 function scheduleIosNotificationByTrackingReminder(trackingReminder) {
 
                     var at = new Date(0); // The 0 there is the key, which sets the date to the epoch
-                    at.setUTCSeconds(trackingReminder.at);
+                    at.setUTCSeconds(trackingReminder.nextReminderTimeEpochSeconds);
                     // Using milliseconds might cause app to crash with this error:
                     // NSInvalidArgumentException·unable to serialize userInfo: Error Domain=NSCocoaErrorDomain Code=3851 "Property list invalid for format: 200 (property lists cannot contain objects of type 'CFNull')" UserInfo={NSDeb
-                    // var at = trackingReminder.nextReminderTimeEpochSeconds;
                     var intervalInMinutes  = trackingReminder.reminderFrequency / 60;
                     var everyString = 'minute';
                     if (intervalInMinutes > 1) {everyString = 'hour';}
@@ -381,9 +380,9 @@ angular.module('starter')
                         icon: config.appSettings.mobileNotificationImage,
                         id: trackingReminder.id
                     };
-                    if(trackingReminder.repeating){
-                        notificationSettings.every = everyString;
-                    }
+
+                    notificationSettings.every = everyString;
+
                     //notificationSettings.sound = "res://platform_default";
                     //notificationSettings.smallIcon = 'ic_stat_icon_bw';
                     createOrUpdateIonicNotificationForTrackingReminder(notificationSettings);
@@ -391,13 +390,9 @@ angular.module('starter')
 
                 function scheduleChromeExtensionNotificationWithTrackingReminder(trackingReminder) {
                     var alarmInfo = {};
-                    alarmInfo.when =  trackingReminder.at * 1000;
-                    if(trackingReminder.repeating){
-                        alarmInfo.periodInMinutes = trackingReminder.reminderFrequency / 60;
-                    }
-
+                    alarmInfo.when =  trackingReminder.nextReminderTimeEpochSeconds * 1000;
+                    alarmInfo.periodInMinutes = trackingReminder.reminderFrequency / 60;
                     var alarmName = createChromeAlarmNameFromTrackingReminder(trackingReminder);
-
                     alarmName = JSON.stringify(alarmName);
 
                     chrome.alarms.getAll(function(alarms) {
@@ -412,18 +407,6 @@ angular.module('starter')
                             console.debug('Created alarm for alarmName ' + alarmName, alarmInfo);
                         }
                     });
-                }
-
-                if(trackingReminder.nextReminderTimeEpochSeconds){
-                    console.debug('Scheduling repeating notifications by reminder');
-                    trackingReminder.at = trackingReminder.nextReminderTimeEpochSeconds;
-                    trackingReminder.repeating = true;
-                }
-
-                if(trackingReminder.trackingReminderNotificationTimeEpoch){
-                    console.debug('Scheduling single notification by reminder notification');
-                    trackingReminder.at = trackingReminder.trackingReminderNotificationTimeEpoch;
-                    trackingReminder.repeating = false;
                 }
 
                 if(trackingReminder.reminderFrequency > 0){
@@ -514,7 +497,6 @@ angular.module('starter')
                         });
                     }
                 });
-
             },
 
             // cancel all existing notifications
