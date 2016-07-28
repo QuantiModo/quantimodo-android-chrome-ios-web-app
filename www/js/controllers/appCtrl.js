@@ -490,7 +490,8 @@ angular.module('starter')
                 $rootScope.setUserForBugsnag($rootScope.user);
                 $scope.syncEverything();
             }
-            migrationService.version1466();
+            // Don't think we need this anymore since everyone should have been migrated by now
+            // migrationService.version1466();
             hideNavigationMenuIfSetInUrlParameter();
             //goToWelcomeStateIfNotWelcomed();
             scheduleReminder();
