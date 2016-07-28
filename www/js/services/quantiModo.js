@@ -77,6 +77,8 @@ angular.module('starter')
                             console.warn("Not including parameter " + key + " in request because it is null or undefined");
                         }
                     }
+                    urlParams.push(encodeURIComponent('appName') + '=' + encodeURIComponent(config.appSettings.appName));
+                    urlParams.push(encodeURIComponent('appVersion') + '=' + encodeURIComponent($rootScope.appVersion));
                     //We can't append access token to Ionic requests for some reason
                     //urlParams.push(encodeURIComponent('access_token') + '=' + encodeURIComponent(tokenObject.accessToken));
 
@@ -145,13 +147,18 @@ angular.module('starter')
                             } 
                         }
                     }
+                    var urlParams = [];
+                    urlParams.push(encodeURIComponent('appName') + '=' + encodeURIComponent(config.appSettings.appName));
+                    urlParams.push(encodeURIComponent('appVersion') + '=' + encodeURIComponent($rootScope.appVersion));
+
+                    var url = config.getURL(baseURL) + ((urlParams.length === 0) ? '' : urlParams.join('&'));
 
                     // configure request
                     var request = {};
                         if(config.getClientId() !== 'oAuthDisabled') {
                             request = {
                                 method : 'POST',
-                                url: config.getURL(baseURL),
+                                url: url,
                                 responseType: 'json',
                                 headers : {
                                     "Authorization" : "Bearer " + token.accessToken,
@@ -162,7 +169,7 @@ angular.module('starter')
                     } else {
                             request = {
                                 method : 'POST',
-                                url: config.getURL(baseURL),
+                                url: url,
                                 responseType: 'json',
                                 headers : {
                                     'Content-Type': "application/json"
