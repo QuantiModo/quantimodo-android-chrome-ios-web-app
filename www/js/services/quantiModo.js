@@ -406,6 +406,14 @@ angular.module('starter')
                     errorHandler);
             };
 
+            QuantiModo.getPublicVariablesByName = function(variableName, successHandler, errorHandler){
+                QuantiModo.get('api/v1/public/variables',
+                    ['name'],
+                    {name: variableName},
+                    successHandler,
+                    errorHandler);
+            };
+
             QuantiModo.getVariableById = function(variableId, successHandler, errorHandler){
                 QuantiModo.get('api/v1/variables' ,
                     ['id'],
