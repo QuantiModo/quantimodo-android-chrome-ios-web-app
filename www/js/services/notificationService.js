@@ -123,7 +123,7 @@ angular.module('starter')
                 }
 
                 function clearOtherLocalNotifications(currentNotification) {
-                    console.debug("Creating notification trigger event to clear other notifications");
+                    console.debug("Clearing notifications except the one that just triggered...");
                     $ionicPlatform.ready(function () {
                         cordova.plugins.notification.local.getTriggeredIds(function (triggeredNotifications) {
                             console.debug("found triggered notifications before removing current one: " + JSON.stringify(triggeredNotifications));
@@ -430,8 +430,8 @@ angular.module('starter')
             scheduleGenericNotification: function(intervalInMinutes){
 
                 var notificationSettings = {
-                    title: config.appSettings.appName,
-                    text: config.appSettings.mobileNotificationText,
+                    title: "Time to track!",
+                    text: $rootScope.numberOfPendingNotifications + " tracking reminder notifications",
                     every: intervalInMinutes,
                     id: config.appSettings.primaryOutcomeVariableDetails.id,
                     sound: "file://sound/silent.ogg",
@@ -448,6 +448,13 @@ angular.module('starter')
                     });
                 }
 
+                function updateGenericAndroidNotification(notificationSettings) {
+                    notificationSettings.icon = 'ic_stat_icon_bw';
+                    cordova.plugins.notification.local.update(notificationSettings, function () {
+                        console.log('notification updated', notificationSettings);
+                    });
+                }
+
                 function scheduleGenericIosNotification(notificationSettings) {
                     var everyString = 'minute';
                     if (notificationSettings.every > 1) {everyString = 'hour';}
@@ -458,6 +465,19 @@ angular.module('starter')
                     // Don't include notificationSettings.icon for iOS. I keep seeing "Unknown property: icon" in Safari console
                     cordova.plugins.notification.local.schedule(notificationSettings, function () {
                         console.log('iOS notification scheduled', notificationSettings);
+                    });
+                }
+
+                function updateGenericIosNotification(notificationSettings) {
+                    var everyString = 'minute';
+                    if (notificationSettings.every > 1) {everyString = 'hour';}
+                    if (notificationSettings.every > 60) {everyString = 'day';}
+                    console.debug("iOS requires second, minute, hour, day, week, month, year so converting " +
+                        notificationSettings.every + " minutes to string: " + everyString);
+                    notificationSettings.every = everyString;
+                    // Don't include notificationSettings.icon for iOS. I keep seeing "Unknown property: icon" in Safari console
+                    cordova.plugins.notification.local.update(notificationSettings, function () {
+                        console.log('iOS notification updated', notificationSettings);
                     });
                 }
 
@@ -473,13 +493,30 @@ angular.module('starter')
                 if (intervalInMinutes > 0) {
                     $ionicPlatform.ready(function () {
                         if (typeof cordova !== "undefined") {
-                            cordova.plugins.notification.local.cancel(config.appSettings.primaryOutcomeVariableDetails.id);
-                            if (ionic.Platform.isAndroid()) {
-                                console.debug('Scheduling Android notification for every ' + intervalInMinutes + ' minutes');
-                                scheduleGenericAndroidNotification(notificationSettings);
-                            } else if (ionic.Platform.isIPad() || ionic.Platform.isIOS()) {
-                                scheduleGenericIosNotification(notificationSettings);
-                            }
+                            cordova.plugins.notification.local.getAll(function (notifications) {
+                                console.debug("All notifications ", notifications);
+                                var found;
+                                for (var i = 0; i < notifications.length; i++) {
+                                    if(notifications[i].id === notificationSettings.id){
+                                        found = true;
+                                        console.log('Updating notification', notifications[i]);
+                                        if (ionic.Platform.isAndroid()) {
+                                            console.debug('Scheduling Android notification for every ' + intervalInMinutes + ' minutes');
+                                            updateGenericAndroidNotification(notificationSettings);
+                                        } else if (ionic.Platform.isIPad() || ionic.Platform.isIOS()) {
+                                            updateGenericIosNotification(notificationSettings);
+                                        }
+                                    }
+                                }
+                                if(!found){
+                                    console.debug('Notification id ' + notificationSettings.id + " not found.  Creating now: ", notificationSettings);
+                                    if (ionic.Platform.isAndroid()) {
+                                        scheduleGenericAndroidNotification(notificationSettings);
+                                    } else if (ionic.Platform.isIPad() || ionic.Platform.isIOS()) {
+                                        scheduleGenericIosNotification(notificationSettings);
+                                    }
+                                }
+                            });
                         }
                     });
                     if ($rootScope.isChromeExtension || $rootScope.isChromeApp) {
