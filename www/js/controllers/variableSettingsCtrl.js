@@ -25,8 +25,37 @@ angular.module('starter')
         };
 
         $scope.resetToDefaultSettings = function() {
-            // Use v1/variables, then populate fields
-            // User still has to press "save"
+            // Populate fields with original settings for variable
+
+            variableService.getPublicVariablesByName($stateParams.variableName).then(function(originalVariableObject) {
+                console.log("Original variable object: " + originalVariableObject);
+
+                if ($scope.state.variableObject.abbreviatedUnitName !== "/5") {
+                    if (originalVariableObject.minimumAllowedValue !== "-Infinity") {
+                        $scope.state.minimumAllowedValue = originalVariableObject.minimumAllowedValue;
+                    }
+                    else {
+                        $scope.state.minimumAllowedValue = "";
+                    }
+                    if (originalVariableObject.maximumAllowedValue !== "Infinity") {
+                        $scope.state.maximumAllowedValue = originalVariableObject.maximumAllowedValue;
+                    }
+                    else {
+                        $scope.state.maximumAllowedValue = "";
+                    }
+                }
+                if (originalVariableObject.fillingValue === null) {
+                    $scope.state.fillingValue = "";
+                }
+                else {
+                    $scope.state.fillingValue = originalVariableObject.fillingValue;
+                }
+
+                $scope.state.sumAvg = originalVariableObject.combinationOperation === "MEAN"? "avg" : "sum";
+                $scope.state.delayBeforeOnset = originalVariableObject.onsetDelay/(60*60); // seconds -> hours
+                $scope.state.durationOfAction = originalVariableObject.durationOfAction/(60*60); // seconds - > hours
+            });
+
         };
 
         $scope.showDeleteAllMeasurementsForVariablePopup = function(){
