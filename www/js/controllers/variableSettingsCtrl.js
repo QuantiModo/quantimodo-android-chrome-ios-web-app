@@ -100,7 +100,7 @@ angular.module('starter')
 
             }
             else if (setting === "Duration of action") {
-                explanationText = "The duration of action is the amount of time over " +
+                explanationText = "The amount of time over " +
                     "which a predictor/stimulus event can exert an observable influence " +
                     "on an outcome variable’s value. For instance, aspirin (stimulus/predictor) " +
                     "typically decreases headache severity for approximately four hours" +
