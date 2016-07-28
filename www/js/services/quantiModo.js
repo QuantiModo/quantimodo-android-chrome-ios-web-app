@@ -534,12 +534,8 @@ angular.module('starter')
 
             // skip tracking reminder
             QuantiModo.skipAllTrackingReminderNotifications = function(params, successHandler, errorHandler){
-                if(!params){
-                    params = [];
-                }
                 QuantiModo.post('api/v1/trackingReminderNotifications/skip/all',
-                    //['trackingReminderId'],
-                    [],
+                    ['trackingReminderId'],
                     params,
                     successHandler,
                     errorHandler);
