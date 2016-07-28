@@ -44,10 +44,6 @@ angular.module('starter')
         $scope.hideLocationTrackingInfoCard = localStorageService.getItemSync('hideLocationTrackingInfoCard');
         $scope.hideChromeExtensionInfoCard = localStorageService.getItemSync('hideChromeExtensionInfoCard');
 
-        $scope.getLocation = function(){
-
-        };
-
         //  Calendar and  Date picker
 
         // will update from showCalendarPopup
