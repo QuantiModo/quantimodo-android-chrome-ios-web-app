@@ -188,19 +188,19 @@ angular.module('starter')
 	    };
 
 
-	    $scope.deleteReminder = function(reminder, $index){
+	    $scope.deleteReminder = function(reminder){
 			localStorageService.deleteElementOfItemById('trackingReminders', reminder.trackingReminderId).then(function(){
 					getTrackingRemindersFromLocalStorage();
 				});
 
-			reminderService.deleteReminder(reminder.id)
+			reminderService.deleteReminder(reminder.trackingReminderId)
 	    	.then(function(){
 
 	    	}, function(err){
 				Bugsnag.notify(err, JSON.stringify(err), {}, "error");
 	    		$ionicLoading.hide();
 				$scope.loading = false;
-	    		utilsService.showAlert('Failed to Delete Reminder, Try again!', 'assertive');
+	    		console.error('Failed to Delete Reminder!');
 	    	});
 	    };
 
