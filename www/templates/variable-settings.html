@@ -34,24 +34,24 @@
                     </label>
                     -->
                     <div ng-hide="state.hideMinMax" class="item item-input">
-                        <span ng-click="showExplanationsPopup('Minimum value')" class="input-label">Minimum value:</span>
-                        <input ng-model="state.minimumAllowedValue" class="right-input" type="number" placeholder="-Infinity">
+                        <span class="input-label left-span" ng-click="showExplanationsPopup('Minimum value')">Minimum value:</span>
+                        <span class="right-span"><input class="right-input" ng-model="state.minimumAllowedValue" type="number" placeholder="-Infinity"></span>
                     </div>
                     <div ng-hide="state.hideMinMax" class="item item-input">
-                        <span ng-click="showExplanationsPopup('Maximum value')" class="input-label">Maximum value:</span>
-                        <input ng-model="state.maximumAllowedValue" class="right-input" type="number" placeholder="Infinity">
+                        <span class="input-label left-span" ng-click="showExplanationsPopup('Maximum value')">Maximum value:</span>
+                        <span class="right-span"><input class="right-input" ng-model="state.maximumAllowedValue" type="number" placeholder="Infinity"></span>
                     </div>
                     <div class="item item-input">
-                        <span ng-click="showExplanationsPopup('Onset delay')" class="input-label">Onset delay (hrs):</span>
-                        <input ng-model="state.onsetDelay" class="right-input" type="number" placeholder="Hours">
+                        <span class="input-label left-span" ng-click="showExplanationsPopup('Onset delay')">Onset delay (hrs):</span>
+                        <span class="right-span"><input class="right-input" ng-model="state.onsetDelay" type="number" placeholder="Hours"></span>
                     </div>
                     <div class="item item-input">
-                        <span ng-click="showExplanationsPopup('Duration of action')" class="input-label">Duration of action (hrs):</span>
-                        <input ng-model="state.durationOfAction" class="right-input" type="number" placeholder="Hours">
+                        <span class="input-label left-span" ng-click="showExplanationsPopup('Duration of action')">Duration of action (hrs):</span>
+                        <span class="right-span"><input class="right-input" ng-model="state.durationOfAction" type="number" placeholder="Hours"></span>
                     </div>
                     <div class="item item-input">
-                        <span ng-click="showExplanationsPopup('Filling value')" class="input-label">Filling value:</span>
-                        <input ng-model="state.fillingValue" class="right-input" type="number" placeholder="None">
+                        <span class="input-label left-span" ng-click="showExplanationsPopup('Filling value')">Filling value:</span>
+                        <span class="right-span"><input class="right-input" ng-model="state.fillingValue" type="number" placeholder="None"></span>
                     </div>
             </div>
         </div>
