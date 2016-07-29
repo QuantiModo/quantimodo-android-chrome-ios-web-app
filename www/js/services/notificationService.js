@@ -576,7 +576,10 @@ angular.module('starter')
                 if(typeof cordova !== "undefined"){
                     $ionicPlatform.ready(function () {
                         cordova.plugins.notification.local.cancelAll(function () {
-                            console.log('notifications have been cancelled');
+                            console.log('cancelAllNotifications: notifications have been cancelled');
+                            cordova.plugins.notification.local.getAll(function (notifications) {
+                                console.debug("cancelAllNotifications: All notifications after cancelling", notifications);
+                            });
                             deferred.resolve();
                         });
                     });
