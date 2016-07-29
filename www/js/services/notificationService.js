@@ -437,16 +437,6 @@ angular.module('starter')
 
             scheduleGenericNotification: function(intervalInMinutes){
 
-                cordova.plugins.notification.local.getAll(function (notifications) {
-                    console.debug("scheduleGenericNotification: All notifications before cancelAllNotifications", notifications);
-                });
-
-                this.cancelAllNotifications();
-
-                cordova.plugins.notification.local.getAll(function (notifications) {
-                    console.debug("scheduleGenericNotification: All notifications after cancelAllNotifications", notifications);
-                });
-
                 if(!$rootScope.showOnlyOneNotification){
                     console.error("scheduleGenericNotification: Called scheduleGenericNotification even though $rootScope.showOnlyOneNotification is " +
                         $rootScope.showOnlyOneNotification + ". Not going to scheduleGenericNotification.");
@@ -468,49 +458,18 @@ angular.module('starter')
                 if($rootScope.numberOfPendingNotifications > 0) {
                     notificationSettings.badge = $rootScope.numberOfPendingNotifications;
                 }
-
-                function scheduleGenericAndroidNotification(notificationSettings) {
+                if($rootScope.isAndroid){
                     notificationSettings.icon = 'ic_stat_icon_bw';
-                    console.debug("scheduleGenericAndroidNotification", notificationSettings);
-                    cordova.plugins.notification.local.schedule(notificationSettings, function () {
-                        console.log('scheduleGenericAndroidNotification: notification scheduled', notificationSettings);
-                    });
                 }
 
-                function updateGenericAndroidNotification(notificationSettings) {
-                    notificationSettings.icon = 'ic_stat_icon_bw';
-                    console.debug("updateGenericAndroidNotification", notificationSettings);
-                    cordova.plugins.notification.local.update(notificationSettings, function () {
-                        console.log('updateGenericAndroidNotification: notification updated', notificationSettings);
-                    });
-                }
-
-                function scheduleGenericIosNotification(notificationSettings) {
+                if($rootScope.isIOS){
                     var everyString = 'minute';
                     if (notificationSettings.every > 1) {everyString = 'hour';}
                     if (notificationSettings.every > 60) {everyString = 'day';}
                     console.debug("scheduleGenericIosNotification: iOS requires second, minute, hour, day, week, month, year so converting " +
                         notificationSettings.every + " minutes to string: " + everyString);
-                    notificationSettings.every = everyString;
                     // Don't include notificationSettings.icon for iOS. I keep seeing "Unknown property: icon" in Safari console
-                    console.debug("scheduleGenericIosNotification", notificationSettings);
-                    cordova.plugins.notification.local.schedule(notificationSettings, function () {
-                        console.log('scheduleGenericIosNotification: iOS notification scheduled', notificationSettings);
-                    });
-                }
-
-                function updateGenericIosNotification(notificationSettings) {
-                    var everyString = 'minute';
-                    if (notificationSettings.every > 1) {everyString = 'hour';}
-                    if (notificationSettings.every > 60) {everyString = 'day';}
-                    console.debug("updateGenericIosNotification: iOS requires second, minute, hour, day, week, month, year so converting " +
-                        notificationSettings.every + " minutes to string: " + everyString);
                     notificationSettings.every = everyString;
-                    // Don't include notificationSettings.icon for iOS. I keep seeing "Unknown property: icon" in Safari console
-                    console.debug("updateGenericIosNotification", notificationSettings);
-                    cordova.plugins.notification.local.update(notificationSettings, function () {
-                        console.log('updateGenericIosNotification: iOS notification updated', notificationSettings);
-                    });
                 }
 
                 function scheduleGenericChromeExtensionNotification(intervalInMinutes) {
@@ -521,7 +480,6 @@ angular.module('starter')
                     console.debug("scheduleGenericChromeExtensionNotification: create genericTrackingReminderNotificationAlarm", alarmInfo);
                     chrome.alarms.create("genericTrackingReminderNotificationAlarm", alarmInfo);
                     console.log("Alarm set, every " + intervalInMinutes + " minutes");
-
                 }
 
                 if (intervalInMinutes > 0) {
@@ -529,26 +487,15 @@ angular.module('starter')
                         if (typeof cordova !== "undefined") {
                             cordova.plugins.notification.local.getAll(function (notifications) {
                                 console.debug("scheduleGenericNotification: All notifications before scheduling", notifications);
-                                var found;
-                                for (var i = 0; i < notifications.length; i++) {
-                                    if(notifications[i].id === notificationSettings.id){
-                                        found = true;
-                                        console.log('Updating notification', notifications[i]);
-                                        if (ionic.Platform.isAndroid()) {
-                                            updateGenericAndroidNotification(notificationSettings);
-                                        } else if (ionic.Platform.isIPad() || ionic.Platform.isIOS()) {
-                                            updateGenericIosNotification(notificationSettings);
-                                        }
-                                    }
-                                }
-                                if(!found){
-                                    console.debug('Notification id ' + notificationSettings.id + " not found.  Creating now: ", notificationSettings);
-                                    if (ionic.Platform.isAndroid()) {
-                                        scheduleGenericAndroidNotification(notificationSettings);
-                                    } else if (ionic.Platform.isIPad() || ionic.Platform.isIOS()) {
-                                        scheduleGenericIosNotification(notificationSettings);
-                                    }
-                                }
+                                cordova.plugins.notification.local.cancelAll(function () {
+                                    console.log('cancelAllNotifications: notifications have been cancelled');
+                                    cordova.plugins.notification.local.getAll(function (notifications) {
+                                        console.debug("cancelAllNotifications: All notifications after cancelling", notifications);
+                                        cordova.plugins.notification.local.schedule(notificationSettings, function () {
+                                            console.log('updateGenericAndroidNotification: notification updated', notificationSettings);
+                                        });
+                                    });
+                                });
                             });
                         }
                     });
