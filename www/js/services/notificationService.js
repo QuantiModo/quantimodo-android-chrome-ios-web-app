@@ -438,7 +438,13 @@ angular.module('starter')
             scheduleGenericNotification: function(intervalInMinutes){
 
                 cordova.plugins.notification.local.getAll(function (notifications) {
-                    console.debug("scheduleGenericNotification: All notifications before scheduling", notifications);
+                    console.debug("scheduleGenericNotification: All notifications before cancelAllNotifications", notifications);
+                });
+
+                this.cancelAllNotifications();
+
+                cordova.plugins.notification.local.getAll(function (notifications) {
+                    console.debug("scheduleGenericNotification: All notifications after cancelAllNotifications", notifications);
                 });
 
                 if(!$rootScope.showOnlyOneNotification){
