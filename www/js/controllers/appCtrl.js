@@ -653,8 +653,8 @@ angular.module('starter')
                     $rootScope.showOnlyOneNotification = true;
                 } else {
                     console.debug("showOnlyOneNotification from local storage is not a false string");
-                    localStorageService.setItem('showOnlyOneNotification', false);
-                    $rootScope.showOnlyOneNotification = false;
+                    localStorageService.setItem('showOnlyOneNotification', true);
+                    $rootScope.showOnlyOneNotification = true;
 
                     // notificationService.cancelAllNotifications().then(function() {
                     //     localStorageService.getItem('primaryOutcomeRatingFrequencyDescription', function (primaryOutcomeRatingFrequencyDescription) {

@@ -365,7 +365,7 @@ angular.module('starter')
                     // Using milliseconds might cause app to crash with this error:
                     // NSInvalidArgumentException·unable to serialize userInfo: Error Domain=NSCocoaErrorDomain Code=3851 "Property list invalid for format: 200 (property lists cannot contain objects of type 'CFNull')" UserInfo={NSDeb
                     var intervalInMinutes  = trackingReminder.reminderFrequency / 60;
-                    var everyString = 'minute';
+                    var everyString = 'hour';
                     if (intervalInMinutes > 1) {everyString = 'hour';}
                     if (intervalInMinutes > 60) {everyString = 'day';}
                     console.debug("iOS requires second, minute, hour, day, week, month, year so converting " +
