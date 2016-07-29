@@ -8,21 +8,17 @@ angular.module('starter')
                                              $rootScope, $ionicActionSheet, $ionicHistory){
 
 	    $scope.controller_name = "RemindersAddCtrl";
-
 		console.log('Loading ' + $scope.controller_name);
 
-        var currentTime = new Date();
-
-        // state
 	    $scope.state = {
             showAddVariableCard : false,
             showReminderFrequencyCard : false,
             showUnits: false,
             selectedFrequency : 'Daily',
             selectedReminder : false,
-            reminderStartTimeEpochTime : timeService.getEpochTimeFromLocalString("07:00:00"),
+            reminderStartTimeEpochTime : timeService.getEpochTimeFromLocalString("00:00:00"),
             reminderEndTimeEpochTime : null,
-            reminderStartTimeStringLocal : "07:00:00",
+            reminderStartTimeStringLocal : "00:00:00",
             reminderEndTimeStringLocal : null,
             measurementSynonymSingularLowercase : 'measurement',
             defaultValueLabel : 'Default Value',
@@ -67,7 +63,7 @@ angular.module('starter')
 	    };
 
 		$scope.openReminderStartTimePicker = function() {
-            var default7amStartTimeInSecondsSinceMidnightLocal = 7 * 60 * 60;
+            var defaultStartTimeInSecondsSinceMidnightLocal = 0;
             $scope.state.timePickerConfiguration = {
                 callback: function (val) {
                     if (typeof (val) === 'undefined') {
@@ -85,7 +81,7 @@ angular.module('starter')
                         $scope.state.reminderStartTimeStringLocal = moment(a).format('HH:mm:ss');
                     }
                 },
-                inputTime: default7amStartTimeInSecondsSinceMidnightLocal,
+                inputTime: defaultStartTimeInSecondsSinceMidnightLocal,
                 step: 1,
                 closeLabel: 'Cancel'
             };
