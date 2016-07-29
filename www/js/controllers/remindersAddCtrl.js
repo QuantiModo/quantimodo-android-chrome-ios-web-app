@@ -250,6 +250,12 @@ angular.module('starter')
                 }
             }
 
+            if($scope.state.reminderEndTimeStringLocal &&
+                $scope.state.reminderEndTimeStringLocal < $scope.state.reminderStartTimeStringLocal) {
+                utilsService.showAlert('Latest reminder time cannot be less than earliest reminder time');
+                return;
+            }
+
             $scope.showLoader('Saving ' + $scope.state.trackingReminder.variableName + ' reminder...');
             $scope.state.trackingReminder.reminderFrequency = getFrequencyChart()[$scope.state.selectedFrequency];
             $scope.state.trackingReminder.valueAndFrequencyTextDescription = $scope.state.selectedFrequency;
