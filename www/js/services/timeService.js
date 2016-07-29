@@ -28,17 +28,16 @@ angular.module('starter')
 			},
 
             getEpochTimeFromUtcString: function (utcTimeString) {
-
-                var timeFormat = "HH:mm:ss Z";
-                var utcTimeStringFull = moment().format(timeFormat);
-                if(utcTimeString){
-                    utcTimeStringFull = utcTimeString + " +0000";
-                }
-
-                var epochTime = moment(utcTimeStringFull, timeFormat).unix();
-                
+                var timeFormat = "HH:mm:ss";
+                var epochTime = moment(utcTimeString, timeFormat).unix();
                 return epochTime;
             },
+
+			getEpochTimeFromLocalString: function (localTimeString) {
+				var timeFormat = "HH:mm:ss";
+				var epochTime = moment(localTimeString, timeFormat).unix();
+				return epochTime;
+			},
 
 			getLocalTimeStringFromUtcString: function (utcTimeString) {
 
