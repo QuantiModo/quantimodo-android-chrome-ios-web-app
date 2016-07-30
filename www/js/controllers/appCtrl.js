@@ -567,8 +567,19 @@ angular.module('starter')
             $scope.showLoader('Syncing reminder notifications...');
             reminderService.getTrackingReminderNotifications(params.variableCategoryName, params.today)
                 .then(function(trackingReminderNotifications){
-                    $rootScope.numberOfPendingNotifications = trackingReminderNotifications.length;
-                    notificationService.updateNotificationBadges(trackingReminderNotifications.length);
+
+                    if(trackingReminderNotifications.length !== $rootScope.numberOfPendingNotifications){
+                        console.debug("New API response trackingReminderNotifications.length (" + trackingReminderNotifications.length +
+                            ") is different from the previous $rootScope.numberOfPendingNotifications (" + $rootScope.numberOfPendingNotifications +
+                            ") so updating or recreating notifications...");
+                        $rootScope.numberOfPendingNotifications = trackingReminderNotifications.length;
+                        notificationService.updateOrRecreateNotifications();
+                    } else {
+                        console.debug("New API response trackingReminderNotifications.length (" + trackingReminderNotifications.length +
+                            ") is still the same as the previous $rootScope.numberOfPendingNotifications (" + $rootScope.numberOfPendingNotifications +
+                            ") so no need to update or recreate notifications...");
+                    }
+                    
                     $rootScope.trackingRemindersNotifications =
                         variableCategoryService.attachVariableCategoryIcons(trackingReminderNotifications);
                     $rootScope.filteredTrackingReminderNotifications = groupTrackingReminderNotificationsByDateRange(trackingReminderNotifications);

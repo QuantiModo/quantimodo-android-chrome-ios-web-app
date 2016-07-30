@@ -83,32 +83,34 @@ angular.module('starter')
                 });
             },
 
+            updateBadgesAndTextOnAllNotifications : function () {
+                $ionicPlatform.ready(function () {
+                    if(!$rootScope.numberOfPendingNotifications){
+                        $rootScope.numberOfPendingNotifications = 0;
+                    }
+                    cordova.plugins.notification.local.getAll(function (notifications) {
+                        console.debug("onTrigger.getNotificationsFromApiAndClearOrUpdateLocalNotifications.updateBadgesAndTextOnAllNotifications: All notifications ", notifications);
+                        for (var i = 0; i < notifications.length; i++) {
+                            console.log('onTrigger.getNotificationsFromApiAndClearOrUpdateLocalNotifications.updateBadgesAndTextOnAllNotifications:Updating notification', notifications[i]);
+                            var notificationSettings = {
+                                id: notifications[i].id,
+                                badge: $rootScope.numberOfPendingNotifications,
+                                title: "Time to track!",
+                                text: "Add a tracking reminder!"
+                            };
+                            if($rootScope.numberOfPendingNotifications > 0){
+                                notificationSettings.text = $rootScope.numberOfPendingNotifications + " tracking reminder notifications";
+                            }
+                            cordova.plugins.notification.local.update(notificationSettings);
+                        }
+                    });
+                });
+            },
+
             setOnTriggerAction: function() {
 
                 function getNotificationsFromApiAndClearOrUpdateLocalNotifications() {
-                    var updateBadgesAndTextOnAllNotifications = function () {
-                        $ionicPlatform.ready(function () {
-                            if(!$rootScope.numberOfPendingNotifications){
-                                $rootScope.numberOfPendingNotifications = 0;
-                            }
-                            cordova.plugins.notification.local.getAll(function (notifications) {
-                                console.debug("onTrigger.getNotificationsFromApiAndClearOrUpdateLocalNotifications.updateBadgesAndTextOnAllNotifications: All notifications ", notifications);
-                                for (var i = 0; i < notifications.length; i++) {
-                                    console.log('onTrigger.getNotificationsFromApiAndClearOrUpdateLocalNotifications.updateBadgesAndTextOnAllNotifications:Updating notification', notifications[i]);
-                                    var notificationSettings = {
-                                        id: notifications[i].id,
-                                        badge: $rootScope.numberOfPendingNotifications,
-                                        title: "Time to track!",
-                                        text: "Add a tracking reminder!"
-                                    };
-                                    if($rootScope.numberOfPendingNotifications > 0){
-                                        notificationSettings.text = $rootScope.numberOfPendingNotifications + " tracking reminder notifications";
-                                    }
-                                    cordova.plugins.notification.local.update(notificationSettings);
-                                }
-                            });
-                        });
-                    };
+
 
                     var currentDateTimeInUtcStringPlus5Min = timeService.getCurrentDateTimeInUtcStringPlusMin(5);
                     var params = {
@@ -124,15 +126,8 @@ angular.module('starter')
                                     console.debug("onTrigger: cleared all active notifications");
                                 }, this);
                             } else {
-                                if($rootScope.isAndroid){
-                                    updateBadgesAndTextOnAllNotifications();
-                                }
-                                if($rootScope.isIOS){
-                                    //iOS makes duplicates when updating for some reason so we just cancel all and schedule again
-                                    var intervalInMinutes = 60;
-                                    this.scheduleGenericNotification(intervalInMinutes);
-                                }
                                 console.debug("onTrigger: notifications from API", $rootScope.trackingReminderNotifications);
+                                this.updateOrRecreateNotifications($rootScope.trackingReminderNotifications);
                             }
                         }
                     }, function (err) {
@@ -222,27 +217,31 @@ angular.module('starter')
             decrementNotificationBadges: function(){
                 if($rootScope.numberOfPendingNotifications > 0){
                     $rootScope.numberOfPendingNotifications = $rootScope.numberOfPendingNotifications - 1;
-                    this.updateNotificationBadges($rootScope.numberOfPendingNotifications);
+                    this.updateOrRecreateNotifications($rootScope.numberOfPendingNotifications);
                 }
             },
 
             setNotificationBadge: function(numberOfPendingNotifications){
                 $rootScope.numberOfPendingNotifications = numberOfPendingNotifications;
-                this.updateNotificationBadges($rootScope.numberOfPendingNotifications);
+                this.updateOrRecreateNotifications($rootScope.numberOfPendingNotifications);
             },
 
-            updateNotificationBadges: function(numberOfPendingNotifications) {
+            updateOrRecreateNotifications: function() {
                 if($rootScope.isIOS || $rootScope.isAndroid) {
                     $ionicPlatform.ready(function () {
                         cordova.plugins.notification.local.getAll(function (notifications) {
-                            console.debug("updateNotificationBadges: All notifications before update", notifications);
-                            for (var i = 0; i < notifications.length; i++) {
-                                console.log('updateNotificationBadges: Updating notification', notifications[i]);
-                                cordova.plugins.notification.local.update({
-                                    id: notifications[i].id,
-                                    badge: numberOfPendingNotifications,
-                                    text: numberOfPendingNotifications + " tracking reminder notifications"
-                                });
+                            if($rootScope.isAndroid){
+                                console.debug("getNotificationsFromApiAndClearOrUpdateLocalNotifications: Updating " +
+                                    "notifications for Android because Samsung limits number of notifications " +
+                                    "that can be scheduled in a day.");
+                                this.updateBadgesAndTextOnAllNotifications();
+                            }
+                            if($rootScope.isIOS){
+                                console.debug("getNotificationsFromApiAndClearOrUpdateLocalNotifications: " +
+                                    "iOS makes duplicates when updating for some reason so we just cancel all " +
+                                    "and schedule again");
+                                var intervalInMinutes = 60;
+                                this.scheduleGenericNotification(intervalInMinutes);
                             }
                         });
                     });
