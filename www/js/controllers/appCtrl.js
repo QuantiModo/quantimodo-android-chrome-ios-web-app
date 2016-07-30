@@ -444,6 +444,7 @@ angular.module('starter')
                     console.debug("Setting on trigger and on click actions for notifications");
                     notificationService.setOnTriggerAction();
                     notificationService.setOnClickAction(QuantiModo);
+                    notificationService.setOnUpdateAction();
                 });
             } else {
                 console.debug("Not setting on trigger and on click actions for notifications because is not ios or android.");

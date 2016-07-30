@@ -21,6 +21,14 @@ angular.module('starter')
 
         return {
 
+            setOnUpdateAction: function(){
+                cordova.plugins.notification.local.on("update", function(notification) {
+                    cordova.plugins.notification.local.getAll(function (notifications) {
+                        console.debug("onUpdate: All notifications after update: ", notifications);
+                    });
+                });
+            },
+
             setOnClickAction: function(QuantiModo) {
                 var params = {};
                 var locationTrackingNotificationId = 666;
@@ -220,12 +228,13 @@ angular.module('starter')
                 if($rootScope.isIOS || $rootScope.isAndroid) {
                     $ionicPlatform.ready(function () {
                         cordova.plugins.notification.local.getAll(function (notifications) {
-                            console.debug("updateNotificationBadges: All notifications ", notifications);
+                            console.debug("updateNotificationBadges: All notifications before update", notifications);
                             for (var i = 0; i < notifications.length; i++) {
                                 console.log('updateNotificationBadges: Updating notification', notifications[i]);
                                 cordova.plugins.notification.local.update({
                                     id: notifications[i].id,
-                                    badge: numberOfPendingNotifications
+                                    badge: numberOfPendingNotifications,
+                                    text: numberOfPendingNotifications + " tracking reminder notifications"
                                 });
                             }
                         });
