@@ -127,7 +127,7 @@ angular.module('starter')
                                 }, this);
                             } else {
                                 console.debug("onTrigger: notifications from API", $rootScope.trackingReminderNotifications);
-                                this.updateOrRecreateNotifications($rootScope.trackingReminderNotifications);
+                                this.updateOrRecreateNotifications();
                             }
                         }
                     }, function (err) {
@@ -217,34 +217,28 @@ angular.module('starter')
             decrementNotificationBadges: function(){
                 if($rootScope.numberOfPendingNotifications > 0){
                     $rootScope.numberOfPendingNotifications = $rootScope.numberOfPendingNotifications - 1;
-                    this.updateOrRecreateNotifications($rootScope.numberOfPendingNotifications);
+                    this.updateOrRecreateNotifications();
                 }
             },
 
             setNotificationBadge: function(numberOfPendingNotifications){
                 $rootScope.numberOfPendingNotifications = numberOfPendingNotifications;
-                this.updateOrRecreateNotifications($rootScope.numberOfPendingNotifications);
+                this.updateOrRecreateNotifications();
             },
 
-            updateOrRecreateNotifications: function(notificationService) {
-                if($rootScope.isIOS || $rootScope.isAndroid) {
-                    $ionicPlatform.ready(function () {
-                        cordova.plugins.notification.local.getAll(function (notifications, notificationService) {
-                            if($rootScope.isAndroid){
-                                console.debug("getNotificationsFromApiAndClearOrUpdateLocalNotifications: Updating " +
-                                    "notifications for Android because Samsung limits number of notifications " +
-                                    "that can be scheduled in a day.");
-                                notificationService.updateBadgesAndTextOnAllNotifications();
-                            }
-                            if($rootScope.isIOS){
-                                console.debug("getNotificationsFromApiAndClearOrUpdateLocalNotifications: " +
-                                    "iOS makes duplicates when updating for some reason so we just cancel all " +
-                                    "and schedule again");
-                                var intervalInMinutes = 60;
-                                notificationService.scheduleGenericNotification(intervalInMinutes);
-                            }
-                        });
-                    });
+            updateOrRecreateNotifications: function() {
+                if($rootScope.isAndroid){
+                    console.debug("getNotificationsFromApiAndClearOrUpdateLocalNotifications: Updating " +
+                        "notifications for Android because Samsung limits number of notifications " +
+                        "that can be scheduled in a day.");
+                    this.updateBadgesAndTextOnAllNotifications();
+                }
+                if($rootScope.isIOS){
+                    console.debug("getNotificationsFromApiAndClearOrUpdateLocalNotifications: " +
+                        "iOS makes duplicates when updating for some reason so we just cancel all " +
+                        "and schedule again");
+                    var intervalInMinutes = 60;
+                    this.scheduleGenericNotification(intervalInMinutes);
                 }
             },
 

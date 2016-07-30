@@ -123,8 +123,6 @@ angular.module('starter')
 							if($rootScope.showOnlyOneNotification !== true){
 								notificationService.scheduleAllNotifications(trackingReminders);
 							}
-							//$rootScope.numberOfPendingNotifications = trackingReminders[0].numberOfPendingNotifications;
-							//notificationService.updateNotificationBadges($rootScope.numberOfPendingNotifications);
 							localStorageService.setItem('trackingReminders', JSON.stringify(trackingReminders));
 							$rootScope.syncingReminders = false;
 							$rootScope.isSyncing = false;
