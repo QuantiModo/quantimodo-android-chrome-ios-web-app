@@ -226,22 +226,22 @@ angular.module('starter')
                 this.updateOrRecreateNotifications($rootScope.numberOfPendingNotifications);
             },
 
-            updateOrRecreateNotifications: function() {
+            updateOrRecreateNotifications: function(notificationService) {
                 if($rootScope.isIOS || $rootScope.isAndroid) {
                     $ionicPlatform.ready(function () {
-                        cordova.plugins.notification.local.getAll(function (notifications) {
+                        cordova.plugins.notification.local.getAll(function (notifications, notificationService) {
                             if($rootScope.isAndroid){
                                 console.debug("getNotificationsFromApiAndClearOrUpdateLocalNotifications: Updating " +
                                     "notifications for Android because Samsung limits number of notifications " +
                                     "that can be scheduled in a day.");
-                                this.updateBadgesAndTextOnAllNotifications();
+                                notificationService.updateBadgesAndTextOnAllNotifications();
                             }
                             if($rootScope.isIOS){
                                 console.debug("getNotificationsFromApiAndClearOrUpdateLocalNotifications: " +
                                     "iOS makes duplicates when updating for some reason so we just cancel all " +
                                     "and schedule again");
                                 var intervalInMinutes = 60;
-                                this.scheduleGenericNotification(intervalInMinutes);
+                                notificationService.scheduleGenericNotification(intervalInMinutes);
                             }
                         });
                     });
