@@ -91,8 +91,11 @@ angular.module('starter')
                                         id: notifications[i].id,
                                         badge: $rootScope.numberOfPendingNotifications,
                                         title: "Time to track!",
-                                        text: $rootScope.numberOfPendingNotifications + " waiting tracking reminder notifications"
+                                        text: "Add a tracking reminder!"
                                     };
+                                    if($rootScope.numberOfPendingNotifications > 0){
+                                        notificationSettings.text = $rootScope.numberOfPendingNotifications + " tracking reminder notifications";
+                                    }
                                     cordova.plugins.notification.local.update(notificationSettings);
                                 }
                             });
@@ -167,6 +170,14 @@ angular.module('starter')
 
                 cordova.plugins.notification.local.on("trigger", function (currentNotification) {
 
+                    if(currentNotification.badge < 1){
+                        $ionicPlatform.ready(function () {
+                            cordova.plugins.notification.local.clearAll(function () {
+                                console.log("onTrigger: Cleared all notifications because badge is less than 1");
+                            });
+                        });
+                        return;
+                    }
                     try {
                         qmLocationService.updateLocationVariablesAndPostMeasurementIfChanged();
                         console.debug("onTrigger: just triggered this notification: ",  currentNotification);
