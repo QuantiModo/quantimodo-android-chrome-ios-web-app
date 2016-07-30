@@ -522,7 +522,7 @@ angular.module('starter')
                                     cordova.plugins.notification.local.getAll(function (notifications) {
                                         console.debug("cancelAllNotifications: All notifications after cancelling", notifications);
                                         cordova.plugins.notification.local.schedule(notificationSettings, function () {
-                                            console.log('scheduleGenericNotification: notification schedule', notificationSettings);
+                                            console.log('scheduleGenericNotification: notification scheduled', notificationSettings);
                                         });
                                     });
                                 });
