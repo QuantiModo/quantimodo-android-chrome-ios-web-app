@@ -1,7 +1,6 @@
 <ion-view hide-nav-bar="hideNavigationMenu" view-title="{{state.title}}">
     <ion-content>
-
-        <div class="card variable-settings" >
+        <div ng-hide="state.loading" class="card variable-settings" >
             <div class="list">
                 <div class="item item-divider ng-binding">Properties</div>
                 <!--FIXME Use this once variable aliasing is implemented-->
@@ -12,15 +11,15 @@
                     </label>
                 -->
                     <label class="item item-content" style="padding: 6px 10px 5px 16px;">
-                        <span style="float: left;" class="input-label">Variable Name:</span>
+                        <span style="float: left;" class="input-label">Variable Name</span>
                         <span class="input-label right-text " id="variableName">{{state.variableName}}</span>
                     </label>
                     <label class="item item-content" style="padding: 6px 10px 5px 16px;"ng-if="!state.showVariableCategorySelector">
-                        <span style="float: left;" class="input-label">Variable Category:</span>
+                        <span style="float: left;" class="input-label">Variable Category</span>
                         <span class="input-label right-text ">{{state.variableObject.category}}</span>
                     </label>
                     <label class="item item-content" style="padding: 6px 10px 5px 16px;" ng-if="(state.variableCategoryName != 'Emotions' && state.variableCategoryName != 'Symptoms')">
-                        <span style="float: left;" class="input-label">Unit:</span>
+                        <span style="float: left;" class="input-label">Unit</span>
                         <span class="input-label right-text ">{{state.variableObject.abbreviatedUnitName}}</span>
                     </label>
                 <div class="item item-divider ng-binding">Data Optimization</div>
@@ -34,40 +33,40 @@
                     </label>
                     -->
                     <div ng-hide="state.hideMinMax" class="item item-input">
-                        <span class="input-label left-span" ng-click="showExplanationsPopup('Minimum value')">Minimum value:</span>
-                        <span class="right-span"><input class="right-input" ng-model="state.minimumAllowedValue" type="number" placeholder="-Infinity"></span>
+                        <span class="input-label left-span" ng-click="showExplanationsPopup('Minimum value')">Minimum Value <i class="icon ion-help-circled"></i></span>
+                        <span class="right-span"><input class="right-input" ng-model="state.minimumAllowedValue" type="number" ></span>
                     </div>
                     <div ng-hide="state.hideMinMax" class="item item-input">
-                        <span class="input-label left-span" ng-click="showExplanationsPopup('Maximum value')">Maximum value:</span>
+                        <span class="input-label left-span" ng-click="showExplanationsPopup('Maximum value')">Maximum Value <i class="icon ion-help-circled"></i></span>
                         <span class="right-span"><input class="right-input" ng-model="state.maximumAllowedValue" type="number" placeholder="Infinity"></span>
                     </div>
                     <div class="item item-input">
-                        <span class="input-label left-span" ng-click="showExplanationsPopup('Onset delay')">Onset delay (hrs):</span>
-                        <span class="right-span"><input class="right-input" ng-model="state.onsetDelay" type="number" placeholder="Hours"></span>
+                        <span class="input-label left-span" ng-click="showExplanationsPopup('Onset delay')">Onset Delay (hours) <i class="icon ion-help-circled"></i></span>
+                        <span class="right-span"><input class="right-input" ng-model="state.onsetDelay" type="number" ></span>
                     </div>
                     <div class="item item-input">
-                        <span class="input-label left-span" ng-click="showExplanationsPopup('Duration of action')">Duration of action (hrs):</span>
-                        <span class="right-span"><input class="right-input" ng-model="state.durationOfAction" type="number" placeholder="Hours"></span>
+                        <span class="input-label left-span" ng-click="showExplanationsPopup('Duration of action')">Duration of Action (hours) <i class="icon ion-help-circled"></i></span>
+                        <span class="right-span"><input class="right-input" ng-model="state.durationOfAction" type="number"></span>
                     </div>
                     <div class="item item-input">
-                        <span class="input-label left-span" ng-click="showExplanationsPopup('Filling value')">Filling value:</span>
+                        <span class="input-label left-span" ng-click="showExplanationsPopup('Filling value')">Filling Value <i class="icon ion-help-circled"></i></span>
                         <span class="right-span"><input class="right-input" ng-model="state.fillingValue" type="number" placeholder="None"></span>
                     </div>
             </div>
-        </div>
 
-        <div class="card" >
-            <div class="row">
-                <div class="col">
-                    <button class="button button-block icon-left ion-android-cancel button-positive" ng-click="resetToDefaultSettings()">Reset to Default Settings</button>
+            <div class="card" >
+                <div class="row">
+                    <div class="col">
+                        <button class="button button-block icon-left ion-android-cancel button-positive" ng-click="resetToDefaultSettings()">Reset to Default Settings</button>
+                    </div>
                 </div>
-            </div>
-            <div class="row">
-                <div class="col col-50">
-                    <button class="button button-block icon-left ion-android-cancel button-assertive" ng-click="cancel()">Cancel</button>
-                </div>
-                <div class="col col-50">
-                    <button class="button button-block icon-left ion-android-done button-positive" ng-click="save()">Save</button>
+                <div class="row">
+                    <div class="col col-50">
+                        <button class="button button-block icon-left ion-android-cancel button-assertive" ng-click="cancel()">Cancel</button>
+                    </div>
+                    <div class="col col-50">
+                        <button class="button button-block icon-left ion-android-done button-positive" ng-click="save()">Save</button>
+                    </div>
                 </div>
             </div>
         </div>
