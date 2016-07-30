@@ -127,7 +127,7 @@ angular.module('starter')
                                 }, this);
                             } else {
                                 console.debug("onTrigger: notifications from API", $rootScope.trackingReminderNotifications);
-                                this.updateOrRecreateNotifications();
+                                $rootScope.updateOrRecreateNotifications();
                             }
                         }
                     }, function (err) {

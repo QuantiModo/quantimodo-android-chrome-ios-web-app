@@ -593,6 +593,9 @@ angular.module('starter')
                 });
         };
 
+        $rootScope.updateOrRecreateNotifications = function () {
+            notificationService.updateOrRecreateNotifications();
+        };
 
         function setPlatformVariables() {
             $rootScope.isIOS = ionic.Platform.isIPad() || ionic.Platform.isIOS();
