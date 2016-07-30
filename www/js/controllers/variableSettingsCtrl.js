@@ -300,13 +300,12 @@ angular.module('starter')
         // constructor
         $scope.init = function(){
             Bugsnag.context = "variableSettings";
-            $scope.loading = true;
-            $scope.showLoader();
+            $scope.state.loading = true;
+            $scope.showLoader('Getting variable details');
             var isAuthorized = authService.checkAuthOrSendToLogin();
             if (typeof analytics !== 'undefined')  { analytics.trackView("Variable Settings Controller"); }
             if(isAuthorized){
                 $scope.showHelpInfoPopupIfNecessary();
-                $scope.loading = true;
                 $scope.state.sumAvg = "avg"; // FIXME should this be the default?
                 variableService.getVariablesByName($stateParams.variableName).then(function(variableObject){
                     $scope.state.variableObject = variableObject;
@@ -341,9 +340,10 @@ angular.module('starter')
 
                     $scope.state.onsetDelay = variableObject.onsetDelay/(60*60); // seconds -> hours
                     $scope.state.durationOfAction = variableObject.durationOfAction/(60*60); // seconds - > hours
+                    $scope.state.loading = false;
+                    $scope.hideLoader();
 
                 });
-                $ionicLoading.hide();
             } 
         };
         
