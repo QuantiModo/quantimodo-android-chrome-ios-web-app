@@ -472,7 +472,12 @@ angular.module('starter')
                         intervalInMinutes + ". Not going to scheduleGenericNotification.");
                 }
 
+                var at = new Date(0); // The 0 there is the key, which sets the date to the epoch
+                var epochSecondsPlus15Minutes = new Date() / 1000 + 15 * 60;
+                at.setUTCSeconds(epochSecondsPlus15Minutes);
+
                 var notificationSettings = {
+                    at: at,
                     title: "Time to track!",
                     text: $rootScope.numberOfPendingNotifications + " tracking reminder notifications",
                     every: intervalInMinutes,
@@ -517,7 +522,7 @@ angular.module('starter')
                                     cordova.plugins.notification.local.getAll(function (notifications) {
                                         console.debug("cancelAllNotifications: All notifications after cancelling", notifications);
                                         cordova.plugins.notification.local.schedule(notificationSettings, function () {
-                                            console.log('updateGenericAndroidNotification: notification updated', notificationSettings);
+                                            console.log('scheduleGenericNotification: notification schedule', notificationSettings);
                                         });
                                     });
                                 });
