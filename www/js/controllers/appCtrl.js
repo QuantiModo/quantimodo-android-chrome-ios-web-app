@@ -10,7 +10,7 @@ angular.module('starter')
 
         $rootScope.loaderImagePath = config.appSettings.loaderImagePath;
         $rootScope.appMigrationVersion = 1489;
-        if(!$rootScope.loaderImagePath){
+        if (!$rootScope.loaderImagePath) {
             $rootScope.loaderImagePath = 'img/circular-loader.gif';
         }
         $rootScope.trackLocation = false;
@@ -27,12 +27,12 @@ angular.module('starter')
         $scope.primaryOutcomeVariableDetails = config.appSettings.primaryOutcomeVariableDetails;
         // Not used
         //$scope.ratingInfo = ratingService.getRatingInfo();
-        $scope.closeMenu = function() {
+        $scope.closeMenu = function () {
             $ionicSideMenuDelegate.toggleLeft(false);
         };
         $scope.floatingMaterialButton = config.appSettings.floatingMaterialButton;
         $rootScope.unitsIndexedByAbbreviatedName = [];
-        
+
         $scope.hideAddTreatmentRemindersCard = localStorageService.getItemSync('hideAddTreatmentRemindersCard');
         $scope.hideAddFoodRemindersCard = localStorageService.getItemSync('hideAddFoodRemindersCard');
         $scope.hideAddSymptomRemindersCard = localStorageService.getItemSync('hideAddSymptomRemindersCard');
@@ -53,7 +53,7 @@ angular.module('starter')
         // "from" datepicker config
         $scope.fromDatePickerObj = {
             callback: function (val) {
-                if (typeof(val)==='undefined') {
+                if (typeof(val) === 'undefined') {
                     console.log('Date not selected');
                 } else {
                     $scope.fromDate = new Date(val);
@@ -67,8 +67,8 @@ angular.module('starter')
 
         // "to" datepicker config
         $scope.toDatePickerObj = {
-            callback: function(val) {
-                if (typeof(val)==='undefined') {
+            callback: function (val) {
+                if (typeof(val) === 'undefined') {
                     console.log('Date not selected');
                 } else {
                     $scope.toDate = new Date(val);
@@ -80,71 +80,71 @@ angular.module('starter')
             to: new Date() //today
         };
 
-        $scope.goToState = function(state, stateParameters){
+        $scope.goToState = function (state, stateParameters) {
             var variableCategoryName = null;
-            if(stateParameters &&  stateParameters.variableCategoryName){
-                variableCategoryName =  stateParameters.variableCategoryName;
+            if (stateParameters && stateParameters.variableCategoryName) {
+                variableCategoryName = stateParameters.variableCategoryName;
             }
             $state.go(state, {
                 fromState: $state.current.name,
                 fromUrl: window.location.href,
-                variableCategoryName:  variableCategoryName
+                variableCategoryName: variableCategoryName
             });
         };
 
-        $scope.setLocalStorageFlagTrue = function(flagName){
+        $scope.setLocalStorageFlagTrue = function (flagName) {
             localStorageService.setItem(flagName, true);
             $scope[flagName] = true;
         };
 
         // open datepicker for "from" date
-        $scope.openFromDatePicker = function(){
+        $scope.openFromDatePicker = function () {
             ionicDatePicker.openDatePicker($scope.fromDatePickerObj);
         };
 
         // open datepicker for "to" date
-        $scope.openToDatePicker = function(){
+        $scope.openToDatePicker = function () {
             ionicDatePicker.openDatePicker($scope.toDatePickerObj);
         };
 
         // update dates selected from calendar
-        $scope.saveDates = function(){
+        $scope.saveDates = function () {
             $scope.updateDatesLocalStorage();
             $scope.updateDatePickerObjects();
             $scope.popover.hide();
             $scope.init();
         };
-        
+
         // update fromDate and toDate in datepicker objects
-        $scope.updateDatePickerObjects = function() {
+        $scope.updateDatePickerObjects = function () {
             $scope.fromDatePickerObj.to = $scope.toDate;
             $scope.toDatePickerObj.from = $scope.fromDate;
             $scope.fromDatePickerObj.inputDate = $scope.fromDate;
             $scope.toDatePickerObj.inputDate = $scope.toDate;
         };
-        
-        $scope.updateDatesLocalStorage = function() {
-            var to = moment($scope.toDate).unix()*1000;
-            var from = moment($scope.fromDate).unix()*1000;
+
+        $scope.updateDatesLocalStorage = function () {
+            var to = moment($scope.toDate).unix() * 1000;
+            var from = moment($scope.fromDate).unix() * 1000;
             measurementService.setDates(to, from);
         };
 
         // show main calendar popup (from and to)
-        $scope.showCalendarPopup = function($event){
+        $scope.showCalendarPopup = function ($event) {
             $scope.popover.show($event);
-            measurementService.getToDate(function(endDate){
+            measurementService.getToDate(function (endDate) {
                 $scope.toDate = new Date(endDate);
                 $scope.fromDatePickerObj.to = $scope.toDate;
-                measurementService.getFromDate(function(fromDate){
+                measurementService.getFromDate(function (fromDate) {
                     $scope.fromDate = new Date(fromDate);
                     $scope.toDatePickerObj.from = $scope.fromDate;
                 });
             });
         };
-        
+
         var helpPopupMessages = config.appSettings.helpPopupMessages || false;
 
-        $scope.showHelpInfoPopup = function(){
+        $scope.showHelpInfoPopup = function () {
             $rootScope.helpPopup = $ionicPopup.show({
                 title: helpPopupMessages[location.hash],
                 subTitle: '',
@@ -162,12 +162,12 @@ angular.module('starter')
             });
         };
 
-        $scope.showHelpInfoPopupIfNecessary = function(e) {
-            localStorageService.getItem('isWelcomed',function(isWelcomed) {
-                if(isWelcomed  === true || isWelcomed === "true"){
+        $scope.showHelpInfoPopupIfNecessary = function (e) {
+            localStorageService.getItem('isWelcomed', function (isWelcomed) {
+                if (isWelcomed === true || isWelcomed === "true") {
                     if (helpPopupMessages && typeof helpPopupMessages[location.hash] !== "undefined") {
                         localStorageService.getItem('notShowHelpPopup', function (val) {
-                            if(typeof val === "undefined" || val === "undefined"){
+                            if (typeof val === "undefined" || val === "undefined") {
                                 $scope.notShowHelpPopup = false;
                             } else {
                                 $scope.notShowHelpPopup = val ? JSON.parse(val) : false;
@@ -184,7 +184,7 @@ angular.module('starter')
             });
         };
 
-        $scope.goToAddMeasurementForVariableObject = function(variableObject){
+        $scope.goToAddMeasurementForVariableObject = function (variableObject) {
             $state.go('app.measurementAdd',
                 {
                     variableObject: variableObject,
@@ -193,7 +193,7 @@ angular.module('starter')
                 });
         };
 
-        $scope.goToHistoryForVariableObject = function(variableObject){
+        $scope.goToHistoryForVariableObject = function (variableObject) {
             $state.go('app.historyAll',
                 {
                     variableObject: variableObject,
@@ -202,7 +202,7 @@ angular.module('starter')
                 });
         };
 
-        $scope.goToChartsPageForVariableObject = function(variableObject){
+        $scope.goToChartsPageForVariableObject = function (variableObject) {
             $state.go('app.variables',
                 {
                     variableObject: variableObject,
@@ -211,7 +211,7 @@ angular.module('starter')
                 });
         };
 
-        $scope.goToAddReminderForVariableObject = function(variableObject){
+        $scope.goToAddReminderForVariableObject = function (variableObject) {
             $state.go('app.reminderAdd',
                 {
                     variableObject: variableObject,
@@ -220,7 +220,7 @@ angular.module('starter')
                 });
         };
 
-        $scope.goToSettingsForVariableObject = function(variableObject) {
+        $scope.goToSettingsForVariableObject = function (variableObject) {
             if (variableObject.variableName) {
                 $state.go('app.variableSettings',
                     {
@@ -240,7 +240,7 @@ angular.module('starter')
 
         };
 
-        $scope.addToFavoritesUsingStateVariableObject = function(variableObject){
+        $scope.addToFavoritesUsingStateVariableObject = function (variableObject) {
             var trackingReminder = {};
             trackingReminder.variableId = variableObject.id;
             trackingReminder.reminderFrequency = 0;
@@ -276,16 +276,16 @@ angular.module('starter')
             }
         };
 
-        $scope.$on('$ionicView.enter', function(e) {
+        $scope.$on('$ionicView.enter', function (e) {
             //$scope.showHelpInfoPopupIfNecessary(e);
             qmLocationService.updateLocationVariablesAndPostMeasurementIfChanged();
         });
 
-        $scope.closeMenuIfNeeded = function(menuItem){
-            if(menuItem.click){
+        $scope.closeMenuIfNeeded = function (menuItem) {
+            if (menuItem.click) {
                 $scope[menuItem.click] && $scope[menuItem.click]();
             }
-            else if(!menuItem.isSubMenuParent){
+            else if (!menuItem.isSubMenuParent) {
                 $scope.closeMenu();
             }
         };
@@ -310,22 +310,22 @@ angular.module('starter')
         /*Wrapper Config End*/
 
         // when view is changed
-        $scope.$on('$ionicView.enter', function(e) {
-            if(e.targetScope && e.targetScope.controller_name && e.targetScope.controller_name === "TrackPrimaryOutcomeCtrl"){
+        $scope.$on('$ionicView.enter', function (e) {
+            if (e.targetScope && e.targetScope.controller_name && e.targetScope.controller_name === "TrackPrimaryOutcomeCtrl") {
                 $scope.showCalendarButton = true;
             } else {
                 $scope.showCalendarButton = false;
             }
 
             // Show "..." button on top rigt
-            if(e.targetScope && e.targetScope.controller_name &&
+            if (e.targetScope && e.targetScope.controller_name &&
                 e.targetScope.controller_name === "MeasurementAddCtrl" ||
                 e.targetScope.controller_name === "RemindersAddCtrl" ||
                 e.targetScope.controller_name === "FavoriteAddCtrl" ||
                 e.targetScope.controller_name === "VariablePageCtrl" ||
                 e.targetScope.controller_name === "VariableSettingsCtrl" ||
                 e.targetScope.controller_name === "RemindersInboxCtrl"
-            ){
+            ) {
                 $scope.showMoreMenuButton = true;
             } else {
                 $scope.showMoreMenuButton = false;
@@ -334,12 +334,12 @@ angular.module('starter')
 
         $ionicPopover.fromTemplateUrl('templates/popover.html', {
             scope: $scope
-        }).then(function(popover) {
+        }).then(function (popover) {
             $scope.popover = popover;
         });
-        
-        var scheduleReminder = function(){
-            if($rootScope.reminderToSchedule){
+
+        var scheduleReminder = function () {
+            if ($rootScope.reminderToSchedule) {
 
                 var trackingReminder = {
                     variableId: $rootScope.reminderToSchedule.id,
@@ -352,13 +352,13 @@ angular.module('starter')
                 };
 
                 reminderService.addNewReminder(trackingReminder)
-                .then(function(){
-                    console.log('reminder scheduled', $rootScope.reminderToSchedule);
-                    delete $rootScope.reminderToSchedule;
-                }, function(err){
-                    Bugsnag.notify("reminderService.addNewReminder", JSON.stringify(trackingReminder), {}, "error");
-                    console.log(err);
-                });
+                    .then(function () {
+                        console.log('reminder scheduled', $rootScope.reminderToSchedule);
+                        delete $rootScope.reminderToSchedule;
+                    }, function (err) {
+                        Bugsnag.notify("reminderService.addNewReminder", JSON.stringify(trackingReminder), {}, "error");
+                        console.log(err);
+                    });
             }
         };
 
@@ -388,7 +388,7 @@ angular.module('starter')
                 $rootScope.hideNavigationMenu = false;
                 $state.go(config.appSettings.defaultState);
             }
-            
+
             // don't animate, clear back history
             $ionicHistory.nextViewOptions({
                 disableAnimate: false,
@@ -399,10 +399,10 @@ angular.module('starter')
             measurementService.syncPrimaryOutcomeVariableMeasurementsAndUpdateCharts();
         }
 
-        $scope.goToDefaultStateIfWelcomed = function(){
+        $scope.goToDefaultStateIfWelcomed = function () {
             console.debug('appCtrl: user has seen the welcome screen before...');
-            localStorageService.getItem('isWelcomed',function(isWelcomed) {
-                if(isWelcomed  === true || isWelcomed === "true"){
+            localStorageService.getItem('isWelcomed', function (isWelcomed) {
+                if (isWelcomed === true || isWelcomed === "true") {
                     $rootScope.isWelcomed = true;
                     console.debug('goToDefaultStateIfWelcomed: Going to default state...');
                     goToDefaultStateShowMenuClearIntroHistoryAndRedraw();
@@ -410,25 +410,25 @@ angular.module('starter')
             });
         };
 
-        var goToDefaultStateIfLoggedInOnLoginState = function(){
+        var goToDefaultStateIfLoggedInOnLoginState = function () {
             var loginState = 'app.login';
-            if(loginState.indexOf($state.current.name) !== -1 && $rootScope.user){
+            if (loginState.indexOf($state.current.name) !== -1 && $rootScope.user) {
                 $rootScope.hideNavigationMenu = false;
                 console.debug('goToDefaultStateIfLoggedInOnLoginState: Going to default state...');
                 $state.go(config.appSettings.defaultState);
             }
         };
-        
+
         $scope.init = function () {
             console.log("Main Constructor Start");
             $scope.shouldWeCombineNotifications();
-            if(!$rootScope.user){
+            if (!$rootScope.user) {
                 $rootScope.user = localStorageService.getItemAsObject('user');
             }
-            if(!$rootScope.user && config.getClientId() === 'oAuthDisabled'){
+            if (!$rootScope.user && config.getClientId() === 'oAuthDisabled') {
                 $rootScope.getUserAndSetInLocalStorage();
             }
-            if($rootScope.user){
+            if ($rootScope.user) {
                 $rootScope.setUserForIntercom($rootScope.user);
                 $rootScope.setUserForBugsnag($rootScope.user);
                 $scope.syncEverything();
@@ -438,9 +438,9 @@ angular.module('starter')
             hideNavigationMenuIfSetInUrlParameter();
             //goToWelcomeStateIfNotWelcomed();
             scheduleReminder();
-            if($rootScope.isIOS || $rootScope.isAndroid) {
+            if ($rootScope.isIOS || $rootScope.isAndroid) {
                 console.debug("Going to try setting on trigger and on click actions for notifications when device is ready");
-                $ionicPlatform.ready(function(){
+                $ionicPlatform.ready(function () {
                     console.debug("Setting on trigger and on click actions for notifications");
                     notificationService.setOnTriggerAction();
                     notificationService.setOnClickAction(QuantiModo);
@@ -452,61 +452,61 @@ angular.module('starter')
             goToDefaultStateIfLoggedInOnLoginState();
         };
 
-        $scope.$on('callAppCtrlInit', function(){
+        $scope.$on('callAppCtrlInit', function () {
             console.log("calling init");
             $scope.init();
         });
 
-        $scope.togglePrimaryOutcomeSubMenu = function(){
+        $scope.togglePrimaryOutcomeSubMenu = function () {
             $scope.showPrimaryOutcomeSubMenu = !$scope.showPrimaryOutcomeSubMenu;
         };
 
-        $scope.toggleEmotionsSubMenu = function(){
+        $scope.toggleEmotionsSubMenu = function () {
             $scope.showEmotionsSubMenu = !$scope.showEmotionsSubMenu;
         };
 
-        $scope.toggleDietSubMenu = function(){
+        $scope.toggleDietSubMenu = function () {
             $scope.showDietSubMenu = !$scope.showDietSubMenu;
         };
 
-        $scope.toggleTreatmentsSubMenu = function(){
+        $scope.toggleTreatmentsSubMenu = function () {
             $scope.showTreatmentsSubMenu = !$scope.showTreatmentsSubMenu;
         };
 
-        $scope.toggleSymptomsSubMenu = function(){
+        $scope.toggleSymptomsSubMenu = function () {
             $scope.showSymptomsSubMenu = !$scope.showSymptomsSubMenu;
         };
 
-        $scope.togglePhysicalActivitySubMenu = function(){
-            $scope.showPhysicalActivitySubMenu= !$scope.showPhysicalActivitySubMenu;
+        $scope.togglePhysicalActivitySubMenu = function () {
+            $scope.showPhysicalActivitySubMenu = !$scope.showPhysicalActivitySubMenu;
         };
 
-        $scope.toggleTrackingSubMenu = function(){
+        $scope.toggleTrackingSubMenu = function () {
             $scope.showTrackingSubMenu = !$scope.showTrackingSubMenu;
         };
 
-        $scope.togglePredictorSearchSubMenu = function(){
+        $scope.togglePredictorSearchSubMenu = function () {
             $scope.showPredictorSearchSubMenu = !$scope.showPredictorSearchSubMenu;
         };
 
-        $scope.toggleOutcomePredictorSubMenu = function(){
+        $scope.toggleOutcomePredictorSubMenu = function () {
             $scope.showOutcomePredictorSubMenu = !$scope.showOutcomePredictorSubMenu;
         };
 
-        $scope.toggleHistorySubMenu = function(){
+        $scope.toggleHistorySubMenu = function () {
             $scope.showHistorySubMenu = !$scope.showHistorySubMenu;
         };
 
-        $scope.toggleReminderSubMenu = function(){
+        $scope.toggleReminderSubMenu = function () {
             $scope.showReminderSubMenu = !$scope.showReminderSubMenu;
         };
 
-        $rootScope.getTrackingReminderNotifications = function(params){
-            if(!params){
+        $rootScope.getTrackingReminderNotifications = function (params) {
+            if (!params) {
                 params = {};
             }
 
-            var groupTrackingReminderNotificationsByDateRange = function(trackingReminderNotifications) {
+            var groupTrackingReminderNotificationsByDateRange = function (trackingReminderNotifications) {
                 var result = [];
                 var reference = moment().local();
                 var today = reference.clone().startOf('day');
@@ -522,26 +522,26 @@ angular.module('starter')
                     result.push({name: "Today", trackingReminderNotifications: todayResult});
                 }
 
-                var yesterdayResult = trackingReminderNotifications.filter(function(trackingReminderNotification){
+                var yesterdayResult = trackingReminderNotifications.filter(function (trackingReminderNotification) {
                     return moment.utc(trackingReminderNotification.trackingReminderNotificationTime).local().isSame(yesterday, 'd') === true;
                 });
 
-                if(yesterdayResult.length) {
-                    result.push({ name : "Yesterday", trackingReminderNotifications : yesterdayResult });
+                if (yesterdayResult.length) {
+                    result.push({name: "Yesterday", trackingReminderNotifications: yesterdayResult});
                 }
 
-                var last7DayResult = trackingReminderNotifications.filter(function(trackingReminderNotification){
+                var last7DayResult = trackingReminderNotifications.filter(function (trackingReminderNotification) {
                     var date = moment.utc(trackingReminderNotification.trackingReminderNotificationTime).local();
 
                     return date.isAfter(weekold) === true && date.isSame(yesterday, 'd') !== true &&
                         date.isSame(today, 'd') !== true;
                 });
 
-                if(last7DayResult.length) {
-                    result.push({ name : "Last 7 Days", trackingReminderNotifications : last7DayResult });
+                if (last7DayResult.length) {
+                    result.push({name: "Last 7 Days", trackingReminderNotifications: last7DayResult});
                 }
 
-                var last30DayResult = trackingReminderNotifications.filter(function(trackingReminderNotification){
+                var last30DayResult = trackingReminderNotifications.filter(function (trackingReminderNotification) {
 
                     var date = moment.utc(trackingReminderNotification.trackingReminderNotificationTime).local();
 
@@ -549,16 +549,16 @@ angular.module('starter')
                         date.isSame(yesterday, 'd') !== true && date.isSame(today, 'd') !== true;
                 });
 
-                if(last30DayResult.length) {
-                    result.push({ name : "Last 30 Days", trackingReminderNotifications : last30DayResult });
+                if (last30DayResult.length) {
+                    result.push({name: "Last 30 Days", trackingReminderNotifications: last30DayResult});
                 }
 
-                var olderResult = trackingReminderNotifications.filter(function(trackingReminderNotification){
+                var olderResult = trackingReminderNotifications.filter(function (trackingReminderNotification) {
                     return moment.utc(trackingReminderNotification.trackingReminderNotificationTime).local().isBefore(monthold) === true;
                 });
 
-                if(olderResult.length) {
-                    result.push({ name : "Older", trackingReminderNotifications : olderResult });
+                if (olderResult.length) {
+                    result.push({name: "Older", trackingReminderNotifications: olderResult});
                 }
 
                 return result;
@@ -566,9 +566,9 @@ angular.module('starter')
 
             $scope.showLoader('Syncing reminder notifications...');
             reminderService.getTrackingReminderNotifications(params.variableCategoryName, params.today)
-                .then(function(trackingReminderNotifications){
+                .then(function (trackingReminderNotifications) {
 
-                    if(trackingReminderNotifications.length !== $rootScope.numberOfPendingNotifications){
+                    if (trackingReminderNotifications.length !== $rootScope.numberOfPendingNotifications) {
                         console.debug("New API response trackingReminderNotifications.length (" + trackingReminderNotifications.length +
                             ") is different from the previous $rootScope.numberOfPendingNotifications (" + $rootScope.numberOfPendingNotifications +
                             ") so updating or recreating notifications...");
