@@ -291,7 +291,7 @@ angular.module('starter')
 
         $rootScope.showActionSheetMenu = function() {
 
-            console.debug("Show the action sheet!  $scope.state.variableObject: ", $scope.state.variableObject);
+            console.debug("variablePageCtrl.showActionSheetMenu:  $scope.state.variableObject: ", $scope.state.variableObject);
             var hideSheet = $ionicActionSheet.show({
                 buttons: [
                     { text: '<i class="icon ion-ios-star"></i>Add to Favorites'},
