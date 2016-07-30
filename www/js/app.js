@@ -24,13 +24,27 @@ angular.module('starter',
     $ionicPlatform.ready(function() {
         //$ionicAnalytics.register();
 
-        window.onNotification = function(e){
+        var push = new Ionic.Push({});
 
+        push.register(function(deviceToken) {
+            // Log out your device token (Save this!)
+            console.log("Got Token:", deviceToken.token);
+            pushNotificationService.registerDeviceToken(deviceToken.token);
+        });
+
+
+
+
+
+
+        window.onNotification = function(e){
+            console.log("window.onNotification: received event", e);
             switch(e.event){
                 case 'registered':
                     if(e.regid.length > 0){
+
                         var deviceToken = e.regid;
-                        pushNotificationService.registerDeviceToken(deviceToken).then(function(response){
+                        pushNotificationService.register(deviceToken).then(function(response){
                             alert('registered!');
                         });
                     }
@@ -55,7 +69,7 @@ angular.module('starter',
                     break;
 
                 case 'error':
-                    alert('error occured');
+                    alert('error occurred');
                     break;
 
             }
