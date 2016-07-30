@@ -49,7 +49,14 @@
     "cordova-plugin-file-opener2",
     "cordova-plugin-ios-non-exempt-encryption",
     "cordova-plugin-email-composer",
-    "cordova-plugin-geolocation"
+    "cordova-plugin-geolocation",
+    {
+      "variables": {
+        "SENDER_ID": "GCM_PROJECT_NUMBER"
+      },
+      "locator": "phonegap-plugin-push",
+      "id": "phonegap-plugin-push"
+    }
   ],
   "cordovaPlatforms": [
     "android"

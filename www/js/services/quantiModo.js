@@ -513,7 +513,7 @@ angular.module('starter')
                     errorHandler);
             };
 
-            // post tracking reminder
+
             QuantiModo.postTrackingReminder = function(reminder, successHandler, errorHandler) { 
                 console.log(reminder);
                 QuantiModo.post('api/v1/trackingReminders',
@@ -528,6 +528,20 @@ angular.module('starter')
                         'reminderStartTime'
                     ],
                     reminder,
+                    successHandler,
+                    errorHandler);
+            };
+
+
+            QuantiModo.postDeviceToken = function(deviceToken, successHandler, errorHandler) {
+                var params = {
+                    deviceToken: deviceToken
+                };
+                QuantiModo.post('api/v1/trackingReminders',
+                    [
+                        'deviceToken'
+                    ],
+                    params,
                     successHandler,
                     errorHandler);
             };

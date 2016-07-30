@@ -105,6 +105,15 @@ cordova plugin add https://github.com/mikepsinn/cordova-plugin-googleplus.git --
 echo "ionic plugin add https://github.com/DrMoriarty/cordova-fabric-crashlytics-plugin -–variable CRASHLYTICS_API_KEY=${FABRIC_API_KEY} –-variable CRASHLYTICS_API_SECRET=${FABRIC_API_SECRET}  for $LOWERCASE_APP_NAME Android app..."
 ionic plugin add https://github.com/DrMoriarty/cordova-fabric-crashlytics-plugin -–variable CRASHLYTICS_API_KEY=${FABRIC_API_KEY} –-variable CRASHLYTICS_API_SECRET=${FABRIC_API_SECRET}
 
+echo "ionic add ionic-platform-web-client"
+ionic add ionic-platform-web-client
+
+echo "ionic plugin add https://github.com/DrMoriarty/cordova-fabric-crashlytics-plugin -–variable CRASHLYTICS_API_KEY=${FABRIC_API_KEY} –-variable CRASHLYTICS_API_SECRET=${FABRIC_API_SECRET}  for $LOWERCASE_APP_NAME Android app..."
+ionic plugin add phonegap-plugin-push --variable SENDER_ID="GCM_PROJECT_NUMBER"
+
+ionic io init
+ionic config set dev_push true
+
 #echo "push for $LOWERCASE_APP_NAME Android app..."
 #cordova plugin add phonegap-plugin-push --variable SENDER_ID="quantimo-do"
 echo "Generating image resources for $LOWERCASE_APP_NAME..."
