@@ -465,6 +465,7 @@ angular.module('starter')
                 if($rootScope.showOnlyOneNotification === false){
                     console.error("scheduleGenericNotification: Called scheduleGenericNotification even though $rootScope.showOnlyOneNotification is " +
                         $rootScope.showOnlyOneNotification + ". Not going to scheduleGenericNotification.");
+                    return;
                 }
 
                 if(!intervalInMinutes){

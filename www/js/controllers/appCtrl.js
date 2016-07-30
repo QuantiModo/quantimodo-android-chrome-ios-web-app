@@ -639,7 +639,9 @@ angular.module('starter')
 
             try {
                 var intervalBetweenCheckingForNotificationsInMinutes = 15;
-                notificationService.scheduleGenericNotification(intervalBetweenCheckingForNotificationsInMinutes);
+                if($rootScope.showOnlyOneNotification === true){
+                    notificationService.scheduleGenericNotification(intervalBetweenCheckingForNotificationsInMinutes);
+                }
             } catch (err) {
                 console.error('scheduleAllNotifications error');
                 bugsnagService.reportError(err);
