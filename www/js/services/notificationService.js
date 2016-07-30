@@ -124,7 +124,14 @@ angular.module('starter')
                                     console.debug("onTrigger: cleared all active notifications");
                                 }, this);
                             } else {
-                                updateBadgesAndTextOnAllNotifications();
+                                if($rootScope.isAndroid){
+                                    updateBadgesAndTextOnAllNotifications();
+                                }
+                                if($rootScope.isIOS){
+                                    //iOS makes duplicates when updating for some reason so we just cancel all and schedule again
+                                    var intervalInMinutes = 60;
+                                    this.scheduleGenericNotification(intervalInMinutes);
+                                }
                                 console.debug("onTrigger: notifications from API", $rootScope.trackingReminderNotifications);
                             }
                         }
