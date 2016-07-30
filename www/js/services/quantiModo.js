@@ -537,7 +537,7 @@ angular.module('starter')
                 var params = {
                     deviceToken: deviceToken
                 };
-                QuantiModo.post('api/v1/trackingReminders',
+                QuantiModo.post('api/v1/deviceTokens',
                     [
                         'deviceToken'
                     ],
