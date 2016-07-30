@@ -489,7 +489,7 @@ angular.module('starter')
             $scope.state.variableObject = $scope.state.trackingReminder;
             $scope.state.variableObject.id = $scope.state.trackingReminder.variableId;
             $scope.state.variableObject.name = $scope.state.trackingReminder.variableName;
-            console.debug("Show the action sheet!  $scope.state.variableObject: ", $scope.state.variableObject);
+            console.debug("remindersAddCtrl.showActionSheetMenu:   $scope.state.variableObject: ", $scope.state.variableObject);
             var hideSheet = $ionicActionSheet.show({
                 buttons: [
                     { text: '<i class="icon ion-ios-star"></i>Add to Favorites' },

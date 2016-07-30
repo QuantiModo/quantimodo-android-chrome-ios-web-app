@@ -212,7 +212,48 @@ angular.module('starter')
 					}, this);
 				});
 			}
-	    };
+
+			// Triggered on a button click, or some other target
+			$rootScope.showActionSheetMenu = function() {
+				// Show the action sheet
+				var hideSheet = $ionicActionSheet.show({
+					buttons: [
+
+					],
+					destructiveText: '<i class="icon ion-trash-a"></i>Clear All Notifications',
+					cancelText: '<i class="icon ion-ios-close"></i>Cancel',
+					cancel: function() {
+						console.log('CANCELLED');
+					},
+					buttonClicked: function(index) {
+						console.log('BUTTON CLICKED', index);
+						if(index === 0){
+
+						}
+						return true;
+					},
+					destructiveButtonClicked: function() {
+						$scope.showLoader('Skipping all reminder notifications...');
+						reminderService.skipAllReminderNotifications()
+							.then(function(){
+								notificationService.setNotificationBadge(0);
+								$scope.init();
+							}, function(err){
+								Bugsnag.notify(err, JSON.stringify(err), {}, "error");
+								console.error(err);
+								utilsService.showAlert('Failed to skip all notifications, Try again!', 'assertive');
+							});
+						return true;
+					}
+				});
+
+
+				$timeout(function() {
+					hideSheet();
+				}, 20000);
+
+			};
+		};
 
 	    $scope.editMeasurement = function(trackingReminderNotification, dividerIndex, trackingReminderNotificationNotificationIndex){
 			$rootScope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications[trackingReminderNotificationNotificationIndex].hide = true;
@@ -347,47 +388,6 @@ angular.module('starter')
 
 			$timeout(function() {
 				hideSheetForNotification();
-			}, 20000);
-
-		};
-
-		// Triggered on a button click, or some other target
-		$rootScope.showActionSheetMenu = function() {
-			// Show the action sheet
-			var hideSheet = $ionicActionSheet.show({
-				buttons: [
-
-				],
-				destructiveText: '<i class="icon ion-trash-a"></i>Clear All Notifications',
-				cancelText: '<i class="icon ion-ios-close"></i>Cancel',
-				cancel: function() {
-					console.log('CANCELLED');
-				},
-				buttonClicked: function(index) {
-					console.log('BUTTON CLICKED', index);
-					if(index === 0){
-
-					}
-					return true;
-				},
-				destructiveButtonClicked: function() {
-					$scope.showLoader('Skipping all reminder notifications...');
-					reminderService.skipAllReminderNotifications()
-						.then(function(){
-							notificationService.setNotificationBadge(0);
-							$scope.init();
-					}, function(err){
-						Bugsnag.notify(err, JSON.stringify(err), {}, "error");
-						console.error(err);
-						utilsService.showAlert('Failed to skip all notifications, Try again!', 'assertive');
-					});
-					return true;
-				}
-			});
-
-
-			$timeout(function() {
-				hideSheet();
 			}, 20000);
 
 		};

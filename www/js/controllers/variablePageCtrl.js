@@ -291,14 +291,14 @@ angular.module('starter')
 
         $rootScope.showActionSheetMenu = function() {
 
-            console.debug("Show the action sheet!  $scope.state.variableObject: ", $scope.state.variableObject);
+            console.debug("variablePageCtrl.showActionSheetMenu:  $scope.state.variableObject: ", $scope.state.variableObject);
             var hideSheet = $ionicActionSheet.show({
                 buttons: [
                     { text: '<i class="icon ion-ios-star"></i>Add to Favorites'},
                     { text: '<i class="icon ion-compose"></i>Record Measurement'},
                     { text: '<i class="icon ion-android-notifications-none"></i>Add Reminder'},
                     { text: '<i class="icon ion-ios-list-outline"></i>History'},
-                    { text: '<i class="icon ion-settings"></i>' + 'Settings'},
+                    { text: '<i class="icon ion-settings"></i>' + 'Variable Settings'},
                     { text: '<i class="icon ion-arrow-up-a"></i>Positive Predictors'},
                     { text: '<i class="icon ion-arrow-down-a"></i>Negative Predictors'}
                 ],
