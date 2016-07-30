@@ -88,7 +88,7 @@ angular.module('starter',
                 'sound': 'true',
                 'alert': 'true',
                 'ecb': 'onNotification',
-                'senderID': 'YOUR GOOGLE CONSOLE PROJECT NUMBER'
+                'senderID': window.private_keys.GCM_SENDER_ID
             }
         );
         
