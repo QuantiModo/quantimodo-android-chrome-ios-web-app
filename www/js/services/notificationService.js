@@ -225,7 +225,7 @@ angular.module('starter')
             scheduleAllNotifications: function(trackingRemindersFromApi) {
                 if($rootScope.isChromeExtension || $rootScope.isIOS || $rootScope.isAndroid) {
                     for (var i = 0; i < trackingRemindersFromApi.length; i++) {
-                        if($rootScope.showOnlyOneNotification !== "true"){
+                        if($rootScope.showOnlyOneNotification === false){
                             try {
                                 this.scheduleNotificationByReminder(trackingRemindersFromApi[i]);
                             } catch (err) {
@@ -299,6 +299,11 @@ angular.module('starter')
             },
 
             scheduleNotificationByReminder: function(trackingReminder){
+
+                if($rootScope.showOnlyOneNotification === true){
+                    console.warn("Not going to scheduleNotificationByReminder because $rootScope.showOnlyOneNotification === true");
+                    return;
+                }
 
                 cordova.plugins.notification.local.getAll(function (notifications) {
                     console.debug("scheduleNotificationByReminder: All notifications before scheduling", notifications);
@@ -437,7 +442,7 @@ angular.module('starter')
 
             scheduleGenericNotification: function(intervalInMinutes){
 
-                if(!$rootScope.showOnlyOneNotification){
+                if($rootScope.showOnlyOneNotification === false){
                     console.error("scheduleGenericNotification: Called scheduleGenericNotification even though $rootScope.showOnlyOneNotification is " +
                         $rootScope.showOnlyOneNotification + ". Not going to scheduleGenericNotification.");
                 }

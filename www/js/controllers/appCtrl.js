@@ -623,7 +623,8 @@ angular.module('starter')
 
 
             try {
-                notificationService.scheduleGenericNotification(intervals[$scope.primaryOutcomeRatingFrequencyDescription]/60);
+                var intervalBetweenCheckingForNotificationsInMinutes = 15;
+                notificationService.scheduleGenericNotification(intervalBetweenCheckingForNotificationsInMinutes);
             } catch (err) {
                 console.error('scheduleAllNotifications error');
                 bugsnagService.reportError(err);
