@@ -23,6 +23,7 @@ angular.module('starter')
 
             setOnUpdateAction: function(){
                 cordova.plugins.notification.local.on("update", function(notification) {
+                    console.debug("onUpdate: Just updated this notification: ", notification);
                     cordova.plugins.notification.local.getAll(function (notifications) {
                         console.debug("onUpdate: All notifications after update: ", notifications);
                     });
@@ -84,6 +85,11 @@ angular.module('starter')
             },
 
             updateBadgesAndTextOnAllNotifications : function () {
+
+                if($rootScope.isIOS){
+                    console.warn("updateBadgesAndTextOnAllNotifications: Not updating notifications because we're on iOS and it makes duplicates");
+                    return;
+                }
                 $ionicPlatform.ready(function () {
                     if(!$rootScope.numberOfPendingNotifications){
                         $rootScope.numberOfPendingNotifications = 0;
