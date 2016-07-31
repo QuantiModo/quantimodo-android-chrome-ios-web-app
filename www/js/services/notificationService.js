@@ -431,7 +431,6 @@ angular.module('starter')
                         ongoing: false,
                         title: "Track " + trackingReminder.variableName,
                         text: "Tap to record measurement",
-                        at: trackingReminder.nextReminderTimeEpochSeconds * 1000,
                         icon: 'ic_stat_icon_bw',
                         id: trackingReminder.id
                     };
@@ -441,22 +440,33 @@ angular.module('starter')
                     console.debug("Trying to create Android notification for " + JSON.stringify(notificationSettings));
                     //notificationSettings.sound = "res://platform_default";
                     //notificationSettings.smallIcon = 'ic_stat_icon_bw';
-                    createOrUpdateIonicNotificationForTrackingReminder(notificationSettings);
+                    var totalSeconds = 0;
+                    var dateFormat = require('dateformat');
+                    var at;
+                    while (totalSeconds < 86400) {
+                        at = new Date(0); // The 0 there is the key, which sets the date to the epoch
+                        at.setUTCSeconds(trackingReminder.nextReminderTimeEpochSeconds + totalSeconds);
+                        notificationSettings.at = at;
+                        notificationSettings.id = parseInt(trackingReminder.id + "000" + dateFormat(at, "HHMMSS"));
+                        totalSeconds = totalSeconds + trackingReminder.reminderFrequency;
+                        if(dateFormat(at, "HH:MM:SS") < $rootScope.user.latestReminderTime &&
+                            dateFormat(at, "HH:MM:SS") > $rootScope.user.earliestReminderTime ){
+                            createOrUpdateIonicNotificationForTrackingReminder(notificationSettings);
+                        } else {
+                            console.debug("Not scheduling notification because it's outside time limits",
+                                notificationSettings);
+                        }
+                    }
                 }
 
                 function scheduleIosNotificationByTrackingReminder(trackingReminder) {
 
-                    var at = new Date(0); // The 0 there is the key, which sets the date to the epoch
-                    at.setUTCSeconds(trackingReminder.nextReminderTimeEpochSeconds);
+
                     // Using milliseconds might cause app to crash with this error:
                     // NSInvalidArgumentException·unable to serialize userInfo: Error Domain=NSCocoaErrorDomain Code=3851 "Property list invalid for format: 200 (property lists cannot contain objects of type 'CFNull')" UserInfo={NSDeb
                     var intervalInMinutes  = trackingReminder.reminderFrequency / 60;
-                    var everyString = 'hour';
+                    var everyString = 'day';
                     if (intervalInMinutes === 1) {everyString = 'minute';}
-                    if (intervalInMinutes > 1) {everyString = 'hour';}
-                    if (intervalInMinutes > 60) {everyString = 'day';}
-                    console.debug("iOS requires second, minute, hour, day, week, month, year so converting " +
-                        intervalInMinutes + " minutes to string: " + everyString);
                     var numberOfPendingNotifications = 0;
                     if($rootScope.numberOfPendingNotifications){
                         numberOfPendingNotifications = $rootScope.numberOfPendingNotifications;
@@ -480,7 +490,25 @@ angular.module('starter')
 
                     //notificationSettings.sound = "res://platform_default";
                     //notificationSettings.smallIcon = 'ic_stat_icon_bw';
-                    createOrUpdateIonicNotificationForTrackingReminder(notificationSettings);
+                    var totalSeconds = 0;
+                    var dateFormat = require('dateformat');
+                    var at;
+                    while (totalSeconds < 86400) {
+                        console.debug("iOS requires second, minute, hour, day, week, month, year so converting " +
+                            intervalInMinutes + " minutes to string: " + everyString);
+                        at = new Date(0); // The 0 there is the key, which sets the date to the epoch
+                        at.setUTCSeconds(trackingReminder.nextReminderTimeEpochSeconds + totalSeconds);
+                        notificationSettings.at = at;
+                        notificationSettings.id = parseInt(trackingReminder.id + "000" + dateFormat(at, "HHMMSS"));
+                        totalSeconds = totalSeconds + trackingReminder.reminderFrequency;
+                        if(dateFormat(at, "HH:MM:SS") < $rootScope.user.latestReminderTime &&
+                            dateFormat(at, "HH:MM:SS") > $rootScope.user.earliestReminderTime ){
+                            createOrUpdateIonicNotificationForTrackingReminder(notificationSettings);
+                        } else {
+                            console.debug("Not scheduling notification because it's outside time limits",
+                                notificationSettings);
+                        }
+                    }
                 }
 
                 function scheduleChromeExtensionNotificationWithTrackingReminder(trackingReminder) {
