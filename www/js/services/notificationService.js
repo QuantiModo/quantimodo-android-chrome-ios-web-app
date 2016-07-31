@@ -293,8 +293,15 @@ angular.module('starter')
                         every: shortestInterval/60,
                         at: at
                     };
+
+                    if($rootScope.previousSingleNotificationSettings && notificationSettings === $rootScope.previousSingleNotificationSettings){
+                        console.debug("scheduleSingleMostFrequentNotification: Notification settings haven't changed so" +
+                            " no need to scheduleGenericNotification", notificationSettings);
+                        return;
+                    }
                     console.debug("scheduleSingleMostFrequentNotification: Going to schedule generic notification",
                         notificationSettings);
+                    $rootScope.previousSingleNotificationSettings = notificationSettings;
                     this.scheduleGenericNotification(notificationSettings);
                 }
             },
