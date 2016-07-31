@@ -99,17 +99,16 @@ angular.module('starter')
                         $rootScope.numberOfPendingNotifications = 0;
                     }
                     cordova.plugins.notification.local.getAll(function (notifications) {
-                        console.debug("onTrigger.getNotificationsFromApiAndClearOrUpdateLocalNotifications." +
-                            "updateBadgesAndTextOnAllNotifications: " +
+                        console.debug("onTrigger.updateBadgesAndTextOnAllNotifications: " +
                             "All notifications ", notifications);
                         for (var i = 0; i < notifications.length; i++) {
                             if(notifications[i].badge === $rootScope.numberOfPendingNotifications){
-                                console.warn("Not updating notification because $rootScope.numberOfPendingNotifications" +
+                                console.warn("updateBadgesAndTextOnAllNotifications: Not updating notification because $rootScope.numberOfPendingNotifications" +
                                     " === notifications[i].badge", notifications[i]);
                                 continue;
                             }
-                            console.log('onTrigger.getNotificationsFromApiAndClearOrUpdateLocalNotifications.' +
-                                'updateBadgesAndTextOnAllNotifications:Updating notification', notifications[i]);
+                            console.log('onTrigger.updateBadgesAndTextOnAllNotifications' +
+                                ':Updating notification', notifications[i]);
                             var notificationSettings = {
                                 id: notifications[i].id,
                                 badge: $rootScope.numberOfPendingNotifications,
@@ -129,8 +128,6 @@ angular.module('starter')
             setOnTriggerAction: function() {
 
                 function getNotificationsFromApiAndClearOrUpdateLocalNotifications() {
-
-
                     var currentDateTimeInUtcStringPlus5Min = timeService.getCurrentDateTimeInUtcStringPlusMin(5);
                     var params = {
                         reminderTime: '(lt)' + currentDateTimeInUtcStringPlus5Min
@@ -140,12 +137,12 @@ angular.module('starter')
                             $rootScope.trackingReminderNotifications = response.data;
                             $rootScope.numberOfPendingNotifications = $rootScope.trackingReminderNotifications.length;
                             if (!$rootScope.numberOfPendingNotifications) {
-                                console.debug("onTrigger: No notifications from API so clearAll active notifications");
+                                console.debug("onTrigger.getNotificationsFromApiAndClearOrUpdateLocalNotifications: No notifications from API so clearAll active notifications");
                                 cordova.plugins.notification.local.clearAll(function () {
-                                    console.debug("onTrigger: cleared all active notifications");
+                                    console.debug("onTrigger.getNotificationsFromApiAndClearOrUpdateLocalNotifications: cleared all active notifications");
                                 }, this);
                             } else {
-                                console.debug("onTrigger: notifications from API", $rootScope.trackingReminderNotifications);
+                                console.debug("onTrigger.getNotificationsFromApiAndClearOrUpdateLocalNotifications: notifications from API", $rootScope.trackingReminderNotifications);
                                 $rootScope.updateOrRecreateNotifications();
                             }
                         }
@@ -257,13 +254,13 @@ angular.module('starter')
 
             updateOrRecreateNotifications: function() {
                 if($rootScope.isAndroid){
-                    console.debug("getNotificationsFromApiAndClearOrUpdateLocalNotifications: Updating " +
+                    console.debug("updateOrRecreateNotifications: Updating " +
                         "notifications for Android because Samsung limits number of notifications " +
                         "that can be scheduled in a day.");
                     this.updateBadgesAndTextOnAllNotifications();
                 }
                 if($rootScope.isIOS){
-                    console.debug("getNotificationsFromApiAndClearOrUpdateLocalNotifications: " +
+                    console.debug("updateOrRecreateNotifications: " +
                         "iOS makes duplicates when updating for some reason so we just cancel all " +
                         "and schedule again");
                     var intervalInMinutes = 60;
