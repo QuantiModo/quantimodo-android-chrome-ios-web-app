@@ -643,6 +643,8 @@ angular.module('starter')
                     var notificationSettings = {
                         every: intervalBetweenCheckingForNotificationsInMinutes
                     };
+                    console.debug("appCtrl.saveInterval: Going to schedule generic notification",
+                        notificationSettings);
                     notificationService.scheduleGenericNotification(notificationSettings);
                 }
             } catch (err) {

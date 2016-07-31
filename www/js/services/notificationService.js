@@ -293,6 +293,8 @@ angular.module('starter')
                         every: shortestInterval/60,
                         at: at
                     };
+                    console.debug("scheduleSingleMostFrequentNotification: Going to schedule generic notification",
+                        notificationSettings);
                     this.scheduleGenericNotification(notificationSettings);
                 }
             },
