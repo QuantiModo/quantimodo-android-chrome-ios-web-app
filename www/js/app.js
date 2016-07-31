@@ -29,13 +29,12 @@ angular.module('starter',
         push.register(function(deviceToken) {
             // Log out your device token (Save this!)
             console.log("Got Token:", deviceToken.token);
+            push.saveToken(deviceToken);
             pushNotificationService.registerDeviceToken(deviceToken.token);
         });
 
 
-
-
-
+/*
 
         window.onNotification = function(e){
             console.log("window.onNotification: received event", e);
@@ -52,7 +51,7 @@ angular.module('starter',
 
                 case 'message':
                     alert('msg received: ' + e.message);
-                    /*
+                    /!*
                      {
                      "message": "Hello this is a push notification",
                      "payload": {
@@ -65,7 +64,7 @@ angular.module('starter',
                      "event": "message"
                      }
                      }
-                     */
+                     *!/
                     break;
 
                 case 'error':
@@ -91,7 +90,9 @@ angular.module('starter',
                 'senderID': window.private_keys.GCM_SENDER_ID
             }
         );
-        
+
+*/
+
         if(typeof analytics !== "undefined") {
             console.log("Configuring Google Analytics");
             analytics.startTrackerWithId("UA-39222734-24");
