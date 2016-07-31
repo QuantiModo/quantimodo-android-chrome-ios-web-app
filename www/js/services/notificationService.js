@@ -264,18 +264,47 @@ angular.module('starter')
                         "iOS makes duplicates when updating for some reason so we just cancel all " +
                         "and schedule again");
                     var intervalInMinutes = 60;
-                    this.scheduleGenericNotification(intervalInMinutes);
+                    var notificationSettings = {
+                        every: intervalInMinutes
+                    };
+                    this.scheduleGenericNotification(notificationSettings);
                 }
             },
 
-            scheduleAllNotifications: function(trackingRemindersFromApi) {
+            scheduleSingleMostFrequentNotification: function(trackingRemindersFromApi) {
+                if($rootScope.showOnlyOneNotification === false){
+                    console.warn("scheduleSingleMostFrequentNotification: $rootScope.showOnlyOneNotification === false" +
+                        " so we shouldn't be calling this function");
+                    return;
+                }
+
+                var shortestInterval = 86400;
+                var at = new Date(0); // The 0 there is the key, which sets the date to the epoch
+                var epochSecondsPlus15Minutes = new Date() / 1000 + 15 * 60;
+                at.setUTCSeconds(epochSecondsPlus15Minutes);
+                if($rootScope.isChromeExtension || $rootScope.isIOS || $rootScope.isAndroid) {
+                    for (var i = 0; i < trackingRemindersFromApi.length; i++) {
+                        if(trackingRemindersFromApi[i].reminderFrequency < shortestInterval){
+                            shortestInterval = trackingRemindersFromApi[i].reminderFrequency;
+                            at.setUTCSeconds(trackingRemindersFromApi[i].nextReminderTimeEpochSeconds);
+                        }
+                    }
+                    var notificationSettings = {
+                        every: shortestInterval/60,
+                        at: at
+                    };
+                    this.scheduleGenericNotification(notificationSettings);
+                }
+            },
+
+            scheduleAllNotificationsByTrackingReminders: function(trackingRemindersFromApi) {
                 if($rootScope.isChromeExtension || $rootScope.isIOS || $rootScope.isAndroid) {
                     for (var i = 0; i < trackingRemindersFromApi.length; i++) {
                         if($rootScope.showOnlyOneNotification === false){
                             try {
                                 this.scheduleNotificationByReminder(trackingRemindersFromApi[i]);
                             } catch (err) {
-                                console.error('scheduleAllNotifications error');
+                                console.error('scheduleAllNotificationsByTrackingReminders error');
                                 bugsnagService.reportError(err);
                                 console.error(err);
                             }
@@ -490,7 +519,7 @@ angular.module('starter')
 
             },
 
-            scheduleGenericNotification: function(intervalInMinutes){
+            scheduleGenericNotification: function(notificationSettings){
 
                 if($rootScope.showOnlyOneNotification === false){
                     console.error("scheduleGenericNotification: Called scheduleGenericNotification even though " +
@@ -499,26 +528,27 @@ angular.module('starter')
                     return;
                 }
 
-                if(!intervalInMinutes){
-                    console.error("scheduleGenericNotification: Called scheduleGenericNotification even though " +
-                        "intervalInMinutes is " +
-                        intervalInMinutes + ". Not going to scheduleGenericNotification.");
+                if(!notificationSettings.every){
+                    console.error("scheduleGenericNotification: Called scheduleGenericNotification without providing " +
+                        "notificationSettings.every " +
+                        notificationSettings.every + ". Not going to scheduleGenericNotification.");
                 }
 
-                var at = new Date(0); // The 0 there is the key, which sets the date to the epoch
-                var epochSecondsPlus15Minutes = new Date() / 1000 + 15 * 60;
-                at.setUTCSeconds(epochSecondsPlus15Minutes);
+                if(!notificationSettings.at){
+                    var at = new Date(0); // The 0 there is the key, which sets the date to the epoch
+                    var epochSecondsPlus15Minutes = new Date() / 1000 + 15 * 60;
+                    at.setUTCSeconds(epochSecondsPlus15Minutes);
+                    notificationSettings.at = at;
+                }
 
-                var notificationSettings = {
-                    at: at,
-                    title: "Time to track!",
-                    text: $rootScope.numberOfPendingNotifications + " tracking reminder notifications",
-                    every: intervalInMinutes,
-                    id: config.appSettings.primaryOutcomeVariableDetails.id,
-                    sound: "file://sound/silent.ogg",
-                    badge: 0
-                };
+                notificationSettings.title = "Time to track!";
+                notificationSettings.text = "Open reminder inbox";
+                notificationSettings.id = config.appSettings.primaryOutcomeVariableDetails.id;
+                notificationSettings.sound = "file://sound/silent.ogg";
+                notificationSettings.badge = 0;
+
                 if($rootScope.numberOfPendingNotifications > 0) {
+                    notificationSettings.text = $rootScope.numberOfPendingNotifications + " tracking reminder notifications";
                     notificationSettings.badge = $rootScope.numberOfPendingNotifications;
                 }
                 if($rootScope.isAndroid){
@@ -529,7 +559,7 @@ angular.module('starter')
                     var everyString = 'minute';
                     if (notificationSettings.every > 1) {everyString = 'hour';}
                     if (notificationSettings.every > 60) {everyString = 'day';}
-                    console.debug("scheduleGenericIosNotification: iOS requires second, minute, hour, day, week, " +
+                    console.warn("scheduleGenericIosNotification: iOS requires second, minute, hour, day, week, " +
                         "month, year so converting " +
                         notificationSettings.every + " minutes to string: " + everyString);
                     // Don't include notificationSettings.icon for iOS. I keep seeing "Unknown property: icon" in Safari console
@@ -547,27 +577,33 @@ angular.module('starter')
                     console.log("Alarm set, every " + intervalInMinutes + " minutes");
                 }
 
-                if (intervalInMinutes > 0) {
-                    $ionicPlatform.ready(function () {
-                        if (typeof cordova !== "undefined") {
-                            cordova.plugins.notification.local.getAll(function (notifications) {
-                                console.debug("scheduleGenericNotification: All notifications before scheduling", notifications);
-                                cordova.plugins.notification.local.cancelAll(function () {
-                                    console.log('cancelAllNotifications: notifications have been cancelled');
-                                    cordova.plugins.notification.local.getAll(function (notifications) {
-                                        console.debug("cancelAllNotifications: All notifications after cancelling", notifications);
-                                        cordova.plugins.notification.local.schedule(notificationSettings, function () {
-                                            console.log('scheduleGenericNotification: notification scheduled', notificationSettings);
-                                        });
+                $ionicPlatform.ready(function () {
+                    if (typeof cordova !== "undefined") {
+                        cordova.plugins.notification.local.getAll(function (notifications) {
+                            console.debug("scheduleGenericNotification: All notifications before scheduling", notifications);
+                            if(notifications[0] && notifications[0].length === 1 &&
+                                notifications[0].every === notificationSettings.every) {
+                                console.warn("Not scheduling generic notification because we already have one with " +
+                                    "the same frequency.");
+                                return;
+                            }
+
+                            cordova.plugins.notification.local.cancelAll(function () {
+                                console.log('cancelAllNotifications: notifications have been cancelled');
+                                cordova.plugins.notification.local.getAll(function (notifications) {
+                                    console.debug("cancelAllNotifications: All notifications after cancelling", notifications);
+                                    cordova.plugins.notification.local.schedule(notificationSettings, function () {
+                                        console.log('scheduleGenericNotification: notification scheduled', notificationSettings);
                                     });
                                 });
                             });
-                        }
-                    });
-                    if ($rootScope.isChromeExtension || $rootScope.isChromeApp) {
-                        scheduleGenericChromeExtensionNotification(intervalInMinutes);
+                        });
                     }
+                });
+                if ($rootScope.isChromeExtension || $rootScope.isChromeApp) {
+                    scheduleGenericChromeExtensionNotification(intervalInMinutes);
                 }
+
             },
 
             cancelIonicNotificationById: function(notificationId){
