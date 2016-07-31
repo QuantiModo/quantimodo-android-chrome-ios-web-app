@@ -280,8 +280,6 @@ angular.module('starter')
 
                 var shortestInterval = 86400;
                 var at = new Date(0); // The 0 there is the key, which sets the date to the epoch
-                var epochSecondsPlus15Minutes = new Date() / 1000 + 15 * 60;
-                at.setUTCSeconds(epochSecondsPlus15Minutes);
                 if($rootScope.isChromeExtension || $rootScope.isIOS || $rootScope.isAndroid) {
                     for (var i = 0; i < trackingRemindersFromApi.length; i++) {
                         if(trackingRemindersFromApi[i].reminderFrequency < shortestInterval){
