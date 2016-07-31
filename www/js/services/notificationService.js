@@ -467,17 +467,17 @@ angular.module('starter')
                         numberOfPendingNotifications = $rootScope.numberOfPendingNotifications;
                     }
                     var notificationSettings = {
-                        autoClear: true,
+                        //autoClear: true,  iOS doesn't recognize this property
                         badge: numberOfPendingNotifications,
-                        color: undefined,
+                        //color: undefined,  iOS doesn't recognize this property
                         data: trackingReminder,
-                        led: undefined,
-                        ongoing: false,
+                        //led: undefined,  iOS doesn't recognize this property
+                        //ongoing: false,  iOS doesn't recognize this property
                         sound: "file://sound/silent.ogg",
                         title: "Track " + trackingReminder.variableName,
                         text: "Record a measurement",
                         at: at,
-                        icon: config.appSettings.mobileNotificationImage,
+                        //icon: config.appSettings.mobileNotificationImage,  iOS doesn't recognize this property
                         id: trackingReminder.id
                     };
 
