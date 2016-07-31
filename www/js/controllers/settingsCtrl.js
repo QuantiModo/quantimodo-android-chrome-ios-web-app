@@ -4,7 +4,8 @@ angular.module('starter')
 	.controller('SettingsCtrl', function($scope,localStorageService, $ionicModal, $timeout, utilsService, authService,
 										 measurementService, chartService, $ionicPopover, $cordovaFile,
 										 $cordovaFileOpener2, $ionicPopup, $state,notificationService, QuantiModo,
-                                         $rootScope, reminderService, qmLocationService) {
+                                         $rootScope, reminderService, qmLocationService, ionicTimePicker, userService,
+										 timeService) {
 		$scope.controller_name = "SettingsCtrl";
 		$scope.state = {};
 		$scope.showReminderFrequencySelector = config.appSettings.settingsPageOptions.showReminderFrequencySelector;
@@ -17,6 +18,12 @@ angular.module('starter')
 		console.debug('CombineNotifications is '+ $scope.state.showOnlyOneNotification);
 		$scope.state.trackLocation = $rootScope.trackLocation;
 		console.debug('trackLocation is '+ $scope.state.trackLocation);
+
+		if(!$rootScope.user.earliestReminderTime || !$rootScope.user.latestReminderTime){
+			userService.refreshUser(function(user){
+				$rootScope.user = user;
+			});
+		}
 
 		// populate ratings interval
 		localStorageService.getItem('primaryOutcomeRatingFrequencyDescription', function (primaryOutcomeRatingFrequencyDescription) {
@@ -133,6 +140,88 @@ angular.module('starter')
 				});
 			}
 			
+		};
+
+		$scope.openEarliestReminderTimePicker = function() {
+			$scope.state.earliestReminderTimePickerConfiguration = {
+				callback: function (val) {
+					if (typeof (val) === 'undefined') {
+						console.log('Time not selected');
+					} else {
+						var a = new Date();
+						var selectedTime = new Date(val * 1000);
+						a.setHours(selectedTime.getUTCHours());
+						a.setMinutes(selectedTime.getUTCMinutes());
+						console.log('Selected epoch is : ', val, 'and the time is ',
+							selectedTime.getUTCHours(), 'H :', selectedTime.getUTCMinutes(), 'M');
+						var newEarliestReminderTime = moment(a).format('HH:mm:ss');
+						if(newEarliestReminderTime > $rootScope.user.latestReminderTime){
+							$ionicPopup.alert({
+								title: 'Choose Another Time',
+								template: 'Earliest reminder time cannot be greater than latest reminder time.  Please change the latest reminder time and try again or select a different earliest reminder time.'
+							});
+						}
+						if(newEarliestReminderTime !== $rootScope.user.earliestReminderTime){
+							$rootScope.user.earliestReminderTime = newEarliestReminderTime;
+							var params = {
+								earliestReminderTime: $rootScope.user.earliestReminderTime
+							};
+							userService.updateUserSettings(params);
+							reminderService.refreshTrackingRemindersAndScheduleAlarms();
+							$ionicPopup.alert({
+								title: 'Earliest Notification Time Updated',
+								template: 'You should not receive device notifications or tracking reminder notifications in your inbox before ' + moment(a).format('h:mm A') + '.'
+							});
+						}
+					}
+				},
+				inputTime: timeService.getSecondsSinceMidnightLocalFromLocalString($rootScope.user.earliestReminderTime),
+				step: 15,
+				closeLabel: 'Cancel'
+			};
+
+			ionicTimePicker.openTimePicker($scope.state.earliestReminderTimePickerConfiguration);
+		};
+
+		$scope.openLatestReminderTimePicker = function() {
+			$scope.state.latestReminderTimePickerConfiguration = {
+				callback: function (val) {
+					if (typeof (val) === 'undefined') {
+						console.log('Time not selected');
+					} else {
+						var a = new Date();
+						var selectedTime = new Date(val * 1000);
+						a.setHours(selectedTime.getUTCHours());
+						a.setMinutes(selectedTime.getUTCMinutes());
+						console.log('Selected epoch is : ', val, 'and the time is ',
+							selectedTime.getUTCHours(), 'H :', selectedTime.getUTCMinutes(), 'M');
+						var newLatestReminderTime = moment(a).format('HH:mm:ss');
+						if(newLatestReminderTime < $rootScope.user.earliestReminderTime){
+							$ionicPopup.alert({
+								title: 'Choose Another Time',
+								template: 'Latest reminder time cannot be less than earliest reminder time.  Please change the earliest reminder time and try again or select a different latest reminder time.'
+							});
+						}
+						if(newLatestReminderTime !== $rootScope.user.latestReminderTime){
+							$rootScope.user.latestReminderTime = newLatestReminderTime;
+							var params = {
+								latestReminderTime: $rootScope.user.latestReminderTime
+							};
+							userService.updateUserSettings(params);
+							reminderService.refreshTrackingRemindersAndScheduleAlarms();
+							$ionicPopup.alert({
+								title: 'Latest Notification Time Updated',
+								template: 'You should not receive device notifications or tracking reminder notifications in your inbox after ' + moment(a).format('h:mm A') + '.'
+							});
+						}
+					}
+				},
+				inputTime: timeService.getSecondsSinceMidnightLocalFromLocalString($rootScope.user.latestReminderTime),
+				step: 15,
+				closeLabel: 'Cancel'
+			};
+
+			ionicTimePicker.openTimePicker($scope.state.latestReminderTimePickerConfiguration);
 		};
 
 		$scope.trackLocationChange = function() {

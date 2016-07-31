@@ -5,7 +5,7 @@ angular.module('starter')
 		// service methods
 		var timeService = {
 
-			getSecondsSinceMidnightLocal: function (utcTimeString) {
+			getSecondsSinceMidnightLocalFromUtcString: function (utcTimeString) {
 
 				var timeFormat = "HH:mm:ss Z";
 				var utcTimeStringFull = moment().format(timeFormat);
@@ -24,6 +24,15 @@ angular.module('starter')
                     secondsSinceMidnightLocal = secondsSinceMidnightLocal + 86400;
                 }
 
+				return secondsSinceMidnightLocal;
+			},
+
+			getSecondsSinceMidnightLocalFromLocalString: function (localTimeString) {
+				var timeFormat = "HH:mm:ss";
+				var hoursSinceMidnightLocal = moment(localTimeString, timeFormat).format("HH");
+				var minutesSinceMidnightLocal = moment(localTimeString, timeFormat).format("mm");
+				var secondsSinceMidnightLocal =
+					hoursSinceMidnightLocal * 60 *60 + minutesSinceMidnightLocal * 60;
 				return secondsSinceMidnightLocal;
 			},
 

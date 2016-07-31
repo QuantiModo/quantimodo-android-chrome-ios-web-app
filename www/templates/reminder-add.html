@@ -61,7 +61,7 @@
                         </button>
                     </label>
             </div>
-            <div class="list card" ng-show="state.selectedFrequency !== 'Daily'">
+<!--            <div class="list card" ng-show="state.selectedFrequency !== 'Daily'">
                 <label class="item item-input">
                     <div class="input-label" >
                         Reminder start time
@@ -84,7 +84,7 @@
                         {{state.reminderEndTimeEpochTime | fromUnixTimestampToLocalTimeOfDay}}
                     </button>
                 </label>
-            </div>
+            </div>-->
             <label class="item item-input" ng-show="state.showInstructionsField">
                 <span class="input-label">Instructions</span>
                 <input type="text" ng-model="state.trackingReminder.instructions" id="instructions" placeholder="Enter instructions here..." >
