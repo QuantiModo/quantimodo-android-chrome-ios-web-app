@@ -260,12 +260,11 @@ angular.module('starter')
                     this.updateBadgesAndTextOnAllNotifications();
                 }
                 if($rootScope.isIOS){
-                    console.warn('updateOrRecreateNotifications: Cannot update local notifications on iOS because it ' +
-                        'makes duplicates and we cannot recreate here because we will lose the previously set interval');
-                    return;
-                    console.debug("updateOrRecreateNotifications: " +
-                        "iOS makes duplicates when updating for some reason so we just cancel all " +
-                        "and schedule again");
+                    console.warn('updateOrRecreateNotifications: Updating local notifications on iOS because might ' +
+                        'make duplicates and we cannot recreate here because we will lose the previously set interval');
+                    this.updateBadgesAndTextOnAllNotifications();
+                    
+                    //console.debug("updateOrRecreateNotifications: iOS makes duplicates when updating for some reason so we just cancel all and schedule again");
                     //this.scheduleGenericNotification(notificationSettings);
                 }
             },
