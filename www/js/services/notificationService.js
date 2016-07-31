@@ -381,9 +381,6 @@ angular.module('starter')
                     return;
                 }
 
-                cordova.plugins.notification.local.getAll(function (notifications) {
-                    console.debug("scheduleNotificationByReminder: All notifications before scheduling", notifications);
-                });
 
                 function createOrUpdateIonicNotificationForTrackingReminder(notificationSettings) {
                     cordova.plugins.notification.local.isPresent(notificationSettings.id, function (present) {
@@ -505,11 +502,22 @@ angular.module('starter')
                     $ionicPlatform.ready(function () {
                         //console.debug('Ionic is ready to schedule notifications');
                         if (typeof cordova !== "undefined") {
-                            if (ionic.Platform.isAndroid()) {
-                                scheduleAndroidNotificationByTrackingReminder(trackingReminder);
-                            } else if (ionic.Platform.isIPad() || ionic.Platform.isIOS()) {
-                                scheduleIosNotificationByTrackingReminder(trackingReminder);
-                            }
+                            cordova.plugins.notification.local.getAll(function (notifications) {
+                                console.debug("scheduleNotificationByReminder: All notifications before scheduling", notifications);
+                                for(var i = 0; i < notifications.length; i++){
+                                    if(notifications[i].every * 60 === trackingReminder.reminderFrequency &&
+                                        notifications[i].id === trackingReminder.id){
+                                        console.warn("already have a local notification with this trackingReminder's id " +
+                                            "and frequency.  Might be" +
+                                            " pointlessly rescheduling", trackingReminder);
+                                    }
+                                }
+                                if (ionic.Platform.isAndroid()) {
+                                    scheduleAndroidNotificationByTrackingReminder(trackingReminder);
+                                } else if (ionic.Platform.isIPad() || ionic.Platform.isIOS()) {
+                                    scheduleIosNotificationByTrackingReminder(trackingReminder);
+                                }
+                            });
                         }
                     });
                     if ($rootScope.isChromeExtension || $rootScope.isChromeApp) {
@@ -532,6 +540,7 @@ angular.module('starter')
                     console.error("scheduleGenericNotification: Called scheduleGenericNotification without providing " +
                         "notificationSettings.every " +
                         notificationSettings.every + ". Not going to scheduleGenericNotification.");
+                    return;
                 }
 
                 if(!notificationSettings.at){
