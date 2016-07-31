@@ -27,6 +27,8 @@ script:
 - #./scripts/build_scripts/04_build_ios.sh quantimodo QuantiModo 1115037060 "com.quantimodo.quantimodo"
 env:
   global:
+  - APPLE_ID=1046797567
+  - APP_IDENTIFIER="com.quantimodo.moodimodoapp"
   - IONIC_APP_VERSION_NUMBER="1.8.0"
   - IONIC_IOS_APP_VERSION_NUMBER="1.8.0.7"
   - TEAM_ID="YD2FK7S2S5"
