@@ -103,7 +103,13 @@ angular.module('starter')
                             "updateBadgesAndTextOnAllNotifications: " +
                             "All notifications ", notifications);
                         for (var i = 0; i < notifications.length; i++) {
-                            console.log('onTrigger.getNotificationsFromApiAndClearOrUpdateLocalNotifications.updateBadgesAndTextOnAllNotifications:Updating notification', notifications[i]);
+                            if(notifications[i].badge === $rootScope.numberOfPendingNotifications){
+                                console.warn("Not updating notification because $rootScope.numberOfPendingNotifications" +
+                                    " === notifications[i].badge", notifications[i]);
+                                continue;
+                            }
+                            console.log('onTrigger.getNotificationsFromApiAndClearOrUpdateLocalNotifications.' +
+                                'updateBadgesAndTextOnAllNotifications:Updating notification', notifications[i]);
                             var notificationSettings = {
                                 id: notifications[i].id,
                                 badge: $rootScope.numberOfPendingNotifications,
@@ -201,7 +207,7 @@ angular.module('starter')
                     if(currentNotification.badge < 1){
                         $ionicPlatform.ready(function () {
                             cordova.plugins.notification.local.clearAll(function () {
-                                console.log("onTrigger: Cleared all notifications because badge is less than 1");
+                                console.warn("onTrigger: Cleared all notifications because badge is less than 1");
                             });
                         });
                         return;
