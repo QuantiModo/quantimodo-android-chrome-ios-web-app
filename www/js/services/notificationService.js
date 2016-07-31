@@ -90,9 +90,9 @@ angular.module('starter')
             updateBadgesAndTextOnAllNotifications : function () {
 
                 if($rootScope.isIOS){
-                    console.warn("updateBadgesAndTextOnAllNotifications: Not updating notifications because we're on " +
-                        "iOS and it makes duplicates");
-                    return;
+                    console.warn("updateBadgesAndTextOnAllNotifications: updating notifications on " +
+                        "iOS might make duplicates");
+                    //return;
                 }
                 $ionicPlatform.ready(function () {
                     if(!$rootScope.numberOfPendingNotifications){
@@ -260,10 +260,10 @@ angular.module('starter')
                     this.updateBadgesAndTextOnAllNotifications();
                 }
                 if($rootScope.isIOS){
-                    console.warn('updateOrRecreateNotifications: Updating local notifications on iOS because might ' +
+                    console.warn('updateOrRecreateNotifications: Updating local notifications on iOS might ' +
                         'make duplicates and we cannot recreate here because we will lose the previously set interval');
                     this.updateBadgesAndTextOnAllNotifications();
-                    
+
                     //console.debug("updateOrRecreateNotifications: iOS makes duplicates when updating for some reason so we just cancel all and schedule again");
                     //this.scheduleGenericNotification(notificationSettings);
                 }
