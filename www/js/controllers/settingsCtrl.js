@@ -101,18 +101,25 @@ angular.module('starter')
 			if($scope.state.showOnlyOneNotification){
 				$ionicPopup.alert({
 					title: 'Disabled Multiple Notifications',
-					template: 'You will only get a single generic repeating device notification at the specified frequency instead of a separate device notification for each reminder that you create.  All tracking reminder notifications for specific reminders will still show up in your Reminder Inbox.'
+					template: 'You will only get a single generic repeating device notification ' +
+					'instead of a separate device notification for each reminder that you create.  All ' +
+					'tracking reminder notifications for specific reminders will still show up in your Reminder Inbox.'
 				});
 
 				notificationService.cancelAllNotifications().then(function() {
-					var intervalToCheckForNotificationsInMinutes = 15;
-					notificationService.scheduleGenericNotification(intervalToCheckForNotificationsInMinutes);
-					// localStorageService.getItem('primaryOutcomeRatingFrequencyDescription', function (primaryOutcomeRatingFrequencyDescription) {
-					// 	console.debug("Cancelled individual notifications and now scheduling combined one with interval: " + primaryOutcomeRatingFrequencyDescription);
-					// 	$scope.primaryOutcomeRatingFrequencyDescription = primaryOutcomeRatingFrequencyDescription ? primaryOutcomeRatingFrequencyDescription : "daily";
-					// 	$scope.saveInterval($scope.primaryOutcomeRatingFrequencyDescription);
-					// });
+					console.debug("SettingsCtrl combineNotificationChange: Disabled Multiple Notifications and now " +
+						"refreshTrackingRemindersAndScheduleAlarms will schedule a single notification for highest " +
+						"frequency reminder");
+					reminderService.refreshTrackingRemindersAndScheduleAlarms();
 				});
+
+				// notificationService.cancelAllNotifications().then(function() {
+				// 	var intervalToCheckForNotificationsInMinutes = 15;
+				// 	var notificationSettings = {
+				// 		every: intervalToCheckForNotificationsInMinutes
+				// 	};
+				// 	notificationService.scheduleGenericNotification(notificationSettings);
+				// });
 			} else {
 				$ionicPopup.alert({
 					title: 'Enabled Multiple Notifications',
@@ -120,7 +127,8 @@ angular.module('starter')
 				});
 
 				notificationService.cancelAllNotifications().then(function() {
-					console.debug("SettingsCtrl combineNotificationChange: Cancelled combined notification and now refreshTrackingRemindersAndScheduleAlarms");
+					console.debug("SettingsCtrl combineNotificationChange: Cancelled combined notification and now " +
+						"refreshTrackingRemindersAndScheduleAlarms");
 					reminderService.refreshTrackingRemindersAndScheduleAlarms();
 				});
 			}
