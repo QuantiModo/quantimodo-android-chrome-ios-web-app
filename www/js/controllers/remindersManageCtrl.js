@@ -122,7 +122,9 @@ angular.module('starter')
 				$scope.showHelpInfoPopupIfNecessary();
 				if(!$rootScope.syncingReminders) {
 					console.debug("ReminderMange init: calling refreshTrackingRemindersAndScheduleAlarms");
+					$scope.showLoader('Reminders coming down the pipes...');
 					reminderService.refreshTrackingRemindersAndScheduleAlarms().then(function () {
+						$scope.hideLoader();
 						getTrackingRemindersFromLocalStorage();
 						//Stop the ion-refresher from spinning
 						$scope.$broadcast('scroll.refreshComplete');
@@ -206,6 +208,7 @@ angular.module('starter')
 
         // when view is changed
     	$scope.$on('$ionicView.enter', function(e){
+			$scope.hideLoader();
     		$scope.init();
     	});
 

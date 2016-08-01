@@ -296,7 +296,6 @@ angular.module('starter')
         // constructor
         $scope.init = function(){
             Bugsnag.context = "measurementAdd";
-                //$scope.showLoader();
                 var isAuthorized = authService.checkAuthOrSendToLogin();
                 if(isAuthorized){
                     unitService.getUnits().then(function () {
@@ -353,7 +352,6 @@ angular.module('starter')
                         }
                     });
                     if (typeof analytics !== 'undefined')  { analytics.trackView("Add Measurement Controller"); }
-                    $scope.hideLoader();
                 }
 
 
@@ -364,7 +362,10 @@ angular.module('starter')
         $scope.selectedMinutes = $scope.selectedDate.getMinutes();
 
         // update data when view is navigated to
-        $scope.$on('$ionicView.enter', $scope.init);
+        $scope.$on('$ionicView.enter', function(e) {
+            $scope.hideLoader();
+            $scope.init();
+        });
 
         $scope.selectPrimaryOutcomeVariableValue = function($event, val){
             // remove any previous primary outcome variables if present
@@ -474,7 +475,6 @@ angular.module('starter')
                 $scope.state.measurement.startTimeEpoch = currentTime.getTime() / 1000;
                 $scope.state.measurementIsSetup = true;
                 setupValueFieldType($stateParams.variableObject.abbreviatedUnitName, $stateParams.variableObject.description);
-                $scope.hideLoader();
             }
         };
 
@@ -482,7 +482,6 @@ angular.module('starter')
             var deferred = $q.defer();
             var measurementId = utilsService.getUrlParameter(location.href, 'measurementId', true);
             if(measurementId){
-                // FIXME this function probably hasn't returned yet; use promise or callback instead
                 var measurementObject;
                 measurementService.getMeasurementById(measurementId).then(
                     function(response) {
@@ -498,7 +497,6 @@ angular.module('starter')
                     }
                 );
             }
-            $scope.hideLoader();
             return deferred.promise;
         };
 
@@ -581,7 +579,6 @@ angular.module('starter')
                 $scope.state.measurement.variable = $scope.state.measurement.variableName;
             }
             setVariableObject();
-            $scope.hideLoader();
         };
 
         var setupTrackingByReminderNotification = function(){
@@ -609,7 +606,6 @@ angular.module('starter')
                 setupValueFieldType($stateParams.reminder.abbreviatedUnitName,
                     $stateParams.reminder.variableDescription);
                 setVariableObject();
-                $scope.hideLoader();
             }
             // Create variableObject
             if (!$scope.state.variableObject) {

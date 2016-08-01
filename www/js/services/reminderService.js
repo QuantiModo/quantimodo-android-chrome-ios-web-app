@@ -106,8 +106,8 @@ angular.module('starter')
 
 			refreshTrackingRemindersAndScheduleAlarms : function(){
 
-				$rootScope.isSyncing = true;
-				$rootScope.syncDisplayText = 'Reminders coming down the pipes...';
+				//$rootScope.isSyncing = true;
+				//$rootScope.syncDisplayText = 'Reminders coming down the pipes...';
 
 				if(!$rootScope.syncingReminders){
 					$rootScope.syncingReminders = true;
@@ -127,21 +127,21 @@ angular.module('starter')
 							}
 							localStorageService.setItem('trackingReminders', JSON.stringify(trackingReminders));
 							$rootScope.syncingReminders = false;
-							$rootScope.isSyncing = false;
-							$rootScope.syncDisplayText = '';
+							//$rootScope.isSyncing = false;
+							//$rootScope.syncDisplayText = '';
 							deferred.resolve(trackingReminders);
 						}
 						else {
 							$rootScope.syncingReminders = false;
-							$rootScope.isSyncing = false;
-							$rootScope.syncDisplayText = '';
+							//$rootScope.isSyncing = false;
+							//$rootScope.syncDisplayText = '';
 							deferred.reject("error");
 							Bugsnag.notify(remindersResponse, JSON.stringify(remindersResponse), {}, "error");
 						}
 					}, function(err){
 						$rootScope.syncingReminders = false;
-						$rootScope.isSyncing = false;
-						$rootScope.syncDisplayText = '';
+						//$rootScope.isSyncing = false;
+						//$rootScope.syncDisplayText = '';
 						Bugsnag.notify(err, JSON.stringify(err), {}, "error");
 						deferred.reject(err);
 					});

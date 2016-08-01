@@ -585,6 +585,7 @@ angular.module('starter')
                     $rootScope.filteredTrackingReminderNotifications = groupTrackingReminderNotificationsByDateRange(trackingReminderNotifications);
                     //Stop the ion-refresher from spinning
                     $scope.$broadcast('scroll.refreshComplete');
+                    $scope.hideLoader();
                 }, function(){
                     $scope.hideLoader();
                     console.error("failed to get reminder notifications!");

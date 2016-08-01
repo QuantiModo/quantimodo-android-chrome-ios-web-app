@@ -62,6 +62,7 @@ angular.module('starter')
 	    // call the constructor
 	    // when view is changed
 	    $scope.$on('$ionicView.enter', function(e) {
+			$scope.hideLoader();
 			$scope.init();
 	    });
 	});

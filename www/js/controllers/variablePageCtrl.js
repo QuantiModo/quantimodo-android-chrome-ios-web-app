@@ -213,7 +213,9 @@ angular.module('starter')
                     };
                     getHistoryForVariable(params);
                 }
-                $scope.hideLoader();
+                else {
+                    $scope.hideLoader();
+                }
                 deferred.resolve();
             }, function(error){
                 Bugsnag.notify(error, JSON.stringify(error), {}, "error");
@@ -297,6 +299,7 @@ angular.module('starter')
         };
 
         $scope.$on('$ionicView.enter', function(e) {
+            $scope.hideLoader();
             console.log("variablePageCtrl: ionicView.enter");
             if (!$scope.state) {
                 console.log("about to call init from enter: no $scope.state");

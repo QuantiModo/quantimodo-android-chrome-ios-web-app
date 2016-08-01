@@ -202,8 +202,8 @@ angular.module('starter')
 
                     }, function(error){
                         isSyncing = false;
-                        $rootScope.isSyncing = false;
-                        $rootScope.syncDisplayText = '';
+                        //$rootScope.isSyncing = false;
+                        //$rootScope.syncDisplayText = '';
                         deferred.reject(error);
                     });
                 };
@@ -299,20 +299,19 @@ angular.module('starter')
                 var deferred = $q.defer();
 
                 if($rootScope.user){
-                    $rootScope.isSyncing = true;
-                    $rootScope.syncDisplayText = 'Syncing ' + config.appSettings.primaryOutcomeVariableDetails.name + ' measurements...';
+                    //$rootScope.syncDisplayText = 'Syncing ' + config.appSettings.primaryOutcomeVariableDetails.name + ' measurements...';
 
                     measurementService.syncPrimaryOutcomeVariableMeasurements().then(function(){
-                        $rootScope.isSyncing = false;
-                        $rootScope.syncDisplayText = '';
+                        //$rootScope.isSyncing = false;
+                        //$rootScope.syncDisplayText = '';
                         $ionicLoading.hide();
                         deferred.resolve();
                     });
                 }
                 else {
                     $rootScope.$broadcast('updateCharts');
-                    $rootScope.isSyncing = false;
-                    $rootScope.syncDisplayText = '';
+                    //$rootScope.isSyncing = false;
+                    //$rootScope.syncDisplayText = '';
                     deferred.resolve();
                 }
                 return deferred.promise;
@@ -321,8 +320,8 @@ angular.module('starter')
             // sync the measurements in queue with QuantiModo API
             syncPrimaryOutcomeVariableMeasurements : function(){
                 var defer = $q.defer();
-                $rootScope.isSyncing = true;
-                $rootScope.syncDisplayText = 'Syncing measurements...';
+                //$rootScope.isSyncing = true;
+                //$rootScope.syncDisplayText = 'Syncing measurements...';
 
                 localStorageService.getItem('measurementsQueue',function(measurementsQueue) {
 
@@ -353,8 +352,8 @@ angular.module('starter')
                             localStorageService.setItem('measurementsQueue', JSON.stringify([]));
                             // success
                             measurementService.getMeasurements().then(function() {
-                                $rootScope.isSyncing = false;
-                                $rootScope.syncDisplayText = '';
+                                //$rootScope.isSyncing = false;
+                                //$rootScope.syncDisplayText = '';
                                 defer.resolve();
                                 console.log("success", response);
                             });
@@ -366,8 +365,8 @@ angular.module('starter')
 
                             // resave queue
                             localStorageService.setItem('measurementsQueue', JSON.stringify(measurementsQueue));
-                            $rootScope.isSyncing = false;
-                            $rootScope.syncDisplayText = '';
+                            //$rootScope.isSyncing = false;
+                            //$rootScope.syncDisplayText = '';
                             console.log("error", response);
                             defer.resolve();
 

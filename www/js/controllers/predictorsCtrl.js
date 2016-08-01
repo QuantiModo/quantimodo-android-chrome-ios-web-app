@@ -80,8 +80,10 @@ angular.module('starter')
                             $scope.state.usersCorrelationObjects = correlationObjects;
                         });
                     $ionicLoading.hide();
+                    $scope.hideLoader();
                 }, function(){
                     $ionicLoading.hide();
+                    $scope.hideLoader();
                     console.error('predictorsCtrl: Could not get correlations');
                 });
         };
@@ -217,6 +219,7 @@ angular.module('starter')
 
         // when view is changed
         $scope.$on('$ionicView.enter', function(e){
+            $scope.hideLoader();
             $scope.init();
         });
 	});

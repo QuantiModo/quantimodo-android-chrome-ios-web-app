@@ -265,9 +265,9 @@ angular.module('starter')
             localStorageService.replaceElementOfItemById('trackingReminders', $scope.state.trackingReminder);
 	    	reminderService.addNewReminder($scope.state.trackingReminder)
 	    	.then(function(){
-
-
+                $scope.hideLoader();
 	    	}, function(err){
+                $scope.hideLoader();
                 console.log(err);
 	    		$ionicLoading.hide();
                 $scope.loading = false;
@@ -439,6 +439,7 @@ angular.module('starter')
 
         // when view is changed
     	$scope.$on('$ionicView.enter', function(e){
+            $scope.hideLoader();
     		$scope.init();
     	});
 

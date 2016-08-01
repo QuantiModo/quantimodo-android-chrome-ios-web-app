@@ -277,7 +277,10 @@ angular.module('starter')
 
         
         // update data when view is navigated to
-        $scope.$on('$ionicView.enter', $scope.init);
+        $scope.$on('$ionicView.enter', function(e) {
+            $scope.hideLoader();
+            $scope.init();
+        });
 
 
     });

@@ -155,14 +155,12 @@ angular.module('starter')
 			};
 	    	reminderService.skipReminderNotification(params)
 	    	.then(function(){
-	    		$scope.hideLoader();
                 notificationService.decrementNotificationBadges();
                 if($rootScope.numberOfPendingNotifications < 2){
                     $scope.init();
                 }
 	    	}, function(err){
 				Bugsnag.notify(err, JSON.stringify(err), {}, "error");
-	    		$scope.hideLoader();
 	    		utilsService.showAlert('Failed to Skip Reminder, Try again!', 'assertive');
 				console.error(err);
 	    	});
@@ -290,6 +288,7 @@ angular.module('starter')
 
         // when view is changed
     	$scope.$on('$ionicView.enter', function(e){
+			$scope.hideLoader();
     		$scope.init();
     	});
 
@@ -375,8 +374,10 @@ angular.module('starter')
 					$scope.showLoader('Skipping all ' + $scope.state.variableObject.name + ' reminder notifications...');
 					reminderService.skipAllReminderNotifications(params)
 						.then(function(){
+							$scope.hideLoader();
 							$scope.init();
 						}, function(err){
+							$scope.hideLoader();
 							Bugsnag.notify(err, JSON.stringify(err), {}, "error");
 							console.error(err);
 							utilsService.showAlert('Failed to skip all notifications for , Try again!', 'assertive');

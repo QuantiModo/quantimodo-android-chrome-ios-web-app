@@ -147,8 +147,8 @@ angular.module('starter')
 
         // when view is changed
     	$scope.$on('$ionicView.enter', function(e) {
+			$scope.hideLoader();
 			$scope.state.offset = 0;
-    		//$scope.state.history = [];
 			$scope.state.trackLocation = $rootScope.trackLocation;
     		$scope.init();
     	});

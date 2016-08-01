@@ -37,7 +37,7 @@ angular.module('starter')
 
             var init = function(){
                 Bugsnag.context = "introPage";
-                $scope.showLoader();
+                //$scope.showLoader();
                 $scope.myIntro.ready = true;
                 $ionicLoading.hide();
             };
@@ -45,6 +45,7 @@ angular.module('starter')
             // when view is changed
             $scope.$on(
                 '$ionicView.enter', function(e) {
+                    $scope.hideLoader();
                     init();
                 }
             );
