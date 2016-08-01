@@ -570,6 +570,7 @@ img.intro-primary-outcome-variable-rating-buttons {
     float: left;
     width: auto;
     position: relative;
+    font-size: 14px;
 }
 .variable-settings .right-span {
     float: right;
