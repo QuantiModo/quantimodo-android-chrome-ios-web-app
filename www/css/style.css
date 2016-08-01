@@ -559,26 +559,30 @@ img.intro-primary-outcome-variable-rating-buttons {
     padding-right: 10px;
 }
 */
+
+.card .variable-settings {
+    padding-right: 10px;
+}
 .variable-settings .item-input {
     display: block;
 }
 .variable-settings .left-span {
     float: left;
-    width: 35%;
+    width: auto;
     position: relative;
 }
 .variable-settings .right-span {
     float: right;
-    padding-right: 10px;
-    width: 30%;
+    width: auto;
 }
 .variable-settings .right-input {
     padding-top: 0px;
-    padding-right: 0px;
+    padding-right: 10px !important;
     text-align: right;
     vertical-align: baseline;
     display: table;
 }
+
 .variable-settings .right-text {
     padding-top: 8px;
     font-style: italic;
