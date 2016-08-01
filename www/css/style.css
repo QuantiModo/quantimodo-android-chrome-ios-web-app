@@ -570,6 +570,7 @@ img.intro-primary-outcome-variable-rating-buttons {
     float: left;
     width: auto;
     position: relative;
+    font-size: 14px;
 }
 .variable-settings .right-span {
     float: right;
@@ -590,6 +591,7 @@ img.intro-primary-outcome-variable-rating-buttons {
     text-align: right;
     font-size: 14px;
     float: right;
+    white-space: normal;
 }
 
 .variable-settings ::-webkit-input-placeholder { /* WebKit, Blink, Edge */
