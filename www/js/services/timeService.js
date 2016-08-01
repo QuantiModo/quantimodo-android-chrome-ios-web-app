@@ -103,6 +103,15 @@ angular.module('starter')
 				var timeFormat = 'YYYY-MM-DD HH:mm:ss';
 				var currentDateTimeInUtcStringPlus15Min = currentMoment.utc().format(timeFormat);
 				return currentDateTimeInUtcStringPlus15Min;
+			},
+
+			convertDateObjectToLocalTimeString: function(dateObject) {
+				var hours = dateObject.getHours();
+				var minutes = dateObject.getMinutes();
+				var seconds = dateObject.getSeconds();
+				var localTimeString = hours + ":" + minutes + ":" + seconds;
+				console.log("localTimeString is " + localTimeString);
+				return localTimeString;
 			}
 		};
 
