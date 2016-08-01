@@ -17,10 +17,16 @@ angular.module('starter')
         $scope.showRatingFaces = true;
 
         // chart flags
+        $scope.state = {
+            showBarChart : false,
+            showLineChart : false,
+            showWeekdayChart: false,
+            showHourlyChart : false
+        };
         $scope.lineChartConfig = false;
         $scope.barChartConfig = false;
-        $scope.redrawLineChart = true;
-        $scope.redrawBarChart = true;
+        $scope.weekdayChartConfig = false;
+        $scope.hourlyChartConfig = false;
 
         $scope.storeRatingLocalAndServerAndUpdateCharts = function (numericRatingValue) {
 
@@ -61,29 +67,27 @@ angular.module('starter')
         };
 
         var updateBarChart = function(barChartData){
-            $scope.redrawBarChart = false;
             console.log("Configuring bar chart...");
             $scope.barChartConfig = chartService.configureBarChart(barChartData);
-            $scope.redrawBarChart = true;
+            $scope.state.showBarChart = true;
         };
 
         var updateLineChart = function(lineChartData){
-            $scope.redrawLineChart = false;
             console.log("Configuring line chart...");
             $scope.lineChartConfig = chartService.configureLineChart(lineChartData);
-            $scope.redrawLineChart = true;
+            $scope.state.showLineChart = true;
         };
 
         var updateWeekdayChart = function(weekdayChartData){
-            $scope.redrawWeekdayChart = false;
+            console.log("Configuring Weekday chart...");
             $scope.weekdayChartConfig = chartService.configureWeekdayChart(weekdayChartData, config.appSettings.primaryOutcomeVariableDetails);
-            $scope.redrawWeekdayChart = true;
+            $scope.state.showWeekdayChart = true;
         };
 
         var updateHourlyChart = function(hourlyChartData){
-            $scope.redrawHourlyChart = false;
+            console.log("Configuring Hourly chart...");
             $scope.hourlyChartConfig = chartService.configureHourlyChart(hourlyChartData, config.appSettings.primaryOutcomeVariableDetails);
-            $scope.redrawHourlyChart = true;
+            $scope.state.showHourlyChart = true;
         };
 
         var updateCharts = function(){
@@ -165,33 +169,6 @@ angular.module('starter')
 
         };
 
-        // calculate values for both of the charts
-        // Deprecated -- moved to measurementService
-        /*
-        var syncPrimaryOutcomeVariableMeasurementsAndUpdateCharts = function(){
-
-            if($rootScope.user){
-                $rootScope.isSyncing = true;
-                console.log('Syncing primary outcome measurements...');
-
-                measurementService.syncPrimaryOutcomeVariableMeasurements().then(function(){
-                    //console.log("Measurement sync complete!");
-                    $rootScope.isSyncing = false;
-
-                    // update loader text
-                    $ionicLoading.hide();
-                    //$scope.showLoader('Calculating stuff', 2000);
-
-                    // now handled with broadcast
-                    //updateCharts();
-
-                });
-            }
-            else {
-                updateCharts();
-            }
-        };
-        */
 
         $scope.init = function(){
             $ionicLoading.hide();
