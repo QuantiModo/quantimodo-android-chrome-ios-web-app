@@ -572,6 +572,10 @@ img.intro-primary-outcome-variable-rating-buttons {
     position: relative;
     font-size: 14px;
 }
+.variable-settings .left-text {
+    float: left;
+    font-size: 14px;
+}
 .variable-settings .right-span {
     float: right;
     width: auto;
@@ -606,4 +610,20 @@ img.intro-primary-outcome-variable-rating-buttons {
 }
 .variable-settings :-ms-input-placeholder { /* Internet Explorer 10-11 */
     color:    #111;
+}
+
+#statisticsCard .right-text {
+    font-style: italic;
+    vertical-align: baseline;
+    text-align: right;
+    font-size: 14px;
+    float: right;
+    white-space: normal;
+}
+#statisticsCard .left-text {
+    float: left;
+    font-size: 14px;
+}
+#statisticsCard label {
+    padding: 6px 10px 5px 16px;
 }
