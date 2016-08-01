@@ -13,10 +13,6 @@ before_install:
 - npm install -g ionic@1.7.10
 - npm install -g ios-sim
 - npm install -g ios-deploy
-- security delete-certificate -c "Apple Worldwide Developer Relations Certification Authority" /Library/Keychains/System.keychain
-- security delete-certificate -c "Apple Worldwide Developer Relations Certification Authority" /Library/Keychains/login.keychain
-- curl -O -L http://developer.apple.com/certificationauthority/AppleWWDRCA.cer
-- security import AppleWWDRCA.cer  -k ~/Library/Keychains/login.keychain -A
 before_script:
 - #chmod a+x ./scripts/decrypt-key.sh
 - #./scripts/decrypt-key.sh
