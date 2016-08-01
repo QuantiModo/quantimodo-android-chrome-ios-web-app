@@ -11,15 +11,15 @@
                     </label>
                 -->
                     <label class="item item-content" style="padding: 6px 10px 5px 16px;">
-                        <span style="float: left; font-size: 14px" class="input-label">Variable Name</span>
+                        <span class="input-label left-text">Variable Name</span>
                         <span class="input-label right-text " id="variableName">{{state.variableName}}</span>
                     </label>
                     <label class="item item-content" style="padding: 6px 10px 5px 16px;"ng-if="!state.showVariableCategorySelector">
-                        <span style="float: left; font-size: 14px" class="input-label">Variable Category</span>
+                        <span class="input-label left-text">Variable Category</span>
                         <span class="input-label right-text ">{{state.variableObject.category}}</span>
                     </label>
                     <label class="item item-content" style="padding: 6px 10px 5px 16px;" ng-if="(state.variableCategoryName != 'Emotions' && state.variableCategoryName != 'Symptoms')">
-                        <span style="float: left; font-size: 14px" class="input-label">Unit</span>
+                        <span class="input-label left-text">Unit</span>
                         <span class="input-label right-text ">{{state.variableObject.abbreviatedUnitName}}</span>
                     </label>
                 <div class="item item-divider ng-binding">Data Optimization</div>
