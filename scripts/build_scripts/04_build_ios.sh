@@ -53,6 +53,7 @@ gulp generateXmlConfig
 cp apps/${LOWERCASE_APP_NAME}/resources/icon_white.png $PWD/resources/icon.png
 #ionic resources - We already do this in gulp makeIosApp
 gulp setVersionNumbersWithEnvs
+ionic hooks add
 gulp makeIosApp
 chmod a+x ./scripts/package-and-upload.sh
 ./scripts/package-and-upload.sh
