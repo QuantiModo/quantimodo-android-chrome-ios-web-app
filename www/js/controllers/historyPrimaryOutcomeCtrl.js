@@ -10,6 +10,7 @@ angular.module('starter')
 		$scope.state = {
 			history : []
 		};
+		$scope.syncDisplayText = 'Syncing ' + config.appSettings.primaryOutcomeVariableDetails.name + ' measurements...';
 		
 		$scope.editMeasurement = function(measurement){
 			$state.go('app.measurementAdd', {
@@ -48,11 +49,11 @@ angular.module('starter')
 			Bugsnag.context = "historyPrimary";
 			updateHistoryView();
 			if($rootScope.user){
-				measurementService.syncPrimaryOutcomeVariableMeasurements()
-					.then(function(){
-						$scope.hideLoader();
-						updateHistoryView();
-					});
+				$scope.showLoader($scope.syncDisplayText);
+				measurementService.syncPrimaryOutcomeVariableMeasurements().then(function(){
+					$scope.hideLoader();
+					updateHistoryView();
+				});
 			}
 			else {
 				updateHistoryView();
@@ -64,6 +65,7 @@ angular.module('starter')
 
         // when view is changed
     	$scope.$on('$ionicView.enter', function(e) {
+			$scope.hideLoader();
     		$scope.init();
     	});
 

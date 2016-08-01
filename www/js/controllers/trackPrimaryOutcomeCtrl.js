@@ -27,6 +27,7 @@ angular.module('starter')
         $scope.barChartConfig = false;
         $scope.weekdayChartConfig = false;
         $scope.hourlyChartConfig = false;
+        $scope.syncDisplayText = 'Syncing ' + config.appSettings.primaryOutcomeVariableDetails.name + ' measurements...';
 
         $scope.storeRatingLocalAndServerAndUpdateCharts = function (numericRatingValue) {
 
@@ -45,7 +46,10 @@ angular.module('starter')
             measurementService.addToMeasurementsQueue(primaryOutcomeMeasurement);
 
             if(!$rootScope.isSyncing){
-                measurementService.syncPrimaryOutcomeVariableMeasurementsAndUpdateCharts();
+                $scope.showLoader($scope.syncDisplayText);
+                measurementService.syncPrimaryOutcomeVariableMeasurementsAndUpdateCharts().then(function() {
+                    $scope.hideLoader();
+                });
             }
            
         };
@@ -189,10 +193,13 @@ angular.module('starter')
         });
 
         $scope.$on('$ionicView.enter', function(e) {
-            console.log('track state brought in focus. Updating charts and syncing..');
+            $scope.hideLoader();
+            console.log('Track state brought in focus. Updating charts and syncing..');
             $scope.showRatingFaces = true;
             $scope.timeRemaining = false;
-            measurementService.syncPrimaryOutcomeVariableMeasurementsAndUpdateCharts();
-
+            $scope.showLoader($scope.syncDisplayText);
+            measurementService.syncPrimaryOutcomeVariableMeasurementsAndUpdateCharts().then(function() {
+                $scope.hideLoader();
+            });
         });
     });

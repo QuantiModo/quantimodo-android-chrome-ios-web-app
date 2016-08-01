@@ -217,6 +217,7 @@ angular.module('starter')
 
         // when view is changed
     	$scope.$on('$ionicView.enter', function(e){
+            $scope.hideLoader();
     		$scope.init();
     	});
 
