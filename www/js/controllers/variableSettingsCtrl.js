@@ -27,7 +27,8 @@ angular.module('starter')
         $scope.resetToDefaultSettings = function() {
             // Populate fields with original settings for variable
 
-            variableService.getPublicVariablesByName($stateParams.variableName).then(function(originalVariableObject) {
+            variableService.getPublicVariablesByName($stateParams.variableName).then(function(variableArray) {
+                var originalVariableObject = variableArray[0];
                 console.log("Original variable object: " + originalVariableObject);
 
                 if ($scope.state.variableObject.abbreviatedUnitName !== "/5") {
