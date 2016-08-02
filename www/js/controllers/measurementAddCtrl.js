@@ -275,7 +275,7 @@ angular.module('starter')
             if ($scope.state.measurement.abbreviatedUnitName !== '/5') {
                 if (variableCategoryName === "Treatments" || variableCategoryName === "Foods" ||
                     variableCategoryName === "Physical Activity") {
-                    variableService.getVariablesByName($scope.state.measurement.variableName).then(function(variableObject){
+                    variableService.getVariablesByName($scope.state.measurement.variable ).then(function(variableObject){
                         $scope.state.measurement.value = parseFloat(variableObject.lastValue);
                     });
                 }
@@ -386,7 +386,7 @@ angular.module('starter')
             if (unit || variableName || startTimeEpoch || value) {
                 var measurementObject = {};
                 measurementObject.abbreviatedUnitName = unit;
-                measurementObject.variableName = variableName;
+                measurementObject.variable = variableName;
                 measurementObject.startTimeEpoch = startTimeEpoch;
                 measurementObject.value = value;
                 setupTrackingByMeasurement(measurementObject);
