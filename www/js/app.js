@@ -704,7 +704,7 @@ angular.module('starter',
             cache: false,
             params: {
                 variableCategoryName : null,
-                reminder : null,
+                reminderNotification: null,
                 fromState : null,
                 fromUrl : null,
                 measurement : null,

@@ -87,7 +87,7 @@ angular.module('starter')
 	    $scope.editReminderSettings = function(trackingReminder){
 	    	$state.go('app.favoriteAdd',
 				{
-					reminder: trackingReminder,
+					reminderNotification: trackingReminder,
 					fromUrl: window.location.href,
 					fromState : $state.current.name
 				});
