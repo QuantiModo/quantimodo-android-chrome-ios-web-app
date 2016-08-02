@@ -42,7 +42,8 @@ angular.module('starter')
                 { id : 8, name : 'Miscellaneous' }
             ],
             hideReminderMeButton : false,
-            showMoreMenuButton: true
+            showMoreMenuButton: true,
+            editReminder : false
         };
 
         $scope.openMeasurementStartTimePicker = function() {
@@ -200,6 +201,19 @@ angular.module('starter')
                         ".  Please select another unit or value.");
                     return;
                 }
+            }
+
+            if ($state.editReminder) {
+                // If "record a different value/time was pressed", skip reminder upon save
+                var params = {
+                    trackingReminderNotificationId: $stateParams.reminder.id
+                };
+                QuantiModo.skipTrackingReminderNotification(params, function(response){
+                    console.debug(response);
+                }, function(err){
+                    console.error(err);
+                    Bugsnag.notify(err, JSON.stringify(err), {}, "error");
+                });
             }
 
             // Combine selected date and time
@@ -413,15 +427,6 @@ angular.module('starter')
                     $stateParams.reminder = JSON.parse(reminderFromURL);
                     console.debug("setupFromReminderObjectInUrl: ", $stateParams.reminder);
                     setupTrackingByReminderNotification();
-                    var params = {
-                        trackingReminderId: $stateParams.reminder.id
-                    };
-                    QuantiModo.skipTrackingReminderNotification(params, function(response){
-                        console.debug(response);
-                    }, function(err){
-                        console.error(err);
-                        Bugsnag.notify(err, JSON.stringify(err), {}, "error");
-                    });
                 }
             }
         };
@@ -571,6 +576,7 @@ angular.module('starter')
         };
 
         var setupTrackingByReminderNotification = function(){
+            $state.editReminder = true;
             if($stateParams.reminder !== null && typeof $stateParams.reminder !== "undefined"){
                 $scope.state.title = "Record Measurement";
                 if(!$scope.state.measurement.abbreviatedUnitName){
