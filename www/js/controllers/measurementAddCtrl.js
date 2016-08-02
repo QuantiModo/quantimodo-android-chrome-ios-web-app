@@ -564,6 +564,9 @@ angular.module('starter')
             $scope.state.measurementIsSetup = true;
             setupValueFieldType($scope.state.measurement.abbreviatedUnitName,
                 $scope.state.measurement.variableDescription);
+            if ($scope.state.measurement.variable) {
+                $scope.state.measurement.variableName = $scope.state.measurement.variable;
+            }
             setVariableObject();
         };
 
