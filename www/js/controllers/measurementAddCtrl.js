@@ -90,24 +90,6 @@ angular.module('starter')
             ionicDatePicker.openDatePicker($scope.state.datePickerConfiguration);
         };
 
-        // Deprecated
-        /*
-        // when add new variable is tapped
-        $scope.addVariable = function(){
-            console.log("add variable");
-
-            $scope.state.showAddVariable = true;
-
-            // set default
-            $scope.state.measurement.variable = "";
-            $scope.state.measurement.value = "";
-            $scope.state.measurement.note = null;
-            if($scope.state.variableCategoryObject && $scope.state.variableCategoryObject.defaultAbbreviatedUnitName &&
-                !$scope.state.measurement.abbreviatedUnitName) {
-                $scope.state.measurement.abbreviatedUnitName = $scope.state.variableCategoryObject.defaultAbbreviatedUnitName;
-            }
-        };*/
-
         // cancel activity
         $scope.cancel = function(){
             $ionicHistory.goBack();
@@ -117,7 +99,7 @@ angular.module('starter')
         $scope.deleteMeasurement = function(){
             var measurementToDelete = {
                 id : $scope.state.measurement.id,
-                variableName : $scope.state.measurement.variable,
+                variableName : $scope.state.measurement.variableName,
                 startTimeEpoch : $scope.state.measurement.startTimeEpoch
             };
             measurementService.deleteMeasurementFromLocalStorage(measurementToDelete).then(
@@ -174,8 +156,7 @@ angular.module('starter')
                 utilsService.showAlert('Please enter a value');
                 return;
             }
-            if((!$scope.state.measurement.variable || $scope.state.measurement.variable === "") &&
-                (!$scope.state.measurement.variableName || $scope.state.measurement.variableName === "")){
+            if(!$scope.state.measurement.variableName || $scope.state.measurement.variableName === ""){
                 utilsService.showAlert('Please enter a variable name');
                 return;
             }
@@ -227,7 +208,7 @@ angular.module('starter')
             // Populate measurementInfo (formerly params)
             var measurementInfo = {
                 id : $scope.state.measurement.id,
-                variableName : $scope.state.measurement.variable || jQuery('#variableName').val(),
+                variableName : $scope.state.measurement.variableName || jQuery('#variableName').val(),
                 value : $scope.state.measurement.value,
                 note : $scope.state.measurement.note || jQuery('#note').val(),
                 prevStartTimeEpoch : $scope.state.measurement.prevStartTimeEpoch,
@@ -255,7 +236,7 @@ angular.module('starter')
             if($stateParams.fromUrl){
                 window.location = $stateParams.fromUrl;
             } else if ($stateParams.fromState){
-                var variableName = $scope.state.measurement.variable;
+                var variableName = $scope.state.measurement.variableName;
                 var variableObject = $scope.state.variableObject;
                 $state.go($stateParams.fromState, {
                     variableObject: variableObject,
@@ -462,9 +443,9 @@ angular.module('starter')
             if($stateParams.variableObject !== null && typeof $stateParams.variableObject !== "undefined") {
                 $scope.state.variableObject = $stateParams.variableObject;
                 $scope.state.title = "Record Measurement";
-                $scope.state.measurement.variable = $stateParams.variableObject.name;
-                if (!$scope.state.measurement.variable) {
-                    $scope.state.measurement.variable = $stateParams.variableObject.variableName;
+                $scope.state.measurement.variableName = $stateParams.variableObject.name;
+                if (!$scope.state.measurement.variableName) {
+                    $scope.state.measurement.variableName = $stateParams.variableObject.variableName;
                 }
                 if($stateParams.variableObject.category){
                     $scope.state.measurement.variableCategoryName = $stateParams.variableObject.category;
@@ -549,7 +530,7 @@ angular.module('starter')
                 variableCategoryName: $scope.state.measurement.variableCategoryName ?
                     $scope.state.measurement.variableCategoryName : null,
                 id: $scope.state.measurement.variableId ? $scope.state.measurement.variableId : null,
-                name: $scope.state.measurement.variable ? $scope.state.measurement.variable : $scope.state.measurement.variableName,
+                name: $scope.state.measurement.variableName,
                 description: $scope.state.measurement.variableDescription
             };
         }
@@ -583,9 +564,6 @@ angular.module('starter')
             $scope.state.measurementIsSetup = true;
             setupValueFieldType($scope.state.measurement.abbreviatedUnitName,
                 $scope.state.measurement.variableDescription);
-            if ($scope.state.measurement.variableName) {
-                $scope.state.measurement.variable = $scope.state.measurement.variableName;
-            }
             setVariableObject();
         };
 
@@ -597,7 +575,7 @@ angular.module('starter')
                 }
                 $scope.state.hideRemindMeButton = true;
                 $scope.state.measurement.value = $stateParams.reminder.defaultValue;
-                $scope.state.measurement.variable = $stateParams.reminder.variableName;
+                $scope.state.measurement.variableName = $stateParams.reminder.variableName;
 
                 $scope.state.measurement.variableCategoryName = $stateParams.reminder.variableCategoryName;
                 $scope.state.measurement.combinationOperation = $stateParams.reminder.combinationOperation;
