@@ -4,7 +4,7 @@ angular.module('starter')
                                                authService, measurementService, $state, $rootScope, $stateParams,
                                                utilsService, localStorageService, $filter, $ionicScrollDelegate,
                                                variableCategoryService, ionicTimePicker, ionicDatePicker, unitService,
-                                               QuantiModo, $ionicActionSheet, $ionicHistory){
+                                               QuantiModo, $ionicActionSheet, $ionicHistory, variableService){
 
         $scope.controller_name = "MeasurementAddCtrl";
 
@@ -291,6 +291,14 @@ angular.module('starter')
             }
             $scope.state.variableSearchPlaceholderText = 'Search for a ' + $filter('wordAliases')(pluralize(variableCategoryName, 1)) + '...';
             setupValueFieldType($scope.state.variableCategoryObject.defaultAbbreviatedUnitName, null);
+            if ($scope.state.measurement.abbreviatedUnitName !== '/5') {
+                if (variableCategoryName === "Treatments" || variableCategoryName === "Foods" ||
+                    variableCategoryName === "Physical Activity") {
+                    variableService.getVariablesByName($scope.state.measurement.variable ).then(function(variableObject){
+                        $scope.state.measurement.value = parseFloat(variableObject.lastValue);
+                    });
+                }
+            }
         };
 
         // constructor
