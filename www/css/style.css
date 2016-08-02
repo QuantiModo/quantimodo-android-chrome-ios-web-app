@@ -260,7 +260,7 @@ label.item.item-input.item-text > input[type="text"] {
     position: absolute;
     top: 40px;
     z-index:5;
-    background-color: #A0E749
+    background-color: #A0E749;
 }
 
 .slider {
