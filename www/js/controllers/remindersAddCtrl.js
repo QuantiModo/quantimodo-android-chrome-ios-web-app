@@ -152,6 +152,14 @@ angular.module('starter')
             if ($scope.state.trackingReminder.abbreviatedUnitName === "/5") {
                 $scope.state.trackingReminder.defaultValue = 3;
             }
+            else {
+                if (selectedVariable.variableCategoryName === "Treatments" || selectedVariable.variableCategoryName === "Foods" ||
+                    selectedVariable.variableCategoryName === "Physical Activity") {
+                    variableService.getVariablesByName($scope.state.trackingReminder.variableName).then(function (variableObject) {
+                        $scope.state.trackingReminder.defaultValue = parseFloat(variableObject.lastValue);
+                    });
+                }
+            }
 	    };
 
 	    // when frequency is changed
