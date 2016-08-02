@@ -77,7 +77,7 @@ angular.module('starter')
                         //notificationService.decrementNotificationBadges();
                         $state.go('app.measurementAdd',
                             {
-                                reminder: notificationData,
+                                reminderNotification: notificationData,
                                 fromState: 'app.remindersInbox'
                             });
                     } else {

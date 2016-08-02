@@ -257,7 +257,7 @@ angular.module('starter')
 			$rootScope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications[trackingReminderNotificationNotificationIndex].hide = true;
 			$state.go('app.measurementAdd',
 				{
-					reminder: trackingReminderNotification,
+					reminderNotification: trackingReminderNotification,
 					fromUrl: window.location.href
 				});
 	    };
@@ -267,7 +267,7 @@ angular.module('starter')
 			trackingReminder.id = trackingReminderNotification.trackingReminderId;
 	    	$state.go('app.reminderAdd',
 				{
-					reminder : trackingReminder,
+					reminderNotification: trackingReminder,
 					fromUrl: window.location.href,
 					fromState : $state.current.name
 				});

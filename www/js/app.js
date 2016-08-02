@@ -340,7 +340,7 @@ angular.module('starter',
             url: "/measurement-add/:variableName",
             cache: false,
             params: {
-                reminder : null,
+                reminderNotification: null,
                 fromState : null,
                 fromUrl : null,
                 measurement : null,
