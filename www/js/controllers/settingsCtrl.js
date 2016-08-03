@@ -117,9 +117,9 @@ angular.module('starter')
                     pushNotificationsEnabled: true
                 };
                 userService.updateUserSettings(params);
-                var deviceToken = localStorageService.getItemSync('deviceToken');
-                if(deviceToken){
-                    pushNotificationService.registerDeviceToken(deviceToken);
+                $rootScope.deviceToken = localStorageService.getItemSync('deviceToken');
+                if($rootScope.deviceToken){
+                    pushNotificationService.registerDeviceToken($rootScope.deviceToken);
                 } else {
                     console.error("Could not find device token for push notifications!");
                 }
@@ -128,8 +128,10 @@ angular.module('starter')
 					console.debug("SettingsCtrl combineNotificationChange: Disabled Multiple Notifications and now " +
 						"refreshTrackingRemindersAndScheduleAlarms will schedule a single notification for highest " +
 						"frequency reminder");
-					//reminderService.refreshTrackingRemindersAndScheduleAlarms();
-
+                    if(!$rootScope.deviceToken){
+                        console.warning("Could not find device token for push notifications so scheduling combined local notifications");
+                        reminderService.refreshTrackingRemindersAndScheduleAlarms();
+                    }
 				});
 
 				// notificationService.cancelAllNotifications().then(function() {
