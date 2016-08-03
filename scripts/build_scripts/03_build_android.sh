@@ -112,7 +112,7 @@ echo "ionic plugin add https://github.com/DrMoriarty/cordova-fabric-crashlytics-
 ionic plugin add phonegap-plugin-push --variable SENDER_ID="GCM_PROJECT_NUMBER"
 
 ionic io init
-ionic config set dev_push true
+ionic config set dev_push false
 
 ionic push --google-api-key ${GCM_SERVER_API_KEY}
 ionic config set gcm_key ${GCM_SENDER_ID}

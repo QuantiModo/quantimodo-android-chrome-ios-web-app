@@ -52,7 +52,7 @@
     "cordova-plugin-geolocation",
     {
       "variables": {
-        "SENDER_ID": "GCM_PROJECT_NUMBER"
+        "SENDER_ID": "1052648855194"
       },
       "locator": "phonegap-plugin-push",
       "id": "phonegap-plugin-push"

@@ -3,7 +3,9 @@
 
 angular.module('starter',
     [
-        'ionic','ionic.service.core',
+        'ionic',
+        'ionic.service.core',
+        'ionic.service.push',
         //'ionic.service.analytics',
         'oc.lazyLoad',
         'highcharts-ng',
