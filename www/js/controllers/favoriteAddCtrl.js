@@ -179,8 +179,8 @@ angular.module('starter')
                             $state.go('app.remindersManage');
                         }
                     }
-                    $stateParams.reminder = $scope.state.allReminders[0];
-                    setupEditReminder($stateParams.reminder);
+                    $stateParams.reminderNotification = $scope.state.allReminders[0];
+                    setupEditReminder($stateParams.reminderNotification);
                     $ionicLoading.hide();
                     $scope.loading = false;
                 }, function () {
@@ -201,8 +201,8 @@ angular.module('starter')
                     var reminderIdUrlParameter = utilsService.getUrlParameter(window.location.href, 'reminderId');
                     var variableIdUrlParameter = utilsService.getUrlParameter(window.location.href, 'variableId');
 
-                    if ($stateParams.reminder && $stateParams.reminder !== null) {
-                        setupEditReminder($stateParams.reminder);
+                    if ($stateParams.reminderNotification && $stateParams.reminderNotification !== null) {
+                        setupEditReminder($stateParams.reminderNotification);
                     } else if(reminderIdUrlParameter) {
                         setupReminderEditingFromUrlParameter(reminderIdUrlParameter);
                     } else if(variableIdUrlParameter){

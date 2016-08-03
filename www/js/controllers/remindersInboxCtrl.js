@@ -255,14 +255,9 @@ angular.module('starter')
 
 	    $scope.editMeasurement = function(trackingReminderNotification, dividerIndex, trackingReminderNotificationNotificationIndex){
 			$rootScope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications[trackingReminderNotificationNotificationIndex].hide = true;
-			// FIXME this shouldn't skip unless the change is made - user could cancel
-			var params = {
-				trackingReminderNotificationId: trackingReminderNotification.id
-			};
-			reminderService.skipReminderNotification(params);
 			$state.go('app.measurementAdd',
 				{
-					reminder: trackingReminderNotification,
+					reminderNotification: trackingReminderNotification,
 					fromUrl: window.location.href
 				});
 	    };
@@ -272,7 +267,7 @@ angular.module('starter')
 			trackingReminder.id = trackingReminderNotification.trackingReminderId;
 	    	$state.go('app.reminderAdd',
 				{
-					reminder : trackingReminder,
+					reminderNotification: trackingReminder,
 					fromUrl: window.location.href,
 					fromState : $state.current.name
 				});
