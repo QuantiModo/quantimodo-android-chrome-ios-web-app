@@ -1,6 +1,6 @@
 angular.module('starter')
 
-    .factory('localStorageService',function(utilsService, $rootScope, $q){
+    .factory('localStorageService',function($rootScope, $q, utilsService) {
 
         return{
 

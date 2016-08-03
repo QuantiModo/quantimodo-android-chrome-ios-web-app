@@ -1,8 +1,9 @@
 angular.module('starter')
 	// Measurement Service
-	.factory('migrationService', function($http, $q, QuantiModo, localStorageService, measurementService, $rootScope){
-        
-		// service methods
+    .factory('migrationService', function($http, $q, QuantiModo, localStorageService, measurementService, $rootScope){
+
+
+        // service methods
 		var migrationService = {
 			// get public variables
 			version1466 : function(){
@@ -23,8 +24,6 @@ angular.module('starter')
                     measurementService.syncPrimaryOutcomeVariableMeasurements().then(function(){
                         console.log("Measurement sync complete!");
                         $scope.hideLoader();
-                        //$rootScope.isSyncing = false;
-                        //$rootScope.syncDisplayText = '';
                     });
                     localStorageService.setItem('appMigrationVersion', 1489);
                 }

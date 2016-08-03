@@ -1,11 +1,10 @@
 angular.module('starter')
 
 	// Controls the History Page of the App.
-	.controller('RemindersAddCtrl', function($scope, authService, $ionicPopup, localStorageService, $state,
-											 $stateParams, measurementService, reminderService, $ionicLoading,
-											 utilsService, $filter, ionicTimePicker, $timeout, 
-											 variableCategoryService, variableService, unitService, timeService,
-                                             $rootScope, $ionicActionSheet, $ionicHistory){
+	.controller('RemindersAddCtrl', function($scope, $state, $stateParams, $ionicLoading, $filter, $timeout, $rootScope,
+                                             $ionicActionSheet, $ionicHistory, authService, localStorageService,
+                                             reminderService, utilsService, ionicTimePicker, variableCategoryService,
+                                             variableService, unitService, timeService) {
 
 	    $scope.controller_name = "RemindersAddCtrl";
 		console.log('Loading ' + $scope.controller_name);
@@ -149,16 +148,16 @@ angular.module('starter')
             }
             $scope.state.showReminderFrequencyCard = true;
 
+            // Set default value
             if ($scope.state.trackingReminder.abbreviatedUnitName === "/5") {
-                $scope.state.trackingReminder.defaultValue = 3;
+                $scope.state.trackingReminder.defaultValue = 3; // Default to 3 ("ok") if variable unit is /5
             }
             else {
-                if (selectedVariable.variableCategoryName === "Treatments" || selectedVariable.variableCategoryName === "Foods" ||
-                    selectedVariable.variableCategoryName === "Physical Activity") {
-                    variableService.getVariablesByName($scope.state.trackingReminder.variableName).then(function (variableObject) {
-                        $scope.state.trackingReminder.defaultValue = parseFloat(variableObject.lastValue);
-                    });
-                }
+                // Fill in default value as last value if not /5
+                variableService.getVariablesByName($scope.state.trackingReminder.variableName).then(function (variableObject) {
+                    $scope.state.trackingReminder.defaultValue = parseFloat(variableObject.lastValue);
+                });
+
             }
 	    };
 

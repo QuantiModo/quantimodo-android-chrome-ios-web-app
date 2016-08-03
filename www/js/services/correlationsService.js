@@ -1,6 +1,6 @@
 angular.module('starter')
     // Correlation service
-    .factory('correlationService', function(QuantiModo, $q) {
+    .factory('correlationService', function($q, QuantiModo) {
         return {
             getAggregatedCorrelations : function(params){
                 var deferred = $q.defer();

@@ -1,8 +1,7 @@
 angular.module('starter')
 	
 	// controls the Import Data page of the app
-	.controller('ImportCtrl', function($scope, $ionicModal, $timeout, $ionicLoading, authService, $state, $rootScope,
-									   utilsService){
+	.controller('ImportCtrl', function($scope, $ionicLoading, $state, $rootScope, authService) {
 		
 		$state.go('app');
 		$scope.controller_name = "ImportCtrl";

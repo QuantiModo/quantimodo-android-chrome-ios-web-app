@@ -1,8 +1,7 @@
 angular.module('starter')
-    .controller('VariableSearchCtrl', function($scope, $ionicModal, $timeout, $ionicPopup ,$ionicLoading,
-                                                     authService, measurementService, $state, $rootScope, $stateParams,
-                                                     utilsService, localStorageService, $filter, $ionicScrollDelegate,
-                                                        variableCategoryService, ionicTimePicker, variableService, reminderService){
+    .controller('VariableSearchCtrl', function($scope, $state, $rootScope, $stateParams, $filter, localStorageService, 
+                                               authService,  variableCategoryService, variableService, 
+                                               reminderService) {
 
         $scope.controller_name = "VariableSearchCtrl";
 
@@ -79,7 +78,7 @@ angular.module('starter')
                     localStorageService.replaceElementOfItemById('trackingReminders', $scope.state.trackingReminder);
                     reminderService.addNewReminder($scope.state.trackingReminder)
                         .then(function(){
-                            console.debug("Saved Reminder", $scope.state.trackingReminder)
+                            console.debug("Saved Reminder", $scope.state.trackingReminder);
                         }, function(err){
                             console.error('Failed to add Reminder!',  $scope.state.trackingReminder);
                         });

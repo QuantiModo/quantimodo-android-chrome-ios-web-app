@@ -1,11 +1,9 @@
 angular.module('starter')
 
 	// Controls the History Page of the App.
-	.controller('FavoriteAddCtrl', function($scope, authService, $ionicPopup, localStorageService, $state,
-											 $stateParams, measurementService, reminderService, $ionicLoading,
-											 utilsService, $filter, ionicTimePicker, $timeout, 
-											 variableCategoryService, variableService, unitService, timeService,
-                                             $rootScope, $ionicActionSheet, $ionicHistory){
+	.controller('FavoriteAddCtrl', function($scope, $state, $stateParams, $ionicLoading, $timeout, $rootScope, 
+                                            $ionicActionSheet, $ionicHistory, authService, localStorageService, 
+                                            utilsService, reminderService, variableCategoryService, variableService, unitService) {
 
 	    $scope.controller_name = "FavoriteAddCtrl";
 

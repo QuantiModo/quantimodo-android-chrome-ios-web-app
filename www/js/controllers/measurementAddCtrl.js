@@ -1,10 +1,10 @@
 angular.module('starter')
 
-    .controller('MeasurementAddCtrl', function($scope, $q, $ionicModal, $timeout, $ionicPopup ,$ionicLoading,
-                                               authService, measurementService, $state, $rootScope, $stateParams,
-                                               utilsService, localStorageService, $filter, $ionicScrollDelegate,
-                                               variableCategoryService, ionicTimePicker, ionicDatePicker, unitService,
-                                               QuantiModo, $ionicActionSheet, $ionicHistory, variableService){
+    .controller('MeasurementAddCtrl', function($scope, $q, $timeout, $state, $rootScope, $stateParams, $filter,
+                                               $ionicActionSheet, $ionicHistory, authService, measurementService,
+                                               utilsService, localStorageService, variableCategoryService,
+                                               ionicTimePicker, ionicDatePicker, unitService, QuantiModo,
+                                               variableService) {
 
         $scope.controller_name = "MeasurementAddCtrl";
 
@@ -286,13 +286,12 @@ angular.module('starter')
             }
             $scope.state.variableSearchPlaceholderText = 'Search for a ' + $filter('wordAliases')(pluralize(variableCategoryName, 1)) + '...';
             setupValueFieldType($scope.state.variableCategoryObject.defaultAbbreviatedUnitName, null);
+            
+            // Fill in default value as last value if not /5
             if ($scope.state.measurement.abbreviatedUnitName !== '/5') {
-                if (variableCategoryName === "Treatments" || variableCategoryName === "Foods" ||
-                    variableCategoryName === "Physical Activity") {
-                    variableService.getVariablesByName($scope.state.measurement.variableName).then(function(variableObject){
-                        $scope.state.measurement.value = parseFloat(variableObject.lastValue);
-                    });
-                }
+                variableService.getVariablesByName($scope.state.measurement.variableName).then(function(variableObject){
+                    $scope.state.measurement.value = parseFloat(variableObject.lastValue);
+                });
             }
         };
 
