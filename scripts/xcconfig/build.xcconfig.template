@@ -26,7 +26,7 @@
 // Type of signing identity used for codesigning, resolves to first match of given type.
 // "iPhone Developer": Development builds (default, local only; iOS Development certificate) or "iPhone Distribution": Distribution builds (Adhoc/In-House/AppStore; iOS Distribution certificate)
 
-PROVISIONING_PROFILE = 028ab892-9a5e-4004-adac-b8472e760bdb
+PROVISIONING_PROFILE = cd6448f6-e30d-4d74-8413-58f96a770671
 CODE_SIGN_IDENTITY = iPhone Distribution: Mike Sinn (YD2FK7S2S5)
 CODE_SIGN_IDENTITY[sdk=iphoneos*] = iPhone Distribution: Mike Sinn (YD2FK7S2S5)
 ENABLE_BITCODE = NO

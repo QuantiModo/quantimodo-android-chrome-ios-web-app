@@ -30,11 +30,11 @@ script:
 env:
   global:
   - IONIC_APP_VERSION_NUMBER="1.8.0"
-  - IONIC_IOS_APP_VERSION_NUMBER="1.8.0.9"
+  - IONIC_IOS_APP_VERSION_NUMBER="1.8.0.10"
   - TEAM_ID="YD2FK7S2S5"
   - DEVELOPER_NAME="iPhone Distribution: Mike Sinn (YD2FK7S2S5)"
-  - PROFILE_NAME="028ab892-9a5e-4004-adac-b8472e760bdb"
-  - PROFILE_UUID="028ab892-9a5e-4004-adac-b8472e760bdb"
+  - PROFILE_NAME="match_AppStore_comquantimodomoodimodoapp"
+  - PROFILE_UUID="cd6448f6-e30d-4d74-8413-58f96a770671"
   - DELIVER_WHAT_TO_TEST="Test the Basics of the app and see if something breaks!"
   - APP_UPLOAD_BRANCH="app/moodimodo"
   - DELIVER_USER="ios@quantimodo.com"
@@ -51,3 +51,4 @@ branches:
   only:
     - master
     - develop
+    - feature/new_profile

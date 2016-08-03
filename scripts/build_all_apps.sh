@@ -1,7 +1,7 @@
 #!/bin/bash
 
 export IONIC_APP_VERSION_NUMBER=1.8.0
-export IONIC_IOS_APP_VERSION_NUMBER="1.8.0.9"
+export IONIC_IOS_APP_VERSION_NUMBER="1.8.0.10"
 
 export RED='\033[0;31m'
 export GREEN='\033[0;32m'
@@ -43,8 +43,8 @@ export ANDROID_KEYSTORE_PATH="$QM_DOCKER_PATH/configs/android/quantimodo.keystor
 ### IOS CRAP ###
 export TEAM_ID="YD2FK7S2S5"
 export DEVELOPER_NAME="iPhone Distribution=Mike Sinn (YD2FK7S2S5)"
-export PROFILE_NAME="028ab892-9a5e-4004-adac-b8472e760bdb"
-export PROFILE_UUID="028ab892-9a5e-4004-adac-b8472e760bdb"
+export PROFILE_NAME="match_AppStore_comquantimodomoodimodoapp"
+export PROFILE_UUID="cd6448f6-e30d-4d74-8413-58f96a770671"
 export DELIVER_USER="ios@quantimodo.com"
 export FASTLANE_USER="ios@quantimodo.com"
 export FASTLANE_PASSWORD=$FASTLANE_PASSWORD
