@@ -3,7 +3,7 @@ angular.module('starter')
 	// Controls the settings page
 	.controller('SettingsCtrl', function( $state, $scope, $ionicPopover, $ionicPopup, localStorageService, $rootScope, 
 										  notificationService, QuantiModo, reminderService, qmLocationService, 
-										  ionicTimePicker, userService, timeService) {
+										  ionicTimePicker, userService, timeService, pushNotificationService) {
 		$scope.controller_name = "SettingsCtrl";
 		$scope.state = {};
 		$scope.showReminderFrequencySelector = config.appSettings.settingsPageOptions.showReminderFrequencySelector;
@@ -117,6 +117,12 @@ angular.module('starter')
                     pushNotificationsEnabled: true
                 };
                 userService.updateUserSettings(params);
+                var deviceToken = localStorageService.getItemSync('deviceToken');
+                if(deviceToken){
+                    pushNotificationService.registerDeviceToken(deviceToken);
+                } else {
+                    console.error("Could not find device token for push notifications!");
+                }
 
 				notificationService.cancelAllNotifications().then(function() {
 					console.debug("SettingsCtrl combineNotificationChange: Disabled Multiple Notifications and now " +
