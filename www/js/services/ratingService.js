@@ -1,5 +1,5 @@
 angular.module('starter')
-	.factory('ratingService', function(variableCategoryService){
+	.factory('ratingService', function(variableCategoryService) {
         
 		var ratingService = {
 

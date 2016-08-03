@@ -1,7 +1,7 @@
 angular.module('starter')    
     // QuantiModo API implementation
-    .factory('QuantiModo', function($http, $q, authService, localStorageService, $state, $ionicLoading,
-                                    $rootScope, $ionicPopup){
+    .factory('QuantiModo', function($http, $q, $rootScope, $ionicPopup, $state, $ionicLoading, authService,
+                                    localStorageService) {
             var QuantiModo = {};
             $rootScope.connectionErrorShowing = false; // to prevent more than one popup
 

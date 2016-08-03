@@ -1,7 +1,7 @@
 angular.module('starter')
     // Measurement Service
-    .factory('qmLocationService', function($http, $q, $rootScope, localStorageService, measurementService,
-                                           $cordovaGeolocation, $ionicPlatform){
+    .factory('qmLocationService', function($http, $q, $rootScope, $cordovaGeolocation, $ionicPlatform,
+                                           localStorageService, measurementService) {
         
         // service methods
         var qmLocationService = {

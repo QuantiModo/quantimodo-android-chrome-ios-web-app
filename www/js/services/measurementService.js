@@ -1,6 +1,6 @@
 angular.module('starter')
 	// Measurement Service
-	.factory('measurementService', function($http, $q, QuantiModo, localStorageService, $rootScope, $ionicLoading){
+	.factory('measurementService', function($q, $rootScope, $ionicLoading, QuantiModo, localStorageService) {
 
         //flag to indicate if data syncing is in progress
         var isSyncing = false;
