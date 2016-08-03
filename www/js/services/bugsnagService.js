@@ -1,6 +1,6 @@
 angular.module('starter')
     // Measurement Service
-    .factory('bugsnagService', function($state, $ionicHistory){
+    .factory('bugsnagService', function() {
         
         // service methods
         var bugsnagService = {

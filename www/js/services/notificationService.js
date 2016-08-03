@@ -1,7 +1,7 @@
 angular.module('starter')
 // Handles the Notifications (inapp, push)
-    .factory('notificationService',function($rootScope, $ionicPlatform, $state, localStorageService, $q, QuantiModo,
-                                            timeService, bugsnagService, qmLocationService){
+    .factory('notificationService',function($rootScope, $ionicPlatform, $state, $q, QuantiModo, timeService,
+                                            bugsnagService, qmLocationService) {
 
         function createChromeAlarmNameFromTrackingReminder(trackingReminder) {
             var alarmName = {

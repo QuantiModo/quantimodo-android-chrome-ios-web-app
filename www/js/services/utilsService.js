@@ -1,7 +1,7 @@
 angular.module('starter')
 
     // utility methods
-    .factory('utilsService', function($ionicPopup, $state, $ionicLoading) {
+    .factory('utilsService', function($ionicPopup, $ionicLoading) {
 
         var loginAlert;
 

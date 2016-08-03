@@ -1,6 +1,6 @@
 angular.module('starter')
 
-	.factory('authService', function ($http, $q, localStorageService, utilsService, $state, $ionicLoading, $rootScope) {
+	.factory('authService', function ($http, $q, $state, $ionicLoading, $rootScope, localStorageService, utilsService) {
 
 		var authService = {
 

@@ -1,10 +1,9 @@
 angular.module('starter')
 
     // Controls the Track Page of the App
-    .controller('VariablePageCtrl', function($scope, $q, $ionicModal, $state, $timeout, utilsService, authService,
-                                                    measurementService, chartService, $ionicPopup, localStorageService,
-                                                    $rootScope, $ionicLoading, ratingService, $stateParams, QuantiModo,
-                                             $ionicActionSheet, variableService) {
+    .controller('VariablePageCtrl', function($scope, $q, $state, $timeout, $rootScope, $ionicLoading,  $ionicActionSheet,
+                                             $stateParams, chartService, localStorageService, QuantiModo, 
+                                             variableService) {
         $scope.controller_name = "VariablePageCtrl";
         $scope.addReminderButtonText = "Add Reminder";
         $scope.recordMeasurementButtonText = "Record Measurement";
@@ -250,11 +249,7 @@ angular.module('starter')
             console.log($scope.state.statistics);
             console.log("stats logged");
         };
-
-
-
-        $scope.init();
-
+        
         $scope.init = function(){
             console.log("variablePageCtrl: init");
             if($stateParams.variableObject){

@@ -1,8 +1,7 @@
 angular.module('starter')
 
-	.controller('PredictorsCtrl', function($scope, $ionicModal, $timeout, measurementService, $ionicLoading,
-                                         $state, $ionicPopup, correlationService, $rootScope,
-                                         localStorageService, utilsService, authService, $stateParams) {
+	.controller('PredictorsCtrl', function($scope, $ionicLoading, $state, $stateParams, $ionicPopup, correlationService,
+                                           authService) {
 
 		$scope.controller_name = "PredictorsCtrl";
         $scope.state = {
