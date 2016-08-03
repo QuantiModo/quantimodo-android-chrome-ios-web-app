@@ -148,16 +148,16 @@ angular.module('starter')
             }
             $scope.state.showReminderFrequencyCard = true;
 
+            // Set default value
             if ($scope.state.trackingReminder.abbreviatedUnitName === "/5") {
-                $scope.state.trackingReminder.defaultValue = 3;
+                $scope.state.trackingReminder.defaultValue = 3; // Default to 3 ("ok") if variable unit is /5
             }
             else {
-                if (selectedVariable.variableCategoryName === "Treatments" || selectedVariable.variableCategoryName === "Foods" ||
-                    selectedVariable.variableCategoryName === "Physical Activity") {
-                    variableService.getVariablesByName($scope.state.trackingReminder.variableName).then(function (variableObject) {
-                        $scope.state.trackingReminder.defaultValue = parseFloat(variableObject.lastValue);
-                    });
-                }
+                // Fill in default value as last value if not /5
+                variableService.getVariablesByName($scope.state.trackingReminder.variableName).then(function (variableObject) {
+                    $scope.state.trackingReminder.defaultValue = parseFloat(variableObject.lastValue);
+                });
+
             }
 	    };
 
