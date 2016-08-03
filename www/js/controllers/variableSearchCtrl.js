@@ -94,7 +94,7 @@ angular.module('starter')
                         {
                             variableObject : variableObject,
                             fromState : $state.current.name,
-                            fromUrl: window.location.href,
+                            fromUrl: window.location.href
                         }
                     );
                 }
@@ -117,8 +117,7 @@ angular.module('starter')
                     {
                         variableObject : variableObject,
                         fromState : $state.current.name,
-                        fromUrl: window.location.href,
-                        variableCategoryName: $stateParams.variableCategoryName
+                        fromUrl: window.location.href
                     }
                 );
             }
