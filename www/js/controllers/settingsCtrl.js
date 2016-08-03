@@ -1,11 +1,9 @@
 angular.module('starter')
 	
 	// Controls the settings page
-	.controller('SettingsCtrl', function($scope,localStorageService, $ionicModal, $timeout, utilsService, authService,
-										 measurementService, chartService, $ionicPopover, $cordovaFile,
-										 $cordovaFileOpener2, $ionicPopup, $state,notificationService, QuantiModo,
-                                         $rootScope, reminderService, qmLocationService, ionicTimePicker, userService,
-										 timeService) {
+	.controller('SettingsCtrl', function( $state, $scope, $ionicPopover, $ionicPopup, localStorageService, $rootScope, 
+										  notificationService, QuantiModo, reminderService, qmLocationService, 
+										  ionicTimePicker, userService, timeService) {
 		$scope.controller_name = "SettingsCtrl";
 		$scope.state = {};
 		$scope.showReminderFrequencySelector = config.appSettings.settingsPageOptions.showReminderFrequencySelector;
@@ -340,7 +338,7 @@ angular.module('starter')
 	        for (var i = 0; i < array.length; i++) {
 	            var line = '';
 	            for (var index in array[i]) {
-	                if (line != '') {
+	                if (line !== '') {
 						line += ',';
 					}
 	                line += array[i][index];
@@ -417,32 +415,6 @@ angular.module('starter')
 			$scope.hideLoader();
 			$scope.state.trackLocation = $rootScope.trackLocation;
 		});
-/*
-
-	    // When Export is tapped
-	    $scope.export = function(){
-
-	    	localStorageService.getItem('allMeasurements', function(allMeasurements){
-		    	// get all data 
-		        var arr = allMeasurements? JSON.parse(allMeasurements) : [];
-		        
-		        // convert JSon to CSV
-		        var csv = convertToCSV(arr);
-
-		        // write it on storage
-		        $cordovaFile.writeFile(cordova.file.dataDirectory, "csv.csv", csv, true)
-				.then(function (success) {
-
-		         	// when done, open the file opener / chooser
-					$cordovaFileOpener2.open(cordova.file.dataDirectory+'csv.csv','application/csv');
-
-		        }, function (error) {
-					Bugsnag.notify(error, JSON.stringify(error), {}, "error");
-					utilsService.showAlert('Please generate CSV later!');
-				});
-	    	});
-	    };
-*/
 
 	    // call constructor
 	    $scope.init();

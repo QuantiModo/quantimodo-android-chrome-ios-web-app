@@ -1,5 +1,6 @@
 angular.module('starter')
-.controller('IntroCtrl', function($scope, $state, localStorageService, $ionicSlideBoxDelegate, $ionicLoading, $rootScope) {
+.controller('IntroCtrl', function($scope, $state, localStorageService, $ionicSlideBoxDelegate, $ionicLoading,
+                                  $rootScope) {
     
     $scope.viewTitle = config.appSettings.appName;
     $scope.primaryOutcomeVariable = config.appSettings.primaryOutcomeVariable;

@@ -1,7 +1,5 @@
 angular.module('starter')
-	.controller('StudyCtrl', function($scope, $ionicModal, $timeout, measurementService, $ionicLoading,
-                                         $state, $ionicPopup, correlationService, $rootScope,
-                                         localStorageService, utilsService, authService, $stateParams, $ionicHistory) {
+	.controller('StudyCtrl', function($scope, authService, $stateParams, $ionicHistory) {
 
 		$scope.controller_name = "StudyCtrl";
         
