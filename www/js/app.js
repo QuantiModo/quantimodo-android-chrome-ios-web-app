@@ -18,7 +18,7 @@ angular.module('starter',
     ]
 )
 
-.run(function($ionicPlatform, $ionicHistory, $state, $rootScope, pushNotificationService) {
+.run(function($ionicPlatform, $ionicHistory, $state, $rootScope, pushNotificationService, localStorageService) {
 //.run(function($ionicPlatform, $ionicHistory, $state, $rootScope, $ionicAnalytics) {
 // Database
 //.run(function($ionicPlatform, $ionicHistory, $state, $rootScope, $cordovaSQLite) {
@@ -32,6 +32,7 @@ angular.module('starter',
             // Log out your device token (Save this!)
             console.log("Got Token:", deviceToken.token);
             push.saveToken(deviceToken);
+            localStorageService.setItem('deviceToken', deviceToken);
             pushNotificationService.registerDeviceToken(deviceToken.token);
         });
 

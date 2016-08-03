@@ -3,7 +3,7 @@ angular.module('starter')
 	// Controls the settings page
 	.controller('SettingsCtrl', function( $state, $scope, $ionicPopover, $ionicPopup, localStorageService, $rootScope, 
 										  notificationService, QuantiModo, reminderService, qmLocationService, 
-										  ionicTimePicker, userService, timeService) {
+										  ionicTimePicker, userService, timeService, pushNotificationService) {
 		$scope.controller_name = "SettingsCtrl";
 		$scope.state = {};
 		$scope.showReminderFrequencySelector = config.appSettings.settingsPageOptions.showReminderFrequencySelector;
@@ -99,6 +99,8 @@ angular.module('starter')
 		};
 
 		$scope.combineNotificationChange = function() {
+
+		    var params = {};
 			
 			console.log('Combine Notification Change', $scope.state.showOnlyOneNotification);
 			$rootScope.showOnlyOneNotification = $scope.state.showOnlyOneNotification;
@@ -111,11 +113,23 @@ angular.module('starter')
 					'tracking reminder notifications for specific reminders will still show up in your Reminder Inbox.'
 				});
 
+                params = {
+                    pushNotificationsEnabled: true
+                };
+                userService.updateUserSettings(params);
+                var deviceToken = localStorageService.getItemSync('deviceToken');
+                if(deviceToken){
+                    pushNotificationService.registerDeviceToken(deviceToken);
+                } else {
+                    console.error("Could not find device token for push notifications!");
+                }
+
 				notificationService.cancelAllNotifications().then(function() {
 					console.debug("SettingsCtrl combineNotificationChange: Disabled Multiple Notifications and now " +
 						"refreshTrackingRemindersAndScheduleAlarms will schedule a single notification for highest " +
 						"frequency reminder");
-					reminderService.refreshTrackingRemindersAndScheduleAlarms();
+					//reminderService.refreshTrackingRemindersAndScheduleAlarms();
+
 				});
 
 				// notificationService.cancelAllNotifications().then(function() {
@@ -130,6 +144,11 @@ angular.module('starter')
 					title: 'Enabled Multiple Notifications',
 					template: 'You will get a separate device notification for each reminder that you create.'
 				});
+
+                params = {
+                    pushNotificationsEnabled: false
+                };
+                userService.updateUserSettings(params);
 
 				notificationService.cancelAllNotifications().then(function() {
 					console.debug("SettingsCtrl combineNotificationChange: Cancelled combined notification and now " +
