@@ -175,7 +175,8 @@ angular.module('starter')
                                 }
                             }
                             // If no results or no exact match, show "+ Add [variable]" button for query
-                            if(variables.length < 1 || !found){
+                            // Also, can only favorite existing variables
+                            if((variables.length < 1 || !found) && $stateParams.nextState !== "app.favoriteAdd"){
                                 $scope.state.showAddVariableButton = true;
                                 if ($stateParams.nextState === "app.reminderAdd") {
                                     $scope.state.addNewVariableButtonText = '+ Add ' + $scope.state.variableSearchQuery +
