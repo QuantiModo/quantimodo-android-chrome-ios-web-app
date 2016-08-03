@@ -250,11 +250,7 @@ angular.module('starter')
             console.log($scope.state.statistics);
             console.log("stats logged");
         };
-
-
-
-        $scope.init();
-
+        
         $scope.init = function(){
             console.log("variablePageCtrl: init");
             if($stateParams.variableObject){
