@@ -25,10 +25,12 @@ script:
 - #./scripts/build_scripts/04_build_ios.sh mindfirst "Mind First" 1024924226 "com.quantimodo.moodimodo"
 - ./scripts/build_scripts/04_build_ios.sh moodimodo MoodiModo 1046797567 "com.quantimodo.moodimodoapp"
 - #./scripts/build_scripts/04_build_ios.sh quantimodo QuantiModo 1115037060 "com.quantimodo.quantimodo"
+- #APPLE_ID=1046797567
+- #APP_IDENTIFIER="com.quantimodo.moodimodoapp"
 env:
   global:
   - IONIC_APP_VERSION_NUMBER="1.8.0"
-  - IONIC_IOS_APP_VERSION_NUMBER="1.8.0.7"
+  - IONIC_IOS_APP_VERSION_NUMBER="1.8.0.9"
   - TEAM_ID="YD2FK7S2S5"
   - DEVELOPER_NAME="iPhone Distribution: Mike Sinn (YD2FK7S2S5)"
   - PROFILE_NAME="028ab892-9a5e-4004-adac-b8472e760bdb"

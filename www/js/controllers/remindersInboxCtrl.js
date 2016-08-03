@@ -1,10 +1,8 @@
 angular.module('starter')
 
-	.controller('RemindersInboxCtrl', function($scope, authService, $ionicPopup, localStorageService, $state, 
-											   reminderService, $ionicLoading, measurementService, utilsService, 
-											   $stateParams, $location, $filter, $ionicPlatform, $rootScope,
-                                               notificationService, variableCategoryService, $ionicActionSheet,
-											   $timeout){
+	.controller('RemindersInboxCtrl', function($scope, $state, $stateParams, $rootScope, $filter, $ionicPlatform,
+											   $ionicActionSheet, $timeout, authService, reminderService, utilsService,
+											   notificationService) {
 
 	    $scope.controller_name = "RemindersInboxCtrl";
 
@@ -155,14 +153,12 @@ angular.module('starter')
 			};
 	    	reminderService.skipReminderNotification(params)
 	    	.then(function(){
-	    		$scope.hideLoader();
                 notificationService.decrementNotificationBadges();
                 if($rootScope.numberOfPendingNotifications < 2){
                     $scope.init();
                 }
 	    	}, function(err){
 				Bugsnag.notify(err, JSON.stringify(err), {}, "error");
-	    		$scope.hideLoader();
 	    		utilsService.showAlert('Failed to Skip Reminder, Try again!', 'assertive');
 				console.error(err);
 	    	});
@@ -257,14 +253,9 @@ angular.module('starter')
 
 	    $scope.editMeasurement = function(trackingReminderNotification, dividerIndex, trackingReminderNotificationNotificationIndex){
 			$rootScope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications[trackingReminderNotificationNotificationIndex].hide = true;
-			// FIXME this shouldn't skip unless the change is made - user could cancel
-			var params = {
-				trackingReminderNotificationId: trackingReminderNotification.id
-			};
-			reminderService.skipReminderNotification(params);
 			$state.go('app.measurementAdd',
 				{
-					reminder: trackingReminderNotification,
+					reminderNotification: trackingReminderNotification,
 					fromUrl: window.location.href
 				});
 	    };
@@ -274,7 +265,7 @@ angular.module('starter')
 			trackingReminder.id = trackingReminderNotification.trackingReminderId;
 	    	$state.go('app.reminderAdd',
 				{
-					reminder : trackingReminder,
+					reminderNotification: trackingReminder,
 					fromUrl: window.location.href,
 					fromState : $state.current.name
 				});
@@ -290,6 +281,7 @@ angular.module('starter')
 
         // when view is changed
     	$scope.$on('$ionicView.enter', function(e){
+			$scope.hideLoader();
     		$scope.init();
     	});
 
@@ -375,8 +367,10 @@ angular.module('starter')
 					$scope.showLoader('Skipping all ' + $scope.state.variableObject.name + ' reminder notifications...');
 					reminderService.skipAllReminderNotifications(params)
 						.then(function(){
+							$scope.hideLoader();
 							$scope.init();
 						}, function(err){
+							$scope.hideLoader();
 							Bugsnag.notify(err, JSON.stringify(err), {}, "error");
 							console.error(err);
 							utilsService.showAlert('Failed to skip all notifications for , Try again!', 'assertive');

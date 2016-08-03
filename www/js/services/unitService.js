@@ -1,6 +1,6 @@
 angular.module('starter')
     // Measurement Service
-    .factory('unitService', function($http, $q, QuantiModo, localStorageService, $rootScope){
+    .factory('unitService', function($q, $rootScope, QuantiModo, localStorageService) {
         
         // service methods
         var unitService = {

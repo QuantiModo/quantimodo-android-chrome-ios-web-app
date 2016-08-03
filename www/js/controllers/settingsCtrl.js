@@ -1,10 +1,9 @@
 angular.module('starter')
 	
 	// Controls the settings page
-	.controller('SettingsCtrl', function($scope,localStorageService, $ionicModal, $timeout, utilsService, authService,
-										 measurementService, chartService, $ionicPopover, $cordovaFile,
-										 $cordovaFileOpener2, $ionicPopup, $state,notificationService, QuantiModo,
-                                         $rootScope, reminderService, qmLocationService) {
+	.controller('SettingsCtrl', function( $state, $scope, $ionicPopover, $ionicPopup, localStorageService, $rootScope, 
+										  notificationService, QuantiModo, reminderService, qmLocationService, 
+										  ionicTimePicker, userService, timeService) {
 		$scope.controller_name = "SettingsCtrl";
 		$scope.state = {};
 		$scope.showReminderFrequencySelector = config.appSettings.settingsPageOptions.showReminderFrequencySelector;
@@ -17,6 +16,12 @@ angular.module('starter')
 		console.debug('CombineNotifications is '+ $scope.state.showOnlyOneNotification);
 		$scope.state.trackLocation = $rootScope.trackLocation;
 		console.debug('trackLocation is '+ $scope.state.trackLocation);
+
+		if(!$rootScope.user.earliestReminderTime || !$rootScope.user.latestReminderTime){
+			userService.refreshUser(function(user){
+				$rootScope.user = user;
+			});
+		}
 
 		// populate ratings interval
 		localStorageService.getItem('primaryOutcomeRatingFrequencyDescription', function (primaryOutcomeRatingFrequencyDescription) {
@@ -101,18 +106,25 @@ angular.module('starter')
 			if($scope.state.showOnlyOneNotification){
 				$ionicPopup.alert({
 					title: 'Disabled Multiple Notifications',
-					template: 'You will only get a single generic repeating device notification at the specified frequency instead of a separate device notification for each reminder that you create.  All tracking reminder notifications for specific reminders will still show up in your Reminder Inbox.'
+					template: 'You will only get a single generic repeating device notification ' +
+					'instead of a separate device notification for each reminder that you create.  All ' +
+					'tracking reminder notifications for specific reminders will still show up in your Reminder Inbox.'
 				});
 
 				notificationService.cancelAllNotifications().then(function() {
-					var intervalToCheckForNotificationsInMinutes = 15;
-					notificationService.scheduleGenericNotification(intervalToCheckForNotificationsInMinutes);
-					// localStorageService.getItem('primaryOutcomeRatingFrequencyDescription', function (primaryOutcomeRatingFrequencyDescription) {
-					// 	console.debug("Cancelled individual notifications and now scheduling combined one with interval: " + primaryOutcomeRatingFrequencyDescription);
-					// 	$scope.primaryOutcomeRatingFrequencyDescription = primaryOutcomeRatingFrequencyDescription ? primaryOutcomeRatingFrequencyDescription : "daily";
-					// 	$scope.saveInterval($scope.primaryOutcomeRatingFrequencyDescription);
-					// });
+					console.debug("SettingsCtrl combineNotificationChange: Disabled Multiple Notifications and now " +
+						"refreshTrackingRemindersAndScheduleAlarms will schedule a single notification for highest " +
+						"frequency reminder");
+					reminderService.refreshTrackingRemindersAndScheduleAlarms();
 				});
+
+				// notificationService.cancelAllNotifications().then(function() {
+				// 	var intervalToCheckForNotificationsInMinutes = 15;
+				// 	var notificationSettings = {
+				// 		every: intervalToCheckForNotificationsInMinutes
+				// 	};
+				// 	notificationService.scheduleGenericNotification(notificationSettings);
+				// });
 			} else {
 				$ionicPopup.alert({
 					title: 'Enabled Multiple Notifications',
@@ -120,11 +132,94 @@ angular.module('starter')
 				});
 
 				notificationService.cancelAllNotifications().then(function() {
-					console.debug("SettingsCtrl combineNotificationChange: Cancelled combined notification and now refreshTrackingRemindersAndScheduleAlarms");
+					console.debug("SettingsCtrl combineNotificationChange: Cancelled combined notification and now " +
+						"refreshTrackingRemindersAndScheduleAlarms");
 					reminderService.refreshTrackingRemindersAndScheduleAlarms();
 				});
 			}
 			
+		};
+
+		$scope.openEarliestReminderTimePicker = function() {
+			$scope.state.earliestReminderTimePickerConfiguration = {
+				callback: function (val) {
+					if (typeof (val) === 'undefined') {
+						console.log('Time not selected');
+					} else {
+						var a = new Date();
+						var selectedTime = new Date(val * 1000);
+						a.setHours(selectedTime.getUTCHours());
+						a.setMinutes(selectedTime.getUTCMinutes());
+						console.log('Selected epoch is : ', val, 'and the time is ',
+							selectedTime.getUTCHours(), 'H :', selectedTime.getUTCMinutes(), 'M');
+						var newEarliestReminderTime = moment(a).format('HH:mm:ss');
+						if(newEarliestReminderTime > $rootScope.user.latestReminderTime){
+							$ionicPopup.alert({
+								title: 'Choose Another Time',
+								template: 'Earliest reminder time cannot be greater than latest reminder time.  Please change the latest reminder time and try again or select a different earliest reminder time.'
+							});
+						}
+						if(newEarliestReminderTime !== $rootScope.user.earliestReminderTime){
+							$rootScope.user.earliestReminderTime = newEarliestReminderTime;
+							var params = {
+								earliestReminderTime: $rootScope.user.earliestReminderTime
+							};
+							userService.updateUserSettings(params);
+							reminderService.refreshTrackingRemindersAndScheduleAlarms();
+							$ionicPopup.alert({
+								title: 'Earliest Notification Time Updated',
+								template: 'You should not receive device notifications or tracking reminder notifications in your inbox before ' + moment(a).format('h:mm A') + '.'
+							});
+						}
+					}
+				},
+				inputTime: timeService.getSecondsSinceMidnightLocalFromLocalString($rootScope.user.earliestReminderTime),
+				step: 15,
+				closeLabel: 'Cancel'
+			};
+
+			ionicTimePicker.openTimePicker($scope.state.earliestReminderTimePickerConfiguration);
+		};
+
+		$scope.openLatestReminderTimePicker = function() {
+			$scope.state.latestReminderTimePickerConfiguration = {
+				callback: function (val) {
+					if (typeof (val) === 'undefined') {
+						console.log('Time not selected');
+					} else {
+						var a = new Date();
+						var selectedTime = new Date(val * 1000);
+						a.setHours(selectedTime.getUTCHours());
+						a.setMinutes(selectedTime.getUTCMinutes());
+						console.log('Selected epoch is : ', val, 'and the time is ',
+							selectedTime.getUTCHours(), 'H :', selectedTime.getUTCMinutes(), 'M');
+						var newLatestReminderTime = moment(a).format('HH:mm:ss');
+						if(newLatestReminderTime < $rootScope.user.earliestReminderTime){
+							$ionicPopup.alert({
+								title: 'Choose Another Time',
+								template: 'Latest reminder time cannot be less than earliest reminder time.  Please change the earliest reminder time and try again or select a different latest reminder time.'
+							});
+						}
+						if(newLatestReminderTime !== $rootScope.user.latestReminderTime){
+							$rootScope.user.latestReminderTime = newLatestReminderTime;
+							var params = {
+								latestReminderTime: $rootScope.user.latestReminderTime
+							};
+							userService.updateUserSettings(params);
+							reminderService.refreshTrackingRemindersAndScheduleAlarms();
+							$ionicPopup.alert({
+								title: 'Latest Notification Time Updated',
+								template: 'You should not receive device notifications or tracking reminder notifications in your inbox after ' + moment(a).format('h:mm A') + '.'
+							});
+						}
+					}
+				},
+				inputTime: timeService.getSecondsSinceMidnightLocalFromLocalString($rootScope.user.latestReminderTime),
+				step: 15,
+				closeLabel: 'Cancel'
+			};
+
+			ionicTimePicker.openTimePicker($scope.state.latestReminderTimePickerConfiguration);
 		};
 
 		$scope.trackLocationChange = function() {
@@ -243,7 +338,7 @@ angular.module('starter')
 	        for (var i = 0; i < array.length; i++) {
 	            var line = '';
 	            for (var index in array[i]) {
-	                if (line != '') {
+	                if (line !== '') {
 						line += ',';
 					}
 	                line += array[i][index];
@@ -317,34 +412,9 @@ angular.module('starter')
 
 		// when view is changed
 		$scope.$on('$ionicView.enter', function(e) {
+			$scope.hideLoader();
 			$scope.state.trackLocation = $rootScope.trackLocation;
 		});
-/*
-
-	    // When Export is tapped
-	    $scope.export = function(){
-
-	    	localStorageService.getItem('allMeasurements', function(allMeasurements){
-		    	// get all data 
-		        var arr = allMeasurements? JSON.parse(allMeasurements) : [];
-		        
-		        // convert JSon to CSV
-		        var csv = convertToCSV(arr);
-
-		        // write it on storage
-		        $cordovaFile.writeFile(cordova.file.dataDirectory, "csv.csv", csv, true)
-				.then(function (success) {
-
-		         	// when done, open the file opener / chooser
-					$cordovaFileOpener2.open(cordova.file.dataDirectory+'csv.csv','application/csv');
-
-		        }, function (error) {
-					Bugsnag.notify(error, JSON.stringify(error), {}, "error");
-					utilsService.showAlert('Please generate CSV later!');
-				});
-	    	});
-	    };
-*/
 
 	    // call constructor
 	    $scope.init();

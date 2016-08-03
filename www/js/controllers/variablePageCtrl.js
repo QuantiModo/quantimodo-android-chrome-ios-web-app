@@ -1,10 +1,9 @@
 angular.module('starter')
 
     // Controls the Track Page of the App
-    .controller('VariablePageCtrl', function($scope, $q, $ionicModal, $state, $timeout, utilsService, authService,
-                                                    measurementService, chartService, $ionicPopup, localStorageService,
-                                                    $rootScope, $ionicLoading, ratingService, $stateParams, QuantiModo,
-                                             $ionicActionSheet, variableService) {
+    .controller('VariablePageCtrl', function($scope, $q, $state, $timeout, $rootScope, $ionicLoading,  $ionicActionSheet,
+                                             $stateParams, chartService, localStorageService, QuantiModo, 
+                                             variableService) {
         $scope.controller_name = "VariablePageCtrl";
         $scope.addReminderButtonText = "Add Reminder";
         $scope.recordMeasurementButtonText = "Record Measurement";
@@ -21,7 +20,20 @@ angular.module('starter')
             showHourlyChart: false,
             showWeekdayChart: false,
             barChartData: null,
-            lineChartData: null
+            lineChartData: null,
+            statistics : {
+                number_of_measurements: null,
+                number_of_correlations: null,
+                number_of_unique_daily_values: null,
+                mean: null,
+                median: null,
+                most_common_value: null,
+                standard_deviation: null,
+                variance: null,
+                skewness: null,
+                kurtosis: null
+            }
+
         };
 
         $scope.addNewReminderButtonClick = function() {
@@ -200,7 +212,9 @@ angular.module('starter')
                     };
                     getHistoryForVariable(params);
                 }
-                $scope.hideLoader();
+                else {
+                    $scope.hideLoader();
+                }
                 deferred.resolve();
             }, function(error){
                 Bugsnag.notify(error, JSON.stringify(error), {}, "error");
@@ -214,8 +228,28 @@ angular.module('starter')
         };
 
 
-        $scope.init();
+        var getStatisticsForVariable = function (variableName) {
+            variableService.getVariablesByName(variableName).then(function(variableObject){
+                updateStatisticsForVariable(variableObject);
+            });
+        };
 
+        var updateStatisticsForVariable = function(variableObject) {
+            $scope.state.statistics.number_of_measurements = variableObject.numberOfMeasurements;
+            $scope.state.statistics.number_of_correlations = variableObject.numberOfCorrelations;
+            $scope.state.statistics.number_of_unique_daily_values = variableObject.numberOfUniqueDailyValues;
+            $scope.state.statistics.mean = variableObject.mean;
+            $scope.state.statistics.median = variableObject.median;
+            $scope.state.statistics.most_common_value = variableObject.mostCommonValue;
+            $scope.state.statistics.standard_deviation = variableObject.standardDeviation;
+            $scope.state.statistics.variance = variableObject.variance;
+            $scope.state.statistics.skewness = variableObject.skewness;
+            $scope.state.statistics.kurtosis = variableObject.kurtosis;
+
+            console.log($scope.state.statistics);
+            console.log("stats logged");
+        };
+        
         $scope.init = function(){
             console.log("variablePageCtrl: init");
             if($stateParams.variableObject){
@@ -223,22 +257,21 @@ angular.module('starter')
                 if($stateParams.variableObject.name){
                     $scope.state.variableObject.variableName = $stateParams.variableObject.name;
                 }
+                getStatisticsForVariable($scope.state.variableObject.variableName);
             } else if ($stateParams.trackingReminder){
                 $scope.state.variableObject = $stateParams.trackingReminder;
+                getStatisticsForVariable($scope.state.variableObject.variableName);
             } else if ($stateParams.variableName){
                 $scope.state.variableObject = {};
                 $scope.state.variableObject.variableName = $stateParams.variableName;
                 variableService.getVariablesByName($stateParams.variableName).then(function(variableObject){
                     $scope.state.variableObject = variableObject;
                     $scope.state.variableObject.variableName = variableObject.name;
+                    updateStatisticsForVariable(variableObject);
                 });
 
             } else {
                 console.error("No variable name provided to variable page controller!");
-            }
-
-            if(!$scope.state.variableObject.abbreviatedUnitName){
-
             }
 
             $ionicLoading.hide();
@@ -257,9 +290,11 @@ angular.module('starter')
                     updateCharts();
                 }
             }));
+
         };
 
         $scope.$on('$ionicView.enter', function(e) {
+            $scope.hideLoader();
             console.log("variablePageCtrl: ionicView.enter");
             if (!$scope.state) {
                 console.log("about to call init from enter: no $scope.state");

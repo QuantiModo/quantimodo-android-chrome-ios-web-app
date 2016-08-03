@@ -1,7 +1,7 @@
 angular.module('starter')
 
 	// Handles All the Views that have an iframe
-	.controller('ExternalCtrl', function($scope, $ionicModal, $timeout, utilsService) {
+	.controller('ExternalCtrl', function($scope) {
 		$scope.controller_name = "ExternalCtrl";
 	    
 	    // when page load completes

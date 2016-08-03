@@ -38,8 +38,28 @@
             </div>
             <ion-toggle ng-model="state.showOnlyOneNotification"
                         ng-change="combineNotificationChange()">
-                Single Repeating
+                Disable Multiple
             </ion-toggle>
+            <label class="item item-input">
+                <div class="input-label" >
+                    Earliest Notification Time
+                </div>
+                <button class="button button-block up-top"
+                        style="text-align:left;font-size:14px;border:none;color:black;background-color: white;margin-bottom: 0px;margin-top: 0px;padding-left: 0px;"
+                        ng-click="openEarliestReminderTimePicker()">
+                    {{user.earliestReminderTime | fromTwentyFourToTwelveHourFormat}}
+                </button>
+            </label>
+            <label class="item item-input">
+                <div class="input-label" >
+                    Latest Notification Time
+                </div>
+                <button class="button button-block up-top"
+                        style="text-align:left;font-size:14px;border:none;color:black;background-color: white;margin-bottom: 0px;margin-top: 0px;padding-left: 0px;"
+                        ng-click="openLatestReminderTimePicker()">
+                    {{user.latestReminderTime | fromTwentyFourToTwelveHourFormat}}
+                </button>
+            </label>
             <!--
             <div ng-click="ratingPopover.show();" ng-show="state.showOnlyOneNotification" class="list card">
                 <div class="item item-text-wrap">

@@ -1,8 +1,7 @@
 angular.module('starter')
 
-	.controller('PredictorsCtrl', function($scope, $ionicModal, $timeout, measurementService, $ionicLoading,
-                                         $state, $ionicPopup, correlationService, $rootScope,
-                                         localStorageService, utilsService, authService, $stateParams) {
+	.controller('PredictorsCtrl', function($scope, $ionicLoading, $state, $stateParams, $ionicPopup, correlationService,
+                                           authService) {
 
 		$scope.controller_name = "PredictorsCtrl";
         $scope.state = {
@@ -80,8 +79,10 @@ angular.module('starter')
                             $scope.state.usersCorrelationObjects = correlationObjects;
                         });
                     $ionicLoading.hide();
+                    $scope.hideLoader();
                 }, function(){
                     $ionicLoading.hide();
+                    $scope.hideLoader();
                     console.error('predictorsCtrl: Could not get correlations');
                 });
         };
@@ -217,6 +218,7 @@ angular.module('starter')
 
         // when view is changed
         $scope.$on('$ionicView.enter', function(e){
+            $scope.hideLoader();
             $scope.init();
         });
 	});

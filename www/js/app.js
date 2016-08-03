@@ -135,7 +135,7 @@ angular.module('starter',
                 return;
             }
 
-            $rootScope.appVersion = "1.8.0.7";
+            $rootScope.appVersion = "1.8.0.9";
             $rootScope.appName = config.appSettings.appName;
 
             if(window.private_keys.bugsnag_key) {
@@ -409,7 +409,7 @@ angular.module('starter',
             url: "/measurement-add/:variableName",
             cache: false,
             params: {
-                reminder : null,
+                reminderNotification: null,
                 fromState : null,
                 fromUrl : null,
                 measurement : null,
@@ -773,7 +773,7 @@ angular.module('starter',
             cache: false,
             params: {
                 variableCategoryName : null,
-                reminder : null,
+                reminderNotification: null,
                 fromState : null,
                 fromUrl : null,
                 measurement : null,

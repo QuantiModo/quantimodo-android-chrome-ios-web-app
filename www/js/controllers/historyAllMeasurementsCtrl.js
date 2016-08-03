@@ -1,11 +1,9 @@
 angular.module('starter')
 
 	// Controls the History Page of the App.
-	.controller('historyAllMeasurementsCtrl', function($scope, $state, $ionicModal, $timeout, $ionicLoading,
-													   authService, $ionicPopover, measurementService, $ionicPopup,
-													   variableCategoryService, unitService, utilsService,
-													   $stateParams, ratingService, $rootScope, localStorageService,
-													   qmLocationService){
+	.controller('historyAllMeasurementsCtrl', function($scope, $state, $stateParams, $rootScope, authService, 
+													   measurementService, variableCategoryService, ratingService, 
+													   localStorageService, qmLocationService) {
 
 	    $scope.controller_name = "historyAllMeasurementsCtrl";
         
@@ -147,8 +145,8 @@ angular.module('starter')
 
         // when view is changed
     	$scope.$on('$ionicView.enter', function(e) {
+			$scope.hideLoader();
 			$scope.state.offset = 0;
-    		//$scope.state.history = [];
 			$scope.state.trackLocation = $rootScope.trackLocation;
     		$scope.init();
     	});

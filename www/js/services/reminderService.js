@@ -1,6 +1,7 @@
 angular.module('starter')
 	// Measurement Service
-	.factory('reminderService', function($http, $q, QuantiModo, timeService, notificationService, localStorageService, $rootScope){
+	.factory('reminderService', function($q, $rootScope, QuantiModo, timeService, notificationService,
+										 localStorageService) {
 
 		// service methods
 		var reminderService = {
@@ -105,10 +106,6 @@ angular.module('starter')
 			},
 
 			refreshTrackingRemindersAndScheduleAlarms : function(){
-
-				$rootScope.isSyncing = true;
-				$rootScope.syncDisplayText = 'Reminders coming down the pipes...';
-
 				if(!$rootScope.syncingReminders){
 					$rootScope.syncingReminders = true;
 					var deferred = $q.defer();
@@ -121,25 +118,21 @@ angular.module('starter')
 						var trackingReminders = remindersResponse.data;
 						if(remindersResponse.success) {
 							if($rootScope.showOnlyOneNotification !== true){
-								notificationService.scheduleAllNotifications(trackingReminders);
+								notificationService.scheduleAllNotificationsByTrackingReminders(trackingReminders);
+							} else {
+								notificationService.scheduleSingleMostFrequentNotification(trackingReminders);
 							}
 							localStorageService.setItem('trackingReminders', JSON.stringify(trackingReminders));
 							$rootScope.syncingReminders = false;
-							$rootScope.isSyncing = false;
-							$rootScope.syncDisplayText = '';
 							deferred.resolve(trackingReminders);
 						}
 						else {
 							$rootScope.syncingReminders = false;
-							$rootScope.isSyncing = false;
-							$rootScope.syncDisplayText = '';
 							deferred.reject("error");
 							Bugsnag.notify(remindersResponse, JSON.stringify(remindersResponse), {}, "error");
 						}
 					}, function(err){
 						$rootScope.syncingReminders = false;
-						$rootScope.isSyncing = false;
-						$rootScope.syncDisplayText = '';
 						Bugsnag.notify(err, JSON.stringify(err), {}, "error");
 						deferred.reject(err);
 					});

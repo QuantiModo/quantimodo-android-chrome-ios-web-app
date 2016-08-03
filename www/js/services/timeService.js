@@ -1,11 +1,11 @@
 angular.module('starter')
 	// Measurement Service
-	.factory('timeService', function($http, $q, QuantiModo, localStorageService){
+	.factory('timeService', function() {
 
 		// service methods
 		var timeService = {
 
-			getSecondsSinceMidnightLocal: function (utcTimeString) {
+			getSecondsSinceMidnightLocalFromUtcString: function (utcTimeString) {
 
 				var timeFormat = "HH:mm:ss Z";
 				var utcTimeStringFull = moment().format(timeFormat);
@@ -24,6 +24,15 @@ angular.module('starter')
                     secondsSinceMidnightLocal = secondsSinceMidnightLocal + 86400;
                 }
 
+				return secondsSinceMidnightLocal;
+			},
+
+			getSecondsSinceMidnightLocalFromLocalString: function (localTimeString) {
+				var timeFormat = "HH:mm:ss";
+				var hoursSinceMidnightLocal = moment(localTimeString, timeFormat).format("HH");
+				var minutesSinceMidnightLocal = moment(localTimeString, timeFormat).format("mm");
+				var secondsSinceMidnightLocal =
+					hoursSinceMidnightLocal * 60 *60 + minutesSinceMidnightLocal * 60;
 				return secondsSinceMidnightLocal;
 			},
 
@@ -94,6 +103,15 @@ angular.module('starter')
 				var timeFormat = 'YYYY-MM-DD HH:mm:ss';
 				var currentDateTimeInUtcStringPlus15Min = currentMoment.utc().format(timeFormat);
 				return currentDateTimeInUtcStringPlus15Min;
+			},
+
+			convertDateObjectToLocalTimeString: function(dateObject) {
+				var hours = dateObject.getHours();
+				var minutes = dateObject.getMinutes();
+				var seconds = dateObject.getSeconds();
+				var localTimeString = hours + ":" + minutes + ":" + seconds;
+				console.log("localTimeString is " + localTimeString);
+				return localTimeString;
 			}
 		};
 

@@ -1,15 +1,14 @@
 angular.module('starter')
 
 	// Controls the History Page of the App.
-	.controller('HistoryPrimaryOutcomeCtrl', function($scope, $ionicModal, $timeout, $ionicLoading, authService,
-													  $ionicPopover, measurementService, $ionicPopup,
-													  localStorageService, utilsService,
-													  $state, $rootScope, ratingService){
+	.controller('HistoryPrimaryOutcomeCtrl', function($scope, $ionicLoading, $state, $rootScope, measurementService,
+													  ratingService) {
 
 	    $scope.controller_name = "HistoryPrimaryOutcomeCtrl";
 		$scope.state = {
 			history : []
 		};
+		$scope.syncDisplayText = 'Syncing ' + config.appSettings.primaryOutcomeVariableDetails.name + ' measurements...';
 		
 		$scope.editMeasurement = function(measurement){
 			$state.go('app.measurementAdd', {
@@ -48,11 +47,11 @@ angular.module('starter')
 			Bugsnag.context = "historyPrimary";
 			updateHistoryView();
 			if($rootScope.user){
-				measurementService.syncPrimaryOutcomeVariableMeasurements()
-					.then(function(){
-						$scope.hideLoader();
-						updateHistoryView();
-					});
+				$scope.showLoader($scope.syncDisplayText);
+				measurementService.syncPrimaryOutcomeVariableMeasurements().then(function(){
+					$scope.hideLoader();
+					updateHistoryView();
+				});
 			}
 			else {
 				updateHistoryView();
@@ -64,6 +63,7 @@ angular.module('starter')
 
         // when view is changed
     	$scope.$on('$ionicView.enter', function(e) {
+			$scope.hideLoader();
     		$scope.init();
     	});
 

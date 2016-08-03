@@ -1,9 +1,8 @@
 angular.module('starter')
 
     // Handlers the Welcome Page
-    .controller('LoginCtrl', function($scope, $ionicModal, $timeout, utilsService, authService, measurementService,
-                                      $state, $ionicHistory, notificationService, localStorageService, $rootScope,
-                                      $ionicLoading, $injector) {
+    .controller('LoginCtrl', function($scope, $state, $rootScope, $ionicLoading, $injector, utilsService, authService,
+                                      localStorageService) {
 
         $scope.controller_name = "LoginCtrl";
         console.log("isIos is" + $rootScope.isIos);

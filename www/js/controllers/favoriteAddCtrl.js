@@ -1,11 +1,9 @@
 angular.module('starter')
 
 	// Controls the History Page of the App.
-	.controller('FavoriteAddCtrl', function($scope, authService, $ionicPopup, localStorageService, $state,
-											 $stateParams, measurementService, reminderService, $ionicLoading,
-											 utilsService, $filter, ionicTimePicker, $timeout, 
-											 variableCategoryService, variableService, unitService, timeService,
-                                             $rootScope, $ionicActionSheet, $ionicHistory){
+	.controller('FavoriteAddCtrl', function($scope, $state, $stateParams, $ionicLoading, $timeout, $rootScope, 
+                                            $ionicActionSheet, $ionicHistory, authService, localStorageService, 
+                                            utilsService, reminderService, variableCategoryService, variableService, unitService) {
 
 	    $scope.controller_name = "FavoriteAddCtrl";
 
@@ -179,8 +177,8 @@ angular.module('starter')
                             $state.go('app.remindersManage');
                         }
                     }
-                    $stateParams.reminder = $scope.state.allReminders[0];
-                    setupEditReminder($stateParams.reminder);
+                    $stateParams.reminderNotification = $scope.state.allReminders[0];
+                    setupEditReminder($stateParams.reminderNotification);
                     $ionicLoading.hide();
                     $scope.loading = false;
                 }, function () {
@@ -201,8 +199,8 @@ angular.module('starter')
                     var reminderIdUrlParameter = utilsService.getUrlParameter(window.location.href, 'reminderId');
                     var variableIdUrlParameter = utilsService.getUrlParameter(window.location.href, 'variableId');
 
-                    if ($stateParams.reminder && $stateParams.reminder !== null) {
-                        setupEditReminder($stateParams.reminder);
+                    if ($stateParams.reminderNotification && $stateParams.reminderNotification !== null) {
+                        setupEditReminder($stateParams.reminderNotification);
                     } else if(reminderIdUrlParameter) {
                         setupReminderEditingFromUrlParameter(reminderIdUrlParameter);
                     } else if(variableIdUrlParameter){
@@ -217,6 +215,7 @@ angular.module('starter')
 
         // when view is changed
     	$scope.$on('$ionicView.enter', function(e){
+            $scope.hideLoader();
     		$scope.init();
     	});
 

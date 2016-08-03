@@ -1,9 +1,8 @@
 angular.module('starter')
 
-	.controller('RemindersManageCtrl', function($scope, authService, $ionicPopup, localStorageService, $state,
-												reminderService, $ionicLoading, measurementService, utilsService,
-												$stateParams, $filter, $rootScope, $ionicActionSheet, $timeout,
-												variableCategoryService){
+	.controller('RemindersManageCtrl', function($scope, $state, $stateParams, $ionicPopup, $ionicLoading, $filter,
+												$rootScope, $ionicActionSheet, $timeout, authService,
+												localStorageService, reminderService, variableCategoryService) {
 
 	    $scope.controller_name = "RemindersManageCtrl";
 
@@ -122,7 +121,9 @@ angular.module('starter')
 				$scope.showHelpInfoPopupIfNecessary();
 				if(!$rootScope.syncingReminders) {
 					console.debug("ReminderMange init: calling refreshTrackingRemindersAndScheduleAlarms");
+					$scope.showLoader('Reminders coming down the pipes...');
 					reminderService.refreshTrackingRemindersAndScheduleAlarms().then(function () {
+						$scope.hideLoader();
 						getTrackingRemindersFromLocalStorage();
 						//Stop the ion-refresher from spinning
 						$scope.$broadcast('scroll.refreshComplete');
@@ -206,6 +207,7 @@ angular.module('starter')
 
         // when view is changed
     	$scope.$on('$ionicView.enter', function(e){
+			$scope.hideLoader();
     		$scope.init();
     	});
 

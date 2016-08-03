@@ -1,10 +1,8 @@
 angular.module('starter')
 
-	.controller('FavoritesCtrl', function($scope, authService, $ionicPopup, localStorageService, $state,
-											   reminderService, $ionicLoading, measurementService, utilsService,
-											   $stateParams, $location, $filter, $ionicPlatform, $rootScope,
-                                               notificationService, variableCategoryService, $ionicActionSheet,
-										  $timeout){
+	.controller('FavoritesCtrl', function($scope, $state, $ionicActionSheet, $timeout, reminderService, authService, 
+										  localStorageService, measurementService, utilsService, 
+										  variableCategoryService) {
 
 	    $scope.controller_name = "FavoritesCtrl";
 
@@ -79,7 +77,7 @@ angular.module('starter')
 	    $scope.editMeasurement = function(trackingReminder){
 			$state.go('app.measurementAdd',
 				{
-					reminder: trackingReminder,
+					reminderNotification: trackingReminder,
 					fromUrl: window.location.href
 				});
 	    };
@@ -87,7 +85,7 @@ angular.module('starter')
 	    $scope.editReminderSettings = function(trackingReminder){
 	    	$state.go('app.favoriteAdd',
 				{
-					reminder : trackingReminder,
+					reminderNotification: trackingReminder,
 					fromUrl: window.location.href,
 					fromState : $state.current.name
 				});
@@ -103,6 +101,7 @@ angular.module('starter')
 
         // when view is changed
     	$scope.$on('$ionicView.enter', function(e){
+			$scope.hideLoader();
     		$scope.init();
     	});
 

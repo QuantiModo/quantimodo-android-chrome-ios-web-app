@@ -260,7 +260,7 @@ label.item.item-input.item-text > input[type="text"] {
     position: absolute;
     top: 40px;
     z-index:5;
-    background-color: #A0E749
+    background-color: #A0E749;
 }
 
 .slider {
@@ -559,33 +559,42 @@ img.intro-primary-outcome-variable-rating-buttons {
     padding-right: 10px;
 }
 */
+
+.card .variable-settings {
+    padding-right: 10px;
+}
 .variable-settings .item-input {
     display: block;
 }
 .variable-settings .left-span {
     float: left;
-    width: 35%;
+    width: auto;
     position: relative;
+    font-size: 14px;
+}
+.variable-settings .left-text {
+    float: left;
+    font-size: 14px;
 }
 .variable-settings .right-span {
     float: right;
-    padding-right: 10px;
-    width: 30%;
+    width: auto;
 }
 .variable-settings .right-input {
     padding-top: 0px;
-    padding-right: 0px;
+    padding-right: 10px !important;
     text-align: right;
     vertical-align: baseline;
     display: table;
 }
+
 .variable-settings .right-text {
-    padding-top: 8px;
     font-style: italic;
     vertical-align: baseline;
     text-align: right;
     font-size: 14px;
     float: right;
+    white-space: normal;
 }
 
 .variable-settings ::-webkit-input-placeholder { /* WebKit, Blink, Edge */
@@ -601,4 +610,20 @@ img.intro-primary-outcome-variable-rating-buttons {
 }
 .variable-settings :-ms-input-placeholder { /* Internet Explorer 10-11 */
     color:    #111;
+}
+
+#statisticsCard .right-text {
+    font-style: italic;
+    vertical-align: baseline;
+    text-align: right;
+    font-size: 14px;
+    float: right;
+    white-space: normal;
+}
+#statisticsCard .left-text {
+    float: left;
+    font-size: 14px;
+}
+#statisticsCard label {
+    padding: 6px 10px 5px 16px;
 }

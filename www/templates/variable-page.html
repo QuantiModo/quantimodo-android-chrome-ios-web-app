@@ -2,31 +2,65 @@
     <ion-content>
         <div ng-show="state.showBarChart" class="card primary-outcome-variable-reporting-chart">
     		<div class="item item-text-wrap">
-                <div >
-                    <highchart id="chart1" config="barChartConfig"></highchart>    
-                </div>
+                <highchart id="chart1" config="barChartConfig"></highchart>
             </div>
         </div>
         <div ng-show="state.showLineChart" class="card primary-outcome-variable-reporting-chart">
             <div class="item item-text-wrap">
-                <div >
-                    <highchart id="chart2" config="lineChartConfig"></highchart>    
-                </div>
+                <highchart id="chart2" config="lineChartConfig"></highchart>
             </div>
         </div>
         <div ng-show="state.showHourlyChart" class="card primary-outcome-variable-reporting-chart">
             <div class="item item-text-wrap">
-                <div >
-                    <highchart id="chart3" config="hourlyChartConfig"></highchart>
-                </div>
+                <highchart id="chart3" config="hourlyChartConfig"></highchart>
             </div>
         </div>
         <div ng-show="state.showWeekdayChart" class="card primary-outcome-variable-reporting-chart">
             <div class="item item-text-wrap">
-                <div>
-                    <highchart id="chart4" config="weekdayChartConfig"></highchart>
-                </div>
+                <highchart id="chart4" config="weekdayChartConfig"></highchart>
             </div>
+        </div>
+        <div class="card list" id="statisticsCard">
+            <label class="item item-content">
+                <span class="input-label left-text"># of measurements</span>
+                <span class="input-label right-text">{{state.statistics.number_of_measurements}}</span>
+            </label>
+            <label class="item item-content">
+                <span class="input-label left-text"># of correlations</span>
+                <span class="input-label right-text">{{state.statistics.number_of_correlations}}</span>
+            </label>
+            <label class="item item-content">
+                <span class="input-label left-text"># of unique daily values</span>
+                <span class="input-label right-text">{{state.statistics.number_of_unique_daily_values}}</span>
+            </label>
+            <label class="item item-content">
+                <span class="input-label left-text">Mean</span>
+                <span class="input-label right-text">{{state.statistics.mean}}</span>
+            </label>
+            <label class="item item-content">
+                <span class="input-label left-text">Median</span>
+                <span class="input-label right-text">{{state.statistics.median}}</span>
+            </label>
+            <label class="item item-content">
+                <span class="input-label left-text">Most common value</span>
+                <span class="input-label right-text">{{state.statistics.most_common_value}}</span>
+            </label>
+            <label class="item item-content">
+                <span class="input-label left-text">Standard deviation</span>
+                <span class="input-label right-text">{{state.statistics.standard_deviation}}</span>
+            </label>
+            <label class="item item-content">
+                <span class="input-label left-text">Variance</span>
+                <span class="input-label right-text">{{state.statistics.variance}}</span>
+            </label>
+            <label class="item item-content">
+                <span class="input-label left-text">Skewness</span>
+                <span class="input-label right-text">{{state.statistics.skewness}}</span>
+            </label>
+            <label class="item item-content">
+                <span class="input-label left-text">Kurtosis</span>
+                <span class="input-label right-text">{{state.statistics.kurtosis}}</span>
+            </label>
         </div>
         <div class="list card" ng-click="recordMeasurementButtonClick()">
             <a id="recordMeasurementButton" class="item item-icon-left">

@@ -2,10 +2,8 @@ angular.module('starter')
     
     // Controls the variable settings editing Page
     .controller('VariableSettingsCtrl',
-        function($scope, $ionicModal, $timeout, $ionicPopup ,$ionicLoading, authService,
-                                                measurementService, $state, $rootScope, utilsService,
-                                                localStorageService, $filter, $stateParams, $ionicHistory,
-                                                variableService, $q, QuantiModo, $ionicActionSheet){
+        function($scope, $state, $rootScope, $timeout, $ionicPopup, $q, $stateParams, $ionicHistory, $ionicActionSheet,
+                 authService, measurementService, localStorageService, variableService, QuantiModo) {
 
         $scope.controller_name = "VariableSettingsCtrl";
 
@@ -27,7 +25,8 @@ angular.module('starter')
         $scope.resetToDefaultSettings = function() {
             // Populate fields with original settings for variable
 
-            variableService.getPublicVariablesByName($stateParams.variableName).then(function(originalVariableObject) {
+            variableService.getPublicVariablesByName($stateParams.variableName).then(function(variableArray) {
+                var originalVariableObject = variableArray[0];
                 console.log("Original variable object: " + originalVariableObject);
 
                 if ($scope.state.variableObject.abbreviatedUnitName !== "/5") {
@@ -348,7 +347,10 @@ angular.module('starter')
         };
         
         // update data when view is navigated to
-        $scope.$on('$ionicView.enter', $scope.init);
+        $scope.$on('$ionicView.enter', function(e) {
+            $scope.hideLoader();
+            $scope.init();
+        });
 
     }
     );

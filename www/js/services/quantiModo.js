@@ -1,7 +1,7 @@
 angular.module('starter')    
     // QuantiModo API implementation
-    .factory('QuantiModo', function($http, $q, authService, localStorageService, $state, $ionicLoading,
-                                    $rootScope, $ionicPopup){
+    .factory('QuantiModo', function($http, $q, $rootScope, $ionicPopup, $state, $ionicLoading, authService,
+                                    localStorageService) {
             var QuantiModo = {};
             $rootScope.connectionErrorShowing = false; // to prevent more than one popup
 
@@ -513,7 +513,17 @@ angular.module('starter')
                     errorHandler);
             };
 
+            // post tracking reminder
+            QuantiModo.updateUserSettings = function(params, successHandler, errorHandler) {
+                console.debug("QuantiModo.updateUserSettings", params);
+                QuantiModo.post('api/v1/userSettings',
+                    [],
+                    params,
+                    successHandler,
+                    errorHandler);
+            };
 
+            // post tracking reminder
             QuantiModo.postTrackingReminder = function(reminder, successHandler, errorHandler) { 
                 console.log(reminder);
                 QuantiModo.post('api/v1/trackingReminders',

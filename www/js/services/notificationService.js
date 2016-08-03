@@ -1,7 +1,7 @@
 angular.module('starter')
 // Handles the Notifications (inapp, push)
-    .factory('notificationService',function($rootScope, $ionicPlatform, $state, localStorageService, $q, QuantiModo,
-                                            timeService, bugsnagService, qmLocationService){
+    .factory('notificationService',function($rootScope, $ionicPlatform, $state, $q, QuantiModo, timeService,
+                                            bugsnagService, qmLocationService) {
 
         function createChromeAlarmNameFromTrackingReminder(trackingReminder) {
             var alarmName = {
@@ -23,6 +23,7 @@ angular.module('starter')
 
             setOnUpdateAction: function(){
                 cordova.plugins.notification.local.on("update", function(notification) {
+                    console.debug("onUpdate: Just updated this notification: ", notification);
                     cordova.plugins.notification.local.getAll(function (notifications) {
                         console.debug("onUpdate: All notifications after update: ", notifications);
                     });
@@ -49,12 +50,14 @@ angular.module('starter')
                     }
 
                     if(notificationData && notificationData.trackingReminderNotificationId){
-                        console.debug("onClick: Notification was a reminder notification not reminder.  Skipping notification with id: " + notificationData.trackingReminderNotificationId);
+                        console.debug("onClick: Notification was a reminder notification not reminder.  " +
+                            "Skipping notification with id: " + notificationData.trackingReminderNotificationId);
                         params = {
                             trackingReminderNotificationId: notificationData.trackingReminderNotificationId
                         };
                     } else if (notificationData && notificationData.id) {
-                        console.debug("onClick: Notification was a reminder not a reminder notification.  Skipping next notification for reminder id: " + notificationData.id);
+                        console.debug("onClick: Notification was a reminder not a reminder notification.  " +
+                            "Skipping next notification for reminder id: " + notificationData.id);
                         params = {
                             trackingReminderId: notificationData.id
                         };
@@ -74,24 +77,38 @@ angular.module('starter')
                         //notificationService.decrementNotificationBadges();
                         $state.go('app.measurementAdd',
                             {
-                                reminder: notificationData,
+                                reminderNotification: notificationData,
                                 fromState: 'app.remindersInbox'
                             });
                     } else {
-                        console.debug("onClick: No params.trackingReminderId || params.trackingReminderNotificationId. Should have already gone to remindersInbox page.");
+                        console.debug("onClick: No params.trackingReminderId || params.trackingReminderNotificationId. " +
+                            "Should have already gone to remindersInbox page.");
                     }
                 });
             },
 
             updateBadgesAndTextOnAllNotifications : function () {
+
+                if($rootScope.isIOS){
+                    console.warn("updateBadgesAndTextOnAllNotifications: updating notifications on " +
+                        "iOS might make duplicates");
+                    //return;
+                }
                 $ionicPlatform.ready(function () {
                     if(!$rootScope.numberOfPendingNotifications){
                         $rootScope.numberOfPendingNotifications = 0;
                     }
                     cordova.plugins.notification.local.getAll(function (notifications) {
-                        console.debug("onTrigger.getNotificationsFromApiAndClearOrUpdateLocalNotifications.updateBadgesAndTextOnAllNotifications: All notifications ", notifications);
+                        console.debug("onTrigger.updateBadgesAndTextOnAllNotifications: " +
+                            "All notifications ", notifications);
                         for (var i = 0; i < notifications.length; i++) {
-                            console.log('onTrigger.getNotificationsFromApiAndClearOrUpdateLocalNotifications.updateBadgesAndTextOnAllNotifications:Updating notification', notifications[i]);
+                            if(notifications[i].badge === $rootScope.numberOfPendingNotifications){
+                                console.warn("updateBadgesAndTextOnAllNotifications: Not updating notification because $rootScope.numberOfPendingNotifications" +
+                                    " === notifications[i].badge", notifications[i]);
+                                continue;
+                            }
+                            console.log('onTrigger.updateBadgesAndTextOnAllNotifications' +
+                                ':Updating notification', notifications[i]);
                             var notificationSettings = {
                                 id: notifications[i].id,
                                 badge: $rootScope.numberOfPendingNotifications,
@@ -99,7 +116,8 @@ angular.module('starter')
                                 text: "Add a tracking reminder!"
                             };
                             if($rootScope.numberOfPendingNotifications > 0){
-                                notificationSettings.text = $rootScope.numberOfPendingNotifications + " tracking reminder notifications";
+                                notificationSettings.text = $rootScope.numberOfPendingNotifications + " tracking " +
+                                    "reminder notifications";
                             }
                             cordova.plugins.notification.local.update(notificationSettings);
                         }
@@ -110,8 +128,6 @@ angular.module('starter')
             setOnTriggerAction: function() {
 
                 function getNotificationsFromApiAndClearOrUpdateLocalNotifications() {
-
-
                     var currentDateTimeInUtcStringPlus5Min = timeService.getCurrentDateTimeInUtcStringPlusMin(5);
                     var params = {
                         reminderTime: '(lt)' + currentDateTimeInUtcStringPlus5Min
@@ -121,12 +137,12 @@ angular.module('starter')
                             $rootScope.trackingReminderNotifications = response.data;
                             $rootScope.numberOfPendingNotifications = $rootScope.trackingReminderNotifications.length;
                             if (!$rootScope.numberOfPendingNotifications) {
-                                console.debug("onTrigger: No notifications from API so clearAll active notifications");
+                                console.debug("onTrigger.getNotificationsFromApiAndClearOrUpdateLocalNotifications: No notifications from API so clearAll active notifications");
                                 cordova.plugins.notification.local.clearAll(function () {
-                                    console.debug("onTrigger: cleared all active notifications");
+                                    console.debug("onTrigger.getNotificationsFromApiAndClearOrUpdateLocalNotifications: cleared all active notifications");
                                 }, this);
                             } else {
-                                console.debug("onTrigger: notifications from API", $rootScope.trackingReminderNotifications);
+                                console.debug("onTrigger.getNotificationsFromApiAndClearOrUpdateLocalNotifications: notifications from API", $rootScope.trackingReminderNotifications);
                                 $rootScope.updateOrRecreateNotifications();
                             }
                         }
@@ -136,15 +152,19 @@ angular.module('starter')
                 }
 
                 function clearOtherLocalNotifications(currentNotification) {
-                    console.debug("onTrigger.clearOtherLocalNotifications: Clearing notifications except the one that just triggered...");
+                    console.debug("onTrigger.clearOtherLocalNotifications: Clearing notifications except the one " +
+                        "that just triggered...");
                     $ionicPlatform.ready(function () {
                         cordova.plugins.notification.local.getTriggeredIds(function (triggeredNotifications) {
-                            console.debug("onTrigger.clearOtherLocalNotifications: found triggered notifications before removing current one: " + JSON.stringify(triggeredNotifications));
+                            console.debug("onTrigger.clearOtherLocalNotifications: found triggered notifications " +
+                                "before removing current one: " + JSON.stringify(triggeredNotifications));
                             if (triggeredNotifications.length < 1) {
-                                console.warn("onTrigger.clearOtherLocalNotifications: Triggered notifications is empty so maybe it's not working.");
+                                console.warn("onTrigger.clearOtherLocalNotifications: Triggered notifications is " +
+                                    "empty so maybe it's not working.");
                             } else {
                                 triggeredNotifications.splice(triggeredNotifications.indexOf(currentNotification.id), 1);
-                                console.debug("onTrigger.clearOtherLocalNotifications: found triggered notifications after removing current one: " + JSON.stringify(triggeredNotifications));
+                                console.debug("onTrigger.clearOtherLocalNotifications: found triggered notifications " +
+                                    "after removing current one: " + JSON.stringify(triggeredNotifications));
                                 cordova.plugins.notification.local.clear(triggeredNotifications);
                             }
                         });
@@ -152,7 +172,8 @@ angular.module('starter')
                 }
 
                 function clearNotificationIfOutsideAllowedTimes(notificationData, currentNotification) {
-                    console.log("onTrigger.clearNotificationIfOutsideAllowedTimes: Checking notification time limits", currentNotification);
+                    console.log("onTrigger.clearNotificationIfOutsideAllowedTimes: Checking notification time limits",
+                        currentNotification);
                     if (notificationData.reminderFrequency < 86400) {
                         var currentTimeInLocalString = timeService.getCurrentTimeInLocalString();
                         var reminderStartTimeInLocalString = timeService.getLocalTimeStringFromUtcString(notificationData.reminderStartTime);
@@ -180,14 +201,17 @@ angular.module('starter')
 
                 cordova.plugins.notification.local.on("trigger", function (currentNotification) {
 
+/*                   I don't think this is necessary because we're going to check the API anyway
                     if(currentNotification.badge < 1){
                         $ionicPlatform.ready(function () {
                             cordova.plugins.notification.local.clearAll(function () {
-                                console.log("onTrigger: Cleared all notifications because badge is less than 1");
+                                console.warn("onTrigger: Cleared all notifications because badge is less than 1");
                             });
                         });
                         return;
                     }
+                    */
+
                     try {
                         qmLocationService.updateLocationVariablesAndPostMeasurementIfChanged();
                         console.debug("onTrigger: just triggered this notification: ",  currentNotification);
@@ -201,7 +225,8 @@ angular.module('starter')
                         }
 
                         if(!notificationData){
-                            console.debug("onTrigger: This is a generic notification that sends to inbox, so we'll check the API for pending notifications.");
+                            console.debug("onTrigger: This is a generic notification that sends to inbox, so we'll " +
+                                "check the API for pending notifications.");
                             getNotificationsFromApiAndClearOrUpdateLocalNotifications();
                         }
 
@@ -222,34 +247,69 @@ angular.module('starter')
             },
 
             setNotificationBadge: function(numberOfPendingNotifications){
+                console.debug("setNotificationBadge: numberOfPendingNotifications is " + numberOfPendingNotifications);
                 $rootScope.numberOfPendingNotifications = numberOfPendingNotifications;
                 this.updateOrRecreateNotifications();
             },
 
             updateOrRecreateNotifications: function() {
                 if($rootScope.isAndroid){
-                    console.debug("getNotificationsFromApiAndClearOrUpdateLocalNotifications: Updating " +
+                    console.debug("updateOrRecreateNotifications: Updating " +
                         "notifications for Android because Samsung limits number of notifications " +
                         "that can be scheduled in a day.");
                     this.updateBadgesAndTextOnAllNotifications();
                 }
                 if($rootScope.isIOS){
-                    console.debug("getNotificationsFromApiAndClearOrUpdateLocalNotifications: " +
-                        "iOS makes duplicates when updating for some reason so we just cancel all " +
-                        "and schedule again");
-                    var intervalInMinutes = 60;
-                    this.scheduleGenericNotification(intervalInMinutes);
+                    console.warn('updateOrRecreateNotifications: Updating local notifications on iOS might ' +
+                        'make duplicates and we cannot recreate here because we will lose the previously set interval');
+                    this.updateBadgesAndTextOnAllNotifications();
+
+                    //console.debug("updateOrRecreateNotifications: iOS makes duplicates when updating for some reason so we just cancel all and schedule again");
+                    //this.scheduleGenericNotification(notificationSettings);
                 }
             },
 
-            scheduleAllNotifications: function(trackingRemindersFromApi) {
+            scheduleSingleMostFrequentNotification: function(trackingRemindersFromApi) {
+                if($rootScope.showOnlyOneNotification === false){
+                    console.warn("scheduleSingleMostFrequentNotification: $rootScope.showOnlyOneNotification === false" +
+                        " so we shouldn't be calling this function");
+                    return;
+                }
+
+                var shortestInterval = 86400;
+                var at = new Date(0); // The 0 there is the key, which sets the date to the epoch
+                if($rootScope.isChromeExtension || $rootScope.isIOS || $rootScope.isAndroid) {
+                    for (var i = 0; i < trackingRemindersFromApi.length; i++) {
+                        if(trackingRemindersFromApi[i].reminderFrequency < shortestInterval){
+                            shortestInterval = trackingRemindersFromApi[i].reminderFrequency;
+                            at.setUTCSeconds(trackingRemindersFromApi[i].nextReminderTimeEpochSeconds);
+                        }
+                    }
+                    var notificationSettings = {
+                        every: shortestInterval/60,
+                        at: at
+                    };
+
+                    if($rootScope.previousSingleNotificationSettings && notificationSettings === $rootScope.previousSingleNotificationSettings){
+                        console.debug("scheduleSingleMostFrequentNotification: Notification settings haven't changed so" +
+                            " no need to scheduleGenericNotification", notificationSettings);
+                        return;
+                    }
+                    console.debug("scheduleSingleMostFrequentNotification: Going to schedule generic notification",
+                        notificationSettings);
+                    $rootScope.previousSingleNotificationSettings = notificationSettings;
+                    this.scheduleGenericNotification(notificationSettings);
+                }
+            },
+
+            scheduleAllNotificationsByTrackingReminders: function(trackingRemindersFromApi) {
                 if($rootScope.isChromeExtension || $rootScope.isIOS || $rootScope.isAndroid) {
                     for (var i = 0; i < trackingRemindersFromApi.length; i++) {
                         if($rootScope.showOnlyOneNotification === false){
                             try {
                                 this.scheduleNotificationByReminder(trackingRemindersFromApi[i]);
                             } catch (err) {
-                                console.error('scheduleAllNotifications error');
+                                console.error('scheduleAllNotificationsByTrackingReminders error');
                                 bugsnagService.reportError(err);
                                 console.error(err);
                             }
@@ -282,7 +342,8 @@ angular.module('starter')
 
                 function cancelIonicNotificationsForDeletedReminders(trackingRemindersFromApi) {
                     cordova.plugins.notification.local.getAll(function (scheduledNotifications) {
-                        console.debug("cancelIonicNotificationsForDeletedReminders: notification.local.getAll scheduledNotifications: ",
+                        console.debug("cancelIonicNotificationsForDeletedReminders: notification.local.getAll " +
+                            "scheduledNotifications: ",
                             scheduledNotifications);
                         for (var i = 0; i < scheduledNotifications.length; i++) {
                             var existingReminderFoundInApiResponse = false;
@@ -293,12 +354,10 @@ angular.module('starter')
                                 }
                             }
                             if(!existingReminderFoundInApiResponse) {
-                                //if($rootScope.showOnlyOneNotification === "false"){
-                                    console.debug('Matching API reminder not found. Cancelling scheduled notification ' + JSON.stringify(scheduledNotifications[i]));
-                                    cordova.plugins.notification.local.cancel(scheduledNotifications[i].id, function (cancelledNotification) {
-                                        console.debug("Canceled notification ", cancelledNotification);
-                                    });
-                                //}
+                                console.debug('Matching API reminder not found. Cancelling scheduled notification ' + JSON.stringify(scheduledNotifications[i]));
+                                cordova.plugins.notification.local.cancel(scheduledNotifications[i].id, function (cancelledNotification) {
+                                    console.debug("Canceled notification ", cancelledNotification);
+                                });
                             }
                         }
                     });
@@ -325,19 +384,30 @@ angular.module('starter')
                     return;
                 }
 
-                cordova.plugins.notification.local.getAll(function (notifications) {
-                    console.debug("scheduleNotificationByReminder: All notifications before scheduling", notifications);
-                });
+
+                if(!$rootScope.user.earliestReminderTime){
+                    console.error("Cannot schedule notifications because $rootScope.user.earliestReminderTime not set",
+                        $rootScope.user);
+                    return;
+                }
+
+                if(!$rootScope.user.latestReminderTime){
+                    console.error("Cannot schedule notifications because $rootScope.user.latestReminderTime not set",
+                        $rootScope.user);
+                    return;
+                }
 
                 function createOrUpdateIonicNotificationForTrackingReminder(notificationSettings) {
                     cordova.plugins.notification.local.isPresent(notificationSettings.id, function (present) {
 
                         if (!present) {
-                            console.debug("createOrUpdateIonicNotificationForTrackingReminder: Creating notification because not already set for " +
+                            console.debug("createOrUpdateIonicNotificationForTrackingReminder: Creating notification " +
+                                "because not already set for " +
                                 JSON.stringify(notificationSettings));
                             cordova.plugins.notification.local.schedule(notificationSettings,
                                 function () {
-                                    console.debug('createOrUpdateIonicNotificationForTrackingReminder: notification scheduled', notificationSettings);
+                                    console.debug('createOrUpdateIonicNotificationForTrackingReminder: notification ' +
+                                        'scheduled', notificationSettings);
                                 });
                         }
 
@@ -346,23 +416,17 @@ angular.module('starter')
                                 notificationSettings);
                             cordova.plugins.notification.local.update(notificationSettings,
                                             function () {
-                                                console.debug('createOrUpdateIonicNotificationForTrackingReminder: notification updated', notificationSettings);
+                                                console.debug('createOrUpdateIonicNotificationForTrackingReminder: ' +
+                                                    'notification updated', notificationSettings);
                                             });
                         }
                     });
                 }
 
                 function scheduleAndroidNotificationByTrackingReminder(trackingReminder) {
-                    // var at = new Date(0); // The 0 there is the key, which sets the date to the epoch
-                    // at.setUTCSeconds(trackingReminder.at);
-                    var intervalInMinutes  = trackingReminder.reminderFrequency / 60;
-                    var numberOfPendingNotifications = 0;
-                    if($rootScope.numberOfPendingNotifications){
-                        numberOfPendingNotifications = $rootScope.numberOfPendingNotifications;
-                    }
+
                     var notificationSettings = {
                         autoClear: true,
-                        badge: numberOfPendingNotifications,
                         color: undefined,
                         data: trackingReminder,
                         led: undefined,
@@ -370,47 +434,65 @@ angular.module('starter')
                         ongoing: false,
                         title: "Track " + trackingReminder.variableName,
                         text: "Tap to record measurement",
-                        at: trackingReminder.nextReminderTimeEpochSeconds * 1000,
                         icon: 'ic_stat_icon_bw',
                         id: trackingReminder.id
                     };
 
-                    notificationSettings.every = intervalInMinutes;
+                    if($rootScope.numberOfPendingNotifications){
+                        notificationSettings.badge = $rootScope.numberOfPendingNotifications;
+                    }
+
+                    var dayInMinutes = 24 * 60;
+                    notificationSettings.every = dayInMinutes;
 
                     console.debug("Trying to create Android notification for " + JSON.stringify(notificationSettings));
                     //notificationSettings.sound = "res://platform_default";
                     //notificationSettings.smallIcon = 'ic_stat_icon_bw';
-                    createOrUpdateIonicNotificationForTrackingReminder(notificationSettings);
+                    var totalSeconds = 0;
+                    var at;
+                    while (totalSeconds < 86400) {
+                        at = new Date(0); // The 0 there is the key, which sets the date to the epoch
+                        at.setUTCSeconds(trackingReminder.nextReminderTimeEpochSeconds + totalSeconds);
+                        notificationSettings.at = at;
+                        notificationSettings.id = parseInt(trackingReminder.id + "000" +  moment(at).format("HHMMSS"));
+                        totalSeconds = totalSeconds + trackingReminder.reminderFrequency;
+                        if(moment(at).format("HH:MM:SS") < $rootScope.user.latestReminderTime &&
+                            moment(at).format("HH:MM:SS") > $rootScope.user.earliestReminderTime ){
+                            console.debug("Scheduling notification because it is within time limits: " +
+                                $rootScope.user.earliestReminderTime + " to " + $rootScope.user.latestReminderTime,
+                                notificationSettings);
+                            createOrUpdateIonicNotificationForTrackingReminder(notificationSettings);
+                        } else {
+                            console.debug("NOT scheduling notification because it is outside time limits: " +
+                                $rootScope.user.earliestReminderTime + " to " + $rootScope.user.latestReminderTime,
+                                notificationSettings);
+                        }
+                    }
                 }
 
                 function scheduleIosNotificationByTrackingReminder(trackingReminder) {
 
-                    var at = new Date(0); // The 0 there is the key, which sets the date to the epoch
-                    at.setUTCSeconds(trackingReminder.nextReminderTimeEpochSeconds);
                     // Using milliseconds might cause app to crash with this error:
                     // NSInvalidArgumentException·unable to serialize userInfo: Error Domain=NSCocoaErrorDomain Code=3851 "Property list invalid for format: 200 (property lists cannot contain objects of type 'CFNull')" UserInfo={NSDeb
                     var intervalInMinutes  = trackingReminder.reminderFrequency / 60;
-                    var everyString = 'hour';
-                    if (intervalInMinutes > 1) {everyString = 'hour';}
-                    if (intervalInMinutes > 60) {everyString = 'day';}
-                    console.debug("iOS requires second, minute, hour, day, week, month, year so converting " +
-                        intervalInMinutes + " minutes to string: " + everyString);
+                    var everyString = 'day';
+                    if (intervalInMinutes === 1) {everyString = 'minute';}
                     var numberOfPendingNotifications = 0;
                     if($rootScope.numberOfPendingNotifications){
                         numberOfPendingNotifications = $rootScope.numberOfPendingNotifications;
                     }
                     var notificationSettings = {
-                        autoClear: true,
+                        //autoClear: true,  iOS doesn't recognize this property
                         badge: numberOfPendingNotifications,
-                        color: undefined,
+                        //color: undefined,  iOS doesn't recognize this property
                         data: trackingReminder,
-                        led: undefined,
-                        ongoing: false,
+                        //led: undefined,  iOS doesn't recognize this property
+                        //ongoing: false,  iOS doesn't recognize this property
                         sound: "file://sound/silent.ogg",
                         title: "Track " + trackingReminder.variableName,
                         text: "Record a measurement",
                         at: at,
-                        icon: config.appSettings.mobileNotificationImage,
+                        //icon: config.appSettings.mobileNotificationImage,  iOS doesn't recognize this property
                         id: trackingReminder.id
                     };
 
@@ -418,7 +500,24 @@ angular.module('starter')
 
                     //notificationSettings.sound = "res://platform_default";
                     //notificationSettings.smallIcon = 'ic_stat_icon_bw';
-                    createOrUpdateIonicNotificationForTrackingReminder(notificationSettings);
+                    var totalSeconds = 0;
+                    var at;
+                    while (totalSeconds < 86400) {
+                        console.debug("iOS requires second, minute, hour, day, week, month, year so converting " +
+                            intervalInMinutes + " minutes to string: " + everyString);
+                        at = new Date(0); // The 0 there is the key, which sets the date to the epoch
+                        at.setUTCSeconds(trackingReminder.nextReminderTimeEpochSeconds + totalSeconds);
+                        notificationSettings.at = at;
+                        notificationSettings.id = parseInt(trackingReminder.id + "000" +  moment(at).format("HHMMSS"));
+                        totalSeconds = totalSeconds + trackingReminder.reminderFrequency;
+                        if(moment(at).format("HH:MM:SS") < $rootScope.user.latestReminderTime &&
+                            moment(at).format("HH:MM:SS") > $rootScope.user.earliestReminderTime ){
+                            createOrUpdateIonicNotificationForTrackingReminder(notificationSettings);
+                        } else {
+                            console.debug("Not scheduling notification because it's outside time limits",
+                                notificationSettings);
+                        }
+                    }
                 }
 
                 function scheduleChromeExtensionNotificationWithTrackingReminder(trackingReminder) {
@@ -446,11 +545,22 @@ angular.module('starter')
                     $ionicPlatform.ready(function () {
                         //console.debug('Ionic is ready to schedule notifications');
                         if (typeof cordova !== "undefined") {
-                            if (ionic.Platform.isAndroid()) {
-                                scheduleAndroidNotificationByTrackingReminder(trackingReminder);
-                            } else if (ionic.Platform.isIPad() || ionic.Platform.isIOS()) {
-                                scheduleIosNotificationByTrackingReminder(trackingReminder);
-                            }
+                            cordova.plugins.notification.local.getAll(function (notifications) {
+                                console.debug("scheduleNotificationByReminder: All notifications before scheduling", notifications);
+                                for(var i = 0; i < notifications.length; i++){
+                                    if(notifications[i].every * 60 === trackingReminder.reminderFrequency &&
+                                        notifications[i].id === trackingReminder.id){
+                                        console.warn("already have a local notification with this trackingReminder's id " +
+                                            "and frequency.  Might be" +
+                                            " pointlessly rescheduling", trackingReminder);
+                                    }
+                                }
+                                if (ionic.Platform.isAndroid()) {
+                                    scheduleAndroidNotificationByTrackingReminder(trackingReminder);
+                                } else if (ionic.Platform.isIPad() || ionic.Platform.isIOS()) {
+                                    scheduleIosNotificationByTrackingReminder(trackingReminder);
+                                }
+                            });
                         }
                     });
                     if ($rootScope.isChromeExtension || $rootScope.isChromeApp) {
@@ -460,33 +570,37 @@ angular.module('starter')
 
             },
 
-            scheduleGenericNotification: function(intervalInMinutes){
+            scheduleGenericNotification: function(notificationSettings){
 
                 if($rootScope.showOnlyOneNotification === false){
-                    console.error("scheduleGenericNotification: Called scheduleGenericNotification even though $rootScope.showOnlyOneNotification is " +
+                    console.error("scheduleGenericNotification: Called scheduleGenericNotification even though " +
+                        "$rootScope.showOnlyOneNotification is " +
                         $rootScope.showOnlyOneNotification + ". Not going to scheduleGenericNotification.");
                     return;
                 }
 
-                if(!intervalInMinutes){
-                    console.error("scheduleGenericNotification: Called scheduleGenericNotification even though intervalInMinutes is " +
-                        intervalInMinutes + ". Not going to scheduleGenericNotification.");
+                if(!notificationSettings.every){
+                    console.error("scheduleGenericNotification: Called scheduleGenericNotification without providing " +
+                        "notificationSettings.every " +
+                        notificationSettings.every + ". Not going to scheduleGenericNotification.");
+                    return;
                 }
 
-                var at = new Date(0); // The 0 there is the key, which sets the date to the epoch
-                var epochSecondsPlus15Minutes = new Date() / 1000 + 15 * 60;
-                at.setUTCSeconds(epochSecondsPlus15Minutes);
+                if(!notificationSettings.at){
+                    var at = new Date(0); // The 0 there is the key, which sets the date to the epoch
+                    var epochSecondsPlus15Minutes = new Date() / 1000 + 15 * 60;
+                    at.setUTCSeconds(epochSecondsPlus15Minutes);
+                    notificationSettings.at = at;
+                }
 
-                var notificationSettings = {
-                    at: at,
-                    title: "Time to track!",
-                    text: $rootScope.numberOfPendingNotifications + " tracking reminder notifications",
-                    every: intervalInMinutes,
-                    id: config.appSettings.primaryOutcomeVariableDetails.id,
-                    sound: "file://sound/silent.ogg",
-                    badge: 0
-                };
+                notificationSettings.title = "Time to track!";
+                notificationSettings.text = "Open reminder inbox";
+                notificationSettings.id = config.appSettings.primaryOutcomeVariableDetails.id;
+                notificationSettings.sound = "file://sound/silent.ogg";
+                notificationSettings.badge = 0;
+
                 if($rootScope.numberOfPendingNotifications > 0) {
+                    notificationSettings.text = $rootScope.numberOfPendingNotifications + " tracking reminder notifications";
                     notificationSettings.badge = $rootScope.numberOfPendingNotifications;
                 }
                 if($rootScope.isAndroid){
@@ -497,14 +611,16 @@ angular.module('starter')
                     var everyString = 'minute';
                     if (notificationSettings.every > 1) {everyString = 'hour';}
                     if (notificationSettings.every > 60) {everyString = 'day';}
-                    console.debug("scheduleGenericIosNotification: iOS requires second, minute, hour, day, week, month, year so converting " +
+                    console.warn("scheduleGenericIosNotification: iOS requires second, minute, hour, day, week, " +
+                        "month, year so converting " +
                         notificationSettings.every + " minutes to string: " + everyString);
                     // Don't include notificationSettings.icon for iOS. I keep seeing "Unknown property: icon" in Safari console
                     notificationSettings.every = everyString;
                 }
 
                 function scheduleGenericChromeExtensionNotification(intervalInMinutes) {
-                    console.log('scheduleGenericChromeExtensionNotification: Reminder notification interval is ' + intervalInMinutes + ' minutes');
+                    console.log('scheduleGenericChromeExtensionNotification: Reminder notification interval is ' +
+                        intervalInMinutes + ' minutes');
                     var alarmInfo = {periodInMinutes: intervalInMinutes};
                     console.debug("scheduleGenericChromeExtensionNotification: clear genericTrackingReminderNotificationAlarm");
                     chrome.alarms.clear("genericTrackingReminderNotificationAlarm");
@@ -513,27 +629,33 @@ angular.module('starter')
                     console.log("Alarm set, every " + intervalInMinutes + " minutes");
                 }
 
-                if (intervalInMinutes > 0) {
-                    $ionicPlatform.ready(function () {
-                        if (typeof cordova !== "undefined") {
-                            cordova.plugins.notification.local.getAll(function (notifications) {
-                                console.debug("scheduleGenericNotification: All notifications before scheduling", notifications);
-                                cordova.plugins.notification.local.cancelAll(function () {
-                                    console.log('cancelAllNotifications: notifications have been cancelled');
-                                    cordova.plugins.notification.local.getAll(function (notifications) {
-                                        console.debug("cancelAllNotifications: All notifications after cancelling", notifications);
-                                        cordova.plugins.notification.local.schedule(notificationSettings, function () {
-                                            console.log('scheduleGenericNotification: notification scheduled', notificationSettings);
-                                        });
+                $ionicPlatform.ready(function () {
+                    if (typeof cordova !== "undefined") {
+                        cordova.plugins.notification.local.getAll(function (notifications) {
+                            console.debug("scheduleGenericNotification: All notifications before scheduling", notifications);
+                            if(notifications[0] && notifications[0].length === 1 &&
+                                notifications[0].every === notificationSettings.every) {
+                                console.warn("Not scheduling generic notification because we already have one with " +
+                                    "the same frequency.");
+                                return;
+                            }
+
+                            cordova.plugins.notification.local.cancelAll(function () {
+                                console.log('cancelAllNotifications: notifications have been cancelled');
+                                cordova.plugins.notification.local.getAll(function (notifications) {
+                                    console.debug("cancelAllNotifications: All notifications after cancelling", notifications);
+                                    cordova.plugins.notification.local.schedule(notificationSettings, function () {
+                                        console.log('scheduleGenericNotification: notification scheduled', notificationSettings);
                                     });
                                 });
                             });
-                        }
-                    });
-                    if ($rootScope.isChromeExtension || $rootScope.isChromeApp) {
-                        scheduleGenericChromeExtensionNotification(intervalInMinutes);
+                        });
                     }
+                });
+                if ($rootScope.isChromeExtension || $rootScope.isChromeApp) {
+                    scheduleGenericChromeExtensionNotification(intervalInMinutes);
                 }
+
             },
 
             cancelIonicNotificationById: function(notificationId){

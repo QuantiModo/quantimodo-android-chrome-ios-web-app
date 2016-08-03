@@ -1,8 +1,7 @@
 angular.module('starter')
     
     // Handlers the Welcome Page
-    .controller('WelcomeCtrl', function($scope, $ionicModal, $timeout, utilsService, authService, measurementService,
-                                        $state, $ionicHistory, notificationService, localStorageService, $rootScope) {
+    .controller('WelcomeCtrl', function($scope, $state, $rootScope, localStorageService, measurementService) {
         
         $scope.controller_name = "WelcomeCtrl";
         $rootScope.isIOS = ionic.Platform.isIPad() || ionic.Platform.isIOS();

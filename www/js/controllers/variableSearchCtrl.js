@@ -1,8 +1,7 @@
 angular.module('starter')
-    .controller('VariableSearchCtrl', function($scope, $ionicModal, $timeout, $ionicPopup ,$ionicLoading,
-                                                     authService, measurementService, $state, $rootScope, $stateParams,
-                                                     utilsService, localStorageService, $filter, $ionicScrollDelegate,
-                                                        variableCategoryService, ionicTimePicker, variableService, reminderService){
+    .controller('VariableSearchCtrl', function($scope, $state, $rootScope, $stateParams, $filter, localStorageService, 
+                                               authService,  variableCategoryService, variableService, 
+                                               reminderService) {
 
         $scope.controller_name = "VariableSearchCtrl";
 
@@ -79,7 +78,7 @@ angular.module('starter')
                     localStorageService.replaceElementOfItemById('trackingReminders', $scope.state.trackingReminder);
                     reminderService.addNewReminder($scope.state.trackingReminder)
                         .then(function(){
-                            console.debug("Saved Reminder", $scope.state.trackingReminder)
+                            console.debug("Saved Reminder", $scope.state.trackingReminder);
                         }, function(err){
                             console.error('Failed to add Reminder!',  $scope.state.trackingReminder);
                         });
@@ -159,11 +158,25 @@ angular.module('starter')
                 else { // on add reminder or record measurement search pages; include public variables
                     variableService.searchVariablesIncludePublic($scope.state.variableSearchQuery, $scope.state.variableCategoryName)
                         .then(function(variables){
-                            // populate list with results
+                            // Populate list with results
                             $scope.state.showAddVariableButton = false;
                             $scope.state.variableSearchResults = variables;
                             $scope.state.searching = false;
-                            if(variables.length < 1){
+                            // Check if exact match is present in results
+                            var resultIndex = 0;
+                            var found = false;
+                            while (!found && resultIndex < $scope.state.variableSearchResults.length) {
+                                if ($scope.state.variableSearchResults[resultIndex].name.toLowerCase() ===
+                                    $scope.state.variableSearchQuery.toLowerCase()) {
+                                    found = true;
+                                }
+                                else {
+                                    resultIndex++;
+                                }
+                            }
+                            // If no results or no exact match, show "+ Add [variable]" button for query
+                            // Also, can only favorite existing variables
+                            if((variables.length < 1 || !found) && $stateParams.nextState !== "app.favoriteAdd"){
                                 $scope.state.showAddVariableButton = true;
                                 if ($stateParams.nextState === "app.reminderAdd") {
                                     $scope.state.addNewVariableButtonText = '+ Add ' + $scope.state.variableSearchQuery +
@@ -277,7 +290,10 @@ angular.module('starter')
 
         
         // update data when view is navigated to
-        $scope.$on('$ionicView.enter', $scope.init);
+        $scope.$on('$ionicView.enter', function(e) {
+            $scope.hideLoader();
+            $scope.init();
+        });
 
 
     });

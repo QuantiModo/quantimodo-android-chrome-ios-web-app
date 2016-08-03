@@ -8,4 +8,14 @@ angular.module('starter')
 				return "";
             }
         };
+	})
+	.filter('fromTwentyFourToTwelveHourFormat', function(){
+		return function(twentyFourHourFormatString){
+			var twentyFourHourFormatSetting = "HH:mm:ss";
+			if (twentyFourHourFormatString){
+				return moment(twentyFourHourFormatString, twentyFourHourFormatSetting).format('h:mm A');
+			} else {
+				return "";
+			}
+		};
 	});
