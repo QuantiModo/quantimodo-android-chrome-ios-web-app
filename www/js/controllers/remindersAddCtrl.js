@@ -280,18 +280,24 @@ angular.module('starter')
                 $scope.loading = false;
 	    		utilsService.showAlert('Failed to add Reminder, Try again!', 'assertive');
 	    	});
-            
+
             $rootScope.updatedReminder = $scope.state.trackingReminder;
              if($stateParams.fromUrl && ($stateParams.fromUrl.indexOf('manage') > -1 )){
              	window.location = $stateParams.fromUrl;
-             } else
-            if ($stateParams.reminder && $stateParams.fromState){
+             } else if ($stateParams.reminder && $stateParams.fromState){
                 $state.go($stateParams.fromState, {
                     updatedReminder: $stateParams.reminder
                 });
-            } else {
-                $state.go('app.remindersManage');
-            }
+             } else {
+             	if ($stateParams.variableCategoryName) {
+             		$state.go('app.remindersManageCategory',{
+             			    variableCategoryName: $stateParams.variableCategoryName
+             			});	
+             	}
+             	else {
+             		$state.go('app.remindersManage');	
+             	}
+             }
 	    };
 
 
@@ -422,21 +428,19 @@ angular.module('starter')
                     var reminderIdUrlParameter = utilsService.getUrlParameter(window.location.href, 'reminderId');
                     var variableIdUrlParameter = utilsService.getUrlParameter(window.location.href, 'variableId');
 
-                    if($stateParams.variableCategoryName){
+                    if ($stateParams.variableObject) {
+                        $scope.variableObject = $stateParams.variableObject;
+                        $scope.onVariableSelect($stateParams.variableObject);
+                    } else if($stateParams.variableCategoryName){
                         $scope.state.trackingReminder.variableCategoryName = $stateParams.variableCategoryName;
                         $scope.setupVariableCategory($scope.state.trackingReminder.variableCategoryName);
                     } else if ($stateParams.reminder && $stateParams.reminder !== null) {
                         setupEditReminder($stateParams.reminder);
-                    }
-                    else if(reminderIdUrlParameter) {
+                    } else if(reminderIdUrlParameter) {
                         setupReminderEditingFromUrlParameter(reminderIdUrlParameter);
-                    } else if(variableIdUrlParameter){
+                    } else if(variableIdUrlParameter) {
                         setupReminderEditingFromVariableId(variableIdUrlParameter);
-                    } else if ($stateParams.variableObject) {
-                        $scope.variableObject = $stateParams.variableObject;
-                        $scope.onVariableSelect($stateParams.variableObject);
-                    }
-                    else {
+                    } else {
                         $scope.state.title = $filter('wordAliases')('Add Reminder');
                     }
                 });
