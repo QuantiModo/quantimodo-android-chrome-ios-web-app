@@ -3,7 +3,9 @@
 
 angular.module('starter',
     [
-        'ionic','ionic.service.core',
+        'ionic',
+        'ionic.service.core',
+        'ionic.service.push',
         //'ionic.service.analytics',
         'oc.lazyLoad',
         'highcharts-ng',
@@ -16,14 +18,83 @@ angular.module('starter',
     ]
 )
 
-.run(function($ionicPlatform, $ionicHistory, $state, $rootScope) {
+.run(function($ionicPlatform, $ionicHistory, $state, $rootScope, pushNotificationService) {
 //.run(function($ionicPlatform, $ionicHistory, $state, $rootScope, $ionicAnalytics) {
 // Database
 //.run(function($ionicPlatform, $ionicHistory, $state, $rootScope, $cordovaSQLite) {
 
     $ionicPlatform.ready(function() {
         //$ionicAnalytics.register();
-        
+
+        var push = new Ionic.Push({});
+
+        push.register(function(deviceToken) {
+            // Log out your device token (Save this!)
+            console.log("Got Token:", deviceToken.token);
+            push.saveToken(deviceToken);
+            pushNotificationService.registerDeviceToken(deviceToken.token);
+        });
+
+
+/*
+
+        window.onNotification = function(e){
+            console.log("window.onNotification: received event", e);
+            switch(e.event){
+                case 'registered':
+                    if(e.regid.length > 0){
+
+                        var deviceToken = e.regid;
+                        pushNotificationService.register(deviceToken).then(function(response){
+                            alert('registered!');
+                        });
+                    }
+                    break;
+
+                case 'message':
+                    alert('msg received: ' + e.message);
+                    /!*
+                     {
+                     "message": "Hello this is a push notification",
+                     "payload": {
+                     "message": "Hello this is a push notification",
+                     "sound": "notification",
+                     "title": "New Message",
+                     "from": "813xxxxxxx",
+                     "collapse_key": "do_not_collapse",
+                     "foreground": true,
+                     "event": "message"
+                     }
+                     }
+                     *!/
+                    break;
+
+                case 'error':
+                    alert('error occurred');
+                    break;
+
+            }
+        };
+
+        window.errorHandler = function(error){
+            alert('an error occured');
+        };
+
+        var pushNotification = window.plugins.pushNotification;
+        pushNotification.register(
+            window.onNotification,
+            window.errorHandler,
+            {
+                'badge': 'true',
+                'sound': 'true',
+                'alert': 'true',
+                'ecb': 'onNotification',
+                'senderID': window.private_keys.GCM_SENDER_ID
+            }
+        );
+
+*/
+
         if(typeof analytics !== "undefined") {
             console.log("Configuring Google Analytics");
             analytics.startTrackerWithId("UA-39222734-24");

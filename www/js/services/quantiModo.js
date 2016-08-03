@@ -542,6 +542,20 @@ angular.module('starter')
                     errorHandler);
             };
 
+
+            QuantiModo.postDeviceToken = function(deviceToken, successHandler, errorHandler) {
+                var params = {
+                    deviceToken: deviceToken
+                };
+                QuantiModo.post('api/v1/deviceTokens',
+                    [
+                        'deviceToken'
+                    ],
+                    params,
+                    successHandler,
+                    errorHandler);
+            };
+
             // delete tracking reminder
             QuantiModo.deleteTrackingReminder = function(reminderId, successHandler, errorHandler){
                 if(!reminderId){
