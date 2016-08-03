@@ -108,8 +108,8 @@ ionic plugin add https://github.com/DrMoriarty/cordova-fabric-crashlytics-plugin
 echo "ionic add ionic-platform-web-client"
 ionic add ionic-platform-web-client
 
-echo "ionic plugin add https://github.com/DrMoriarty/cordova-fabric-crashlytics-plugin -–variable CRASHLYTICS_API_KEY=${FABRIC_API_KEY} –-variable CRASHLYTICS_API_SECRET=${FABRIC_API_SECRET}  for $LOWERCASE_APP_NAME Android app..."
-ionic plugin add phonegap-plugin-push --variable SENDER_ID="GCM_PROJECT_NUMBER"
+# We shouldn't need to do this because it should already be in package.json
+#ionic plugin add phonegap-plugin-push --variable SENDER_ID="${GCM_SENDER_ID}"
 
 ionic io init
 ionic config set dev_push false
