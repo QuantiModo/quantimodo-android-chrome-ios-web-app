@@ -114,6 +114,9 @@ ionic plugin add phonegap-plugin-push --variable SENDER_ID="GCM_PROJECT_NUMBER"
 ionic io init
 ionic config set dev_push true
 
+ionic push --google-api-key ${GCM_SERVER_API_KEY}
+ionic config set gcm_key ${GCM_SENDER_ID}
+
 #echo "push for $LOWERCASE_APP_NAME Android app..."
 #cordova plugin add phonegap-plugin-push --variable SENDER_ID="quantimo-do"
 echo "Generating image resources for $LOWERCASE_APP_NAME..."
