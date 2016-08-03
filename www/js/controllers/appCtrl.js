@@ -290,8 +290,6 @@ angular.module('starter')
         };
         $scope.showHistorySubMenu = false;
         $scope.shoppingCartEnabled = config.shoppingCartEnabled;
-        //$rootScope.isSyncing = false;
-        //$rootScope.syncDisplayText = '';
         $scope.loading = false;
         $ionicLoading.hide();
 

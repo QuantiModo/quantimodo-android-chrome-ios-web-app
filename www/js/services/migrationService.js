@@ -23,8 +23,6 @@ angular.module('starter')
                     measurementService.syncPrimaryOutcomeVariableMeasurements().then(function(){
                         console.log("Measurement sync complete!");
                         $scope.hideLoader();
-                        //$rootScope.isSyncing = false;
-                        //$rootScope.syncDisplayText = '';
                     });
                     localStorageService.setItem('appMigrationVersion', 1489);
                 }
