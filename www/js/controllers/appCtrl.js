@@ -1,12 +1,11 @@
 angular.module('starter')
     // Parent Controller
     // This controller runs before every one else
-	.controller('AppCtrl', function($scope, $ionicModal, $timeout, $injector, utilsService, authService,
-                                    measurementService, $ionicPopover, $ionicLoading, $state, $ionicHistory,
-                                    QuantiModo, notificationService, $rootScope, localStorageService, reminderService,
-                                    $ionicPopup, $ionicSideMenuDelegate, ratingService, migrationService,
-                                    ionicDatePicker, unitService, variableService, $ionicPlatform, $cordovaGeolocation,
-                                    qmLocationService, variableCategoryService, bugsnagService) {
+	.controller('AppCtrl', function($scope, $timeout, $ionicPopover, $ionicLoading, $state, $ionicHistory, $rootScope,
+                                    $ionicPopup, $ionicSideMenuDelegate, $ionicPlatform, authService,
+                                    measurementService, QuantiModo, notificationService, localStorageService,
+                                    reminderService, ratingService, migrationService, ionicDatePicker, unitService,
+                                    variableService, qmLocationService, variableCategoryService, bugsnagService) {
 
         $rootScope.loaderImagePath = config.appSettings.loaderImagePath;
         $rootScope.appMigrationVersion = 1489;
