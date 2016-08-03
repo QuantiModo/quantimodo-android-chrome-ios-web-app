@@ -1,9 +1,9 @@
 angular.module('starter')
 	// Measurement Service
-    .factory('migrationService', function($q, QuantiModo, localStorageService, measurementService, $rootScope){
+    .factory('migrationService', function($http, $q, QuantiModo, localStorageService, measurementService, $rootScope){
 
 
-            // service methods
+        // service methods
 		var migrationService = {
 			// get public variables
 			version1466 : function(){
