@@ -4,7 +4,7 @@
 	<!--<ion-content scroll="true" overflow-scroll="true">-->
 
 		<ion-content >
-        <div class="list card" ng-if="state.favorites.length" ng-repeat="favorite in state.favorites" on-hold="showActionSheet(favorite, $index)">
+        <div class="list card" id="favoritesList" ng-if="state.favorites.length" ng-repeat="favorite in state.favorites" on-hold="showActionSheet(favorite, $index)">
             <div class="item" style="padding-bottom:0px;">
                 <div class="row">
                     <div ng-click="showActionSheet(favorite, $index)" class="col col-10" style="padding-top: 0px; text-align: center;">
@@ -55,12 +55,12 @@
             </div>
         </div>
             <div class="list card" ng-click="goToState('app.favoriteSearch')">
-                <a style="white-space: normal; " class="item item-icon-left">
+                <a id="addFavoriteBtn" style="white-space: normal; " class="item item-icon-left">
                     <i class="icon ion-ios-star positive"></i>
                     Add a Favorite Variable
                 </a>
             </div>
-            <div class="list card" ng-if="state.favorites.length === 0" >
+            <div class="list card" id="noFavoritesExplanation" ng-if="state.favorites.length === 0" >
                 <div class="item" style="padding-bottom:0px;">
                     <div class="row">
                         <h2 style="white-space: normal; text-align: center; line-height: normal; ">
