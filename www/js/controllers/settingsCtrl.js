@@ -100,7 +100,12 @@ angular.module('starter')
 
 		$scope.combineNotificationChange = function() {
 
-		    var params = {};
+
+			var d = new Date();
+			var timeZoneOffsetInMinutes = d.getTimezoneOffset();
+			var params = {
+				timeZoneOffset: timeZoneOffsetInMinutes
+			};
 			
 			console.log('Combine Notification Change', $scope.state.showOnlyOneNotification);
 			$rootScope.showOnlyOneNotification = $scope.state.showOnlyOneNotification;
@@ -113,9 +118,7 @@ angular.module('starter')
 					'tracking reminder notifications for specific reminders will still show up in your Reminder Inbox.'
 				});
 
-                params = {
-                    pushNotificationsEnabled: true
-                };
+                params.pushNotificationsEnabled = true;
                 userService.updateUserSettings(params);
                 $rootScope.deviceToken = localStorageService.getItemSync('deviceToken');
                 if($rootScope.deviceToken){
@@ -147,9 +150,7 @@ angular.module('starter')
 					template: 'You will get a separate device notification for each reminder that you create.'
 				});
 
-                params = {
-                    pushNotificationsEnabled: false
-                };
+				params.pushNotificationsEnabled = false;
                 userService.updateUserSettings(params);
 
 				notificationService.cancelAllNotifications().then(function() {
@@ -168,6 +169,9 @@ angular.module('starter')
 						console.log('Time not selected');
 					} else {
 						var a = new Date();
+						var params = {
+							timeZoneOffset: a.getTimezoneOffset()
+						};
 						var selectedTime = new Date(val * 1000);
 						a.setHours(selectedTime.getUTCHours());
 						a.setMinutes(selectedTime.getUTCMinutes());
@@ -182,9 +186,7 @@ angular.module('starter')
 						}
 						if(newEarliestReminderTime !== $rootScope.user.earliestReminderTime){
 							$rootScope.user.earliestReminderTime = newEarliestReminderTime;
-							var params = {
-								earliestReminderTime: $rootScope.user.earliestReminderTime
-							};
+							params.earliestReminderTime = $rootScope.user.earliestReminderTime;
 							userService.updateUserSettings(params);
 							reminderService.refreshTrackingRemindersAndScheduleAlarms();
 							$ionicPopup.alert({
@@ -209,6 +211,9 @@ angular.module('starter')
 						console.log('Time not selected');
 					} else {
 						var a = new Date();
+						var params = {
+							timeZoneOffset: a.getTimezoneOffset()
+						};
 						var selectedTime = new Date(val * 1000);
 						a.setHours(selectedTime.getUTCHours());
 						a.setMinutes(selectedTime.getUTCMinutes());
@@ -223,9 +228,7 @@ angular.module('starter')
 						}
 						if(newLatestReminderTime !== $rootScope.user.latestReminderTime){
 							$rootScope.user.latestReminderTime = newLatestReminderTime;
-							var params = {
-								latestReminderTime: $rootScope.user.latestReminderTime
-							};
+							params.latestReminderTime = $rootScope.user.latestReminderTime;
 							userService.updateUserSettings(params);
 							reminderService.refreshTrackingRemindersAndScheduleAlarms();
 							$ionicPopup.alert({
