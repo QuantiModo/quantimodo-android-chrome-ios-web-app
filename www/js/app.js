@@ -32,7 +32,7 @@ angular.module('starter',
             // Log out your device token (Save this!)
             console.log("Got Token:", deviceToken.token);
             push.saveToken(deviceToken);
-            localStorageService.setItem('deviceToken', deviceToken);
+            localStorageService.setItem('deviceToken', deviceToken.token);
             pushNotificationService.registerDeviceToken(deviceToken.token);
         });
 
