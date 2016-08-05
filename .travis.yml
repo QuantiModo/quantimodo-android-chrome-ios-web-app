@@ -9,8 +9,8 @@ before_install:
 - gem install cocoapods -v 0.39.0
 - npm install -g gulp@3.9.0
 - npm install -g grunt-cli@0.1.13
-- npm install -g cordova
-- npm install -g ionic
+- npm install -g cordova@5.4.0
+- npm install -g ionic@1.7.10
 - npm install -g ios-sim
 - npm install -g ios-deploy
 before_script:
