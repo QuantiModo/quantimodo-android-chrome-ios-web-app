@@ -20,10 +20,10 @@ ionic plugin add cordova-plugin-email-composer
 ionic plugin add cordova-plugin-geolocation
 ionic plugin add cordova-plugin-facebook4@1.7.1 --save --variable APP_ID="${FACEBOOK_APP_ID}" --variable APP_NAME="${FACEBOOK_APP_NAME}"
 #ionic plugin add https://github.com/mikepsinn/cordova-plugin-googleplus.git --variable REVERSED_CLIENT_ID=${REVERSED_CLIENT_ID}
-ionic plugin add phonegap-plugin-push --variable SENDER_ID="${GCM_SENDER_ID}"
+#ionic plugin add phonegap-plugin-push --variable SENDER_ID="${GCM_SENDER_ID}"
 
-ionic add ionic-platform-web-client
-ionic io init
-ionic config set dev_push false
-ionic config set gcm_key ${GCM_SENDER_ID}
-ionic config build
+#ionic add ionic-platform-web-client
+#ionic io init
+#ionic config set dev_push false
+#ionic config set gcm_key ${GCM_SENDER_ID}
+#ionic config build
