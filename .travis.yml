@@ -9,8 +9,8 @@ before_install:
 - gem install cocoapods -v 0.39.0
 - npm install -g gulp@3.9.0
 - npm install -g grunt-cli@0.1.13
-- npm install -g cordova
-- npm install -g ionic
+- npm install -g cordova@5.4.0
+- npm install -g ionic@1.7.10
 - npm install -g ios-sim
 - npm install -g ios-deploy
 before_script:
@@ -45,10 +45,11 @@ env:
   - secure: O3V431zlRPYQH6OSyWkQnVNGbiLQ28lSXmCkKzVIlUnb8Bhf+Cany5qOpASQevbMCk5KWzND/ULKP+maLA7z/RpGr77Dfb5CpzL+YHB5eWZ0W1eWbzTYH5nISD+8JbDWUcihBTV4HwMgK4EAZtxzTkgrdBAMISxIMWBf2wlWYK60Ydh9O3UAg2VSzXQQ1k+V404zRfGDwX99vwCERw3Q7xJT3v86B2+bxP9hj4VTTNsKJ0bY1JwPE/poRh8ZfyHtoTjyIadEdmop35aa6V6wc1Uk6kmulSc7+QA2HUV+1O3c4OR1g+cq4ScvHNIGeftZ6TEpyrbIJtN2syAX+wkdNr7ekVrzwv04swyErI9Y5zeGH68eljPW1jTZwWcYZEpy53DDC7iON5El/RyhSycLTIaiMgtVI0kQyfNbyTUs26XdYuK1uqHts6yQHdXfPLjvtRzKNqUyIfyIQXZDajsYWxzn3RicCe5ncIIyrXmHgly+m1oK3JB+1R5nGsMGUxGnitCenFHt/02FUuClr6TI+gXCJfy3HtrFoQ2xg6Lenz7I2P63raCG1Moc9IIrm8IBUc5fHZd2sYcY8z6c48Ug7XawMn/zjmbi1nN0WewZAjXSMEimYTMjSS+Wz54ehnqAszH58ztFtYfoaJMqa9ZGqEy5gRlxrIYyoZRjmDv8JJo=
 notifications:
   email: false
-  
+
 # whitelist
 branches:
   only:
     - master
     - develop
     - feature/new_profile
+    - feature/remove_push_for_ios
