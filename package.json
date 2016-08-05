@@ -37,13 +37,19 @@
     "postinstall": "bower install && gulp generatePrivateConfigFromEnvsForHeroku && ionic config build"
   },
   "cordovaPlugins": [
-    "https://github.com/katzer/cordova-plugin-local-notifications#a3f2be443b4d4539557611b5081453a7bfd1be46",
+    {
+      "locator": "https://github.com/katzer/cordova-plugin-local-notifications#a3f2be443b4d4539557611b5081453a7bfd1be46",
+      "id": "de.appplant.cordova.plugin.local-notification"
+    },
     "cordova-plugin-device",
     "cordova-plugin-console",
     "cordova-plugin-whitelist",
     "cordova-plugin-splashscreen",
     "ionic-plugin-keyboard",
-    "https://github.com/apache/cordova-plugin-inappbrowser",
+    {
+      "locator": "https://github.com/apache/cordova-plugin-inappbrowser",
+      "id": "cordova-plugin-inappbrowser"
+    },
     "cordova-plugin-statusbar",
     "cordova-plugin-datepicker",
     "cordova-plugin-file-opener2",
@@ -52,10 +58,11 @@
     "cordova-plugin-geolocation",
     {
       "variables": {
-        "SENDER_ID": "1052648855194"
+        "APP_ID": "225078261031461",
+        "APP_NAME": "QuantiModo"
       },
-      "locator": "phonegap-plugin-push",
-      "id": "phonegap-plugin-push"
+      "locator": "cordova-plugin-facebook4@1.7.1",
+      "id": "cordova-plugin-facebook4"
     }
   ],
   "cordovaPlatforms": [
