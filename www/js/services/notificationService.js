@@ -672,6 +672,12 @@ angular.module('starter')
 
             scheduleUpdateOrDeleteGenericNotificationsByDailyReminderTimes: function(trackingReminders){
                 var localDailyReminderNotificationTimesFromApi = trackingReminders[0].localDailyReminderNotificationTimes;
+                if(localDailyReminderNotificationTimesFromApi.length < 1){
+                    console.warn('Cannot schedule notifications because ' +
+                        'trackingReminders[0].localDailyReminderNotificationTimes is empty.');
+                    return;
+                }
+
                 if($rootScope.isMobile){
                     $ionicPlatform.ready(function () {
                         cordova.plugins.notification.local.getAll(function (existingLocalNotifications) {
