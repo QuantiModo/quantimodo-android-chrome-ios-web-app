@@ -88,6 +88,8 @@ angular.module('starter')
             },
 
             updateBadgesAndTextOnAllNotifications : function () {
+                console.debug("updateOrRecreateNotifications: Disabled until everything works right");
+                return;
 
                 if($rootScope.isIOS){
                     console.warn("updateBadgesAndTextOnAllNotifications: updating notifications on " +
@@ -253,6 +255,9 @@ angular.module('starter')
             },
 
             updateOrRecreateNotifications: function() {
+                console.debug("updateOrRecreateNotifications: Disabled until everything works right");
+                return;
+
                 if($rootScope.isAndroid){
                     console.debug("updateOrRecreateNotifications: Updating " +
                         "notifications for Android because Samsung limits number of notifications " +
