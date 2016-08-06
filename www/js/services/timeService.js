@@ -13,10 +13,11 @@ angular.module('starter')
 					utcTimeStringFull = utcTimeString + " +0000";
 				}
 				
-				var hoursSinceMidnightLocal = moment(utcTimeStringFull, timeFormat).format("HH");
-				var minutesSinceMidnightLocal = moment(utcTimeStringFull, timeFormat).format("mm");
+				var hours = parseInt(moment(utcTimeStringFull, timeFormat).format("HH"));
+				var minutes = parseInt(moment(utcTimeStringFull, timeFormat).format("mm"));
+				var seconds = parseInt(moment(utcTimeStringFull, timeFormat).format("ss"));
 				var secondsSinceMidnightLocal =
-					hoursSinceMidnightLocal * 60 *60 + minutesSinceMidnightLocal * 60;
+					hours * 60 *60 + minutes * 60 + seconds;
 
                 // not sure why this is necessary
                 secondsSinceMidnightLocal = secondsSinceMidnightLocal - 60 * 60;
@@ -29,10 +30,11 @@ angular.module('starter')
 
 			getSecondsSinceMidnightLocalFromLocalString: function (localTimeString) {
 				var timeFormat = "HH:mm:ss";
-				var hoursSinceMidnightLocal = moment(localTimeString, timeFormat).format("HH");
-				var minutesSinceMidnightLocal = moment(localTimeString, timeFormat).format("mm");
+				var hours = parseInt(moment(localTimeString, timeFormat).format("HH"));
+				var minutes = parseInt(moment(localTimeString, timeFormat).format("mm"));
+				var seconds = parseInt(moment(localTimeString, timeFormat).format("ss"));
 				var secondsSinceMidnightLocal =
-					hoursSinceMidnightLocal * 60 *60 + minutesSinceMidnightLocal * 60;
+					hours * 60 *60 + minutes * 60 + seconds;
 				return secondsSinceMidnightLocal;
 			},
 
@@ -61,6 +63,15 @@ angular.module('starter')
 				console.debug("localTimeString is " + localTimeString);
 
 				return localTimeString;
+			},
+
+			getUtcTimeStringFromLocalString: function (localTimeString) {
+
+				var returnTimeFormat = "HH:mm:ss";
+				var utcTimeString = moment(localTimeString, returnTimeFormat).utc().format(returnTimeFormat);
+				console.debug("utcTimeString is " + utcTimeString);
+
+				return utcTimeString;
 			},
 
 			getEpochMillisecondsFromUtcDateTimeString: function (utcDateTimeString) {
