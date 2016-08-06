@@ -111,8 +111,7 @@ angular.module('starter')
                 $scope.loading = false;
 	    		utilsService.showAlert('Failed to add favorite! Please contact info@quantimo.do', 'assertive');
 	    	});
-            
-            $rootScope.updatedReminder = $scope.state.trackingReminder;
+
             $state.go('app.favorites');
 
 	    };
