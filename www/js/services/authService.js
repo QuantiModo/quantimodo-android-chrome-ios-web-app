@@ -107,7 +107,24 @@ angular.module('starter')
 					localStorageService.setItem('accessToken', tokenInGetParams);
 					//resolving promise using token fetched from get params
 					console.log('resolving token using token url parameter', tokenInGetParams);
-					userService.refreshUser();
+                    var url = config.getURL("api/user") + '?accessToke=' + tokenInGetParams;
+                    $http.get(url).then(
+                        function (userCredentialsResp) {
+                            console.log('direct API call was successful. User credentials fetched:', userCredentialsResp.data);
+                            Bugsnag.metaData = {
+                                user: {
+                                    name: userCredentialsResp.data.displayName,
+                                    email: userCredentialsResp.data.email
+                                }
+                            };
+                            localStorageService.setItem('user', JSON.stringify(userCredentialsResp.data));
+                            $rootScope.user = userCredentialsResp.data;
+                        },
+                        function (errorResp) {
+                            console.log('Could not get user with accessToken.  error response:', errorResp);
+                        }
+                    );
+
 					deferred.resolve({
 						accessToken: tokenInGetParams
 					});
