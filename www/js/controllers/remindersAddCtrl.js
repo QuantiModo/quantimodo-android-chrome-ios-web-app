@@ -253,51 +253,55 @@ angular.module('starter')
                 }
             }
 
+/*
             if($scope.state.reminderEndTimeStringLocal &&
                 $scope.state.reminderEndTimeStringLocal < $scope.state.reminderStartTimeStringLocal) {
                 utilsService.showAlert('Latest reminder time cannot be less than earliest reminder time');
                 return;
             }
+            */
 
             $scope.showLoader('Saving ' + $scope.state.trackingReminder.variableName + ' reminder...');
             $scope.state.trackingReminder.reminderFrequency = getFrequencyChart()[$scope.state.selectedFrequency];
             $scope.state.trackingReminder.valueAndFrequencyTextDescription = $scope.state.selectedFrequency;
-            $scope.state.trackingReminder.reminderStartTime = $scope.state.reminderStartTimeStringLocal;
-            $scope.state.trackingReminder.reminderEndTime = $scope.state.reminderEndTimeStringLocal;
+            $scope.state.trackingReminder.reminderStartTime =
+                timeService.getUtcTimeStringFromLocalString($scope.state.reminderStartTimeStringLocal);
+            //End time not reminder specific anymore
+            //$scope.state.trackingReminder.reminderEndTime = $scope.state.reminderEndTimeStringLocal;
+            //$scope.state.trackingReminder.reminderEndTimeEpochSeconds = $scope.state.reminderEndTimeEpochTime;
             $scope.state.trackingReminder.reminderStartTimeEpochSeconds = $scope.state.reminderStartTimeEpochTime;
-            $scope.state.trackingReminder.reminderEndTimeEpochSeconds = $scope.state.reminderEndTimeEpochTime;
             $scope.state.trackingReminder.nextReminderTimeEpochSeconds = $scope.state.reminderStartTimeEpochTime;
 
 
-            localStorageService.replaceElementOfItemById('trackingReminders', $scope.state.trackingReminder);
-	    	reminderService.addNewReminder($scope.state.trackingReminder)
-	    	.then(function(){
-                $scope.hideLoader();
-	    	}, function(err){
-                $scope.hideLoader();
-                console.log(err);
-	    		$ionicLoading.hide();
-                $scope.loading = false;
-	    		utilsService.showAlert('Failed to add Reminder, Try again!', 'assertive');
-	    	});
+            localStorageService.replaceElementOfItemById('trackingReminders', $scope.state.trackingReminder)
+                .then(function(){
+                    reminderService.addNewReminder($scope.state.trackingReminder)
+                        .then(function(){
+                            $scope.hideLoader();
+                        }, function(err){
+                            $scope.hideLoader();
+                            console.log(err);
+                            $ionicLoading.hide();
+                            $scope.loading = false;
+                            utilsService.showAlert('Failed to add Reminder, Try again!', 'assertive');
+                        });
 
-            $rootScope.updatedReminder = $scope.state.trackingReminder;
-             if($stateParams.fromUrl && ($stateParams.fromUrl.indexOf('manage') > -1 )){
-             	window.location = $stateParams.fromUrl;
-             } else if ($stateParams.reminder && $stateParams.fromState){
-                $state.go($stateParams.fromState, {
-                    updatedReminder: $stateParams.reminder
-                });
-             } else {
-             	if ($stateParams.variableCategoryName) {
-             		$state.go('app.remindersManageCategory',{
-             			    variableCategoryName: $stateParams.variableCategoryName
-             			});	
-             	}
-             	else {
-             		$state.go('app.remindersManage');	
-             	}
-             }
+                    if($stateParams.fromUrl && ($stateParams.fromUrl.indexOf('manage') > -1 )){
+                        window.location = $stateParams.fromUrl;
+                    } else {
+                        if ($stateParams.variableCategoryName) {
+                            $state.go('app.remindersManageCategory',{
+                                variableCategoryName: $stateParams.variableCategoryName
+                            });
+                        }
+                        else {
+                            $state.go('app.remindersManage');
+                        }
+                    }
+                }
+
+            );
+
 	    };
 
 
