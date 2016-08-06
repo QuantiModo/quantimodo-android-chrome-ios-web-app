@@ -81,7 +81,7 @@ angular.module('starter')
                     }
                 },
                 inputTime: defaultStartTimeInSecondsSinceMidnightLocal,
-                step: 1,
+                step: 15,
                 closeLabel: 'Cancel'
             };
 
@@ -108,7 +108,7 @@ angular.module('starter')
                     }
                 },
                 inputTime: default9pmEndTimeInSecondsSinceMidnightLocal,
-                step: 1,
+                step: 15,
                 closeLabel: 'Cancel'
             };
 

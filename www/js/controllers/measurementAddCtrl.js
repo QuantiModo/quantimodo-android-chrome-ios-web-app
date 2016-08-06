@@ -85,7 +85,7 @@ angular.module('starter')
                     }
                 },
                 inputDate: $scope.selectedDate,
-                from:new Date(2012, 8, 1),
+                from: new Date(2012, 8, 1),
                 to: new Date()
             };
             ionicDatePicker.openDatePicker($scope.state.datePickerConfiguration);
