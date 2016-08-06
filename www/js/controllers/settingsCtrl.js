@@ -17,11 +17,22 @@ angular.module('starter')
 		$scope.state.trackLocation = $rootScope.trackLocation;
 		console.debug('trackLocation is '+ $scope.state.trackLocation);
 
+		var d = new Date();
+		var timeZoneOffsetInMinutes = d.getTimezoneOffset();
+		if($rootScope.user.timeZoneOffset !== timeZoneOffsetInMinutes ){
+			var params = {
+				timeZoneOffset: timeZoneOffsetInMinutes
+			};
+			userService.updateUserSettings(params);
+		}
+
 		if(!$rootScope.user.earliestReminderTime || !$rootScope.user.latestReminderTime){
 			userService.refreshUser(function(user){
 				$rootScope.user = user;
 			});
 		}
+
+
 
 		// populate ratings interval
 		localStorageService.getItem('primaryOutcomeRatingFrequencyDescription', function (primaryOutcomeRatingFrequencyDescription) {
