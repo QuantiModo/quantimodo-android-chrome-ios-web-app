@@ -208,6 +208,14 @@ angular.module('starter')
 					}, this);
 				});
 			}
+			var d = new Date();
+			var timeZoneOffsetInMinutes = d.getTimezoneOffset();
+			if($rootScope.user.timeZoneOffset !== timeZoneOffsetInMinutes ){
+				var params = {
+					timeZoneOffset: timeZoneOffsetInMinutes
+				};
+				userService.updateUserSettings(params);
+			}
 
 			// Triggered on a button click, or some other target
 			$rootScope.showActionSheetMenu = function() {
