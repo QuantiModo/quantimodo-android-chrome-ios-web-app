@@ -135,6 +135,9 @@ angular.module('starter')
 
             getAccessTokenFromUserEndpoint: function (deferred) {
                 console.log('trying to fetch user credentials with call to /api/user');
+                if($rootScope.user){
+                    console.warn('Are you sure we should be getting the user again when we already have a user?', $rootScope.user)
+                }
                 $http.get(config.getURL("api/user")).then(
                     function (userCredentialsResp) {
                         console.log('direct API call was successful. User credentials fetched:', userCredentialsResp.data);
