@@ -5,7 +5,7 @@ angular.module('starter')
         var pushNotificationService = {
             registerDeviceToken : function(deviceToken){
                 var deferred = $q.defer();
-                console.debug("Posing deviceToken to server: ", deviceToken);
+                console.debug("Posting deviceToken to server: ", deviceToken);
                 QuantiModo.postDeviceToken(deviceToken, function(response){
                     console.debug(response);
                     deferred.resolve();

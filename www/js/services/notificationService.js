@@ -88,6 +88,8 @@ angular.module('starter')
             },
 
             updateBadgesAndTextOnAllNotifications : function () {
+                console.debug("updateOrRecreateNotifications: Disabled until everything works right");
+                return;
 
                 if($rootScope.isIOS){
                     console.warn("updateBadgesAndTextOnAllNotifications: updating notifications on " +
@@ -253,6 +255,9 @@ angular.module('starter')
             },
 
             updateOrRecreateNotifications: function() {
+                console.debug("updateOrRecreateNotifications: Disabled until everything works right");
+                return;
+
                 if($rootScope.isAndroid){
                     console.debug("updateOrRecreateNotifications: Updating " +
                         "notifications for Android because Samsung limits number of notifications " +
@@ -572,13 +577,6 @@ angular.module('starter')
 
             scheduleGenericNotification: function(notificationSettings){
 
-                if($rootScope.showOnlyOneNotification === false){
-                    console.error("scheduleGenericNotification: Called scheduleGenericNotification even though " +
-                        "$rootScope.showOnlyOneNotification is " +
-                        $rootScope.showOnlyOneNotification + ". Not going to scheduleGenericNotification.");
-                    return;
-                }
-
                 if(!notificationSettings.every){
                     console.error("scheduleGenericNotification: Called scheduleGenericNotification without providing " +
                         "notificationSettings.every " +
@@ -593,9 +591,12 @@ angular.module('starter')
                     notificationSettings.at = at;
                 }
 
+                if(!notificationSettings.id){
+                    notificationSettings.id = config.appSettings.primaryOutcomeVariableDetails.id;
+                }
+
                 notificationSettings.title = "Time to track!";
                 notificationSettings.text = "Open reminder inbox";
-                notificationSettings.id = config.appSettings.primaryOutcomeVariableDetails.id;
                 notificationSettings.sound = "file://sound/silent.ogg";
                 notificationSettings.badge = 0;
 
@@ -667,6 +668,116 @@ angular.module('starter')
                         });
                     }
                 });
+            },
+
+            scheduleUpdateOrDeleteGenericNotificationsByDailyReminderTimes: function(trackingReminders){
+                var localDailyReminderNotificationTimesFromApi = trackingReminders[0].localDailyReminderNotificationTimes;
+                if($rootScope.isMobile){
+                    $ionicPlatform.ready(function () {
+                        cordova.plugins.notification.local.getAll(function (existingLocalNotifications) {
+                            console.debug("scheduleUpdateOrDeleteGenericNotificationsByDailyReminderTimes: All " +
+                                "existing notifications before scheduling", existingLocalNotifications);
+                            for (var i = 0; i < existingLocalNotifications.length; i++) {
+                                var existingReminderNotificationTimeFoundInApiResponse = false;
+                                for (var j = 0; j < localDailyReminderNotificationTimesFromApi.length; j++) {
+                                    if (parseInt(localDailyReminderNotificationTimesFromApi[j].replace(":", "")) ===
+                                            existingLocalNotifications[i].id) {
+                                        console.debug('Server has a reminder notification matching local notification ' +
+                                            JSON.stringify(existingLocalNotifications[i]));
+                                        existingReminderNotificationTimeFoundInApiResponse = true;
+                                    }
+                                }
+                                if(!existingReminderNotificationTimeFoundInApiResponse) {
+                                    console.debug('No matching notification time found so cancelling this local notification ',
+                                        JSON.stringify(existingLocalNotifications[i]));
+                                    cordova.plugins.notification.local.cancel(existingLocalNotifications[i].id);
+                                }
+                            }
+                            for (var k = 0; i < localDailyReminderNotificationTimesFromApi.length; k++) {
+                                var existingLocalNotificationScheduled = false;
+                                for (var l = 0; l < existingLocalNotifications.length; l++) {
+                                    if (parseInt(localDailyReminderNotificationTimesFromApi[k].replace(":", "")) ===
+                                        existingLocalNotifications[l].id) {
+                                        console.debug('Server has a reminder notification matching local notification ' +
+                                            JSON.stringify(existingLocalNotifications[i]));
+                                        existingLocalNotificationScheduled = true;
+                                    }
+                                }
+                                if(!existingLocalNotificationScheduled) {
+                                    var at = new Date();
+                                    var splitUpLocalDailyReminderNotificationTimesFromApi =
+                                        localDailyReminderNotificationTimesFromApi[k].split(":");
+                                    at.setHours(splitUpLocalDailyReminderNotificationTimesFromApi[0]);
+                                    at.setMinutes(splitUpLocalDailyReminderNotificationTimesFromApi[1]);
+                                    console.debug('No existing local notification so scheduling ',
+                                        JSON.stringify(localDailyReminderNotificationTimesFromApi[k]));
+                                    var notificationSettings = {
+                                        every: 60 * 24,
+                                        at: at,
+                                        id: parseInt(localDailyReminderNotificationTimesFromApi[k].replace(":", ""))
+                                    };
+                                    notificationSettings.title = "Time to track!";
+                                    notificationSettings.text = "Open reminder inbox";
+                                    notificationSettings.sound = "file://sound/silent.ogg";
+                                    if($rootScope.numberOfPendingNotifications > 0) {
+                                        notificationSettings.badge = $rootScope.numberOfPendingNotifications;
+                                    }
+                                    if($rootScope.isAndroid){
+                                        notificationSettings.icon = 'ic_stat_icon_bw';
+                                    }
+                                    if($rootScope.isIOS){
+                                        notificationSettings.every = 'day';
+                                    }
+                                    cordova.plugins.notification.local.schedule(notificationSettings, function (notification) {
+                                        console.log('scheduleGenericNotification: notification scheduled', notification);
+                                    });
+                                }
+                            }
+                        });
+                    });
+                }
+
+                if($rootScope.isChrome){
+                    chrome.alarms.getAll(function(existingLocalAlarms) {
+                        for (var i = 0; i < existingLocalAlarms.length; i++) {
+                            var existingAlarmTimeFoundInApiResponse = false;
+                            for (var j = 0; j < localDailyReminderNotificationTimesFromApi.length; j++) {
+                                if (existingLocalAlarms[i].name === localDailyReminderNotificationTimesFromApi[j]) {
+                                    console.debug('Server has a reminder notification time matching time ' + existingLocalAlarms[i].name);
+                                    existingAlarmTimeFoundInApiResponse = true;
+                                }
+                            }
+                            if(!existingAlarmTimeFoundInApiResponse) {
+                                console.debug('No api reminder found matching so cancelling this alarm ', JSON.stringify(existingLocalAlarms[i]));
+                                chrome.alarms.clear(existingLocalAlarms[i].name);
+                            }
+                        }
+                        for (var k = 0; i < localDailyReminderNotificationTimesFromApi.length; k++) {
+                            var existingAlarmScheduled = false;
+                            for (var l = 0; l < existingLocalAlarms.length; l++) {
+                                if (existingLocalAlarms[i].name === localDailyReminderNotificationTimesFromApi[j]) {
+                                    console.debug('Server has a reminder notification matching local notification ' +
+                                        JSON.stringify(existingLocalAlarms[i]));
+                                    existingAlarmScheduled = true;
+                                }
+                            }
+                            if(!existingAlarmScheduled) {
+                                var alarmInfo = {};
+                                var at = new Date(); // The 0 there is the key, which sets the date to the epoch
+                                var splitUpLocalDailyReminderNotificationTimesFromApi =
+                                    localDailyReminderNotificationTimesFromApi[k].split(":");
+                                at.setHours(splitUpLocalDailyReminderNotificationTimesFromApi[0]);
+                                at.setMinutes(splitUpLocalDailyReminderNotificationTimesFromApi[1]);
+                                alarmInfo.when =  at.getTime();
+                                alarmInfo.periodInMinutes = 24 * 60;
+                                console.debug('No existing local notification so scheduling ',
+                                    alarmInfo);
+                                chrome.alarms.create(localDailyReminderNotificationTimesFromApi[k], alarmInfo);
+                            }
+                        }
+
+                    });
+                }
             },
 
             // cancel all existing notifications
