@@ -737,7 +737,7 @@ angular.module('starter')
                     });
                 }
 
-                if($rootScope.isChrome){
+                if($rootScope.isChromeExtension){
                     chrome.alarms.getAll(function(existingLocalAlarms) {
                         for (var i = 0; i < existingLocalAlarms.length; i++) {
                             var existingAlarmTimeFoundInApiResponse = false;
