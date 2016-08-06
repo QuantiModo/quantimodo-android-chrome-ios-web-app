@@ -25,7 +25,7 @@ angular.module('starter',
 
     $ionicPlatform.ready(function() {
         //$ionicAnalytics.register();
-
+        /*
         var push = new Ionic.Push({});
 
         push.register(function(deviceToken) {
@@ -37,7 +37,7 @@ angular.module('starter',
         });
 
 
-/*
+
 
         window.onNotification = function(e){
             console.log("window.onNotification: received event", e);

@@ -69,7 +69,6 @@ angular.module('starter')
 			$state.go('app.login');
 	    };
 
-
 		$scope.sendSharingInvitation= function() {
 			var subjectLine = "I%27d%20like%20to%20share%20my%20data%20with%20you";
 			var emailBody = "Hi!%20%20%0A%0AI%27m%20tracking%20my%20health%20and%20happiness%20with%20an%20app%20and%20I%27d%20like%20to%20share%20my%20data%20with%20you.%20%20%0A%0APlease%20generate%20a%20data%20authorization%20URL%20at%20https%3A%2F%2Fapp.quantimo.do%2Fapi%2Fv2%2Fphysicians%20and%20email%20it%20to%20me.%20%0A%0AThanks!%20%3AD";
@@ -81,15 +80,14 @@ angular.module('starter')
 			}
 		};
 
-        
-		$scope.init = function(){
+		$scope.init = function() {
 			Bugsnag.context = "settings";
 			if (typeof analytics !== 'undefined')  { analytics.trackView("Settings Controller"); }
 			$scope.shouldWeCombineNotifications();
 			qmLocationService.getLocationVariablesFromLocalStorage();
 	    };
 
-		$scope.contactUs = function(){
+		$scope.contactUs = function() {
 			$scope.hideLoader();
 			if ($rootScope.isChromeApp) {
 				window.location = 'mailto:help@quantimo.do';
@@ -110,8 +108,6 @@ angular.module('starter')
 		};
 
 		$scope.combineNotificationChange = function() {
-
-
 			var d = new Date();
 			var timeZoneOffsetInMinutes = d.getTimezoneOffset();
 			var params = {
@@ -133,9 +129,9 @@ angular.module('starter')
                 userService.updateUserSettings(params);
                 $rootScope.deviceToken = localStorageService.getItemSync('deviceToken');
                 if($rootScope.deviceToken){
-                    pushNotificationService.registerDeviceToken($rootScope.deviceToken);
+                    //pushNotificationService.registerDeviceToken($rootScope.deviceToken);
                 } else {
-                    console.error("Could not find device token for push notifications!");
+                    //console.error("Could not find device token for push notifications!");
                 }
 
 				notificationService.cancelAllNotifications().then(function() {
@@ -274,7 +270,7 @@ angular.module('starter')
 
 		};
 
-        $scope.logout = function(){
+        $scope.logout = function() {
 
             var startLogout = function(){
                 console.log('Logging out...');
@@ -382,10 +378,9 @@ angular.module('starter')
 	        }
 	        return str;
 	    };
-		
 
 		// When Export is tapped
-		$scope.exportCsv = function(){
+		$scope.exportCsv = function() {
 			$ionicPopup.alert({
 				title: 'Export Request Sent!',
 				template: 'Your data will be emailed to you.  Enjoy your life! So do we!'
@@ -405,7 +400,7 @@ angular.module('starter')
 		};
 
 		// When Export is tapped
-		$scope.exportPdf = function(){
+		$scope.exportPdf = function() {
 			$ionicPopup.alert({
 				title: 'Export Request Sent!',
 				template: 'Your data will be emailed to you.  Enjoy your life! So do we!'

@@ -118,9 +118,10 @@ angular.module('starter')
 						var trackingReminders = remindersResponse.data;
 						if(remindersResponse.success) {
 							if($rootScope.showOnlyOneNotification !== true){
-								notificationService.scheduleAllNotificationsByTrackingReminders(trackingReminders);
+                                notificationService.scheduleUpdateOrDeleteGenericNotificationsByDailyReminderTimes(trackingReminders);
+								//notificationService.scheduleAllNotificationsByTrackingReminders(trackingReminders);
 							} else {
-								notificationService.scheduleSingleMostFrequentNotification(trackingReminders);
+								notificationService.scheduleUpdateOrDeleteGenericNotificationsByDailyReminderTimes(trackingReminders);
 							}
 							localStorageService.setItem('trackingReminders', JSON.stringify(trackingReminders));
 							$rootScope.syncingReminders = false;
