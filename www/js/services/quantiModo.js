@@ -488,6 +488,9 @@ angular.module('starter')
 
             // get user data
             QuantiModo.getUser = function(successHandler, errorHandler){
+                if($rootScope.user){
+                    console.warn('Are you sure we should be getting the user again when we already have a user?', $rootScope.user)
+                }
                 QuantiModo.get('api/user/me',
                     [],
                     {},
