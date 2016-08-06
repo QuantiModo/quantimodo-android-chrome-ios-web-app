@@ -1,6 +1,6 @@
 angular.module('starter')
 
-	.factory('authService', function ($http, $q, $state, $ionicLoading, $rootScope, localStorageService, utilsService) {
+	.factory('authService', function ($http, $q, $state, $ionicLoading, $rootScope, localStorageService, utilsService, userService) {
 
 		var authService = {
 
@@ -107,6 +107,7 @@ angular.module('starter')
 					localStorageService.setItem('accessToken', tokenInGetParams);
 					//resolving promise using token fetched from get params
 					console.log('resolving token using token url parameter', tokenInGetParams);
+					userService.refreshUser();
 					deferred.resolve({
 						accessToken: tokenInGetParams
 					});
