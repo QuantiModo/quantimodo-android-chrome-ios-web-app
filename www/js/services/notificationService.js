@@ -671,6 +671,11 @@ angular.module('starter')
             },
 
             scheduleUpdateOrDeleteGenericNotificationsByDailyReminderTimes: function(trackingReminders){
+                if(!$rootScope.isMobile && !$rootScope.isChromeExtension){
+                    console.debug('Not scheduling notifications because we are not mobile or Chrome extension');
+                    return;
+                }
+
                 var localDailyReminderNotificationTimesFromApi = trackingReminders[0].localDailyReminderNotificationTimes;
                 if(localDailyReminderNotificationTimesFromApi.length < 1){
                     console.warn('Cannot schedule notifications because ' +
