@@ -241,7 +241,7 @@ angular.module('starter')
                 measurementInfo.value = jQuery('#measurementValue').val();
             }
 
-            console.log(measurementInfo);
+            console.debug('measurementAddCtrl.done is posting this measurement: ' + JSON.stringify(measurementInfo));
 
             // Measurement only - post measurement. This is for adding or editing
             measurementService.postTrackingMeasurement(measurementInfo, true);
@@ -380,6 +380,7 @@ angular.module('starter')
 
             // update view
             $scope.state.measurement.value = val;
+            console.debug('measurementAddCtrl.selectPrimaryOutcomeVariableValue selected rating value: ' + val);
         };
 
         $scope.toggleShowUnits = function(){

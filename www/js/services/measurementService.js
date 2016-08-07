@@ -431,7 +431,7 @@ angular.module('starter')
                         });
                         console.debug("postTrackingMeasurement: newAllMeasurements length is " + newAllMeasurements.length);
                         console.debug("postTrackingMeasurement:  Setting allMeasurements to: ", newAllMeasurements);
-                        localStorageService.setItem('allMeasurements',JSON.stringify(newAllMeasurements));
+                        localStorageService.setItem('allMeasurements', JSON.stringify(newAllMeasurements));
                         var editedMeasurement = {
                             id: measurementInfo.id,
                             variableName: measurementInfo.variableName,
