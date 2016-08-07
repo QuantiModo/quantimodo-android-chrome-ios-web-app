@@ -194,8 +194,9 @@ angular.module('starter')
 						if(newEarliestReminderTime !== $rootScope.user.earliestReminderTime){
 							$rootScope.user.earliestReminderTime = newEarliestReminderTime;
 							params.earliestReminderTime = $rootScope.user.earliestReminderTime;
-							userService.updateUserSettings(params);
-							reminderService.refreshTrackingRemindersAndScheduleAlarms();
+							userService.updateUserSettings(params).then(function(){
+								reminderService.refreshTrackingRemindersAndScheduleAlarms();
+							});
 							$ionicPopup.alert({
 								title: 'Earliest Notification Time Updated',
 								template: 'You should not receive device notifications or tracking reminder notifications in your inbox before ' + moment(a).format('h:mm A') + '.'
@@ -236,8 +237,9 @@ angular.module('starter')
 						if(newLatestReminderTime !== $rootScope.user.latestReminderTime){
 							$rootScope.user.latestReminderTime = newLatestReminderTime;
 							params.latestReminderTime = $rootScope.user.latestReminderTime;
-							userService.updateUserSettings(params);
-							reminderService.refreshTrackingRemindersAndScheduleAlarms();
+							userService.updateUserSettings(params).then(function(){
+								reminderService.refreshTrackingRemindersAndScheduleAlarms();
+							});
 							$ionicPopup.alert({
 								title: 'Latest Notification Time Updated',
 								template: 'You should not receive device notifications or tracking reminder notifications in your inbox after ' + moment(a).format('h:mm A') + '.'
