@@ -200,6 +200,14 @@ angular.module('starter')
 				//update alarms and local notifications
 				console.debug("reminderInbox init: calling refreshTrackingRemindersAndScheduleAlarms");
 				reminderService.refreshTrackingRemindersAndScheduleAlarms();
+				var d = new Date();
+				var timeZoneOffsetInMinutes = d.getTimezoneOffset();
+				if($rootScope.user.timeZoneOffset !== timeZoneOffsetInMinutes ){
+					var params = {
+						timeZoneOffset: timeZoneOffsetInMinutes
+					};
+					userService.updateUserSettings(params);
+				}
 			}
 			if (typeof cordova !== "undefined") {
 				$ionicPlatform.ready(function () {
@@ -207,14 +215,6 @@ angular.module('starter')
 						console.debug("clearAll active notifications");
 					}, this);
 				});
-			}
-			var d = new Date();
-			var timeZoneOffsetInMinutes = d.getTimezoneOffset();
-			if($rootScope.user.timeZoneOffset !== timeZoneOffsetInMinutes ){
-				var params = {
-					timeZoneOffset: timeZoneOffsetInMinutes
-				};
-				userService.updateUserSettings(params);
 			}
 
 			// Triggered on a button click, or some other target
