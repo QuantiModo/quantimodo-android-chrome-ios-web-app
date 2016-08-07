@@ -757,6 +757,10 @@ angular.module('starter')
                                         localDailyReminderNotificationTimesFromApi[k].split(":");
                                     at.setHours(splitUpLocalDailyReminderNotificationTimesFromApi[0]);
                                     at.setMinutes(splitUpLocalDailyReminderNotificationTimesFromApi[1]);
+                                    var now = new Date();
+                                    if(at < now){
+                                        at = new Date(at.getTime() + 60 * 60 * 24 * 1000);
+                                    }
                                     console.debug('No existing local notification so scheduling ',
                                         JSON.stringify(localDailyReminderNotificationTimesFromApi[k]));
                                     notificationSettings.at = at;
