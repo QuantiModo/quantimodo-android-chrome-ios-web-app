@@ -28,8 +28,10 @@ angular.module('starter')
 			isDisabled : false,
 			loading : true,
 			showTreatmentInfoCard : false,
-			showSymptomInfoCard : false
+			showSymptomInfoCard : false,
+			orderParameter : 'variableName'
 	    };
+
 
 
 		if($stateParams.variableCategoryName){
@@ -131,7 +133,42 @@ angular.module('starter')
 				} else {
 					$scope.$broadcast('scroll.refreshComplete');
 				}
-			} 
+			}
+			// Triggered on a button click, or some other target
+			$rootScope.showActionSheetMenu = function() {
+				// Show the action sheet
+				var hideSheet = $ionicActionSheet.show({
+					buttons: [
+						{ text: '<i class="icon ion-arrow-down-c"></i>Sort by Name'},
+						{ text: '<i class="icon ion-clock"></i>Sort by Time' }
+					],
+					cancelText: '<i class="icon ion-ios-close"></i>Cancel',
+					cancel: function() {
+						console.log('CANCELLED');
+					},
+					buttonClicked: function(index) {
+						console.log('BUTTON CLICKED', index);
+						if(index === 0){
+							console.debug("Sort by name");
+							$scope.state.orderParameter = 'variableName';
+							$scope.init();
+						}
+						if(index === 1){
+							console.debug("Sort by time");
+							$scope.state.orderParameter = 'reminderStartTimeLocal';
+							$scope.init();
+						}
+
+						return true;
+					}
+				});
+
+
+				$timeout(function() {
+					hideSheet();
+				}, 20000);
+
+			};
 	    };
 
 		$scope.showMoreNotificationInfoPopup = function(){
