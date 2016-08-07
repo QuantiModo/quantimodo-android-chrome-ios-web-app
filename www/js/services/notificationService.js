@@ -731,11 +731,15 @@ angular.module('starter')
                                     cordova.plugins.notification.local.cancel(existingLocalNotifications[i].id);
                                 }
                             }
-                            for (var k = 0; i < localDailyReminderNotificationTimesFromApi.length; k++) {
+                            for (var k = 0; k < localDailyReminderNotificationTimesFromApi.length; k++) {
                                 console.debug('localDailyReminderNotificationTimesFromApi[k] is ',
                                     localDailyReminderNotificationTimesFromApi[k]);
                                 var existingLocalNotificationScheduled = false;
                                 for (var l = 0; l < existingLocalNotifications.length; l++) {
+                                    if(!localDailyReminderNotificationTimesFromApi[k]){
+                                        console.error('localDailyReminderNotificationTimesFromApi[' + k + '] is not defined! ' +
+                                            'localDailyReminderNotificationTimesFromApi: ', localDailyReminderNotificationTimesFromApi)
+                                    }
                                     if (parseInt(localDailyReminderNotificationTimesFromApi[k].replace(":", "")) ===
                                         existingLocalNotifications[l].id &&
                                         existingLocalNotifications[l].text === notificationSettings.text) {
@@ -791,7 +795,7 @@ angular.module('starter')
                                 chrome.alarms.clear(existingLocalAlarms[i].name);
                             }
                         }
-                        for (var k = 0; i < localDailyReminderNotificationTimesFromApi.length; k++) {
+                        for (var k = 0; k < localDailyReminderNotificationTimesFromApi.length; k++) {
                             var existingAlarmScheduled = false;
                             for (var l = 0; l < existingLocalAlarms.length; l++) {
                                 if (existingLocalAlarms[l].name === localDailyReminderNotificationTimesFromApi[k]) {
