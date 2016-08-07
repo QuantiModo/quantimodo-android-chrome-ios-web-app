@@ -57,7 +57,7 @@ angular.module('starter')
 				{ id : 8, name : 'Hourly'},
 	    		{ id : 9, name : 'Every 30 minutes'},
 	    		{ id : 10, name : 'Never'},
-                { id : 11, name : 'Minutely'}
+                //{ id : 11, name : 'Minutely'}
 	    	]
 	    };
 
@@ -273,6 +273,9 @@ angular.module('starter')
             $scope.showLoader('Saving ' + $scope.state.trackingReminder.variableName + ' reminder...');
             $scope.state.trackingReminder.reminderFrequency = getFrequencyChart()[$scope.state.selectedFrequency];
             $scope.state.trackingReminder.valueAndFrequencyTextDescription = $scope.state.selectedFrequency;
+            if($scope.state.trackingReminder.reminderFrequency === 86400){
+                $scope.state.trackingReminder.valueAndFrequencyTextDescription = 'Daily at ' + timeService.humanFormat($scope.state.reminderStartTimeStringLocal);
+            }
             $scope.state.trackingReminder.reminderStartTime =
                 timeService.getUtcTimeStringFromLocalString($scope.state.reminderStartTimeStringLocal);
             //End time not reminder specific anymore
