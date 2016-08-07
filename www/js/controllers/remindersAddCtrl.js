@@ -4,7 +4,8 @@ angular.module('starter')
 	.controller('RemindersAddCtrl', function($scope, $state, $stateParams, $ionicLoading, $filter, $timeout, $rootScope,
                                              $ionicActionSheet, $ionicHistory, authService, localStorageService,
                                              reminderService, utilsService, ionicTimePicker, variableCategoryService,
-                                             variableService, unitService, timeService, bugsnagService, $ionicPopup) {
+                                             variableService, unitService, timeService, bugsnagService, $ionicPopup,
+                                             ionicDatePicker) {
 
 	    $scope.controller_name = "RemindersAddCtrl";
 		console.log('Loading ' + $scope.controller_name);
@@ -22,7 +23,8 @@ angular.module('starter')
             defaultValueLabel : 'Default Value',
             defaultValuePlaceholderText : 'Enter typical value',
             variableSearchPlaceholderText : 'Search for a variable...',
-            showInstructionsField : false
+            showInstructionsField : false,
+            selectedStopTrackingDate: null
         };
 
         if($rootScope.user) {
@@ -159,6 +161,28 @@ angular.module('starter')
 
 			ionicTimePicker.openTimePicker($scope.state.timePickerConfiguration);
 		};
+
+        $scope.openStopTrackingDatePicker = function() {
+            var now = new Date();
+            $scope.state.stopTrackingDatePickerConfiguration = {
+                callback: function(val) {
+                    if (typeof(val)==='undefined') {
+                        console.log('Date not selected');
+                    } else {
+                        // clears out hours and minutes
+
+                        $scope.state.selectedStopTrackingDate = new Date(val);
+                    }
+                },
+                from: new Date(),
+                to: new Date(now.getTime() + 365 * 24 * 60 * 60 * 1000)
+            };
+
+            if($scope.state.selectedStopTrackingDate){
+                $scope.state.stopTrackingDatePickerConfiguration.inputDate = $scope.state.selectedStopTrackingDate;
+            }
+            ionicDatePicker.openDatePicker($scope.state.stopTrackingDatePickerConfiguration);
+        };
 
 /*
 
@@ -383,6 +407,10 @@ angular.module('starter')
             $scope.showLoader('Saving ' + $scope.state.trackingReminder.variableName + ' reminder...');
             $scope.state.trackingReminder.reminderFrequency = getFrequencyChart()[$scope.state.selectedFrequency];
             $scope.state.trackingReminder.valueAndFrequencyTextDescription = $scope.state.selectedFrequency;
+            if($scope.state.selectedStopTrackingDate){
+                var dateFormat = 'YYYY-MM-DD';
+                $scope.state.trackingReminder.stopTrackingDate = moment($scope.state.selectedStopTrackingDate).format(dateFormat);
+            }
 
             var remindersArray = [];
             remindersArray[0] = JSON.parse(JSON.stringify($scope.state.trackingReminder));
@@ -441,6 +469,9 @@ angular.module('starter')
             $scope.state.firstReminderStartTimeLocal = timeService.getLocalTimeStringFromUtcString(trackingReminder.reminderStartTime);
             $scope.state.firstReminderStartTimeEpochTime = timeService.getEpochTimeFromLocalString($scope.state.firstReminderStartTimeLocal);
             //$scope.state.reminderEndTimeStringLocal = trackingReminder.reminderEndTime;
+            if(trackingReminder.stopTrackingDate){
+                $scope.state.selectedStopTrackingDate = new Date(trackingReminder.stopTrackingDate);
+            }
             
 	    	var reverseFrequencyChart = {
 	    		86400: "Daily",
