@@ -321,7 +321,8 @@ angular.module('starter')
                 e.targetScope.controller_name === "FavoriteAddCtrl" ||
                 e.targetScope.controller_name === "VariablePageCtrl" ||
                 e.targetScope.controller_name === "VariableSettingsCtrl" ||
-                e.targetScope.controller_name === "RemindersInboxCtrl"
+                e.targetScope.controller_name === "RemindersInboxCtrl" ||
+                e.targetScope.controller_name === "RemindersManageCtrl"
             ) {
                 $scope.showMoreMenuButton = true;
             } else {
