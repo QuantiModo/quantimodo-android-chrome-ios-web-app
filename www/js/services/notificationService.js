@@ -692,7 +692,10 @@ angular.module('starter')
                     return;
                 }
 
-                var localDailyReminderNotificationTimesFromApi = trackingReminders[0].localDailyReminderNotificationTimes;
+                var localDailyReminderNotificationTimesFromApi =
+                    trackingReminders[0].localDailyReminderNotificationTimesForAllReminders;
+                console.debug('localDailyReminderNotificationTimesFromApi: ' +
+                    JSON.stringify(localDailyReminderNotificationTimesFromApi));
                 if(localDailyReminderNotificationTimesFromApi.length < 1){
                     console.warn('Cannot schedule notifications because ' +
                         'trackingReminders[0].localDailyReminderNotificationTimes is empty.');
@@ -729,6 +732,8 @@ angular.module('starter')
                                 }
                             }
                             for (var k = 0; i < localDailyReminderNotificationTimesFromApi.length; k++) {
+                                console.debug('localDailyReminderNotificationTimesFromApi[k] is ',
+                                    localDailyReminderNotificationTimesFromApi[k]);
                                 var existingLocalNotificationScheduled = false;
                                 for (var l = 0; l < existingLocalNotifications.length; l++) {
                                     if (parseInt(localDailyReminderNotificationTimesFromApi[k].replace(":", "")) ===
@@ -772,6 +777,7 @@ angular.module('starter')
 
                 if($rootScope.isChromeExtension){
                     chrome.alarms.getAll(function(existingLocalAlarms) {
+                        console.debug('Existing Chrome alarms before scheduling: ', existingLocalAlarms);
                         for (var i = 0; i < existingLocalAlarms.length; i++) {
                             var existingAlarmTimeFoundInApiResponse = false;
                             for (var j = 0; j < localDailyReminderNotificationTimesFromApi.length; j++) {
@@ -788,13 +794,17 @@ angular.module('starter')
                         for (var k = 0; i < localDailyReminderNotificationTimesFromApi.length; k++) {
                             var existingAlarmScheduled = false;
                             for (var l = 0; l < existingLocalAlarms.length; l++) {
-                                if (existingLocalAlarms[i].name === localDailyReminderNotificationTimesFromApi[j]) {
+                                if (existingLocalAlarms[l].name === localDailyReminderNotificationTimesFromApi[k]) {
                                     console.debug('Server has a reminder notification matching local notification ' +
                                         JSON.stringify(existingLocalAlarms[i]));
                                     existingAlarmScheduled = true;
                                 }
                             }
                             if(!existingAlarmScheduled) {
+                                if(!localDailyReminderNotificationTimesFromApi[k]){
+                                    console.error('localDailyReminderNotificationTimesFromApi[' + k + '] is not defined! ' +
+                                        'localDailyReminderNotificationTimesFromApi: ', localDailyReminderNotificationTimesFromApi)
+                                }
                                 var alarmInfo = {};
                                 var at = new Date(); // The 0 there is the key, which sets the date to the epoch
                                 var splitUpLocalDailyReminderNotificationTimesFromApi =
