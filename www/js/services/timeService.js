@@ -65,6 +65,12 @@ angular.module('starter')
 				return localTimeString;
 			},
 
+			humanFormat: function(hhmmssFormatString){
+				var intitialTimeFormat = "HH:mm:ss";
+				var humanTimeFormat = "hh:mm A";
+				return moment(hhmmssFormatString, intitialTimeFormat).format(humanTimeFormat);
+			},
+
 			getUtcTimeStringFromLocalString: function (localTimeString) {
 
 				var returnTimeFormat = "HH:mm:ss";
