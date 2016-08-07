@@ -707,8 +707,8 @@ angular.module('starter')
                         cordova.plugins.notification.local.getAll(function (existingLocalNotifications) {
                             var notificationSettings = {
                                 every: 60 * 24,
-                                title: "Time to track!",
-                                text: "Open reminder inbox",
+                                title: "How are you?",
+                                text: "Time to track!",
                                 sound: "file://sound/silent.ogg"
                             };
                             console.debug("scheduleUpdateOrDeleteGenericNotificationsByDailyReminderTimes: All " +
