@@ -202,11 +202,15 @@ angular.module('starter')
 				reminderService.refreshTrackingRemindersAndScheduleAlarms();
 				var d = new Date();
 				var timeZoneOffsetInMinutes = d.getTimezoneOffset();
-				if($rootScope.user.timeZoneOffset !== timeZoneOffsetInMinutes ){
+
+				if($rootScope.user && $rootScope.user.timeZoneOffset !== timeZoneOffsetInMinutes ){
 					var params = {
 						timeZoneOffset: timeZoneOffsetInMinutes
 					};
 					userService.updateUserSettings(params);
+				}
+				if(!$rootScope.user){
+					userService.refreshUser();
 				}
 			}
 			if (typeof cordova !== "undefined") {
