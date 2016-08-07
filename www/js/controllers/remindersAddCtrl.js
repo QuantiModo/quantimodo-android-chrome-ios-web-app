@@ -15,9 +15,9 @@ angular.module('starter')
             showUnits: false,
             selectedFrequency : 'Daily',
             selectedReminder : false,
-            reminderStartTimeEpochTime : timeService.getEpochTimeFromLocalString("12:00:00"),
+            reminderStartTimeEpochTime : timeService.getEpochTimeFromLocalString($rootScope.user.earliestReminderTime),
             //reminderEndTimeEpochTime : null,
-            reminderStartTimeStringLocal : "12:00:00",
+            reminderStartTimeStringLocal : $rootScope.user.earliestReminderTime,
             //reminderEndTimeStringLocal : null,
             measurementSynonymSingularLowercase : 'measurement',
             defaultValueLabel : 'Default Value',
@@ -62,7 +62,8 @@ angular.module('starter')
 	    };
 
 		$scope.openReminderStartTimePicker = function() {
-            var defaultStartTimeInSecondsSinceMidnightLocal = 60 * 60 * 12;
+            var defaultStartTimeInSecondsSinceMidnightLocal =
+                timeService.getSecondsSinceMidnightLocalFromLocalString($rootScope.user.earliestReminderTime);
             if($scope.state.reminderStartTimeStringLocal){
                 defaultStartTimeInSecondsSinceMidnightLocal =
                     timeService.getSecondsSinceMidnightLocalFromLocalString($scope.state.reminderStartTimeStringLocal);
