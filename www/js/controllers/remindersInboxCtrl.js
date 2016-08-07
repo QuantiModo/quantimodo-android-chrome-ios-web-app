@@ -277,7 +277,7 @@ angular.module('starter')
 			trackingReminder.id = trackingReminderNotification.trackingReminderId;
 	    	$state.go('app.reminderAdd',
 				{
-					reminderNotification: trackingReminder,
+					reminder: trackingReminder,
 					fromUrl: window.location.href,
 					fromState : $state.current.name
 				});
