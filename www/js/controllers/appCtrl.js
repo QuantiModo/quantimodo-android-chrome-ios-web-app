@@ -570,6 +570,12 @@ angular.module('starter')
                             ") is different from the previous $rootScope.numberOfPendingNotifications (" + $rootScope.numberOfPendingNotifications +
                             ") so updating or recreating notifications...");
                         $rootScope.numberOfPendingNotifications = trackingReminderNotifications.length;
+                        if (window.chrome && window.chrome.browserAction) {
+                            chrome.browserAction.setBadgeText({
+                                text: $rootScope.numberOfPendingNotifications
+                            });
+                        }
+
                         notificationService.updateOrRecreateNotifications();
                     } else {
                         console.debug("New API response trackingReminderNotifications.length (" + trackingReminderNotifications.length +

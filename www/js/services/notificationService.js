@@ -138,6 +138,12 @@ angular.module('starter')
                         if (response.success) {
                             $rootScope.trackingReminderNotifications = response.data;
                             $rootScope.numberOfPendingNotifications = $rootScope.trackingReminderNotifications.length;
+                            if (window.chrome && window.chrome.browserAction) {
+                                chrome.browserAction.setBadgeText({
+                                    text: $rootScope.numberOfPendingNotifications
+                                });
+                            }
+
                             if (!$rootScope.numberOfPendingNotifications) {
                                 console.debug("onTrigger.getNotificationsFromApiAndClearOrUpdateLocalNotifications: No notifications from API so clearAll active notifications");
                                 cordova.plugins.notification.local.clearAll(function () {
@@ -244,6 +250,11 @@ angular.module('starter')
             decrementNotificationBadges: function(){
                 if($rootScope.numberOfPendingNotifications > 0){
                     $rootScope.numberOfPendingNotifications = $rootScope.numberOfPendingNotifications - 1;
+                    if (window.chrome && window.chrome.browserAction) {
+                        chrome.browserAction.setBadgeText({
+                            text: $rootScope.numberOfPendingNotifications
+                        });
+                    }
                     this.updateOrRecreateNotifications();
                 }
             },
@@ -251,6 +262,11 @@ angular.module('starter')
             setNotificationBadge: function(numberOfPendingNotifications){
                 console.debug("setNotificationBadge: numberOfPendingNotifications is " + numberOfPendingNotifications);
                 $rootScope.numberOfPendingNotifications = numberOfPendingNotifications;
+                if (window.chrome && window.chrome.browserAction) {
+                    chrome.browserAction.setBadgeText({
+                        text: $rootScope.numberOfPendingNotifications
+                    });
+                }
                 this.updateOrRecreateNotifications();
             },
 
