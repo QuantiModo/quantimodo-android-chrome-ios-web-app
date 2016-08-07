@@ -686,13 +686,21 @@ angular.module('starter')
                 if($rootScope.isMobile){
                     $ionicPlatform.ready(function () {
                         cordova.plugins.notification.local.getAll(function (existingLocalNotifications) {
+                            var notificationSettings = {
+                                every: 60 * 24,
+                                title: "Time to track!",
+                                text: "Open reminder inbox",
+                                sound: "file://sound/silent.ogg"
+                            };
                             console.debug("scheduleUpdateOrDeleteGenericNotificationsByDailyReminderTimes: All " +
                                 "existing notifications before scheduling", existingLocalNotifications);
                             for (var i = 0; i < existingLocalNotifications.length; i++) {
                                 var existingReminderNotificationTimeFoundInApiResponse = false;
                                 for (var j = 0; j < localDailyReminderNotificationTimesFromApi.length; j++) {
                                     if (parseInt(localDailyReminderNotificationTimesFromApi[j].replace(":", "")) ===
-                                            existingLocalNotifications[i].id) {
+                                            existingLocalNotifications[i].id &&
+                                        existingLocalNotifications[i].text === notificationSettings.text
+                                    ) {
                                         console.debug('Server has a reminder notification matching local notification ' +
                                             JSON.stringify(existingLocalNotifications[i]));
                                         existingReminderNotificationTimeFoundInApiResponse = true;
@@ -708,13 +716,17 @@ angular.module('starter')
                                 var existingLocalNotificationScheduled = false;
                                 for (var l = 0; l < existingLocalNotifications.length; l++) {
                                     if (parseInt(localDailyReminderNotificationTimesFromApi[k].replace(":", "")) ===
-                                        existingLocalNotifications[l].id) {
+                                        existingLocalNotifications[l].id &&
+                                        existingLocalNotifications[l].text === notificationSettings.text) {
                                         console.debug('Server has a reminder notification matching local notification ' +
                                             JSON.stringify(existingLocalNotifications[i]));
                                         existingLocalNotificationScheduled = true;
                                     }
                                 }
                                 if(!existingLocalNotificationScheduled) {
+                                    if(!localDailyReminderNotificationTimesFromApi[k]){
+                                        console.error("Did not get localDailyReminderNotificationTimesFromApi", trackingReminders);
+                                    }
                                     var at = new Date();
                                     var splitUpLocalDailyReminderNotificationTimesFromApi =
                                         localDailyReminderNotificationTimesFromApi[k].split(":");
@@ -722,14 +734,8 @@ angular.module('starter')
                                     at.setMinutes(splitUpLocalDailyReminderNotificationTimesFromApi[1]);
                                     console.debug('No existing local notification so scheduling ',
                                         JSON.stringify(localDailyReminderNotificationTimesFromApi[k]));
-                                    var notificationSettings = {
-                                        every: 60 * 24,
-                                        at: at,
-                                        id: parseInt(localDailyReminderNotificationTimesFromApi[k].replace(":", ""))
-                                    };
-                                    notificationSettings.title = "Time to track!";
-                                    notificationSettings.text = "Open reminder inbox";
-                                    notificationSettings.sound = "file://sound/silent.ogg";
+                                    notificationSettings.at = at;
+                                    notificationSettings.id = parseInt(localDailyReminderNotificationTimesFromApi[k].replace(":", ""));
                                     if($rootScope.numberOfPendingNotifications > 0) {
                                         notificationSettings.badge = $rootScope.numberOfPendingNotifications;
                                     }
