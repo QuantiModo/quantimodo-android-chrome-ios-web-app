@@ -146,6 +146,8 @@ iframe {
 
 .active-primary-outcome-variable-rating-button {
     opacity: 1.0 !important;
+    -webkit-filter: saturate(200%); /* Chrome, Safari, Opera */
+    filter: saturate(200%);
 }
 
 .buttons > .button {
