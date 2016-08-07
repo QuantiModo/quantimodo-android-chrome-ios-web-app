@@ -719,7 +719,7 @@ angular.module('starter')
                                         existingLocalNotifications[l].id &&
                                         existingLocalNotifications[l].text === notificationSettings.text) {
                                         console.debug('Server has a reminder notification matching local notification ' +
-                                            JSON.stringify(existingLocalNotifications[i]));
+                                            JSON.stringify(existingLocalNotifications[l]));
                                         existingLocalNotificationScheduled = true;
                                     }
                                 }
