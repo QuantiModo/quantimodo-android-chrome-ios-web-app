@@ -73,7 +73,7 @@ angular.module('starter')
             var defaultStartTimeHours = defaultStartTime.getUTCHours();
             var defaultStartTimeMinutes = defaultStartTime.getUTCMinutes();
             if (defaultStartTimeMinutes % 15 !== 0) {
-                if ((defaultStartTimeMinutes > 0 && defaultStartTimeMinutes <= 7) || (defaultStartTimeMinutes > 52)) {
+                if ((defaultStartTimeMinutes > 0 && defaultStartTimeMinutes <= 7)) {
                     defaultStartTimeMinutes = 0;
                 }
                 else if (defaultStartTimeMinutes > 7 && defaultStartTimeMinutes <= 22) {
@@ -85,9 +85,17 @@ angular.module('starter')
                 else if (defaultStartTimeMinutes > 37 && defaultStartTimeMinutes <= 52) {
                     defaultStartTimeMinutes = 45;
                 }
-                defaultStartTimeInSecondsSinceMidnightLocal =
-                    timeService.getSecondsSinceMidnightLocalFromLocalString("" + defaultStartTimeHours + ":" + defaultStartTimeMinutes + ":00");
+                else if (defaultStartTimeMinutes > 52) {
+                    defaultStartTimeMinutes = 0;
+                    defaultStartTimeHours += 1;
+                }
             }
+            // Correct for error in timepicker library
+            if (defaultStartTimeMinutes === 30 || defaultStartTimeMinutes === 45) {
+                defaultStartTimeHours -= 1;
+            }
+            defaultStartTimeInSecondsSinceMidnightLocal =
+                timeService.getSecondsSinceMidnightLocalFromLocalString("" + defaultStartTimeHours + ":" + defaultStartTimeMinutes + ":00");
             
             $scope.state.timePickerConfiguration = {
                 callback: function (val) {
