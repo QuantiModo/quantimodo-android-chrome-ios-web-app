@@ -779,9 +779,16 @@ angular.module('starter')
                                     if($rootScope.isIOS){
                                         notificationSettings.every = 'day';
                                     }
-                                    cordova.plugins.notification.local.schedule(notificationSettings, function (notification) {
-                                        console.log('scheduleGenericNotification: notification scheduled', notification);
-                                    });
+                                    try{
+                                        cordova.plugins.notification.local.schedule(notificationSettings, function (notification) {
+                                            console.log('scheduleUpdateOrDeleteGenericNotificationsByDailyReminderTimes: notification scheduled', notification);
+                                        });
+                                    } catch (error) {
+                                        bugsnagService.reportError(error);
+                                        console.error('scheduleUpdateOrDeleteGenericNotificationsByDailyReminderTimes error: ' + error);
+                                        console.error('scheduleUpdateOrDeleteGenericNotificationsByDailyReminderTimes' +
+                                            ' notificationSettings: ' + JSON.stringify(notificationSettings));
+                                    }
                                 }
                             }
                         });
