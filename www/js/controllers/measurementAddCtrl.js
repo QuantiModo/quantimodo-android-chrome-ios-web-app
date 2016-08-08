@@ -51,7 +51,15 @@ angular.module('starter')
             // Correct for timepicker library rounding error
             var timePickerHours = $scope.selectedHours;
             if ($scope.selectedMinutes >= 30) {
-                timePickerHours -= 1;
+                if (timePickerHours === 0) {
+                    timePickerHours = 11;
+                }
+                else if (timePickerHours === 12) {
+                    timePickerHours = 23;
+                }
+                else {
+                    timePickerHours -= 1;
+                }
             }
             var secondsSinceMidnightLocal = (timePickerHours * 60 * 60) + ($scope.selectedMinutes * 60);
 
