@@ -320,6 +320,7 @@ angular.module('starter')
 	    // setup editing view
 	    var setupEditReminder = function(trackingReminder){
             $scope.state.trackingReminder = trackingReminder;
+            $scope.setupVariableCategory($scope.state.trackingReminder.variableCategoryName);
             $scope.state.trackingReminder.firstDailyReminderTime = null;
             $scope.state.trackingReminder.secondDailyReminderTime = null;
             $scope.state.trackingReminder.thirdDailyReminderTime = null;
