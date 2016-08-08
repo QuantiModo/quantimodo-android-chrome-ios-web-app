@@ -670,7 +670,7 @@ angular.module('starter')
                     }
                 });
                 if ($rootScope.isChromeExtension || $rootScope.isChromeApp) {
-                    scheduleGenericChromeExtensionNotification(intervalInMinutes);
+                    scheduleGenericChromeExtensionNotification(notificationSettings.every);
                 }
 
             },
