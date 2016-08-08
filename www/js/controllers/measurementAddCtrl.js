@@ -48,7 +48,12 @@ angular.module('starter')
 
         $scope.openMeasurementStartTimePicker = function() {
 
-            var secondsSinceMidnightLocal = ($scope.selectedHours * 60 * 60) + ($scope.selectedMinutes * 60);
+            // Correct for timepicker library rounding error
+            var timePickerHours = $scope.selectedHours;
+            if ($scope.selectedMinutes >= 30) {
+                timePickerHours -= 1;
+            }
+            var secondsSinceMidnightLocal = (timePickerHours * 60 * 60) + ($scope.selectedMinutes * 60);
 
             $scope.state.timePickerConfiguration = {
                 callback: function (val) {
@@ -319,6 +324,11 @@ angular.module('starter')
                             }
                             $scope.state.measurement.abbreviatedUnitName = $stateParams.reminderNotification.abbreviatedUnitName;
                         }
+
+                        $scope.selectedDate = new Date();
+                        $scope.selectedHours = $scope.selectedDate.getHours();
+                        $scope.selectedMinutes = $scope.selectedDate.getMinutes();
+
                         if(!$scope.state.measurementIsSetup){
                             setupFromUrlParameters();
                         }
@@ -358,10 +368,6 @@ angular.module('starter')
 
 
         };
-        
-        $scope.selectedDate = new Date();
-        $scope.selectedHours = $scope.selectedDate.getHours();
-        $scope.selectedMinutes = $scope.selectedDate.getMinutes();
 
         // update data when view is navigated to
         $scope.$on('$ionicView.enter', function(e) {
