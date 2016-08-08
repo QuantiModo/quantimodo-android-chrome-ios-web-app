@@ -9,8 +9,9 @@ var TEAM_ID = process.env.TEAM_ID;
 var platforms = process.env.CORDOVA_PLATFORMS;
 var rootdir = process.argv[2];
 console.log('hook: root directory is ' + rootdir);
+console.log('MAKE SURE YOUR PRIVATE CONFIG FILE IS IN www/private_configs!');
 
-if (platforms == "ios") {
+if (platforms === "ios") {
 	var plistFile = path.resolve(__dirname, '../../platforms/ios/exportOptions.plist');
 
 	var result = [
@@ -28,9 +29,9 @@ if (platforms == "ios") {
 
 	fs.writeFile(plistFile, result, 'utf8', function (err) {
 		if (err) return console.log('No directory Found for cordova iOS! Skipping exportOptionsPlist creation. ',err);
-		console.log('Cordova iOS exportOptionsPlist updated with profile and developer values.')
+		console.log('Cordova iOS exportOptionsPlist updated with profile and developer values.');
 	});
-} else if (platforms == "android") {
+} else if (platforms === "android") {
 	console.log("add-export-options hook is for iOS only");
 } else {
   console.log("dd-export-options hook is for iOS only");
