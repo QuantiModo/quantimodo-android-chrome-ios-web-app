@@ -1,7 +1,7 @@
 angular.module('starter')
 	// Measurement Service
 	.factory('reminderService', function($q, $rootScope, QuantiModo, timeService, notificationService,
-										 localStorageService, $timeout) {
+										 localStorageService, $timeout, bugsnagService) {
 
 		// service methods
 		var reminderService = {
@@ -123,10 +123,20 @@ angular.module('starter')
 						var trackingReminders = remindersResponse.data;
 						if(remindersResponse.success) {
 							if($rootScope.showOnlyOneNotification !== true){
-                                notificationService.scheduleUpdateOrDeleteGenericNotificationsByDailyReminderTimes(trackingReminders);
+								try {
+									notificationService.scheduleUpdateOrDeleteGenericNotificationsByDailyReminderTimes(trackingReminders);
+								} catch (err) {
+									console.error('scheduleUpdateOrDeleteGenericNotificationsByDailyReminderTimes error: ' + err);
+									bugsnagService.reportError(err);
+								}
 								//notificationService.scheduleAllNotificationsByTrackingReminders(trackingReminders);
 							} else {
-								notificationService.scheduleUpdateOrDeleteGenericNotificationsByDailyReminderTimes(trackingReminders);
+								try {
+									notificationService.scheduleUpdateOrDeleteGenericNotificationsByDailyReminderTimes(trackingReminders);
+								} catch (err) {
+									console.error('scheduleUpdateOrDeleteGenericNotificationsByDailyReminderTimes error: ' + err);
+									bugsnagService.reportError(err);
+								}
 							}
 							localStorageService.setItem('trackingReminders', JSON.stringify(trackingReminders));
 							$rootScope.syncingReminders = false;
