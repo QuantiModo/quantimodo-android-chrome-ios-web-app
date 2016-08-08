@@ -37,7 +37,7 @@ angular.module('starter')
 					if(expiresAt) {
 						localStorageService.setItem('expiresAt', expiresAt);
                     }
-					
+					$rootScope.accessToken = accessToken;
 					return accessToken;
 				} else {
 					return "";
@@ -105,9 +105,11 @@ angular.module('starter')
 				//check if token in get params
 				if (tokenInGetParams) {
 					localStorageService.setItem('accessToken', tokenInGetParams);
+					localStorageService.setItem('accessTokenInUrl', tokenInGetParams);
+					$rootScope.accessTokenInUrl = tokenInGetParams;
 					//resolving promise using token fetched from get params
 					console.log('resolving token using token url parameter', tokenInGetParams);
-                    var url = config.getURL("api/user") + '?accessToke=' + tokenInGetParams;
+                    var url = config.getURL("api/user") + 'accessToken=' + tokenInGetParams;
                     if(!$rootScope.user){
                         $http.get(url).then(
                             function (userCredentialsResp) {
@@ -244,6 +246,8 @@ angular.module('starter')
                }
             var accessTokenInUrl = authService.getAccessTokenFromUrlParameter;
             if(accessTokenInUrl){
+            	localStorageService.setItem('accessTokenInUrl', accessTokenInUrl);
+				$rootScope.accessTokenInUrl = accessTokenInUrl;
 				$rootScope.getUserAndSetInLocalStorage();
                    return true;
                }
@@ -377,16 +381,23 @@ angular.module('starter')
 					// configure request
 					var url = config.getURL(baseURL);
 					var request = {};
-					if(config.getClientId() !== 'oAuthDisabled') {
+					var accessToken;
+					if($rootScope.accessTokenInUrl){
+						accessToken = $rootScope.accessTokenInUrl;
+					} else {
+						accessToken = token.accessToken;
+					}
+					if(config.getClientId() !== 'oAuthDisabled' || $rootScope.accessTokenInUrl) {
 						request = {
 							method : 'GET',
 							url: (url + ((urlParams.length === 0) ? '' : urlParams.join('&'))),
 							responseType: 'json',
 							headers : {
-								"Authorization" : "Bearer " + token.accessToken,
+								"Authorization" : "Bearer " + accessToken,
 								'Content-Type': "application/json"
 							}
 						};
+						console.log("Making request with this token " + accessToken);
 					} else {
 						request = {
 							method: 'GET',
@@ -396,9 +407,10 @@ angular.module('starter')
 								'Content-Type': "application/json"
 							}
 						};
+
 					}
 
-					console.log("Making request with this token " + token.accessToken);
+
 
 					$http(request).success(successHandler).error(function(data,status,headers,config){
 						var error = "Error";

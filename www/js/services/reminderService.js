@@ -1,7 +1,7 @@
 angular.module('starter')
 	// Measurement Service
 	.factory('reminderService', function($q, $rootScope, QuantiModo, timeService, notificationService,
-										 localStorageService) {
+										 localStorageService, $timeout) {
 
 		// service methods
 		var reminderService = {
@@ -106,13 +106,18 @@ angular.module('starter')
 			},
 
 			refreshTrackingRemindersAndScheduleAlarms : function(){
-				if(!$rootScope.syncingReminders){
+				if($rootScope.syncingReminders !== true){
 					$rootScope.syncingReminders = true;
 					var deferred = $q.defer();
 
 					var params = {
 						limit: 200
 					};
+
+					$timeout(function() {
+						// Set to false after 30 seconds because it seems to get stuck on true sometimes for some reason
+						$rootScope.syncingReminders = false;
+					}, 30000);
 
 					QuantiModo.getTrackingReminders(params, function(remindersResponse){
 						var trackingReminders = remindersResponse.data;
