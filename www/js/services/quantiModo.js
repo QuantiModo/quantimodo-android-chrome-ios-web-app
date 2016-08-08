@@ -84,25 +84,24 @@ angular.module('starter')
 
                     // configure request
                     var url = config.getURL(baseURL);
-                    var request = {};
-                    if(config.getClientId() !== 'oAuthDisabled') {
-                        request = {
-                            method: 'GET',
-                            url: (url + ((urlParams.length === 0) ? '' : urlParams.join('&'))),
-                            responseType: 'json',
-                            headers: {
-                                "Authorization": "Bearer " + tokenObject.accessToken,
-                                'Content-Type': "application/json"
-                            }
-                        };
+                    var request = {
+                        method: 'GET',
+                        url: (url + ((urlParams.length === 0) ? '' : urlParams.join('&'))),
+                        responseType: 'json',
+                        headers: {
+                            'Content-Type': "application/json"
+                        }
+                    };
+                    var accessToken;
+                    if($rootScope.accessTokenInUrl){
+                        accessToken = $rootScope.accessTokenInUrl;
                     } else {
-                        request = {
-                            method: 'GET',
-                            url: (url + ((urlParams.length === 0) ? '' : urlParams.join('&'))),
-                            responseType: 'json',
-                            headers: {
-                                'Content-Type': "application/json"
-                            }
+                        accessToken = tokenObject.accessToken;
+                    }
+                    if(config.getClientId() !== 'oAuthDisabled' || $rootScope.accessTokenInUrl) {
+                        request.headers = {
+                            "Authorization": "Bearer " + accessToken,
+                            'Content-Type': "application/json"
                         };
                     }
 
@@ -154,28 +153,26 @@ angular.module('starter')
                     var url = config.getURL(baseURL) + ((urlParams.length === 0) ? '' : urlParams.join('&'));
 
                     // configure request
-                    var request = {};
-                        if(config.getClientId() !== 'oAuthDisabled') {
-                            request = {
-                                method : 'POST',
-                                url: url,
-                                responseType: 'json',
-                                headers : {
-                                    "Authorization" : "Bearer " + token.accessToken,
-                                    'Content-Type': "application/json"
-                                },
-                                data : JSON.stringify(items)
-                            };
+                    var request = {
+                        method : 'POST',
+                        url: url,
+                        responseType: 'json',
+                        headers : {
+                            'Content-Type': "application/json"
+                        },
+                        data : JSON.stringify(items)
+                    };
+                    var accessToken;
+                    if($rootScope.accessTokenInUrl){
+                        accessToken = $rootScope.accessTokenInUrl;
                     } else {
-                            request = {
-                                method : 'POST',
-                                url: url,
-                                responseType: 'json',
-                                headers : {
-                                    'Content-Type': "application/json"
-                                },
-                                data : JSON.stringify(items)
-                            };
+                        accessToken = token.accessToken;
+                    }
+                    if(config.getClientId() !== 'oAuthDisabled' || $rootScope.accessTokenInUrl) {
+                        request.headers = {
+                            "Authorization" : "Bearer " + accessToken,
+                            'Content-Type': "application/json"
+                        };
                     }
 
                     if($rootScope.trackLocation){
