@@ -319,6 +319,11 @@ angular.module('starter')
                             }
                             $scope.state.measurement.abbreviatedUnitName = $stateParams.reminderNotification.abbreviatedUnitName;
                         }
+
+                        $scope.selectedDate = new Date();
+                        $scope.selectedHours = $scope.selectedDate.getHours();
+                        $scope.selectedMinutes = $scope.selectedDate.getMinutes();
+
                         if(!$scope.state.measurementIsSetup){
                             setupFromUrlParameters();
                         }
@@ -358,10 +363,6 @@ angular.module('starter')
 
 
         };
-        
-        $scope.selectedDate = new Date();
-        $scope.selectedHours = $scope.selectedDate.getHours();
-        $scope.selectedMinutes = $scope.selectedDate.getMinutes();
 
         // update data when view is navigated to
         $scope.$on('$ionicView.enter', function(e) {
