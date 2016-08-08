@@ -121,7 +121,7 @@ angular.module('starter')
 			if(isAuthorized){
 				$scope.state.showButtons = true;
 				$scope.showHelpInfoPopupIfNecessary();
-				if(!$rootScope.syncingReminders) {
+				if($rootScope.syncingReminders !== true) {
 					console.debug("ReminderMange init: calling refreshTrackingRemindersAndScheduleAlarms");
 					$scope.showLoader('Reminders coming down the pipes...');
 					reminderService.refreshTrackingRemindersAndScheduleAlarms().then(function () {
