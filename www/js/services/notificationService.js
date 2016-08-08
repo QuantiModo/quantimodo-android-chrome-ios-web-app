@@ -692,6 +692,11 @@ angular.module('starter')
                     return;
                 }
 
+                if(!trackingReminders){
+                    console.debug('Not scheduling notifications because we do not have any reminders');
+                    return;
+                }
+
                 var localDailyReminderNotificationTimesFromApi =
                     trackingReminders[0].localDailyReminderNotificationTimesForAllReminders;
                 console.debug('localDailyReminderNotificationTimesFromApi: ' +
