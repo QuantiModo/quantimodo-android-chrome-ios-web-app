@@ -95,18 +95,6 @@ angular.module('starter')
                     }
                 }
             }
-            // Correct for error in timepicker library
-            if (defaultStartTimeMinutes === 30 || defaultStartTimeMinutes === 45) {
-                if (defaultStartTimeHours === 0) {
-                	defaultStartTimeHours = 11;
-                }
-                else if (defaultStartTimeHours === 12) {
-                    defaultStartTimeHours = 23;
-                }
-                else {
-                	defaultStartTimeHours -= 1;
-                }
-            }
             defaultStartTimeInSecondsSinceMidnightLocal =
                 timeService.getSecondsSinceMidnightLocalFromLocalString("" + defaultStartTimeHours + ":" + defaultStartTimeMinutes + ":00");
             
