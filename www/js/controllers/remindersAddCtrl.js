@@ -406,7 +406,9 @@ angular.module('starter')
             }
             $scope.state.trackingReminder.variableCategoryName = variableCategoryName;
             $scope.state.variableCategoryObject = variableCategoryService.getVariableCategoryInfo(variableCategoryName);
-            $scope.state.trackingReminder.abbreviatedUnitName = $scope.state.variableCategoryObject.defaultAbbreviatedUnitName;
+            if (!$scope.state.trackingReminder.abbreviatedUnitName) {
+            	$scope.state.trackingReminder.abbreviatedUnitName = $scope.state.variableCategoryObject.defaultAbbreviatedUnitName;
+            }
             $scope.state.title = "Add " + $filter('wordAliases')(pluralize(variableCategoryName, 1)) + " Reminder";
             $scope.state.measurementSynonymSingularLowercase = $scope.state.variableCategoryObject.measurementSynonymSingularLowercase;
             if($scope.state.variableCategoryObject.defaultValueLabel){
