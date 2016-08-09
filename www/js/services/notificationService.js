@@ -692,7 +692,7 @@ angular.module('starter')
                     return;
                 }
 
-                if(!trackingReminders){
+                if(!trackingReminders || !trackingReminders[0]){
                     console.log('Not scheduling notifications because we do not have any reminders');
                     return;
                 }
