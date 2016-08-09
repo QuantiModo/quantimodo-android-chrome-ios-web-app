@@ -19,14 +19,14 @@ angular.module('starter')
 
 		var d = new Date();
 		var timeZoneOffsetInMinutes = d.getTimezoneOffset();
-		if($rootScope.user.timeZoneOffset !== timeZoneOffsetInMinutes ){
+		if($rootScope.user && $rootScope.user.timeZoneOffset !== timeZoneOffsetInMinutes ){
 			var params = {
 				timeZoneOffset: timeZoneOffsetInMinutes
 			};
 			userService.updateUserSettings(params);
 		}
 
-		if(!$rootScope.user.earliestReminderTime || !$rootScope.user.latestReminderTime){
+		if($rootScope.user && !$rootScope.user.earliestReminderTime || !$rootScope.user.latestReminderTime){
 			userService.refreshUser(function(user){
 				$rootScope.user = user;
 			});
