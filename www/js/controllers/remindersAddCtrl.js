@@ -502,7 +502,7 @@ angular.module('starter')
                     } else if(variableIdUrlParameter) {
                         setupReminderEditingFromVariableId(variableIdUrlParameter);
                     } else {
-                        $scope.state.title = $filter('wordAliases')('Add Reminder');
+                    	$ionicHistory.goBack();
                     }
                 });
             }
