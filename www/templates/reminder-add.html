@@ -22,24 +22,9 @@
 
                     <select id="unitSelector"
                             ng-model="state.trackingReminder.abbreviatedUnitName" ng-options="x for x in abbreviatedUnitNames">
-                    </select>
-<!--                 Above is a crappier workaround for sometimes empty unit selector
-<select ng-model="state.trackingReminder.abbreviatedUnitName">
-                        <option ng-selected="{{unitObject.abbreviatedName == state.trackingReminder.abbreviatedUnitName}}"
-                                ng-repeat="unitObject in unitObjects"
-                                value="{{unitObject.abbreviatedName}}">
-                            {{unitObject.name}} ({{unitObject.abbreviatedName}})
-                        </option>
-                    </select>-->
-                </label>
-                <!--
-                <label class="item item-input item-select" ng-if="state.showAddVariableCard && !state.trackingReminder.variableCategoryName">
-                    <div class="input-label" style="white-space:normal; width: 60%">Select Category</div>
-                    <select ng-model="state.trackingReminder.variableCategoryName">
-                        <option ng-repeat="variableCategory in variables.variableCategories" value="{{variableCategory.name}}">{{variableCategory.name}}</option>
+                            <!--ng-model="state.trackingReminder.abbreviatedUnitName" ng-options="x as x.abbreviatedName for x in unitObjects track by x.id">-->
                     </select>
                 </label>
-                -->
                 <label class="item item-input item-select">
                     <div class="input-label">
                         Frequency

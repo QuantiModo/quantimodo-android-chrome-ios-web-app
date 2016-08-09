@@ -527,6 +527,8 @@ angular.module('starter')
                 });
         };
 
+        // Deprecated - not used
+        /*
         // when a unit is selected
         $scope.unitSelected = function(unit){
             console.log("selecting_unit",unit);
@@ -536,6 +538,7 @@ angular.module('starter')
             $scope.state.showUnits = false;
             $scope.state.selectedUnitAbbreviatedName = unit.abbreviatedName;
         };
+        */
 
         $scope.toggleShowUnits = function(){
             $scope.state.showUnits=!$scope.state.showUnits;
