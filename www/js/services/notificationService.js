@@ -779,6 +779,14 @@ angular.module('starter')
                                     if($rootScope.isIOS){
                                         notificationSettings.every = 'day';
                                     }
+                                    console.debug('No existing local notification so scheduling: ',
+                                        JSON.stringify(notificationSettings));
+                                    if(!(notificationSettings.at instanceof Date)){
+                                      var errorMessage = 'Skipping notification creation because notificationSettings.at is not an instance of Date: ' + JSON.stringify(notificationSettings);
+                                      console.error(errorMessage);
+                                      bugsnagService.reportError(errorMessage);
+                                      continue;
+                                    }
                                     try{
                                         cordova.plugins.notification.local.schedule(notificationSettings, function (notification) {
                                             console.log('scheduleUpdateOrDeleteGenericNotificationsByDailyReminderTimes: notification scheduled', notification);
