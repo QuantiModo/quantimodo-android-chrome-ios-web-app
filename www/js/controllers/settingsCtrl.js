@@ -26,13 +26,11 @@ angular.module('starter')
 			userService.updateUserSettings(params);
 		}
 
-		if($rootScope.user && !$rootScope.user.earliestReminderTime || !$rootScope.user.latestReminderTime){
+		if($rootScope.user && (!$rootScope.user.earliestReminderTime || !$rootScope.user.latestReminderTime)){
 			userService.refreshUser(function(user){
 				$rootScope.user = user;
 			});
 		}
-
-
 
 		// populate ratings interval
 		localStorageService.getItem('primaryOutcomeRatingFrequencyDescription', function (primaryOutcomeRatingFrequencyDescription) {
