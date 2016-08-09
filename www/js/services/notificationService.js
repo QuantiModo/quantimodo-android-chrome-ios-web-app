@@ -787,6 +787,14 @@ angular.module('starter')
                                       bugsnagService.reportError(errorMessage);
                                       continue;
                                     }
+                                    if(!isNaN(notificationSettings.at) &&
+                                            parseInt(Number(notificationSettings.at)) === notificationSettings.at &&
+                                            !isNaN(parseInt(notificationSettings.at, 10))){
+                                        var intErrorMessage = 'Skipping notification creation because notificationSettings.at is not an instance of Date: ' + JSON.stringify(notificationSettings);
+                                        console.error(intErrorMessage);
+                                        bugsnagService.reportError(intErrorMessage);
+                                        continue;
+                                    }
                                     try{
                                         cordova.plugins.notification.local.schedule(notificationSettings, function (notification) {
                                             console.log('scheduleUpdateOrDeleteGenericNotificationsByDailyReminderTimes: notification scheduled', notification);
