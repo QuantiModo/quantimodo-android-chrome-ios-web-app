@@ -55,22 +55,28 @@ angular.module('starter')
 				}
 			}
 
-			var now = new Date();
+			if(!$scope.state[trackingReminder.id]){
+                $scope.state[trackingReminder.id] = {
+                    tally: 0
+                };
+            }
 
-			while(now.getTime() - $scope.state.lastSent.getTime() < 1 + Math.random()){
-				console.debug('Waiting...');
-				now = new Date();
-			}
+			$scope.state[trackingReminder.id].tally += modifiedReminderValue;
 
-			$scope.state.lastSent = new Date();
-			measurementService.postMeasurementByReminder(trackingReminder, modifiedReminderValue)
-				.then(function(){
+            $timeout(function() {
+                if($scope.state[trackingReminder.id].tally) {
+                    measurementService.postMeasurementByReminder(trackingReminder, $scope.state[trackingReminder.id].tally)
+                        .then(function () {
 
-				}, function(err){
-					Bugsnag.notify(err, JSON.stringify(err), {}, "error");
-					console.error(err);
-					utilsService.showAlert('Failed to Track Reminder, Try again!', 'assertive');
-				});
+                        }, function (err) {
+                            Bugsnag.notify(err, JSON.stringify(err), {}, "error");
+                            console.error(err);
+                            utilsService.showAlert('Failed to Track Reminder, Try again!', 'assertive');
+                        });
+                    $scope.state[trackingReminder.id].tally = 0;
+                }
+            }, 5000);
+
 		};
 
 	    $scope.init = function(){
