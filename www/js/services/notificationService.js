@@ -785,7 +785,7 @@ angular.module('starter')
                                       var errorMessage = 'Skipping notification creation because notificationSettings.at is not an instance of Date: ' + JSON.stringify(notificationSettings);
                                       console.error(errorMessage);
                                       bugsnagService.reportError(errorMessage);
-                                      continue;
+                                      return;
                                     }
                                     if(!isNaN(notificationSettings.at) &&
                                             parseInt(Number(notificationSettings.at)) === notificationSettings.at &&
@@ -793,7 +793,7 @@ angular.module('starter')
                                         var intErrorMessage = 'Skipping notification creation because notificationSettings.at is not an instance of Date: ' + JSON.stringify(notificationSettings);
                                         console.error(intErrorMessage);
                                         bugsnagService.reportError(intErrorMessage);
-                                        continue;
+                                        return;
                                     }
                                     try{
                                         cordova.plugins.notification.local.schedule(notificationSettings, function (notification) {
