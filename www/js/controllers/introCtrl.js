@@ -1,11 +1,11 @@
 angular.module('starter')
 .controller('IntroCtrl', function($scope, $state, localStorageService, $ionicSlideBoxDelegate, $ionicLoading,
                                   $rootScope) {
-    
+
     $scope.viewTitle = config.appSettings.appName;
     $scope.primaryOutcomeVariable = config.appSettings.primaryOutcomeVariable;
     $scope.introConfiguration = config.appSettings.intro;
-    
+
     $scope.myIntro = {
         ready : false,
 
@@ -62,7 +62,7 @@ angular.module('starter')
 
             localStorageService.getItem('introSeen', function(introSeen){
                 if(introSeen){
-                    console.debug('introCtrl init: Going to default state...');
+                    console.debug('introCtrl init: Going to default state: ' + config.appSettings.defaultState);
                     $state.go(config.appSettings.defaultState);
                 } else {
                     $scope.myIntro.ready = true;
