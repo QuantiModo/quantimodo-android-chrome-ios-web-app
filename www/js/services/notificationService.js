@@ -743,7 +743,7 @@ angular.module('starter')
                                 for (var l = 0; l < existingLocalNotifications.length; l++) {
                                     if(!localDailyReminderNotificationTimesFromApi[k]){
                                         console.error('localDailyReminderNotificationTimesFromApi[' + k + '] is not defined! ' +
-                                            'localDailyReminderNotificationTimesFromApi: ', localDailyReminderNotificationTimesFromApi)
+                                            'localDailyReminderNotificationTimesFromApi: ', localDailyReminderNotificationTimesFromApi);
                                     }
                                     if (parseInt(localDailyReminderNotificationTimesFromApi[k].replace(":", "")) ===
                                         existingLocalNotifications[l].id &&
@@ -823,7 +823,7 @@ angular.module('starter')
                             if(!existingAlarmScheduled) {
                                 if(!localDailyReminderNotificationTimesFromApi[k]){
                                     console.error('localDailyReminderNotificationTimesFromApi[' + k + '] is not defined! ' +
-                                        'localDailyReminderNotificationTimesFromApi: ', localDailyReminderNotificationTimesFromApi)
+                                        'localDailyReminderNotificationTimesFromApi: ', localDailyReminderNotificationTimesFromApi);
                                 }
                                 var alarmInfo = {};
                                 var at = new Date(); // The 0 there is the key, which sets the date to the epoch
