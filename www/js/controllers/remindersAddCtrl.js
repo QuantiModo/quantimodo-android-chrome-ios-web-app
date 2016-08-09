@@ -305,7 +305,14 @@ angular.module('starter')
             $scope.state.trackingReminder.reminderFrequency = getFrequencyChart()[$scope.state.selectedFrequency];
             $scope.state.trackingReminder.valueAndFrequencyTextDescription = $scope.state.selectedFrequency;
             if($scope.state.trackingReminder.reminderFrequency === 86400){
-                $scope.state.trackingReminder.valueAndFrequencyTextDescription = 'Daily at ' + timeService.humanFormat($scope.state.reminderStartTimeStringLocal);
+                if($scope.state.trackingReminder.abbreviatedUnitName === '/5'){
+                    $scope.state.trackingReminder.valueAndFrequencyTextDescription = 'Daily at ' +
+                        timeService.humanFormat($scope.state.reminderStartTimeStringLocal);
+                } else {
+                    $scope.state.trackingReminder.valueAndFrequencyTextDescription = $scope.state.trackingReminder.defaultValue +
+                        ' ' + $scope.state.trackingReminder.abbreviatedUnitName + ' daily at ' +
+                        timeService.humanFormat($scope.state.reminderStartTimeStringLocal);
+                }
             }
             $scope.state.trackingReminder.reminderStartTime =
                 timeService.getUtcTimeStringFromLocalString($scope.state.reminderStartTimeStringLocal);
