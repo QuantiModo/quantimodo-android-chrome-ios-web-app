@@ -259,6 +259,10 @@ angular.module('starter')
                 utilsService.showAlert('Please select a unit');
                 return;
             }
+            else {
+                $scope.state.trackingReminder.unitId =
+                    $rootScope.unitsIndexedByAbbreviatedName[$scope.state.trackingReminder.abbreviatedUnitName].id;
+            }
 
             if(!$scope.state.trackingReminder.defaultValue && $scope.state.trackingReminder.defaultValue !== 0) {
                 utilsService.showAlert('Please enter a default value');
