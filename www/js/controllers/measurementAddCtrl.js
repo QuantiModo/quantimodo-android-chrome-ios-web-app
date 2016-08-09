@@ -165,14 +165,14 @@ angular.module('starter')
                 utilsService.showAlert('Please select a variable category');
                 return;
             }
-            if(!$scope.state.measurement.abbreviatedUnitName && !$scope.abbreviatedUnitName){
-                utilsService.showAlert('Please select a unit');
-                return;
-            }
 
             if(!$scope.state.measurement.abbreviatedUnitName && !$scope.abbreviatedUnitName){
                 utilsService.showAlert('Please select a unit');
                 return;
+            }
+            else {
+                $scope.state.trackingReminder.unitId =
+                    $rootScope.unitsIndexedByAbbreviatedName[$scope.state.measurement.abbreviatedUnitName].id;
             }
 
             if($rootScope.unitsIndexedByAbbreviatedName[$scope.state.measurement.abbreviatedUnitName] &&
