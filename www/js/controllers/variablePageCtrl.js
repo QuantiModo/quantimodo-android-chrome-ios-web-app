@@ -196,12 +196,7 @@ angular.module('starter')
 
             QuantiModo.getV1Measurements(params, function(history){
                 $scope.state.history = $scope.state.history.concat(history);
-                if(!$scope.state.variableObject.abbreviatedUnitName){
-                    $scope.state.variableObject.abbreviatedUnitName = history[0].abbreviatedUnitName;
-                }
-                if(!$scope.state.variableObject.unitName){
-                    $scope.state.variableObject.unitName = history[0].unitName;
-                }
+                
                 if(history.length === 200){
                     $scope.state.offset = $scope.state.offset + 200;
                     params = {
@@ -213,6 +208,14 @@ angular.module('starter')
                     getHistoryForVariable(params);
                 }
                 else {
+                    if (history[0]) {
+                        if(!$scope.state.variableObject.abbreviatedUnitName){
+                            $scope.state.variableObject.abbreviatedUnitName = history[0].abbreviatedUnitName;
+                        }
+                        if(!$scope.state.variableObject.unitName){
+                            $scope.state.variableObject.unitName = history[0].unitName;
+                        }
+                    }
                     $scope.hideLoader();
                 }
                 deferred.resolve();
