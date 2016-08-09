@@ -35,18 +35,15 @@ angular.module('starter')
 		}
 
 		$scope.trackByReminder = function(trackingReminder, modifiedReminderValue){
-			var value = 0;
-			if(modifiedReminderValue){
-				value = modifiedReminderValue;
-			} else {
-				value = trackingReminder.defaultValue;
+			if(!modifiedReminderValue){
+				modifiedReminderValue = trackingReminder.defaultValue;
 			}
 			console.debug('Tracking reminder', trackingReminder);
 			console.log('modifiedReminderValue is ' + modifiedReminderValue);
 			for(var i = 0; i < $scope.state.favorites.length; i++){
 				if($scope.state.favorites[i].id === trackingReminder.id){
 					if($scope.state.favorites[i].abbreviatedUnitName !== '/5') {
-						$scope.state.favorites[i].total = $scope.state.favorites[i].total + value;
+						$scope.state.favorites[i].total = $scope.state.favorites[i].total + modifiedReminderValue;
 						$scope.state.favorites[i].displayTotal = $scope.state.favorites[i].total + " " + $scope.state.favorites[i].abbreviatedUnitName;
 					} else {
 						$scope.state.favorites[i].displayTotal = modifiedReminderValue + '/5';
@@ -55,19 +52,20 @@ angular.module('starter')
 				}
 			}
 
-			if(!$scope.state[trackingReminder.id]){
+			if(!$scope.state[trackingReminder.id] || !$scope.state[trackingReminder.id].tally){
                 $scope.state[trackingReminder.id] = {
                     tally: 0
                 };
             }
 
 			$scope.state[trackingReminder.id].tally += modifiedReminderValue;
-
+			console.log('modified tally is ' + $scope.state[trackingReminder.id].tally);
+			
             $timeout(function() {
                 if($scope.state[trackingReminder.id].tally) {
                     measurementService.postMeasurementByReminder(trackingReminder, $scope.state[trackingReminder.id].tally)
                         .then(function () {
-
+                        	console.log("success");
                         }, function (err) {
                             Bugsnag.notify(err, JSON.stringify(err), {}, "error");
                             console.error(err);
@@ -75,7 +73,7 @@ angular.module('starter')
                         });
                     $scope.state[trackingReminder.id].tally = 0;
                 }
-            }, 5000);
+            }, 2000);
 
 		};
 
