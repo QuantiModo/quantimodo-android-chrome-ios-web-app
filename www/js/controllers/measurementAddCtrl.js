@@ -171,7 +171,7 @@ angular.module('starter')
                 return;
             }
             else {
-                $scope.state.trackingReminder.unitId =
+                $scope.state.measurement.unitId =
                     $rootScope.unitsIndexedByAbbreviatedName[$scope.state.measurement.abbreviatedUnitName].id;
             }
 
@@ -244,23 +244,24 @@ angular.module('starter')
             console.debug('measurementAddCtrl.done is posting this measurement: ' + JSON.stringify(measurementInfo));
 
             // Measurement only - post measurement. This is for adding or editing
-            measurementService.postTrackingMeasurement(measurementInfo, true);
-            //.then(function() {});
+            measurementService.postTrackingMeasurement(measurementInfo, true).then(function() {
+                if($stateParams.fromUrl){
+                    window.location = $stateParams.fromUrl;
+                } else if ($stateParams.fromState){
+                    var variableName = $scope.state.measurement.variableName;
+                    var variableObject = $scope.state.variableObject;
+                    $state.go($stateParams.fromState, {
+                        variableObject: variableObject,
+                        variableName: variableName,
+                        measurementInfo: measurementInfo
+                    });
+                } else {
+                    $rootScope.hideNavigationMenu = false;
+                    $state.go(config.appSettings.defaultState);
+                }
+            });
 
-            if($stateParams.fromUrl){
-                window.location = $stateParams.fromUrl;
-            } else if ($stateParams.fromState){
-                var variableName = $scope.state.measurement.variableName;
-                var variableObject = $scope.state.variableObject;
-                $state.go($stateParams.fromState, {
-                    variableObject: variableObject,
-                    variableName: variableName,
-                    measurementInfo: measurementInfo
-                });
-            } else {
-                $rootScope.hideNavigationMenu = false;
-                $state.go(config.appSettings.defaultState);
-            }
+
 
         };
 
