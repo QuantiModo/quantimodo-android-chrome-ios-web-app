@@ -12,7 +12,8 @@ angular.module('starter')
 	    	selected1to5Value : false,
 			title : 'Favorites',
 			loading : true,
-            trackingReminder : null
+            trackingReminder : null,
+            lastSent: new Date()
 	    };
 
 	    $scope.selectPrimaryOutcomeVariableValue = function($event, val){
@@ -54,6 +55,14 @@ angular.module('starter')
 				}
 			}
 
+			var now = new Date();
+
+			while(now.getTime() - $scope.state.lastSent.getTime() < 1 + Math.random()){
+				console.debug('Waiting...');
+				now = new Date();
+			}
+
+			$scope.state.lastSent = new Date();
 			measurementService.postMeasurementByReminder(trackingReminder, modifiedReminderValue)
 				.then(function(){
 
