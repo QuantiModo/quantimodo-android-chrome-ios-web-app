@@ -718,6 +718,7 @@ angular.module('starter',
             }
         })
         .state('app.remindersManage', {
+            cache: false,
             url: "/reminders-manage",
             views: {
                 'menuContent': {

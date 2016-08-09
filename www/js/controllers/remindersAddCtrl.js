@@ -259,6 +259,10 @@ angular.module('starter')
                 utilsService.showAlert('Please select a unit');
                 return;
             }
+            else {
+                $scope.state.trackingReminder.unitId =
+                    $rootScope.unitsIndexedByAbbreviatedName[$scope.state.trackingReminder.abbreviatedUnitName].id;
+            }
 
             if(!$scope.state.trackingReminder.defaultValue && $scope.state.trackingReminder.defaultValue !== 0) {
                 utilsService.showAlert('Please enter a default value');
@@ -406,7 +410,9 @@ angular.module('starter')
             }
             $scope.state.trackingReminder.variableCategoryName = variableCategoryName;
             $scope.state.variableCategoryObject = variableCategoryService.getVariableCategoryInfo(variableCategoryName);
-            $scope.state.trackingReminder.abbreviatedUnitName = $scope.state.variableCategoryObject.defaultAbbreviatedUnitName;
+            if (!$scope.state.trackingReminder.abbreviatedUnitName) {
+            	$scope.state.trackingReminder.abbreviatedUnitName = $scope.state.variableCategoryObject.defaultAbbreviatedUnitName;
+            }
             $scope.state.title = "Add " + $filter('wordAliases')(pluralize(variableCategoryName, 1)) + " Reminder";
             $scope.state.measurementSynonymSingularLowercase = $scope.state.variableCategoryObject.measurementSynonymSingularLowercase;
             if($scope.state.variableCategoryObject.defaultValueLabel){
@@ -527,6 +533,8 @@ angular.module('starter')
                 });
         };
 
+        // Deprecated - not used
+        /*
         // when a unit is selected
         $scope.unitSelected = function(unit){
             console.log("selecting_unit",unit);
@@ -536,6 +544,7 @@ angular.module('starter')
             $scope.state.showUnits = false;
             $scope.state.selectedUnitAbbreviatedName = unit.abbreviatedName;
         };
+        */
 
         $scope.toggleShowUnits = function(){
             $scope.state.showUnits=!$scope.state.showUnits;
