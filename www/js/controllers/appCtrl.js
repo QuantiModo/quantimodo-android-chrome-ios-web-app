@@ -31,6 +31,7 @@ angular.module('starter')
         };
         $scope.floatingMaterialButton = config.appSettings.floatingMaterialButton;
         $rootScope.unitsIndexedByAbbreviatedName = [];
+        $rootScope.abbreviatedUnitNamesIndexedByUnitId = [];
 
         $scope.hideAddTreatmentRemindersCard = localStorageService.getItemSync('hideAddTreatmentRemindersCard');
         $scope.hideAddFoodRemindersCard = localStorageService.getItemSync('hideAddFoodRemindersCard');
