@@ -244,7 +244,7 @@ angular.module('starter')
             if(user){
                    return true;
                }
-            var accessTokenInUrl = authService.getAccessTokenFromUrlParameter;
+            var accessTokenInUrl = authService.getAccessTokenFromUrlParameter();
             if(accessTokenInUrl){
             	localStorageService.setItem('accessTokenInUrl', accessTokenInUrl);
 				$rootScope.accessTokenInUrl = accessTokenInUrl;
