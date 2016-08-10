@@ -87,7 +87,7 @@ angular.module('starter')
 	                        type : 'column',
 	                        renderTo : 'BarContainer',
 	                        animation: {
-	                            duration: 1000
+	                            duration: 0
 	                        }
 	                    },
 	                    title : {
