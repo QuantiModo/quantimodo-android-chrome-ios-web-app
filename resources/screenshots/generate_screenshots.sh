@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Generate iPhone Portrait Screenshots from 6+ for app store submission.
-# Upload screeshot to https://launchkit.io/screenshots/dashboard/, customize and download
+# Upload screenshot to https://launchkit.io/screenshots/dashboard/, customize and download
 # Usage From folder containing downloaded 6+ screenshots and this script run: ./generate_screenshots.sh *.jpg
 
 mkdir -p 3.5

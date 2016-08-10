@@ -1,9 +1,10 @@
 angular.module('starter')
 
 	// Controls the History Page of the App.
-	.controller('historyAllMeasurementsCtrl', function($scope, $state, $stateParams, $rootScope, authService, 
-													   measurementService, variableCategoryService, ratingService, 
-													   localStorageService, qmLocationService) {
+	.controller('historyAllMeasurementsCtrl', function($scope, $state, $stateParams, $rootScope, $ionicActionSheet,
+													   $timeout, authService, measurementService,
+													   variableCategoryService, ratingService, localStorageService,
+													   qmLocationService) {
 
 	    $scope.controller_name = "historyAllMeasurementsCtrl";
         
@@ -18,12 +19,6 @@ angular.module('starter')
 			showLocationToggle: false,
 			noHistory: false
 	    };
-
-		$scope.title = 'Measurement History';
-
-		if($stateParams.variableObject){
-			$scope.title = $stateParams.variableObject.name + ' History';
-		}
 
 		var setupVariableCategory = function () {
 			if($stateParams.variableCategoryName){
@@ -130,6 +125,13 @@ angular.module('starter')
 	    $scope.init = function(){
 			if (typeof analytics !== 'undefined')  { analytics.trackView("All Measurements Controller"); }
 			Bugsnag.context = "historyAll";
+
+			if($stateParams.variableObject){
+				$scope.title = $stateParams.variableObject.name + ' History';
+			}
+			else {
+				$scope.title = 'Measurement History';
+			}
 			
 			setupVariableCategory();
             var isAuthorized = authService.checkAuthOrSendToLogin();
@@ -153,5 +155,86 @@ angular.module('starter')
 			$scope.state.trackLocation = $rootScope.trackLocation;
     		$scope.init();
     	});
+
+
+		$scope.showActionSheet = function(measurement, $index) {
+
+			$scope.state.measurement = measurement;
+			$scope.state.variableObject = measurement;
+			$scope.state.variableObject.id = measurement.variableId;
+			$scope.state.variableObject.name = measurement.variableName;
+			// Show the action sheet
+			var hideSheet = $ionicActionSheet.show({
+				buttons: [
+					{ text: '<i class="icon ion-edit"></i>Edit Measurement'},
+					{ text: '<i class="icon ion-ios-star"></i>Add to Favorites'},
+					{ text: '<i class="icon ion-android-notifications-none"></i>Add Reminder'},
+					{ text: '<i class="icon ion-arrow-graph-up-right"></i>Visualize'},
+					{ text: '<i class="icon ion-ios-list-outline"></i>' + 'History'},
+					{ text: '<i class="icon ion-settings"></i>' + 'Variable Settings'},
+					{ text: '<i class="icon ion-arrow-up-a"></i>Positive Predictors'},
+					{ text: '<i class="icon ion-arrow-down-a"></i>Negative Predictors'}
+				],
+				cancelText: '<i class="icon ion-ios-close"></i>Cancel',
+				cancel: function() {
+					console.log('CANCELLED');
+				},
+				buttonClicked: function(index) {
+					console.log('BUTTON CLICKED', index);
+					if(index === 0){
+						$scope.editMeasurement($scope.state.variableObject);
+					}
+					if(index === 1){
+						$scope.addToFavoritesUsingStateVariableObject($scope.state.variableObject);
+					}
+					if(index === 2){
+						$state.go('app.reminderAdd',
+							{
+								variableObject: $scope.state.variableObject,
+								fromState: $state.current.name,
+								fromUrl: window.location.href
+							});
+					}
+					if (index === 3) {
+						$scope.goToChartsPageForVariableObject($scope.state.variableObject);
+					}
+					if (index === 4) {
+						$scope.goToHistoryForVariableObject($scope.state.variableObject);
+
+					}
+					if(index === 5){
+						$scope.goToSettingsForVariableObject($scope.state.variableObject);
+					}
+					if(index === 6){
+						$state.go('app.predictors',
+							{
+								variableObject: $scope.state.variableObject,
+								requestParams: {
+									effect:  $scope.state.variableObject.name,
+									correlationCoefficient: "(gt)0"
+								}
+							});
+					}
+					if(index === 7){
+						$state.go('app.predictors',
+							{
+								variableObject: $scope.state.variableObject,
+								requestParams: {
+									effect:  $scope.state.variableObject.name,
+									correlationCoefficient: "(lt)0"
+								}
+							});
+					}
+
+					return true;
+				},
+			});
+
+			$timeout(function() {
+				hideSheet();
+			}, 20000);
+
+		};
+
 
 	});

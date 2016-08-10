@@ -32,19 +32,6 @@ angular.module('starter')
 			orderParameter : 'variableName'
 	    };
 
-	    $scope.selectPrimaryOutcomeVariableValue = function($event, val){
-	        // remove any previous primary outcome variables if present
-	        jQuery('.primary-outcome-variable-rating-buttons .active-primary-outcome-variable-rating-button').removeClass('active-primary-outcome-variable-rating-button');
-
-	        // make this primary outcome variable glow visually
-	        jQuery($event.target).addClass('active-primary-outcome-variable-rating-button');
-
-	        jQuery($event.target).parent().removeClass('primary-outcome-variable-history').addClass('primary-outcome-variable-history');
-
-	        $scope.state.selected1to5Value = val;
-
-		};
-
 		function showAppropriateHelpInfoCards(){
 			$scope.state.showTreatmentInfoCard = (!$scope.state.allReminders.length) && (window.location.href.indexOf('Treatments') > -1);
 			$scope.state.showSymptomInfoCard = (!$scope.state.allReminders.length) && (window.location.href.indexOf('Symptom') > -1);
@@ -99,7 +86,6 @@ angular.module('starter')
 				$scope.state.slots.epochTime = a.getTime()/1000;
 			}
 		};
-
 
 	    // constructor
 	    $scope.init = function(){
@@ -161,7 +147,6 @@ angular.module('starter')
 					}
 				});
 
-
 				$timeout(function() {
 					hideSheet();
 				}, 20000);
@@ -220,9 +205,7 @@ angular.module('starter')
 						fromUrl: window.location.href
 					});
 			}
-
 	    };
-
 
 	    $scope.deleteReminder = function(reminder){
 			localStorageService.deleteElementOfItemById('trackingReminders', reminder.trackingReminderId).then(function(){
@@ -319,11 +302,8 @@ angular.module('starter')
 				}
 			});
 
-
 			$timeout(function() {
 				hideSheet();
 			}, 20000);
-
 		};
-		
 	});

@@ -255,16 +255,20 @@ angular.module('starter')
                 reminderService.addNewReminder(trackingReminder)
                     .then(function () {
                         console.debug("Saved Reminder", trackingReminder);
+                        reminderService.refreshTrackingRemindersAndScheduleAlarms()
+                        .then(function() {
+                            $state.go('app.favorites',
+                                {
+                                    trackingReminder: trackingReminder,
+                                    fromState: $state.current.name,
+                                    fromUrl: window.location.href
+                                }
+                            );
+                        });
                     }, function (err) {
                         console.error('Failed to add Reminder!', trackingReminder);
                     });
-                $state.go('app.favorites',
-                    {
-                        trackingReminder: trackingReminder,
-                        fromState: $state.current.name,
-                        fromUrl: window.location.href
-                    }
-                );
+
             } else {
                 $state.go('app.favoriteAdd',
                     {
@@ -426,7 +430,8 @@ angular.module('starter')
             }
             if (!$rootScope.user && config.getClientId() === 'oAuthDisabled') {
                 console.debug("appCtrl.init: No user and oAuthDisabled so trying to getUserAndSetInLocalStorage. Note: This interferes with welcome flow.");
-                $rootScope.getUserAndSetInLocalStorage();
+                console.warn("Commented $rootScope.getUserAndSetInLocalStorage in appCtrl.init");
+                //$rootScope.getUserAndSetInLocalStorage();
             }
             if ($rootScope.user) {
                 $rootScope.setUserForIntercom($rootScope.user);

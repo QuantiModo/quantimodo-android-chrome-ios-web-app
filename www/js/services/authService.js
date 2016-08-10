@@ -149,6 +149,8 @@ angular.module('starter')
 				}
 
 				if(config.getClientId() === 'oAuthDisabled') {
+					console.log('getAccessTokenFromAnySource: oAuthDisabled and going to ' +
+						'authService.getAccessTokenFromUserEndpoint');
 					authService.getAccessTokenFromUserEndpoint(deferred);
 					return deferred.promise;
 				}
@@ -365,6 +367,7 @@ angular.module('starter')
             },
 
 			apiGet: function(baseURL, allowedParams, params, successHandler, errorHandler){
+            	console.debug('authService.apiGet: ' + baseURL + '. Going to authService.getAccessTokenFromAnySource');
 				authService.getAccessTokenFromAnySource().then(function(token){
 
 					// configure params

@@ -58,6 +58,7 @@ angular.module('starter')
 
             // GET method with the added token
             QuantiModo.get = function(baseURL, allowedParams, params, successHandler, errorHandler){
+                console.debug('QuantiModo.get: ' + baseURL + '. Going to authService.getAccessTokenFromAnySource');
                 authService.getAccessTokenFromAnySource().then(function(tokenObject){
                     allowedParams.push('limit');
                     allowedParams.push('offset');
@@ -133,6 +134,7 @@ angular.module('starter')
 
             // POST method with the added token
             QuantiModo.post = function(baseURL, requiredFields, items, successHandler, errorHandler){
+                console.debug('QuantiModo.get: ' + baseURL + '. Going to authService.getAccessTokenFromAnySource');
                 authService.getAccessTokenFromAnySource().then(function(token){
                     
                     //console.log("Token : ", token.accessToken);

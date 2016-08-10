@@ -16,15 +16,6 @@ angular.module('starter')
             lastSent: new Date()
 	    };
 
-	    $scope.selectPrimaryOutcomeVariableValue = function($event, val){
-	        // remove any previous primary outcome variables if present
-	        jQuery('.primary-outcome-variable-rating-buttons .active-primary-outcome-variable-rating-button').removeClass('active-primary-outcome-variable-rating-button');
-	        // make this primary outcome variable glow visually
-	        jQuery($event.target).addClass('active-primary-outcome-variable-rating-button');
-	        jQuery($event.target).parent().removeClass('primary-outcome-variable-history').addClass('primary-outcome-variable-history');
-	        $scope.state.selected1to5Value = val;
-		};
-
 		function getFavoriteTrackingRemindersFromLocalStorage(){
 			$scope.state.favorites =
 				localStorageService.getElementsFromItemWithFilters('trackingReminders', 'reminderFrequency', 0);

@@ -25,6 +25,7 @@ angular.module('starter')
 			if (typeof analytics !== 'undefined')  { analytics.trackView("Import Data Controller"); }
 			$scope.showLoader();
 	        // get user's access token
+			console.debug('importCtrl.init: Going to authService.getAccessTokenFromAnySource');
 	        authService.getAccessTokenFromAnySource().then(function(token){
 	            $ionicLoading.hide();
 	            if(ionic.Platform.platforms[0] === "browser"){

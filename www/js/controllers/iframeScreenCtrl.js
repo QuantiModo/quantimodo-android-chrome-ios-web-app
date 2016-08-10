@@ -31,7 +31,7 @@ angular.module('starter')
             iFrameUrl = config.getApiUrl() + '/api/v1/connect/mobile';
             $scope.title = 'Your Variable Relationships';
         }
-
+        console.debug('importCtrl.init: Going to authService.getAccessTokenFromAnySource');
         authService.getAccessTokenFromAnySource().then(function(token) {
             $scope.iframeUrl = $sce.trustAsResourceUrl(
                 iFrameUrl + '&access_token=' + token.accessToken
