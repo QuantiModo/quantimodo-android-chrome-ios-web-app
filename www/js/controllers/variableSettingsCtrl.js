@@ -16,6 +16,7 @@ angular.module('starter')
         };
         $scope.state.title = $stateParams.variableName + ' Variable Settings';
         $scope.state.variableName = $stateParams.variableName;
+        $scope.state.userVariableAlias = $stateParams.variableName;
 
         // cancel activity
         $scope.cancel = function(){
@@ -29,30 +30,33 @@ angular.module('starter')
                 var originalVariableObject = variableArray[0];
                 console.log("Original variable object: " + originalVariableObject);
 
-                if ($scope.state.variableObject.abbreviatedUnitName !== "/5") {
-                    if (originalVariableObject.minimumAllowedValue !== "-Infinity") {
-                        $scope.state.minimumAllowedValue = originalVariableObject.minimumAllowedValue;
+                if (originalVariableObject) {
+                    if ($scope.state.variableObject.abbreviatedUnitName !== "/5") {
+                        if (originalVariableObject.minimumAllowedValue !== "-Infinity") {
+                            $scope.state.minimumAllowedValue = originalVariableObject.minimumAllowedValue;
+                        }
+                        else {
+                            $scope.state.minimumAllowedValue = "";
+                        }
+                        if (originalVariableObject.maximumAllowedValue !== "Infinity") {
+                            $scope.state.maximumAllowedValue = originalVariableObject.maximumAllowedValue;
+                        }
+                        else {
+                            $scope.state.maximumAllowedValue = "";
+                        }
+                    }
+                    if (originalVariableObject.fillingValue === null) {
+                        $scope.state.fillingValue = "";
                     }
                     else {
-                        $scope.state.minimumAllowedValue = "";
+                        $scope.state.fillingValue = originalVariableObject.fillingValue;
                     }
-                    if (originalVariableObject.maximumAllowedValue !== "Infinity") {
-                        $scope.state.maximumAllowedValue = originalVariableObject.maximumAllowedValue;
-                    }
-                    else {
-                        $scope.state.maximumAllowedValue = "";
-                    }
-                }
-                if (originalVariableObject.fillingValue === null) {
-                    $scope.state.fillingValue = "";
-                }
-                else {
-                    $scope.state.fillingValue = originalVariableObject.fillingValue;
-                }
 
-                $scope.state.sumAvg = originalVariableObject.combinationOperation === "MEAN"? "avg" : "sum";
-                $scope.state.onsetDelay = originalVariableObject.onsetDelay/(60*60); // seconds -> hours
-                $scope.state.durationOfAction = originalVariableObject.durationOfAction/(60*60); // seconds - > hours
+                    $scope.state.sumAvg = originalVariableObject.combinationOperation === "MEAN"? "avg" : "sum";
+                    $scope.state.onsetDelay = originalVariableObject.onsetDelay/(60*60); // seconds -> hours
+                    $scope.state.durationOfAction = originalVariableObject.durationOfAction/(60*60); // seconds - > hours
+                    $scope.state.userVariableAlias = $stateParams.variableName;
+                }
             });
 
         };
@@ -209,6 +213,7 @@ angular.module('starter')
                 maximumAllowedValue: maximumAllowedValue,
                 minimumAllowedValue: minimumAllowedValue,
                 onsetDelay: $scope.state.onsetDelay*60*60,
+                userVariableAlias: $scope.state.userVariableAlias
                 //experimentStartTime
                 //experimentEndTime
             };
@@ -335,6 +340,12 @@ angular.module('starter')
                     }
                     else {
                         $scope.state.fillingValue = variableObject.fillingValue;
+                    }
+                    if (variableObject.userVariableAlias) {
+                        $scope.state.userVariableAlias = variableObject.userVariableAlias;
+                    }
+                    else {
+                        $scope.state.userVariableAlias = $stateParams.variableName;
                     }
 
                     $scope.state.onsetDelay = variableObject.onsetDelay/(60*60); // seconds -> hours
