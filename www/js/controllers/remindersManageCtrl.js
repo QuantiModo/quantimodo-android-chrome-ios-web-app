@@ -91,9 +91,9 @@ angular.module('starter')
 	    $scope.init = function(){
 			Bugsnag.context = "reminderManage";
 			getTrackingRemindersFromLocalStorage();
-			var isAuthorized = authService.checkAuthOrSendToLogin();
+			//var isAuthorized = authService.checkAuthOrSendToLogin();
 			if (typeof analytics !== 'undefined')  { analytics.trackView("Manage Reminders Controller"); }
-			if(isAuthorized){
+			if($rootScope.user){
 				if($stateParams.variableCategoryName){
 					$scope.state.title = "Manage " + pluralize($filter('wordAliases')($stateParams.variableCategoryName), 1) + " Reminders";
 					$scope.state.addButtonText = 'Add new ' +

@@ -306,9 +306,9 @@ angular.module('starter')
             Bugsnag.context = "variableSettings";
             $scope.state.loading = true;
             $scope.showLoader('Getting variable details');
-            var isAuthorized = authService.checkAuthOrSendToLogin();
+            //var isAuthorized = authService.checkAuthOrSendToLogin();
             if (typeof analytics !== 'undefined')  { analytics.trackView("Variable Settings Controller"); }
-            if(isAuthorized){
+            if($rootScope.user){
                 $scope.showHelpInfoPopupIfNecessary();
                 $scope.state.sumAvg = "avg"; // FIXME should this be the default?
                 variableService.getVariablesByName($stateParams.variableName).then(function(variableObject){

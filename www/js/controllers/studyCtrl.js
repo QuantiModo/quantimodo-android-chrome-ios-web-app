@@ -7,7 +7,7 @@ angular.module('starter')
             $scope.state = {
                 correlationObject: $stateParams.correlationObject
             };
-            authService.checkAuthOrSendToLogin();
+            //authService.checkAuthOrSendToLogin();
             if (typeof analytics !== 'undefined')  {analytics.trackView("Study Controller");}
             if(!$scope.state.correlationObject) {
                 $ionicHistory.goBack();

@@ -191,9 +191,9 @@ angular.module('starter')
             Bugsnag.context = "reminderAdd";
             if (typeof analytics !== 'undefined')  { analytics.trackView("Add Favorite Controller"); }
 
-            var isAuthorized = authService.checkAuthOrSendToLogin();
+            //var isAuthorized = authService.checkAuthOrSendToLogin();
 
-            if(isAuthorized){
+            if($rootScope.user){
                 unitService.getUnits().then(function (unitObjects) {
                     var reminderIdUrlParameter = utilsService.getUrlParameter(window.location.href, 'reminderId');
                     var variableIdUrlParameter = utilsService.getUrlParameter(window.location.href, 'variableId');

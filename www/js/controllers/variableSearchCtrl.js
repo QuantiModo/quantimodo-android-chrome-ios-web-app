@@ -129,8 +129,8 @@ angular.module('starter')
             Bugsnag.context = "variableSearch";
 
             if (typeof analytics !== 'undefined')  { analytics.trackView("Variable Search Controller"); }
-            var isAuthorized = authService.checkAuthOrSendToLogin();
-            if(isAuthorized){
+            //var isAuthorized = authService.checkAuthOrSendToLogin();
+            if($rootScope.user){
                 $scope.showHelpInfoPopupIfNecessary();
                 $scope.state.showVariableSearchCard = true;
                 if($scope.state.variableSearchResults < 10){

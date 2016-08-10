@@ -134,8 +134,8 @@ angular.module('starter')
 			}
 			
 			setupVariableCategory();
-            var isAuthorized = authService.checkAuthOrSendToLogin();
-			if(isAuthorized){
+            //var isAuthorized = authService.checkAuthOrSendToLogin();
+			if($rootScope.user){
                 $scope.showHelpInfoPopupIfNecessary();
                 variableCategoryService.getVariableCategories()
                     .then(function(variableCategories){

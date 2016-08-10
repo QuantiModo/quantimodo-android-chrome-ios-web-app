@@ -299,8 +299,8 @@ angular.module('starter')
         // constructor
         $scope.init = function(){
             Bugsnag.context = "measurementAdd";
-                var isAuthorized = authService.checkAuthOrSendToLogin();
-                if(isAuthorized){
+                //var isAuthorized = authService.checkAuthOrSendToLogin();
+                if($rootScope.user){
                     unitService.getUnits().then(function () {
                         if($stateParams.variableObject !== null && typeof $stateParams.variableObject !== "undefined") {
                             console.debug("Setting $scope.state.measurement.abbreviatedUnitName by variableObject: " + $stateParams.variableObject.abbreviatedUnitName);
