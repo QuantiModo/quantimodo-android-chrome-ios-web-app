@@ -3,13 +3,13 @@
         <div ng-hide="state.loading" class="card variable-settings" >
             <div class="list">
                 <div class="item item-divider ng-binding">Properties</div>
-                <!--FIXME Use this once variable aliasing is implemented-->
-                <!--
-                    <label class="item item-input">
-                        <span class="input-label">Variable Name:</span>
-                        <input class="right-input" type="text" ng-model="state.variableName" id="variableName" placeholder="Variable name">
-                    </label>
-                -->
+                    <!--FIXME Use this once variable aliasing is implemented-->
+                    <!--
+                        <div class="item item-input">
+                            <span class="input-label left-span">Variable Alias:</span>
+                            <span class="right-span"><input class="right-input" type="text" ng-model="state.userVariableAlias"></span>
+                        </div>
+                    -->
                     <label class="item item-content" style="padding: 6px 10px 5px 16px;">
                         <span class="input-label left-text">Variable Name</span>
                         <span class="input-label right-text " id="variableName">{{state.variableName}}</span>
