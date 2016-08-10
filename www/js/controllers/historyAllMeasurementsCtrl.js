@@ -134,9 +134,8 @@ angular.module('starter')
 			}
 			
 			setupVariableCategory();
-			// Commented auth check to see if it solves weird redirects in GI oAuthDisabled tests
-            //var isAuthorized = authService.checkAuthOrSendToLogin();
-			//if(isAuthorized){
+            var isAuthorized = authService.checkAuthOrSendToLogin();
+			if(isAuthorized){
                 $scope.showHelpInfoPopupIfNecessary();
                 variableCategoryService.getVariableCategories()
                     .then(function(variableCategories){
@@ -146,7 +145,7 @@ angular.module('starter')
                         console.log("error getting variable categories", err);
                     });
                 getHistory();
-			//}
+			}
 	    };
 
         // when view is changed
