@@ -91,6 +91,9 @@ angular.module('starter')
 					if (history.length === 0) {
 						$scope.state.noHistory = true;
 					}
+					else {
+						$scope.state.noHistory = false;
+					}
 				} else {
 					$scope.state.hideLoadMoreButton = false;
 				}
