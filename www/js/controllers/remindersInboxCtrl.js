@@ -52,20 +52,6 @@ angular.module('starter')
 		}
 
 
-
-	    $scope.selectPrimaryOutcomeVariableValue = function($event, val){
-	        // remove any previous primary outcome variables if present
-	        jQuery('.primary-outcome-variable-rating-buttons .active-primary-outcome-variable-rating-button').removeClass('active-primary-outcome-variable-rating-button');
-
-	        // make this primary outcome variable glow visually
-	        jQuery($event.target).addClass('active-primary-outcome-variable-rating-button');
-
-	        jQuery($event.target).parent().removeClass('primary-outcome-variable-history').addClass('primary-outcome-variable-history');
-
-	        $scope.state.selected1to5Value = val;
-
-		};
-
 		var setPageTitle = function(){
 			if(typeof(config.appSettings.remindersInbox.title) !== 'undefined'){
 				$scope.state.title = config.appSettings.remindersInbox.title;
@@ -123,9 +109,10 @@ angular.module('starter')
 			console.debug('Tracking notification', trackingReminderNotification);
 			console.log('modifiedReminderValue is ' + modifiedReminderValue);
 			var params = {
-				trackingReminderNotificationId: trackingReminderNotification.id,
+				trackingReminderNotification: trackingReminderNotification,
 				modifiedValue: modifiedReminderValue
 			};
+
 	    	reminderService.trackReminderNotification(params)
 	    	.then(function(){
                 notificationService.decrementNotificationBadges();
