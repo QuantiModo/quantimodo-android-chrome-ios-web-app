@@ -255,16 +255,20 @@ angular.module('starter')
                 reminderService.addNewReminder(trackingReminder)
                     .then(function () {
                         console.debug("Saved Reminder", trackingReminder);
+                        reminderService.refreshTrackingRemindersAndScheduleAlarms()
+                        .then(function() {
+                            $state.go('app.favorites',
+                                {
+                                    trackingReminder: trackingReminder,
+                                    fromState: $state.current.name,
+                                    fromUrl: window.location.href
+                                }
+                            );
+                        });
                     }, function (err) {
                         console.error('Failed to add Reminder!', trackingReminder);
                     });
-                $state.go('app.favorites',
-                    {
-                        trackingReminder: trackingReminder,
-                        fromState: $state.current.name,
-                        fromUrl: window.location.href
-                    }
-                );
+
             } else {
                 $state.go('app.favoriteAdd',
                     {
