@@ -20,12 +20,6 @@ angular.module('starter')
 			noHistory: false
 	    };
 
-		$scope.title = 'Measurement History';
-
-		if($stateParams.variableObject){
-			$scope.title = $stateParams.variableObject.name + ' History';
-		}
-
 		var setupVariableCategory = function () {
 			if($stateParams.variableCategoryName){
 				$scope.title = $stateParams.variableCategoryName + ' History';
@@ -131,6 +125,13 @@ angular.module('starter')
 	    $scope.init = function(){
 			if (typeof analytics !== 'undefined')  { analytics.trackView("All Measurements Controller"); }
 			Bugsnag.context = "historyAll";
+			
+			if($stateParams.variableObject){
+				$scope.title = $stateParams.variableObject.name + ' History';
+			}
+			else {
+				$scope.title = 'Measurement History';
+			}
 			
 			setupVariableCategory();
             var isAuthorized = authService.checkAuthOrSendToLogin();
