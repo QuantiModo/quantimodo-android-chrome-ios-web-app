@@ -32,15 +32,6 @@ angular.module('starter')
 			orderParameter : 'variableName'
 	    };
 
-		if($stateParams.variableCategoryName){
-			$scope.state.title = "Manage " + pluralize($filter('wordAliases')($stateParams.variableCategoryName), 1) + " Reminders";
-			$scope.state.addButtonText = 'Add new ' +
-				pluralize($filter('wordAliases')($stateParams.variableCategoryName.toLowerCase()), 1) + ' reminder';
-		} else {
-			$scope.state.title = "Manage Reminders";
-			$scope.state.addButtonText = "Add new reminder";
-		}
-		
 		function showAppropriateHelpInfoCards(){
 			$scope.state.showTreatmentInfoCard = (!$scope.state.allReminders.length) && (window.location.href.indexOf('Treatments') > -1);
 			$scope.state.showSymptomInfoCard = (!$scope.state.allReminders.length) && (window.location.href.indexOf('Symptom') > -1);
@@ -103,6 +94,15 @@ angular.module('starter')
 			var isAuthorized = authService.checkAuthOrSendToLogin();
 			if (typeof analytics !== 'undefined')  { analytics.trackView("Manage Reminders Controller"); }
 			if(isAuthorized){
+				if($stateParams.variableCategoryName){
+					$scope.state.title = "Manage " + pluralize($filter('wordAliases')($stateParams.variableCategoryName), 1) + " Reminders";
+					$scope.state.addButtonText = 'Add new ' +
+						pluralize($filter('wordAliases')($stateParams.variableCategoryName.toLowerCase()), 1) + ' reminder';
+				} else {
+					$scope.state.title = "Manage Reminders";
+					$scope.state.addButtonText = "Add new reminder";
+				}
+
 				$scope.state.showButtons = true;
 				$scope.showHelpInfoPopupIfNecessary();
 				if($rootScope.syncingReminders !== true) {

@@ -729,6 +729,7 @@ angular.module('starter',
             }
         })
         .state('app.remindersManageCategory', {
+            cache: false,
             url: "/reminders-manage/:variableCategoryName",
             views: {
                 'menuContent': {
