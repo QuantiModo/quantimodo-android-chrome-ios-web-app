@@ -108,8 +108,10 @@ angular.module('starter')
 			$rootScope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications[trackingReminderNotificationNotificationIndex].hide = true;
 			console.debug('Tracking notification', trackingReminderNotification);
 			console.log('modifiedReminderValue is ' + modifiedReminderValue);
-			var params = trackingReminderNotification;
-			params.modifiedReminderValue = modifiedReminderValue;
+			var params = {
+				trackingReminderNotification: trackingReminderNotification,
+				modifiedValue: modifiedReminderValue
+			};
 
 	    	reminderService.trackReminderNotification(params)
 	    	.then(function(){
