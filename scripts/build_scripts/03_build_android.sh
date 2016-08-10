@@ -170,6 +170,10 @@ ${ANDROID_BUILD_TOOLS}/zipalign -v 4 ${UNSIGNED_APK_FILENAME} ${SIGNED_APK_FILEN
 echo -e "${GREEN}Copying ${SIGNED_APK_FILENAME} to $DROPBOX_PATH/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${SIGNED_APK_FILENAME}${NC}"
 cp ${SIGNED_APK_FILENAME} "$DROPBOX_PATH/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${SIGNED_APK_FILENAME}"
 
+echo "Copying ${SIGNED_APK_FILENAME} to workspace folder ${IONIC_PATH}/android_builds_to_upload/ for Jenkins upload to Play beta..."
+mkdir ${IONIC_PATH}/android_builds_to_upload
+cp ${SIGNED_APK_FILENAME} ${IONIC_PATH}/android_builds_to_upload/
+
 rm ${BUILD_PATH}/${LOWERCASE_APP_NAME}/android/android-debug.apk
 rm ${BUILD_PATH}/${LOWERCASE_APP_NAME}/android/android-debug-unaligned.apk
 rm ${BUILD_PATH}/${LOWERCASE_APP_NAME}/android/android-release-unsigned.apk
