@@ -137,27 +137,25 @@ angular.module('starter')
                 console.log("variablePageCtrl: update charts, logging lineArr");
                 console.log(lineArr);
                 
-                if (!$scope.lineChartConfig) {
-                    $scope.state.lineChartData = lineArr;
-                    if ($scope.state.lineChartData.length > 0) {
-                        updateLineChart($scope.state.lineChartData);
-                        if($scope.state.variableObject.abbreviatedUnitName === '/5' && (!$scope.barChartConfig || barArr !== $scope.barChartConfig.series[0].data)) {
-                            $scope.state.barChartData = barArr;
-                            if ($scope.state.barChartData.length === 5) {
-                                updateBarChart($scope.state.barChartData);
-                                // only show if length > 0 - we don't want an empty bar chart
-                            }
-                        }
-                        else {
-                            $scope.state.showBarChart = false;
-                        }
-                        if (!$scope.$$phase) {
-                            $scope.safeApply();
+                $scope.state.lineChartData = lineArr;
+                if ($scope.state.lineChartData.length > 0) {
+                    updateLineChart($scope.state.lineChartData);
+                    if($scope.state.variableObject.abbreviatedUnitName === '/5' && (!$scope.barChartConfig || barArr !== $scope.barChartConfig.series[0].data)) {
+                        $scope.state.barChartData = barArr;
+                        if ($scope.state.barChartData.length === 5) {
+                            updateBarChart($scope.state.barChartData);
+                            // only show if length > 0 - we don't want an empty bar chart
                         }
                     }
                     else {
-                        $scope.state.showLineChart = false;
+                        $scope.state.showBarChart = false;
                     }
+                    if (!$scope.$$phase) {
+                        $scope.safeApply();
+                    }
+                }
+                else {
+                    $scope.state.showLineChart = false;
                 }
                 windowResize();
             }
@@ -189,9 +187,8 @@ angular.module('starter')
         };
         
 
-        var getHistoryForVariable = function(params){
+        var getHistoryForVariable = function(params, deferred){
             console.log("variablePageCtrl: getHistoryForVariable " + $scope.state.variableObject.variableName);
-            var deferred = $q.defer();
             $scope.showLoader('Getting ' + $scope.state.variableObject.variableName + ' measurements...');
 
             QuantiModo.getV1Measurements(params, function(history){
@@ -205,7 +202,8 @@ angular.module('starter')
                         variableName: $scope.state.variableObject.variableName,
                         limit: 200
                     };
-                    getHistoryForVariable(params);
+                    updateCharts();
+                    getHistoryForVariable(params, deferred);
                 }
                 else {
                     if (history[0]) {
@@ -217,8 +215,8 @@ angular.module('starter')
                         }
                     }
                     $scope.hideLoader();
+                    deferred.resolve();
                 }
-                deferred.resolve();
             }, function(error){
                 Bugsnag.notify(error, JSON.stringify(error), {}, "error");
                 console.log('error getting measurements', error);
@@ -286,7 +284,9 @@ angular.module('starter')
                 limit: 200
             };
 
-            getHistoryForVariable(params).then((function() {
+                   
+            var deferred = $q.defer();
+            getHistoryForVariable(params, deferred).then((function() {
                 if ($scope.state.history.length > 0) {
                     console.log("variablePageCtrl: history log");
                     console.log($scope.state.history);
