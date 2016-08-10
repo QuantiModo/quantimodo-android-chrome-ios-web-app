@@ -621,6 +621,7 @@ angular.module('starter',
         })
         .state('app.historyAllCategory', {
             url: "/history-all/:variableCategoryName",
+            cache: false,
             params: {
                 variableCategoryName : null,
                 fromState : null,
