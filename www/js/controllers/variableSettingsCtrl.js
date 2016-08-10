@@ -16,7 +16,7 @@ angular.module('starter')
         };
         $scope.state.title = $stateParams.variableName + ' Variable Settings';
         $scope.state.variableName = $stateParams.variableName;
-        $scope.state.userVariableAlias = $stateParams.variableName;
+        //$scope.state.userVariableAlias = $stateParams.variableName;
 
         // cancel activity
         $scope.cancel = function(){
@@ -55,7 +55,7 @@ angular.module('starter')
                     $scope.state.sumAvg = originalVariableObject.combinationOperation === "MEAN"? "avg" : "sum";
                     $scope.state.onsetDelay = originalVariableObject.onsetDelay/(60*60); // seconds -> hours
                     $scope.state.durationOfAction = originalVariableObject.durationOfAction/(60*60); // seconds - > hours
-                    $scope.state.userVariableAlias = $stateParams.variableName;
+                    //$scope.state.userVariableAlias = $stateParams.variableName;
                 }
             });
 
@@ -213,7 +213,7 @@ angular.module('starter')
                 maximumAllowedValue: maximumAllowedValue,
                 minimumAllowedValue: minimumAllowedValue,
                 onsetDelay: $scope.state.onsetDelay*60*60,
-                userVariableAlias: $scope.state.userVariableAlias
+                //userVariableAlias: $scope.state.userVariableAlias
                 //experimentStartTime
                 //experimentEndTime
             };
@@ -341,12 +341,14 @@ angular.module('starter')
                     else {
                         $scope.state.fillingValue = variableObject.fillingValue;
                     }
+                    /*
                     if (variableObject.userVariableAlias) {
                         $scope.state.userVariableAlias = variableObject.userVariableAlias;
                     }
                     else {
                         $scope.state.userVariableAlias = $stateParams.variableName;
                     }
+                    */
 
                     $scope.state.onsetDelay = variableObject.onsetDelay/(60*60); // seconds -> hours
                     $scope.state.durationOfAction = variableObject.durationOfAction/(60*60); // seconds - > hours
