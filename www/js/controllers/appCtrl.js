@@ -425,6 +425,7 @@ angular.module('starter')
                 $rootScope.user = localStorageService.getItemAsObject('user');
             }
             if (!$rootScope.user && config.getClientId() === 'oAuthDisabled') {
+                console.debug("appCtrl.init: No user and oAuthDisabled so trying to getUserAndSetInLocalStorage. Note: This interferes with welcome flow.");
                 $rootScope.getUserAndSetInLocalStorage();
             }
             if ($rootScope.user) {
@@ -800,6 +801,7 @@ angular.module('starter')
 
         $scope.syncEverything = function () {
             if(!$rootScope.syncedEverything && $rootScope.user){
+                console.debug('syncEverything for this user: ' + JSON.stringify($rootScope.user));
                 measurementService.syncPrimaryOutcomeVariableMeasurementsAndUpdateCharts();
                 reminderService.refreshTrackingRemindersAndScheduleAlarms();
                 console.debug("syncEverything: calling refreshTrackingRemindersAndScheduleAlarms");
