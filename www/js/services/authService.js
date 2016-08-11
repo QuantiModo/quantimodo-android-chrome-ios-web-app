@@ -242,22 +242,57 @@ angular.module('starter')
 			},
 
         checkAuthOrSendToLogin: function() {
-            var user = localStorageService.getItemAsObject('user');
-            if(user){
-                   return true;
-               }
+            $rootScope.user = localStorageService.getItemAsObject('user');
+            if($rootScope.user){
+				return true;
+			}
             var accessTokenInUrl = authService.getAccessTokenFromUrlParameter();
             if(accessTokenInUrl){
             	localStorageService.setItem('accessTokenInUrl', accessTokenInUrl);
 				$rootScope.accessTokenInUrl = accessTokenInUrl;
 				$rootScope.getUserAndSetInLocalStorage();
-                   return true;
-               }
-            if(!user && !accessTokenInUrl){
-                   $ionicLoading.hide();
-                   console.debug('checkAuthOrSendToLogin: Could not get user or access token from url. Going to login page...');
-                   $state.go('app.login');
-               }
+				var url = config.getURL("api/user") + 'accessToken=' + accessTokenInUrl;
+				$http.get(url).then(
+					function (userCredentialsResp) {
+						console.log('direct API call was successful. User credentials fetched:', userCredentialsResp.data);
+						Bugsnag.metaData = {
+							user: {
+								name: userCredentialsResp.data.displayName,
+								email: userCredentialsResp.data.email
+							}
+						};
+						localStorageService.setItem('user', JSON.stringify(userCredentialsResp.data));
+						$rootScope.user = userCredentialsResp.data;
+					},
+					function (errorResp) {
+						$ionicLoading.hide();
+						console.error('checkAuthOrSendToLogin: Could not get user with access token from url. Going to login page...', errorResp);
+						$state.go('app.login');
+					}
+				);
+				return true;
+			}
+
+			if(!accessTokenInUrl && !$rootScope.user){
+				$http.get(config.getURL("api/user")).then(
+					function (userCredentialsResp) {
+						console.debug('Cookie or session auth-based user credentials request successful:', userCredentialsResp.data);
+						Bugsnag.metaData = {
+							user: {
+								name: userCredentialsResp.data.displayName,
+								email: userCredentialsResp.data.email
+							}
+						};
+						localStorageService.setItem('user', JSON.stringify(userCredentialsResp.data));
+						$rootScope.user = userCredentialsResp.data;
+					},
+					function (errorResp) {
+						$ionicLoading.hide();
+						console.error('checkAuthOrSendToLogin: Could not get user with a cookie. Going to login page...', errorResp);
+						$state.go('app.login');
+					}
+				);
+			}
         },
 
         getJWTToken: function (provider, accessToken) {
