@@ -454,6 +454,7 @@ angular.module('starter',
         })
         .state('app.variableSearch', {
             url: "/search-variables",
+            cache: false,
             params: {
                 variableCategoryName: null,
                 fromState: null,
