@@ -260,12 +260,9 @@ label.item.item-input.item-text > input[type="text"] {
     text-align: center;
     color: white;
     position: absolute;
-    top: 44px;
-    z-index: 12;
+    top: 40px;
+    z-index: 5;
     background-color: #A0E749;
-    height: 44px;
-    vertical-align: center;
-    line-height: 30px;
 }
 
 .slider {
