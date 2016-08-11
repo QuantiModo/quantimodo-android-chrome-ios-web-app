@@ -22,7 +22,7 @@ angular.module('starter')
                 $rootScope.helpPopup.close();
             }
             console.log("login initialized");
-            if(!$rootScope.user && $rootScope.isChromeExtension){
+            if(!$rootScope.user){
                 $rootScope.getUserAndSetInLocalStorage();
             }
             if($rootScope.user){
