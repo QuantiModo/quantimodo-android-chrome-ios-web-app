@@ -262,7 +262,7 @@ config.appSettings  = {
             title : 'All Reminders',
             isSubMenuChild : true,
             showSubMenuVariable : 'showReminderSubMenu',
-            href : '#/app/reminders-manage',
+            href : '#/app/reminders-manage/Anything',
             icon : 'ion-android-globe'
         },
         {

@@ -603,24 +603,6 @@ angular.module('starter',
                 }
             }
         })
-        /*
-        .state('app.historyAll', {
-            url: "/history-all",
-            cache: false,
-            params: {
-                variableCategoryName : null,
-                fromState : null,
-                fromUrl : null,
-                variableObject : null
-            },
-            views: {
-                'menuContent': {
-                    templateUrl: "templates/history-all.html",
-                    controller: 'historyAllMeasurementsCtrl'
-                }
-            }
-        })
-        */
         .state('app.historyAll', {
             url: "/history-all/:variableCategoryName",
             cache: false,
@@ -722,16 +704,6 @@ angular.module('starter',
             }
         })
         .state('app.remindersManage', {
-            cache: false,
-            url: "/reminders-manage",
-            views: {
-                'menuContent': {
-                    templateUrl: "templates/reminders-manage.html",
-                    controller: 'RemindersManageCtrl'
-                }
-            }
-        })
-        .state('app.remindersManageCategory', {
             cache: false,
             url: "/reminders-manage/:variableCategoryName",
             views: {
