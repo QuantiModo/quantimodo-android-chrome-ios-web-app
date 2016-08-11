@@ -22,44 +22,6 @@ angular.module('starter')
             variableSearchQuery: '',
             trackingReminder: {}
         };
-
-        if(variableCategoryName && variableCategoryName !== 'Anything'){
-            $scope.state.variableSearchPlaceholderText = "Search for a " +  $filter('wordAliases')(pluralize(variableCategoryName, 1).toLowerCase()) + " here...";
-        } else {
-            $scope.state.variableSearchPlaceholderText = "Search for a variable here...";
-        }
-
-        if ($stateParams.nextState === "app.reminderAdd") {
-            if(variableCategoryName && variableCategoryName !== 'Anything'){
-                $scope.state.title = $filter('wordAliases')('Add') + " " + $filter('wordAliases')(pluralize(variableCategoryName, 1)) + " Reminder";
-            } else {
-                $scope.state.title = $filter('wordAliases')('Add Reminder');
-            }
-        }
-
-        if ($stateParams.nextState === "app.favoriteAdd") {
-            if(variableCategoryName && variableCategoryName !== 'Anything'){
-                $scope.state.title = $filter('wordAliases')('Add') + " " + $filter('wordAliases')(pluralize(variableCategoryName, 1)) + " Favorite";
-            } else {
-                $scope.state.title = $filter('wordAliases')('Add Favorite');
-            }
-        }
-
-
-        else if ($stateParams.doNotIncludePublicVariables || $stateParams.nextState === "app.variables") {
-            $scope.state.variableSearchPlaceholderText = "Search for a variable here...";
-            $scope.state.title = $filter('wordAliases')('Your Variables');
-        }
-        else if ($stateParams.nextState === "app.measurementAdd"){
-            if(variableCategoryName && variableCategoryName !== 'Anything'){
-                $scope.state.variableSearchPlaceholderText = "Search for a " +  $filter('wordAliases')(pluralize(variableCategoryName, 1).toLowerCase()) + " here...";
-                $scope.state.title = $filter('wordAliases')('Record') + " " + $filter('wordAliases')(variableCategoryName);
-            } else {
-                $scope.state.variableSearchPlaceholderText = "Search for a variable here...";
-                $scope.state.title = $filter('wordAliases')('Record a Measurement');
-            }
-        }
-        
         
         // when an old measurement is tapped to remeasure
         $scope.selectVariable = function(variableObject) {
@@ -127,6 +89,41 @@ angular.module('starter')
         
         $scope.init = function(){
             Bugsnag.context = "variableSearch";
+
+            if(variableCategoryName && variableCategoryName !== 'Anything'){
+                $scope.state.variableSearchPlaceholderText = "Search for a " +  $filter('wordAliases')(pluralize(variableCategoryName, 1).toLowerCase()) + " here...";
+            } else {
+                $scope.state.variableSearchPlaceholderText = "Search for a variable here...";
+            }
+
+            if ($stateParams.nextState === "app.reminderAdd") {
+                if(variableCategoryName && variableCategoryName !== 'Anything'){
+                    $scope.state.title = $filter('wordAliases')('Add') + " " + $filter('wordAliases')(pluralize(variableCategoryName, 1)) + " Reminder";
+                } else {
+                    $scope.state.title = $filter('wordAliases')('Add Reminder');
+                }
+            }
+
+            if ($stateParams.nextState === "app.favoriteAdd") {
+                if(variableCategoryName && variableCategoryName !== 'Anything'){
+                    $scope.state.title = $filter('wordAliases')('Add') + " " + $filter('wordAliases')(pluralize(variableCategoryName, 1)) + " Favorite";
+                } else {
+                    $scope.state.title = $filter('wordAliases')('Add Favorite');
+                }
+            }
+            else if ($stateParams.doNotIncludePublicVariables || $stateParams.nextState === "app.variables") {
+                $scope.state.variableSearchPlaceholderText = "Search for a variable here...";
+                $scope.state.title = $filter('wordAliases')('Your Variables');
+            }
+            else if ($stateParams.nextState === "app.measurementAdd"){
+                if(variableCategoryName && variableCategoryName !== 'Anything'){
+                    $scope.state.variableSearchPlaceholderText = "Search for a " +  $filter('wordAliases')(pluralize(variableCategoryName, 1).toLowerCase()) + " here...";
+                    $scope.state.title = $filter('wordAliases')('Record') + " " + $filter('wordAliases')(variableCategoryName);
+                } else {
+                    $scope.state.variableSearchPlaceholderText = "Search for a variable here...";
+                    $scope.state.title = $filter('wordAliases')('Record a Measurement');
+                }
+            }
 
             if (typeof analytics !== 'undefined')  { analytics.trackView("Variable Search Controller"); }
             var isAuthorized = authService.checkAuthOrSendToLogin();
