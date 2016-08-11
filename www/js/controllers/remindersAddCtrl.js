@@ -343,14 +343,9 @@ angular.module('starter')
                     if($stateParams.fromUrl && ($stateParams.fromUrl.indexOf('manage') > -1 )){
                         window.location = $stateParams.fromUrl;
                     } else {
-                        if ($stateParams.variableCategoryName) {
-                            $state.go('app.remindersManageCategory',{
-                                variableCategoryName: $stateParams.variableCategoryName
-                            });
-                        }
-                        else {
-                            $state.go('app.remindersManage');
-                        }
+                        $state.go('app.remindersManage',{
+                            variableCategoryName: $stateParams.variableCategoryName
+                        });
                     }
                 }
 
@@ -412,7 +407,7 @@ angular.module('starter')
 	    // setup category view
 	    $scope.setupVariableCategory = function(variableCategoryName){
             console.log("variableCategoryName  is " + variableCategoryName);
-            if(!variableCategoryName){
+            if(!variableCategoryName || variableCategoryName === 'Anything'){
                 variableCategoryName = '';
             }
             $scope.state.trackingReminder.variableCategoryName = variableCategoryName;
