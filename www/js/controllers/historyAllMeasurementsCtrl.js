@@ -114,11 +114,11 @@ angular.module('starter')
 			if (typeof analytics !== 'undefined')  { analytics.trackView("All Measurements Controller"); }
 			Bugsnag.context = "historyAll";
 
-			if($stateParams.variableObject){
+			if ($stateParams.variableObject){
 				$scope.title = $stateParams.variableObject.name + ' History';
 			}
-			else if ($stateParams.variableCategoryName !== "Anything") {
-				if ($stateParams.variableCategoryName) {
+			else if ($stateParams.variableCategoryName) {
+				if ($stateParams.variableCategoryName !== "Anything") {
 					$scope.title = $stateParams.variableCategoryName + ' History';
 					if ($stateParams.variableCategoryName === "Location") {
 						$scope.state.showLocationToggle = true;
@@ -126,8 +126,7 @@ angular.module('starter')
 					else {
 						$scope.state.showLocationToggle = false;
 					}
-				}
-				else {
+				} else {
 					$scope.title = 'Measurement History';
 				}
 			}
