@@ -59,7 +59,7 @@ angular.module('starter')
             // GET method with the added token
             QuantiModo.get = function(baseURL, allowedParams, params, successHandler, errorHandler){
                 console.debug('QuantiModo.get: ' + baseURL + '. Going to authService.getAccessTokenFromAnySource');
-                authService.getAccessTokenFromAnySource().then(function(tokenObject){
+                authService.getAccessTokenFromAnySource().then(function(accessToken){
                     allowedParams.push('limit');
                     allowedParams.push('offset');
                     allowedParams.push('sort');
@@ -93,13 +93,8 @@ angular.module('starter')
                             'Content-Type': "application/json"
                         }
                     };
-                    var accessToken;
-                    if($rootScope.accessTokenInUrl){
-                        accessToken = $rootScope.accessTokenInUrl;
-                    } else {
-                        accessToken = tokenObject.accessToken;
-                    }
-                    if(config.getClientId() !== 'oAuthDisabled' || $rootScope.accessTokenInUrl) {
+
+                    if(accessToken) {
                         request.headers = {
                             "Authorization": "Bearer " + accessToken,
                             'Content-Type': "application/json"
@@ -135,7 +130,7 @@ angular.module('starter')
             // POST method with the added token
             QuantiModo.post = function(baseURL, requiredFields, items, successHandler, errorHandler){
                 console.debug('QuantiModo.get: ' + baseURL + '. Going to authService.getAccessTokenFromAnySource');
-                authService.getAccessTokenFromAnySource().then(function(token){
+                authService.getAccessTokenFromAnySource().then(function(accessToken){
                     
                     //console.log("Token : ", token.accessToken);
                     // configure params
@@ -164,12 +159,7 @@ angular.module('starter')
                         },
                         data : JSON.stringify(items)
                     };
-                    var accessToken;
-                    if($rootScope.accessTokenInUrl){
-                        accessToken = $rootScope.accessTokenInUrl;
-                    } else {
-                        accessToken = token.accessToken;
-                    }
+
                     if(config.getClientId() !== 'oAuthDisabled' || $rootScope.accessTokenInUrl) {
                         request.headers = {
                             "Authorization" : "Bearer " + accessToken,

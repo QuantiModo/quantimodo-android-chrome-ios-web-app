@@ -32,10 +32,18 @@ angular.module('starter')
             $scope.title = 'Your Variable Relationships';
         }
         console.debug('importCtrl.init: Going to authService.getAccessTokenFromAnySource');
-        authService.getAccessTokenFromAnySource().then(function(token) {
-            $scope.iframeUrl = $sce.trustAsResourceUrl(
-                iFrameUrl + '&access_token=' + token.accessToken
-            );
+        authService.getAccessTokenFromAnySource().then(function(accessToken) {
+
+            if(accessToken){
+                $scope.iframeUrl = $sce.trustAsResourceUrl(
+                    iFrameUrl + '&access_token=' + accessToken
+                );
+            } else {
+                $scope.iframeUrl = $sce.trustAsResourceUrl(
+                    iFrameUrl
+                );
+            }
+
             $ionicLoading.hide();
         }, function(){
             console.log("getAccessTokenFromAnySource: No access token. Need to log in.");

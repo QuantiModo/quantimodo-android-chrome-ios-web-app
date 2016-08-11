@@ -429,8 +429,9 @@ angular.module('starter')
                 $rootScope.user = localStorageService.getItemAsObject('user');
             }
             if (!$rootScope.user && config.getClientId() === 'oAuthDisabled') {
-                console.debug("appCtrl.init: No user and oAuthDisabled so trying to getUserAndSetInLocalStorage. Note: This interferes with welcome flow.");
-                $rootScope.getUserAndSetInLocalStorage();
+                //console.debug("appCtrl.init: No user and oAuthDisabled so trying to getUserAndSetInLocalStorage. Note: This interferes with welcome flow.");
+                console.warn('Disabled getUserAndSetInLocalStorage in appCtrl.init...');
+                //$rootScope.getUserAndSetInLocalStorage();
             }
             if ($rootScope.user) {
                 $rootScope.setUserForIntercom($rootScope.user);
@@ -705,16 +706,12 @@ angular.module('starter')
             
             var successHandler = function(userObject) {
                 if (userObject) {
-                    // set user data in local storage
                     console.log('Setting user in getUserAndSetInLocalStorage');
                     localStorageService.setItem('user', JSON.stringify(userObject));
                     $rootScope.user = userObject;
                     $rootScope.setUserForIntercom($rootScope.user);
                     $rootScope.setUserForBugsnag($rootScope.user);
-                    //$rootScope.$broadcast('updateChartsAndSyncMeasurements');
-                    var currentStateName = $state.current.name;
-                    console.log('Current state is  ' + currentStateName);
-                    if (currentStateName === 'app.login') {
+                    if ($state.current.name === 'app.login') {
                         goToDefaultStateShowMenuClearIntroHistoryAndRedraw();
                     }
                     return userObject;
@@ -726,8 +723,8 @@ angular.module('starter')
                 {},
                 successHandler,
                 function(err){
-                    Bugsnag.notify(err, JSON.stringify(err), {}, "error");
-                    console.log(err);
+                    //Bugsnag.notify(err, JSON.stringify(err), {}, "error");
+                    console.debug(err);
                 }
             );
         };
