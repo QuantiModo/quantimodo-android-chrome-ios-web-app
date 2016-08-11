@@ -429,8 +429,9 @@ angular.module('starter')
                 $rootScope.user = localStorageService.getItemAsObject('user');
             }
             if (!$rootScope.user && config.getClientId() === 'oAuthDisabled') {
-                console.debug("appCtrl.init: No user and oAuthDisabled so trying to getUserAndSetInLocalStorage. Note: This interferes with welcome flow.");
-                $rootScope.getUserAndSetInLocalStorage();
+                //console.debug("appCtrl.init: No user and oAuthDisabled so trying to getUserAndSetInLocalStorage. Note: This interferes with welcome flow.");
+                console.warn('Disabled getUserAndSetInLocalStorage in appCtrl.init...');
+                //$rootScope.getUserAndSetInLocalStorage();
             }
             if ($rootScope.user) {
                 $rootScope.setUserForIntercom($rootScope.user);
