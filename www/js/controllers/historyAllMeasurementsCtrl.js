@@ -117,21 +117,17 @@ angular.module('starter')
 			if ($stateParams.variableObject){
 				$scope.title = $stateParams.variableObject.name + ' History';
 			}
-			else if ($stateParams.variableCategoryName) {
-				if ($stateParams.variableCategoryName !== "Anything") {
-					$scope.title = $stateParams.variableCategoryName + ' History';
-					if ($stateParams.variableCategoryName === "Location") {
-						$scope.state.showLocationToggle = true;
-					}
-					else {
-						$scope.state.showLocationToggle = false;
-					}
-				} else {
-					$scope.title = 'Measurement History';
-				}
+			else if (!$stateParams.variableCategoryName || $stateParams.variableCategoryName === "Anything") {
+				$scope.title = 'Measurement History';
 			}
 			else {
-				$scope.title = 'Measurement History';
+				$scope.title = $stateParams.variableCategoryName + ' History';
+				if ($stateParams.variableCategoryName === "Location") {
+					$scope.state.showLocationToggle = true;
+				}
+				else {
+					$scope.state.showLocationToggle = false;
+				}
 			}
 			
             var isAuthorized = authService.checkAuthOrSendToLogin();
