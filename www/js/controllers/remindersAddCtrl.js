@@ -348,7 +348,7 @@ angular.module('starter')
                     		variableCategoryName = 'Anything';
                     	}
                         $state.go('app.remindersManage',{
-                            variableCategoryName: $stateParams.variableCategoryName
+                            variableCategoryName: variableCategoryName
                         });
                     }
                 }
