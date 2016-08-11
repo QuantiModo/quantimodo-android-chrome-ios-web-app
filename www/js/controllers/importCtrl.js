@@ -26,13 +26,15 @@ angular.module('starter')
 			$scope.showLoader();
 	        // get user's access token
 			console.debug('importCtrl.init: Going to authService.getAccessTokenFromAnySource');
-	        authService.getAccessTokenFromAnySource().then(function(token){
+	        authService.getAccessTokenFromAnySource().then(function(accessToken){
 	            $ionicLoading.hide();
 	            if(ionic.Platform.platforms[0] === "browser"){
 					console.log("Browser Detected");
 					
 					var url = config.getURL("api/v2/account/connectors", true);
-					url += "access_token=" + token.accessToken;
+					if(accessToken){
+						url += "access_token=" + accessToken;
+					}
 					var newTab = window.open(url,'_blank');
 
 					if(!newTab){
@@ -42,7 +44,9 @@ angular.module('starter')
 					$state.go(config.appSettings.defaultState);
 	            } else {	            	
 	            	var targetUrl = config.getURL("api/v1/connect/mobile", true);
-	            	targetUrl += "access_token="+token.accessToken;
+					if(accessToken){
+						targetUrl += "access_token=" + accessToken;
+					}
 	            	var ref = window.open(targetUrl,'_blank', 'location=no,toolbar=yes');
 	            	ref.addEventListener('exit', function(){
                         $rootScope.hideNavigationMenu = false;

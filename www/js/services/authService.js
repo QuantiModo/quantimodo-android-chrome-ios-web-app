@@ -100,6 +100,14 @@ angular.module('starter')
             getAccessTokenFromAnySource: function () {
 
 				var deferred = $q.defer();
+
+                if(config.getClientId() === 'oAuthDisabled') {
+                    console.log('getAccessTokenFromAnySource: oAuthDisabled so we do not need an access token');
+                    //authService.getAccessTokenFromUserEndpoint(deferred);
+                    deferred.resolve();
+                    return deferred.promise;
+                }
+
                 var tokenInGetParams = this.getAccessTokenFromUrlParameter();
 
 				//check if token in get params
@@ -127,6 +135,8 @@ angular.module('starter')
                                 console.log('Could not get user with accessToken.  error response:', errorResp);
                             }
                         );
+
+
                     }
 
 					deferred.resolve({
@@ -145,13 +155,6 @@ angular.module('starter')
 
 				if(config.getClientId() !== 'oAuthDisabled') {
 					authService._defaultGetAccessToken(deferred);
-					return deferred.promise;
-				}
-
-				if(config.getClientId() === 'oAuthDisabled') {
-					console.log('getAccessTokenFromAnySource: oAuthDisabled and going to ' +
-						'authService.getAccessTokenFromUserEndpoint');
-					authService.getAccessTokenFromUserEndpoint(deferred);
 					return deferred.promise;
 				}
 
@@ -273,7 +276,7 @@ angular.module('starter')
 				return true;
 			}
 
-			if(!accessTokenInUrl && !$rootScope.user){
+			if(!accessTokenInUrl && !$rootScope.user && config.getClientId() === 'oAuthDisabled'){
 				$http.get(config.getURL("api/user")).then(
 					function (userCredentialsResp) {
 						console.debug('Cookie or session auth-based user credentials request successful:', userCredentialsResp.data);
@@ -403,7 +406,7 @@ angular.module('starter')
 
 			apiGet: function(baseURL, allowedParams, params, successHandler, errorHandler){
             	console.debug('authService.apiGet: ' + baseURL + '. Going to authService.getAccessTokenFromAnySource');
-				authService.getAccessTokenFromAnySource().then(function(token){
+				authService.getAccessTokenFromAnySource().then(function(accessToken){
 
 					// configure params
 					var urlParams = [];
@@ -419,13 +422,8 @@ angular.module('starter')
 					// configure request
 					var url = config.getURL(baseURL);
 					var request = {};
-					var accessToken;
-					if($rootScope.accessTokenInUrl){
-						accessToken = $rootScope.accessTokenInUrl;
-					} else {
-						accessToken = token.accessToken;
-					}
-					if(config.getClientId() !== 'oAuthDisabled' || $rootScope.accessTokenInUrl) {
+
+					if(accessToken) {
 						request = {
 							method : 'GET',
 							url: (url + ((urlParams.length === 0) ? '' : urlParams.join('&'))),
