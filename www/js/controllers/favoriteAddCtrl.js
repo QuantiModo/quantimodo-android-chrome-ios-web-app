@@ -191,25 +191,21 @@ angular.module('starter')
             Bugsnag.context = "reminderAdd";
             if (typeof analytics !== 'undefined')  { analytics.trackView("Add Favorite Controller"); }
 
-            var isAuthorized = authService.checkAuthOrSendToLogin();
+            authService.checkAuthOrSendToLogin();
+            unitService.getUnits().then(function () {
+                var reminderIdUrlParameter = utilsService.getUrlParameter(window.location.href, 'reminderId');
+                var variableIdUrlParameter = utilsService.getUrlParameter(window.location.href, 'variableId');
 
-            if(isAuthorized){
-                unitService.getUnits().then(function (unitObjects) {
-                    var reminderIdUrlParameter = utilsService.getUrlParameter(window.location.href, 'reminderId');
-                    var variableIdUrlParameter = utilsService.getUrlParameter(window.location.href, 'variableId');
-
-                    if ($stateParams.reminderNotification && $stateParams.reminderNotification !== null) {
-                        setupEditReminder($stateParams.reminderNotification);
-                    } else if(reminderIdUrlParameter) {
-                        setupReminderEditingFromUrlParameter(reminderIdUrlParameter);
-                    } else if(variableIdUrlParameter){
-                        setupReminderEditingFromVariableId(variableIdUrlParameter);
-                    } else if ($stateParams.variableObject) {
-                        $scope.onVariableSelect($stateParams.variableObject);
-                    }
-                });
-            }
-
+                if ($stateParams.reminderNotification && $stateParams.reminderNotification !== null) {
+                    setupEditReminder($stateParams.reminderNotification);
+                } else if(reminderIdUrlParameter) {
+                    setupReminderEditingFromUrlParameter(reminderIdUrlParameter);
+                } else if(variableIdUrlParameter){
+                    setupReminderEditingFromVariableId(variableIdUrlParameter);
+                } else if ($stateParams.variableObject) {
+                    $scope.onVariableSelect($stateParams.variableObject);
+                }
+            });
 	    };
 
         // when view is changed

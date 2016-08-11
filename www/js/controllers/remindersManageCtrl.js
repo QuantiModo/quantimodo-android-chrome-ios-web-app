@@ -91,34 +91,34 @@ angular.module('starter')
 	    $scope.init = function(){
 			Bugsnag.context = "reminderManage";
 			getTrackingRemindersFromLocalStorage();
-			var isAuthorized = authService.checkAuthOrSendToLogin();
+			authService.checkAuthOrSendToLogin();
 			if (typeof analytics !== 'undefined')  { analytics.trackView("Manage Reminders Controller"); }
-			if(isAuthorized){
-				if (!$stateParams.variableCategoryName || $stateParams.variableCategoryName === "Anything") {
-					$scope.state.title = "Manage Reminders";
-					$scope.state.addButtonText = "Add new reminder";
-				}
-				else {
-					$scope.state.title = "Manage " + pluralize($filter('wordAliases')($stateParams.variableCategoryName), 1) + " Reminders";
-					$scope.state.addButtonText = 'Add new ' +
-						pluralize($filter('wordAliases')($stateParams.variableCategoryName.toLowerCase()), 1) + ' reminder';
-				}
 
-				$scope.state.showButtons = true;
-				$scope.showHelpInfoPopupIfNecessary();
-				if($rootScope.syncingReminders !== true) {
-					console.debug("ReminderMange init: calling refreshTrackingRemindersAndScheduleAlarms");
-					$scope.showLoader('Reminders coming down the pipes...');
-					reminderService.refreshTrackingRemindersAndScheduleAlarms().then(function () {
-						$scope.hideLoader();
-						getTrackingRemindersFromLocalStorage();
-						//Stop the ion-refresher from spinning
-						$scope.$broadcast('scroll.refreshComplete');
-					});
-				} else {
-					$scope.$broadcast('scroll.refreshComplete');
-				}
+			if (!$stateParams.variableCategoryName || $stateParams.variableCategoryName === "Anything") {
+				$scope.state.title = "Manage Reminders";
+				$scope.state.addButtonText = "Add new reminder";
 			}
+			else {
+				$scope.state.title = "Manage " + pluralize($filter('wordAliases')($stateParams.variableCategoryName), 1) + " Reminders";
+				$scope.state.addButtonText = 'Add new ' +
+					pluralize($filter('wordAliases')($stateParams.variableCategoryName.toLowerCase()), 1) + ' reminder';
+			}
+
+			$scope.state.showButtons = true;
+			$scope.showHelpInfoPopupIfNecessary();
+			if($rootScope.syncingReminders !== true) {
+				console.debug("ReminderMange init: calling refreshTrackingRemindersAndScheduleAlarms");
+				$scope.showLoader('Reminders coming down the pipes...');
+				reminderService.refreshTrackingRemindersAndScheduleAlarms().then(function () {
+					$scope.hideLoader();
+					getTrackingRemindersFromLocalStorage();
+					//Stop the ion-refresher from spinning
+					$scope.$broadcast('scroll.refreshComplete');
+				});
+			} else {
+				$scope.$broadcast('scroll.refreshComplete');
+			}
+
 			// Triggered on a button click, or some other target
 			$rootScope.showActionSheetMenu = function() {
 				// Show the action sheet

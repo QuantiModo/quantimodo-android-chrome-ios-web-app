@@ -179,27 +179,27 @@ angular.module('starter')
 	    $scope.init = function(){
 			Bugsnag.context = "reminderInbox";
 			setPageTitle();
-			var isAuthorized = authService.checkAuthOrSendToLogin();
+			authService.checkAuthOrSendToLogin();
 			if (typeof analytics !== 'undefined')  { analytics.trackView("Reminders Inbox Controller"); }
-			if(isAuthorized){
-				$scope.showHelpInfoPopupIfNecessary();
-                $rootScope.getTrackingReminderNotifications();
-				//update alarms and local notifications
-				console.debug("reminderInbox init: calling refreshTrackingRemindersAndScheduleAlarms");
-				reminderService.refreshTrackingRemindersAndScheduleAlarms();
-				var d = new Date();
-				var timeZoneOffsetInMinutes = d.getTimezoneOffset();
 
-				if($rootScope.user && $rootScope.user.timeZoneOffset !== timeZoneOffsetInMinutes ){
-					var params = {
-						timeZoneOffset: timeZoneOffsetInMinutes
-					};
-					userService.updateUserSettings(params);
-				}
-				if(!$rootScope.user){
-					userService.refreshUser();
-				}
+			$scope.showHelpInfoPopupIfNecessary();
+			$rootScope.getTrackingReminderNotifications();
+			//update alarms and local notifications
+			console.debug("reminderInbox init: calling refreshTrackingRemindersAndScheduleAlarms");
+			reminderService.refreshTrackingRemindersAndScheduleAlarms();
+			var d = new Date();
+			var timeZoneOffsetInMinutes = d.getTimezoneOffset();
+
+			if($rootScope.user && $rootScope.user.timeZoneOffset !== timeZoneOffsetInMinutes ){
+				var params = {
+					timeZoneOffset: timeZoneOffsetInMinutes
+				};
+				userService.updateUserSettings(params);
 			}
+			if(!$rootScope.user){
+				userService.refreshUser();
+			}
+
 			if (typeof cordova !== "undefined") {
 				$ionicPlatform.ready(function () {
 					cordova.plugins.notification.local.clearAll(function () {
