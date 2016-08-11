@@ -385,7 +385,7 @@ config.appSettings  = {
             title : 'All Measurements',
             isSubMenuChild : true,
             showSubMenuVariable : 'showHistorySubMenu',
-            href : '#/app/history-all',
+            href : '#/app/history-all/Anything',
             icon : 'ion-android-globe'
         },
         {

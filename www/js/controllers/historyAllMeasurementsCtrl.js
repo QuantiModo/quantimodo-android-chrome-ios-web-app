@@ -20,18 +20,6 @@ angular.module('starter')
 			noHistory: false
 	    };
 
-		var setupVariableCategory = function () {
-			if($stateParams.variableCategoryName){
-				$scope.title = $stateParams.variableCategoryName + ' History';
-				if ($stateParams.variableCategoryName === "Location") {
-					$scope.state.showLocationToggle = true;
-				}
-				else {
-					$scope.state.showLocationToggle = false;
-				}
-			}
-		};
-
 	    $scope.editMeasurement = function(measurement){
 	    	$state.go('app.measurementAdd', {
 	    		measurement: measurement,
@@ -129,11 +117,19 @@ angular.module('starter')
 			if($stateParams.variableObject){
 				$scope.title = $stateParams.variableObject.name + ' History';
 			}
+			else if ($stateParams.variableCategoryName !== "Anything") {
+				$scope.title = $stateParams.variableCategoryName + ' History';
+				if ($stateParams.variableCategoryName === "Location") {
+					$scope.state.showLocationToggle = true;
+				}
+				else {
+					$scope.state.showLocationToggle = false;
+				}
+			}
 			else {
 				$scope.title = 'Measurement History';
 			}
 			
-			setupVariableCategory();
             var isAuthorized = authService.checkAuthOrSendToLogin();
 			if(isAuthorized){
                 $scope.showHelpInfoPopupIfNecessary();

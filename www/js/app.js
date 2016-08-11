@@ -603,6 +603,7 @@ angular.module('starter',
                 }
             }
         })
+        /*
         .state('app.historyAll', {
             url: "/history-all",
             cache: false,
@@ -619,13 +620,15 @@ angular.module('starter',
                 }
             }
         })
-        .state('app.historyAllCategory', {
+        */
+        .state('app.historyAll', {
             url: "/history-all/:variableCategoryName",
             cache: false,
             params: {
                 variableCategoryName : null,
                 fromState : null,
-                fromUrl : null
+                fromUrl : null,
+                variableObject : null
             },
             views: {
                 'menuContent': {
