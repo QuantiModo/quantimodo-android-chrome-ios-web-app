@@ -118,12 +118,17 @@ angular.module('starter')
 				$scope.title = $stateParams.variableObject.name + ' History';
 			}
 			else if ($stateParams.variableCategoryName !== "Anything") {
-				$scope.title = $stateParams.variableCategoryName + ' History';
-				if ($stateParams.variableCategoryName === "Location") {
-					$scope.state.showLocationToggle = true;
+				if ($stateParams.variableCategoryName) {
+					$scope.title = $stateParams.variableCategoryName + ' History';
+					if ($stateParams.variableCategoryName === "Location") {
+						$scope.state.showLocationToggle = true;
+					}
+					else {
+						$scope.state.showLocationToggle = false;
+					}
 				}
 				else {
-					$scope.state.showLocationToggle = false;
+					$scope.title = 'Measurement History';
 				}
 			}
 			else {
