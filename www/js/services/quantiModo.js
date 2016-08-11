@@ -363,7 +363,7 @@ angular.module('starter')
             QuantiModo.searchVariablesIncludePublic = function(query, successHandler, errorHandler){
                 QuantiModo.get('api/v1/variables/search/' + encodeURIComponent(query),
                     ['limit','includePublic'],
-                    {'limit' : 5, 'includePublic' : true},
+                    {'limit' : 100, 'includePublic' : true},
                     successHandler,
                     errorHandler);
             };
@@ -381,7 +381,7 @@ angular.module('starter')
             QuantiModo.searchVariablesByCategoryIncludePublic = function(query, category, successHandler, errorHandler){
                 QuantiModo.get('api/v1/variables/search/'+ encodeURIComponent(query),
                     ['limit','categoryName','includePublic'],
-                    {'limit' : 5, 'categoryName': category, 'includePublic': true},
+                    {'limit' : 100, 'categoryName': category, 'includePublic': true},
                     successHandler,
                     errorHandler);
             };
@@ -399,7 +399,7 @@ angular.module('starter')
             QuantiModo.getVariables = function(successHandler, errorHandler){
                 QuantiModo.get('api/v1/variables',
                     ['limit'],
-                    { limit:5 },
+                    { limit:100 },
                     successHandler,
                     errorHandler);
             };
