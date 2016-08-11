@@ -139,17 +139,13 @@ angular.module('starter')
 
                     }
 
-					deferred.resolve({
-						accessToken: tokenInGetParams
-					});
+					deferred.resolve(tokenInGetParams);
 					return deferred.promise;
 				}
 
 				if (localStorageService.getItemSync('accessToken')) {
 					//console.log('resolving token using value from local storage');
-					deferred.resolve({
-						accessToken: localStorageService.getItemSync('accessToken')
-					});
+					deferred.resolve(localStorageService.getItemSync('accessToken'));
 					return deferred.promise;
 				}
 
