@@ -127,16 +127,18 @@ angular.module('starter')
         
         $scope.init = function(){
             Bugsnag.context = "variableSearch";
+            console.debug('Initializing variable search controller...');
 
             if (typeof analytics !== 'undefined')  { analytics.trackView("Variable Search Controller"); }
-            var isAuthorized = authService.checkAuthOrSendToLogin();
-            if(isAuthorized){
-                $scope.showHelpInfoPopupIfNecessary();
-                $scope.state.showVariableSearchCard = true;
-                if($scope.state.variableSearchResults < 10){
-                    populateUserVariables();
-                }
-            } 
+            authService.checkAuthOrSendToLogin();
+            
+            console.debug('variableSearchCtrl:Initializing variable search controller...');
+            $scope.showHelpInfoPopupIfNecessary();
+            $scope.state.showVariableSearchCard = true;
+            if($scope.state.variableSearchResults < 10){
+                populateUserVariables();
+            }
+
         };
 
         // when a query is searched in the search box
