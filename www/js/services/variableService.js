@@ -90,6 +90,7 @@ angular.module('starter')
                 }, function(){
                     deferred.reject(false);
                 });
+                
                 return deferred.promise;
             },
 
@@ -103,6 +104,19 @@ angular.module('starter')
                     deferred.reject(false);
                 });
 
+                return deferred.promise;
+            },
+
+            deleteAllMeasurementsForVariable : function(variableId) {
+                var deferred = $q.defer();
+                QuantiModo.deleteUserVariableMeasurements(variableId, function() {
+                    deferred.resolve();
+                }, function(error) {
+                    Bugsnag.notify(error, JSON.stringify(error), {}, "error");
+                    console.log('Error deleting all measurements for variable: ', error);
+                    deferred.reject(error);
+                });
+                
                 return deferred.promise;
             },
 
