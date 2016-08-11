@@ -366,7 +366,8 @@ angular.module('starter')
             $scope.state.trackingReminder.secondDailyReminderTime = null;
             $scope.state.trackingReminder.thirdDailyReminderTime = null;
 	    	$scope.state.title = "Edit " +  trackingReminder.variableName + " Reminder";
-            $scope.state.reminderStartTimeStringLocal = trackingReminder.reminderStartTime;
+            $scope.state.reminderStartTimeStringLocal = timeService.getLocalTimeStringFromUtcString(trackingReminder.reminderStartTime);
+            $scope.state.reminderStartTimeEpochTime = timeService.getEpochTimeFromLocalString($scope.state.reminderStartTimeStringLocal);
             //$scope.state.reminderEndTimeStringLocal = trackingReminder.reminderEndTime;
             
 	    	var reverseFrequencyChart = {
@@ -382,14 +383,6 @@ angular.module('starter')
                 60: "Every minute",
 				0: "Never"
 	    	};
-
-			if(typeof $stateParams.reminder.reminderStartTime !== "undefined" &&
-                $stateParams.reminder.reminderStartTime !== null){
-
-				$scope.state.reminderStartTimeStringLocal = $stateParams.reminder.reminderStartTimeLocal;
-                $scope.state.reminderStartTimeEpochTime =
-                    timeService.getEpochTimeFromLocalString($stateParams.reminder.reminderStartTimeLocal);
-			}
 
 			// This is no longer reminder-specific
             // if(typeof $stateParams.reminder.reminderEndTime !== "undefined" &&
