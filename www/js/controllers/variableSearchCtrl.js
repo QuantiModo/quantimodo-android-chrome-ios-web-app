@@ -23,14 +23,14 @@ angular.module('starter')
             trackingReminder: {}
         };
 
-        if(variableCategoryName){
+        if(variableCategoryName && variableCategoryName !== 'Anything'){
             $scope.state.variableSearchPlaceholderText = "Search for a " +  $filter('wordAliases')(pluralize(variableCategoryName, 1).toLowerCase()) + " here...";
         } else {
             $scope.state.variableSearchPlaceholderText = "Search for a variable here...";
         }
 
         if ($stateParams.nextState === "app.reminderAdd") {
-            if(variableCategoryName){
+            if(variableCategoryName && variableCategoryName !== 'Anything'){
                 $scope.state.title = $filter('wordAliases')('Add') + " " + $filter('wordAliases')(pluralize(variableCategoryName, 1)) + " Reminder";
             } else {
                 $scope.state.title = $filter('wordAliases')('Add Reminder');
@@ -38,7 +38,7 @@ angular.module('starter')
         }
 
         if ($stateParams.nextState === "app.favoriteAdd") {
-            if(variableCategoryName){
+            if(variableCategoryName && variableCategoryName !== 'Anything'){
                 $scope.state.title = $filter('wordAliases')('Add') + " " + $filter('wordAliases')(pluralize(variableCategoryName, 1)) + " Favorite";
             } else {
                 $scope.state.title = $filter('wordAliases')('Add Favorite');
@@ -51,7 +51,7 @@ angular.module('starter')
             $scope.state.title = $filter('wordAliases')('Your Variables');
         }
         else if ($stateParams.nextState === "app.measurementAdd"){
-            if(variableCategoryName){
+            if(variableCategoryName && variableCategoryName !== 'Anything'){
                 $scope.state.variableSearchPlaceholderText = "Search for a " +  $filter('wordAliases')(pluralize(variableCategoryName, 1).toLowerCase()) + " here...";
                 $scope.state.title = $filter('wordAliases')('Record') + " " + $filter('wordAliases')(variableCategoryName);
             } else {
@@ -204,6 +204,10 @@ angular.module('starter')
 
 
         var populateCommonVariables = function(){
+            if (variableCategoryName === 'Anything') {
+                variableCategoryName = null;
+            }
+            
             if($scope.state.variableSearchQuery.length > 2){
                 return;
             }
@@ -242,6 +246,9 @@ angular.module('starter')
             if(!$scope.state.variableSearchResults || $scope.state.variableSearchResults.length < 1){
                 $scope.state.searching = true;
             }
+            if (variableCategoryName === 'Anything') {
+                variableCategoryName = null;
+            }
 
             var userVariables = localStorageService.getElementsFromItemWithFilters(
                 'userVariables', 'variableCategoryName', variableCategoryName);
@@ -274,7 +281,7 @@ angular.module('starter')
             
             var variableObject = {};
             variableObject.name = $scope.state.variableSearchQuery;
-            if($scope.state.variableCategoryName){
+            if($scope.state.variableCategoryName && $scope.state.variableCategoryName !== 'Anything'){
                 variableObject.variableCategoryName = $scope.state.variableCategoryName;
             }
 
