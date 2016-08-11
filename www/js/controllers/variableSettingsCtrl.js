@@ -134,17 +134,10 @@ angular.module('starter')
         };
 
         $scope.deleteAllMeasurementsForVariable = function() {
-            // Get measurements from server and delete
+            // Delete all measurements for a variable
             // If primary outcome variable, also clear local storage
-
-            var params = {
-                offset: $scope.state.offset,
-                sort: "startTimeEpoch",
-                variableName: $scope.state.variableName,
-                limit: 200
-            };
-
-            $scope.getMeasurementsAndDelete(params).then(function() {
+            
+            variableService.deleteAllMeasurementsForVariable($scope.state.variableObject.id).then(function() {
                 if ($scope.state.variableName === config.appSettings.primaryOutcomeVariableDetails.name) {
                     // Delete local storage measurements
                     localStorageService.setItem('allMeasurements',[]);
@@ -158,6 +151,8 @@ angular.module('starter')
             });
         };
 
+        // Deprecated
+        /*
         $scope.getMeasurementsAndDelete = function(params) {
             var deferred = $q.defer();
             QuantiModo.getV1Measurements(params, function(measurements){
@@ -188,6 +183,7 @@ angular.module('starter')
             });
             return deferred.promise;
         };
+        */
 
         $scope.save = function(){
             var maximumAllowedValue = $scope.state.maximumAllowedValue;
@@ -293,7 +289,6 @@ angular.module('starter')
                     return true;
                 }
             });
-
 
             $timeout(function() {
                 hideSheet();

@@ -467,6 +467,17 @@ angular.module('starter')
                     errorHandler);
             };
 
+            // deletes all of a user's measurements for a variable
+            QuantiModo.deleteUserVariableMeasurements = function(variableId, successHandler, errorHandler) {
+                QuantiModo.post('api/v1/userVariables/delete',
+                [
+                    'variableId'
+                ], 
+                {variableId: variableId},
+                successHandler,
+                errorHandler);
+            };
+
             // get variable categories
             QuantiModo.getVariableCategories = function(successHandler, errorHandler){
                 QuantiModo.get('api/variableCategories',
