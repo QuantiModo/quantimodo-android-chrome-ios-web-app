@@ -55,7 +55,7 @@ angular.module('starter')
                 $scope.state.requestParams.correlationCoefficient = "(lt)0";
             }
             $scope.state.variableObject = $stateParams.variableObject;
-            //authService.checkAuthOrSendToLogin();
+            authService.checkAuthOrSendToLogin();
             if (typeof analytics !== 'undefined')  {analytics.trackView("Predictors Controller");}
             if($scope.state.requestParams.effect){
                 if ($scope.state.requestParams.correlationCoefficient === "(lt)0") {
