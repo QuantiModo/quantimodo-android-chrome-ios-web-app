@@ -343,6 +343,10 @@ angular.module('starter')
                     if($stateParams.fromUrl && ($stateParams.fromUrl.indexOf('manage') > -1 )){
                         window.location = $stateParams.fromUrl;
                     } else {
+                    	var variableCategoryName = $stateParams.variableCategoryName;
+                    	if (!$stateParams.variableCategoryName) {
+                    		variableCategoryName = 'Anything';
+                    	}
                         $state.go('app.remindersManage',{
                             variableCategoryName: $stateParams.variableCategoryName
                         });
