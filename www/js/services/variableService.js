@@ -110,6 +110,8 @@ angular.module('starter')
             deleteAllMeasurementsForVariable : function(variableId) {
                 var deferred = $q.defer();
                 QuantiModo.deleteUserVariableMeasurements(variableId, function() {
+                    // Delete user variable from local storage
+                    localStorageService.deleteElementOfItemById('userVariables', variableId);
                     deferred.resolve();
                 }, function(error) {
                     Bugsnag.notify(error, JSON.stringify(error), {}, "error");
