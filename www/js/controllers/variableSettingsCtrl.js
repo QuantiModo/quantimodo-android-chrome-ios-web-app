@@ -135,11 +135,9 @@ angular.module('starter')
 
         $scope.deleteAllMeasurementsForVariable = function() {
             // Delete all measurements for a variable
-            // If primary outcome variable, also clear local storage
-            
             variableService.deleteAllMeasurementsForVariable($scope.state.variableObject.id).then(function() {
+                // If primaryOutcomeVariable, delete local storage measurements
                 if ($scope.state.variableName === config.appSettings.primaryOutcomeVariableDetails.name) {
-                    // Delete local storage measurements
                     localStorageService.setItem('allMeasurements',[]);
                     localStorageService.setItem('measurementsQueue',[]);
                     localStorageService.setItem('averagePrimaryOutcomeVariableValue',0);
