@@ -269,7 +269,7 @@ config.appSettings  = {
             title : 'All Reminders',
             isSubMenuChild : true,
             showSubMenuVariable : 'showReminderSubMenu',
-            href : '#/app/reminders-manage',
+            href : '#/app/reminders-manage/Anything',
             icon : 'ion-android-globe'
         },
         {
@@ -383,7 +383,7 @@ config.appSettings  = {
             title : 'All Measurements',
             isSubMenuChild : true,
             showSubMenuVariable : 'showHistorySubMenu',
-            href : '#/app/history-all',
+            href : '#/app/history-all/Anything',
             icon : 'ion-android-globe'
         },
         {

@@ -49,7 +49,7 @@ angular.module('starter')
 						nonFavoriteReminders.push(unfilteredReminders[k]);
 					}
 				}
-				if($stateParams.variableCategoryName) {
+				if($stateParams.variableCategoryName !== 'Anything') {
 					for(var j = 0; j < nonFavoriteReminders.length; j++){
 						if($stateParams.variableCategoryName === nonFavoriteReminders[j].variableCategoryName){
 							$scope.state.allReminders.push(nonFavoriteReminders[j]);
@@ -94,13 +94,14 @@ angular.module('starter')
 			var isAuthorized = authService.checkAuthOrSendToLogin();
 			if (typeof analytics !== 'undefined')  { analytics.trackView("Manage Reminders Controller"); }
 			if(isAuthorized){
-				if($stateParams.variableCategoryName){
+				if (!$stateParams.variableCategoryName || $stateParams.variableCategoryName === "Anything") {
+					$scope.state.title = "Manage Reminders";
+					$scope.state.addButtonText = "Add new reminder";
+				}
+				else {
 					$scope.state.title = "Manage " + pluralize($filter('wordAliases')($stateParams.variableCategoryName), 1) + " Reminders";
 					$scope.state.addButtonText = 'Add new ' +
 						pluralize($filter('wordAliases')($stateParams.variableCategoryName.toLowerCase()), 1) + ' reminder';
-				} else {
-					$scope.state.title = "Manage Reminders";
-					$scope.state.addButtonText = "Add new reminder";
 				}
 
 				$scope.state.showButtons = true;
@@ -191,7 +192,7 @@ angular.module('starter')
 	    };
 
 	    $scope.addNewReminderButtonClick = function(){
-			if ($stateParams.variableCategoryName) {
+			if ($stateParams.variableCategoryName !== 'Anything') {
 				$state.go('app.reminderSearchCategory',
 					{
 						variableCategoryName : $stateParams.variableCategoryName,
