@@ -272,12 +272,12 @@ config.appSettings  = {
         button3 : {
             icon: 'ion-ios-pulse',
             label: 'Add Vital Sign',
-            stateAndParameters: "'app.track_factors_category', {variableCategoryName : 'Vital Signs'}"
+            stateAndParameters: "'app.measurementAddSearchCategory', {variableCategoryName : 'Vital Signs'}"
         },
         button4 : {
             icon: 'ion-heart-broken',
             label: 'Record a Symptom',
-            stateAndParameters: "'app.track_factors_category', {variableCategoryName : 'Symptoms'}"
+            stateAndParameters: "'app.measurementAddSearchCategory', {variableCategoryName : 'Symptoms'}"
         }
     },
 

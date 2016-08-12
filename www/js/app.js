@@ -306,7 +306,7 @@ angular.module('starter',
                 }
             }
         })
-        .state('app.track_factors', {
+        .state('app.measurementAddSearch', {
             url: "/track_factors",
             params: {
                 reminder : null,
@@ -322,7 +322,7 @@ angular.module('starter',
                 }
             }
         })
-        .state('app.track_factors_category', {
+        .state('app.measurementAddSearchCategory', {
             url: "/track_factors_category/:variableCategoryName",
             params: {
                 variableCategoryName : null,
@@ -484,8 +484,8 @@ angular.module('starter',
             },
             views: {
                 'menuContent': {
-                    templateUrl: "templates/variable-page.html",
-                    controller: 'VariablePageCtrl'
+                    templateUrl: "templates/charts-page.html",
+                    controller: 'ChartsPageCtrl'
                 }
             }
         })

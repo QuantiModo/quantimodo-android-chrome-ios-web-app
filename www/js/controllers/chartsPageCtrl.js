@@ -1,10 +1,10 @@
 angular.module('starter')
 
     // Controls the Track Page of the App
-    .controller('VariablePageCtrl', function($scope, $q, $state, $timeout, $rootScope, $ionicLoading,  $ionicActionSheet,
+    .controller('ChartsPageCtrl', function($scope, $q, $state, $timeout, $rootScope, $ionicLoading,  $ionicActionSheet,
                                              $stateParams, chartService, localStorageService, QuantiModo, 
                                              variableService) {
-        $scope.controller_name = "VariablePageCtrl";
+        $scope.controller_name = "ChartsPageCtrl";
         $scope.addReminderButtonText = "Add Reminder";
         $scope.recordMeasurementButtonText = "Record Measurement";
         $scope.lineChartConfig = false;
