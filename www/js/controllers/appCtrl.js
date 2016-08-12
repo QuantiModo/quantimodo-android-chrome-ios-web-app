@@ -203,7 +203,7 @@ angular.module('starter')
         };
 
         $scope.goToChartsPageForVariableObject = function (variableObject) {
-            $state.go('app.variables',
+            $state.go('app.charts',
                 {
                     variableObject: variableObject,
                     fromState: $state.current.name,

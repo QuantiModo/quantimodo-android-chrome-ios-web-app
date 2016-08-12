@@ -63,7 +63,7 @@ angular.module('starter')
 
             } else if ($stateParams.doNotIncludePublicVariables) { // implies going to variable page
                 //TODO: Figure out why this is causing a duplicate error on variable searches
-                $state.go('app.variables',
+                $state.go('app.charts',
                     {
                         variableName: variableObject.name,
                         variableObject: variableObject,
@@ -71,7 +71,7 @@ angular.module('starter')
                         fromUrl: window.location.href
                     }
                 ).then(function() {
-                    console.log("Transition to app.variables finished");
+                    console.log("Transition to app.charts finished");
                 });
             }
             else {
@@ -112,7 +112,7 @@ angular.module('starter')
                     $scope.state.title = $filter('wordAliases')('Add Favorite');
                 }
             }
-            else if ($stateParams.doNotIncludePublicVariables || $stateParams.nextState === "app.variables") {
+            else if ($stateParams.doNotIncludePublicVariables || $stateParams.nextState === "app.charts") {
                 $scope.state.variableSearchPlaceholderText = "Search for a variable here...";
                 $scope.state.title = $filter('wordAliases')('Your Variables');
             }

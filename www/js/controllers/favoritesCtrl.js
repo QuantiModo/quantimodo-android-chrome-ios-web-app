@@ -141,7 +141,7 @@ angular.module('starter')
 						$scope.editMeasurement($scope.state.variableObject);
 					}
                     if(index === 2){
-						$state.go('app.variables',
+						$state.go('app.charts',
 							{
 								trackingReminder: $scope.state.trackingReminder,
 								fromState: $state.current.name,

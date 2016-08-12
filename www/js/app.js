@@ -452,7 +452,7 @@ angular.module('starter',
                 }
             }
         })
-        .state('app.variableSearch', {
+        .state('app.chartsSearch', {
             url: "/search-variables",
             cache: false,
             params: {
@@ -461,7 +461,7 @@ angular.module('starter',
                 fromUrl: null,
                 measurement: null,
                 doNotIncludePublicVariables: true,
-                nextState: 'app.variables'
+                nextState: 'app.charts'
             },
             views: {
                 'menuContent': {
@@ -470,7 +470,7 @@ angular.module('starter',
                 }
             }
         })
-        .state('app.variables', {
+        .state('app.charts', {
             url: "/variables/:variableName",
             cache: false,
             params: {
