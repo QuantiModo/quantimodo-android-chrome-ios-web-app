@@ -5,7 +5,7 @@
 
 
 		<div class="list card"  ng-hide="hideAddTreatmentRemindersCard">
-			<div class="item" style="padding-bottom:0px;">
+			<div class="item" style="padding-bottom:10px;">
 				<p style=" text-align: center; line-height: normal; font-size: 25px;">Treatment Tracking</p>
 
 				<div class="row">
@@ -39,7 +39,7 @@
 		</div>
 
 		<div class="list card"  ng-hide="hideAddSymptomRemindersCard">
-			<div class="item" style="padding-bottom:0px;">
+			<div class="item" style="padding-bottom:10px;">
 				<p style=" text-align: center; line-height: normal; font-size: 25px;">Symptom Ratings</p>
 
 				<div class="row">
@@ -73,7 +73,7 @@
 		</div>
 
 		<div class="list card"  ng-hide="hideAddEmotionRemindersCard">
-			<div class="item" style="padding-bottom:0px;">
+			<div class="item" style="padding-bottom:10px;">
 				<p style=" text-align: center; line-height: normal; font-size: 25px;">Varying Emotions?</p>
 				<div class="row">
 					<div class="col" style="padding-top: 0px;">
@@ -107,7 +107,7 @@
 		</div>
 
 		<div class="list card"  ng-hide="hideAddFoodRemindersCard">
-			<div class="item" style="padding-bottom:0px;">
+			<div class="item" style="padding-bottom:10px;">
 				<p style=" text-align: center; line-height: normal; font-size: 25px;">Track Diet</p>
 				<div class="row">
 					<div class="col" style="padding-top: 0px;">
@@ -147,7 +147,7 @@
 		</div>
 
 <!--		<div class="list card"  ng-hide="hideNotificationSettingsInfoCard">
-			<div class="item" style="padding-bottom:0px;">
+			<div class="item" style="padding-bottom:10px;">
 				<p style=" text-align: center; line-height: normal; font-size: 25px;">Notification Settings</p>
 
 				<div class="row">
@@ -199,7 +199,7 @@
 		</div>-->
 
         <div class="list card"  ng-hide="hideRecordMeasurementInfoCard">
-            <div class="item" style="padding-bottom:0px;">
+            <div class="item" style="padding-bottom:10px;">
                 <p style=" text-align: center; line-height: normal; font-size: 25px;">Record Measurements</p>
                 <div class="row">
                     <div class="col" style="padding-top: 0px;">
@@ -231,7 +231,7 @@
         </div>
 
 		<div class="list card"  ng-if="!hideLocationTrackingInfoCard && !trackLocation">
-			<div class="item" style="padding-bottom:0px;">
+			<div class="item" style="padding-bottom:10px;">
 				<p style=" text-align: center; line-height: normal; font-size: 25px;">Location Tracking</p>
 				<div class="row">
 					<div class="col" style="padding-top: 0px;">
@@ -265,7 +265,7 @@
 		</div>
 
 		<div class="list card"  ng-if="isMobile && !hideChromeExtensionInfoCard">
-			<div class="item" style="padding-bottom:0px;">
+			<div class="item" style="padding-bottom:10px;">
 				<p style=" text-align: center; line-height: normal; font-size: 25px;">Track on the Computer</p>
 				<div class="row">
 					<div class="col" style="padding-top: 0px;">
@@ -306,7 +306,7 @@
 
 
 		<div class="list card"  ng-hide="hideImportDataCard">
-			<div class="item" style="padding-bottom:0px;">
+			<div class="item" style="padding-bottom:10px;">
 				<p style=" text-align: center; line-height: normal; font-size: 25px;">Import Your Data</p>
 				<div class="row">
 					<div class="col" style="padding-top: 0px;">
@@ -350,7 +350,7 @@
 					 ng-if="!trackingReminderNotification.hide"
 					 ng-repeat="trackingReminderNotification in divider.trackingReminderNotifications"
 					 ng-init="trackingReminderNotificationIndex = $index" >
-					<div class="item" style="padding-bottom:0px;">
+					<div class="item" style="padding-bottom:10px;">
 						<div ng-click="showActionSheetForNotification(trackingReminderNotification, $event)" class="row">
 							<div class="col col-20" style="padding-top: 0px;">
 								<i style="font-size: 40px;" class="icon positive {{trackingReminderNotification.icon}}"></i>
@@ -451,7 +451,7 @@
 		</div>
 
 		<div class="list card"  ng-if="numberOfPendingNotifications === 0">
-			<div class="item" style="padding-bottom:0px;">
+			<div class="item" style="padding-bottom:10px;">
 				<p style=" text-align: center; line-height: normal; font-size: 25px;">All caught up!</p>
 
 				<div class="row">
@@ -468,7 +468,31 @@
 					<div class="button-bar">
 						<button class="button button-clear button-balanced" style="font-size: 14px;"
 								ng-click="goToState('app.reminderSearch')">
-							<i class="ion-plus-round"> &nbsp; Add a reminder &nbsp;</i>
+							<i class="ion-android-notifications"> &nbsp; Add a reminder &nbsp;</i>
+						</button>
+					</div>
+				</div>
+				<div class="row" >
+					<div class="button-bar">
+						<button class="button button-clear button-assertive" style="font-size: 14px;"
+								ng-click="goToState('app.favorites')">
+							<i class="ion-star"> &nbsp; Go to favorites &nbsp;</i>
+						</button>
+					</div>
+				</div>
+				<div class="row" >
+					<div class="button-bar">
+						<button class="button button-clear button-royal" style="font-size: 14px;"
+								ng-click="goToState('app.reminderSearch')">
+							<i class="ion-compose"> &nbsp; Record a measurement &nbsp;</i>
+						</button>
+					</div>
+				</div>
+				<div class="row" >
+					<div class="button-bar">
+						<button class="button button-clear button-calm" style="font-size: 14px;"
+								ng-click="goToState('app.reminderSearch')">
+							<i class="ion-ios-list-outline"> &nbsp; History &nbsp;</i>
 						</button>
 					</div>
 				</div>

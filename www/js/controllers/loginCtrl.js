@@ -131,7 +131,8 @@ angular.module('starter')
             var url = authService.generateV1OAuthUrl(register);
 
             console.log('nonNativeMobileLogin: open the auth window via inAppBrowser.');
-            var ref = window.open(url,'_blank', 'location=no,toolbar=yes');
+            // Set location=yes instead of location=no temporarily to try to diagnose intermittent white screen on iOS
+            var ref = window.open(url,'_blank', 'location=yes,toolbar=yes');
 
             console.log('nonNativeMobileLogin: listen to its event when the page changes');
             ref.addEventListener('loadstart', function(event) {
@@ -153,8 +154,10 @@ angular.module('starter')
                         fetchAccessTokenAndUserDetails(authorizationCode);
 
                     } else {
-                        console.log("nonNativeMobileLogin: error occurred", utilsService.getUrlParameter(event.url, 'error'));
-                        console.log('nonNativeMobileLogin: close inAppBrowser');
+                        var errorMessage = "nonNativeMobileLogin: error occurred:" + utilsService.getUrlParameter(event.url, 'error');
+                        console.log(errorMessage);
+                        bugsnagService.reportError(errorMessage);
+                        console.error('nonNativeMobileLogin: close inAppBrowser');
                         ref.close();
                     }
                 }
@@ -221,8 +224,9 @@ angular.module('starter')
                                 // get access token from authorization code
                                 fetchAccessTokenAndUserDetails(authorizationCode, withJWT);
                             } else {
-
-                                console.log("nativeLogin: error occurred", utilsService.getUrlParameter(event.url, 'error'));
+                                var errorMessage = "nativeLogin: error occurred: " + utilsService.getUrlParameter(event.url, 'error');
+                                bugsnagService.reportError(errorMessage);
+                                console.error(errorMessage);
 
                                 // close inAppBrowser
                                 ref.close();
@@ -255,7 +259,7 @@ angular.module('starter')
                         console.debug('successfully logged in');
                         console.debug('google->', JSON.stringify(userData));
                         var tokenForApi = null;
-                        
+
                         if(userData.oauthToken) {
                             console.log('userData.oauthToken is ' + userData.oauthToken);
                             tokenForApi = userData.oauthToken;
@@ -263,7 +267,7 @@ angular.module('starter')
                             console.error('googleLogin: No userData.accessToken!  You might have to use cordova-plugin-googleplus@4.0.8 or update API to use serverAuthCode to get an accessToken from Google...');
                             tokenForApi = userData.serverAuthCode;
                         }
-                        
+
                         if(!tokenForApi){
                             Bugsnag.notify("ERROR: googleLogin could not get userData.oauthToken!  ", JSON.stringify(userData), {}, "error");
                             console.error('googleLogin: No userData.accessToken or userData.idToken provided! Fallback to nonNativeMobileLogin...');
