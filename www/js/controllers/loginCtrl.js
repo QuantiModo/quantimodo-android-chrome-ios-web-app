@@ -131,7 +131,8 @@ angular.module('starter')
             var url = authService.generateV1OAuthUrl(register);
 
             console.log('nonNativeMobileLogin: open the auth window via inAppBrowser.');
-            var ref = window.open(url,'_blank', 'location=no,toolbar=yes');
+            // Set location=yes instead of location=no temporarily to try to diagnose intermittent white screen on iOS
+            var ref = window.open(url,'_blank', 'location=yes,toolbar=yes');
 
             console.log('nonNativeMobileLogin: listen to its event when the page changes');
             ref.addEventListener('loadstart', function(event) {
