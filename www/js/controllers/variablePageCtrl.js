@@ -239,7 +239,6 @@ angular.module('starter')
                 variableService.getVariablesByName($stateParams.variableName).then(function(variableObject){
                     $scope.state.variableObject = variableObject;
                     $scope.state.variableObject.variableName = variableObject.name;
-                    updateStatisticsForVariable(variableObject);
                 });
 
             } else {
