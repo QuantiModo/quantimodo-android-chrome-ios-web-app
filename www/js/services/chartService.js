@@ -341,7 +341,7 @@ angular.module('starter')
 				var timezoneOffsetMilliseconds = timezoneOffsetHours*60*60*1000; // minutes, seconds, milliseconds
 				var displayVariableName;
 				if (variableName) {
-					displayVariableName = variableName + ' over time';
+					displayVariableName = variableName + ' Over Time';
 				}
 				else {
 					displayVariableName = config.appSettings.primaryOutcomeVariable + ' Over Time';
