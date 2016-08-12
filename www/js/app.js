@@ -306,7 +306,7 @@ angular.module('starter',
                 }
             }
         })
-        .state('app.track_factors', {
+        .state('app.measurementAddSearch', {
             url: "/track_factors",
             params: {
                 reminder : null,
@@ -322,7 +322,7 @@ angular.module('starter',
                 }
             }
         })
-        .state('app.track_factors_category', {
+        .state('app.measurementAddSearchCategory', {
             url: "/track_factors_category/:variableCategoryName",
             params: {
                 variableCategoryName : null,
@@ -452,7 +452,7 @@ angular.module('starter',
                 }
             }
         })
-        .state('app.variableSearch', {
+        .state('app.chartsSearch', {
             url: "/search-variables",
             cache: false,
             params: {
@@ -461,7 +461,7 @@ angular.module('starter',
                 fromUrl: null,
                 measurement: null,
                 doNotIncludePublicVariables: true,
-                nextState: 'app.variables'
+                nextState: 'app.charts'
             },
             views: {
                 'menuContent': {
@@ -470,7 +470,7 @@ angular.module('starter',
                 }
             }
         })
-        .state('app.variables', {
+        .state('app.charts', {
             url: "/variables/:variableName",
             cache: false,
             params: {
@@ -484,8 +484,8 @@ angular.module('starter',
             },
             views: {
                 'menuContent': {
-                    templateUrl: "templates/variable-page.html",
-                    controller: 'VariablePageCtrl'
+                    templateUrl: "templates/charts-page.html",
+                    controller: 'ChartsPageCtrl'
                 }
             }
         })

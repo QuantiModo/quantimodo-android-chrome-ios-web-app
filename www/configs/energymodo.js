@@ -189,7 +189,7 @@ config.appSettings  = {
         button2 : {
             icon: 'ion-compose',
             label: 'Record a Measurement',
-            stateAndParameters: "'app.track_factors'"
+            stateAndParameters: "'app.measurementAddSearch'"
         },
         button3 : {
             icon: 'ion-ios-cloud-download-outline',
