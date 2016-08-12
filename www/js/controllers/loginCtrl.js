@@ -135,7 +135,7 @@ angular.module('starter')
             var ref = window.open(url,'_blank', 'location=yes,toolbar=yes')
 
             $timeout(function () {
-                console.log('nonNativeMobileLogin: Automatically closing auth window after 60 seconds.');
+                console.log('nonNativeMobileLogin: Automatically closing inAppBrowser auth window after 60 seconds.');
                 ref.close();
             }, 60000);
 
