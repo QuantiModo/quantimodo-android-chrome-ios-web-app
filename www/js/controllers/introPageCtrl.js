@@ -1,9 +1,9 @@
 angular.module('starter')
 
     // Controls the Track Page of the App
-    .controller('IntroPageCtrl', function($scope, $ionicModal, $state, $timeout, utilsService, authService,
-                                      measurementService, chartService, $ionicPopup, localStorageService, $ionicLoading,
-                                          $ionicSlideBoxDelegate, $rootScope) {
+    .controller('IntroPageCtrl', function($scope, $ionicModal, $state, $ionicLoading, $ionicSlideBoxDelegate,
+                                          $rootScope) {
+
         $scope.controller_name = "IntroPageCtrl";
 
             $scope.viewTitle = config.appSettings.appName;
@@ -37,7 +37,7 @@ angular.module('starter')
 
             var init = function(){
                 Bugsnag.context = "introPage";
-                $scope.showLoader();
+                //$scope.showLoader();
                 $scope.myIntro.ready = true;
                 $ionicLoading.hide();
             };
@@ -45,6 +45,7 @@ angular.module('starter')
             // when view is changed
             $scope.$on(
                 '$ionicView.enter', function(e) {
+                    $scope.hideLoader();
                     init();
                 }
             );

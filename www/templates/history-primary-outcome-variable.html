@@ -1,12 +1,34 @@
 <ion-view hide-nav-bar="hideNavigationMenu" view-title="History">
      <ion-content>
+         <ion-refresher on-refresh="init()"></ion-refresher>
+         <div class="list card"  ng-hide="hideHistoryPageInstructionsCard">
+             <div class="item" >
+                 <p style=" text-align: center; line-height: normal; font-size: 25px;">Past Data</p>
+
+                 <div class="row">
+                     <div class="col" style="padding-top: 0px;">
+                         <i style="font-size: 60px;" class="icon positive ion-calendar"></i>
+                     </div>
+                     <div class="col col-75">
+                         <h2 style="white-space: normal; text-align: left; line-height: normal; ">Edit your past data or add notes by tapping on any measurement below.</h2>
+                     </div>
+                 </div>
+                 <div class="row"  >
+                     <div class="button-bar">
+                         <button class="button button-clear button-balanced" style="font-size: 14px;" ng-click="setLocalStorageFlagTrue('hideHistoryPageInstructionsCard')"><i class="ion-checkmark"> &nbsp; Got it!</i></button>
+                     </div>
+                 </div>
+
+             </div>
+         </div>
       <ion-list>
-          <div collection-repeat="historyItem in history" divider-collection-repeat>
+          <div collection-repeat="historyItem in history" data-measurementid="{{historyItem.id}}"  on-hold="showActionSheet(historyItem, $index)" divider-collection-repeat>
               <ion-item ng-click="editMeasurement(historyItem)" >
                   <div style="display:inline-block;float:left;margin-right:15px;">
                     <img ng-src="{{historyItem.image}}" style="width:80px;" />
                   </div>
                   <div class="history-block">
+                      <p ng-hide="true">{{historyItem.id}}</p>
                       <h2 class="" >{{historyItem.value | percentage}}% {{historyItem.value | PrimaryOutcomeVariableByNumber}}</h2>
                       <h2 class="history-time" ng-repeat="line in (historyItem.startTimeEpoch | timeOfDayDayOfWeek) track by $index">
                           {{line}}
@@ -14,6 +36,7 @@
                       <h2 class="history-time" ng-repeat="line in (historyItem.startTimeEpoch | justDate) track by $index">
                           {{line}}
                       </h2>
+                      <h2 class="" >{{historyItem.note}}</h2>
                     <br/>
                   </div>
               </ion-item>

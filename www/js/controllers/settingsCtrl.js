@@ -1,10 +1,9 @@
 angular.module('starter')
 	
 	// Controls the settings page
-	.controller('SettingsCtrl', function($scope,localStorageService, $ionicModal, $timeout, utilsService, authService,
-										 measurementService, chartService, $ionicPopover, $cordovaFile,
-										 $cordovaFileOpener2, $ionicPopup, $state,notificationService, QuantiModo,
-                                         $rootScope, reminderService) {
+	.controller('SettingsCtrl', function( $state, $scope, $ionicPopover, $ionicPopup, localStorageService, $rootScope, 
+										  notificationService, QuantiModo, reminderService, qmLocationService, 
+										  ionicTimePicker, userService, timeService, pushNotificationService) {
 		$scope.controller_name = "SettingsCtrl";
 		$scope.state = {};
 		$scope.showReminderFrequencySelector = config.appSettings.settingsPageOptions.showReminderFrequencySelector;
@@ -12,13 +11,39 @@ angular.module('starter')
 		$rootScope.isAndroid = ionic.Platform.isAndroid();
         $rootScope.isChrome = window.chrome ? true : false;
 	    // populate user data
-		//$scope.state.combineNotifications = true;
-		$scope.state.combineNotifications = $rootScope.combineNotifications;
-		console.debug('CombineNotifications is '+ $scope.state.combineNotifications);
+		//$scope.state.showOnlyOneNotification = true;
+		$scope.state.showOnlyOneNotification = $rootScope.showOnlyOneNotification;
+		console.debug('CombineNotifications is '+ $scope.state.showOnlyOneNotification);
+		$scope.state.trackLocation = $rootScope.trackLocation;
+		console.debug('trackLocation is '+ $scope.state.trackLocation);
+
+		var d = new Date();
+		var timeZoneOffsetInMinutes = d.getTimezoneOffset();
+		if($rootScope.user && $rootScope.user.timeZoneOffset !== timeZoneOffsetInMinutes ){
+			var params = {
+				timeZoneOffset: timeZoneOffsetInMinutes
+			};
+			userService.updateUserSettings(params);
+		}
+
+		if($rootScope.user && (!$rootScope.user.earliestReminderTime || !$rootScope.user.latestReminderTime)){
+			userService.refreshUser(function(user){
+				$rootScope.user = user;
+			});
+		}
 
 		// populate ratings interval
 		localStorageService.getItem('primaryOutcomeRatingFrequencyDescription', function (primaryOutcomeRatingFrequencyDescription) {
 			$scope.primaryOutcomeRatingFrequencyDescription = primaryOutcomeRatingFrequencyDescription ? primaryOutcomeRatingFrequencyDescription : "daily";
+			if($rootScope.isIOS){
+				if($scope.primaryOutcomeRatingFrequencyDescription !== 'hour' &&
+					$scope.primaryOutcomeRatingFrequencyDescription !== 'day' &&
+					$scope.primaryOutcomeRatingFrequencyDescription !== 'never'
+				) {
+					$scope.primaryOutcomeRatingFrequencyDescription = 'day';
+					localStorageService.setItem('primaryOutcomeRatingFrequencyDescription', 'day');
+				}
+			}
 		});
 		// load rating popover
 		$ionicPopover.fromTemplateUrl('templates/settings/ask-for-a-rating.html', {
@@ -42,78 +67,25 @@ angular.module('starter')
 			$state.go('app.login');
 	    };
 
-		function sendWithMailTo(subjectLine, emailBody){
-                    var emailUrl = 'mailto:?subject=' + subjectLine + '&body=' + emailBody;
-                    if($rootScope.isChromeExtension){
-                        console.debug('isChromeExtension so sending to website to share data');
-                        var url = config.getURL("api/v2/account/applications", true);
-                        var newTab = window.open(url,'_blank');
-                        if(!newTab){
-                            alert("Please unblock popups and refresh to access the Data Sharing page.");
-                        }
-                        $rootScope.hideNavigationMenu = false;
-                        $state.go(config.appSettings.defaultState);
-        
-                    } else {
-                        console.debug('window.plugins.emailComposer not found!  Generating email normal way.');
-						window.location.href = emailUrl;
-                    }
-                }
-
-		function sendWithEmailComposer(subjectLine, emailBody){
-                    document.addEventListener('deviceready', function () {
-                        console.debug('deviceready');
-                        cordova.plugins.email.isAvailable(
-                            function (isAvailable) {
-                                if(isAvailable){
-                                    if(window.plugins && window.plugins.emailComposer) {
-                                        console.debug('Generating email with cordova-plugin-email-composer');
-                                        window.plugins.emailComposer.showEmailComposerWithCallback(function(result) {
-                                                console.log("Response -> " + result);
-                                            },
-                                            subjectLine, // Subject
-                                            emailBody,                      // Body
-                                            null,    // To
-                                            'info@quantimo.do',                    // CC
-                                            null,                    // BCC
-                                            true,                   // isHTML
-                                            null,                    // Attachments
-                                            null);                   // Attachment Data
-                                    } else {
-                                        console.error('window.plugins.emailComposer not available!');
-										sendWithMailTo(subjectLine, emailBody);
-                                    }
-                                } else {
-                                    console.error('Email has not been configured for this device!');
-									sendWithMailTo(subjectLine, emailBody);
-                                }
-                            }
-                        );
-        
-                    }, false);
-                }
-
 		$scope.sendSharingInvitation= function() {
-			var subjectLine = "I%27d%20like%20to%20share%20my%20data%20with%20you%20at%20QuantiModo";
-			var emailBody = "Hi!%20%20%0A%0AI%27m%20tracking%20my%20life%20with%20QuantiModo%20and%20I%27d%20like%20to%20share%20my%20data%20with%20you.%20%20%0A%0APlease%20generate%20a%20data%20authorization%20URL%20at%20https%3A%2F%2Fapp.quantimo.do%2Fapi%2Fv2%2Fphysicians%20and%20email%20it%20to%20me.%20%0A%0AThanks!%20%3AD";
+			var subjectLine = "I%27d%20like%20to%20share%20my%20data%20with%20you";
+			var emailBody = "Hi!%20%20%0A%0AI%27m%20tracking%20my%20health%20and%20happiness%20with%20an%20app%20and%20I%27d%20like%20to%20share%20my%20data%20with%20you.%20%20%0A%0APlease%20generate%20a%20data%20authorization%20URL%20at%20https%3A%2F%2Fapp.quantimo.do%2Fapi%2Fv2%2Fphysicians%20and%20email%20it%20to%20me.%20%0A%0AThanks!%20%3AD";
 
 			if($rootScope.isMobile){
-				sendWithEmailComposer(subjectLine, emailBody);
+				$scope.sendWithEmailComposer(subjectLine, emailBody);
 			} else {
-				sendWithMailTo(subjectLine, emailBody);
-
+				$scope.sendWithMailTo(subjectLine, emailBody);
 			}
 		};
 
-
-        
-		$scope.init = function(){
+		$scope.init = function() {
 			Bugsnag.context = "settings";
 			if (typeof analytics !== 'undefined')  { analytics.trackView("Settings Controller"); }
 			$scope.shouldWeCombineNotifications();
+			qmLocationService.getLocationVariablesFromLocalStorage();
 	    };
 
-		$scope.contactUs = function(){
+		$scope.contactUs = function() {
 			$scope.hideLoader();
 			if ($rootScope.isChromeApp) {
 				window.location = 'mailto:help@quantimo.do';
@@ -134,33 +106,174 @@ angular.module('starter')
 		};
 
 		$scope.combineNotificationChange = function() {
+			var d = new Date();
+			var timeZoneOffsetInMinutes = d.getTimezoneOffset();
+			var params = {
+				timeZoneOffset: timeZoneOffsetInMinutes
+			};
 			
-			console.log('Combine Notification Change', $scope.state.combineNotifications);
-			$rootScope.combineNotifications = $scope.state.combineNotifications;
-			localStorageService.setItem('combineNotifications', $scope.state.combineNotifications);
-			if($scope.state.combineNotifications){
-				// populate ratings interval
-				notificationService.cancelAllNotifications().then(function() {
-
-					localStorageService.getItem('primaryOutcomeRatingFrequencyDescription', function (primaryOutcomeRatingFrequencyDescription) {
-						alert('You will only get one notification at a time instead of a separate notification for each reminder that you create');
-						console.debug("Cancelled individual notifications and now scheduling combined one with interval: " + primaryOutcomeRatingFrequencyDescription);
-						$scope.primaryOutcomeRatingFrequencyDescription = primaryOutcomeRatingFrequencyDescription ? primaryOutcomeRatingFrequencyDescription : "daily";
-						$scope.saveInterval($scope.primaryOutcomeRatingFrequencyDescription);
-					});
+			console.log('Combine Notification Change', $scope.state.showOnlyOneNotification);
+			$rootScope.showOnlyOneNotification = $scope.state.showOnlyOneNotification;
+			localStorageService.setItem('showOnlyOneNotification', $scope.state.showOnlyOneNotification);
+			if($scope.state.showOnlyOneNotification){
+				$ionicPopup.alert({
+					title: 'Disabled Multiple Notifications',
+					template: 'You will only get a single generic repeating device notification ' +
+					'instead of a separate device notification for each reminder that you create.  All ' +
+					'tracking reminder notifications for specific reminders will still show up in your Reminder Inbox.'
 				});
-			} else {
+
+                params.pushNotificationsEnabled = true;
+                userService.updateUserSettings(params);
+                $rootScope.deviceToken = localStorageService.getItemSync('deviceToken');
+                if($rootScope.deviceToken){
+                    //pushNotificationService.registerDeviceToken($rootScope.deviceToken);
+                } else {
+                    //console.error("Could not find device token for push notifications!");
+                }
 
 				notificationService.cancelAllNotifications().then(function() {
-					alert('You will get a separate notification for each reminder that you create');
-					console.debug("Cancelled combined notification and now scheduling individual ones");
+					console.debug("SettingsCtrl combineNotificationChange: Disabled Multiple Notifications and now " +
+						"refreshTrackingRemindersAndScheduleAlarms will schedule a single notification for highest " +
+						"frequency reminder");
+                    if(!$rootScope.deviceToken){
+                        console.warning("Could not find device token for push notifications so scheduling combined local notifications");
+                        reminderService.refreshTrackingRemindersAndScheduleAlarms();
+                    }
+				});
+
+				// notificationService.cancelAllNotifications().then(function() {
+				// 	var intervalToCheckForNotificationsInMinutes = 15;
+				// 	var notificationSettings = {
+				// 		every: intervalToCheckForNotificationsInMinutes
+				// 	};
+				// 	notificationService.scheduleGenericNotification(notificationSettings);
+				// });
+			} else {
+				$ionicPopup.alert({
+					title: 'Enabled Multiple Notifications',
+					template: 'You will get a separate device notification for each reminder that you create.'
+				});
+
+				params.pushNotificationsEnabled = false;
+                userService.updateUserSettings(params);
+
+				notificationService.cancelAllNotifications().then(function() {
+					console.debug("SettingsCtrl combineNotificationChange: Cancelled combined notification and now " +
+						"refreshTrackingRemindersAndScheduleAlarms");
 					reminderService.refreshTrackingRemindersAndScheduleAlarms();
 				});
 			}
 			
 		};
 
-        $scope.logout = function(){
+		$scope.openEarliestReminderTimePicker = function() {
+			$scope.state.earliestReminderTimePickerConfiguration = {
+				callback: function (val) {
+					if (typeof (val) === 'undefined') {
+						console.log('Time not selected');
+					} else {
+						var a = new Date();
+						var params = {
+							timeZoneOffset: a.getTimezoneOffset()
+						};
+						var selectedTime = new Date(val * 1000);
+						a.setHours(selectedTime.getUTCHours());
+						a.setMinutes(selectedTime.getUTCMinutes());
+						console.log('Selected epoch is : ', val, 'and the time is ',
+							selectedTime.getUTCHours(), 'H :', selectedTime.getUTCMinutes(), 'M');
+						var newEarliestReminderTime = moment(a).format('HH:mm:ss');
+						if(newEarliestReminderTime > $rootScope.user.latestReminderTime){
+							$ionicPopup.alert({
+								title: 'Choose Another Time',
+								template: 'Earliest reminder time cannot be greater than latest reminder time.  Please change the latest reminder time and try again or select a different earliest reminder time.'
+							});
+						}
+						if(newEarliestReminderTime !== $rootScope.user.earliestReminderTime){
+							$rootScope.user.earliestReminderTime = newEarliestReminderTime;
+							params.earliestReminderTime = $rootScope.user.earliestReminderTime;
+							userService.updateUserSettings(params).then(function(){
+								reminderService.refreshTrackingRemindersAndScheduleAlarms();
+							});
+							$ionicPopup.alert({
+								title: 'Earliest Notification Time Updated',
+								template: 'You should not receive device notifications or tracking reminder notifications in your inbox before ' + moment(a).format('h:mm A') + '.'
+							});
+						}
+					}
+				},
+				inputTime: timeService.getSecondsSinceMidnightLocalFromLocalString($rootScope.user.earliestReminderTime),
+				step: 15,
+				closeLabel: 'Cancel'
+			};
+
+			ionicTimePicker.openTimePicker($scope.state.earliestReminderTimePickerConfiguration);
+		};
+
+		$scope.openLatestReminderTimePicker = function() {
+			$scope.state.latestReminderTimePickerConfiguration = {
+				callback: function (val) {
+					if (typeof (val) === 'undefined') {
+						console.log('Time not selected');
+					} else {
+						var a = new Date();
+						var params = {
+							timeZoneOffset: a.getTimezoneOffset()
+						};
+						var selectedTime = new Date(val * 1000);
+						a.setHours(selectedTime.getUTCHours());
+						a.setMinutes(selectedTime.getUTCMinutes());
+						console.log('Selected epoch is : ', val, 'and the time is ',
+							selectedTime.getUTCHours(), 'H :', selectedTime.getUTCMinutes(), 'M');
+						var newLatestReminderTime = moment(a).format('HH:mm:ss');
+						if(newLatestReminderTime < $rootScope.user.earliestReminderTime){
+							$ionicPopup.alert({
+								title: 'Choose Another Time',
+								template: 'Latest reminder time cannot be less than earliest reminder time.  Please change the earliest reminder time and try again or select a different latest reminder time.'
+							});
+						}
+						if(newLatestReminderTime !== $rootScope.user.latestReminderTime){
+							$rootScope.user.latestReminderTime = newLatestReminderTime;
+							params.latestReminderTime = $rootScope.user.latestReminderTime;
+							userService.updateUserSettings(params).then(function(){
+								reminderService.refreshTrackingRemindersAndScheduleAlarms();
+							});
+							$ionicPopup.alert({
+								title: 'Latest Notification Time Updated',
+								template: 'You should not receive device notifications or tracking reminder notifications in your inbox after ' + moment(a).format('h:mm A') + '.'
+							});
+						}
+					}
+				},
+				inputTime: timeService.getSecondsSinceMidnightLocalFromLocalString($rootScope.user.latestReminderTime),
+				step: 15,
+				closeLabel: 'Cancel'
+			};
+
+			ionicTimePicker.openTimePicker($scope.state.latestReminderTimePickerConfiguration);
+		};
+
+		$scope.trackLocationChange = function() {
+
+			console.log('trackLocation', $scope.state.trackLocation);
+			$rootScope.trackLocation = $scope.state.trackLocation;
+			localStorageService.setItem('trackLocation', $scope.state.trackLocation);
+			if($scope.state.trackLocation){
+				$ionicPopup.alert({
+					title: 'Location Tracking Enabled',
+					template: 'Location tracking is an experimental feature.  Your location is automatically logged ' +
+					'when you open the app. Your location is not logged when the ' +
+					'app is closed so you should create reminder notifications and open the app regularly to ' +
+					'keep your location up to date.'
+				});
+				qmLocationService.updateLocationVariablesAndPostMeasurementIfChanged();
+			} else {
+				console.debug("Do not track location");
+			}
+
+		};
+
+        $scope.logout = function() {
 
             var startLogout = function(){
                 console.log('Logging out...');
@@ -240,8 +353,6 @@ angular.module('starter')
         // when user is logging out
         function clearTokensFromLocalStorage() {
             //Set out local storage flag for welcome screen variables
-            localStorageService.setItem('isLoggedIn', false);
-
             localStorageService.setItem('primaryOutcomeVariableReportedWelcomeScreen', true);
             localStorageService.deleteItem('accessToken');
             localStorageService.deleteItem('refreshToken');
@@ -261,7 +372,7 @@ angular.module('starter')
 	        for (var i = 0; i < array.length; i++) {
 	            var line = '';
 	            for (var index in array[i]) {
-	                if (line != '') {
+	                if (line !== '') {
 						line += ',';
 					}
 	                line += array[i][index];
@@ -270,14 +381,17 @@ angular.module('starter')
 	        }
 	        return str;
 	    };
-		
 
 		// When Export is tapped
-		$scope.exportCsv = function(){
+		$scope.exportCsv = function() {
+			$ionicPopup.alert({
+				title: 'Export Request Sent!',
+				template: 'Your data will be emailed to you.  Enjoy your life! So do we!'
+			});
 
 			QuantiModo.postMeasurementsCsvExport(function(response){
 				if(response.success) {
-					alert("Your measurements will be emailed to you.");
+
 				} else {
 					alert("Could not export measurements.");
 					console.log("error", response);
@@ -289,11 +403,15 @@ angular.module('starter')
 		};
 
 		// When Export is tapped
-		$scope.exportPdf = function(){
+		$scope.exportPdf = function() {
+			$ionicPopup.alert({
+				title: 'Export Request Sent!',
+				template: 'Your data will be emailed to you.  Enjoy your life! So do we!'
+			});
 
 			QuantiModo.postMeasurementsPdfExport(function(response){
 				if(response.success) {
-					alert("Your measurements will be emailed to you.");
+
 				} else {
 					alert("Could not export measurements.");
 					console.log("error", response);
@@ -306,10 +424,15 @@ angular.module('starter')
 
 		// When Export is tapped
 		$scope.exportXls = function(){
-
+			$ionicPopup.alert({
+				title: 'Export Request Sent!',
+				template: 'Your data will be emailed to you.  Enjoy your life! So do we!'
+			});
+			
 			QuantiModo.postMeasurementsXlsExport(function(response){
 				if(response.success) {
-					alert("Your measurements will be emailed to you.");
+
+
 				} else {
 					alert("Could not export measurements.");
 					console.log("error", response);
@@ -319,32 +442,12 @@ angular.module('starter')
 				console.log("error", response);
 			});
 		};
-/*
 
-	    // When Export is tapped
-	    $scope.export = function(){
-
-	    	localStorageService.getItem('allMeasurements', function(allMeasurements){
-		    	// get all data 
-		        var arr = allMeasurements? JSON.parse(allMeasurements) : [];
-		        
-		        // convert JSon to CSV
-		        var csv = convertToCSV(arr);
-
-		        // write it on storage
-		        $cordovaFile.writeFile(cordova.file.dataDirectory, "csv.csv", csv, true)
-				.then(function (success) {
-
-		         	// when done, open the file opener / chooser
-					$cordovaFileOpener2.open(cordova.file.dataDirectory+'csv.csv','application/csv');
-
-		        }, function (error) {
-					Bugsnag.notify(error, JSON.stringify(error), {}, "error");
-					utilsService.showAlert('Please generate CSV later!');
-				});
-	    	});
-	    };
-*/
+		// when view is changed
+		$scope.$on('$ionicView.enter', function(e) {
+			$scope.hideLoader();
+			$scope.state.trackLocation = $rootScope.trackLocation;
+		});
 
 	    // call constructor
 	    $scope.init();

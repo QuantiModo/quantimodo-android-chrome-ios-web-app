@@ -37,7 +37,7 @@ config.appSettings  = {
     features: [
         ' - Automatically backup and sync your data across devices',
         ' - Track diet, treatments, symptoms, and anything else',
-        ' - Analyze your data to see the top predictors for your Mood'
+        ' - Analyze your data to see the strongest predictors of your mood'
     ],
 
     primaryOutcomeVariableDetails : {
@@ -116,7 +116,7 @@ config.appSettings  = {
                 showFirstBr : true,   
                 finalP: {
                     visible : true,
-                    content : 'Go to the <span class="positive">Track Mood</span> page to report your Mood!',
+                    content : 'Go to the <span class="positive">Track Mood</span> page to report your mood!',
                     classes : 'intro-paragraph',
                     buttonBarVisible : true
                 } 
@@ -195,7 +195,7 @@ config.appSettings  = {
                 },
                 finalP: {
                     visible : true,
-                    content : 'Add a note by tapping on a mood rating in the <span class="positive">History</span> page. You can also <span class="positive">Edit</span> your Mood there too.',
+                    content : 'Add a note by tapping on a mood rating in the <span class="positive">History</span> page. You can also <span class="positive">Edit</span> your mood there too.',
                     classes : 'intro-paragraph',
                     buttonBarVisible : true
                 }
@@ -346,7 +346,7 @@ config.appSettings  = {
 
                 firstP : {
                     visible : true,
-                    content : 'We are feeling ecstatic that you\'re helping us derive a mathematical equation for happiness!',
+                    content : 'Thank you for helping us derive a mathematical equation for happiness!',
                     classes : 'intro-paragraph positive'
                 }, 
                 
@@ -458,7 +458,7 @@ config.appSettings  = {
             title : 'Manage',
             isSubMenuChild : true,
             showSubMenuVariable : 'showReminderSubMenu',
-            href : '#/app/reminders-manage',
+            href : '#/app/reminders-manage/Anything',
             icon : 'ion-ios-gear-outline'
         },
         {
@@ -508,7 +508,7 @@ config.appSettings  = {
             title : 'All Measurements',
             isSubMenuChild : true,
             showSubMenuVariable : 'showHistorySubMenu',
-            href : '#/app/history-all',
+            href : '#/app/history-all/Anything',
             icon : 'ion-ios-paper-outline'
         },
         {
@@ -517,9 +517,9 @@ config.appSettings  = {
             icon : 'ion-ios-cloud-download-outline'
         },
         {
-            title : 'Variables',
+            title : 'Charts',
             href : '#app/search-variables',
-            icon : 'ion-social-vimeo'
+            icon : 'ion-arrow-graph-up-right'
         },
         {
             title : 'Predictor Search',

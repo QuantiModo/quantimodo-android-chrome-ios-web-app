@@ -14,6 +14,7 @@ var path = require('path');
 var rootdir = process.argv[2];
 
 function addPlatformBodyTag(indexPath, platform) {
+  console.log('MAKE SURE YOUR PRIVATE CONFIG FILE IS IN www/private_configs!');
   // add the platform class to the body tag
   try {
     var platformClass = 'platform-' + platform;
@@ -76,7 +77,7 @@ if (rootdir) {
       var platform = platforms[x].trim().toLowerCase();
       var indexPath;
 
-      if(platform == 'android') {
+      if(platform === 'android') {
         indexPath = path.join('platforms', platform, 'assets', 'www', 'index.html');
       } else {
         indexPath = path.join('platforms', platform, 'www', 'index.html');

@@ -23,7 +23,7 @@
     "gulp-util": "^3.0.6",
     "gulp-zip": "^3.0.2",
     "inquirer": "^0.9.0",
-    "ionic":  "1.7.16",
+    "ionic": "1.7.16",
     "ng-material-floating-button": "^0.6.2",
     "plist": "^1.2.0",
     "q": "^1.4.1",
@@ -37,7 +37,7 @@
     "postinstall": "bower install && gulp generatePrivateConfigFromEnvsForHeroku && ionic config build"
   },
   "cordovaPlugins": [
-    "https://github.com/katzer/cordova-plugin-local-notifications.git",
+    "https://github.com/katzer/cordova-plugin-local-notifications#a3f2be443b4d4539557611b5081453a7bfd1be46",
     "cordova-plugin-device",
     "cordova-plugin-console",
     "cordova-plugin-whitelist",
@@ -48,7 +48,8 @@
     "cordova-plugin-datepicker",
     "cordova-plugin-file-opener2",
     "cordova-plugin-ios-non-exempt-encryption",
-    "cordova-plugin-email-composer"
+    "cordova-plugin-email-composer",
+    "cordova-plugin-geolocation"
   ],
   "cordovaPlatforms": [
     "android"

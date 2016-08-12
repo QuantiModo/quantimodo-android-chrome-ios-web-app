@@ -13,7 +13,7 @@ var platforms = process.env.CORDOVA_PLATFORMS;
 var rootdir = process.argv[2];
 console.log('hook: root directory is ' + rootdir);
 
-if (platforms == "ios") {
+if (platforms === "ios") {
   var xcconfigFinal = path.resolve(__dirname, '../../platforms/ios/cordova/build-release.xcconfig');
   var xcconfigTemplate = path.resolve(__dirname, '../../scripts/xcconfig/build-release.xcconfig.template');
 
@@ -26,11 +26,11 @@ if (platforms == "ios") {
       .replace(DEVELOPER_NAME_REGEX_GLOBAL, DEVELOPER_NAME_ENV_VAR);
 
     fs.writeFile(xcconfigFinal, result, 'utf8', function (err) {
-      if (err) return console.log('No directory Found for cordova iOS! Skipping xcconfig creation. ',err);
-      console.log('Cordova iOS build-release.xcconfig updated with profile and developer values.')
+      if (err) return console.log('No directory Found for cordova iOS! Skipping xcconfig creation. ', err);
+      console.log('Cordova iOS build-release.xcconfig updated with profile and developer values.');
     });
   });
-} else if (platforms == "android") {
+} else if (platforms === "android") {
 	console.log("update-release-xcconfig hook is for iOS only");
 } else {
   console.log("update-release-xcconfig hook is for iOS only");

@@ -27,6 +27,7 @@ window.config = {
 
 config.appSettings  = {
     appName : 'MedTLC',
+    linkToChromeExtension : "https://chrome.google.com/webstore/detail/quantimodo-life-tracking/nojnjdgmjaejpnpehgioddbimopnblga",
     allowOffline : false,
 
     primaryOutcomeVariable : 'Mood',
@@ -53,6 +54,7 @@ config.appSettings  = {
     primaryOutcomeVariableDetails : {
         id : 1398,
         name : "Overall Mood",
+        variableName: "Overall Mood",
         category : "Mood",
         abbreviatedUnitName : "/5",
         unitId : 10,
@@ -226,17 +228,8 @@ config.appSettings  = {
     ],
 
     helpPopupMessages : {
-        "#/app/reminders-inbox/Treatments": 'Be sure to add your "How I feel" responses throughout the day so you can monitor the effects of your medications and dosages.',
-        "#/app/reminders-inbox/Symptoms": 'If you\'ve already added some side effect or response tracking reminders, here\'s where your medication notifications should appear when it\'s time to take them.  Once you have some notifications, you can use those to record how you feel.',
-        "#/app/reminders-manage/Treatments": 'Here, you can set up or delete existing medications.',
-        "#/app/reminders-manage/Symptoms": 'Here, you can set up or delete existing side effect tracking or response tracking reminders.',
-        "#/app/reminders-manage": 'Here, you can create, modify or delete existing medications.',
-        "#/app/reminders-inbox": 'Be sure to add your "How I feel" responses throughout the day so you can monitor the effects of your medications and dosages.',
-        "#/app/history": 'You can see and edit your past data and add notes by tapping on any item in the list.',
-        "#/app/track_factors_category/Foods": 'Record your diet on this page. <span class="positive">Add a new Food Variable</span> if you do not find the meal you looked for in the search results.',
-        "#/app/track_factors_category/Symptoms": 'You can immediately record any response or side effect on this page.',
-        "#/app/track_factors_category/Treatments": 'You can immediately record any as-need treatment on this page. You can also <span class="positive">Add a new Treatment</span> if you don\'t find the treatment you looked for in the search results.',
-    },
+        "#/app/example": 'If you\'ve already added some side effect or response tracking reminders, here\'s where your medication notifications should appear when it\'s time to take them.  Once you have some notifications, you can use those to record how you feel.',
+       },
     
     wordAliases : {
         "Treatments" : "Medications",
@@ -295,6 +288,11 @@ config.appSettings  = {
             icon : 'ion-archive'
         },
         {
+            title : 'As Needed',
+            href : '#/app/favorites',
+            icon : 'ion-ios-star'
+        },
+        {
             title : 'Medications',
             click : 'togglePrimaryOutcomeSubMenu',
             showSubMenuVariable : 'showPrimaryOutcomeSubMenu',
@@ -342,7 +340,7 @@ config.appSettings  = {
             title : 'All Reminders',
             isSubMenuChild : true,
             showSubMenuVariable : 'showReminderSubMenu',
-            href : '#/app/reminders-manage',
+            href : '#/app/reminders-manage/Anything',
             icon : 'ion-android-globe'
         },
         {
@@ -456,7 +454,7 @@ config.appSettings  = {
             title : 'All Measurements',
             isSubMenuChild : true,
             showSubMenuVariable : 'showHistorySubMenu',
-            href : '#/app/history-all',
+            href : '#/app/history-all/Anything',
             icon : 'ion-android-globe'
         },
         {
@@ -500,6 +498,13 @@ config.appSettings  = {
             showSubMenuVariable : 'showHistorySubMenu',
             href : '#/app/history-all/Vital Signs',
             icon : 'ion-ios-pulse'
+        },
+        {
+            title : 'Locations',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showHistorySubMenu',
+            href : '#/app/history-all/Location',
+            icon : 'ion-ios-location-outline'
         },
         // {
         //     title : 'Import Data',
@@ -583,7 +588,7 @@ config.appSettings  = {
             title : 'All Measurements',
             isSubMenuChild : true,
             showSubMenuVariable : 'showHistorySubMenu',
-            href : '#/app/history-all',
+            href : '#/app/history-all/Anything',
             icon : 'ion-android-globe'
         },
         {
@@ -652,7 +657,7 @@ config.appSettings  = {
             title : 'Manage',
             isSubMenuChild : true,
             showSubMenuVariable : 'showReminderSubMenu',
-            href : '#/app/reminders-manage',
+            href : '#/app/reminders-manage/Anything',
             icon : 'ion-ios-gear-outline'
         },
         {

@@ -1,217 +1,501 @@
 <ion-view hide-nav-bar="hideNavigationMenu" view-title="{{state.title}}">
+	<ion-content>
+		<!--<ion-content scroll="true" overflow-scroll="true">-->
+		<ion-refresher on-refresh="init()"></ion-refresher>
 
-	<ion-content scroll="true" overflow-scroll="true">
 
+		<div class="list card"  ng-hide="hideAddTreatmentRemindersCard">
+			<div class="item" style="padding-bottom:0px;">
+				<p style=" text-align: center; line-height: normal; font-size: 25px;">Treatment Tracking</p>
 
-
-			<div class="list card"  ng-hide="hideAddTreatmentRemindersCard">
-				<div class="item" style="padding-bottom:0px;">
-					<p style=" text-align: center; line-height: normal; font-size: 25px;">Treatment Tracking</p>
-
-					<div class="row">
-						<div class="col" style="padding-top: 0px;">
-							<i style="text-align: center; font-size: 60px;" class="icon positive ion-ios-medkit-outline"></i>
-						</div>
-						<div class="col col-75">
-							<h2 style="white-space: normal; text-align: left; line-height: normal; ">Get reminded to take and record treatments to identify how they might be affecting you.</h2>
-						</div>
+				<div class="row">
+					<div class="col" style="padding-top: 0px;">
+						<i style="text-align: center; font-size: 60px;" class="icon positive ion-ios-medkit-outline"></i>
 					</div>
-					<div class="row" >
-						<div class="button-bar">
-							<button class="button button-clear button-balanced" style="font-size: 14px;" ng-click="goToReminderSearchCategory('Treatments')"><i class="ion-plus-round"> &nbsp; Add treatment reminder &nbsp;</i></button>
-						</div>
-					</div>
-					<div class="row" >
-						<div class="button-bar">
-							<button class="button button-clear button-assertive" style="font-size: 14px;" ng-click="setLocalStorageFlagTrue('hideAddTreatmentRemindersCard')"><i class="ion-close-circled"> &nbsp;Done adding treatments</i></button>
-						</div>
-					</div>
-
-				</div>
-			</div>
-
-			<div class="list card"  ng-hide="hideAddSymptomRemindersCard">
-				<div class="item" >
-					<p style=" text-align: center; line-height: normal; font-size: 25px;">Symptom Ratings</p>
-
-					<div class="row">
-						<div class="col" style="padding-top: 0px;">
-							<i style="font-size: 60px;" class="icon positive ion-sad-outline"></i>
-						</div>
-						<div class="col col-75">
-							<h2 style="white-space: normal; text-align: left; line-height: normal; ">Rate symptoms regularly in order to determine which factors are influencing them. </h2>
-						</div>
-					</div>
-					<div class="row" >
-						<div class="button-bar">
-							<button class="button button-clear button-balanced" style="font-size: 14px;" ng-click="goToReminderSearchCategory('Symptoms')"><i class="ion-plus-round"> &nbsp; Add symptom reminder &nbsp;</i></button>
-						</div>
-					</div>
-					<div class="row"  >
-						<div class="button-bar">
-							<button class="button button-clear button-assertive" style="font-size: 14px;" ng-click="setLocalStorageFlagTrue('hideAddSymptomRemindersCard')"><i class="ion-close-circled"> &nbsp; Done adding symptoms</i></button>
-						</div>
-					</div>
-
-				</div>
-			</div>
-
-			<div class="list card"  ng-hide="hideAddEmotionRemindersCard">
-				<div class="item" style="padding-bottom:0px;">
-					<p style=" text-align: center; line-height: normal; font-size: 25px;">Varying Emotions?</p>
-					<div class="row">
-						<div class="col" style="padding-top: 0px;">
-							<i style="font-size: 60px;" class="icon positive ion-happy-outline"></i>
-						</div>
-						<div class="col col-75">
-							<h2 style="white-space: normal; text-align: left; line-height: normal; ">It's important to rate variable emotions regularly in order to determine which factors are influencing them. </h2>
-						</div>
-					</div>
-					<div class="row" >
-						<div class="button-bar">
-							<button class="button button-clear button-balanced" style="font-size: 14px;" ng-click="goToReminderSearchCategory('Emotions')"><i class="ion-plus-round"> &nbsp; Add an emotion reminder&nbsp;</i></button>
-						</div>
-					</div>
-					<div class="row"  >
-						<div class="button-bar">
-							<button class="button button-clear button-assertive" style="font-size: 14px;" ng-click="setLocalStorageFlagTrue('hideAddEmotionRemindersCard')"><i class="ion-close-circled"> &nbsp; Done adding emotions</i></button>
-						</div>
-					</div>
-
-				</div>
-			</div>
-
-			<div class="list card"  ng-hide="hideAddFoodRemindersCard">
-				<div class="item" style="padding-bottom:0px;">
-					<p style=" text-align: center; line-height: normal; font-size: 25px;">Track Diet</p>
-					<div class="row">
-						<div class="col" style="padding-top: 0px;">
-							<i style="font-size: 60px;" class="icon positive ion-ios-nutrition-outline"></i>
-						</div>
-						<div class="col col-75">
-							<h2 style="white-space: normal; text-align: left; line-height: normal; ">Diet can have a significant impact on your health.  It's important to enter any foods that you regularly eat to see how they might be affecting you. </h2>
-						</div>
-					</div>
-					<div class="row" >
-						<div class="button-bar">
-							<button class="button button-clear button-balanced" style="font-size: 14px;" ng-click="goToReminderSearchCategory('Foods')"><i class="ion-plus-round"> &nbsp; Add a food reminder &nbsp;</i></button>
-						</div>
-					</div>
-					<div class="row"  >
-						<div class="button-bar">
-							<button class="button button-clear button-assertive" style="font-size: 14px;" ng-click="setLocalStorageFlagTrue('hideAddFoodRemindersCard')"><i class="ion-close-circled"> &nbsp; Done adding common foods</i></button>
-						</div>
+					<div class="col col-75">
+						<h2 style="white-space: normal; text-align: justify; line-height: normal; ">
+							Get reminded to take and record treatments to identify how they might be affecting you.
+						</h2>
 					</div>
 				</div>
-			</div>
-
-			<div class="list card"  ng-hide="hideImportDataCard">
-				<div class="item" style="padding-bottom:0px;">
-					<p style=" text-align: center; line-height: normal; font-size: 25px;">Import Your Data</p>
-					<div class="row">
-						<div class="col" style="padding-top: 0px;">
-							<i style="font-size: 60px;" class="icon positive ion-ios-cloud-download-outline"></i>
-						</div>
-						<div class="col col-75">
-							<h2 style="white-space: normal; text-align: left; line-height: normal; ">Start by scrolling down to the Weather connector and enter your zip code so we can see how the weather might be affecting you. </h2>
-						</div>
-					</div>
-					<div class="row" >
-						<div class="button-bar">
-							<button class="button button-clear button-balanced" style="font-size: 14px;" ng-click="goToState('app.import')"><i class="ion-plus-round"> &nbsp; Connect an app or device &nbsp;</i></button>
-						</div>
-					</div>
-					<div class="row"  >
-						<div class="button-bar">
-							<button class="button button-clear button-assertive" style="font-size: 14px;" ng-click="setLocalStorageFlagTrue('hideImportDataCard')"><i class="ion-close-circled"> &nbsp; Done connecting to sources</i></button>
-						</div>
+				<div class="row" >
+					<div class="button-bar">
+						<button class="button button-clear button-balanced" style="font-size: 14px;"
+								ng-click="goToReminderSearchCategory('Treatments')">
+							<i class="ion-plus-round"> &nbsp; Add treatment reminder &nbsp;</i>
+						</button>
 					</div>
 				</div>
-			</div>
-
-		<div class="list card" ng-if="state.filteredReminders.length">
-			<div ng-repeat="divider in state.filteredReminders" ng-init="dividerIndex = $index" id="{{divider.name}}Reminders">
-
-				<div class="item item-divider" style="">
-				  {{divider.name}}
-				</div>
-
-				
-				<div class="list card" ng-if="!reminder.hide" ng-repeat="reminder in divider.reminders" ng-init="reminderNotificationIndex = $index" >
-					<div class="item" style="padding-bottom:0px;">
-						<div class="row">
-							<div class="col" style="padding-top: 0px;">
-								<i style="font-size: 60px;" class="icon positive ion-ios-alarm-outline"></i>
-							</div>
-							<div class="col col-75">
-								<h2 ng-if="reminder.abbreviatedUnitName != '/5'" style="white-space: normal; line-height: normal; ">{{reminder.defaultValue}}&nbsp;{{reminder.unitName.toLowerCase()}} {{reminder.variableName}}</h2>
-								<h2 ng-if="reminder.abbreviatedUnitName == '/5'" style="white-space: normal; line-height: normal; ">Rate {{reminder.variableName}}</h2>
-								<p style="white-space: normal;">{{ reminder.trackingReminderNotificationTime | fromUtcToLocalDateAndTime}} </p>
-							</div>
-						</div>
-						<div class="button-bar">
-							<button class="button button-clear button-assertive" style="text-overflow: clip; font-size: 12px;" ng-click="skip(reminder, $event, dividerIndex, reminderNotificationIndex)"><i class="ion-android-cancel"> &nbsp; Skip</i></button>
-							<button class="button button-clear button-royal" style="text-overflow: clip; font-size: 12px;" ng-click="snooze(reminder, $event, dividerIndex, reminderNotificationIndex)"><i class="ion-android-notifications-off"> &nbsp; Snooze</i></button>
-							<button class="button button-clear button-calm" ng-click="editReminderSettings(reminder)" style="text-overflow: clip;  font-size: 12px;"><i class="ion-settings"> &nbsp; Settings</i></button>
-						</div>
-						<div class="row" ng-if="reminder.abbreviatedUnitName !== '/5' " >
-							<div class="button-bar">
-								<button ng-show="reminder.defaultValue" class="button button-clear button-assertive" style="text-overflow: clip; font-size: 14px;" ng-click="track(reminder, 0, $event, dividerIndex, reminderNotificationIndex)"><i class="ion-android-done"> &nbsp; Record 0</i></button>
-								<button class="button button-clear button-balanced" style="text-overflow: clip; font-size: 14px;" ng-click="track(reminder, null, $event, dividerIndex, reminderNotificationIndex)"><i class="ion-android-done"> &nbsp; Record {{reminder.defaultValue}}&nbsp</i></button>
-							</div>
-						</div>
-						<div class="row" ng-if="reminder.abbreviatedUnitName !== '/5' " >
-							<div class="button-bar">
-								<button class="button button-clear button-calm" style="text-overflow: clip; font-size: 14px;" ng-click="editMeasurement(reminder, dividerIndex, reminderNotificationIndex)"><i class="ion-edit"> &nbsp; Record Different Value/Time</i></button>
-							</div>
-						</div>
-						<div class="primary-outcome-variable-reporting"
-						 	ng-if="!reminder.description &&	reminder.abbreviatedUnitName === '/5'">
-							<div class="primary-outcome-variable-rating-buttons" >
-								<img ng-repeat="option in numericRatingOptions"
-									 ng-click="track(reminder, option.numericValue, $event, dividerIndex, reminderNotificationIndex)"
-									 ng-src="{{option.img}}">
-							</div>
-							<br>
-						</div>
-						<div class="primary-outcome-variable-reporting"
-							 ng-if="reminder.abbreviatedUnitName === '/5' &&
-						 	reminder.description.toLowerCase().indexOf('positive') > -1">
-							<div class="primary-outcome-variable-rating-buttons" >
-								<img ng-repeat="option in positiveRatingOptions"
-									 ng-click="track(reminder, option.numericValue, $event, dividerIndex, reminderNotificationIndex)"
-									 ng-src="{{option.img}}">
-								<br>
-							</div>
-							<br>
-						</div>
-						<div class="primary-outcome-variable-reporting"
-							 ng-if="reminder.abbreviatedUnitName === '/5' &&
-						 	reminder.description.toLowerCase().indexOf('negative') > -1">
-							<div class="primary-outcome-variable-rating-buttons" >
-								<img ng-repeat="option in negativeRatingOptions"
-									 ng-click="track(reminder, option.numericValue, $event, dividerIndex, reminderNotificationIndex)"
-									 ng-src="{{option.img}}">
-								<br>
-							</div>
-							<br>
-						</div>
+				<div class="row" >
+					<div class="button-bar">
+						<button id="hideAddTreatmentRemindersCardButton" class="button button-clear button-assertive"
+								style="font-size: 14px;"
+								ng-click="setLocalStorageFlagTrue('hideAddTreatmentRemindersCard')">
+							<i class="ion-close-circled"> &nbsp;Done adding treatments</i>
+						</button>
 					</div>
 				</div>
-			</div>
-			
-			<div ng-hide="state.hideLoadMoreButton" class="button-bar">
-				<a class="button button-clear button-calm" ng-click="init()" style="text-overflow: clip;"><i class="ion-refresh">  Refresh</i></a>
 			</div>
 		</div>
 
+		<div class="list card"  ng-hide="hideAddSymptomRemindersCard">
+			<div class="item" style="padding-bottom:0px;">
+				<p style=" text-align: center; line-height: normal; font-size: 25px;">Symptom Ratings</p>
+
+				<div class="row">
+					<div class="col" style="padding-top: 0px;">
+						<i style="font-size: 60px;" class="icon positive ion-sad-outline"></i>
+					</div>
+					<div class="col col-75">
+						<h2 style="white-space: normal; text-align: justify; line-height: normal; ">
+							Rate symptoms regularly in order to determine which factors are influencing them.
+						</h2>
+					</div>
+				</div>
+				<div class="row" >
+					<div class="button-bar">
+						<button class="button button-clear button-balanced" style="font-size: 14px;"
+								ng-click="goToReminderSearchCategory('Symptoms')">
+							<i class="ion-plus-round"> &nbsp; Add symptom reminder &nbsp;</i>
+						</button>
+					</div>
+				</div>
+				<div class="row"  >
+					<div class="button-bar">
+						<button id="hideAddSymptomRemindersCardButton" class="button button-clear button-assertive"
+								style="font-size: 14px;"
+								ng-click="setLocalStorageFlagTrue('hideAddSymptomRemindersCard')">
+							<i class="ion-close-circled"> &nbsp; Done adding symptoms</i>
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="list card"  ng-hide="hideAddEmotionRemindersCard">
+			<div class="item" style="padding-bottom:0px;">
+				<p style=" text-align: center; line-height: normal; font-size: 25px;">Varying Emotions?</p>
+				<div class="row">
+					<div class="col" style="padding-top: 0px;">
+						<i style="font-size: 60px;" class="icon positive ion-happy-outline"></i>
+					</div>
+					<div class="col col-75">
+						<h2 style="white-space: normal; text-align: justify; line-height: normal; ">
+							It's important to rate variable emotions regularly in order to determine which factors are
+							influencing them.
+						</h2>
+					</div>
+				</div>
+				<div class="row" >
+					<div class="button-bar">
+						<button class="button button-clear button-balanced" style="font-size: 14px;"
+								ng-click="goToReminderSearchCategory('Emotions')">
+							<i class="ion-plus-round"> &nbsp; Add an emotion reminder&nbsp;</i>
+						</button>
+					</div>
+				</div>
+				<div class="row"  >
+					<div class="button-bar">
+						<button id="hideAddEmotionRemindersCardButton" class="button button-clear button-assertive"
+								style="font-size: 14px;"
+								ng-click="setLocalStorageFlagTrue('hideAddEmotionRemindersCard')">
+							<i class="ion-close-circled"> &nbsp; Done adding emotions</i>
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="list card"  ng-hide="hideAddFoodRemindersCard">
+			<div class="item" style="padding-bottom:0px;">
+				<p style=" text-align: center; line-height: normal; font-size: 25px;">Track Diet</p>
+				<div class="row">
+					<div class="col" style="padding-top: 0px;">
+						<i style="font-size: 60px;" class="icon positive ion-ios-nutrition-outline"></i>
+					</div>
+					<div class="col col-75">
+						<h2 style="white-space: normal; text-align: justify; line-height: normal; ">
+							Diet can have a significant impact on your health.
+						</h2>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col">
+						<h2 style="white-space: normal; text-align: justify; line-height: normal; ">
+							It's important to enter any foods that you regularly eat to see how they might be affecting
+							you.
+						</h2>
+					</div>
+				</div>
+				<div class="row" >
+					<div class="button-bar">
+						<button class="button button-clear button-balanced" style="font-size: 14px;"
+								ng-click="goToReminderSearchCategory('Foods')">
+							<i class="ion-plus-round"> &nbsp; Add a food reminder &nbsp;</i>
+						</button>
+					</div>
+				</div>
+				<div class="row"  >
+					<div class="button-bar">
+						<button id="hideAddFoodRemindersCardButton" class="button button-clear button-assertive"
+								style="font-size: 14px;" ng-click="setLocalStorageFlagTrue('hideAddFoodRemindersCard')">
+							<i class="ion-close-circled"> &nbsp; Done adding common foods</i>
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+<!--		<div class="list card"  ng-hide="hideNotificationSettingsInfoCard">
+			<div class="item" style="padding-bottom:0px;">
+				<p style=" text-align: center; line-height: normal; font-size: 25px;">Notification Settings</p>
+
+				<div class="row">
+					<div class="col" style="padding-top: 0px;">
+						<i style="text-align: center; font-size: 60px;" class="icon positive ion-android-notifications-none"></i>
+					</div>
+					<div class="col col-75">
+						<h2 ng-show="showOnlyOneNotification" style="white-space: normal; text-align: justify; line-height: normal; ">
+							Currently, you will only get one general repeating <span class="positive">device notification</span> at a time.
+						</h2>
+						<h2 ng-hide="showOnlyOneNotification" style="white-space: normal; text-align: justify; line-height: normal; ">
+							Currently, you will get a separate <span class="positive">device notification</span> for each <span class="positive">tracking reminder</span> that you create.
+						</h2>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col">
+						<h2 ng-show="showOnlyOneNotification" style="white-space: normal; text-align: justify; line-height: normal; ">
+							However it is possible to instead get a separate <span class="positive">device notification</span> for each specific
+							<span class="positive">tracking reminder</span> that you create.
+							You can change this setting or update the <span class="positive">device notification</span> frequency on the settings page.
+							Either way, all your <span class="positive">tracking reminder notifications</span> will be waiting
+							in the Reminder Inbox at the frequency specified when creating/editing the specific <span class="positive">tracking reminder</span>.
+						</h2>
+						<h2 ng-hide="showOnlyOneNotification" style="white-space: normal; text-align: justify; line-height: normal; ">
+							If you would prefer to only get one general repeating <span class="positive">device notification</span> at a time,
+							you can change this setting and set the <span class="positive">device notification</span> frequency on the settings page.
+							Either way, all your <span class="positive">tracking reminder notifications</span> will be
+							in the Reminder Inbox at the frequency specified when creating/editing the specific <span class="positive">tracking reminder</span>.
+						</h2>
+					</div>
+				</div>
+				<div class="row" >
+					<div class="button-bar">
+						<button class="button button-clear button-balanced" style="font-size: 14px;" ng-click="goToState('app.settings')">
+							<i class="ion-gear-a"> &nbsp; Go to settings &nbsp;</i>
+						</button>
+					</div>
+				</div>
+				<div class="row" >
+					<div class="button-bar">
+						<button id="hideNotificationSettingsInfoCardButton" class="button button-clear button-assertive"
+								style="font-size: 14px;" ng-click="setLocalStorageFlagTrue('hideNotificationSettingsInfoCard')">
+							<i class="ion-close-circled"> &nbsp;That's fine</i>
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>-->
+
+        <div class="list card"  ng-hide="hideRecordMeasurementInfoCard">
+            <div class="item" style="padding-bottom:0px;">
+                <p style=" text-align: center; line-height: normal; font-size: 25px;">Record Measurements</p>
+                <div class="row">
+                    <div class="col" style="padding-top: 0px;">
+                        <i style="font-size: 60px;" class="icon positive ion-edit"></i>
+                    </div>
+                    <div class="col col-75">
+                        <h2 style="white-space: normal; text-align: justify; line-height: normal; ">
+							Want to just record a medication, food or symptom immediately instead of creating a reminder?
+						</h2>
+                    </div>
+                </div>
+				<div class="row">
+					<div class="col">
+						<h2 style="white-space: normal; text-align: justify; line-height: normal; ">
+							Just go to the "Record Measurement" menu item and select the appropriate variable category.
+							Alternatively, you can just press the little red button at the bottom of the screen.
+						</h2>
+					</div>
+				</div>
+                <div class="row" >
+                    <div class="button-bar">
+                        <button id="hideRecordMeasurementInfoCardButton" class="button button-clear button-balanced"
+								style="font-size: 14px;" ng-click="setLocalStorageFlagTrue('hideRecordMeasurementInfoCard')">
+							<i class="ion-checkmark"> &nbsp; Got it!</i>
+						</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+		<div class="list card"  ng-if="!hideLocationTrackingInfoCard && !trackLocation">
+			<div class="item" style="padding-bottom:0px;">
+				<p style=" text-align: center; line-height: normal; font-size: 25px;">Location Tracking</p>
+				<div class="row">
+					<div class="col" style="padding-top: 0px;">
+						<i style="font-size: 60px;" class="icon positive ion-ios-location"></i>
+					</div>
+					<div class="col col-75">
+						<h2 style="white-space: normal; text-align: justify; line-height: normal; ">
+							To determine how the amount of time spent at work, restaurants, the gym, or doctor's
+							offices might be influencing you, you can enable automatic location tracking in the
+							Settings page.
+						</h2>
+					</div>
+				</div>
+				<div class="row" >
+					<div class="button-bar">
+						<button class="button button-clear button-balanced" style="font-size: 14px;"
+								ng-click="goToState('app.settings')">
+							<i class="ion-gear-a"> &nbsp; Go to settings &nbsp;</i>
+						</button>
+					</div>
+				</div>
+				<div class="row" >
+					<div class="button-bar">
+						<button id="hideLocationTrackingInfoCardButton" class="button button-clear button-assertive"
+								style="font-size: 14px;" ng-click="setLocalStorageFlagTrue('hideLocationTrackingInfoCard')">
+							<i class="ion-close-circled"> &nbsp;Dismiss</i>
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="list card"  ng-if="isMobile && !hideChromeExtensionInfoCard">
+			<div class="item" style="padding-bottom:0px;">
+				<p style=" text-align: center; line-height: normal; font-size: 25px;">Track on the Computer</p>
+				<div class="row">
+					<div class="col" style="padding-top: 0px;">
+						<i style="font-size: 60px;" class="icon positive ion-social-chrome"></i>
+					</div>
+					<div class="col col-75">
+						<h2 style="white-space: normal; text-align: justify; line-height: normal; ">
+							Did you know that you can easily track everything on your laptop and desktop with our
+							Google Chrome browser extension?
+						</h2>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col">
+						<h2 style="white-space: normal; text-align: justify; line-height: normal; ">
+							Your data is synced between devices so you'll never have to track twice!
+						</h2>
+					</div>
+				</div>
+				<div class="row" >
+					<div class="button-bar">
+						<button class="button button-clear button-balanced" style="font-size: 14px;"
+								ng-click="sendChromeEmailLink()">
+							<i class="ion-email"> &nbsp; Send Yourself a Link &nbsp;</i>
+						</button>
+					</div>
+				</div>
+				<div class="row" >
+					<div class="button-bar">
+						<button id="hideChromeExtensionInfoCardButton" class="button button-clear button-assertive"
+								style="font-size: 14px;" ng-click="setLocalStorageFlagTrue('hideChromeExtensionInfoCard')">
+							<i class="ion-close-circled"> &nbsp; Dismiss</i>
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+
+		<div class="list card"  ng-hide="hideImportDataCard">
+			<div class="item" style="padding-bottom:0px;">
+				<p style=" text-align: center; line-height: normal; font-size: 25px;">Import Your Data</p>
+				<div class="row">
+					<div class="col" style="padding-top: 0px;">
+						<i style="font-size: 60px;" class="icon positive ion-ios-cloud-download-outline"></i>
+					</div>
+					<div class="col col-75">
+						<h2 style="white-space: normal; text-align: justify; line-height: normal; ">
+							Start by scrolling down to the Weather connector and enter your zip code so we can see how
+							the weather might be affecting you.
+						</h2>
+					</div>
+				</div>
+				<div class="row" >
+					<div class="button-bar">
+						<button class="button button-clear button-balanced" style="font-size: 14px;"
+								ng-click="goToState('app.import')">
+							<i class="ion-plus-round"> &nbsp; Connect an app or device &nbsp;</i>
+						</button>
+					</div>
+				</div>
+				<div class="row"  >
+					<div class="button-bar">
+						<button id="hideImportDataCardButton" class="button button-clear button-assertive"
+								style="font-size: 14px;" ng-click="setLocalStorageFlagTrue('hideImportDataCard')">
+							<i class="ion-close-circled"> &nbsp; Done connecting data sources</i>
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div  class="list card" ng-if="filteredTrackingReminderNotifications.length">
+			<div ng-repeat="divider in filteredTrackingReminderNotifications" ng-init="dividerIndex = $index"
+				 id="{{divider.name}}Reminders">
+
+				<div class="item item-divider" style="">
+					{{divider.name}}
+				</div>
+
+				<div on-hold="showActionSheetForNotification(trackingReminderNotification, $event)" class="list card"
+					 ng-if="!trackingReminderNotification.hide"
+					 ng-repeat="trackingReminderNotification in divider.trackingReminderNotifications"
+					 ng-init="trackingReminderNotificationIndex = $index" >
+					<div class="item" style="padding-bottom:0px;">
+						<div ng-click="showActionSheetForNotification(trackingReminderNotification, $event)" class="row">
+							<div class="col col-20" style="padding-top: 0px;">
+								<i style="font-size: 40px;" class="icon positive {{trackingReminderNotification.icon}}"></i>
+							</div>
+							<div ng-click="showActionSheetForNotification(trackingReminderNotification, $event)" class="col col-70">
+								<h2 ng-if="trackingReminderNotification.abbreviatedUnitName != '/5'"
+									style="white-space: normal;
+									line-height: normal; ">
+									{{trackingReminderNotification.defaultValue}}&nbsp;{{trackingReminderNotification.unitName.toLowerCase()}} {{trackingReminderNotification.variableName}}
+								</h2>
+								<h2 ng-if="trackingReminderNotification.abbreviatedUnitName == '/5'"
+									style="white-space: normal;
+									line-height: normal; ">Rate {{trackingReminderNotification.variableName}}
+								</h2>
+								<p style="white-space: normal;">
+									{{ trackingReminderNotification.trackingReminderNotificationTime | fromUtcToLocalDateAndTime}}
+								</p>
+							</div>
+							<div ng-click="showActionSheet(trackingReminderNotification, event)" class="col col-10">
+								<i style="font-size: 20px;" class="icon positive ion-more"></i>
+							</div>
+						</div>
+						<div class="button-bar">
+							<button class="button button-clear button-assertive"
+									style="text-overflow: clip; font-size: 12px;"
+									ng-click="skip(trackingReminderNotification, $event, dividerIndex, trackingReminderNotificationIndex)">
+								<i class="ion-android-cancel"> &nbsp; Skip</i>
+							</button>
+							<button class="button button-clear button-royal"
+									style="text-overflow: clip; font-size: 12px;"
+									ng-click="snooze(trackingReminderNotification, $event, dividerIndex, trackingReminderNotificationIndex)">
+								<i class="ion-android-notifications-off"> &nbsp; Snooze</i>
+							</button>
+							<button class="button button-clear button-calm"
+									ng-click="editReminderSettingsByNotification(trackingReminderNotification)"
+									style="text-overflow: clip;  font-size: 12px;">
+								<i class="ion-settings"> &nbsp; Settings</i>
+							</button>
+						</div>
+						<div class="row" ng-if="trackingReminderNotification.abbreviatedUnitName !== '/5' " >
+							<div class="button-bar">
+								<button ng-show="trackingReminderNotification.defaultValue"
+										class="button button-clear button-assertive"
+										style="text-overflow: clip; font-size: 14px;"
+										ng-click="track(trackingReminderNotification, 0, $event, dividerIndex, trackingReminderNotificationIndex)">
+									<i class="ion-android-done"> &nbsp; Record 0</i>
+								</button>
+								<button class="button button-clear button-balanced"
+										style="text-overflow: clip; font-size: 14px;"
+										ng-click="track(trackingReminderNotification, null, $event, dividerIndex, trackingReminderNotificationIndex)">
+									<i class="ion-android-done"> &nbsp; Record {{trackingReminderNotification.defaultValue}}&nbsp</i>
+								</button>
+							</div>
+						</div>
+						<div class="row" ng-if="trackingReminderNotification.abbreviatedUnitName !== '/5' " >
+							<div class="button-bar">
+								<button class="button button-clear button-calm"
+										style="text-overflow: clip; font-size: 14px;"
+										ng-click="editMeasurement(trackingReminderNotification, dividerIndex, trackingReminderNotificationIndex)">
+									<i class="ion-edit"> &nbsp; Record Different Value/Time</i>
+								</button>
+							</div>
+						</div>
+						<div class="primary-outcome-variable-reporting"
+							 ng-if="!trackingReminderNotification.description &&	trackingReminderNotification.abbreviatedUnitName === '/5'">
+							<div class="primary-outcome-variable-rating-buttons" >
+								<img ng-repeat="option in numericRatingOptions"
+									 ng-click="track(trackingReminderNotification, option.numericValue, $event, dividerIndex, trackingReminderNotificationIndex)"
+									 ng-src="{{option.img}}">
+							</div>
+							<br>
+						</div>
+						<div class="primary-outcome-variable-reporting"
+							 ng-if="trackingReminderNotification.abbreviatedUnitName === '/5' &&
+						 	trackingReminderNotification.description.toLowerCase().indexOf('positive') > -1">
+							<div class="primary-outcome-variable-rating-buttons" >
+								<img ng-repeat="option in positiveRatingOptions"
+									 ng-click="track(trackingReminderNotification, option.numericValue, $event, dividerIndex, trackingReminderNotificationIndex)"
+									 ng-src="{{option.img}}">
+								<br>
+							</div>
+							<br>
+						</div>
+						<div class="primary-outcome-variable-reporting"
+							 ng-if="trackingReminderNotification.abbreviatedUnitName === '/5' &&
+						 	trackingReminderNotification.description.toLowerCase().indexOf('negative') > -1">
+							<div class="primary-outcome-variable-rating-buttons" >
+								<img ng-repeat="option in negativeRatingOptions"
+									 ng-click="track(trackingReminderNotification, option.numericValue, $event, dividerIndex, trackingReminderNotificationIndex)"
+									 ng-src="{{option.img}}">
+								<br>
+							</div>
+							<br>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="list card"  ng-if="numberOfPendingNotifications === 0">
+			<div class="item" style="padding-bottom:0px;">
+				<p style=" text-align: center; line-height: normal; font-size: 25px;">All caught up!</p>
+
+				<div class="row">
+					<div class="col" style="padding-top: 0px;">
+						<i style="text-align: center; font-size: 60px;" class="icon positive ion-android-sunny"></i>
+					</div>
+					<div class="col col-75">
+						<h2 style="white-space: normal; text-align: justify; line-height: normal; ">
+							Maybe you should refresh or add some more reminders?
+						</h2>
+					</div>
+				</div>
+				<div class="row" >
+					<div class="button-bar">
+						<button class="button button-clear button-balanced" style="font-size: 14px;"
+								ng-click="goToState('app.reminderSearch')">
+							<i class="ion-plus-round"> &nbsp; Add a reminder &nbsp;</i>
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div ng-if="!isSyncing && numberOfPendingNotifications !== null" class="button-bar">
+			<a class="button button-clear button-calm" ng-click="init()" style="text-overflow: clip;">
+				<i class="ion-refresh">  Refresh</i>
+			</a>
+		</div>
+
 	</ion-content>
-	<nav mfb-menu position="bl" effect="slidein-spring"
-		 active-icon="ion-minus-round" resting-icon="ion-plus-round"
-		 toggling-method="click" ng-hide="hideNavigationMenu || (hideNavigationMenu && !isWelcomed)">
-		<button mfb-button icon={{floatingMaterialButton.button1.icon}} label={{floatingMaterialButton.button1.label}} ng-click="goToState({{floatingMaterialButton.button1.stateAndParameters}})"></button>
-		<button mfb-button icon={{floatingMaterialButton.button2.icon}} label={{floatingMaterialButton.button2.label}} ng-click="goToState({{floatingMaterialButton.button2.stateAndParameters}})"></button>
-		<button mfb-button icon={{floatingMaterialButton.button3.icon}} label={{floatingMaterialButton.button3.label}} ng-click="goToState({{floatingMaterialButton.button3.stateAndParameters}})"></button>
-		<button mfb-button icon={{floatingMaterialButton.button4.icon}} label={{floatingMaterialButton.button4.label}} ng-click="goToState({{floatingMaterialButton.button4.stateAndParameters}})"></button>
+	<nav id="floatingMaterialButton"
+		 mfb-menu position="bl"
+		 effect="slidein-spring"
+		 active-icon="ion-minus-round"
+		 resting-icon="ion-plus-round"
+		 toggling-method="click"
+		 ng-hide="hideNavigationMenu || (hideNavigationMenu && !isWelcomed)">
+		<button mfb-button icon={{floatingMaterialButton.button1.icon}} label={{floatingMaterialButton.button1.label}}
+				ng-click="goToState({{floatingMaterialButton.button1.stateAndParameters}})"></button>
+		<button mfb-button icon={{floatingMaterialButton.button2.icon}} label={{floatingMaterialButton.button2.label}}
+				ng-click="goToState({{floatingMaterialButton.button2.stateAndParameters}})"></button>
+		<button mfb-button icon={{floatingMaterialButton.button3.icon}} label={{floatingMaterialButton.button3.label}}
+				ng-click="goToState({{floatingMaterialButton.button3.stateAndParameters}})"></button>
+		<button mfb-button icon={{floatingMaterialButton.button4.icon}} label={{floatingMaterialButton.button4.label}}
+				ng-click="goToState({{floatingMaterialButton.button4.stateAndParameters}})"></button>
 	</nav>
 </ion-view>

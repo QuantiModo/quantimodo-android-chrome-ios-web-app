@@ -1,9 +1,8 @@
 angular.module('starter')
 
     // Controls the Track Page of the App
-    .controller('TrackPrimaryOutcomeCtrl', function($scope, $ionicModal, $state, $timeout, utilsService, authService,
-                                                    measurementService, chartService, $ionicPopup, localStorageService,
-                                                    $rootScope, $ionicLoading, ratingService) {
+    .controller('TrackPrimaryOutcomeCtrl', function($scope, $timeout, $rootScope, $ionicLoading, measurementService, 
+                                                    chartService, localStorageService, ratingService) {
         $scope.controller_name = "TrackPrimaryOutcomeCtrl";
 
         //$scope.showCharts = false;
@@ -17,10 +16,17 @@ angular.module('starter')
         $scope.showRatingFaces = true;
 
         // chart flags
+        $scope.state = {
+            showBarChart : false,
+            showLineChart : false,
+            showWeekdayChart: false,
+            showHourlyChart : false
+        };
         $scope.lineChartConfig = false;
         $scope.barChartConfig = false;
-        $scope.redrawLineChart = true;
-        $scope.redrawBarChart = true;
+        $scope.weekdayChartConfig = false;
+        $scope.hourlyChartConfig = false;
+        $scope.syncDisplayText = 'Syncing ' + config.appSettings.primaryOutcomeVariableDetails.name + ' measurements...';
 
         $scope.storeRatingLocalAndServerAndUpdateCharts = function (numericRatingValue) {
 
@@ -39,7 +45,10 @@ angular.module('starter')
             measurementService.addToMeasurementsQueue(primaryOutcomeMeasurement);
 
             if(!$rootScope.isSyncing){
-                measurementService.syncPrimaryOutcomeVariableMeasurementsAndUpdateCharts();
+                $scope.showLoader($scope.syncDisplayText);
+                measurementService.syncPrimaryOutcomeVariableMeasurementsAndUpdateCharts().then(function() {
+                    $scope.hideLoader();
+                });
             }
            
         };
@@ -61,66 +70,28 @@ angular.module('starter')
         };
 
         var updateBarChart = function(barChartData){
-            $scope.redrawBarChart = false;
             console.log("Configuring bar chart...");
             $scope.barChartConfig = chartService.configureBarChart(barChartData);
-            $scope.redrawBarChart = true;
+            $scope.state.showBarChart = true;
         };
 
         var updateLineChart = function(lineChartData){
-            $scope.redrawLineChart = false;
             console.log("Configuring line chart...");
             $scope.lineChartConfig = chartService.configureLineChart(lineChartData);
-            $scope.redrawLineChart = true;
+            $scope.state.showLineChart = true;
         };
 
         var updateWeekdayChart = function(weekdayChartData){
-            $scope.redrawWeekdayChart = false;
-            $scope.weekdayChartConfig = chartService.configureWeekdayChart(weekdayChartData, config.appSettings.primaryOutcomeVariableDetails.name);
-            $scope.redrawWeekdayChart = true;
+            console.log("Configuring Weekday chart...");
+            $scope.weekdayChartConfig = chartService.configureWeekdayChart(weekdayChartData, config.appSettings.primaryOutcomeVariableDetails);
+            $scope.state.showWeekdayChart = true;
         };
 
         var updateHourlyChart = function(hourlyChartData){
-            $scope.redrawHourlyChart = false;
-            $scope.hourlyChartConfig = chartService.configureHourlyChart(hourlyChartData, config.appSettings.primaryOutcomeVariableDetails.name);
-            $scope.redrawHourlyChart = true;
+            console.log("Configuring Hourly chart...");
+            $scope.hourlyChartConfig = chartService.configureHourlyChart(hourlyChartData, config.appSettings.primaryOutcomeVariableDetails);
+            $scope.state.showHourlyChart = true;
         };
-
-        function calculateAverageValueByWeekday(weekdayMeasurementArrays) {
-            var sumByWeekday = [];
-            for (var k = 0; k < 7; k++) {
-                if (typeof weekdayMeasurementArrays[k] !== "undefined") {
-                    for (var j = 0; j < weekdayMeasurementArrays[k].length; j++) {
-                        if (typeof sumByWeekday[k] === "undefined") {
-                            sumByWeekday[k] = 0;
-                        }
-                        sumByWeekday[k] = sumByWeekday[k] + weekdayMeasurementArrays[k][j].value;
-                    }
-                    $scope.averageValueByWeekday[k] = sumByWeekday[k] / (weekdayMeasurementArrays[k].length);
-                } else {
-                    $scope.averageValueByWeekday[k] = null;
-                    console.debug("No data for day " + k);
-                }
-            }
-        }
-
-        function calculateAverageValueByHour(hourlyMeasurementArrays) {
-            var sumByHour = [];
-            for (var k = 0; k < 23; k++) {
-                if (typeof hourlyMeasurementArrays[k] !== "undefined") {
-                    for (var j = 0; j < hourlyMeasurementArrays[k].length; j++) {
-                        if (typeof sumByHour[k] === "undefined") {
-                            sumByHour[k] = 0;
-                        }
-                        sumByHour[k] = sumByHour[k] + hourlyMeasurementArrays[k][j].value;
-                    }
-                    $scope.averageValueByHour[k] = sumByHour[k] / (hourlyMeasurementArrays[k].length);
-                } else {
-                    $scope.averageValueByHour[k] = null;
-                    console.debug("No data for day " + k);
-                }
-            }
-        }
 
         var updateCharts = function(){
 
@@ -169,8 +140,8 @@ angular.module('starter')
                         }
                     }
 
-                    calculateAverageValueByWeekday(weekdayMeasurementArrays);
-                    calculateAverageValueByHour(hourlyMeasurementArrays);
+                    $scope.averageValueByWeekday = chartService.calculateAverageValueByWeekday(weekdayMeasurementArrays);
+                    $scope.averageValueByHour = chartService.calculateAverageValueByHour(hourlyMeasurementArrays);
 
                     var averagePrimaryOutcomeVariableValue = Math.round(sum/(rangeLength));
                     localStorageService.setItem('averagePrimaryOutcomeVariableValue',averagePrimaryOutcomeVariableValue);
@@ -201,33 +172,6 @@ angular.module('starter')
 
         };
 
-        // calculate values for both of the charts
-        // Deprecated -- moved to measurementService
-        /*
-        var syncPrimaryOutcomeVariableMeasurementsAndUpdateCharts = function(){
-
-            if($rootScope.user){
-                $rootScope.isSyncing = true;
-                console.log('Syncing primary outcome measurements...');
-
-                measurementService.syncPrimaryOutcomeVariableMeasurements().then(function(){
-                    //console.log("Measurement sync complete!");
-                    $rootScope.isSyncing = false;
-
-                    // update loader text
-                    $ionicLoading.hide();
-                    //$scope.showLoader('Calculating stuff', 2000);
-
-                    // now handled with broadcast
-                    //updateCharts();
-
-                });
-            }
-            else {
-                updateCharts();
-            }
-        };
-        */
 
         $scope.init = function(){
             $ionicLoading.hide();
@@ -248,10 +192,13 @@ angular.module('starter')
         });
 
         $scope.$on('$ionicView.enter', function(e) {
-            console.log('track state brought in focus. Updating charts and syncing..');
+            $scope.hideLoader();
+            console.log('Track state brought in focus. Updating charts and syncing..');
             $scope.showRatingFaces = true;
             $scope.timeRemaining = false;
-            measurementService.syncPrimaryOutcomeVariableMeasurementsAndUpdateCharts();
-
+            $scope.showLoader($scope.syncDisplayText);
+            measurementService.syncPrimaryOutcomeVariableMeasurementsAndUpdateCharts().then(function() {
+                $scope.hideLoader();
+            });
         });
     });

@@ -68,10 +68,18 @@ chrome.alarms.onAlarm.addListener(function(alarm)
 */
 chrome.notifications.onClicked.addListener(function(notificationId)
 {
-    var windowParams;
-
+    console.log('onClicked: notificationId:', notificationId);
 	var badgeParams = {text:""};
 	chrome.browserAction.setBadgeText(badgeParams);
+
+    var windowParams = {
+        url: "/www/index.html#/app/reminders-inbox",
+        type: 'panel',
+        top: 0.2 * screen.height,
+        left: 0.4 * screen.width,
+        width: 450,
+        height: 750
+    };
 
 	if(notificationId === "moodReportNotification")
 	{
@@ -82,23 +90,14 @@ chrome.notifications.onClicked.addListener(function(notificationId)
 							width: 371,
 							height: 70
 						   };
-		chrome.windows.create(windowParams);
-	}
-
-    if(notificationId === "trackingInboxNotification")
-    {
-        windowParams = {
-            url: "/www/index.html#/app/reminders-inbox",
-            type: 'panel',
-            top: 0.2 * screen.height,
-            left: 0.4 * screen.width,
-            width: 450,
-            height: 750
-        };
-        chrome.windows.create(windowParams);
+	} else if (IsJsonString(notificationId)) {
+		windowParams.url = "/www/index.html#/app/measurement-add/?trackingReminderObject=" + notificationId;
+	} else {
+        console.error('notificationId is not a json object and is not moodReportNotification. Opening Reminder Inbox', notificationId);
     }
-	chrome.notifications.clear(notificationId);
 
+    chrome.windows.create(windowParams);
+	chrome.notifications.clear(notificationId);
 
 	// chrome.notifications.getAll(function (notifications){
 	// 	console.log('Got all notifications ', notifications);
@@ -115,7 +114,7 @@ chrome.notifications.onClicked.addListener(function(notificationId)
 chrome.extension.onMessage.addListener(function(request, sender, sendResponse)
 {
 	console.log("Received request: " + request.message);
-	if(request.message == "uploadMeasurements")
+	if(request.message === "uploadMeasurements")
 	{
 		pushMeasurements(request.payload, null);
 	}
@@ -159,8 +158,9 @@ function objectLength(obj) {
     return result;
 }
 
-function checkForNotifications()
+function showGenericTrackingNotification(alarm)
 {
+
     var xhr = new XMLHttpRequest();
     xhr.open("GET", "https://app.quantimo.do:443/api/v1/trackingReminderNotifications", false);
     xhr.onreadystatechange = function()
@@ -170,7 +170,15 @@ function checkForNotifications()
             var notificationsObject = JSON.parse(xhr.responseText);
             var numberOfWaitingNotifications = objectLength(notificationsObject.data);
             if(numberOfWaitingNotifications > 0) {
-                showTrackingInboxNotification();
+				var notificationParams = {
+					type: "basic",
+					title: numberOfWaitingNotifications + " new tracking reminder notifications!",
+					message: "Click to open reminder inbox",
+					iconUrl: "www/img/icons/icon_700.png",
+					priority: 2
+				};
+				var notificationId = alarm.name;
+				chrome.notifications.create(notificationId, notificationParams, function(id){});
             }
         }
     };
@@ -178,25 +186,46 @@ function checkForNotifications()
     xhr.send();
 }
 
+function IsJsonString(str) {
+    try {
+        JSON.parse(str);
+    } catch (e) {
+        return false;
+    }
+    return true;
+}
+
 function showTrackingInboxNotification(alarm){
 
+	console.log('showTrackingInboxNotification alarm: ', alarm);
 
-    var notificationParams = {
-        type: "basic",
-        title: "How are you?",
-        message: "It's time to track!",
-        iconUrl: "www/img/icons/icon_700.png",
-        priority: 2
-    };
+	var notificationParams = {
+		type: "basic",
+		title: "How are you?",
+		message: "Click to open reminder inbox",
+		iconUrl: "www/img/icons/icon_700.png",
+		priority: 2
+	};
 
-	var trackingReminder = JSON.parse(alarm.name);
-	
-	if(trackingReminder.variableName){
+    var notificationId = "trackingInboxNotification";
+
+	if(alarm.name === "genericTrackingReminderNotificationAlarm"){
+		showGenericTrackingNotification(alarm);
+	} else if (IsJsonString(alarm.name)) {
+		console.log('alarm.name IsJsonString', alarm);
+		var trackingReminder = JSON.parse(alarm.name);
 		notificationParams.title = 'Time to track ' + trackingReminder.variableName + '!';
-		notificationParams.message = 'Click to open reminder inbox';
+		notificationParams.message = 'Click to add measurement';
+        notificationId = alarm.name;
+	} else {
+		console.log('alarm.name is not a json object', alarm);
 	}
 
-    chrome.notifications.create("trackingInboxNotification", notificationParams, function(id){});
+	console.log('notificationParams: ', notificationParams);
+
+
+
+    chrome.notifications.create(notificationId, notificationParams, function(id){});
 
     var showBadge = (localStorage["showBadge"] || "true") == "true" ? true : false;
 

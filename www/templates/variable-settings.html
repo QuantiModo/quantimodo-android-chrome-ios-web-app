@@ -1,68 +1,74 @@
 <ion-view hide-nav-bar="hideNavigationMenu" view-title="{{state.title}}">
     <ion-content>
-
-        <div class="card" >
+        <div ng-hide="state.loading" class="card variable-settings" >
             <div class="list">
-                <label class="item item-input item-stacked-label" >
-                    <span class="input-label">Variable Name</span>
-                    <input type="text" ng-model="state.variableName" readonly id="variableName" placeholder="Variable name">
-                </label>
-
-                <label class="item item-input item-stacked-label" ng-if="!state.showVariableCategorySelector">
-                    <span class="input-label">Variable Category</span>
-                    <input type="text" ng-model="state.variableObject.category" readonly id="category_name" placeholder="Category name">
-                </label>
-            </div>
-        </div>
-
-        <div class="card" style="overflow: visible">
-            <p class="heading positive" style="padding:14px;">Combination Method</p>
-                <div class="list">
-                    <label class="item item-radio">
-                        <input type="radio" ng-model="state.sumAvg" value="sum" name="group">
-                        <div class="item-content">
-                            Sum
+                <div class="item item-divider ng-binding">Properties</div>
+                    <!--FIXME Use this once variable aliasing is implemented-->
+                    <!--
+                        <div class="item item-input">
+                            <span class="input-label left-span">Variable Alias:</span>
+                            <span class="right-span"><input class="right-input" type="text" ng-model="state.userVariableAlias"></span>
                         </div>
-                        <i class="radio-icon ion-checkmark"></i>
+                    -->
+                    <label class="item item-content" style="padding: 6px 10px 5px 16px;">
+                        <span class="input-label left-text">Variable Name</span>
+                        <span class="input-label right-text " id="variableName">{{state.variableName}}</span>
                     </label>
-
-                    <label class="item item-radio">
-                        <input type="radio" ng-model="state.sumAvg" value="avg" name="group">
-                        <div class="item-content">
-                            Average
-                        </div>
-                        <i class="radio-icon ion-checkmark"></i>
+                    <label class="item item-content" style="padding: 6px 10px 5px 16px;"ng-if="!state.showVariableCategorySelector">
+                        <span class="input-label left-text">Variable Category</span>
+                        <span class="input-label right-text ">{{state.variableObject.category}}</span>
                     </label>
-                </div>
-            </div>
-
-        <div class="row labeled-control" ng-if="(state.variableCategoryName != 'Emotions' && state.variableCategoryName != 'Symptoms')">
-            <div class="col col-l">
-                <span class="input-label">Unit</span>
-            </div>
-            <div class="col">
-                <div class="row up-top" style="padding-left:0px;">
-                    <div class="col" style="padding-top:5px;">
-
-                        <!-- Lock to default unit when tracking measurement for existing variable-->
-                        <span>{{state.variableObject.abbreviatedUnitName}}</span>
-
+                    <label class="item item-content" style="padding: 6px 10px 5px 16px;" ng-if="(state.variableCategoryName != 'Emotions' && state.variableCategoryName != 'Symptoms')">
+                        <span class="input-label left-text">Unit</span>
+                        <span class="input-label right-text ">{{state.variableObject.abbreviatedUnitName}}</span>
+                    </label>
+                <div class="item item-divider ng-binding">Data Optimization</div>
+                    <!--
+                    <label class="item item-input item-select">
+                        <div class="input-label" style="white-space:normal; width: 60%">Combination method:</div>
+                        <select ng-model="state.sumAvg">
+                            <option value="sum" name="group">Sum</option>
+                            <option value="avg" name="group">Avg</option>
+                        </select>
+                    </label>
+                    -->
+                    <div ng-hide="state.hideMinMax" class="item item-input">
+                        <span class="input-label left-span" ng-click="showExplanationsPopup('Minimum value')">Minimum Value <i class="icon ion-help-circled"></i></span>
+                        <span class="right-span"><input class="right-input" ng-model="state.minimumAllowedValue" type="number" placeholder="-Infinity"></span>
                     </div>
+                    <div ng-hide="state.hideMinMax" class="item item-input">
+                        <span class="input-label left-span" ng-click="showExplanationsPopup('Maximum value')">Maximum Value <i class="icon ion-help-circled"></i></span>
+                        <span class="right-span"><input class="right-input" ng-model="state.maximumAllowedValue" type="number" placeholder="Infinity"></span>
+                    </div>
+                    <div class="item item-input">
+                        <span class="input-label left-span" ng-click="showExplanationsPopup('Onset delay')">Onset Delay (hours) <i class="icon ion-help-circled"></i></span>
+                        <span class="right-span" style="width:45%"><input class="right-input" ng-model="state.onsetDelay" type="number"></span>
+                    </div>
+                    <div class="item item-input">
+                        <span class="input-label left-span" ng-click="showExplanationsPopup('Duration of action')">Duration of Action (hours) <i class="icon ion-help-circled"></i></span>
+                        <span class="right-span" style="width: 34%"><input class="right-input" ng-model="state.durationOfAction" type="number"></span>
+                    </div>
+                    <div class="item item-input">
+                        <span class="input-label left-span" ng-click="showExplanationsPopup('Filling value')">Filling Value <i class="icon ion-help-circled"></i></span>
+                        <span class="right-span"><input class="right-input" ng-model="state.fillingValue" type="number" placeholder="None"></span>
+                    </div>
+            </div>
 
+            <div class="card" >
+                <div class="row">
+                    <div class="col">
+                        <button class="button button-block icon-left ion-android-cancel button-positive" ng-click="resetToDefaultSettings()">Reset to Default Settings</button>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col col-50">
+                        <button class="button button-block icon-left ion-android-cancel button-assertive" ng-click="cancel()">Cancel</button>
+                    </div>
+                    <div class="col col-50">
+                        <button class="button button-block icon-left ion-android-done button-positive" ng-click="save()">Save</button>
+                    </div>
                 </div>
             </div>
         </div>
-
-        <div class="card" >
-                    <button ng-click="cancel()" class="button button-assertive button-block">
-                        Cancel
-                    </button>
-                    <button ng-click="done()" class="button button-positive button-block">
-                        Done
-                    </button>
-                </div>
-            </div>
-        </div>
-
     </ion-content>
 </ion-view>

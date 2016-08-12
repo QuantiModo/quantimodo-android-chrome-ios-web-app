@@ -1,11 +1,6 @@
-/**
- * Created by Abdullah on 8/14/2015.
- * //
- */
-
 angular.module('starter')
 
-    .factory('localStorageService',function(utilsService, $rootScope, $q){
+    .factory('localStorageService',function($rootScope, $q, utilsService) {
 
         return{
 
@@ -41,16 +36,17 @@ angular.module('starter')
 
             replaceElementOfItemById : function(localStorageItemName, replacementElement){
                 var deferred = $q.defer();
-                var found = false;
-                var localStorageItemArray = JSON.parse(this.getItemSync(localStorageItemName));
                 var elementsToKeep = [];
                 elementsToKeep.push(replacementElement);
-                for(var i = 0; i < localStorageItemArray.length; i++){
-                    if(localStorageItemArray[i].id !== replacementElement.id){
-                        elementsToKeep.push(localStorageItemArray[i]);
+
+                var localStorageItemArray = JSON.parse(this.getItemSync(localStorageItemName));
+                if(localStorageItemArray){
+                    for(var i = 0; i < localStorageItemArray.length; i++){
+                        if(localStorageItemArray[i].id !== replacementElement.id){
+                            elementsToKeep.push(localStorageItemArray[i]);
+                        }
                     }
                 }
-                //console.log(JSON.stringify(elementsToKeep));
                 this.setItem(localStorageItemName, JSON.stringify(elementsToKeep));
                 deferred.resolve();
                 return deferred.promise;
@@ -110,8 +106,8 @@ angular.module('starter')
                     //console.log(localStorage.getItem(keyIdentifier + localStorageItemName));
                     matchingElements = JSON.parse(localStorage.getItem(keyIdentifier + localStorageItemName));
                 }
-                
-                if(filterPropertyName && filterPropertyValue){
+
+                if(filterPropertyName && typeof filterPropertyValue !== "undefined" && filterPropertyValue !== null){
                     if(matchingElements){
                         unfilteredElementArray = matchingElements;
                     }

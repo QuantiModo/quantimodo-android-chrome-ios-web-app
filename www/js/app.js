@@ -3,7 +3,10 @@
 
 angular.module('starter',
     [
-        'ionic','ionic.service.core', 'ionic.service.analytics',
+        'ionic',
+        'ionic.service.core',
+        //'ionic.service.push',
+        //'ionic.service.analytics',
         'oc.lazyLoad',
         'highcharts-ng',
         'ngCordova',
@@ -15,13 +18,84 @@ angular.module('starter',
     ]
 )
 
-.run(function($ionicPlatform, $ionicHistory, $state, $rootScope, $ionicAnalytics) {
+.run(function($ionicPlatform, $ionicHistory, $state, $rootScope, pushNotificationService, localStorageService) {
+//.run(function($ionicPlatform, $ionicHistory, $state, $rootScope, $ionicAnalytics) {
 // Database
 //.run(function($ionicPlatform, $ionicHistory, $state, $rootScope, $cordovaSQLite) {
 
     $ionicPlatform.ready(function() {
-        $ionicAnalytics.register();
-        
+        //$ionicAnalytics.register();
+        /*
+        var push = new Ionic.Push({});
+
+        push.register(function(deviceToken) {
+            // Log out your device token (Save this!)
+            console.log("Got Token:", deviceToken.token);
+            push.saveToken(deviceToken);
+            localStorageService.setItem('deviceToken', deviceToken.token);
+            pushNotificationService.registerDeviceToken(deviceToken.token);
+        });
+
+
+
+
+        window.onNotification = function(e){
+            console.log("window.onNotification: received event", e);
+            switch(e.event){
+                case 'registered':
+                    if(e.regid.length > 0){
+
+                        var deviceToken = e.regid;
+                        pushNotificationService.register(deviceToken).then(function(response){
+                            alert('registered!');
+                        });
+                    }
+                    break;
+
+                case 'message':
+                    alert('msg received: ' + e.message);
+                    /!*
+                     {
+                     "message": "Hello this is a push notification",
+                     "payload": {
+                     "message": "Hello this is a push notification",
+                     "sound": "notification",
+                     "title": "New Message",
+                     "from": "813xxxxxxx",
+                     "collapse_key": "do_not_collapse",
+                     "foreground": true,
+                     "event": "message"
+                     }
+                     }
+                     *!/
+                    break;
+
+                case 'error':
+                    alert('error occurred');
+                    break;
+
+            }
+        };
+
+        window.errorHandler = function(error){
+            alert('an error occured');
+        };
+
+        var pushNotification = window.plugins.pushNotification;
+        pushNotification.register(
+            window.onNotification,
+            window.errorHandler,
+            {
+                'badge': 'true',
+                'sound': 'true',
+                'alert': 'true',
+                'ecb': 'onNotification',
+                'senderID': window.private_keys.GCM_SENDER_ID
+            }
+        );
+
+*/
+
         if(typeof analytics !== "undefined") {
             console.log("Configuring Google Analytics");
             analytics.startTrackerWithId("UA-39222734-24");
@@ -64,13 +138,21 @@ angular.module('starter',
                 return;
             }
 
+            $rootScope.appVersion = "1.8.2.1";
+            $rootScope.appName = config.appSettings.appName;
+
             if(window.private_keys.bugsnag_key) {
                 //Set Bugsnag Release Stage
                 $rootScope.bugsnagApiKey = window.private_keys.bugsnag_key;
                 Bugsnag.apiKey = window.private_keys.bugsnag_key;
                 Bugsnag.releaseStage = config.getEnv();
                 Bugsnag.notifyReleaseStages = config.bugsnag.notifyReleaseStages;
-                Bugsnag.appVersion = "1.6.6.0";
+                Bugsnag.appVersion = $rootScope.appVersion;
+                Bugsnag.metaData = {
+                    platform: ionic.Platform.platform(),
+                    platformVersion: ionic.Platform.version(),
+                    appName: config.appSettings.appName
+                };
             } else {
                 console.error('intervalChecker: No bugsnag_key found in private config!');
             }
@@ -236,7 +318,7 @@ angular.module('starter',
             views: {
                 'menuContent': {
                   templateUrl: "templates/variable-search.html",
-                  controller: 'TrackFactorsCategoryCtrl'
+                  controller: 'VariableSearchCtrl'
                 }
             }
         })
@@ -252,7 +334,7 @@ angular.module('starter',
             views: {
                 'menuContent': {
                     templateUrl: "templates/variable-search.html",
-                    controller: 'TrackFactorsCategoryCtrl'
+                    controller: 'VariableSearchCtrl'
                 }
             }
         })
@@ -269,7 +351,7 @@ angular.module('starter',
             views: {
                 'menuContent': {
                     templateUrl: "templates/variable-search.html",
-                    controller: 'TrackFactorsCategoryCtrl'
+                    controller: 'VariableSearchCtrl'
                 }
             }
         })
@@ -286,7 +368,43 @@ angular.module('starter',
             views: {
                 'menuContent': {
                     templateUrl: "templates/variable-search.html",
-                    controller: 'TrackFactorsCategoryCtrl'
+                    controller: 'VariableSearchCtrl'
+                }
+            }
+        })
+        .state('app.favoriteSearchCategory', {
+            url: "/favorite-search-category/:variableCategoryName",
+            params: {
+                variableCategoryName : null,
+                fromState : null,
+                fromUrl : null,
+                measurement : null,
+                favoriteSearch: true,
+                nextState: 'app.favoriteAdd',
+                pageTitle: 'Add a favorite'
+            },
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/variable-search.html",
+                    controller: 'VariableSearchCtrl'
+                }
+            }
+        })
+        .state('app.favoriteSearch', {
+            url: "/favorite-search",
+            params: {
+                variableCategoryName : null,
+                fromState : null,
+                fromUrl : null,
+                measurement : null,
+                favoriteSearch: true,
+                nextState: 'app.favoriteAdd',
+                pageTitle: 'Add a favorite'
+            },
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/variable-search.html",
+                    controller: 'VariableSearchCtrl'
                 }
             }
         })
@@ -294,7 +412,7 @@ angular.module('starter',
             url: "/measurement-add/:variableName",
             cache: false,
             params: {
-                reminder : null,
+                reminderNotification: null,
                 fromState : null,
                 fromUrl : null,
                 measurement : null,
@@ -307,14 +425,15 @@ angular.module('starter',
                 }
             }
         })
-        .state('app.variable_settings', {
+        .state('app.variableSettings', {
             url: "/variable_settings/:variableName",
+            cache: false,
             params: {
                 reminder : null,
                 fromState : null,
                 fromUrl : null,
                 measurement : null,
-                variableObject : null
+                variableName : null
             },
             views: {
                 'menuContent': {
@@ -335,6 +454,7 @@ angular.module('starter',
         })
         .state('app.variableSearch', {
             url: "/search-variables",
+            cache: false,
             params: {
                 variableCategoryName: null,
                 fromState: null,
@@ -346,7 +466,7 @@ angular.module('starter',
             views: {
                 'menuContent': {
                     templateUrl: "templates/variable-search.html",
-                    controller: 'TrackFactorsCategoryCtrl'
+                    controller: 'VariableSearchCtrl'
                 }
             }
         })
@@ -354,12 +474,13 @@ angular.module('starter',
             url: "/variables/:variableName",
             cache: false,
             params: {
+                trackingReminder : null,
                 variableName : null,
                 variableObject: null,
                 measurementInfo: null,
                 noReload: false,
                 fromState : null,
-                fromUrl : null,
+                fromUrl : null
             },
             views: {
                 'menuContent': {
@@ -386,39 +507,29 @@ angular.module('starter',
                 }
             }
         })
-        .state('app.negative', {
-            url: "/negative",
-            views: {
-                'menuContent': {
-                    templateUrl: "templates/negative.html",
-                    controller: 'NegativeCtrl'
+        .state('app.predictors', {
+            url: "/predictors/:valence",
+            params: {
+                variableObject : null,
+                requestParams : {
+                    cause: null,
+                    effect: null,
+                    correlationCoefficient: null
                 }
-            }
-        })
-        .state('app.positive', {
-            url: "/positive",
-            views: {
-                'menuContent': {
-                    templateUrl: "templates/positive.html",
-                    controller: 'PositiveCtrl'
-                }
-            }
-        })
-        .state('app.positiveNegative', {
-            url: "/positive-negative/:valence",
+            },
             cache: false,
             views: {
                 'menuContent': {
-                  templateUrl: "templates/positive-negative.html",
-                  controller: 'PositiveNegativeCtrl'
+                  templateUrl: "templates/predictors.html",
+                  controller: 'PredictorsCtrl'
                 }
             }
         })
         .state('app.study', {
-            url: "/study/:factor",
+            cache: false,
+            url: "/study",
             params: {
-                factor: null,
-                factorObject: null
+                correlationObject: null
             },
             views: {
                 'menuContent': {
@@ -433,6 +544,15 @@ angular.module('starter',
                 'menuContent': {
                     templateUrl: "templates/settings.html",
                     controller: 'SettingsCtrl'
+                }
+            }
+        })
+        .state('app.map', {
+            url: "/map",
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/map.html",
+                    controller: 'MapCtrl'
                 }
             }
         })
@@ -485,25 +605,13 @@ angular.module('starter',
             }
         })
         .state('app.historyAll', {
-            url: "/history-all",
-            params: {
-                variableCategoryName : null,
-                fromState : null,
-                fromUrl : null
-            },
-            views: {
-                'menuContent': {
-                    templateUrl: "templates/history-all.html",
-                    controller: 'historyAllMeasurementsCtrl'
-                }
-            }
-        })
-        .state('app.historyAllCategory', {
             url: "/history-all/:variableCategoryName",
+            cache: false,
             params: {
                 variableCategoryName : null,
                 fromState : null,
-                fromUrl : null
+                fromUrl : null,
+                variableObject : null
             },
             views: {
                 'menuContent': {
@@ -515,6 +623,7 @@ angular.module('starter',
         .state('app.remindersInbox', {
             url: "/reminders-inbox",
             params: {
+                reminderFrequency: null,
                 unit: null,
                 variableName : null,
                 dateTime : null,
@@ -525,6 +634,23 @@ angular.module('starter',
                 'menuContent': {
                     templateUrl: "templates/reminders-inbox.html",
                     controller: 'RemindersInboxCtrl'
+                }
+            }
+        })
+        .state('app.favorites', {
+            url: "/favorites",
+            params: {
+                reminderFrequency: 0,
+                unit: null,
+                variableName : null,
+                dateTime : null,
+                value : null,
+                fromUrl : null
+            },
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/favorites.html",
+                    controller: 'FavoritesCtrl'
                 }
             }
         })
@@ -579,15 +705,7 @@ angular.module('starter',
             }
         })
         .state('app.remindersManage', {
-            url: "/reminders-manage",
-            views: {
-                'menuContent': {
-                    templateUrl: "templates/reminders-manage.html",
-                    controller: 'RemindersManageCtrl'
-                }
-            }
-        })
-        .state('app.remindersManageCategory', {
+            cache: false,
             url: "/reminders-manage/:variableCategoryName",
             views: {
                 'menuContent': {
@@ -631,7 +749,26 @@ angular.module('starter',
                     controller: 'RemindersAddCtrl'
                 }
             }
-        });
+        })
+        .state('app.favoriteAdd', {
+            url: "/favorite-add",
+            cache: false,
+            params: {
+                variableCategoryName : null,
+                reminderNotification: null,
+                fromState : null,
+                fromUrl : null,
+                measurement : null,
+                variableObject : null
+            },
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/favorite-add.html",
+                    controller: 'FavoriteAddCtrl'
+                }
+            }
+        })
+    ;
     
       // if none of the above states are matched, use this as the fallback
       $urlRouterProvider.otherwise('/');

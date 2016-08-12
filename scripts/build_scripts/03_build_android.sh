@@ -80,6 +80,7 @@ echo "ionic platform remove android for $LOWERCASE_APP_NAME Android app..."
 ionic platform remove android
 echo "ionic platform add android for $LOWERCASE_APP_NAME Android app..."
 ionic platform add android
+source scripts/create_icons.sh
 
 echo "cordova plugin rm phonegap-facebook-plugin for $LOWERCASE_APP_NAME Android app..."
 cordova plugin rm phonegap-facebook-plugin || true
@@ -103,6 +104,18 @@ cordova plugin add https://github.com/mikepsinn/cordova-plugin-googleplus.git --
 
 echo "ionic plugin add https://github.com/DrMoriarty/cordova-fabric-crashlytics-plugin -–variable CRASHLYTICS_API_KEY=${FABRIC_API_KEY} –-variable CRASHLYTICS_API_SECRET=${FABRIC_API_SECRET}  for $LOWERCASE_APP_NAME Android app..."
 ionic plugin add https://github.com/DrMoriarty/cordova-fabric-crashlytics-plugin -–variable CRASHLYTICS_API_KEY=${FABRIC_API_KEY} –-variable CRASHLYTICS_API_SECRET=${FABRIC_API_SECRET}
+
+echo "ionic add ionic-platform-web-client"
+ionic add ionic-platform-web-client
+
+# We shouldn't need to do this because it should already be in package.json
+#ionic plugin add phonegap-plugin-push --variable SENDER_ID="${GCM_SENDER_ID}"
+
+ionic io init
+ionic config set dev_push false
+
+ionic push --google-api-key ${GCM_SERVER_API_KEY}
+ionic config set gcm_key ${GCM_SENDER_ID}
 
 #echo "push for $LOWERCASE_APP_NAME Android app..."
 #cordova plugin add phonegap-plugin-push --variable SENDER_ID="quantimo-do"
@@ -157,6 +170,10 @@ ${ANDROID_BUILD_TOOLS}/zipalign -v 4 ${UNSIGNED_APK_FILENAME} ${SIGNED_APK_FILEN
 echo -e "${GREEN}Copying ${SIGNED_APK_FILENAME} to $DROPBOX_PATH/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${SIGNED_APK_FILENAME}${NC}"
 cp ${SIGNED_APK_FILENAME} "$DROPBOX_PATH/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${SIGNED_APK_FILENAME}"
 
+echo "Copying ${SIGNED_APK_FILENAME} to workspace folder ${IONIC_PATH}/android_builds_to_upload/ for Jenkins upload to Play beta..."
+mkdir ${IONIC_PATH}/android_builds_to_upload
+cp ${SIGNED_APK_FILENAME} ${IONIC_PATH}/android_builds_to_upload/
+
 rm ${BUILD_PATH}/${LOWERCASE_APP_NAME}/android/android-debug.apk
 rm ${BUILD_PATH}/${LOWERCASE_APP_NAME}/android/android-debug-unaligned.apk
 rm ${BUILD_PATH}/${LOWERCASE_APP_NAME}/android/android-release-unsigned.apk
@@ -171,10 +188,10 @@ if [ -f "$DROPBOX_PATH/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${SIGNED_AP
 then
     cd ${INTERMEDIATE_PATH}
     COMMIT_MESSAGE=$(git log -1 HEAD --pretty=format:%s)
-    ionic upload --email ${IONIC_EMAIL} --password ${IONIC_PASSWORD} --note "$COMMIT_MESSAGE"
-    ionic package build android --email ${IONIC_EMAIL} --password ${IONIC_PASSWORD}
-    ionic package build android --release --profile production --email ${IONIC_EMAIL} --password ${IONIC_PASSWORD}
-    ionic package build ios --release --profile production --email ${IONIC_EMAIL} --password ${IONIC_PASSWORD}
+    #ionic upload --email ${IONIC_EMAIL} --password ${IONIC_PASSWORD} --note "$COMMIT_MESSAGE"
+    #ionic package build android --email ${IONIC_EMAIL} --password ${IONIC_PASSWORD}
+    #ionic package build android --release --profile production --email ${IONIC_EMAIL} --password ${IONIC_PASSWORD}
+    #ionic package build ios --release --profile production --email ${IONIC_EMAIL} --password ${IONIC_PASSWORD}
     echo echo "${SIGNED_APK_FILENAME} is ready in $DROPBOX_PATH/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${SIGNED_APK_FILENAME}"
 else
    echo "ERROR: File ${SIGNED_APK_FILENAME} does not exist. Build FAILED"

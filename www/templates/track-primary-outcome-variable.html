@@ -40,19 +40,19 @@
 <!--                <div style="height: 460px;" ng-show="isSyncing">
                     <div style="position: absolute;top:45%;text-align: center;width: 100%"><span>Still retrieving data. Check back soon.</span></div>
                 </div>-->
-                <div ng-if="redrawBarChart">
+                <div ng-if="state.showBarChart">
                     <highchart id="chart1" config="barChartConfig"></highchart>    
                 </div>
     
-                <div ng-if="redrawLineChart">
+                <div ng-if="state.showLineChart">
                     <highchart id="chart2" config="lineChartConfig"></highchart>    
                 </div>
 
-                <div ng-if="redrawWeekdayChart">
+                <div ng-if="state.showWeekdayChart">
                     <highchart id="chart3" config="weekdayChartConfig"></highchart>
                 </div>
 
-                <div ng-if="redrawHourlyChart">
+                <div ng-if="state.showHourlyChart">
                     <highchart id="chart4" config="hourlyChartConfig"></highchart>
                 </div>
 

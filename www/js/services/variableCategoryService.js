@@ -1,6 +1,6 @@
 angular.module('starter')
     // Variable Category Service
-    .factory('variableCategoryService', function($filter, $q, QuantiModo, localStorageService){
+    .factory('variableCategoryService', function($filter, $q, QuantiModo, localStorageService) {
 
         // service methods
         var variableCategoryService = {
@@ -117,7 +117,7 @@ angular.module('starter')
                         variableCategoryName: "Symptoms",
                         variableCategoryNameSingularLowercase: "symptom",
                         measurementSynonymSingularLowercase : "rating",
-                        icon: "ion-ios-pulse"
+                        icon: "ion-sad-outline"
                     },
                     "Treatments": {
                         defaultAbbreviatedUnitName : "mg",
@@ -216,6 +216,22 @@ angular.module('starter')
                     return 'ion-speedometer';
                 }
                 
+            },
+            attachVariableCategoryIcons : function(dataArray){
+                if(!dataArray){
+                    return;
+                }
+                var variableCategoryInfo;
+                for(var i = 0; i < dataArray.length; i++){
+                    variableCategoryInfo = this.getVariableCategoryInfo(dataArray[i].variableCategoryName);
+                    if(variableCategoryInfo.icon){
+                        dataArray[i].icon = variableCategoryInfo.icon;
+                    } else {
+                        console.warn('Could not find icon for variableCategoryName ' + dataArray[i].variableCategoryName);
+                        return 'ion-speedometer';
+                    }
+                }
+                return dataArray;
             }
         };
         

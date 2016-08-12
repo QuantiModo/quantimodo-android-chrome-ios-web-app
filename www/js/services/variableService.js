@@ -1,6 +1,6 @@
 angular.module('starter')
 	// Measurement Service
-	.factory('variableService', function($http, $q, QuantiModo, localStorageService, $rootScope){
+	.factory('variableService', function($q, $rootScope, QuantiModo, localStorageService) {
 
         
 		// service methods
@@ -69,6 +69,30 @@ angular.module('starter')
 
                 return deferred.promise;
             },
+            
+            getPublicVariablesByName : function(name) {
+                var deferred = $q.defer();
+                QuantiModo.getPublicVariablesByName(name, function(variable){
+                    deferred.resolve(variable);
+                }, function(){
+                    deferred.reject(false);
+                });
+
+                return deferred.promise;
+                
+            },
+
+            // post changes to user variable settings
+            postUserVariable : function(userVariable) {
+                var deferred = $q.defer();
+                QuantiModo.postUserVariable(userVariable, function(userVariable) {
+                    deferred.resolve(userVariable);
+                }, function(){
+                    deferred.reject(false);
+                });
+                
+                return deferred.promise;
+            },
 
             getVariableById : function(variableId){
                 var deferred = $q.defer();
@@ -80,6 +104,21 @@ angular.module('starter')
                     deferred.reject(false);
                 });
 
+                return deferred.promise;
+            },
+
+            deleteAllMeasurementsForVariable : function(variableId) {
+                var deferred = $q.defer();
+                QuantiModo.deleteUserVariableMeasurements(variableId, function() {
+                    // Delete user variable from local storage
+                    localStorageService.deleteElementOfItemById('userVariables', variableId);
+                    deferred.resolve();
+                }, function(error) {
+                    Bugsnag.notify(error, JSON.stringify(error), {}, "error");
+                    console.log('Error deleting all measurements for variable: ', error);
+                    deferred.reject(error);
+                });
+                
                 return deferred.promise;
             },
 

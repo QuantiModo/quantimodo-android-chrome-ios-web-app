@@ -1,5 +1,5 @@
 angular.module('starter')
-    .controller('IframeScreenCtrl', function ($scope, authService, utilsService, $ionicLoading, $sce, $state) {
+    .controller('IframeScreenCtrl', function ($scope, $ionicLoading, $sce, $state, authService) {
 
         $scope.showLoader();
         console.debug('IframeScreenCtrl works!');
@@ -31,11 +31,19 @@ angular.module('starter')
             iFrameUrl = config.getApiUrl() + '/api/v1/connect/mobile';
             $scope.title = 'Your Variable Relationships';
         }
+        console.debug('importCtrl.init: Going to authService.getAccessTokenFromAnySource');
+        authService.getAccessTokenFromAnySource().then(function(accessToken) {
 
-        authService.getAccessTokenFromAnySource().then(function(token) {
-            $scope.iframeUrl = $sce.trustAsResourceUrl(
-                iFrameUrl + '&access_token=' + token.accessToken
-            );
+            if(accessToken){
+                $scope.iframeUrl = $sce.trustAsResourceUrl(
+                    iFrameUrl + '&access_token=' + accessToken
+                );
+            } else {
+                $scope.iframeUrl = $sce.trustAsResourceUrl(
+                    iFrameUrl
+                );
+            }
+
             $ionicLoading.hide();
         }, function(){
             console.log("getAccessTokenFromAnySource: No access token. Need to log in.");

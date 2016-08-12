@@ -1,6 +1,6 @@
 angular.module('starter')
 	// Measurement Service
-	.factory('measurementService', function($http, $q, QuantiModo, localStorageService, $rootScope, $ionicLoading){
+	.factory('measurementService', function($q, $rootScope, $ionicLoading, QuantiModo, localStorageService) {
 
         //flag to indicate if data syncing is in progress
         var isSyncing = false;
@@ -110,7 +110,7 @@ angular.module('starter')
                 var paramTime = moment($rootScope.lastSyncTime).subtract(15, 'minutes').format("YYYY-MM-DDTHH:mm:ss");
                 params = {
                     variableName : config.appSettings.primaryOutcomeVariableDetails.name,
-                    'lastUpdated':'(ge)'+ paramTime ,
+                    'updatedAt':'(ge)'+ paramTime ,
                     sort : '-startTimeEpoch',
                     limit:200,
                     offset:0
@@ -123,38 +123,16 @@ angular.module('starter')
                     }
                 });
 
-                // send request
-                QuantiModo.getMeasurements(params).then(function(response){
-                    if(response){
-                        localStorageService.setItem('lastSyncTime',moment.utc().format('YYYY-MM-DDTHH:mm:ss'));
-                        localStorageService.getItem('lastSyncTime',function(val){
-                            $rootScope.lastSyncTime = val;
-                            console.log("lastSyncTime is " + $rootScope.lastSyncTime);
-                        });
-                        // set flag
-                        console.log("Measurement sync complete!");
-                        isSyncing = false;
-                        deferred.resolve(response);
-                        $rootScope.$broadcast('updateCharts');
-                    }
-                    else {
-                        deferred.reject(false);
-                    }
-                }, function(response){
-                    isSyncing = false;
-                    $rootScope.isSyncing = false;
-                    $rootScope.syncDisplayText = '';
-                    deferred.reject(false);
-                }, function(response){
-                    if(response){
-                        if(response.length > 0){
-                            // update local data
+                var getPrimaryOutcomeVariableMeasurements = function(params) {
+                    QuantiModo.getV1Measurements(params, function(response){
+                        // Do the stuff with adding to allMeasurements
+                        if (response.length > 0 && response.length <= 200) {
+                            // Update local data
                             var allMeasurements;
                             localStorageService.getItem('allMeasurements',function(allMeasurements){
                                 allMeasurements = allMeasurements ? JSON.parse(allMeasurements) : [];
 
                                 var filteredStoredMeasurements = [];
-
                                 allMeasurements.forEach(function(storedMeasurement) {
                                     var found = false;
                                     var i = 0;
@@ -172,7 +150,6 @@ angular.module('starter')
                                 });
                                 allMeasurements = filteredStoredMeasurements.concat(response);
 
-
                                 var s  = 9999999999999;
                                 allMeasurements.forEach(function(x){
                                     if(!x.startTimeEpoch){
@@ -183,29 +160,53 @@ angular.module('starter')
                                     }
                                 });
 
+                                // FIXME Is this right? Doesn't do what is described
+                                // updating last updated time and data in local storage so that we syncing should continue from this point
+                                // if user restarts the app or refreshes the page.
                                 measurementService.setDates(new Date().getTime(),s*1000);
-                                //updating last updated time and data in local storage so that we syncing should continue from this point
-                                //if user restarts the app or refreshes the page.
-                                localStorageService.setItem('allMeasurements',JSON.stringify(allMeasurements));
+                                console.debug("getPrimaryOutcomeVariableMeasurements: allMeasurements length is " + allMeasurements.length);
+                                console.debug("getPrimaryOutcomeVariableMeasurements:  Setting allMeasurements to: ", allMeasurements);
+                                localStorageService.setItem('allMeasurements', JSON.stringify(allMeasurements));
                                 $rootScope.$broadcast('updateCharts');
-                                /*
-                                $rootScope.lastSyncTime = moment.utc().format('YYYY-MM-DDTHH:mm:ss');
-                                localStorageService.setItem('lastSyncTime', $rootScope.lastSyncTime);
-                                console.log("lastSyncTime is " + $rootScope.lastSyncTime);
-                                */
-
                             });
-
                         }
-                    } else {
-                        localStorageService.getItem('user', function(user){
-                            if(!user){
-                                isSyncing = false;
-                                deferred.resolve();
-                            }
-                        });
-                    }
-                });
+
+                        if (response.length < 200 || params.offset > 2000) {
+                            // Finished
+                            localStorageService.setItem('lastSyncTime',moment.utc().format('YYYY-MM-DDTHH:mm:ss'));
+                            localStorageService.getItem('lastSyncTime',function(val){
+                                $rootScope.lastSyncTime = val;
+                                console.log("lastSyncTime is " + $rootScope.lastSyncTime);
+                            });
+                            // set flag
+                            console.log("Measurement sync complete!");
+                            isSyncing = false;
+                            deferred.resolve(response);
+                            $rootScope.$broadcast('updateCharts');
+                        }
+                        else if (response.length === 200 && params.offset < 2001) {
+                            // Keep querying
+                            params = {
+                                variableName: config.appSettings.primaryOutcomeVariableDetails.name,
+                                'updatedAt':'(ge)'+ paramTime ,
+                                sort : '-startTimeEpoch',
+                                limit: 200,
+                                offset: params.offset + 200
+                            };
+                            getPrimaryOutcomeVariableMeasurements(params);
+                        }
+                        else {
+                            // More than 200 measurements returned, something is wrong
+                            deferred.reject(false);
+                        }
+
+                    }, function(error){
+                        isSyncing = false;
+                        deferred.reject(error);
+                    });
+                };
+
+                getPrimaryOutcomeVariableMeasurements(params);
                 
                 return deferred.promise;
             },
@@ -214,20 +215,13 @@ angular.module('starter')
                 var deferred = $q.defer();
 
                 if($rootScope.user){
-                    $rootScope.isSyncing = true;
-                    $rootScope.syncDisplayText = 'Syncing ' + config.appSettings.primaryOutcomeVariableDetails.name + ' measurements...';
-
                     measurementService.syncPrimaryOutcomeVariableMeasurements().then(function(){
-                        $rootScope.isSyncing = false;
-                        $rootScope.syncDisplayText = '';
                         $ionicLoading.hide();
                         deferred.resolve();
                     });
                 }
                 else {
                     $rootScope.$broadcast('updateCharts');
-                    $rootScope.isSyncing = false;
-                    $rootScope.syncDisplayText = '';
                     deferred.resolve();
                 }
                 return deferred.promise;
@@ -236,8 +230,6 @@ angular.module('starter')
             // sync the measurements in queue with QuantiModo API
             syncPrimaryOutcomeVariableMeasurements : function(){
                 var defer = $q.defer();
-                $rootScope.isSyncing = true;
-                $rootScope.syncDisplayText = 'Syncing measurements...';
 
                 localStorageService.getItem('measurementsQueue',function(measurementsQueue) {
 
@@ -265,11 +257,9 @@ angular.module('starter')
 
                         // send request
                         QuantiModo.postMeasurementsV2(measurements, function (response) {
+                            localStorageService.setItem('measurementsQueue', JSON.stringify([]));
                             // success
                             measurementService.getMeasurements().then(function() {
-                                localStorageService.setItem('measurementsQueue', JSON.stringify([]));
-                                $rootScope.isSyncing = false;
-                                $rootScope.syncDisplayText = '';
                                 defer.resolve();
                                 console.log("success", response);
                             });
@@ -281,8 +271,6 @@ angular.module('starter')
 
                             // resave queue
                             localStorageService.setItem('measurementsQueue', JSON.stringify(measurementsQueue));
-                            $rootScope.isSyncing = false;
-                            $rootScope.syncDisplayText = '';
                             console.log("error", response);
                             defer.resolve();
 
@@ -352,7 +340,10 @@ angular.module('starter')
                     startTimeEpoch: Math.floor(startTimeEpoch / 1000),
                     abbreviatedUnitName: config.appSettings.primaryOutcomeVariableDetails.abbreviatedUnitName,
                     value: numericRatingValue,
-                    note: ""  
+                    note: "",
+                    latitude: $rootScope.lastLatitude,
+                    longitude: $rootScope.lastLongitude,
+                    location: $rootScope.lastLocationNameAndAddress
                 };
                 return measurementObject;
             },
@@ -374,7 +365,10 @@ angular.module('starter')
                         startTimeEpoch: measurementObject.startTimeEpoch,
                         abbreviatedUnitName: config.appSettings.primaryOutcomeVariableDetails.abbreviatedUnitName,
                         value: measurementObject.value,
-                        note: measurementObject.note
+                        note: measurementObject.note,
+                        latitude: $rootScope.lastLatitude,
+                        longitude: $rootScope.lastLongitude,
+                        location: $rootScope.lastLocationNameAndAddress
                     });
                     //resave queue
                     localStorageService.setItem('measurementsQueue', JSON.stringify(measurementsQueue));
@@ -435,7 +429,9 @@ angular.module('starter')
                                 }
                             });
                         });
-                        localStorageService.setItem('allMeasurements',JSON.stringify(newAllMeasurements));
+                        console.debug("postTrackingMeasurement: newAllMeasurements length is " + newAllMeasurements.length);
+                        console.debug("postTrackingMeasurement:  Setting allMeasurements to: ", newAllMeasurements);
+                        localStorageService.setItem('allMeasurements', JSON.stringify(newAllMeasurements));
                         var editedMeasurement = {
                             id: measurementInfo.id,
                             variableName: measurementInfo.variableName,
@@ -445,7 +441,10 @@ angular.module('starter')
                             value: measurementInfo.value,
                             variableCategoryName : measurementInfo.variableCategoryName,
                             note : measurementInfo.note,
-                            combinationOperation : measurementInfo.isAvg? "MEAN" : "SUM"
+                            combinationOperation : measurementInfo.isAvg? "MEAN" : "SUM",
+                            latitude: $rootScope.lastLatitude,
+                            longitude: $rootScope.lastLongitude,
+                            location: $rootScope.lastLocationNameAndAddress
                         };
                         measurementService.addToMeasurementsQueue(editedMeasurement);
 
@@ -460,7 +459,10 @@ angular.module('starter')
                             value: measurementInfo.value,
                             variableCategoryName : measurementInfo.variableCategoryName,
                             note : measurementInfo.note,
-                            combinationOperation : measurementInfo.isAvg? "MEAN" : "SUM"
+                            combinationOperation : measurementInfo.isAvg? "MEAN" : "SUM",
+                            latitude: $rootScope.lastLatitude,
+                            longitude: $rootScope.lastLongitude,
+                            location: $rootScope.lastLocationNameAndAddress
                         };
                         measurementService.addToMeasurementsQueue(newMeasurement);
                     }
@@ -475,11 +477,15 @@ angular.module('starter')
                 else {
                     // Non primary outcome variable, post immediately
 
+                    var measurementSourceName = config.get('clientSourceName');
+                    if(measurementInfo.sourceName){
+                        measurementSourceName = measurementInfo.sourceName;
+                    }
                     // measurements set
                     var measurements = [
                         {
                             variableName: measurementInfo.variableName,
-                            source: config.get('clientSourceName'),
+                            source: measurementSourceName,
                             variableCategoryName: measurementInfo.variableCategoryName,
                             abbreviatedUnitName: measurementInfo.abbreviatedUnitName,
                             combinationOperation : measurementInfo.isAvg? "MEAN" : "SUM",
@@ -488,7 +494,10 @@ angular.module('starter')
                                     id: measurementInfo.id,
                                     startTimeEpoch:  measurementInfo.startTimeEpoch,
                                     value: measurementInfo.value,
-                                    note : measurementInfo.note
+                                    note : measurementInfo.note,
+                                    latitude: $rootScope.lastLatitude,
+                                    longitude: $rootScope.lastLongitude,
+                                    location: $rootScope.lastLocationNameAndAddress
                                 }
                             ]
                         }
@@ -503,9 +512,12 @@ angular.module('starter')
                         value: measurementInfo.value,
                         variableCategoryName : measurementInfo.variableCategoryName,
                         note : measurementInfo.note,
-                        combinationOperation : measurementInfo.isAvg? "MEAN" : "SUM"
+                        combinationOperation : measurementInfo.isAvg? "MEAN" : "SUM",
+                        latitude: $rootScope.lastLatitude,
+                        longitude: $rootScope.lastLongitude,
+                        location: $rootScope.lastLocationNameAndAddress
                     };
-                    
+
                     // send request
                     QuantiModo.postMeasurementsV2(measurements, function(response){
                         if(response.success) {
@@ -529,6 +541,50 @@ angular.module('starter')
                 if(usePromise) {
                     return deferred.promise;
                 }
+            },
+
+            postMeasurementByReminder: function(trackingReminder, modifiedValue) {
+
+                // send request
+                var value = trackingReminder.defaultValue;
+                if(typeof modifiedValue !== "undefined" && modifiedValue !== null){
+                    value = modifiedValue;
+                }
+
+                var startTimeEpochMilliseconds = new Date();
+                var startTimeEpochSeconds = startTimeEpochMilliseconds/1000;
+                // measurements set
+                var measurementSet = [
+                    {
+                        variableName: trackingReminder.variableName,
+                        source: config.get('clientSourceName'),
+                        variableCategoryName: trackingReminder.variableCategoryName,
+                        abbreviatedUnitName: trackingReminder.abbreviatedUnitName,
+                        measurements : [
+                            {
+                                startTimeEpoch:  startTimeEpochSeconds,
+                                value: value,
+                                note : null,
+                                latitude: $rootScope.lastLatitude,
+                                longitude: $rootScope.lastLongitude,
+                                location: $rootScope.lastLocationNameAndAddress
+                            }
+                        ]
+                    }
+                ];
+
+                var deferred = $q.defer();
+
+                QuantiModo.postMeasurementsV2(measurementSet, function(response){
+                    if(response.success) {
+                        console.log("success", response);
+                        deferred.resolve();
+                    } else {
+                        deferred.reject(response.message ? response.message.split('.')[0] : "Can't post measurement right now!");
+                    }
+                });
+
+                return deferred.promise;
             },
 
             getHistoryMeasurements : function(params){
@@ -585,6 +641,9 @@ angular.module('starter')
                         });
                     });
                     if (found) {
+
+                        console.debug("deleteMeasurementFromLocalStorage: newAllMeasurements length is " + newAllMeasurements.length);
+                        console.debug("deleteMeasurementFromLocalStorage: Setting allMeasurements to ", newAllMeasurements);
                         localStorageService.setItem('allMeasurements',JSON.stringify(newAllMeasurements));
                         deferred.resolve();
                     }

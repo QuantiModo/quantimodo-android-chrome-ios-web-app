@@ -146,6 +146,8 @@ iframe {
 
 .active-primary-outcome-variable-rating-button {
     opacity: 1.0 !important;
+    -webkit-filter: saturate(200%); /* Chrome, Safari, Opera */
+    filter: saturate(200%);
 }
 
 .buttons > .button {
@@ -231,6 +233,7 @@ label.item.item-input.item-text > input[type="text"] {
 
 .alert-popup .popup {
     width: 285px;
+    text-align: center;
 }
 
 
@@ -258,8 +261,8 @@ label.item.item-input.item-text > input[type="text"] {
     color: white;
     position: absolute;
     top: 40px;
-    z-index:5;
-    background-color: #A0E749
+    z-index: 5;
+    background-color: #A0E749;
 }
 
 .slider {
@@ -375,6 +378,7 @@ img.intro-primary-outcome-variable-rating-buttons {
 .popup {
   border: 1px solid gray !important;
   background-color: white!important;
+    text-align: center;
 }
 
  #qm-loader {
@@ -491,30 +495,30 @@ img.intro-primary-outcome-variable-rating-buttons {
 }
 
 /* Positive/negative factors and study page */
-.factorResultList a {
+.correlationResultList a {
     white-space: normal;
     color: #1A0DAB;
     font-size: 24px;
     font-family: arial, sans-serif;
 }
 
-.factorResultList h4 {
+.correlationResultList h4 {
     margin-top: 10px;
     margin-bottom: 10px;
     font-weight: 700;
 }
 
-.factorResultList h3 {
+.correlationResultList h3 {
     font-size: 24px;
     margin-top: 20px;
     margin-bottom: 10px;
 }
 
-.factorResultList p a {
+.correlationResultList p a {
     font-size: 14px;
 }
 
-.factorResultList p {
+.correlationResultList p {
     white-space: normal;
 }
 
@@ -536,4 +540,92 @@ img.intro-primary-outcome-variable-rating-buttons {
 /* Fixes bottom of text being cut off in dropdown selectors */
 .item-select select {
     padding: 14px 48px 8px 16px;
+}
+
+#map {
+    height: 100%;
+    width: 100%;
+}
+
+.scroll {
+    height: 100%;
+}
+
+
+/* Variable settings page */
+/*
+.variable-settings .item-input {
+    padding-right: 10px;
+}
+.variable-settings .item-content {
+    padding-right: 10px;
+}
+*/
+
+.card .variable-settings {
+    padding-right: 10px;
+}
+.variable-settings .item-input {
+    display: block;
+}
+.variable-settings .left-span {
+    float: left;
+    width: auto;
+    position: relative;
+    font-size: 14px;
+}
+.variable-settings .left-text {
+    float: left;
+    font-size: 14px;
+}
+.variable-settings .right-span {
+    float: right;
+    width: auto;
+}
+.variable-settings .right-input {
+    padding-top: 0px;
+    padding-right: 10px !important;
+    text-align: right;
+    vertical-align: baseline;
+    display: table;
+}
+
+.variable-settings .right-text {
+    font-style: italic;
+    vertical-align: baseline;
+    text-align: right;
+    font-size: 14px;
+    float: right;
+    white-space: normal;
+}
+
+.variable-settings ::-webkit-input-placeholder { /* WebKit, Blink, Edge */
+    color:    #111;
+}
+.variable-settings :-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+    color:    #111;
+    opacity:  1;
+}
+.variable-settings ::-moz-placeholder { /* Mozilla Firefox 19+ */
+    color:    #111;
+    opacity:  1;
+}
+.variable-settings :-ms-input-placeholder { /* Internet Explorer 10-11 */
+    color:    #111;
+}
+
+#statisticsCard .right-text {
+    font-style: italic;
+    vertical-align: baseline;
+    text-align: right;
+    font-size: 14px;
+    float: right;
+    white-space: normal;
+}
+#statisticsCard .left-text {
+    float: left;
+    font-size: 14px;
+}
+#statisticsCard label {
+    padding: 6px 10px 5px 16px;
 }

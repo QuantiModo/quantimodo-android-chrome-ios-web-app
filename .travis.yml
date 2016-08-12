@@ -25,14 +25,16 @@ script:
 - #./scripts/build_scripts/04_build_ios.sh mindfirst "Mind First" 1024924226 "com.quantimodo.moodimodo"
 - ./scripts/build_scripts/04_build_ios.sh moodimodo MoodiModo 1046797567 "com.quantimodo.moodimodoapp"
 - #./scripts/build_scripts/04_build_ios.sh quantimodo QuantiModo 1115037060 "com.quantimodo.quantimodo"
+- #APPLE_ID=1046797567
+- #APP_IDENTIFIER="com.quantimodo.moodimodoapp"
 env:
   global:
-  - IONIC_APP_VERSION_NUMBER="1.6.7"
-  - IONIC_IOS_APP_VERSION_NUMBER="1.6.7.0"
+  - IONIC_APP_VERSION_NUMBER="1.8.2"
+  - IONIC_IOS_APP_VERSION_NUMBER="1.8.2.1"
   - TEAM_ID="YD2FK7S2S5"
   - DEVELOPER_NAME="iPhone Distribution: Mike Sinn (YD2FK7S2S5)"
-  - PROFILE_NAME="028ab892-9a5e-4004-adac-b8472e760bdb"
-  - PROFILE_UUID="028ab892-9a5e-4004-adac-b8472e760bdb"
+  - PROFILE_NAME="match_AppStore_comquantimodomoodimodoapp"
+  - PROFILE_UUID="cd6448f6-e30d-4d74-8413-58f96a770671"
   - DELIVER_WHAT_TO_TEST="Test the Basics of the app and see if something breaks!"
   - APP_UPLOAD_BRANCH="app/moodimodo"
   - DELIVER_USER="ios@quantimodo.com"
@@ -43,3 +45,11 @@ env:
   - secure: O3V431zlRPYQH6OSyWkQnVNGbiLQ28lSXmCkKzVIlUnb8Bhf+Cany5qOpASQevbMCk5KWzND/ULKP+maLA7z/RpGr77Dfb5CpzL+YHB5eWZ0W1eWbzTYH5nISD+8JbDWUcihBTV4HwMgK4EAZtxzTkgrdBAMISxIMWBf2wlWYK60Ydh9O3UAg2VSzXQQ1k+V404zRfGDwX99vwCERw3Q7xJT3v86B2+bxP9hj4VTTNsKJ0bY1JwPE/poRh8ZfyHtoTjyIadEdmop35aa6V6wc1Uk6kmulSc7+QA2HUV+1O3c4OR1g+cq4ScvHNIGeftZ6TEpyrbIJtN2syAX+wkdNr7ekVrzwv04swyErI9Y5zeGH68eljPW1jTZwWcYZEpy53DDC7iON5El/RyhSycLTIaiMgtVI0kQyfNbyTUs26XdYuK1uqHts6yQHdXfPLjvtRzKNqUyIfyIQXZDajsYWxzn3RicCe5ncIIyrXmHgly+m1oK3JB+1R5nGsMGUxGnitCenFHt/02FUuClr6TI+gXCJfy3HtrFoQ2xg6Lenz7I2P63raCG1Moc9IIrm8IBUc5fHZd2sYcY8z6c48Ug7XawMn/zjmbi1nN0WewZAjXSMEimYTMjSS+Wz54ehnqAszH58ztFtYfoaJMqa9ZGqEy5gRlxrIYyoZRjmDv8JJo=
 notifications:
   email: false
+
+# whitelist
+branches:
+  only:
+    - master
+    - develop
+    - feature/new_profile
+    - feature/remove_push_for_ios

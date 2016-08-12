@@ -1,14 +1,15 @@
 angular.module('starter')
 	// Measurement Service
-	.factory('migrationService', function($http, $q, QuantiModo, localStorageService, measurementService, $rootScope){
-        
-		// service methods
+    .factory('migrationService', function($http, $q, QuantiModo, localStorageService, measurementService, $rootScope){
+
+
+        // service methods
 		var migrationService = {
 			// get public variables
 			version1466 : function(){
-                var storedVersion = localStorageService.getItemAsObject('appVersion');
+                var storedVersion = localStorageService.getItemAsObject('appMigrationVersion');
                 if (!$rootScope.user && !storedVersion) {
-                    localStorageService.setItem('appVersion', 1489);
+                    localStorageService.setItem('appMigrationVersion', 1489);
                 }
                 else if (storedVersion < 1489){
                     console.debug('Running migration version version1489...');
@@ -19,12 +20,12 @@ angular.module('starter')
                     });
                     localStorageService.deleteItem('allMeasurements');
                     localStorageService.deleteItem('lastSyncTime');
+                    $scope.showLoader("Syncing ' + config.appSettings.primaryOutcomeVariableDetails.name + ' measurements...")
                     measurementService.syncPrimaryOutcomeVariableMeasurements().then(function(){
                         console.log("Measurement sync complete!");
-                        $rootScope.isSyncing = false;
-                        $rootScope.syncDisplayText = '';
+                        $scope.hideLoader();
                     });
-                    localStorageService.setItem('appVersion', 1489);
+                    localStorageService.setItem('appMigrationVersion', 1489);
                 }
 			}
 		};

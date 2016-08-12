@@ -1,13 +1,13 @@
 <ion-view hide-nav-bar="hideNavigationMenu" view-title="{{state.title}}">
     <ion-content scroll="true" overflow-scroll="true">
 
-        <div class="list card" ng-show="state.showReminderFrequencyCard">
+        <div class="list card" ng-show="state.showReminderFrequencyCard" id="reminderAddCard">
         	<div class="item item-divider">{{state.trackingReminder.variableName}} reminder settings</div>
             <div class="list">
                 <!--<label class="item item-input item-select" ng-if="state.showAddVariableCard && !state.trackingReminder.variableCategoryName">-->
                 <label class="item item-input item-select" ng-if="state.showAddVariableCard">
                     <div class="input-label" style="white-space:normal; width: 60%">Select Category</div>
-                    <select ng-model="state.trackingReminder.variableCategoryName" ng-change="setupVariableCategory(state.trackingReminder.variableCategoryName)">
+                    <select id="variableCategorySelector" ng-model="state.trackingReminder.variableCategoryName" ng-change="setupVariableCategory(state.trackingReminder.variableCategoryName)">
                         <option ng-repeat="variableCategory in variables.variableCategories" value="{{variableCategory.name}}">{{variableCategory.name}}</option>
                     </select>
                 </label>
@@ -20,31 +20,16 @@
                         Unit
                     </div>
 
-                    <select
+                    <select id="unitSelector"
                             ng-model="state.trackingReminder.abbreviatedUnitName" ng-options="x for x in abbreviatedUnitNames">
-                    </select>
-<!--                 Above is a crappier workaround for sometimes empty unit selector
-<select ng-model="state.trackingReminder.abbreviatedUnitName">
-                        <option ng-selected="{{unitObject.abbreviatedName == state.trackingReminder.abbreviatedUnitName}}"
-                                ng-repeat="unitObject in unitObjects"
-                                value="{{unitObject.abbreviatedName}}">
-                            {{unitObject.name}} ({{unitObject.abbreviatedName}})
-                        </option>
-                    </select>-->
-                </label>
-                <!--
-                <label class="item item-input item-select" ng-if="state.showAddVariableCard && !state.trackingReminder.variableCategoryName">
-                    <div class="input-label" style="white-space:normal; width: 60%">Select Category</div>
-                    <select ng-model="state.trackingReminder.variableCategoryName">
-                        <option ng-repeat="variableCategory in variables.variableCategories" value="{{variableCategory.name}}">{{variableCategory.name}}</option>
+                            <!--ng-model="state.trackingReminder.abbreviatedUnitName" ng-options="x as x.abbreviatedName for x in unitObjects track by x.id">-->
                     </select>
                 </label>
-                -->
                 <label class="item item-input item-select">
                     <div class="input-label">
                         Frequency
                     </div>
-                    <select ng-change="onFrequencyChange()" ng-model="state.selectedFrequency">
+                    <select id="frequencySelector" ng-change="onFrequencyChange()" ng-model="state.selectedFrequency">
                         <option ng-repeat="frequency in variables.frequencyVariables">{{frequency.name}}</option>
                     </select>
                 </label>
@@ -61,7 +46,7 @@
                         </button>
                     </label>
             </div>
-            <div class="list card" ng-show="state.selectedFrequency !== 'Daily'">
+<!--            <div class="list card" ng-show="state.selectedFrequency !== 'Daily'">
                 <label class="item item-input">
                     <div class="input-label" >
                         Reminder start time
@@ -84,26 +69,26 @@
                         {{state.reminderEndTimeEpochTime | fromUnixTimestampToLocalTimeOfDay}}
                     </button>
                 </label>
-            </div>
+            </div>-->
             <label class="item item-input" ng-show="state.showInstructionsField">
                 <span class="input-label">Instructions</span>
                 <input type="text" ng-model="state.trackingReminder.instructions" id="instructions" placeholder="Enter instructions here..." >
             </label>
-            <br>
-			<div class="row">
-				<div class="col col-50">
-					<button class="button button-block icon-left ion-android-cancel button-assertive" ng-click="cancel()">Cancel</button>
-				</div>
-				<div class="col col-50">
-					<button class="button button-block icon-left ion-android-done button-positive" ng-click="save()">Save</button>
-				</div>
-			</div>
             <div class="row">
-                <button ng-show="state.trackingReminder.id" ng-click="deleteReminder()"
-                        class="button icon-left ion-trash-a button-assertive"
-                        style="margin: auto">
-                    Delete Reminder
-                </button>
+                <div class="col col-50">
+                    <button id="cancelButton" class="button button-block icon-left ion-android-cancel button-assertive" ng-click="cancel()">Cancel</button>
+                </div>
+                <div class="col col-50">
+                    <button id="saveButton" class="button button-block icon-left ion-android-done button-positive" ng-click="save()">Save</button>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <button ng-show="state.trackingReminder.id" ng-click="deleteReminder()"
+                            class="button button-block icon-left ion-trash-a button-assertive">
+                        Delete
+                    </button>
+                </div>
             </div>
         </div>
         

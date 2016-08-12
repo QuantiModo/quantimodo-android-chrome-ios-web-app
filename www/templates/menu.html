@@ -9,15 +9,16 @@
             <ion-nav-buttons side="right">
                 <div class="buttons">
                     <button class="button button-icon ion-calendar" ng-show="showCalendarButton" ng-click="showCalendarPopup($event)"></button>
+                    <button class="button button-icon ion-android-more-vertical" ng-show="showMoreMenuButton" ng-click="showActionSheetMenu()"></button>
                 </div>
             </ion-nav-buttons>
         </ion-nav-bar>
         
-        <div class="col" ng-if="!hideNavigationMenu" ng-class="{'blink': isSyncing,'sync-indicator':isSyncing}" ng-show="isSyncing">
+        <div class="col" ng-show="!hideNavigationMenu && isSyncing" ng-class="{'blink': isSyncing,'sync-indicator':isSyncing}">
             <span>{{syncDisplayText}}</span>
         </div>
 
-        <div class="col" ng-if="hideNavigationMenu" style="top:0px!important;" ng-class="{'blink': isSyncing,'sync-indicator':isSyncing}" ng-show="isSyncing">
+        <div class="col" ng-show="hideNavigationMenu && isSyncing" style="top:0px!important;" ng-class="{'blink': isSyncing,'sync-indicator':isSyncing}">
             <span>{{syncDisplayText}}</span>
         </div>
         <ion-nav-view name="menuContent">
