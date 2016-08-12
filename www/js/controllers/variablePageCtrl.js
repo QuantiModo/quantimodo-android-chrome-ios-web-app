@@ -20,20 +20,7 @@ angular.module('starter')
             showHourlyChart: false,
             showWeekdayChart: false,
             barChartData: null,
-            lineChartData: null,
-            statistics : {
-                number_of_measurements: null,
-                number_of_correlations: null,
-                number_of_unique_daily_values: null,
-                mean: null,
-                median: null,
-                most_common_value: null,
-                standard_deviation: null,
-                variance: null,
-                skewness: null,
-                kurtosis: null
-            }
-
+            lineChartData: null
         };
 
         $scope.addNewReminderButtonClick = function() {
@@ -231,24 +218,8 @@ angular.module('starter')
 
         var getStatisticsForVariable = function (variableName) {
             variableService.getVariablesByName(variableName).then(function(variableObject){
-                updateStatisticsForVariable(variableObject);
+                $scope.state.variableObject = variableObject;
             });
-        };
-
-        var updateStatisticsForVariable = function(variableObject) {
-            $scope.state.statistics.number_of_measurements = variableObject.numberOfMeasurements;
-            $scope.state.statistics.number_of_correlations = variableObject.numberOfCorrelations;
-            $scope.state.statistics.number_of_unique_daily_values = variableObject.numberOfUniqueDailyValues;
-            $scope.state.statistics.mean = variableObject.mean;
-            $scope.state.statistics.median = variableObject.median;
-            $scope.state.statistics.most_common_value = variableObject.mostCommonValue;
-            $scope.state.statistics.standard_deviation = variableObject.standardDeviation;
-            $scope.state.statistics.variance = variableObject.variance;
-            $scope.state.statistics.skewness = variableObject.skewness;
-            $scope.state.statistics.kurtosis = variableObject.kurtosis;
-
-            console.log($scope.state.statistics);
-            console.log("stats logged");
         };
         
         $scope.init = function(){
