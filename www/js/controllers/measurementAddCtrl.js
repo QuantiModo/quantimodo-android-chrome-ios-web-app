@@ -299,70 +299,66 @@ angular.module('starter')
         // constructor
         $scope.init = function(){
             Bugsnag.context = "measurementAdd";
-                var isAuthorized = authService.checkAuthOrSendToLogin();
-                if(isAuthorized){
-                    unitService.getUnits().then(function () {
-                        if($stateParams.variableObject !== null && typeof $stateParams.variableObject !== "undefined") {
-                            console.debug("Setting $scope.state.measurement.abbreviatedUnitName by variableObject: " + $stateParams.variableObject.abbreviatedUnitName);
-                            if (jQuery.inArray($stateParams.variableObject.abbreviatedUnitName, $rootScope.abbreviatedUnitNames) === -1)
-                            {
-                                // Note: will occur for new variable
-                                console.warn('Invalid unit name! allowed parameters: ' + $rootScope.abbreviatedUnitNames.toString());
-                            }
-                            $scope.state.measurement.abbreviatedUnitName = $stateParams.variableObject.abbreviatedUnitName;
-                            //$scope.unitObject.abbreviatedName = $stateParams.variableObject.abbreviatedUnitName;
+                authService.checkAuthOrSendToLogin();
+                unitService.getUnits().then(function () {
+                    if($stateParams.variableObject !== null && typeof $stateParams.variableObject !== "undefined") {
+                        console.debug("Setting $scope.state.measurement.abbreviatedUnitName by variableObject: " + $stateParams.variableObject.abbreviatedUnitName);
+                        if (jQuery.inArray($stateParams.variableObject.abbreviatedUnitName, $rootScope.abbreviatedUnitNames) === -1)
+                        {
+                            // Note: will occur for new variable
+                            console.warn('Invalid unit name! allowed parameters: ' + $rootScope.abbreviatedUnitNames.toString());
                         }
-                        if($stateParams.reminderNotification !== null && typeof $stateParams.reminderNotification !== "undefined") {
-                            console.debug("Setting $scope.state.measurement.abbreviatedUnitName by reminder: " + $stateParams.reminderNotification.abbreviatedUnitName);
-                            if (jQuery.inArray($stateParams.reminderNotification.abbreviatedUnitName, $rootScope.abbreviatedUnitNames) === -1)
-                            {
-                                console.error('Invalid unit name! allowed parameters: ' + $rootScope.abbreviatedUnitNames.toString());
-                            }
-                            $scope.state.measurement.abbreviatedUnitName = $stateParams.reminderNotification.abbreviatedUnitName;
+                        $scope.state.measurement.abbreviatedUnitName = $stateParams.variableObject.abbreviatedUnitName;
+                        //$scope.unitObject.abbreviatedName = $stateParams.variableObject.abbreviatedUnitName;
+                    }
+                    if($stateParams.reminderNotification !== null && typeof $stateParams.reminderNotification !== "undefined") {
+                        console.debug("Setting $scope.state.measurement.abbreviatedUnitName by reminder: " + $stateParams.reminderNotification.abbreviatedUnitName);
+                        if (jQuery.inArray($stateParams.reminderNotification.abbreviatedUnitName, $rootScope.abbreviatedUnitNames) === -1)
+                        {
+                            console.error('Invalid unit name! allowed parameters: ' + $rootScope.abbreviatedUnitNames.toString());
                         }
+                        $scope.state.measurement.abbreviatedUnitName = $stateParams.reminderNotification.abbreviatedUnitName;
+                    }
 
-                        $scope.selectedDate = new Date();
-                        $scope.selectedHours = $scope.selectedDate.getHours();
-                        $scope.selectedMinutes = $scope.selectedDate.getMinutes();
+                    $scope.selectedDate = new Date();
+                    $scope.selectedHours = $scope.selectedDate.getHours();
+                    $scope.selectedMinutes = $scope.selectedDate.getMinutes();
 
-                        if(!$scope.state.measurementIsSetup){
-                            setupFromUrlParameters();
-                        }
-                        if(!$scope.state.measurementIsSetup) {
-                            setupFromMeasurementStateParameter();
-                        }
-                        if(!$scope.state.measurementIsSetup) {
-                            setupFromMeasurementObjectInUrl();
-                        }
-                        if(!$scope.state.measurementIsSetup) {
-                            setupFromVariableStateParameter();
-                        }
-                        if(!$scope.state.measurementIsSetup) {
-                            setupFromReminderObjectInUrl();
-                        }
-                        if(!$scope.state.measurementIsSetup) {
-                            setupFromReminderStateParameter();
-                        }
-                        if(!$scope.state.measurementIsSetup){
-                            setMeasurementVariablesByMeasurementId().then(function() {
-                                if(!$scope.state.measurementIsSetup){
-                                    // Not set up, go to different state
-                                    if($stateParams.fromUrl){
-                                        window.location = $stateParams.fromUrl;
-                                    } else if ($stateParams.fromState){
-                                        $state.go($stateParams.fromState);
-                                    } else {
-                                        $rootScope.hideNavigationMenu = false;
-                                        $state.go(config.appSettings.defaultState);
-                                    }
+                    if(!$scope.state.measurementIsSetup){
+                        setupFromUrlParameters();
+                    }
+                    if(!$scope.state.measurementIsSetup) {
+                        setupFromMeasurementStateParameter();
+                    }
+                    if(!$scope.state.measurementIsSetup) {
+                        setupFromMeasurementObjectInUrl();
+                    }
+                    if(!$scope.state.measurementIsSetup) {
+                        setupFromVariableStateParameter();
+                    }
+                    if(!$scope.state.measurementIsSetup) {
+                        setupFromReminderObjectInUrl();
+                    }
+                    if(!$scope.state.measurementIsSetup) {
+                        setupFromReminderStateParameter();
+                    }
+                    if(!$scope.state.measurementIsSetup){
+                        setMeasurementVariablesByMeasurementId().then(function() {
+                            if(!$scope.state.measurementIsSetup){
+                                // Not set up, go to different state
+                                if($stateParams.fromUrl){
+                                    window.location = $stateParams.fromUrl;
+                                } else if ($stateParams.fromState){
+                                    $state.go($stateParams.fromState);
+                                } else {
+                                    $rootScope.hideNavigationMenu = false;
+                                    $state.go(config.appSettings.defaultState);
                                 }
-                            });
-                        }
-                    });
-                    if (typeof analytics !== 'undefined')  { analytics.trackView("Add Measurement Controller"); }
-                }
-
-
+                            }
+                        });
+                    }
+                });
+                if (typeof analytics !== 'undefined')  { analytics.trackView("Add Measurement Controller"); }
         };
 
         // update data when view is navigated to

@@ -130,18 +130,17 @@ angular.module('starter')
 				}
 			}
 			
-            var isAuthorized = authService.checkAuthOrSendToLogin();
-			if(isAuthorized){
-                $scope.showHelpInfoPopupIfNecessary();
-                variableCategoryService.getVariableCategories()
-                    .then(function(variableCategories){
-                        $scope.state.variableCategories = variableCategories;
-                    }, function(err){
-						Bugsnag.notify(err, JSON.stringify(err), {}, "error");
-                        console.log("error getting variable categories", err);
-                    });
-                getHistory();
-			}
+            authService.checkAuthOrSendToLogin();
+			$scope.showHelpInfoPopupIfNecessary();
+			variableCategoryService.getVariableCategories()
+				.then(function(variableCategories){
+					$scope.state.variableCategories = variableCategories;
+				}, function(err){
+					Bugsnag.notify(err, JSON.stringify(err), {}, "error");
+					console.log("error getting variable categories", err);
+				});
+			getHistory();
+
 	    };
 
         // when view is changed
