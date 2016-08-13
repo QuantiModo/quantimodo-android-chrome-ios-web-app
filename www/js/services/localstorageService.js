@@ -34,6 +34,24 @@ angular.module('starter')
                 return deferred.promise;
             },
 
+            deleteElementOfItemByProperty : function(localStorageItemName, propertyName, propertyValue){
+                var deferred = $q.defer();
+                var elementsToKeep = [];
+                var localStorageItemArray = JSON.parse(this.getItemSync(localStorageItemName));
+                if(!localStorageItemArray){
+                    console.error("Local storage item " + localStorageItemName + " not found");
+                } else {
+                    for(var i = 0; i < localStorageItemArray.length; i++){
+                        if(localStorageItemArray[i][propertyName] !== propertyValue){
+                            elementsToKeep.push(localStorageItemArray[i]);
+                        }
+                    }
+                    this.setItem(localStorageItemName, JSON.stringify(elementsToKeep));
+                }
+                deferred.resolve();
+                return deferred.promise;
+            },
+
             replaceElementOfItemById : function(localStorageItemName, replacementElement){
                 var deferred = $q.defer();
                 var elementsToKeep = [];
