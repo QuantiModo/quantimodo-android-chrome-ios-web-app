@@ -100,13 +100,16 @@ angular.module('starter')
         $scope.deleteMeasurement = function(){
             $scope.showLoader('Deleting measurement...');
             if($scope.state.measurement.variableName === config.appSettings.primaryOutcomeVariableDetails.name){
-                localStorageService.deleteElementOfItemById('allMeasurements', $scope.state.measurement.id);
-                localStorageService.deleteElementOfItemByProperty('measurementQueue', 'startTimeEpoch',
-                    $scope.state.measurement.startTimeEpoch);
+                measurementService.deleteMeasurementFromLocalStorage($scope.state.measurement).then(function (){
+                    measurementService.deleteMeasurementFromServer($scope.state.measurement).then(function (){
+                        $ionicHistory.backView().go();
+                    });
+                });
+            } else {
+                measurementService.deleteMeasurementFromServer($scope.state.measurement).then(function (){
+                    $ionicHistory.backView().go();
+                });
             }
-            measurementService.deleteMeasurementFromServer($scope.state.measurement).then(function (){
-                $ionicHistory.backView().go();
-            });
         };
 
         $scope.onMeasurementStart = function(){
