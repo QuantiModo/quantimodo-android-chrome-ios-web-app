@@ -6,10 +6,10 @@ angular.module('starter')
 			generateDistributionArray : function(allMeasurements){
 				var distributionArray = [];
 				for (var i = 0; i < allMeasurements.length; i++) {
-					if(typeof distributionArray[allMeasurements[i].value] === "undefined"){
-						distributionArray[allMeasurements[i].value] = 0;
+					if(typeof distributionArray[String(allMeasurements[i].value)] === "undefined"){
+						distributionArray[String(allMeasurements[i].value)] = 0;
 					}
-					distributionArray[allMeasurements[i].value] += 1;
+					distributionArray[String(allMeasurements[i].value)] += 1;
 				}
 				return distributionArray;
 			},
@@ -80,12 +80,16 @@ angular.module('starter')
 			},
 
 	    	// generate bar chart stub with data
-	        configureDistributionChart : function(data, variableObject){
+	        configureDistributionChart : function(dataAndLabels, variableObject){
 				var xAxisLabels = [];
-				for(var propertyName in data) {
+				var data = [];
+				for(var propertyName in dataAndLabels) {
 					// propertyName is what you want
 					// you can get the value like this: myObject[propertyName]
-					xAxisLabels.push(data[propertyName]);
+					if(dataAndLabels.hasOwnProperty(propertyName)){
+						xAxisLabels.push(propertyName);
+						data.push(dataAndLabels[propertyName]);
+					}
 				}
 
 				if(variableObject.name === config.appSettings.primaryOutcomeVariableDetails.name) {
@@ -105,6 +109,9 @@ angular.module('starter')
 	                        text : variableObject.name + ' Distribution'
 	                    },
 	                    xAxis : {
+							title : {
+								text : 'Daily Values (' + variableObject.abbreviatedUnitName + ')'
+							},
 	                        categories : xAxisLabels
 	                    },
 	                    yAxis : {
@@ -186,22 +193,6 @@ angular.module('starter')
 			},
 
 			processDataAndConfigureDistributionChart : function(measurements, variableObject) {
-				if(!variableObject.name){
-					console.error("ERROR: No variable name provided to processDataAndConfigureHourlyChart");
-					return;
-				}
-
-				if(!variableObject.unitName){
-					variableObject.unitName = measurements[0].unitName;
-				}
-				if(!variableObject.unitName){
-					variableObject.unitName = measurements[0].abbreviatedUnitName;
-				}
-				var distributionArray = this.generateDistributionArray(measurements);
-				return this.configureDistributionChart(distributionArray, variableObject);
-			},
-
-			processDataAndConfigureLineChart : function(measurements, variableObject) {
 				if(!variableObject.name){
 					console.error("ERROR: No variable name provided to processDataAndConfigureHourlyChart");
 					return;
@@ -397,10 +388,24 @@ angular.module('starter')
 				};
 			},
 
+			processDataAndConfigureLineChart: function(measurements, variableObject) {
+				var lineChartData = [];
+				var lineChartItem;
+				for (var i = 0; i < measurements.length; i++) {
+					lineChartItem = [measurements[i].startTimeEpoch * 1000, measurements[i].value];
+					lineChartData.push(lineChartItem);
+				}
+				return chartService.configureLineChart(lineChartData, variableObject);
+			},
+
 	        // generate stock chart
 	        configureLineChart : function(data, variableObject) {
 				if(!variableObject.name){
 					console.error("ERROR: No variable name provided to configureLineChart");
+					return;
+				}
+				if(data.length < 1){
+					console.error("ERROR: No data provided to configureLineChart");
 					return;
 				}
 				var date = new Date();

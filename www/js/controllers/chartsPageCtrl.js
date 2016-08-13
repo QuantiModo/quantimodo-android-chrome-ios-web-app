@@ -14,13 +14,7 @@ angular.module('starter')
             sum : 0,
             rangeLength : 0,
             averageValue : 0,
-            offset: 0,
-            showDistributionChart: false,
-            showLineChart: false,
-            showHourlyChart: false,
-            showWeekdayChart: false,
-            distributionChartData: null,
-            lineChartData: []
+            offset: 0
         };
 
         $scope.addNewReminderButtonClick = function() {
@@ -42,12 +36,6 @@ angular.module('starter')
             $scope.goToSettingsForVariableObject($scope.state.variableObject);
         };
 
-        var updateDistributionChart = function(measurementsToChart){
-            console.log("Configuring bar chart...");
-
-            $scope.state.showDistributionChart = true;
-        };
-
         var windowResize = function() {
             $(window).resize();
 
@@ -59,7 +47,6 @@ angular.module('starter')
             $scope.$broadcast('highchartsng.reflow');
         };
 
-        // updates all the visual elements on the page
         var updateCharts = function(){
 
             if ($scope.state.history.length > 0) {
@@ -72,32 +59,14 @@ angular.module('starter')
                 if (!toDate) {
                     toDate = Date.now();
                 }*/
-
-                var fromDate = 0;
-                var toDate = Date.now();
-                var measurementsToChart = [];
-
-                for (var i = 0; i < $scope.state.history.length; i++) {
-                    var currentValue = Math.ceil($scope.state.history[i].value); // Math.ceil was used before -- why?
-                    var startTimeMilliseconds = $scope.state.history[i].startTimeEpoch * 1000;
-                    if (startTimeMilliseconds >= fromDate && startTimeMilliseconds <= toDate) {
-                        measurementsToChart.push($scope.state.history[i]);
-                        var lineChartItem = [startTimeMilliseconds, currentValue];
-                        $scope.state.lineChartData.push(lineChartItem);
-                        $scope.state.sum+= currentValue;
-                        $scope.state.rangeLength++;
-                    }
-                }
+                $scope.lineChartConfig = chartService.processDataAndConfigureLineChart($scope.state.history, $scope.state.variableObject);
                 $scope.hourlyChartConfig =
-                    chartService.processDataAndConfigureHourlyChart(measurementsToChart, $scope.state.variableObject);
+                    chartService.processDataAndConfigureHourlyChart($scope.state.history, $scope.state.variableObject);
                 $scope.weekdayChartConfig =
-                    chartService.processDataAndConfigureWeekdayChart(measurementsToChart, $scope.state.variableObject);
+                    chartService.processDataAndConfigureWeekdayChart($scope.state.history, $scope.state.variableObject);
                 $scope.distributionChartConfig =
-                    chartService.processDataAndConfigureDistributionChart(measurementsToChart, $scope.state.variableObject);
+                    chartService.processDataAndConfigureDistributionChart($scope.state.history, $scope.state.variableObject);
                 $scope.state.averageValue = Math.round($scope.state.sum/($scope.state.rangeLength));
-                $scope.lineChartConfig =
-                    chartService.configureLineChart($scope.state.lineChartData, $scope.state.variableObject);
-                var measurementsGroupedByDay = chartService.groupOverTime(measurementsToChart, $scope.state.variableObject, 'day');
                 windowResize();
             }
         };
@@ -112,10 +81,10 @@ angular.module('starter')
             console.log("variablePageCtrl: getHistoryForVariable " + $scope.state.variableObject.name);
             $scope.showLoader('Getting ' + $scope.state.variableObject.name + ' measurements...');
 
-            QuantiModo.getV1Measurements(params, function(history){
+            QuantiModo.getV1MeasurementsDaily(params, function(history){
                 $scope.state.history = $scope.state.history.concat(history);
                 
-                if(history.length === 200){
+                if(history.length > 0){
                     $scope.state.offset = $scope.state.offset + 200;
                     params = {
                         offset: $scope.state.offset,

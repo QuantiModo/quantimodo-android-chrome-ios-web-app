@@ -259,6 +259,14 @@ angular.module('starter')
                     successHandler,
                     errorHandler);
             };
+
+            QuantiModo.getV1MeasurementsDaily = function(params, successHandler, errorHandler){
+                QuantiModo.get('api/v1/measurements/daily',
+                    ['source', 'limit', 'offset', 'sort', 'id', 'variableCategoryName', 'variableName'],
+                    params,
+                    successHandler,
+                    errorHandler);
+            };
         
             QuantiModo.deleteV1Measurements = function(measurements, successHandler, errorHandler){
                 QuantiModo.post('api/v1/measurements/delete',
