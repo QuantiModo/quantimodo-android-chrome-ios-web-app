@@ -175,6 +175,8 @@ angular.module('starter')
         var getHistoryForVariable = function(params){
             if(!params.variableName){
                 console.error("ERROR: params.variableName not provided to getHistoryForVariable");
+                console.error("params: " + JSON.stringify(params));
+                console.error("$scope.state.variableObject: " + JSON.stringify($scope.state.variableObject));
                 return;
             }
             console.log("variablePageCtrl: getHistoryForVariable " + $scope.state.variableObject.name);
