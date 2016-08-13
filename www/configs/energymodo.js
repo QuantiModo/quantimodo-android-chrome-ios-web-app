@@ -50,7 +50,8 @@ config.appSettings  = {
         category : "Emotions",
         abbreviatedUnitName : "/5",
         combinationOperation: "MEAN",
-        positiveOrNegative: 'positive'
+        positiveOrNegative: 'positive',
+        unitName: '1 to 5 Rating'
     },
 
     primaryOutcomeVariableRatingOptionLabels : [
