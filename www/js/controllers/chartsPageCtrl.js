@@ -44,7 +44,7 @@ angular.module('starter')
 
         var updateBarChart = function(barChartData){
             console.log("Configuring bar chart...");
-            $scope.barChartConfig = chartService.configureBarChart(barChartData, $scope.state.variableObject.variableName);
+            $scope.barChartConfig = chartService.configureBarChart(barChartData, $scope.state.variableObject);
             $scope.state.showBarChart = true;
         };
 
@@ -64,7 +64,7 @@ angular.module('starter')
 
         var updateLineChart = function(lineChartData){
             console.log("Configuring line chart...");
-            $scope.lineChartConfig = chartService.configureLineChart(lineChartData, $scope.state.variableObject.variableName);
+            $scope.lineChartConfig = chartService.configureLineChart(lineChartData, $scope.state.variableObject);
             $scope.state.showLineChart = true;
         };
 
@@ -172,9 +172,15 @@ angular.module('starter')
             }
         };
 
-        var getHistoryForVariable = function(params, deferred){
-            console.log("variablePageCtrl: getHistoryForVariable " + $scope.state.variableObject.variableName);
-            $scope.showLoader('Getting ' + $scope.state.variableObject.variableName + ' measurements...');
+        var getHistoryForVariable = function(params){
+            if(!params.variableName){
+                console.error("ERROR: params.variableName not provided to getHistoryForVariable");
+                console.error("params: " + JSON.stringify(params));
+                console.error("$scope.state.variableObject: " + JSON.stringify($scope.state.variableObject));
+                return;
+            }
+            console.log("variablePageCtrl: getHistoryForVariable " + $scope.state.variableObject.name);
+            $scope.showLoader('Getting ' + $scope.state.variableObject.name + ' measurements...');
 
             QuantiModo.getV1Measurements(params, function(history){
                 $scope.state.history = $scope.state.history.concat(history);
@@ -184,7 +190,7 @@ angular.module('starter')
                     params = {
                         offset: $scope.state.offset,
                         sort: "startTimeEpoch",
-                        variableName: $scope.state.variableObject.variableName,
+                        variableName: $scope.state.variableObject.name,
                         limit: 200
                     };
                     updateCharts();
@@ -217,6 +223,9 @@ angular.module('starter')
 
 
         var getStatisticsForVariable = function (variableName) {
+            $scope.state.variableObject = {
+                name:  variableName
+            };
             variableService.getVariablesByName(variableName).then(function(variableObject){
                 $scope.state.variableObject = variableObject;
             });
@@ -226,38 +235,27 @@ angular.module('starter')
             console.log("variablePageCtrl: init");
             if($stateParams.variableObject){
                 $scope.state.variableObject = $stateParams.variableObject;
-                if($stateParams.variableObject.name){
-                    $scope.state.variableObject.variableName = $stateParams.variableObject.name;
-                }
-                getStatisticsForVariable($scope.state.variableObject.variableName);
             } else if ($stateParams.trackingReminder){
-                $scope.state.variableObject = $stateParams.trackingReminder;
-                getStatisticsForVariable($scope.state.variableObject.variableName);
+                getStatisticsForVariable($stateParams.trackingReminder.variableName);
             } else if ($stateParams.variableName){
-                $scope.state.variableObject = {
-                    variableName:  $stateParams.variableName
-                };
-                variableService.getVariablesByName($stateParams.variableName).then(function(variableObject){
-                    $scope.state.variableObject = variableObject;
-                    $scope.state.variableObject.variableName = variableObject.name;
-                });
-
+                getStatisticsForVariable($stateParams.variableName);
             } else {
-                console.error("No variable name provided to variable page controller!");
+                console.error("ERROR: chartsPageCtrl.init No variable name provided!");
+                return;
             }
 
             $ionicLoading.hide();
 
-            if($scope.state.variableObject.variableName){
+            if($scope.state.variableObject.name){
                 var params = {
                     sort: "startTimeEpoch",
-                    variableName: $scope.state.variableObject.variableName,
+                    variableName: $scope.state.variableObject.name,
                     limit: 200
                 };
                 getHistoryForVariable(params);
             } else {
-                console.error('ERROR: $scope.state.variableObject.variableName not defined! $scope.state.variableObject: ' +
-                    JSON.stringify($scope.state.variableObject) )
+                console.error('ERROR: $scope.state.variableObject.name not defined! $scope.state.variableObject: ' +
+                    JSON.stringify($scope.state.variableObject));
             }
         };
 
