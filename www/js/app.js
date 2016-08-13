@@ -622,6 +622,7 @@ angular.module('starter',
         })
         .state('app.remindersInbox', {
             url: "/reminders-inbox",
+            cache: false,
             params: {
                 reminderFrequency: null,
                 unit: null,

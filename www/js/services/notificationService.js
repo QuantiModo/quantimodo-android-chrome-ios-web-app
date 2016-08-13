@@ -1,7 +1,7 @@
 angular.module('starter')
 // Handles the Notifications (inapp, push)
     .factory('notificationService',function($rootScope, $ionicPlatform, $state, $q, QuantiModo, timeService,
-                                            bugsnagService, qmLocationService) {
+                                            bugsnagService, qmLocationService, variableCategoryService) {
 
         function createChromeAlarmNameFromTrackingReminder(trackingReminder) {
             var alarmName = {
@@ -138,6 +138,11 @@ angular.module('starter')
                         if (response.success) {
                             $rootScope.trackingReminderNotifications = response.data;
                             $rootScope.numberOfPendingNotifications = $rootScope.trackingReminderNotifications.length;
+                            $rootScope.trackingRemindersNotifications =
+                                variableCategoryService.attachVariableCategoryIcons(trackingReminderNotifications);
+                            localStorageService.setItem('trackingReminderNotifications',
+                                JSON.stringify($rootScope.trackingRemindersNotifications));
+
                             if (window.chrome && window.chrome.browserAction) {
                                 chrome.browserAction.setBadgeText({
                                     text: $rootScope.numberOfPendingNotifications

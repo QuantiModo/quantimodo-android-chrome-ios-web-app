@@ -570,6 +570,12 @@ angular.module('starter')
             };
 
             $scope.showLoader('Syncing reminder notifications...');
+            $rootScope.trackingReminderNotifications =
+                localStorageService.getElementsFromItemWithFilters('trackingReminderNotifications',
+                    'variableCategoryName', params.variableCategoryName);
+            $rootScope.filteredTrackingReminderNotifications =
+                groupTrackingReminderNotificationsByDateRange($rootScope.trackingReminderNotifications);
+
             reminderService.getTrackingReminderNotifications(params.variableCategoryName, params.today)
                 .then(function (trackingReminderNotifications) {
 
@@ -593,7 +599,12 @@ angular.module('starter')
                     
                     $rootScope.trackingRemindersNotifications =
                         variableCategoryService.attachVariableCategoryIcons(trackingReminderNotifications);
-                    $rootScope.filteredTrackingReminderNotifications = groupTrackingReminderNotificationsByDateRange(trackingReminderNotifications);
+                    $rootScope.filteredTrackingReminderNotifications =
+                        groupTrackingReminderNotificationsByDateRange(trackingReminderNotifications);
+                    if(!params.today && !params.variableCategoryName){
+                        localStorageService.setItem('trackingReminderNotifications',
+                            JSON.stringify($rootScope.trackingRemindersNotifications));
+                    }
                     //Stop the ion-refresher from spinning
                     $scope.$broadcast('scroll.refreshComplete');
                     $scope.hideLoader();

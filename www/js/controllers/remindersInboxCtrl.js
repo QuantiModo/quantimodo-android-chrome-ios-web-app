@@ -112,6 +112,8 @@ angular.module('starter')
 				trackingReminderNotification: trackingReminderNotification,
 				modifiedValue: modifiedReminderValue
 			};
+			localStorageService.deleteElementOfItemById('trackingReminderNotifications',
+				trackingReminderNotification.id);
 
 	    	reminderService.trackReminderNotification(params)
 	    	.then(function(){
@@ -160,6 +162,8 @@ angular.module('starter')
 			$rootScope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications[trackingReminderNotificationNotificationIndex].hide = true;
 
 			console.debug('Snoozing notification', trackingReminderNotification);
+			localStorageService.deleteElementOfItemById('trackingReminderNotifications',
+				trackingReminderNotification.id);
 			var params = {
 				trackingReminderNotificationId: trackingReminderNotification.id
 			};
@@ -251,6 +255,8 @@ angular.module('starter')
 		};
 
 	    $scope.editMeasurement = function(trackingReminderNotification, dividerIndex, trackingReminderNotificationNotificationIndex){
+			localStorageService.deleteElementOfItemById('trackingReminderNotifications',
+				trackingReminderNotification.id);
 			$rootScope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications[trackingReminderNotificationNotificationIndex].hide = true;
 			$state.go('app.measurementAdd',
 				{
