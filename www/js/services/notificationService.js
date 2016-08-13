@@ -145,7 +145,7 @@ angular.module('starter')
 
                             if (window.chrome && window.chrome.browserAction) {
                                 chrome.browserAction.setBadgeText({
-                                    text: $rootScope.numberOfPendingNotifications
+                                    text: String($rootScope.numberOfPendingNotifications)
                                 });
                             }
 
@@ -257,7 +257,7 @@ angular.module('starter')
                     $rootScope.numberOfPendingNotifications = $rootScope.numberOfPendingNotifications - 1;
                     if (window.chrome && window.chrome.browserAction) {
                         chrome.browserAction.setBadgeText({
-                            text: $rootScope.numberOfPendingNotifications
+                            text: String($rootScope.numberOfPendingNotifications)
                         });
                     }
                     this.updateOrRecreateNotifications();
@@ -269,7 +269,7 @@ angular.module('starter')
                 $rootScope.numberOfPendingNotifications = numberOfPendingNotifications;
                 if (window.chrome && window.chrome.browserAction) {
                     chrome.browserAction.setBadgeText({
-                        text: $rootScope.numberOfPendingNotifications
+                        text: String($rootScope.numberOfPendingNotifications)
                     });
                 }
                 this.updateOrRecreateNotifications();
