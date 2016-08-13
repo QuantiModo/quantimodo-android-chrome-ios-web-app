@@ -137,6 +137,8 @@ angular.module('starter')
 			$rootScope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications[trackingReminderNotificationNotificationIndex].hide = true;
 
 			console.debug('Skipping notification', trackingReminderNotification);
+            localStorageService.deleteElementOfItemById('trackingReminderNotifications',
+                trackingReminderNotification.id);
 			var params = {
 				trackingReminderNotificationId: trackingReminderNotification.id
 			};
