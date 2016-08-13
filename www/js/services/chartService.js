@@ -42,7 +42,7 @@ angular.module('starter')
 						averageValueByHourArray[k] = sumByHour[k] / (hourlyMeasurementArrays[k].length);
 					} else {
 						averageValueByHourArray[k] = null;
-						console.debug("No data for hour " + k);
+						//console.debug("No data for hour " + k);
 					}
 				}
 				return averageValueByHourArray;
@@ -62,7 +62,7 @@ angular.module('starter')
 						averageValueByWeekdayArray[k] = sumByWeekday[k] / (weekdayMeasurementArrays[k].length);
 					} else {
 						averageValueByWeekdayArray[k] = null;
-						console.debug("No data for day " + k);
+						//console.debug("No data for day " + k);
 					}
 				}
 				return averageValueByWeekdayArray;
