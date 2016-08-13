@@ -151,7 +151,6 @@ angular.module('starter')
         var addDataPointAndUpdateCharts = function() {
             $scope.state.history = $scope.state.history.concat($stateParams.measurementInfo);
 
-
             var startTimeMilliseconds = $stateParams.measurementInfo.startTimeEpoch*1000;
             //if (startTimeMilliseconds >= fromDate && startTimeMilliseconds <= toDate) {
                 var currentValue = Math.ceil($stateParams.measurementInfo.value);
@@ -172,7 +171,6 @@ angular.module('starter')
                 updateBarChart($scope.state.barChartData);
             }
         };
-        
 
         var getHistoryForVariable = function(params, deferred){
             console.log("variablePageCtrl: getHistoryForVariable " + $scope.state.variableObject.variableName);
@@ -190,7 +188,7 @@ angular.module('starter')
                         limit: 200
                     };
                     updateCharts();
-                    getHistoryForVariable(params, deferred);
+                    getHistoryForVariable(params);
                 }
                 else {
                     if (history[0]) {
@@ -202,17 +200,19 @@ angular.module('starter')
                         }
                     }
                     $scope.hideLoader();
-                    deferred.resolve();
+                    if ($scope.state.history.length > 0) {
+                        console.log("variablePageCtrl: history log");
+                        console.log($scope.state.history);
+                        updateCharts();
+                    }
                 }
             }, function(error){
                 Bugsnag.notify(error, JSON.stringify(error), {}, "error");
-                console.log('error getting measurements', error);
+                console.error('error getting measurements', error);
                 $scope.hideLoader();
-                deferred.reject(error);
             }, function(history) {
                 $scope.state.history = $scope.state.history.concat(history);
             });
-            return deferred.promise;
         };
 
 
@@ -234,8 +234,9 @@ angular.module('starter')
                 $scope.state.variableObject = $stateParams.trackingReminder;
                 getStatisticsForVariable($scope.state.variableObject.variableName);
             } else if ($stateParams.variableName){
-                $scope.state.variableObject = {};
-                $scope.state.variableObject.variableName = $stateParams.variableName;
+                $scope.state.variableObject = {
+                    variableName:  $stateParams.variableName
+                };
                 variableService.getVariablesByName($stateParams.variableName).then(function(variableObject){
                     $scope.state.variableObject = variableObject;
                     $scope.state.variableObject.variableName = variableObject.name;
@@ -247,23 +248,17 @@ angular.module('starter')
 
             $ionicLoading.hide();
 
-            var params = {
-                offset: $scope.state.offset,
-                sort: "startTimeEpoch",
-                variableName: $scope.state.variableObject.variableName,
-                limit: 200
-            };
-
-                   
-            var deferred = $q.defer();
-            getHistoryForVariable(params, deferred).then((function() {
-                if ($scope.state.history.length > 0) {
-                    console.log("variablePageCtrl: history log");
-                    console.log($scope.state.history);
-                    updateCharts();
-                }
-            }));
-
+            if($scope.state.variableObject.variableName){
+                var params = {
+                    sort: "startTimeEpoch",
+                    variableName: $scope.state.variableObject.variableName,
+                    limit: 200
+                };
+                getHistoryForVariable(params);
+            } else {
+                console.error('ERROR: $scope.state.variableObject.variableName not defined! $scope.state.variableObject: ' +
+                    JSON.stringify($scope.state.variableObject) )
+            }
         };
 
         $scope.$on('$ionicView.enter', function(e) {
