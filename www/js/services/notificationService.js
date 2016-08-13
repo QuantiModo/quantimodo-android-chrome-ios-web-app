@@ -62,6 +62,7 @@ angular.module('starter')
                             trackingReminderId: notificationData.id
                         };
                     } else {
+                        $rootScope.$broadcast('refreshReminderInbox');
                         console.log("onClick: No notification data provided. Going to remindersInbox page.");
                         $state.go('app.remindersInbox');
                     }

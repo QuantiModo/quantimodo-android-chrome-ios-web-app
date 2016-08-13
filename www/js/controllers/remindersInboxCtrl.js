@@ -292,6 +292,11 @@ angular.module('starter')
     		$scope.init();
     	});
 
+		$scope.$on('refreshReminderInbox', function(){
+			$scope.init();
+			console.log('Received refreshReminderInbox!');
+		});
+		
 		// Triggered on a button click, or some other target
 		$scope.showActionSheetForNotification = function(trackingReminderNotification, $event) {
 
