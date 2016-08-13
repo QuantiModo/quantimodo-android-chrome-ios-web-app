@@ -19,13 +19,12 @@ angular.module('starter')
                 $ionicLoading.hide();
                 if(status === 401){
                     localStorageService.deleteItem('accessToken');
+                    localStorageService.deleteItem('accessTokenInUrl');
+                    $rootScope.accessToken = null;
                     localStorageService.deleteItem('user');
                     $rootScope.user = null;
                     console.warn('QuantiModo.errorHandler: Sending to login because we got 401 with request ' +
                         JSON.stringify(request));
-                    console.debug('data: ' + JSON.stringify(data));
-                    console.debug('headers: ' + JSON.stringify(headers));
-                    console.debug('config: ' + JSON.stringify(config));
                     $state.go('app.login');
                     return;
                 }
@@ -60,6 +59,14 @@ angular.module('starter')
             QuantiModo.get = function(baseURL, allowedParams, params, successHandler, errorHandler){
                 console.debug('QuantiModo.get: ' + baseURL + '. Going to authService.getAccessTokenFromAnySource');
                 authService.getAccessTokenFromAnySource().then(function(accessToken){
+                    if(accessToken && accessToken.indexOf(' ') > -1){
+                        accessToken = null;
+                        localStorageService.deleteItem('accessToken');
+                        localStorageService.deleteItem('accessTokenInUrl');
+                        $rootScope.accessToken = null;
+                        bugsnagService.reportError('ERROR: Access token had white space so probably erroneous! Deleting it now.')
+                    }
+
                     allowedParams.push('limit');
                     allowedParams.push('offset');
                     allowedParams.push('sort');
@@ -131,6 +138,14 @@ angular.module('starter')
             QuantiModo.post = function(baseURL, requiredFields, items, successHandler, errorHandler){
                 console.debug('QuantiModo.get: ' + baseURL + '. Going to authService.getAccessTokenFromAnySource');
                 authService.getAccessTokenFromAnySource().then(function(accessToken){
+
+                    if(accessToken && accessToken.indexOf(' ') > -1){
+                        accessToken = null;
+                        localStorageService.deleteItem('accessToken');
+                        localStorageService.deleteItem('accessTokenInUrl');
+                        $rootScope.accessToken = null;
+                        bugsnagService.reportError('ERROR: Access token had white space so probably erroneous! Deleting it now.')
+                    }
                     
                     //console.log("Token : ", token.accessToken);
                     // configure params

@@ -7,6 +7,7 @@ angular.module('starter')
 
             reportError : function(exception){
                 var message = exception.toString();
+                console.error('ERROR: ' + message);
                 var stacktrace;
                 if(typeof exception.stack !== 'undefined'){
                     stacktrace = exception.stack.toLocaleString();
