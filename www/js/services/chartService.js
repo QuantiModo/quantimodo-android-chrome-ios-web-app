@@ -69,11 +69,11 @@ angular.module('starter')
 			},
 
 	    	// generate bar chart stub with data
-	        configureBarChart : function(data, variableName){
+	        configureBarChart : function(data, variableObject){
 				var displayVariableName;
 				var xAxisLabels;
-				if (variableName) {
-					displayVariableName = variableName + ' distribution';
+				if (variableObject) {
+					displayVariableName = variableObject.name + ' Distribution';
 					xAxisLabels = ["1", "2", "3", "4", "5"];
 				}
 				else {
@@ -335,13 +335,13 @@ angular.module('starter')
 			},
 
 	        // generate stock chart
-	        configureLineChart : function(data, variableName) {
+	        configureLineChart : function(data, variableObject) {
 				var date = new Date();
 				var timezoneOffsetHours = (date.getTimezoneOffset())/60;
 				var timezoneOffsetMilliseconds = timezoneOffsetHours*60*60*1000; // minutes, seconds, milliseconds
 				var displayVariableName;
-				if (variableName) {
-					displayVariableName = variableName + ' Over Time';
+				if (variableObject) {
+					displayVariableName = variableObject.name + ' Over Time';
 				}
 				else {
 					displayVariableName = config.appSettings.primaryOutcomeVariable + ' Over Time';
