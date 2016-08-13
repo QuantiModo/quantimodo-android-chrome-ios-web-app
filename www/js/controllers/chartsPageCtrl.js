@@ -151,7 +151,6 @@ angular.module('starter')
         var addDataPointAndUpdateCharts = function() {
             $scope.state.history = $scope.state.history.concat($stateParams.measurementInfo);
 
-
             var startTimeMilliseconds = $stateParams.measurementInfo.startTimeEpoch*1000;
             //if (startTimeMilliseconds >= fromDate && startTimeMilliseconds <= toDate) {
                 var currentValue = Math.ceil($stateParams.measurementInfo.value);
@@ -172,7 +171,6 @@ angular.module('starter')
                 updateBarChart($scope.state.barChartData);
             }
         };
-        
 
         var getHistoryForVariable = function(params, deferred){
             console.log("variablePageCtrl: getHistoryForVariable " + $scope.state.variableObject.variableName);
