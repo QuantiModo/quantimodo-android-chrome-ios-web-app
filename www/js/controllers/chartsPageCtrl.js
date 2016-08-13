@@ -8,19 +8,19 @@ angular.module('starter')
         $scope.addReminderButtonText = "Add Reminder";
         $scope.recordMeasurementButtonText = "Record Measurement";
         $scope.lineChartConfig = false;
-        $scope.barChartConfig = false;
+        $scope.distributionChartConfig = false;
         $scope.state = {
             history : [],
             sum : 0,
             rangeLength : 0,
             averageValue : 0,
             offset: 0,
-            showBarChart: false,
+            showDistributionChart: false,
             showLineChart: false,
             showHourlyChart: false,
             showWeekdayChart: false,
-            barChartData: null,
-            lineChartData: null
+            distributionChartData: null,
+            lineChartData: []
         };
 
         $scope.addNewReminderButtonClick = function() {
@@ -42,30 +42,10 @@ angular.module('starter')
             $scope.goToSettingsForVariableObject($scope.state.variableObject);
         };
 
-        var updateBarChart = function(barChartData){
+        var updateDistributionChart = function(measurementsToChart){
             console.log("Configuring bar chart...");
-            $scope.barChartConfig = chartService.configureBarChart(barChartData, $scope.state.variableObject);
-            $scope.state.showBarChart = true;
-        };
 
-
-        var updateWeekdayChart = function(measurementsToChart){
-            console.log("Configuring Weekday chart...");
-            $scope.weekdayChartConfig = chartService.processDataAndConfigureWeekdayChart(measurementsToChart, $scope.state.variableObject);
-            $scope.state.showWeekdayChart = true;
-        };
-
-        var updateHourlyChart = function(measurementsToChart){
-            console.log("Configuring Hourly chart...");
-            $scope.hourlyChartConfig = chartService.processDataAndConfigureHourlyChart(measurementsToChart, $scope.state.variableObject);
-            $scope.state.showHourlyChart = true;
-        };
-
-
-        var updateLineChart = function(lineChartData){
-            console.log("Configuring line chart...");
-            $scope.lineChartConfig = chartService.configureLineChart(lineChartData, $scope.state.variableObject);
-            $scope.state.showLineChart = true;
+            $scope.state.showDistributionChart = true;
         };
 
         var windowResize = function() {
@@ -81,13 +61,6 @@ angular.module('starter')
 
         // updates all the visual elements on the page
         var updateCharts = function(){
-
-            var lineArr = [];
-            var barArr = []; // only if /5 unit
-            if ($scope.state.history[0].abbreviatedUnitName === '/5') {
-                $scope.state.variableObject.abbreviatedUnitName = '/5';
-                barArr = [0, 0, 0, 0, 0];
-            }
 
             if ($scope.state.history.length > 0) {
                 // FIXME Eventually update fromDate and toDate so calendar can determine domain
@@ -110,65 +83,22 @@ angular.module('starter')
                     if (startTimeMilliseconds >= fromDate && startTimeMilliseconds <= toDate) {
                         measurementsToChart.push($scope.state.history[i]);
                         var lineChartItem = [startTimeMilliseconds, currentValue];
-                        lineArr.push(lineChartItem);
-                        if ($scope.state.variableObject.abbreviatedUnitName === '/5') {
-                            barArr[currentValue - 1]++;
-                        }
+                        $scope.state.lineChartData.push(lineChartItem);
                         $scope.state.sum+= currentValue;
                         $scope.state.rangeLength++;
                     }
                 }
-                updateHourlyChart(measurementsToChart);
-                updateWeekdayChart(measurementsToChart);
+                $scope.hourlyChartConfig =
+                    chartService.processDataAndConfigureHourlyChart(measurementsToChart, $scope.state.variableObject);
+                $scope.weekdayChartConfig =
+                    chartService.processDataAndConfigureWeekdayChart(measurementsToChart, $scope.state.variableObject);
+                $scope.distributionChartConfig =
+                    chartService.processDataAndConfigureDistributionChart(measurementsToChart, $scope.state.variableObject);
                 $scope.state.averageValue = Math.round($scope.state.sum/($scope.state.rangeLength));
-                console.log("variablePageCtrl: update charts, logging lineArr");
-                console.log(lineArr);
-                
-                $scope.state.lineChartData = lineArr;
-                if ($scope.state.lineChartData.length > 0) {
-                    updateLineChart($scope.state.lineChartData);
-                    if($scope.state.variableObject.abbreviatedUnitName === '/5' && (!$scope.barChartConfig || barArr !== $scope.barChartConfig.series[0].data)) {
-                        $scope.state.barChartData = barArr;
-                        if ($scope.state.barChartData.length === 5) {
-                            updateBarChart($scope.state.barChartData);
-                            // only show if length > 0 - we don't want an empty bar chart
-                        }
-                    }
-                    else {
-                        $scope.state.showBarChart = false;
-                    }
-                    if (!$scope.$$phase) {
-                        $scope.safeApply();
-                    }
-                }
-                else {
-                    $scope.state.showLineChart = false;
-                }
+                $scope.lineChartConfig =
+                    chartService.configureLineChart($scope.state.lineChartData, $scope.state.variableObject);
+                var measurementsGroupedByDay = chartService.groupOverTime(measurementsToChart, $scope.state.variableObject, 'day');
                 windowResize();
-            }
-        };
-
-        var addDataPointAndUpdateCharts = function() {
-            $scope.state.history = $scope.state.history.concat($stateParams.measurementInfo);
-
-            var startTimeMilliseconds = $stateParams.measurementInfo.startTimeEpoch*1000;
-            //if (startTimeMilliseconds >= fromDate && startTimeMilliseconds <= toDate) {
-                var currentValue = Math.ceil($stateParams.measurementInfo.value);
-                var lineChartItem = [startTimeMilliseconds, currentValue];
-                $scope.state.lineChartData.push(lineChartItem);
-            //}
-            updateLineChart($scope.state.lineChartData);
-            if ($scope.state.variableObject.abbreviatedUnitName === '/5') {
-                $scope.state.barChartData[currentValue - 1]++;
-                updateBarChart($scope.state.barChartData);
-            }
-            $scope.state.sum+= currentValue;
-            $scope.state.rangeLength++;
-            $scope.state.averageValue = Math.round($scope.state.sum/($scope.state.rangeLength));
-
-            updateLineChart($scope.state.lineChartData);
-            if ($scope.state.variableObject.abbreviatedUnitName === '/5') {
-                updateBarChart($scope.state.barChartData);
             }
         };
 
@@ -260,34 +190,7 @@ angular.module('starter')
         };
 
         $scope.$on('$ionicView.enter', function(e) {
-            $scope.hideLoader();
-            console.log("variablePageCtrl: ionicView.enter");
-            if (!$scope.state) {
-                console.log("about to call init from enter: no $scope.state");
-                $scope.init();
-            }
-            else if ($scope.state.history.length === 0) {
-                console.log("about to call init from enter: no history");
-                $scope.init();
-            }
-            else if ($stateParams.measurementInfo) {
-                console.log("about to call addDataPointAndUpdateCharts from enter");
-                addDataPointAndUpdateCharts($stateParams.measurementInfo);
-                windowResize();
-            }
-            else if ($stateParams.noReload) {
-                // lineChartData getting cleared out upon cancel - not reproducible
-                updateLineChart($scope.state.lineChartData);
-                if ($scope.state.variableObject.abbreviatedUnitName === '/5') {
-                    updateBarChart($scope.state.barChartData);
-                }
-                windowResize();
-            }
-            else {
-                console.log("about to call init from enter: else");
-                $scope.init();
-            }
-
+            $scope.init();
         });
 
         $rootScope.showActionSheetMenu = function() {

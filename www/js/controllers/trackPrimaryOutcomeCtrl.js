@@ -12,18 +12,18 @@ angular.module('starter')
         $scope.averagePrimaryOutcomeVariableImage = false;
         $scope.averagePrimaryOutcomeVariableValue = false;
         $scope.lineChartData = null;
-        $scope.barChartData = null;
+        $scope.distributionChartData = null;
         $scope.showRatingFaces = true;
 
         // chart flags
         $scope.state = {
-            showBarChart : false,
+            showDistributionChart : false,
             showLineChart : false,
             showWeekdayChart: false,
             showHourlyChart : false
         };
         $scope.lineChartConfig = false;
-        $scope.barChartConfig = false;
+        $scope.distributionChartConfig = false;
         $scope.weekdayChartConfig = false;
         $scope.hourlyChartConfig = false;
         $scope.syncDisplayText = 'Syncing ' + config.appSettings.primaryOutcomeVariableDetails.name + ' measurements...';
@@ -69,15 +69,15 @@ angular.module('starter')
             }
         };
 
-        var updateBarChart = function(barChartData){
+        var updateDistributionChart = function(distributionChartData){
             console.log("Configuring bar chart...");
-            $scope.barChartConfig = chartService.configureBarChart(barChartData);
-            $scope.state.showBarChart = true;
+            $scope.distributionChartConfig = chartService.configureDistributionChart(distributionChartData, config.appSettings.primaryOutcomeVariableDetails);
+            $scope.state.showDistributionChart = true;
         };
 
         var updateLineChart = function(lineChartData){
             console.log("Configuring line chart...");
-            $scope.lineChartConfig = chartService.configureLineChart(lineChartData);
+            $scope.lineChartConfig = chartService.configureLineChart(lineChartData, config.appSettings.primaryOutcomeVariableDetails);
             $scope.state.showLineChart = true;
         };
 
@@ -146,13 +146,13 @@ angular.module('starter')
                     var averagePrimaryOutcomeVariableValue = Math.round(sum/(rangeLength));
                     localStorageService.setItem('averagePrimaryOutcomeVariableValue',averagePrimaryOutcomeVariableValue);
 
-                    if(!$scope.barChartConfig || barArr !== $scope.barChartConfig.series[0].data) {
+                    if(!$scope.distributionChartConfig || barArr !== $scope.distributionChartConfig.series[0].data) {
                         updateAveragePrimaryOutcomeRatingView(averagePrimaryOutcomeVariableValue);
                         $scope.lineChartData = lineArr;
-                        $scope.barChartData = barArr;
-                        if ($scope.lineChartData.length > 0 && $scope.barChartData.length === 5) {
+                        $scope.distributionChartData = barArr;
+                        if ($scope.lineChartData.length > 0 && $scope.distributionChartData.length === 5) {
                             updateLineChart($scope.lineChartData);
-                            updateBarChart($scope.barChartData);
+                            updateDistributionChart($scope.distributionChartData);
                             updateWeekdayChart($scope.averageValueByWeekday);
                             updateHourlyChart($scope.averageValueByHour);
                             $scope.showCharts = true;
