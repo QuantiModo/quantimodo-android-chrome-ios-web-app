@@ -577,7 +577,7 @@ angular.module('starter')
                 $rootScope.filteredTrackingReminderNotifications =
                     groupTrackingReminderNotificationsByDateRange($rootScope.trackingReminderNotifications);
             }
-            
+
             reminderService.getTrackingReminderNotifications(params.variableCategoryName, params.today)
                 .then(function (trackingReminderNotifications) {
 
@@ -598,15 +598,18 @@ angular.module('starter')
                             ") is still the same as the previous $rootScope.numberOfPendingNotifications (" + $rootScope.numberOfPendingNotifications +
                             ") so no need to update or recreate notifications...");
                     }
-                    
-                    $rootScope.trackingRemindersNotifications =
-                        variableCategoryService.attachVariableCategoryIcons(trackingReminderNotifications);
-                    $rootScope.filteredTrackingReminderNotifications =
-                        groupTrackingReminderNotificationsByDateRange(trackingReminderNotifications);
-                    if(!params.today && !params.variableCategoryName){
-                        localStorageService.setItem('trackingReminderNotifications',
-                            JSON.stringify($rootScope.trackingRemindersNotifications));
+
+                    if(trackingReminderNotifications){
+                        $rootScope.trackingRemindersNotifications =
+                            variableCategoryService.attachVariableCategoryIcons(trackingReminderNotifications);
+                        $rootScope.filteredTrackingReminderNotifications =
+                            groupTrackingReminderNotificationsByDateRange(trackingReminderNotifications);
+                        if(!params.today && !params.variableCategoryName){
+                            localStorageService.setItem('trackingReminderNotifications',
+                                JSON.stringify($rootScope.trackingRemindersNotifications));
+                        }
                     }
+
                     //Stop the ion-refresher from spinning
                     $scope.$broadcast('scroll.refreshComplete');
                     $scope.hideLoader();
