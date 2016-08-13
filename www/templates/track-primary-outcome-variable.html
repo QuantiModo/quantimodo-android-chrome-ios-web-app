@@ -35,24 +35,24 @@
         </div>
 
 
-        <div ng-show="showCharts" class="card primary-outcome-variable-reporting-chart">
+        <div ng-show="lineChartConfig" class="card primary-outcome-variable-reporting-chart">
     		<div class="item item-text-wrap">
 <!--                <div style="height: 460px;" ng-show="isSyncing">
                     <div style="position: absolute;top:45%;text-align: center;width: 100%"><span>Still retrieving data. Check back soon.</span></div>
                 </div>-->
-                <div ng-if="state.showDistributionChart">
+                <div ng-if="distributionChartConfig">
                     <highchart id="chart1" config="distributionChartConfig"></highchart>
                 </div>
     
-                <div ng-if="state.showLineChart">
+                <div ng-if="lineChartConfig">
                     <highchart id="chart2" config="lineChartConfig"></highchart>    
                 </div>
 
-                <div ng-if="state.showWeekdayChart">
+                <div ng-if="weekdayChartConfig">
                     <highchart id="chart3" config="weekdayChartConfig"></highchart>
                 </div>
 
-                <div ng-if="state.showHourlyChart">
+                <div ng-if="hourlyChartConfig">
                     <highchart id="chart4" config="hourlyChartConfig"></highchart>
                 </div>
 
