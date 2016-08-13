@@ -622,58 +622,14 @@ angular.module('starter')
 
             deleteMeasurementFromLocalStorage : function(measurement) {
                 var deferred = $q.defer();
-                var found = false;
-                if (measurement.id) {
-                    var newAllMeasurements = [];
-                    localStorageService.getItem('allMeasurements',function(oldAllMeasurements) {
-                        oldAllMeasurements = oldAllMeasurements ? JSON.parse(oldAllMeasurements) : [];
-
-                        oldAllMeasurements.forEach(function (storedMeasurement) {
-                            // look for deleted measurement based on IDs
-                            if (storedMeasurement.id !== measurement.id) {
-                                // copy non-deleted measurements to newAllMeasurements
-                                newAllMeasurements.push(storedMeasurement);
-                            }
-                            else {
-                                console.debug("deleted measurement found in allMeasurements");
-                                found = true;
-                            }
-                        });
-                    });
-                    if (found) {
-
-                        console.debug("deleteMeasurementFromLocalStorage: newAllMeasurements length is " + newAllMeasurements.length);
-                        console.debug("deleteMeasurementFromLocalStorage: Setting allMeasurements to ", newAllMeasurements);
-                        localStorageService.setItem('allMeasurements',JSON.stringify(newAllMeasurements));
-                        deferred.resolve();
-                    }
-                }
-                else {
-                    var newMeasurementsQueue = [];
-                    localStorageService.getItemAsObject('measurementsQueue',function(oldMeasurementsQueue) {
-                        oldMeasurementsQueue.forEach(function(queuedMeasurement) {
-                            // look for deleted measurement based on startTimeEpocH
-                            if (found || queuedMeasurement.startTimeEpoch !== measurement.startTimeEpoch) {
-                                newMeasurementsQueue.push(queuedMeasurement);
-                            }
-                            else {
-                                console.debug("deleted measurement found in measurementsQueue");
-                                // don't copy
-                                found = true;
-                            }
-                        });
-                    });
-                    if (found) {
-                        localStorageService.setItem('measurementsQueue',JSON.stringify(newMeasurementsQueue));
-                        deferred.resolve();
-                    }
-                }
-                if (!found){
-                    console.debug("deleted measurement not found in local storage");
-                    deferred.reject();
-                }
+                localStorageService.deleteElementOfItemById('allMeasurements', measurement.id).then(function(){
+                    deferred.resolve();
+                });
+                localStorageService.deleteElementOfItemByProperty('measurementQueue', 'startTimeEpoch',
+                    measurement.startTimeEpoch).then(function (){
+                    deferred.resolve();
+                });
                 return deferred.promise;
-
             },
 
             deleteMeasurementFromServer : function(measurement){
