@@ -103,7 +103,7 @@ angular.module('starter')
 				var deferred = $q.defer();
 
                 if(config.getClientId() === 'oAuthDisabled') {
-                    console.log('getAccessTokenFromAnySource: oAuthDisabled so we do not need an access token');
+                    //console.log('getAccessTokenFromAnySource: oAuthDisabled so we do not need an access token');
                     deferred.resolve();
                     return deferred.promise;
                 }
@@ -244,7 +244,7 @@ angular.module('starter')
 			if(!accessTokenInUrl && !$rootScope.user && config.getClientId() === 'oAuthDisabled'){
 				$http.get(config.getURL("api/user")).then(
 					function (userCredentialsResp) {
-						console.debug('Cookie or session auth-based user credentials request successful:', userCredentialsResp.data);
+						//console.debug('Cookie or session auth-based user credentials request successful:', userCredentialsResp.data);
 						Bugsnag.metaData = {
 							user: {
 								name: userCredentialsResp.data.displayName,

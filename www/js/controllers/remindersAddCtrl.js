@@ -327,7 +327,7 @@ angular.module('starter')
             $scope.state.trackingReminder.nextReminderTimeEpochSeconds = $scope.state.reminderStartTimeEpochTime;
 
 
-            localStorageService.replaceElementOfItemById('trackingReminders', $scope.state.trackingReminder)
+            localStorageService.addToOrReplaceElementOfItemById('trackingReminders', $scope.state.trackingReminder)
                 .then(function(){
                     reminderService.addNewReminder($scope.state.trackingReminder)
                         .then(function(){
