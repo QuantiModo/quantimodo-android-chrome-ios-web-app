@@ -1,63 +1,63 @@
 <ion-view hide-nav-bar="hideNavigationMenu" view-title="{{state.variableObject.variableName}} Visualized">
     <ion-content>
-        <div ng-show="state.showBarChart" class="card primary-outcome-variable-reporting-chart">
+        <div ng-show="distributionChartConfig" class="card primary-outcome-variable-reporting-chart">
     		<div class="item item-text-wrap">
-                <highchart id="chart1" config="barChartConfig"></highchart>
+                <highchart id="chart1" config="distributionChartConfig"></highchart>
             </div>
         </div>
-        <div ng-show="state.showLineChart" class="card primary-outcome-variable-reporting-chart">
+        <div ng-show="lineChartConfig" class="card primary-outcome-variable-reporting-chart">
             <div class="item item-text-wrap">
                 <highchart id="chart2" config="lineChartConfig"></highchart>
             </div>
         </div>
-        <div ng-show="state.showHourlyChart" class="card primary-outcome-variable-reporting-chart">
+        <div ng-show="hourlyChartConfig" class="card primary-outcome-variable-reporting-chart">
             <div class="item item-text-wrap">
                 <highchart id="chart3" config="hourlyChartConfig"></highchart>
             </div>
         </div>
-        <div ng-show="state.showWeekdayChart" class="card primary-outcome-variable-reporting-chart">
+        <div ng-show="weekdayChartConfig" class="card primary-outcome-variable-reporting-chart">
             <div class="item item-text-wrap">
                 <highchart id="chart4" config="weekdayChartConfig"></highchart>
             </div>
         </div>
-        <div class="card list" id="statisticsCard">
-            <label class="item item-content">
+        <div class="card list" id="statisticsCard" ng-if="state.variableObject.numberOfMeasurements">
+            <label class="item item-content" ng-if="state.variableObject.numberOfMeasurements">
                 <span class="input-label left-text"># of measurements</span>
                 <span class="input-label right-text">{{state.variableObject.numberOfMeasurements}}</span>
             </label>
-            <label class="item item-content">
+            <label class="item item-content" ng-if="state.variableObject.numberOfCorrelations">
                 <span class="input-label left-text"># of correlations</span>
                 <span class="input-label right-text">{{state.variableObject.numberOfCorrelations}}</span>
             </label>
-            <label class="item item-content">
+            <label class="item item-content" ng-if="state.variableObject.numberOfUniqueDailyValues">
                 <span class="input-label left-text"># of unique daily values</span>
                 <span class="input-label right-text">{{state.variableObject.numberOfUniqueDailyValues}}</span>
             </label>
-            <label class="item item-content">
+            <label class="item item-content" ng-if="state.variableObject.mean">
                 <span class="input-label left-text">Mean</span>
                 <span class="input-label right-text">{{state.variableObject.mean}} {{state.variableObject.abbreviatedUnitName}}</span>
             </label>
-            <label class="item item-content">
+            <label class="item item-content" ng-if="state.variableObject.median">
                 <span class="input-label left-text">Median</span>
                 <span class="input-label right-text">{{state.variableObject.median}} {{state.variableObject.abbreviatedUnitName}}</span>
             </label>
-            <label class="item item-content">
+            <label class="item item-content" ng-if="state.variableObject.mostCommonValue">
                 <span class="input-label left-text">Most common value</span>
                 <span class="input-label right-text">{{state.variableObject.mostCommonValue}} {{state.variableObject.abbreviatedUnitName}}</span>
             </label>
-            <label class="item item-content">
+            <label class="item item-content" ng-if="state.variableObject.standardDeviation">
                 <span class="input-label left-text">Standard deviation</span>
                 <span class="input-label right-text">{{state.variableObject.standardDeviation}}</span>
             </label>
-            <label class="item item-content">
+            <label class="item item-content" ng-if="state.variableObject.variance">
                 <span class="input-label left-text">Variance</span>
                 <span class="input-label right-text">{{state.variableObject.variance}}</span>
             </label>
-            <label class="item item-content">
+            <label class="item item-content" ng-if="state.variableObject.skewness">
                 <span class="input-label left-text">Skewness</span>
                 <span class="input-label right-text">{{state.variableObject.skewness}}</span>
             </label>
-            <label class="item item-content">
+            <label class="item item-content" ng-if="state.variableObject.kurtosis">
                 <span class="input-label left-text">Kurtosis</span>
                 <span class="input-label right-text">{{state.variableObject.kurtosis}}</span>
             </label>

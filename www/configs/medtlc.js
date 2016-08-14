@@ -59,7 +59,8 @@ config.appSettings  = {
         abbreviatedUnitName : "/5",
         unitId : 10,
         combinationOperation: "MEAN",
-        description: 'positive'
+        description: 'positive',
+        unitName: '1 to 5 Rating'
     },
 
     primaryOutcomeVariableRatingOptionLabels : [

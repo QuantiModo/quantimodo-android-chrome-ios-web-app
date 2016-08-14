@@ -126,6 +126,7 @@ angular.module('starter')
         $scope.updateDatesLocalStorage = function () {
             var to = moment($scope.toDate).unix() * 1000;
             var from = moment($scope.fromDate).unix() * 1000;
+            console.log("$scope.updateDatesLocalStorage is calling measurementService.setDates");
             measurementService.setDates(to, from);
         };
 
@@ -399,7 +400,7 @@ angular.module('starter')
             });
 
             // redraw everything according to updated appstate
-            measurementService.syncPrimaryOutcomeVariableMeasurementsAndUpdateCharts();
+            measurementService.syncPrimaryOutcomeVariableMeasurements();
         }
 
         $scope.goToDefaultStateIfWelcomed = function () {
@@ -819,7 +820,7 @@ angular.module('starter')
         $scope.syncEverything = function () {
             if(!$rootScope.syncedEverything && $rootScope.user){
                 console.debug('syncEverything for this user: ' + JSON.stringify($rootScope.user));
-                measurementService.syncPrimaryOutcomeVariableMeasurementsAndUpdateCharts();
+                measurementService.syncPrimaryOutcomeVariableMeasurements();
                 reminderService.refreshTrackingRemindersAndScheduleAlarms();
                 console.debug("syncEverything: calling refreshTrackingRemindersAndScheduleAlarms");
                 variableService.refreshUserVariables();

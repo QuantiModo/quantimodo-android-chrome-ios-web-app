@@ -98,37 +98,18 @@ angular.module('starter')
 
         // delete measurement
         $scope.deleteMeasurement = function(){
-            var measurementToDelete = {
-                id : $scope.state.measurement.id,
-                variableName : $scope.state.measurement.variableName,
-                startTimeEpoch : $scope.state.measurement.startTimeEpoch
-            };
-            measurementService.deleteMeasurementFromLocalStorage(measurementToDelete).then(
-                function() {
-                    console.log("About to delete measurement on server");
-                    if($stateParams.fromUrl){
-                        window.location = $stateParams.fromUrl;
-                    } else if ($stateParams.fromState){
-                        $state.go($stateParams.fromState);
-                    } else {
-                        $rootScope.hideNavigationMenu = false;
-                        $state.go(config.appSettings.defaultState);
-                    }
-                    measurementService.deleteMeasurementFromServer(measurementToDelete);
-                },
-                function() {
-                    console.log("Cannot delete measurement from local storage");
-                    measurementService.deleteMeasurementFromServer(measurementToDelete);
-                    if($stateParams.fromUrl){
-                        window.location = $stateParams.fromUrl;
-                    } else if ($stateParams.fromState){
-                        $state.go($stateParams.fromState);
-                    } else {
-                        $rootScope.hideNavigationMenu = false;
-                        $state.go(config.appSettings.defaultState);
-                    }
-                }
-            );
+            $scope.showLoader('Deleting measurement...');
+            if($scope.state.measurement.variableName === config.appSettings.primaryOutcomeVariableDetails.name){
+                measurementService.deleteMeasurementFromLocalStorage($scope.state.measurement).then(function (){
+                    measurementService.deleteMeasurementFromServer($scope.state.measurement).then(function (){
+                        $ionicHistory.backView().go();
+                    });
+                });
+            } else {
+                measurementService.deleteMeasurementFromServer($scope.state.measurement).then(function (){
+                    $ionicHistory.backView().go();
+                });
+            }
         };
 
         $scope.onMeasurementStart = function(){

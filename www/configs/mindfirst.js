@@ -57,7 +57,8 @@ config.appSettings  = {
         category : "Mood",
         abbreviatedUnitName : "/5",
         combinationOperation: "MEAN",
-        description: 'positive'
+        description: 'positive',
+        unitName: '1 to 5 Rating'
     },
 
     primaryOutcomeVariableRatingOptionLabels : [
