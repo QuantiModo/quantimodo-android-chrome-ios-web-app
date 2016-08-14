@@ -1,6 +1,7 @@
 angular.module('starter')
 
-	.factory('authService', function ($http, $q, $state, $ionicLoading, $rootScope, localStorageService, utilsService) {
+	.factory('authService', function ($http, $q, $state, $ionicLoading, $rootScope, localStorageService, utilsService,
+                                      $timeout) {
 
 		var authService = {
 
@@ -122,7 +123,12 @@ angular.module('starter')
 					//resolving promise using token fetched from get params
 					//console.log('resolving token using token url parameter', tokenInGetParams);
                     var url = config.getURL("api/user") + 'accessToken=' + tokenInGetParams;
-                    if(!$rootScope.user){
+                    if(!$rootScope.user && $rootScope.gettingUser !== true){
+                        $rootScope.gettingUser = true;
+                        $timeout(function() {
+                            $rootScope.gettingUser = false;
+                        }, 20000);
+
                         $http.get(url).then(
                             function (userCredentialsResp) {
                                 console.log('direct API call was successful. User credentials fetched:', userCredentialsResp.data);
@@ -134,9 +140,11 @@ angular.module('starter')
                                 };
                                 localStorageService.setItem('user', JSON.stringify(userCredentialsResp.data));
                                 $rootScope.user = userCredentialsResp.data;
+                                $rootScope.gettingUser = false;
                             },
                             function (errorResp) {
                                 console.log('Could not get user with accessToken.  error response:', errorResp);
+                                $rootScope.gettingUser = false;
                             }
                         );
 
@@ -220,8 +228,17 @@ angular.module('starter')
 				$rootScope.accessTokenInUrl = accessTokenInUrl;
 				$rootScope.getUserAndSetInLocalStorage();
 				var url = config.getURL("api/user") + 'accessToken=' + accessTokenInUrl;
+                if($rootScope.gettingUser === true){
+                    return;
+                }
+                $rootScope.gettingUser = true;
+                $timeout(function() {
+                    $rootScope.gettingUser = false;
+                }, 20000);
+
 				$http.get(url).then(
 					function (userCredentialsResp) {
+                        $rootScope.gettingUser = false;
 						console.log('direct API call was successful. User credentials fetched:', userCredentialsResp.data);
 						Bugsnag.metaData = {
 							user: {
@@ -233,6 +250,7 @@ angular.module('starter')
 						$rootScope.user = userCredentialsResp.data;
 					},
 					function (errorResp) {
+                        $rootScope.gettingUser = false;
 						$ionicLoading.hide();
 						console.error('checkAuthOrSendToLogin: Could not get user with access token from url. Going to login page...', errorResp);
 						$state.go('app.login');
@@ -242,8 +260,16 @@ angular.module('starter')
 			}
 
 			if(!accessTokenInUrl && !$rootScope.user && config.getClientId() === 'oAuthDisabled'){
+                if($rootScope.gettingUser === true){
+                    return;
+                }
+                $rootScope.gettingUser = true;
+                $timeout(function() {
+                    $rootScope.gettingUser = false;
+                }, 20000);
 				$http.get(config.getURL("api/user")).then(
 					function (userCredentialsResp) {
+                        $rootScope.gettingUser = false;
 						//console.debug('Cookie or session auth-based user credentials request successful:', userCredentialsResp.data);
 						Bugsnag.metaData = {
 							user: {
@@ -255,6 +281,7 @@ angular.module('starter')
 						$rootScope.user = userCredentialsResp.data;
 					},
 					function (errorResp) {
+                        $rootScope.gettingUser = false;
 						$ionicLoading.hide();
 						console.error('checkAuthOrSendToLogin: Could not get user with a cookie. Going to login page...', errorResp);
 						$state.go('app.login');
