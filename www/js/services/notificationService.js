@@ -700,6 +700,7 @@ angular.module('starter')
                 }
 
                 if($rootScope.isAndroid){
+                    this.cancelAllNotifications();
                     console.log('Not scheduling local notifications because Android uses push notifications');
                     return;
                 }
