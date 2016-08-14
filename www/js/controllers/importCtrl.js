@@ -22,7 +22,8 @@ angular.module('starter')
 	    // constructor
 	    $scope.init = function(){
 			Bugsnag.context = "importData";
-			if (typeof analytics !== 'undefined')  { analytics.trackView("Import Data Controller"); }
+			if (typeof analytics !== 'undefined')  { //noinspection JSUnresolvedFunction
+				analytics.trackView("Import Data Controller"); }
 			$scope.showLoader();
 	        // get user's access token
 			console.debug('importCtrl.init: Going to authService.getAccessTokenFromAnySource');
@@ -41,6 +42,7 @@ angular.module('starter')
 						alert("Please unblock popups and refresh to access the Import Data page.");
 					}
                     $rootScope.hideNavigationMenu = false;
+					//noinspection JSCheckFunctionSignatures
 					$state.go(config.appSettings.defaultState);
 	            } else {	            	
 	            	var targetUrl = config.getURL("api/v1/connect/mobile", true);
@@ -50,6 +52,7 @@ angular.module('starter')
 	            	var ref = window.open(targetUrl,'_blank', 'location=no,toolbar=yes');
 	            	ref.addEventListener('exit', function(){
                         $rootScope.hideNavigationMenu = false;
+						//noinspection JSCheckFunctionSignatures
 						$state.go(config.appSettings.defaultState);
 					});
 	            }
