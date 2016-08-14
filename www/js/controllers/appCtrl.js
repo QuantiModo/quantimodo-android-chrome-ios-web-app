@@ -241,7 +241,7 @@ angular.module('starter')
 
         };
 
-        $scope.addToFavoritesUsingStateVariableObject = function (variableObject) {
+        $scope.addToFavoritesUsingVariableObject = function (variableObject) {
             var trackingReminder = {};
             trackingReminder.variableId = variableObject.id;
             trackingReminder.reminderFrequency = 0;
@@ -252,7 +252,7 @@ angular.module('starter')
 
             if (trackingReminder.abbreviatedUnitName === '/5') {
                 trackingReminder.defaultValue = 3;
-                localStorageService.replaceElementOfItemById('trackingReminders', trackingReminder);
+                localStorageService.addToOrReplaceElementOfItemById('trackingReminders', trackingReminder);
                 reminderService.addNewReminder(trackingReminder)
                     .then(function () {
                         console.debug("Saved Reminder", trackingReminder);
@@ -269,7 +269,6 @@ angular.module('starter')
                     }, function (err) {
                         console.error('Failed to add Reminder!', trackingReminder);
                     });
-
             } else {
                 $state.go('app.favoriteAdd',
                     {

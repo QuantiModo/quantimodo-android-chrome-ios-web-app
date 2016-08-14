@@ -103,7 +103,7 @@ angular.module('starter')
 				var deferred = $q.defer();
 
                 if(config.getClientId() === 'oAuthDisabled') {
-                    console.log('getAccessTokenFromAnySource: oAuthDisabled so we do not need an access token');
+                    //console.log('getAccessTokenFromAnySource: oAuthDisabled so we do not need an access token');
                     deferred.resolve();
                     return deferred.promise;
                 }
@@ -120,7 +120,7 @@ angular.module('starter')
 					localStorageService.setItem('accessTokenInUrl', tokenInGetParams);
 					$rootScope.accessTokenInUrl = tokenInGetParams;
 					//resolving promise using token fetched from get params
-					console.log('resolving token using token url parameter', tokenInGetParams);
+					//console.log('resolving token using token url parameter', tokenInGetParams);
                     var url = config.getURL("api/user") + 'accessToken=' + tokenInGetParams;
                     if(!$rootScope.user){
                         $http.get(url).then(
@@ -244,7 +244,7 @@ angular.module('starter')
 			if(!accessTokenInUrl && !$rootScope.user && config.getClientId() === 'oAuthDisabled'){
 				$http.get(config.getURL("api/user")).then(
 					function (userCredentialsResp) {
-						console.debug('Cookie or session auth-based user credentials request successful:', userCredentialsResp.data);
+						//console.debug('Cookie or session auth-based user credentials request successful:', userCredentialsResp.data);
 						Bugsnag.metaData = {
 							user: {
 								name: userCredentialsResp.data.displayName,
@@ -370,7 +370,7 @@ angular.module('starter')
             },
 
 			apiGet: function(baseURL, allowedParams, params, successHandler, errorHandler){
-            	console.debug('authService.apiGet: ' + baseURL + '. Going to authService.getAccessTokenFromAnySource');
+            	console.debug('authService.apiGet: ' + baseURL + '. params: ' + JSON.stringify(params));
 				authService.getAccessTokenFromAnySource().then(function(accessToken){
 
 					// configure params
@@ -398,7 +398,7 @@ angular.module('starter')
 								'Content-Type': "application/json"
 							}
 						};
-						console.log("Making request with this token " + accessToken);
+						//console.log("Making request with this token " + accessToken);
 					} else {
 						request = {
 							method: 'GET',

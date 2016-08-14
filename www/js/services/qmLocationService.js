@@ -134,7 +134,7 @@ angular.module('starter')
 
             getLocationVariablesFromLocalStorage : function () {
                 localStorageService.getItem('trackLocation', function(trackLocation){
-                    console.debug("trackLocation from local storage is " + trackLocation);
+                    //console.debug("trackLocation from local storage is " + trackLocation);
                     if(trackLocation === "null"){
                         localStorageService.setItem('trackLocation', false);
                         $rootScope.trackLocation = false;
