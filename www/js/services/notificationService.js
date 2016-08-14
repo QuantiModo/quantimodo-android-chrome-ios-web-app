@@ -522,7 +522,6 @@ angular.module('starter')
                         sound: "file://sound/silent.ogg",
                         title: "Track " + trackingReminder.variableName,
                         text: "Record a measurement",
-                        at: at,
                         //icon: config.appSettings.mobileNotificationImage,  iOS doesn't recognize this property
                         id: trackingReminder.id
                     };
