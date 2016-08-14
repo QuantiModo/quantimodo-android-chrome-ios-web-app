@@ -71,12 +71,7 @@ angular.module('starter')
 				$scope.hideLoader();
 				if(history.length < 200){
 					$scope.state.hideLoadMoreButton = true;
-					if (history.length === 0) {
-						$scope.state.noHistory = true;
-					}
-					else {
-						$scope.state.noHistory = false;
-					}
+					$scope.state.noHistory = history.length === 0;
 				} else {
 					$scope.state.hideLoadMoreButton = false;
 				}
@@ -122,12 +117,7 @@ angular.module('starter')
 			}
 			else {
 				$scope.title = $stateParams.variableCategoryName + ' History';
-				if ($stateParams.variableCategoryName === "Location") {
-					$scope.state.showLocationToggle = true;
-				}
-				else {
-					$scope.state.showLocationToggle = false;
-				}
+				$scope.state.showLocationToggle = $stateParams.variableCategoryName === "Location";
 			}
 			
             authService.checkAuthOrSendToLogin();
