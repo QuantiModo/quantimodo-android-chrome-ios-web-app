@@ -574,7 +574,7 @@ angular.module('starter')
                     console.log('BUTTON CLICKED', index);
 
                     if(index === 0){
-                        $scope.addToFavoritesUsingStateVariableObject($scope.state.variableObject);
+                        $scope.addToFavoritesUsingVariableObject($scope.state.variableObject);
                     }
                     if(index === 1){
                         $scope.goToAddMeasurementForVariableObject($scope.state.variableObject);

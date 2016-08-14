@@ -329,7 +329,7 @@ angular.module('starter')
 						$scope.editReminderSettingsByNotification($scope.state.trackingReminderNotification);
 					}
 					if(index === 1){
-						$scope.addToFavoritesUsingStateVariableObject($scope.state.variableObject);
+						$scope.addToFavoritesUsingVariableObject($scope.state.variableObject);
 					}
 					if(index === 2){
 						$scope.goToAddMeasurementForVariableObject($scope.state.variableObject);

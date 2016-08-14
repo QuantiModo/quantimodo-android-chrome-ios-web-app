@@ -180,7 +180,7 @@ angular.module('starter')
 						$scope.editMeasurement($scope.state.variableObject);
 					}
 					if(index === 1){
-						$scope.addToFavoritesUsingStateVariableObject($scope.state.variableObject);
+						$scope.addToFavoritesUsingVariableObject($scope.state.variableObject);
 					}
 					if(index === 2){
 						$state.go('app.reminderAdd',

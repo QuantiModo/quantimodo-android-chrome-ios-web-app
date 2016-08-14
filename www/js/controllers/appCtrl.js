@@ -241,7 +241,7 @@ angular.module('starter')
 
         };
 
-        $scope.addToFavoritesUsingStateVariableObject = function (variableObject) {
+        $scope.addToFavoritesUsingVariableObject = function (variableObject) {
             var trackingReminder = {};
             trackingReminder.variableId = variableObject.id;
             trackingReminder.reminderFrequency = 0;
