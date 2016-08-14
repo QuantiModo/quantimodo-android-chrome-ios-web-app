@@ -1,7 +1,8 @@
 angular.module('starter')
 // Handles the Notifications (inapp, push)
     .factory('notificationService',function($rootScope, $ionicPlatform, $state, $q, QuantiModo, timeService,
-                                            bugsnagService, qmLocationService, variableCategoryService) {
+                                            bugsnagService, qmLocationService, variableCategoryService,
+                                            pushNotificationService, localStorageService) {
 
         function createChromeAlarmNameFromTrackingReminder(trackingReminder) {
             var alarmName = {
@@ -692,8 +693,14 @@ angular.module('starter')
             },
 
             scheduleUpdateOrDeleteGenericNotificationsByDailyReminderTimes: function(trackingReminders){
+
                 if(!$rootScope.isMobile && !$rootScope.isChromeExtension){
                     console.log('Not scheduling notifications because we are not mobile or Chrome extension');
+                    return;
+                }
+
+                if($rootScope.isAndroid){
+                    console.log('Not scheduling local notifications because Android uses push notifications');
                     return;
                 }
 
