@@ -1,7 +1,7 @@
 angular.module('starter')    
     // QuantiModo API implementation
     .factory('QuantiModo', function($http, $q, $rootScope, $ionicPopup, $state, $ionicLoading, authService,
-                                    localStorageService) {
+                                    localStorageService, bugsnagService) {
             var QuantiModo = {};
             $rootScope.connectionErrorShowing = false; // to prevent more than one popup
 
@@ -57,7 +57,7 @@ angular.module('starter')
 
             // GET method with the added token
             QuantiModo.get = function(baseURL, allowedParams, params, successHandler, errorHandler){
-                console.debug('QuantiModo.get: ' + baseURL + '. Going to authService.getAccessTokenFromAnySource');
+                console.debug('QuantiModo.get: ' + baseURL + '. params: ' + JSON.stringify(params));
                 authService.getAccessTokenFromAnySource().then(function(accessToken){
                     if(accessToken && accessToken.indexOf(' ') > -1){
                         accessToken = null;
@@ -136,7 +136,7 @@ angular.module('starter')
 
             // POST method with the added token
             QuantiModo.post = function(baseURL, requiredFields, items, successHandler, errorHandler){
-                console.debug('QuantiModo.get: ' + baseURL + '. Going to authService.getAccessTokenFromAnySource');
+                console.debug('QuantiModo.post: ' + baseURL + ' body: ' + JSON.stringify(items));
                 authService.getAccessTokenFromAnySource().then(function(accessToken){
 
                     if(accessToken && accessToken.indexOf(' ') > -1){
