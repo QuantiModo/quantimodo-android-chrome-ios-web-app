@@ -430,7 +430,7 @@ angular.module('starter')
             }
             if (!$rootScope.user && config.getClientId() === 'oAuthDisabled') {
                 //console.debug("appCtrl.init: No user and oAuthDisabled so trying to getUserAndSetInLocalStorage. Note: This interferes with welcome flow.");
-                console.warn('Disabled getUserAndSetInLocalStorage in appCtrl.init...');
+                //console.warn('Disabled getUserAndSetInLocalStorage in appCtrl.init...');
                 //$rootScope.getUserAndSetInLocalStorage();
             }
             if ($rootScope.user) {
@@ -452,7 +452,7 @@ angular.module('starter')
                     notificationService.setOnUpdateAction();
                 });
             } else {
-                console.debug("Not setting on trigger and on click actions for notifications because is not ios or android.");
+                //console.debug("Not setting on trigger and on click actions for notifications because is not ios or android.");
             }
             goToDefaultStateIfLoggedInOnLoginState();
         };

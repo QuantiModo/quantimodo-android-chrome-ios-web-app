@@ -82,7 +82,6 @@ angular.module('starter')
             setTitleAndPlaceholderText();
             if (typeof analytics !== 'undefined')  { analytics.trackView("Variable Search Controller"); }
             authService.checkAuthOrSendToLogin();
-            console.debug('variableSearchCtrl:Initializing variable search controller...');
             $scope.showHelpInfoPopupIfNecessary();
             $scope.state.showVariableSearchCard = true;
             if($scope.state.variableSearchResults < 10){
