@@ -109,7 +109,7 @@ echo "ionic add ionic-platform-web-client"
 ionic add ionic-platform-web-client
 
 # We shouldn't need to do this because it should already be in package.json
-#ionic plugin add phonegap-plugin-push --variable SENDER_ID="${GCM_SENDER_ID}"
+ionic plugin add phonegap-plugin-push --variable SENDER_ID="${GCM_SENDER_ID}"
 
 ionic io init -email ${IONIC_EMAIL} --password ${IONIC_PASSWORD}
 ionic config set dev_push false

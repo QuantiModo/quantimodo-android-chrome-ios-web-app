@@ -25,21 +25,22 @@ angular.module('starter',
 
     $ionicPlatform.ready(function() {
         //$ionicAnalytics.register();
+
+        if(ionic.Platform.isAndroid()){
+            var push = new Ionic.Push({});
+
+            push.register(function(deviceToken) {
+                console.log("Got device token for push notifications: ", deviceToken.token);
+                $rootScope.deviceToken = localStorageService.getItemSync('deviceToken');
+                push.saveToken(deviceToken);
+                if($rootScope.deviceToken !== deviceToken.token){
+                    pushNotificationService.registerDeviceToken(deviceToken.token);
+                }
+            });
+        }
+
         /*
-        var push = new Ionic.Push({});
-
-        push.register(function(deviceToken) {
-            // Log out your device token (Save this!)
-            console.log("Got Token:", deviceToken.token);
-            push.saveToken(deviceToken);
-            localStorageService.setItem('deviceToken', deviceToken.token);
-            pushNotificationService.registerDeviceToken(deviceToken.token);
-        });
-
-
-
-
-        window.onNotification = function(e){
+         window.onNotification = function(e){
             console.log("window.onNotification: received event", e);
             switch(e.event){
                 case 'registered':
