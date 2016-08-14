@@ -111,7 +111,7 @@ ionic add ionic-platform-web-client
 # We shouldn't need to do this because it should already be in package.json
 #ionic plugin add phonegap-plugin-push --variable SENDER_ID="${GCM_SENDER_ID}"
 
-ionic io init
+ionic io init -email ${IONIC_EMAIL} --password ${IONIC_PASSWORD}
 ionic config set dev_push false
 
 ionic push --google-api-key ${GCM_SERVER_API_KEY}
