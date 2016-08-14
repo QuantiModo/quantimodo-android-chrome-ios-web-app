@@ -126,6 +126,7 @@ angular.module('starter')
         $scope.updateDatesLocalStorage = function () {
             var to = moment($scope.toDate).unix() * 1000;
             var from = moment($scope.fromDate).unix() * 1000;
+            console.log("$scope.updateDatesLocalStorage is calling measurementService.setDates");
             measurementService.setDates(to, from);
         };
 

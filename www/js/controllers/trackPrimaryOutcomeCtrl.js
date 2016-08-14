@@ -4,6 +4,7 @@ angular.module('starter')
     .controller('TrackPrimaryOutcomeCtrl', function($scope, $timeout, $rootScope, $ionicLoading, measurementService, 
                                                     chartService, localStorageService, ratingService) {
         $scope.controller_name = "TrackPrimaryOutcomeCtrl";
+        $scope.state = {};
 
         //$scope.showCharts = false;
         $scope.showRatingFaces = true;
@@ -13,6 +14,17 @@ angular.module('starter')
         $scope.averagePrimaryOutcomeVariableValue = false;
         $scope.showRatingFaces = true;
         $scope.syncDisplayText = 'Syncing ' + config.appSettings.primaryOutcomeVariableDetails.name + ' measurements...';
+
+        var windowResize = function() {
+            $(window).resize();
+
+            // Not sure what this does
+            $timeout(function() {
+                $scope.$broadcast('highchartsng.reflow');
+            }, 10);
+            // Fixes chart width
+            $scope.$broadcast('highchartsng.reflow');
+        };
 
         $scope.storeRatingLocalAndServerAndUpdateCharts = function (numericRatingValue) {
 
@@ -40,39 +52,43 @@ angular.module('starter')
            
         };
 
-        // Update primary outcome variable images via an integer
-        var updateAveragePrimaryOutcomeRatingView = function(numericRatingValue){
-            var averageRatingText =
-                config.appSettings.ratingValueToTextConversionDataSet[numericRatingValue];
-            if(averageRatingText){
-                $scope.averagePrimaryOutcomeVariableImage = ratingService.getRatingFaceImageByText(averageRatingText);
-                $scope.averagePrimaryOutcomeVariableText = averageRatingText;
-                console.log("updated averagePrimaryOutcomeVariableRating view");
+        var updateAveragePrimaryOutcomeRatingView = function(){
+            var sum = 0;
+            for (var j = 0; j <  $scope.state.primaryOutcomeMeasurements.length; j++) {
+                sum += $scope.state.primaryOutcomeMeasurements[j].value;
             }
+            $scope.averagePrimaryOutcomeVariableValue = Math.round(sum / $scope.state.primaryOutcomeMeasurements.length);
 
-            if(!$scope.$$phase) {
-                console.log("Not in the middle of digest cycle, so redrawing everything...");
-                $scope.safeApply();
+            $scope.averagePrimaryOutcomeVariableText =
+                config.appSettings.ratingValueToTextConversionDataSet[$scope.averagePrimaryOutcomeVariableValue ];
+            if($scope.averagePrimaryOutcomeVariableText){
+                $scope.averagePrimaryOutcomeVariableImage = ratingService.getRatingFaceImageByText($scope.averagePrimaryOutcomeVariableText);
             }
+            windowResize();
         };
+
         var updateCharts = function(){
-            measurementService.getAllLocalMeasurements(false, function(primaryOutcomeMeasurements) {
-                primaryOutcomeMeasurements = JSON.parse(primaryOutcomeMeasurements);
-                if (primaryOutcomeMeasurements) {
-                    $scope.lineChartConfig =
-                        chartService.processDataAndConfigureLineChart(primaryOutcomeMeasurements,
-                            config.appSettings.primaryOutcomeVariableDetails);
-                    $scope.hourlyChartConfig =
-                        chartService.processDataAndConfigureHourlyChart(primaryOutcomeMeasurements,
-                            config.appSettings.primaryOutcomeVariableDetails);
-                    $scope.weekdayChartConfig =
-                        chartService.processDataAndConfigureWeekdayChart(primaryOutcomeMeasurements,
-                            config.appSettings.primaryOutcomeVariableDetails);
-                    $scope.distributionChartConfig =
-                        chartService.processDataAndConfigureDistributionChart(primaryOutcomeMeasurements,
-                            config.appSettings.primaryOutcomeVariableDetails);
-                }
-            });
+            $scope.state.primaryOutcomeMeasurements = localStorageService.getItemAsObject('allMeasurements');
+            var measurementsQueue = localStorageService.getItemAsObject('measurementsQueue');
+            if(measurementsQueue){
+                $scope.state.primaryOutcomeMeasurements =  $scope.state.primaryOutcomeMeasurements.concat(measurementsQueue);
+            }
+            if( $scope.state.primaryOutcomeMeasurements) {
+                $scope.lineChartConfig =
+                    chartService.processDataAndConfigureLineChart( $scope.state.primaryOutcomeMeasurements,
+                        config.appSettings.primaryOutcomeVariableDetails);
+                $scope.hourlyChartConfig =
+                    chartService.processDataAndConfigureHourlyChart( $scope.state.primaryOutcomeMeasurements,
+                        config.appSettings.primaryOutcomeVariableDetails);
+                $scope.weekdayChartConfig =
+                    chartService.processDataAndConfigureWeekdayChart( $scope.state.primaryOutcomeMeasurements,
+                        config.appSettings.primaryOutcomeVariableDetails);
+                $scope.distributionChartConfig =
+                    chartService.processDataAndConfigureDistributionChart( $scope.state.primaryOutcomeMeasurements,
+                        config.appSettings.primaryOutcomeVariableDetails);
+                updateAveragePrimaryOutcomeRatingView();
+            }
+            windowResize();
         };
 
 
@@ -92,10 +108,12 @@ angular.module('starter')
         };
 
         $scope.$on('updateCharts', function(){
-            $scope.init();
+            console.log('updateCharts broadcast received..');
+            updateCharts();
         });
 
         $scope.$on('$ionicView.enter', function(e) {
+            console.log('$ionicView.enter. Updating charts and syncing..');
             $scope.init();
         });
     });
