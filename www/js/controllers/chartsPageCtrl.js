@@ -66,7 +66,6 @@ angular.module('starter')
                     chartService.processDataAndConfigureWeekdayChart($scope.state.history, $scope.state.variableObject);
                 $scope.distributionChartConfig =
                     chartService.processDataAndConfigureDistributionChart($scope.state.history, $scope.state.variableObject);
-                $scope.state.averageValue = Math.round($scope.state.sum/($scope.state.rangeLength));
                 windowResize();
             }
         };
