@@ -214,7 +214,7 @@ angular.module('starter')
                     $scope.abbreviatedUnitName :
                     $scope.state.measurement.abbreviatedUnitName,
                 variableCategoryName : $scope.state.measurement.variableCategoryName,
-                isAvg : $scope.state.sumAvg === "avg"? true : false
+                isAvg : $scope.state.sumAvg === "avg"
             };
 
             // Assign measurement value if it does not exist

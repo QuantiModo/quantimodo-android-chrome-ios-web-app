@@ -3,7 +3,7 @@ angular.module('starter')
 	.factory('timeService', function() {
 
 		// service methods
-		var timeService = {
+		return {
 
 			getSecondsSinceMidnightLocalFromUtcString: function (utcTimeString) {
 
@@ -132,5 +132,4 @@ angular.module('starter')
 			}
 		};
 
-		return timeService;
 	});

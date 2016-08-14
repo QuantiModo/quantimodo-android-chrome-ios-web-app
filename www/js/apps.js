@@ -1,4 +1,4 @@
-var appsManager = {
+var appsManager = { // jshint ignore:line
 	apps : {
 		"moodimodo" : "configs/moodimodo",
 		"energymodo" : "configs/energymodo",

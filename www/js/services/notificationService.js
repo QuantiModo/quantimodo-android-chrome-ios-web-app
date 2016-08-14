@@ -5,7 +5,7 @@ angular.module('starter')
                                             localStorageService) {
 
         function createChromeAlarmNameFromTrackingReminder(trackingReminder) {
-            var alarmName = {
+            return {
                 trackingReminderId: trackingReminder.id,
                 variableName: trackingReminder.variableName,
                 defaultValue: trackingReminder.defaultValue,
@@ -17,7 +17,6 @@ angular.module('starter')
                 variableDescription: trackingReminder.variableDescription,
                 reminderEndTime: trackingReminder.reminderEndTime
             };
-            return alarmName;
         }
 
         return {

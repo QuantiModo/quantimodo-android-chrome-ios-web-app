@@ -36,7 +36,7 @@ chrome.runtime.onInstalled.addListener(function()
 {
 	var notificationInterval = parseInt(localStorage.notificationInterval || "60");
 
-	if(notificationInterval == -1)
+	if(notificationInterval === -1)
 	{
 		chrome.alarms.clear("moodReportAlarm");
 		console.log("Alarm cancelled");
@@ -55,7 +55,7 @@ chrome.runtime.onInstalled.addListener(function()
 chrome.alarms.onAlarm.addListener(function(alarm)
 {
 	console.log('onAlarm Listener heard this alarm ', alarm);
-	var showNotification = (localStorage.showNotification || "true") == "true" ? true : false;
+	var showNotification = (localStorage.showNotification || "true") === "true";
 
     if(showNotification){
 		showTrackingInboxNotification(alarm);
@@ -133,12 +133,12 @@ function pushMeasurements(measurements, onDoneListener)
 	xhr.onreadystatechange = function()
 		{
 			// If the request is completed
-			if (xhr.readyState == 4)
+			if (xhr.readyState === 4)
 			{
 				console.log("QuantiModo responds:");
 				console.log(xhr.responseText);
 
-				if(onDoneListener != null)
+				if(onDoneListener !== null)
 				{
 					onDoneListener(xhr.responseText);
 				}
@@ -227,7 +227,7 @@ function showTrackingInboxNotification(alarm){
 
     chrome.notifications.create(notificationId, notificationParams, function(id){});
 
-    var showBadge = (localStorage["showBadge"] || "true") == "true" ? true : false;
+    var showBadge = (localStorage["showBadge"] || "true") == "true";
 
     if(showBadge)
     {
