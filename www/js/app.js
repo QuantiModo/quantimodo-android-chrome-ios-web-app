@@ -99,9 +99,10 @@ angular.module('starter',
 
         if(typeof analytics !== "undefined") {
             console.log("Configuring Google Analytics");
+            //noinspection JSUnresolvedFunction
             analytics.startTrackerWithId("UA-39222734-24");
         } else {
-            console.log("Google Analytics Unavailable");
+            //console.log("Google Analytics Unavailable");
         }
         
         // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard

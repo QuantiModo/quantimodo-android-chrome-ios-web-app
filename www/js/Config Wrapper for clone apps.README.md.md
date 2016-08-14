@@ -19,17 +19,3 @@ A configuration object "appSettings" is available in /js/config.js for changing 
 7. "primaryOutcomeVariableAverageText" : "indicating average value of the primary outcome variable.
 
     ![alt tag](http://res.cloudinary.com/loops-inc/image/upload/v1436308086/average_rqvqb7.png)
-
-This is how configuration wrapper for MoodiModo looks like
-
-```json
-config.appSettings  = {
-    appName : 'MoodiModo', // This will change the name of the app on Top header
-    primaryOutcomeVariable : 'Mood', // Tracking factor that the app will track,
-    primaryOutcomeVariableRatingOptionLabels : [ 'Depressed', 'Sad', 'OK', 'Happy', 'Ecstatic' ] , //tracking facotor options, the elements of this array will be displayed on the x-axis of the graph
-    welcomeText:"Let's start off by reporting your first mood on the card below", // This text will be displayed on first line of welcome card on welcome screen
-    primaryOutcomeVariableTrackingQuestion:"How are you?", // will be displayed above primary outcome variable reporting card
-    primaryOutcomeVariableAverageText:"Your average mood is "
-
-}
-```

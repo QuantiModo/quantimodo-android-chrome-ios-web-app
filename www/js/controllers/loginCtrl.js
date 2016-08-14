@@ -2,7 +2,7 @@ angular.module('starter')
 
     // Handlers the Welcome Page
     .controller('LoginCtrl', function($scope, $state, $rootScope, $ionicLoading, $injector, utilsService, authService,
-                                      localStorageService) {
+                                      localStorageService, $timeout, bugsnagService) {
 
         $scope.controller_name = "LoginCtrl";
         console.log("isIos is" + $rootScope.isIos);
@@ -132,7 +132,7 @@ angular.module('starter')
 
             console.log('nonNativeMobileLogin: open the auth window via inAppBrowser.');
             // Set location=yes instead of location=no temporarily to try to diagnose intermittent white screen on iOS
-            var ref = window.open(url,'_blank', 'location=yes,toolbar=yes')
+            var ref = window.open(url,'_blank', 'location=yes,toolbar=yes');
 
             $timeout(function () {
                 console.log('nonNativeMobileLogin: Automatically closing inAppBrowser auth window after 60 seconds.');
@@ -265,6 +265,8 @@ angular.module('starter')
                         console.debug('google->', JSON.stringify(userData));
                         var tokenForApi = null;
 
+                        /** @namespace userData.oauthToken */
+                        /** @namespace userData.serverAuthCode */
                         if(userData.oauthToken) {
                             console.log('userData.oauthToken is ' + userData.oauthToken);
                             tokenForApi = userData.oauthToken;
@@ -294,6 +296,7 @@ angular.module('starter')
         };
 
         $scope.googleLogout = function(){
+            /** @namespace window.plugins.googleplus */
             window.plugins.googleplus.logout(function (msg) {
                 console.log("logged out of google!");
             }, function(fail){
@@ -407,7 +410,7 @@ angular.module('starter')
 
                             } else {
                                 // TODO : display_error
-                                console.log("Error occurred validating redirect url. Closing the sibling tab.",
+                                console.error("Error occurred validating redirect url. Closing the sibling tab.",
                                     utilsService.getUrlParameter(iframe_url, 'error'));
 
                                 // close the sibling tab

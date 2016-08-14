@@ -64,7 +64,7 @@ angular.module('starter')
             },
 
             hasInIt : function(fullString, search){
-                return fullString.indexOf(search) === -1 ? false : true;
+                return fullString.indexOf(search) !== -1;
             },
 
             // returns bool | string

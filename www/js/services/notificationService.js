@@ -2,10 +2,10 @@ angular.module('starter')
 // Handles the Notifications (inapp, push)
     .factory('notificationService',function($rootScope, $ionicPlatform, $state, $q, QuantiModo, timeService,
                                             bugsnagService, qmLocationService, variableCategoryService,
-                                            pushNotificationService, localStorageService) {
+                                            localStorageService) {
 
         function createChromeAlarmNameFromTrackingReminder(trackingReminder) {
-            var alarmName = {
+            return {
                 trackingReminderId: trackingReminder.id,
                 variableName: trackingReminder.variableName,
                 defaultValue: trackingReminder.defaultValue,
@@ -17,7 +17,6 @@ angular.module('starter')
                 variableDescription: trackingReminder.variableDescription,
                 reminderEndTime: trackingReminder.reminderEndTime
             };
-            return alarmName;
         }
 
         return {
@@ -45,6 +44,7 @@ angular.module('starter')
                     }
 
                     if(notification.id !== locationTrackingNotificationId){
+                        /** @namespace cordova.plugins.notification */
                         cordova.plugins.notification.local.clearAll(function () {
                             console.log("onClick: clearAll active notifications");
                         }, this);
@@ -140,10 +140,12 @@ angular.module('starter')
                             $rootScope.trackingReminderNotifications = response.data;
                             $rootScope.numberOfPendingNotifications = $rootScope.trackingReminderNotifications.length;
                             $rootScope.trackingRemindersNotifications =
-                                variableCategoryService.attachVariableCategoryIcons(trackingReminderNotifications);
+                                variableCategoryService.attachVariableCategoryIcons($rootScope.trackingReminderNotifications);
                             localStorageService.setItem('trackingReminderNotifications',
                                 JSON.stringify($rootScope.trackingRemindersNotifications));
 
+                            /** @namespace window.chrome */
+                            /** @namespace window.chrome.browserAction */
                             if (window.chrome && window.chrome.browserAction) {
                                 chrome.browserAction.setBadgeText({
                                     text: String($rootScope.numberOfPendingNotifications)
@@ -375,6 +377,7 @@ angular.module('starter')
                         for (var i = 0; i < scheduledNotifications.length; i++) {
                             var existingReminderFoundInApiResponse = false;
                             for (var j = 0; j < trackingRemindersFromApi.length; j++) {
+                                /** @namespace scheduledNotifications[i].id */
                                 if (trackingRemindersFromApi[j].id === scheduledNotifications[i].id) {
                                     console.log('Server returned a reminder matching' + trackingRemindersFromApi[j]);
                                     existingReminderFoundInApiResponse = true;
@@ -518,7 +521,6 @@ angular.module('starter')
                         sound: "file://sound/silent.ogg",
                         title: "Track " + trackingReminder.variableName,
                         text: "Record a measurement",
-                        at: at,
                         //icon: config.appSettings.mobileNotificationImage,  iOS doesn't recognize this property
                         id: trackingReminder.id
                     };
@@ -693,7 +695,6 @@ angular.module('starter')
             },
 
             scheduleUpdateOrDeleteGenericNotificationsByDailyReminderTimes: function(trackingReminders){
-
                 if(!$rootScope.isMobile && !$rootScope.isChromeExtension){
                     console.log('Not scheduling notifications because we are not mobile or Chrome extension');
                     return;
@@ -710,6 +711,7 @@ angular.module('starter')
                     return;
                 }
 
+                /** @namespace trackingReminders[0].localDailyReminderNotificationTimesForAllReminders */
                 var localDailyReminderNotificationTimesFromApi =
                     trackingReminders[0].localDailyReminderNotificationTimesForAllReminders;
                 console.log('localDailyReminderNotificationTimesFromApi: ' +
