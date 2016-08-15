@@ -100,7 +100,7 @@ angular.module('starter')
             $scope.state.trackingReminder.reminderFrequency = 0;
             $scope.state.trackingReminder.valueAndFrequencyTextDescription = "As Needed";
 
-            localStorageService.addToOrReplaceElementOfItemById('trackingReminders', $scope.state.trackingReminder);
+            localStorageService.addToOrReplaceElementOfItemByIdOrMoveToFront('trackingReminders', $scope.state.trackingReminder);
 	    	reminderService.addNewReminder($scope.state.trackingReminder)
 	    	.then(function(){
 

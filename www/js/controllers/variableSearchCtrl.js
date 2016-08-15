@@ -25,6 +25,10 @@ angular.module('starter')
         
         // when an old measurement is tapped to remeasure
         $scope.selectVariable = function(variableObject) {
+            if($stateParams.doNotIncludePublicVariables){
+                localStorageService.addToOrReplaceElementOfItemByIdOrMoveToFront('userVariables', variableObject);
+            }
+            localStorageService.addToOrReplaceElementOfItemByIdOrMoveToFront('commonVariables', variableObject);
 
             if($state.current.name === 'app.favoriteSearch'){
                 $scope.addToFavoritesUsingVariableObject(variableObject);

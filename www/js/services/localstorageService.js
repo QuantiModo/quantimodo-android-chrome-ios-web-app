@@ -51,7 +51,8 @@ angular.module('starter')
                 deferred.resolve();
                 return deferred.promise;
             },
-            addToOrReplaceElementOfItemById : function(localStorageItemName, replacementElement){
+
+            addToOrReplaceElementOfItemByIdOrMoveToFront : function(localStorageItemName, replacementElement){
                 var deferred = $q.defer();
                 var elementsToKeep = [];
                 elementsToKeep.push(replacementElement);
