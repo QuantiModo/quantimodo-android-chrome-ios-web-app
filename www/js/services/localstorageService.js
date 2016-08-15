@@ -19,7 +19,8 @@ angular.module('starter')
             deleteElementOfItemById : function(localStorageItemName, elementId){
                 var deferred = $q.defer();
                 var elementsToKeep = [];
-                var localStorageItemArray = JSON.parse(this.getItemSync(localStorageItemName));
+                var localStorageItemAsString = this.getItemSync(localStorageItemName);
+                var localStorageItemArray = JSON.parse(localStorageItemAsString);
                 if(!localStorageItemArray){
                     console.error("Local storage item " + localStorageItemName + " not found");
                 } else {
