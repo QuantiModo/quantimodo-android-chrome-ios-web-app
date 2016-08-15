@@ -221,4 +221,6 @@ angular.module('starter')
             $scope.hideLoader();
             $scope.init();
         });
+
+        $scope.init();
 	});
