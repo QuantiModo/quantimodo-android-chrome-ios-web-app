@@ -146,6 +146,12 @@ angular.module('starter')
             syncPrimaryOutcomeVariableMeasurements : function(){
                 var defer = $q.defer();
 
+                if(!$rootScope.user){
+                    console.log('Not doing syncPrimaryOutcomeVariableMeasurements because we do not have a $rootScope.user');
+                    defer.resolve();
+                    return defer;
+                }
+
                 localStorageService.getItem('measurementsQueue',function(measurementsQueue) {
 
                     var measurementObjects = JSON.parse(measurementsQueue);
