@@ -482,6 +482,8 @@ angular.module('starter')
 
             // deletes all of a user's measurements for a variable
             QuantiModo.deleteUserVariableMeasurements = function(variableId, successHandler, errorHandler) {
+                localStorageService.deleteElementOfItemByProperty('userVariables', 'variableId', variableId);
+                localStorageService.deleteElementOfItemById('commonVariables', variableId);
                 QuantiModo.post('api/v1/userVariables/delete',
                 [
                     'variableId'
