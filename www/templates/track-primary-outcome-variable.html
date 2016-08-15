@@ -12,7 +12,7 @@
                 <div ng-show="timeRemaining">
                     <br/>
                     <ul>
-                        <li style="padding:14px; text-align: center;">Thanks for reporting your {{primaryOutcomeVariable}}!</li>
+                        <li style="padding:14px; text-align: center;">Thanks for reporting your {{primaryOutcomeVariable | lowercase }}!</li>
                         <li ng-show="secondsLeft">You can report your {{primaryOutcomeVariable}} back in {{secondsLeft}} seconds</li>
                     </ul>
                 </div>

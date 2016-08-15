@@ -112,13 +112,9 @@ angular.module('starter')
                         }
 
                         if (response.length < 200 || params.offset > 2000) {
-                            // Finished
-                            localStorageService.setItem('lastSyncTime', moment.utc().format('YYYY-MM-DDTHH:mm:ss'));
-                            localStorageService.getItem('lastSyncTime', function(val){
-                                $rootScope.lastSyncTime = val;
-                                console.log("lastSyncTime is " + $rootScope.lastSyncTime);
-                            });
-                            console.log("Measurement sync complete!");
+                            $rootScope.lastSyncTime = moment.utc().format('YYYY-MM-DDTHH:mm:ss');
+                            localStorageService.setItem('lastSyncTime', $rootScope.lastSyncTime);
+                            console.log("Measurement sync completed and lastSyncTime set to " + $rootScope.lastSyncTime);
                             deferred.resolve(response);
                         } else if (response.length === 200 && params.offset < 2001) {
                             // Keep querying
