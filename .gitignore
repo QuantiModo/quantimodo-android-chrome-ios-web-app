@@ -20,3 +20,4 @@ resources/android/
 apps/moodimodo/resources/chrome_extension/www/
 apps/moodimodo/resources/chrome_extension/www
 *.psd
+platforms/windows/
