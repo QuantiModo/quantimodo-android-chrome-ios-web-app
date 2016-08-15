@@ -184,12 +184,33 @@ angular.module('starter')
 
 	    $scope.init = function(){
 			Bugsnag.context = "reminderInbox";
+			$rootScope.showAllCaughtUpCard = false;
 			setPageTitle();
 			authService.checkAuthOrSendToLogin();
 			if (typeof analytics !== 'undefined')  { analytics.trackView("Reminders Inbox Controller"); }
 
 			$scope.showHelpInfoPopupIfNecessary();
-			$rootScope.getTrackingReminderNotifications();
+			if(!$stateParams.today){
+				$rootScope.getTrackingReminderNotifications();
+			} else {
+				$scope.showLoader("Getting today's reminder notifications...");
+				reminderService.getTrackingReminderNotifications($stateParams.variableCategoryName, $stateParams.today)
+					.then(function (trackingReminderNotifications) {
+						$rootScope.trackingReminderNotifications = trackingReminderNotifications;
+						if(trackingReminderNotifications.length === 0){
+							$rootScope.showAllCaughtUpCard = true;
+						}
+						//Stop the ion-refresher from spinning
+						$scope.$broadcast('scroll.refreshComplete');
+						$scope.hideLoader();
+					}, function(){
+						$scope.hideLoader();
+						console.error("failed to get reminder notifications!");
+						//Stop the ion-refresher from spinning
+						$scope.$broadcast('scroll.refreshComplete');
+					});
+			}
+
 			//update alarms and local notifications
 			console.debug("reminderInbox init: calling refreshTrackingRemindersAndScheduleAlarms");
 			reminderService.refreshTrackingRemindersAndScheduleAlarms();

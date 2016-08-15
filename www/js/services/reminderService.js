@@ -1,7 +1,7 @@
 angular.module('starter')
 	// Measurement Service
 	.factory('reminderService', function($q, $rootScope, QuantiModo, timeService, notificationService,
-										 localStorageService, $timeout, bugsnagService) {
+										 localStorageService, $timeout, bugsnagService, variableCategoryService) {
 
 		// service methods
 		var reminderService = {
@@ -157,46 +157,30 @@ angular.module('starter')
 				}
 			},
 
-			getTrackingReminderNotifications : function(category, today){
+			getTrackingReminderNotifications : function(variableCategoryName, today){
 
 				var localMidnightInUtcString = timeService.getLocalMidnightInUtcString();
 				var currentDateTimeInUtcStringPlus5Min = timeService.getCurrentDateTimeInUtcStringPlusMin(5);
 				var params = {};
 
-				if (today && !category) {
-					var reminderTime = '(gt)' + localMidnightInUtcString;
-					params = {
-						reminderTime: reminderTime,
-						sort: 'reminderTime'
-					};
+				if (today) {
+					params.reminderTime = '(gt)' + localMidnightInUtcString;
+					params.sort = 'reminderTime';
+				} else {
+					params.reminderTime = '(lt)' + currentDateTimeInUtcStringPlus5Min;
+					params.sort = '-reminderTime';
 				}
 
-				if (!today && category) {
-					params = {
-						variableCategoryName: category,
-						reminderTime: '(lt)' + currentDateTimeInUtcStringPlus5Min
-					};
+				if (variableCategoryName) {
+					params.variableCategoryName = variableCategoryName;
 				}
-
-				if (today && category) {
-					params = {
-						reminderTime: '(gt)' + localMidnightInUtcString,
-						variableCategoryName: category,
-						sort: 'reminderTime'
-					};
-				}
-
-				if (!today && !category) {
-					params = {
-						reminderTime: '(lt)' + currentDateTimeInUtcStringPlus5Min
-					};
-				}
-
 
 				var deferred = $q.defer();
 				QuantiModo.getTrackingReminderNotifications(params, function(response){
 					if(response.success) {
-						deferred.resolve(response.data);
+						var trackingRemindersNotifications =
+							variableCategoryService.attachVariableCategoryIcons(response.data);
+						deferred.resolve(trackingRemindersNotifications);
 					}
 					else {
 						deferred.reject("error");
