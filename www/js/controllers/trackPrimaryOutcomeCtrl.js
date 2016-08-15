@@ -70,6 +70,9 @@ angular.module('starter')
         var updateCharts = function(){
             $scope.state.primaryOutcomeMeasurements = localStorageService.getItemAsObject('allMeasurements');
             var measurementsQueue = localStorageService.getItemAsObject('measurementsQueue');
+            if(!$scope.state.primaryOutcomeMeasurements){
+                $scope.state.primaryOutcomeMeasurements = [];
+            }
             if(measurementsQueue){
                 $scope.state.primaryOutcomeMeasurements =  $scope.state.primaryOutcomeMeasurements.concat(measurementsQueue);
             }
