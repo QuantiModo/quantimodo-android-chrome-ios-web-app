@@ -50,7 +50,8 @@ config.appSettings  = {
         category : "Emotions",
         abbreviatedUnitName : "/5",
         combinationOperation: "MEAN",
-        positiveOrNegative: 'positive'
+        positiveOrNegative: 'positive',
+        unitName: '1 to 5 Rating'
     },
 
     primaryOutcomeVariableRatingOptionLabels : [
@@ -189,7 +190,7 @@ config.appSettings  = {
         button2 : {
             icon: 'ion-compose',
             label: 'Record a Measurement',
-            stateAndParameters: "'app.track_factors'"
+            stateAndParameters: "'app.measurementAddSearch'"
         },
         button3 : {
             icon: 'ion-ios-cloud-download-outline',

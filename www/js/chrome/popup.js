@@ -78,7 +78,7 @@ var onFaceButtonClicked = function() {
 
     		clearNotifications();
     	}, 400 );*/
-}
+};
 
 document.addEventListener('DOMContentLoaded', function() {
 

@@ -94,6 +94,7 @@ angular.module('starter')
                 if (!tokenInGetParams) {
                     tokenInGetParams = utilsService.getUrlParameter(location.href, 'access_token');
                 }
+
                 return tokenInGetParams;
             },
             // if not logged in, returns rejects
@@ -102,13 +103,16 @@ angular.module('starter')
 				var deferred = $q.defer();
 
                 if(config.getClientId() === 'oAuthDisabled') {
-                    console.log('getAccessTokenFromAnySource: oAuthDisabled so we do not need an access token');
-                    //authService.getAccessTokenFromUserEndpoint(deferred);
+                    //console.log('getAccessTokenFromAnySource: oAuthDisabled so we do not need an access token');
                     deferred.resolve();
                     return deferred.promise;
                 }
 
                 var tokenInGetParams = this.getAccessTokenFromUrlParameter();
+
+				if(!tokenInGetParams){
+					localStorageService.deleteItem('accessTokenInUrl');
+				}
 
 				//check if token in get params
 				if (tokenInGetParams) {
@@ -116,7 +120,7 @@ angular.module('starter')
 					localStorageService.setItem('accessTokenInUrl', tokenInGetParams);
 					$rootScope.accessTokenInUrl = tokenInGetParams;
 					//resolving promise using token fetched from get params
-					console.log('resolving token using token url parameter', tokenInGetParams);
+					//console.log('resolving token using token url parameter', tokenInGetParams);
                     var url = config.getURL("api/user") + 'accessToken=' + tokenInGetParams;
                     if(!$rootScope.user){
                         $http.get(url).then(
@@ -143,9 +147,16 @@ angular.module('starter')
 					return deferred.promise;
 				}
 
-				if (localStorageService.getItemSync('accessToken')) {
-					//console.log('resolving token using value from local storage');
-					deferred.resolve(localStorageService.getItemSync('accessToken'));
+				$rootScope.accessToken = localStorageService.getItemSync('accessToken');
+
+				if ($rootScope.accessToken) {
+					if($rootScope.accessToken.indexOf(' ') > -1){
+						localStorageService.deleteItem('accessToken');
+						$rootScope.accessToken = null;
+						deferred.reject();
+					} else {
+						deferred.resolve($rootScope.accessToken);
+					}
 					return deferred.promise;
 				}
 
@@ -155,48 +166,6 @@ angular.module('starter')
 				}
 
 			},
-
-            getAccessTokenFromUserEndpoint: function (deferred) {
-                console.log('trying to fetch user credentials with call to /api/user');
-                if($rootScope.user){
-                    console.warn('Are you sure we should be getting the user again when we already have a user?', $rootScope.user)
-                }
-                $http.get(config.getURL("api/user")).then(
-                    function (userCredentialsResp) {
-                        console.log('direct API call was successful. User credentials fetched:', userCredentialsResp.data);
-                        Bugsnag.metaData = {
-                            user: {
-                                name: userCredentialsResp.data.displayName,
-                                email: userCredentialsResp.data.email
-                            }
-                        };
-                        localStorageService.setItem('user', JSON.stringify(userCredentialsResp.data));
-						$rootScope.user = userCredentialsResp.data;
-                        
-                        //get token value from response
-                        var token = userCredentialsResp.data.token.split("|")[2];
-                        //update locally stored token
-                        localStorageService.setItem('accessToken', token);
-						$ionicLoading.hide();
-                        //resolve promise
-                        deferred.resolve({
-                            accessToken: token
-                        });
-
-                    },
-                    function (errorResp) {
-
-                        console.debug('getAccessTokenFromUserEndpoint: failed to fetch user credentials', errorResp);
-                        console.debug('getAccessTokenFromUserEndpoint: client id is ' + config.getClientId());
-                        console.debug('getAccessTokenFromUserEndpoint: Platform is browser: ' + ionic.Platform.is('browser'));
-                        console.debug('getAccessTokenFromUserEndpoint: Platform is ios: ' + ionic.Platform.is('ios'));
-                        console.debug('getAccessTokenFromUserEndpoint: Platform is android: ' + ionic.Platform.is('android'));
-						$rootScope.user = null;
-						localStorageService.deleteItem('user');
-						$state.go('app.login');
-                    }
-                );
-            },
 
 			// get access token from authorization code
 			getAccessTokenFromAuthorizationCode: function (authorizationCode) {
@@ -275,7 +244,7 @@ angular.module('starter')
 			if(!accessTokenInUrl && !$rootScope.user && config.getClientId() === 'oAuthDisabled'){
 				$http.get(config.getURL("api/user")).then(
 					function (userCredentialsResp) {
-						console.debug('Cookie or session auth-based user credentials request successful:', userCredentialsResp.data);
+						//console.debug('Cookie or session auth-based user credentials request successful:', userCredentialsResp.data);
 						Bugsnag.metaData = {
 							user: {
 								name: userCredentialsResp.data.displayName,
@@ -354,7 +323,7 @@ angular.module('starter')
 				} else if (refreshToken) {
                     authService.refreshAccessToken(refreshToken, deferred);
 				} else {
-					localStorage.removeItem('accessToken');
+					localStorageService.deleteItem('accessToken');
 					console.warn('Refresh token is undefined. Not enough data for oauth flow. rejecting token promise. ' +
 						'Clearing accessToken from local storage if it exists and sending to login page...');
                     $state.go('app.login');
@@ -401,7 +370,7 @@ angular.module('starter')
             },
 
 			apiGet: function(baseURL, allowedParams, params, successHandler, errorHandler){
-            	console.debug('authService.apiGet: ' + baseURL + '. Going to authService.getAccessTokenFromAnySource');
+            	console.debug('authService.apiGet: ' + baseURL + '. params: ' + JSON.stringify(params));
 				authService.getAccessTokenFromAnySource().then(function(accessToken){
 
 					// configure params
@@ -429,7 +398,7 @@ angular.module('starter')
 								'Content-Type': "application/json"
 							}
 						};
-						console.log("Making request with this token " + accessToken);
+						//console.log("Making request with this token " + accessToken);
 					} else {
 						request = {
 							method: 'GET',

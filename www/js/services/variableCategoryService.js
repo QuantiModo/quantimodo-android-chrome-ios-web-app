@@ -3,7 +3,7 @@ angular.module('starter')
     .factory('variableCategoryService', function($filter, $q, QuantiModo, localStorageService) {
 
         // service methods
-        var variableCategoryService = {
+        return {
 
             getVariableCategoryInfo: function (variableCategoryName) {
 
@@ -234,6 +234,5 @@ angular.module('starter')
                 return dataArray;
             }
         };
-        
-        return variableCategoryService;
+
     });

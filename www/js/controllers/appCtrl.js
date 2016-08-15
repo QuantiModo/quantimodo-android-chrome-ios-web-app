@@ -126,6 +126,7 @@ angular.module('starter')
         $scope.updateDatesLocalStorage = function () {
             var to = moment($scope.toDate).unix() * 1000;
             var from = moment($scope.fromDate).unix() * 1000;
+            console.log("$scope.updateDatesLocalStorage is calling measurementService.setDates");
             measurementService.setDates(to, from);
         };
 
@@ -203,7 +204,7 @@ angular.module('starter')
         };
 
         $scope.goToChartsPageForVariableObject = function (variableObject) {
-            $state.go('app.variables',
+            $state.go('app.charts',
                 {
                     variableObject: variableObject,
                     fromState: $state.current.name,
@@ -240,7 +241,7 @@ angular.module('starter')
 
         };
 
-        $scope.addToFavoritesUsingStateVariableObject = function (variableObject) {
+        $scope.addToFavoritesUsingVariableObject = function (variableObject) {
             var trackingReminder = {};
             trackingReminder.variableId = variableObject.id;
             trackingReminder.reminderFrequency = 0;
@@ -251,7 +252,7 @@ angular.module('starter')
 
             if (trackingReminder.abbreviatedUnitName === '/5') {
                 trackingReminder.defaultValue = 3;
-                localStorageService.replaceElementOfItemById('trackingReminders', trackingReminder);
+                localStorageService.addToOrReplaceElementOfItemByIdOrMoveToFront('trackingReminders', trackingReminder);
                 reminderService.addNewReminder(trackingReminder)
                     .then(function () {
                         console.debug("Saved Reminder", trackingReminder);
@@ -268,7 +269,6 @@ angular.module('starter')
                     }, function (err) {
                         console.error('Failed to add Reminder!', trackingReminder);
                     });
-
             } else {
                 $state.go('app.favoriteAdd',
                     {
@@ -324,7 +324,7 @@ angular.module('starter')
                 e.targetScope.controller_name === "MeasurementAddCtrl" ||
                 e.targetScope.controller_name === "RemindersAddCtrl" ||
                 e.targetScope.controller_name === "FavoriteAddCtrl" ||
-                e.targetScope.controller_name === "VariablePageCtrl" ||
+                e.targetScope.controller_name === "ChartsPageCtrl" ||
                 e.targetScope.controller_name === "VariableSettingsCtrl" ||
                 e.targetScope.controller_name === "RemindersInboxCtrl" ||
                 e.targetScope.controller_name === "RemindersManageCtrl"
@@ -399,7 +399,7 @@ angular.module('starter')
             });
 
             // redraw everything according to updated appstate
-            measurementService.syncPrimaryOutcomeVariableMeasurementsAndUpdateCharts();
+            measurementService.syncPrimaryOutcomeVariableMeasurements();
         }
 
         $scope.goToDefaultStateIfWelcomed = function () {
@@ -430,7 +430,7 @@ angular.module('starter')
             }
             if (!$rootScope.user && config.getClientId() === 'oAuthDisabled') {
                 //console.debug("appCtrl.init: No user and oAuthDisabled so trying to getUserAndSetInLocalStorage. Note: This interferes with welcome flow.");
-                console.warn('Disabled getUserAndSetInLocalStorage in appCtrl.init...');
+                //console.warn('Disabled getUserAndSetInLocalStorage in appCtrl.init...');
                 //$rootScope.getUserAndSetInLocalStorage();
             }
             if ($rootScope.user) {
@@ -452,7 +452,7 @@ angular.module('starter')
                     notificationService.setOnUpdateAction();
                 });
             } else {
-                console.debug("Not setting on trigger and on click actions for notifications because is not ios or android.");
+                //console.debug("Not setting on trigger and on click actions for notifications because is not ios or android.");
             }
             goToDefaultStateIfLoggedInOnLoginState();
         };
@@ -570,6 +570,14 @@ angular.module('starter')
             };
 
             $scope.showLoader('Syncing reminder notifications...');
+            $rootScope.trackingReminderNotifications =
+                localStorageService.getElementsFromItemWithFilters('trackingReminderNotifications',
+                    'variableCategoryName', params.variableCategoryName);
+            if($rootScope.trackingReminderNotifications){
+                $rootScope.filteredTrackingReminderNotifications =
+                    groupTrackingReminderNotificationsByDateRange($rootScope.trackingReminderNotifications);
+            }
+
             reminderService.getTrackingReminderNotifications(params.variableCategoryName, params.today)
                 .then(function (trackingReminderNotifications) {
 
@@ -590,10 +598,18 @@ angular.module('starter')
                             ") is still the same as the previous $rootScope.numberOfPendingNotifications (" + $rootScope.numberOfPendingNotifications +
                             ") so no need to update or recreate notifications...");
                     }
-                    
-                    $rootScope.trackingRemindersNotifications =
-                        variableCategoryService.attachVariableCategoryIcons(trackingReminderNotifications);
-                    $rootScope.filteredTrackingReminderNotifications = groupTrackingReminderNotificationsByDateRange(trackingReminderNotifications);
+
+                    if(trackingReminderNotifications){
+                        $rootScope.trackingRemindersNotifications =
+                            variableCategoryService.attachVariableCategoryIcons(trackingReminderNotifications);
+                        $rootScope.filteredTrackingReminderNotifications =
+                            groupTrackingReminderNotificationsByDateRange(trackingReminderNotifications);
+                        if(!params.today && !params.variableCategoryName){
+                            localStorageService.setItem('trackingReminderNotifications',
+                                JSON.stringify($rootScope.trackingRemindersNotifications));
+                        }
+                    }
+
                     //Stop the ion-refresher from spinning
                     $scope.$broadcast('scroll.refreshComplete');
                     $scope.hideLoader();
@@ -803,7 +819,7 @@ angular.module('starter')
         $scope.syncEverything = function () {
             if(!$rootScope.syncedEverything && $rootScope.user){
                 console.debug('syncEverything for this user: ' + JSON.stringify($rootScope.user));
-                measurementService.syncPrimaryOutcomeVariableMeasurementsAndUpdateCharts();
+                measurementService.syncPrimaryOutcomeVariableMeasurements();
                 reminderService.refreshTrackingRemindersAndScheduleAlarms();
                 console.debug("syncEverything: calling refreshTrackingRemindersAndScheduleAlarms");
                 variableService.refreshUserVariables();

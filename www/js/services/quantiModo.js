@@ -1,7 +1,7 @@
 angular.module('starter')    
     // QuantiModo API implementation
     .factory('QuantiModo', function($http, $q, $rootScope, $ionicPopup, $state, $ionicLoading, authService,
-                                    localStorageService) {
+                                    localStorageService, bugsnagService) {
             var QuantiModo = {};
             $rootScope.connectionErrorShowing = false; // to prevent more than one popup
 
@@ -19,13 +19,12 @@ angular.module('starter')
                 $ionicLoading.hide();
                 if(status === 401){
                     localStorageService.deleteItem('accessToken');
+                    localStorageService.deleteItem('accessTokenInUrl');
+                    $rootScope.accessToken = null;
                     localStorageService.deleteItem('user');
                     $rootScope.user = null;
                     console.warn('QuantiModo.errorHandler: Sending to login because we got 401 with request ' +
                         JSON.stringify(request));
-                    console.debug('data: ' + JSON.stringify(data));
-                    console.debug('headers: ' + JSON.stringify(headers));
-                    console.debug('config: ' + JSON.stringify(config));
                     $state.go('app.login');
                     return;
                 }
@@ -58,8 +57,16 @@ angular.module('starter')
 
             // GET method with the added token
             QuantiModo.get = function(baseURL, allowedParams, params, successHandler, errorHandler){
-                console.debug('QuantiModo.get: ' + baseURL + '. Going to authService.getAccessTokenFromAnySource');
+                console.debug('QuantiModo.get: ' + baseURL + '. params: ' + JSON.stringify(params));
                 authService.getAccessTokenFromAnySource().then(function(accessToken){
+                    if(accessToken && accessToken.indexOf(' ') > -1){
+                        accessToken = null;
+                        localStorageService.deleteItem('accessToken');
+                        localStorageService.deleteItem('accessTokenInUrl');
+                        $rootScope.accessToken = null;
+                        bugsnagService.reportError('ERROR: Access token had white space so probably erroneous! Deleting it now.')
+                    }
+
                     allowedParams.push('limit');
                     allowedParams.push('offset');
                     allowedParams.push('sort');
@@ -129,8 +136,16 @@ angular.module('starter')
 
             // POST method with the added token
             QuantiModo.post = function(baseURL, requiredFields, items, successHandler, errorHandler){
-                console.debug('QuantiModo.get: ' + baseURL + '. Going to authService.getAccessTokenFromAnySource');
+                console.debug('QuantiModo.post: ' + baseURL + ' body: ' + JSON.stringify(items));
                 authService.getAccessTokenFromAnySource().then(function(accessToken){
+
+                    if(accessToken && accessToken.indexOf(' ') > -1){
+                        accessToken = null;
+                        localStorageService.deleteItem('accessToken');
+                        localStorageService.deleteItem('accessTokenInUrl');
+                        $rootScope.accessToken = null;
+                        bugsnagService.reportError('ERROR: Access token had white space so probably erroneous! Deleting it now.')
+                    }
                     
                     //console.log("Token : ", token.accessToken);
                     // configure params
@@ -239,6 +254,14 @@ angular.module('starter')
 
             QuantiModo.getV1Measurements = function(params, successHandler, errorHandler){
                 QuantiModo.get('api/v1/measurements',
+                    ['source', 'limit', 'offset', 'sort', 'id', 'variableCategoryName', 'variableName'],
+                    params,
+                    successHandler,
+                    errorHandler);
+            };
+
+            QuantiModo.getV1MeasurementsDaily = function(params, successHandler, errorHandler){
+                QuantiModo.get('api/v1/measurements/daily',
                     ['source', 'limit', 'offset', 'sort', 'id', 'variableCategoryName', 'variableName'],
                     params,
                     successHandler,

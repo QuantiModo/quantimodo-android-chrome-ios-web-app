@@ -70,12 +70,11 @@ angular.module('starter')
 
 	    $scope.init = function(){
 			Bugsnag.context = "Favorites";
-			var isAuthorized = authService.checkAuthOrSendToLogin();
+			authService.checkAuthOrSendToLogin();
 			if (typeof analytics !== 'undefined')  { analytics.trackView("Favorites Controller"); }
-			if(isAuthorized){
-				getFavoriteTrackingRemindersFromLocalStorage();
-				$scope.showHelpInfoPopupIfNecessary();
-			}
+			getFavoriteTrackingRemindersFromLocalStorage();
+			$scope.showHelpInfoPopupIfNecessary();
+
 	    };
 
 	    $scope.editMeasurement = function(trackingReminder){
@@ -142,7 +141,7 @@ angular.module('starter')
 						$scope.editMeasurement($scope.state.variableObject);
 					}
                     if(index === 2){
-						$state.go('app.variables',
+						$state.go('app.charts',
 							{
 								trackingReminder: $scope.state.trackingReminder,
 								fromState: $state.current.name,

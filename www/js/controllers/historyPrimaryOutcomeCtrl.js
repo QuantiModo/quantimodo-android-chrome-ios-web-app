@@ -18,29 +18,11 @@ angular.module('starter')
 			});
 		};
 
-
 		function updateHistoryView(){
-                    measurementService.getAllLocalMeasurements(true,function(history){
-                        if(history.length < 1){
-                            console.log('No measurements for history!  Going to default state. ');
-                            $rootScope.hideNavigationMenu = false;
-                            $state.go(config.appSettings.defaultState);
-                        }
-                        if(history.length > 0){
-                            $scope.showHelpInfoPopupIfNecessary();
-                            history = history.sort(function(a,b){
-                                if(a.startTimeEpoch < b.startTimeEpoch){
-                                    return 1;}
-                                if(a.startTimeEpoch> b.startTimeEpoch)
-                                {return -1;}
-                                return 0;
-                            });
-                            $scope.history = ratingService.addInfoAndImagesToMeasurements(history);
-                        }
-						//Stop the ion-refresher from spinning
-						$scope.$broadcast('scroll.refreshComplete');
-                    });
-                }
+			$scope.history = measurementService.getAllLocalMeasurements();
+			//Stop the ion-refresher from spinning
+			$scope.$broadcast('scroll.refreshComplete');
+		}
 
 		$scope.init = function(){
 			console.debug('history page init');
@@ -53,17 +35,11 @@ angular.module('starter')
 					updateHistoryView();
 				});
 			}
-			else {
-				updateHistoryView();
-			}
-
-
-			$ionicLoading.hide();
+			$scope.hideLoader();
 	    };
 
         // when view is changed
     	$scope.$on('$ionicView.enter', function(e) {
-			$scope.hideLoader();
     		$scope.init();
     	});
 
@@ -94,7 +70,7 @@ angular.module('starter')
 						$scope.editMeasurement($scope.state.variableObject);
 					}
 					if(index === 1){
-						$scope.addToFavoritesUsingStateVariableObject($scope.state.variableObject);
+						$scope.addToFavoritesUsingVariableObject($scope.state.variableObject);
 					}
 					if(index === 2){
 						$state.go('app.reminderAdd',

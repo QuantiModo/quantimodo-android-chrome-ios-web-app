@@ -2,7 +2,7 @@ angular.module('starter')
 
 	.controller('RemindersInboxCtrl', function($scope, $state, $stateParams, $rootScope, $filter, $ionicPlatform,
 											   $ionicActionSheet, $timeout, authService, reminderService, utilsService,
-											   notificationService, userService) {
+											   notificationService, userService, localStorageService) {
 
 	    $scope.controller_name = "RemindersInboxCtrl";
 
@@ -112,6 +112,8 @@ angular.module('starter')
 				trackingReminderNotification: trackingReminderNotification,
 				modifiedValue: modifiedReminderValue
 			};
+			localStorageService.deleteElementOfItemById('trackingReminderNotifications',
+				trackingReminderNotification.id);
 
 	    	reminderService.trackReminderNotification(params)
 	    	.then(function(){
@@ -135,6 +137,8 @@ angular.module('starter')
 			$rootScope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications[trackingReminderNotificationNotificationIndex].hide = true;
 
 			console.debug('Skipping notification', trackingReminderNotification);
+            localStorageService.deleteElementOfItemById('trackingReminderNotifications',
+                trackingReminderNotification.id);
 			var params = {
 				trackingReminderNotificationId: trackingReminderNotification.id
 			};
@@ -160,6 +164,8 @@ angular.module('starter')
 			$rootScope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications[trackingReminderNotificationNotificationIndex].hide = true;
 
 			console.debug('Snoozing notification', trackingReminderNotification);
+			localStorageService.deleteElementOfItemById('trackingReminderNotifications',
+				trackingReminderNotification.id);
 			var params = {
 				trackingReminderNotificationId: trackingReminderNotification.id
 			};
@@ -179,27 +185,27 @@ angular.module('starter')
 	    $scope.init = function(){
 			Bugsnag.context = "reminderInbox";
 			setPageTitle();
-			var isAuthorized = authService.checkAuthOrSendToLogin();
+			authService.checkAuthOrSendToLogin();
 			if (typeof analytics !== 'undefined')  { analytics.trackView("Reminders Inbox Controller"); }
-			if(isAuthorized){
-				$scope.showHelpInfoPopupIfNecessary();
-                $rootScope.getTrackingReminderNotifications();
-				//update alarms and local notifications
-				console.debug("reminderInbox init: calling refreshTrackingRemindersAndScheduleAlarms");
-				reminderService.refreshTrackingRemindersAndScheduleAlarms();
-				var d = new Date();
-				var timeZoneOffsetInMinutes = d.getTimezoneOffset();
 
-				if($rootScope.user && $rootScope.user.timeZoneOffset !== timeZoneOffsetInMinutes ){
-					var params = {
-						timeZoneOffset: timeZoneOffsetInMinutes
-					};
-					userService.updateUserSettings(params);
-				}
-				if(!$rootScope.user){
-					userService.refreshUser();
-				}
+			$scope.showHelpInfoPopupIfNecessary();
+			$rootScope.getTrackingReminderNotifications();
+			//update alarms and local notifications
+			console.debug("reminderInbox init: calling refreshTrackingRemindersAndScheduleAlarms");
+			reminderService.refreshTrackingRemindersAndScheduleAlarms();
+			var d = new Date();
+			var timeZoneOffsetInMinutes = d.getTimezoneOffset();
+
+			if($rootScope.user && $rootScope.user.timeZoneOffset !== timeZoneOffsetInMinutes ){
+				var params = {
+					timeZoneOffset: timeZoneOffsetInMinutes
+				};
+				userService.updateUserSettings(params);
 			}
+			if(!$rootScope.user){
+				userService.refreshUser();
+			}
+
 			if (typeof cordova !== "undefined") {
 				$ionicPlatform.ready(function () {
 					cordova.plugins.notification.local.clearAll(function () {
@@ -251,6 +257,8 @@ angular.module('starter')
 		};
 
 	    $scope.editMeasurement = function(trackingReminderNotification, dividerIndex, trackingReminderNotificationNotificationIndex){
+			localStorageService.deleteElementOfItemById('trackingReminderNotifications',
+				trackingReminderNotification.id);
 			$rootScope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications[trackingReminderNotificationNotificationIndex].hide = true;
 			$state.go('app.measurementAdd',
 				{
@@ -321,7 +329,7 @@ angular.module('starter')
 						$scope.editReminderSettingsByNotification($scope.state.trackingReminderNotification);
 					}
 					if(index === 1){
-						$scope.addToFavoritesUsingStateVariableObject($scope.state.variableObject);
+						$scope.addToFavoritesUsingVariableObject($scope.state.variableObject);
 					}
 					if(index === 2){
 						$scope.goToAddMeasurementForVariableObject($scope.state.variableObject);

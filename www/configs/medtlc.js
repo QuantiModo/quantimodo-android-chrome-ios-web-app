@@ -59,7 +59,8 @@ config.appSettings  = {
         abbreviatedUnitName : "/5",
         unitId : 10,
         combinationOperation: "MEAN",
-        description: 'positive'
+        description: 'positive',
+        unitName: '1 to 5 Rating'
     },
 
     primaryOutcomeVariableRatingOptionLabels : [
@@ -272,12 +273,12 @@ config.appSettings  = {
         button3 : {
             icon: 'ion-ios-pulse',
             label: 'Add Vital Sign',
-            stateAndParameters: "'app.track_factors_category', {variableCategoryName : 'Vital Signs'}"
+            stateAndParameters: "'app.measurementAddSearchCategory', {variableCategoryName : 'Vital Signs'}"
         },
         button4 : {
             icon: 'ion-heart-broken',
             label: 'Record a Symptom',
-            stateAndParameters: "'app.track_factors_category', {variableCategoryName : 'Symptoms'}"
+            stateAndParameters: "'app.measurementAddSearchCategory', {variableCategoryName : 'Symptoms'}"
         }
     },
 

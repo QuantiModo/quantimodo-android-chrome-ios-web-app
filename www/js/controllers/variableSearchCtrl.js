@@ -25,80 +25,33 @@ angular.module('starter')
         
         // when an old measurement is tapped to remeasure
         $scope.selectVariable = function(variableObject) {
+            if($stateParams.doNotIncludePublicVariables){
+                localStorageService.addToOrReplaceElementOfItemByIdOrMoveToFront('userVariables', variableObject);
+            }
+            localStorageService.addToOrReplaceElementOfItemByIdOrMoveToFront('commonVariables', variableObject);
 
             if($state.current.name === 'app.favoriteSearch'){
-                $scope.state.trackingReminder.variableId = variableObject.id;
-                $scope.state.trackingReminder.reminderFrequency = 0;
-                $scope.state.trackingReminder.variableName = variableObject.name;
-                $scope.state.trackingReminder.abbreviatedUnitName = variableObject.abbreviatedUnitName;
-                $scope.state.trackingReminder.variableDescription = variableObject.description;
-                $scope.state.trackingReminder.variableCategoryName = variableObject.variableCategoryName;
-
-
-                if($scope.state.trackingReminder.abbreviatedUnitName === '/5'){
-                    $scope.state.trackingReminder.defaultValue = 3;
-                    localStorageService.replaceElementOfItemById('trackingReminders', $scope.state.trackingReminder);
-                    reminderService.addNewReminder($scope.state.trackingReminder)
-                        .then(function(){
-                            console.debug("Saved Reminder", $scope.state.trackingReminder);
-                        }, function(err){
-                            console.error('Failed to add Reminder!',  $scope.state.trackingReminder);
-                        });
-                    $state.go('app.favorites',
-                        {
-                            trackingReminder : $scope.state.trackingReminder,
-                            fromState : $state.current.name,
-                            fromUrl: window.location.href
-                        }
-                    );
-                } else {
-                    $state.go($stateParams.nextState,
-                        {
-                            variableObject : variableObject,
-                            fromState : $state.current.name,
-                            fromUrl: window.location.href,
-                        }
-                    );
-                }
-
-            } else if ($stateParams.doNotIncludePublicVariables) { // implies going to variable page
-                //TODO: Figure out why this is causing a duplicate error on variable searches
-                $state.go('app.variables',
-                    {
-                        variableName: variableObject.name,
-                        variableObject: variableObject,
-                        fromState: $state.current.name,
-                        fromUrl: window.location.href
-                    }
-                ).then(function() {
-                    console.log("Transition to app.variables finished");
-                });
-            }
-            else {
+                $scope.addToFavoritesUsingVariableObject(variableObject);
+            } else {
                 $state.go($stateParams.nextState,
                     {
                         variableObject : variableObject,
                         fromState : $state.current.name,
                         fromUrl: window.location.href,
                         variableCategoryName: $stateParams.variableCategoryName
-                    }
-                );
+                    });
             }
-
         };
-        
-        $scope.init = function(){
-            Bugsnag.context = "variableSearch";
-            console.debug('Initializing variable search controller...');
 
-            if(variableCategoryName && variableCategoryName !== 'Anything'){
-                $scope.state.variableSearchPlaceholderText = "Search for a " +  $filter('wordAliases')(pluralize(variableCategoryName, 1).toLowerCase()) + " here...";
+        function setTitleAndPlaceholderText() {
+            if (variableCategoryName && variableCategoryName !== 'Anything') {
+                $scope.state.variableSearchPlaceholderText = "Search for a " + $filter('wordAliases')(pluralize(variableCategoryName, 1).toLowerCase()) + " here...";
             } else {
                 $scope.state.variableSearchPlaceholderText = "Search for a variable here...";
             }
 
             if ($stateParams.nextState === "app.reminderAdd") {
-                if(variableCategoryName && variableCategoryName !== 'Anything'){
+                if (variableCategoryName && variableCategoryName !== 'Anything') {
                     $scope.state.title = $filter('wordAliases')('Add') + " " + $filter('wordAliases')(pluralize(variableCategoryName, 1)) + " Reminder";
                 } else {
                     $scope.state.title = $filter('wordAliases')('Add Reminder');
@@ -106,30 +59,33 @@ angular.module('starter')
             }
 
             if ($stateParams.nextState === "app.favoriteAdd") {
-                if(variableCategoryName && variableCategoryName !== 'Anything'){
+                if (variableCategoryName && variableCategoryName !== 'Anything') {
                     $scope.state.title = $filter('wordAliases')('Add') + " " + $filter('wordAliases')(pluralize(variableCategoryName, 1)) + " Favorite";
                 } else {
                     $scope.state.title = $filter('wordAliases')('Add Favorite');
                 }
             }
-            else if ($stateParams.doNotIncludePublicVariables || $stateParams.nextState === "app.variables") {
+            else if ($stateParams.doNotIncludePublicVariables || $stateParams.nextState === "app.charts") {
                 $scope.state.variableSearchPlaceholderText = "Search for a variable here...";
                 $scope.state.title = $filter('wordAliases')('Your Variables');
             }
-            else if ($stateParams.nextState === "app.measurementAdd"){
-                if(variableCategoryName && variableCategoryName !== 'Anything'){
-                    $scope.state.variableSearchPlaceholderText = "Search for a " +  $filter('wordAliases')(pluralize(variableCategoryName, 1).toLowerCase()) + " here...";
+            else if ($stateParams.nextState === "app.measurementAdd") {
+                if (variableCategoryName && variableCategoryName !== 'Anything') {
+                    $scope.state.variableSearchPlaceholderText = "Search for a " + $filter('wordAliases')(pluralize(variableCategoryName, 1).toLowerCase()) + " here...";
                     $scope.state.title = $filter('wordAliases')('Record') + " " + $filter('wordAliases')(variableCategoryName);
                 } else {
                     $scope.state.variableSearchPlaceholderText = "Search for a variable here...";
                     $scope.state.title = $filter('wordAliases')('Record a Measurement');
                 }
             }
+        }
 
+        $scope.init = function(){
+            Bugsnag.context = "variableSearch";
+            console.debug('Initializing variable search controller...');
+            setTitleAndPlaceholderText();
             if (typeof analytics !== 'undefined')  { analytics.trackView("Variable Search Controller"); }
             authService.checkAuthOrSendToLogin();
-            
-            console.debug('variableSearchCtrl:Initializing variable search controller...');
             $scope.showHelpInfoPopupIfNecessary();
             $scope.state.showVariableSearchCard = true;
             if($scope.state.variableSearchResults < 10){
@@ -195,8 +151,6 @@ angular.module('starter')
                 }
             }
             else {
-                //$scope.state.variableSearchResults = null;
-                //var reset = true;
                 populateUserVariables();
             }
         };
@@ -237,7 +191,7 @@ angular.module('starter')
             }
         };
 
-        var populateUserVariables = function(reset){
+        var populateUserVariables = function(){
             if($scope.state.variableSearchQuery.length > 2){
                 return;
             }

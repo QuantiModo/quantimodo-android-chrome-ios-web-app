@@ -25,21 +25,22 @@ angular.module('starter',
 
     $ionicPlatform.ready(function() {
         //$ionicAnalytics.register();
+
+        if(ionic.Platform.isAndroid()){
+            var push = new Ionic.Push({});
+
+            push.register(function(deviceToken) {
+                console.log("Got device token for push notifications: ", deviceToken.token);
+                $rootScope.deviceToken = localStorageService.getItemSync('deviceToken');
+                push.saveToken(deviceToken);
+                if($rootScope.deviceToken !== deviceToken.token){
+                    pushNotificationService.registerDeviceToken(deviceToken.token);
+                }
+            });
+        }
+
         /*
-        var push = new Ionic.Push({});
-
-        push.register(function(deviceToken) {
-            // Log out your device token (Save this!)
-            console.log("Got Token:", deviceToken.token);
-            push.saveToken(deviceToken);
-            localStorageService.setItem('deviceToken', deviceToken.token);
-            pushNotificationService.registerDeviceToken(deviceToken.token);
-        });
-
-
-
-
-        window.onNotification = function(e){
+         window.onNotification = function(e){
             console.log("window.onNotification: received event", e);
             switch(e.event){
                 case 'registered':
@@ -98,9 +99,10 @@ angular.module('starter',
 
         if(typeof analytics !== "undefined") {
             console.log("Configuring Google Analytics");
+            //noinspection JSUnresolvedFunction
             analytics.startTrackerWithId("UA-39222734-24");
         } else {
-            console.log("Google Analytics Unavailable");
+            //console.log("Google Analytics Unavailable");
         }
         
         // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
@@ -138,7 +140,7 @@ angular.module('starter',
                 return;
             }
 
-            $rootScope.appVersion = "1.8.2.1";
+            $rootScope.appVersion = "1.8.4.1";
             $rootScope.appName = config.appSettings.appName;
 
             if(window.private_keys.bugsnag_key) {
@@ -299,6 +301,7 @@ angular.module('starter',
         })
         .state('app.track', {
             url: "/track",
+            cache: false,
             views: {
                 'menuContent': {
                     templateUrl: "templates/track-primary-outcome-variable.html",
@@ -306,7 +309,7 @@ angular.module('starter',
                 }
             }
         })
-        .state('app.track_factors', {
+        .state('app.measurementAddSearch', {
             url: "/track_factors",
             params: {
                 reminder : null,
@@ -322,7 +325,7 @@ angular.module('starter',
                 }
             }
         })
-        .state('app.track_factors_category', {
+        .state('app.measurementAddSearchCategory', {
             url: "/track_factors_category/:variableCategoryName",
             params: {
                 variableCategoryName : null,
@@ -452,7 +455,7 @@ angular.module('starter',
                 }
             }
         })
-        .state('app.variableSearch', {
+        .state('app.chartsSearch', {
             url: "/search-variables",
             cache: false,
             params: {
@@ -461,7 +464,7 @@ angular.module('starter',
                 fromUrl: null,
                 measurement: null,
                 doNotIncludePublicVariables: true,
-                nextState: 'app.variables'
+                nextState: 'app.charts'
             },
             views: {
                 'menuContent': {
@@ -470,7 +473,7 @@ angular.module('starter',
                 }
             }
         })
-        .state('app.variables', {
+        .state('app.charts', {
             url: "/variables/:variableName",
             cache: false,
             params: {
@@ -484,8 +487,8 @@ angular.module('starter',
             },
             views: {
                 'menuContent': {
-                    templateUrl: "templates/variable-page.html",
-                    controller: 'VariablePageCtrl'
+                    templateUrl: "templates/charts-page.html",
+                    controller: 'ChartsPageCtrl'
                 }
             }
         })
@@ -622,6 +625,7 @@ angular.module('starter',
         })
         .state('app.remindersInbox', {
             url: "/reminders-inbox",
+            cache: false,
             params: {
                 reminderFrequency: null,
                 unit: null,

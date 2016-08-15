@@ -327,7 +327,7 @@ angular.module('starter')
             $scope.state.trackingReminder.nextReminderTimeEpochSeconds = $scope.state.reminderStartTimeEpochTime;
 
 
-            localStorageService.replaceElementOfItemById('trackingReminders', $scope.state.trackingReminder)
+            localStorageService.addToOrReplaceElementOfItemByIdOrMoveToFront('trackingReminders', $scope.state.trackingReminder)
                 .then(function(){
                     reminderService.addNewReminder($scope.state.trackingReminder)
                         .then(function(){
@@ -474,31 +474,28 @@ angular.module('starter')
             Bugsnag.context = "reminderAdd";
             if (typeof analytics !== 'undefined')  { analytics.trackView("Add Reminder Controller"); }
 
-            var isAuthorized = authService.checkAuthOrSendToLogin();
+            authService.checkAuthOrSendToLogin();
 
-            if(isAuthorized){
-                unitService.getUnits().then(function (unitObjects) {
-                    var reminderIdUrlParameter = utilsService.getUrlParameter(window.location.href, 'reminderId');
-                    var variableIdUrlParameter = utilsService.getUrlParameter(window.location.href, 'variableId');
+            unitService.getUnits().then(function () {
+                var reminderIdUrlParameter = utilsService.getUrlParameter(window.location.href, 'reminderId');
+                var variableIdUrlParameter = utilsService.getUrlParameter(window.location.href, 'variableId');
 
-                    if ($stateParams.variableObject) {
-                        $scope.variableObject = $stateParams.variableObject;
-                        $scope.onVariableSelect($stateParams.variableObject);
-                    } else if($stateParams.variableCategoryName){
-                        $scope.state.trackingReminder.variableCategoryName = $stateParams.variableCategoryName;
-                        $scope.setupVariableCategory($scope.state.trackingReminder.variableCategoryName);
-                    } else if ($stateParams.reminder && $stateParams.reminder !== null) {
-                        setupEditReminder($stateParams.reminder);
-                    } else if(reminderIdUrlParameter) {
-                        setupReminderEditingFromUrlParameter(reminderIdUrlParameter);
-                    } else if(variableIdUrlParameter) {
-                        setupReminderEditingFromVariableId(variableIdUrlParameter);
-                    } else {
-                    	$ionicHistory.goBack();
-                    }
-                });
-            }
-
+                if ($stateParams.variableObject) {
+                    $scope.variableObject = $stateParams.variableObject;
+                    $scope.onVariableSelect($stateParams.variableObject);
+                } else if($stateParams.variableCategoryName){
+                    $scope.state.trackingReminder.variableCategoryName = $stateParams.variableCategoryName;
+                    $scope.setupVariableCategory($scope.state.trackingReminder.variableCategoryName);
+                } else if ($stateParams.reminder && $stateParams.reminder !== null) {
+                    setupEditReminder($stateParams.reminder);
+                } else if(reminderIdUrlParameter) {
+                    setupReminderEditingFromUrlParameter(reminderIdUrlParameter);
+                } else if(variableIdUrlParameter) {
+                    setupReminderEditingFromVariableId(variableIdUrlParameter);
+                } else {
+                    $ionicHistory.goBack();
+                }
+            });
 	    };
 
         // when view is changed
@@ -577,7 +574,7 @@ angular.module('starter')
                     console.log('BUTTON CLICKED', index);
 
                     if(index === 0){
-                        $scope.addToFavoritesUsingStateVariableObject($scope.state.variableObject);
+                        $scope.addToFavoritesUsingVariableObject($scope.state.variableObject);
                     }
                     if(index === 1){
                         $scope.goToAddMeasurementForVariableObject($scope.state.variableObject);

@@ -71,12 +71,7 @@ angular.module('starter')
 				$scope.hideLoader();
 				if(history.length < 200){
 					$scope.state.hideLoadMoreButton = true;
-					if (history.length === 0) {
-						$scope.state.noHistory = true;
-					}
-					else {
-						$scope.state.noHistory = false;
-					}
+					$scope.state.noHistory = history.length === 0;
 				} else {
 					$scope.state.hideLoadMoreButton = false;
 				}
@@ -122,26 +117,20 @@ angular.module('starter')
 			}
 			else {
 				$scope.title = $stateParams.variableCategoryName + ' History';
-				if ($stateParams.variableCategoryName === "Location") {
-					$scope.state.showLocationToggle = true;
-				}
-				else {
-					$scope.state.showLocationToggle = false;
-				}
+				$scope.state.showLocationToggle = $stateParams.variableCategoryName === "Location";
 			}
 			
-            var isAuthorized = authService.checkAuthOrSendToLogin();
-			if(isAuthorized){
-                $scope.showHelpInfoPopupIfNecessary();
-                variableCategoryService.getVariableCategories()
-                    .then(function(variableCategories){
-                        $scope.state.variableCategories = variableCategories;
-                    }, function(err){
-						Bugsnag.notify(err, JSON.stringify(err), {}, "error");
-                        console.log("error getting variable categories", err);
-                    });
-                getHistory();
-			}
+            authService.checkAuthOrSendToLogin();
+			$scope.showHelpInfoPopupIfNecessary();
+			variableCategoryService.getVariableCategories()
+				.then(function(variableCategories){
+					$scope.state.variableCategories = variableCategories;
+				}, function(err){
+					Bugsnag.notify(err, JSON.stringify(err), {}, "error");
+					console.log("error getting variable categories", err);
+				});
+			getHistory();
+
 	    };
 
         // when view is changed
@@ -181,7 +170,7 @@ angular.module('starter')
 						$scope.editMeasurement($scope.state.variableObject);
 					}
 					if(index === 1){
-						$scope.addToFavoritesUsingStateVariableObject($scope.state.variableObject);
+						$scope.addToFavoritesUsingVariableObject($scope.state.variableObject);
 					}
 					if(index === 2){
 						$state.go('app.reminderAdd',

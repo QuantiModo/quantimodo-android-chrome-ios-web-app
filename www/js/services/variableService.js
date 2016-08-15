@@ -4,7 +4,7 @@ angular.module('starter')
 
         
 		// service methods
-		var variableService = {
+		return {
 
 			// get public variables
 			searchVariablesIncludePublic : function(variableSearchQuery, variableCategoryName){
@@ -176,5 +176,4 @@ angular.module('starter')
             }
 		};
 
-		return variableService;
 	});

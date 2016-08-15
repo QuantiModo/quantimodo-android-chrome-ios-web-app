@@ -3,6 +3,17 @@ angular.module('starter')
 	.factory('chartService', function(ratingService) {
 	    var chartService = {
 
+			generateDistributionArray : function(allMeasurements){
+				var distributionArray = [];
+				for (var i = 0; i < allMeasurements.length; i++) {
+					if(typeof distributionArray[String(allMeasurements[i].value)] === "undefined"){
+						distributionArray[String(allMeasurements[i].value)] = 0;
+					}
+					distributionArray[String(allMeasurements[i].value)] += 1;
+				}
+				return distributionArray;
+			},
+
 	    	generateWeekdayMeasurementArray : function(allMeasurements){
 				var weekdayMeasurementArrays = [];
 				var startTimeMilliseconds = null;
@@ -42,7 +53,7 @@ angular.module('starter')
 						averageValueByHourArray[k] = sumByHour[k] / (hourlyMeasurementArrays[k].length);
 					} else {
 						averageValueByHourArray[k] = null;
-						console.debug("No data for hour " + k);
+						//console.debug("No data for hour " + k);
 					}
 				}
 				return averageValueByHourArray;
@@ -62,23 +73,37 @@ angular.module('starter')
 						averageValueByWeekdayArray[k] = sumByWeekday[k] / (weekdayMeasurementArrays[k].length);
 					} else {
 						averageValueByWeekdayArray[k] = null;
-						console.debug("No data for day " + k);
+						//console.debug("No data for day " + k);
 					}
 				}
 				return averageValueByWeekdayArray;
 			},
 
 	    	// generate bar chart stub with data
-	        configureBarChart : function(data, variableName){
-				var displayVariableName;
-				var xAxisLabels;
-				if (variableName) {
-					displayVariableName = variableName + ' distribution';
-					xAxisLabels = ["1", "2", "3", "4", "5"];
+	        configureDistributionChart : function(dataAndLabels, variableObject){
+				var xAxisLabels = [];
+				var xAxisTitle = 'Daily Values (' + variableObject.abbreviatedUnitName + ')';
+				var data = [];
+				if(variableObject.name === config.appSettings.primaryOutcomeVariableDetails.name){
+					data = [0, 0, 0, 0, 0];
 				}
-				else {
-					displayVariableName = config.appSettings.primaryOutcomeVariable + ' Distribution';
+
+				for(var propertyName in dataAndLabels) {
+					// propertyName is what you want
+					// you can get the value like this: myObject[propertyName]
+					if(dataAndLabels.hasOwnProperty(propertyName)){
+						xAxisLabels.push(propertyName);
+						if(variableObject.name === config.appSettings.primaryOutcomeVariableDetails.name){
+							data[parseInt(propertyName) - 1] = dataAndLabels[propertyName];
+						} else {
+							data.push(dataAndLabels[propertyName]);
+						}
+					}
+				}
+
+				if(variableObject.name === config.appSettings.primaryOutcomeVariableDetails.name) {
 					xAxisLabels = ratingService.getPrimaryOutcomeVariableOptionLabels();
+					xAxisTitle = '';
 				}
 	            return {
 	                options: {
@@ -91,14 +116,17 @@ angular.module('starter')
 	                        }
 	                    },
 	                    title : {
-	                        text : displayVariableName
+	                        text : variableObject.name + ' Distribution'
 	                    },
 	                    xAxis : {
+							title : {
+								text : xAxisTitle
+							},
 	                        categories : xAxisLabels
 	                    },
 	                    yAxis : {
 	                        title : {
-	                            text : 'Number of ratings'
+	                            text : 'Number of Measurements'
 	                        },
 	                        min : 0
 	                    },
@@ -120,7 +148,7 @@ angular.module('starter')
 	                        column : {
 	                            pointPadding : 0.2,
 	                            borderWidth : 0,
-	                            pointWidth : 40,
+	                            pointWidth : 40 * 5 / xAxisLabels.length,
 	                            enableMouseTracking : false,
 	                            colorByPoint : true
 	                        }
@@ -132,13 +160,17 @@ angular.module('starter')
 	                    colors : [ "#000000", "#5D83FF", "#68B107", "#ffbd40", "#CB0000" ]
 	                },
 	                series: [{
-	                    name : displayVariableName,
+	                    name : variableObject.name + ' Distribution',
 	                    data: data
 	                }]
 	            };
 	        },
 
 			processDataAndConfigureWeekdayChart : function(measurements, variableObject) {
+				if(!variableObject.name){
+					console.error("ERROR: No variable name provided to processDataAndConfigureWeekdayChart");
+					return;
+				}
 	        	if(!variableObject.unitName){
 					variableObject.unitName = measurements[0].unitName;
 					console.error("Please provide unit name with variable object!");
@@ -154,6 +186,11 @@ angular.module('starter')
 			},
 
 			processDataAndConfigureHourlyChart : function(measurements, variableObject) {
+				if(!variableObject.name){
+					console.error("ERROR: No variable name provided to processDataAndConfigureHourlyChart");
+					return;
+				}
+
 				if(!variableObject.unitName){
 					variableObject.unitName = measurements[0].unitName;
 				}
@@ -165,7 +202,29 @@ angular.module('starter')
 				return this.configureHourlyChart(averageValueByHourArray, variableObject);
 			},
 
+			processDataAndConfigureDistributionChart : function(measurements, variableObject) {
+				if(!variableObject.name){
+					console.error("ERROR: No variable name provided to processDataAndConfigureHourlyChart");
+					return;
+				}
+
+				if(!variableObject.unitName){
+					variableObject.unitName = measurements[0].unitName;
+				}
+				if(!variableObject.unitName){
+					variableObject.unitName = measurements[0].abbreviatedUnitName;
+				}
+				var distributionArray = this.generateDistributionArray(measurements);
+				return this.configureDistributionChart(distributionArray, variableObject);
+			},
+
 			configureWeekdayChart : function(averageValueByWeekdayArray, variableObject){
+
+				if(!variableObject.name){
+					console.error("ERROR: No variable name provided to configureWeekdayChart");
+					return;
+				}
+
 	        	var maximum = 0;
 				var minimum = 99999999999999999999999999999999;
 				var xAxisLabels = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
@@ -188,7 +247,7 @@ angular.module('starter')
 							}
 						},
 						title : {
-							text : variableObject.variableName + ' by Day of Week'
+							text : variableObject.name + ' by Day of Week'
 						},
 						xAxis : {
 							categories : xAxisLabels
@@ -218,7 +277,7 @@ angular.module('starter')
 							column : {
 								pointPadding : 0.2,
 								borderWidth : 0,
-								pointWidth : 40 * 5 / 7,
+								pointWidth : 40 * 5 / xAxisLabels.length,
 								enableMouseTracking : true,
 								colorByPoint : true
 							}
@@ -230,13 +289,18 @@ angular.module('starter')
 						colors : [ "#5D83FF", "#68B107", "#ffbd40", "#CB0000" ]
 					},
 					series: [{
-						name : variableObject.variableName + ' by Day of Week',
+						name : variableObject.name + ' by Day of Week',
 						data: averageValueByWeekdayArray
 					}]
 				};
 			},
 
 			configureHourlyChart : function(averageValueByHourArray, variableObject){
+
+				if(!variableObject.name){
+					console.error("ERROR: No variable name provided to configureHourlyChart");
+					return;
+				}
 
 				var maximum = 0;
 				var minimum = 99999999999999999999999999999999;
@@ -286,7 +350,7 @@ angular.module('starter')
 							}
 						},
 						title : {
-							text : variableObject.variableName + ' by Hour of Day'
+							text : variableObject.name + ' by Hour of Day'
 						},
 						xAxis : {
 							categories : xAxisLabels
@@ -316,7 +380,7 @@ angular.module('starter')
 							column : {
 								pointPadding : 0.2,
 								borderWidth : 0,
-								pointWidth : 40 * 5 / 24,
+								pointWidth : 40 * 5 / xAxisLabels.length,
 								enableMouseTracking : true,
 								colorByPoint : true
 							}
@@ -328,25 +392,35 @@ angular.module('starter')
 						colors : [ "#5D83FF", "#68B107", "#ffbd40", "#CB0000"]
 					},
 					series: [{
-						name : variableObject.variableName + ' by Hour of Day',
+						name : variableObject.name + ' by Hour of Day',
 						data: averageValueByHourArray
 					}]
 				};
 			},
 
+			processDataAndConfigureLineChart: function(measurements, variableObject) {
+				var lineChartData = [];
+				var lineChartItem;
+				for (var i = 0; i < measurements.length; i++) {
+					lineChartItem = [measurements[i].startTimeEpoch * 1000, measurements[i].value];
+					lineChartData.push(lineChartItem);
+				}
+				return chartService.configureLineChart(lineChartData, variableObject);
+			},
+
 	        // generate stock chart
-	        configureLineChart : function(data, variableName) {
+	        configureLineChart : function(data, variableObject) {
+				if(!variableObject.name){
+					console.error("ERROR: No variable name provided to configureLineChart");
+					return;
+				}
+				if(data.length < 1){
+					console.error("ERROR: No data provided to configureLineChart");
+					return;
+				}
 				var date = new Date();
 				var timezoneOffsetHours = (date.getTimezoneOffset())/60;
 				var timezoneOffsetMilliseconds = timezoneOffsetHours*60*60*1000; // minutes, seconds, milliseconds
-				var displayVariableName;
-				if (variableName) {
-					displayVariableName = variableName + ' over time';
-				}
-				else {
-					displayVariableName = config.appSettings.primaryOutcomeVariable + ' Over Time';
-				}
-
 
 				data = data.sort(function(a, b){
 					return a[0] - b[0];
@@ -363,7 +437,7 @@ angular.module('starter')
 	        			    enabled : false
 	        			},
 	        			title: {
-	        			    text: displayVariableName
+	        			    text: variableObject.name + ' Over Time'
 	        			},
 	        			xAxis : {
 	        				type: 'datetime',
@@ -404,7 +478,7 @@ angular.module('starter')
                         }
 	        		},
 	        		series :[{
-			            name : displayVariableName,
+			            name : variableObject.name + ' Over Time',
 			            data : data,
 			            tooltip: {
 			                valueDecimals: 2
