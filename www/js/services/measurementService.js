@@ -149,7 +149,7 @@ angular.module('starter')
                 if(!$rootScope.user){
                     console.log('Not doing syncPrimaryOutcomeVariableMeasurements because we do not have a $rootScope.user');
                     defer.resolve();
-                    return defer;
+                    return defer.promise;
                 }
 
                 localStorageService.getItem('measurementsQueue',function(measurementsQueue) {

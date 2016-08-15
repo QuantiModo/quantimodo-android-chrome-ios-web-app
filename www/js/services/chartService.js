@@ -82,18 +82,28 @@ angular.module('starter')
 	    	// generate bar chart stub with data
 	        configureDistributionChart : function(dataAndLabels, variableObject){
 				var xAxisLabels = [];
+				var xAxisTitle = 'Daily Values (' + variableObject.abbreviatedUnitName + ')';
 				var data = [];
+				if(variableObject.name === config.appSettings.primaryOutcomeVariableDetails.name){
+					data = [0, 0, 0, 0, 0];
+				}
+
 				for(var propertyName in dataAndLabels) {
 					// propertyName is what you want
 					// you can get the value like this: myObject[propertyName]
 					if(dataAndLabels.hasOwnProperty(propertyName)){
 						xAxisLabels.push(propertyName);
-						data.push(dataAndLabels[propertyName]);
+						if(variableObject.name === config.appSettings.primaryOutcomeVariableDetails.name){
+							data[parseInt(propertyName) - 1] = dataAndLabels[propertyName];
+						} else {
+							data.push(dataAndLabels[propertyName]);
+						}
 					}
 				}
 
 				if(variableObject.name === config.appSettings.primaryOutcomeVariableDetails.name) {
 					xAxisLabels = ratingService.getPrimaryOutcomeVariableOptionLabels();
+					xAxisTitle = '';
 				}
 	            return {
 	                options: {
@@ -110,7 +120,7 @@ angular.module('starter')
 	                    },
 	                    xAxis : {
 							title : {
-								text : 'Daily Values (' + variableObject.abbreviatedUnitName + ')'
+								text : xAxisTitle
 							},
 	                        categories : xAxisLabels
 	                    },

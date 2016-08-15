@@ -43,7 +43,7 @@ angular.module('starter')
             measurementService.addToMeasurementsQueue(primaryOutcomeMeasurement);
             updateCharts();
 
-            if(!$rootScope.isSyncing){
+            if(!$rootScope.isSyncing && $rootScope.user){
                 $scope.showLoader($scope.syncDisplayText);
                 measurementService.syncPrimaryOutcomeVariableMeasurements().then(function(){
                     updateCharts();
@@ -103,11 +103,13 @@ angular.module('starter')
             console.log('Track state brought in focus. Updating charts and syncing..');
             $scope.showRatingFaces = true;
             $scope.timeRemaining = false;
-            $scope.showLoader($scope.syncDisplayText);
-            measurementService.syncPrimaryOutcomeVariableMeasurements().then(function(){
-                updateCharts();
-                $ionicLoading.hide();
-            });
+            if($rootScope.user){
+                $scope.showLoader($scope.syncDisplayText);
+                measurementService.syncPrimaryOutcomeVariableMeasurements().then(function(){
+                    updateCharts();
+                    $ionicLoading.hide();
+                });
+            }
             if (typeof analytics !== 'undefined')  { analytics.trackView("Track Primary Outcome Controller"); }
         };
 
