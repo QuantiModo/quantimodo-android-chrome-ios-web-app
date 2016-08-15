@@ -233,18 +233,18 @@ config.appSettings  = {
        },
     
     wordAliases : {
-        "Treatments" : "Medications",
-        "treatments" : "medications",
-        "Treatment" : "Medication",
-        "treatment" : "medication",
-        "Treatment Reminder" : "Medication",
-        "treatment reminder" : "medication",
-        "Reminder Inbox" : "Reminders",
-        "Track" : "Record",
-        "Symptom" : "Response",
-        "Symptoms" : "Responses",
-        "symptom" : "response",
-        "symptoms" : "responses"
+        //"Treatments" : "Medications",
+        //"treatments" : "medications",
+        //"Treatment" : "Medication",
+        //"treatment" : "medication",
+        //"Treatment Reminder" : "Medication",
+        //"treatment reminder" : "medication",
+        //"Reminder Inbox" : "Reminders",
+        //"Track" : "Record",
+        //"Symptom" : "Response",
+        //"Symptoms" : "Responses",
+        //"symptom" : "response",
+        //"symptoms" : "responses"
     },
     
     remindersInbox : {
@@ -261,24 +261,24 @@ config.appSettings  = {
 
     floatingMaterialButton : {
         button1 : {
-            icon: 'ion-happy-outline',
-            label: 'How are you?',
-            stateAndParameters: "'app.track'"
+            icon: 'ion-android-notifications-none',
+            label: 'Add a Reminder',
+            stateAndParameters: "'app.reminderSearch'"
         },
         button2 : {
-            icon: 'ion-ios-medkit-outline',
-            label: 'Add a medication',
-            stateAndParameters: "'app.reminderSearchCategory', {variableCategoryName : 'Treatments'}"
+            icon: 'ion-compose',
+            label: 'Record a Measurement',
+            stateAndParameters: "'app.measurementAddSearch'"
         },
         button3 : {
-            icon: 'ion-ios-pulse',
-            label: 'Add Vital Sign',
-            stateAndParameters: "'app.measurementAddSearchCategory', {variableCategoryName : 'Vital Signs'}"
+            icon: 'ion-ios-cloud-download-outline',
+            label: 'Import Data',
+            stateAndParameters: "'app.import'"
         },
         button4 : {
-            icon: 'ion-heart-broken',
-            label: 'Record a Symptom',
-            stateAndParameters: "'app.measurementAddSearchCategory', {variableCategoryName : 'Symptoms'}"
+            icon: 'ion-ios-star',
+            label: 'Go to your favorites',
+            stateAndParameters: "'app.favorites'"
         }
     },
 
@@ -289,7 +289,7 @@ config.appSettings  = {
             icon : 'ion-archive'
         },
         {
-            title : 'As Needed',
+            title : 'Favorites',
             href : '#/app/favorites',
             icon : 'ion-ios-star'
         },
@@ -507,33 +507,38 @@ config.appSettings  = {
             href : '#/app/history-all/Location',
             icon : 'ion-ios-location-outline'
         },
-        // {
-        //     title : 'Import Data',
-        //     href : '#/app/import',
-        //     icon : 'ion-ios-cloud-download-outline'
-        // },
-        // {
-        //     title : 'Strongest Predictors',
-        //     click : 'togglePredictorSearchSubMenu',
-        //     showSubMenuVariable : 'showPredictorSearchSubMenu',
-        //     isSubMenuParent : true,
-        //     collapsedIcon : 'ion-ios-analytics',
-        //     expandedIcon : 'ion-chevron-down'
-        // },
-        // {
-        //     title : 'For Everyone',
-        //     isSubMenuChild : true,
-        //     showSubMenuVariable : 'showPredictorSearchSubMenu',
-        //     href : '#/app/search-common-relationships',
-        //     icon : 'ion-ios-people'
-        // },
-        // {
-        //     title : 'For You',
-        //     isSubMenuChild : true,
-        //     showSubMenuVariable : 'showPredictorSearchSubMenu',
-        //     href : '#/app/search-user-relationships',
-        //     icon : 'ion-person'
-        // },
+        {
+            title : 'Import Data',
+            href : '#/app/import',
+            icon : 'ion-ios-cloud-download-outline'
+        },
+        {
+            title : 'Charts',
+            href : '#/app/search-variables',
+            icon : 'ion-arrow-graph-up-right'
+        },
+        {
+            title : 'Strongest Predictors',
+            click : 'togglePredictorSearchSubMenu',
+            showSubMenuVariable : 'showPredictorSearchSubMenu',
+            isSubMenuParent : true,
+            collapsedIcon : 'ion-ios-analytics',
+            expandedIcon : 'ion-chevron-down'
+        },
+        {
+            title : 'For Everyone',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showPredictorSearchSubMenu',
+            href : '#/app/search-common-relationships',
+            icon : 'ion-ios-people'
+        },
+        {
+            title : 'For You',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showPredictorSearchSubMenu',
+            href : '#/app/search-user-relationships',
+            icon : 'ion-person'
+        },
         {
             title : 'Settings',
             href : '#/app/settings',
