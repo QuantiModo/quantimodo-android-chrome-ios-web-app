@@ -141,8 +141,10 @@ angular.module('starter')
                             $rootScope.numberOfPendingNotifications = $rootScope.trackingReminderNotifications.length;
                             $rootScope.trackingRemindersNotifications =
                                 variableCategoryService.attachVariableCategoryIcons($rootScope.trackingReminderNotifications);
-                            localStorageService.setItem('trackingReminderNotifications',
-                                JSON.stringify($rootScope.trackingRemindersNotifications));
+                            if($rootScope.trackingRemindersNotifications.length > 1){
+                                localStorageService.setItem('trackingReminderNotifications',
+                                    JSON.stringify($rootScope.trackingRemindersNotifications));
+                            }
 
                             /** @namespace window.chrome */
                             /** @namespace window.chrome.browserAction */

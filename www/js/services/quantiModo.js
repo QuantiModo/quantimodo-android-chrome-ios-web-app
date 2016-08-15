@@ -64,7 +64,7 @@ angular.module('starter')
                         localStorageService.deleteItem('accessToken');
                         localStorageService.deleteItem('accessTokenInUrl');
                         $rootScope.accessToken = null;
-                        bugsnagService.reportError('ERROR: Access token had white space so probably erroneous! Deleting it now.')
+                        bugsnagService.reportError('ERROR: Access token had white space so probably erroneous! Deleting it now.');
                     }
 
                     allowedParams.push('limit');
@@ -144,7 +144,7 @@ angular.module('starter')
                         localStorageService.deleteItem('accessToken');
                         localStorageService.deleteItem('accessTokenInUrl');
                         $rootScope.accessToken = null;
-                        bugsnagService.reportError('ERROR: Access token had white space so probably erroneous! Deleting it now.')
+                        bugsnagService.reportError('ERROR: Access token had white space so probably erroneous! Deleting it now.');
                     }
                     
                     //console.log("Token : ", token.accessToken);
@@ -512,7 +512,7 @@ angular.module('starter')
             // get user data
             QuantiModo.getUser = function(successHandler, errorHandler){
                 if($rootScope.user){
-                    console.warn('Are you sure we should be getting the user again when we already have a user?', $rootScope.user)
+                    console.warn('Are you sure we should be getting the user again when we already have a user?', $rootScope.user);
                 }
                 QuantiModo.get('api/user/me',
                     [],
@@ -585,7 +585,8 @@ angular.module('starter')
             // delete tracking reminder
             QuantiModo.deleteTrackingReminder = function(reminderId, successHandler, errorHandler){
                 if(!reminderId){
-                    console.warn('No reminder id to delete with!  Maybe it has only been stored locally and has not updated from server yet.');
+                    console.error('No reminder id to delete with!  Maybe it has only been stored locally and has not updated from server yet.');
+                    return;
                 }
                 QuantiModo.post('api/v1/trackingReminders/delete',
                     ['id'],
