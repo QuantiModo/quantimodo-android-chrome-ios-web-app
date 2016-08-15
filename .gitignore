@@ -22,3 +22,5 @@ apps/moodimodo/resources/chrome_extension/www
 *.psd
 platforms/windows/
 bld/
+.vs/
+.vagrant/
