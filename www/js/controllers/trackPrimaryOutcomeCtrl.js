@@ -41,6 +41,7 @@ angular.module('starter')
             //  add to measurementsQueue
             var primaryOutcomeMeasurement = measurementService.createPrimaryOutcomeMeasurement(numericRatingValue);
             measurementService.addToMeasurementsQueue(primaryOutcomeMeasurement);
+            updateCharts();
 
             if(!$rootScope.isSyncing){
                 $scope.showLoader($scope.syncDisplayText);
