@@ -252,7 +252,7 @@ angular.module('starter')
 
             if (trackingReminder.abbreviatedUnitName === '/5') {
                 trackingReminder.defaultValue = 3;
-                localStorageService.addToOrReplaceElementOfItemById('trackingReminders', trackingReminder);
+                localStorageService.addToOrReplaceElementOfItemByIdOrMoveToFront('trackingReminders', trackingReminder);
                 reminderService.addNewReminder(trackingReminder)
                     .then(function () {
                         console.debug("Saved Reminder", trackingReminder);
