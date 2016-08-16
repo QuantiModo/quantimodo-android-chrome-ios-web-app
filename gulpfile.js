@@ -59,7 +59,7 @@ gulp.task('install', ['git-check'], function() {
 		});
 });
 
-gulp.task('generateXmlConfig', ['getAppName'], function(){
+gulp.task('generateXmlConfigAndUpdateAppsJs', ['getAppName'], function(){
 
 	var deferred = q.defer();
 
@@ -911,7 +911,7 @@ gulp.task('installPods', [ 'addPodfile' ] , function(){
 
 	var commands = [
 		'cd platforms/ios',
-		'pod install'
+		'pod install --verbose'
 	].join(' && ');
 
 	execute(commands, function(error){
@@ -972,7 +972,7 @@ gulp.task('makeIosApp', function(callback){
 	callback);
 });
 
-gulp.task('makeIosAppOnJenkins', function(callback){
+gulp.task('makeIosAppSimplified', function(callback){
 	runSequence(
 		'readKeysForCurrentApp',
 		'fixResourcesPlist',
@@ -1043,7 +1043,7 @@ gulp.task('setVersionNumbersWithEnvs', function(){
 
 	if(!environmentalVariables['IONIC_IOS_APP_VERSION_NUMBER']){
 		//throw new Error('Please set IONIC_IOS_APP_VERSION_NUMBER env!');
-		environmentalVariables['IONIC_IOS_APP_VERSION_NUMBER'] = '1.8.5.1';
+		environmentalVariables['IONIC_IOS_APP_VERSION_NUMBER'] = '1.8.5.2';
 		console.warn('No IONIC_IOS_APP_VERSION_NUMBER env!  Using hardcoded gulp version ' +
 			environmentalVariables['IONIC_IOS_APP_VERSION_NUMBER'])
 	}

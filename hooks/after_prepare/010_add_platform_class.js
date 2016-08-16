@@ -11,6 +11,11 @@
 var fs = require('fs');
 var path = require('path');
 
+var FgRed = "\x1b[31m";
+var FgGreen = "\x1b[32m";
+var FgYellow = "\x1b[33m";
+var Reset = "\x1b[0m";
+
 var rootdir = process.argv[2];
 
 function addPlatformBodyTag(indexPath, platform) {
