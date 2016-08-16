@@ -47,9 +47,15 @@ notifications:
   email: false
 
 # whitelist
+#branches:
+#  only:
+#    - master
+#    - develop
+
+# Make sure to test the iOS build before merging to develop
+# blocklist
 branches:
-  only:
-    - master
-    - develop
-    - feature/new_profile
-    - feature/remove_push_for_ios
+  except:
+  - master
+  - release
+  - develop
