@@ -591,9 +591,7 @@ angular.module('starter')
                             $rootScope.showAllCaughtUpCard = true;
                         }
                         if (window.chrome && window.chrome.browserAction) {
-                            chrome.browserAction.setBadgeText({
-                                text: $rootScope.numberOfPendingNotifications
-                            });
+                            chrome.browserAction.setBadgeText({text: String($rootScope.numberOfPendingNotifications)});
                         }
 
                         notificationService.updateOrRecreateNotifications();
