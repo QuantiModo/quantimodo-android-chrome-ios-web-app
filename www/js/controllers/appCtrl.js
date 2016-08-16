@@ -604,7 +604,8 @@ angular.module('starter')
                     if(trackingReminderNotifications){
                         $rootScope.filteredTrackingReminderNotifications =
                             groupTrackingReminderNotificationsByDateRange(trackingReminderNotifications);
-                        if(!params.today && !params.variableCategoryName && $rootScope.trackingRemindersNotifications.length > 1){
+                        if(!params.today && !params.variableCategoryName && $rootScope.trackingRemindersNotifications &&
+                            $rootScope.trackingRemindersNotifications.length > 1){
                             localStorageService.setItem('trackingReminderNotifications',
                                 JSON.stringify($rootScope.trackingRemindersNotifications));
                         }
