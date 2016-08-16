@@ -12,7 +12,10 @@ echo "EXECUTING COMMAND: security delete-keychain ios-build.keychain"
 security delete-keychain ios-build.keychain
 
 echo "EXECUTING COMMAND: pilot upload -u ${FASTLANE_USER} -i ${PWD}/build/${APP_DISPLAY_NAME}.ipa -a ${APP_IDENTIFIER} -p ${APPLE_ID} --verbose"
-pilot upload -u ${FASTLANE_USER} -i "${PWD}/build/${APP_DISPLAY_NAME}.ipa" -a "${APP_IDENTIFIER}" -p "${APPLE_ID}" --verbose
+#pilot upload -u ${FASTLANE_USER} -i "${PWD}/build/${APP_DISPLAY_NAME}.ipa" -a "${APP_IDENTIFIER}" -p "${APPLE_ID}" --verbose
+echo "Watching for Waiting for iTunes Connect to finish processing the new build"
+until pilot upload -u ${FASTLANE_USER} -i "${PWD}/build/${APP_DISPLAY_NAME}.ipa" -a "${APP_IDENTIFIER}" -p "${APPLE_ID}" --verbose | grep -m 1 "Waiting for iTunes Connect to finish processing the new build"; do : ; done
+
 # pilot upload -u ios@quantimodo.com -i "MoodiModo.ipa" -a "com.quantimodo.moodimodoapp" -p "1046797567" --verbose
 
 # until my_cmd | grep -m 1 "String Im Looking For"; do : ; done
