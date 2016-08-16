@@ -59,3 +59,4 @@ gulp setVersionNumbersWithEnvs
 gulp makeIosApp
 chmod a+x ./scripts/package-and-upload.sh
 ./scripts/package-and-upload.sh
+exit 0
