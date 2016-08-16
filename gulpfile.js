@@ -59,7 +59,7 @@ gulp.task('install', ['git-check'], function() {
 		});
 });
 
-gulp.task('generateXmlConfig', ['getAppName'], function(){
+gulp.task('generateXmlConfigAndUpdateAppsJs', ['getAppName'], function(){
 
 	var deferred = q.defer();
 
@@ -972,7 +972,7 @@ gulp.task('makeIosApp', function(callback){
 	callback);
 });
 
-gulp.task('makeIosAppOnJenkins', function(callback){
+gulp.task('makeIosAppSimplified', function(callback){
 	runSequence(
 		'readKeysForCurrentApp',
 		'fixResourcesPlist',
