@@ -911,7 +911,7 @@ gulp.task('installPods', [ 'addPodfile' ] , function(){
 
 	var commands = [
 		'cd platforms/ios',
-		'pod install'
+		'pod install --verbose'
 	].join(' && ');
 
 	execute(commands, function(error){
