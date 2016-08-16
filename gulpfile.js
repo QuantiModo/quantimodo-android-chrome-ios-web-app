@@ -967,8 +967,8 @@ gulp.task('makeIosApp', function(callback){
 	'enableBitCode',
 	'addInheritedToOtherLinkerFlags',
 	'addDeploymentTarget',
-	//'addPodfile', // Excluding to see if this fixes Travis build
-	//'installPods', // Excluding to see if this fixes Travis build
+	'addPodfile',
+	'installPods',
 	callback);
 });
 
