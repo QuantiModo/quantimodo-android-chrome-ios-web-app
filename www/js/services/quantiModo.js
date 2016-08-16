@@ -115,7 +115,7 @@ angular.module('starter')
                         if (!data && !$rootScope.connectionErrorShowing) {
                             $rootScope.connectionErrorShowing = true;
                             $ionicPopup.show({
-                                title: 'Not connected:',
+                                title: 'NOT CONNECTED',
                                 subTitle: 'Either you are not connected to the internet or the QuantiModo server cannot be reached.',
                                 buttons:[
                                     {text: 'OK',
@@ -193,7 +193,7 @@ angular.module('starter')
                         if (!data && !$rootScope.connectionErrorShowing) {
                             $rootScope.connectionErrorShowing = true;
                             $ionicPopup.show({
-                                title: 'Not connected:',
+                                title: 'NOT CONNECTED',
                                 subTitle: 'Either you are not connected to the internet or the QuantiModo server cannot be reached.',
                                 buttons:[
                                     {text: 'OK',
