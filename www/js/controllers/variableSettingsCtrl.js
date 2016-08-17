@@ -295,52 +295,51 @@ angular.module('starter')
         };
 
         // constructor
-            function setupByVariableObject(variableObject) {
-                console.log(variableObject);
-                $scope.variableObject = variableObject;
-                $scope.state.sumAvg = variableObject.combinationOperation === "MEAN" ? "avg" : "sum";
-                $scope.state.variableCategory = variableObject.category;
-                if (variableObject.abbreviatedUnitName === "/5") {
-                    // FIXME hide other fixed range variables as well
-                    $scope.state.hideMinMax = true;
-                }
-                else {
-                    if (variableObject.minimumAllowedValue !== "-Infinity") {
-                        $scope.state.minimumAllowedValue = variableObject.minimumAllowedValue;
-                    }
-                    else {
-                        $scope.state.minimumAllowedValue = "";
-                    }
-                    if (variableObject.maximumAllowedValue !== "Infinity") {
-                        $scope.state.maximumAllowedValue = variableObject.maximumAllowedValue;
-                    }
-                    else {
-                        $scope.state.maximumAllowedValue = "";
-                    }
-                }
-                if (variableObject.fillingValue === null) {
-                    $scope.state.fillingValue = "";
-                }
-                else {
-                    $scope.state.fillingValue = variableObject.fillingValue;
-                }
-                /*
-                                 if (variableObject.userVariableAlias) {
-                                 $scope.state.userVariableAlias = variableObject.userVariableAlias;
-                                 }
-                                 else {
-                                 $scope.state.userVariableAlias = $stateParams.variableName;
-                                 }
-                                 */
-
-                $scope.state.onsetDelay = variableObject.onsetDelay / (60 * 60); // seconds -> hours
-                $scope.state.durationOfAction = variableObject.durationOfAction / (60 * 60); // seconds - > hours
-                $scope.state.loading = false;
-                $scope.hideLoader()
-                ;
+        function setupByVariableObject(variableObject) {
+            console.log(variableObject);
+            $scope.variableObject = variableObject;
+            $scope.state.sumAvg = variableObject.combinationOperation === "MEAN" ? "avg" : "sum";
+            $scope.state.variableCategory = variableObject.category;
+            if (variableObject.abbreviatedUnitName === "/5") {
+                // FIXME hide other fixed range variables as well
+                $scope.state.hideMinMax = true;
             }
+            else {
+                if (variableObject.minimumAllowedValue !== "-Infinity") {
+                    $scope.state.minimumAllowedValue = variableObject.minimumAllowedValue;
+                }
+                else {
+                    $scope.state.minimumAllowedValue = "";
+                }
+                if (variableObject.maximumAllowedValue !== "Infinity") {
+                    $scope.state.maximumAllowedValue = variableObject.maximumAllowedValue;
+                }
+                else {
+                    $scope.state.maximumAllowedValue = "";
+                }
+            }
+            if (variableObject.fillingValue === null) {
+                $scope.state.fillingValue = "";
+            }
+            else {
+                $scope.state.fillingValue = variableObject.fillingValue;
+            }
+            /*
+             if (variableObject.userVariableAlias) {
+             $scope.state.userVariableAlias = variableObject.userVariableAlias;
+             }
+             else {
+             $scope.state.userVariableAlias = $stateParams.variableName;
+             }
+             */
 
-            $scope.init = function(){
+            $scope.state.onsetDelay = variableObject.onsetDelay / (60 * 60); // seconds -> hours
+            $scope.state.durationOfAction = variableObject.durationOfAction / (60 * 60); // seconds - > hours
+            $scope.state.loading = false;
+            $scope.hideLoader() ;
+        }
+
+        $scope.init = function(){
             Bugsnag.context = "variableSettings";
             $scope.state.loading = true;
             $scope.showLoader('Getting variable details');
@@ -364,6 +363,4 @@ angular.module('starter')
             $scope.hideLoader();
             $scope.init();
         });
-
-    }
-    );
+    });
