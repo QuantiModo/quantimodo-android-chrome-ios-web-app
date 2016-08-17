@@ -213,7 +213,7 @@ angular.module('starter')
             };
             console.log(params);
             variableService.postUserVariable(params).then(function() {
-                console.log("success");
+                console.log("variableService.postUserVariable: success: " + JSON.stringify(params));
             },
             function() {
                 console.log("error");

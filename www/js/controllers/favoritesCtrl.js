@@ -50,17 +50,17 @@ angular.module('starter')
             }
 
 			$scope.state[trackingReminder.id].tally += modifiedReminderValue;
-			console.log('modified tally is ' + $scope.state[trackingReminder.id].tally);
+			console.debug('modified tally is ' + $scope.state[trackingReminder.id].tally);
 			
             $timeout(function() {
                 if($scope.state[trackingReminder.id].tally) {
                     measurementService.postMeasurementByReminder(trackingReminder, $scope.state[trackingReminder.id].tally)
                         .then(function () {
-                        	console.log("success");
+                        	console.debug("Successfully measurementService.postMeasurementByReminder: " + JSON.stringify(trackingReminder));
                         }, function (err) {
                             Bugsnag.notify(err, JSON.stringify(err), {}, "error");
                             console.error(err);
-                            utilsService.showAlert('Failed to Track Reminder, Try again!', 'assertive');
+                            console.error('Failed to Track by favorite, Try again!');
                         });
                     $scope.state[trackingReminder.id].tally = 0;
                 }
