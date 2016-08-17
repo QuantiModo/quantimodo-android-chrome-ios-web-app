@@ -51,10 +51,8 @@ cp -R apps/${LOWERCASE_APP_NAME}/* $PWD
 #npm install
 #echo "npm has installed"
 #npm install -g gulp
-npm install -g cordova
-ionic platform rm ios
-ionic platform add ios@4.1.0
 gulp generateXmlConfigAndUpdateAppsJs
+
 
 #ionic resources - We already do this in gulp makeIosApp
 gulp setVersionNumbersWithEnvs
@@ -71,13 +69,18 @@ ionic config set dev_push false
 ionic config set gcm_key ${GCM_SENDER_ID}
 
 echo "Generating image resources for $LOWERCASE_APP_NAME..."
-ionic resources >/dev/null
-cp apps/${LOWERCASE_APP_NAME}/resources/icon_white.png $PWD/resources/icon.png
 
 ionic config build
 
+npm install -g cordova ionic ios-sim ios-deploy
+ionic platform rm ios
+ionic platform add ios@4.1.0
+
+ionic resources >/dev/null
+cp apps/${LOWERCASE_APP_NAME}/resources/icon_white.png $PWD/resources/icon.png
+
+gulp makeIosAppSimplified
 #ionic emulate ios
-#gulp makeIosAppSimplified
 
 #chmod a+x ./scripts/package-and-upload.sh
 #./scripts/package-and-upload.sh
