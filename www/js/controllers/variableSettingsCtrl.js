@@ -295,20 +295,10 @@ angular.module('starter')
         };
 
         // constructor
-        $scope.init = function(){
-            Bugsnag.context = "variableSettings";
-            $scope.state.loading = true;
-            $scope.showLoader('Getting variable details');
-            authService.checkAuthOrSendToLogin();
-            if (typeof analytics !== 'undefined')  { analytics.trackView("Variable Settings Controller"); }
-
-            $scope.showHelpInfoPopupIfNecessary();
-            $scope.state.sumAvg = "avg"; // FIXME should this be the default?
-            variableService.getVariablesByName($stateParams.variableName).then(function(variableObject){
-                $scope.state.variableObject = variableObject;
+            function setupByVariableObject(variableObject) {
                 console.log(variableObject);
                 $scope.variableObject = variableObject;
-                $scope.state.sumAvg = variableObject.combinationOperation === "MEAN"? "avg" : "sum";
+                $scope.state.sumAvg = variableObject.combinationOperation === "MEAN" ? "avg" : "sum";
                 $scope.state.variableCategory = variableObject.category;
                 if (variableObject.abbreviatedUnitName === "/5") {
                     // FIXME hide other fixed range variables as well
@@ -335,20 +325,38 @@ angular.module('starter')
                     $scope.state.fillingValue = variableObject.fillingValue;
                 }
                 /*
-                if (variableObject.userVariableAlias) {
-                    $scope.state.userVariableAlias = variableObject.userVariableAlias;
-                }
-                else {
-                    $scope.state.userVariableAlias = $stateParams.variableName;
-                }
-                */
+                                 if (variableObject.userVariableAlias) {
+                                 $scope.state.userVariableAlias = variableObject.userVariableAlias;
+                                 }
+                                 else {
+                                 $scope.state.userVariableAlias = $stateParams.variableName;
+                                 }
+                                 */
 
-                $scope.state.onsetDelay = variableObject.onsetDelay/(60*60); // seconds -> hours
-                $scope.state.durationOfAction = variableObject.durationOfAction/(60*60); // seconds - > hours
+                $scope.state.onsetDelay = variableObject.onsetDelay / (60 * 60); // seconds -> hours
+                $scope.state.durationOfAction = variableObject.durationOfAction / (60 * 60); // seconds - > hours
                 $scope.state.loading = false;
-                $scope.hideLoader();
+                $scope.hideLoader()
+                ;
+            }
 
-            });
+            $scope.init = function(){
+            Bugsnag.context = "variableSettings";
+            $scope.state.loading = true;
+            $scope.showLoader('Getting variable details');
+            authService.checkAuthOrSendToLogin();
+            if (typeof analytics !== 'undefined')  { analytics.trackView("Variable Settings Controller"); }
+
+            $scope.showHelpInfoPopupIfNecessary();
+            $scope.state.sumAvg = "avg"; // FIXME should this be the default?
+            if($stateParams.variableObject){
+                setupByVariableObject($stateParams.variableObject);
+            } else {
+                variableService.getVariablesByName($stateParams.variableName).then(function(variableObject){
+                    $scope.state.variableObject = variableObject;
+                    setupByVariableObject(variableObject);
+                });
+            }
         };
         
         // update data when view is navigated to

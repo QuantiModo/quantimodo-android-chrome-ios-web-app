@@ -186,18 +186,16 @@ angular.module('starter')
             if (selectedVariable.description) {
                 $scope.state.trackingReminder.variableDescription = selectedVariable.description;
             }
+
+            if (typeof selectedVariable.lastValue !== "undefined"){
+                $scope.state.trackingReminder.defaultValue = selectedVariable.lastValue;
+            }
+
             $scope.state.showReminderFrequencyCard = true;
 
             // Set default value
             if ($scope.state.trackingReminder.abbreviatedUnitName === "/5") {
                 $scope.state.trackingReminder.defaultValue = 3; // Default to 3 ("ok") if variable unit is /5
-            }
-            else {
-                // Fill in default value as last value if not /5
-                variableService.getVariablesByName($scope.state.trackingReminder.variableName).then(function (variableObject) {
-                    $scope.state.trackingReminder.defaultValue = parseFloat(variableObject.lastValue);
-                });
-
             }
 	    };
 
