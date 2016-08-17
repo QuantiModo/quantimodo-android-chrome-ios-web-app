@@ -911,7 +911,7 @@ gulp.task('installPods', [ 'addPodfile' ] , function(){
 
 	var commands = [
 		'cd platforms/ios',
-		'pod install --verbose'
+		'pod install'
 	].join(' && ');
 
 	execute(commands, function(error){
@@ -1032,20 +1032,21 @@ gulp.task('bumpVersion', function(){
 
 gulp.task('setVersionNumbersWithEnvs', function(){
 
+	console.log('gulp setVersionNumbersWithEnvs was called');
 	var deferred = q.defer();
 	var environmentalVariables = process.env;
 	if(!environmentalVariables['IONIC_APP_VERSION_NUMBER']){
 		//throw new Error('Please set IONIC_APP_VERSION_NUMBER env!');
 		environmentalVariables['IONIC_APP_VERSION_NUMBER'] = '1.8.5';
-		console.warn('No IONIC_APP_VERSION_NUMBER env!  Using hardcoded gulp version ' +
-			environmentalVariables['IONIC_APP_VERSION_NUMBER'])
+		console.log('No IONIC_APP_VERSION_NUMBER env!  Using hardcoded gulp version number ' +
+			environmentalVariables['IONIC_APP_VERSION_NUMBER']);
 	}
 
 	if(!environmentalVariables['IONIC_IOS_APP_VERSION_NUMBER']){
 		//throw new Error('Please set IONIC_IOS_APP_VERSION_NUMBER env!');
-		environmentalVariables['IONIC_IOS_APP_VERSION_NUMBER'] = '1.8.5.2';
-		console.warn('No IONIC_IOS_APP_VERSION_NUMBER env!  Using hardcoded gulp version ' +
-			environmentalVariables['IONIC_IOS_APP_VERSION_NUMBER'])
+		environmentalVariables['IONIC_IOS_APP_VERSION_NUMBER'] = '1.8.5.3';
+		console.log('No IONIC_IOS_APP_VERSION_NUMBER env!  Using hardcoded gulp version number ' +
+			environmentalVariables['IONIC_IOS_APP_VERSION_NUMBER']);
 	}
 
 	var xml = fs.readFileSync('./config.xml', 'utf8');
@@ -1076,7 +1077,7 @@ gulp.task('setVersionNumbersWithEnvs', function(){
 
 			fs.writeFile('./config.xml', updatedXmlFile, 'utf8', function (err) {
 				if (err) {
-					console.log("Error updating version in config.xml", err);
+					console.log("Error updating version number in config.xml", err);
 					deferred.reject();
 				} else {
 					console.log("Successfully updated the version number to " +
