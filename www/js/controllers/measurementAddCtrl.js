@@ -268,13 +268,7 @@ angular.module('starter')
             }
             $scope.state.variableSearchPlaceholderText = 'Search for a ' + $filter('wordAliases')(pluralize(variableCategoryName, 1)) + '...';
             setupValueFieldType($scope.state.variableCategoryObject.defaultAbbreviatedUnitName, null);
-            
-            // Fill in default value as last value if not /5
-            if ($scope.state.measurement.abbreviatedUnitName !== '/5') {
-                variableService.getVariablesByName($scope.state.measurement.variableName).then(function(variableObject){
-                    $scope.state.measurement.value = parseFloat(variableObject.lastValue);
-                });
-            }
+
         };
 
         // constructor
@@ -448,6 +442,12 @@ angular.module('starter')
                 $scope.state.measurement.startTimeEpoch = currentTime.getTime() / 1000;
                 $scope.state.measurementIsSetup = true;
                 setupValueFieldType($stateParams.variableObject.abbreviatedUnitName, $stateParams.variableObject.description);
+
+                // Fill in default value as last value if not /5
+                if ($scope.state.measurement.abbreviatedUnitName !== '/5' && !$scope.state.measurement.value &&
+                    typeof $stateParams.variableObject.lastValue !== "undefined") {
+                    $scope.state.measurement.value = $stateParams.variableObject.lastValue;
+                }
             }
         };
 
