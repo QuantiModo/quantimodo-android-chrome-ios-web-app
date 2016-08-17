@@ -46,11 +46,13 @@ chmod a+x ./scripts/decrypt-key.sh
 chmod a+x ./scripts/add-key.sh
 ./scripts/add-key.sh
 
+chmod -R a+x ./hooks
+
 cp -R apps/${LOWERCASE_APP_NAME}/* $PWD
 #ionic state reset
 #npm install
 #echo "npm has installed"
-#npm install -g gulp
+npm install gulp
 gulp generateXmlConfigAndUpdateAppsJs
 
 
