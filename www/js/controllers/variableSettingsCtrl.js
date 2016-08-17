@@ -28,7 +28,8 @@ angular.module('starter')
 
             variableService.getPublicVariablesByName($stateParams.variableName).then(function(variableArray) {
                 var originalVariableObject = variableArray[0];
-                console.log("Original variable object: " + originalVariableObject);
+                console.log("variableService.getPublicVariablesByName: Original variable object: " +
+                    JSON.stringify(originalVariableObject));
 
                 if (originalVariableObject) {
                     if ($scope.state.variableObject.abbreviatedUnitName !== "/5") {
@@ -349,6 +350,7 @@ angular.module('starter')
             $scope.showHelpInfoPopupIfNecessary();
             $scope.state.sumAvg = "avg"; // FIXME should this be the default?
             if($stateParams.variableObject){
+                $scope.state.variableObject = $stateParams.variableObject;
                 setupByVariableObject($stateParams.variableObject);
             } else {
                 variableService.getVariablesByName($stateParams.variableName).then(function(variableObject){
