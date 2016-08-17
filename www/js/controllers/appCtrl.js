@@ -9,6 +9,7 @@ angular.module('starter')
 
         $rootScope.loaderImagePath = config.appSettings.loaderImagePath;
         $rootScope.appMigrationVersion = 1489;
+        $rootScope.appVersion = "1.8.5.2";
         if (!$rootScope.loaderImagePath) {
             $rootScope.loaderImagePath = 'img/circular-loader.gif';
         }
@@ -586,10 +587,11 @@ angular.module('starter')
                             ") is different from the previous $rootScope.numberOfPendingNotifications (" + $rootScope.numberOfPendingNotifications +
                             ") so updating or recreating notifications...");
                         $rootScope.numberOfPendingNotifications = trackingReminderNotifications.length;
+                        if($rootScope.numberOfPendingNotifications === 0){
+                            $rootScope.showAllCaughtUpCard = true;
+                        }
                         if (window.chrome && window.chrome.browserAction) {
-                            chrome.browserAction.setBadgeText({
-                                text: $rootScope.numberOfPendingNotifications
-                            });
+                            chrome.browserAction.setBadgeText({text: String($rootScope.numberOfPendingNotifications)});
                         }
 
                         notificationService.updateOrRecreateNotifications();
@@ -600,11 +602,10 @@ angular.module('starter')
                     }
 
                     if(trackingReminderNotifications){
-                        $rootScope.trackingRemindersNotifications =
-                            variableCategoryService.attachVariableCategoryIcons(trackingReminderNotifications);
                         $rootScope.filteredTrackingReminderNotifications =
                             groupTrackingReminderNotificationsByDateRange(trackingReminderNotifications);
-                        if(!params.today && !params.variableCategoryName){
+                        if(!params.today && !params.variableCategoryName && $rootScope.trackingRemindersNotifications &&
+                            $rootScope.trackingRemindersNotifications.length > 1){
                             localStorageService.setItem('trackingReminderNotifications',
                                 JSON.stringify($rootScope.trackingRemindersNotifications));
                         }

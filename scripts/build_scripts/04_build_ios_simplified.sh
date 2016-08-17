@@ -47,16 +47,40 @@ chmod a+x ./scripts/add-key.sh
 ./scripts/add-key.sh
 
 cp -R apps/${LOWERCASE_APP_NAME}/* $PWD
-ionic state reset
-npm install
-echo "npm has installed"
-gulp -v
-echo "ran through gulp"
+#ionic state reset
+#npm install
+#echo "npm has installed"
+#npm install -g gulp
 gulp generateXmlConfigAndUpdateAppsJs
-cp apps/${LOWERCASE_APP_NAME}/resources/icon_white.png $PWD/resources/icon.png
+
+
 #ionic resources - We already do this in gulp makeIosApp
 gulp setVersionNumbersWithEnvs
-gulp makeIosApp
-chmod a+x ./scripts/package-and-upload.sh
-./scripts/package-and-upload.sh
-exit 0
+#echo "ionic add ionic-platform-web-client"
+#ionic add ionic-platform-web-client
+
+# We shouldn't need to do this because it should already be in package.json
+ionic plugin add phonegap-plugin-push --variable SENDER_ID="${GCM_SENDER_ID}"
+
+ionic io init -email ${IONIC_EMAIL} --password ${IONIC_PASSWORD}
+ionic config set dev_push false
+
+#ionic push --google-api-key ${GCM_SERVER_API_KEY}
+ionic config set gcm_key ${GCM_SENDER_ID}
+
+echo "Generating image resources for $LOWERCASE_APP_NAME..."
+
+ionic config build
+
+npm install -g cordova ionic ios-sim ios-deploy
+ionic platform rm ios
+ionic platform add ios@4.1.0
+
+ionic resources >/dev/null
+cp apps/${LOWERCASE_APP_NAME}/resources/icon_white.png $PWD/resources/icon.png
+
+gulp makeIosAppSimplified
+#ionic emulate ios
+
+#chmod a+x ./scripts/package-and-upload.sh
+#./scripts/package-and-upload.sh

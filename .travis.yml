@@ -29,14 +29,13 @@ script:
 - #APP_IDENTIFIER="com.quantimodo.moodimodoapp"
 env:
   global:
-  - IONIC_APP_VERSION_NUMBER="1.8.4"
-  - IONIC_IOS_APP_VERSION_NUMBER="1.8.4.1"
+  - IONIC_APP_VERSION_NUMBER="1.8.5"
+  - IONIC_IOS_APP_VERSION_NUMBER="1.8.5.2"
   - TEAM_ID="YD2FK7S2S5"
   - DEVELOPER_NAME="iPhone Distribution: Mike Sinn (YD2FK7S2S5)"
   - PROFILE_NAME="match_AppStore_comquantimodomoodimodoapp"
   - PROFILE_UUID="cd6448f6-e30d-4d74-8413-58f96a770671"
   - DELIVER_WHAT_TO_TEST="Test the Basics of the app and see if something breaks!"
-  - APP_UPLOAD_BRANCH="app/moodimodo"
   - DELIVER_USER="ios@quantimodo.com"
   - FASTLANE_USER="ios@quantimodo.com"
   - secure: FMLEhv2Uw1+nsdGbdYzrZYo8IGtkoFG0I+yNn//bFJC5Z46eQJTYfG9mt9mKMwh14TcgiwbGp7nX0QSoYB34NW5yF/FoRoGAUe+m6ru2vTn8o6BpC/JAP+Je0n4ffQjJ9i4U8W5qQDR8ZdapCHKV6aSxZ7ECl0a5T11A62ks+u50SC3yvxOJJYMMDhy8MCHW6rCxwNFaPF5QltbPfNh2rfAWClsmomve4Z7pGU8Xv9Otn8hRiTTfLEBh0neC1v2M5Y3uxMOxI0Q6H/l0iD+Q0DgSflS76DS0iaBJOJ5rvCyUig48osz4+xX43ft+Y25DjEgSMoFncH04Yruy/XVODm9+BvYrxV1JqCWK/UQXbRY83pVXnabm5f07fyTGtEF4wY05zjc5FI8J1gL/86YV9fugvbd6kVj2ptIGijPrFN20JK1KpUl0z8JgjzVMClzompzSbq98UyeGOxDHxM+dXJ2t8sJUrnXp++otqT5SVaKbtEazZJovZTVZetB2FGPEYa00p6123JQBqhPDuwJ023y68aIvgUGY+dVMhgvwzb3DIi73f6Ax4k4yL7WNyAjBjQfwHPMF2B6mEboMMBwIGgR8dbgQmUya+/iDBSHsNROXfWOIurML6DEryKCHFPJdLxlZtdcTqlIMBE4lUtFo6bg1SYRKR/ZC/yPzaV7CaeE=
@@ -47,9 +46,15 @@ notifications:
   email: false
 
 # whitelist
+#branches:
+#  only:
+#    - master
+#    - develop
+
+# Make sure to test the iOS build before merging to develop
+# blocklist
 branches:
-  only:
-    - master
-    - develop
-    - feature/new_profile
-    - feature/remove_push_for_ios
+  except:
+  - master
+  - release
+  - develop
