@@ -20,7 +20,7 @@ angular.module('starter')
         $scope.resetToDefaultSettings = function() {
             // Populate fields with original settings for variable
 
-            variableService.getPublicVariablesByName($stateParams.variableName).then(function(variableArray) {
+            variableService.getPublicVariablesByName($scope.state.variableObject.name).then(function(variableArray) {
                 var originalVariableObject = variableArray[0];
                 console.log("variableService.getPublicVariablesByName: Original variable object: " +
                     JSON.stringify(originalVariableObject));
@@ -237,7 +237,7 @@ angular.module('starter')
                     console.log('CANCELLED');
                 },
                 buttonClicked: function(index) {
-                    console.log('BUTTON CLICKED', index);
+                    console.log('variableSettingsCtrl BUTTON CLICKED: ' + index);
                     if(index === 0){
                         $scope.addToFavoritesUsingVariableObject($scope.state.variableObject);
                     }
@@ -251,6 +251,7 @@ angular.module('starter')
                         $scope.goToChartsPageForVariableObject($scope.state.variableObject);
                     }
                     if(index === 4) {
+                        console.log('variableSettingsCtrl going to history' + JSON.stringify($scope.state.variableObject));
                         $scope.goToHistoryForVariableObject($scope.state.variableObject);
                     }
                     if(index === 5){

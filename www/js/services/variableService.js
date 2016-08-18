@@ -90,7 +90,19 @@ angular.module('starter')
                 }, function(){
                     deferred.reject(false);
                 });
-                
+
+                return deferred.promise;
+            },
+
+            resetUserVariable : function(variableId) {
+                var deferred = $q.defer();
+                var body = {variableId: variableId};
+                QuantiModo.resetUserVariable(body, function(userVariable) {
+                    deferred.resolve(userVariable);
+                }, function(){
+                    deferred.reject(false);
+                });
+
                 return deferred.promise;
             },
 
