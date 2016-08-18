@@ -6,10 +6,10 @@ angular.module('starter')
 			generateDistributionArray : function(allMeasurements){
 				var distributionArray = [];
 				for (var i = 0; i < allMeasurements.length; i++) {
-					if(typeof distributionArray[String(allMeasurements[i].value)] === "undefined"){
-						distributionArray[String(allMeasurements[i].value)] = 0;
+					if(typeof distributionArray[String(allMeasurements[i].value.toPrecision(2))] === "undefined"){
+						distributionArray[String(allMeasurements[i].value.toPrecision(2))] = 0;
 					}
-					distributionArray[String(allMeasurements[i].value)] += 1;
+					distributionArray[String(allMeasurements[i].value.toPrecision(2))] += 1;
 				}
 				return distributionArray;
 			},
