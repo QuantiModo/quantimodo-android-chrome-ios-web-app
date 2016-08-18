@@ -194,7 +194,7 @@ angular.module('starter')
 
             // populate params
             var params = {
-                variableId: $scope.variableObject.id,
+                variableId: $scope.state.variableObject.id,
                 durationOfAction: $scope.state.durationOfAction*60*60,
                 fillingValue: fillingValue,
                 //joinWith
