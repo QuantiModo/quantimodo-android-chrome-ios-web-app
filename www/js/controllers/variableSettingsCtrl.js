@@ -14,9 +14,7 @@ angular.module('starter')
             searchedUnits : [],
             offset : 0
         };
-        $scope.state.title = $stateParams.variableName + ' Variable Settings';
-        $scope.state.variableName = $stateParams.variableName;
-        //$scope.state.userVariableAlias = $stateParams.variableName;
+
 
         // cancel activity
         $scope.cancel = function(){
@@ -295,9 +293,9 @@ angular.module('starter')
 
         };
 
-        // constructor
         function setupByVariableObject(variableObject) {
-            console.log(variableObject);
+            $scope.state.title = variableObject.name + ' Variable Settings';
+            $scope.state.variableName = variableObject.name;
             $scope.variableObject = variableObject;
             $scope.state.sumAvg = variableObject.combinationOperation === "MEAN" ? "avg" : "sum";
             $scope.state.variableCategory = variableObject.category;
@@ -350,13 +348,17 @@ angular.module('starter')
             $scope.showHelpInfoPopupIfNecessary();
             $scope.state.sumAvg = "avg"; // FIXME should this be the default?
             if($stateParams.variableObject){
-                $scope.state.variableObject = $stateParams.variableObject;
                 setupByVariableObject($stateParams.variableObject);
-            } else {
+            } else if ($stateParams.variableName) {
+                $scope.state.title = $stateParams.variableName + ' Variable Settings';
+                $scope.state.variableName = $stateParams.variableName;
                 variableService.getVariablesByName($stateParams.variableName).then(function(variableObject){
                     $scope.state.variableObject = variableObject;
                     setupByVariableObject(variableObject);
                 });
+            } else {
+                console.error("Variable name not provided to variable settings controller!");
+                $ionicHistory.goBack();
             }
         };
         
