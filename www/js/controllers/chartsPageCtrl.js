@@ -33,7 +33,8 @@ angular.module('starter')
         };
 
         $scope.editSettingsButtonClick = function() {
-            $scope.goToSettingsForVariableObject($scope.state.variableObject);
+            $state.go('app.variableSettings',
+                {variableObject: $scope.state.variableObject});
         };
 
         var windowResize = function() {
@@ -194,7 +195,8 @@ angular.module('starter')
                         $scope.goToHistoryForVariableObject($scope.state.variableObject);
                     }
                     if (index === 4) {
-                        $scope.goToSettingsForVariableObject($scope.state.variableObject);
+                        $state.go('app.variableSettings',
+                            {variableObject: $scope.state.variableObject});
                     }
                     if(index === 5){
                         $state.go('app.predictors',

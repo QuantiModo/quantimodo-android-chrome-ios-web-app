@@ -179,10 +179,10 @@ angular.module('starter')
                             localStorageService.setItem('measurementsQueue', JSON.stringify([]));
                             measurementService.getMeasurements().then(function() {
                                 defer.resolve();
-                                console.log("success", response);
+                                console.log("QuantiModo.postMeasurementsV2 success: " + JSON.stringify(response));
                             });
                         }, function (response) {
-                            console.log("error", response);
+                            console.log("error: " + JSON.stringify(response));
                             defer.resolve();
                         });
                     }
@@ -424,18 +424,18 @@ angular.module('starter')
                     // send request
                     QuantiModo.postMeasurementsV2(measurements, function(response){
                         if(response.success) {
-                            console.log("success", response);
+                            console.log("postMeasurementsV2 success " + JSON.stringify(response));
                             if(usePromise) {
                                 deferred.resolve();
                             }
                         } else {
-                            console.log("error", response);
+                            console.log("QuantiModo.postMeasurementsV2 error" + JSON.stringify(response));
                             if(usePromise) {
                                 deferred.reject(response.message ? response.message.split('.')[0] : "Can't post measurement right now!");
                             }
                         }
                     }, function(response){
-                        console.log("error", response);
+                        console.log("QuantiModo.postMeasurementsV2 error" + JSON.stringify(response));
                         if(usePromise) {
                             deferred.reject(response.message ? response.message.split('.')[0] : "Can't post measurement right now!");
                         }
@@ -480,7 +480,7 @@ angular.module('starter')
 
                 QuantiModo.postMeasurementsV2(measurementSet, function(response){
                     if(response.success) {
-                        console.log("success", response);
+                        console.log("QuantiModo.postMeasurementsV2 success: " + JSON.stringify(response));
                         deferred.resolve();
                     } else {
                         deferred.reject(response.message ? response.message.split('.')[0] : "Can't post measurement right now!");
@@ -538,10 +538,10 @@ angular.module('starter')
             deleteMeasurementFromServer : function(measurement){
                 var deferred = $q.defer();
                 QuantiModo.deleteV1Measurements(measurement, function(response){
-                    console.log("success", response);
                     deferred.resolve(response);
+                    console.log("deleteMeasurementFromServer success " + JSON.stringify(response));
                 }, function(response){
-                    console.log("error", response);
+                    console.log("deleteMeasurementFromServer error " + JSON.stringify(response));
                     deferred.reject();
                 });
                 return deferred.promise;

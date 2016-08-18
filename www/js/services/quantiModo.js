@@ -480,6 +480,16 @@ angular.module('starter')
                     errorHandler);
             };
 
+            QuantiModo.resetUserVariable = function(body, successHandler, errorHandler) {
+                QuantiModo.post('api/v1/userVariables/reset',
+                    [
+                        'variableId'
+                    ],
+                    body,
+                    successHandler,
+                    errorHandler);
+            };
+
             // deletes all of a user's measurements for a variable
             QuantiModo.deleteUserVariableMeasurements = function(variableId, successHandler, errorHandler) {
                 localStorageService.deleteElementOfItemByProperty('userVariables', 'variableId', variableId);

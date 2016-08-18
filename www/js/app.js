@@ -436,7 +436,8 @@ angular.module('starter',
                 fromState : null,
                 fromUrl : null,
                 measurement : null,
-                variableName : null
+                variableName : null,
+                variableObject : null
             },
             views: {
                 'menuContent': {
