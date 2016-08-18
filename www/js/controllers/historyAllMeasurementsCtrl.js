@@ -188,7 +188,8 @@ angular.module('starter')
 
 					}
 					if(index === 5){
-						$scope.goToSettingsForVariableObject($scope.state.variableObject);
+						$state.go('app.variableSettings',
+							{variableName: $scope.state.measurement.variableName});
 					}
 					if(index === 6){
 						$state.go('app.predictors',

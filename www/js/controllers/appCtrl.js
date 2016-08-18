@@ -222,15 +222,6 @@ angular.module('starter')
                 });
         };
 
-        $scope.goToSettingsForVariableObject = function (variableObject) {
-            $state.go('app.variableSettings',
-                {
-                    variableObject: variableObject,
-                    fromState: $state.current.name,
-                    fromUrl: window.location.href
-                });
-        };
-
         $scope.addToFavoritesUsingVariableObject = function (variableObject) {
             var trackingReminder = {};
             trackingReminder.variableId = variableObject.id;

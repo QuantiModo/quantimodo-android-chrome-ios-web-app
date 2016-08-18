@@ -43,7 +43,7 @@ angular.module('starter')
     		$scope.init();
     	});
 
-		$scope.showActionSheet = function(measurement, $index) {
+		$scope.showActionSheet = function(measurement) {
 
 			$scope.state.measurement = measurement;
 			$scope.state.variableObject = measurement;
@@ -84,7 +84,8 @@ angular.module('starter')
 						$state.go('app.track');
 					}
 					if(index === 4){
-						$scope.goToSettingsForVariableObject($scope.state.variableObject);
+						$state.go('app.variableSettings',
+							{variableName: $scope.state.measurement.variableName});
 					}
 					if(index === 5){
 						$state.go('app.predictors',

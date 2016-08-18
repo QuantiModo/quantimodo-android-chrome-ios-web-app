@@ -7,16 +7,12 @@ angular.module('starter')
 
         $scope.controller_name = "VariableSettingsCtrl";
 
-        // state
         $scope.state = {
-            // category object,
             unitCategories : {},
             searchedUnits : [],
             offset : 0
         };
 
-
-        // cancel activity
         $scope.cancel = function(){
             $ionicHistory.goBack();
         };
@@ -73,7 +69,7 @@ angular.module('starter')
                     },
                     {
                         text: 'No',
-                        type: 'button-assertive',
+                        type: 'button-assertive'
                     }
                 ]
 
@@ -198,14 +194,13 @@ angular.module('starter')
 
             // populate params
             var params = {
-                user: $scope.variableObject.userId,
                 variableId: $scope.variableObject.id,
                 durationOfAction: $scope.state.durationOfAction*60*60,
                 fillingValue: fillingValue,
                 //joinWith
                 maximumAllowedValue: maximumAllowedValue,
                 minimumAllowedValue: minimumAllowedValue,
-                onsetDelay: $scope.state.onsetDelay*60*60,
+                onsetDelay: $scope.state.onsetDelay*60*60
                 //userVariableAlias: $scope.state.userVariableAlias
                 //experimentStartTime
                 //experimentEndTime
@@ -296,9 +291,8 @@ angular.module('starter')
         function setupByVariableObject(variableObject) {
             $scope.state.title = variableObject.name + ' Variable Settings';
             $scope.state.variableName = variableObject.name;
-            $scope.variableObject = variableObject;
+            $scope.state.variableObject = variableObject;
             $scope.state.sumAvg = variableObject.combinationOperation === "MEAN" ? "avg" : "sum";
-            $scope.state.variableCategory = variableObject.category;
             if (variableObject.abbreviatedUnitName === "/5") {
                 // FIXME hide other fixed range variables as well
                 $scope.state.hideMinMax = true;
