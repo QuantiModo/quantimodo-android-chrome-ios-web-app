@@ -27,11 +27,12 @@
   <plugin name="cordova-plugin-inappbrowser" spec="1.2.1" />
   <plugin name="ionic-plugin-keyboard" spec="~1.0.8" />
   <plugin name="cordova-plugin-geolocation" version="2.1.0" />
+  <plugin name="phonegap-plugin-push" version="1.8.1">
+    <variable name="SENDER_ID" value="1052648855194" />
+  </plugin>
   <plugin name="cordova-plugin-facebook4" version="1.7.1">
     <variable name="APP_ID" value="225078261031461" />
     <variable name="APP_NAME" value="QuantiModo" />
   </plugin>
-  <plugin name="phonegap-plugin-push" version="1.8.1">
-    <variable name="SENDER_ID" value="1052648855194" />
-  </plugin>
+  <plugin name="cordova-plugin-datepicker" version="0.9.3" />
 </widget>
