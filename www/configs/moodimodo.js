@@ -6,7 +6,7 @@ var getPlatform = function () {
         typeof ionic.Platform !== "undefined") {
         var currentPlatform = ionic.Platform.platform();
         var currentPlatformVersion = ionic.Platform.version();
-        if (currentPlatform.indexOf('win' > -1)){
+        if (currentPlatform.indexOf('win') > -1){
             return 'windows';
         }
         return ionic.Platform.isIOS() ? "iOS" : ionic.Platform.isAndroid() ? "Android" : "Web";
