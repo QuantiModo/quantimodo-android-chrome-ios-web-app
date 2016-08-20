@@ -24,3 +24,5 @@ platforms/windows/
 bld/
 .vs/
 .vagrant/
+platforms/Windows-x64/
+bin/

@@ -14,7 +14,7 @@ angular.module('starter')
             $cordovaFacebook = $injector.get('$cordovaFacebook');
         }
 
-        $scope.init = function(){
+        $scope.init = function () {
             Bugsnag.context = "login";
             $scope.hideLoader();
             if($rootScope.helpPopup){
@@ -40,7 +40,7 @@ angular.module('starter')
 
         // User wants to login
         $scope.login = function(register) {
-
+            var currentPlaform = config.getPlatform();
             $scope.showLoader('Logging you in...');
             localStorageService.setItem('isWelcomed', true);
             $rootScope.isWelcomed = true;
@@ -49,6 +49,8 @@ angular.module('starter')
                 chromeAppLogin(register);
             } else if ($rootScope.isChromeExtension) {
                 chromeExtensionLogin(register);
+            } else if (ionic.Platform.platform().indexOf('win') > -1) {
+                nonNativeMobileLogin(register);
             } else if(ionic.Platform.is('browser')){
                 console.log("$scope.login: Browser Detected");
                 browserLogin(register);

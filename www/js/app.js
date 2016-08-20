@@ -189,8 +189,8 @@ angular.module('starter',
 
 .config(function($stateProvider, $urlRouterProvider, $compileProvider, ionicTimePickerProvider,
                  ionicDatePickerProvider, $ionicConfigProvider) {
-    $compileProvider.imgSrcSanitizationWhitelist(/^\s*(https?|ftp|file|mailto|chrome-extension):/);
-    $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|file|ftp|mailto|chrome-extension):/);
+    $compileProvider.imgSrcSanitizationWhitelist(/^\s*(https?|ftp|file|mailto|chrome-extension|ms-appx-web|ms-appx):/);
+    $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|file|ftp|mailto|chrome-extension|ms-appx-web|ms-appx):/);
     $ionicConfigProvider.tabs.position("bottom"); //Places them at the bottom for all OS
 
     var config_resolver = {

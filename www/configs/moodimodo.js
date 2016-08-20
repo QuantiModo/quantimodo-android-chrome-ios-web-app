@@ -1,13 +1,18 @@
 
-var getPlatform = function(){
+var getPlatform = function () {
+
+
     if(typeof ionic !== "undefined" &&
-        typeof ionic.Platform !== "undefined" &&
-        typeof ionic.Platform.isIOS !== "undefined" &&
-        typeof ionic.Platform.isAndroid !== "undefined" ) {
+        typeof ionic.Platform !== "undefined") {
+        var currentPlatform = ionic.Platform.platform();
+        var currentPlatformVersion = ionic.Platform.version();
+        if (currentPlatform.indexOf('win' > -1)){
+            return 'windows';
+        }
         return ionic.Platform.isIOS() ? "iOS" : ionic.Platform.isAndroid() ? "Android" : "Web";
     }
     else {
-        return "Ionic";
+        return "Unknown Platform";
     }
 };
 
@@ -524,7 +529,11 @@ config.getClientId = function(){
         return window.private_keys.client_ids.Chrome;
     } else {
         var platform = getPlatform();
-        return platform === "Ionic"? window.private_keys.client_ids.Web : platform === "Web"? window.private_keys.client_ids.Web : platform === "iOS"? window.private_keys.client_ids.iOS : window.private_keys.client_ids.Android;
+        if (platform === "Web") { return window.private_keys.client_ids.Web };
+        if (platform === "iOS") { return window.private_keys.client_ids.iOS };
+        if (platform === "Android") { return window.private_keys.client_ids.Android };
+        if (platform === "windows") { return window.private_keys.client_ids.windows };
+        return window.private_keys.client_ids.Web;
     }
 };
 
@@ -533,11 +542,17 @@ config.getClientSecret = function(){
         return window.private_keys.client_secrets.Chrome;
     } else {
         var platform = getPlatform();
-        return platform === "Ionic"? window.private_keys.client_secrets.Web : platform === "Web"? window.private_keys.client_secrets.Web : platform === "iOS"? window.private_keys.client_secrets.iOS : window.private_keys.client_secrets.Android;
+        if (platform === "Web") { return window.private_keys.client_secrets.Web };
+        if (platform === "iOS") { return window.private_keys.client_secrets.iOS };
+        if (platform === "Android") { return window.private_keys.client_secrets.Android };
+        if (platform === "windows") { return window.private_keys.client_secrets.windows };
+        return window.private_keys.client_secrets.Web;
     }
 };
 
-config.getRedirectUri = function(){
+config.getRedirectUri = function () {
+    var currentPlatform = ionic.Platform.platform();
+    var currentPlatformVersion = ionic.Platform.version();
     if(!window.private_keys.redirect_uris){
         return 'https://app.quantimo.do/ionic/Modo/www/callback/';
     }
@@ -545,11 +560,17 @@ config.getRedirectUri = function(){
         return window.private_keys.redirect_uris.Chrome;
     } else {
         var platform = getPlatform();
-        return platform === "Ionic"? window.private_keys.redirect_uris.Web : platform === "Web"? window.private_keys.redirect_uris.Web : platform === "iOS"? window.private_keys.redirect_uris.iOS : window.private_keys.redirect_uris.Android;
+        if (platform === "Web") { return window.private_keys.redirect_uris.Web };
+        if (platform === "iOS") { return window.private_keys.redirect_uris.iOS };
+        if (platform === "Android") { return window.private_keys.redirect_uris.Android };
+        if (platform === "windows") { return window.private_keys.redirect_uris.windows };
+        return window.private_keys.redirect_uris.Web;
     }
 };
 
-config.getApiUrl = function(){
+config.getApiUrl = function () {
+    var currentPlatform = ionic.Platform.platform();
+    var currentPlatformVersion = ionic.Platform.version();
     if(!window.private_keys.api_urls){
         return 'https://app.quantimo.do';
     }
@@ -559,7 +580,11 @@ config.getApiUrl = function(){
     } else if (platform === 'Web' && window.private_keys.client_ids.Web === 'oAuthDisabled') {
         return window.location.origin;
     } else {
-        return platform === "Ionic"? window.private_keys.api_urls.Web : platform === "Web"? window.private_keys.api_urls.Web : platform === "iOS"? window.private_keys.api_urls.iOS : window.private_keys.api_urls.Android;
+        if (platform === "Web") { return window.private_keys.api_urls.Web };
+        if (platform === "iOS") { return window.private_keys.api_urls.iOS };
+        if (platform === "Android") { return window.private_keys.api_urls.Android };
+        if (platform === "windows") { return window.private_keys.api_urls.windows };
+        return window.private_keys.api_urls.Web;
     }
 };
 
@@ -577,8 +602,22 @@ config.getPermissionString = function(){
 
 };
 
+config.getProtocol = function () {
+    if (typeof ionic !== "undefined") {
+        var currentPlatform = ionic.Platform.platform();
+        if(currentPlatform.indexOf('win') > -1){
+            return 'ms-appx-web';
+        }
+    }
 
-config.getURL = function(path){
+    return 'https';
+
+};
+
+
+config.getURL = function (path) {
+    var currentPlatform = ionic.Platform.platform();
+    var currentPlatformVersion = ionic.Platform.version();
     if(typeof path === "undefined") {
         path = "";
     }
@@ -593,7 +632,7 @@ config.getURL = function(path){
     }
     else
     {
-        url = config.protocol + "://" + config.domain + "/" + path;
+        url = config.getProtocol() + "://" + config.domain + "/" + path;
     }
 
    return url;

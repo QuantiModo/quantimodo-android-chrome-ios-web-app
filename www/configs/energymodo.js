@@ -584,7 +584,7 @@ config.getURL = function(path){
     }
     else 
     {
-        url = config.protocol + "://" + config.domain + "/" + path;
+        url = config.getProtocol() + "://" + config.domain + "/" + path;
     }
 
     return url;
