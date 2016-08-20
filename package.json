@@ -18,10 +18,18 @@
     "gulp-util": "^2.2.14",
     "shelljs": "^0.3.0"
   },
+  "scripts": {
+    "build": "node_modules/.bin/gulp",
+    "bower": "node_modules/.bin/bower install",
+    "postinstall": "npm run bower && npm run build"
+  },
   "cordovaPlugins": [
     "cordova-plugin-device",
+    "cordova-plugin-console",
     "cordova-plugin-whitelist",
     "cordova-plugin-inappbrowser",
+    "cordova-plugin-splashscreen",
+    "cordova-plugin-statusbar",
     "ionic-plugin-keyboard"
   ],
   "cordovaPlatforms": []
