@@ -227,7 +227,7 @@ angular.module('starter')
 				userService.refreshUser();
 			}
 
-			if (typeof cordova !== "undefined") {
+			if (typeof cordova !== "undefined" && typeof cordova.plugins.notification !== "undefined") {
 				$ionicPlatform.ready(function () {
 					cordova.plugins.notification.local.clearAll(function () {
 						console.debug("clearAll active notifications");

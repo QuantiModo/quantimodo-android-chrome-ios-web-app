@@ -26,3 +26,5 @@ bld/
 .vagrant/
 platforms/Windows-x64/
 bin/
+resources/ios/splash/
+resources/ios/icon/

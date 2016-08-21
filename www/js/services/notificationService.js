@@ -22,6 +22,10 @@ angular.module('starter')
         return {
 
             setOnUpdateAction: function(){
+                if (typeof cordova === "undefined" || typeof cordova.plugins.notification === "undefined") {
+                    console.log('cordova.plugins.notification is not defined');
+                    return;
+                }
                 cordova.plugins.notification.local.on("update", function(notification) {
                     console.log("onUpdate: Just updated this notification: ", notification);
                     cordova.plugins.notification.local.getAll(function (notifications) {
@@ -31,6 +35,10 @@ angular.module('starter')
             },
 
             setOnClickAction: function(QuantiModo) {
+                if (typeof cordova === "undefined" || typeof cordova.plugins.notification === "undefined") {
+                    console.log('cordova.plugins.notification is not defined');
+                    return;
+                }
                 var params = {};
                 var locationTrackingNotificationId = 666;
                 cordova.plugins.notification.local.on("click", function (notification) {
@@ -89,6 +97,10 @@ angular.module('starter')
             },
 
             updateBadgesAndTextOnAllNotifications : function () {
+                if (typeof cordova === "undefined" || typeof cordova.plugins.notification === "undefined") {
+                    console.log('cordova.plugins.notification is not defined');
+                    return;
+                }
                 console.log("updateOrRecreateNotifications: Disabled until everything works right");
                 return;
 
@@ -129,6 +141,10 @@ angular.module('starter')
             },
 
             setOnTriggerAction: function() {
+                if (typeof cordova === "undefined" || typeof cordova.plugins.notification === "undefined") {
+                    console.log('cordova.plugins.notification is not defined');
+                    return;
+                }
 
                 function getNotificationsFromApiAndClearOrUpdateLocalNotifications() {
                     var currentDateTimeInUtcStringPlus5Min = timeService.getCurrentDateTimeInUtcStringPlusMin(5);
@@ -155,6 +171,10 @@ angular.module('starter')
                             }
 
                             if (!$rootScope.numberOfPendingNotifications) {
+                                if (typeof cordova === "undefined" || typeof cordova.plugins.notification === "undefined") {
+                                    console.log('cordova.plugins.notification is not defined');
+                                    return;
+                                }
                                 console.log("onTrigger.getNotificationsFromApiAndClearOrUpdateLocalNotifications: No notifications from API so clearAll active notifications");
                                 cordova.plugins.notification.local.clearAll(function () {
                                     console.log("onTrigger.getNotificationsFromApiAndClearOrUpdateLocalNotifications: cleared all active notifications");
@@ -372,6 +392,10 @@ angular.module('starter')
                 }
 
                 function cancelIonicNotificationsForDeletedReminders(trackingRemindersFromApi) {
+                    if (typeof cordova === "undefined" || typeof cordova.plugins.notification === "undefined") {
+                        console.log('cordova.plugins.notification is not defined');
+                        return;
+                    }
                     cordova.plugins.notification.local.getAll(function (scheduledNotifications) {
                         console.log("cancelIonicNotificationsForDeletedReminders: notification.local.getAll " +
                             "scheduledNotifications: ",
@@ -430,6 +454,10 @@ angular.module('starter')
                 }
 
                 function createOrUpdateIonicNotificationForTrackingReminder(notificationSettings) {
+                    if (typeof cordova === "undefined" || typeof cordova.plugins.notification === "undefined") {
+                        console.log('cordova.plugins.notification is not defined');
+                        return;
+                    }
                     cordova.plugins.notification.local.isPresent(notificationSettings.id, function (present) {
 
                         if (!present) {
@@ -447,10 +475,10 @@ angular.module('starter')
                             console.log('createOrUpdateIonicNotificationForTrackingReminder: Updating notification',
                                 notificationSettings);
                             cordova.plugins.notification.local.update(notificationSettings,
-                                            function () {
-                                                console.log('createOrUpdateIonicNotificationForTrackingReminder: ' +
-                                                    'notification updated', notificationSettings);
-                                            });
+                                function () {
+                                    console.log('createOrUpdateIonicNotificationForTrackingReminder: ' +
+                                        'notification updated', notificationSettings);
+                                });
                         }
                     });
                 }
@@ -658,6 +686,10 @@ angular.module('starter')
 
                 $ionicPlatform.ready(function () {
                     if (typeof cordova !== "undefined") {
+                        if (typeof cordova === "undefined" || typeof cordova.plugins.notification === "undefined") {
+                            console.log('cordova.plugins.notification is not defined');
+                            return;
+                        }
                         cordova.plugins.notification.local.getAll(function (notifications) {
                             console.log("scheduleGenericNotification: All notifications before scheduling", notifications);
                             if(notifications[0] && notifications[0].length === 1 &&
@@ -686,6 +718,10 @@ angular.module('starter')
             },
 
             cancelIonicNotificationById: function(notificationId){
+                if (typeof cordova === "undefined" || typeof cordova.plugins.notification === "undefined") {
+                    console.log('cordova.plugins.notification is not defined');
+                    return;
+                }
                 $ionicPlatform.ready(function () {
                     if (typeof cordova !== "undefined") {
                         console.log('cancelIonicNotificationById ' + notificationId);
@@ -725,6 +761,10 @@ angular.module('starter')
                 }
 
                 if($rootScope.isMobile){
+                    if (typeof cordova === "undefined" || typeof cordova.plugins.notification === "undefined") {
+                        console.log('cordova.plugins.notification is not defined');
+                        return;
+                    }
                     $ionicPlatform.ready(function () {
                         cordova.plugins.notification.local.getAll(function (existingLocalNotifications) {
                             var notificationSettings = {
@@ -739,7 +779,7 @@ angular.module('starter')
                                 var existingReminderNotificationTimeFoundInApiResponse = false;
                                 for (var j = 0; j < localDailyReminderNotificationTimesFromApi.length; j++) {
                                     if (parseInt(localDailyReminderNotificationTimesFromApi[j].replace(":", "")) ===
-                                            existingLocalNotifications[i].id &&
+                                        existingLocalNotifications[i].id &&
                                         existingLocalNotifications[i].text === notificationSettings.text
                                     ) {
                                         console.log('Server has a reminder notification matching local notification ' +
@@ -797,14 +837,14 @@ angular.module('starter')
                                         notificationSettings.every = 'day';
                                     }
                                     if(!(notificationSettings.at instanceof Date)){
-                                      var errorMessage = 'Skipping notification creation because notificationSettings.at is not an instance of Date: ' + JSON.stringify(notificationSettings);
-                                      console.error(errorMessage);
-                                      bugsnagService.reportError(errorMessage);
-                                      return;
+                                        var errorMessage = 'Skipping notification creation because notificationSettings.at is not an instance of Date: ' + JSON.stringify(notificationSettings);
+                                        console.error(errorMessage);
+                                        bugsnagService.reportError(errorMessage);
+                                        return;
                                     }
                                     if(!isNaN(notificationSettings.at) &&
-                                            parseInt(Number(notificationSettings.at)) === notificationSettings.at &&
-                                            !isNaN(parseInt(notificationSettings.at, 10))){
+                                        parseInt(Number(notificationSettings.at)) === notificationSettings.at &&
+                                        !isNaN(parseInt(notificationSettings.at, 10))){
                                         var intErrorMessage = 'Skipping notification creation because notificationSettings.at is not an instance of Date: ' + JSON.stringify(notificationSettings);
                                         console.error(intErrorMessage);
                                         bugsnagService.reportError(intErrorMessage);
@@ -884,6 +924,10 @@ angular.module('starter')
                 var deferred = $q.defer();
                 if(typeof cordova !== "undefined"){
                     $ionicPlatform.ready(function () {
+                        if (typeof cordova === "undefined" || typeof cordova.plugins.notification === "undefined") {
+                            console.log('cordova.plugins.notification is not defined');
+                            return;
+                        }
                         cordova.plugins.notification.local.cancelAll(function () {
                             console.log('cancelAllNotifications: notifications have been cancelled');
                             cordova.plugins.notification.local.getAll(function (notifications) {
