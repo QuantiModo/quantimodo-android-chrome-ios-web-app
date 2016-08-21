@@ -1,6 +1,7 @@
 angular.module('starter')
 
-	.factory('authService', function ($http, $q, $state, $ionicLoading, $rootScope, localStorageService, utilsService) {
+	.factory('authService', function ($http, $q, $state, $ionicLoading, $rootScope, localStorageService, utilsService,
+		$cordovaPush, $ionicPlatform, pushNotificationService, $injector) {
 
 		var authService = {
 
@@ -211,6 +212,26 @@ angular.module('starter')
 
         checkAuthOrSendToLogin: function() {
             $rootScope.user = localStorageService.getItemAsObject('user');
+
+			if($rootScope.isMobile){
+				$ionicPlatform.ready(function () {
+					console.debug('Going to try $cordovaPush.register...');
+					$cordovaPush = $injector.get('$cordovaPush');
+					$cordovaPush.register({
+						badge: true,
+						sound: true,
+						alert: true
+					}).then(function (result) {
+						console.debug('Got this token from $cordovaPush.register: ' + result.token);
+						if($rootScope.deviceToken !== result.token){
+							pushNotificationService.registerDeviceToken(result.token);
+						}
+					}, function (err) {
+						console.log('reg device error', err);
+					});
+				});
+			}
+
             if($rootScope.user){
 				return true;
 			}
