@@ -40,7 +40,7 @@ angular.module('starter')
 
         // User wants to login
         $scope.login = function(register) {
-            var currentPlaform = config.getPlatform();
+            
             $scope.showLoader('Logging you in...');
             localStorageService.setItem('isWelcomed', true);
             $rootScope.isWelcomed = true;
