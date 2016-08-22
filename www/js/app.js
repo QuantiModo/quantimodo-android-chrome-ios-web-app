@@ -23,6 +23,10 @@ angular.module('starter',
 // Database
 //.run(function($ionicPlatform, $ionicHistory, $state, $rootScope, $cordovaSQLite) {
 
+    window.onerror = function (errorMsg, url, lineNumber) {
+        alert('Error: ' + errorMsg + ' Script: ' + url + ' Line: ' + lineNumber);
+    };
+
     $ionicPlatform.ready(function() {
         //$ionicAnalytics.register();
 
