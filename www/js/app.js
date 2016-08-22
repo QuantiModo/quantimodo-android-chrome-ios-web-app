@@ -43,6 +43,37 @@ angular.module('starter',
             });
         }
 
+        if(ionic.Platform.isIPad() || ionic.Platform.isIOS()){
+            var push = PushNotification.init({
+                android: {
+                    senderID: "1052648855194"
+                },
+                ios: {
+                    alert: "true",
+                    badge: "true",
+                    sound: "true"
+                }
+            });
+
+            push.on('registration', function(data) {
+                // data.registrationId
+                alert(data.registrationId);
+            });
+
+            push.on('notification', function(data) {
+                // data.message,
+                // data.title,
+                // data.count,
+                // data.sound,
+                // data.image,
+                // data.additionalData
+            });
+
+            push.on('error', function(e) {
+                // e.message
+            });
+        }
+
         /*
          window.onNotification = function(e){
             console.log("window.onNotification: received event", e);
