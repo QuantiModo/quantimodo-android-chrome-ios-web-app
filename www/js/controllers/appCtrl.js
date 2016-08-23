@@ -713,7 +713,7 @@ angular.module('starter')
                 }
             };
             
-            QuantiModo.apiGet('api/user/me',
+            QuantiModo.get('api/user/me',
                 [],
                 {},
                 successHandler,
