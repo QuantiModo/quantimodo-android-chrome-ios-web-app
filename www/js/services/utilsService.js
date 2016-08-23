@@ -1,11 +1,11 @@
 angular.module('starter')
 
     // utility methods
-    .factory('utilsService', function($ionicPopup, $ionicLoading) {
-
-        var loginAlert;
+    .factory('utilsService', function($ionicPopup) {
 
         return {
+
+
 
             convertToObjectIfJsonString : function (stringOrObject) {
                 try {
@@ -16,7 +16,6 @@ angular.module('starter')
                 return stringOrObject;
             },
 
-            
             showAlert : function(title, template) {
                 var alertPopup = $ionicPopup.alert({
                     cssClass : 'positive',
@@ -26,45 +25,10 @@ angular.module('starter')
                 });
             },
 
-            // Hide spinner
-            loadingStop : function(){
-                $ionicLoading.hide();
-            },
-
-            // show spinner
-            loadingStart : function(loadingMessage, hideAfter){
-                
-                if(!hideAfter){
-                    hideAfter = 10;
-                }
-                
-                if(!loadingMessage) {
-                    $ionicLoading.show({
-                        noBackdrop: true,
-                        template: '<img src={{loaderImagePath}}><!--<br><p class="item-icon-left">Loading stuff...<ion-spinner icon="lines"/></p>-->'
-                    });
-                }
-                
-                if(loadingMessage) {
-                    $ionicLoading.show({
-                        noBackdrop: true,
-                        template: '<p class="item-icon-left">' + loadingMessage + '<ion-spinner icon="lines"/></p>'
-                    });
-                }
-
-                setTimeout(function(){
-                    $ionicLoading.hide();
-                }, hideAfter);
-            },
-
             // returns bool
             // if a string starts with substring
             startsWith : function (fullString, search) {
                 return fullString.slice(0, search.length) === search;
-            },
-
-            hasInIt : function(fullString, search){
-                return fullString.indexOf(search) !== -1;
             },
 
             // returns bool | string
@@ -91,6 +55,6 @@ angular.module('starter')
                 } else {
                     return false;
                 }
-            },
+            }
         };
     });

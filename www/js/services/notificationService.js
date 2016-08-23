@@ -239,16 +239,16 @@ angular.module('starter')
 
                 cordova.plugins.notification.local.on("trigger", function (currentNotification) {
 
-/*                   I don't think this is necessary because we're going to check the API anyway
-                    if(currentNotification.badge < 1){
-                        $ionicPlatform.ready(function () {
-                            cordova.plugins.notification.local.clearAll(function () {
-                                console.warn("onTrigger: Cleared all notifications because badge is less than 1");
-                            });
-                        });
-                        return;
-                    }
-                    */
+                    /*                   I don't think this is necessary because we're going to check the API anyway
+                     if(currentNotification.badge < 1){
+                     $ionicPlatform.ready(function () {
+                     cordova.plugins.notification.local.clearAll(function () {
+                     console.warn("onTrigger: Cleared all notifications because badge is less than 1");
+                     });
+                     });
+                     return;
+                     }
+                     */
 
                     try {
                         qmLocationService.updateLocationVariablesAndPostMeasurementIfChanged();

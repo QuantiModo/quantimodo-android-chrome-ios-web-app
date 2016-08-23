@@ -17,28 +17,71 @@ angular.module('starter',
     ]
 )
 
-.run(function($ionicPlatform, $ionicHistory, $state, $rootScope, pushNotificationService, localStorageService) {
+.run(function($ionicPlatform, $ionicHistory, $state, $rootScope, PushNotification, localStorageService) {
 //.run(function($ionicPlatform, $ionicHistory, $state, $rootScope, $ionicAnalytics) {
 // Database
 //.run(function($ionicPlatform, $ionicHistory, $state, $rootScope, $cordovaSQLite) {
 
+    window.onerror = function (errorMsg, url, lineNumber) {
+        alert('Error: ' + errorMsg + ' Script: ' + url + ' Line: ' + lineNumber);
+    };
+
     $ionicPlatform.ready(function() {
         //$ionicAnalytics.register();
 
-        if(ionic.Platform.isAndroid()){
-            var push = new Ionic.Push({});
+        if(ionic.Platform.isIPad() || ionic.Platform.isIOS()){
+            window.onerror = function (errorMsg, url, lineNumber) {
+                alert('Error: ' + errorMsg + ' Script: ' + url + ' Line: ' + lineNumber);
+            };
+        }
 
-            push.register(function(deviceToken) {
-                console.log("Got device token for push notifications: ", deviceToken.token);
-                $rootScope.deviceToken = localStorageService.getItemSync('deviceToken');
-                push.saveToken(deviceToken);
-                if($rootScope.deviceToken !== deviceToken.token){
-                    pushNotificationService.registerDeviceToken(deviceToken.token);
+        if(ionic.Platform.isAndroid() || ionic.Platform.isIPad() || ionic.Platform.isIOS()){
+            alert("Going to try to register push");
+            var push = PushNotification.init({
+                android: {
+                    senderID: "1052648855194"
+                },
+                ios: {
+                    alert: "true",
+                    badge: "true",
+                    sound: "true"
                 }
+            });
+
+            push.on('registration', function(data) {
+                alert("Got device token for push notifications: " + data.registrationId);
+                localStorageService.setItem('deviceTokenToSync', data.registrationId);
+            });
+
+            push.on('notification', function(data) {
+                // data.message,
+                // data.title,
+                // data.count,
+                // data.sound,
+                // data.image,
+                // data.additionalData
+            });
+
+            push.on('error', function(e) {
+                // e.message
             });
         }
 
         /*
+
+         if (ionic.Platform.isAndroid() || ionic.Platform.isIPad() || ionic.Platform.isIOS()) {
+         alert("Going to try to register push");
+         var push = new Ionic.Push({"debug": true});
+
+         push.register(function (deviceToken) {
+         alert("Got device token for push notifications: " + deviceToken.token);
+         push.saveToken(deviceToken);
+         //if($rootScope.deviceToken !== deviceToken.token){
+         pushNotificationService.registerDeviceToken(deviceToken.token);
+         //}
+         });
+         }
+
          window.onNotification = function(e){
             console.log("window.onNotification: received event", e);
             switch(e.event){
@@ -78,7 +121,7 @@ angular.module('starter',
         };
 
         window.errorHandler = function(error){
-            alert('an error occured');
+            alert('an error occurred');
         };
 
         var pushNotification = window.plugins.pushNotification;

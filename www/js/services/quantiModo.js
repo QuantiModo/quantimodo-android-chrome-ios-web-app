@@ -1,7 +1,7 @@
 angular.module('starter')    
     // QuantiModo API implementation
-    .factory('QuantiModo', function($http, $q, $rootScope, $ionicPopup, $state, $ionicLoading, authService,
-                                    localStorageService, bugsnagService) {
+    .factory('QuantiModo', function($http, $q, $rootScope, $ionicPopup, $state, $ionicLoading,
+                                    localStorageService, bugsnagService, utilsService) {
             var QuantiModo = {};
             $rootScope.connectionErrorShowing = false; // to prevent more than one popup
 
@@ -58,7 +58,7 @@ angular.module('starter')
             // GET method with the added token
             QuantiModo.get = function(baseURL, allowedParams, params, successHandler, errorHandler){
                 console.debug('QuantiModo.get: ' + baseURL + '. params: ' + JSON.stringify(params));
-                authService.getAccessTokenFromAnySource().then(function(accessToken){
+                QuantiModo.getAccessTokenFromAnySource().then(function(accessToken){
                     if(accessToken && accessToken.indexOf(' ') > -1){
                         accessToken = null;
                         localStorageService.deleteItem('accessToken');
@@ -137,7 +137,7 @@ angular.module('starter')
             // POST method with the added token
             QuantiModo.post = function(baseURL, requiredFields, items, successHandler, errorHandler){
                 console.debug('QuantiModo.post: ' + baseURL + ' body: ' + JSON.stringify(items));
-                authService.getAccessTokenFromAnySource().then(function(accessToken){
+                QuantiModo.getAccessTokenFromAnySource().then(function(accessToken){
 
                     if(accessToken && accessToken.indexOf(' ') > -1){
                         accessToken = null;
@@ -645,6 +645,162 @@ angular.module('starter')
                     params,
                     successHandler,
                     errorHandler);
+            };
+
+            // if not logged in, returns rejects
+            QuantiModo.getAccessTokenFromAnySource = function () {
+
+                var deferred = $q.defer();
+
+                if(config.getClientId() === 'oAuthDisabled') {
+                    //console.log('getAccessTokenFromAnySource: oAuthDisabled so we do not need an access token');
+                    deferred.resolve();
+                    return deferred.promise;
+                }
+
+                $rootScope.accessTokenInUrl = $rootScope.getAccessTokenFromUrlParameter();
+
+                if ($rootScope.accessTokenInUrl) {
+                    var url = config.getURL("api/user") + 'accessToken=' + $rootScope.accessTokenInUrl;
+                    if(!$rootScope.user){
+                        $http.get(url).then(
+                            function (userCredentialsResp) {
+                                console.log('QuantiModo.getAccessTokenFromAnySource calling setUserInLocalStorageBugsnagAndRegisterDeviceForPush');
+                                $rootScope.setUserInLocalStorageBugsnagAndRegisterDeviceForPush(userCredentialsResp.data);
+                            },
+                            function (errorResp) {
+                                console.log('Could not get user with accessToken.  error response:', errorResp);
+                            }
+                        );
+                    }
+
+                    deferred.resolve($rootScope.accessTokenInUrl);
+                    return deferred.promise;
+                }
+
+                $rootScope.accessToken = localStorageService.getItemSync('accessToken');
+
+                if ($rootScope.accessToken) {
+                    if($rootScope.accessToken.indexOf(' ') > -1){
+                        localStorageService.deleteItem('accessToken');
+                        $rootScope.accessToken = null;
+                        deferred.reject();
+                    } else {
+                        deferred.resolve($rootScope.accessToken);
+                    }
+                    return deferred.promise;
+                }
+
+                if(config.getClientId() !== 'oAuthDisabled') {
+                    QuantiModo._defaultGetAccessToken(deferred);
+                    return deferred.promise;
+                }
+
+            };
+
+            QuantiModo._defaultGetAccessToken = function (deferred) {
+
+                console.log('access token resolving flow');
+
+                var now = new Date().getTime();
+                var expiresAt = localStorageService.getItemSync('expiresAt');
+                var refreshToken = localStorageService.getItemSync('refreshToken');
+                var accessToken = localStorageService.getItemSync('accessToken');
+
+                console.log('Values from local storage:', {
+                    expiresAt: expiresAt,
+                    refreshToken: refreshToken,
+                    accessToken: accessToken
+                });
+
+                // get expired time
+                if (now < expiresAt) {
+
+                    console.log('Current token should not be expired');
+                    // valid token
+                    console.log('Resolving token using value from local storage');
+
+                    deferred.resolve({
+                        accessToken: accessToken
+                    });
+
+                } else if (refreshToken) {
+                    QuantiModo.refreshAccessToken(refreshToken, deferred);
+                } else {
+                    localStorageService.deleteItem('accessToken');
+                    console.warn('Refresh token is undefined. Not enough data for oauth flow. rejecting token promise. ' +
+                        'Clearing accessToken from local storage if it exists and sending to login page...');
+                    $state.go('app.login');
+                    deferred.reject();
+                }
+            };
+
+            QuantiModo.refreshAccessToken = function(refreshToken, deferred) {
+                console.log('Refresh token will be used to fetch access token from ' +
+                    config.getURL("api/oauth2/token") + ' with client id ' + config.getClientId());
+
+                var url = config.getURL("api/oauth2/token");
+
+                //expire token, refresh
+                $http.post(url, {
+
+                    client_id: config.getClientId(),
+                    client_secret: config.getClientSecret(),
+                    refresh_token: refreshToken,
+                    grant_type: 'refresh_token'
+                }).success(function (data) {
+                    // update local storage
+                    if (data.error) {
+                        console.log('Token refresh failed: ' + data.error);
+                        deferred.reject('refresh failed');
+                    } else {
+                        var accessTokenRefreshed = QuantiModo.updateAccessToken(data);
+
+                        console.log('access token successfully updated from api server', data);
+                        console.log('resolving toke using response value');
+                        // respond
+                        deferred.resolve({
+                            accessToken: accessTokenRefreshed
+                        });
+                    }
+
+                }).error(function (response) {
+                    console.log("failed to refresh token from api server", response);
+                    // error refreshing
+                    deferred.reject(response);
+                });
+
+            };
+
+            // extract values from token response and saves in localstorage
+            QuantiModo.updateAccessToken = function (accessResponse) {
+                if(accessResponse){
+                    var accessToken = accessResponse.accessToken || accessResponse.access_token;
+                    var expiresIn = accessResponse.expiresIn || accessResponse.expires_in;
+                    var refreshToken = accessResponse.refreshToken || accessResponse.refresh_token;
+
+                    // save in localStorage
+                    if(accessToken) {
+                        localStorageService.setItem('accessToken', accessToken);
+                    }
+                    if(refreshToken) {
+                        localStorageService.setItem('refreshToken', refreshToken);
+                    }
+
+                    console.log("expires in: ", JSON.stringify(expiresIn), parseInt(expiresIn, 10));
+
+                    // calculate expires at
+                    var expiresAt = new Date().getTime() + parseInt(expiresIn, 10) * 1000 - 60000;
+
+                    // save in localStorage
+                    if(expiresAt) {
+                        localStorageService.setItem('expiresAt', expiresAt);
+                    }
+                    $rootScope.accessToken = accessToken;
+                    return accessToken;
+                } else {
+                    return "";
+                }
             };
 
             return QuantiModo;
