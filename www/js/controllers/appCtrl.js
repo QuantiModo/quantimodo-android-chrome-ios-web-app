@@ -5,7 +5,8 @@ angular.module('starter')
                                     $ionicPopup, $ionicSideMenuDelegate, $ionicPlatform, authService,
                                     measurementService, QuantiModo, notificationService, localStorageService,
                                     reminderService, ratingService, migrationService, ionicDatePicker, unitService,
-                                    variableService, qmLocationService, variableCategoryService, bugsnagService, pushNotificationService) {
+                                    variableService, qmLocationService, variableCategoryService, bugsnagService,
+                                    pushNotificationService, utilsService) {
 
         $rootScope.loaderImagePath = config.appSettings.loaderImagePath;
         $rootScope.appMigrationVersion = 1489;
