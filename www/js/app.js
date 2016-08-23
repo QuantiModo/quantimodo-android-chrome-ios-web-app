@@ -18,7 +18,7 @@ angular.module('starter',
     ]
 )
 
-.run(function($ionicPlatform, $ionicHistory, $state, $rootScope) {
+.run(function($ionicPlatform, $ionicHistory, $state, $rootScope, PushNotification, localStorageService) {
 //.run(function($ionicPlatform, $ionicHistory, $state, $rootScope, $ionicAnalytics) {
 // Database
 //.run(function($ionicPlatform, $ionicHistory, $state, $rootScope, $cordovaSQLite) {
@@ -36,7 +36,8 @@ angular.module('starter',
             };
         }
 
-        if(ionic.Platform.isIPad() || ionic.Platform.isIOS()){
+        if(ionic.Platform.isAndroid() || ionic.Platform.isIPad() || ionic.Platform.isIOS()){
+            alert("Going to try to register push");
             var push = PushNotification.init({
                 android: {
                     senderID: "1052648855194"
@@ -49,8 +50,8 @@ angular.module('starter',
             });
 
             push.on('registration', function(data) {
-                // data.registrationId
-                alert(data.registrationId);
+                alert("Got device token for push notifications: " + data.registrationId);
+                localStorageService.setItem('deviceTokenToSync', data.registrationId);
             });
 
             push.on('notification', function(data) {
@@ -68,6 +69,20 @@ angular.module('starter',
         }
 
         /*
+
+         if (ionic.Platform.isAndroid() || ionic.Platform.isIPad() || ionic.Platform.isIOS()) {
+         alert("Going to try to register push");
+         var push = new Ionic.Push({"debug": true});
+
+         push.register(function (deviceToken) {
+         alert("Got device token for push notifications: " + deviceToken.token);
+         push.saveToken(deviceToken);
+         //if($rootScope.deviceToken !== deviceToken.token){
+         pushNotificationService.registerDeviceToken(deviceToken.token);
+         //}
+         });
+         }
+
          window.onNotification = function(e){
             console.log("window.onNotification: received event", e);
             switch(e.event){
