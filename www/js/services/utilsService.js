@@ -6,9 +6,9 @@ angular.module('starter')
         return {
 
             getAccessTokenFromUrlParameter: function () {
-                $rootScope.accessTokenInUrl = utilsService.getUrlParameter(location.href, 'accessToken');
+                $rootScope.accessTokenInUrl = this.getUrlParameter(location.href, 'accessToken');
                 if (!$rootScope.accessTokenInUrl) {
-                    $rootScope.accessTokenInUrl = utilsService.getUrlParameter(location.href, 'access_token');
+                    $rootScope.accessTokenInUrl = this.getUrlParameter(location.href, 'access_token');
                 }
                 if($rootScope.accessTokenInUrl){
                     localStorageService.setItem('accessTokenInUrl', $rootScope.accessTokenInUrl);
