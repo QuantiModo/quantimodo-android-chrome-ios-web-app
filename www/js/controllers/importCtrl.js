@@ -27,7 +27,7 @@ angular.module('starter')
 			$scope.showLoader();
 	        // get user's access token
 			console.debug('importCtrl.init: Going to authService.getAccessTokenFromAnySource');
-	        authService.getAccessTokenFromAnySource().then(function(accessToken){
+			QuantiModo.getAccessTokenFromAnySource().then(function(accessToken){
 	            $ionicLoading.hide();
 	            if(ionic.Platform.platforms[0] === "browser"){
 					console.log("Browser Detected");

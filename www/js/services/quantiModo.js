@@ -58,7 +58,7 @@ angular.module('starter')
             // GET method with the added token
             QuantiModo.get = function(baseURL, allowedParams, params, successHandler, errorHandler){
                 console.debug('QuantiModo.get: ' + baseURL + '. params: ' + JSON.stringify(params));
-                authService.getAccessTokenFromAnySource().then(function(accessToken){
+                QuantiModo.getAccessTokenFromAnySource().then(function(accessToken){
                     if(accessToken && accessToken.indexOf(' ') > -1){
                         accessToken = null;
                         localStorageService.deleteItem('accessToken');
@@ -137,7 +137,7 @@ angular.module('starter')
             // POST method with the added token
             QuantiModo.post = function(baseURL, requiredFields, items, successHandler, errorHandler){
                 console.debug('QuantiModo.post: ' + baseURL + ' body: ' + JSON.stringify(items));
-                authService.getAccessTokenFromAnySource().then(function(accessToken){
+                QuantiModo.getAccessTokenFromAnySource().then(function(accessToken){
 
                     if(accessToken && accessToken.indexOf(' ') > -1){
                         accessToken = null;
@@ -645,6 +645,69 @@ angular.module('starter')
                     params,
                     successHandler,
                     errorHandler);
+            };
+
+            // if not logged in, returns rejects
+            QuantiModo.getAccessTokenFromAnySource = function () {
+
+                var deferred = $q.defer();
+
+                if(config.getClientId() === 'oAuthDisabled') {
+                    //console.log('getAccessTokenFromAnySource: oAuthDisabled so we do not need an access token');
+                    deferred.resolve();
+                    return deferred.promise;
+                }
+
+                var tokenInGetParams = this.getAccessTokenFromUrlParameter();
+
+                if(!tokenInGetParams){
+                    localStorageService.deleteItem('accessTokenInUrl');
+                }
+
+                //check if token in get params
+                if (tokenInGetParams) {
+                    localStorageService.setItem('accessToken', tokenInGetParams);
+                    localStorageService.setItem('accessTokenInUrl', tokenInGetParams);
+                    $rootScope.accessTokenInUrl = tokenInGetParams;
+                    //resolving promise using token fetched from get params
+                    //console.log('resolving token using token url parameter', tokenInGetParams);
+                    var url = config.getURL("api/user") + 'accessToken=' + tokenInGetParams;
+                    if(!$rootScope.user){
+                        $http.get(url).then(
+                            function (userCredentialsResp) {
+                                console.log('authService.getAccessTokenFromAnySource calling setUserInLocalStorageBugsnagAndRegisterDeviceForPush');
+                                userService.setUserInLocalStorageBugsnagAndRegisterDeviceForPush(userCredentialsResp.data);
+                            },
+                            function (errorResp) {
+                                console.log('Could not get user with accessToken.  error response:', errorResp);
+                            }
+                        );
+
+
+                    }
+
+                    deferred.resolve(tokenInGetParams);
+                    return deferred.promise;
+                }
+
+                $rootScope.accessToken = localStorageService.getItemSync('accessToken');
+
+                if ($rootScope.accessToken) {
+                    if($rootScope.accessToken.indexOf(' ') > -1){
+                        localStorageService.deleteItem('accessToken');
+                        $rootScope.accessToken = null;
+                        deferred.reject();
+                    } else {
+                        deferred.resolve($rootScope.accessToken);
+                    }
+                    return deferred.promise;
+                }
+
+                if(config.getClientId() !== 'oAuthDisabled') {
+                    authService._defaultGetAccessToken(deferred);
+                    return deferred.promise;
+                }
+
             };
 
             return QuantiModo;
