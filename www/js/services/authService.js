@@ -1,7 +1,6 @@
 angular.module('starter')
 
-	.factory('authService', function ($http, $q, $state, $ionicLoading, $rootScope, localStorageService, utilsService,
-		$cordovaPush, $ionicPlatform, pushNotificationService, $injector) {
+	.factory('authService', function ($http, $q, $state, $ionicLoading, $rootScope, localStorageService, utilsService) {
 
 		var authService = {
 
@@ -98,52 +97,32 @@ angular.module('starter')
 				return deferred.promise;
 			},
 
-        checkAuthOrSendToLogin: function() {
-            $rootScope.user = localStorageService.getItemAsObject('user');
-
-			if($rootScope.isMobile){
-				$ionicPlatform.ready(function () {
-					console.debug('Going to try $cordovaPush.register...');
-					$cordovaPush = $injector.get('$cordovaPush');
-					$cordovaPush.register({
-						badge: true,
-						sound: true,
-						alert: true
-					}).then(function (result) {
-						console.debug('Got this token from $cordovaPush.register: ' + result.token);
-						if($rootScope.deviceToken !== result.token){
-							pushNotificationService.registerDeviceToken(result.token);
-						}
-					}, function (err) {
-						console.log('reg device error', err);
-					});
-				});
-			}
-
-            if($rootScope.user){
-				return true;
-			}
-			$rootScope.accessTokenInUrl = $rootScope.getAccessTokenFromUrlParameter();
-			var url = config.getURL("api/user");
-            if($rootScope.accessTokenInUrl){
-				url = url + 'accessToken=' + $rootScope.accessTokenInUrl;
-			}
-
-			$http.get(url).then(
-				function (userCredentialsResp) {
-					console.log('authService.getAccessTokenFromAnySource calling setUserInLocalStorageBugsnagAndRegisterDeviceForPush');
-					$rootScope.setUserInLocalStorageBugsnagAndRegisterDeviceForPush(userCredentialsResp.data);
-				},
-				function (errorResp) {
-					$ionicLoading.hide();
-					console.error('checkAuthOrSendToLogin: Could not get user with a cookie. Going to login page...', errorResp);
-					$state.go('app.login');
+			checkAuthOrSendToLogin: function() {
+				$rootScope.user = localStorageService.getItemAsObject('user');
+				if($rootScope.user){
+					return true;
 				}
-			);
+				$rootScope.accessTokenInUrl = $rootScope.getAccessTokenFromUrlParameter();
+				var url = config.getURL("api/user");
+				if($rootScope.accessTokenInUrl){
+					url = url + 'accessToken=' + $rootScope.accessTokenInUrl;
+				}
 
-        },
+				$http.get(url).then(
+					function (userCredentialsResp) {
+						console.log('authService.getAccessTokenFromAnySource calling setUserInLocalStorageBugsnagAndRegisterDeviceForPush');
+						$rootScope.setUserInLocalStorageBugsnagAndRegisterDeviceForPush(userCredentialsResp.data);
+					},
+					function (errorResp) {
+						$ionicLoading.hide();
+						console.error('checkAuthOrSendToLogin: Could not get user with a cookie. Going to login page...', errorResp);
+						$state.go('app.login');
+					}
+				);
 
-        getJWTToken: function (provider, accessToken) {
+			},
+
+			getJWTToken: function (provider, accessToken) {
 				var deferred = $q.defer();
 
 				if(!accessToken || accessToken === "null" || accessToken === null){
