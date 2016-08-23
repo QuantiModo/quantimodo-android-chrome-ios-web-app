@@ -97,32 +97,32 @@ angular.module('starter')
 				return deferred.promise;
 			},
 
-			checkAuthOrSendToLogin: function() {
-				$rootScope.user = localStorageService.getItemAsObject('user');
-				if($rootScope.user){
-					return true;
+        checkAuthOrSendToLogin: function() {
+            $rootScope.user = localStorageService.getItemAsObject('user');
+            if($rootScope.user){
+				return true;
+			}
+			$rootScope.accessTokenInUrl = $rootScope.getAccessTokenFromUrlParameter();
+			var url = config.getURL("api/user");
+            if($rootScope.accessTokenInUrl){
+				url = url + 'accessToken=' + $rootScope.accessTokenInUrl;
+			}
+
+			$http.get(url).then(
+				function (userCredentialsResp) {
+					console.log('authService.getAccessTokenFromAnySource calling setUserInLocalStorageBugsnagAndRegisterDeviceForPush');
+					$rootScope.setUserInLocalStorageBugsnagAndRegisterDeviceForPush(userCredentialsResp.data);
+				},
+				function (errorResp) {
+					$ionicLoading.hide();
+					console.error('checkAuthOrSendToLogin: Could not get user with a cookie. Going to login page...', errorResp);
+					$state.go('app.login');
 				}
-				$rootScope.accessTokenInUrl = $rootScope.getAccessTokenFromUrlParameter();
-				var url = config.getURL("api/user");
-				if($rootScope.accessTokenInUrl){
-					url = url + 'accessToken=' + $rootScope.accessTokenInUrl;
-				}
+			);
 
-				$http.get(url).then(
-					function (userCredentialsResp) {
-						console.log('authService.getAccessTokenFromAnySource calling setUserInLocalStorageBugsnagAndRegisterDeviceForPush');
-						$rootScope.setUserInLocalStorageBugsnagAndRegisterDeviceForPush(userCredentialsResp.data);
-					},
-					function (errorResp) {
-						$ionicLoading.hide();
-						console.error('checkAuthOrSendToLogin: Could not get user with a cookie. Going to login page...', errorResp);
-						$state.go('app.login');
-					}
-				);
+        },
 
-			},
-
-			getJWTToken: function (provider, accessToken) {
+        getJWTToken: function (provider, accessToken) {
 				var deferred = $q.defer();
 
 				if(!accessToken || accessToken === "null" || accessToken === null){
