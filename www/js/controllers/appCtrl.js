@@ -869,21 +869,16 @@ angular.module('starter')
                 platform_version: $rootScope.currentPlatformVersion
             };
 
-            $ionicPlatform.ready(function() {
-                if (ionic.Platform.isAndroid() || ionic.Platform.isIPad() || ionic.Platform.isIOS()) {
-                    console.debug("Going to try to register push");
-                    var push = new Ionic.Push({"debug": true});
+            var deviceTokenOnServer = localStorageService.getItemSync('deviceTokenOnServer');
+            if(deviceTokenOnServer){
+                console.log("This token is already on the server: " + deviceTokenOnServer);
+                return;
+            }
 
-                    push.register(function (deviceToken) {
-                        console.debug("Got device token for push notifications: " + deviceToken.token);
-                        $rootScope.deviceToken = localStorageService.getItemSync('deviceToken');
-                        push.saveToken(deviceToken);
-                        //if($rootScope.deviceToken !== deviceToken.token){
-                        pushNotificationService.registerDeviceToken(deviceToken.token);
-                        //}
-                    });
-                }
-            });
+            var deviceTokenToSync = localStorageService.getItemSync('deviceTokenToSync');
+            if(deviceTokenToSync){
+                pushNotificationService.registerDeviceToken(deviceTokenToSync);
+            }
         };
         
         $scope.init();
