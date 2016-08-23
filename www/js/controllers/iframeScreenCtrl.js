@@ -32,7 +32,7 @@ angular.module('starter')
             $scope.title = 'Your Variable Relationships';
         }
         console.debug('importCtrl.init: Going to authService.getAccessTokenFromAnySource');
-        authService.getAccessTokenFromAnySource().then(function(accessToken) {
+        QuantiModo.getAccessTokenFromAnySource().then(function(accessToken) {
 
             if(accessToken){
                 $scope.iframeUrl = $sce.trustAsResourceUrl(
