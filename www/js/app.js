@@ -17,7 +17,7 @@ angular.module('starter',
     ]
 )
 
-.run(function($ionicPlatform, $ionicHistory, $state, $rootScope, PushNotification, localStorageService) {
+.run(function($ionicPlatform, $ionicHistory, $state, $rootScope) {
 //.run(function($ionicPlatform, $ionicHistory, $state, $rootScope, $ionicAnalytics) {
 // Database
 //.run(function($ionicPlatform, $ionicHistory, $state, $rootScope, $cordovaSQLite) {
@@ -33,38 +33,6 @@ angular.module('starter',
             window.onerror = function (errorMsg, url, lineNumber) {
                 alert('Error: ' + errorMsg + ' Script: ' + url + ' Line: ' + lineNumber);
             };
-        }
-
-        if(ionic.Platform.isAndroid() || ionic.Platform.isIPad() || ionic.Platform.isIOS()){
-            alert("Going to try to register push");
-            var push = PushNotification.init({
-                android: {
-                    senderID: "1052648855194"
-                },
-                ios: {
-                    alert: "true",
-                    badge: "true",
-                    sound: "true"
-                }
-            });
-
-            push.on('registration', function(data) {
-                alert("Got device token for push notifications: " + data.registrationId);
-                localStorageService.setItem('deviceTokenToSync', data.registrationId);
-            });
-
-            push.on('notification', function(data) {
-                // data.message,
-                // data.title,
-                // data.count,
-                // data.sound,
-                // data.image,
-                // data.additionalData
-            });
-
-            push.on('error', function(e) {
-                // e.message
-            });
         }
 
         /*
