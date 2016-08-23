@@ -18,7 +18,7 @@ angular.module('starter',
     ]
 )
 
-.run(function($ionicPlatform, $ionicHistory, $state, $rootScope, pushNotificationService, localStorageService) {
+.run(function($ionicPlatform, $ionicHistory, $state, $rootScope) {
 //.run(function($ionicPlatform, $ionicHistory, $state, $rootScope, $ionicAnalytics) {
 // Database
 //.run(function($ionicPlatform, $ionicHistory, $state, $rootScope, $cordovaSQLite) {
@@ -30,17 +30,10 @@ angular.module('starter',
     $ionicPlatform.ready(function() {
         //$ionicAnalytics.register();
 
-        if(ionic.Platform.isAndroid()){
-            var push = new Ionic.Push({});
-
-            push.register(function(deviceToken) {
-                console.log("Got device token for push notifications: ", deviceToken.token);
-                $rootScope.deviceToken = localStorageService.getItemSync('deviceToken');
-                push.saveToken(deviceToken);
-                if($rootScope.deviceToken !== deviceToken.token){
-                    pushNotificationService.registerDeviceToken(deviceToken.token);
-                }
-            });
+        if(ionic.Platform.isIPad() || ionic.Platform.isIOS()){
+            window.onerror = function (errorMsg, url, lineNumber) {
+                alert('Error: ' + errorMsg + ' Script: ' + url + ' Line: ' + lineNumber);
+            };
         }
 
         if(ionic.Platform.isIPad() || ionic.Platform.isIOS()){
@@ -114,7 +107,7 @@ angular.module('starter',
         };
 
         window.errorHandler = function(error){
-            alert('an error occured');
+            alert('an error occurred');
         };
 
         var pushNotification = window.plugins.pushNotification;
