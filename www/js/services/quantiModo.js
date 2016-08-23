@@ -658,20 +658,10 @@ angular.module('starter')
                     return deferred.promise;
                 }
 
-                var tokenInGetParams = this.getAccessTokenFromUrlParameter();
+                $rootScope.accessTokenInUrl = utilsService.getAccessTokenFromUrlParameter();
 
-                if(!tokenInGetParams){
-                    localStorageService.deleteItem('accessTokenInUrl');
-                }
-
-                //check if token in get params
-                if (tokenInGetParams) {
-                    localStorageService.setItem('accessToken', tokenInGetParams);
-                    localStorageService.setItem('accessTokenInUrl', tokenInGetParams);
-                    $rootScope.accessTokenInUrl = tokenInGetParams;
-                    //resolving promise using token fetched from get params
-                    //console.log('resolving token using token url parameter', tokenInGetParams);
-                    var url = config.getURL("api/user") + 'accessToken=' + tokenInGetParams;
+                if ($rootScope.accessTokenInUrl) {
+                    var url = config.getURL("api/user") + 'accessToken=' + $rootScope.accessTokenInUrl;
                     if(!$rootScope.user){
                         $http.get(url).then(
                             function (userCredentialsResp) {
@@ -682,11 +672,9 @@ angular.module('starter')
                                 console.log('Could not get user with accessToken.  error response:', errorResp);
                             }
                         );
-
-
                     }
 
-                    deferred.resolve(tokenInGetParams);
+                    deferred.resolve($rootScope.accessTokenInUrl);
                     return deferred.promise;
                 }
 

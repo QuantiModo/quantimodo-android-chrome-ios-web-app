@@ -54,19 +54,6 @@ angular.module('starter')
 				}
 				return authorizationCode;
 			},
-            
-			// retrieves access token.
-			// if expired, renews it
-            getAccessTokenFromUrlParameter: function () {
-                var tokenInGetParams = utilsService.getUrlParameter(location.href, 'accessToken');
-
-                if (!tokenInGetParams) {
-                    tokenInGetParams = utilsService.getUrlParameter(location.href, 'access_token');
-                }
-
-                return tokenInGetParams;
-            },
-
 
 			// get access token from authorization code
 			getAccessTokenFromAuthorizationCode: function (authorizationCode) {
@@ -115,12 +102,10 @@ angular.module('starter')
             if($rootScope.user){
 				return true;
 			}
-            var accessTokenInUrl = authService.getAccessTokenFromUrlParameter();
+			$rootScope.accessTokenInUrl = utilsService.getAccessTokenFromUrlParameter();
 			var url = config.getURL("api/user");
-            if(accessTokenInUrl){
-            	localStorageService.setItem('accessTokenInUrl', accessTokenInUrl);
-				$rootScope.accessTokenInUrl = accessTokenInUrl;
-				url = url + 'accessToken=' + accessTokenInUrl;
+            if($rootScope.accessTokenInUrl){
+				url = url + 'accessToken=' + $rootScope.accessTokenInUrl;
 			}
 
 			$http.get(url).then(

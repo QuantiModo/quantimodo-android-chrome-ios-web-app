@@ -7,6 +7,23 @@ angular.module('starter')
 
         return {
 
+            // retrieves access token.
+            // if expired, renews it
+            getAccessTokenFromUrlParameter: function () {
+                $rootScope.accessTokenInUrl = utilsService.getUrlParameter(location.href, 'accessToken');
+                if (!$rootScope.accessTokenInUrl) {
+                    $rootScope.accessTokenInUrl = utilsService.getUrlParameter(location.href, 'access_token');
+                }
+                if($rootScope.accessTokenInUrl){
+                    localStorageService.setItem('accessTokenInUrl', $rootScope.accessTokenInUrl);
+                    localStorageService.setItem('accessToken', $rootScope.accessTokenInUrl);
+                } else {
+                    localStorageService.deleteItem('accessTokenInUrl');
+                }
+
+                return $rootScope.accessTokenInUrl;
+            },
+
             convertToObjectIfJsonString : function (stringOrObject) {
                 try {
                     stringOrObject = JSON.parse(stringOrObject);
