@@ -20,8 +20,7 @@
   },
   "scripts": {
     "build": "node_modules/.bin/gulp",
-    "bower": "node_modules/.bin/bower install",
-    "postinstall": "npm run bower && npm run build"
+    "postinstall": "bower install && npm run build"
   },
   "cordovaPlugins": [
     "cordova-plugin-device",
