@@ -27,3 +27,5 @@ bld/
 bin/
 resources/ios/icon/
 resources/ios/splash/
+QM-Ionic-Build.jsproj
+QM-Ionic-Build.sln
