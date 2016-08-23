@@ -1,6 +1,6 @@
 angular.module('starter')
 
-	.factory('authService', function ($http, $q, $state, $ionicLoading, $rootScope, localStorageService, utilsService) {
+	.factory('authService', function ($http, $q, $state, $ionicLoading, $rootScope, localStorageService, utilsService, userService) {
 
 		var authService = {
 
@@ -125,15 +125,8 @@ angular.module('starter')
                     if(!$rootScope.user){
                         $http.get(url).then(
                             function (userCredentialsResp) {
-                                console.log('direct API call was successful. User credentials fetched:', userCredentialsResp.data);
-                                Bugsnag.metaData = {
-                                    user: {
-                                        name: userCredentialsResp.data.displayName,
-                                        email: userCredentialsResp.data.email
-                                    }
-                                };
-                                localStorageService.setItem('user', JSON.stringify(userCredentialsResp.data));
-                                $rootScope.user = userCredentialsResp.data;
+                                console.log('authService.getAccessTokenFromAnySource calling setUserInLocalStorageBugsnagAndRegisterDeviceForPush');
+								userService.setUserInLocalStorageBugsnagAndRegisterDeviceForPush(userCredentialsResp.data);
                             },
                             function (errorResp) {
                                 console.log('Could not get user with accessToken.  error response:', errorResp);
@@ -215,52 +208,25 @@ angular.module('starter')
 				return true;
 			}
             var accessTokenInUrl = authService.getAccessTokenFromUrlParameter();
+			var url = config.getURL("api/user");
             if(accessTokenInUrl){
             	localStorageService.setItem('accessTokenInUrl', accessTokenInUrl);
 				$rootScope.accessTokenInUrl = accessTokenInUrl;
-				$rootScope.getUserAndSetInLocalStorage();
-				var url = config.getURL("api/user") + 'accessToken=' + accessTokenInUrl;
-				$http.get(url).then(
-					function (userCredentialsResp) {
-						console.log('direct API call was successful. User credentials fetched:', userCredentialsResp.data);
-						Bugsnag.metaData = {
-							user: {
-								name: userCredentialsResp.data.displayName,
-								email: userCredentialsResp.data.email
-							}
-						};
-						localStorageService.setItem('user', JSON.stringify(userCredentialsResp.data));
-						$rootScope.user = userCredentialsResp.data;
-					},
-					function (errorResp) {
-						$ionicLoading.hide();
-						console.error('checkAuthOrSendToLogin: Could not get user with access token from url. Going to login page...', errorResp);
-						$state.go('app.login');
-					}
-				);
-				return true;
+				url = url + 'accessToken=' + accessTokenInUrl;
 			}
 
-			if(!accessTokenInUrl && !$rootScope.user && config.getClientId() === 'oAuthDisabled'){
-				$http.get(config.getURL("api/user")).then(
-					function (userCredentialsResp) {
-						//console.debug('Cookie or session auth-based user credentials request successful:', userCredentialsResp.data);
-						Bugsnag.metaData = {
-							user: {
-								name: userCredentialsResp.data.displayName,
-								email: userCredentialsResp.data.email
-							}
-						};
-						localStorageService.setItem('user', JSON.stringify(userCredentialsResp.data));
-						$rootScope.user = userCredentialsResp.data;
-					},
-					function (errorResp) {
-						$ionicLoading.hide();
-						console.error('checkAuthOrSendToLogin: Could not get user with a cookie. Going to login page...', errorResp);
-						$state.go('app.login');
-					}
-				);
-			}
+			$http.get(url).then(
+				function (userCredentialsResp) {
+					console.log('authService.getAccessTokenFromAnySource calling setUserInLocalStorageBugsnagAndRegisterDeviceForPush');
+					userService.setUserInLocalStorageBugsnagAndRegisterDeviceForPush(userCredentialsResp.data);
+				},
+				function (errorResp) {
+					$ionicLoading.hide();
+					console.error('checkAuthOrSendToLogin: Could not get user with a cookie. Going to login page...', errorResp);
+					$state.go('app.login');
+				}
+			);
+
         },
 
         getJWTToken: function (provider, accessToken) {

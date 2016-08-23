@@ -2,7 +2,7 @@ angular.module('starter')
 
     // Handlers the Welcome Page
     .controller('LoginCtrl', function($scope, $state, $rootScope, $ionicLoading, $injector, utilsService, authService,
-                                      localStorageService, $timeout, bugsnagService) {
+                                      localStorageService, $timeout, bugsnagService, userService) {
 
         $scope.controller_name = "LoginCtrl";
         console.log("isIos is" + $rootScope.isIos);
@@ -62,9 +62,8 @@ angular.module('starter')
             $rootScope.user = userObject;
 
             if($rootScope.user){
-                console.debug('login: Setting up user and going to default state');
-                $rootScope.setUserForIntercom($rootScope.user);
-                $rootScope.setUserForBugsnag($rootScope.user);
+                console.debug('$scope.login calling setUserInLocalStorageBugsnagAndRegisterDeviceForPush');
+                userService.setUserInLocalStorageBugsnagAndRegisterDeviceForPush($rootScope.user);
                 $rootScope.hideNavigationMenu = false;
                 $state.go(config.appSettings.defaultState);
                 if (typeof analytics !== 'undefined')  {

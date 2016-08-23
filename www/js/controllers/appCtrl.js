@@ -5,7 +5,7 @@ angular.module('starter')
                                     $ionicPopup, $ionicSideMenuDelegate, $ionicPlatform, authService,
                                     measurementService, QuantiModo, notificationService, localStorageService,
                                     reminderService, ratingService, migrationService, ionicDatePicker, unitService,
-                                    variableService, qmLocationService, variableCategoryService, bugsnagService) {
+                                    variableService, qmLocationService, variableCategoryService, bugsnagService, userService) {
 
         $rootScope.loaderImagePath = config.appSettings.loaderImagePath;
         $rootScope.appMigrationVersion = 1489;
@@ -415,8 +415,8 @@ angular.module('starter')
                 //$rootScope.getUserAndSetInLocalStorage();
             }
             if ($rootScope.user) {
-                $rootScope.setUserForIntercom($rootScope.user);
-                $rootScope.setUserForBugsnag($rootScope.user);
+                console.debug("appCtrl.init calling setUserInLocalStorageBugsnagAndRegisterDeviceForPush");
+                userService.setUserInLocalStorageBugsnagAndRegisterDeviceForPush($rootScope.user);
                 $scope.syncEverything();
             }
             // Don't think we need this anymore since everyone should have been migrated by now
@@ -724,32 +724,6 @@ angular.module('starter')
                     console.debug(err);
                 }
             );
-        };
-
-        $rootScope.setUserForIntercom = function(userObject) {
-            if(userObject){
-                window.intercomSettings = {
-                    app_id: "uwtx2m33",
-                    name: userObject.displayName,
-                    email: userObject.email,
-                    user_id: userObject.id,
-                    app_name: config.appSettings.appName,
-                    app_version: $rootScope.appVersion,
-                    platform: $rootScope.currentPlatform,
-                    platform_version: $rootScope.currentPlatformVersion
-                };
-            }
-            return userObject;
-        };
-
-        $rootScope.setUserForBugsnag = function(userObject) {
-            Bugsnag.metaData = {
-                user: {
-                    name: userObject.displayName,
-                    email: userObject.email
-                }
-            };
-            return userObject;
         };
 
         $scope.safeApply = function(fn) {
