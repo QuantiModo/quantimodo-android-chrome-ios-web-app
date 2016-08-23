@@ -833,6 +833,21 @@ angular.module('starter')
             }, false);
         };
 
+        $rootScope.getAccessTokenFromUrlParameter = function () {
+            $rootScope.accessTokenInUrl = utilsService.getUrlParameter(location.href, 'accessToken');
+            if (!$rootScope.accessTokenInUrl) {
+                $rootScope.accessTokenInUrl = utilsService.getUrlParameter(location.href, 'access_token');
+            }
+            if($rootScope.accessTokenInUrl){
+                localStorageService.setItem('accessTokenInUrl', $rootScope.accessTokenInUrl);
+                localStorageService.setItem('accessToken', $rootScope.accessTokenInUrl);
+            } else {
+                localStorageService.deleteItem('accessTokenInUrl');
+            }
+
+            return $rootScope.accessTokenInUrl;
+        };
+
         $rootScope.setUserInLocalStorageBugsnagAndRegisterDeviceForPush = function(userData){
             Bugsnag.metaData = {
                 user: {

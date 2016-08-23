@@ -1,24 +1,11 @@
 angular.module('starter')
 
     // utility methods
-    .factory('utilsService', function($ionicPopup, $ionicLoading, $rootScope, localStorageService) {
+    .factory('utilsService', function($ionicPopup) {
 
         return {
 
-            getAccessTokenFromUrlParameter: function () {
-                $rootScope.accessTokenInUrl = this.getUrlParameter(location.href, 'accessToken');
-                if (!$rootScope.accessTokenInUrl) {
-                    $rootScope.accessTokenInUrl = this.getUrlParameter(location.href, 'access_token');
-                }
-                if($rootScope.accessTokenInUrl){
-                    localStorageService.setItem('accessTokenInUrl', $rootScope.accessTokenInUrl);
-                    localStorageService.setItem('accessToken', $rootScope.accessTokenInUrl);
-                } else {
-                    localStorageService.deleteItem('accessTokenInUrl');
-                }
 
-                return $rootScope.accessTokenInUrl;
-            },
 
             convertToObjectIfJsonString : function (stringOrObject) {
                 try {
