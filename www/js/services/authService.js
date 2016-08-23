@@ -1,6 +1,6 @@
 angular.module('starter')
 
-	.factory('authService', function ($http, $q, $state, $ionicLoading, $rootScope, localStorageService, utilsService, userService) {
+	.factory('authService', function ($http, $q, $state, $ionicLoading, $rootScope, localStorageService, utilsService) {
 
 		var authService = {
 
@@ -12,37 +12,6 @@ angular.module('starter')
                 }
                 return stringOrObject;
             },
-
-			// extract values from token response and saves in localstorage
-			updateAccessToken: function (accessResponse) {
-				if(accessResponse){
-					var accessToken = accessResponse.accessToken || accessResponse.access_token;
-					var expiresIn = accessResponse.expiresIn || accessResponse.expires_in;
-					var refreshToken = accessResponse.refreshToken || accessResponse.refresh_token;
-
-					// save in localStorage
-					if(accessToken) {
-						localStorageService.setItem('accessToken', accessToken);
-                    }
-					if(refreshToken) {
-						localStorageService.setItem('refreshToken', refreshToken);
-                    }
-
-					console.log("expires in: ", JSON.stringify(expiresIn), parseInt(expiresIn, 10));
-
-					// calculate expires at
-					var expiresAt = new Date().getTime() + parseInt(expiresIn, 10) * 1000 - 60000;
-
-					// save in localStorage
-					if(expiresAt) {
-						localStorageService.setItem('expiresAt', expiresAt);
-                    }
-					$rootScope.accessToken = accessToken;
-					return accessToken;
-				} else {
-					return "";
-                }
-			},
 
 			generateV1OAuthUrl: function(register) {
 				var url = config.getApiUrl() + "/api/oauth2/authorize?";
@@ -157,7 +126,7 @@ angular.module('starter')
 			$http.get(url).then(
 				function (userCredentialsResp) {
 					console.log('authService.getAccessTokenFromAnySource calling setUserInLocalStorageBugsnagAndRegisterDeviceForPush');
-					userService.setUserInLocalStorageBugsnagAndRegisterDeviceForPush(userCredentialsResp.data);
+					$rootScope.setUserInLocalStorageBugsnagAndRegisterDeviceForPush(userCredentialsResp.data);
 				},
 				function (errorResp) {
 					$ionicLoading.hide();
@@ -197,140 +166,7 @@ angular.module('starter')
 				});
 
 				return deferred.promise;
-			},
-
-			_defaultGetAccessToken: function (deferred) {
-
-				console.log('access token resolving flow');
-
-				var now = new Date().getTime();
-				var expiresAt = localStorageService.getItemSync('expiresAt');
-				var refreshToken = localStorageService.getItemSync('refreshToken');
-				var accessToken = localStorageService.getItemSync('accessToken');
-
-				console.log('Values from local storage:', {
-					expiresAt: expiresAt,
-					refreshToken: refreshToken,
-					accessToken: accessToken
-				});
-
-				// get expired time
-				if (now < expiresAt) {
-
-					console.log('Current token should not be expired');
-					// valid token
-					console.log('Resolving token using value from local storage');
-
-					deferred.resolve({
-						accessToken: accessToken
-					});
-
-				} else if (refreshToken) {
-                    authService.refreshAccessToken(refreshToken, deferred);
-				} else {
-					localStorageService.deleteItem('accessToken');
-					console.warn('Refresh token is undefined. Not enough data for oauth flow. rejecting token promise. ' +
-						'Clearing accessToken from local storage if it exists and sending to login page...');
-                    $state.go('app.login');
-					deferred.reject();
-				}
-
-			},
-
-            refreshAccessToken: function(refreshToken, deferred) {
-                console.log('Refresh token will be used to fetch access token from ' +
-                    config.getURL("api/oauth2/token") + ' with client id ' + config.getClientId());
-
-                var url = config.getURL("api/oauth2/token");
-
-                //expire token, refresh
-                $http.post(url, {
-
-                    client_id: config.getClientId(),
-                    client_secret: config.getClientSecret(),
-                    refresh_token: refreshToken,
-                    grant_type: 'refresh_token'
-                }).success(function (data) {
-                    // update local storage
-                    if (data.error) {
-                        console.log('Token refresh failed: ' + data.error);
-                        deferred.reject('refresh failed');
-                    } else {
-                        var accessTokenRefreshed = authService.updateAccessToken(data);
-
-                        console.log('access token successfully updated from api server', data);
-                        console.log('resolving toke using response value');
-                        // respond
-                        deferred.resolve({
-                            accessToken: accessTokenRefreshed
-                        });
-                    }
-
-                }).error(function (response) {
-                    console.log("failed to refresh token from api server", response);
-                    // error refreshing
-                    deferred.reject(response);
-                });
-
-            },
-
-			apiGet: function(baseURL, allowedParams, params, successHandler, errorHandler){
-            	console.debug('authService.apiGet: ' + baseURL + '. params: ' + JSON.stringify(params));
-				QuantiModo.getAccessTokenFromAnySource().then(function(accessToken){
-
-					// configure params
-					var urlParams = [];
-					for (var key in params)
-					{
-						if (jQuery.inArray(key, allowedParams) === -1)
-						{
-							throw 'invalid parameter; allowed parameters: ' + allowedParams.toString();
-						}
-						urlParams.push(encodeURIComponent(key) + '=' + encodeURIComponent(params[key]));
-					}
-
-					// configure request
-					var url = config.getURL(baseURL);
-					var request = {};
-
-					if(accessToken) {
-						request = {
-							method : 'GET',
-							url: (url + ((urlParams.length === 0) ? '' : urlParams.join('&'))),
-							responseType: 'json',
-							headers : {
-								"Authorization" : "Bearer " + accessToken,
-								'Content-Type': "application/json"
-							}
-						};
-						//console.log("Making request with this token " + accessToken);
-					} else {
-						request = {
-							method: 'GET',
-							url: (url + ((urlParams.length === 0) ? '' : urlParams.join('&'))),
-							responseType: 'json',
-							headers: {
-								'Content-Type': "application/json"
-							}
-						};
-
-					}
-
-
-
-					$http(request).success(successHandler).error(function(data,status,headers,config){
-						var error = "Error";
-						if (data && data.error && data.error.message) {
-                            error = data.error.message;
-                        }
-                        console.error("API Request to "+request.url+" Failed",error,{},"error");
-						Bugsnag.notify("API Request to "+request.url+" Failed",error,{},"error");
-						errorHandler(data,status,headers,config);
-					});
-
-				});
-			},
-			utilsService: utilsService
+			}
 		};
 
 		return authService;

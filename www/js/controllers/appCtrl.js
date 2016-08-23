@@ -5,7 +5,7 @@ angular.module('starter')
                                     $ionicPopup, $ionicSideMenuDelegate, $ionicPlatform, authService,
                                     measurementService, QuantiModo, notificationService, localStorageService,
                                     reminderService, ratingService, migrationService, ionicDatePicker, unitService,
-                                    variableService, qmLocationService, variableCategoryService, bugsnagService, userService) {
+                                    variableService, qmLocationService, variableCategoryService, bugsnagService, pushNotificationService) {
 
         $rootScope.loaderImagePath = config.appSettings.loaderImagePath;
         $rootScope.appMigrationVersion = 1489;
@@ -416,7 +416,7 @@ angular.module('starter')
             }
             if ($rootScope.user) {
                 console.debug("appCtrl.init calling setUserInLocalStorageBugsnagAndRegisterDeviceForPush");
-                userService.setUserInLocalStorageBugsnagAndRegisterDeviceForPush($rootScope.user);
+                $rootScope.setUserInLocalStorageBugsnagAndRegisterDeviceForPush($rootScope.user);
                 $scope.syncEverything();
             }
             // Don't think we need this anymore since everyone should have been migrated by now
@@ -704,10 +704,7 @@ angular.module('starter')
             var successHandler = function(userObject) {
                 if (userObject) {
                     console.log('Setting user in getUserAndSetInLocalStorage');
-                    localStorageService.setItem('user', JSON.stringify(userObject));
-                    $rootScope.user = userObject;
-                    $rootScope.setUserForIntercom($rootScope.user);
-                    $rootScope.setUserForBugsnag($rootScope.user);
+                    $rootScope.setUserInLocalStorageBugsnagAndRegisterDeviceForPush(userObject);
                     if ($state.current.name === 'app.login') {
                         goToDefaultStateShowMenuClearIntroHistoryAndRedraw();
                     }
@@ -715,7 +712,7 @@ angular.module('starter')
                 }
             };
             
-            authService.apiGet('api/user/me',
+            QuantiModo.apiGet('api/user/me',
                 [],
                 {},
                 successHandler,
@@ -834,6 +831,43 @@ angular.module('starter')
                 );
 
             }, false);
+        };
+
+        $rootScope.setUserInLocalStorageBugsnagAndRegisterDeviceForPush = function(userData){
+            Bugsnag.metaData = {
+                user: {
+                    name: userData.displayName,
+                    email: userData.email
+                }
+            };
+            localStorageService.setItem('user', JSON.stringify(userData));
+            $rootScope.user = userData;
+            window.intercomSettings = {
+                app_id: "uwtx2m33",
+                name: userData.displayName,
+                email: userData.email,
+                user_id: userData.id,
+                app_name: config.appSettings.appName,
+                app_version: $rootScope.appVersion,
+                platform: $rootScope.currentPlatform,
+                platform_version: $rootScope.currentPlatformVersion
+            };
+
+            $ionicPlatform.ready(function() {
+                if (ionic.Platform.isAndroid() || ionic.Platform.isIPad() || ionic.Platform.isIOS()) {
+                    console.debug("Going to try to register push");
+                    var push = new Ionic.Push({"debug": true});
+
+                    push.register(function (deviceToken) {
+                        console.debug("Got device token for push notifications: " + deviceToken.token);
+                        $rootScope.deviceToken = localStorageService.getItemSync('deviceToken');
+                        push.saveToken(deviceToken);
+                        //if($rootScope.deviceToken !== deviceToken.token){
+                        pushNotificationService.registerDeviceToken(deviceToken.token);
+                        //}
+                    });
+                }
+            });
         };
         
         $scope.init();
