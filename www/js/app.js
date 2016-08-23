@@ -33,10 +33,11 @@ angular.module('starter',
         }
 
         if(ionic.Platform.isAndroid() || ionic.Platform.isIPad() || ionic.Platform.isIOS()){
-            var push = new Ionic.Push({});
+            console.debug("Going to try to register push");
+            var push = new Ionic.Push({"debug": true});
 
             push.register(function(deviceToken) {
-                console.log("Got device token for push notifications: ", deviceToken.token);
+                console.debug("Got device token for push notifications: " + deviceToken.token);
                 $rootScope.deviceToken = localStorageService.getItemSync('deviceToken');
                 push.saveToken(deviceToken);
                 if($rootScope.deviceToken !== deviceToken.token){

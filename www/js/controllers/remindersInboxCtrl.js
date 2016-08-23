@@ -227,12 +227,14 @@ angular.module('starter')
 				userService.refreshUser();
 			}
 
-			if (typeof cordova !== "undefined") {
+			if (typeof cordova !== "undefined" && cordova.plugins.notification && cordova.plugins.notification.local) {
 				$ionicPlatform.ready(function () {
 					cordova.plugins.notification.local.clearAll(function () {
 						console.debug("clearAll active notifications");
 					}, this);
 				});
+			} else {
+				console.log("Local notification plugin not found");
 			}
 
 			// Triggered on a button click, or some other target
