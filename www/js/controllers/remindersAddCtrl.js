@@ -199,12 +199,6 @@ angular.module('starter')
             }
 	    };
 
-	    // when frequency is changed
-	    $scope.onFrequencyChange = function(){
-	    	console.log("onFrequencyChange ran");
-            
-	    };
-
 	    // when adding/editing is cancelled
 	    $scope.cancel = function(){
             $ionicHistory.goBack();
@@ -392,7 +386,7 @@ angular.module('starter')
 
 	    // setup category view
 	    $scope.setupVariableCategory = function(variableCategoryName){
-            console.log("variableCategoryName  is " + variableCategoryName);
+            console.log("remindersAdd.setupVariableCategory " + variableCategoryName);
             if(!variableCategoryName || variableCategoryName === 'Anything'){
                 variableCategoryName = '';
             }
@@ -421,14 +415,15 @@ angular.module('starter')
                 variableService.getVariableById(variableId)
                     .then(function (variables) {
                         $scope.variableObject = variables[0];
-                        console.log($scope.variableObject);
+                        console.log('setupReminderEditingFromVariableId$scope got ' +
+                            JSON.stringify($scope.variableObject));
                         $scope.onVariableSelect($scope.variableObject);
                         $ionicLoading.hide();
                         $scope.loading = false;
                     }, function () {
                         $ionicLoading.hide();
                         $scope.loading = false;
-                        console.log("failed to get variable");
+                        console.error('ERROR: failed to get variable with id ' + variableId);
                     });
 
             }
@@ -455,7 +450,7 @@ angular.module('starter')
                 }, function () {
                     $ionicLoading.hide();
                     $scope.loading = false;
-                    console.log("failed to get reminders");
+                    console.error('ERROR: failed to get reminder with reminderIdUrlParameter ' + reminderIdUrlParameter);
                 });
         }
 
@@ -514,7 +509,8 @@ angular.module('starter')
                 }, function(err){
                     $ionicLoading.hide();
                     $scope.loading = false;
-                    utilsService.showAlert('Failed to Delete Reminder, Try again!', 'assertive');
+                    console.error('ERROR: reminderService.deleteReminder Failed to Delete Reminder with id ' +
+                        $scope.state.trackingReminder.id);
                 });
         };
 
