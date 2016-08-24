@@ -582,12 +582,24 @@ angular.module('starter')
 
 
             QuantiModo.postDeviceToken = function(deviceToken, successHandler, errorHandler) {
+                var platform;
+                if($rootScope.isAndroid){
+                    platform = 'android';
+                }
+                if($rootScope.isIOS){
+                    platform = 'ios';
+                }
+                if($rootScope.isWindows){
+                    platform = 'windows';
+                }
                 var params = {
+                    platform: platform,
                     deviceToken: deviceToken
                 };
                 QuantiModo.post('api/v1/deviceTokens',
                     [
-                        'deviceToken'
+                        'deviceToken',
+                        'platform'
                     ],
                     params,
                     successHandler,
