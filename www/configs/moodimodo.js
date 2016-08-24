@@ -1,49 +1,19 @@
-
-var getPlatform = function () {
-
-
-    if(typeof ionic !== "undefined" &&
-        typeof ionic.Platform !== "undefined") {
-        var currentPlatform = ionic.Platform.platform();
-        var currentPlatformVersion = ionic.Platform.version();
-        if (currentPlatform.indexOf('win') > -1){
-            return 'windows';
-        }
-        return ionic.Platform.isIOS() ? "iOS" : ionic.Platform.isAndroid() ? "Android" : "Web";
-    }
-    else {
-        return "Unknown Platform";
-    }
-};
-
-window.config = {
-    clientSourceName : "MoodiModo "+ getPlatform(),
-    domain : 'app.quantimo.do',
-    environment: "Development",
-    permissions : ['readmeasurements', 'writemeasurements'],
-    port : '4417',
-    protocol : 'https',
-    shoppingCartEnabled : true
-};
+window.config = {};
 
 config.appSettings  = {
     appName : 'MoodiModo',
     linkToChromeExtension : "https://chrome.google.com/webstore/detail/quantimodo-life-tracking/lncgjbhijecjdbdgeigfodmiimpmlelg",
     allowOffline : true,
     loaderImagePath : 'img/pop-tart-cat.gif',
-    
+    shoppingCartEnabled : true,
     settingsPageOptions :
     {
         showReminderFrequencySelector : true
     },
-
     defaultState : 'app.remindersInbox',
     welcomeState : 'app.welcome',
-
     primaryOutcomeVariable : 'Mood',
-
     appStorageIdentifier: 'MoodiModoData*',
-
     headline : 'Sync and Analyze Your Data',
     features: [
         ' - Automatically backup and sync your data across devices',
@@ -69,7 +39,6 @@ config.appSettings  = {
         'Happy',
         'Ecstatic'
     ],
-    /* NEW STUFF */
 
     primaryOutcomeVariableRatingOptionLowercaseLabels : [
         'depressed',
@@ -498,147 +467,6 @@ config.appSettings  = {
         }
     ]
 };
-
-config.getEnv = function(){
-
-    var env = "";
-
-    if(window.location.origin.indexOf('local')> -1){
-        //On localhost
-        env = "Development";
-    }
-    else if(window.location.origin.indexOf('file://')){
-        env = this.environment;
-    }
-    else if(window.location.origin.indexOf('staging.quantimo.do') > -1){
-        env = "Staging";
-    }
-    else if(window.location.origin.indexOf('app.quantimo.do')){
-        env = "Production";
-    }
-
-    return env;
-};
-
-config.getClientId = function(){
-    //if chrome app
-    if (window.chrome && chrome.runtime && chrome.runtime.id) {
-        return window.private_keys.client_ids.Chrome;
-    } else {
-        var platform = getPlatform();
-        if (platform === "Web") { return window.private_keys.client_ids.Web };
-        if (platform === "iOS") { return window.private_keys.client_ids.iOS };
-        if (platform === "Android") { return window.private_keys.client_ids.Android };
-        if (platform === "windows") { return window.private_keys.client_ids.windows };
-        return window.private_keys.client_ids.Web;
-    }
-};
-
-config.getClientSecret = function(){
-    if (window.chrome && chrome.runtime && chrome.runtime.id) {
-        return window.private_keys.client_secrets.Chrome;
-    } else {
-        var platform = getPlatform();
-        if (platform === "Web") { return window.private_keys.client_secrets.Web };
-        if (platform === "iOS") { return window.private_keys.client_secrets.iOS };
-        if (platform === "Android") { return window.private_keys.client_secrets.Android };
-        if (platform === "windows") { return window.private_keys.client_secrets.windows };
-        return window.private_keys.client_secrets.Web;
-    }
-};
-
-config.getRedirectUri = function () {
-    var currentPlatform = ionic.Platform.platform();
-    var currentPlatformVersion = ionic.Platform.version();
-    if(!window.private_keys.redirect_uris){
-        return 'https://app.quantimo.do/ionic/Modo/www/callback/';
-    }
-    if (window.chrome && chrome.runtime && chrome.runtime.id) {
-        return window.private_keys.redirect_uris.Chrome;
-    } else {
-        var platform = getPlatform();
-        if (platform === "Web") { return window.private_keys.redirect_uris.Web };
-        if (platform === "iOS") { return window.private_keys.redirect_uris.iOS };
-        if (platform === "Android") { return window.private_keys.redirect_uris.Android };
-        if (platform === "windows") { return window.private_keys.redirect_uris.windows };
-        return window.private_keys.redirect_uris.Web;
-    }
-};
-
-config.getApiUrl = function () {
-    var currentPlatform = ionic.Platform.platform();
-    var currentPlatformVersion = ionic.Platform.version();
-    if(!window.private_keys.api_urls){
-        return 'https://app.quantimo.do';
-    }
-    var platform = getPlatform();
-    if (window.chrome && chrome.runtime && chrome.runtime.id) {
-        return window.private_keys.api_urls.Chrome;
-    } else if (platform === 'Web' && window.private_keys.client_ids.Web === 'oAuthDisabled') {
-        return window.location.origin;
-    } else {
-        if (platform === "Web") { return window.private_keys.api_urls.Web };
-        if (platform === "iOS") { return window.private_keys.api_urls.iOS };
-        if (platform === "Android") { return window.private_keys.api_urls.Android };
-        if (platform === "windows") { return window.private_keys.api_urls.windows };
-        return window.private_keys.api_urls.Web;
-    }
-};
-
-config.getAllowOffline = function(){
-    return true;
-};
-
-config.getPermissionString = function(){
-
-    var str = "";
-    for(var i=0; i < config.permissions.length; i++) {
-        str += config.permissions[i] + "%20";
-    }
-    return str.replace(/%20([^%20]*)$/,'$1');
-
-};
-
-config.getProtocol = function () {
-    if (typeof ionic !== "undefined") {
-        var currentPlatform = ionic.Platform.platform();
-        if(currentPlatform.indexOf('win') > -1){
-            return 'ms-appx-web';
-        }
-    }
-
-    return 'https';
-
-};
-
-
-config.getURL = function (path) {
-    var currentPlatform = ionic.Platform.platform();
-    var currentPlatformVersion = ionic.Platform.version();
-    if(typeof path === "undefined") {
-        path = "";
-    }
-    else {
-        path += "?";
-    }
-
-    var url = "";
-
-    if(config.getApiUrl() !== "undefined") {
-        url = config.getApiUrl() + "/" + path;
-    }
-    else
-    {
-        url = config.getProtocol() + "://" + config.domain + "/" + path;
-    }
-
-   return url;
-};
-
-config.get = function(key){
-	return config[key]? config[key] : false;
-};
-
 
 window.notification_callback = function(reportedVariable, reportingTime){
     var startTime  = Math.floor(reportingTime/1000) || Math.floor(new Date().getTime()/1000);

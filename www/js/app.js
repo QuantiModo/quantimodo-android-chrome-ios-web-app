@@ -154,7 +154,6 @@ angular.module('starter',
             if($rootScope.bugsnagApiKey) {
                 //Set Bugsnag Release Stage
                 Bugsnag.apiKey = $rootScope.bugsnagApiKey;
-                Bugsnag.releaseStage = config.getEnv();
                 Bugsnag.notifyReleaseStages = ['Production','Staging'];
                 Bugsnag.appVersion = $rootScope.appVersion;
                 Bugsnag.metaData = {

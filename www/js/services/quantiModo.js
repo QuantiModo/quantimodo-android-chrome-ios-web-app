@@ -5,7 +5,6 @@ angular.module('starter')
             var QuantiModo = {};
             $rootScope.connectionErrorShowing = false; // to prevent more than one popup
 
-
             QuantiModo.successHandler = function(data){
                 if(!data.success){
                     return;
@@ -91,7 +90,7 @@ angular.module('starter')
                     //urlParams.push(encodeURIComponent('access_token') + '=' + encodeURIComponent(tokenObject.accessToken));
 
                     // configure request
-                    var url = config.getURL(baseURL);
+                    var url = utilsService.getURL(baseURL);
                     var request = {
                         method: 'GET',
                         url: (url + ((urlParams.length === 0) ? '' : urlParams.join('&'))),
@@ -162,7 +161,7 @@ angular.module('starter')
                     urlParams.push(encodeURIComponent('appName') + '=' + encodeURIComponent(config.appSettings.appName));
                     urlParams.push(encodeURIComponent('appVersion') + '=' + encodeURIComponent($rootScope.appVersion));
 
-                    var url = config.getURL(baseURL) + ((urlParams.length === 0) ? '' : urlParams.join('&'));
+                    var url = utilsService.getURL(baseURL) + ((urlParams.length === 0) ? '' : urlParams.join('&'));
 
                     // configure request
                     var request = {
@@ -175,7 +174,7 @@ angular.module('starter')
                         data : JSON.stringify(items)
                     };
 
-                    if(config.getClientId() !== 'oAuthDisabled' || $rootScope.accessTokenInUrl) {
+                    if(utilsService.getClientId() !== 'oAuthDisabled' || $rootScope.accessTokenInUrl) {
                         request.headers = {
                             "Authorization" : "Bearer " + accessToken,
                             'Content-Type': "application/json"
@@ -664,7 +663,7 @@ angular.module('starter')
 
                 var deferred = $q.defer();
 
-                if(config.getClientId() === 'oAuthDisabled') {
+                if(utilsService.getClientId() === 'oAuthDisabled') {
                     //console.log('getAccessTokenFromAnySource: oAuthDisabled so we do not need an access token');
                     deferred.resolve();
                     return deferred.promise;
@@ -673,7 +672,7 @@ angular.module('starter')
                 $rootScope.accessTokenInUrl = $rootScope.getAccessTokenFromUrlParameter();
 
                 if ($rootScope.accessTokenInUrl) {
-                    var url = config.getURL("api/user") + 'accessToken=' + $rootScope.accessTokenInUrl;
+                    var url = utilsService.getURL("api/user") + 'accessToken=' + $rootScope.accessTokenInUrl;
                     if(!$rootScope.user){
                         $http.get(url).then(
                             function (userCredentialsResp) {
@@ -703,7 +702,7 @@ angular.module('starter')
                     return deferred.promise;
                 }
 
-                if(config.getClientId() !== 'oAuthDisabled') {
+                if(utilsService.getClientId() !== 'oAuthDisabled') {
                     QuantiModo._defaultGetAccessToken(deferred);
                     return deferred.promise;
                 }
@@ -749,15 +748,15 @@ angular.module('starter')
 
             QuantiModo.refreshAccessToken = function(refreshToken, deferred) {
                 console.log('Refresh token will be used to fetch access token from ' +
-                    config.getURL("api/oauth2/token") + ' with client id ' + config.getClientId());
+                    utilsService.getURL("api/oauth2/token") + ' with client id ' + utilsService.getClientId());
 
-                var url = config.getURL("api/oauth2/token");
+                var url = utilsService.getURL("api/oauth2/token");
 
                 //expire token, refresh
                 $http.post(url, {
 
-                    client_id: config.getClientId(),
-                    client_secret: config.getClientSecret(),
+                    client_id: utilsService.getClientId(),
+                    client_secret: utilsService.getClientSecret(),
                     refresh_token: refreshToken,
                     grant_type: 'refresh_token'
                 }).success(function (data) {

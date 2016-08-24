@@ -276,7 +276,7 @@ angular.module('starter')
             }
         };
         $scope.showHistorySubMenu = false;
-        $scope.shoppingCartEnabled = config.shoppingCartEnabled;
+        $scope.shoppingCartEnabled = config.appSettings.shoppingCartEnabled;
         $scope.loading = false;
         $ionicLoading.hide();
 
@@ -410,7 +410,7 @@ angular.module('starter')
             if (!$rootScope.user) {
                 $rootScope.user = localStorageService.getItemAsObject('user');
             }
-            if (!$rootScope.user && config.getClientId() === 'oAuthDisabled') {
+            if (!$rootScope.user && utilsService.getClientId() === 'oAuthDisabled') {
                 //console.debug("appCtrl.init: No user and oAuthDisabled so trying to getUserAndSetInLocalStorage. Note: This interferes with welcome flow.");
                 //console.warn('Disabled getUserAndSetInLocalStorage in appCtrl.init...');
                 //$rootScope.getUserAndSetInLocalStorage();
@@ -791,7 +791,7 @@ angular.module('starter')
             var emailUrl = 'mailto:?subject=' + subjectLine + '&body=' + emailBody;
             if($rootScope.isChromeExtension){
                 console.debug('isChromeExtension so sending to website to share data');
-                var url = config.getURL("api/v2/account/applications", true);
+                var url = utilsService.getURL("api/v2/account/applications", true);
                 var newTab = window.open(url,'_blank');
                 if(!newTab){
                     alert("Please unblock popups and refresh to access the Data Sharing page.");
