@@ -324,10 +324,9 @@ angular.module('starter')
                             $scope.hideLoader();
                         }, function(err){
                             $scope.hideLoader();
-                            console.log(err);
+                            console.error("addNewReminder ERROR: " + err);
                             $ionicLoading.hide();
                             $scope.loading = false;
-                            utilsService.showAlert('Failed to add Reminder, Try again!', 'assertive');
                         });
 
                     if($stateParams.fromUrl && ($stateParams.fromUrl.indexOf('manage') > -1 )){
