@@ -157,7 +157,7 @@ angular.module('starter')
 
 	    // when a search result is selected
 	    $scope.onVariableSelect = function(selectedVariable){
-	    	console.log("Variable Selected: ", selectedVariable);
+            console.log("remindersAdd.onVariableSelect: " + JSON.stringify(selectedVariable));
 
 	    	if(!selectedVariable.variableCategoryName){
 	    		selectedVariable.variableCategoryName = selectedVariable.category;
