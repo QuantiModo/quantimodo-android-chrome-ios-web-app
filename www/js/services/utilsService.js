@@ -121,7 +121,7 @@ angular.module('starter')
         };
 
         utilsService.getURL = function (path) {
-            console.warn('utilsService.getURL is deprecated. Please use utilsService.getURL');
+            
             if(typeof path === "undefined") {
                 path = "";
             }
