@@ -31,7 +31,7 @@ angular.module('starter')
             if (window.chrome && chrome.runtime && chrome.runtime.id) {
                 return window.private_keys.client_ids.Chrome;
             } else {
-                var platform = getPlatform();
+                var platform = utilsService.getPlatform();
                 if (platform === "Web") { return window.private_keys.client_ids.Web }
                 if (platform === "iOS") { return window.private_keys.client_ids.iOS }
                 if (platform === "Android") { return window.private_keys.client_ids.Android }
