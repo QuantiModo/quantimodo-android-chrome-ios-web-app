@@ -32,7 +32,6 @@
     <vs:platformSpecificWidget platformName="windows" version="1.8.5.3" id="com.quantimodo.moodimodoapp" />
   </vs:platformSpecificValues>
   <preference name="WindowsStoreDisplayName" value="MoodiModo" />
-  <preference name="deployment-target" value="8.3" />
   <plugin name="cordova-plugin-datepicker" version="0.9.3" />
   <plugin name="cordova-plugin-geolocation" version="2.1.0" />
   <plugin name="cordova-plugin-inappbrowser" version="1.2.1" />
@@ -43,4 +42,5 @@
     <variable name="APP_ID" value="225078261031461" />
     <variable name="APP_NAME" value="QuantiModo" />
   </plugin>
+  <preference name="deployment-target" value="6.0"/>
 </widget>

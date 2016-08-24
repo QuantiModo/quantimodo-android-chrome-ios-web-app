@@ -1,6 +1,6 @@
 {
   "name": "quantimodo-ionic",
-  "private": "true",
+  "private": false,
   "devDependencies": {
     "ionic-platform-web-client": "^0.7.1"
   },
