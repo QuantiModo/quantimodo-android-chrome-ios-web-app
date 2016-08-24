@@ -67,7 +67,7 @@ angular.module('starter')
             if (window.chrome && chrome.runtime && chrome.runtime.id) {
                 return window.private_keys.client_secrets.Chrome;
             } else {
-                var platform = getPlatform();
+                var platform = utilsService.getPlatform();
                 if (platform === "Web") { return window.private_keys.client_secrets.Web }
                 if (platform === "iOS") { return window.private_keys.client_secrets.iOS }
                 if (platform === "Android") { return window.private_keys.client_secrets.Android }
@@ -83,7 +83,7 @@ angular.module('starter')
             if (window.chrome && chrome.runtime && chrome.runtime.id) {
                 return window.private_keys.redirect_uris.Chrome;
             } else {
-                var platform = getPlatform();
+                var platform = utilsService.getPlatform();
                 if (platform === "Web") { return window.private_keys.redirect_uris.Web }
                 if (platform === "iOS") { return window.private_keys.redirect_uris.iOS }
                 if (platform === "Android") { return window.private_keys.redirect_uris.Android }
