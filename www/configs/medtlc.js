@@ -13,9 +13,6 @@ var getPlatform = function(){
 };
 
 window.config = {
-    bugsnag:{
-        notifyReleaseStages:['Production','Staging']
-    },
     clientSourceName : "MedTLC " + getPlatform(),
     domain : 'app.quantimo.do',
     environment: "Development",

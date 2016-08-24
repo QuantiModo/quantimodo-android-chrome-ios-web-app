@@ -12,9 +12,6 @@ var getPlatform = function(){
 };
 
 window.config = {
-    bugsnag:{
-        notifyReleaseStages:['Production','Staging']
-    },
     clientSourceName : "EnergyModo " + getPlatform(),
     domain : 'app.quantimo.do',
     environment: "Development",

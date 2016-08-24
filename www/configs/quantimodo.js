@@ -12,9 +12,6 @@ var getPlatform = function(){
 };
 
 window.config = {
-    bugsnag:{
-        notifyReleaseStages:['Production','Staging']
-    },
     clientSourceName : "QuantiModo "+ getPlatform(),
     domain : 'app.quantimo.do',
     environment: "Development",
