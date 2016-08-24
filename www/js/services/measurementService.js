@@ -104,7 +104,7 @@ angular.module('starter')
                                 console.log("getPrimaryOutcomeVariableMeasurements is calling measurementService.setDates");
                                 //measurementService.setDates(new Date().getTime(),s*1000);
                                 console.debug("getPrimaryOutcomeVariableMeasurements: allMeasurements length is " + allMeasurements.length);
-                                console.debug("getPrimaryOutcomeVariableMeasurements:  Setting allMeasurements to: ", allMeasurements);
+                                //console.debug("getPrimaryOutcomeVariableMeasurements:  Setting allMeasurements to: ", allMeasurements);
                                 localStorageService.setItem('allMeasurements', JSON.stringify(allMeasurements));
                                 console.log("getPrimaryOutcomeVariableMeasurements broadcasting to update charts");
                                 $rootScope.$broadcast('updateCharts');
@@ -334,7 +334,7 @@ angular.module('starter')
                             });
                         });
                         console.debug("postTrackingMeasurement: newAllMeasurements length is " + newAllMeasurements.length);
-                        console.debug("postTrackingMeasurement:  Setting allMeasurements to: ", newAllMeasurements);
+                        //console.debug("postTrackingMeasurement:  Setting allMeasurements to: ", newAllMeasurements);
                         localStorageService.setItem('allMeasurements', JSON.stringify(newAllMeasurements));
                         var editedMeasurement = {
                             id: measurementInfo.id,
