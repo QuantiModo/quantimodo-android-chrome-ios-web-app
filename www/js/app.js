@@ -146,7 +146,7 @@ angular.module('starter',
                 return;
             }
 
-            $rootScope.appVersion = "1.8.5.5";
+            $rootScope.appVersion = "1.8.5.6";
             $rootScope.appName = config.appSettings.appName;
 
             //$rootScope.bugsnagApiKey = window.private_keys.bugsnag_key;

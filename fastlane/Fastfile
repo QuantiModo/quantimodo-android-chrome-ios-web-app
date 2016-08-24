@@ -44,6 +44,8 @@ platform :ios do
     match(git_url: "git@github.com:Abolitionist-Project/ios-certificates.git",  # more information: https://codesigning.guide
       type: "appstore")
 
+    pem
+
     gym(scheme: "MoodiModo",
         project: "platforms/ios/MoodiModo.xcodeproj") # Build your app - more options available # Build your app - more options available
         
