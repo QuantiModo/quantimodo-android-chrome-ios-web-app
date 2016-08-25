@@ -9,7 +9,7 @@ config.appSettings  = {
     welcomeState : 'app.welcome',
     shoppingCartEnabled : true,
     primaryOutcomeVariable : 'Energy',
-
+    qmApiHostName: 'app.quantimo.do',
     appStorageIdentifier: 'EnergyModoData*',
 
     settingsPageOptions :

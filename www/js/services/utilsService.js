@@ -30,28 +30,26 @@ angular.module('starter')
             //if chrome app
             if (window.chrome && chrome.runtime && chrome.runtime.id) {
                 return window.private_keys.client_ids.Chrome;
-            } else {
-                var platform = utilsService.getPlatform();
-                if (platform === "Web") { return window.private_keys.client_ids.Web }
-                if (platform === "iOS") { return window.private_keys.client_ids.iOS }
-                if (platform === "Android") { return window.private_keys.client_ids.Android }
-                if (platform === "windows") { return window.private_keys.client_ids.windows }
-                return window.private_keys.client_ids.Web;
             }
+
+            if (window.cordova) {
+                var platform = utilsService.getPlatform();
+                if (platform === "iOS") { return window.private_keys.client_ids.iOS; }
+                if (platform === "Android") { return window.private_keys.client_ids.Android; }
+                if (platform === "Windows") { return window.private_keys.client_ids.Windows; }
+
+            }
+            return window.private_keys.client_ids.Web;
         };
         
         utilsService.getPlatform = function () {
-            if(typeof ionic !== "undefined" &&
-                typeof ionic.Platform !== "undefined") {
+            if (window.cordova) {
                 var currentPlatform = ionic.Platform.platform();
-                if (currentPlatform.indexOf('win') > -1){
-                    return 'windows';
-                }
-                return ionic.Platform.isIOS() ? "iOS" : ionic.Platform.isAndroid() ? "Android" : "Web";
+                if (currentPlatform.indexOf('win') > -1){return 'Windows';}
+                if (ionic.Platform.isIOS()){return 'iOS';}
+                if (ionic.Platform.isAndroid()){return 'Android';}
             }
-            else {
-                return "Unknown Platform";
-            }
+            return "Web";
         };
 
         utilsService.getPermissionString = function(){
@@ -66,14 +64,16 @@ angular.module('starter')
         utilsService.getClientSecret = function(){
             if (window.chrome && chrome.runtime && chrome.runtime.id) {
                 return window.private_keys.client_secrets.Chrome;
-            } else {
-                var platform = utilsService.getPlatform();
-                if (platform === "Web") { return window.private_keys.client_secrets.Web }
-                if (platform === "iOS") { return window.private_keys.client_secrets.iOS }
-                if (platform === "Android") { return window.private_keys.client_secrets.Android }
-                if (platform === "windows") { return window.private_keys.client_secrets.windows }
-                return window.private_keys.client_secrets.Web;
             }
+
+            if (window.cordova) {
+                var platform = utilsService.getPlatform();
+                if (platform === "iOS") { return window.private_keys.client_secrets.iOS; }
+                if (platform === "Android") { return window.private_keys.client_secrets.Android; }
+                if (platform === "Windows") { return window.private_keys.client_secrets.Windows; }
+
+            }
+            return window.private_keys.client_secrets.Web;
         };
 
         utilsService.getRedirectUri = function () {
@@ -82,14 +82,15 @@ angular.module('starter')
             }
             if (window.chrome && chrome.runtime && chrome.runtime.id) {
                 return window.private_keys.redirect_uris.Chrome;
-            } else {
-                var platform = utilsService.getPlatform();
-                if (platform === "Web") { return window.private_keys.redirect_uris.Web }
-                if (platform === "iOS") { return window.private_keys.redirect_uris.iOS }
-                if (platform === "Android") { return window.private_keys.redirect_uris.Android }
-                if (platform === "windows") { return window.private_keys.redirect_uris.windows }
-                return window.private_keys.redirect_uris.Web;
             }
+
+            if (window.cordova) {
+                var platform = utilsService.getPlatform();
+                if (platform === "iOS") { return window.private_keys.redirect_uris.iOS; }
+                if (platform === "Android") { return window.private_keys.redirect_uris.Android; }
+                if (platform === "Windows") { return window.private_keys.redirect_uris.Windows; }
+            }
+            return window.private_keys.redirect_uris.Web;
         };
 
         utilsService.getProtocol = function () {
@@ -103,43 +104,27 @@ angular.module('starter')
         };
 
         utilsService.getApiUrl = function () {
-            if(!window.private_keys.api_urls){
-                return 'https://app.quantimo.do';
-            }
             var platform = utilsService.getPlatform();
-            if (window.chrome && chrome.runtime && chrome.runtime.id) {
-                return window.private_keys.api_urls.Chrome;
-            } else if (platform === 'Web' && window.private_keys.client_ids.Web === 'oAuthDisabled') {
+            if (platform === 'Web' && window.private_keys.client_ids.Web === 'oAuthDisabled') {
                 return window.location.origin;
-            } else {
-                if (platform === "Web") { return window.private_keys.api_urls.Web }
-                if (platform === "iOS") { return window.private_keys.api_urls.iOS }
-                if (platform === "Android") { return window.private_keys.api_urls.Android }
-                if (platform === "windows") { return window.private_keys.api_urls.windows }
-                return window.private_keys.api_urls.Web;
             }
+            if(!config.appSettings.qmApiHostName){
+                config.appSettings.qmApiHostName = "app.quantimo.do";
+            }
+            if (platform === "Windows") {
+                return "ms-appx-web://" + config.appSettings.qmApiHostName;
+            }
+            return "https://" + config.appSettings.qmApiHostName;
         };
 
         utilsService.getURL = function (path) {
-            
             if(typeof path === "undefined") {
                 path = "";
-            }
-            else {
+            } else {
                 path += "?";
             }
 
-            var url = "";
-
-            if(utilsService.getApiUrl() !== "undefined") {
-                url = utilsService.getApiUrl() + "/" + path;
-            }
-            else
-            {
-                url = utilsService.getProtocol() + "://app.quantimo.do/" + path;
-            }
-
-            return url;
+            return utilsService.getApiUrl() + "/" + path;
         };
 
         utilsService.convertToObjectIfJsonString = function (stringOrObject) {

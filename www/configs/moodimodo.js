@@ -6,6 +6,7 @@ config.appSettings  = {
     allowOffline : true,
     loaderImagePath : 'img/pop-tart-cat.gif',
     shoppingCartEnabled : true,
+    qmApiHostName: 'app.quantimo.do',
     settingsPageOptions :
     {
         showReminderFrequencySelector : true

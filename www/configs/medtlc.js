@@ -6,7 +6,7 @@ config.appSettings  = {
     allowOffline : false,
     shoppingCartEnabled : false,
     primaryOutcomeVariable : 'Mood',
-
+    qmApiHostName: 'app.quantimo.do',
     appStorageIdentifier: 'MedTLCData*',
 
     defaultState : 'app.remindersInbox',

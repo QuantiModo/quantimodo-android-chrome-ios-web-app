@@ -6,7 +6,7 @@ config.appSettings  = {
     allowOffline : true,
     loaderImagePath : 'img/pop-tart-cat.gif',
     defaultState : 'app.remindersInbox',
-
+    qmApiHostName: 'app.quantimo.do',
     welcomeState : 'app.welcome',
 
     primaryOutcomeVariable : 'Mood',
