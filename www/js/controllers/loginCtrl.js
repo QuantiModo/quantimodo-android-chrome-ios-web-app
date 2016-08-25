@@ -361,8 +361,7 @@ angular.module('starter')
                 console.log("sendToNonOAuthBrowserLoginUrl: Client id is oAuthDisabled - will redirect to regular login.");
                 loginUrl += "redirect_uri=" + encodeURIComponent(window.location.href.replace('app/login','app/reminders-inbox'));
                 console.debug('sendToNonOAuthBrowserLoginUrl: AUTH redirect URL created:', loginUrl);
-                var apiUrl = utilsService.getApiUrl();
-                var apiUrlMatchesHostName = apiUrl.indexOf(window.location.hostname);
+                var apiUrlMatchesHostName = $rootScope.qmApiUrl.indexOf(window.location.hostname);
                 if(apiUrlMatchesHostName > -1 || $rootScope.isChromeExtension) {
                     $scope.showLoader('Logging you in...');
                     window.location.replace(loginUrl);

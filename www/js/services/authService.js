@@ -14,7 +14,7 @@ angular.module('starter')
             },
 
 			generateV1OAuthUrl: function(register) {
-				var url = utilsService.getApiUrl() + "/api/oauth2/authorize?";
+				var url = $rootScope.qmApiUrl + "/api/oauth2/authorize?";
 				// add params
 				url += "response_type=code";
 				url += "&client_id=" + utilsService.getClientId();

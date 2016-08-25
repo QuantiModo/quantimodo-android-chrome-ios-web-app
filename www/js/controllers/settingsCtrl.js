@@ -283,7 +283,7 @@ angular.module('starter')
                 $rootScope.isBrowser = ionic.Platform.platforms[0] === "browser";
                 if($rootScope.isMobile || !$rootScope.isBrowser){
                     console.log('startLogout: Open the auth window via inAppBrowser.  Platform is ' + ionic.Platform.platforms[0]);
-                    var ref = window.open(utilsService.getApiUrl() + '/api/v2/auth/logout','_blank', 'location=no,toolbar=yes');
+                    var ref = window.open($rootScope.qmApiUrl + '/api/v2/auth/logout','_blank', 'location=no,toolbar=yes');
 
                     console.log('startLogout: listen to its event when the page changes');
 

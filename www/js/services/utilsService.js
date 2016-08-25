@@ -124,7 +124,7 @@ angular.module('starter')
                 path += "?";
             }
 
-            return utilsService.getApiUrl() + "/" + path;
+            return $rootScope.qmApiUrl + "/" + path;
         };
 
         utilsService.convertToObjectIfJsonString = function (stringOrObject) {
