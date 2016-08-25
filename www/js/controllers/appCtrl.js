@@ -608,8 +608,6 @@ angular.module('starter')
         };
 
         function setPlatformVariables() {
-            $rootScope.qmApiUrl = utilsService.getApiUrl();
-
             $rootScope.isIOS = ionic.Platform.isIPad() || ionic.Platform.isIOS();
             $rootScope.isAndroid = ionic.Platform.isAndroid();
             $rootScope.isMobile = ionic.Platform.isAndroid() || ionic.Platform.isIPad() || ionic.Platform.isIOS();
@@ -634,6 +632,7 @@ angular.module('starter')
                 $rootScope.isChromeExtension = false;
                 $rootScope.isChromeApp = true;
             }
+            $rootScope.qmApiUrl = utilsService.getApiUrl();
         }
 
 
