@@ -4,7 +4,7 @@
     if (typeof mashapeKey !== 'undefined' && mashapeKey) {
         var baseUrl = 'https://quantimodo-quantimodo-v1.p.mashape.com';
     } else {
-        var baseUrl = '{{{base}}}';
+        var baseUrl = 'https://app.quantimo.do';
     }
 
     var mainDiv;
@@ -63,46 +63,6 @@
 
     createStyles();
 
-    function getApiUrl() {
-        if(!window.private_keys.api_urls){
-            return 'https://app.quantimo.do';
-        }
-        var platform = utilsService.getPlatform();
-        if (window.chrome && chrome.runtime && chrome.runtime.id) {
-            return window.private_keys.api_urls.Chrome;
-        } else if (platform === 'Web' && window.private_keys.client_ids.Web === 'oAuthDisabled') {
-            return window.location.origin;
-        } else {
-            if (platform === "Web") { return window.private_keys.api_urls.Web }
-            if (platform === "iOS") { return window.private_keys.api_urls.iOS }
-            if (platform === "Android") { return window.private_keys.api_urls.Android }
-            if (platform === "windows") { return window.private_keys.api_urls.windows }
-            return window.private_keys.api_urls.Web;
-        }
-    }
-
-    function getURL(path) {
-        
-        if(typeof path === "undefined") {
-            path = "";
-        }
-        else {
-            path += "?";
-        }
-
-        var url = "";
-
-        if(getApiUrl() !== "undefined") {
-            url = getApiUrl() + "/" + path;
-        }
-        else
-        {
-            url = "https://app.quantimo.do/" + path;
-        }
-
-        return url;
-    }
-
     window.qmSetupInPopup = function () {
         createHiddenPopupBlock();
         showLoader(true);
@@ -126,8 +86,7 @@
     };
 
     window.qmSetupOnIonic = function() {
-        baseUrl = utilsService.getURL();
-        access_token = localStorage[config.appSettings.storageIdentifier + 'accessToken'];
+        access_token = localStorage[config.appSettings.appStorageIdentifier + 'accessToken'];
         useConnectionWindow = false;
 
         var theDiv = document.getElementById('import_iframe');
