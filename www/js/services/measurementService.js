@@ -166,7 +166,7 @@ angular.module('starter')
                         var measurements = [
                             {
                                 variableName: config.appSettings.primaryOutcomeVariableDetails.name,
-                                source: config.appSettings.appName + " " + utilsService.getPlatform(),
+                                source: config.appSettings.appName + " " + $rootScope.currentPlatform,
                                 variableCategoryName: config.appSettings.primaryOutcomeVariableDetails.category,
                                 combinationOperation: config.appSettings.primaryOutcomeVariableDetails.combinationOperation,
                                 abbreviatedUnitName: config.appSettings.primaryOutcomeVariableDetails.abbreviatedUnitName,
@@ -340,7 +340,7 @@ angular.module('starter')
                         var editedMeasurement = {
                             id: measurementInfo.id,
                             variableName: measurementInfo.variableName,
-                            source: config.appSettings.appName + utilsService.getPlatform(),
+                            source: config.appSettings.appName + $rootScope.currentPlatform,
                             abbreviatedUnitName: measurementInfo.unit,
                             startTimeEpoch:  measurementInfo.startTimeEpoch,
                             value: measurementInfo.value,
@@ -358,7 +358,7 @@ angular.module('starter')
                         var newMeasurement = {
                             id: null,
                             variableName: measurementInfo.variableName,
-                            source: config.appSettings.appName + utilsService.getPlatform(),
+                            source: config.appSettings.appName + $rootScope.currentPlatform,
                             abbreviatedUnitName: measurementInfo.unit,
                             startTimeEpoch:  measurementInfo.startTimeEpoch,
                             value: measurementInfo.value,
@@ -410,7 +410,7 @@ angular.module('starter')
                     // for local
                     var measurement = {
                         variableName: measurementInfo.variableName,
-                        source: config.appSettings.appName + utilsService.getPlatform(),
+                        source: config.appSettings.appName + $rootScope.currentPlatform,
                         abbreviatedUnitName: measurementInfo.unit,
                         startTimeEpoch:  measurementInfo.startTimeEpoch,
                         value: measurementInfo.value,
@@ -461,7 +461,7 @@ angular.module('starter')
                 var measurementSet = [
                     {
                         variableName: trackingReminder.variableName,
-                        source: config.appSettings.appName + utilsService.getPlatform(),
+                        source: config.appSettings.appName + $rootScope.currentPlatform,
                         variableCategoryName: trackingReminder.variableCategoryName,
                         abbreviatedUnitName: trackingReminder.abbreviatedUnitName,
                         measurements : [
