@@ -103,7 +103,8 @@ angular.module('starter')
                 if ($stateParams.doNotIncludePublicVariables) { // on variable search page, only show user's variables
                     variableService.searchUserVariables($scope.state.variableSearchQuery, $scope.state.variableCategoryName)
                         .then(function(variables){
-                            // populate list with results
+                            console.debug("$scope.onVariableSearch: Populating list with " +
+                                "variableService.searchUserVariables results " + JSON.stringify(variables));
                             $scope.state.showAddVariableButton = false;
                             $scope.state.variableSearchResults = variables;
                             $scope.state.searching = false;
@@ -115,7 +116,8 @@ angular.module('starter')
                 else { // on add reminder or record measurement search pages; include public variables
                     variableService.searchVariablesIncludePublic($scope.state.variableSearchQuery, $scope.state.variableCategoryName)
                         .then(function(variables){
-                            // Populate list with results
+                            console.debug("$scope.onVariableSearch: Populating list with " +
+                                "variableService.searchVariablesIncludePublic results " + JSON.stringify(variables));
                             $scope.state.showAddVariableButton = false;
                             $scope.state.variableSearchResults = variables;
                             $scope.state.searching = false;
