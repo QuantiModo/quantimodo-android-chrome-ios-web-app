@@ -415,7 +415,7 @@ angular.module('starter')
                 variableService.getVariableById(variableId)
                     .then(function (variables) {
                         $scope.variableObject = variables[0];
-                        console.log('setupReminderEditingFromVariableId$scope got ' +
+                        console.log('setupReminderEditingFromVariableId got this variable object ' +
                             JSON.stringify($scope.variableObject));
                         $scope.onVariableSelect($scope.variableObject);
                         $ionicLoading.hide();

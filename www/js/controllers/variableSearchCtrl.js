@@ -25,6 +25,7 @@ angular.module('starter')
         
         // when an old measurement is tapped to remeasure
         $scope.selectVariable = function(variableObject) {
+            console.debug("$scope.selectVariable: " + JSON.stringify(variableObject));
             if($stateParams.doNotIncludePublicVariables){
                 localStorageService.addToOrReplaceElementOfItemByIdOrMoveToFront('userVariables', variableObject);
             }
@@ -96,7 +97,7 @@ angular.module('starter')
 
         // when a query is searched in the search box
         $scope.onVariableSearch = function(){
-            console.log("Search: ", $scope.state.variableSearchQuery);
+            console.log("Search term: ", $scope.state.variableSearchQuery);
             if($scope.state.variableSearchQuery.length > 2){
                 $scope.state.searching = true;
                 if ($stateParams.doNotIncludePublicVariables) { // on variable search page, only show user's variables
