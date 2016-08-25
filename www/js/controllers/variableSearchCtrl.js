@@ -239,6 +239,7 @@ angular.module('starter')
                 variableObject.variableCategoryName = $scope.state.variableCategoryName;
             }
 
+            console.debug("$scope.addNewVariable: " + JSON.stringify(variableObject));
             if ($stateParams.nextState) {
                 $state.go($stateParams.nextState,
                     {
