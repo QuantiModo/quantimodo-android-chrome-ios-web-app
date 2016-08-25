@@ -108,9 +108,6 @@ angular.module('starter')
                             $scope.state.showAddVariableButton = false;
                             $scope.state.variableSearchResults = variables;
                             $scope.state.searching = false;
-                            if(variables.length < 1){
-                                $scope.state.showAddVariableButton = false;
-                            }
                         });
                 }
                 else { // on add reminder or record measurement search pages; include public variables
@@ -136,6 +133,7 @@ angular.module('starter')
                             // If no results or no exact match, show "+ Add [variable]" button for query
                             // Also, can only favorite existing variables
                             if((variables.length < 1 || !found) && $stateParams.nextState !== "app.favoriteAdd"){
+                                console.debug("$scope.onVariableSearch: Set showAddVariableButton to true");
                                 $scope.state.showAddVariableButton = true;
                                 if ($stateParams.nextState === "app.reminderAdd") {
                                     $scope.state.addNewVariableButtonText = '+ Add ' + $scope.state.variableSearchQuery +
