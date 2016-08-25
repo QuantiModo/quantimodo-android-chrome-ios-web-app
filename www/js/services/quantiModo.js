@@ -56,7 +56,6 @@ angular.module('starter')
 
             // GET method with the added token
             QuantiModo.get = function(baseURL, allowedParams, params, successHandler, errorHandler){
-                console.debug('QuantiModo.get: ' + baseURL + '. params: ' + JSON.stringify(params));
                 QuantiModo.getAccessTokenFromAnySource().then(function(accessToken){
                     if(accessToken && accessToken.indexOf(' ') > -1){
                         accessToken = null;
@@ -108,6 +107,7 @@ angular.module('starter')
                     }
 
                     //console.log("Making this request: " + JSON.stringify(request));
+                    console.debug('QuantiModo.get: ' + request.url);
 
                     $http(request).success(successHandler).error(function(data,status,headers,config){
                         QuantiModo.errorHandler(data, status, headers, config, request);
