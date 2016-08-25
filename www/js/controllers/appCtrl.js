@@ -613,12 +613,14 @@ angular.module('starter')
             $rootScope.isIOS = ionic.Platform.isIPad() || ionic.Platform.isIOS();
             $rootScope.isAndroid = ionic.Platform.isAndroid();
             $rootScope.isMobile = ionic.Platform.isAndroid() || ionic.Platform.isIPad() || ionic.Platform.isIOS();
-            var currentPlatform = ionic.Platform.platform();
-            if (currentPlatform.indexOf('win') > -1){
+            $rootScope.isChrome = window.chrome ? true : false;
+            $rootScope.currentPlatform = utilsService.getPlatform();
+            if($rootScope.currentPlatform === "Windows"){
                 $rootScope.isWindows = true;
             }
-            $rootScope.isChrome = window.chrome ? true : false;
-            $rootScope.currentPlatform = ionic.Platform.platform();
+            if($rootScope.currentPlatform === "Web"){
+                $rootScope.isWeb = true;
+            }
             $rootScope.currentPlatformVersion = ionic.Platform.version();
 
             var currentUrl =  window.location.href;

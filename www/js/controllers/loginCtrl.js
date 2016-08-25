@@ -49,14 +49,12 @@ angular.module('starter')
                 chromeAppLogin(register);
             } else if ($rootScope.isChromeExtension) {
                 chromeExtensionLogin(register);
-            } else if (ionic.Platform.platform().indexOf('win') > -1) {
+            } else if ($rootScope.isAndroid || $rootScope.isIOS || $rootScope.isWindows) {
+                console.log("$scope.login: Browser and Chrome Not Detected.  Assuming mobile platform and using nonNativeMobileLogin");
                 nonNativeMobileLogin(register);
-            } else if(ionic.Platform.is('browser')){
-                console.log("$scope.login: Browser Detected");
-                browserLogin(register);
             } else {
-                console.log("$scope.login: Browser and Chrome Not Detected.  Assuming mobile platform");
-                nonNativeMobileLogin(register);
+                console.log("$scope.login: Not windows, android or is so assuming browser.");
+                browserLogin(register);
             }
 
             var userObject = localStorageService.getItemAsObject('user');

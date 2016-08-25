@@ -1,7 +1,7 @@
 angular.module('starter')
 
     // utility methods
-    .factory('utilsService', function($ionicPopup) {
+    .factory('utilsService', function($ionicPopup, $rootScope) {
 
         var utilsService = {};
 
@@ -33,10 +33,9 @@ angular.module('starter')
             }
 
             if (window.cordova) {
-                var platform = utilsService.getPlatform();
-                if (platform === "iOS") { return window.private_keys.client_ids.iOS; }
-                if (platform === "Android") { return window.private_keys.client_ids.Android; }
-                if (platform === "Windows") { return window.private_keys.client_ids.Windows; }
+                if ($rootScope.isIOS) { return window.private_keys.client_ids.iOS; }
+                if ($rootScope.isAndroid) { return window.private_keys.client_ids.Android; }
+                if ($rootScope.isWindows) { return window.private_keys.client_ids.Windows; }
 
             }
             return window.private_keys.client_ids.Web;
@@ -67,10 +66,9 @@ angular.module('starter')
             }
 
             if (window.cordova) {
-                var platform = utilsService.getPlatform();
-                if (platform === "iOS") { return window.private_keys.client_secrets.iOS; }
-                if (platform === "Android") { return window.private_keys.client_secrets.Android; }
-                if (platform === "Windows") { return window.private_keys.client_secrets.Windows; }
+                if ($rootScope.isIOS) { return window.private_keys.client_secrets.iOS; }
+                if ($rootScope.isAndroid) { return window.private_keys.client_secrets.Android; }
+                if ($rootScope.isWindows) { return window.private_keys.client_secrets.Windows; }
 
             }
             return window.private_keys.client_secrets.Web;
@@ -85,10 +83,9 @@ angular.module('starter')
             }
 
             if (window.cordova) {
-                var platform = utilsService.getPlatform();
-                if (platform === "iOS") { return window.private_keys.redirect_uris.iOS; }
-                if (platform === "Android") { return window.private_keys.redirect_uris.Android; }
-                if (platform === "Windows") { return window.private_keys.redirect_uris.Windows; }
+                if ($rootScope.isIOS) { return window.private_keys.redirect_uris.iOS; }
+                if ($rootScope.isAndroid) { return window.private_keys.redirect_uris.Android; }
+                if ($rootScope.isWindows) { return window.private_keys.redirect_uris.Windows; }
             }
             return window.private_keys.redirect_uris.Web;
         };
@@ -104,14 +101,13 @@ angular.module('starter')
         };
 
         utilsService.getApiUrl = function () {
-            var platform = utilsService.getPlatform();
-            if (platform === 'Web' && window.private_keys.client_ids.Web === 'oAuthDisabled') {
+            if ($rootScope.isWeb && window.private_keys.client_ids.Web === 'oAuthDisabled') {
                 return window.location.origin;
             }
             if(!config.appSettings.qmApiHostName){
                 config.appSettings.qmApiHostName = "app.quantimo.do";
             }
-            if (platform === "Windows") {
+            if ($rootScope.isWindows) {
                 return "ms-appx-web://" + config.appSettings.qmApiHostName;
             }
             return "https://" + config.appSettings.qmApiHostName;
