@@ -417,7 +417,7 @@ angular.module('starter')
         };
 
         var setupFromVariableStateParameter = function(){
-            console.log('variableObject is ' + $stateParams.variableObject);
+            console.log('setupFromVariableStateParameter: variableObject is ' + JSON.stringify($stateParams.variableObject));
             if($stateParams.variableObject !== null && typeof $stateParams.variableObject !== "undefined") {
                 $scope.state.variableObject = $stateParams.variableObject;
                 $scope.state.title = "Record Measurement";
