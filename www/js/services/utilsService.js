@@ -41,14 +41,42 @@ angular.module('starter')
             return window.private_keys.client_ids.Web;
         };
         
-        utilsService.getPlatform = function () {
+        utilsService.setPlatformVariables = function () {
             if (window.cordova) {
+                $rootScope.currentPlatformVersion = ionic.Platform.version();
                 var currentPlatform = ionic.Platform.platform();
-                if (currentPlatform.indexOf('win') > -1){return 'Windows';}
-                if (ionic.Platform.isIOS()){return 'iOS';}
-                if (ionic.Platform.isAndroid()){return 'Android';}
+                if (currentPlatform.indexOf('win') > -1){
+                    $rootScope.isWindows = true;
+                    $rootScope.currentPlatform = "Windows";
+                }
+                if (ionic.Platform.isIOS()){
+                    $rootScope.isIOS = true;
+                    $rootScope.isMobile = true;
+                    $rootScope.currentPlatform = "iOS";
+                }
+                if (ionic.Platform.isAndroid()){
+                    $rootScope.isAndroid = true;
+                    $rootScope.isMobile = true;
+                    $rootScope.currentPlatform = "Android";
+                }
+            } else {
+                $rootScope.isChrome = window.chrome ? true : false;
+                $rootScope.currentPlatformVersion = null;
+                var currentUrl =  window.location.href;
+                if (currentUrl.indexOf('chrome-extension') !== -1) {
+                    $rootScope.isChromeExtension = true;
+                    $rootScope.isChromeApp = false;
+                    $rootScope.currentPlatform = "ChromeExtension";
+                } else if ($rootScope.isChrome && chrome.identity) {
+                    $rootScope.isChromeExtension = false;
+                    $rootScope.isChromeApp = true;
+                    $rootScope.currentPlatform = "ChromeApp";
+                } else {
+                    $rootScope.isWeb = true;
+                    $rootScope.currentPlatform = "Web";
+                }
             }
-            return "Web";
+            $rootScope.qmApiUrl = utilsService.getApiUrl();
         };
 
         utilsService.getPermissionString = function(){

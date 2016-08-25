@@ -280,7 +280,7 @@ angular.module('starter')
         $scope.loading = false;
         $ionicLoading.hide();
 
-        setPlatformVariables();
+        utilsService.setPlatformVariables();
 
         /*Wrapper Config*/
         $scope.viewTitle = config.appSettings.appName;
@@ -606,35 +606,6 @@ angular.module('starter')
         $rootScope.updateOrRecreateNotifications = function () {
             notificationService.updateOrRecreateNotifications();
         };
-
-        function setPlatformVariables() {
-            $rootScope.isIOS = ionic.Platform.isIPad() || ionic.Platform.isIOS();
-            $rootScope.isAndroid = ionic.Platform.isAndroid();
-            $rootScope.isMobile = ionic.Platform.isAndroid() || ionic.Platform.isIPad() || ionic.Platform.isIOS();
-            $rootScope.isChrome = window.chrome ? true : false;
-            $rootScope.currentPlatform = utilsService.getPlatform();
-            if($rootScope.currentPlatform === "Windows"){
-                $rootScope.isWindows = true;
-            }
-            if($rootScope.currentPlatform === "Web"){
-                $rootScope.isWeb = true;
-            }
-            $rootScope.currentPlatformVersion = ionic.Platform.version();
-
-            var currentUrl =  window.location.href;
-            console.log('currentUrl is ' + currentUrl );
-            if (currentUrl.indexOf('chrome-extension') !== -1) {
-                $rootScope.isChromeExtension = true;
-                $rootScope.isChromeApp = false;
-            } 
-
-            if ($rootScope.isChrome && chrome.identity) {
-                $rootScope.isChromeExtension = false;
-                $rootScope.isChromeApp = true;
-            }
-            $rootScope.qmApiUrl = utilsService.getApiUrl();
-        }
-
 
         $scope.saveInterval = function(primaryOutcomeRatingFrequencyDescription){
             if(primaryOutcomeRatingFrequencyDescription){
