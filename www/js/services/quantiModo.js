@@ -390,19 +390,27 @@ angular.module('starter')
             };
 
             // search for public variables by category
-            QuantiModo.searchVariablesByCategoryIncludePublic = function(query, category, successHandler, errorHandler){
+            QuantiModo.searchVariablesByCategoryIncludePublic = function(query, variableCategoryName, successHandler, errorHandler){
+                var params = {'limit' : 100, 'includePublic': false};
+                if(variableCategoryName && variableCategoryName !== 'Anything'){
+                    params.variableCategoryName = variableCategoryName;
+                }
                 QuantiModo.get('api/v1/variables/search/'+ encodeURIComponent(query),
-                    ['limit','categoryName','includePublic'],
-                    {'limit' : 100, 'categoryName': category, 'includePublic': true},
+                    ['limit','variableCategoryName','includePublic'],
+                    params,
                     successHandler,
                     errorHandler);
             };
 
             // search user variables by category
-            QuantiModo.searchUserVariablesByCategory = function(query, category, successHandler, errorHandler){
+            QuantiModo.searchUserVariablesByCategory = function(query, variableCategoryName, successHandler, errorHandler){
+                var params = {'limit' : 100, 'includePublic': false};
+                if(variableCategoryName && variableCategoryName !== 'Anything'){
+                    params.variableCategoryName = variableCategoryName;
+                }
                 QuantiModo.get('api/v1/variables/search/'+ encodeURIComponent(query),
-                    ['limit','categoryName','includePublic'],
-                    {'limit' : 100, 'categoryName': category, 'includePublic': false},
+                    ['limit','variableCategoryName','includePublic'],
+                    params,
                     successHandler,
                     errorHandler);
             };
@@ -442,21 +450,17 @@ angular.module('starter')
 
 
             // get user variables
-            QuantiModo.getUserVariables = function(category, successHandler, errorHandler){
-                if(category){
-                    QuantiModo.get('api/v1/variables',
-                        ['category', 'limit'],
-                        {limit:200},
-                        successHandler,
-                        errorHandler);
+            QuantiModo.getUserVariables = function(variableCategoryName, successHandler, errorHandler){
+                var params = {'limit' : 200};
+                if(variableCategoryName && variableCategoryName !== 'Anything'){
+                    params.variableCategoryName = variableCategoryName;
                 }
-                if(!category){
-                    QuantiModo.get('api/v1/variables',
-                        ['category', 'limit'],
-                        {limit:200},
-                        successHandler,
-                        errorHandler);
-                }
+
+                QuantiModo.get('api/v1/variables',
+                    ['variableCategoryName', 'limit'],
+                    params,
+                    successHandler,
+                    errorHandler);
             };
 
             // post changes to user variable
