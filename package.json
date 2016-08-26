@@ -34,7 +34,7 @@
     "xml2js": "^0.4.15"
   },
   "scripts": {
-    "postinstall": "bower install && gulp generatePrivateConfigFromEnvsForHeroku && ionic config build"
+    "postinstall": "bower install && ionic config build && gulp generatePrivateConfigFromEnvsForHeroku"
   },
   "cordovaPlugins": [
     "https://github.com/katzer/cordova-plugin-local-notifications#a3f2be443b4d4539557611b5081453a7bfd1be46",
