@@ -1,6 +1,6 @@
 angular.module('starter')
     // Measurement Service
-    .factory('bugsnagService', function(utilsService) {
+    .factory('bugsnagService', function(utilsService, $rootScope) {
         
         // service methods
         var bugsnagService = {
