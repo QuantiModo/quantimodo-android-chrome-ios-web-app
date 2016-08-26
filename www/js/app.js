@@ -17,7 +17,7 @@ angular.module('starter',
     ]
 )
 
-.run(function($ionicPlatform, $ionicHistory, $state, $rootScope) {
+.run(function($ionicPlatform, $ionicHistory, $state, $rootScope, localStorageService) {
 //.run(function($ionicPlatform, $ionicHistory, $state, $rootScope, $ionicAnalytics) {
 // Database
 //.run(function($ionicPlatform, $ionicHistory, $state, $rootScope, $cordovaSQLite) {
@@ -31,20 +31,25 @@ angular.module('starter',
             };
         }
 
-        /*
-
          if (ionic.Platform.isAndroid() || ionic.Platform.isIPad() || ionic.Platform.isIOS()) {
-         alert("Going to try to register push");
-         var push = new Ionic.Push({"debug": true});
+             alert("Going to try to register push");
+             var push = new Ionic.Push({"debug": true});
 
-         push.register(function (deviceToken) {
-         alert("Got device token for push notifications: " + deviceToken.token);
-         push.saveToken(deviceToken);
-         //if($rootScope.deviceToken !== deviceToken.token){
-         pushNotificationService.registerDeviceToken(deviceToken.token);
-         //}
-         });
+             push.register(function (registerResponse) {
+                 var newDeviceToken = registerResponse.token;
+                 alert("Got device token for push notifications: " + registerResponse.token);
+
+                 push.saveToken(registerResponse.token);
+                 var deviceTokenOnServer = localStorageService.getItemSync('deviceTokenOnServer');
+                 alert('deviceTokenOnServer from localStorage is ' + deviceTokenOnServer);
+                 if(deviceTokenOnServer !== registerResponse.token) {
+                     localStorageService.setItem('deviceTokenToSync', newDeviceToken);
+                     alert('New push device token does not match push device token on server so saving to localStorage to sync after login');
+                 }
+             });
          }
+
+        /*
 
          window.onNotification = function(e){
             console.log("window.onNotification: received event", e);
