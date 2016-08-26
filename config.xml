@@ -8,7 +8,7 @@
       QuantiModo
     </author>
   <content src="index.html" />
-  <access origin="https://quantimo.do/*" />
+  <access origin="https://app.quantimo.do/*" />
   <allow-navigation href="*" />
   <preference name="webviewbounce" value="false" />
   <preference name="UIWebViewBounce" value="false" />
