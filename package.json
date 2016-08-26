@@ -31,6 +31,7 @@
     "run-sequence": "^1.1.4",
     "shelljs": "^0.5.3",
     "swagger-js-codegen": "^1.1.4",
+    "xcode" : "0.8.9",
     "xml2js": "^0.4.15"
   },
   "scripts": {
