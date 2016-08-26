@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <widget id="com.quantimodo.moodimodoapp" version="1.8.5" ios-CFBundleVersion="1.8.5.6" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
   <name>MoodiModo</name>
   <description>
@@ -43,7 +43,7 @@
     <variable name="APP_NAME" value="QuantiModo" />
   </plugin>
   <platform name="ios">
-      <hook type="after_build" src="hooks/generate_resources_fix_xcode_and_fastlane_beta.sh" />
+    <hook type="after_build" src="hooks/generate_resources_fix_xcode_and_fastlane_beta.sh" />
   </platform>
-  <preference name="deployment-target" value="6.0"/>
+  <preference name="deployment-target" value="6.0" />
 </widget>
