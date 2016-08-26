@@ -188,7 +188,7 @@ angular.module('starter')
             }
 
             if (typeof selectedVariable.lastValue !== "undefined"){
-                $scope.state.trackingReminder.defaultValue = selectedVariable.lastValue;
+                $scope.state.trackingReminder.defaultValue = Number(selectedVariable.lastValue);
             }
 
             $scope.state.showReminderFrequencyCard = true;
