@@ -157,7 +157,7 @@ angular.module('starter')
 
 	    // when a search result is selected
 	    $scope.onVariableSelect = function(selectedVariable){
-	    	console.log("Variable Selected: ", selectedVariable);
+            console.log("remindersAdd.onVariableSelect: " + JSON.stringify(selectedVariable));
 
 	    	if(!selectedVariable.variableCategoryName){
 	    		selectedVariable.variableCategoryName = selectedVariable.category;
@@ -188,7 +188,7 @@ angular.module('starter')
             }
 
             if (typeof selectedVariable.lastValue !== "undefined"){
-                $scope.state.trackingReminder.defaultValue = selectedVariable.lastValue;
+                $scope.state.trackingReminder.defaultValue = Number(selectedVariable.lastValue);
             }
 
             $scope.state.showReminderFrequencyCard = true;
@@ -197,12 +197,6 @@ angular.module('starter')
             if ($scope.state.trackingReminder.abbreviatedUnitName === "/5") {
                 $scope.state.trackingReminder.defaultValue = 3; // Default to 3 ("ok") if variable unit is /5
             }
-	    };
-
-	    // when frequency is changed
-	    $scope.onFrequencyChange = function(){
-	    	console.log("onFrequencyChange ran");
-            
 	    };
 
 	    // when adding/editing is cancelled
@@ -324,10 +318,9 @@ angular.module('starter')
                             $scope.hideLoader();
                         }, function(err){
                             $scope.hideLoader();
-                            console.log(err);
+                            console.error("addNewReminder ERROR: " + err);
                             $ionicLoading.hide();
                             $scope.loading = false;
-                            utilsService.showAlert('Failed to add Reminder, Try again!', 'assertive');
                         });
 
                     if($stateParams.fromUrl && ($stateParams.fromUrl.indexOf('manage') > -1 )){
@@ -393,7 +386,7 @@ angular.module('starter')
 
 	    // setup category view
 	    $scope.setupVariableCategory = function(variableCategoryName){
-            console.log("variableCategoryName  is " + variableCategoryName);
+            console.log("remindersAdd.setupVariableCategory " + variableCategoryName);
             if(!variableCategoryName || variableCategoryName === 'Anything'){
                 variableCategoryName = '';
             }
@@ -422,14 +415,15 @@ angular.module('starter')
                 variableService.getVariableById(variableId)
                     .then(function (variables) {
                         $scope.variableObject = variables[0];
-                        console.log($scope.variableObject);
+                        console.log('setupReminderEditingFromVariableId got this variable object ' +
+                            JSON.stringify($scope.variableObject));
                         $scope.onVariableSelect($scope.variableObject);
                         $ionicLoading.hide();
                         $scope.loading = false;
                     }, function () {
                         $ionicLoading.hide();
                         $scope.loading = false;
-                        console.log("failed to get variable");
+                        console.error('ERROR: failed to get variable with id ' + variableId);
                     });
 
             }
@@ -456,7 +450,7 @@ angular.module('starter')
                 }, function () {
                     $ionicLoading.hide();
                     $scope.loading = false;
-                    console.log("failed to get reminders");
+                    console.error('ERROR: failed to get reminder with reminderIdUrlParameter ' + reminderIdUrlParameter);
                 });
         }
 
@@ -515,7 +509,8 @@ angular.module('starter')
                 }, function(err){
                     $ionicLoading.hide();
                     $scope.loading = false;
-                    utilsService.showAlert('Failed to Delete Reminder, Try again!', 'assertive');
+                    console.error('ERROR: reminderService.deleteReminder Failed to Delete Reminder with id ' +
+                        $scope.state.trackingReminder.id);
                 });
         };
 

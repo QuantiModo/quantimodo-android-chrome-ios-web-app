@@ -3,7 +3,7 @@ angular.module('starter')
 	// Controls the settings page
 	.controller('SettingsCtrl', function( $state, $scope, $ionicPopover, $ionicPopup, localStorageService, $rootScope, 
 										  notificationService, QuantiModo, reminderService, qmLocationService, 
-										  ionicTimePicker, userService, timeService) {
+										  ionicTimePicker, userService, timeService, utilsService) {
 		$scope.controller_name = "SettingsCtrl";
 		$scope.state = {};
 		$scope.showReminderFrequencySelector = config.appSettings.settingsPageOptions.showReminderFrequencySelector;
@@ -283,7 +283,7 @@ angular.module('starter')
                 $rootScope.isBrowser = ionic.Platform.platforms[0] === "browser";
                 if($rootScope.isMobile || !$rootScope.isBrowser){
                     console.log('startLogout: Open the auth window via inAppBrowser.  Platform is ' + ionic.Platform.platforms[0]);
-                    var ref = window.open(config.getApiUrl() + '/api/v2/auth/logout','_blank', 'location=no,toolbar=yes');
+                    var ref = window.open($rootScope.qmApiUrl + '/api/v2/auth/logout','_blank', 'location=no,toolbar=yes');
 
                     console.log('startLogout: listen to its event when the page changes');
 
@@ -361,7 +361,7 @@ angular.module('starter')
 
 		// when user is logging out
         function logoutOfApi() {
-			var logoutUrl = config.getURL("api/v2/auth/logout");
+			var logoutUrl = utilsService.getURL("api/v2/auth/logout");
 			window.open(logoutUrl,'_blank');
         }
 

@@ -25,6 +25,7 @@ angular.module('starter')
         
         // when an old measurement is tapped to remeasure
         $scope.selectVariable = function(variableObject) {
+            console.debug("$scope.selectVariable: " + JSON.stringify(variableObject));
             if($stateParams.doNotIncludePublicVariables){
                 localStorageService.addToOrReplaceElementOfItemByIdOrMoveToFront('userVariables', variableObject);
             }
@@ -96,25 +97,24 @@ angular.module('starter')
 
         // when a query is searched in the search box
         $scope.onVariableSearch = function(){
-            console.log("Search: ", $scope.state.variableSearchQuery);
+            console.log("Search term: ", $scope.state.variableSearchQuery);
             if($scope.state.variableSearchQuery.length > 2){
                 $scope.state.searching = true;
                 if ($stateParams.doNotIncludePublicVariables) { // on variable search page, only show user's variables
                     variableService.searchUserVariables($scope.state.variableSearchQuery, $scope.state.variableCategoryName)
                         .then(function(variables){
-                            // populate list with results
+                            console.debug("$scope.onVariableSearch: Populating list with " +
+                                "variableService.searchUserVariables results " + JSON.stringify(variables));
                             $scope.state.showAddVariableButton = false;
                             $scope.state.variableSearchResults = variables;
                             $scope.state.searching = false;
-                            if(variables.length < 1){
-                                $scope.state.showAddVariableButton = false;
-                            }
                         });
                 }
                 else { // on add reminder or record measurement search pages; include public variables
                     variableService.searchVariablesIncludePublic($scope.state.variableSearchQuery, $scope.state.variableCategoryName)
                         .then(function(variables){
-                            // Populate list with results
+                            console.debug("$scope.onVariableSearch: Populating list with " +
+                                "variableService.searchVariablesIncludePublic results " + JSON.stringify(variables));
                             $scope.state.showAddVariableButton = false;
                             $scope.state.variableSearchResults = variables;
                             $scope.state.searching = false;
@@ -133,6 +133,7 @@ angular.module('starter')
                             // If no results or no exact match, show "+ Add [variable]" button for query
                             // Also, can only favorite existing variables
                             if((variables.length < 1 || !found) && $stateParams.nextState !== "app.favoriteAdd"){
+                                console.debug("$scope.onVariableSearch: Set showAddVariableButton to true");
                                 $scope.state.showAddVariableButton = true;
                                 if ($stateParams.nextState === "app.reminderAdd") {
                                     $scope.state.addNewVariableButtonText = '+ Add ' + $scope.state.variableSearchQuery +
@@ -238,6 +239,7 @@ angular.module('starter')
                 variableObject.variableCategoryName = $scope.state.variableCategoryName;
             }
 
+            console.debug("$scope.addNewVariable: " + JSON.stringify(variableObject));
             if ($stateParams.nextState) {
                 $state.go($stateParams.nextState,
                     {

@@ -36,7 +36,7 @@
                 </ion-item>
             </ion-list>
 
-            <ion-list ng-show="state.showAddVariableButton">
+            <ion-list ng-if="state.showAddVariableButton">
                 <ion-item style="border-top: 1px solid rgb(221, 221, 221);" ng-click="addNewVariable()">
                     {{state.addNewVariableButtonText}}
                 </ion-item>

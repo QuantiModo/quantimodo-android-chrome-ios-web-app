@@ -1,6 +1,6 @@
 angular.module('starter')
     // Measurement Service
-    .factory('bugsnagService', function() {
+    .factory('bugsnagService', function(utilsService) {
         
         // service methods
         var bugsnagService = {
@@ -14,7 +14,11 @@ angular.module('starter')
                 } else {
                     stacktrace = "No stack trace provided with exception";
                 }
-                Bugsnag.apiKey = window.private_keys.bugsnag_key;
+
+                //$rootScope.bugsnagApiKey = window.private_keys.bugsnag_key;
+                $rootScope.bugsnagApiKey = "ae7bc49d1285848342342bb5c321a2cf";
+                Bugsnag.releaseStage = utilsService.getEnv();
+                Bugsnag.apiKey = $rootScope.bugsnagApiKey;
                 Bugsnag.notify("ERROR: "+message, "Stacktrace: "+stacktrace, {}, "error");
             }
         };

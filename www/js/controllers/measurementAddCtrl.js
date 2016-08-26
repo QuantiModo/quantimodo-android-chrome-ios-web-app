@@ -417,7 +417,7 @@ angular.module('starter')
         };
 
         var setupFromVariableStateParameter = function(){
-            console.log('variableObject is ' + $stateParams.variableObject);
+            console.log('setupFromVariableStateParameter: variableObject is ' + JSON.stringify($stateParams.variableObject));
             if($stateParams.variableObject !== null && typeof $stateParams.variableObject !== "undefined") {
                 $scope.state.variableObject = $stateParams.variableObject;
                 $scope.state.title = "Record Measurement";
@@ -444,9 +444,10 @@ angular.module('starter')
                 setupValueFieldType($stateParams.variableObject.abbreviatedUnitName, $stateParams.variableObject.description);
 
                 // Fill in default value as last value if not /5
+                /** @namespace $stateParams.variableObject.lastValue */
                 if ($scope.state.measurement.abbreviatedUnitName !== '/5' && !$scope.state.measurement.value &&
                     typeof $stateParams.variableObject.lastValue !== "undefined") {
-                    $scope.state.measurement.value = $stateParams.variableObject.lastValue;
+                    $scope.state.measurement.value = Number($stateParams.variableObject.lastValue);
                 }
             }
         };

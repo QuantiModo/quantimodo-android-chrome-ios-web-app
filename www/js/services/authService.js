@@ -14,29 +14,29 @@ angular.module('starter')
             },
 
 			generateV1OAuthUrl: function(register) {
-				var url = config.getApiUrl() + "/api/oauth2/authorize?";
+				var url = $rootScope.qmApiUrl + "/api/oauth2/authorize?";
 				// add params
 				url += "response_type=code";
-				url += "&client_id="+config.getClientId();
-				url += "&client_secret="+config.getClientSecret();
-				url += "&scope="+config.getPermissionString();
+				url += "&client_id=" + utilsService.getClientId();
+				url += "&client_secret=" + utilsService.getClientSecret();
+				url += "&scope=" + utilsService.getPermissionString();
 				url += "&state=testabcd";
 				if(register === true){
 					url += "&register=true";
 				}
-				//url += "&redirect_uri=" + config.getRedirectUri();
+				//url += "&redirect_uri=" + utilsService.getRedirectUri();
 				return url;
 			},
 
 			generateV2OAuthUrl: function(JWTToken) {
-				var url = config.getURL("api/v2/bshaffer/oauth/authorize", true);
+				var url = utilsService.getURL("api/v2/bshaffer/oauth/authorize", true);
 				url += "response_type=code";
-				url += "&client_id=" + config.getClientId();
-				url += "&client_secret=" + config.getClientSecret();
-				url += "&scope=" + config.getPermissionString();
+				url += "&client_id=" + utilsService.getClientId();
+				url += "&client_secret=" + utilsService.getClientSecret();
+				url += "&scope=" + utilsService.getPermissionString();
 				url += "&state=testabcd";
 				url += "&token=" + JWTToken;
-				//url += "&redirect_uri=" + config.getRedirectUri();
+				//url += "&redirect_uri=" + utilsService.getRedirectUri();
 				return url;
 			},
 
@@ -61,7 +61,7 @@ angular.module('starter')
 
 				var deferred = $q.defer();
 
-				var url = config.getURL("api/oauth2/token");
+				var url = utilsService.getURL("api/oauth2/token");
 
 				// make request
 				var request = {
@@ -72,11 +72,11 @@ angular.module('starter')
 						'Content-Type': "application/json"
 					},
 					data: {
-						client_id: config.getClientId(),
-						client_secret: config.getClientSecret(),
+						client_id: utilsService.getClientId(),
+						client_secret: utilsService.getClientSecret(),
 						grant_type: 'authorization_code',
 						code: authorizationCode,
-						redirect_uri: config.getRedirectUri()
+						redirect_uri: utilsService.getRedirectUri()
 					}
 				};
 
@@ -103,7 +103,7 @@ angular.module('starter')
 				return true;
 			}
 			$rootScope.accessTokenInUrl = $rootScope.getAccessTokenFromUrlParameter();
-			var url = config.getURL("api/user");
+			var url = utilsService.getURL("api/user");
             if($rootScope.accessTokenInUrl){
 				url = url + 'accessToken=' + $rootScope.accessTokenInUrl;
 			}
@@ -129,7 +129,7 @@ angular.module('starter')
 					Bugsnag.notify("No accessToken", "accessToken not provided to getJWTToken function", {}, "error");
 					deferred.reject();
 				}
-				var url = config.getURL('api/v2/auth/social/authorizeToken');
+				var url = utilsService.getURL('api/v2/auth/social/authorizeToken');
 
 				url += "provider=" + provider;
 				url += "&accessToken=" + accessToken;

@@ -10,7 +10,7 @@ angular.module('starter')
 
         $rootScope.loaderImagePath = config.appSettings.loaderImagePath;
         $rootScope.appMigrationVersion = 1489;
-        $rootScope.appVersion = "1.8.5.2";
+        $rootScope.appVersion = "1.8.5.6";
         if (!$rootScope.loaderImagePath) {
             $rootScope.loaderImagePath = 'img/circular-loader.gif';
         }
@@ -276,11 +276,11 @@ angular.module('starter')
             }
         };
         $scope.showHistorySubMenu = false;
-        $scope.shoppingCartEnabled = config.shoppingCartEnabled;
+        $scope.shoppingCartEnabled = config.appSettings.shoppingCartEnabled;
         $scope.loading = false;
         $ionicLoading.hide();
 
-        setPlatformVariables();
+        utilsService.setPlatformVariables();
 
         /*Wrapper Config*/
         $scope.viewTitle = config.appSettings.appName;
@@ -410,7 +410,7 @@ angular.module('starter')
             if (!$rootScope.user) {
                 $rootScope.user = localStorageService.getItemAsObject('user');
             }
-            if (!$rootScope.user && config.getClientId() === 'oAuthDisabled') {
+            if (!$rootScope.user && utilsService.getClientId() === 'oAuthDisabled') {
                 //console.debug("appCtrl.init: No user and oAuthDisabled so trying to getUserAndSetInLocalStorage. Note: This interferes with welcome flow.");
                 //console.warn('Disabled getUserAndSetInLocalStorage in appCtrl.init...');
                 //$rootScope.getUserAndSetInLocalStorage();
@@ -607,28 +607,6 @@ angular.module('starter')
             notificationService.updateOrRecreateNotifications();
         };
 
-        function setPlatformVariables() {
-            $rootScope.isIOS = ionic.Platform.isIPad() || ionic.Platform.isIOS();
-            $rootScope.isAndroid = ionic.Platform.isAndroid();
-            $rootScope.isMobile = ionic.Platform.isAndroid() || ionic.Platform.isIPad() || ionic.Platform.isIOS();
-            $rootScope.isChrome = window.chrome ? true : false;
-            $rootScope.currentPlatform = ionic.Platform.platform();
-            $rootScope.currentPlatformVersion = ionic.Platform.version();
-
-            var currentUrl =  window.location.href;
-            console.log('currentUrl is ' + currentUrl );
-            if (currentUrl.indexOf('chrome-extension') !== -1) {
-                $rootScope.isChromeExtension = true;
-                $rootScope.isChromeApp = false;
-            } 
-
-            if ($rootScope.isChrome && chrome.identity) {
-                $rootScope.isChromeExtension = false;
-                $rootScope.isChromeApp = true;
-            }
-        }
-
-
         $scope.saveInterval = function(primaryOutcomeRatingFrequencyDescription){
             if(primaryOutcomeRatingFrequencyDescription){
                 $scope.primaryOutcomeRatingFrequencyDescription = primaryOutcomeRatingFrequencyDescription;
@@ -787,7 +765,7 @@ angular.module('starter')
             var emailUrl = 'mailto:?subject=' + subjectLine + '&body=' + emailBody;
             if($rootScope.isChromeExtension){
                 console.debug('isChromeExtension so sending to website to share data');
-                var url = config.getURL("api/v2/account/applications", true);
+                var url = utilsService.getURL("api/v2/account/applications", true);
                 var newTab = window.open(url,'_blank');
                 if(!newTab){
                     alert("Please unblock popups and refresh to access the Data Sharing page.");

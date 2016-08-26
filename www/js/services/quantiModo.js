@@ -5,7 +5,6 @@ angular.module('starter')
             var QuantiModo = {};
             $rootScope.connectionErrorShowing = false; // to prevent more than one popup
 
-
             QuantiModo.successHandler = function(data){
                 if(!data.success){
                     return;
@@ -57,7 +56,6 @@ angular.module('starter')
 
             // GET method with the added token
             QuantiModo.get = function(baseURL, allowedParams, params, successHandler, errorHandler){
-                console.debug('QuantiModo.get: ' + baseURL + '. params: ' + JSON.stringify(params));
                 QuantiModo.getAccessTokenFromAnySource().then(function(accessToken){
                     if(accessToken && accessToken.indexOf(' ') > -1){
                         accessToken = null;
@@ -91,7 +89,7 @@ angular.module('starter')
                     //urlParams.push(encodeURIComponent('access_token') + '=' + encodeURIComponent(tokenObject.accessToken));
 
                     // configure request
-                    var url = config.getURL(baseURL);
+                    var url = utilsService.getURL(baseURL);
                     var request = {
                         method: 'GET',
                         url: (url + ((urlParams.length === 0) ? '' : urlParams.join('&'))),
@@ -109,6 +107,7 @@ angular.module('starter')
                     }
 
                     //console.log("Making this request: " + JSON.stringify(request));
+                    console.debug('QuantiModo.get: ' + request.url);
 
                     $http(request).success(successHandler).error(function(data,status,headers,config){
                         QuantiModo.errorHandler(data, status, headers, config, request);
@@ -162,7 +161,7 @@ angular.module('starter')
                     urlParams.push(encodeURIComponent('appName') + '=' + encodeURIComponent(config.appSettings.appName));
                     urlParams.push(encodeURIComponent('appVersion') + '=' + encodeURIComponent($rootScope.appVersion));
 
-                    var url = config.getURL(baseURL) + ((urlParams.length === 0) ? '' : urlParams.join('&'));
+                    var url = utilsService.getURL(baseURL) + ((urlParams.length === 0) ? '' : urlParams.join('&'));
 
                     // configure request
                     var request = {
@@ -175,7 +174,7 @@ angular.module('starter')
                         data : JSON.stringify(items)
                     };
 
-                    if(config.getClientId() !== 'oAuthDisabled' || $rootScope.accessTokenInUrl) {
+                    if(utilsService.getClientId() !== 'oAuthDisabled' || $rootScope.accessTokenInUrl) {
                         request.headers = {
                             "Authorization" : "Bearer " + accessToken,
                             'Content-Type': "application/json"
@@ -391,19 +390,27 @@ angular.module('starter')
             };
 
             // search for public variables by category
-            QuantiModo.searchVariablesByCategoryIncludePublic = function(query, category, successHandler, errorHandler){
+            QuantiModo.searchVariablesByCategoryIncludePublic = function(query, variableCategoryName, successHandler, errorHandler){
+                var params = {'limit' : 100, 'includePublic': false};
+                if(variableCategoryName && variableCategoryName !== 'Anything'){
+                    params.variableCategoryName = variableCategoryName;
+                }
                 QuantiModo.get('api/v1/variables/search/'+ encodeURIComponent(query),
-                    ['limit','categoryName','includePublic'],
-                    {'limit' : 100, 'categoryName': category, 'includePublic': true},
+                    ['limit','variableCategoryName','includePublic'],
+                    params,
                     successHandler,
                     errorHandler);
             };
 
             // search user variables by category
-            QuantiModo.searchUserVariablesByCategory = function(query, category, successHandler, errorHandler){
+            QuantiModo.searchUserVariablesByCategory = function(query, variableCategoryName, successHandler, errorHandler){
+                var params = {'limit' : 100, 'includePublic': false};
+                if(variableCategoryName && variableCategoryName !== 'Anything'){
+                    params.variableCategoryName = variableCategoryName;
+                }
                 QuantiModo.get('api/v1/variables/search/'+ encodeURIComponent(query),
-                    ['limit','categoryName','includePublic'],
-                    {'limit' : 100, 'categoryName': category, 'includePublic': false},
+                    ['limit','variableCategoryName','includePublic'],
+                    params,
                     successHandler,
                     errorHandler);
             };
@@ -443,21 +450,17 @@ angular.module('starter')
 
 
             // get user variables
-            QuantiModo.getUserVariables = function(category, successHandler, errorHandler){
-                if(category){
-                    QuantiModo.get('api/v1/variables',
-                        ['category', 'limit'],
-                        {limit:200},
-                        successHandler,
-                        errorHandler);
+            QuantiModo.getUserVariables = function(variableCategoryName, successHandler, errorHandler){
+                var params = {'limit' : 200};
+                if(variableCategoryName && variableCategoryName !== 'Anything'){
+                    params.variableCategoryName = variableCategoryName;
                 }
-                if(!category){
-                    QuantiModo.get('api/v1/variables',
-                        ['category', 'limit'],
-                        {limit:200},
-                        successHandler,
-                        errorHandler);
-                }
+
+                QuantiModo.get('api/v1/variables',
+                    ['variableCategoryName', 'limit'],
+                    params,
+                    successHandler,
+                    errorHandler);
             };
 
             // post changes to user variable
@@ -582,12 +585,24 @@ angular.module('starter')
 
 
             QuantiModo.postDeviceToken = function(deviceToken, successHandler, errorHandler) {
+                var platform;
+                if($rootScope.isAndroid){
+                    platform = 'android';
+                }
+                if($rootScope.isIOS){
+                    platform = 'ios';
+                }
+                if($rootScope.isWindows){
+                    platform = 'windows';
+                }
                 var params = {
+                    platform: platform,
                     deviceToken: deviceToken
                 };
                 QuantiModo.post('api/v1/deviceTokens',
                     [
-                        'deviceToken'
+                        'deviceToken',
+                        'platform'
                     ],
                     params,
                     successHandler,
@@ -652,7 +667,7 @@ angular.module('starter')
 
                 var deferred = $q.defer();
 
-                if(config.getClientId() === 'oAuthDisabled') {
+                if(utilsService.getClientId() === 'oAuthDisabled') {
                     //console.log('getAccessTokenFromAnySource: oAuthDisabled so we do not need an access token');
                     deferred.resolve();
                     return deferred.promise;
@@ -661,7 +676,7 @@ angular.module('starter')
                 $rootScope.accessTokenInUrl = $rootScope.getAccessTokenFromUrlParameter();
 
                 if ($rootScope.accessTokenInUrl) {
-                    var url = config.getURL("api/user") + 'accessToken=' + $rootScope.accessTokenInUrl;
+                    var url = utilsService.getURL("api/user") + 'accessToken=' + $rootScope.accessTokenInUrl;
                     if(!$rootScope.user){
                         $http.get(url).then(
                             function (userCredentialsResp) {
@@ -691,7 +706,7 @@ angular.module('starter')
                     return deferred.promise;
                 }
 
-                if(config.getClientId() !== 'oAuthDisabled') {
+                if(utilsService.getClientId() !== 'oAuthDisabled') {
                     QuantiModo._defaultGetAccessToken(deferred);
                     return deferred.promise;
                 }
@@ -737,15 +752,15 @@ angular.module('starter')
 
             QuantiModo.refreshAccessToken = function(refreshToken, deferred) {
                 console.log('Refresh token will be used to fetch access token from ' +
-                    config.getURL("api/oauth2/token") + ' with client id ' + config.getClientId());
+                    utilsService.getURL("api/oauth2/token") + ' with client id ' + utilsService.getClientId());
 
-                var url = config.getURL("api/oauth2/token");
+                var url = utilsService.getURL("api/oauth2/token");
 
                 //expire token, refresh
                 $http.post(url, {
 
-                    client_id: config.getClientId(),
-                    client_secret: config.getClientSecret(),
+                    client_id: utilsService.getClientId(),
+                    client_secret: utilsService.getClientSecret(),
                     refresh_token: refreshToken,
                     grant_type: 'refresh_token'
                 }).success(function (data) {

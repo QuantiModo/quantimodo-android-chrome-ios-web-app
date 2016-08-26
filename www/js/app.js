@@ -3,8 +3,7 @@
 
 angular.module('starter',
     [
-        'ionic',
-        'ionic.service.core',
+        'ionic','ionic.service.core',
         //'ionic.service.push',
         //'ionic.service.analytics',
         'oc.lazyLoad',
@@ -22,10 +21,6 @@ angular.module('starter',
 //.run(function($ionicPlatform, $ionicHistory, $state, $rootScope, $ionicAnalytics) {
 // Database
 //.run(function($ionicPlatform, $ionicHistory, $state, $rootScope, $cordovaSQLite) {
-
-    window.onerror = function (errorMsg, url, lineNumber) {
-        alert('Error: ' + errorMsg + ' Script: ' + url + ' Line: ' + lineNumber);
-    };
 
     $ionicPlatform.ready(function() {
         //$ionicAnalytics.register();
@@ -151,15 +146,15 @@ angular.module('starter',
                 return;
             }
 
-            $rootScope.appVersion = "1.8.5.2";
+            $rootScope.appVersion = "1.8.5.6";
             $rootScope.appName = config.appSettings.appName;
 
-            if(window.private_keys.bugsnag_key) {
+            //$rootScope.bugsnagApiKey = window.private_keys.bugsnag_key;
+            $rootScope.bugsnagApiKey = "ae7bc49d1285848342342bb5c321a2cf";
+            if($rootScope.bugsnagApiKey) {
                 //Set Bugsnag Release Stage
-                $rootScope.bugsnagApiKey = window.private_keys.bugsnag_key;
-                Bugsnag.apiKey = window.private_keys.bugsnag_key;
-                Bugsnag.releaseStage = config.getEnv();
-                Bugsnag.notifyReleaseStages = config.bugsnag.notifyReleaseStages;
+                Bugsnag.apiKey = $rootScope.bugsnagApiKey;
+                Bugsnag.notifyReleaseStages = ['Production','Staging'];
                 Bugsnag.appVersion = $rootScope.appVersion;
                 Bugsnag.metaData = {
                     platform: ionic.Platform.platform(),
@@ -200,8 +195,8 @@ angular.module('starter',
 
 .config(function($stateProvider, $urlRouterProvider, $compileProvider, ionicTimePickerProvider,
                  ionicDatePickerProvider, $ionicConfigProvider) {
-    $compileProvider.imgSrcSanitizationWhitelist(/^\s*(https?|ftp|file|mailto|chrome-extension):/);
-    $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|file|ftp|mailto|chrome-extension):/);
+    $compileProvider.imgSrcSanitizationWhitelist(/^\s*(https?|ftp|file|mailto|chrome-extension|ms-appx-web|ms-appx):/);
+    $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|file|ftp|mailto|chrome-extension|ms-appx-web|ms-appx):/);
     $ionicConfigProvider.tabs.position("bottom"); //Places them at the bottom for all OS
 
     var config_resolver = {

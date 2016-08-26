@@ -1,6 +1,7 @@
 angular.module('starter')
 	// Measurement Service
-	.factory('measurementService', function($q, $rootScope, $ionicLoading, QuantiModo, localStorageService, ratingService) {
+	.factory('measurementService', function($q, $rootScope, $ionicLoading, QuantiModo, localStorageService,
+                                            ratingService, utilsService) {
 
         //flag to indicate if data syncing is in progress
         var isSyncing = false;
@@ -104,7 +105,7 @@ angular.module('starter')
                                 console.log("getPrimaryOutcomeVariableMeasurements is calling measurementService.setDates");
                                 //measurementService.setDates(new Date().getTime(),s*1000);
                                 console.debug("getPrimaryOutcomeVariableMeasurements: allMeasurements length is " + allMeasurements.length);
-                                console.debug("getPrimaryOutcomeVariableMeasurements:  Setting allMeasurements to: ", allMeasurements);
+                                //console.debug("getPrimaryOutcomeVariableMeasurements:  Setting allMeasurements to: ", allMeasurements);
                                 localStorageService.setItem('allMeasurements', JSON.stringify(allMeasurements));
                                 console.log("getPrimaryOutcomeVariableMeasurements broadcasting to update charts");
                                 $rootScope.$broadcast('updateCharts');
@@ -165,7 +166,7 @@ angular.module('starter')
                         var measurements = [
                             {
                                 variableName: config.appSettings.primaryOutcomeVariableDetails.name,
-                                source: config.get('clientSourceName'),
+                                source: config.appSettings.appName + " " + $rootScope.currentPlatform,
                                 variableCategoryName: config.appSettings.primaryOutcomeVariableDetails.category,
                                 combinationOperation: config.appSettings.primaryOutcomeVariableDetails.combinationOperation,
                                 abbreviatedUnitName: config.appSettings.primaryOutcomeVariableDetails.abbreviatedUnitName,
@@ -334,12 +335,12 @@ angular.module('starter')
                             });
                         });
                         console.debug("postTrackingMeasurement: newAllMeasurements length is " + newAllMeasurements.length);
-                        console.debug("postTrackingMeasurement:  Setting allMeasurements to: ", newAllMeasurements);
+                        //console.debug("postTrackingMeasurement:  Setting allMeasurements to: ", newAllMeasurements);
                         localStorageService.setItem('allMeasurements', JSON.stringify(newAllMeasurements));
                         var editedMeasurement = {
                             id: measurementInfo.id,
                             variableName: measurementInfo.variableName,
-                            source: config.get('clientSourceName'),
+                            source: config.appSettings.appName + $rootScope.currentPlatform,
                             abbreviatedUnitName: measurementInfo.unit,
                             startTimeEpoch:  measurementInfo.startTimeEpoch,
                             value: measurementInfo.value,
@@ -357,7 +358,7 @@ angular.module('starter')
                         var newMeasurement = {
                             id: null,
                             variableName: measurementInfo.variableName,
-                            source: config.get('clientSourceName'),
+                            source: config.appSettings.appName + $rootScope.currentPlatform,
                             abbreviatedUnitName: measurementInfo.unit,
                             startTimeEpoch:  measurementInfo.startTimeEpoch,
                             value: measurementInfo.value,
@@ -380,7 +381,7 @@ angular.module('starter')
                 }
                 else {
                     // Non primary outcome variable, post immediately
-                    var measurementSourceName = config.get('clientSourceName');
+                    var measurementSourceName = config.appSettings.appName;
                     if(measurementInfo.sourceName){
                         measurementSourceName = measurementInfo.sourceName;
                     }
@@ -409,7 +410,7 @@ angular.module('starter')
                     // for local
                     var measurement = {
                         variableName: measurementInfo.variableName,
-                        source: config.get('clientSourceName'),
+                        source: config.appSettings.appName + $rootScope.currentPlatform,
                         abbreviatedUnitName: measurementInfo.unit,
                         startTimeEpoch:  measurementInfo.startTimeEpoch,
                         value: measurementInfo.value,
@@ -460,7 +461,7 @@ angular.module('starter')
                 var measurementSet = [
                     {
                         variableName: trackingReminder.variableName,
-                        source: config.get('clientSourceName'),
+                        source: config.appSettings.appName + $rootScope.currentPlatform,
                         variableCategoryName: trackingReminder.variableCategoryName,
                         abbreviatedUnitName: trackingReminder.abbreviatedUnitName,
                         measurements : [
