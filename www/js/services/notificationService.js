@@ -1,5 +1,4 @@
 angular.module('starter')
-// Handles the Notifications (inapp, push)
     .factory('notificationService',function($rootScope, $ionicPlatform, $state, $q, QuantiModo, timeService,
                                             bugsnagService, qmLocationService, variableCategoryService,
                                             localStorageService) {
