@@ -2,6 +2,7 @@ window.config = {};
 
 config.appSettings  = {
     appName : 'QuantiModo',
+    cordovaLocalNotificationsEnabled : false,
     linkToChromeExtension : "https://chrome.google.com/webstore/detail/quantimodo-life-tracking/jioloifallegdkgjklafkkbniianjbgi",
     allowOffline : true,
     loaderImagePath : 'img/pop-tart-cat.gif',

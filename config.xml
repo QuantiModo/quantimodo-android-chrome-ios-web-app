@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <widget id="com.quantimodo.moodimodoapp" version="1.8.5" ios-CFBundleVersion="1.8.5.6" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
   <name>MoodiModo</name>
   <description>
@@ -8,13 +8,24 @@
       QuantiModo
     </author>
   <content src="index.html" />
-  <access origin="https://quantimo.do/*" />
+  <access origin="*" />
+  <allow-intent href="http://*/*" />
+  <allow-intent href="https://*/*" />
+  <allow-intent href="tel:*" />
+  <allow-intent href="sms:*" />
+  <allow-intent href="mailto:*" />
+  <allow-intent href="geo:*" />
+  <platform name="android">
+    <allow-intent href="market:*" />
+  </platform>
+  <platform name="ios">
+    <allow-intent href="itms:*" />
+    <allow-intent href="itms-apps:*" />
+  </platform>
   <allow-navigation href="*" />
   <preference name="webviewbounce" value="false" />
   <preference name="UIWebViewBounce" value="false" />
   <preference name="DisallowOverscroll" value="true" />
-  <preference name="SplashScreenDelay" value="2000" />
-  <preference name="FadeSplashScreenDuration" value="2000" />
   <preference name="android-minSdkVersion" value="16" />
   <preference name="BackupWebStorage" value="none" />
   <feature name="StatusBar">
@@ -28,6 +39,10 @@
   <plugin name="phonegap-plugin-push" version="1.8.1">
     <variable name="SENDER_ID" value="1052648855194" />
   </plugin>
+  <plugin name="cordova-plugin-facebook4" version="1.7.2">
+    <variable name="APP_ID" value="225078261031461" />
+    <variable name="APP_NAME" value="QuantiModo" />
+  </plugin>
   <vs:platformSpecificValues xmlns:vs="http://schemas.microsoft.com/appx/2014/htmlapps">
     <vs:platformSpecificWidget platformName="windows" version="1.8.5.3" id="com.quantimodo.moodimodoapp" />
   </vs:platformSpecificValues>
@@ -38,9 +53,12 @@
   <plugin name="ionic-plugin-keyboard" version="2.2.1" />
   <plugin name="cordova-plugin-statusbar" version="2.1.3" />
   <access origin="https://widget.intercom.io/*" />
-  <plugin name="cordova-plugin-facebook4" version="1.7.2">
-    <variable name="APP_ID" value="225078261031461" />
-    <variable name="APP_NAME" value="QuantiModo" />
-  </plugin>
-  <preference name="deployment-target" value="6.0"/>
+  <platform name="ios">
+    <hook type="after_prepare" src="package-hooks/ios9_allow_native_fb.sh" />
+    <hook type="after_prepare" src="package-hooks/ios_disable_bitcode.js" />
+    <hook type="after_prepare" src="package-hooks/ios_remove_armv7s.js" />
+  </platform>
+  <preference name="deployment-target" value="6.0" />
+  <hook src="scripts/incrementBuildNum.js" type="after_build"/>
+  <preference name="SplashScreen" value="screen"/>
 </widget>

@@ -17,13 +17,17 @@ angular.module('starter',
     ]
 )
 
-.run(function($ionicPlatform, $ionicHistory, $state, $rootScope) {
+.run(function($ionicPlatform, $ionicHistory, $state, $rootScope, localStorageService) {
 //.run(function($ionicPlatform, $ionicHistory, $state, $rootScope, $ionicAnalytics) {
 // Database
 //.run(function($ionicPlatform, $ionicHistory, $state, $rootScope, $cordovaSQLite) {
 
     $ionicPlatform.ready(function() {
         //$ionicAnalytics.register();
+        if(navigator && navigator.splashscreen) {
+            console.debug('Hiding splash screen because app is ready');
+            navigator.splashscreen.hide();
+        }
 
         if(ionic.Platform.isIPad() || ionic.Platform.isIOS()){
             window.onerror = function (errorMsg, url, lineNumber) {
@@ -31,20 +35,25 @@ angular.module('starter',
             };
         }
 
-        /*
-
          if (ionic.Platform.isAndroid() || ionic.Platform.isIPad() || ionic.Platform.isIOS()) {
-         alert("Going to try to register push");
-         var push = new Ionic.Push({"debug": true});
+             console.debug("Going to try to register push");
+             var push = new Ionic.Push({"debug": true});
 
-         push.register(function (deviceToken) {
-         alert("Got device token for push notifications: " + deviceToken.token);
-         push.saveToken(deviceToken);
-         //if($rootScope.deviceToken !== deviceToken.token){
-         pushNotificationService.registerDeviceToken(deviceToken.token);
-         //}
-         });
+             push.register(function (registerResponse) {
+                 var newDeviceToken = registerResponse.token;
+                 console.debug("Got device token for push notifications: " + registerResponse.token);
+
+                 push.saveToken(registerResponse.token);
+                 var deviceTokenOnServer = localStorageService.getItemSync('deviceTokenOnServer');
+                 console.debug('deviceTokenOnServer from localStorage is ' + deviceTokenOnServer);
+                 if(deviceTokenOnServer !== registerResponse.token) {
+                     localStorageService.setItem('deviceTokenToSync', newDeviceToken);
+                     console.debug('New push device token does not match push device token on server so saving to localStorage to sync after login');
+                 }
+             });
          }
+
+        /*
 
          window.onNotification = function(e){
             console.log("window.onNotification: received event", e);
@@ -150,22 +159,14 @@ angular.module('starter',
             $rootScope.appName = config.appSettings.appName;
 
             //$rootScope.bugsnagApiKey = window.private_keys.bugsnag_key;
-            $rootScope.bugsnagApiKey = "ae7bc49d1285848342342bb5c321a2cf";
-            if($rootScope.bugsnagApiKey) {
-                //Set Bugsnag Release Stage
-                Bugsnag.apiKey = $rootScope.bugsnagApiKey;
-                Bugsnag.notifyReleaseStages = ['Production','Staging'];
-                Bugsnag.appVersion = $rootScope.appVersion;
-                Bugsnag.metaData = {
-                    platform: ionic.Platform.platform(),
-                    platformVersion: ionic.Platform.version(),
-                    appName: config.appSettings.appName
-                };
-            } else {
-                console.error('intervalChecker: No bugsnag_key found in private config!');
-            }
-
-
+            Bugsnag.apiKey = "ae7bc49d1285848342342bb5c321a2cf";
+            //Bugsnag.notifyReleaseStages = ['Production','Staging'];
+            Bugsnag.appVersion = $rootScope.appVersion;
+            Bugsnag.metaData = {
+                platform: ionic.Platform.platform(),
+                platformVersion: ionic.Platform.version(),
+                appName: config.appSettings.appName
+            };
 
             $ionicPlatform.registerBackButtonAction(function (event) {
                 if($ionicHistory.currentStateName() === config.appSettings.defaultState){

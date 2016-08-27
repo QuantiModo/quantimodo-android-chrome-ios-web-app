@@ -1,5 +1,15 @@
 #!/bin/bash
 
+echo "ADDING Facebook FB plugin"
+export FACEBOOK_APP_ID=225078261031461
+export FACEBOOK_APP_NAME=QuantiModo
+
+echo "cordova plugin rm cordova-plugin-facebook4 for $LOWERCASE_APP_NAME Android app..."
+cordova plugin rm cordova-plugin-facebook4 || true
+
+echo "cordova plugin add cordova-plugin-facebook4 APP_ID=${FACEBOOK_APP_ID} APP_NAME=${FACEBOOK_APP_NAME} for $LOWERCASE_APP_NAME Android app..."
+cordova plugin add cordova-plugin-facebook4@1.7.1 --save --variable APP_ID="${FACEBOOK_APP_ID}" --variable APP_NAME="${FACEBOOK_APP_NAME}"
+
 if [[ ! -f /usr/libexec/PlistBuddy ]]; then
     exit 0
 fi

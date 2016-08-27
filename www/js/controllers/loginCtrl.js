@@ -10,8 +10,11 @@ angular.module('starter')
         $scope.headline = config.appSettings.headline;
         $scope.features = config.appSettings.features;
         var $cordovaFacebook = {};
-        if(($rootScope.isIOS || $rootScope.isAndroid) && $injector.has('$cordovaFacebook')){
+        if (($rootScope.isIOS || $rootScope.isAndroid) && $injector.has('$cordovaFacebook')) {
+            console.log('Injecting $cordovaFacebook');
             $cordovaFacebook = $injector.get('$cordovaFacebook');
+        } else {
+            console.log("Could not inject $cordovaFacebook");
         }
 
         $scope.init = function () {
@@ -303,9 +306,9 @@ angular.module('starter')
             });
         };
 
-        // login with facebook
         $scope.facebookLogin = function(){
             $scope.showLoader('Logging you in...');
+            console.log("$scope.facebookLogin about to try $cordovaFacebook.login");
             $cordovaFacebook.login(["public_profile", "email", "user_friends"])
                 .then(function(success) {
                     // success

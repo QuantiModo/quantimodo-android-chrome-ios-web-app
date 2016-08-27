@@ -2,6 +2,7 @@ window.config = {};
 
 config.appSettings  = {
     appName : 'EnergyModo',
+    cordovaLocalNotificationsEnabled : false,
     linkToChromeExtension : "https://chrome.google.com/webstore/detail/quantimodo-life-tracking/ncfgnobloleophhanefmkmpclbakoakh",
     allowOffline : true,
     loaderImagePath : 'img/pop-tart-cat.gif',

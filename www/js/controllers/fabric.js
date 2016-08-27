@@ -1,5 +1,5 @@
 angular.module('fabric', ['ng']).config(['$provide', function($provide) {
-  $provide.decorator("$exceptionHandler", ['$delegate', function($delegate, $rootScope) {
+  $provide.decorator("$exceptionHandler", ['$delegate', function($delegate) {
     return function(exception, cause) {
       $delegate(exception, cause);
 
@@ -13,8 +13,7 @@ angular.module('fabric', ['ng']).config(['$provide', function($provide) {
       } else {
          stacktrace = "No stack trace provided with exception";
       }
-      //$rootScope.bugsnagApiKey = window.private_keys.bugsnag_key;
-      $rootScope.bugsnagApiKey = "ae7bc49d1285848342342bb5c321a2cf";
+      Bugsnag.apiKey = "ae7bc49d1285848342342bb5c321a2cf";
       Bugsnag.notify("ERROR: "+message, "Stacktrace: "+stacktrace, {}, "error");
       if(typeof navigator !== 'undefined' && typeof navigator.crashlytics !== 'undefined'){
         navigator.crashlytics.logException("ERROR: "+message+", stacktrace: "+stacktrace);
