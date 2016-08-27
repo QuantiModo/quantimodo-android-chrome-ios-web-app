@@ -2,6 +2,7 @@ window.config = {};
 
 config.appSettings  = {
     appName : 'MedTLC',
+    cordovaLocalNotificationsEnabled : false,
     linkToChromeExtension : "https://chrome.google.com/webstore/detail/quantimodo-life-tracking/nojnjdgmjaejpnpehgioddbimopnblga",
     allowOffline : false,
     shoppingCartEnabled : false,

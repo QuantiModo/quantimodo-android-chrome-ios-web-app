@@ -2,6 +2,7 @@ window.config = {};
 
 config.appSettings  = {
     appName : 'Mind First Mood Tracker',
+    cordovaLocalNotificationsEnabled : false,
     linkToChromeExtension : "https://chrome.google.com/webstore/detail/quantimodo-life-tracking/koghchdnkopobpmmhfelgmfelcjichhh",
     allowOffline : true,
     loaderImagePath : 'img/pop-tart-cat.gif',
