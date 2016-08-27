@@ -719,7 +719,7 @@ angular.module('starter')
 
             cancelIonicNotificationById: function(notificationId){
                 if (typeof cordova === "undefined" || typeof cordova.plugins.notification === "undefined") {
-                    console.log('cordova.plugins.notification is not defined');
+                    console.log('Local notification plugin is not installed');
                     return;
                 }
                 $ionicPlatform.ready(function () {
@@ -733,6 +733,11 @@ angular.module('starter')
             },
 
             scheduleUpdateOrDeleteGenericNotificationsByDailyReminderTimes: function(trackingReminders){
+                if (typeof cordova === "undefined" || typeof cordova.plugins.notification === "undefined") {
+                    console.log('Local notification plugin is not installed');
+                    return;
+                }
+
                 if(!$rootScope.isMobile && !$rootScope.isChromeExtension){
                     console.log('Not scheduling notifications because we are not mobile or Chrome extension');
                     return;
