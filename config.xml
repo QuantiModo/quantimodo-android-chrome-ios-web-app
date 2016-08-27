@@ -45,4 +45,5 @@
   </platform>
   <preference name="deployment-target" value="6.0" />
   <hook src="scripts/incrementBuildNum.js" type="after_build"/>
+  <preference name="SplashScreen" value="screen"/>
 </widget>
