@@ -32,19 +32,19 @@ angular.module('starter',
         }
 
          if (ionic.Platform.isAndroid() || ionic.Platform.isIPad() || ionic.Platform.isIOS()) {
-             alert("Going to try to register push");
+             console.debug("Going to try to register push");
              var push = new Ionic.Push({"debug": true});
 
              push.register(function (registerResponse) {
                  var newDeviceToken = registerResponse.token;
-                 alert("Got device token for push notifications: " + registerResponse.token);
+                 console.debug("Got device token for push notifications: " + registerResponse.token);
 
                  push.saveToken(registerResponse.token);
                  var deviceTokenOnServer = localStorageService.getItemSync('deviceTokenOnServer');
-                 alert('deviceTokenOnServer from localStorage is ' + deviceTokenOnServer);
+                 console.debug('deviceTokenOnServer from localStorage is ' + deviceTokenOnServer);
                  if(deviceTokenOnServer !== registerResponse.token) {
                      localStorageService.setItem('deviceTokenToSync', newDeviceToken);
-                     alert('New push device token does not match push device token on server so saving to localStorage to sync after login');
+                     console.debug('New push device token does not match push device token on server so saving to localStorage to sync after login');
                  }
              });
          }
