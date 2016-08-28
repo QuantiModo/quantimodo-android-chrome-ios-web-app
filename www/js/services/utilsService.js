@@ -31,20 +31,15 @@ angular.module('starter')
             if (window.chrome && chrome.runtime && chrome.runtime.id) {
                 return window.private_keys.client_ids.Chrome;
             }
-
-            if (window.cordova) {
-                if ($rootScope.isIOS) { return window.private_keys.client_ids.iOS; }
-                if ($rootScope.isAndroid) { return window.private_keys.client_ids.Android; }
-                if ($rootScope.isWindows) { return window.private_keys.client_ids.Windows; }
-
-            }
+            if ($rootScope.isIOS) { return window.private_keys.client_ids.iOS; }
+            if ($rootScope.isAndroid) { return window.private_keys.client_ids.Android; }
+            if ($rootScope.isWindows) { return window.private_keys.client_ids.Windows; }
             return window.private_keys.client_ids.Web;
         };
         
         utilsService.setPlatformVariables = function () {
             if (window.cordova) {
                 $rootScope.currentPlatformVersion = ionic.Platform.version();
-                var currentPlatform = ionic.Platform.platform();
                 if (ionic.Platform.isIOS()){
                     $rootScope.isIOS = true;
                     $rootScope.isMobile = true;
@@ -91,13 +86,9 @@ angular.module('starter')
             if (window.chrome && chrome.runtime && chrome.runtime.id) {
                 return window.private_keys.client_secrets.Chrome;
             }
-
-            if (window.cordova) {
-                if ($rootScope.isIOS) { return window.private_keys.client_secrets.iOS; }
-                if ($rootScope.isAndroid) { return window.private_keys.client_secrets.Android; }
-                if ($rootScope.isWindows) { return window.private_keys.client_secrets.Windows; }
-
-            }
+            if ($rootScope.isIOS) { return window.private_keys.client_secrets.iOS; }
+            if ($rootScope.isAndroid) { return window.private_keys.client_secrets.Android; }
+            if ($rootScope.isWindows) { return window.private_keys.client_secrets.Windows; }
             return window.private_keys.client_secrets.Web;
         };
 
@@ -108,12 +99,9 @@ angular.module('starter')
             if (window.chrome && chrome.runtime && chrome.runtime.id) {
                 return window.private_keys.redirect_uris.Chrome;
             }
-
-            if (window.cordova) {
-                if ($rootScope.isIOS) { return window.private_keys.redirect_uris.iOS; }
-                if ($rootScope.isAndroid) { return window.private_keys.redirect_uris.Android; }
-                if ($rootScope.isWindows) { return window.private_keys.redirect_uris.Windows; }
-            }
+            if ($rootScope.isIOS) { return window.private_keys.redirect_uris.iOS; }
+            if ($rootScope.isAndroid) { return window.private_keys.redirect_uris.Android; }
+            if ($rootScope.isWindows) { return window.private_keys.redirect_uris.Windows; }
             return window.private_keys.redirect_uris.Web;
         };
 
