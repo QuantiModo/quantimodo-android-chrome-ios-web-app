@@ -52,6 +52,7 @@
     "cordova-plugin-splashscreen",
     "ionic-plugin-keyboard",
     "https://github.com/apache/cordova-plugin-inappbrowser",
+    "cordova-plugin-statusbar",
     "cordova-plugin-datepicker",
     "cordova-plugin-file-opener2",
     "cordova-plugin-ios-non-exempt-encryption",
