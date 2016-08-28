@@ -341,7 +341,9 @@ angular.module('starter')
                         console.log('reminder scheduled', $rootScope.reminderToSchedule);
                         delete $rootScope.reminderToSchedule;
                     }, function (err) {
-                        Bugsnag.notify("reminderService.addNewReminder", JSON.stringify(trackingReminder), {}, "error");
+                        if (typeof Bugsnag !== "undefined") {
+                            Bugsnag.notify("reminderService.addNewReminder", JSON.stringify(trackingReminder), {}, "error");
+                        }
                         console.log(err);
                     });
             }
@@ -637,7 +639,9 @@ angular.module('starter')
                 }
             } catch (err) {
                 console.error('scheduleGenericNotification error');
-                bugsnagService.reportError(err);
+                if (typeof Bugsnag !== "undefined") {
+                    bugsnagService.reportError(err);
+                }
                 console.error(err);
             }
 
@@ -828,12 +832,14 @@ angular.module('starter')
         };
 
         $rootScope.setUserInLocalStorageBugsnagAndRegisterDeviceForPush = function(userData){
-            Bugsnag.metaData = {
-                user: {
-                    name: userData.displayName,
-                    email: userData.email
-                }
-            };
+            if (typeof Bugsnag !== "undefined") {
+                Bugsnag.metaData = {
+                    user: {
+                        name: userData.displayName,
+                        email: userData.email
+                    }
+                };
+            }
             localStorageService.setItem('user', JSON.stringify(userData));
             $rootScope.user = userData;
             window.intercomSettings = {

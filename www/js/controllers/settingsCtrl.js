@@ -79,7 +79,9 @@ angular.module('starter')
 		};
 
 		$scope.init = function() {
-			Bugsnag.context = "settings";
+			if (typeof Bugsnag !== "undefined") {
+				Bugsnag.context = "settings";
+			}
 			if (typeof analytics !== 'undefined')  { analytics.trackView("Settings Controller"); }
 			$scope.shouldWeCombineNotifications();
 			qmLocationService.getLocationVariablesFromLocalStorage();

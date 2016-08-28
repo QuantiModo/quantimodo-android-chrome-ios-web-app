@@ -334,7 +334,9 @@ angular.module('starter')
         }
 
         $scope.init = function(){
-            Bugsnag.context = "variableSettings";
+            if (typeof Bugsnag !== "undefined") {
+                Bugsnag.context = "variableSettings";
+            }
             $scope.state.loading = true;
             $scope.showLoader('Getting variable details');
             authService.checkAuthOrSendToLogin();

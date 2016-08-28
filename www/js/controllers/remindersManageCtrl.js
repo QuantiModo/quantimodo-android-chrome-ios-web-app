@@ -89,7 +89,9 @@ angular.module('starter')
 
 	    // constructor
 	    $scope.init = function(){
-			Bugsnag.context = "reminderManage";
+			if (typeof Bugsnag !== "undefined") {
+				Bugsnag.context = "reminderManage";
+			}
 			getTrackingRemindersFromLocalStorage();
 			authService.checkAuthOrSendToLogin();
 			if (typeof analytics !== 'undefined')  { analytics.trackView("Manage Reminders Controller"); }
@@ -217,7 +219,9 @@ angular.module('starter')
 	    	.then(function(){
 
 	    	}, function(err){
-				Bugsnag.notify(err, JSON.stringify(err), {}, "error");
+				if (typeof Bugsnag !== "undefined") {
+					Bugsnag.notify(err, JSON.stringify(err), {}, "error");
+				}
 	    		$ionicLoading.hide();
 				$scope.loading = false;
 	    		console.error('Failed to Delete Reminder!');

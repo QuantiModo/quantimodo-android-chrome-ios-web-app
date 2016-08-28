@@ -18,7 +18,9 @@ angular.module('starter')
         }
 
         $scope.init = function () {
-            Bugsnag.context = "login";
+            if (typeof Bugsnag !== "undefined") {
+                Bugsnag.context = "login";
+            }
             $scope.hideLoader();
             if($rootScope.helpPopup){
                 console.log('Closing help popup!');

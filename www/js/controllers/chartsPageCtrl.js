@@ -112,7 +112,9 @@ angular.module('starter')
                     }
                 }
             }, function(error){
-                Bugsnag.notify(error, JSON.stringify(error), {}, "error");
+                if (typeof Bugsnag !== "undefined") {
+                    Bugsnag.notify(error, JSON.stringify(error), {}, "error");
+                }
                 console.error('error getting measurements', error);
                 $scope.hideLoader();
             }, function(history) {

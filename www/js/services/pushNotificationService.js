@@ -13,7 +13,9 @@ angular.module('starter')
                     console.debug(response);
                     deferred.resolve();
                 }, function(err){
-                    Bugsnag.notify(err, JSON.stringify(err), {}, "error");
+                    if (typeof Bugsnag !== "undefined") {
+                        Bugsnag.notify(err, JSON.stringify(err), {}, "error");
+                    }
                     deferred.reject(err);
                 });
                 return deferred.promise;

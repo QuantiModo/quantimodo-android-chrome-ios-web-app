@@ -26,7 +26,9 @@ angular.module('starter')
 
 		$scope.init = function(){
 			console.debug('history page init');
-			Bugsnag.context = "historyPrimary";
+			if (typeof Bugsnag !== "undefined") {
+				Bugsnag.context = "historyPrimary";
+			}
 			updateHistoryView();
 			if($rootScope.user){
 				$scope.showLoader($scope.syncDisplayText);

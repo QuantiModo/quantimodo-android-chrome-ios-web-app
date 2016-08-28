@@ -57,7 +57,9 @@ angular.module('starter')
                         .then(function () {
                         	console.debug("Successfully measurementService.postMeasurementByReminder: " + JSON.stringify(trackingReminder));
                         }, function (err) {
-                            Bugsnag.notify(err, JSON.stringify(err), {}, "error");
+							if (typeof Bugsnag !== "undefined") {
+								Bugsnag.notify(err, JSON.stringify(err), {}, "error");
+							}
                             console.error(err);
                             console.error('Failed to Track by favorite, Try again!');
                         });
@@ -68,7 +70,9 @@ angular.module('starter')
 		};
 
 	    $scope.init = function(){
-			Bugsnag.context = "Favorites";
+			if (typeof Bugsnag !== "undefined") {
+				Bugsnag.context = "Favorites";
+			}
 			authService.checkAuthOrSendToLogin();
 			if (typeof analytics !== 'undefined')  { analytics.trackView("Favorites Controller"); }
 			getFavoriteTrackingRemindersFromLocalStorage();

@@ -94,7 +94,9 @@ angular.module('starter')
                         console.log(response);
                     }, function(err){
                         console.error(err);
-                        Bugsnag.notify(err, JSON.stringify(err), {}, "error");
+                        if (typeof Bugsnag !== "undefined") {
+                            Bugsnag.notify(err, JSON.stringify(err), {}, "error");
+                        }
                     });
                     console.log("onClick: Notification data provided. Going to addMeasurement page. Data: ", notificationData);
                     //notificationService.decrementNotificationBadges();
@@ -193,7 +195,9 @@ angular.module('starter')
                         }
                     }
                 }, function (err) {
-                    Bugsnag.notify(err, JSON.stringify(err), {}, "error");
+                    if (typeof Bugsnag !== "undefined") {
+                        Bugsnag.notify(err, JSON.stringify(err), {}, "error");
+                    }
                 });
             }
 
@@ -279,7 +283,9 @@ angular.module('starter')
                     clearOtherLocalNotifications(currentNotification);
                 } catch (err) {
                     console.error('onTrigger error');
-                    bugsnagService.reportError(err);
+                    if (typeof Bugsnag !== "undefined") {
+                        bugsnagService.reportError(err);
+                    }
                     console.error(err);
                 }
             });
@@ -370,7 +376,9 @@ angular.module('starter')
                             this.scheduleNotificationByReminder(trackingRemindersFromApi[i]);
                         } catch (err) {
                             console.error('scheduleAllNotificationsByTrackingReminders error');
-                            bugsnagService.reportError(err);
+                            if (typeof Bugsnag !== "undefined") {
+                                bugsnagService.reportError(err);
+                            }
                             console.error(err);
                         }
                     }
@@ -847,7 +855,9 @@ angular.module('starter')
                                 if(!(notificationSettings.at instanceof Date)){
                                     var errorMessage = 'Skipping notification creation because notificationSettings.at is not an instance of Date: ' + JSON.stringify(notificationSettings);
                                     console.error(errorMessage);
-                                    bugsnagService.reportError(errorMessage);
+                                    if (typeof Bugsnag !== "undefined") {
+                                        bugsnagService.reportError(errorMessage);
+                                    }
                                     return;
                                 }
                                 if(!isNaN(notificationSettings.at) &&
@@ -855,7 +865,9 @@ angular.module('starter')
                                     !isNaN(parseInt(notificationSettings.at, 10))){
                                     var intErrorMessage = 'Skipping notification creation because notificationSettings.at is not an instance of Date: ' + JSON.stringify(notificationSettings);
                                     console.error(intErrorMessage);
-                                    bugsnagService.reportError(intErrorMessage);
+                                    if (typeof Bugsnag !== "undefined") {
+                                        bugsnagService.reportError(intErrorMessage);
+                                    }
                                     return;
                                 }
                                 try{
@@ -867,7 +879,9 @@ angular.module('starter')
                                             ' notification scheduled: ' + JSON.stringify(notification));
                                     });
                                 } catch (error) {
-                                    bugsnagService.reportError(error);
+                                    if (typeof Bugsnag !== "undefined") {
+                                        bugsnagService.reportError(error);
+                                    }
                                     console.error('scheduleUpdateOrDeleteGenericNotificationsByDailyReminderTimes error: ' + error);
                                     console.error('scheduleUpdateOrDeleteGenericNotificationsByDailyReminderTimes' +
                                         ' notificationSettings: ' + JSON.stringify(notificationSettings));

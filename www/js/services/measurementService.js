@@ -497,7 +497,9 @@ angular.module('starter')
                 QuantiModo.getV1Measurements(params, function(response){
                     deferred.resolve(response);
                 }, function(error){
-                    Bugsnag.notify(error, JSON.stringify(error), {}, "error");
+                    if (typeof Bugsnag !== "undefined") {
+                        Bugsnag.notify(error, JSON.stringify(error), {}, "error");
+                    }
                     deferred.reject(error);
                 });
 
@@ -516,7 +518,9 @@ angular.module('starter')
                     var measurementObject = measurementArray[0];
                     deferred.resolve(measurementObject);
                 }, function(error){
-                    Bugsnag.notify(error, JSON.stringify(error), {}, "error");
+                    if (typeof Bugsnag !== "undefined") {
+                        Bugsnag.notify(error, JSON.stringify(error), {}, "error");
+                    }
                     console.log(error);
                     deferred.reject();
                 });

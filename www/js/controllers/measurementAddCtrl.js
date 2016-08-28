@@ -193,7 +193,9 @@ angular.module('starter')
                     console.debug(response);
                 }, function(err){
                     console.error(err);
-                    Bugsnag.notify(err, JSON.stringify(err), {}, "error");
+                    if (typeof Bugsnag !== "undefined") {
+                        Bugsnag.notify(err, JSON.stringify(err), {}, "error");
+                    }
                 });
             }
 
@@ -273,7 +275,9 @@ angular.module('starter')
 
         // constructor
         $scope.init = function(){
-            Bugsnag.context = "measurementAdd";
+            if (typeof Bugsnag !== "undefined") {
+                Bugsnag.context = "measurementAdd";
+            }
                 authService.checkAuthOrSendToLogin();
                 unitService.getUnits().then(function () {
                     if($stateParams.variableObject !== null && typeof $stateParams.variableObject !== "undefined") {

@@ -21,7 +21,9 @@ angular.module('starter')
 
 	    // constructor
 	    $scope.init = function(){
-			Bugsnag.context = "importData";
+			if (typeof Bugsnag !== "undefined") {
+				Bugsnag.context = "importData";
+			}
 			if (typeof analytics !== 'undefined')  { //noinspection JSUnresolvedFunction
 				analytics.trackView("Import Data Controller"); }
 			$scope.showLoader();

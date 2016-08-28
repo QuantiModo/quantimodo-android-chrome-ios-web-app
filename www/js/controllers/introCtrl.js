@@ -56,7 +56,10 @@ angular.module('starter')
         if($rootScope.user || $rootScope.introSeen){
             $state.go(config.appSettings.defaultState);
         } else {
-            Bugsnag.context = "intro";
+            if (typeof Bugsnag !== 'undefined') {
+                Bugsnag.context = "intro";
+            }
+           
 
             $scope.showLoader();
 

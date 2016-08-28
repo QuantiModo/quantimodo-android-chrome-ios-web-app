@@ -98,7 +98,9 @@ angular.module('starter')
 
         $scope.init = function(){
             $ionicLoading.hide();
-            Bugsnag.context = "trackPrimary";
+            if (typeof Bugsnag !== "undefined") {
+                Bugsnag.context = "trackPrimary";
+            }
             updateCharts();
             console.log('Track state brought in focus. Updating charts and syncing..');
             $scope.showRatingFaces = true;

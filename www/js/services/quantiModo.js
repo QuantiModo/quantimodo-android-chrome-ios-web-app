@@ -33,7 +33,9 @@ angular.module('starter')
                 }
                 if(request) {
                     error = data.error.message;
-                    Bugsnag.notify("API Request to " + request.url + " Failed", error, {}, "error");
+                    if (typeof Bugsnag !== "undefined") {
+                        Bugsnag.notify("API Request to " + request.url + " Failed", error, {}, "error");
+                    }
                 }
                 if(data.success){
                     return;
@@ -62,7 +64,9 @@ angular.module('starter')
                         localStorageService.deleteItem('accessToken');
                         localStorageService.deleteItem('accessTokenInUrl');
                         $rootScope.accessToken = null;
-                        bugsnagService.reportError('ERROR: Access token had white space so probably erroneous! Deleting it now.');
+                        if (typeof Bugsnag !== "undefined") {
+                            bugsnagService.reportError('ERROR: Access token had white space so probably erroneous! Deleting it now.');
+                        }
                     }
 
                     allowedParams.push('limit');

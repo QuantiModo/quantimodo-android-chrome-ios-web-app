@@ -188,7 +188,9 @@ angular.module('starter')
         }
 
         $scope.init = function(){
-            Bugsnag.context = "reminderAdd";
+            if (typeof Bugsnag !== "undefined") {
+                Bugsnag.context = "reminderAdd";
+            }
             if (typeof analytics !== 'undefined')  { analytics.trackView("Add Favorite Controller"); }
 
             authService.checkAuthOrSendToLogin();

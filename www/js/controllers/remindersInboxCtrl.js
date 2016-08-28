@@ -122,7 +122,9 @@ angular.module('starter')
                     $scope.init();
                 }
 	    	}, function(err){
-				Bugsnag.notify(err, JSON.stringify(err), {}, "error");
+				if (typeof Bugsnag !== "undefined") {
+					Bugsnag.notify(err, JSON.stringify(err), {}, "error");
+				}
 				console.error(err);
 	    		utilsService.showAlert('Failed to Track Reminder, Try again!', 'assertive');
 	    	});
@@ -149,7 +151,9 @@ angular.module('starter')
                     $scope.init();
                 }
 	    	}, function(err){
-				Bugsnag.notify(err, JSON.stringify(err), {}, "error");
+				if (typeof Bugsnag !== "undefined") {
+					Bugsnag.notify(err, JSON.stringify(err), {}, "error");
+				}
 	    		utilsService.showAlert('Failed to Skip Reminder, Try again!', 'assertive');
 				console.error(err);
 	    	});
@@ -176,14 +180,18 @@ angular.module('starter')
                     $scope.init();
                 }
 	    	}, function(err){
-				Bugsnag.notify(err, JSON.stringify(err), {}, "error");
+				if (typeof Bugsnag !== "undefined") {
+					Bugsnag.notify(err, JSON.stringify(err), {}, "error");
+				}
 				console.error(err);
 	    		utilsService.showAlert('Failed to Snooze Reminder, Try again!', 'assertive');
 	    	});
 	    };
 
 	    $scope.init = function(){
-			Bugsnag.context = "reminderInbox";
+			if (typeof Bugsnag !== "undefined") {
+				Bugsnag.context = "reminderInbox";
+			}
 			$rootScope.showAllCaughtUpCard = false;
 			setPageTitle();
 			authService.checkAuthOrSendToLogin();
@@ -263,7 +271,9 @@ angular.module('starter')
 								notificationService.setNotificationBadge(0);
 								$scope.init();
 							}, function(err){
-								Bugsnag.notify(err, JSON.stringify(err), {}, "error");
+								if (typeof Bugsnag !== "undefined") {
+									Bugsnag.notify(err, JSON.stringify(err), {}, "error");
+								}
 								console.error(err);
 								utilsService.showAlert('Failed to skip all notifications, Try again!', 'assertive');
 							});
@@ -402,7 +412,9 @@ angular.module('starter')
 							$scope.init();
 						}, function(err){
 							$scope.hideLoader();
-							Bugsnag.notify(err, JSON.stringify(err), {}, "error");
+							if (typeof Bugsnag !== "undefined") {
+								Bugsnag.notify(err, JSON.stringify(err), {}, "error");
+							}
 							console.error(err);
 							utilsService.showAlert('Failed to skip all notifications for , Try again!', 'assertive');
 						});

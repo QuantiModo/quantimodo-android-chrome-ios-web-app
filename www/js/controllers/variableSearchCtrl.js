@@ -82,7 +82,9 @@ angular.module('starter')
         }
 
         $scope.init = function(){
-            Bugsnag.context = "variableSearch";
+            if (typeof Bugsnag !== "undefined") {
+                Bugsnag.context = "variableSearch";
+            }
             console.debug('Initializing variable search controller...');
             setTitleAndPlaceholderText();
             if (typeof analytics !== 'undefined')  { analytics.trackView("Variable Search Controller"); }

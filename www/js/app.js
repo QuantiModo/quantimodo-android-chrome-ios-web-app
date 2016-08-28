@@ -158,15 +158,17 @@ angular.module('starter',
             $rootScope.appVersion = "1.8.5.6";
             $rootScope.appName = config.appSettings.appName;
 
-            //$rootScope.bugsnagApiKey = window.private_keys.bugsnag_key;
-            Bugsnag.apiKey = "ae7bc49d1285848342342bb5c321a2cf";
-            //Bugsnag.notifyReleaseStages = ['Production','Staging'];
-            Bugsnag.appVersion = $rootScope.appVersion;
-            Bugsnag.metaData = {
-                platform: ionic.Platform.platform(),
-                platformVersion: ionic.Platform.version(),
-                appName: config.appSettings.appName
-            };
+            if (typeof Bugsnag !== "undefined") {
+                //$rootScope.bugsnagApiKey = window.private_keys.bugsnag_key;
+                Bugsnag.apiKey = "ae7bc49d1285848342342bb5c321a2cf";
+                //Bugsnag.notifyReleaseStages = ['Production','Staging'];
+                Bugsnag.appVersion = $rootScope.appVersion;
+                Bugsnag.metaData = {
+                    platform: ionic.Platform.platform(),
+                    platformVersion: ionic.Platform.version(),
+                    appName: config.appSettings.appName
+                };
+            }
 
             $ionicPlatform.registerBackButtonAction(function (event) {
                 if($ionicHistory.currentStateName() === config.appSettings.defaultState){
@@ -788,6 +790,8 @@ angular.module('starter',
 
 angular.module('exceptionOverride', []).factory('$exceptionHandler', function () {
     return function (exception, cause) {
-        Bugsnag.notifyException(exception, {diagnostics:{cause: cause}});
+        if (typeof Bugsnag !== "undefined") {
+            Bugsnag.notifyException(exception, {diagnostics: {cause: cause}});
+        }
     };
 });

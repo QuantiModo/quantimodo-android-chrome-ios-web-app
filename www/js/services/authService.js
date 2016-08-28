@@ -126,7 +126,9 @@ angular.module('starter')
 				var deferred = $q.defer();
 
 				if(!accessToken || accessToken === "null" || accessToken === null){
-					Bugsnag.notify("No accessToken", "accessToken not provided to getJWTToken function", {}, "error");
+					if (typeof Bugsnag !== "undefined") {
+						Bugsnag.notify("No accessToken", "accessToken not provided to getJWTToken function", {}, "error");
+					}
 					deferred.reject();
 				}
 				var url = utilsService.getURL('api/v2/auth/social/authorizeToken');

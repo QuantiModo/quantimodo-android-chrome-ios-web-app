@@ -7,7 +7,9 @@ angular.module('starter')
                     QuantiModo.getAggregatedCorrelations(params, function(correlationObjects){
                         deferred.resolve(correlationObjects);
                     }, function(error){
-                        Bugsnag.notify(error, JSON.stringify(error), {}, "error");
+                        if (typeof Bugsnag !== "undefined") {
+                            Bugsnag.notify(error, JSON.stringify(error), {}, "error");
+                        }
                         deferred.reject(error);
                     });
                 return deferred.promise;
@@ -18,7 +20,9 @@ angular.module('starter')
                 QuantiModo.getUserCorrelations(params, function(correlationObjects){
                     deferred.resolve(correlationObjects);
                 }, function(error){
-                    Bugsnag.notify(error, JSON.stringify(error), {}, "error");
+                    if (typeof Bugsnag !== "undefined") {
+                        Bugsnag.notify(error, JSON.stringify(error), {}, "error");
+                    }
                     deferred.reject(error);
                 });
                 return deferred.promise;
