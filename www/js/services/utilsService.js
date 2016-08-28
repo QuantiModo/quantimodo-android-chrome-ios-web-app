@@ -45,10 +45,6 @@ angular.module('starter')
             if (window.cordova) {
                 $rootScope.currentPlatformVersion = ionic.Platform.version();
                 var currentPlatform = ionic.Platform.platform();
-                if (currentPlatform.indexOf('win') > -1){
-                    $rootScope.isWindows = true;
-                    $rootScope.currentPlatform = "Windows";
-                }
                 if (ionic.Platform.isIOS()){
                     $rootScope.isIOS = true;
                     $rootScope.isMobile = true;
@@ -59,6 +55,9 @@ angular.module('starter')
                     $rootScope.isMobile = true;
                     $rootScope.currentPlatform = "Android";
                 }
+            } else if (window.location.href.indexOf('ms-appx') > -1) {
+                $rootScope.isWindows = true;
+                $rootScope.currentPlatform = "Windows";
             } else {
                 $rootScope.isChrome = window.chrome ? true : false;
                 $rootScope.currentPlatformVersion = null;
