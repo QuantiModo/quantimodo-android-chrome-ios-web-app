@@ -27,9 +27,6 @@
   <preference name="DisallowOverscroll" value="true" />
   <preference name="android-minSdkVersion" value="16" />
   <preference name="BackupWebStorage" value="none" />
-  <feature name="StatusBar">
-    <param name="ios-package" onload="true" value="CDVStatusBar" />
-  </feature>
   <plugin name="cordova-plugin-device" spec="~1.1.2" />
   <plugin name="cordova-plugin-console" spec="~1.0.3" />
   <plugin name="cordova-plugin-whitelist" spec="~1.2.2" />
@@ -50,9 +47,13 @@
   <plugin name="cordova-plugin-geolocation" version="2.1.0" />
   <plugin name="cordova-plugin-inappbrowser" version="1.2.1" />
   <plugin name="ionic-plugin-keyboard" version="2.2.1" />
-  <plugin name="cordova-plugin-statusbar" version="2.1.3" />
   <access origin="https://widget.intercom.io/*" />
   <platform name="ios">
+    <plugin name="cordova-plugin-statusbar" version="2.1.3" />
+    <feature name="StatusBar">
+      <param name="ios-package" onload="true" value="CDVStatusBar" />
+    </feature>
+    <plugin name="cordova-plugin-statusbar" version="2.1.3" />
     <hook type="after_prepare" src="package-hooks/ios9_allow_native_fb.sh" />
     <hook type="after_prepare" src="package-hooks/ios_disable_bitcode.js" />
     <hook type="after_prepare" src="package-hooks/ios_remove_armv7s.js" />
