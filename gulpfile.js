@@ -1097,7 +1097,8 @@ gulp.task('setVersionNumbersWithEnvs', function(){
 });
 
 // Setup platforms to build that are supported on current hardware
-var winPlatforms = ["android", "windows"],
+//var winPlatforms = ["android", "windows"], //Android is having problems so I'm only building windows for now
+var winPlatforms = ["windows"],
 	linuxPlatforms = ["android"],
 	osxPlatforms = ["ios"],
 	platformsToBuild = process.platform === "darwin" ? osxPlatforms :
