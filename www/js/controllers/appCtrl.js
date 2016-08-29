@@ -10,7 +10,7 @@ angular.module('starter')
 
         $rootScope.loaderImagePath = config.appSettings.loaderImagePath;
         $rootScope.appMigrationVersion = 1489;
-        $rootScope.appVersion = "1.8.5.6";
+        $rootScope.appVersion = "1.8.5.12";
         if (!$rootScope.loaderImagePath) {
             $rootScope.loaderImagePath = 'img/circular-loader.gif';
         }
