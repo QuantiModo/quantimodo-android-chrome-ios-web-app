@@ -35,7 +35,7 @@ angular.module('starter',
             };
         }
 
-         if (ionic.Platform.isAndroid() || ionic.Platform.isIPad() || ionic.Platform.isIOS()) {
+         if (ionic.Platform.isAndroid()) {
              console.debug("Going to try to register push");
              var push = new Ionic.Push({"debug": true});
 
@@ -53,64 +53,55 @@ angular.module('starter',
              });
          }
 
-        /*
+        if (ionic.Platform.isIPad() || ionic.Platform.isIOS()) {
+            if (typeof PushNotification === "undefined") {
+                alert("PushNotification is undefined");
+            }
 
-         window.onNotification = function(e){
-            console.log("window.onNotification: received event", e);
-            switch(e.event){
-                case 'registered':
-                    if(e.regid.length > 0){
+            if (typeof PushNotification !== "undefined") {
+                var push = PushNotification.init({
+                    android: {
+                        senderID: "1052648855194"
+                    },
+                    browser: {
+                        pushServiceURL: 'http://push.api.phonegap.com/v1/push'
+                    },
+                    ios: {
+                        alert: "true",
+                        badge: "true",
+                        sound: "true"
+                    },
+                    windows: {}
+                });
 
-                        var deviceToken = e.regid;
-                        pushNotificationService.register(deviceToken).then(function(response){
-                            alert('registered!');
-                        });
+                push.on('registration', function(registerResponse) {
+                    alert("Got device token for push notifications: " + JSON.stringify(registerResponse);
+                    var newDeviceToken = registerResponse.token;
+
+                    push.saveToken(registerResponse.token);
+                    var deviceTokenOnServer = localStorageService.getItemSync('deviceTokenOnServer');
+                    alert('deviceTokenOnServer from localStorage is ' + deviceTokenOnServer);
+                    if(deviceTokenOnServer !== registerResponse.token) {
+                        localStorageService.setItem('deviceTokenToSync', newDeviceToken);
+                        alert('New push device token does not match push device token on server so saving to localStorage to sync after login');
                     }
-                    break;
+                    // data.registrationId
+                });
 
-                case 'message':
-                    alert('msg received: ' + e.message);
-                    /!*
-                     {
-                     "message": "Hello this is a push notification",
-                     "payload": {
-                     "message": "Hello this is a push notification",
-                     "sound": "notification",
-                     "title": "New Message",
-                     "from": "813xxxxxxx",
-                     "collapse_key": "do_not_collapse",
-                     "foreground": true,
-                     "event": "message"
-                     }
-                     }
-                     *!/
-                    break;
+                push.on('notification', function(data) {
+                    // data.message,
+                    // data.title,
+                    // data.count,
+                    // data.sound,
+                    // data.image,
+                    // data.additionalData
+                });
 
-                case 'error':
-                    alert('error occurred');
-                    break;
-
+                push.on('error', function(e) {
+                    // e.message
+                });
             }
-        };
-
-        window.errorHandler = function(error){
-            alert('an error occurred');
-        };
-
-        var pushNotification = window.plugins.pushNotification;
-        pushNotification.register(
-            window.onNotification,
-            window.errorHandler,
-            {
-                'badge': 'true',
-                'sound': 'true',
-                'alert': 'true',
-                'ecb': 'onNotification',
-                'senderID': window.private_keys.GCM_SENDER_ID
-            }
-        );
-
-*/
+        }
 
         if(typeof analytics !== "undefined") {
             console.log("Configuring Google Analytics");
