@@ -119,13 +119,11 @@ angular.module('starter')
             if ($rootScope.isWeb && window.private_keys.client_ids.Web === 'oAuthDisabled') {
                 return window.location.origin;
             }
-            if(!config.appSettings.qmApiHostName){
-                config.appSettings.qmApiHostName = "app.quantimo.do";
-            }
-            if ($rootScope.isWindows) {
-                return "ms-appx-web://" + config.appSettings.qmApiHostName;
-            }
-            return "https://" + config.appSettings.qmApiHostName;
+            if ($rootScope.isWeb) { return window.private_keys.redirect_uris.Web; }
+            if ($rootScope.isIOS) { return window.private_keys.redirect_uris.iOS; }
+            if ($rootScope.isAndroid) { return window.private_keys.redirect_uris.Android; }
+            if ($rootScope.isWindows) { return window.private_keys.redirect_uris.Windows; }
+            return "https://app.quantimo.do";
         };
 
         utilsService.getURL = function (path) {
