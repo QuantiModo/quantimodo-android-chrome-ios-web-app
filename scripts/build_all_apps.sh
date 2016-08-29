@@ -95,6 +95,7 @@ export APPLE_ID="1115037060"
 export APP_IDENTIFIER="com.quantimodo.quantimodo"
 export APP_DISPLAY_NAME="QuantiModo"
 export LOWERCASE_APP_NAME=quantimodo
+export APP_DESCRIPTION="Perfect your life!"
 
 echo "Moving old ${LOWERCASE_APP_NAME} Android versions to archive so we catch build failures"
 mv ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/* ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/archive/
@@ -117,6 +118,7 @@ export APPLE_ID="1046797567"
 export APP_IDENTIFIER="com.quantimodo.moodimodoapp"
 export APP_DISPLAY_NAME="MoodiModo"
 export LOWERCASE_APP_NAME=moodimodo
+export APP_DESCRIPTION="The mood-tracking app from QuantiModo"
 
 echo "Moving old ${LOWERCASE_APP_NAME} Android versions to archive so we catch build failures"
 mv ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/* ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/archive/
@@ -139,6 +141,7 @@ export APPLE_ID="1024924226"
 export APP_IDENTIFIER="com.quantimodo.moodimodo"
 export APP_DISPLAY_NAME="Mind First"
 export LOWERCASE_APP_NAME=mindfirst
+export APP_DESCRIPTION="The Mind First Mood Tracking app from QuantiModo"
 
 echo "Moving old ${LOWERCASE_APP_NAME} Android versions to archive so we catch build failures"
 mv ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/* ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/archive/
@@ -160,6 +163,7 @@ export APPLE_ID="1115037652"
 export APP_IDENTIFIER="com.quantimodo.energymodo"
 export APP_DISPLAY_NAME="EnergyModo"
 export LOWERCASE_APP_NAME=energymodo
+export APP_DESCRIPTION="The energy-tracking app from QuantiModo"
 
 echo "Moving old ${LOWERCASE_APP_NAME} Android versions to archive so we catch build failures"
 mv ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/* ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/archive/
@@ -181,6 +185,7 @@ export APPLE_ID="1115037661"
 export APP_IDENTIFIER="com.quantimodo.medtlc"
 export APP_DISPLAY_NAME="MedTLC"
 export LOWERCASE_APP_NAME=medtlc
+export APP_DESCRIPTION="Medication - Track. Learn. Connect."
 
 echo "Moving old ${LOWERCASE_APP_NAME} Android versions to archive so we catch build failures"
 mv ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/* ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/archive/
