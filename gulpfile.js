@@ -91,9 +91,10 @@ gulp.task('swagger', function(){
 	console.log(angularjsSourceCode);
 
 	fs.writeFile('./www/js/services/swaggerjs.js', angularjsSourceCode , function (err) {
-			if (err)
-					return console.log(err);
-			console.log('Swagger code > /www/js/services/swaggerjs.js');
+			if (err) {
+                return console.log(err);
+            }
+        console.log('Swagger code > /www/js/services/swaggerjs.js');
 			deferred.resolve();
 	});
 	return deferred.promise;
@@ -117,24 +118,24 @@ gulp.task('generatePrivateConfigFromEnvsForHeroku', function(){
 	var environmentalVariables = process.env;
 
 	// Only run when on heroku
-	if(typeof environmentalVariables['BUILDPACK_URL'] === "undefined" ){
+	if(typeof environmentalVariables.BUILDPACK_URL === "undefined" ){
 		console.log("BUILDPACK_URL is undefined.  Heroku Not Detected.  Kashif, what is this check for?");
 		deferred.reject();
 	}
 
 	// Can't do this because it overwrites decrypted config on Travis
-	// if(typeof environmentalVariables['APPS'] === "undefined" || environmentalVariables['APPS'].trim() === '') {
+	// if(typeof environmentalVariables.APPS === "undefined" || environmentalVariables.APPS.trim() === '') {
 	// 	if (environmentalVariables['LOWERCASE_APP_NAME']) {
 	// 		console.log('No APPS env found.  Using LOWERCASE_APP_NAME ' + environmentalVariables['LOWERCASE_APP_NAME'].toUpperCase());
-	// 		environmentalVariables['APPS'] = environmentalVariables['LOWERCASE_APP_NAME'].toUpperCase();
+	// 		environmentalVariables.APPS = environmentalVariables['LOWERCASE_APP_NAME'].toUpperCase();
 	// 	}
 	// }
 
-	if(typeof environmentalVariables['APPS'] === "undefined" || environmentalVariables['APPS'].trim() === ''){
+	if(typeof environmentalVariables.APPS === "undefined" || environmentalVariables.APPS.trim() === ''){
 		console.error('No APPS env found!');
 		deferred.reject();
 	} else {
-		var upperCaseAppNames = environmentalVariables['APPS'].split(',');
+		var upperCaseAppNames = environmentalVariables.APPS.split(',');
 
 		upperCaseAppNames.forEach(function(upperCaseAppName){
 			upperCaseAppName = upperCaseAppName.trim();
@@ -174,8 +175,8 @@ gulp.task('generatePrivateConfigFromEnvsForHeroku', function(){
 				configkeys.redirect_uris.Web = 'https://app.quantimo.do/ionic/Modo/www/callback/';
 			}
 
-            if(typeof environmentalVariables['IONIC_BUGSNAG_KEY'] !== "undefined"){
-                configkeys.bugsnag_key = environmentalVariables['IONIC_BUGSNAG_KEY'];
+            if(typeof environmentalVariables.IONIC_BUGSNAG_KEY !== "undefined"){
+                configkeys.bugsnag_key = environmentalVariables.IONIC_BUGSNAG_KEY;
                 console.log('IONIC_BUGSNAG_KEY' +' Detected');
             } else {
                 console.log('IONIC_BUGSNAG_KEY'+' NOT DETECTED');
@@ -536,7 +537,9 @@ gulp.task('getAppName', function(){
 	var deferred = q.defer();
   gutil.log('process.env.LOWERCASE_APP_NAME is ' + process.env.LOWERCASE_APP_NAME);
   LOWERCASE_APP_NAME = process.env.LOWERCASE_APP_NAME;
-  if(LOWERCASE_APP_NAME) deferred.resolve();
+  if(LOWERCASE_APP_NAME) {
+      deferred.resolve();
+  }
   if(!LOWERCASE_APP_NAME){
     throw new Error('Please set LOWERCASE_APP_NAME env!');
   }
@@ -579,10 +582,10 @@ gulp.task('readKeysForCurrentApp', ['getAppName'] ,function(){
 	var deferred = q.defer();
 
 	fs.stat('./www/private_configs/' + LOWERCASE_APP_NAME + '.config.js', function(err, stat) {
-		if(err == null) {
+		if(!err) {
 			console.log('./www/private_configs/' + LOWERCASE_APP_NAME + '.config.js exists');
 		} else {
-			console.log(err.code);
+			console.log(JSON.stringify(err));
 		}
 	});
 
@@ -616,17 +619,19 @@ gulp.task('readKeysForCurrentApp', ['getAppName'] ,function(){
 			var arr = rx.exec(data);
 			FACEBOOK_APP_ID = JSON.parse("{"+arr[0]+"}").FACEBOOK_APP_ID;
 
-			var rx =  /("|')FACEBOOK_APP_NAME("|')(\s)?:(\s)?("|')(\w*|\.*|\-*)*("|')/g;
-			var arr = rx.exec(data);
+			rx =  /("|')FACEBOOK_APP_NAME("|')(\s)?:(\s)?("|')(\w*|\.*|\-*)*("|')/g;
+			arr = rx.exec(data);
 			FACEBOOK_APP_NAME = JSON.parse("{"+arr[0]+"}").FACEBOOK_APP_NAME;
 
-			var rx =  /("|')REVERSED_CLIENT_ID("|')(\s)?:(\s)?("|')(\w*|\.*|\-*)*("|')/g;
-			var arr = rx.exec(data);
+			rx =  /("|')REVERSED_CLIENT_ID("|')(\s)?:(\s)?("|')(\w*|\.*|\-*)*("|')/g;
+			arr = rx.exec(data);
 			REVERSED_CLIENT_ID = JSON.parse("{"+arr[0]+"}").REVERSED_CLIENT_ID;
 
 			console.log(FACEBOOK_APP_ID, FACEBOOK_APP_NAME, REVERSED_CLIENT_ID);
 			deferred.resolve();
-		} else deferred.reject();
+		} else {
+            deferred.reject();
+        }
 	});
 
 	return deferred.promise;
@@ -717,7 +722,9 @@ var IOS_FOLDER_NAME = false;
 gulp.task('getIOSAppFolderName', ['getAppName'] , function(){
 	var deferred = q.defer();
 
-	if(IOS_FOLDER_NAME) deferred.resolve();
+	if(IOS_FOLDER_NAME) {
+        deferred.resolve();
+    }
 	else {
 		var xml = fs.readFileSync('./apps/' + LOWERCASE_APP_NAME + '/config.xml', 'utf8');
 		parseString(xml, function (err, result) {
@@ -901,9 +908,10 @@ gulp.task('addInheritedToOtherLinkerFlags', [ 'getIOSAppFolderName' ], function(
 gulp.task('addDeploymentTarget', ['getIOSAppFolderName'], function(){
 	return gulp.src('./platforms/ios/'+IOS_FOLDER_NAME+'.xcodeproj/project.pbxproj')
 		.pipe(change(function(content){
-			if(content.indexOf('IPHONEOS_DEPLOYMENT_TARGET') === -1)
-				return content.replace(/ENABLE_BITCODE(\s+)?=(\s+)?(\s+)NO\;/g, "IPHONEOS_DEPLOYMENT_TARGET = 6.0;\ENABLE_BITCODE = NO;");
-			return content;
+			if(content.indexOf('IPHONEOS_DEPLOYMENT_TARGET') === -1) {
+                return content.replace(/ENABLE_BITCODE(\s+)?=(\s+)?(\s+)NO\;/g, "IPHONEOS_DEPLOYMENT_TARGET = 6.0;\ENABLE_BITCODE = NO;");
+            }
+            return content;
 		}))
 		.pipe(change(function(content){
 			console.log("*****************\n\n\n",content,"\n\n\n*****************");
@@ -1000,8 +1008,12 @@ gulp.task('bumpVersion', function(){
 			var version = "1.0.0";
 
 			if(result && result.widget && result.widget.$ ){
-				if(result.widget.$['version']) version = result.widget.$['version'];
-				if(result.widget.$["ios-CFBundleVersion"]) version = result.widget.$["ios-CFBundleVersion"];
+				if(result.widget.$['version']) {
+                    version = result.widget.$['version'];
+                }
+				if(result.widget.$["ios-CFBundleVersion"]) {
+                    version = result.widget.$["ios-CFBundleVersion"];
+                }
 			}
 
 	    	// bump version number
@@ -1010,9 +1022,15 @@ gulp.task('bumpVersion', function(){
 	    	numberToBumpArr[numberToBumpArr.length-1] = (parseInt(numberToBump)+1).toString();
 	    	version = numberToBumpArr.join('.');
 
-	    	if(!result) result = {};
-	    	if(!result.widget) result['widget'] = {};
-	    	if(!result.widget.$) result.widget['$'] = {};
+	    	if(!result) {
+				result = {};
+			}
+	    	if(!result.widget) {
+				result['widget'] = {};
+			}
+	    	if(!result.widget.$) {
+				result.widget['$'] = {};
+			}
 
 	    	result.widget.$["version"] = version;
 	    	result.widget.$["ios-CFBundleVersion"] = version;
@@ -1040,18 +1058,18 @@ gulp.task('setVersionNumbersWithEnvs', function(){
 	console.log('gulp setVersionNumbersWithEnvs was called');
 	var deferred = q.defer();
 	var environmentalVariables = process.env;
-	if(!environmentalVariables['IONIC_APP_VERSION_NUMBER']){
+	if(!environmentalVariables.IONIC_APP_VERSION_NUMBER){
 		//throw new Error('Please set IONIC_APP_VERSION_NUMBER env!');
-		environmentalVariables['IONIC_APP_VERSION_NUMBER'] = '1.8.5';
+		environmentalVariables.IONIC_APP_VERSION_NUMBER = '1.8.5';
 		console.log('No IONIC_APP_VERSION_NUMBER env!  Using hardcoded gulp version number ' +
-			environmentalVariables['IONIC_APP_VERSION_NUMBER']);
+			environmentalVariables.IONIC_APP_VERSION_NUMBER);
 	}
 
-	if(!environmentalVariables['IONIC_IOS_APP_VERSION_NUMBER']){
+	if(!environmentalVariables.IONIC_IOS_APP_VERSION_NUMBER){
 		//throw new Error('Please set IONIC_IOS_APP_VERSION_NUMBER env!');
-		environmentalVariables['IONIC_IOS_APP_VERSION_NUMBER'] = '1.8.5.6';
+		environmentalVariables.IONIC_IOS_APP_VERSION_NUMBER = '1.8.5.6';
 		console.log('No IONIC_IOS_APP_VERSION_NUMBER env!  Using hardcoded gulp version number ' +
-			environmentalVariables['IONIC_IOS_APP_VERSION_NUMBER']);
+			environmentalVariables.IONIC_IOS_APP_VERSION_NUMBER);
 	}
 
 	var xml = fs.readFileSync('./config.xml', 'utf8');
@@ -1070,12 +1088,18 @@ gulp.task('setVersionNumbersWithEnvs', function(){
 				}
 			}
 
-			if(!parsedXmlFile) parsedXmlFile = {};
-			if(!parsedXmlFile.widget) parsedXmlFile['widget'] = {};
-			if(!parsedXmlFile.widget.$) parsedXmlFile.widget['$'] = {};
+			if(!parsedXmlFile) {
+				parsedXmlFile = {};
+			}
+			if(!parsedXmlFile.widget) {
+				parsedXmlFile['widget'] = {};
+			}
+			if(!parsedXmlFile.widget.$) {
+				parsedXmlFile.widget['$'] = {};
+			}
 
-			parsedXmlFile.widget.$["version"] = environmentalVariables['IONIC_APP_VERSION_NUMBER'];
-			parsedXmlFile.widget.$["ios-CFBundleVersion"] = environmentalVariables['IONIC_IOS_APP_VERSION_NUMBER'];
+			parsedXmlFile.widget.$["version"] = environmentalVariables.IONIC_APP_VERSION_NUMBER;
+			parsedXmlFile.widget.$["ios-CFBundleVersion"] = environmentalVariables.IONIC_IOS_APP_VERSION_NUMBER;
 
 			var builder = new xml2js.Builder();
 			var updatedXmlFile = builder.buildObject(parsedXmlFile);
@@ -1086,7 +1110,7 @@ gulp.task('setVersionNumbersWithEnvs', function(){
 					deferred.reject();
 				} else {
 					console.log("Successfully updated the version number to " +
-						environmentalVariables['IONIC_APP_VERSION_NUMBER'] + " in config.xml file");
+						environmentalVariables.IONIC_APP_VERSION_NUMBER + " in config.xml file");
 					deferred.resolve();
 				}
 			});
