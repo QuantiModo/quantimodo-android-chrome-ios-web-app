@@ -9,13 +9,13 @@ fi
 
 if [ -z "$INTERMEDIATE_PATH" ]
     then
-      $INTERMEDIATE_PATH="$PWD"
+      export INTERMEDIATE_PATH="$PWD"
       echo "No INTERMEDIATE_PATH given. Using $INTERMEDIATE_PATH..."
 fi
 
 if [ -z "$BUILD_PATH" ]
     then
-      $BUILD_PATH="$IONIC_PATH"/build
+      export BUILD_PATH="$IONIC_PATH"/build
       echo "No BUILD_PATH given. Using $BUILD_PATH..."
 fi
 
@@ -51,13 +51,20 @@ fi
 export LC_CTYPE=C
 export LANG=C
 echo -e "${GREEN}Replacing IONIC_APP_VERSION_NUMBER with ${IONIC_APP_VERSION_NUMBER}...${NC}"
-cd "${INTERMEDIATE_PATH}/apps" && find . -type f -exec sed -i '' -e 's/IONIC_APP_VERSION_NUMBER/'${IONIC_APP_VERSION_NUMBER}'/g' {} \; >> /dev/null 2>&1
+cp ${INTERMEDIATE_PATH}/config-template.xml ${INTERMEDIATE_PATH}/apps/${LOWERCASE_APP_NAME}/config.xml
+cd ${INTERMEDIATE_PATH}/apps/${LOWERCASE_APP_NAME}
+find . -type f -exec sed -i '' -e 's/IONIC_IOS_APP_VERSION_NUMBER/'${IONIC_IOS_APP_VERSION_NUMBER}'/g' {} \; >> /dev/null 2>&1
+find . -type f -exec sed -i '' -e 's/IONIC_APP_VERSION_NUMBER/'${IONIC_APP_VERSION_NUMBER}'/g' {} \; >> /dev/null 2>&1
+find . -type f -exec sed -i '' -e 's/APP_DISPLAY_NAME/'${APP_DISPLAY_NAME}'/g' {} \; >> /dev/null 2>&1
+find . -type f -exec sed -i '' -e 's/APP_IDENTIFIER/'${APP_IDENTIFIER}'/g' {} \; >> /dev/null 2>&1
+
+echo "MAKE SURE NOT TO USE QUOTES OR SPECIAL CHARACTERS WITH export APP_DESCRIPTION OR IT WILL NOT REPLACE PROPERLY"
+find . -type f -exec sed -i '' -e 's/APP_DESCRIPTION/'${APP_DESCRIPTION}'/g' {} \; >> /dev/null 2>&1
+
 export LANG=en_US.UTF-8
 
 echo -e "${GREEN}Copy ${LOWERCASE_APP_NAME} config and resource files${NC}"
 cp -R ${INTERMEDIATE_PATH}/apps/${LOWERCASE_APP_NAME}/*  "${INTERMEDIATE_PATH}"
-rm ${INTERMEDIATE_PATH}/config.xml
-mv ${INTERMEDIATE_PATH}/config.xml.conflict ${INTERMEDIATE_PATH}/config.xml
 ionic config build
 
 cd "${INTERMEDIATE_PATH}"
@@ -68,5 +75,7 @@ cp -R ${INTERMEDIATE_PATH}/resources/android/*  "${INTERMEDIATE_PATH}/www/img/"
 
 rm -rf "${BUILD_PATH}/${LOWERCASE_APP_NAME}"
 
-echo -e "${GREEN}Copy ${APP_PRIVATE_CONFIG_PATH}/${LOWERCASE_APP_NAME}.config.js private config to ${INTERMEDIATE_PATH}/www/private_configs/${NC}"
-cp "${APP_PRIVATE_CONFIG_PATH}/${LOWERCASE_APP_NAME}.config.js" "${INTERMEDIATE_PATH}/www/private_configs/"
+if [ ! -f ${INTERMEDIATE_PATH}/www/private_configs//${LOWERCASE_APP_NAME}.config.js ]; then
+    echo -e "${GREEN}Copy ${APP_PRIVATE_CONFIG_PATH}/${LOWERCASE_APP_NAME}.config.js private config to ${INTERMEDIATE_PATH}/www/private_configs/${NC}"
+    cp "${APP_PRIVATE_CONFIG_PATH}/${LOWERCASE_APP_NAME}.config.js" "${INTERMEDIATE_PATH}/www/private_configs/"
+fi
