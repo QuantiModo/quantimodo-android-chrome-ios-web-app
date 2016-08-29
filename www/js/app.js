@@ -75,7 +75,7 @@ angular.module('starter',
                 });
 
                 push.on('registration', function(registerResponse) {
-                    alert("Got device token for push notifications: " + JSON.stringify(registerResponse);
+                    alert("Got device token for push notifications: " + JSON.stringify(registerResponse));
                     var newDeviceToken = registerResponse.token;
 
                     push.saveToken(registerResponse.token);
