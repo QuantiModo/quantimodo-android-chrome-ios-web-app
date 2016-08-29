@@ -24,13 +24,15 @@ angular.module('starter')
             $ionicPlatform.ready(function () {
                 if (!config.appSettings.cordovaLocalNotificationsEnabled || typeof cordova === "undefined" ||
                     typeof cordova.plugins.notification === "undefined") {
-                    if (typeof cordova !== "undefined" && typeof cordova.plugins.notification !== "undefined") {
-                        cordova.plugins.notification.local.cancelAll(function () {
-                            console.log('cancelAllNotifications: notifications have been cancelled');
-                            cordova.plugins.notification.local.getAll(function (notifications) {
-                                console.log("cancelAllNotifications: All notifications after cancelling", notifications);
+                    if (typeof cordova !== "undefined") {
+                        if(typeof cordova.plugins.notification !== "undefined") {
+                            cordova.plugins.notification.local.cancelAll(function () {
+                                console.log('cancelAllNotifications: notifications have been cancelled');
+                                cordova.plugins.notification.local.getAll(function (notifications) {
+                                    console.log("cancelAllNotifications: All notifications after cancelling", notifications);
+                                });
                             });
-                        });
+                        }
                     }
                     console.log('cordova.plugins.notification is not defined');
                     return false;
