@@ -21,13 +21,12 @@ fi
 
 
 echo "ionic add ionic-platform-web-client"
-ionic add ionic-platform-web-client
+bower install --save-dev ionic-platform-web-client
 
 cordova plugin remove phonegap-plugin-push
 ionic plugin remove phonegap-plugin-push
 
-# We shouldn't need to do this because it should already be in package.json
-ionic plugin add phonegap-plugin-push --variable SENDER_ID="${GCM_SENDER_ID}"
+cordova plugin add phonegap-plugin-push --variable SENDER_ID="${GCM_SENDER_ID}"
 
 ionic io init -email ${IONIC_EMAIL} --password ${IONIC_PASSWORD}
 ionic config set dev_push false
