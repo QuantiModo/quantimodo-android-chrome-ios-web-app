@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html>
   <head>
     <meta charset="utf-8">
@@ -19,7 +19,7 @@
       https://js.intercomcdn.com
       'unsafe-inline' 'unsafe-eval'">
     <title></title>-->
-      <meta http-equiv="Content-Security-Policy" content="ms-appdata *; default-src *; script-src 'self' 'unsafe-inline' 'unsafe-eval' *; style-src  'self' 'unsafe-inline' *">
+      <meta http-equiv="Content-Security-Policy" content="default-src *; script-src 'self' 'unsafe-inline' 'unsafe-eval' *; style-src  'self' 'unsafe-inline' *">
 
 
       <title></title>
@@ -43,7 +43,6 @@
     <!-- ionic/angularjs js -->
     <script src="lib/ionic/js/ionic.bundle.js"></script>
 <script src="lib/ionic-platform-web-client/dist/ionic.io.bundle.min.js"></script>
-    
     <script src="lib/ngCordova/dist/ng-cordova.js"></script>
 
       <!-- google maps -->
@@ -52,7 +51,6 @@
       <!--<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=GOOGLE_MAPS_API_KEY&libraries=places"></script>-->
 
     <!-- cordova script (this will be a 404 during development) -->
-    <!-- Cordova is bootstrapped by ionic-platform-web-client, uncomment this if you remove ionic-platform-web-client... -->
     <!-- Cordova is bootstrapped by ionic-platform-web-client, uncomment this if you remove ionic-platform-web-client... -->
 <!-- <script src="cordova.js"></script> -->
 
@@ -65,7 +63,7 @@
     <script src="lib/moment/moment.js"></script>
     <!-- Must use local Bugsnag library because external one causes problems in Chrome extension -->
     <script src="lib/bugsnag/src/bugsnag.js"></script>
-    <script src="js/connect.js"></script>
+    <script src="https://cdn.rawgit.com/quantimodo/import-data/master/connect.js"></script>
     <script src="lib/pluralize/pluralize.js"></script>
     <script src="lib/ng-material-floating-button/src/mfb-directive.js"></script>
 
