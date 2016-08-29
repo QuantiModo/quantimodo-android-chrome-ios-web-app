@@ -9,13 +9,13 @@ fi
 
 if [ -z "$INTERMEDIATE_PATH" ]
     then
-      $INTERMEDIATE_PATH="$PWD"
+      export INTERMEDIATE_PATH="$PWD"
       echo "No INTERMEDIATE_PATH given. Using $INTERMEDIATE_PATH..."
 fi
 
 if [ -z "$BUILD_PATH" ]
     then
-      $BUILD_PATH="$IONIC_PATH"/build
+      export BUILD_PATH="$IONIC_PATH"/build
       echo "No BUILD_PATH given. Using $BUILD_PATH..."
 fi
 
