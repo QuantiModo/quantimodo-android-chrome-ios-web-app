@@ -35,7 +35,7 @@ angular.module('starter',
             };
         }
 
-         if (ionic.Platform.isAndroid()) {
+         if (ionic.Platform.isAndroid() || ionic.Platform.isIPad() || ionic.Platform.isIOS()) {
              console.debug("Going to try to register push");
              var push = new Ionic.Push({"debug": true});
 
@@ -51,57 +51,26 @@ angular.module('starter',
                      console.debug('New push device token does not match push device token on server so saving to localStorage to sync after login');
                  }
              });
+
+             push.on('registration', function(data) {
+                 // data.registrationId
+                 console.log('Registered device for push notifications: ' + JSON.stringify(data));
+             });
+
+             push.on('notification', function(data) {
+                 console.log('Received push notification: ' + JSON.stringify(data));
+                 // data.message,
+                 // data.title,
+                 // data.count,
+                 // data.sound,
+                 // data.image,
+                 // data.additionalData
+             });
+
+             push.on('error', function(e) {
+                 alert(e.message);
+             });
          }
-
-        if (ionic.Platform.isIPad() || ionic.Platform.isIOS()) {
-            if (typeof PushNotification === "undefined") {
-                alert("PushNotification is undefined");
-            }
-
-            if (typeof PushNotification !== "undefined") {
-                var push = PushNotification.init({
-                    android: {
-                        senderID: "1052648855194"
-                    },
-                    browser: {
-                        pushServiceURL: 'http://push.api.phonegap.com/v1/push'
-                    },
-                    ios: {
-                        alert: "true",
-                        badge: "true",
-                        sound: "true"
-                    },
-                    windows: {}
-                });
-
-                push.on('registration', function(registerResponse) {
-                    alert("Got device token for push notifications: " + JSON.stringify(registerResponse));
-                    var newDeviceToken = registerResponse.token;
-
-                    push.saveToken(registerResponse.token);
-                    var deviceTokenOnServer = localStorageService.getItemSync('deviceTokenOnServer');
-                    alert('deviceTokenOnServer from localStorage is ' + deviceTokenOnServer);
-                    if(deviceTokenOnServer !== registerResponse.token) {
-                        localStorageService.setItem('deviceTokenToSync', newDeviceToken);
-                        alert('New push device token does not match push device token on server so saving to localStorage to sync after login');
-                    }
-                    // data.registrationId
-                });
-
-                push.on('notification', function(data) {
-                    // data.message,
-                    // data.title,
-                    // data.count,
-                    // data.sound,
-                    // data.image,
-                    // data.additionalData
-                });
-
-                push.on('error', function(e) {
-                    // e.message
-                });
-            }
-        }
 
         if(typeof analytics !== "undefined") {
             console.log("Configuring Google Analytics");
