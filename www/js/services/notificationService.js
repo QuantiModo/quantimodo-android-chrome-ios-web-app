@@ -36,7 +36,7 @@ angular.module('starter')
                     return false;
                 }
                 return true;
-            }
+            });
         };
 
         notificationService.setOnUpdateAction = function(){
