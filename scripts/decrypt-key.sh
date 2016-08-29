@@ -54,11 +54,7 @@ openssl aes-256-cbc \
 -in "./scripts/certs/dist.p12.enc" -d -a \
 -out "./scripts/certs/dist.p12"
 
-echo "DECRYPTING ./scripts/private_configs/$LOWERCASE_APP_NAME.config.js.enc..."
-openssl aes-256-cbc \
--k "$ENCRYPTION_SECRET" \
--in "./scripts/private_configs/$LOWERCASE_APP_NAME.config.js.enc" -d -a \
--out "./www/private_configs/$LOWERCASE_APP_NAME.config.js"
+source scripts/decrypt-private-configs.sh
 
 echo "Modifying .hooks permissions..."
 find ./hooks -type f -exec chmod 644 {} \;
