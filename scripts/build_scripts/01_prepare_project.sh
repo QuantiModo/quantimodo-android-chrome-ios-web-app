@@ -58,7 +58,7 @@ find . -type f -exec sed -i '' -e 's/IONIC_APP_VERSION_NUMBER/'${IONIC_APP_VERSI
 find . -type f -exec sed -i '' -e 's/APP_DISPLAY_NAME/'${APP_DISPLAY_NAME}'/g' {} \; >> /dev/null 2>&1
 find . -type f -exec sed -i '' -e 's/APP_IDENTIFIER/'${APP_IDENTIFIER}'/g' {} \; >> /dev/null 2>&1
 
-echo "MAKE SURE NOT TO USE QUOTES WITH export APP_DESCRIPTION OR IT WILL NOT REPLACE PROPERLY"
+echo "MAKE SURE NOT TO USE QUOTES OR SPECIAL CHARACTERS WITH export APP_DESCRIPTION OR IT WILL NOT REPLACE PROPERLY"
 find . -type f -exec sed -i '' -e 's/APP_DESCRIPTION/'${APP_DESCRIPTION}'/g' {} \; >> /dev/null 2>&1
 
 export LANG=en_US.UTF-8
