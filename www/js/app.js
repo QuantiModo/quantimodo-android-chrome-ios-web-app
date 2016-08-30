@@ -57,11 +57,11 @@ angular.module('starter',
              push.on('registration', function(registerResponse) {
                  console.debug('Registered device for push notifications: ' + JSON.stringify(registerResponse));
                  // data.registrationId
-                 var newDeviceToken = registerResponse.token;
-                 console.debug("Got device token for push notifications: " + registerResponse.token);
+                 var newDeviceToken = registerResponse.registrationId;
+                 console.debug("Got device token for push notifications: " + registerResponse.registrationId);
                  var deviceTokenOnServer = localStorageService.getItemSync('deviceTokenOnServer');
                  console.debug('deviceTokenOnServer from localStorage is ' + deviceTokenOnServer);
-                 if(deviceTokenOnServer !== registerResponse.token) {
+                 if(deviceTokenOnServer !== registerResponse.registrationId) {
                      localStorageService.setItem('deviceTokenToSync', newDeviceToken);
                      console.debug('New push device token does not match push device token on server so saving to localStorage to sync after login');
                  }
