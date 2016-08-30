@@ -6,9 +6,7 @@
   },
   "version": "1.0.0",
   "description": "Perfect your life!",
-  "devDependencies": {
-    "taco-team-build": "^0.2.1"
-  },
+  "devDependencies": {},
   "dependencies": {
     "bower": "~1.3.3",
     "express": "^4.13.3",
@@ -36,6 +34,7 @@
     "run-sequence": "^1.1.4",
     "shelljs": "^0.5.3",
     "swagger-js-codegen": "^1.1.4",
+    "taco-team-build": "^0.2.1",
     "xcode" : "0.8.9",
     "xml2js": "^0.4.15"
   },
