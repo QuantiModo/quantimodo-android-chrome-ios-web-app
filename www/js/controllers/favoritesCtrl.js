@@ -126,7 +126,7 @@ angular.module('starter')
 			var hideSheet = $ionicActionSheet.show({
 				buttons: [
 					{ text: '<i class="icon ion-gear-a"></i>Change Default Value' },
-					{ text: '<i class="icon ion-edit"></i>Different Value/Time' },
+					{ text: '<i class="icon ion-edit"></i>Different Value/Time/Note' },
 					{ text: '<i class="icon ion-arrow-graph-up-right"></i>Visualize'},
 					{ text: '<i class="icon ion-ios-list-outline"></i>' + 'History'},
 					{ text: '<i class="icon ion-settings"></i>' + 'Variable Settings'},
