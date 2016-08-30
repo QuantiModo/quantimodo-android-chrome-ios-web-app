@@ -52,6 +52,10 @@ angular.module('starter')
 			console.debug('modified tally is ' + $scope.state[trackingReminder.id].tally);
 			
             $timeout(function() {
+            	if(typeof $scope.state[trackingReminder.id] === "undefined"){
+            		console.error("$scope.state[trackingReminder.id] is undefined so we can't send tally in favorite controller. Not sure how this is happening.");
+					return;
+				}
                 if($scope.state[trackingReminder.id].tally) {
                     measurementService.postMeasurementByReminder(trackingReminder, $scope.state[trackingReminder.id].tally)
                         .then(function () {
