@@ -119,10 +119,10 @@ angular.module('starter')
             if ($rootScope.isWeb && window.private_keys.client_ids.Web === 'oAuthDisabled') {
                 return window.location.origin;
             }
-            if ($rootScope.isWeb) { return window.private_keys.redirect_uris.Web; }
-            if ($rootScope.isIOS) { return window.private_keys.redirect_uris.iOS; }
-            if ($rootScope.isAndroid) { return window.private_keys.redirect_uris.Android; }
-            if ($rootScope.isWindows) { return window.private_keys.redirect_uris.Windows; }
+            if ($rootScope.isWeb) { return window.private_keys.api_urls.Web; }
+            if ($rootScope.isIOS) { return window.private_keys.api_urls.iOS; }
+            if ($rootScope.isAndroid) { return window.private_keys.api_urls.Android; }
+            if ($rootScope.isWindows) { return window.private_keys.api_urls.Windows; }
             return "https://app.quantimo.do";
         };
 

@@ -37,13 +37,28 @@ angular.module('starter',
 
          if (ionic.Platform.isAndroid() || ionic.Platform.isIPad() || ionic.Platform.isIOS()) {
              console.debug("Going to try to register push");
-             var push = new Ionic.Push({"debug": true});
+             var push = PushNotification.init({
+                 android: {
+                     senderID: "1052648855194",
+                     sound: "false",
+                     vibrate: "false"
+                 },
+                 browser: {
+                     pushServiceURL: 'http://push.api.phonegap.com/v1/push'
+                 },
+                 ios: {
+                     alert: "false",
+                     badge: "true",
+                     sound: "false"
+                 },
+                 windows: {}
+             });
 
-             push.register(function (registerResponse) {
+             push.on('registration', function(registerResponse) {
+                 console.debug('Registered device for push notifications: ' + JSON.stringify(registerResponse));
+                 // data.registrationId
                  var newDeviceToken = registerResponse.token;
                  console.debug("Got device token for push notifications: " + registerResponse.token);
-
-                 push.saveToken(registerResponse.token);
                  var deviceTokenOnServer = localStorageService.getItemSync('deviceTokenOnServer');
                  console.debug('deviceTokenOnServer from localStorage is ' + deviceTokenOnServer);
                  if(deviceTokenOnServer !== registerResponse.token) {
@@ -52,13 +67,8 @@ angular.module('starter',
                  }
              });
 
-             push.on('registration', function(data) {
-                 // data.registrationId
-                 console.log('Registered device for push notifications: ' + JSON.stringify(data));
-             });
-
              push.on('notification', function(data) {
-                 console.log('Received push notification: ' + JSON.stringify(data));
+                 alert('Received push notification: ' + JSON.stringify(data));
                  // data.message,
                  // data.title,
                  // data.count,
