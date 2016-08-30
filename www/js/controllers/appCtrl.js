@@ -408,7 +408,12 @@ angular.module('starter')
 
         $scope.init = function () {
             console.log("Main Constructor Start");
+            $rootScope.getAccessTokenFromUrlParameter();
+            hideNavigationMenuIfSetInUrlParameter();
             $scope.shouldWeCombineNotifications();
+            localStorageService.getItem('introSeen', function(introSeen){
+                $rootScope.introSeen = introSeen;
+            });
             if (!$rootScope.user) {
                 $rootScope.user = localStorageService.getItemAsObject('user');
             }
@@ -424,7 +429,7 @@ angular.module('starter')
             }
             // Don't think we need this anymore since everyone should have been migrated by now
             // migrationService.version1466();
-            hideNavigationMenuIfSetInUrlParameter();
+
             //goToWelcomeStateIfNotWelcomed();
             scheduleReminder();
             if ($rootScope.isIOS || $rootScope.isAndroid) {

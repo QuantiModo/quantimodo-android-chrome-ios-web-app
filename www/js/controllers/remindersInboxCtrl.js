@@ -192,20 +192,10 @@ angular.module('starter')
 
 			if (typeof Bugsnag !== "undefined") { Bugsnag.context = "reminderInbox"; }
 
-	    	if (location.href.toLowerCase().indexOf('hidemenu=true') === -1) {
-	    		$rootScope.hideMenu = false;
-				localStorageService.getItem('introSeen', function(introSeen){
-					$rootScope.introSeen = introSeen;
-					if(!introSeen){
-						console.debug('reminderInboxCtrl init: Intro not seen and hidemenu is false so going to intro state');
-						$state.go('intro');
-					}
-				});
+	    	if (!$rootScope.hideNavigationMenu && !$rootScope.introSeen) {
+				console.debug('reminderInboxCtrl init: Intro not seen and hidemenu is false so going to intro state');
+				$state.go('intro');
 			} else {
-				$rootScope.hideMenu = true;
-			}
-
-			if($rootScope.introSeen || $rootScope.hideMenu) {
 				$rootScope.showAllCaughtUpCard = false;
 				setPageTitle();
 				authService.checkAuthOrSendToLogin();
