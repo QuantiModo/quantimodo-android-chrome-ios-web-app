@@ -17,7 +17,7 @@ angular.module('starter',
     ]
 )
 
-.run(function($ionicPlatform, $ionicHistory, $state, $rootScope, localStorageService) {
+.run(function($ionicPlatform, $ionicHistory, $state, $rootScope, localStorageService, qmLocationService) {
 //.run(function($ionicPlatform, $ionicHistory, $state, $rootScope, $ionicAnalytics) {
 // Database
 //.run(function($ionicPlatform, $ionicHistory, $state, $rootScope, $cordovaSQLite) {
@@ -69,6 +69,7 @@ angular.module('starter',
 
              push.on('notification', function(data) {
                  console.log('Received push notification: ' + JSON.stringify(data));
+                 qmLocationService.updateLocationVariablesAndPostMeasurementIfChanged();
                  // data.message,
                  // data.title,
                  // data.count,
