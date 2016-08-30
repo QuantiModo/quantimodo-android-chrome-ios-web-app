@@ -115,7 +115,8 @@ angular.module('starter')
 				},
 				function (errorResp) {
 					$ionicLoading.hide();
-					console.error('checkAuthOrSendToLogin: Could not get user with a cookie. Going to login page...', errorResp);
+					console.error('checkAuthOrSendToLogin: Could not get user with ' + url +
+						'. Going to login page. Error response: ' + errorResp.message);
 					$state.go('app.login');
 				}
 			);

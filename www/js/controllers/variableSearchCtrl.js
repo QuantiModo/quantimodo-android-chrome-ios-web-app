@@ -106,7 +106,7 @@ angular.module('starter')
                     variableService.searchUserVariables($scope.state.variableSearchQuery, $scope.state.variableCategoryName)
                         .then(function(variables){
                             console.debug("$scope.onVariableSearch: Populating list with " +
-                                "variableService.searchUserVariables results " + JSON.stringify(variables));
+                                "variableService.searchUserVariables results ");
                             $scope.state.showAddVariableButton = false;
                             $scope.state.variableSearchResults = variables;
                             $scope.state.searching = false;
@@ -116,7 +116,7 @@ angular.module('starter')
                     variableService.searchVariablesIncludePublic($scope.state.variableSearchQuery, $scope.state.variableCategoryName)
                         .then(function(variables){
                             console.debug("$scope.onVariableSearch: Populating list with " +
-                                "variableService.searchVariablesIncludePublic results " + JSON.stringify(variables));
+                                "variableService.searchVariablesIncludePublic results ");
                             $scope.state.showAddVariableButton = false;
                             $scope.state.variableSearchResults = variables;
                             $scope.state.searching = false;

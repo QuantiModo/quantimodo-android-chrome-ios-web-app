@@ -123,8 +123,9 @@ angular.module('starter',
         if(typeof config !== "undefined"){
             clearInterval(intervalChecker);
 
-            if(!window.private_keys){
-                console.error('intervalChecker: No private config file found!');
+            if(!window.private_keys) {
+                alert('Please add private config file to www/private_configs folder!  Contact mike@quantimo.do if you need help');
+                console.error('Please add private config file to www/private_configs folder!  Contact mike@quantimo.do if you need help');
                 return;
             }
 
@@ -755,10 +756,9 @@ angular.module('starter',
                 }
             }
         })
-    ;
     
       // if none of the above states are matched, use this as the fallback
-      $urlRouterProvider.otherwise('/');
+      $urlRouterProvider.otherwise('/app/reminders-inbox');
 });
 
 angular.module('exceptionOverride', []).factory('$exceptionHandler', function () {
