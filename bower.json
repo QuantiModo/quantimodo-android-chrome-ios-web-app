@@ -20,7 +20,7 @@
     "highcharts-ng": "~0.0.11",
     "highcharts": "~4.1.8",
     "highstock-release": "~2.1.9",
-    "ionic-timepicker": "0.6.0",
+    "ionic-timepicker": "https://github.com/rajeshwarpatlolla/ionic-timepicker.git#bec5cd23da331a3aef9659ddb24c7847637b10b3",
     "pluralize": "^1.2.1",
     "ng-material-floating-button": "ng-mfb#^0.6.2",
     "Ionicons": "ionicons#^2.0.1",

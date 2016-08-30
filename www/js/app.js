@@ -37,80 +37,50 @@ angular.module('starter',
 
          if (ionic.Platform.isAndroid() || ionic.Platform.isIPad() || ionic.Platform.isIOS()) {
              console.debug("Going to try to register push");
-             var push = new Ionic.Push({"debug": true});
+             var push = PushNotification.init({
+                 android: {
+                     senderID: "1052648855194",
+                     sound: "false",
+                     vibrate: "false"
+                 },
+                 browser: {
+                     pushServiceURL: 'http://push.api.phonegap.com/v1/push'
+                 },
+                 ios: {
+                     alert: "false",
+                     badge: "true",
+                     sound: "false"
+                 },
+                 windows: {}
+             });
 
-             push.register(function (registerResponse) {
-                 var newDeviceToken = registerResponse.token;
-                 console.debug("Got device token for push notifications: " + registerResponse.token);
-
-                 push.saveToken(registerResponse.token);
+             push.on('registration', function(registerResponse) {
+                 console.debug('Registered device for push notifications: ' + JSON.stringify(registerResponse));
+                 // data.registrationId
+                 var newDeviceToken = registerResponse.registrationId;
+                 console.debug("Got device token for push notifications: " + registerResponse.registrationId);
                  var deviceTokenOnServer = localStorageService.getItemSync('deviceTokenOnServer');
                  console.debug('deviceTokenOnServer from localStorage is ' + deviceTokenOnServer);
-                 if(deviceTokenOnServer !== registerResponse.token) {
+                 if(deviceTokenOnServer !== registerResponse.registrationId) {
                      localStorageService.setItem('deviceTokenToSync', newDeviceToken);
                      console.debug('New push device token does not match push device token on server so saving to localStorage to sync after login');
                  }
              });
+
+             push.on('notification', function(data) {
+                 alert('Received push notification: ' + JSON.stringify(data));
+                 // data.message,
+                 // data.title,
+                 // data.count,
+                 // data.sound,
+                 // data.image,
+                 // data.additionalData
+             });
+
+             push.on('error', function(e) {
+                 alert(e.message);
+             });
          }
-
-        /*
-
-         window.onNotification = function(e){
-            console.log("window.onNotification: received event", e);
-            switch(e.event){
-                case 'registered':
-                    if(e.regid.length > 0){
-
-                        var deviceToken = e.regid;
-                        pushNotificationService.register(deviceToken).then(function(response){
-                            alert('registered!');
-                        });
-                    }
-                    break;
-
-                case 'message':
-                    alert('msg received: ' + e.message);
-                    /!*
-                     {
-                     "message": "Hello this is a push notification",
-                     "payload": {
-                     "message": "Hello this is a push notification",
-                     "sound": "notification",
-                     "title": "New Message",
-                     "from": "813xxxxxxx",
-                     "collapse_key": "do_not_collapse",
-                     "foreground": true,
-                     "event": "message"
-                     }
-                     }
-                     *!/
-                    break;
-
-                case 'error':
-                    alert('error occurred');
-                    break;
-
-            }
-        };
-
-        window.errorHandler = function(error){
-            alert('an error occurred');
-        };
-
-        var pushNotification = window.plugins.pushNotification;
-        pushNotification.register(
-            window.onNotification,
-            window.errorHandler,
-            {
-                'badge': 'true',
-                'sound': 'true',
-                'alert': 'true',
-                'ecb': 'onNotification',
-                'senderID': window.private_keys.GCM_SENDER_ID
-            }
-        );
-
-*/
 
         if(typeof analytics !== "undefined") {
             console.log("Configuring Google Analytics");
@@ -155,7 +125,7 @@ angular.module('starter',
                 return;
             }
 
-            $rootScope.appVersion = "1.8.5.6";
+            $rootScope.appVersion = "1.8.5.12";
             $rootScope.appName = config.appSettings.appName;
 
             if (typeof Bugsnag !== "undefined") {
