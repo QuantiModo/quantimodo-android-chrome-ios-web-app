@@ -191,7 +191,8 @@ angular.module('starter')
 	    $scope.init = function(){
 
 			if (typeof Bugsnag !== "undefined") { Bugsnag.context = "reminderInbox"; }
-
+			$rootScope.getAccessTokenFromUrlParameter();
+			$rootScope.hideNavigationMenuIfSetInUrlParameter();
 	    	if (!$rootScope.hideNavigationMenu && !$rootScope.introSeen && !$rootScope.user) {
 				console.debug('reminderInboxCtrl init: Intro not seen and hidemenu is false so going to intro state');
 				$state.go('intro');

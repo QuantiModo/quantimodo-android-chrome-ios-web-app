@@ -350,11 +350,11 @@ angular.module('starter')
         };
 
         // when work on this activity is complete
-        function hideNavigationMenuIfSetInUrlParameter() {
+        $rootScope.hideNavigationMenuIfSetInUrlParameter = function() {
             if (location.href.toLowerCase().indexOf('hidemenu=true') !== -1) {
                 $rootScope.hideNavigationMenu = true;
             }
-        }
+        };
 
         function goToDefaultStateShowMenuClearIntroHistoryAndRedraw() {
 
@@ -409,7 +409,7 @@ angular.module('starter')
         $scope.init = function () {
             console.log("Main Constructor Start");
             $rootScope.getAccessTokenFromUrlParameter();
-            hideNavigationMenuIfSetInUrlParameter();
+            $rootScope.hideNavigationMenuIfSetInUrlParameter();
             $scope.shouldWeCombineNotifications();
             localStorageService.getItem('introSeen', function(introSeen){
                 $rootScope.introSeen = introSeen;
