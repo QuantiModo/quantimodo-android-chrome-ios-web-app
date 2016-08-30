@@ -16,6 +16,7 @@
   <allow-intent href="mailto:*" />
   <allow-intent href="geo:*" />
   <platform name="android">
+    <hook type="after_prepare" src="hooks/copy_android_images.sh"/>
     <allow-intent href="market:*" />
   </platform>
   <platform name="ios">

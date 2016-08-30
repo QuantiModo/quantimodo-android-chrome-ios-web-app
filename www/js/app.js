@@ -40,8 +40,10 @@ angular.module('starter',
              var push = PushNotification.init({
                  android: {
                      senderID: "1052648855194",
-                     sound: "false",
-                     vibrate: "false"
+                     badge: true,
+                     sound: false,
+                     vibrate: false,
+                     icon: 'ic_stat_icon_bw'
                  },
                  browser: {
                      pushServiceURL: 'http://push.api.phonegap.com/v1/push'
