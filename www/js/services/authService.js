@@ -102,7 +102,7 @@ angular.module('starter')
             if($rootScope.user){
 				return true;
 			}
-			$rootScope.getAccessTokenFromUrlParameter();
+			$rootScope.accessTokenInUrl = $rootScope.getAccessTokenFromUrlParameter();
 			var url = utilsService.getURL("api/user");
             if($rootScope.accessTokenInUrl){
 				url = url + 'accessToken=' + $rootScope.accessTokenInUrl;

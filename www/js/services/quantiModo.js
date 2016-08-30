@@ -677,7 +677,7 @@ angular.module('starter')
                     return deferred.promise;
                 }
 
-                $rootScope.getAccessTokenFromUrlParameter();
+                $rootScope.accessTokenInUrl = $rootScope.getAccessTokenFromUrlParameter();
 
                 if ($rootScope.accessTokenInUrl) {
                     var url = utilsService.getURL("api/user") + 'accessToken=' + $rootScope.accessTokenInUrl;
