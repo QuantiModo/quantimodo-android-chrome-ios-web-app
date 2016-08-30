@@ -192,7 +192,7 @@ angular.module('starter')
 
 			if (typeof Bugsnag !== "undefined") { Bugsnag.context = "reminderInbox"; }
 
-	    	if (!$rootScope.hideNavigationMenu && !$rootScope.introSeen) {
+	    	if (!$rootScope.hideNavigationMenu && !$rootScope.introSeen && !$rootScope.user) {
 				console.debug('reminderInboxCtrl init: Intro not seen and hidemenu is false so going to intro state');
 				$state.go('intro');
 			} else {
