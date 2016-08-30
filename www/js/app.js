@@ -756,7 +756,7 @@ angular.module('starter',
     ;
     
       // if none of the above states are matched, use this as the fallback
-      $urlRouterProvider.otherwise('/');
+      $urlRouterProvider.otherwise('/reminders-inbox');
 });
 
 angular.module('exceptionOverride', []).factory('$exceptionHandler', function () {
