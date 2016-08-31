@@ -1,5 +1,5 @@
 angular.module('starter')
-    .controller('IframeScreenCtrl', function ($scope, $ionicLoading, $sce, $state, authService, $rootScope) {
+    .controller('IframeScreenCtrl', function ($scope, $ionicLoading, $sce, $state, authService, $rootScope, QuantiModo) {
 
         $scope.showLoader();
         console.debug('IframeScreenCtrl works!');
