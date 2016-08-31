@@ -102,8 +102,6 @@ angular.module('starter')
                 console.error("$scope.state.variableObject: " + JSON.stringify($scope.state.variableObject));
                 return;
             }
-            console.log("variablePageCtrl: getHistoryForVariable " + $scope.state.variableObject.name);
-            $scope.showLoader('Getting ' + $scope.state.variableObject.name + ' measurements...');
 
             QuantiModo.getV1Measurements(params, function(history){
                 $scope.state.history = $scope.state.history.concat(history);
@@ -130,8 +128,6 @@ angular.module('starter')
                     }
                     $scope.hideLoader();
                     if ($scope.state.history.length > 0) {
-                        console.log("variablePageCtrl: history log");
-                        console.log($scope.state.history);
                         updateCharts();
                     }
                 }
@@ -153,9 +149,6 @@ angular.module('starter')
                 console.error("$scope.state.variableObject: " + JSON.stringify($scope.state.variableObject));
                 return;
             }
-            console.log("variablePageCtrl: getHistoryForVariable " + $scope.state.variableObject.name);
-            $scope.showLoader('Getting ' + $scope.state.variableObject.name + ' measurements...');
-
             QuantiModo.getV1MeasurementsDaily(params, function(dailyHistory){
                 $scope.state.dailyHistory = $scope.state.dailyHistory.concat(dailyHistory);
 
@@ -169,8 +162,7 @@ angular.module('starter')
                     };
                     updateDailyCharts();
                     getDailyHistoryForVariable(params);
-                }
-                else {
+                } else {
                     if (dailyHistory[0]) {
                         if(!$scope.state.variableObject.abbreviatedUnitName){
                             $scope.state.variableObject.abbreviatedUnitName = dailyHistory[0].abbreviatedUnitName;
@@ -181,8 +173,6 @@ angular.module('starter')
                     }
                     $scope.hideLoader();
                     if ($scope.state.dailyHistory.length > 0) {
-                        console.log("variablePageCtrl: dailyHistory log");
-                        console.log($scope.state.dailyHistory);
                         updateDailyCharts();
                     }
                 }

@@ -36,6 +36,8 @@
     "XMLHttpRequest" : false,
     "process" : false,
     "defer" : false,
-    "deferred" : false
+    "deferred" : false,
+    "PushNotification" : false,
+    "navigator" : false
   }
 }
