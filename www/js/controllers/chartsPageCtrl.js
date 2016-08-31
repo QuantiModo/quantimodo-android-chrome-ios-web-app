@@ -11,10 +11,12 @@ angular.module('starter')
         $scope.distributionChartConfig = false;
         $scope.state = {
             history : [],
+            dailyHistory : [],
             sum : 0,
             rangeLength : 0,
             averageValue : 0,
-            offset: 0
+            offset: 0,
+            dailyHistoryOffset: 0
         };
 
         $scope.addNewReminderButtonClick = function() {
@@ -48,6 +50,29 @@ angular.module('starter')
             $scope.$broadcast('highchartsng.reflow');
         };
 
+        var updateDailyCharts = function(){
+
+            if ($scope.state.history.length > 0) {
+                // FIXME Eventually update fromDate and toDate so calendar can determine domain
+                /*var fromDate = parseInt(localStorageService.getItemSync('fromDate'));
+                 var toDate = parseInt(localStorageService.getItemSync('toDate'));
+                 if (!fromDate) {
+                 fromDate = 0;
+                 }
+                 if (!toDate) {
+                 toDate = Date.now();
+                 }*/
+                if($scope.state.variableObject.fillingValue && $scope.state.variableObject.fillingValue !== -1){
+                    $scope.distributionChartConfig =
+                        chartService.processDataAndConfigureDistributionChart($scope.state.dailyHistory, $scope.state.variableObject);
+                }
+                $scope.lineChartConfig = chartService.processDataAndConfigureLineChart($scope.state.dailyHistory, $scope.state.variableObject);
+                $scope.weekdayChartConfig =
+                    chartService.processDataAndConfigureWeekdayChart($scope.state.dailyHistory, $scope.state.variableObject);
+                windowResize();
+            }
+        };
+
         var updateCharts = function(){
 
             if ($scope.state.history.length > 0) {
@@ -60,13 +85,12 @@ angular.module('starter')
                 if (!toDate) {
                     toDate = Date.now();
                 }*/
-                $scope.lineChartConfig = chartService.processDataAndConfigureLineChart($scope.state.history, $scope.state.variableObject);
+                if(!$scope.state.variableObject.fillingValue || $scope.state.variableObject.fillingValue === -1){
+                    $scope.distributionChartConfig =
+                        chartService.processDataAndConfigureDistributionChart($scope.state.history, $scope.state.variableObject);
+                }
                 $scope.hourlyChartConfig =
                     chartService.processDataAndConfigureHourlyChart($scope.state.history, $scope.state.variableObject);
-                $scope.weekdayChartConfig =
-                    chartService.processDataAndConfigureWeekdayChart($scope.state.history, $scope.state.variableObject);
-                $scope.distributionChartConfig =
-                    chartService.processDataAndConfigureDistributionChart($scope.state.history, $scope.state.variableObject);
                 windowResize();
             }
         };
@@ -78,10 +102,8 @@ angular.module('starter')
                 console.error("$scope.state.variableObject: " + JSON.stringify($scope.state.variableObject));
                 return;
             }
-            console.log("variablePageCtrl: getHistoryForVariable " + $scope.state.variableObject.name);
-            $scope.showLoader('Getting ' + $scope.state.variableObject.name + ' measurements...');
 
-            QuantiModo.getV1MeasurementsDaily(params, function(history){
+            QuantiModo.getV1Measurements(params, function(history){
                 $scope.state.history = $scope.state.history.concat(history);
                 
                 if(history.length > 0){
@@ -106,8 +128,6 @@ angular.module('starter')
                     }
                     $scope.hideLoader();
                     if ($scope.state.history.length > 0) {
-                        console.log("variablePageCtrl: history log");
-                        console.log($scope.state.history);
                         updateCharts();
                     }
                 }
@@ -122,6 +142,50 @@ angular.module('starter')
             });
         };
 
+        var getDailyHistoryForVariable = function(params){
+            if(!params.variableName){
+                console.error("ERROR: params.variableName not provided to getHistoryForVariable");
+                console.error("params: " + JSON.stringify(params));
+                console.error("$scope.state.variableObject: " + JSON.stringify($scope.state.variableObject));
+                return;
+            }
+            QuantiModo.getV1MeasurementsDaily(params, function(dailyHistory){
+                $scope.state.dailyHistory = $scope.state.dailyHistory.concat(dailyHistory);
+
+                if(dailyHistory.length > 0){
+                    $scope.state.dailyHistoryOffset = $scope.state.dailyHistoryOffset + 200;
+                    params = {
+                        offset: $scope.state.dailyHistoryOffset,
+                        sort: "startTimeEpoch",
+                        variableName: $scope.state.variableObject.name,
+                        limit: 200
+                    };
+                    updateDailyCharts();
+                    getDailyHistoryForVariable(params);
+                } else {
+                    if (dailyHistory[0]) {
+                        if(!$scope.state.variableObject.abbreviatedUnitName){
+                            $scope.state.variableObject.abbreviatedUnitName = dailyHistory[0].abbreviatedUnitName;
+                        }
+                        if(!$scope.state.variableObject.unitName){
+                            $scope.state.variableObject.unitName = dailyHistory[0].unitName;
+                        }
+                    }
+                    $scope.hideLoader();
+                    if ($scope.state.dailyHistory.length > 0) {
+                        updateDailyCharts();
+                    }
+                }
+            }, function(error){
+                if (typeof Bugsnag !== "undefined") {
+                    Bugsnag.notify(error, JSON.stringify(error), {}, "error");
+                }
+                console.error('error getting dailyHistory measurements', error);
+                $scope.hideLoader();
+            }, function(history) {
+                $scope.state.dailyHistory = $scope.state.dailyHistory.concat(history);
+            });
+        };
 
         var getStatisticsForVariable = function (variableName) {
             $scope.state.variableObject = {
@@ -151,8 +215,10 @@ angular.module('starter')
                 var params = {
                     sort: "startTimeEpoch",
                     variableName: $scope.state.variableObject.name,
-                    limit: 200
+                    limit: 200,
+                    offset: 0
                 };
+                getDailyHistoryForVariable(params);
                 getHistoryForVariable(params);
             } else {
                 console.error('ERROR: $scope.state.variableObject.name not defined! $scope.state.variableObject: ' +
