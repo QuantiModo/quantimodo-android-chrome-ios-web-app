@@ -226,7 +226,7 @@ angular.module('starter')
             }
         };
 
-        $scope.$on('$ionicView.enter', function(e) {
+        $scope.$on('$ionicView.enter', function(e) { console.debug("Entering state " + $state.current.name);
             $scope.init();
         });
 

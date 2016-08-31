@@ -120,7 +120,7 @@ angular.module('starter')
             updateCharts();
         });
 
-        $scope.$on('$ionicView.enter', function(e) {
+        $scope.$on('$ionicView.enter', function(e) { console.debug("Entering state " + $state.current.name);
             console.log('$ionicView.enter. Updating charts and syncing..');
             $scope.init();
         });
