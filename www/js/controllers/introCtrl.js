@@ -53,6 +53,11 @@ angular.module('starter')
     };
 
     var init = function(){
+        if(navigator && navigator.splashscreen) {
+            console.debug('Hiding splash screen because app is ready');
+            navigator.splashscreen.hide();
+        }
+
         if($rootScope.user || $rootScope.introSeen){
             $state.go(config.appSettings.defaultState);
         } else {
