@@ -11,10 +11,12 @@ angular.module('starter')
         $scope.distributionChartConfig = false;
         $scope.state = {
             history : [],
+            dailyHistory : [],
             sum : 0,
             rangeLength : 0,
             averageValue : 0,
-            offset: 0
+            offset: 0,
+            dailyHistoryOffset: 0
         };
 
         $scope.addNewReminderButtonClick = function() {
@@ -60,11 +62,13 @@ angular.module('starter')
                  if (!toDate) {
                  toDate = Date.now();
                  }*/
-                $scope.lineChartConfig = chartService.processDataAndConfigureLineChart($scope.state.history, $scope.state.variableObject);
+                if($scope.state.variableObject.fillingValue && $scope.state.variableObject.fillingValue !== -1){
+                    $scope.distributionChartConfig =
+                        chartService.processDataAndConfigureDistributionChart($scope.state.dailyHistory, $scope.state.variableObject);
+                }
+                $scope.lineChartConfig = chartService.processDataAndConfigureLineChart($scope.state.dailyHistory, $scope.state.variableObject);
                 $scope.weekdayChartConfig =
-                    chartService.processDataAndConfigureWeekdayChart($scope.state.history, $scope.state.variableObject);
-                $scope.distributionChartConfig =
-                    chartService.processDataAndConfigureDistributionChart($scope.state.history, $scope.state.variableObject);
+                    chartService.processDataAndConfigureWeekdayChart($scope.state.dailyHistory, $scope.state.variableObject);
                 windowResize();
             }
         };
@@ -81,6 +85,10 @@ angular.module('starter')
                 if (!toDate) {
                     toDate = Date.now();
                 }*/
+                if(!$scope.state.variableObject.fillingValue || $scope.state.variableObject.fillingValue === -1){
+                    $scope.distributionChartConfig =
+                        chartService.processDataAndConfigureDistributionChart($scope.state.history, $scope.state.variableObject);
+                }
                 $scope.hourlyChartConfig =
                     chartService.processDataAndConfigureHourlyChart($scope.state.history, $scope.state.variableObject);
                 windowResize();
@@ -217,7 +225,8 @@ angular.module('starter')
                 var params = {
                     sort: "startTimeEpoch",
                     variableName: $scope.state.variableObject.name,
-                    limit: 200
+                    limit: 200,
+                    offset: 0
                 };
                 getDailyHistoryForVariable(params);
                 getHistoryForVariable(params);
