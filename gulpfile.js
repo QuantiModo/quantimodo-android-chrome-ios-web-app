@@ -1053,6 +1053,11 @@ gulp.task('bumpVersion', function(){
 	return deferred.promise;
 });
 
+gulp.task('ic_notification', function() {
+	gulp.src('./resources/android/res/**')
+		.pipe(gulp.dest('./platforms/android/res'));
+});
+
 gulp.task('setVersionNumbersWithEnvs', function(){
 
 	console.log('gulp setVersionNumbersWithEnvs was called');
