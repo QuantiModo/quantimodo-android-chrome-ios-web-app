@@ -110,11 +110,18 @@ source scripts/push_plugin_install.sh
 echo "Generating image resources for $LOWERCASE_APP_NAME..."
 ionic resources >/dev/null
 
+ionic browser rm crosswalk
 cordova build --debug android >/dev/null
 cordova build --release android >/dev/null
+
+ionic browser add crosswalk@12.41.296.5
+cordova build --release android >/dev/null
+
 mkdir -p ${BUILD_PATH}/${LOWERCASE_APP_NAME}/android
 cp -R platforms/android/build/outputs/apk/* ${BUILD_PATH}/${LOWERCASE_APP_NAME}/android
 cd ${BUILD_PATH}/${LOWERCASE_APP_NAME}/android
+
+cp ${SIGNED_GENERIC_APK_FILENAME} "$DROPBOX_PATH/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${SIGNED_GENERIC_APK_FILENAME}"
 
 UNSIGNED_APK_FILENAME="android-release-unsigned.apk"
 SIGNED_APK_FILENAME=${LOWERCASE_APP_NAME}-android-release-signed.apk
@@ -125,52 +132,33 @@ SIGNED_DEBUG_APK_FILENAME=${LOWERCASE_APP_NAME}-android-debug-signed.apk
 ANDROID_DEBUG_KEYSTORE_PASSWORD=android
 DEBUG_ALIAS=androiddebugkey
 
-echo "zip -d ${UNSIGNED_DEBUG_APK_FILENAME} META-INF/\*"
-zip -d ${UNSIGNED_DEBUG_APK_FILENAME} META-INF/\*
-echo "Signing ${UNSIGNED_DEBUG_APK_FILENAME}"
-jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore ${ANDROID_DEBUG_KEYSTORE_PATH} -storepass ${ANDROID_DEBUG_KEYSTORE_PASSWORD} ${UNSIGNED_DEBUG_APK_FILENAME} ${DEBUG_ALIAS} >/dev/null
-echo "Verifying ${UNSIGNED_DEBUG_APK_FILENAME}"
-jarsigner -verify ${UNSIGNED_DEBUG_APK_FILENAME} >/dev/null
-echo "Zipaligning ${UNSIGNED_DEBUG_APK_FILENAME}"
-${ANDROID_BUILD_TOOLS}/zipalign -v 4 ${UNSIGNED_DEBUG_APK_FILENAME} ${SIGNED_DEBUG_APK_FILENAME} >/dev/null
+export UNSIGNED_GENERIC_APK_FILENAME=${UNSIGNED_DEBUG_APK_FILENAME}
+export ANDROID_GENERIC_KEYSTORE_PATH=${ANDROID_DEBUG_KEYSTORE_PATH}
+export ANDROID_GENERIC_KEYSTORE_PASSWORD=${ANDROID_DEBUG_KEYSTORE_PASSWORD}
+export GENERIC_ALIAS=${DEBUG_ALIAS}
+export SIGNED_GENERIC_APK_FILENAME=${SIGNED_DEBUG_APK_FILENAME}
+source scripts/build_scripts/android_sign.sh
 
-echo -e "${GREEN}Copying ${SIGNED_DEBUG_APK_FILENAME} to $DROPBOX_PATH/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${SIGNED_DEBUG_APK_FILENAME}${NC}"
-cp ${SIGNED_DEBUG_APK_FILENAME} "$DROPBOX_PATH/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${SIGNED_DEBUG_APK_FILENAME}"
+export UNSIGNED_GENERIC_APK_FILENAME=${UNSIGNED_APK_FILENAME}
+export ANDROID_GENERIC_KEYSTORE_PATH=${ANDROID_KEYSTORE_PATH}
+export ANDROID_GENERIC_KEYSTORE_PASSWORD=${ANDROID_KEYSTORE_PASSWORD}
+export GENERIC_ALIAS=${ALIAS}
+export SIGNED_GENERIC_APK_FILENAME=${SIGNED_APK_FILENAME}
+source scripts/build_scripts/android_sign.sh
 
-if [ -f "$DROPBOX_PATH/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${SIGNED_DEBUG_APK_FILENAME}" ];
-then
-   echo echo "${SIGNED_DEBUG_APK_FILENAME} is ready in $DROPBOX_PATH/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${SIGNED_DEBUG_APK_FILENAME}"
-else
-   echo "ERROR: File ${SIGNED_DEBUG_APK_FILENAME} does not exist. Build FAILED"
-   exit 1
-fi
+export UNSIGNED_GENERIC_APK_FILENAME="android-arm7-release-unsigned.apk"
+export SIGNED_GENERIC_APK_FILENAME=${LOWERCASE_APP_NAME}-android-arm7-release-signed.apk
+source scripts/build_scripts/android_sign.sh
 
-echo "zip -d ${UNSIGNED_APK_FILENAME} META-INF/\* "
-zip -d ${UNSIGNED_APK_FILENAME} META-INF/\*
-
-echo "Signing ${UNSIGNED_APK_FILENAME}"
-jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore ${ANDROID_KEYSTORE_PATH} -storepass ${ANDROID_KEYSTORE_PASSWORD} ${UNSIGNED_APK_FILENAME} ${ALIAS} >/dev/null
-echo "Verifying ${UNSIGNED_APK_FILENAME}"
-jarsigner -verify ${UNSIGNED_APK_FILENAME} >/dev/null
-echo "Zipaligning ${UNSIGNED_APK_FILENAME}"
-${ANDROID_BUILD_TOOLS}/zipalign -v 4 ${UNSIGNED_APK_FILENAME} ${SIGNED_APK_FILENAME} >/dev/null
-
-echo -e "${GREEN}Copying ${SIGNED_APK_FILENAME} to $DROPBOX_PATH/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${SIGNED_APK_FILENAME}${NC}"
-cp ${SIGNED_APK_FILENAME} "$DROPBOX_PATH/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${SIGNED_APK_FILENAME}"
+export UNSIGNED_GENERIC_APK_FILENAME="android-x86-release-unsigned.apk"
+export SIGNED_GENERIC_APK_FILENAME=${LOWERCASE_APP_NAME}-android-x86-release-signed.apk
+source scripts/build_scripts/android_sign.sh
 
 echo "Copying ${SIGNED_APK_FILENAME} to workspace folder ${IONIC_PATH}/android_builds_to_upload/ for Jenkins upload to Play beta..."
 mkdir ${IONIC_PATH}/android_builds_to_upload
 cp ${SIGNED_APK_FILENAME} ${IONIC_PATH}/android_builds_to_upload/
 
-rm ${BUILD_PATH}/${LOWERCASE_APP_NAME}/android/android-debug.apk
-rm ${BUILD_PATH}/${LOWERCASE_APP_NAME}/android/android-debug-unaligned.apk
-rm ${BUILD_PATH}/${LOWERCASE_APP_NAME}/android/android-release-unsigned.apk
-
-# Sign the app
-#jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore ${ANDROID_KEYSTORE_PATH} -storepass ${ANDROID_KEYSTORE_PASSWORD} ${UNSIGNED_APK_FILENAME} ${ALIAS} >/dev/null
-
-# Optimize apk
-#${ANDROID_BUILD_TOOLS}/zipalign 4 ${UNSIGNED_APK_FILENAME} ${SIGNED_APK_FILENAME} >/dev/null
+rm ${BUILD_PATH}/${LOWERCASE_APP_NAME}/android/*.apk
 
 if [ -f "$DROPBOX_PATH/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${SIGNED_APK_FILENAME}" ];
 then
