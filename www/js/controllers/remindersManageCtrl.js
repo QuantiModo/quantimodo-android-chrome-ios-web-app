@@ -92,9 +92,6 @@ angular.module('starter')
 			if (typeof Bugsnag !== "undefined") {
 				Bugsnag.context = "reminderManage";
 			}
-			getTrackingRemindersFromLocalStorage();
-			authService.checkAuthOrSendToLogin();
-			if (typeof analytics !== 'undefined')  { analytics.trackView("Manage Reminders Controller"); }
 
 			if (!$stateParams.variableCategoryName || $stateParams.variableCategoryName === "Anything") {
 				$scope.state.title = "Manage Reminders";
@@ -107,7 +104,12 @@ angular.module('starter')
 			}
 
 			$scope.state.showButtons = true;
-			$scope.showHelpInfoPopupIfNecessary();
+			//$scope.showHelpInfoPopupIfNecessary();
+
+			getTrackingRemindersFromLocalStorage();
+			authService.checkAuthOrSendToLogin();
+			if (typeof analytics !== 'undefined')  { analytics.trackView("Manage Reminders Controller"); }
+
 			if($rootScope.syncingReminders !== true) {
 				console.debug("ReminderMange init: calling refreshTrackingRemindersAndScheduleAlarms");
 				$scope.showLoader('Reminders coming down the pipes...');
