@@ -81,6 +81,31 @@ cd ${INTERMEDIATE_PATH}
 echo "ionic state reset"
 ionic state reset
 
+echo "cordova plugin rm phonegap-facebook-plugin for $LOWERCASE_APP_NAME Android app..."
+cordova plugin rm phonegap-facebook-plugin || true
+echo "cordova plugin rm cordova-plugin-facebook4 for $LOWERCASE_APP_NAME Android app..."
+cordova plugin rm cordova-plugin-facebook4 || true
+echo "rm -rf ../fbplugin for $LOWERCASE_APP_NAME Android app..."
+rm -rf ../fbplugin
+#echo "gulp addFacebookPlugin for $LOWERCASE_APP_NAME Android app..."
+#gulp addFacebookPlugin
+echo "cordova plugin add cordova-plugin-facebook4 APP_ID=${FACEBOOK_APP_ID} APP_NAME=${FACEBOOK_APP_NAME} for $LOWERCASE_APP_NAME Android app..."
+cordova plugin add cordova-plugin-facebook4@1.7.1 --save --variable APP_ID="${FACEBOOK_APP_ID}" --variable APP_NAME="${FACEBOOK_APP_NAME}"
+
+#echo "gulp addFacebookPlugin for $LOWERCASE_APP_NAME Android app..."
+#gulp addGooglePlusPlugin
+
+echo "cordova plugin add https://github.com/mikepsinn/cordova-plugin-googleplus.git REVERSED_CLIENT_ID=${REVERSED_CLIENT_ID} for $LOWERCASE_APP_NAME Android app..."
+cordova plugin add https://github.com/mikepsinn/cordova-plugin-googleplus.git --variable REVERSED_CLIENT_ID=${REVERSED_CLIENT_ID}
+
+#echo "cordova plugin add cordova-fabric-plugin --variable FABRIC_API_KEY=${FABRIC_API_KEY} --variable FABRIC_API_SECRET=${FABRIC_API_SECRET} for $LOWERCASE_APP_NAME Android app..."
+#cordova plugin add cordova-fabric-plugin --variable FABRIC_API_KEY=${FABRIC_API_KEY} --variable FABRIC_API_SECRET=${FABRIC_API_SECRET}
+
+echo "ionic plugin add https://github.com/DrMoriarty/cordova-fabric-crashlytics-plugin -–variable CRASHLYTICS_API_KEY=${FABRIC_API_KEY} –-variable CRASHLYTICS_API_SECRET=${FABRIC_API_SECRET}  for $LOWERCASE_APP_NAME Android app..."
+ionic plugin add https://github.com/DrMoriarty/cordova-fabric-crashlytics-plugin -–variable CRASHLYTICS_API_KEY=${FABRIC_API_KEY} –-variable CRASHLYTICS_API_SECRET=${FABRIC_API_SECRET}
+
+source ${IONIC_PATH}/scripts/build_scripts/push_plugin_install.sh
+
 #npm install -g bower
 bower install
 ionic config build
@@ -109,7 +134,7 @@ source ${INTERMEDIATE_PATH}/scripts/build_scripts/02_build_chrome.sh
 #source ${INTERMEDIATE_PATH}/04_reset_workspace.sh
 
 # We do this at this higher level so Jenkins can detect the exit code
-if [ -f ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${LOWERCASE_APP_NAME}-android-release-signed.apk ];
+if [ -f ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${LOWERCASE_APP_NAME}-android-armv7-release-signed.apk ];
 then
    echo echo "${LOWERCASE_APP_NAME} Android app is ready in ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${LOWERCASE_APP_NAME}-android-release-signed.apk"
 else
@@ -130,7 +155,7 @@ source ${INTERMEDIATE_PATH}/scripts/build_scripts/02_build_chrome.sh
 #source ${INTERMEDIATE_PATH}/04_reset_workspace.sh
 
 # We do this at this higher level so Jenkins can detect the exit code
-if [ -f ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${LOWERCASE_APP_NAME}-android-release-signed.apk ];
+if [ -f ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${LOWERCASE_APP_NAME}-android-armv7-release-signed.apk ];
 then
    echo echo "${LOWERCASE_APP_NAME} Android app is ready in ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${LOWERCASE_APP_NAME}-android-release-signed.apk"
 else
@@ -150,7 +175,7 @@ source ${INTERMEDIATE_PATH}/scripts/build_scripts/02_build_chrome.sh
 #source ${INTERMEDIATE_PATH}/scripts/build_scripts/04_build_ios.sh
 
 # We do this at this higher level so Jenkins can detect the exit code
-if [ -f ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${LOWERCASE_APP_NAME}-android-release-signed.apk ];
+if [ -f ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${LOWERCASE_APP_NAME}-android-armv7-release-signed.apk ];
 then
    echo echo "${LOWERCASE_APP_NAME} Android app is ready in ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${LOWERCASE_APP_NAME}-android-release-signed.apk"
 else
@@ -170,7 +195,7 @@ source ${INTERMEDIATE_PATH}/scripts/build_scripts/02_build_chrome.sh
 #source ${INTERMEDIATE_PATH}/scripts/build_scripts/04_build_ios.sh
 
 # We do this at this higher level so Jenkins can detect the exit code
-if [ -f ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${LOWERCASE_APP_NAME}-android-release-signed.apk ];
+if [ -f ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${LOWERCASE_APP_NAME}-android-armv7-release-signed.apk ];
 then
    echo echo "${LOWERCASE_APP_NAME} Android app is ready in ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${LOWERCASE_APP_NAME}-android-release-signed.apk"
 else
@@ -190,7 +215,7 @@ source ${INTERMEDIATE_PATH}/scripts/build_scripts/02_build_chrome.sh
 #source ${INTERMEDIATE_PATH}/scripts/build_scripts/04_build_ios.sh
 
 # We do this at this higher level so Jenkins can detect the exit code
-if [ -f ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${LOWERCASE_APP_NAME}-android-release-signed.apk ];
+if [ -f ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${LOWERCASE_APP_NAME}-android-armv7-release-signed.apk ];
 then
    echo echo "${LOWERCASE_APP_NAME} Android app is ready in ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${LOWERCASE_APP_NAME}-android-release-signed.apk"
 else
