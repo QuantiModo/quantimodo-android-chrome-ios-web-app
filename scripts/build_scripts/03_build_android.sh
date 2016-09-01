@@ -110,6 +110,7 @@ source scripts/push_plugin_install.sh
 echo "Generating image resources for $LOWERCASE_APP_NAME..."
 ionic resources >/dev/null
 
+ionic info
 ionic browser rm crosswalk
 cordova build --debug android >/dev/null
 cordova build --release android >/dev/null
