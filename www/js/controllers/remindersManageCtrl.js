@@ -1,7 +1,7 @@
 angular.module('starter')
 
-	.controller('RemindersManageCtrl', function($scope, $state, $stateParams, $ionicPopup, $ionicLoading, $filter,
-												$rootScope, $ionicActionSheet, $timeout, authService,
+	.controller('RemindersManageCtrl', function($scope, $state, $stateParams, $ionicPopup, $rootScope, $timeout, $ionicLoading, $filter,
+												 $ionicActionSheet,  authService,
 												localStorageService, reminderService, variableCategoryService) {
 
 	    $scope.controller_name = "RemindersManageCtrl";
@@ -92,9 +92,6 @@ angular.module('starter')
 			if (typeof Bugsnag !== "undefined") {
 				Bugsnag.context = "reminderManage";
 			}
-			getTrackingRemindersFromLocalStorage();
-			authService.checkAuthOrSendToLogin();
-			if (typeof analytics !== 'undefined')  { analytics.trackView("Manage Reminders Controller"); }
 
 			if (!$stateParams.variableCategoryName || $stateParams.variableCategoryName === "Anything") {
 				$scope.state.title = "Manage Reminders";
@@ -107,7 +104,12 @@ angular.module('starter')
 			}
 
 			$scope.state.showButtons = true;
-			$scope.showHelpInfoPopupIfNecessary();
+			//$scope.showHelpInfoPopupIfNecessary();
+
+			getTrackingRemindersFromLocalStorage();
+			authService.checkAuthOrSendToLogin();
+			if (typeof analytics !== 'undefined')  { analytics.trackView("Manage Reminders Controller"); }
+
 			if($rootScope.syncingReminders !== true) {
 				console.debug("ReminderMange init: calling refreshTrackingRemindersAndScheduleAlarms");
 				$scope.showLoader('Reminders coming down the pipes...');
@@ -229,7 +231,7 @@ angular.module('starter')
 	    };
 
         // when view is changed
-    	$scope.$on('$ionicView.enter', function(e){
+    	$scope.$on('$ionicView.enter', function(e) { console.debug("Entering state " + $state.current.name);
 			$scope.hideLoader();
     		$scope.init();
     	});

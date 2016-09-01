@@ -360,7 +360,7 @@ angular.module('starter')
         };
         
         // update data when view is navigated to
-        $scope.$on('$ionicView.enter', function(e) {
+        $scope.$on('$ionicView.enter', function(e) { console.debug("Entering state " + $state.current.name);
             $scope.hideLoader();
             $scope.init();
         });
