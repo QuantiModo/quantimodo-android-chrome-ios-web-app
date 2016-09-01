@@ -89,7 +89,7 @@ source ${IONIC_PATH}/scripts/create_icons.sh
 
 #echo "ionic browser rm crosswalk"
 #ionic browser rm crosswalk
-#cordova build --debug android >/dev/null
+cordova build --debug android >/dev/null
 #cordova build --release android >/dev/null
 
 echo "ionic browser add crosswalk@12.41.296.5"
@@ -120,7 +120,7 @@ export ANDROID_GENERIC_KEYSTORE_PATH=${ANDROID_KEYSTORE_PATH}
 export ANDROID_GENERIC_KEYSTORE_PASSWORD=${ANDROID_KEYSTORE_PASSWORD}
 export GENERIC_ALIAS=${ALIAS}
 export SIGNED_GENERIC_APK_FILENAME=${SIGNED_APK_FILENAME}
-source ${IONIC_PATH}/scripts/build_scripts/android_sign.sh
+#source ${IONIC_PATH}/scripts/build_scripts/android_sign.sh
 
 export UNSIGNED_GENERIC_APK_FILENAME="android-armv7-release-unsigned.apk"
 export SIGNED_GENERIC_APK_FILENAME=${LOWERCASE_APP_NAME}-android-armv7-release-signed.apk
