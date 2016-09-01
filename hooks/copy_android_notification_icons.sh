@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 echo "COPYING ANDROID NOTIFICATION ICONS..."
-cp resources/android/res/* platforms/android/res
+cp -R resources/android/res/* platforms/android/res
