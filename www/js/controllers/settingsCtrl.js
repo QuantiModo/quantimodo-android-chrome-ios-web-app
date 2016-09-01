@@ -3,7 +3,7 @@ angular.module('starter')
 	// Controls the settings page
 	.controller('SettingsCtrl', function( $state, $scope, $ionicPopover, $ionicPopup, localStorageService, $rootScope, 
 										  notificationService, QuantiModo, reminderService, qmLocationService, 
-										  ionicTimePicker, userService, timeService, pushNotificationService) {
+										  ionicTimePicker, userService, timeService, utilsService) {
 		$scope.controller_name = "SettingsCtrl";
 		$scope.state = {};
 		$scope.showReminderFrequencySelector = config.appSettings.settingsPageOptions.showReminderFrequencySelector;
@@ -79,7 +79,9 @@ angular.module('starter')
 		};
 
 		$scope.init = function() {
-			Bugsnag.context = "settings";
+			if (typeof Bugsnag !== "undefined") {
+				Bugsnag.context = "settings";
+			}
 			if (typeof analytics !== 'undefined')  { analytics.trackView("Settings Controller"); }
 			$scope.shouldWeCombineNotifications();
 			qmLocationService.getLocationVariablesFromLocalStorage();
@@ -283,7 +285,7 @@ angular.module('starter')
                 $rootScope.isBrowser = ionic.Platform.platforms[0] === "browser";
                 if($rootScope.isMobile || !$rootScope.isBrowser){
                     console.log('startLogout: Open the auth window via inAppBrowser.  Platform is ' + ionic.Platform.platforms[0]);
-                    var ref = window.open(config.getApiUrl() + '/api/v2/auth/logout','_blank', 'location=no,toolbar=yes');
+                    var ref = window.open($rootScope.qmApiUrl + '/api/v2/auth/logout','_blank', 'location=no,toolbar=yes');
 
                     console.log('startLogout: listen to its event when the page changes');
 
@@ -361,7 +363,7 @@ angular.module('starter')
 
 		// when user is logging out
         function logoutOfApi() {
-			var logoutUrl = config.getURL("api/v2/auth/logout");
+			var logoutUrl = utilsService.getURL("api/v2/auth/logout");
 			window.open(logoutUrl,'_blank');
         }
 
@@ -444,7 +446,7 @@ angular.module('starter')
 		};
 
 		// when view is changed
-		$scope.$on('$ionicView.enter', function(e) {
+		$scope.$on('$ionicView.enter', function(e) { console.debug("Entering state " + $state.current.name);
 			$scope.hideLoader();
 			$scope.state.trackLocation = $rootScope.trackLocation;
 		});

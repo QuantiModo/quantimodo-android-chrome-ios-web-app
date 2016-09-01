@@ -23,12 +23,15 @@
             <p></p>
             <ion-list>
                 <ion-item style="text-align:center;border-bottom: 1px solid rgb(221, 221, 221);" ng-show="state.searching">
-                    <img src="../img/circular-loader.gif">
+                    <object data="../www/img/circular-loader.gif" type="image/png">
+                        <!--Falling back to /img if /www/img isn't present because Heroku uses different root than mobile apps-->
+                        <img src="../img/circular-loader.gif" />
+                    </object>
                 </ion-item>
             </ion-list>
             <ion-list ng-show="state.variableSearchResults.length" class>
                 <!--<ion-item ng-click="selectVariable(item)" ng-repeat="item in state.variableSearchResults | orderBy:'-latestMeasurementTime' | limitTo:5 | unique:'id'  ">-->
-                <ion-item ng-click="selectVariable(item)" ng-repeat="item in state.variableSearchResults | unique:'id'  ">
+                <ion-item ng-click="selectVariable(item)" ng-repeat="item in state.variableSearchResults track by $index  ">
                     <div>
                         <p style="font-size:18px; white-space: pre;">{{item.name}}</p>
 <!--                        <p>{{item.latestMeasurementTime | fromNow}}</p>-->
@@ -36,7 +39,7 @@
                 </ion-item>
             </ion-list>
 
-            <ion-list ng-show="state.showAddVariableButton">
+            <ion-list ng-if="state.showAddVariableButton">
                 <ion-item style="border-top: 1px solid rgb(221, 221, 221);" ng-click="addNewVariable()">
                     {{state.addNewVariableButtonText}}
                 </ion-item>

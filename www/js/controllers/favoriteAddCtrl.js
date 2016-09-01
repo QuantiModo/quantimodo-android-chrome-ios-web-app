@@ -19,7 +19,7 @@ angular.module('starter')
 
 	    // when a search result is selected
 	    $scope.onVariableSelect = function(selectedVariable){
-	    	console.log("Variable Selected: ", selectedVariable);
+	    	console.log("favoriteAdd.onVariableSelect:  " + JSON.stringify(selectedVariable));
 
             $scope.state.trackingReminder = $stateParams.variableObject;
             $scope.setupVariableCategory(selectedVariable.variableCategoryName);
@@ -188,7 +188,9 @@ angular.module('starter')
         }
 
         $scope.init = function(){
-            Bugsnag.context = "reminderAdd";
+            if (typeof Bugsnag !== "undefined") {
+                Bugsnag.context = "reminderAdd";
+            }
             if (typeof analytics !== 'undefined')  { analytics.trackView("Add Favorite Controller"); }
 
             authService.checkAuthOrSendToLogin();
@@ -209,7 +211,7 @@ angular.module('starter')
 	    };
 
         // when view is changed
-    	$scope.$on('$ionicView.enter', function(e){
+    	$scope.$on('$ionicView.enter', function(e) { console.debug("Entering state " + $state.current.name);
             $scope.hideLoader();
     		$scope.init();
     	});
@@ -287,7 +289,8 @@ angular.module('starter')
                         $scope.goToHistoryForVariableObject($scope.state.variableObject);
                     }
                     if (index === 4) {
-                        $scope.goToSettingsForVariableObject($scope.state.variableObject);
+                        $state.go('app.variableSettings',
+                            {variableName: $scope.state.trackingReminder.variableName});
                     }
                     if(index === 5){
                         $state.go('app.predictors',

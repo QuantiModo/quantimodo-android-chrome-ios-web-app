@@ -33,8 +33,8 @@ gem install xcodeproj -v 0.28.2
 gem install cocoapods -v 0.39.0
 npm install -g gulp@3.9.0
 npm install -g grunt-cli@0.1.13
-npm install -g cordova@5.4.0
-npm install -g ionic@1.7.10
+npm install -g cordova@6.0.x
+npm install -g ionic@1.7.16
 
 cd "${INTERMEDIATE_PATH}" && npm install && bower install && ionic config build
 #npm rebuild node-sass

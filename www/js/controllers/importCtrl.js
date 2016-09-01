@@ -1,7 +1,7 @@
 angular.module('starter')
 	
 	// controls the Import Data page of the app
-	.controller('ImportCtrl', function($scope, $ionicLoading, $state, $rootScope, authService) {
+	.controller('ImportCtrl', function($scope, $ionicLoading, $state, $rootScope, authService, utilsService, QuantiModo) {
 		
 		$state.go('app');
 		$scope.controller_name = "ImportCtrl";
@@ -21,18 +21,20 @@ angular.module('starter')
 
 	    // constructor
 	    $scope.init = function(){
-			Bugsnag.context = "importData";
+			if (typeof Bugsnag !== "undefined") {
+				Bugsnag.context = "importData";
+			}
 			if (typeof analytics !== 'undefined')  { //noinspection JSUnresolvedFunction
 				analytics.trackView("Import Data Controller"); }
 			$scope.showLoader();
 	        // get user's access token
 			console.debug('importCtrl.init: Going to authService.getAccessTokenFromAnySource');
-	        authService.getAccessTokenFromAnySource().then(function(accessToken){
+			QuantiModo.getAccessTokenFromAnySource().then(function(accessToken){
 	            $ionicLoading.hide();
 	            if(ionic.Platform.platforms[0] === "browser"){
 					console.log("Browser Detected");
 					
-					var url = config.getURL("api/v2/account/connectors", true);
+					var url = utilsService.getURL("api/v2/account/connectors", true);
 					if(accessToken){
 						url += "access_token=" + accessToken;
 					}
@@ -45,7 +47,7 @@ angular.module('starter')
 					//noinspection JSCheckFunctionSignatures
 					$state.go(config.appSettings.defaultState);
 	            } else {	            	
-	            	var targetUrl = config.getURL("api/v1/connect/mobile", true);
+	            	var targetUrl = utilsService.getURL("api/v1/connect/mobile", true);
 					if(accessToken){
 						targetUrl += "access_token=" + accessToken;
 					}
@@ -68,7 +70,7 @@ angular.module('starter')
 
 	    // call the constructor
 	    // when view is changed
-	    $scope.$on('$ionicView.enter', function(e) {
+	    $scope.$on('$ionicView.enter', function(e) { console.debug("Entering state " + $state.current.name);
 			$scope.hideLoader();
 			$scope.init();
 	    });

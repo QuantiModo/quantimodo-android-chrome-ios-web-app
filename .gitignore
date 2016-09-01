@@ -24,3 +24,14 @@ platforms/windows/
 bld/
 .vs/
 .vagrant/
+bin/
+resources/ios/icon/
+resources/ios/splash/
+QM-Ionic-Build.jsproj
+QM-Ionic-Build.sln
+QM-Ionic.jsproj
+QM-Ionic.sln
+QM-Ionic.jsproj.user
+changeList.json
+taco.json
+gradle-2.14.1-bin.zip

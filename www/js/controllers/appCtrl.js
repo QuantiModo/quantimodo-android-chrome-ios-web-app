@@ -5,11 +5,12 @@ angular.module('starter')
                                     $ionicPopup, $ionicSideMenuDelegate, $ionicPlatform, authService,
                                     measurementService, QuantiModo, notificationService, localStorageService,
                                     reminderService, ratingService, migrationService, ionicDatePicker, unitService,
-                                    variableService, qmLocationService, variableCategoryService, bugsnagService) {
+                                    variableService, qmLocationService, variableCategoryService, bugsnagService,
+                                    pushNotificationService, utilsService) {
 
         $rootScope.loaderImagePath = config.appSettings.loaderImagePath;
         $rootScope.appMigrationVersion = 1489;
-        $rootScope.appVersion = "1.8.5.2";
+        $rootScope.appVersion = "1.8.6.0";
         if (!$rootScope.loaderImagePath) {
             $rootScope.loaderImagePath = 'img/circular-loader.gif';
         }
@@ -222,26 +223,6 @@ angular.module('starter')
                 });
         };
 
-        $scope.goToSettingsForVariableObject = function (variableObject) {
-            if (variableObject.variableName) {
-                $state.go('app.variableSettings',
-                    {
-                        variableName: variableObject.variableName,
-                        fromState: $state.current.name,
-                        fromUrl: window.location.href
-                    });
-            }
-            else if (variableObject.name) {
-                $state.go('app.variableSettings',
-                    {
-                        variableName: variableObject.name,
-                        fromState: $state.current.name,
-                        fromUrl: window.location.href
-                    });
-            }
-
-        };
-
         $scope.addToFavoritesUsingVariableObject = function (variableObject) {
             var trackingReminder = {};
             trackingReminder.variableId = variableObject.id;
@@ -295,11 +276,11 @@ angular.module('starter')
             }
         };
         $scope.showHistorySubMenu = false;
-        $scope.shoppingCartEnabled = config.shoppingCartEnabled;
+        $scope.shoppingCartEnabled = config.appSettings.shoppingCartEnabled;
         $scope.loading = false;
         $ionicLoading.hide();
 
-        setPlatformVariables();
+        utilsService.setPlatformVariables();
 
         /*Wrapper Config*/
         $scope.viewTitle = config.appSettings.appName;
@@ -360,18 +341,20 @@ angular.module('starter')
                         console.log('reminder scheduled', $rootScope.reminderToSchedule);
                         delete $rootScope.reminderToSchedule;
                     }, function (err) {
-                        Bugsnag.notify("reminderService.addNewReminder", JSON.stringify(trackingReminder), {}, "error");
+                        if (typeof Bugsnag !== "undefined") {
+                            Bugsnag.notify("reminderService.addNewReminder", JSON.stringify(trackingReminder), {}, "error");
+                        }
                         console.log(err);
                     });
             }
         };
 
         // when work on this activity is complete
-        function hideNavigationMenuIfSetInUrlParameter() {
+        $rootScope.hideNavigationMenuIfSetInUrlParameter = function() {
             if (location.href.toLowerCase().indexOf('hidemenu=true') !== -1) {
                 $rootScope.hideNavigationMenu = true;
             }
-        }
+        };
 
         function goToDefaultStateShowMenuClearIntroHistoryAndRedraw() {
 
@@ -425,23 +408,28 @@ angular.module('starter')
 
         $scope.init = function () {
             console.log("Main Constructor Start");
+            $rootScope.getAccessTokenFromUrlParameter();
+            $rootScope.hideNavigationMenuIfSetInUrlParameter();
             $scope.shouldWeCombineNotifications();
+            localStorageService.getItem('introSeen', function(introSeen){
+                $rootScope.introSeen = introSeen;
+            });
             if (!$rootScope.user) {
                 $rootScope.user = localStorageService.getItemAsObject('user');
             }
-            if (!$rootScope.user && config.getClientId() === 'oAuthDisabled') {
+            if (!$rootScope.user && utilsService.getClientId() === 'oAuthDisabled') {
                 //console.debug("appCtrl.init: No user and oAuthDisabled so trying to getUserAndSetInLocalStorage. Note: This interferes with welcome flow.");
                 //console.warn('Disabled getUserAndSetInLocalStorage in appCtrl.init...');
                 //$rootScope.getUserAndSetInLocalStorage();
             }
             if ($rootScope.user) {
-                $rootScope.setUserForIntercom($rootScope.user);
-                $rootScope.setUserForBugsnag($rootScope.user);
+                console.debug("appCtrl.init calling setUserInLocalStorageBugsnagAndRegisterDeviceForPush");
+                $rootScope.setUserInLocalStorageBugsnagAndRegisterDeviceForPush($rootScope.user);
                 $scope.syncEverything();
             }
             // Don't think we need this anymore since everyone should have been migrated by now
             // migrationService.version1466();
-            hideNavigationMenuIfSetInUrlParameter();
+
             //goToWelcomeStateIfNotWelcomed();
             scheduleReminder();
             if ($rootScope.isIOS || $rootScope.isAndroid) {
@@ -626,28 +614,6 @@ angular.module('starter')
             notificationService.updateOrRecreateNotifications();
         };
 
-        function setPlatformVariables() {
-            $rootScope.isIOS = ionic.Platform.isIPad() || ionic.Platform.isIOS();
-            $rootScope.isAndroid = ionic.Platform.isAndroid();
-            $rootScope.isMobile = ionic.Platform.isAndroid() || ionic.Platform.isIPad() || ionic.Platform.isIOS();
-            $rootScope.isChrome = window.chrome ? true : false;
-            $rootScope.currentPlatform = ionic.Platform.platform();
-            $rootScope.currentPlatformVersion = ionic.Platform.version();
-
-            var currentUrl =  window.location.href;
-            console.log('currentUrl is ' + currentUrl );
-            if (currentUrl.indexOf('chrome-extension') !== -1) {
-                $rootScope.isChromeExtension = true;
-                $rootScope.isChromeApp = false;
-            } 
-
-            if ($rootScope.isChrome && chrome.identity) {
-                $rootScope.isChromeExtension = false;
-                $rootScope.isChromeApp = true;
-            }
-        }
-
-
         $scope.saveInterval = function(primaryOutcomeRatingFrequencyDescription){
             if(primaryOutcomeRatingFrequencyDescription){
                 $scope.primaryOutcomeRatingFrequencyDescription = primaryOutcomeRatingFrequencyDescription;
@@ -678,7 +644,9 @@ angular.module('starter')
                 }
             } catch (err) {
                 console.error('scheduleGenericNotification error');
-                bugsnagService.reportError(err);
+                if (typeof Bugsnag !== "undefined") {
+                    bugsnagService.reportError(err);
+                }
                 console.error(err);
             }
 
@@ -724,10 +692,7 @@ angular.module('starter')
             var successHandler = function(userObject) {
                 if (userObject) {
                     console.log('Setting user in getUserAndSetInLocalStorage');
-                    localStorageService.setItem('user', JSON.stringify(userObject));
-                    $rootScope.user = userObject;
-                    $rootScope.setUserForIntercom($rootScope.user);
-                    $rootScope.setUserForBugsnag($rootScope.user);
+                    $rootScope.setUserInLocalStorageBugsnagAndRegisterDeviceForPush(userObject);
                     if ($state.current.name === 'app.login') {
                         goToDefaultStateShowMenuClearIntroHistoryAndRedraw();
                     }
@@ -735,7 +700,7 @@ angular.module('starter')
                 }
             };
             
-            authService.apiGet('api/user/me',
+            QuantiModo.get('api/user/me',
                 [],
                 {},
                 successHandler,
@@ -744,32 +709,6 @@ angular.module('starter')
                     console.debug(err);
                 }
             );
-        };
-
-        $rootScope.setUserForIntercom = function(userObject) {
-            if(userObject){
-                window.intercomSettings = {
-                    app_id: "uwtx2m33",
-                    name: userObject.displayName,
-                    email: userObject.email,
-                    user_id: userObject.id,
-                    app_name: config.appSettings.appName,
-                    app_version: $rootScope.appVersion,
-                    platform: $rootScope.currentPlatform,
-                    platform_version: $rootScope.currentPlatformVersion
-                };
-            }
-            return userObject;
-        };
-
-        $rootScope.setUserForBugsnag = function(userObject) {
-            Bugsnag.metaData = {
-                user: {
-                    name: userObject.displayName,
-                    email: userObject.email
-                }
-            };
-            return userObject;
         };
 
         $scope.safeApply = function(fn) {
@@ -835,7 +774,7 @@ angular.module('starter')
             var emailUrl = 'mailto:?subject=' + subjectLine + '&body=' + emailBody;
             if($rootScope.isChromeExtension){
                 console.debug('isChromeExtension so sending to website to share data');
-                var url = config.getURL("api/v2/account/applications", true);
+                var url = utilsService.getURL("api/v2/account/applications", true);
                 var newTab = window.open(url,'_blank');
                 if(!newTab){
                     alert("Please unblock popups and refresh to access the Data Sharing page.");
@@ -880,6 +819,55 @@ angular.module('starter')
                 );
 
             }, false);
+        };
+
+        $rootScope.getAccessTokenFromUrlParameter = function () {
+            $rootScope.accessTokenInUrl = utilsService.getUrlParameter(location.href, 'accessToken');
+            if (!$rootScope.accessTokenInUrl) {
+                $rootScope.accessTokenInUrl = utilsService.getUrlParameter(location.href, 'access_token');
+            }
+            if($rootScope.accessTokenInUrl){
+                localStorageService.setItem('accessTokenInUrl', $rootScope.accessTokenInUrl);
+                localStorageService.setItem('accessToken', $rootScope.accessTokenInUrl);
+            } else {
+                localStorageService.deleteItem('accessTokenInUrl');
+            }
+
+            return $rootScope.accessTokenInUrl;
+        };
+
+        $rootScope.setUserInLocalStorageBugsnagAndRegisterDeviceForPush = function(userData){
+            if (typeof Bugsnag !== "undefined") {
+                Bugsnag.metaData = {
+                    user: {
+                        name: userData.displayName,
+                        email: userData.email
+                    }
+                };
+            }
+            localStorageService.setItem('user', JSON.stringify(userData));
+            $rootScope.user = userData;
+            window.intercomSettings = {
+                app_id: "uwtx2m33",
+                name: userData.displayName,
+                email: userData.email,
+                user_id: userData.id,
+                app_name: config.appSettings.appName,
+                app_version: $rootScope.appVersion,
+                platform: $rootScope.currentPlatform,
+                platform_version: $rootScope.currentPlatformVersion
+            };
+
+            var deviceTokenOnServer = localStorageService.getItemSync('deviceTokenOnServer');
+            if(deviceTokenOnServer){
+                console.log("This token is already on the server: " + deviceTokenOnServer);
+                return;
+            }
+
+            var deviceTokenToSync = localStorageService.getItemSync('deviceTokenToSync');
+            if(deviceTokenToSync){
+                pushNotificationService.registerDeviceToken(deviceTokenToSync);
+            }
         };
         
         $scope.init();

@@ -90,7 +90,19 @@ angular.module('starter')
                 }, function(){
                     deferred.reject(false);
                 });
-                
+
+                return deferred.promise;
+            },
+
+            resetUserVariable : function(variableId) {
+                var deferred = $q.defer();
+                var body = {variableId: variableId};
+                QuantiModo.resetUserVariable(body, function(userVariable) {
+                    deferred.resolve(userVariable);
+                }, function(){
+                    deferred.reject(false);
+                });
+
                 return deferred.promise;
             },
 
@@ -114,7 +126,9 @@ angular.module('starter')
                     localStorageService.deleteElementOfItemById('userVariables', variableId);
                     deferred.resolve();
                 }, function(error) {
-                    Bugsnag.notify(error, JSON.stringify(error), {}, "error");
+                    if (typeof Bugsnag !== "undefined") {
+                        Bugsnag.notify(error, JSON.stringify(error), {}, "error");
+                    }
                     console.log('Error deleting all measurements for variable: ', error);
                     deferred.reject(error);
                 });
@@ -154,7 +168,9 @@ angular.module('starter')
                     var errorHandler = function(err) {
                         $rootScope.syncingCommonVariables = false;
                         console.error(err);
-                        Bugsnag.notify("ERROR: "+ err, err, {}, "error");
+                        if (typeof Bugsnag !== "undefined") {
+                            Bugsnag.notify("ERROR: " + err, err, {}, "error");
+                        }
                         deferred.reject(false);
                     };
                     

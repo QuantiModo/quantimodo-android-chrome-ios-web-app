@@ -123,7 +123,8 @@ angular.module('starter')
                     });
                 } else {
                     //console.log(localStorage.getItem(keyIdentifier + localStorageItemName));
-                    matchingElements = JSON.parse(localStorage.getItem(keyIdentifier + localStorageItemName));
+                    var itemAsString = localStorage.getItem(keyIdentifier + localStorageItemName);
+                    matchingElements = JSON.parse(itemAsString);
                 }
 
                 if(filterPropertyName && typeof filterPropertyValue !== "undefined" && filterPropertyValue !== null){

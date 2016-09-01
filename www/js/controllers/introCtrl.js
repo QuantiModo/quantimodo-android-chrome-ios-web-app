@@ -56,7 +56,10 @@ angular.module('starter')
         if($rootScope.user || $rootScope.introSeen){
             $state.go(config.appSettings.defaultState);
         } else {
-            Bugsnag.context = "intro";
+            if (typeof Bugsnag !== 'undefined') {
+                Bugsnag.context = "intro";
+            }
+           
 
             $scope.showLoader();
 
@@ -74,7 +77,7 @@ angular.module('starter')
 
 
     // when view is changed
-    $scope.$on('$ionicView.enter', function(e) {
+    $scope.$on('$ionicView.enter', function(e) { console.debug("Entering state " + $state.current.name);
         $scope.hideLoader();
         init();
     });

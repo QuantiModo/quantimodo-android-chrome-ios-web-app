@@ -6,10 +6,10 @@ angular.module('starter')
 			generateDistributionArray : function(allMeasurements){
 				var distributionArray = [];
 				for (var i = 0; i < allMeasurements.length; i++) {
-					if(typeof distributionArray[String(allMeasurements[i].value)] === "undefined"){
-						distributionArray[String(allMeasurements[i].value)] = 0;
+					if(typeof distributionArray[String(allMeasurements[i].value.toPrecision(2))] === "undefined"){
+						distributionArray[String(allMeasurements[i].value.toPrecision(2))] = 0;
 					}
-					distributionArray[String(allMeasurements[i].value)] += 1;
+					distributionArray[String(allMeasurements[i].value.toPrecision(2))] += 1;
 				}
 				return distributionArray;
 			},
@@ -88,13 +88,19 @@ angular.module('starter')
 					data = [0, 0, 0, 0, 0];
 				}
 
+				function isInt(n) {
+					return parseFloat(n) % 1 === 0;
+				}
+
 				for(var propertyName in dataAndLabels) {
 					// propertyName is what you want
 					// you can get the value like this: myObject[propertyName]
 					if(dataAndLabels.hasOwnProperty(propertyName)){
 						xAxisLabels.push(propertyName);
 						if(variableObject.name === config.appSettings.primaryOutcomeVariableDetails.name){
-							data[parseInt(propertyName) - 1] = dataAndLabels[propertyName];
+							if(isInt(propertyName)){
+								data[parseInt(propertyName) - 1] = dataAndLabels[propertyName];
+							}
 						} else {
 							data.push(dataAndLabels[propertyName]);
 						}

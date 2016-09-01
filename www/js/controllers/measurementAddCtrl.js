@@ -193,7 +193,9 @@ angular.module('starter')
                     console.debug(response);
                 }, function(err){
                     console.error(err);
-                    Bugsnag.notify(err, JSON.stringify(err), {}, "error");
+                    if (typeof Bugsnag !== "undefined") {
+                        Bugsnag.notify(err, JSON.stringify(err), {}, "error");
+                    }
                 });
             }
 
@@ -268,18 +270,14 @@ angular.module('starter')
             }
             $scope.state.variableSearchPlaceholderText = 'Search for a ' + $filter('wordAliases')(pluralize(variableCategoryName, 1)) + '...';
             setupValueFieldType($scope.state.variableCategoryObject.defaultAbbreviatedUnitName, null);
-            
-            // Fill in default value as last value if not /5
-            if ($scope.state.measurement.abbreviatedUnitName !== '/5') {
-                variableService.getVariablesByName($scope.state.measurement.variableName).then(function(variableObject){
-                    $scope.state.measurement.value = parseFloat(variableObject.lastValue);
-                });
-            }
+
         };
 
         // constructor
         $scope.init = function(){
-            Bugsnag.context = "measurementAdd";
+            if (typeof Bugsnag !== "undefined") {
+                Bugsnag.context = "measurementAdd";
+            }
                 authService.checkAuthOrSendToLogin();
                 unitService.getUnits().then(function () {
                     if($stateParams.variableObject !== null && typeof $stateParams.variableObject !== "undefined") {
@@ -343,7 +341,7 @@ angular.module('starter')
         };
 
         // update data when view is navigated to
-        $scope.$on('$ionicView.enter', function(e) {
+        $scope.$on('$ionicView.enter', function(e) { console.debug("Entering state " + $state.current.name);
             $scope.hideLoader();
             $scope.init();
         });
@@ -423,7 +421,7 @@ angular.module('starter')
         };
 
         var setupFromVariableStateParameter = function(){
-            console.log('variableObject is ' + $stateParams.variableObject);
+            console.log('setupFromVariableStateParameter: variableObject is ' + JSON.stringify($stateParams.variableObject));
             if($stateParams.variableObject !== null && typeof $stateParams.variableObject !== "undefined") {
                 $scope.state.variableObject = $stateParams.variableObject;
                 $scope.state.title = "Record Measurement";
@@ -448,6 +446,13 @@ angular.module('starter')
                 $scope.state.measurement.startTimeEpoch = currentTime.getTime() / 1000;
                 $scope.state.measurementIsSetup = true;
                 setupValueFieldType($stateParams.variableObject.abbreviatedUnitName, $stateParams.variableObject.description);
+
+                // Fill in default value as last value if not /5
+                /** @namespace $stateParams.variableObject.lastValue */
+                if ($scope.state.measurement.abbreviatedUnitName !== '/5' && !$scope.state.measurement.value &&
+                    typeof $stateParams.variableObject.lastValue !== "undefined") {
+                    $scope.state.measurement.value = Number($stateParams.variableObject.lastValue);
+                }
             }
         };
 
@@ -632,7 +637,8 @@ angular.module('starter')
                         $scope.goToHistoryForVariableObject($scope.state.variableObject);
                     }
                     if (index === 4) {
-                        $scope.goToSettingsForVariableObject($scope.state.variableObject);
+                        $state.go('app.variableSettings',
+                            {variableName: $scope.state.measurement.variableName});
                     }
                     if(index === 5){
                         $state.go('app.predictors',

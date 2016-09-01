@@ -60,7 +60,9 @@ angular.module('starter')
 
 
         $scope.init = function(){
-            Bugsnag.context = "welcome";
+            if (typeof Bugsnag !== "undefined") {
+                Bugsnag.context = "welcome";
+            }
             console.log("welcome initialization...");
             if (typeof analytics !== 'undefined')  { analytics.trackView("Welcome Controller"); }
             

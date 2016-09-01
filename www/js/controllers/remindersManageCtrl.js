@@ -1,7 +1,7 @@
 angular.module('starter')
 
-	.controller('RemindersManageCtrl', function($scope, $state, $stateParams, $ionicPopup, $ionicLoading, $filter,
-												$rootScope, $ionicActionSheet, $timeout, authService,
+	.controller('RemindersManageCtrl', function($scope, $state, $stateParams, $ionicPopup, $rootScope, $timeout, $ionicLoading, $filter,
+												 $ionicActionSheet,  authService,
 												localStorageService, reminderService, variableCategoryService) {
 
 	    $scope.controller_name = "RemindersManageCtrl";
@@ -89,10 +89,9 @@ angular.module('starter')
 
 	    // constructor
 	    $scope.init = function(){
-			Bugsnag.context = "reminderManage";
-			getTrackingRemindersFromLocalStorage();
-			authService.checkAuthOrSendToLogin();
-			if (typeof analytics !== 'undefined')  { analytics.trackView("Manage Reminders Controller"); }
+			if (typeof Bugsnag !== "undefined") {
+				Bugsnag.context = "reminderManage";
+			}
 
 			if (!$stateParams.variableCategoryName || $stateParams.variableCategoryName === "Anything") {
 				$scope.state.title = "Manage Reminders";
@@ -105,7 +104,12 @@ angular.module('starter')
 			}
 
 			$scope.state.showButtons = true;
-			$scope.showHelpInfoPopupIfNecessary();
+			//$scope.showHelpInfoPopupIfNecessary();
+
+			getTrackingRemindersFromLocalStorage();
+			authService.checkAuthOrSendToLogin();
+			if (typeof analytics !== 'undefined')  { analytics.trackView("Manage Reminders Controller"); }
+
 			if($rootScope.syncingReminders !== true) {
 				console.debug("ReminderMange init: calling refreshTrackingRemindersAndScheduleAlarms");
 				$scope.showLoader('Reminders coming down the pipes...');
@@ -217,7 +221,9 @@ angular.module('starter')
 	    	.then(function(){
 
 	    	}, function(err){
-				Bugsnag.notify(err, JSON.stringify(err), {}, "error");
+				if (typeof Bugsnag !== "undefined") {
+					Bugsnag.notify(err, JSON.stringify(err), {}, "error");
+				}
 	    		$ionicLoading.hide();
 				$scope.loading = false;
 	    		console.error('Failed to Delete Reminder!');
@@ -225,7 +231,7 @@ angular.module('starter')
 	    };
 
         // when view is changed
-    	$scope.$on('$ionicView.enter', function(e){
+    	$scope.$on('$ionicView.enter', function(e) { console.debug("Entering state " + $state.current.name);
 			$scope.hideLoader();
     		$scope.init();
     	});
@@ -272,7 +278,8 @@ angular.module('starter')
 						$scope.goToHistoryForVariableObject($scope.state.variableObject);
 					}
 					if (index === 5) {
-						$scope.goToSettingsForVariableObject($scope.state.variableObject);
+						$state.go('app.variableSettings',
+							{variableName: $scope.state.trackingReminder.variableName});
 					}
 					if(index === 6){
 						$state.go('app.predictors',

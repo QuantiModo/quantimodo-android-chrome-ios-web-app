@@ -1,5 +1,5 @@
 angular.module('starter')
-    .controller('IframeScreenCtrl', function ($scope, $ionicLoading, $sce, $state, authService) {
+    .controller('IframeScreenCtrl', function ($scope, $ionicLoading, $sce, $state, authService, $rootScope, QuantiModo) {
 
         $scope.showLoader();
         console.debug('IframeScreenCtrl works!');
@@ -10,29 +10,29 @@ angular.module('starter')
 
         if(window.location.href.indexOf('search-variables') > -1 )
         {
-            iFrameUrl = config.getApiUrl() + '/embeddable/?plugin=search-variables';
+            iFrameUrl = $rootScope.qmApiUrl + '/embeddable/?plugin=search-variables';
             $scope.title = 'Your Variables';
         }
 
         if(window.location.href.indexOf('search-common-relationships') > -1 )
         {
-            iFrameUrl = config.getApiUrl() + '/embeddable/?plugin=search-relationships&commonOrUser=common';
+            iFrameUrl = $rootScope.qmApiUrl + '/embeddable/?plugin=search-relationships&commonOrUser=common';
             $scope.title = 'Common Variable Relationships';
         }
 
         if(window.location.href.indexOf('search-user-relationships') > -1 )
         {
-            iFrameUrl = config.getApiUrl() + '/embeddable/?plugin=search-relationships&commonOrUser=user';
+            iFrameUrl = $rootScope.qmApiUrl + '/embeddable/?plugin=search-relationships&commonOrUser=user';
             $scope.title = 'Your Variable Relationships';
         }
 
         if(window.location.href.indexOf('import-data') > -1 )
         {
-            iFrameUrl = config.getApiUrl() + '/api/v1/connect/mobile';
+            iFrameUrl = $rootScope.qmApiUrl + '/api/v1/connect/mobile';
             $scope.title = 'Your Variable Relationships';
         }
         console.debug('importCtrl.init: Going to authService.getAccessTokenFromAnySource');
-        authService.getAccessTokenFromAnySource().then(function(accessToken) {
+        QuantiModo.getAccessTokenFromAnySource().then(function(accessToken) {
 
             if(accessToken){
                 $scope.iframeUrl = $sce.trustAsResourceUrl(
