@@ -167,7 +167,7 @@ else
 fi
 
 export APPLE_ID="1024924226"
-export APP_IDENTIFIER="com.quantimodo.moodimodo"
+export APP_IDENTIFIER="com.quantimodo.mindfirst"
 export APP_DISPLAY_NAME="Mind First"
 export LOWERCASE_APP_NAME=mindfirst
 export APP_DESCRIPTION=Empowering a New Approach to Mind Research
