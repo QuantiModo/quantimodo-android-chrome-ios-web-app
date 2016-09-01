@@ -869,6 +869,11 @@ angular.module('starter')
                 pushNotificationService.registerDeviceToken(deviceTokenToSync);
             }
         };
+
+        $scope.onTextClick = function ($event) {
+            console.log("Auto selecting text so the user doesn't have to press backspace...");
+            $event.target.select();
+        };
         
         $scope.init();
     });
