@@ -72,8 +72,8 @@ echo -e "${GREEN}build_android.sh: INTERMEDIATE_PATH is ${INTERMEDIATE_PATH}...$
 
 ### Build Android App ###
 cd ${INTERMEDIATE_PATH}
-echo "ionic state reset for $LOWERCASE_APP_NAME Android app..."
-ionic state reset
+#echo "ionic state reset for $LOWERCASE_APP_NAME Android app..."
+#ionic state reset
 echo "deleting platforms/android for $LOWERCASE_APP_NAME Android app..."
 rm -rf platforms/android
 echo "ionic platform remove android for $LOWERCASE_APP_NAME Android app..."
@@ -110,7 +110,6 @@ source ${IONIC_PATH}/scripts/build_scripts/push_plugin_install.sh
 echo "Generating image resources for $LOWERCASE_APP_NAME..."
 ionic resources >/dev/null
 
-ionic info
 echo "ionic browser rm crosswalk"
 ionic browser rm crosswalk
 cordova build --debug android >/dev/null
@@ -146,8 +145,8 @@ export GENERIC_ALIAS=${ALIAS}
 export SIGNED_GENERIC_APK_FILENAME=${SIGNED_APK_FILENAME}
 source ${IONIC_PATH}/scripts/build_scripts/android_sign.sh
 
-export UNSIGNED_GENERIC_APK_FILENAME="android-arm7-release-unsigned.apk"
-export SIGNED_GENERIC_APK_FILENAME=${LOWERCASE_APP_NAME}-android-arm7-release-signed.apk
+export UNSIGNED_GENERIC_APK_FILENAME="android-armv7-release-unsigned.apk"
+export SIGNED_GENERIC_APK_FILENAME=${LOWERCASE_APP_NAME}-android-armv7-release-signed.apk
 source ${IONIC_PATH}/scripts/build_scripts/android_sign.sh
 
 export UNSIGNED_GENERIC_APK_FILENAME="android-x86-release-unsigned.apk"

@@ -144,6 +144,9 @@ export APP_DISPLAY_NAME="Mind First"
 export LOWERCASE_APP_NAME=mindfirst
 export APP_DESCRIPTION=Empowering a New Approach to Mind Research
 
+echo "ionic state reset"
+ionic state reset
+
 echo "Moving old ${LOWERCASE_APP_NAME} Android versions to archive so we catch build failures"
 mv ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/* ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/archive/
 source ${INTERMEDIATE_PATH}/scripts/build_scripts/01_prepare_project.sh
