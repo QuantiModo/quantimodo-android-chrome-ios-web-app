@@ -197,6 +197,10 @@ angular.module('starter')
 				console.debug('reminderInboxCtrl init: Intro not seen and hidemenu is false so going to intro state');
 				$state.go('intro');
 			} else {
+				if(navigator && navigator.splashscreen) {
+					console.debug('Hiding splash screen because app is ready');
+					navigator.splashscreen.hide();
+				}
 				$rootScope.showAllCaughtUpCard = false;
 				setPageTitle();
 				authService.checkAuthOrSendToLogin();
