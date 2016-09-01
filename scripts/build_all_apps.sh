@@ -186,7 +186,7 @@ export APPLE_ID="1115037661"
 export APP_IDENTIFIER="com.quantimodo.medtlc"
 export APP_DISPLAY_NAME="MedTLC"
 export LOWERCASE_APP_NAME=medtlc
-export APP_DESCRIPTION=Medication. Track. Learn. Connect.
+export APP_DESCRIPTION=Medication Track Learn Connect
 
 echo "Moving old ${LOWERCASE_APP_NAME} Android versions to archive so we catch build failures"
 mv ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/* ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/archive/
