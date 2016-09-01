@@ -93,6 +93,7 @@ source ${IONIC_PATH}/scripts/create_icons.sh
 
 #echo "ionic browser add crosswalk@12.41.296.5"
 #ionic browser add crosswalk@12.41.296.5
+cordova build --debug android >/dev/null
 cordova build --release android >/dev/null
 
 mkdir -p ${BUILD_PATH}/${LOWERCASE_APP_NAME}/android
@@ -113,6 +114,14 @@ export ANDROID_GENERIC_KEYSTORE_PASSWORD=${ANDROID_DEBUG_KEYSTORE_PASSWORD}
 export GENERIC_ALIAS=${DEBUG_ALIAS}
 export SIGNED_GENERIC_APK_FILENAME=${SIGNED_DEBUG_APK_FILENAME}
 #source ${IONIC_PATH}/scripts/build_scripts/android_sign.sh
+
+export UNSIGNED_GENERIC_APK_FILENAME="android-armv7-debug-unaligned.apk"
+export SIGNED_GENERIC_APK_FILENAME=${LOWERCASE_APP_NAME}-android-armv7-debug-signed.apk
+source ${IONIC_PATH}/scripts/build_scripts/android_sign.sh
+
+export UNSIGNED_GENERIC_APK_FILENAME="android-x86-debug-unaligned.apk"
+export SIGNED_GENERIC_APK_FILENAME=${LOWERCASE_APP_NAME}-android-x86-debug-signed.apk
+source ${IONIC_PATH}/scripts/build_scripts/android_sign.sh
 
 export UNSIGNED_GENERIC_APK_FILENAME=${UNSIGNED_APK_FILENAME}
 export ANDROID_GENERIC_KEYSTORE_PATH=${ANDROID_KEYSTORE_PATH}
