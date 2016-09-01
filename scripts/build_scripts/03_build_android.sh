@@ -130,10 +130,6 @@ export UNSIGNED_GENERIC_APK_FILENAME="android-x86-release-unsigned.apk"
 export SIGNED_GENERIC_APK_FILENAME=${LOWERCASE_APP_NAME}-android-x86-release-signed.apk
 source ${IONIC_PATH}/scripts/build_scripts/android_sign.sh
 
-echo "Copying ${SIGNED_APK_FILENAME} to workspace folder ${IONIC_PATH}/android_builds_to_upload/ for Jenkins upload to Play beta..."
-mkdir ${IONIC_PATH}/android_builds_to_upload
-cp ${SIGNED_APK_FILENAME} ${IONIC_PATH}/android_builds_to_upload/
-
 rm ${BUILD_PATH}/${LOWERCASE_APP_NAME}/android/*.apk
 
 if [ -f "$DROPBOX_PATH/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${SIGNED_APK_FILENAME}" ];
