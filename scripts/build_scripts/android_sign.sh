@@ -21,3 +21,11 @@ else
    echo "ERROR: File ${SIGNED_GENERIC_APK_FILENAME} does not exist. Build FAILED"
    exit 1
 fi
+
+if [ -f "$IONIC_PATH/build/${LOWERCASE_APP_NAME}/android/${SIGNED_GENERIC_APK_FILENAME}" ];
+then
+   echo echo "${SIGNED_GENERIC_APK_FILENAME} is ready in $IONIC_PATH/build/${LOWERCASE_APP_NAME}/android/${SIGNED_GENERIC_APK_FILENAME}"
+else
+   echo "ERROR: File ${SIGNED_GENERIC_APK_FILENAME} does not exist in build folder. Build FAILED"
+   exit 1
+fi

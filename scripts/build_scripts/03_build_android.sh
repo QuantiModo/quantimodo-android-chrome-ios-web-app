@@ -2,9 +2,8 @@
 
 mkdir "$DROPBOX_PATH/QuantiModo/apps/$LOWERCASE_APP_NAME"  || true
 
-echo "Moving old ${LOWERCASE_APP_NAME} Android versions to archive so we catch build failures"
-mkdir ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/archive
-mv ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/*.apk ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/archive/
+echo "Removing old ${LOWERCASE_APP_NAME} Android versions to archive so we catch build failures"
+rm ${BUILD_PATH}/${LOWERCASE_APP_NAME}/android/*.apk
 
 if [ -z "$LOWERCASE_APP_NAME" ]
   then
@@ -129,8 +128,6 @@ source ${IONIC_PATH}/scripts/build_scripts/android_sign.sh
 export UNSIGNED_GENERIC_APK_FILENAME="android-x86-release-unsigned.apk"
 export SIGNED_GENERIC_APK_FILENAME=${LOWERCASE_APP_NAME}-android-x86-release-signed.apk
 source ${IONIC_PATH}/scripts/build_scripts/android_sign.sh
-
-rm ${BUILD_PATH}/${LOWERCASE_APP_NAME}/android/*.apk
 
 if [ -f "$DROPBOX_PATH/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${SIGNED_GENERIC_APK_FILENAME}" ];
 then
