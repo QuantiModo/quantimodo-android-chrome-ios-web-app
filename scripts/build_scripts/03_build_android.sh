@@ -122,9 +122,6 @@ cordova build --release android >/dev/null
 
 mkdir -p ${BUILD_PATH}/${LOWERCASE_APP_NAME}/android
 cp -R platforms/android/build/outputs/apk/* ${BUILD_PATH}/${LOWERCASE_APP_NAME}/android
-cd ${BUILD_PATH}/${LOWERCASE_APP_NAME}/android
-
-cp ${SIGNED_GENERIC_APK_FILENAME} "$DROPBOX_PATH/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${SIGNED_GENERIC_APK_FILENAME}"
 
 UNSIGNED_APK_FILENAME="android-release-unsigned.apk"
 SIGNED_APK_FILENAME=${LOWERCASE_APP_NAME}-android-release-signed.apk
