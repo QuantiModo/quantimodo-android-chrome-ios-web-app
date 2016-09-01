@@ -105,7 +105,7 @@ cordova plugin add https://github.com/mikepsinn/cordova-plugin-googleplus.git --
 echo "ionic plugin add https://github.com/DrMoriarty/cordova-fabric-crashlytics-plugin -–variable CRASHLYTICS_API_KEY=${FABRIC_API_KEY} –-variable CRASHLYTICS_API_SECRET=${FABRIC_API_SECRET}  for $LOWERCASE_APP_NAME Android app..."
 ionic plugin add https://github.com/DrMoriarty/cordova-fabric-crashlytics-plugin -–variable CRASHLYTICS_API_KEY=${FABRIC_API_KEY} –-variable CRASHLYTICS_API_SECRET=${FABRIC_API_SECRET}
 
-source scripts/push_plugin_install.sh
+source scripts/build_scripts/push_plugin_install.sh
 
 echo "Generating image resources for $LOWERCASE_APP_NAME..."
 ionic resources >/dev/null

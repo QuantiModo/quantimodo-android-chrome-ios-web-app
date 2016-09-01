@@ -75,7 +75,7 @@ echo "Generating image resources for $LOWERCASE_APP_NAME..."
 
 ionic config build
 
-npm install -g cordova ionic@1.7.16 ios-sim ios-deploy
+npm install -g cordova@6.0.x ionic@1.7.16 ios-sim ios-deploy
 ionic platform rm ios
 ionic platform add ios@4.1.0
 
