@@ -2,6 +2,10 @@
 
 mkdir "$DROPBOX_PATH/QuantiModo/apps/$LOWERCASE_APP_NAME"  || true
 
+echo "Moving old ${LOWERCASE_APP_NAME} Android versions to archive so we catch build failures"
+mkdir ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/archive
+mv ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/* ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/archive/
+
 if [ -z "$LOWERCASE_APP_NAME" ]
   then
     echo -e "${RED}build_android.sh: Please provide lowercase LOWERCASE_APP_NAME ${NC}"

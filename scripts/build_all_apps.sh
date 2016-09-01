@@ -98,8 +98,6 @@ export LOWERCASE_APP_NAME=quantimodo
 export APP_DESCRIPTION=Perfect your life
 echo "Cannot use exclamation point in app description"
 
-echo "Moving old ${LOWERCASE_APP_NAME} Android versions to archive so we catch build failures"
-mv ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/* ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/archive/
 source ${INTERMEDIATE_PATH}/scripts/build_scripts/01_prepare_project.sh
 source ${INTERMEDIATE_PATH}/scripts/build_scripts/03_build_android.sh
 source ${INTERMEDIATE_PATH}/scripts/build_scripts/02_build_chrome.sh
@@ -121,8 +119,6 @@ export APP_DISPLAY_NAME="MoodiModo"
 export LOWERCASE_APP_NAME=moodimodo
 export APP_DESCRIPTION=Track and find out what affects your mood
 
-echo "Moving old ${LOWERCASE_APP_NAME} Android versions to archive so we catch build failures"
-mv ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/* ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/archive/
 source ${INTERMEDIATE_PATH}/scripts/build_scripts/01_prepare_project.sh
 source ${INTERMEDIATE_PATH}/scripts/build_scripts/03_build_android.sh
 source ${INTERMEDIATE_PATH}/scripts/build_scripts/02_build_chrome.sh
@@ -147,8 +143,6 @@ export APP_DESCRIPTION=Empowering a New Approach to Mind Research
 echo "ionic state reset"
 ionic state reset
 
-echo "Moving old ${LOWERCASE_APP_NAME} Android versions to archive so we catch build failures"
-mv ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/* ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/archive/
 source ${INTERMEDIATE_PATH}/scripts/build_scripts/01_prepare_project.sh
 source ${INTERMEDIATE_PATH}/scripts/build_scripts/03_build_android.sh
 source ${INTERMEDIATE_PATH}/scripts/build_scripts/02_build_chrome.sh
@@ -169,8 +163,6 @@ export APP_DISPLAY_NAME="EnergyModo"
 export LOWERCASE_APP_NAME=energymodo
 export APP_DESCRIPTION=Track and find out what affects your energy levels
 
-echo "Moving old ${LOWERCASE_APP_NAME} Android versions to archive so we catch build failures"
-mv ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/* ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/archive/
 source ${INTERMEDIATE_PATH}/scripts/build_scripts/01_prepare_project.sh
 source ${INTERMEDIATE_PATH}/scripts/build_scripts/03_build_android.sh
 source ${INTERMEDIATE_PATH}/scripts/build_scripts/02_build_chrome.sh
@@ -191,8 +183,6 @@ export APP_DISPLAY_NAME="MedTLC"
 export LOWERCASE_APP_NAME=medtlc
 export APP_DESCRIPTION=Medication Track Learn Connect
 
-echo "Moving old ${LOWERCASE_APP_NAME} Android versions to archive so we catch build failures"
-mv ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/* ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/archive/
 source ${INTERMEDIATE_PATH}/scripts/build_scripts/01_prepare_project.sh
 source ${INTERMEDIATE_PATH}/scripts/build_scripts/03_build_android.sh
 source ${INTERMEDIATE_PATH}/scripts/build_scripts/02_build_chrome.sh
