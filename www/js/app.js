@@ -24,11 +24,6 @@ angular.module('starter',
 
     $ionicPlatform.ready(function() {
         //$ionicAnalytics.register();
-        if(navigator && navigator.splashscreen) {
-            console.debug('Hiding splash screen because app is ready');
-            navigator.splashscreen.hide();
-        }
-
         if(ionic.Platform.isIPad() || ionic.Platform.isIOS()){
             window.onerror = function (errorMsg, url, lineNumber) {
                 alert('Error: ' + errorMsg + ' Script: ' + url + ' Line: ' + lineNumber);
