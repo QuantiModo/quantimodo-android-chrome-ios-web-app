@@ -207,7 +207,7 @@ else
 fi
 
 export APPLE_ID="1115037661"
-export APP_IDENTIFIER="com.quantimodo.medtlc"
+export APP_IDENTIFIER="com.quantimodo.medtlcapp"
 export APP_DISPLAY_NAME="MedTLC"
 export LOWERCASE_APP_NAME=medtlc
 export APP_DESCRIPTION=Medication Track Learn Connect
