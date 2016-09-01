@@ -111,10 +111,12 @@ echo "Generating image resources for $LOWERCASE_APP_NAME..."
 ionic resources >/dev/null
 
 ionic info
+echo "ionic browser rm crosswalk"
 ionic browser rm crosswalk
 cordova build --debug android >/dev/null
 cordova build --release android >/dev/null
 
+echo "ionic browser add crosswalk@12.41.296.5"
 ionic browser add crosswalk@12.41.296.5
 cordova build --release android >/dev/null
 
