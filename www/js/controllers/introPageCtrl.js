@@ -36,6 +36,10 @@ angular.module('starter')
             };
 
             var init = function(){
+                if(navigator && navigator.splashscreen) {
+                    console.debug('Hiding splash screen because app is ready');
+                    navigator.splashscreen.hide();
+                }
                 if (typeof Bugsnag !== "undefined") {
                     Bugsnag.context = "introPage";
                 }
