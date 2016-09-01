@@ -140,7 +140,7 @@ then
     #ionic package build android --email ${IONIC_EMAIL} --password ${IONIC_PASSWORD}
     #ionic package build android --release --profile production --email ${IONIC_EMAIL} --password ${IONIC_PASSWORD}
     #ionic package build ios --release --profile production --email ${IONIC_EMAIL} --password ${IONIC_PASSWORD}
-    echo echo "${SIGNED_GENERIC_APK_FILENAME} is ready in $DROPBOX_PATH/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${SIGNED_APK_FILENAME}"
+    echo echo "${SIGNED_GENERIC_APK_FILENAME} is ready in $DROPBOX_PATH/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${SIGNED_GENERIC_APK_FILENAME}"
 else
    echo "ERROR: File ${SIGNED_GENERIC_APK_FILENAME} does not exist. Build FAILED"
    exit 1
