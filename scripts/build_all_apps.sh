@@ -95,7 +95,8 @@ export APPLE_ID="1115037060"
 export APP_IDENTIFIER="com.quantimodo.quantimodo"
 export APP_DISPLAY_NAME="QuantiModo"
 export LOWERCASE_APP_NAME=quantimodo
-export APP_DESCRIPTION=Perfect your life!
+export APP_DESCRIPTION=Perfect your life
+echo "Cannot use exclamation point in app description"
 
 echo "Moving old ${LOWERCASE_APP_NAME} Android versions to archive so we catch build failures"
 mv ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/* ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/archive/
