@@ -35,7 +35,7 @@ fi
 export APP_PRIVATE_CONFIG_PATH="${QM_DOCKER_PATH}/configs/ionic/private_configs"
 export BUILD_PATH="${IONIC_PATH}/build"
 export LANG=en_US.UTF-8
-export ENCRYPTION_SECRET=$ENCRYPTION_SECRET
+export ENCRYPTION_SECRET=${ENCRYPTION_SECRET}
 
 ### ANDROID CRAP ###
 export ANDROID_KEYSTORE_PATH="$QM_DOCKER_PATH/configs/android/quantimodo.keystore"
@@ -47,10 +47,10 @@ export PROFILE_NAME="match_AppStore_comquantimodomoodimodoapp"
 export PROFILE_UUID="cd6448f6-e30d-4d74-8413-58f96a770671"
 export DELIVER_USER="ios@quantimodo.com"
 export FASTLANE_USER="ios@quantimodo.com"
-export FASTLANE_PASSWORD=$FASTLANE_PASSWORD
-export DELIVER_PASSWORD=$DELIVER_PASSWORD
+export FASTLANE_PASSWORD=${FASTLANE_PASSWORD}
+export DELIVER_PASSWORD=${DELIVER_PASSWORD}
 export DELIVER_WHAT_TO_TEST="Test the basics of the app and see if something breaks!"
-export KEY_PASSWORD=$KEY_PASSWORD
+export KEY_PASSWORD=${KEY_PASSWORD}
 
 if [ -z "$ANDROID_HOME" ]
   then
