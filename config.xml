@@ -62,6 +62,7 @@
   <preference name="WindowsStoreDisplayName" value="MoodiModo"/>
   <preference name="deployment-target" value="6.0"/>
   <preference name="SplashScreen" value="screen"/>
+  <preference name="AutoHideSplashScreen" value="false" />
   <feature name="StatusBar">
     <param name="ios-package" onload="true" value="CDVStatusBar"/>
   </feature>
