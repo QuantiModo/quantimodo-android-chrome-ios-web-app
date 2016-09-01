@@ -17,7 +17,7 @@ angular.module('starter')
 
                 if (typeof Bugsnag !== "undefined") {
                     Bugsnag.releaseStage = utilsService.getEnv();
-                    Bugsnag.apiKey = "ae7bc49d1285848342342bb5c321a2cf";
+                    //Bugsnag.apiKey = "ae7bc49d1285848342342bb5c321a2cf";
                     Bugsnag.notify("ERROR: " + message, "Stacktrace: " + stacktrace, {}, "error");
                 }
             }
