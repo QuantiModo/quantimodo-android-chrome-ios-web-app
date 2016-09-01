@@ -6,7 +6,9 @@
   },
   "version": "1.0.0",
   "description": "Perfect your life!",
-  "devDependencies": {},
+  "devDependencies": {
+    "gulp-angular-templatecache": "^2.0.0",
+  },
   "dependencies": {
     "bower": "~1.3.3",
     "express": "^4.13.3",
@@ -35,7 +37,7 @@
     "shelljs": "^0.5.3",
     "swagger-js-codegen": "^1.1.4",
     "taco-team-build": "^0.2.1",
-    "xcode" : "0.8.9",
+    "xcode": "0.8.9",
     "xml2js": "^0.4.15"
   },
   "scripts": {

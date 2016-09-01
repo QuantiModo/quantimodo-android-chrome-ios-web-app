@@ -13,6 +13,7 @@ angular.module('starter',
         'ionic-timepicker',
         'ngIOS9UIWebViewPatch',
         'ng-mfb',
+        //'templates',
         'fabric'
     ]
 )
@@ -170,6 +171,11 @@ angular.module('starter',
     $compileProvider.imgSrcSanitizationWhitelist(/^\s*(https?|ftp|file|mailto|chrome-extension|ms-appx-web|ms-appx):/);
     $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|file|ftp|mailto|chrome-extension|ms-appx-web|ms-appx):/);
     $ionicConfigProvider.tabs.position("bottom"); //Places them at the bottom for all OS
+    if(ionic.Platform.isAndroid()){
+        //Doesn't seem to improve performance
+        //console.debug("app.js: On Android so using native scrolling..");
+        //$ionicConfigProvider.scrolling.jsScrolling(false);
+    }
 
     var config_resolver = {
       loadMyService: ['$ocLazyLoad', function($ocLazyLoad) {

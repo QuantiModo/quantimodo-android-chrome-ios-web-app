@@ -1238,3 +1238,13 @@ gulp.task("sass", function () {
 		.pipe(sass().on("error", sass.logError))
 		.pipe(gulp.dest(paths.sassCssTarget));
 });
+
+var templateCache = require('gulp-angular-templatecache');
+gulp.task('template', function(done){
+	gulp.src('./www/templates/**/*.html')
+		.pipe(templateCache({
+			standalone:true,
+			root: 'templates'}))
+		.pipe(gulp.dest('./public'))
+		.on('end', done);
+});
