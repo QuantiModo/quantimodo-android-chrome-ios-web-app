@@ -77,6 +77,10 @@ fi
 #echo "Copying everything from ${IONIC_PATH} to $INTERMEDIATE_PATH"
 #rsync -a --exclude=build/ --exclude=.git/ ${IONIC_PATH}/* ${INTERMEDIATE_PATH}
 cd ${INTERMEDIATE_PATH}
+
+echo "ionic state reset"
+ionic state reset
+
 #npm install -g bower
 bower install
 ionic config build
@@ -139,9 +143,6 @@ export APP_IDENTIFIER="com.quantimodo.moodimodo"
 export APP_DISPLAY_NAME="Mind First"
 export LOWERCASE_APP_NAME=mindfirst
 export APP_DESCRIPTION=Empowering a New Approach to Mind Research
-
-echo "ionic state reset"
-ionic state reset
 
 source ${INTERMEDIATE_PATH}/scripts/build_scripts/01_prepare_project.sh
 source ${INTERMEDIATE_PATH}/scripts/build_scripts/03_build_android.sh
