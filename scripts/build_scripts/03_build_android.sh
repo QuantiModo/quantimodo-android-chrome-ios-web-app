@@ -80,7 +80,7 @@ echo "ionic platform remove android for $LOWERCASE_APP_NAME Android app..."
 ionic platform remove android
 echo "ionic platform add android for $LOWERCASE_APP_NAME Android app..."
 ionic platform add android
-source scripts/create_icons.sh
+source ${IONIC_PATH}/scripts/create_icons.sh
 
 echo "cordova plugin rm phonegap-facebook-plugin for $LOWERCASE_APP_NAME Android app..."
 cordova plugin rm phonegap-facebook-plugin || true
@@ -105,7 +105,7 @@ cordova plugin add https://github.com/mikepsinn/cordova-plugin-googleplus.git --
 echo "ionic plugin add https://github.com/DrMoriarty/cordova-fabric-crashlytics-plugin -–variable CRASHLYTICS_API_KEY=${FABRIC_API_KEY} –-variable CRASHLYTICS_API_SECRET=${FABRIC_API_SECRET}  for $LOWERCASE_APP_NAME Android app..."
 ionic plugin add https://github.com/DrMoriarty/cordova-fabric-crashlytics-plugin -–variable CRASHLYTICS_API_KEY=${FABRIC_API_KEY} –-variable CRASHLYTICS_API_SECRET=${FABRIC_API_SECRET}
 
-source scripts/build_scripts/push_plugin_install.sh
+source ${IONIC_PATH}/scripts/build_scripts/push_plugin_install.sh
 
 echo "Generating image resources for $LOWERCASE_APP_NAME..."
 ionic resources >/dev/null
@@ -137,22 +137,22 @@ export ANDROID_GENERIC_KEYSTORE_PATH=${ANDROID_DEBUG_KEYSTORE_PATH}
 export ANDROID_GENERIC_KEYSTORE_PASSWORD=${ANDROID_DEBUG_KEYSTORE_PASSWORD}
 export GENERIC_ALIAS=${DEBUG_ALIAS}
 export SIGNED_GENERIC_APK_FILENAME=${SIGNED_DEBUG_APK_FILENAME}
-source scripts/build_scripts/android_sign.sh
+source ${IONIC_PATH}/scripts/build_scripts/android_sign.sh
 
 export UNSIGNED_GENERIC_APK_FILENAME=${UNSIGNED_APK_FILENAME}
 export ANDROID_GENERIC_KEYSTORE_PATH=${ANDROID_KEYSTORE_PATH}
 export ANDROID_GENERIC_KEYSTORE_PASSWORD=${ANDROID_KEYSTORE_PASSWORD}
 export GENERIC_ALIAS=${ALIAS}
 export SIGNED_GENERIC_APK_FILENAME=${SIGNED_APK_FILENAME}
-source scripts/build_scripts/android_sign.sh
+source ${IONIC_PATH}/scripts/build_scripts/android_sign.sh
 
 export UNSIGNED_GENERIC_APK_FILENAME="android-arm7-release-unsigned.apk"
 export SIGNED_GENERIC_APK_FILENAME=${LOWERCASE_APP_NAME}-android-arm7-release-signed.apk
-source scripts/build_scripts/android_sign.sh
+source ${IONIC_PATH}/scripts/build_scripts/android_sign.sh
 
 export UNSIGNED_GENERIC_APK_FILENAME="android-x86-release-unsigned.apk"
 export SIGNED_GENERIC_APK_FILENAME=${LOWERCASE_APP_NAME}-android-x86-release-signed.apk
-source scripts/build_scripts/android_sign.sh
+source ${IONIC_PATH}/scripts/build_scripts/android_sign.sh
 
 echo "Copying ${SIGNED_APK_FILENAME} to workspace folder ${IONIC_PATH}/android_builds_to_upload/ for Jenkins upload to Play beta..."
 mkdir ${IONIC_PATH}/android_builds_to_upload
