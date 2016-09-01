@@ -106,6 +106,9 @@ ionic plugin add https://github.com/DrMoriarty/cordova-fabric-crashlytics-plugin
 
 source ${IONIC_PATH}/scripts/build_scripts/push_plugin_install.sh
 
+echo "ionic browser add crosswalk@12.41.296.5"
+ionic browser add crosswalk@12.41.296.5
+
 #npm install -g bower
 bower install
 ionic config build

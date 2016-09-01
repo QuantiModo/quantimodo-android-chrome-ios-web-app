@@ -92,8 +92,8 @@ source ${IONIC_PATH}/scripts/create_icons.sh
 #cordova build --debug android >/dev/null
 #cordova build --release android >/dev/null
 
-echo "ionic browser add crosswalk@12.41.296.5"
-ionic browser add crosswalk@12.41.296.5
+#echo "ionic browser add crosswalk@12.41.296.5"
+#ionic browser add crosswalk@12.41.296.5
 cordova build --release android >/dev/null
 
 mkdir -p ${BUILD_PATH}/${LOWERCASE_APP_NAME}/android
