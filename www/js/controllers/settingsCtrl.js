@@ -281,21 +281,7 @@ angular.module('starter')
                 console.log('Logging out...');
                 $scope.hideLoader();
                 $rootScope.user = null;
-                $rootScope.isMobile = window.cordova;
-                $rootScope.isBrowser = ionic.Platform.platforms[0] === "browser";
-                if($rootScope.isMobile || !$rootScope.isBrowser){
-                    console.log('startLogout: Open the auth window via inAppBrowser.  Platform is ' + ionic.Platform.platforms[0]);
-                    var ref = window.open($rootScope.qmApiUrl + '/api/v2/auth/logout','_blank', 'location=no,toolbar=yes');
-
-                    console.log('startLogout: listen to its event when the page changes');
-
-                    ref.addEventListener('loadstart', function(event) {
-                        ref.close();
-                        $scope.showDataClearPopup();
-                    });
-                } else {
-                    $scope.showDataClearPopup();
-                }
+				$scope.showDataClearPopup();
             };
 
             function refreshTrackingPageAndGoToWelcome() {
@@ -328,24 +314,16 @@ angular.module('starter')
             };
             
             var completelyResetAppState = function(){
-                $rootScope.user = null;
                 localStorageService.clear();
                 notificationService.cancelAllNotifications();
-              	logoutOfApi();
-                //TODO: Fix this
-                //QuantiModo.logoutOfApi();
-				//hard reload
 				$state.go(config.appSettings.welcomeState, {}, {
 					reload: true
 				});
             };
             
             var afterLogoutDoNotDeleteMeasurements = function(){
-                $rootScope.user = null;
                 clearTokensFromLocalStorage();
                 logoutOfApi();
-                //TODO: Fix this
-                //QuantiModo.logoutOfApi();
                 refreshTrackingPageAndGoToWelcome();
             };
 
