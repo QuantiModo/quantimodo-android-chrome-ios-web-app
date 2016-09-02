@@ -57,7 +57,7 @@ angular.module('starter')
 				$cordovaOauth.github(window.private_keys.GITHUB_CLIENT_ID, window.private_keys.GITHUB_CLIENT_SECRET,
 					scopes).then(function(result) {
 					console.log("Response Object -> " + JSON.stringify(result));
-					var params = {access_token: result.access_token};
+					var params = {connectorAccessToken: result.access_token};
 					connectorsService.connect('github', params).then(function(result){
 						console.log(JSON.stringify(result));
 						$scope.init();
