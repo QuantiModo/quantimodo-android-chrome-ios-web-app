@@ -751,9 +751,17 @@ angular.module('starter',
                 }
             }
         })
-    
+
+    if (window.localStorage.introSeen) {
+        console.log("Intro seen so going to inbox");
+        $urlRouterProvider.otherwise('/app/reminders-inbox');
+    } else {
+        console.log("Intro not seen so going to intro");
+        localStorage.setItem('introSeen', true);
+        $urlRouterProvider.otherwise('/');
+    }
       // if none of the above states are matched, use this as the fallback
-      $urlRouterProvider.otherwise('/app/reminders-inbox');
+    
 });
 
 angular.module('exceptionOverride', []).factory('$exceptionHandler', function () {
