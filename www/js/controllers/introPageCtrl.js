@@ -55,6 +55,7 @@ angular.module('starter')
                 console.debug('introCtrl.afterEnter: Hiding splash screen because app is ready');
                 navigator.splashscreen.hide();
             }
+            localStorage.setItem('introSeen', true);
         });
     }
 );
