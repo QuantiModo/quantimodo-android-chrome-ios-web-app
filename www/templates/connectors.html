@@ -1,0 +1,85 @@
+<ion-view hide-nav-bar="hideNavigationMenu" view-title="{{state.title}}">
+	<ion-content>
+		<!--<ion-content scroll="true" overflow-scroll="true">-->
+		<ion-refresher on-refresh="init()"></ion-refresher>
+
+		<div  class="list card" ng-if="connectors.length">
+
+				<div on-hold="showActionSheetForConnector(connector, $event)" class="list card"
+					 ng-repeat="connector in connectors" >
+					<div class="item" style="padding-bottom:10px;">
+						<div ng-click="showActionSheetForConnector(connector, $event)" class="row">
+							<div class="col col-20" style="padding-top: 10px;">
+								<img src="{{connector.image}}" alt="Mountain View" style="width:40px;height:40px;">
+							</div>
+							<div ng-click="showActionSheetForConnector(connector, $event)" class="col col-70">
+								<h1 ng-if="connector.abbreviatedUnitName != '/5'"
+									style="white-space: normal;
+									line-height: normal; ">
+									{{connector.displayName}}
+								</h1>
+								<p ng-if="connector.lastUpdate" style="white-space: normal;">
+									Last updated {{ connector.lastUpdate * 1000 | date : "longDate"}}
+								</p>
+								<p ng-if="!connector.lastUpdate" style="white-space: normal;">
+									{{connector.shortDescription}}
+								</p>
+								<p ng-if="connector.updateStatus === 'ERROR'" style="white-space: normal;">
+									{{ connector.errorMessage }}
+								</p>
+							</div>
+							<div ng-click="showActionSheet(connector, event)" class="col col-10">
+								<i style="font-size: 20px;" class="icon positive ion-more"></i>
+							</div>
+						</div>
+						<div class="button-bar" ng-if="!connector.connected">
+							<button class="button button-clear button-balanced"
+									style="text-overflow: clip;"
+									ng-click="showAuthWindow(connector)">
+								<i class="ion-link"> &nbsp; Connect</i>
+							</button>
+							<button class="button button-clear button-calm"
+									ng-click="editReminderSettingsByNotification(connector)"
+									style="text-overflow: clip;">
+								<i class="ion-bag"> &nbsp; Get it here!</i>
+							</button>
+						</div>
+						<div class="button-bar" ng-if="connector.connected">
+							<button ng-if="connector.updateStatus !== 'ERROR'" class="button button-clear button-royal"
+									style="text-overflow: clip;"
+									ng-click="snooze(connector)">
+								<i class="ion-ios-cloud-download"> &nbsp; {{connector.updateStatus}}</i>
+							</button>
+							<button ng-if="connector.updateStatus === 'ERROR'" class="button button-clear button-balanced"
+									ng-click="editReminderSettingsByNotification(connector)"
+									style="text-overflow: clip;">
+								<i class="ion-link"> &nbsp; Reconnect</i>
+							</button>
+							<button class="button button-clear button-assertive"
+									ng-click="editReminderSettingsByNotification(connector)"
+									style="text-overflow: clip;">
+								<i class="ion-close-circled"> &nbsp; Disconnect</i>
+							</button>
+						</div>
+					</div>
+				</div>
+		</div>
+
+	</ion-content>
+	<nav id="floatingMaterialButton"
+		 mfb-menu position="bl"
+		 effect="slidein-spring"
+		 active-icon="ion-minus-round"
+		 resting-icon="ion-plus-round"
+		 toggling-method="click"
+		 ng-hide="hideNavigationMenu || (hideNavigationMenu && !isWelcomed)">
+		<button mfb-button icon={{floatingMaterialButton.button1.icon}} label={{floatingMaterialButton.button1.label}}
+				ng-click="goToState({{floatingMaterialButton.button1.stateAndParameters}})"></button>
+		<button mfb-button icon={{floatingMaterialButton.button2.icon}} label={{floatingMaterialButton.button2.label}}
+				ng-click="goToState({{floatingMaterialButton.button2.stateAndParameters}})"></button>
+		<button mfb-button icon={{floatingMaterialButton.button3.icon}} label={{floatingMaterialButton.button3.label}}
+				ng-click="goToState({{floatingMaterialButton.button3.stateAndParameters}})"></button>
+		<button mfb-button icon={{floatingMaterialButton.button4.icon}} label={{floatingMaterialButton.button4.label}}
+				ng-click="goToState({{floatingMaterialButton.button4.stateAndParameters}})"></button>
+	</nav>
+</ion-view>
