@@ -575,12 +575,7 @@ angular.module('starter')
                     [
                         'variableId', 
                         'defaultValue',
-                        'reminderFrequency',
-                        'variableName',
-                        'variableCategoryName',
-                        'abbreviatedUnitName',
-                        'combinationOperation',
-                        'reminderStartTime'
+                        'reminderFrequency'
                     ],
                     reminder,
                     successHandler,
