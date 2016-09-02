@@ -71,5 +71,15 @@ angular.module('starter')
 			return deferred.promise;
 		};
 
+		connectorsService.connect = function(connectorLowercaseName, params){
+			var deferred = $q.defer();
+			QuantiModo.connectConnector(connectorLowercaseName, params, function(){
+				connectorsService.refreshConnectors();
+			}, function(){
+				deferred.reject(false);
+			});
+			return deferred.promise;
+		};
+
 		return connectorsService;
 	});

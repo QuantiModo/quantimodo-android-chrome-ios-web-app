@@ -32,14 +32,14 @@
 								<i style="font-size: 20px;" class="icon positive ion-more"></i>
 							</div>
 						</div>
-						<div class="button-bar" ng-if="!connector.connected">
+						<div class="button-bar" ng-if="!connector.connected && !connector.qmClient">
 							<button class="button button-clear button-balanced"
 									style="text-overflow: clip;"
-									ng-click="showAuthWindow(connector)">
+									ng-click="connect(connector)">
 								<i class="ion-link"> &nbsp; Connect</i>
 							</button>
 							<button class="button button-clear button-calm"
-									ng-click="editReminderSettingsByNotification(connector)"
+									ng-click="getItHere(connector)"
 									style="text-overflow: clip;">
 								<i class="ion-bag"> &nbsp; Get it here!</i>
 							</button>
@@ -47,7 +47,7 @@
 						<div class="button-bar" ng-if="connector.connected">
 							<button ng-if="connector.updateStatus !== 'ERROR'" class="button button-clear button-royal"
 									style="text-overflow: clip;"
-									ng-click="snooze(connector)">
+									ng-click="">
 								<i class="ion-ios-cloud-download"> &nbsp; {{connector.updateStatus}}</i>
 							</button>
 							<button ng-if="connector.updateStatus === 'ERROR'" class="button button-clear button-balanced"
@@ -56,7 +56,7 @@
 								<i class="ion-link"> &nbsp; Reconnect</i>
 							</button>
 							<button class="button button-clear button-assertive"
-									ng-click="editReminderSettingsByNotification(connector)"
+									ng-click="disconnect(connector)"
 									style="text-overflow: clip;">
 								<i class="ion-close-circled"> &nbsp; Disconnect</i>
 							</button>

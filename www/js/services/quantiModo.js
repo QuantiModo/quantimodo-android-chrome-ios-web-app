@@ -539,12 +539,25 @@ angular.module('starter')
 
             // get units
             QuantiModo.disconnectConnector = function(name, successHandler, errorHandler){
-                QuantiModo.get('/api/v1/connectors/' + name + '/disconnect',
+                QuantiModo.get('api/v1/connectors/' + name + '/disconnect',
                     [],
                     {},
                     successHandler,
                     errorHandler);
             };
+
+        // get units
+        QuantiModo.connectConnector = function(connectorLowercaseName, providedParams, successHandler, errorHandler){
+            var allowedParams = [
+                'location',
+                'connectorAccessToken'
+            ];
+            QuantiModo.get('api/v1/connectors/' + connectorLowercaseName + '/connect',
+                allowedParams,
+                providedParams,
+                successHandler,
+                errorHandler);
+        };
 
             // get user data
             QuantiModo.getUser = function(successHandler, errorHandler){
