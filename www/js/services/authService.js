@@ -1,6 +1,7 @@
 angular.module('starter')
 
-	.factory('authService', function ($http, $q, $state, $ionicLoading, $rootScope, localStorageService, utilsService) {
+	.factory('authService', function ($http, $q, $state, $ionicLoading, $rootScope, localStorageService, utilsService,
+									  bugsnagService) {
 
 		var authService = {
 
@@ -85,9 +86,15 @@ angular.module('starter')
 
 				// post
 				$http(request).success(function (response) {
-					console.log('getAccessTokenFromAuthorizationCode: Successful response is ', response);
-					console.log(JSON.stringify(response));
-					deferred.resolve(response);
+					if(response.error){
+						bugsnagService.reportError(response);
+						alert(response.error + ": " + response.error_description + ".  Please try again or contact mike@quantimo.do.");
+						deferred.reject(response);
+					} else {
+						console.log('getAccessTokenFromAuthorizationCode: Successful response is ', response);
+						console.log(JSON.stringify(response));
+						deferred.resolve(response);
+					}
 				}).error(function (response) {
 					console.log('getAccessTokenFromAuthorizationCode: Error response is ', response);
 					console.log(JSON.stringify(response));
