@@ -2,7 +2,7 @@ angular.module('starter')
 
 	.controller('ConnectorsCtrl', function($scope, $state, $stateParams, $rootScope, $filter, $ionicPlatform,
 										   $ionicActionSheet, $timeout, authService, reminderService, utilsService,
-										   connectorsService, localStorageService) {
+										   connectorsService, $cordovaOauth, bugsnagService) {
 
 	    $scope.controller_name = "ConnectorsCtrl";
 
@@ -51,6 +51,46 @@ angular.module('starter')
 			//return authWindow;
 		};
 
+		$scope.connect = function(connector){
+			if(connector.name === 'github') {
+				var scopes = ['user', 'repo'];
+				$cordovaOauth.github(window.private_keys.GITHUB_CLIENT_ID, window.private_keys.GITHUB_CLIENT_SECRET,
+					scopes).then(function(result) {
+					console.log("Response Object -> " + JSON.stringify(result));
+					var params = {access_token: result.access_token};
+					connectorsService.connect('github', params).then(function(result){
+						console.log(JSON.stringify(result));
+						$scope.init();
+					}, function (error) {
+						bugsnagService.reportError(error);
+						alert("Error: " + error);
+					});
+				}, function(error) {
+					bugsnagService.reportError(error);
+					alert("Error: " + error);
+				});
+			}
+
+			if(connector.name === 'worldweatheronline') {
+				var params = {
+					location: 'location'
+				};
+				connectorsService.connect(connector.name, params);
+			}
+
+		};
+
+		$scope.disconnect = function (connector){
+			connectorsService.disconnect(connector.name).then(function (){
+				$scope.init();
+			}, function() {
+				console.error("error disconnecting " + connector.name);
+			});
+		};
+
+		$scope.getItHere = function (connector){
+			window.open(connector.getItUrl, '_blank');
+		};
 
     	$scope.$on('$ionicView.enter', function(e) { console.debug("Entering state " + $state.current.name);
 			$scope.hideLoader();

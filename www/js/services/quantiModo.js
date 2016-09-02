@@ -546,6 +546,19 @@ angular.module('starter')
                     errorHandler);
             };
 
+        // get units
+        QuantiModo.connectConnector = function(connectorLowercaseName, providedParams, successHandler, errorHandler){
+            var allowedParams = [
+                'location',
+                'access_token'
+            ];
+            QuantiModo.get('/api/v1/connectors/' + connectorLowercaseName + '/connect',
+                allowedParams,
+                providedParams,
+                successHandler,
+                errorHandler);
+        };
+
             // get user data
             QuantiModo.getUser = function(successHandler, errorHandler){
                 if($rootScope.user){
