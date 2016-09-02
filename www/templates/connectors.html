@@ -38,7 +38,7 @@
 									ng-click="connect(connector)">
 								<i class="ion-link"> &nbsp; Connect</i>
 							</button>
-							<button class="button button-clear button-calm"
+							<button ng-if="connector.getItUrl" class="button button-clear button-calm"
 									ng-click="getItHere(connector)"
 									style="text-overflow: clip;">
 								<i class="ion-bag"> &nbsp; Get it here!</i>
