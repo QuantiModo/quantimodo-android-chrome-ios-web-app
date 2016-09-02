@@ -1,7 +1,7 @@
 #!/bin/bash
 
-export IONIC_APP_VERSION_NUMBER=1.8.7
-export IONIC_IOS_APP_VERSION_NUMBER="1.8.7.0"
+export IONIC_APP_VERSION_NUMBER=1.8.8
+export IONIC_IOS_APP_VERSION_NUMBER="1.8.8.0"
 
 export RED='\033[0;31m'
 export GREEN='\033[0;32m'
@@ -168,7 +168,8 @@ fi
 
 export APPLE_ID="1024924226"
 export APP_IDENTIFIER="com.quantimodo.mindfirst"
-export APP_DISPLAY_NAME="Mind First"
+export APP_DISPLAY_NAME=Mind First
+echo "Replace doesn't work if we use quotes if there's a space"
 export LOWERCASE_APP_NAME=mindfirst
 export APP_DESCRIPTION=Empowering a New Approach to Mind Research
 

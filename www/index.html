@@ -38,6 +38,9 @@
     <link href="css/ionic.app.css" rel="stylesheet">
     -->
 
+    <!-- Must use local Bugsnag library because external one causes problems in Chrome extension -->
+    <script src="lib/bugsnag/src/bugsnag.js" data-apikey="ae7bc49d1285848342342bb5c321a2cf"></script>
+
     <!-- load jQuery -->
     <!--Putting jQuery before Angular to see if it fixes double click issue per https://github.com/angular/angular.js/issues/6251 -->
     <script src="lib/jquery/dist/jquery.min.js"></script>
@@ -63,8 +66,6 @@
     <script src="lib/ionic-datepicker/dist/ionic-datepicker.bundle.min.js"></script>
     <script src="lib/ionic-timepicker/dist/ionic-timepicker.bundle.min.js"></script>
     <script src="lib/moment/moment.js"></script>
-    <!-- Must use local Bugsnag library because external one causes problems in Chrome extension -->
-    <script src="lib/bugsnag/src/bugsnag.js"></script>
     <script src="https://cdn.rawgit.com/quantimodo/import-data/master/connect.js"></script>
     <script src="lib/pluralize/pluralize.js"></script>
     <script src="lib/ng-material-floating-button/src/mfb-directive.js"></script>

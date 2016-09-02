@@ -8,15 +8,18 @@
             <div class="list card" ng-show="state.showVariableCategorySelector" >
                 <label class="item item-input item-select">
                     <div class="input-label" style="white-space:normal; width: 60%">Select Category</div>
-                    <select id="variableCategorySelector" ng-model="state.measurement.variableCategoryName" ng-change="setupVariableCategory(state.measurement.variableCategoryName)">
-                        <option ng-repeat="variableCategory in state.variableCategories" value="{{variableCategory.name}}">{{variableCategory.name}}</option>
+                    <select id="variableCategorySelector" ng-model="state.measurement.variableCategoryName"
+                            ng-change="setupVariableCategory(state.measurement.variableCategoryName)">
+                        <option ng-repeat="variableCategory in state.variableCategories"
+                                value="{{variableCategory.name}}">{{variableCategory.name}}</option>
                     </select>
                 </label>
             </div>
             <div class="list">
                 <label ng-if="state.measurement.abbreviatedUnitName !== '/5'" class="item item-input">
                     <span class="input-label">{{state.defaultValueLabel}}</span>
-                    <input type="number" ng-model="state.measurement.value" id="defaultValue" onFocus="this.select()" placeholder={{state.defaultValuePlaceholderText}} >
+                    <input type="number" ng-model="state.measurement.value" id="defaultValue"
+                           ng-click="onTextClick($event)" placeholder={{state.defaultValuePlaceholderText}} >
                 </label>
                 <div class="primary-outcome-variable-rating-buttons primary-outcome-variable-history col"
                      ng-if="showNumericRatingNumberButtons">

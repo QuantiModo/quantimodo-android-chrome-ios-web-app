@@ -10,7 +10,7 @@ angular.module('starter')
 
         $rootScope.loaderImagePath = config.appSettings.loaderImagePath;
         $rootScope.appMigrationVersion = 1489;
-        $rootScope.appVersion = "1.8.7.0";
+        $rootScope.appVersion = "1.8.8.0";
         if (!$rootScope.loaderImagePath) {
             $rootScope.loaderImagePath = 'img/circular-loader.gif';
         }
@@ -868,6 +868,11 @@ angular.module('starter')
             if(deviceTokenToSync){
                 pushNotificationService.registerDeviceToken(deviceTokenToSync);
             }
+        };
+
+        $scope.onTextClick = function ($event) {
+            console.log("Auto selecting text so the user doesn't have to press backspace...");
+            $event.target.select();
         };
         
         $scope.init();

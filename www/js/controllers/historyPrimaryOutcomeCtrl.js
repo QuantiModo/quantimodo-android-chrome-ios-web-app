@@ -2,7 +2,7 @@ angular.module('starter')
 
 	// Controls the History Page of the App.
 	.controller('HistoryPrimaryOutcomeCtrl', function($scope, $ionicLoading, $ionicActionSheet, $state, $timeout,
-													  $rootScope, measurementService, ratingService) {
+													  $rootScope, measurementService) {
 
 	    $scope.controller_name = "HistoryPrimaryOutcomeCtrl";
 		$scope.state = {

@@ -46,7 +46,7 @@ angular.module('starter')
 					//types: ['store']
 				};
 
-				service = new google.maps.places.PlacesService(map);
+				var service = new google.maps.places.PlacesService(map);
 				service.nearbySearch(request, callback);
 
 				$ionicLoading.hide();

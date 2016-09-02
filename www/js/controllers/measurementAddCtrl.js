@@ -3,8 +3,7 @@ angular.module('starter')
     .controller('MeasurementAddCtrl', function($scope, $q, $timeout, $state, $rootScope, $stateParams, $filter,
                                                $ionicActionSheet, $ionicHistory, authService, measurementService,
                                                utilsService, localStorageService, variableCategoryService,
-                                               ionicTimePicker, ionicDatePicker, unitService, QuantiModo,
-                                               variableService) {
+                                               ionicTimePicker, ionicDatePicker, unitService, QuantiModo) {
 
         $scope.controller_name = "MeasurementAddCtrl";
 
@@ -184,7 +183,7 @@ angular.module('starter')
                 }
             }
 
-            if ($state.editReminder) {
+            if ($stateParams.reminderNotification) {
                 // If "record a different value/time was pressed", skip reminder upon save
                 var params = {
                     trackingReminderNotificationId: $stateParams.reminderNotification.id
@@ -194,7 +193,7 @@ angular.module('starter')
                 }, function(err){
                     console.error(err);
                     if (typeof Bugsnag !== "undefined") {
-                        Bugsnag.notify(err, JSON.stringify(err), {}, "error");
+                        Bugsnag.notifyException(err);
                     }
                 });
             }
@@ -560,7 +559,6 @@ angular.module('starter')
         };
 
         var setupTrackingByReminderNotification = function(){
-            $state.editReminder = true;
             if($stateParams.reminderNotification !== null && typeof $stateParams.reminderNotification !== "undefined"){
                 $scope.state.title = "Record Measurement";
                 if(!$scope.state.measurement.abbreviatedUnitName){

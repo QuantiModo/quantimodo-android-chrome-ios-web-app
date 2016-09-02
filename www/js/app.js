@@ -124,12 +124,12 @@ angular.module('starter',
                 return;
             }
 
-            $rootScope.appVersion = "1.8.7.0";
+            $rootScope.appVersion = "1.8.8.0";
             $rootScope.appName = config.appSettings.appName;
 
             if (typeof Bugsnag !== "undefined") {
                 //$rootScope.bugsnagApiKey = window.private_keys.bugsnag_key;
-                Bugsnag.apiKey = "ae7bc49d1285848342342bb5c321a2cf";
+                //Bugsnag.apiKey = "ae7bc49d1285848342342bb5c321a2cf";
                 //Bugsnag.notifyReleaseStages = ['Production','Staging'];
                 Bugsnag.appVersion = $rootScope.appVersion;
                 Bugsnag.metaData = {
@@ -751,9 +751,17 @@ angular.module('starter',
                 }
             }
         })
-    
+
+    if (window.localStorage.introSeen) {
+        console.log("Intro seen so going to inbox");
+        $urlRouterProvider.otherwise('/app/reminders-inbox');
+    } else {
+        console.log("Intro not seen so going to intro");
+        localStorage.setItem('introSeen', true);
+        $urlRouterProvider.otherwise('/');
+    }
       // if none of the above states are matched, use this as the fallback
-      $urlRouterProvider.otherwise('/app/reminders-inbox');
+    
 });
 
 angular.module('exceptionOverride', []).factory('$exceptionHandler', function () {
