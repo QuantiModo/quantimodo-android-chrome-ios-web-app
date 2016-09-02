@@ -528,6 +528,15 @@ angular.module('starter')
                     errorHandler);
             };
 
+            // get units
+            QuantiModo.getConnectors = function(successHandler, errorHandler){
+                QuantiModo.get('api/connectors/list',
+                    [],
+                    {},
+                    successHandler,
+                    errorHandler);
+            };
+
             // get user data
             QuantiModo.getUser = function(successHandler, errorHandler){
                 if($rootScope.user){
