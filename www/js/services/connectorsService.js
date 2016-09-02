@@ -37,10 +37,10 @@ angular.module('starter')
 			localStorageService.getItem('connectors', function(connectors){
 				if(connectors){
 					$rootScope.connectors = JSON.parse(connectors);
-					deferred.resolve(connectors);
+					deferred.resolve($rootScope.connectors);
 				} else {
 					connectorsService.refreshConnectors().then(function(){
-						deferred.resolve(connectors);
+						deferred.resolve($rootScope.connectors);
 					});
 				}
 			});
@@ -54,7 +54,17 @@ angular.module('starter')
 			QuantiModo.getConnectors(function(connectors){
 				localStorageService.setItem('connectors', JSON.stringify(connectors));
 				$rootScope.connectors = connectors;
-				deferred.resolve(connectors);
+				deferred.resolve($rootScope.connectors);
+			}, function(){
+				deferred.reject(false);
+			});
+			return deferred.promise;
+		};
+
+		connectorsService.disconnect = function(name){
+			var deferred = $q.defer();
+			QuantiModo.disconnectConnector(name, function(){
+				connectorsService.refreshConnectors();
 			}, function(){
 				deferred.reject(false);
 			});

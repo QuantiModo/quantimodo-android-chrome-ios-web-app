@@ -1,8 +1,8 @@
 angular.module('starter')
 
 	.controller('ConnectorsCtrl', function($scope, $state, $stateParams, $rootScope, $filter, $ionicPlatform,
-											   $ionicActionSheet, $timeout, authService, reminderService, utilsService,
-											   userService, localStorageService) {
+										   $ionicActionSheet, $timeout, authService, reminderService, utilsService,
+										   connectorsService, localStorageService) {
 
 	    $scope.controller_name = "ConnectorsCtrl";
 
@@ -21,7 +21,34 @@ angular.module('starter')
 	    $scope.init = function(){
 			if (typeof Bugsnag !== "undefined") { Bugsnag.context = "importData"; }
 			if (typeof analytics !== 'undefined')  { analytics.trackView("Import Data Controller"); }
+			connectorsService.getConnectors();
+			connectorsService.refreshConnectors();
+		};
 
+		$scope.showAuthWindow = function (connector) {
+			var url = connector.connectInstructions.url;
+			var authWindow;
+			var windowSize = {
+				width: Math.floor(window.outerWidth * 0.8),
+				height: Math.floor(window.outerHeight * 0.7)
+			};
+			if (windowSize.height < 500) {
+				windowSize.height = Math.min(500, window.outerHeight);
+			}
+			if (windowSize.width < 800) {
+				windowSize.width = Math.min(800, window.outerWidth);
+			}
+			windowSize.left = window.screenX + (window.outerWidth - windowSize.width) / 2;
+			windowSize.top = window.screenY + (window.outerHeight - windowSize.height) / 8;
+			var windowOptions = "width=" + windowSize.width + ",height=" + windowSize.height;
+			windowOptions += ",toolbar=0,scrollbars=1,status=1,resizable=1,location=1,menuBar=0";
+			windowOptions += ",left=" + windowSize.left + ",top=" + windowSize.top;
+
+			authWindow = window.open(url, "Authorization", windowOptions);
+			if (authWindow) {
+				//authWindow.focus();
+			}
+			//return authWindow;
 		};
 
 
