@@ -29,8 +29,8 @@ angular.module('starter')
 
         $scope.subscribeNotification = true;
 
-        $scope.saveIntervalAndGoToLogin = function(){
-            $scope.saveInterval();
+        $scope.saveIntervalAndGoToLogin = function(primaryOutcomeRatingFrequencyDescription){
+            $scope.saveInterval(primaryOutcomeRatingFrequencyDescription);
             $state.go('app.login');
         };
 
