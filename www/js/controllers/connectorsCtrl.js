@@ -2,7 +2,7 @@ angular.module('starter')
 
 	.controller('ConnectorsCtrl', function($scope, $state, $stateParams, $rootScope, $filter, $ionicPlatform,
 										   $ionicActionSheet, $timeout, authService, reminderService, utilsService,
-										   connectorsService, $cordovaOauth, bugsnagService) {
+										   connectorsService, $cordovaOauth, bugsnagService, $ionicPopup) {
 
 	    $scope.controller_name = "ConnectorsCtrl";
 
@@ -52,8 +52,11 @@ angular.module('starter')
 		};
 
 		$scope.connect = function(connector){
+
+			var scopes;
+
 			if(connector.name === 'github') {
-				var scopes = ['user', 'repo'];
+				scopes = ['user', 'repo'];
 				$cordovaOauth.github(window.private_keys.GITHUB_CLIENT_ID, window.private_keys.GITHUB_CLIENT_SECRET,
 					scopes).then(function(result) {
 					console.log("Response Object -> " + JSON.stringify(result));
@@ -71,11 +74,162 @@ angular.module('starter')
 				});
 			}
 
+			if(connector.name === 'withings') {
+				$cordovaOauth.withings(window.private_keys.WITHINGS_CLIENT_ID, window.private_keys.WITHINGS_CLIENT_SECRET)
+					.then(function(result) {
+					console.log("Response Object -> " + JSON.stringify(result));
+					var params = {connectorAccessToken: result.access_token};
+					connectorsService.connect('withings', params).then(function(result){
+						console.log(JSON.stringify(result));
+						$scope.init();
+					}, function (error) {
+						bugsnagService.reportError(error);
+						alert("Error: " + error);
+					});
+				}, function(error) {
+					bugsnagService.reportError(error);
+					alert("Error: " + error);
+				});
+			}
+
+			if(connector.name === 'facebook') {
+				scopes = ['user_likes', 'user_posts'];
+				$cordovaOauth.facebook(window.private_keys.FACEBOOK_APP_ID, scopes)
+					.then(function(result) {
+						console.log("Response Object -> " + JSON.stringify(result));
+						var params = {connectorAccessToken: result.access_token};
+						connectorsService.connect('facebook', params).then(function(result){
+							console.log(JSON.stringify(result));
+							$scope.init();
+						}, function (error) {
+							bugsnagService.reportError(error);
+							alert("Error: " + error);
+						});
+					}, function(error) {
+						bugsnagService.reportError(error);
+						alert("Error: " + error);
+					});
+			}
+
+			if(connector.name === 'googlefit') {
+				scopes = [
+					"https://www.googleapis.com/auth/fitness.activity.read",
+					"https://www.googleapis.com/auth/fitness.body.read",
+					"https://www.googleapis.com/auth/fitness.location.read"
+				];
+
+				$cordovaOauth.google(window.private_keys.GOOGLE_CLIENT_ID, scopes)
+					.then(function(result) {
+						console.log("Response Object -> " + JSON.stringify(result));
+						var params = {connectorAccessToken: result.access_token};
+						connectorsService.connect('googlefit', params).then(function(result){
+							console.log(JSON.stringify(result));
+							$scope.init();
+						}, function (error) {
+							bugsnagService.reportError(error);
+							alert("Error: " + error);
+						});
+					}, function(error) {
+						bugsnagService.reportError(error);
+						alert("Error: " + error);
+					});
+			}
+
+			if(connector.name === 'googlecalendar') {
+				scopes = [
+					"https://www.googleapis.com/auth/calendar",
+					"https://www.googleapis.com/auth/calendar.readonly"
+				];
+
+				$cordovaOauth.google(window.private_keys.GOOGLE_CLIENT_ID, scopes)
+					.then(function(result) {
+						console.log("Response Object -> " + JSON.stringify(result));
+						var params = {connectorAccessToken: result.access_token};
+						connectorsService.connect('googlecalendar', params).then(function(result){
+							console.log(JSON.stringify(result));
+							$scope.init();
+						}, function (error) {
+							bugsnagService.reportError(error);
+							alert("Error: " + error);
+						});
+					}, function(error) {
+						bugsnagService.reportError(error);
+						alert("Error: " + error);
+					});
+			}
+
+			if(connector.name === 'up') {
+				scopes = [
+					'basic_read',
+					'extended_read',
+					'location_read',
+					'friends_read',
+					'mood_read',
+					'move_read',
+					'sleep_read',
+					'meal_read',
+					'weight_read',
+					'heartrate_read',
+					'generic_event_read'
+				];
+
+				$cordovaOauth.jawbone(window.private_keys.JAWBONE_CLIENT_ID, window.private_keys.JAWBONE_CLIENT_SECRET, scopes)
+					.then(function(result) {
+						console.log("Response Object -> " + JSON.stringify(result));
+						var params = {connectorAccessToken: result.access_token};
+						connectorsService.connect('up', params).then(function(result){
+							console.log(JSON.stringify(result));
+							$scope.init();
+						}, function (error) {
+							bugsnagService.reportError(error);
+							alert("Error: " + error);
+						});
+					}, function(error) {
+						bugsnagService.reportError(error);
+						alert("Error: " + error);
+					});
+			}
+
 			if(connector.name === 'worldweatheronline') {
-				var params = {
-					location: 'location'
+				$scope.showPopup = function() {
+					$scope.data = {};
+
+					// An elaborate, custom popup
+					var myPopup = $ionicPopup.show({
+						template: '<input type="text" ng-model="data.wwoLocation">',
+						title: 'Enter Your Zip Code',
+						subTitle: 'Please use normal things',
+						scope: $scope,
+						buttons: [
+							{ text: 'Cancel' },
+							{
+								text: '<b>Save</b>',
+								type: 'button-positive',
+								onTap: function(e) {
+									if (!$scope.data.wifi) {
+										//don't allow the user to close unless he enters wifi password
+										e.preventDefault();
+									} else {
+										return $scope.data.wwoLocation;
+									}
+								}
+							}
+						]
+					});
+
+					myPopup.then(function(res) {
+						var params = {
+							location: $scope.data.wwoLocation
+						};
+						connectorsService.connect(connector.name, params);
+						console.log('Tapped!', res);
+					});
+
+					$timeout(function() {
+						myPopup.close(); //close the popup after 3 seconds for some reason
+					}, 3000);
 				};
-				connectorsService.connect(connector.name, params);
+
 			}
 
 		};
