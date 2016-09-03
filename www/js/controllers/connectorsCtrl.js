@@ -196,9 +196,11 @@ angular.module('starter')
 
                 // An elaborate, custom popup
                 myPopup = $ionicPopup.show({
-                    template: '<input type="number" ng-model="data.wwoLocation">',
-                    title: 'Enter Your Zip Code',
-                    subTitle: '',
+					template: '<label class="item item-input">' +
+					'<i class="icon ion-location placeholder-icon"></i>' +
+					'<input type="number" placeholder="Zip Code" ng-model="data.location"></label>',
+                    title: connector.displayName,
+                    subTitle: 'Enter Your Zip Code',
                     scope: $scope,
                     buttons: [
                         { text: 'Cancel' },
@@ -206,11 +208,11 @@ angular.module('starter')
                             text: '<b>Save</b>',
                             type: 'button-positive',
                             onTap: function(e) {
-                                if (!$scope.data.wwoLocation) {
+                                if (!$scope.data.location) {
                                     //don't allow the user to close unless he enters wifi password
                                     e.preventDefault();
                                 } else {
-                                    return $scope.data.wwoLocation;
+                                    return $scope.data.location;
                                 }
                             }
                         }
@@ -219,7 +221,7 @@ angular.module('starter')
 
                 myPopup.then(function(res) {
                     var params = {
-                        location: $scope.data.wwoLocation
+                        location: $scope.data.location
                     };
                     connectorsService.connect(connector.name, params);
                     console.log('Entered zip code. Result: ', res);
@@ -231,9 +233,11 @@ angular.module('starter')
 
                 // An elaborate, custom popup
                 myPopup = $ionicPopup.show({
-                    template: '<input type="text" ng-model="data.wwoLocation">',
-                    title: 'Enter Your ' + connector.displayName + ' Username',
-                    subTitle: '',
+					template: '<label class="item item-input">' +
+					'<i class="icon ion-person placeholder-icon"></i>' +
+					'<input type="text" placeholder="Username" ng-model="data.username"></label>',
+					title: connector.displayName,
+					subTitle: 'Enter Your ' + connector.displayName + ' Username',
                     scope: $scope,
                     buttons: [
                         { text: 'Cancel' },
@@ -241,11 +245,11 @@ angular.module('starter')
                             text: '<b>Save</b>',
                             type: 'button-positive',
                             onTap: function(e) {
-                                if (!$scope.data.whatpulseUsername) {
+                                if (!$scope.data.username) {
                                     //don't allow the user to close unless he enters wifi password
                                     e.preventDefault();
                                 } else {
-                                    return $scope.data.whatpulseUsername;
+                                    return $scope.data.username;
                                 }
                             }
                         }
@@ -254,7 +258,7 @@ angular.module('starter')
 
                 myPopup.then(function(res) {
                     var params = {
-                        username: $scope.data.whatpulseUsername
+                        username: $scope.data.username
                     };
                     connectorsService.connect(connector.name, params);
                 });
@@ -265,10 +269,14 @@ angular.module('starter')
 
                 // An elaborate, custom popup
                 myPopup = $ionicPopup.show({
-                    template: '<input type="text" ng-model="data.mfpUsername">' +
-                    '<br> <input type="text" ng-model="data.mfpPassword">',
-                    title: 'Enter Your ' + connector.displayName + ' Credentials',
-                    subTitle: '',
+					template: '<label class="item item-input">' +
+					'<i class="icon ion-person placeholder-icon"></i>' +
+					'<input type="text" placeholder="Username" ng-model="data.username"></label>' +
+					'<br> <label class="item item-input">' +
+					'<i class="icon ion-locked placeholder-icon"></i>' +
+					'<input type="password" placeholder="Password" ng-model="data.password"></label>',
+					title: connector.displayName,
+					subTitle: 'Enter Your ' + connector.displayName + ' Credentials',
                     scope: $scope,
                     buttons: [
                         { text: 'Cancel' },
@@ -276,7 +284,7 @@ angular.module('starter')
                             text: '<b>Save</b>',
                             type: 'button-positive',
                             onTap: function(e) {
-                                if (!$scope.data.mfpPassword || !$scope.data.mfpUsername) {
+                                if (!$scope.data.username || !$scope.data.password) {
                                     //don't allow the user to close unless he enters wifi password
                                     e.preventDefault();
                                 } else {
@@ -289,8 +297,8 @@ angular.module('starter')
 
                 myPopup.then(function(res) {
                     var params = {
-                        username: $scope.data.mfpUsername,
-                        password: $scope.data.mfpPassword
+                        username: $scope.data.username,
+                        password: $scope.data.password
                     };
                     connectorsService.connect(connector.name, params);
                 });
@@ -301,10 +309,14 @@ angular.module('starter')
 
                 // An elaborate, custom popup
                 myPopup = $ionicPopup.show({
-                    template: '<input type="text" ng-model="data.username">' +
-                    '<br> <input type="password" ng-model="data.password">',
-                    title: 'Enter Your ' + connector.displayName + ' Credentials',
-                    subTitle: '',
+					template: '<label class="item item-input">' +
+					'<i class="icon ion-person placeholder-icon"></i>' +
+					'<input type="text" placeholder="Username" ng-model="data.username"></label>' +
+					'<br> <label class="item item-input">' +
+					'<i class="icon ion-locked placeholder-icon"></i>' +
+					'<input type="password" placeholder="Password" ng-model="data.password"></label>',
+					title: connector.displayName,
+					subTitle: 'Enter Your ' + connector.displayName + ' Credentials',
                     scope: $scope,
                     buttons: [
                         { text: 'Cancel' },
@@ -337,10 +349,14 @@ angular.module('starter')
 
                 // An elaborate, custom popup
                 myPopup = $ionicPopup.show({
-                    template: '<input type="text" ng-model="data.username">' +
-                    '<br> <input type="password" ng-model="data.password">',
-                    title: 'Enter Your ' + connector.displayName + ' Credentials',
-                    subTitle: '',
+                    template: '<label class="item item-input">' +
+					'<i class="icon ion-person placeholder-icon"></i>' +
+					'<input type="text" placeholder="Username" ng-model="data.username"></label>' +
+					'<br> <label class="item item-input">' +
+						'<i class="icon ion-locked placeholder-icon"></i>' +
+					'<input type="password" placeholder="Password" ng-model="data.password"></label>',
+                    title: connector.displayName,
+                    subTitle: 'Enter Your ' + connector.displayName + ' Credentials',
                     scope: $scope,
                     buttons: [
                         { text: 'Cancel' },
@@ -373,10 +389,11 @@ angular.module('starter')
 
                 // An elaborate, custom popup
                 myPopup = $ionicPopup.show({
-                    template: '<input type="text" ng-model="data.mfpUsername">' +
-                    '<br> <input type="text" ng-model="data.mfpPassword">',
-                    title: 'Enter Your ' + connector.displayName + ' Email',
-                    subTitle: '',
+                    template: '<label class="item item-input">' +
+					'<i class="icon ion-email placeholder-icon"></i>' +
+					'<input type="email" placeholder="Email" ng-model="data.email"></label>',
+                    title: connector.displayName,
+                    subTitle: 'Enter Your ' + connector.displayName + ' Email',
                     scope: $scope,
                     buttons: [
                         { text: 'Cancel' },
@@ -403,6 +420,45 @@ angular.module('starter')
                 });
             }
 
+			if(connector.name === 'moodscope') {
+				$scope.data = {};
+
+				// An elaborate, custom popup
+				myPopup = $ionicPopup.show({
+					template: '<label class="item item-input">' +
+					'<i class="icon ion-person placeholder-icon"></i>' +
+					'<input type="text" placeholder="Username" ng-model="data.username"></label>' +
+					'<br> <label class="item item-input">' +
+					'<i class="icon ion-locked placeholder-icon"></i>' +
+					'<input type="password" placeholder="Password" ng-model="data.password"></label>',
+					title: connector.displayName,
+					subTitle: 'Enter Your ' + connector.displayName + ' Credentials',
+					scope: $scope,
+					buttons: [
+						{ text: 'Cancel' },
+						{
+							text: '<b>Save</b>',
+							type: 'button-positive',
+							onTap: function(e) {
+								if (!$scope.data.password || !$scope.data.username) {
+									//don't allow the user to close unless he enters wifi password
+									e.preventDefault();
+								} else {
+									return $scope.data;
+								}
+							}
+						}
+					]
+				});
+
+				myPopup.then(function(res) {
+					var params = {
+						username: $scope.data.username,
+						password: $scope.data.password
+					};
+					connectorsService.connect(connector.name, params);
+				});
+			}
 		};
 
 		$scope.disconnect = function (connector){
