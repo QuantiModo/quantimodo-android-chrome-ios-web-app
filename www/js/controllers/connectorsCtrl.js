@@ -191,45 +191,38 @@ angular.module('starter')
 			}
 
 			if(connector.name === 'worldweatheronline') {
-				$scope.showPopup = function() {
-					$scope.data = {};
+                $scope.data = {};
 
-					// An elaborate, custom popup
-					var myPopup = $ionicPopup.show({
-						template: '<input type="text" ng-model="data.wwoLocation">',
-						title: 'Enter Your Zip Code',
-						subTitle: 'Please use normal things',
-						scope: $scope,
-						buttons: [
-							{ text: 'Cancel' },
-							{
-								text: '<b>Save</b>',
-								type: 'button-positive',
-								onTap: function(e) {
-									if (!$scope.data.wifi) {
-										//don't allow the user to close unless he enters wifi password
-										e.preventDefault();
-									} else {
-										return $scope.data.wwoLocation;
-									}
-								}
-							}
-						]
-					});
+                // An elaborate, custom popup
+                var myPopup = $ionicPopup.show({
+                    template: '<input type="number" ng-model="data.wwoLocation">',
+                    title: 'Enter Your Zip Code',
+                    subTitle: '',
+                    scope: $scope,
+                    buttons: [
+                        { text: 'Cancel' },
+                        {
+                            text: '<b>Save</b>',
+                            type: 'button-positive',
+                            onTap: function(e) {
+                                if (!$scope.data.wwoLocation) {
+                                    //don't allow the user to close unless he enters wifi password
+                                    e.preventDefault();
+                                } else {
+                                    return $scope.data.wwoLocation;
+                                }
+                            }
+                        }
+                    ]
+                });
 
-					myPopup.then(function(res) {
-						var params = {
-							location: $scope.data.wwoLocation
-						};
-						connectorsService.connect(connector.name, params);
-						console.log('Tapped!', res);
-					});
-
-					$timeout(function() {
-						myPopup.close(); //close the popup after 3 seconds for some reason
-					}, 3000);
-				};
-
+                myPopup.then(function(res) {
+                    var params = {
+                        location: $scope.data.wwoLocation
+                    };
+                    connectorsService.connect(connector.name, params);
+                    console.log('Entered zip code. Result: ', res);
+                });
 			}
 
 		};
