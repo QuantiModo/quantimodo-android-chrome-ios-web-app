@@ -551,7 +551,10 @@ angular.module('starter')
             var allowedParams = [
                 'location',
                 'connectorAccessToken',
-                'noRedirect'
+                'noRedirect',
+                'username',
+                'password'
+
             ];
             providedParams.noRedirect = true;
             QuantiModo.get('api/v1/connectors/' + connectorLowercaseName + '/connect',

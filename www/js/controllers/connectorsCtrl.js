@@ -54,6 +54,7 @@ angular.module('starter')
 		$scope.connect = function(connector){
 
 			var scopes;
+            var myPopup;
 
 			if(connector.name === 'github') {
 				scopes = ['user', 'repo'];
@@ -194,7 +195,7 @@ angular.module('starter')
                 $scope.data = {};
 
                 // An elaborate, custom popup
-                var myPopup = $ionicPopup.show({
+                myPopup = $ionicPopup.show({
                     template: '<input type="number" ng-model="data.wwoLocation">',
                     title: 'Enter Your Zip Code',
                     subTitle: '',
@@ -224,6 +225,183 @@ angular.module('starter')
                     console.log('Entered zip code. Result: ', res);
                 });
 			}
+
+            if(connector.name === 'whatpulse') {
+                $scope.data = {};
+
+                // An elaborate, custom popup
+                myPopup = $ionicPopup.show({
+                    template: '<input type="text" ng-model="data.wwoLocation">',
+                    title: 'Enter Your ' + connector.displayName + ' Username',
+                    subTitle: '',
+                    scope: $scope,
+                    buttons: [
+                        { text: 'Cancel' },
+                        {
+                            text: '<b>Save</b>',
+                            type: 'button-positive',
+                            onTap: function(e) {
+                                if (!$scope.data.whatpulseUsername) {
+                                    //don't allow the user to close unless he enters wifi password
+                                    e.preventDefault();
+                                } else {
+                                    return $scope.data.whatpulseUsername;
+                                }
+                            }
+                        }
+                    ]
+                });
+
+                myPopup.then(function(res) {
+                    var params = {
+                        username: $scope.data.whatpulseUsername
+                    };
+                    connectorsService.connect(connector.name, params);
+                });
+            }
+
+            if(connector.name === 'myfitnesspal') {
+                $scope.data = {};
+
+                // An elaborate, custom popup
+                myPopup = $ionicPopup.show({
+                    template: '<input type="text" ng-model="data.mfpUsername">' +
+                    '<br> <input type="text" ng-model="data.mfpPassword">',
+                    title: 'Enter Your ' + connector.displayName + ' Credentials',
+                    subTitle: '',
+                    scope: $scope,
+                    buttons: [
+                        { text: 'Cancel' },
+                        {
+                            text: '<b>Save</b>',
+                            type: 'button-positive',
+                            onTap: function(e) {
+                                if (!$scope.data.mfpPassword || !$scope.data.mfpUsername) {
+                                    //don't allow the user to close unless he enters wifi password
+                                    e.preventDefault();
+                                } else {
+                                    return $scope.data;
+                                }
+                            }
+                        }
+                    ]
+                });
+
+                myPopup.then(function(res) {
+                    var params = {
+                        username: $scope.data.mfpUsername,
+                        password: $scope.data.mfpPassword
+                    };
+                    connectorsService.connect(connector.name, params);
+                });
+            }
+
+            if(connector.name === 'myfitnesspal') {
+                $scope.data = {};
+
+                // An elaborate, custom popup
+                myPopup = $ionicPopup.show({
+                    template: '<input type="text" ng-model="data.username">' +
+                    '<br> <input type="password" ng-model="data.password">',
+                    title: 'Enter Your ' + connector.displayName + ' Credentials',
+                    subTitle: '',
+                    scope: $scope,
+                    buttons: [
+                        { text: 'Cancel' },
+                        {
+                            text: '<b>Save</b>',
+                            type: 'button-positive',
+                            onTap: function(e) {
+                                if (!$scope.data.password || !$scope.data.username) {
+                                    //don't allow the user to close unless he enters wifi password
+                                    e.preventDefault();
+                                } else {
+                                    return $scope.data;
+                                }
+                            }
+                        }
+                    ]
+                });
+
+                myPopup.then(function(res) {
+                    var params = {
+                        username: $scope.data.username,
+                        password: $scope.data.password
+                    };
+                    connectorsService.connect(connector.name, params);
+                });
+            }
+
+            if(connector.name === 'mynetdiary') {
+                $scope.data = {};
+
+                // An elaborate, custom popup
+                myPopup = $ionicPopup.show({
+                    template: '<input type="text" ng-model="data.username">' +
+                    '<br> <input type="password" ng-model="data.password">',
+                    title: 'Enter Your ' + connector.displayName + ' Credentials',
+                    subTitle: '',
+                    scope: $scope,
+                    buttons: [
+                        { text: 'Cancel' },
+                        {
+                            text: '<b>Save</b>',
+                            type: 'button-positive',
+                            onTap: function(e) {
+                                if (!$scope.data.password || !$scope.data.username) {
+                                    //don't allow the user to close unless he enters wifi password
+                                    e.preventDefault();
+                                } else {
+                                    return $scope.data;
+                                }
+                            }
+                        }
+                    ]
+                });
+
+                myPopup.then(function(res) {
+                    var params = {
+                        username: $scope.data.username,
+                        password: $scope.data.password
+                    };
+                    connectorsService.connect(connector.name, params);
+                });
+            }
+
+            if(connector.name === 'moodpanda') {
+                $scope.data = {};
+
+                // An elaborate, custom popup
+                myPopup = $ionicPopup.show({
+                    template: '<input type="text" ng-model="data.mfpUsername">' +
+                    '<br> <input type="text" ng-model="data.mfpPassword">',
+                    title: 'Enter Your ' + connector.displayName + ' Email',
+                    subTitle: '',
+                    scope: $scope,
+                    buttons: [
+                        { text: 'Cancel' },
+                        {
+                            text: '<b>Save</b>',
+                            type: 'button-positive',
+                            onTap: function(e) {
+                                if (!$scope.data.email) {
+                                    //don't allow the user to close unless he enters wifi password
+                                    e.preventDefault();
+                                } else {
+                                    return $scope.data;
+                                }
+                            }
+                        }
+                    ]
+                });
+
+                myPopup.then(function(res) {
+                    var params = {
+                        email: $scope.data.email
+                    };
+                    connectorsService.connect(connector.name, params);
+                });
+            }
 
 		};
 
