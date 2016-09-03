@@ -4,8 +4,7 @@
 		<ion-refresher on-refresh="init()"></ion-refresher>
 
 		<div  class="list card" ng-if="connectors.length">
-
-				<div on-hold="showActionSheetForConnector(connector, $event)" class="list card"
+			<div on-hold="showActionSheetForConnector(connector, $event)" class="list card"
 					 ng-repeat="connector in connectors" >
 					<div class="item" style="padding-bottom:10px;">
 						<div ng-click="showActionSheetForConnector(connector, $event)" class="row">
