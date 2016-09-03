@@ -466,11 +466,6 @@ config.appSettings  = {
             title : 'Help & Feedback',
             href : "#/app/feedback",
             icon : 'ion-ios-help-outline'
-        },
-        {
-            title : 'Connectors',
-            href : "#/app/connectors",
-            icon : 'ion-ios-cloud-download-outline'
         }
     ]
 };
