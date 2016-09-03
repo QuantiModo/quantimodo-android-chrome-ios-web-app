@@ -29,7 +29,8 @@ angular.module('starter')
 				analytics.trackView("Import Data Controller"); }
 			$scope.showLoader();
 
-			if(!$rootScope.isMobile){
+			if($rootScope.isMobile){
+				console.log('importCtrl: $rootScope.isMobile so using native connector page');
 				connectorsService.getConnectors();
 				connectorsService.refreshConnectors();
 			} else {
