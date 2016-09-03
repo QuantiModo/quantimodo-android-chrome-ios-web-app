@@ -32,8 +32,8 @@
 								<i style="font-size: 20px;" class="icon positive ion-more"></i>
 							</div>
 						</div>
-						<div class="button-bar" ng-if="!connector.connected && !connector.qmClient">
-							<button class="button button-clear button-balanced"
+						<div class="button-bar" ng-if="!connector.connected">
+							<button ng-if="!connector.qmClient" class="button button-clear button-balanced"
 									style="text-overflow: clip;"
 									ng-click="connect(connector)">
 								<i class="ion-link"> &nbsp; Connect</i>
@@ -55,10 +55,10 @@
 									style="text-overflow: clip;">
 								<i class="ion-link"> &nbsp; Reconnect</i>
 							</button>
-							<button class="button button-clear button-assertive"
+							<button ng-if="!connector.qmClient" class="button button-clear button-assertive"
 									ng-click="disconnect(connector)"
 									style="text-overflow: clip;">
-								<i class="ion-close-circled"> &nbsp; Disconnect</i>
+								<i class="ion-close-circled"> Disconnect </i>
 							</button>
 						</div>
 					</div>
