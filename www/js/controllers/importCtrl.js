@@ -149,13 +149,43 @@ angular.module('starter')
 					});
 			}
 
+			if(connector.name === 'fitbit') {
+				scopes = [
+					'activity',
+					'heartrate',
+					'location',
+					'nutrition',
+					'profile',
+					'settings',
+					'sleep',
+					'social',
+					'weight'
+				];
+
+				$cordovaOauth.fitbit(window.private_keys.FITBIT_CLIENT_ID, window.private_keys.FITBIT_CLIENT_SECRET, scopes)
+					.then(function(result) {
+						console.log("Response Object -> " + JSON.stringify(result));
+						var params = {connectorAccessToken: result.access_token};
+						connectorsService.connect(connector.name, params).then(function(result){
+							console.log(JSON.stringify(result));
+							$scope.init();
+						}, function (error) {
+							bugsnagService.reportError(error);
+							alert("Error: " + error);
+						});
+					}, function(error) {
+						bugsnagService.reportError(error);
+						alert("Error: " + error);
+					});
+			}
+
 			if(connector.name === 'facebook') {
 				scopes = ['user_likes', 'user_posts'];
 				$cordovaOauth.facebook(window.private_keys.FACEBOOK_APP_ID, scopes)
 					.then(function(result) {
 						console.log("Response Object -> " + JSON.stringify(result));
 						var params = {connectorAccessToken: result.access_token};
-						connectorsService.connect('facebook', params).then(function(result){
+						connectorsService.connect(connector.name, params).then(function(result){
 							console.log(JSON.stringify(result));
 							$scope.init();
 						}, function (error) {
@@ -179,7 +209,7 @@ angular.module('starter')
 					.then(function(result) {
 						console.log("Response Object -> " + JSON.stringify(result));
 						var params = {connectorAccessToken: result.access_token};
-						connectorsService.connect('googlefit', params).then(function(result){
+						connectorsService.connect(connector.name, params).then(function(result){
 							console.log(JSON.stringify(result));
 							$scope.init();
 						}, function (error) {
@@ -202,7 +232,7 @@ angular.module('starter')
 					.then(function(result) {
 						console.log("Response Object -> " + JSON.stringify(result));
 						var params = {connectorAccessToken: result.access_token};
-						connectorsService.connect('googlecalendar', params).then(function(result){
+						connectorsService.connect(connector.name, params).then(function(result){
 							console.log(JSON.stringify(result));
 							$scope.init();
 						}, function (error) {
@@ -234,7 +264,7 @@ angular.module('starter')
 					.then(function(result) {
 						console.log("Response Object -> " + JSON.stringify(result));
 						var params = {connectorAccessToken: result.access_token};
-						connectorsService.connect('up', params).then(function(result){
+						connectorsService.connect(connector.name, params).then(function(result){
 							console.log(JSON.stringify(result));
 							$scope.init();
 						}, function (error) {

@@ -2,7 +2,7 @@
     <ion-content scroll="true" overflow-scroll="true">
         <ion-refresher on-refresh="init()"></ion-refresher>
 
-        <div  class="list card" ng-if="!isMobile">
+        <div  class="list card" ng-if="isMobile">
             <div on-hold="showActionSheetForConnector(connector, $event)" class="list card"
                  ng-repeat="connector in connectors" >
                 <div class="item" style="padding-bottom:10px;">
@@ -62,7 +62,7 @@
                 </div>
             </div>
         </div>
-        <div id="import-iframe" ng-if="isMobile">
+        <div id="import-iframe" ng-if="!isMobile">
         	
         </div>
         <!-- <iframe id="import-iframe" data-tap-disabled="true" style="height:800px;width:100%;" frameborder="0" onload="window.closeLoading();"></iframe> -->
