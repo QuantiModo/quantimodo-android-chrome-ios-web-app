@@ -1,3 +1,0 @@
-[submodule "www/custom-lib/ng-cordova-oauth"]
-	path = www/custom-lib/ng-cordova-oauth
-	url = git@github.com:mikepsinn/ng-cordova-oauth.git
