@@ -7,6 +7,11 @@ machine:
   php:
     version: 5.6.2
 
+checkout:
+  post:
+    - git submodule sync
+    - git submodule update --init # use submodules
+
 # Customize dependencies
 dependencies:
   post:
