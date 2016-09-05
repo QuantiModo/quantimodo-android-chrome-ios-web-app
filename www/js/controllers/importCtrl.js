@@ -111,6 +111,7 @@ angular.module('starter')
 
 			var scopes;
 			var myPopup;
+			var options;
 
 			var genericConnection = function(body) {
 				connectorsService.connect(body).then(function(result){
@@ -167,13 +168,40 @@ angular.module('starter')
 					'weight'
 				];
 
-				$cordovaOauth.fitbit(window.private_keys.FITBIT_CLIENT_ID, window.private_keys.FITBIT_CLIENT_SECRET, scopes)
-					.then(function(result) {
-						connectWithToken(result);
+				options = {redirect_uri: utilsService.getRedirectUri()};
+				$cordovaOauth.fitbit(window.private_keys.FITBIT_CLIENT_ID, scopes, options)
+					.then(function(authorizationCode) {
+						console.log(connector.name + " connect result is " + JSON.stringify(authorizationCode));
+						connectorsService.getAccessTokenAndConnect(authorizationCode, connector.name);
 					}, function(error) {
                         errorHandler(error);
 					});
 			}
+
+			if(connector.name === 'rescutime') {
+				scopes = ['time_data', 'category_data', 'productivity_data'];
+				options = {redirect_uri: utilsService.getRedirectUri()};
+				$cordovaOauth.rescutime(window.private_keys.RESCUETIME_CLIENT_ID, scopes, options)
+					.then(function(authorizationCode) {
+						console.log(connector.name + " connect result is " + JSON.stringify(authorizationCode));
+						connectorsService.getAccessTokenAndConnect(authorizationCode, connector.name);
+					}, function(error) {
+						errorHandler(error);
+					});
+			}
+
+			if(connector.name === 'slice') {
+				scopes = [];
+				options = {redirect_uri: utilsService.getRedirectUri()};
+				$cordovaOauth.slice(window.private_keys.SLICE_CLIENT_ID, scopes, options)
+					.then(function(authorizationCode) {
+						console.log(connector.name + " connect result is " + JSON.stringify(authorizationCode));
+						connectorsService.getAccessTokenAndConnect(authorizationCode, connector.name);
+					}, function(error) {
+						errorHandler(error);
+					});
+			}
+
 
 			if(connector.name === 'facebook') {
 				scopes = ['user_likes', 'user_posts'];

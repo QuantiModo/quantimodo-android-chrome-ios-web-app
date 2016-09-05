@@ -560,6 +560,23 @@ angular.module('starter')
                     errorHandler);
             };
 
+            QuantiModo.getAccessTokenAndConnect = function(code, connectorLowercaseName, successHandler, errorHandler){
+                var allowedParams = [
+                    'code',
+                    'noRedirect'
+                ];
+                var params = {
+                    noRedirect: true,
+                    code: code
+                };
+
+                QuantiModo.post('api/v1/connectors/' + connectorLowercaseName + 'connect',
+                    allowedParams,
+                    params,
+                    successHandler,
+                    errorHandler);
+            };
+
             // get user data
             QuantiModo.getUser = function(successHandler, errorHandler){
                 if($rootScope.user){

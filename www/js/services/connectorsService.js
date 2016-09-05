@@ -81,5 +81,15 @@ angular.module('starter')
 			return deferred.promise;
 		};
 
+		connectorsService.getAccessTokenAndConnect = function(code, lowercaseConnectorName){
+			var deferred = $q.defer();
+			QuantiModo.getAccessTokenAndConnect(code, lowercaseConnectorName, function(){
+				connectorsService.refreshConnectors();
+			}, function(){
+				deferred.reject(false);
+			});
+			return deferred.promise;
+		};
+
 		return connectorsService;
 	});
