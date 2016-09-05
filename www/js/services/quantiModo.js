@@ -31,28 +31,27 @@ angular.module('starter')
                     console.log('QuantiModo.errorHandler: No data property returned from QM API request');
                     return;
                 }
-                if(request) {
-                    error = data.error.message;
-                    if (typeof Bugsnag !== "undefined") {
-                        Bugsnag.notify("API Request to " + request.url + " Failed", error, {}, "error");
-                    }
-                }
                 if(data.success){
                     return;
                 }
-                var error = "Error";
+                var error = "Unknown error";
                 if (data && data.error) {
                     error = data.error;
                 }
                 if (data && data.error && data.error.message) {
                     error = data.error.message;
                 }
-                console.log(error);
+                if(request) {
+                    if (typeof Bugsnag !== "undefined") {
+                        Bugsnag.notify("API Request to " + request.url + " Failed", error, {}, "error");
+                    }
+                }
+                console.error(error);
             };
 
             // Handler when request is failed
             var onRequestFailed = function(error){
-                console.log("Not Allowed! error : "+ error);
+                console.log("Request error : " + error);
             };
 
 
