@@ -267,7 +267,7 @@ angular.module('starter')
 
 				myPopup.then(function(res) {
 					var params = {
-						location: $scope.data.location
+						location: String($scope.data.location)
 					};
 					var body = {
 						connectorCredentials: params,
