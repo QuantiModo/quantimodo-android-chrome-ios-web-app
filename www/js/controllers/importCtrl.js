@@ -192,7 +192,7 @@ angular.module('starter')
 					"https://www.googleapis.com/auth/fitness.location.read"
 				];
 
-				$cordovaOauth.google(window.private_keys.GOOGLE_CLIENT_ID, scopes)
+				$cordovaOauth.googleOffline(window.private_keys.GOOGLE_CLIENT_ID, window.private_keys.GOOGLE_CLIENT_SECRET, scopes)
 					.then(function(result) {
 						connectWithToken(result);
 					}, function(error) {
@@ -206,7 +206,7 @@ angular.module('starter')
 					"https://www.googleapis.com/auth/calendar.readonly"
 				];
 
-				$cordovaOauth.google(window.private_keys.GOOGLE_CLIENT_ID, scopes)
+				$cordovaOauth.googleOffline(window.private_keys.GOOGLE_CLIENT_ID, window.private_keys.GOOGLE_CLIENT_SECRET, scopes)
 					.then(function(result) {
 						connectWithToken(result);
 					}, function(error) {
