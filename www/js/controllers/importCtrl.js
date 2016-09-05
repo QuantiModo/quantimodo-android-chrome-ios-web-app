@@ -94,6 +94,7 @@ angular.module('starter')
 					$scope.init();
 				}, function (error) {
                     errorHandler(error);
+					$scope.init();
 				});
 			};
 
@@ -104,6 +105,16 @@ angular.module('starter')
 					connector: connector
 				};
 				genericConnection(body);
+			};
+
+			var getAccessTokenAndConnect = function(authorizationCode, connector){
+				console.log(connector.name + " connect result is " + JSON.stringify(authorizationCode));
+				connectorsService.getAccessTokenAndConnect(authorizationCode, connector.name).then(function (){
+					$scope.init();
+				}, function() {
+					console.error("error on getAccessTokenAndConnect for " + connector.name);
+					$scope.init();
+				});
 			};
 
 			var errorHandler = function(error){
@@ -146,8 +157,7 @@ angular.module('starter')
 				options = {redirect_uri: utilsService.getRedirectUri()};
 				$cordovaOauth.fitbit(window.private_keys.FITBIT_CLIENT_ID, scopes, options)
 					.then(function(authorizationCode) {
-						console.log(connector.name + " connect result is " + JSON.stringify(authorizationCode));
-						connectorsService.getAccessTokenAndConnect(authorizationCode, connector.name);
+						getAccessTokenAndConnect(authorizationCode, connector);
 					}, function(error) {
                         errorHandler(error);
 					});
@@ -158,8 +168,7 @@ angular.module('starter')
 				options = {redirect_uri: utilsService.getRedirectUri()};
 				$cordovaOauth.rescutime(window.private_keys.RESCUETIME_CLIENT_ID, scopes, options)
 					.then(function(authorizationCode) {
-						console.log(connector.name + " connect result is " + JSON.stringify(authorizationCode));
-						connectorsService.getAccessTokenAndConnect(authorizationCode, connector.name);
+						getAccessTokenAndConnect(authorizationCode, connector);
 					}, function(error) {
 						errorHandler(error);
 					});
@@ -170,8 +179,7 @@ angular.module('starter')
 				options = {redirect_uri: utilsService.getRedirectUri()};
 				$cordovaOauth.slice(window.private_keys.SLICE_CLIENT_ID, scopes, options)
 					.then(function(authorizationCode) {
-						console.log(connector.name + " connect result is " + JSON.stringify(authorizationCode));
-						connectorsService.getAccessTokenAndConnect(authorizationCode, connector.name);
+						getAccessTokenAndConnect(authorizationCode, connector);
 					}, function(error) {
 						errorHandler(error);
 					});
@@ -198,8 +206,7 @@ angular.module('starter')
 				options = {redirect_uri: utilsService.getRedirectUri()};
 				$cordovaOauth.googleOffline(window.private_keys.GOOGLE_CLIENT_ID, scopes, options)
 					.then(function(authorizationCode) {
-						console.log(connector.name + " connect result is " + JSON.stringify(authorizationCode));
-						connectorsService.getAccessTokenAndConnect(authorizationCode, connector.name);
+						getAccessTokenAndConnect(authorizationCode, connector);
 					}, function(error) {
 						errorHandler(error);
 					});
@@ -213,8 +220,7 @@ angular.module('starter')
 				options = {redirect_uri: utilsService.getRedirectUri()};
 				$cordovaOauth.googleOffline(window.private_keys.GOOGLE_CLIENT_ID, scopes, options)
 					.then(function(authorizationCode) {
-						console.log(connector.name + " connect result is " + JSON.stringify(authorizationCode));
-						connectorsService.getAccessTokenAndConnect(authorizationCode, connector.name);
+						getAccessTokenAndConnect(authorizationCode, connector);
 					}, function(error) {
 						errorHandler(error);
 					});
@@ -227,8 +233,7 @@ angular.module('starter')
 				options = {redirect_uri: utilsService.getRedirectUri()};
 				$cordovaOauth.googleOffline(window.private_keys.GOOGLE_CLIENT_ID, scopes, options)
 					.then(function(authorizationCode) {
-						console.log(connector.name + " connect result is " + JSON.stringify(authorizationCode));
-						connectorsService.getAccessTokenAndConnect(authorizationCode, connector.name);
+						getAccessTokenAndConnect(authorizationCode, connector);
 					}, function(error) {
 						errorHandler(error);
 					});
@@ -260,7 +265,6 @@ angular.module('starter')
 			if(connector.name === 'worldweatheronline') {
 				$scope.data = {};
 
-				// An elaborate, custom popup
 				myPopup = $ionicPopup.show({
 					template: '<label class="item item-input">' +
 					'<i class="icon ion-location placeholder-icon"></i>' +
@@ -301,7 +305,6 @@ angular.module('starter')
 			if(connector.name === 'whatpulse') {
 				$scope.data = {};
 
-				// An elaborate, custom popup
 				myPopup = $ionicPopup.show({
 					template: '<label class="item item-input">' +
 					'<i class="icon ion-person placeholder-icon"></i>' +
@@ -341,7 +344,6 @@ angular.module('starter')
 			if(connector.name === 'myfitnesspal') {
 				$scope.data = {};
 
-				// An elaborate, custom popup
 				myPopup = $ionicPopup.show({
 					template: '<label class="item item-input">' +
 					'<i class="icon ion-person placeholder-icon"></i>' +
@@ -382,54 +384,9 @@ angular.module('starter')
 				});
 			}
 
-			if(connector.name === 'myfitnesspal') {
-				$scope.data = {};
-
-				// An elaborate, custom popup
-				myPopup = $ionicPopup.show({
-					template: '<label class="item item-input">' +
-					'<i class="icon ion-person placeholder-icon"></i>' +
-					'<input type="text" placeholder="Username" ng-model="data.username"></label>' +
-					'<br> <label class="item item-input">' +
-					'<i class="icon ion-locked placeholder-icon"></i>' +
-					'<input type="password" placeholder="Password" ng-model="data.password"></label>',
-					title: connector.displayName,
-					subTitle: 'Enter Your ' + connector.displayName + ' Credentials',
-					scope: $scope,
-					buttons: [
-						{ text: 'Cancel' },
-						{
-							text: '<b>Save</b>',
-							type: 'button-positive',
-							onTap: function(e) {
-								if (!$scope.data.password || !$scope.data.username) {
-									//don't allow the user to close unless he enters wifi password
-									e.preventDefault();
-								} else {
-									return $scope.data;
-								}
-							}
-						}
-					]
-				});
-
-				myPopup.then(function(res) {
-					var params = {
-						username: $scope.data.username,
-						password: $scope.data.password
-					};
-					var body = {
-						connectorCredentials: params,
-						connector: connector
-					};
-					genericConnection(body);
-				});
-			}
-
 			if(connector.name === 'mynetdiary') {
 				$scope.data = {};
 
-				// An elaborate, custom popup
 				myPopup = $ionicPopup.show({
 					template: '<label class="item item-input">' +
 					'<i class="icon ion-person placeholder-icon"></i>' +
@@ -473,7 +430,6 @@ angular.module('starter')
 			if(connector.name === 'moodpanda') {
 				$scope.data = {};
 
-				// An elaborate, custom popup
 				myPopup = $ionicPopup.show({
 					template: '<label class="item item-input">' +
 					'<i class="icon ion-email placeholder-icon"></i>' +
@@ -513,7 +469,6 @@ angular.module('starter')
 			if(connector.name === 'moodscope') {
 				$scope.data = {};
 
-				// An elaborate, custom popup
 				myPopup = $ionicPopup.show({
 					template: '<label class="item item-input">' +
 					'<i class="icon ion-person placeholder-icon"></i>' +
