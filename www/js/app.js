@@ -752,20 +752,6 @@ angular.module('starter',
                 }
             }
         })
-        .state('app.connectors', {
-            url: "/connectors",
-            cache: false,
-            params: {
-                fromState : null,
-                fromUrl : null
-            },
-            views: {
-                'menuContent': {
-                    templateUrl: "templates/connectors.html",
-                    controller: 'ConnectorsCtrl'
-                }
-            }
-        })
 
     if (window.localStorage.introSeen) {
         console.log("Intro seen so going to inbox");

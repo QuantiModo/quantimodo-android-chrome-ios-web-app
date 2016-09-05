@@ -112,40 +112,45 @@ angular.module('starter')
 			var scopes;
 			var myPopup;
 
+			var genericConnection = function(body) {
+				connectorsService.connect(body).then(function(result){
+					console.log(JSON.stringify(result));
+					$scope.init();
+				}, function (error) {
+                    errorHandler(error);
+				});
+			};
+
+			var connectWithToken = function(response) {
+				console.log("Response Object -> " + JSON.stringify(response));
+				var body = {
+					connectorCredentials: {token: response},
+					connector: connector
+				};
+				genericConnection(body);
+			};
+
+			var errorHandler = function(error){
+                bugsnagService.reportError(error);
+                alert("Error: " + error);
+            };
+
 			if(connector.name === 'github') {
 				scopes = ['user', 'repo'];
 				$cordovaOauth.github(window.private_keys.GITHUB_CLIENT_ID, window.private_keys.GITHUB_CLIENT_SECRET,
 					scopes).then(function(result) {
-					console.log("Response Object -> " + JSON.stringify(result));
-					var params = {connectorAccessToken: result.access_token};
-					connectorsService.connect('github', params).then(function(result){
-						console.log(JSON.stringify(result));
-						$scope.init();
-					}, function (error) {
-						bugsnagService.reportError(error);
-						alert("Error: " + error);
-					});
+					connectWithToken(result);
 				}, function(error) {
-					bugsnagService.reportError(error);
-					alert("Error: " + error);
+					errorHandler(error);
 				});
 			}
 
 			if(connector.name === 'withings') {
 				$cordovaOauth.withings(window.private_keys.WITHINGS_CLIENT_ID, window.private_keys.WITHINGS_CLIENT_SECRET)
 					.then(function(result) {
-						console.log("Response Object -> " + JSON.stringify(result));
-						var params = {connectorAccessToken: result.access_token};
-						connectorsService.connect('withings', params).then(function(result){
-							console.log(JSON.stringify(result));
-							$scope.init();
-						}, function (error) {
-							bugsnagService.reportError(error);
-							alert("Error: " + error);
-						});
+						connectWithToken(result);
 					}, function(error) {
-						bugsnagService.reportError(error);
-						alert("Error: " + error);
+                        errorHandler(error);
 					});
 			}
 
@@ -164,18 +169,9 @@ angular.module('starter')
 
 				$cordovaOauth.fitbit(window.private_keys.FITBIT_CLIENT_ID, window.private_keys.FITBIT_CLIENT_SECRET, scopes)
 					.then(function(result) {
-						console.log("Response Object -> " + JSON.stringify(result));
-						var params = {connectorAccessToken: result.access_token};
-						connectorsService.connect(connector.name, params).then(function(result){
-							console.log(JSON.stringify(result));
-							$scope.init();
-						}, function (error) {
-							bugsnagService.reportError(error);
-							alert("Error: " + error);
-						});
+						connectWithToken(result);
 					}, function(error) {
-						bugsnagService.reportError(error);
-						alert("Error: " + error);
+                        errorHandler(error);
 					});
 			}
 
@@ -183,18 +179,9 @@ angular.module('starter')
 				scopes = ['user_likes', 'user_posts'];
 				$cordovaOauth.facebook(window.private_keys.FACEBOOK_APP_ID, scopes)
 					.then(function(result) {
-						console.log("Response Object -> " + JSON.stringify(result));
-						var params = {connectorAccessToken: result.access_token};
-						connectorsService.connect(connector.name, params).then(function(result){
-							console.log(JSON.stringify(result));
-							$scope.init();
-						}, function (error) {
-							bugsnagService.reportError(error);
-							alert("Error: " + error);
-						});
+						connectWithToken(result);
 					}, function(error) {
-						bugsnagService.reportError(error);
-						alert("Error: " + error);
+                        errorHandler(error);
 					});
 			}
 
@@ -207,18 +194,9 @@ angular.module('starter')
 
 				$cordovaOauth.google(window.private_keys.GOOGLE_CLIENT_ID, scopes)
 					.then(function(result) {
-						console.log("Response Object -> " + JSON.stringify(result));
-						var params = {connectorAccessToken: result.access_token};
-						connectorsService.connect(connector.name, params).then(function(result){
-							console.log(JSON.stringify(result));
-							$scope.init();
-						}, function (error) {
-							bugsnagService.reportError(error);
-							alert("Error: " + error);
-						});
+						connectWithToken(result);
 					}, function(error) {
-						bugsnagService.reportError(error);
-						alert("Error: " + error);
+                        errorHandler(error);
 					});
 			}
 
@@ -230,18 +208,9 @@ angular.module('starter')
 
 				$cordovaOauth.google(window.private_keys.GOOGLE_CLIENT_ID, scopes)
 					.then(function(result) {
-						console.log("Response Object -> " + JSON.stringify(result));
-						var params = {connectorAccessToken: result.access_token};
-						connectorsService.connect(connector.name, params).then(function(result){
-							console.log(JSON.stringify(result));
-							$scope.init();
-						}, function (error) {
-							bugsnagService.reportError(error);
-							alert("Error: " + error);
-						});
+						connectWithToken(result);
 					}, function(error) {
-						bugsnagService.reportError(error);
-						alert("Error: " + error);
+                        errorHandler(error);
 					});
 			}
 
@@ -262,18 +231,9 @@ angular.module('starter')
 
 				$cordovaOauth.jawbone(window.private_keys.JAWBONE_CLIENT_ID, window.private_keys.JAWBONE_CLIENT_SECRET, scopes)
 					.then(function(result) {
-						console.log("Response Object -> " + JSON.stringify(result));
-						var params = {connectorAccessToken: result.access_token};
-						connectorsService.connect(connector.name, params).then(function(result){
-							console.log(JSON.stringify(result));
-							$scope.init();
-						}, function (error) {
-							bugsnagService.reportError(error);
-							alert("Error: " + error);
-						});
+						connectWithToken(result);
 					}, function(error) {
-						bugsnagService.reportError(error);
-						alert("Error: " + error);
+                        errorHandler(error);
 					});
 			}
 
@@ -309,7 +269,11 @@ angular.module('starter')
 					var params = {
 						location: $scope.data.location
 					};
-					connectorsService.connect(connector.name, params);
+					var body = {
+						connectorCredentials: params,
+						connector: connector
+					};
+					genericConnection(body);
 					console.log('Entered zip code. Result: ', res);
 				});
 			}
@@ -346,7 +310,11 @@ angular.module('starter')
 					var params = {
 						username: $scope.data.username
 					};
-					connectorsService.connect(connector.name, params);
+					var body = {
+						connectorCredentials: params,
+						connector: connector
+					};
+					genericConnection(body);
 				});
 			}
 
@@ -386,7 +354,11 @@ angular.module('starter')
 						username: $scope.data.username,
 						password: $scope.data.password
 					};
-					connectorsService.connect(connector.name, params);
+					var body = {
+						connectorCredentials: params,
+						connector: connector
+					};
+					genericConnection(body);
 				});
 			}
 
@@ -426,7 +398,11 @@ angular.module('starter')
 						username: $scope.data.username,
 						password: $scope.data.password
 					};
-					connectorsService.connect(connector.name, params);
+					var body = {
+						connectorCredentials: params,
+						connector: connector
+					};
+					genericConnection(body);
 				});
 			}
 
@@ -466,7 +442,11 @@ angular.module('starter')
 						username: $scope.data.username,
 						password: $scope.data.password
 					};
-					connectorsService.connect(connector.name, params);
+					var body = {
+						connectorCredentials: params,
+						connector: connector
+					};
+					genericConnection(body);
 				});
 			}
 
@@ -502,7 +482,11 @@ angular.module('starter')
 					var params = {
 						email: $scope.data.email
 					};
-					connectorsService.connect(connector.name, params);
+					var body = {
+						connectorCredentials: params,
+						connector: connector
+					};
+					genericConnection(body);
 				});
 			}
 
@@ -542,7 +526,11 @@ angular.module('starter')
 						username: $scope.data.username,
 						password: $scope.data.password
 					};
-					connectorsService.connect(connector.name, params);
+					var body = {
+						connectorCredentials: params,
+						connector: connector
+					};
+					genericConnection(body);
 				});
 			}
 		};

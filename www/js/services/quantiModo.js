@@ -546,23 +546,19 @@ angular.module('starter')
                     errorHandler);
             };
 
-        // get units
-        QuantiModo.connectConnector = function(connectorLowercaseName, providedParams, successHandler, errorHandler){
-            var allowedParams = [
-                'location',
-                'connectorAccessToken',
-                'noRedirect',
-                'username',
-                'password'
 
-            ];
-            providedParams.noRedirect = true;
-            QuantiModo.get('api/v1/connectors/' + connectorLowercaseName + '/connect',
-                allowedParams,
-                providedParams,
-                successHandler,
-                errorHandler);
-        };
+            QuantiModo.connectConnector = function(body, successHandler, errorHandler){
+                var requiredProperties = [
+                    'connector',
+                    'connectorCredentials'
+                ];
+
+                QuantiModo.post('api/v1/connectors/connect',
+                    requiredProperties,
+                    body,
+                    successHandler,
+                    errorHandler);
+            };
 
             // get user data
             QuantiModo.getUser = function(successHandler, errorHandler){
