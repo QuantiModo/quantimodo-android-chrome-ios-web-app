@@ -570,7 +570,7 @@ angular.module('starter')
                     code: code
                 };
 
-                QuantiModo.post('api/v1/connectors/' + connectorLowercaseName + 'connect',
+                QuantiModo.get('api/v1/connectors/' + connectorLowercaseName + '/connect',
                     allowedParams,
                     params,
                     successHandler,
