@@ -163,10 +163,10 @@ angular.module('starter')
 					});
 			}
 
-			if(connector.name === 'rescutime') {
+			if(connector.name === 'rescuetime') {
 				scopes = ['time_data', 'category_data', 'productivity_data'];
 				options = {redirect_uri: utilsService.getRedirectUri()};
-				$cordovaOauth.rescutime(window.private_keys.RESCUETIME_CLIENT_ID, scopes, options)
+				$cordovaOauth.rescuetime(window.private_keys.RESCUETIME_CLIENT_ID, scopes, options)
 					.then(function(authorizationCode) {
 						getAccessTokenAndConnect(authorizationCode, connector);
 					}, function(error) {
