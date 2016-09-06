@@ -154,7 +154,7 @@ angular.module('starter')
 					'weight'
 				];
 
-				options = {redirect_uri: utilsService.getRedirectUri()};
+				options = {redirect_uri: utilsService.getApiUrl() + '/api/v1/connectors/' + connector.name + '/connect'};
 				$cordovaOauth.fitbit(window.private_keys.FITBIT_CLIENT_ID, scopes, options)
 					.then(function(authorizationCode) {
 						getAccessTokenAndConnect(authorizationCode, connector);
@@ -165,7 +165,7 @@ angular.module('starter')
 
 			if(connector.name === 'rescuetime') {
 				scopes = ['time_data', 'category_data', 'productivity_data'];
-				options = {redirect_uri: utilsService.getRedirectUri()};
+				options = {redirect_uri: utilsService.getApiUrl() + '/api/v1/connectors/' + connector.name + '/connect'};
 				$cordovaOauth.rescuetime(window.private_keys.RESCUETIME_CLIENT_ID, scopes, options)
 					.then(function(authorizationCode) {
 						getAccessTokenAndConnect(authorizationCode, connector);
@@ -176,7 +176,7 @@ angular.module('starter')
 
 			if(connector.name === 'slice') {
 				scopes = [];
-				options = {redirect_uri: utilsService.getRedirectUri()};
+				options = {redirect_uri: utilsService.getApiUrl() + '/api/v1/connectors/' + connector.name + '/connect'};
 				$cordovaOauth.slice(window.private_keys.SLICE_CLIENT_ID, scopes, options)
 					.then(function(authorizationCode) {
 						getAccessTokenAndConnect(authorizationCode, connector);
@@ -203,7 +203,7 @@ angular.module('starter')
 					"https://www.googleapis.com/auth/fitness.location.read"
 				];
 
-				options = {redirect_uri: utilsService.getRedirectUri()};
+				options = {redirect_uri: utilsService.getApiUrl() + '/api/v1/connectors/' + connector.name + '/connect'};
 				$cordovaOauth.googleOffline(window.private_keys.GOOGLE_CLIENT_ID, scopes, options)
 					.then(function(authorizationCode) {
 						getAccessTokenAndConnect(authorizationCode, connector);
@@ -217,7 +217,7 @@ angular.module('starter')
 					"https://www.googleapis.com/auth/calendar",
 					"https://www.googleapis.com/auth/calendar.readonly"
 				];
-				options = {redirect_uri: utilsService.getRedirectUri()};
+				options = {redirect_uri: utilsService.getApiUrl() + '/api/v1/connectors/' + connector.name + '/connect'};
 				$cordovaOauth.googleOffline(window.private_keys.GOOGLE_CLIENT_ID, scopes, options)
 					.then(function(authorizationCode) {
 						getAccessTokenAndConnect(authorizationCode, connector);
@@ -230,7 +230,7 @@ angular.module('starter')
 				scopes = [
 					'https://www.googleapis.com/auth/userinfo.email'
 				];
-				options = {redirect_uri: utilsService.getRedirectUri()};
+				options = {redirect_uri: utilsService.getApiUrl() + '/api/v1/connectors/' + connector.name + '/connect'};
 				$cordovaOauth.googleOffline(window.private_keys.GOOGLE_CLIENT_ID, scopes, options)
 					.then(function(authorizationCode) {
 						getAccessTokenAndConnect(authorizationCode, connector);
