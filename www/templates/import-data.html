@@ -19,6 +19,9 @@
                             <p ng-if="connector.lastUpdate" style="white-space: normal;">
                                 Last updated {{ connector.lastUpdate * 1000 | date : "longDate"}}
                             </p>
+                            <p ng-if="connector.totalMeasurementsInLastUpdate" style="white-space: normal;">
+                                {{ connector.totalMeasurementsInLastUpdate }} new measurements
+                            </p>
                             <p ng-if="!connector.lastUpdate" style="white-space: normal;">
                                 {{connector.shortDescription}}
                             </p>
