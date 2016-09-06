@@ -67,9 +67,7 @@ angular.module('starter')
 				}, function(){
 					$ionicLoading.hide();
 					console.log('importCtrl: Could not get getAccessTokenFromAnySource.  Going to login page...');
-					$state.go('app.login', {
-						fromUrl : window.location.href
-					});
+					$rootScope.sendToLogin();
 				});
 			}
 	    };

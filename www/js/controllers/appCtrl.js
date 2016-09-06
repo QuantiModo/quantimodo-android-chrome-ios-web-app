@@ -678,6 +678,15 @@ angular.module('starter')
             );
         };
 
+        $rootScope.sendToLogin = function(){
+            localStorageService.deleteItem('user');
+            localStorageService.deleteItem('accessToken');
+            localStorageService.deleteItem('accessTokenInUrl');
+            $rootScope.accessToken = null;
+            $rootScope.user = null;
+            $state.go('app.login');
+        };
+
         $scope.safeApply = function(fn) {
             var phase = this.$root.$$phase;
             if(phase === '$apply' || phase === '$digest') {

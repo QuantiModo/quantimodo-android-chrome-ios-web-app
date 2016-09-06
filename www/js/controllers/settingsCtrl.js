@@ -61,11 +61,6 @@ angular.module('starter')
 			// hide popover
 			$scope.ratingPopover.hide();
 		};
-		
-        // when login is tapped
-	    $scope.loginFromSettings = function(){
-			$state.go('app.login');
-	    };
 
 		$scope.sendSharingInvitation= function() {
 			var subjectLine = "I%27d%20like%20to%20share%20my%20data%20with%20you";
