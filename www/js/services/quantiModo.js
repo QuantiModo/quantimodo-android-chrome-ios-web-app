@@ -614,11 +614,16 @@ angular.module('starter')
             // post tracking reminder
             QuantiModo.postTrackingReminder = function(reminder, successHandler, errorHandler) { 
                 console.log(reminder);
+                if(!reminder.timeZoneOffset){
+                    var d = new Date();
+                    reminder.timeZoneOffset = d.getTimezoneOffset();
+                }
                 QuantiModo.post('api/v1/trackingReminders',
                     [
                         'variableId', 
                         'defaultValue',
-                        'reminderFrequency'
+                        'reminderFrequency',
+                        'timeZoneOffset'
                     ],
                     reminder,
                     successHandler,
