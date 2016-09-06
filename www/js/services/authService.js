@@ -124,7 +124,7 @@ angular.module('starter')
 					$ionicLoading.hide();
 					console.error('checkAuthOrSendToLogin: Could not get user with ' + url +
 						'. Going to login page. Error response: ' + errorResp.message);
-					$state.go('app.login');
+					$rootScope.sendToLogin();
 				}
 			);
 

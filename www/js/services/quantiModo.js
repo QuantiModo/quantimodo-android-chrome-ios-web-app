@@ -17,14 +17,9 @@ angular.module('starter')
             QuantiModo.errorHandler = function(data, status, headers, config, request){
                 $ionicLoading.hide();
                 if(status === 401){
-                    localStorageService.deleteItem('accessToken');
-                    localStorageService.deleteItem('accessTokenInUrl');
-                    $rootScope.accessToken = null;
-                    localStorageService.deleteItem('user');
-                    $rootScope.user = null;
                     console.warn('QuantiModo.errorHandler: Sending to login because we got 401 with request ' +
                         JSON.stringify(request));
-                    $state.go('app.login');
+                    $rootScope.sendToLogin();
                     return;
                 }
                 if(!data){
@@ -789,10 +784,9 @@ angular.module('starter')
                 } else if (refreshToken) {
                     QuantiModo.refreshAccessToken(refreshToken, deferred);
                 } else {
-                    localStorageService.deleteItem('accessToken');
                     console.warn('Refresh token is undefined. Not enough data for oauth flow. rejecting token promise. ' +
                         'Clearing accessToken from local storage if it exists and sending to login page...');
-                    $state.go('app.login');
+                    $rootScope.sendToLogin();
                     deferred.reject();
                 }
             };

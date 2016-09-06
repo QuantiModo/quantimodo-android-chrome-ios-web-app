@@ -31,14 +31,14 @@ angular.module('starter')
 
         $scope.saveIntervalAndGoToLogin = function(primaryOutcomeRatingFrequencyDescription){
             $scope.saveInterval(primaryOutcomeRatingFrequencyDescription);
-            $state.go('app.login');
+            $rootScope.sendToLogin();
         };
 
         // skip interval reporting is tapped
         $scope.skipInterval = function(){
             $scope.showIntervalCard = false;
             console.debug('skipInterval: Going to login state...');
-            $state.go('app.login');
+            $rootScope.sendToLogin();
         };
 
         // ratingValue is reported
