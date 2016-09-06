@@ -163,6 +163,17 @@ angular.module('starter')
 					});
 			}
 
+			if(connector.name === 'runkeeper') {
+				scopes = [];
+				options = {redirect_uri: utilsService.getApiUrl() + '/api/v1/connectors/' + connector.name + '/connect'};
+				$cordovaOauth.fitbit(window.private_keys.RUNKEEPER_CLIENT_ID, scopes, options)
+					.then(function(authorizationCode) {
+						getAccessTokenAndConnect(authorizationCode, connector);
+					}, function(error) {
+						errorHandler(error);
+					});
+			}
+
 			if(connector.name === 'rescuetime') {
 				scopes = ['time_data', 'category_data', 'productivity_data'];
 				options = {redirect_uri: utilsService.getApiUrl() + '/api/v1/connectors/' + connector.name + '/connect'};
