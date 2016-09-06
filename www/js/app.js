@@ -13,7 +13,8 @@ angular.module('starter',
         'ionic-timepicker',
         'ngIOS9UIWebViewPatch',
         'ng-mfb',
-        'fabric'
+        'fabric',
+        'ngCordovaOauth'
     ]
 )
 
@@ -24,7 +25,7 @@ angular.module('starter',
 
     $ionicPlatform.ready(function() {
         //$ionicAnalytics.register();
-        if(ionic.Platform.isIPad() || ionic.Platform.isIOS()){
+        if(ionic.Platform.isAndroid() || ionic.Platform.isIPad() || ionic.Platform.isIOS()){
             window.onerror = function (errorMsg, url, lineNumber) {
                 alert('Error: ' + errorMsg + ' Script: ' + url + ' Line: ' + lineNumber);
             };
@@ -38,7 +39,8 @@ angular.module('starter',
                      badge: true,
                      sound: false,
                      vibrate: false,
-                     icon: 'ic_stat_icon_bw'
+                     icon: 'ic_stat_icon_bw',
+                     clearBadge: true
                  },
                  browser: {
                      pushServiceURL: 'http://push.api.phonegap.com/v1/push'
@@ -46,7 +48,8 @@ angular.module('starter',
                  ios: {
                      alert: "false",
                      badge: "true",
-                     sound: "false"
+                     sound: "false",
+                     clearBadge: true
                  },
                  windows: {}
              });
@@ -124,7 +127,7 @@ angular.module('starter',
                 return;
             }
 
-            $rootScope.appVersion = "1.8.8.0";
+            $rootScope.appVersion = "1.8.9.0";
             $rootScope.appName = config.appSettings.appName;
 
             if (typeof Bugsnag !== "undefined") {

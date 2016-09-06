@@ -6,11 +6,11 @@ angular.module('starter')
                                     measurementService, QuantiModo, notificationService, localStorageService,
                                     reminderService, ratingService, migrationService, ionicDatePicker, unitService,
                                     variableService, qmLocationService, variableCategoryService, bugsnagService,
-                                    pushNotificationService, utilsService) {
+                                    pushNotificationService, utilsService, connectorsService) {
 
         $rootScope.loaderImagePath = config.appSettings.loaderImagePath;
         $rootScope.appMigrationVersion = 1489;
-        $rootScope.appVersion = "1.8.8.0";
+        $rootScope.appVersion = "1.8.9.0";
         if (!$rootScope.loaderImagePath) {
             $rootScope.loaderImagePath = 'img/circular-loader.gif';
         }
@@ -417,21 +417,12 @@ angular.module('starter')
             if (!$rootScope.user) {
                 $rootScope.user = localStorageService.getItemAsObject('user');
             }
-            if (!$rootScope.user && utilsService.getClientId() === 'oAuthDisabled') {
-                //console.debug("appCtrl.init: No user and oAuthDisabled so trying to getUserAndSetInLocalStorage. Note: This interferes with welcome flow.");
-                //console.warn('Disabled getUserAndSetInLocalStorage in appCtrl.init...');
-                //$rootScope.getUserAndSetInLocalStorage();
-            }
             if ($rootScope.user) {
                 console.debug("appCtrl.init calling setUserInLocalStorageBugsnagAndRegisterDeviceForPush");
                 $rootScope.setUserInLocalStorageBugsnagAndRegisterDeviceForPush($rootScope.user);
                 $scope.syncEverything();
             }
-            // Don't think we need this anymore since everyone should have been migrated by now
-            // migrationService.version1466();
 
-            //goToWelcomeStateIfNotWelcomed();
-            scheduleReminder();
             if ($rootScope.isIOS || $rootScope.isAndroid) {
                 console.debug("Going to try setting on trigger and on click actions for notifications when device is ready");
                 $ionicPlatform.ready(function () {
@@ -631,36 +622,12 @@ angular.module('starter')
                 "day" : 24 * 60 * 60
             };
 
-
-            try {
-                var intervalBetweenCheckingForNotificationsInMinutes = 15;
-                if($rootScope.showOnlyOneNotification === true){
-                    var notificationSettings = {
-                        every: intervalBetweenCheckingForNotificationsInMinutes
-                    };
-                    console.debug("appCtrl.saveInterval: Going to schedule generic notification",
-                        notificationSettings);
-                    notificationService.scheduleGenericNotification(notificationSettings);
-                }
-            } catch (err) {
-                console.error('scheduleGenericNotification error');
-                if (typeof Bugsnag !== "undefined") {
-                    bugsnagService.reportError(err);
-                }
-                console.error(err);
-            }
-
-            $rootScope.reminderToSchedule = {
-                id: config.appSettings.primaryOutcomeVariableDetails.id,
-                reportedVariableValue: $scope.reportedVariableValue,
-                interval: intervals[$scope.primaryOutcomeRatingFrequencyDescription],
-                variableName: config.appSettings.primaryOutcomeVariableDetails.name,
-                category: config.appSettings.primaryOutcomeVariableDetails.category,
-                unit: config.appSettings.primaryOutcomeVariableDetails.abbreviatedUnitName,
-                combinationOperation : config.appSettings.primaryOutcomeVariableDetails.combinationOperation
+            var reminderToSchedule = {
+                reminderFrequency: intervals[$scope.primaryOutcomeRatingFrequencyDescription],
+                variableId: config.appSettings.primaryOutcomeVariableDetails.id,
+                defaultValue: 3
             };
-
-            localStorageService.setItem('primaryOutcomeRatingFrequencyDescription', $scope.primaryOutcomeRatingFrequencyDescription);
+            reminderService.addToTrackingReminderSyncQueue(reminderToSchedule);
             $scope.showIntervalCard = false;
         };
 
@@ -709,6 +676,15 @@ angular.module('starter')
                     console.debug(err);
                 }
             );
+        };
+
+        $rootScope.sendToLogin = function(){
+            localStorageService.deleteItem('user');
+            localStorageService.deleteItem('accessToken');
+            localStorageService.deleteItem('accessTokenInUrl');
+            $rootScope.accessToken = null;
+            $rootScope.user = null;
+            $state.go('app.login');
         };
 
         $scope.safeApply = function(fn) {
@@ -767,6 +743,8 @@ angular.module('starter')
                 unitService.refreshUnits();
                 $rootScope.syncedEverything = true;
                 qmLocationService.updateLocationVariablesAndPostMeasurementIfChanged();
+                reminderService.syncTrackingReminderSyncQueueToServer();
+                connectorsService.refreshConnectors();
             }
         };
 
