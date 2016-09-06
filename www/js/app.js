@@ -39,7 +39,8 @@ angular.module('starter',
                      badge: true,
                      sound: false,
                      vibrate: false,
-                     icon: 'ic_stat_icon_bw'
+                     icon: 'ic_stat_icon_bw',
+                     clearBadge: true
                  },
                  browser: {
                      pushServiceURL: 'http://push.api.phonegap.com/v1/push'
@@ -47,7 +48,8 @@ angular.module('starter',
                  ios: {
                      alert: "false",
                      badge: "true",
-                     sound: "false"
+                     sound: "false",
+                     clearBadge: true
                  },
                  windows: {}
              });
