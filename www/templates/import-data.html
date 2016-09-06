@@ -3,16 +3,15 @@
         <ion-refresher on-refresh="init()"></ion-refresher>
 
         <div  class="list card" ng-if="isMobile">
-            <div on-hold="showActionSheetForConnector(connector, $event)" class="list card"
+            <div ng-if="!connector.hide" class="list card"
                  ng-repeat="connector in connectors" >
                 <div class="item" style="padding-bottom:10px;">
-                    <div ng-click="showActionSheetForConnector(connector, $event)" class="row">
+                    <div class="row">
                         <div class="col col-20" style="padding-top: 10px;">
                             <img src="{{connector.image}}" alt="Mountain View" style="width:40px;height:40px;">
                         </div>
                         <div ng-click="showActionSheetForConnector(connector, $event)" class="col col-70">
-                            <h1 ng-if="connector.abbreviatedUnitName != '/5'"
-                                style="white-space: normal;
+                            <h1 style="white-space: normal;
 									line-height: normal; ">
                                 {{connector.displayName}}
                             </h1>
@@ -28,9 +27,6 @@
                             <p ng-if="connector.updateStatus === 'ERROR'" style="white-space: normal;">
                                 {{ connector.errorMessage }}
                             </p>
-                        </div>
-                        <div ng-click="showActionSheet(connector, event)" class="col col-10">
-                            <i style="font-size: 20px;" class="icon positive ion-more"></i>
                         </div>
                     </div>
                     <div class="button-bar" ng-if="!connector.connected">
