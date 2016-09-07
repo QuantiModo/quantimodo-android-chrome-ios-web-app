@@ -144,10 +144,9 @@ angular.module('starter')
 
             updateLocationVariablesAndPostMeasurementIfChanged : function () {
                 qmLocationService.getLocationVariablesFromLocalStorage();
-                if(!$rootScope.user.trackLocation){
-                    //console.debug('$rootScope.user.trackLocation is false, so not tracking location');
-                    return;
-                }
+                if(!$rootScope.user){return;}
+                if(!$rootScope.user.trackLocation){return;}
+
                 $ionicPlatform.ready(function() {
                     var posOptions = {
                         enableHighAccuracy: true,
