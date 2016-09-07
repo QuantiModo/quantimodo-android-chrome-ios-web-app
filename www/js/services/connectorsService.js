@@ -70,7 +70,7 @@ angular.module('starter')
 		connectorsService.hideBrokenConnectors = function(connectors){
 			$rootScope.connectors = connectors;
 			for(var i = 0; i < $rootScope.connectors.length; i++){
-				if($rootScope.connectors[i].name === 'facebook') {
+				if($rootScope.connectors[i].name === 'facebook' && $rootScope.isAndroid) {
 					$rootScope.connectors[i].hide = true;
 				}
 			}
