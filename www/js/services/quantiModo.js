@@ -541,7 +541,23 @@ angular.module('starter')
             };
 
 
-            QuantiModo.connectConnector = function(body, successHandler, errorHandler){
+            QuantiModo.connectConnectorWithParams = function(params, lowercaseConnectorName, successHandler, errorHandler){
+                var allowedParams = [
+                    'location',
+                    'username',
+                    'password',
+                    'email'
+                ];
+
+                QuantiModo.get('api/v1/connectors/' + lowercaseConnectorName + '/connect',
+                    allowedParams,
+                    params,
+                    successHandler,
+                    errorHandler);
+            };
+
+
+            QuantiModo.connectConnectorWithToken = function(body, lowercaseConnectorName, successHandler, errorHandler){
                 var requiredProperties = [
                     'connector',
                     'connectorCredentials'
@@ -554,7 +570,7 @@ angular.module('starter')
                     errorHandler);
             };
 
-            QuantiModo.getAccessTokenAndConnect = function(code, connectorLowercaseName, successHandler, errorHandler){
+            QuantiModo.connectWithAuthCode = function(code, connectorLowercaseName, successHandler, errorHandler){
                 var allowedParams = [
                     'code',
                     'noRedirect'

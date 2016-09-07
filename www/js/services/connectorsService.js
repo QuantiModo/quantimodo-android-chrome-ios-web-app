@@ -47,9 +47,9 @@ angular.module('starter')
 			return deferred.promise;
 		};
 
-		connectorsService.connect = function(body){
+		connectorsService.connectWithParams = function(params, lowercaseConnectorName){
 			var deferred = $q.defer();
-			QuantiModo.connectConnector(body, function(){
+			QuantiModo.connectConnectorWithParams(params, lowercaseConnectorName, function(){
 				connectorsService.refreshConnectors();
 			}, function(){
 				deferred.reject(false);
@@ -57,9 +57,19 @@ angular.module('starter')
 			return deferred.promise;
 		};
 
-		connectorsService.getAccessTokenAndConnect = function(code, lowercaseConnectorName){
+		connectorsService.connectWithToken = function(body){
 			var deferred = $q.defer();
-			QuantiModo.getAccessTokenAndConnect(code, lowercaseConnectorName, function(){
+			QuantiModo.connectConnectorWithToken(body, function(){
+				connectorsService.refreshConnectors();
+			}, function(){
+				deferred.reject(false);
+			});
+			return deferred.promise;
+		};
+
+		connectorsService.connectWithAuthCode = function(code, lowercaseConnectorName){
+			var deferred = $q.defer();
+			QuantiModo.connectWithAuthCode(code, lowercaseConnectorName, function(){
 				connectorsService.refreshConnectors();
 			}, function(){
 				deferred.reject(false);
