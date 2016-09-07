@@ -133,7 +133,7 @@ angular.module('starter')
             },
 
             getLocationVariablesFromLocalStorage : function () {
-                if($rootScope.user.trackLocation){
+                if($rootScope.user && $rootScope.user.trackLocation){
                     $rootScope.lastLocationName = localStorageService.getItemSync('lastLocationName');
                     $rootScope.lastLocationAddress = localStorageService.getItemSync('lastLocationAddress');
                     $rootScope.lastLocationResultType = localStorageService.getItemSync('lastLocationResultType');
