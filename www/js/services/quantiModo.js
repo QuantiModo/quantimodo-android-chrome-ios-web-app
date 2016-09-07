@@ -179,7 +179,7 @@ angular.module('starter')
                         };
                     }
 
-                    if($rootScope.trackLocation){
+                    if($rootScope.user.trackLocation){
                         request.headers.LOCATION = $rootScope.lastLocationNameAndAddress;
                         request.headers.LATITUDE = $rootScope.lastLatitude;
                         request.headers.LONGITUDE = $rootScope.lastLongitude;

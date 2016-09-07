@@ -15,7 +15,7 @@ angular.module('starter')
 			units : [],
 			variableCategories : [],
 			hideLoadMoreButton : true,
-			trackLocation : $rootScope.trackLocation,
+			trackLocation : $rootScope.user.trackLocation,
 			showLocationToggle: false,
 			noHistory: false
 	    };
@@ -94,8 +94,8 @@ angular.module('starter')
 		$scope.trackLocationChange = function() {
 
 			console.log('trackLocation', $scope.state.trackLocation);
-			$rootScope.trackLocation = $scope.state.trackLocation;
-			localStorageService.setItem('trackLocation', $scope.state.trackLocation);
+			$rootScope.user.trackLocation = $scope.state.trackLocation;
+			userService.updateUserSettings({trackLocation: $rootScope.user.trackLocation});
 			if($scope.state.trackLocation){
 				qmLocationService.updateLocationVariablesAndPostMeasurementIfChanged();
 			} else {
@@ -137,7 +137,7 @@ angular.module('starter')
     	$scope.$on('$ionicView.enter', function(e) { console.debug("Entering state " + $state.current.name);
 			$scope.hideLoader();
 			$scope.state.offset = 0;
-			$scope.state.trackLocation = $rootScope.trackLocation;
+			$scope.state.trackLocation = $rootScope.user.trackLocation;
     		$scope.init();
     	});
 
