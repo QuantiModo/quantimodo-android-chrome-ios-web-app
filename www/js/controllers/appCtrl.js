@@ -6,13 +6,21 @@ angular.module('starter')
                                     measurementService, QuantiModo, notificationService, localStorageService,
                                     reminderService, ratingService, migrationService, ionicDatePicker, unitService,
                                     variableService, qmLocationService, variableCategoryService, bugsnagService,
-                                    pushNotificationService, utilsService, connectorsService) {
+                                    pushNotificationService, utilsService, connectorsService, userService) {
 
         $rootScope.loaderImagePath = config.appSettings.loaderImagePath;
         $rootScope.appMigrationVersion = 1489;
         $rootScope.appVersion = "1.9.0.0";
         if (!$rootScope.loaderImagePath) {
             $rootScope.loaderImagePath = 'img/circular-loader.gif';
+        }
+        if($rootScope.user && typeof $rootScope.user.trackLocation === "undefined"){
+            localStorageService.getItem('trackLocation', function(trackLocation){
+                $rootScope.user.trackLocation = trackLocation;
+                if($rootScope.user.trackLocation){
+                    userService.updateUserSettings({trackLocation: $rootScope.user.trackLocation});
+                }
+            });
         }
         $rootScope.placeName = null;
         $rootScope.lastLatitude = null;
