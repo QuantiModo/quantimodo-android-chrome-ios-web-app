@@ -14,7 +14,7 @@ angular.module('starter')
 		//$scope.state.showOnlyOneNotification = true;
 		$scope.state.showOnlyOneNotification = $rootScope.showOnlyOneNotification;
 		console.debug('CombineNotifications is '+ $scope.state.showOnlyOneNotification);
-		$scope.state.trackLocation = $rootScope.trackLocation;
+		$scope.state.trackLocation = $rootScope.user.trackLocation;
 		console.debug('trackLocation is '+ $scope.state.trackLocation);
 
 		var d = new Date();
@@ -251,10 +251,9 @@ angular.module('starter')
 		};
 
 		$scope.trackLocationChange = function() {
-
 			console.log('trackLocation', $scope.state.trackLocation);
-			$rootScope.trackLocation = $scope.state.trackLocation;
-			localStorageService.setItem('trackLocation', $scope.state.trackLocation);
+			$rootScope.user.trackLocation = $scope.state.trackLocation;
+			userService.updateUserSettings({trackLocation: $rootScope.user.trackLocation});
 			if($scope.state.trackLocation){
 				$ionicPopup.alert({
 					title: 'Location Tracking Enabled',
@@ -421,7 +420,7 @@ angular.module('starter')
 		// when view is changed
 		$scope.$on('$ionicView.enter', function(e) { console.debug("Entering state " + $state.current.name);
 			$scope.hideLoader();
-			$scope.state.trackLocation = $rootScope.trackLocation;
+			$scope.state.trackLocation = $rootScope.user.trackLocation;
 		});
 
 	    // call constructor

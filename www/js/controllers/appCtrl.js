@@ -14,7 +14,6 @@ angular.module('starter')
         if (!$rootScope.loaderImagePath) {
             $rootScope.loaderImagePath = 'img/circular-loader.gif';
         }
-        $rootScope.trackLocation = false;
         $rootScope.placeName = null;
         $rootScope.lastLatitude = null;
         $rootScope.lastLongitude = null;
