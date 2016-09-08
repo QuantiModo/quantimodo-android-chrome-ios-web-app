@@ -100,20 +100,19 @@ angular.module('starter')
             $scope.state.trackingReminder.reminderFrequency = 0;
             $scope.state.trackingReminder.valueAndFrequencyTextDescription = "As Needed";
 
-            localStorageService.addToOrReplaceElementOfItemByIdOrMoveToFront('trackingReminders', $scope.state.trackingReminder);
-	    	reminderService.addNewReminder($scope.state.trackingReminder)
-	    	.then(function(){
+            localStorageService.addToOrReplaceElementOfItemByIdOrMoveToFront('trackingReminders', $scope.state.trackingReminder)
+                .then(function(){
+                    reminderService.addNewReminder($scope.state.trackingReminder)
+                        .then(function(){
 
-
-	    	}, function(err){
-                console.log(err);
-	    		$ionicLoading.hide();
-                $scope.loading = false;
-	    		utilsService.showAlert('Failed to add favorite! Please contact info@quantimo.do', 'assertive');
-	    	});
-
-            $state.go('app.favorites');
-
+                        }, function(err){
+                            console.log(err);
+                            $ionicLoading.hide();
+                            $scope.loading = false;
+                            utilsService.showAlert('Failed to add favorite! Please contact info@quantimo.do', 'assertive');
+                        });
+                    $state.go('app.favorites');
+                });
 	    };
 
 

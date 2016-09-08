@@ -6,13 +6,11 @@ angular.module('starter')
 		var reminderService = {};
 
 		reminderService.addNewReminder = function(trackingReminder){
-
 			var deferred = $q.defer();
 			if(trackingReminder.reminderFrequency !== 0 && !$rootScope.showOnlyOneNotification){
 				if($rootScope.localNotificationsEnabled){
 					notificationService.scheduleNotificationByReminder(trackingReminder);
 				}
-
 			}
 
 			trackingReminder.timeZoneOffset = new Date().getTimezoneOffset();
@@ -20,7 +18,6 @@ angular.module('starter')
 				//update alarms and local notifications
 				console.debug("remindersService:  Finished postTrackingReminder so now refreshTrackingRemindersAndScheduleAlarms");
 				reminderService.refreshTrackingRemindersAndScheduleAlarms();
-                reminderService.refreshTrackingReminderNotifications();
 				deferred.resolve();
 			}, function(err){
 				if (typeof Bugsnag !== "undefined") {
@@ -488,6 +485,7 @@ angular.module('starter')
 					reminderService.addNewReminder(JSON.parse(trackingReminders)).then(function () {
 						console.log('reminder queue synced' + trackingReminders);
 						localStorageService.deleteItem('trackingReminderSyncQueue');
+                        reminderService.refreshTrackingReminderNotifications();
 					}, function (err) {
 						bugsnagService.reportError(err);
 					});

@@ -315,6 +315,7 @@ angular.module('starter')
                 .then(function(){
                     reminderService.addNewReminder($scope.state.trackingReminder)
                         .then(function(){
+                            reminderService.refreshTrackingReminderNotifications();
                             $scope.hideLoader();
                         }, function(err){
                             $scope.hideLoader();

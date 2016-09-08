@@ -241,21 +241,21 @@ angular.module('starter')
 
             if (trackingReminder.abbreviatedUnitName === '/5') {
                 trackingReminder.defaultValue = 3;
-                localStorageService.addToOrReplaceElementOfItemByIdOrMoveToFront('trackingReminders', trackingReminder);
-                reminderService.addNewReminder(trackingReminder)
-                    .then(function () {
-                        console.debug("Saved Reminder", trackingReminder);
-                        .then(function() {
-                            $state.go('app.favorites',
-                                {
-                                    trackingReminder: trackingReminder,
-                                    fromState: $state.current.name,
-                                    fromUrl: window.location.href
-                                }
-                            );
-                        });
-                    }, function (err) {
-                        console.error('Failed to add Reminder!', trackingReminder);
+                localStorageService.addToOrReplaceElementOfItemByIdOrMoveToFront('trackingReminders', trackingReminder)
+                    .then(function() {
+                        reminderService.addNewReminder(trackingReminder)
+                            .then(function () {
+                                console.debug("Saved to favorites: " + JSON.stringify(trackingReminder));
+                                $state.go('app.favorites',
+                                    {
+                                        trackingReminder: trackingReminder,
+                                        fromState: $state.current.name,
+                                        fromUrl: window.location.href
+                                    }
+                                );
+                            }, function (err) {
+                                console.error('Failed to add favorite!', trackingReminder);
+                            });
                     });
             } else {
                 $state.go('app.favoriteAdd',
@@ -328,32 +328,6 @@ angular.module('starter')
         }).then(function (popover) {
             $scope.popover = popover;
         });
-
-        var scheduleReminder = function () {
-            if ($rootScope.reminderToSchedule) {
-
-                var trackingReminder = {
-                    variableId: $rootScope.reminderToSchedule.id,
-                    defaultValue: $rootScope.reminderToSchedule.reportedVariableValue,
-                    variableName: $rootScope.reminderToSchedule.name,
-                    frequency: $rootScope.reminderToSchedule.interval,
-                    variableCategoryName: $rootScope.reminderToSchedule.category,
-                    abbreviatedUnitName: $rootScope.reminderToSchedule.unit,
-                    combinationOperation: $rootScope.reminderToSchedule.combinationOperation
-                };
-
-                reminderService.addNewReminder(trackingReminder)
-                    .then(function () {
-                        console.log('reminder scheduled', $rootScope.reminderToSchedule);
-                        delete $rootScope.reminderToSchedule;
-                    }, function (err) {
-                        if (typeof Bugsnag !== "undefined") {
-                            Bugsnag.notify("reminderService.addNewReminder", JSON.stringify(trackingReminder), {}, "error");
-                        }
-                        console.log(err);
-                    });
-            }
-        };
 
         // when work on this activity is complete
         $rootScope.hideNavigationMenuIfSetInUrlParameter = function() {
