@@ -232,18 +232,13 @@ angular.module('starter')
                 });
         };
 
-        // Deprecated - not used
-        /*
-        // when a unit is selected
-        $scope.unitSelected = function(unit){
-            console.log("selecting_unit",unit);
-
-            // update viewmodel
-            $scope.state.trackingReminder.abbreviatedUnitName = unit.abbreviatedName;
-            $scope.state.showUnits = false;
-            $scope.state.selectedUnitAbbreviatedName = unit.abbreviatedName;
+        $scope.unitSelected = function(){
+            console.log("selecting_unit", $scope.state.trackingReminder.abbreviatedUnitName);
+            $scope.state.trackingReminder.unitName =
+                $rootScope.unitsIndexedByAbbreviatedName[$scope.state.trackingReminder.abbreviatedUnitName].name;
+            $scope.state.trackingReminder.unitId =
+                $rootScope.unitsIndexedByAbbreviatedName[$scope.state.trackingReminder.abbreviatedUnitName].id;
         };
-        */
 
         $scope.toggleShowUnits = function(){
             $scope.state.showUnits=!$scope.state.showUnits;
