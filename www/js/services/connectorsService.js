@@ -1,7 +1,6 @@
 angular.module('starter')
 	// Measurement Service
-	.factory('connectorsService', function($q, $rootScope, QuantiModo, timeService, notificationService,
-										 localStorageService) {
+	.factory('connectorsService', function($q, $rootScope, QuantiModo, timeService, localStorageService) {
 
 		var connectorsService = {};
 

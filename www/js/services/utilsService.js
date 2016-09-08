@@ -70,6 +70,9 @@ angular.module('starter')
                     $rootScope.currentPlatform = "Web";
                 }
             }
+            if($rootScope.isChromeExtension){
+                $rootScope.localNotificationsEnabled = true;
+            }
             $rootScope.qmApiUrl = utilsService.getApiUrl();
         };
 

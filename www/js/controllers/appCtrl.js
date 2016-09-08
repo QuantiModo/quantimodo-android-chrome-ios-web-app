@@ -430,7 +430,7 @@ angular.module('starter')
                 $scope.syncEverything();
             }
 
-            if ($rootScope.isIOS || $rootScope.isAndroid) {
+            if ($rootScope.isMobile && $rootScope.localNotificationsEnabled) {
                 console.debug("Going to try setting on trigger and on click actions for notifications when device is ready");
                 $ionicPlatform.ready(function () {
                     console.debug("Setting on trigger and on click actions for notifications");
@@ -580,7 +580,9 @@ angular.module('starter')
                             chrome.browserAction.setBadgeText({text: String($rootScope.numberOfPendingNotifications)});
                         }
 
-                        notificationService.updateOrRecreateNotifications();
+                        if($rootScope.localNotificationsEnabled){
+                            notificationService.updateOrRecreateNotifications();
+                        }
                     } else {
                         console.debug("New API response trackingReminderNotifications.length (" + trackingReminderNotifications.length +
                             ") is still the same as the previous $rootScope.numberOfPendingNotifications (" + $rootScope.numberOfPendingNotifications +
@@ -609,7 +611,9 @@ angular.module('starter')
         };
 
         $rootScope.updateOrRecreateNotifications = function () {
-            notificationService.updateOrRecreateNotifications();
+            if($rootScope.localNotificationsEnabled){
+                notificationService.updateOrRecreateNotifications();
+            }
         };
 
         $scope.saveInterval = function(primaryOutcomeRatingFrequencyDescription){
@@ -743,7 +747,9 @@ angular.module('starter')
             if(!$rootScope.syncedEverything && $rootScope.user){
                 console.debug('syncEverything for this user: ' + JSON.stringify($rootScope.user));
                 measurementService.syncPrimaryOutcomeVariableMeasurements();
-                reminderService.refreshTrackingRemindersAndScheduleAlarms();
+                if($rootScope.localNotificationsEnabled){
+                    reminderService.refreshTrackingRemindersAndScheduleAlarms();
+                }
                 console.debug("syncEverything: calling refreshTrackingRemindersAndScheduleAlarms");
                 variableService.refreshUserVariables();
                 variableService.refreshCommonVariables();
