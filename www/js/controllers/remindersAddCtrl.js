@@ -432,7 +432,6 @@ angular.module('starter')
         function setupReminderEditingFromUrlParameter(reminderIdUrlParameter) {
             reminderService.getTrackingReminderById(reminderIdUrlParameter)
                 .then(function (reminders) {
-                    $scope.state.allReminders = reminders;
                     if (reminders.length !== 1) {
                         utilsService.showAlert("Reminder id " + reminderIdUrlParameter + " not found!", 'assertive');
                         if($stateParams.fromUrl){
@@ -443,7 +442,7 @@ angular.module('starter')
                             $state.go('app.remindersManage');
                         }
                     }
-                    $stateParams.reminder = $scope.state.allReminders[0];
+                    $stateParams.reminder = reminders[0];
                     setupEditReminder($stateParams.reminder);
                     $ionicLoading.hide();
                     $scope.loading = false;

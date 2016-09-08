@@ -15,8 +15,7 @@ angular.module('starter')
 	    	selectedReminder : false,
 	    	reminderDefaultValue : "",
 	    	selected1to5Value : false,
-	    	allReminders : [],
-	    	filteredReminders : [],
+	    	trackingReminders : [],
 	    	measurementDate : new Date(),
 	    	slots : {
 				epochTime: new Date().getTime()/1000,
@@ -33,8 +32,8 @@ angular.module('starter')
 	    };
 
 		function showAppropriateHelpInfoCards(){
-			$scope.state.showTreatmentInfoCard = (!$scope.state.allReminders.length) && (window.location.href.indexOf('Treatments') > -1);
-			$scope.state.showSymptomInfoCard = (!$scope.state.allReminders.length) && (window.location.href.indexOf('Symptom') > -1);
+			$scope.state.showTreatmentInfoCard = (!$scope.state.trackingReminders.length) && (window.location.href.indexOf('Treatments') > -1);
+			$scope.state.showSymptomInfoCard = (!$scope.state.trackingReminders.length) && (window.location.href.indexOf('Symptom') > -1);
 		}
 
 	    // when date is updated
@@ -57,6 +56,28 @@ angular.module('starter')
 				$scope.state.slots.epochTime = a.getTime()/1000;
 			}
 		};
+
+		var refreshReminders = function () {
+			if($rootScope.syncingReminders !== true) {
+				console.debug("ReminderMange init: calling refreshTrackingRemindersAndScheduleAlarms");
+				$scope.showLoader('Reminders coming down the pipes...');
+				reminderService.refreshTrackingRemindersAndScheduleAlarms().then(function () {
+					getTrackingReminders();
+				});
+			} else {
+				$scope.$broadcast('scroll.refreshComplete');
+			}
+		};
+
+		var getTrackingReminders = function(){
+			reminderService.getTrackingReminders($stateParams.variableCategoryName)
+				.then(function (trackingReminders) {
+					$scope.state.trackingReminders = trackingReminders;
+					$scope.hideLoader();
+					//Stop the ion-refresher from spinning
+					$scope.$broadcast('scroll.refreshComplete');
+				});
+		};
 		
 	    $scope.init = function(){
 			if (typeof Bugsnag !== "undefined") {
@@ -72,27 +93,12 @@ angular.module('starter')
 				$scope.state.addButtonText = 'Add new ' +
 					pluralize($filter('wordAliases')($stateParams.variableCategoryName.toLowerCase()), 1) + ' reminder';
 			}
-
 			showAppropriateHelpInfoCards();
-
 			$scope.state.showButtons = true;
-			$scope.state.trackingReminders = reminderService.getTrackingReminders($stateParams.variableCategoryName);
 			authService.checkAuthOrSendToLogin();
+			getTrackingReminders();
 			if (typeof analytics !== 'undefined')  { analytics.trackView("Manage Reminders Controller"); }
-
-			if($rootScope.syncingReminders !== true) {
-				console.debug("ReminderMange init: calling refreshTrackingRemindersAndScheduleAlarms");
-				$scope.showLoader('Reminders coming down the pipes...');
-				reminderService.refreshTrackingRemindersAndScheduleAlarms().then(function () {
-					$scope.hideLoader();
-					$scope.state.trackingReminders = reminderService.getTrackingReminders($stateParams.variableCategoryName);
-					//Stop the ion-refresher from spinning
-					$scope.$broadcast('scroll.refreshComplete');
-				});
-			} else {
-				$scope.$broadcast('scroll.refreshComplete');
-			}
-
+			refreshReminders();
 			// Triggered on a button click, or some other target
 			$rootScope.showActionSheetMenu = function() {
 				// Show the action sheet
@@ -188,16 +194,16 @@ angular.module('starter')
 				});
 
 			reminderService.deleteReminder(reminder.trackingReminderId)
-	    	.then(function(){
-
-	    	}, function(err){
-				if (typeof Bugsnag !== "undefined") {
-					Bugsnag.notify(err, JSON.stringify(err), {}, "error");
-				}
-	    		$ionicLoading.hide();
-				$scope.loading = false;
-	    		console.error('Failed to Delete Reminder!');
-	    	});
+				.then(function(){
+					console.log("Reminder deleted");
+				}, function(err){
+					if (typeof Bugsnag !== "undefined") {
+						Bugsnag.notify(err, JSON.stringify(err), {}, "error");
+					}
+					$ionicLoading.hide();
+					$scope.loading = false;
+					console.error('Failed to Delete Reminder!');
+				});
 	    };
 
         // when view is changed
