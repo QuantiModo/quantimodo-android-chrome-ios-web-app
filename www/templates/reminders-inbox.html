@@ -347,7 +347,7 @@
 				</div>
 
 				<div on-hold="showActionSheetForNotification(trackingReminderNotification, $event)" class="list card"
-					 ng-if="!trackingReminderNotification.hide"
+					 ng-show="!trackingReminderNotification.hide"
 					 ng-repeat="trackingReminderNotification in divider.trackingReminderNotifications"
 					 ng-init="trackingReminderNotificationIndex = $index" >
 					<div class="item" style="padding-bottom:10px;">
