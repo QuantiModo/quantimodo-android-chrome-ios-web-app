@@ -6,54 +6,56 @@ angular.module('starter')
 
         $scope.controller_name = "IntroPageCtrl";
 
-            $scope.viewTitle = config.appSettings.appName;
-            $scope.primaryOutcomeVariable = config.appSettings.primaryOutcomeVariable;
-            $scope.introConfiguration = config.appSettings.intro;
+        $scope.viewTitle = config.appSettings.appName;
+        $scope.primaryOutcomeVariable = config.appSettings.primaryOutcomeVariable;
+        $scope.introConfiguration = config.appSettings.intro;
 
-            $scope.myIntro = {
-                ready : false,
+        $scope.myIntro = {
+            ready : false,
 
-                slideIndex : 0,
-                // Called to navigate to the main app
-                startApp : function() {
-                    $rootScope.hideNavigationMenu = false;
-                    console.debug('startApp: Going to default state...');
-                    $state.go(config.appSettings.defaultState);
-                },
+            slideIndex : 0,
+            // Called to navigate to the main app
+            startApp : function() {
+                $rootScope.hideNavigationMenu = false;
+                console.debug('startApp: Going to default state...');
+                $state.go(config.appSettings.defaultState);
+            },
 
-                next : function() {
-                    $ionicSlideBoxDelegate.next();
-                },
+            next : function() {
+                $ionicSlideBoxDelegate.next();
+            },
 
-                previous : function() {
-                    $ionicSlideBoxDelegate.previous();
-                },
+            previous : function() {
+                $ionicSlideBoxDelegate.previous();
+            },
 
-                // Called each time the slide changes
-                slideChanged : function(index) {
-                    $scope.myIntro.slideIndex = index;
-                }
-            };
+            // Called each time the slide changes
+            slideChanged : function(index) {
+                $scope.myIntro.slideIndex = index;
+            }
+        };
 
-            var init = function(){
-                if(navigator && navigator.splashscreen) {
-                    console.debug('Hiding splash screen because app is ready');
-                    navigator.splashscreen.hide();
-                }
-                if (typeof Bugsnag !== "undefined") {
-                    Bugsnag.context = "introPage";
-                }
-                //$scope.showLoader();
-                $scope.myIntro.ready = true;
-                $ionicLoading.hide();
-            };
+        var init = function(){
+            if (typeof Bugsnag !== "undefined") { Bugsnag.context = "introPage"; }
+            //$scope.showLoader();
+            $scope.myIntro.ready = true;
+            $ionicLoading.hide();
+        };
 
-            // when view is changed
-            $scope.$on(
-                '$ionicView.enter', function(e) {
-                    $scope.hideLoader();
-                    init();
-                }
-            );
-        }
-    );
+        // when view is changed
+        $scope.$on(
+            '$ionicView.enter', function(e) {
+                $scope.hideLoader();
+                init();
+            }
+        );
+
+        $scope.$on('$ionicView.afterEnter', function(){
+            if(navigator && navigator.splashscreen) {
+                console.debug('introCtrl.afterEnter: Hiding splash screen because app is ready');
+                navigator.splashscreen.hide();
+            }
+            localStorage.setItem('introSeen', true);
+        });
+    }
+);

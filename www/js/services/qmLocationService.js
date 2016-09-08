@@ -133,30 +133,20 @@ angular.module('starter')
             },
 
             getLocationVariablesFromLocalStorage : function () {
-                localStorageService.getItem('trackLocation', function(trackLocation){
-                    //console.debug("trackLocation from local storage is " + trackLocation);
-                    if(trackLocation === "null"){
-                        localStorageService.setItem('trackLocation', false);
-                        $rootScope.trackLocation = false;
-                    }
-                    $rootScope.trackLocation = trackLocation === "true";
-                });
-                if($rootScope.trackLocation){
+                if($rootScope.user && $rootScope.user.trackLocation){
                     $rootScope.lastLocationName = localStorageService.getItemSync('lastLocationName');
                     $rootScope.lastLocationAddress = localStorageService.getItemSync('lastLocationAddress');
                     $rootScope.lastLocationResultType = localStorageService.getItemSync('lastLocationResultType');
                     $rootScope.lastLocationUpdateTimeEpochSeconds = localStorageService.getItemSync('lastLocationUpdateTimeEpochSeconds');
                     $rootScope.lastLocationNameAndAddress = localStorageService.getItemSync('lastLocationNameAndAddress');
                 }
-
             },
 
             updateLocationVariablesAndPostMeasurementIfChanged : function () {
                 qmLocationService.getLocationVariablesFromLocalStorage();
-                if(!$rootScope.trackLocation){
-                    console.debug('$rootScope.trackLocation is false, so not tracking location');
-                    return;
-                }
+                if(!$rootScope.user){return;}
+                if(!$rootScope.user.trackLocation){return;}
+
                 $ionicPlatform.ready(function() {
                     var posOptions = {
                         enableHighAccuracy: true,

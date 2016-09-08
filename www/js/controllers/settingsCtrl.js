@@ -14,7 +14,7 @@ angular.module('starter')
 		//$scope.state.showOnlyOneNotification = true;
 		$scope.state.showOnlyOneNotification = $rootScope.showOnlyOneNotification;
 		console.debug('CombineNotifications is '+ $scope.state.showOnlyOneNotification);
-		$scope.state.trackLocation = $rootScope.trackLocation;
+		$scope.state.trackLocation = $rootScope.user.trackLocation;
 		console.debug('trackLocation is '+ $scope.state.trackLocation);
 
 		var d = new Date();
@@ -61,11 +61,6 @@ angular.module('starter')
 			// hide popover
 			$scope.ratingPopover.hide();
 		};
-		
-        // when login is tapped
-	    $scope.loginFromSettings = function(){
-			$state.go('app.login');
-	    };
 
 		$scope.sendSharingInvitation= function() {
 			var subjectLine = "I%27d%20like%20to%20share%20my%20data%20with%20you";
@@ -256,10 +251,9 @@ angular.module('starter')
 		};
 
 		$scope.trackLocationChange = function() {
-
 			console.log('trackLocation', $scope.state.trackLocation);
-			$rootScope.trackLocation = $scope.state.trackLocation;
-			localStorageService.setItem('trackLocation', $scope.state.trackLocation);
+			$rootScope.user.trackLocation = $scope.state.trackLocation;
+			userService.updateUserSettings({trackLocation: $rootScope.user.trackLocation});
 			if($scope.state.trackLocation){
 				$ionicPopup.alert({
 					title: 'Location Tracking Enabled',
@@ -281,21 +275,7 @@ angular.module('starter')
                 console.log('Logging out...');
                 $scope.hideLoader();
                 $rootScope.user = null;
-                $rootScope.isMobile = window.cordova;
-                $rootScope.isBrowser = ionic.Platform.platforms[0] === "browser";
-                if($rootScope.isMobile || !$rootScope.isBrowser){
-                    console.log('startLogout: Open the auth window via inAppBrowser.  Platform is ' + ionic.Platform.platforms[0]);
-                    var ref = window.open($rootScope.qmApiUrl + '/api/v2/auth/logout','_blank', 'location=no,toolbar=yes');
-
-                    console.log('startLogout: listen to its event when the page changes');
-
-                    ref.addEventListener('loadstart', function(event) {
-                        ref.close();
-                        $scope.showDataClearPopup();
-                    });
-                } else {
-                    $scope.showDataClearPopup();
-                }
+				$scope.showDataClearPopup();
             };
 
             function refreshTrackingPageAndGoToWelcome() {
@@ -328,24 +308,16 @@ angular.module('starter')
             };
             
             var completelyResetAppState = function(){
-                $rootScope.user = null;
                 localStorageService.clear();
                 notificationService.cancelAllNotifications();
-              	logoutOfApi();
-                //TODO: Fix this
-                //QuantiModo.logoutOfApi();
-				//hard reload
 				$state.go(config.appSettings.welcomeState, {}, {
 					reload: true
 				});
             };
             
             var afterLogoutDoNotDeleteMeasurements = function(){
-                $rootScope.user = null;
                 clearTokensFromLocalStorage();
                 logoutOfApi();
-                //TODO: Fix this
-                //QuantiModo.logoutOfApi();
                 refreshTrackingPageAndGoToWelcome();
             };
 
@@ -448,7 +420,7 @@ angular.module('starter')
 		// when view is changed
 		$scope.$on('$ionicView.enter', function(e) { console.debug("Entering state " + $state.current.name);
 			$scope.hideLoader();
-			$scope.state.trackLocation = $rootScope.trackLocation;
+			$scope.state.trackLocation = $rootScope.user.trackLocation;
 		});
 
 	    // call constructor

@@ -228,7 +228,7 @@ config.appSettings  = {
         hideAddNewReminderButton : true,
         showAddHowIFeelResponseButton : true,
         showAddVitalSignButton : true,
-        title : 'Reminders'
+        title : 'Reminder Inbox'
     },
 
     remindersManage : {

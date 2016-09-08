@@ -117,7 +117,9 @@ angular.module('starter')
 
 	    	reminderService.trackReminderNotification(params)
 	    	.then(function(){
-                notificationService.decrementNotificationBadges();
+	    		if($rootScope.localNotificationsEnabled){
+					notificationService.decrementNotificationBadges();
+				}
                 if($rootScope.numberOfPendingNotifications < 2){
                     $scope.init();
                 }
@@ -146,7 +148,9 @@ angular.module('starter')
 			};
 	    	reminderService.skipReminderNotification(params)
 	    	.then(function(){
-                notificationService.decrementNotificationBadges();
+				if($rootScope.localNotificationsEnabled){
+					notificationService.decrementNotificationBadges();
+				}
                 if($rootScope.numberOfPendingNotifications < 2){
                     $scope.init();
                 }
@@ -175,7 +179,9 @@ angular.module('starter')
 			};
 	    	reminderService.snoozeReminderNotification(params)
 	    	.then(function(){
-                notificationService.decrementNotificationBadges();
+				if($rootScope.localNotificationsEnabled){
+					notificationService.decrementNotificationBadges();
+				}
                 if($rootScope.numberOfPendingNotifications < 2){
                     $scope.init();
                 }
@@ -197,10 +203,7 @@ angular.module('starter')
 				console.debug('reminderInboxCtrl init: Intro not seen and hidemenu is false so going to intro state');
 				$state.go('intro');
 			} else {
-				if(navigator && navigator.splashscreen) {
-					console.debug('Hiding splash screen because app is ready');
-					navigator.splashscreen.hide();
-				}
+
 				$rootScope.showAllCaughtUpCard = false;
 				setPageTitle();
 				authService.checkAuthOrSendToLogin();
@@ -269,7 +272,9 @@ angular.module('starter')
 							$scope.showLoader('Skipping all reminder notifications...');
 							reminderService.skipAllReminderNotifications()
 								.then(function(){
-									notificationService.setNotificationBadge(0);
+									if($rootScope.localNotificationsEnabled){
+										notificationService.setNotificationBadge(0);
+									}
 									$scope.init();
 								}, function(err){
 									if (typeof Bugsnag !== "undefined") {
@@ -288,6 +293,11 @@ angular.module('starter')
 					}, 20000);
 
 				};
+
+				if(navigator && navigator.splashscreen) {
+					console.debug('ReminderInbox: Hiding splash screen because app is ready');
+					navigator.splashscreen.hide();
+				}
 			}
 
 		};

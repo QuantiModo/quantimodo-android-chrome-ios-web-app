@@ -14,7 +14,8 @@ angular.module('starter',
         'ngIOS9UIWebViewPatch',
         'ng-mfb',
         //'templates',
-        'fabric'
+        'fabric',
+        'ngCordovaOauth'
     ]
 )
 
@@ -25,7 +26,7 @@ angular.module('starter',
 
     $ionicPlatform.ready(function() {
         //$ionicAnalytics.register();
-        if(ionic.Platform.isIPad() || ionic.Platform.isIOS()){
+        if(ionic.Platform.isAndroid() || ionic.Platform.isIPad() || ionic.Platform.isIOS()){
             window.onerror = function (errorMsg, url, lineNumber) {
                 alert('Error: ' + errorMsg + ' Script: ' + url + ' Line: ' + lineNumber);
             };
@@ -39,7 +40,8 @@ angular.module('starter',
                      badge: true,
                      sound: false,
                      vibrate: false,
-                     icon: 'ic_stat_icon_bw'
+                     icon: 'ic_stat_icon_bw',
+                     clearBadge: true
                  },
                  browser: {
                      pushServiceURL: 'http://push.api.phonegap.com/v1/push'
@@ -47,7 +49,8 @@ angular.module('starter',
                  ios: {
                      alert: "false",
                      badge: "true",
-                     sound: "false"
+                     sound: "false",
+                     clearBadge: true
                  },
                  windows: {}
              });
@@ -125,7 +128,7 @@ angular.module('starter',
                 return;
             }
 
-            $rootScope.appVersion = "1.8.8.0";
+            $rootScope.appVersion = "1.9.0.0";
             $rootScope.appName = config.appSettings.appName;
 
             if (typeof Bugsnag !== "undefined") {
@@ -171,11 +174,6 @@ angular.module('starter',
     $compileProvider.imgSrcSanitizationWhitelist(/^\s*(https?|ftp|file|mailto|chrome-extension|ms-appx-web|ms-appx):/);
     $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|file|ftp|mailto|chrome-extension|ms-appx-web|ms-appx):/);
     $ionicConfigProvider.tabs.position("bottom"); //Places them at the bottom for all OS
-    if(ionic.Platform.isAndroid()){
-        //Doesn't seem to improve performance
-        //console.debug("app.js: On Android so using native scrolling..");
-        //$ionicConfigProvider.scrolling.jsScrolling(false);
-    }
 
     var config_resolver = {
       loadMyService: ['$ocLazyLoad', function($ocLazyLoad) {
@@ -756,10 +754,18 @@ angular.module('starter',
                     controller: 'FavoriteAddCtrl'
                 }
             }
-        })
-    
+        });
+
+    if (window.localStorage.introSeen) {
+        console.log("Intro seen so going to inbox");
+        $urlRouterProvider.otherwise('/app/reminders-inbox');
+    } else {
+        console.log("Intro not seen so going to intro");
+        localStorage.setItem('introSeen', true);
+        $urlRouterProvider.otherwise('/');
+    }
       // if none of the above states are matched, use this as the fallback
-      $urlRouterProvider.otherwise('/app/reminders-inbox');
+    
 });
 
 angular.module('exceptionOverride', []).factory('$exceptionHandler', function () {

@@ -378,13 +378,14 @@ angular.module('starter')
         var oAuthBrowserLogin = function (register) {
             //$scope.showLoader();
             var url = authService.generateV1OAuthUrl(register);
+            console.log("Going to try logging by opening new tab at url " + url);
 
             var ref = window.open(url, '_blank');
 
             if (!ref) {
                 alert("You must first unblock popups, and and refresh the page for this to work!");
             } else {
-                // broadcast message question every second to sibling tabs
+                console.log('Opened ' + url + ' and now broadcasting isLoggedIn message question every second to sibling tabs');
                 var interval = setInterval(function () {
                     ref.postMessage('isLoggedIn?', utilsService.getRedirectUri());
                 }, 1000);
