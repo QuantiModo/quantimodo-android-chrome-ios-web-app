@@ -753,7 +753,7 @@ angular.module('starter',
                     controller: 'FavoriteAddCtrl'
                 }
             }
-        })
+        });
 
     if (window.localStorage.introSeen) {
         console.log("Intro seen so going to inbox");
