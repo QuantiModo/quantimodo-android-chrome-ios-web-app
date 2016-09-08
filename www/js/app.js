@@ -13,6 +13,7 @@ angular.module('starter',
         'ionic-timepicker',
         'ngIOS9UIWebViewPatch',
         'ng-mfb',
+        //'templates',
         'fabric',
         'ngCordovaOauth'
     ]

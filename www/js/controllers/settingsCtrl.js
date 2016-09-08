@@ -14,8 +14,10 @@ angular.module('starter')
 		//$scope.state.showOnlyOneNotification = true;
 		$scope.state.showOnlyOneNotification = $rootScope.showOnlyOneNotification;
 		console.debug('CombineNotifications is '+ $scope.state.showOnlyOneNotification);
-		$scope.state.trackLocation = $rootScope.user.trackLocation;
-		console.debug('trackLocation is '+ $scope.state.trackLocation);
+		if($rootScope.user){
+			$scope.state.trackLocation = $rootScope.user.trackLocation;
+			console.debug('trackLocation is '+ $scope.state.trackLocation);
+		}
 
 		var d = new Date();
 		var timeZoneOffsetInMinutes = d.getTimezoneOffset();

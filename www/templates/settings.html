@@ -16,7 +16,7 @@
     		
         </div>
 
-        <div class="card sign-in" >
+        <div ng-show="user" class="card sign-in" >
             <ion-toggle ng-model="state.trackLocation"
                         ng-change="trackLocationChange()">
                 <i class="icon ion-map"></i>
