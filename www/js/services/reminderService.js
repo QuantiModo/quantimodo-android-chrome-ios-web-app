@@ -20,6 +20,7 @@ angular.module('starter')
 				//update alarms and local notifications
 				console.debug("remindersService:  Finished postTrackingReminder so now refreshTrackingRemindersAndScheduleAlarms");
 				reminderService.refreshTrackingRemindersAndScheduleAlarms();
+                reminderService.refreshTrackingReminderNotifications();
 				deferred.resolve();
 			}, function(err){
 				if (typeof Bugsnag !== "undefined") {
@@ -432,6 +433,7 @@ angular.module('starter')
 					//update alarms and local notifications
 					console.debug("remindersService:  Finished deleteReminder so now refreshTrackingRemindersAndScheduleAlarms");
 					reminderService.refreshTrackingRemindersAndScheduleAlarms();
+                    reminderService.refreshTrackingReminderNotifications();
 					deferred.resolve();
 				}
 				else {

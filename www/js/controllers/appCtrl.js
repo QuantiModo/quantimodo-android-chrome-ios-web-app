@@ -245,7 +245,6 @@ angular.module('starter')
                 reminderService.addNewReminder(trackingReminder)
                     .then(function () {
                         console.debug("Saved Reminder", trackingReminder);
-                        reminderService.refreshTrackingRemindersAndScheduleAlarms()
                         .then(function() {
                             $state.go('app.favorites',
                                 {
