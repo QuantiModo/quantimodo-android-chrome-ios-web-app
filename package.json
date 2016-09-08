@@ -6,8 +6,11 @@
   },
   "version": "1.0.0",
   "description": "Perfect your life!",
-  "devDependencies": {},
+  "devDependencies": {
+    "ionic-minify": "^2.0.10"
+  },
   "dependencies": {
+    "async": "^2.0.1",
     "bower": "~1.3.3",
     "event-stream": "^3.3.2",
     "express": "^4.13.3",
@@ -27,6 +30,7 @@
     "gulp-zip": "^3.0.2",
     "inquirer": "^0.9.0",
     "ionic": "1.7.16",
+    "jshint": "^2.9.3",
     "ng-cordova-oauth": "git+https://github.com/mikepsinn/ng-cordova-oauth.git#development",
     "ng-material-floating-button": "^0.6.2",
     "plist": "^1.2.0",
