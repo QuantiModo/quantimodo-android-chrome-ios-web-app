@@ -117,7 +117,9 @@ angular.module('starter')
 
 	    	reminderService.trackReminderNotification(params)
 	    	.then(function(){
-                notificationService.decrementNotificationBadges();
+	    		if($rootScope.localNotificationsEnabled){
+					notificationService.decrementNotificationBadges();
+				}
                 if($rootScope.numberOfPendingNotifications < 2){
                     $scope.init();
                 }
@@ -146,7 +148,9 @@ angular.module('starter')
 			};
 	    	reminderService.skipReminderNotification(params)
 	    	.then(function(){
-                notificationService.decrementNotificationBadges();
+				if($rootScope.localNotificationsEnabled){
+					notificationService.decrementNotificationBadges();
+				}
                 if($rootScope.numberOfPendingNotifications < 2){
                     $scope.init();
                 }
@@ -175,7 +179,9 @@ angular.module('starter')
 			};
 	    	reminderService.snoozeReminderNotification(params)
 	    	.then(function(){
-                notificationService.decrementNotificationBadges();
+				if($rootScope.localNotificationsEnabled){
+					notificationService.decrementNotificationBadges();
+				}
                 if($rootScope.numberOfPendingNotifications < 2){
                     $scope.init();
                 }
@@ -266,7 +272,9 @@ angular.module('starter')
 							$scope.showLoader('Skipping all reminder notifications...');
 							reminderService.skipAllReminderNotifications()
 								.then(function(){
-									notificationService.setNotificationBadge(0);
+									if($rootScope.localNotificationsEnabled){
+										notificationService.setNotificationBadge(0);
+									}
 									$scope.init();
 								}, function(err){
 									if (typeof Bugsnag !== "undefined") {

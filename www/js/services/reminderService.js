@@ -9,7 +9,10 @@ angular.module('starter')
 
 			var deferred = $q.defer();
 			if(trackingReminder.reminderFrequency !== 0 && !$rootScope.showOnlyOneNotification){
-				notificationService.scheduleNotificationByReminder(trackingReminder);
+				if($rootScope.localNotificationsEnabled){
+					notificationService.scheduleNotificationByReminder(trackingReminder);
+				}
+
 			}
 
 			trackingReminder.timeZoneOffset = new Date().getTimezoneOffset();
@@ -133,7 +136,9 @@ angular.module('starter')
 					if(remindersResponse.success) {
 						if($rootScope.showOnlyOneNotification !== true){
 							try {
-								notificationService.scheduleUpdateOrDeleteGenericNotificationsByDailyReminderTimes(trackingReminders);
+								if($rootScope.localNotificationsEnabled){
+									notificationService.scheduleUpdateOrDeleteGenericNotificationsByDailyReminderTimes(trackingReminders);
+								}
 							} catch (err) {
 								console.error('scheduleUpdateOrDeleteGenericNotificationsByDailyReminderTimes error: ' + err);
 								if (typeof Bugsnag !== "undefined") {
@@ -143,7 +148,9 @@ angular.module('starter')
 							//notificationService.scheduleAllNotificationsByTrackingReminders(trackingReminders);
 						} else {
 							try {
-								notificationService.scheduleUpdateOrDeleteGenericNotificationsByDailyReminderTimes(trackingReminders);
+								if($rootScope.localNotificationsEnabled){
+									notificationService.scheduleUpdateOrDeleteGenericNotificationsByDailyReminderTimes(trackingReminders);
+								}
 							} catch (err) {
 								console.error('scheduleUpdateOrDeleteGenericNotificationsByDailyReminderTimes error: ' + err);
 								bugsnagService.reportError(err);
