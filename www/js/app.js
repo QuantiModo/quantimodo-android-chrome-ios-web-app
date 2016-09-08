@@ -123,7 +123,6 @@ angular.module('starter',
             clearInterval(intervalChecker);
 
             if(!window.private_keys) {
-                alert('Please add private config file to www/private_configs folder!  Contact mike@quantimo.do if you need help');
                 console.error('Please add private config file to www/private_configs folder!  Contact mike@quantimo.do if you need help');
                 return;
             }
