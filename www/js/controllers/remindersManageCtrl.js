@@ -184,7 +184,7 @@ angular.module('starter')
 
 	    $scope.deleteReminder = function(reminder){
 			localStorageService.deleteElementOfItemById('trackingReminders', reminder.trackingReminderId).then(function(){
-					getTrackingRemindersFromLocalStorage();
+					$scope.state.trackingReminders = reminderService.getTrackingReminders($stateParams.variableCategoryName);
 				});
 
 			reminderService.deleteReminder(reminder.trackingReminderId)

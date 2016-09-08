@@ -560,7 +560,7 @@ angular.module('starter')
 			return result;
 		};
 
-		reminderService.getTrackingRemindersFromLocalStorage = function (){
+		reminderService.getTrackingRemindersFromLocalStorage = function (variableCategoryName){
 			var deferred = $q.defer();
 			var allReminders = [];
 			var nonFavoriteReminders = [];
@@ -573,9 +573,9 @@ angular.module('starter')
 						nonFavoriteReminders.push(unfilteredReminders[k]);
 					}
 				}
-				if($stateParams.variableCategoryName !== 'Anything') {
+				if(variableCategoryName && variableCategoryName !== 'Anything') {
 					for(var j = 0; j < nonFavoriteReminders.length; j++){
-						if($stateParams.variableCategoryName === nonFavoriteReminders[j].variableCategoryName){
+						if(variableCategoryName === nonFavoriteReminders[j].variableCategoryName){
 							allReminders.push(nonFavoriteReminders[j]);
 						}
 					}
