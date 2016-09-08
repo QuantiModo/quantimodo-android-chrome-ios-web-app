@@ -5,9 +5,7 @@ angular.module('starter')
 		var connectorsService = {};
 
 		connectorsService.getConnectors = function(){
-
 			var deferred = $q.defer();
-
 			localStorageService.getItem('connectors', function(connectors){
 				if(connectors){
 					$rootScope.connectors = JSON.parse(connectors);
@@ -19,7 +17,6 @@ angular.module('starter')
 					});
 				}
 			});
-
 			return deferred.promise;
 
 		};
