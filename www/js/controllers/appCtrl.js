@@ -751,11 +751,13 @@ angular.module('starter')
                     reminderService.refreshTrackingRemindersAndScheduleAlarms();
                 }
                 console.debug("syncEverything: calling refreshTrackingRemindersAndScheduleAlarms");
-                variableService.refreshUserVariables();
-                variableService.refreshCommonVariables();
-                unitService.refreshUnits();
+                variableService.getUserVariables();
+                variableService.getCommonVariables();
+                unitService.getUnits();
                 $rootScope.syncedEverything = true;
-                qmLocationService.updateLocationVariablesAndPostMeasurementIfChanged();
+                if($rootScope.user.trackLocation){
+                    qmLocationService.updateLocationVariablesAndPostMeasurementIfChanged();
+                }
                 reminderService.syncTrackingReminderSyncQueueToServer();
                 connectorsService.refreshConnectors();
             }
