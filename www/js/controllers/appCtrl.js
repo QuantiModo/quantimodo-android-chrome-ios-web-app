@@ -629,11 +629,11 @@ angular.module('starter')
         $scope.syncEverything = function () {
             if(!$rootScope.syncedEverything && $rootScope.user){
                 console.debug('syncEverything for this user: ' + JSON.stringify($rootScope.user));
-                measurementService.syncPrimaryOutcomeVariableMeasurements();
+                //measurementService.syncPrimaryOutcomeVariableMeasurements();
                 if($rootScope.localNotificationsEnabled){
+                    console.debug("syncEverything: calling refreshTrackingRemindersAndScheduleAlarms");
                     reminderService.refreshTrackingRemindersAndScheduleAlarms();
                 }
-                console.debug("syncEverything: calling refreshTrackingRemindersAndScheduleAlarms");
                 variableService.getUserVariables();
                 variableService.getCommonVariables();
                 unitService.getUnits();
@@ -642,7 +642,7 @@ angular.module('starter')
                     qmLocationService.updateLocationVariablesAndPostMeasurementIfChanged();
                 }
                 reminderService.syncTrackingReminderSyncQueueToServer();
-                connectorsService.refreshConnectors();
+                //connectorsService.getConnectors();
             }
         };
 

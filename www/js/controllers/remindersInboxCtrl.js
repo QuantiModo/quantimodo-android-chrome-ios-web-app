@@ -247,9 +247,11 @@ angular.module('starter')
 					reminderService.refreshTrackingRemindersAndScheduleAlarms();
 				}
 
-				//update alarms and local notifications
-				console.debug("reminderInbox init: calling refreshTrackingRemindersAndScheduleAlarms");
-				reminderService.refreshTrackingRemindersAndScheduleAlarms();
+				if($rootScope.localNotificationsEnabled){
+					console.debug("reminderInbox init: calling refreshTrackingRemindersAndScheduleAlarms");
+					reminderService.refreshTrackingRemindersAndScheduleAlarms();
+				}
+
 				var d = new Date();
 				var timeZoneOffsetInMinutes = d.getTimezoneOffset();
 
