@@ -33,10 +33,7 @@ angular.module('starter')
 
 		reminderService.skipReminderNotification = function(params){
 			var deferred = $q.defer();
-
-			// Not keeping notifications in local storage currently
-			//localStorageService.deleteElementOfItemById('trackingReminderNotifications', trackingReminderNotificationId);
-
+			reminderService.deleteNotificationFromLocalStorage(params.trackingReminderNotification);
 			QuantiModo.skipTrackingReminderNotification(params, function(response){
 				if(response.success) {
 					deferred.resolve();
@@ -56,6 +53,7 @@ angular.module('starter')
 
 		reminderService.skipAllReminderNotifications = function(params){
 			var deferred = $q.defer();
+			localStorageService.deleteItem('trackingReminderNotifications');
 			QuantiModo.skipAllTrackingReminderNotifications(params, function(response){
 				if(response.success) {
 					deferred.resolve();
@@ -75,9 +73,7 @@ angular.module('starter')
 
 		reminderService.trackReminderNotification = function(params){
 			var deferred = $q.defer();
-			// Not keeping notifications in local storage currently
-			//localStorageService.deleteElementOfItemById('trackingReminderNotifications', trackingReminderNotificationId);
-
+			reminderService.deleteNotificationFromLocalStorage(params.trackingReminderNotification);
 			QuantiModo.trackTrackingReminderNotification(params, function(response){
 				if(response.success) {
 					deferred.resolve();
@@ -97,9 +93,7 @@ angular.module('starter')
 
 		reminderService.snoozeReminderNotification = function(params){
 			var deferred = $q.defer();
-			// Not keeping notifications in local storage currently
-			//localStorageService.deleteElementOfItemById('trackingReminderNotifications', trackingReminderNotificationId);
-
+			reminderService.deleteNotificationFromLocalStorage(params.trackingReminderNotification);
 			QuantiModo.snoozeTrackingReminderNotification(params, function(response){
 				if(response.success) {
 					deferred.resolve();
@@ -179,29 +173,20 @@ angular.module('starter')
 			}
 		};
 
-		reminderService.getTrackingReminderNotifications = function(variableCategoryName, today){
-
+		reminderService.getTodayTrackingReminderNotifications = function(variableCategoryName){
 			var localMidnightInUtcString = timeService.getLocalMidnightInUtcString();
-			var currentDateTimeInUtcStringPlus5Min = timeService.getCurrentDateTimeInUtcStringPlusMin(5);
 			var params = {};
-
-			if (today) {
-				params.reminderTime = '(gt)' + localMidnightInUtcString;
-				params.sort = 'reminderTime';
-			} else {
-				params.reminderTime = '(lt)' + currentDateTimeInUtcStringPlus5Min;
-				params.sort = '-reminderTime';
-			}
-
+			params.reminderTime = '(gt)' + localMidnightInUtcString;
+			params.sort = 'reminderTime';
 			if (variableCategoryName) {
 				params.variableCategoryName = variableCategoryName;
 			}
-
 			var deferred = $q.defer();
 			QuantiModo.getTrackingReminderNotifications(params, function(response){
 				if(response.success) {
 					var trackingRemindersNotifications =
 						variableCategoryService.attachVariableCategoryIcons(response.data);
+					$rootScope.numberOfPendingNotifications = trackingRemindersNotifications.length;
 					deferred.resolve(trackingRemindersNotifications);
 				}
 				else {
@@ -216,6 +201,96 @@ angular.module('starter')
 
 			return deferred.promise;
 		};
+
+		reminderService.getTrackingReminderNotifications = function(variableCategoryName){
+			var localStorageItemName = 'trackingReminderNotifications';
+			if(variableCategoryName){
+				localStorageItemName = localStorageItemName + variableCategoryName;
+			}
+			var deferred = $q.defer();
+			localStorageService.getItem(localStorageItemName, function(trackingReminderNotifications){
+				if(trackingReminderNotifications){
+					trackingReminderNotifications = JSON.parse(trackingReminderNotifications);
+					$rootScope.numberOfPendingNotifications = trackingReminderNotifications.length;
+					if (window.chrome && window.chrome.browserAction) {
+						chrome.browserAction.setBadgeText({text: String($rootScope.numberOfPendingNotifications)});
+					}
+					deferred.resolve(trackingReminderNotifications);
+				} else {
+					reminderService.refreshTrackingReminderNotifications(variableCategoryName)
+						.then(function (trackingReminderNotifications) {
+							deferred.resolve(trackingReminderNotifications);
+						}, function(){
+							console.error("failed to get reminder notifications!");
+						});
+				}
+			});
+			return deferred.promise;
+		};
+
+		reminderService.getFilteredTrackingReminderNotifications = function(variableCategoryName){
+			var deferred = $q.defer();
+			reminderService.getTrackingReminderNotifications(variableCategoryName)
+				.then(function (trackingReminderNotifications) {
+					var filteredTrackingReminderNotifications =
+						reminderService.groupTrackingReminderNotificationsByDateRange(trackingReminderNotifications);
+					deferred.resolve(filteredTrackingReminderNotifications);
+				}, function(){
+					console.error("failed to get filtered reminder notifications!");
+				});
+			return deferred.promise;
+		};
+
+		reminderService.getFilteredTodayTrackingReminderNotifications = function(variableCategoryName){
+			var deferred = $q.defer();
+			reminderService.getTodayTrackingReminderNotifications(variableCategoryName)
+				.then(function (trackingReminderNotifications) {
+					var filteredTrackingReminderNotifications =
+						reminderService.groupTrackingReminderNotificationsByDateRange(trackingReminderNotifications);
+					deferred.resolve(filteredTrackingReminderNotifications);
+				}, function(){
+					console.error("failed to get filtered reminder notifications!");
+				});
+			return deferred.promise;
+		};
+
+		reminderService.refreshTrackingReminderNotifications = function(variableCategoryName){
+			var localStorageItemName = 'trackingReminderNotifications';
+			if(variableCategoryName){
+				localStorageItemName = localStorageItemName + variableCategoryName;
+			}
+			var currentDateTimeInUtcStringPlus5Min = timeService.getCurrentDateTimeInUtcStringPlusMin(5);
+			var params = {};
+			params.reminderTime = '(lt)' + currentDateTimeInUtcStringPlus5Min;
+			params.sort = '-reminderTime';
+			if (variableCategoryName) {
+				params.variableCategoryName = variableCategoryName;
+			}
+			var deferred = $q.defer();
+			QuantiModo.getTrackingReminderNotifications(params, function(response){
+				if(response.success) {
+					var trackingRemindersNotifications =
+						variableCategoryService.attachVariableCategoryIcons(response.data);
+					$rootScope.numberOfPendingNotifications = trackingRemindersNotifications.length;
+					if (window.chrome && window.chrome.browserAction) {
+						chrome.browserAction.setBadgeText({text: String($rootScope.numberOfPendingNotifications)});
+					}
+					localStorageService.setItem(localStorageItemName, JSON.stringify(trackingRemindersNotifications));
+					deferred.resolve(trackingRemindersNotifications);
+				}
+				else {
+					deferred.reject("error");
+				}
+			}, function(err){
+				if (typeof Bugsnag !== "undefined") {
+					Bugsnag.notify(err, JSON.stringify(err), {}, "error");
+				}
+				deferred.reject(err);
+			});
+
+			return deferred.promise;
+		};
+
 
 		reminderService.getTrackingReminderById = function(reminderId){
 			var deferred = $q.defer();
@@ -398,6 +473,73 @@ angular.module('starter')
 					});
 				}
 			});
+		};
+
+		reminderService.deleteNotificationFromLocalStorage = function(trackingReminderNotification){
+			$rootScope.numberOfPendingNotifications -= $rootScope.numberOfPendingNotifications;
+			localStorageService.deleteElementOfItemById('trackingReminderNotifications',
+				trackingReminderNotification.id);
+			localStorageService.deleteElementOfItemById('trackingReminderNotifications' +
+				trackingReminderNotification.variableCategoryName,
+				trackingReminderNotification.id);
+		};
+
+		reminderService.groupTrackingReminderNotificationsByDateRange = function (trackingReminderNotifications) {
+			var result = [];
+			var reference = moment().local();
+			var today = reference.clone().startOf('day');
+			var yesterday = reference.clone().subtract(1, 'days').startOf('day');
+			var weekold = reference.clone().subtract(7, 'days').startOf('day');
+			var monthold = reference.clone().subtract(30, 'days').startOf('day');
+
+			var todayResult = trackingReminderNotifications.filter(function (trackingReminderNotification) {
+				return moment.utc(trackingReminderNotification.trackingReminderNotificationTime).local().isSame(today, 'd') === true;
+			});
+
+			if (todayResult.length) {
+				result.push({name: "Today", trackingReminderNotifications: todayResult});
+			}
+
+			var yesterdayResult = trackingReminderNotifications.filter(function (trackingReminderNotification) {
+				return moment.utc(trackingReminderNotification.trackingReminderNotificationTime).local().isSame(yesterday, 'd') === true;
+			});
+
+			if (yesterdayResult.length) {
+				result.push({name: "Yesterday", trackingReminderNotifications: yesterdayResult});
+			}
+
+			var last7DayResult = trackingReminderNotifications.filter(function (trackingReminderNotification) {
+				var date = moment.utc(trackingReminderNotification.trackingReminderNotificationTime).local();
+
+				return date.isAfter(weekold) === true && date.isSame(yesterday, 'd') !== true &&
+					date.isSame(today, 'd') !== true;
+			});
+
+			if (last7DayResult.length) {
+				result.push({name: "Last 7 Days", trackingReminderNotifications: last7DayResult});
+			}
+
+			var last30DayResult = trackingReminderNotifications.filter(function (trackingReminderNotification) {
+
+				var date = moment.utc(trackingReminderNotification.trackingReminderNotificationTime).local();
+
+				return date.isAfter(monthold) === true && date.isBefore(weekold) === true &&
+					date.isSame(yesterday, 'd') !== true && date.isSame(today, 'd') !== true;
+			});
+
+			if (last30DayResult.length) {
+				result.push({name: "Last 30 Days", trackingReminderNotifications: last30DayResult});
+			}
+
+			var olderResult = trackingReminderNotifications.filter(function (trackingReminderNotification) {
+				return moment.utc(trackingReminderNotification.trackingReminderNotificationTime).local().isBefore(monthold) === true;
+			});
+
+			if (olderResult.length) {
+				result.push({name: "Older", trackingReminderNotifications: olderResult});
+			}
+
+			return result;
 		};
 
 		return reminderService;
