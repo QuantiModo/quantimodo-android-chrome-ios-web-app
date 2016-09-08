@@ -37,35 +37,6 @@ angular.module('starter')
 			$scope.state.showSymptomInfoCard = (!$scope.state.allReminders.length) && (window.location.href.indexOf('Symptom') > -1);
 		}
 
-		function getTrackingRemindersFromLocalStorage(){
-			$scope.state.allReminders = [];
-			var nonFavoriteReminders = [];
-			var unfilteredReminders = JSON.parse(localStorageService.getItemSync('trackingReminders'));
-			unfilteredReminders =
-				variableCategoryService.attachVariableCategoryIcons(unfilteredReminders);
-			if(unfilteredReminders) {
-				for(var k = 0; k < unfilteredReminders.length; k++){
-					if(unfilteredReminders[k].reminderFrequency !== 0){
-						nonFavoriteReminders.push(unfilteredReminders[k]);
-					}
-				}
-				if($stateParams.variableCategoryName !== 'Anything') {
-					for(var j = 0; j < nonFavoriteReminders.length; j++){
-						if($stateParams.variableCategoryName === nonFavoriteReminders[j].variableCategoryName){
-							$scope.state.allReminders.push(nonFavoriteReminders[j]);
-						}
-					}
-					showAppropriateHelpInfoCards();
-				} else {
-					$scope.state.allReminders = nonFavoriteReminders;
-					showAppropriateHelpInfoCards();
-				}
-				$scope.state.allReminders = reminderService.addRatingTimesToDailyReminders($scope.state.allReminders);
-			} else {
-				showAppropriateHelpInfoCards();
-			}
-		}
-
 	    // when date is updated
 	    $scope.currentDatePickerCallback = function (val) {
 	    	if(typeof(val)==='undefined'){
@@ -86,8 +57,7 @@ angular.module('starter')
 				$scope.state.slots.epochTime = a.getTime()/1000;
 			}
 		};
-
-	    // constructor
+		
 	    $scope.init = function(){
 			if (typeof Bugsnag !== "undefined") {
 				Bugsnag.context = "reminderManage";
@@ -103,10 +73,10 @@ angular.module('starter')
 					pluralize($filter('wordAliases')($stateParams.variableCategoryName.toLowerCase()), 1) + ' reminder';
 			}
 
-			$scope.state.showButtons = true;
-			//$scope.showHelpInfoPopupIfNecessary();
+			showAppropriateHelpInfoCards();
 
-			getTrackingRemindersFromLocalStorage();
+			$scope.state.showButtons = true;
+			$scope.state.trackingReminders = reminderService.getTrackingReminders($stateParams.variableCategoryName);
 			authService.checkAuthOrSendToLogin();
 			if (typeof analytics !== 'undefined')  { analytics.trackView("Manage Reminders Controller"); }
 
@@ -115,7 +85,7 @@ angular.module('starter')
 				$scope.showLoader('Reminders coming down the pipes...');
 				reminderService.refreshTrackingRemindersAndScheduleAlarms().then(function () {
 					$scope.hideLoader();
-					getTrackingRemindersFromLocalStorage();
+					$scope.state.trackingReminders = reminderService.getTrackingReminders($stateParams.variableCategoryName);
 					//Stop the ion-refresher from spinning
 					$scope.$broadcast('scroll.refreshComplete');
 				});

@@ -111,6 +111,24 @@ angular.module('starter')
 			return deferred.promise;
 		};
 
+		reminderService.getTrackingReminders = function(variableCategoryName) {
+			var deferred = $q.defer();
+			reminderService.getTrackingRemindersFromLocalStorage(variableCategoryName)
+				.then(function (trackingReminders) {
+					if (trackingReminders) {
+						deferred.resolve(trackingReminders)
+					} else {
+						reminderService.refreshTrackingRemindersAndScheduleAlarms.then(function () {
+							reminderService.getTrackingRemindersFromLocalStorage(variableCategoryName)
+								.then(function (trackingReminders) {
+									deferred.resolve(trackingReminders)
+								});
+						});
+					}
+				});
+			return deferred.promise;
+		};
+
 		reminderService.refreshTrackingRemindersAndScheduleAlarms = function(){
 			if($rootScope.syncingReminders !== true){
 				$rootScope.syncingReminders = true;
@@ -540,6 +558,34 @@ angular.module('starter')
 			}
 
 			return result;
+		};
+
+		reminderService.getTrackingRemindersFromLocalStorage = function (){
+			var deferred = $q.defer();
+			var allReminders = [];
+			var nonFavoriteReminders = [];
+			var unfilteredReminders = JSON.parse(localStorageService.getItemSync('trackingReminders'));
+			unfilteredReminders =
+				variableCategoryService.attachVariableCategoryIcons(unfilteredReminders);
+			if(unfilteredReminders) {
+				for(var k = 0; k < unfilteredReminders.length; k++){
+					if(unfilteredReminders[k].reminderFrequency !== 0){
+						nonFavoriteReminders.push(unfilteredReminders[k]);
+					}
+				}
+				if($stateParams.variableCategoryName !== 'Anything') {
+					for(var j = 0; j < nonFavoriteReminders.length; j++){
+						if($stateParams.variableCategoryName === nonFavoriteReminders[j].variableCategoryName){
+							allReminders.push(nonFavoriteReminders[j]);
+						}
+					}
+				} else {
+					allReminders = nonFavoriteReminders;
+				}
+				allReminders = reminderService.addRatingTimesToDailyReminders(allReminders);
+				deferred.resolve(allReminders);
+			}
+			return deferred.promise;
 		};
 
 		return reminderService;
