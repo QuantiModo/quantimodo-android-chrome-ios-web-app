@@ -718,8 +718,9 @@ angular.module('starter')
 
             // track tracking reminder with default value
             QuantiModo.trackTrackingReminderNotification = function(params, successHandler, errorHandler){
+                var requiredProperties = ['id', 'trackingReminderNotificationId', 'trackingReminderId', 'modifiedValue'];
                 QuantiModo.post('api/v1/trackingReminderNotifications/track',
-                    ['id', 'trackingReminderNotificationId', 'trackingReminderId', 'modifiedValue'],
+                    requiredProperties,
                     params,
                     successHandler,
                     errorHandler);

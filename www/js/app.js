@@ -19,10 +19,40 @@ angular.module('starter',
     ]
 )
 
-.run(function($ionicPlatform, $ionicHistory, $state, $rootScope, localStorageService, qmLocationService) {
+.run(function($ionicPlatform, $ionicHistory, $state, $rootScope, localStorageService, qmLocationService, reminderService) {
 //.run(function($ionicPlatform, $ionicHistory, $state, $rootScope, $ionicAnalytics) {
 // Database
 //.run(function($ionicPlatform, $ionicHistory, $state, $rootScope, $cordovaSQLite) {
+
+    window.trackLastValueAction = function (data){
+        alert(JSON.stringify(data));
+        console.log("Push data: " + JSON.stringify(data));
+        var body = {
+            trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId,
+            modifiedValue: data.additionalData.lastValue
+        };
+        reminderService.trackReminderNotification(body);
+    };
+
+    window.trackSecondToLastValueAction = function (data){
+        alert(JSON.stringify(data));
+        console.log("Push data: " + JSON.stringify(data));
+        var body = {
+            trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId,
+            modifiedValue: data.additionalData.secondToLastValue
+        };
+        reminderService.trackReminderNotification(body);
+    };
+
+    window.trackThirdToLastValueAction = function (data){
+        alert(JSON.stringify(data));
+        console.log("Push data: " + JSON.stringify(data));
+        var body = {
+            trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId,
+            modifiedValue: data.additionalData.thirdToLastValue
+        };
+        reminderService.trackReminderNotification(body);
+    };
 
     $ionicPlatform.ready(function() {
         //$ionicAnalytics.register();
