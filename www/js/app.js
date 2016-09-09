@@ -24,6 +24,24 @@ angular.module('starter',
 // Database
 //.run(function($ionicPlatform, $ionicHistory, $state, $rootScope, $cordovaSQLite) {
 
+    window.trackDefaultValueAction = function (data){
+        alert(JSON.stringify(data));
+        console.log("Push data: " + JSON.stringify(data));
+        var body = {
+            trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId
+        };
+        reminderService.trackReminderNotification(body);
+    };
+
+    window.snoozeAction = function (data){
+        alert(JSON.stringify(data));
+        console.log("Push data: " + JSON.stringify(data));
+        var body = {
+            trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId
+        };
+        reminderService.snoozeReminderNotification(body);
+    };
+
     window.trackLastValueAction = function (data){
         alert(JSON.stringify(data));
         console.log("Push data: " + JSON.stringify(data));
