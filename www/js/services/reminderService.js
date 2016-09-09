@@ -430,7 +430,8 @@ angular.module('starter')
 					//update alarms and local notifications
 					console.debug("remindersService:  Finished deleteReminder so now refreshTrackingRemindersAndScheduleAlarms");
 					reminderService.refreshTrackingRemindersAndScheduleAlarms();
-                    reminderService.refreshTrackingReminderNotifications();
+                    // No need to do this for favorites so we do it at a higher level
+					//reminderService.refreshTrackingReminderNotifications();
 					deferred.resolve();
 				}
 				else {

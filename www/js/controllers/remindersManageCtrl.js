@@ -190,11 +190,14 @@ angular.module('starter')
 
 	    $scope.deleteReminder = function(reminder){
 			localStorageService.deleteElementOfItemById('trackingReminders', reminder.trackingReminderId).then(function(){
-					$scope.state.trackingReminders = reminderService.getTrackingReminders($stateParams.variableCategoryName);
+					reminderService.getTrackingReminders($stateParams.variableCategoryName).then(function(trackingReminders){
+						$scope.state.trackingReminders = trackingReminders;
+					});
 				});
 
 			reminderService.deleteReminder(reminder.trackingReminderId)
 				.then(function(){
+					reminderService.refreshTrackingReminderNotifications();
 					console.log("Reminder deleted");
 				}, function(err){
 					if (typeof Bugsnag !== "undefined") {
