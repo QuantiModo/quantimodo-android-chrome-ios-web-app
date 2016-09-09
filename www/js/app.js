@@ -127,7 +127,7 @@ angular.module('starter',
                 return;
             }
 
-            $rootScope.appVersion = "1.9.0.0";
+            $rootScope.appVersion = "1.9.1.0";
             $rootScope.appName = config.appSettings.appName;
 
             if (typeof Bugsnag !== "undefined") {
