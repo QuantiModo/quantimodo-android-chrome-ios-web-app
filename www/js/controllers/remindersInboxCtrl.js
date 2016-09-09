@@ -144,7 +144,8 @@ angular.module('starter')
             localStorageService.deleteElementOfItemById('trackingReminderNotifications',
                 trackingReminderNotification.id);
 			var params = {
-				trackingReminderNotificationId: trackingReminderNotification.id
+				trackingReminderNotificationId: trackingReminderNotification.id,
+				trackingReminderNotification: trackingReminderNotification
 			};
 	    	reminderService.skipReminderNotification(params)
 	    	.then(function(){
@@ -175,7 +176,8 @@ angular.module('starter')
 			localStorageService.deleteElementOfItemById('trackingReminderNotifications',
 				trackingReminderNotification.id);
 			var params = {
-				trackingReminderNotificationId: trackingReminderNotification.id
+				trackingReminderNotificationId: trackingReminderNotification.id,
+				trackingReminderNotification: trackingReminderNotification
 			};
 	    	reminderService.snoozeReminderNotification(params)
 	    	.then(function(){
