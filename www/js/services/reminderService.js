@@ -307,7 +307,6 @@ angular.module('starter')
 			return deferred.promise;
 		};
 
-
 		reminderService.getTrackingReminderById = function(reminderId){
 			var deferred = $q.defer();
 			var params = {id : reminderId};

@@ -57,7 +57,7 @@ angular.module('starter')
 			}
 		};
 
-		var refreshReminders = function () {
+		$scope.refreshReminders = function () {
 			if($rootScope.syncingReminders !== true) {
 				console.debug("ReminderMange init: calling refreshTrackingRemindersAndScheduleAlarms");
 				$scope.showLoader('Reminders coming down the pipes...');
@@ -98,7 +98,7 @@ angular.module('starter')
 			authService.checkAuthOrSendToLogin();
 			getTrackingReminders();
 			if (typeof analytics !== 'undefined')  { analytics.trackView("Manage Reminders Controller"); }
-			refreshReminders();
+			$scope.refreshReminders();
 			// Triggered on a button click, or some other target
 			$rootScope.showActionSheetMenu = function() {
 				// Show the action sheet
