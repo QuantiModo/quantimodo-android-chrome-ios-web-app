@@ -194,6 +194,55 @@ angular.module('starter')
 	    	});
 	    };
 
+	    var getTrackingReminderNotifications = function () {
+			if($stateParams.today){
+				$scope.showLoader("Getting today's reminder notifications...");
+				reminderService.getFilteredTodayTrackingReminderNotifications($stateParams.variableCategoryName)
+					.then(function (filteredTrackingReminderNotifications) {
+						$scope.filteredTrackingReminderNotifications = filteredTrackingReminderNotifications;
+						if(filteredTrackingReminderNotifications.length === 0){
+							$rootScope.showAllCaughtUpCard = true;
+						}
+						//Stop the ion-refresher from spinning
+						$scope.$broadcast('scroll.refreshComplete');
+						$scope.hideLoader();
+					}, function(){
+						$scope.hideLoader();
+						console.error("failed to get reminder notifications!");
+						//Stop the ion-refresher from spinning
+						$scope.$broadcast('scroll.refreshComplete');
+					});
+			} else {
+				$scope.showLoader("Getting reminder notifications...");
+				reminderService.getFilteredTrackingReminderNotifications($stateParams.variableCategoryName)
+					.then(function (filteredTrackingReminderNotifications) {
+						$scope.filteredTrackingReminderNotifications = filteredTrackingReminderNotifications;
+						if(filteredTrackingReminderNotifications.length === 0){
+							$rootScope.showAllCaughtUpCard = true;
+						}
+						//Stop the ion-refresher from spinning
+						$scope.$broadcast('scroll.refreshComplete');
+						$scope.hideLoader();
+					}, function(){
+						$scope.hideLoader();
+						console.error("failed to get reminder notifications!");
+						//Stop the ion-refresher from spinning
+						$scope.$broadcast('scroll.refreshComplete');
+					});
+			}
+		};
+
+		$scope.refreshTrackingReminderNotifications = function () {
+			if($stateParams.today){
+				getTrackingReminderNotifications();
+			} else {
+				reminderService.refreshTrackingReminderNotifications($stateParams.variableCategoryName)
+					.then(function(){
+						getTrackingReminderNotifications();
+					});
+			}
+		};
+
 	    $scope.init = function(){
 			if (typeof Bugsnag !== "undefined") { Bugsnag.context = "reminderInbox"; }
 			$rootScope.getAccessTokenFromUrlParameter();
@@ -206,41 +255,8 @@ angular.module('starter')
 				setPageTitle();
 				authService.checkAuthOrSendToLogin();
 				if (typeof analytics !== 'undefined')  { analytics.trackView("Reminders Inbox Controller"); }
-				if($stateParams.today){
-					$scope.showLoader("Getting today's reminder notifications...");
-					reminderService.getFilteredTodayTrackingReminderNotifications($stateParams.variableCategoryName)
-						.then(function (filteredTrackingReminderNotifications) {
-							$scope.filteredTrackingReminderNotifications = filteredTrackingReminderNotifications;
-							if(filteredTrackingReminderNotifications.length === 0){
-								$rootScope.showAllCaughtUpCard = true;
-							}
-							//Stop the ion-refresher from spinning
-							$scope.$broadcast('scroll.refreshComplete');
-							$scope.hideLoader();
-						}, function(){
-							$scope.hideLoader();
-							console.error("failed to get reminder notifications!");
-							//Stop the ion-refresher from spinning
-							$scope.$broadcast('scroll.refreshComplete');
-						});
-				} else {
-					$scope.showLoader("Getting reminder notifications...");
-					reminderService.getFilteredTrackingReminderNotifications($stateParams.variableCategoryName)
-						.then(function (filteredTrackingReminderNotifications) {
-							$scope.filteredTrackingReminderNotifications = filteredTrackingReminderNotifications;
-							if(filteredTrackingReminderNotifications.length === 0){
-								$rootScope.showAllCaughtUpCard = true;
-							}
-							//Stop the ion-refresher from spinning
-							$scope.$broadcast('scroll.refreshComplete');
-							$scope.hideLoader();
-						}, function(){
-							$scope.hideLoader();
-							console.error("failed to get reminder notifications!");
-							//Stop the ion-refresher from spinning
-							$scope.$broadcast('scroll.refreshComplete');
-						});
-				}
+
+				getTrackingReminderNotifications();
 
 				if($rootScope.localNotificationsEnabled){
 					console.debug("reminderInbox init: calling refreshTrackingRemindersAndScheduleAlarms");
