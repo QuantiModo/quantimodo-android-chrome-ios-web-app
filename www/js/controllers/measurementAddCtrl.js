@@ -101,12 +101,20 @@ angular.module('starter')
             if($scope.state.measurement.variableName === config.appSettings.primaryOutcomeVariableDetails.name){
                 measurementService.deleteMeasurementFromLocalStorage($scope.state.measurement).then(function (){
                     measurementService.deleteMeasurementFromServer($scope.state.measurement).then(function (){
-                        $ionicHistory.backView().go();
+                        if($ionicHistory.backView()){
+                            $ionicHistory.goBack();
+                        } else {
+                            $state.go(config.appSettings.defaultState);
+                        }
                     });
                 });
             } else {
                 measurementService.deleteMeasurementFromServer($scope.state.measurement).then(function (){
-                    $ionicHistory.backView().go();
+                    if($ionicHistory.backView()){
+                        $ionicHistory.goBack();
+                    } else {
+                        $state.go(config.appSettings.defaultState);
+                    }
                 });
             }
         };
