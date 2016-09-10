@@ -340,8 +340,8 @@ angular.module('starter')
         };
 
         notificationService.scheduleSingleMostFrequentNotification = function(trackingRemindersFromApi) {
-            if($rootScope.showOnlyOneNotification === false){
-                console.warn("scheduleSingleMostFrequentNotification: $rootScope.showOnlyOneNotification === false" +
+            if($rootScope.user.combineNotifications === false){
+                console.warn("scheduleSingleMostFrequentNotification: $rootScope.user.combineNotifications === false" +
                     " so we shouldn't be calling this function");
                 return;
             }
@@ -375,7 +375,7 @@ angular.module('starter')
         notificationService.scheduleAllNotificationsByTrackingReminders = function(trackingRemindersFromApi) {
             if($rootScope.isChromeExtension || $rootScope.isIOS || $rootScope.isAndroid) {
                 for (var i = 0; i < trackingRemindersFromApi.length; i++) {
-                    if($rootScope.showOnlyOneNotification === false){
+                    if($rootScope.user.combineNotifications === false){
                         try {
                             this.scheduleNotificationByReminder(trackingRemindersFromApi[i]);
                         } catch (err) {
@@ -455,8 +455,8 @@ angular.module('starter')
 
         notificationService.scheduleNotificationByReminder = function(trackingReminder){
 
-            if($rootScope.showOnlyOneNotification === true){
-                console.warn("Not going to scheduleNotificationByReminder because $rootScope.showOnlyOneNotification === true");
+            if($rootScope.user.combineNotifications === true){
+                console.warn("Not going to scheduleNotificationByReminder because $rootScope.user.combineNotifications === true");
                 return;
             }
 

@@ -7,7 +7,7 @@ angular.module('starter')
 
 		reminderService.addNewReminder = function(trackingReminder){
 			var deferred = $q.defer();
-			if(trackingReminder.reminderFrequency !== 0 && !$rootScope.showOnlyOneNotification){
+			if(trackingReminder.reminderFrequency !== 0 && !$rootScope.user.combineNotifications){
 				if($rootScope.localNotificationsEnabled){
 					notificationService.scheduleNotificationByReminder(trackingReminder);
 				}
@@ -145,7 +145,7 @@ angular.module('starter')
 				QuantiModo.getTrackingReminders(params, function(remindersResponse){
 					var trackingReminders = remindersResponse.data;
 					if(remindersResponse.success) {
-						if($rootScope.showOnlyOneNotification !== true){
+						if($rootScope.user.combineNotifications !== true){
 							try {
 								if($rootScope.localNotificationsEnabled){
 									notificationService.scheduleUpdateOrDeleteGenericNotificationsByDailyReminderTimes(trackingReminders);
