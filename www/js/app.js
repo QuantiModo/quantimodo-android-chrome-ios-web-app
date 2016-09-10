@@ -25,17 +25,18 @@ angular.module('starter',
 //.run(function($ionicPlatform, $ionicHistory, $state, $rootScope, $cordovaSQLite) {
 
     window.trackDefaultValueAction = function (data){
-        alert(JSON.stringify(data));
-        console.log("Push data: " + JSON.stringify(data));
+        //alert(JSON.stringify(data));
+        console.log("trackDefaultValueAction Push data: " + JSON.stringify(data));
         var body = {
             trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId
         };
+
         reminderService.trackReminderNotification(body);
     };
 
     window.snoozeAction = function (data){
-        alert(JSON.stringify(data));
-        console.log("Push data: " + JSON.stringify(data));
+        //alert(JSON.stringify(data));
+        console.log("snoozeAction push data: " + JSON.stringify(data));
         var body = {
             trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId
         };
@@ -43,8 +44,8 @@ angular.module('starter',
     };
 
     window.trackLastValueAction = function (data){
-        alert(JSON.stringify(data));
-        console.log("Push data: " + JSON.stringify(data));
+        //alert(JSON.stringify(data));
+        console.log("trackLastValueAction Push data: " + JSON.stringify(data));
         var body = {
             trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId,
             modifiedValue: data.additionalData.lastValue
@@ -53,18 +54,18 @@ angular.module('starter',
     };
 
     window.trackSecondToLastValueAction = function (data){
-        alert(JSON.stringify(data));
-        console.log("Push data: " + JSON.stringify(data));
+        //alert(JSON.stringify(data));
+        console.log("trackSecondToLastValueAction Push data: " + JSON.stringify(data));
         var body = {
-            trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId,
+            trackingReminderNotification: data.additionalData.trackingReminderNotificationId,
             modifiedValue: data.additionalData.secondToLastValue
         };
         reminderService.trackReminderNotification(body);
     };
 
     window.trackThirdToLastValueAction = function (data){
-        alert(JSON.stringify(data));
-        console.log("Push data: " + JSON.stringify(data));
+        //alert(JSON.stringify(data));
+        console.log("trackThirdToLastValueAction Push data: " + JSON.stringify(data));
         var body = {
             trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId,
             modifiedValue: data.additionalData.thirdToLastValue
@@ -74,7 +75,7 @@ angular.module('starter',
 
     $ionicPlatform.ready(function() {
         //$ionicAnalytics.register();
-        if(ionic.Platform.isAndroid() || ionic.Platform.isIPad() || ionic.Platform.isIOS()){
+        if(ionic.Platform.isIPad() || ionic.Platform.isIOS()){
             window.onerror = function (errorMsg, url, lineNumber) {
                 alert('Error: ' + errorMsg + ' Script: ' + url + ' Line: ' + lineNumber);
             };

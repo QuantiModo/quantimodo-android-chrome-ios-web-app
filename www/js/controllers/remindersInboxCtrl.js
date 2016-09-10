@@ -108,11 +108,11 @@ angular.module('starter')
 			$scope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications[trackingReminderNotificationNotificationIndex].hide = true;
 			console.debug('Tracking notification ' + JSON.stringify(trackingReminderNotification));
 			console.log('modifiedReminderValue is ' + modifiedReminderValue);
-			var params = {
+			var body = {
 				trackingReminderNotification: trackingReminderNotification,
 				modifiedValue: modifiedReminderValue
 			};
-	    	reminderService.trackReminderNotification(params)
+	    	reminderService.trackReminderNotification(body)
 				.then(function(){
 					if($rootScope.localNotificationsEnabled){
 						notificationService.decrementNotificationBadges();
