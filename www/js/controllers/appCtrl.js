@@ -390,7 +390,6 @@ angular.module('starter')
             console.log("Main Constructor Start");
             $rootScope.getAccessTokenFromUrlParameter();
             $rootScope.hideNavigationMenuIfSetInUrlParameter();
-            $scope.shouldWeCombineNotifications();
             localStorageService.getItem('introSeen', function(introSeen){
                 $rootScope.introSeen = introSeen;
             });
@@ -496,29 +495,6 @@ angular.module('starter')
             };
             reminderService.addToTrackingReminderSyncQueue(reminderToSchedule);
             $scope.showIntervalCard = false;
-        };
-
-        $scope.shouldWeCombineNotifications = function(){
-            localStorageService.getItem('showOnlyOneNotification', function(showOnlyOneNotification){
-                if(showOnlyOneNotification === "false") {
-                    console.debug("showOnlyOneNotification from local storage is a false string: " + showOnlyOneNotification);
-                    $rootScope.showOnlyOneNotification = false;
-                } else if (showOnlyOneNotification === "true") {
-                    $rootScope.showOnlyOneNotification = true;
-                } else {
-                    console.debug("showOnlyOneNotification from local storage is not a false string");
-                    localStorageService.setItem('showOnlyOneNotification', true);
-                    $rootScope.showOnlyOneNotification = true;
-
-                    // notificationService.cancelAllNotifications().then(function() {
-                    //     localStorageService.getItem('primaryOutcomeRatingFrequencyDescription', function (primaryOutcomeRatingFrequencyDescription) {
-                    //         console.debug("Cancelled individual notifications and now scheduling combined one with interval: " + primaryOutcomeRatingFrequencyDescription);
-                    //         $scope.primaryOutcomeRatingFrequencyDescription = primaryOutcomeRatingFrequencyDescription ? primaryOutcomeRatingFrequencyDescription : "daily";
-                    //         $scope.saveInterval($scope.primaryOutcomeRatingFrequencyDescription);
-                    //     });
-                    // });
-                }
-            });
         };
 
         $rootScope.getUserAndSetInLocalStorage = function(){

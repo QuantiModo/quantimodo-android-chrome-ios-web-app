@@ -25,11 +25,12 @@ angular.module('starter',
 //.run(function($ionicPlatform, $ionicHistory, $state, $rootScope, $cordovaSQLite) {
 
     window.trackDefaultValueAction = function (data){
-        alert(JSON.stringify(data));
-        console.log("Push data: " + JSON.stringify(data));
+        //alert(JSON.stringify(data));
+        console.log("trackDefaultValueAction Push data: " + JSON.stringify(data));
         var body = {
             trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId
         };
+
         reminderService.trackReminderNotification(body);
 
         push.finish(function() {
@@ -40,8 +41,8 @@ angular.module('starter',
     };
 
     window.snoozeAction = function (data){
-        alert(JSON.stringify(data));
-        console.log("Push data: " + JSON.stringify(data));
+        //alert(JSON.stringify(data));
+        console.log("snoozeAction push data: " + JSON.stringify(data));
         var body = {
             trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId
         };
@@ -55,8 +56,8 @@ angular.module('starter',
     };
 
     window.trackLastValueAction = function (data){
-        alert(JSON.stringify(data));
-        console.log("Push data: " + JSON.stringify(data));
+        //alert(JSON.stringify(data));
+        console.log("trackLastValueAction Push data: " + JSON.stringify(data));
         var body = {
             trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId,
             modifiedValue: data.additionalData.lastValue
@@ -71,10 +72,10 @@ angular.module('starter',
     };
 
     window.trackSecondToLastValueAction = function (data){
-        alert(JSON.stringify(data));
-        console.log("Push data: " + JSON.stringify(data));
+        //alert(JSON.stringify(data));
+        console.log("trackSecondToLastValueAction Push data: " + JSON.stringify(data));
         var body = {
-            trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId,
+            trackingReminderNotification: data.additionalData.trackingReminderNotificationId,
             modifiedValue: data.additionalData.secondToLastValue
         };
         reminderService.trackReminderNotification(body);
@@ -87,8 +88,8 @@ angular.module('starter',
     };
 
     window.trackThirdToLastValueAction = function (data){
-        alert(JSON.stringify(data));
-        console.log("Push data: " + JSON.stringify(data));
+        //alert(JSON.stringify(data));
+        console.log("trackThirdToLastValueAction Push data: " + JSON.stringify(data));
         var body = {
             trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId,
             modifiedValue: data.additionalData.thirdToLastValue

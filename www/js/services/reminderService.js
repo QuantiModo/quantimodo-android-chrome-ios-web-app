@@ -7,7 +7,7 @@ angular.module('starter')
 
 		reminderService.addNewReminder = function(trackingReminder){
 			var deferred = $q.defer();
-			if(trackingReminder.reminderFrequency !== 0 && !$rootScope.showOnlyOneNotification){
+			if(trackingReminder.reminderFrequency !== 0 && !$rootScope.user.combineNotifications){
 				if($rootScope.localNotificationsEnabled){
 					notificationService.scheduleNotificationByReminder(trackingReminder);
 				}
@@ -29,10 +29,10 @@ angular.module('starter')
 			return deferred.promise;
 		};
 
-		reminderService.skipReminderNotification = function(params){
+		reminderService.skipReminderNotification = function(body){
 			var deferred = $q.defer();
-			reminderService.deleteNotificationFromLocalStorage(params.trackingReminderNotification);
-			QuantiModo.skipTrackingReminderNotification(params, function(response){
+			reminderService.deleteNotificationFromLocalStorage(body);
+			QuantiModo.skipTrackingReminderNotification(body, function(response){
 				if(response.success) {
 					deferred.resolve();
 				}
@@ -69,10 +69,11 @@ angular.module('starter')
 			return deferred.promise;
 		};
 
-		reminderService.trackReminderNotification = function(params){
+		reminderService.trackReminderNotification = function(body){
 			var deferred = $q.defer();
-			reminderService.deleteNotificationFromLocalStorage(params.trackingReminderNotification);
-			QuantiModo.trackTrackingReminderNotification(params, function(response){
+			alert('reminderService.trackReminderNotification: Going to track ' + JSON.stringify(body));
+			reminderService.deleteNotificationFromLocalStorage(body);
+			QuantiModo.trackTrackingReminderNotification(body, function(response){
 				if(response.success) {
 					deferred.resolve();
 				}
@@ -89,10 +90,10 @@ angular.module('starter')
 			return deferred.promise;
 		};
 
-		reminderService.snoozeReminderNotification = function(params){
+		reminderService.snoozeReminderNotification = function(body){
 			var deferred = $q.defer();
-			reminderService.deleteNotificationFromLocalStorage(params.trackingReminderNotification);
-			QuantiModo.snoozeTrackingReminderNotification(params, function(response){
+			reminderService.deleteNotificationFromLocalStorage(body);
+			QuantiModo.snoozeTrackingReminderNotification(body, function(response){
 				if(response.success) {
 					deferred.resolve();
 				}
@@ -144,7 +145,7 @@ angular.module('starter')
 				QuantiModo.getTrackingReminders(params, function(remindersResponse){
 					var trackingReminders = remindersResponse.data;
 					if(remindersResponse.success) {
-						if($rootScope.showOnlyOneNotification !== true){
+						if($rootScope.user.combineNotifications !== true){
 							try {
 								if($rootScope.localNotificationsEnabled){
 									notificationService.scheduleUpdateOrDeleteGenericNotificationsByDailyReminderTimes(trackingReminders);
@@ -493,13 +494,22 @@ angular.module('starter')
 			});
 		};
 
-		reminderService.deleteNotificationFromLocalStorage = function(trackingReminderNotification){
+		reminderService.deleteNotificationFromLocalStorage = function(body){
+			var trackingReminderNotificationId = body;
+			if(isNaN(trackingReminderNotificationId) && body.trackingReminderNotification){
+				trackingReminderNotificationId = body.trackingReminderNotification.id;
+			}
+			if(isNaN(trackingReminderNotificationId) && body.trackingReminderNotificationId){
+				trackingReminderNotificationId = body.trackingReminderNotificationId;
+			}
 			$rootScope.numberOfPendingNotifications -= $rootScope.numberOfPendingNotifications;
 			localStorageService.deleteElementOfItemById('trackingReminderNotifications',
-				trackingReminderNotification.id);
-			localStorageService.deleteElementOfItemById('trackingReminderNotifications' +
-				trackingReminderNotification.variableCategoryName,
-				trackingReminderNotification.id);
+				trackingReminderNotificationId);
+			if(body.trackingReminderNotification){
+				localStorageService.deleteElementOfItemById('trackingReminderNotifications' +
+					body.trackingReminderNotification.variableCategoryName,
+					trackingReminderNotificationId);
+			}
 		};
 
 		reminderService.groupTrackingReminderNotificationsByDateRange = function (trackingReminderNotifications) {

@@ -10,10 +10,6 @@ angular.module('starter')
 		$rootScope.isIOS = ionic.Platform.isIPad() || ionic.Platform.isIOS();
 		$rootScope.isAndroid = ionic.Platform.isAndroid();
         $rootScope.isChrome = window.chrome ? true : false;
-	    // populate user data
-		//$scope.state.showOnlyOneNotification = true;
-		$scope.state.showOnlyOneNotification = $rootScope.showOnlyOneNotification;
-		console.debug('CombineNotifications is '+ $scope.state.showOnlyOneNotification);
 		if($rootScope.user){
 			$scope.state.trackLocation = $rootScope.user.trackLocation;
 			console.debug('trackLocation is '+ $scope.state.trackLocation);
@@ -80,7 +76,6 @@ angular.module('starter')
 				Bugsnag.context = "settings";
 			}
 			if (typeof analytics !== 'undefined')  { analytics.trackView("Settings Controller"); }
-			$scope.shouldWeCombineNotifications();
 			qmLocationService.getLocationVariablesFromLocalStorage();
 	    };
 
@@ -105,32 +100,14 @@ angular.module('starter')
 		};
 
 		$scope.combineNotificationChange = function() {
-			var d = new Date();
-			var timeZoneOffsetInMinutes = d.getTimezoneOffset();
-			var params = {
-				timeZoneOffset: timeZoneOffsetInMinutes
-			};
-			
-			console.log('Combine Notification Change', $scope.state.showOnlyOneNotification);
-			$rootScope.showOnlyOneNotification = $scope.state.showOnlyOneNotification;
-			localStorageService.setItem('showOnlyOneNotification', $scope.state.showOnlyOneNotification);
-			if($scope.state.showOnlyOneNotification){
+			userService.updateUserSettings({combineNotifications: $rootScope.user.combineNotifications});
+			if($rootScope.user.combineNotifications){
 				$ionicPopup.alert({
 					title: 'Disabled Multiple Notifications',
-					template: 'You will only get a single generic repeating device notification ' +
-					'instead of a separate device notification for each reminder that you create.  All ' +
+					template: 'You will only get a single generic notification ' +
+					'instead of a separate notification for each reminder that you create.  All ' +
 					'tracking reminder notifications for specific reminders will still show up in your Reminder Inbox.'
 				});
-
-                params.pushNotificationsEnabled = true;
-                userService.updateUserSettings(params);
-                $rootScope.deviceToken = localStorageService.getItemSync('deviceToken');
-                if($rootScope.deviceToken){
-                    //pushNotificationService.registerDeviceToken($rootScope.deviceToken);
-                } else {
-                    //console.error("Could not find device token for push notifications!");
-                }
-
 				notificationService.cancelAllNotifications().then(function() {
 					console.debug("SettingsCtrl combineNotificationChange: Disabled Multiple Notifications and now " +
 						"refreshTrackingRemindersAndScheduleAlarms will schedule a single notification for highest " +
@@ -141,22 +118,11 @@ angular.module('starter')
                     }
 				});
 
-				// notificationService.cancelAllNotifications().then(function() {
-				// 	var intervalToCheckForNotificationsInMinutes = 15;
-				// 	var notificationSettings = {
-				// 		every: intervalToCheckForNotificationsInMinutes
-				// 	};
-				// 	notificationService.scheduleGenericNotification(notificationSettings);
-				// });
 			} else {
 				$ionicPopup.alert({
 					title: 'Enabled Multiple Notifications',
 					template: 'You will get a separate device notification for each reminder that you create.'
 				});
-
-				params.pushNotificationsEnabled = false;
-                userService.updateUserSettings(params);
-
 				notificationService.cancelAllNotifications().then(function() {
 					console.debug("SettingsCtrl combineNotificationChange: Cancelled combined notification and now " +
 						"refreshTrackingRemindersAndScheduleAlarms");

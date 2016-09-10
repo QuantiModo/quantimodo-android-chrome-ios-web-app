@@ -154,24 +154,24 @@
 						<i style="text-align: center; font-size: 60px;" class="icon positive ion-android-notifications-none"></i>
 					</div>
 					<div class="col col-75">
-						<h2 ng-show="showOnlyOneNotification" style="white-space: normal; text-align: justify; line-height: normal; ">
+						<h2 ng-show="user.combineNotifications" style="white-space: normal; text-align: justify; line-height: normal; ">
 							Currently, you will only get one general repeating <span class="positive">device notification</span> at a time.
 						</h2>
-						<h2 ng-hide="showOnlyOneNotification" style="white-space: normal; text-align: justify; line-height: normal; ">
+						<h2 ng-hide="user.combineNotifications" style="white-space: normal; text-align: justify; line-height: normal; ">
 							Currently, you will get a separate <span class="positive">device notification</span> for each <span class="positive">tracking reminder</span> that you create.
 						</h2>
 					</div>
 				</div>
 				<div class="row">
 					<div class="col">
-						<h2 ng-show="showOnlyOneNotification" style="white-space: normal; text-align: justify; line-height: normal; ">
+						<h2 ng-show="user.combineNotifications" style="white-space: normal; text-align: justify; line-height: normal; ">
 							However it is possible to instead get a separate <span class="positive">device notification</span> for each specific
 							<span class="positive">tracking reminder</span> that you create.
 							You can change this setting or update the <span class="positive">device notification</span> frequency on the settings page.
 							Either way, all your <span class="positive">tracking reminder notifications</span> will be waiting
 							in the Reminder Inbox at the frequency specified when creating/editing the specific <span class="positive">tracking reminder</span>.
 						</h2>
-						<h2 ng-hide="showOnlyOneNotification" style="white-space: normal; text-align: justify; line-height: normal; ">
+						<h2 ng-hide="user.combineNotifications" style="white-space: normal; text-align: justify; line-height: normal; ">
 							If you would prefer to only get one general repeating <span class="positive">device notification</span> at a time,
 							you can change this setting and set the <span class="positive">device notification</span> frequency on the settings page.
 							Either way, all your <span class="positive">tracking reminder notifications</span> will be
