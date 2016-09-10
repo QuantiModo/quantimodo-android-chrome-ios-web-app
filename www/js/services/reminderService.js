@@ -71,7 +71,7 @@ angular.module('starter')
 
 		reminderService.trackReminderNotification = function(body){
 			var deferred = $q.defer();
-			alert('reminderService.trackReminderNotification: Going to track ' + JSON.stringify(body));
+			console.debug('reminderService.trackReminderNotification: Going to track ' + JSON.stringify(body));
 			reminderService.deleteNotificationFromLocalStorage(body);
 			QuantiModo.trackTrackingReminderNotification(body, function(response){
 				if(response.success) {

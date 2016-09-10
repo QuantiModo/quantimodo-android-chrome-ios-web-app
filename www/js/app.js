@@ -24,85 +24,6 @@ angular.module('starter',
 // Database
 //.run(function($ionicPlatform, $ionicHistory, $state, $rootScope, $cordovaSQLite) {
 
-    window.trackDefaultValueAction = function (data){
-        //alert(JSON.stringify(data));
-        console.log("trackDefaultValueAction Push data: " + JSON.stringify(data));
-        var body = {
-            trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId
-        };
-
-        reminderService.trackReminderNotification(body);
-
-        push.finish(function() {
-            console.log('accept callback finished');
-        }, function() {
-            console.log('accept callback failed');
-        }, data.additionalData.notId);
-    };
-
-    window.snoozeAction = function (data){
-        //alert(JSON.stringify(data));
-        console.log("snoozeAction push data: " + JSON.stringify(data));
-        var body = {
-            trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId
-        };
-        reminderService.snoozeReminderNotification(body);
-
-        push.finish(function() {
-            console.log('accept callback finished');
-        }, function() {
-            console.log('accept callback failed');
-        }, data.additionalData.notId);
-    };
-
-    window.trackLastValueAction = function (data){
-        //alert(JSON.stringify(data));
-        console.log("trackLastValueAction Push data: " + JSON.stringify(data));
-        var body = {
-            trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId,
-            modifiedValue: data.additionalData.lastValue
-        };
-        reminderService.trackReminderNotification(body);
-
-        push.finish(function() {
-            console.log('accept callback finished');
-        }, function() {
-            console.log('accept callback failed');
-        }, data.additionalData.notId);
-    };
-
-    window.trackSecondToLastValueAction = function (data){
-        //alert(JSON.stringify(data));
-        console.log("trackSecondToLastValueAction Push data: " + JSON.stringify(data));
-        var body = {
-            trackingReminderNotification: data.additionalData.trackingReminderNotificationId,
-            modifiedValue: data.additionalData.secondToLastValue
-        };
-        reminderService.trackReminderNotification(body);
-
-        push.finish(function() {
-            console.log('accept callback finished');
-        }, function() {
-            console.log('accept callback failed');
-        }, data.additionalData.notId);
-    };
-
-    window.trackThirdToLastValueAction = function (data){
-        //alert(JSON.stringify(data));
-        console.log("trackThirdToLastValueAction Push data: " + JSON.stringify(data));
-        var body = {
-            trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId,
-            modifiedValue: data.additionalData.thirdToLastValue
-        };
-        reminderService.trackReminderNotification(body);
-
-        push.finish(function() {
-            console.log('accept callback finished');
-        }, function() {
-            console.log('accept callback failed');
-        }, data.additionalData.notId);
-    };
-
     $ionicPlatform.ready(function() {
         //$ionicAnalytics.register();
         if(ionic.Platform.isIPad() || ionic.Platform.isIOS()){
@@ -165,6 +86,170 @@ angular.module('starter',
              push.on('error', function(e) {
                  alert(e.message);
              });
+
+             window.trackOneRatingAction = function (data){
+                 //alert(JSON.stringify(data));
+                 console.log("trackDefaultValueAction Push data: " + JSON.stringify(data));
+                 var body = {
+                     trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId,
+                     modifiedValue: 1
+                 };
+
+                 reminderService.trackReminderNotification(body);
+
+                 push.finish(function() {
+                     console.log('accept callback finished');
+                 }, function() {
+                     console.log('accept callback failed');
+                 }, data.additionalData.notId);
+             };
+
+             window.trackTwoRatingAction = function (data){
+                 //alert(JSON.stringify(data));
+                 console.log("trackDefaultValueAction Push data: " + JSON.stringify(data));
+                 var body = {
+                     trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId,
+                     modifiedValue: 2
+                 };
+
+                 reminderService.trackReminderNotification(body);
+
+                 push.finish(function() {
+                     console.log('accept callback finished');
+                 }, function() {
+                     console.log('accept callback failed');
+                 }, data.additionalData.notId);
+             };
+
+             window.trackThreeRatingAction = function (data){
+                 //alert(JSON.stringify(data));
+                 console.log("trackDefaultValueAction Push data: " + JSON.stringify(data));
+                 var body = {
+                     trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId,
+                     modifiedValue: 3
+                 };
+
+                 reminderService.trackReminderNotification(body);
+
+                 push.finish(function() {
+                     console.log('accept callback finished');
+                 }, function() {
+                     console.log('accept callback failed');
+                 }, data.additionalData.notId);
+             };
+
+             window.trackFourRatingAction = function (data){
+                 //alert(JSON.stringify(data));
+                 console.log("trackDefaultValueAction Push data: " + JSON.stringify(data));
+                 var body = {
+                     trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId,
+                     modifiedValue: 4
+                 };
+
+                 reminderService.trackReminderNotification(body);
+
+                 push.finish(function() {
+                     console.log('accept callback finished');
+                 }, function() {
+                     console.log('accept callback failed');
+                 }, data.additionalData.notId);
+             };
+
+             window.trackFiveRatingAction = function (data){
+                 //alert(JSON.stringify(data));
+                 console.log("trackDefaultValueAction Push data: " + JSON.stringify(data));
+                 var body = {
+                     trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId,
+                     modifiedValue: 5
+                 };
+
+                 reminderService.trackReminderNotification(body);
+
+                 push.finish(function() {
+                     console.log('accept callback finished');
+                 }, function() {
+                     console.log('accept callback failed');
+                 }, data.additionalData.notId);
+             };
+
+             window.trackDefaultValueAction = function (data){
+                 //alert(JSON.stringify(data));
+                 console.log("trackDefaultValueAction Push data: " + JSON.stringify(data));
+                 var body = {
+                     trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId
+                 };
+
+                 reminderService.trackReminderNotification(body);
+
+                 push.finish(function() {
+                     console.log('accept callback finished');
+                 }, function() {
+                     console.log('accept callback failed');
+                 }, data.additionalData.notId);
+             };
+
+             window.snoozeAction = function (data){
+                 //alert(JSON.stringify(data));
+                 console.log("snoozeAction push data: " + JSON.stringify(data));
+                 var body = {
+                     trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId
+                 };
+                 reminderService.snoozeReminderNotification(body);
+
+                 push.finish(function() {
+                     console.log('accept callback finished');
+                 }, function() {
+                     console.log('accept callback failed');
+                 }, data.additionalData.notId);
+             };
+
+             window.trackLastValueAction = function (data){
+                 //alert(JSON.stringify(data));
+                 console.log("trackLastValueAction Push data: " + JSON.stringify(data));
+                 var body = {
+                     trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId,
+                     modifiedValue: data.additionalData.lastValue
+                 };
+                 reminderService.trackReminderNotification(body);
+
+                 push.finish(function() {
+                     console.log('accept callback finished');
+                 }, function() {
+                     console.log('accept callback failed');
+                 }, data.additionalData.notId);
+             };
+
+             window.trackSecondToLastValueAction = function (data){
+                 //alert(JSON.stringify(data));
+                 console.log("trackSecondToLastValueAction Push data: " + JSON.stringify(data));
+                 var body = {
+                     trackingReminderNotification: data.additionalData.trackingReminderNotificationId,
+                     modifiedValue: data.additionalData.secondToLastValue
+                 };
+                 reminderService.trackReminderNotification(body);
+
+                 push.finish(function() {
+                     console.log('accept callback finished');
+                 }, function() {
+                     console.log('accept callback failed');
+                 }, data.additionalData.notId);
+             };
+
+             window.trackThirdToLastValueAction = function (data){
+                 //alert(JSON.stringify(data));
+                 console.log("trackThirdToLastValueAction Push data: " + JSON.stringify(data));
+                 var body = {
+                     trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId,
+                     modifiedValue: data.additionalData.thirdToLastValue
+                 };
+                 reminderService.trackReminderNotification(body);
+
+                 push.finish(function() {
+                     console.log('accept callback finished');
+                 }, function() {
+                     console.log('accept callback failed');
+                 }, data.additionalData.notId);
+             };
          }
 
         if(typeof analytics !== "undefined") {
