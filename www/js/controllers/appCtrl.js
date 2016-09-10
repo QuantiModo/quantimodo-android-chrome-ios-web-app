@@ -102,8 +102,8 @@ angular.module('starter')
         };
 
         $scope.setLocalStorageFlagTrue = function (flagName) {
-            localStorageService.setItem(flagName, true);
             $scope[flagName] = true;
+            localStorageService.setItem(flagName, true);
         };
 
         // open datepicker for "from" date
