@@ -66,8 +66,14 @@ angular.module('starter')
                         }
                     }
                 }
-                this.setItem(localStorageItemName, JSON.stringify(elementsToKeep));
-                deferred.resolve();
+                this.setItem(localStorageItemName, JSON.stringify(elementsToKeep))
+                    .success(function(data){
+                        deferred.resolve(data);
+                    })
+                    .error(function(error){
+                        deferred.reject(error);
+                    });
+
                 return deferred.promise;
             },
 
