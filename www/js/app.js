@@ -32,6 +32,12 @@ angular.module('starter',
         };
 
         reminderService.trackReminderNotification(body);
+
+        push.finish(function() {
+            console.log('accept callback finished');
+        }, function() {
+            console.log('accept callback failed');
+        }, data.additionalData.notId);
     };
 
     window.snoozeAction = function (data){
@@ -41,6 +47,12 @@ angular.module('starter',
             trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId
         };
         reminderService.snoozeReminderNotification(body);
+
+        push.finish(function() {
+            console.log('accept callback finished');
+        }, function() {
+            console.log('accept callback failed');
+        }, data.additionalData.notId);
     };
 
     window.trackLastValueAction = function (data){
@@ -51,6 +63,12 @@ angular.module('starter',
             modifiedValue: data.additionalData.lastValue
         };
         reminderService.trackReminderNotification(body);
+
+        push.finish(function() {
+            console.log('accept callback finished');
+        }, function() {
+            console.log('accept callback failed');
+        }, data.additionalData.notId);
     };
 
     window.trackSecondToLastValueAction = function (data){
@@ -61,6 +79,12 @@ angular.module('starter',
             modifiedValue: data.additionalData.secondToLastValue
         };
         reminderService.trackReminderNotification(body);
+
+        push.finish(function() {
+            console.log('accept callback finished');
+        }, function() {
+            console.log('accept callback failed');
+        }, data.additionalData.notId);
     };
 
     window.trackThirdToLastValueAction = function (data){
@@ -71,6 +95,12 @@ angular.module('starter',
             modifiedValue: data.additionalData.thirdToLastValue
         };
         reminderService.trackReminderNotification(body);
+
+        push.finish(function() {
+            console.log('accept callback finished');
+        }, function() {
+            console.log('accept callback failed');
+        }, data.additionalData.notId);
     };
 
     $ionicPlatform.ready(function() {
@@ -126,6 +156,10 @@ angular.module('starter',
                  // data.sound,
                  // data.image,
                  // data.additionalData
+
+                 push.finish(function() {
+                     console.log("processing of push data is finished");
+                 });
              });
 
              push.on('error', function(e) {
