@@ -213,7 +213,7 @@ angular.module('starter')
                     var url = authService.generateV2OAuthUrl(JWTToken);
 
                     console.log('nativeLogin: open the auth window via inAppBrowser.');
-                    var ref = window.open(url,'_blank', 'location=no,toolbar=no');
+                    var ref = window.open(url,'_blank', 'location=yes,toolbar=yes');
 
                     console.log('nativeLogin: listen to event when the page changes.');
                     ref.addEventListener('loadstart', function(event) {
