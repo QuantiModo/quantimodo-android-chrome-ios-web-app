@@ -213,16 +213,16 @@ angular.module('starter')
                     var url = authService.generateV2OAuthUrl(JWTToken);
 
                     console.log('nativeLogin: open the auth window via inAppBrowser.');
-                    var ref = window.open(url,'_blank', 'location=yes,toolbar=yes');
+                    var ref = window.open(url,'_blank', 'location=yes,toolbar=yes,clearcache=yes,clearsessioncache=yes');
 
                     console.log('nativeLogin: listen to event at ' + url + ' when the page changes.');
-
+/*
                     $timeout(function () {
                         if(!$rootScope.user){
                             bugsnagService.reportError('Could not get user with url ' + url);
                         }
                     }, 30000);
-
+*/
                     ref.addEventListener('loadstart', function(event) {
 
                         console.debug('nativeLogin: loadstart event is ' + JSON.stringify(event));
