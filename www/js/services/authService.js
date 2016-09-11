@@ -1,7 +1,7 @@
 angular.module('starter')
 
 	.factory('authService', function ($http, $q, $state, $ionicLoading, $rootScope, localStorageService, utilsService,
-									  bugsnagService) {
+									  bugsnagService, $timeout) {
 
 		var authService = {
 
