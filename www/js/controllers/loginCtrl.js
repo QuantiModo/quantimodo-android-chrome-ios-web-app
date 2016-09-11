@@ -209,7 +209,7 @@ angular.module('starter')
                 .then(function(JWTToken){
                     // success
 
-                    alert("nativeLogin: Mobile device detected and platform is " + platform + ". Got JWT token " + JWTToken);
+                    console.debug("nativeLogin: Mobile device detected and platform is " + platform + ". Got JWT token " + JWTToken);
                     var url = authService.generateV2OAuthUrl(JWTToken);
 
                     console.log('nativeLogin: open the auth window via inAppBrowser.');
@@ -225,7 +225,7 @@ angular.module('starter')
 
                     ref.addEventListener('loadstart', function(event) {
 
-                        alert("nativeLogin: loadstart event", event);
+                        console.debug('nativeLogin: loadstart event is ' + JSON.stringify(event));
                         console.log('nativeLogin: check if changed url is the same as redirection url.');
 
                         if(utilsService.startsWith(event.url, utilsService.getRedirectUri())) {

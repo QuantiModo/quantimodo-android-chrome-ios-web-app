@@ -176,8 +176,8 @@ fi
 
 export APPLE_ID="1024924226"
 export APP_IDENTIFIER="com.quantimodo.mindfirst"
-export APP_DISPLAY_NAME=Mind First
-echo "Replace doesn't work if we use quotes if there's a space"
+export APP_DISPLAY_NAME=MindFirst
+echo "Replace doesn't work if there's a space"
 export LOWERCASE_APP_NAME=mindfirst
 export APP_DESCRIPTION=Empowering a New Approach to Mind Research
 
