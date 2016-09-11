@@ -216,6 +216,13 @@ angular.module('starter')
                     var ref = window.open(url,'_blank', 'location=yes,toolbar=yes');
 
                     console.log('nativeLogin: listen to event at ' + url + ' when the page changes.');
+
+                    $timeout(function () {
+                        if(!$rootScope.user){
+                            bugsnagService.reportError('Could not get user with url ' + url);
+                        }
+                    }, 30000);
+
                     ref.addEventListener('loadstart', function(event) {
 
                         alert("nativeLogin: loadstart event", event);
