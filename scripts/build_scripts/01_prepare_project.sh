@@ -2,7 +2,8 @@
 
 if [ -z "$IONIC_APP_VERSION_NUMBER" ]
   then
-    echo "${GREEN}No version parameter second argument given so using ${IONIC_APP_VERSION_NUMBER} as default version number...${NC}"
+    echo "${GREEN}Please provide IONIC_APP_VERSION_NUMBER...${NC}"
+    exit 1
 else
     echo -e "IONIC_APP_VERSION_NUMBER is $IONIC_APP_VERSION_NUMBER...${NC}"
 fi
