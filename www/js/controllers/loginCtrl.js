@@ -213,7 +213,7 @@ angular.module('starter')
                     var url = authService.generateV2OAuthUrl(JWTToken);
 
                     console.log('nativeLogin: open the auth window via inAppBrowser.');
-                    var ref = cordova.InAppBrowser.open(url,'_self', 'location=yes,toolbar=yes,clearcache=yes,clearsessioncache=yes');
+                    var ref = cordova.InAppBrowser.open(url,'_blank', 'location=yes,toolbar=yes,clearcache=yes,clearsessioncache=yes');
 
                     console.log('nativeLogin: listen to event at ' + url + ' when the page changes.');
 /*
