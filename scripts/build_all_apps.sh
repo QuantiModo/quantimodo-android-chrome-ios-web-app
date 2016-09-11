@@ -133,7 +133,6 @@ echo "Cannot use exclamation point in app description"
 if [ -z ${BUILD_QUANTIMODO} ];
     then
         echo "NOT BUILDING ${APP_DISPLAY_NAME}"
-        exit 1
     else
         source ${INTERMEDIATE_PATH}/scripts/build_scripts/01_prepare_project.sh
         source ${INTERMEDIATE_PATH}/scripts/build_scripts/03_build_android.sh
@@ -159,7 +158,6 @@ export APP_DESCRIPTION=Track and find out what affects your mood
 if [ -z ${BUILD_MOODIMODO} ];
     then
         echo "NOT BUILDING ${APP_DISPLAY_NAME}"
-        exit 1
     else
         source ${INTERMEDIATE_PATH}/scripts/build_scripts/01_prepare_project.sh
         source ${INTERMEDIATE_PATH}/scripts/build_scripts/03_build_android.sh
@@ -186,7 +184,6 @@ export APP_DESCRIPTION=Empowering a New Approach to Mind Research
 if [ -z ${BUILD_MINDFIRST} ];
     then
         echo "NOT BUILDING ${APP_DISPLAY_NAME}"
-        exit 1
     else
         source ${INTERMEDIATE_PATH}/scripts/build_scripts/01_prepare_project.sh
         source ${INTERMEDIATE_PATH}/scripts/build_scripts/03_build_android.sh
@@ -212,7 +209,6 @@ export APP_DESCRIPTION=Track and find out what affects your energy levels
 if [ -z ${BUILD_ENERGYMODO} ];
     then
         echo "NOT BUILDING ${APP_DISPLAY_NAME}"
-        exit 1
     else
         source ${INTERMEDIATE_PATH}/scripts/build_scripts/01_prepare_project.sh
         source ${INTERMEDIATE_PATH}/scripts/build_scripts/03_build_android.sh
@@ -238,7 +234,6 @@ export APP_DESCRIPTION=Medication Track Learn Connect
 if [ -z ${BUILD_MEDTLC} ];
     then
         echo "NOT BUILDING ${APP_DISPLAY_NAME}"
-        exit 1
     else
         source ${INTERMEDIATE_PATH}/scripts/build_scripts/01_prepare_project.sh
         source ${INTERMEDIATE_PATH}/scripts/build_scripts/03_build_android.sh
