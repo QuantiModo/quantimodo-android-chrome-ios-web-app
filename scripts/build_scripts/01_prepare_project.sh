@@ -74,6 +74,7 @@ cd "${INTERMEDIATE_PATH}"
 echo "Copying generated images from ${INTERMEDIATE_PATH}/resources/android to ${INTERMEDIATE_PATH}/www/img/"
 cp -R ${INTERMEDIATE_PATH}/resources/android/*  "${INTERMEDIATE_PATH}/www/img/"
 
+echo "Removing ${BUILD_PATH}/${LOWERCASE_APP_NAME}"
 rm -rf "${BUILD_PATH}/${LOWERCASE_APP_NAME}"
 
 if [ ! -f ${INTERMEDIATE_PATH}/www/private_configs//${LOWERCASE_APP_NAME}.config.js ]; then
