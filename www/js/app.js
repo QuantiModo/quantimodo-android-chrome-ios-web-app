@@ -203,7 +203,7 @@ angular.module('starter',
                  
                  console.log("trackSecondToLastValueAction Push data: " + JSON.stringify(data));
                  var body = {
-                     trackingReminderNotification: data.additionalData.trackingReminderNotificationId,
+                     trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId,
                      modifiedValue: data.additionalData.secondToLastValue
                  };
                  reminderService.trackReminderNotification(body);
