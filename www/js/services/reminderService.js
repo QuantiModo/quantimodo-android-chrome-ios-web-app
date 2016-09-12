@@ -272,6 +272,11 @@ angular.module('starter')
 		};
 
 		reminderService.refreshTrackingReminderNotifications = function(variableCategoryName){
+			if($rootScope.refreshingTrackingReminderNotifications){
+				console.log('Already refreshing reminder notifications');
+				return;
+			}
+			$rootScope.refreshingTrackingReminderNotifications = true;
 			var localStorageItemName = 'trackingReminderNotifications';
 			if(variableCategoryName){
 				localStorageItemName = localStorageItemName + variableCategoryName;
@@ -293,15 +298,18 @@ angular.module('starter')
 						chrome.browserAction.setBadgeText({text: String($rootScope.numberOfPendingNotifications)});
 					}
 					localStorageService.setItem(localStorageItemName, JSON.stringify(trackingRemindersNotifications));
+					$rootScope.refreshingTrackingReminderNotifications = false;
 					deferred.resolve(trackingRemindersNotifications);
 				}
 				else {
+					$rootScope.refreshingTrackingReminderNotifications = false;
 					deferred.reject("error");
 				}
 			}, function(err){
 				if (typeof Bugsnag !== "undefined") {
 					Bugsnag.notify(err, JSON.stringify(err), {}, "error");
 				}
+				$rootScope.refreshingTrackingReminderNotifications = false;
 				deferred.reject(err);
 			});
 

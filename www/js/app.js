@@ -71,6 +71,7 @@ angular.module('starter',
              push.on('notification', function(data) {
                  console.log('Received push notification: ' + JSON.stringify(data));
                  qmLocationService.updateLocationVariablesAndPostMeasurementIfChanged();
+                 reminderService.refreshTrackingReminderNotifications();
                  // data.message,
                  // data.title,
                  // data.count,
