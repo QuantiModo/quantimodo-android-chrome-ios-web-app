@@ -65,6 +65,13 @@
         "SENDER_ID": "1052648855194"
       },
       "locator": "phonegap-plugin-push"
+    },
+    {
+      "variables": {
+        "SENDER_ID": "1052648855194"
+      },
+      "locator": "https://github.com/mikepsinn/phonegap-plugin-push#29c241b69109d73c62d62996829265e63606dae3",
+      "id": "phonegap-plugin-push"
     }
   ],
   "cordovaPlatforms": [
