@@ -79,9 +79,9 @@ angular.module('starter',
                  // data.image,
                  // data.additionalData
 
-                 push.finish(function() {
-                     console.log("processing of push data is finished");
-                 });
+                  push.finish(function() {
+                      console.log("processing of push data is finished: " + JSON.stringify(data));
+                  });
              });
 
              push.on('error', function(e) {
