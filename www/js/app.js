@@ -88,6 +88,18 @@ angular.module('starter',
                  alert(e.message);
              });
 
+             var finishPush = function (data) {
+                 if(ionic.Platform.isAndroid()){
+                     console.log('Not doing push.finish for data.additionalData.notId: ' + data.additionalData.notId);
+                 } else {
+                     push.finish(function() {
+                         console.log('accept callback finished for data.additionalData.notId: ' + data.additionalData.notId);
+                     }, function() {
+                         console.log('accept callback failed for data.additionalData.notId: ' + data.additionalData.notId);
+                     }, data.additionalData.notId);
+                 }
+             };
+
              window.trackOneRatingAction = function (data){
                  //alert(JSON.stringify(data));
                  console.log("trackDefaultValueAction Push data: " + JSON.stringify(data));
@@ -97,12 +109,7 @@ angular.module('starter',
                  };
 
                  reminderService.trackReminderNotification(body);
-
-                 push.finish(function() {
-                     console.log('accept callback finished for data.additionalData.notId: ' + data.additionalData.notId);
-                 }, function() {
-                     console.log('accept callback failed for data.additionalData.notId: ' + data.additionalData.notId);
-                 }, data.additionalData.notId);
+                 finishPush(data);
              };
 
              window.trackTwoRatingAction = function (data){
@@ -114,12 +121,7 @@ angular.module('starter',
                  };
 
                  reminderService.trackReminderNotification(body);
-
-                 push.finish(function() {
-                     console.log('accept callback finished for data.additionalData.notId: ' + data.additionalData.notId);
-                 }, function() {
-                     console.log('accept callback failed for data.additionalData.notId: ' + data.additionalData.notId);
-                 }, data.additionalData.notId);
+                 finishPush(data);
              };
 
              window.trackThreeRatingAction = function (data){
@@ -131,12 +133,7 @@ angular.module('starter',
                  };
 
                  reminderService.trackReminderNotification(body);
-
-                 push.finish(function() {
-                     console.log('accept callback finished for data.additionalData.notId: ' + data.additionalData.notId);
-                 }, function() {
-                     console.log('accept callback failed for data.additionalData.notId: ' + data.additionalData.notId);
-                 }, data.additionalData.notId);
+                 finishPush(data);
              };
 
              window.trackFourRatingAction = function (data){
@@ -148,12 +145,7 @@ angular.module('starter',
                  };
 
                  reminderService.trackReminderNotification(body);
-
-                 push.finish(function() {
-                     console.log('accept callback finished for data.additionalData.notId: ' + data.additionalData.notId);
-                 }, function() {
-                     console.log('accept callback failed for data.additionalData.notId: ' + data.additionalData.notId);
-                 }, data.additionalData.notId);
+                 finishPush(data);
              };
 
              window.trackFiveRatingAction = function (data){
@@ -165,12 +157,7 @@ angular.module('starter',
                  };
 
                  reminderService.trackReminderNotification(body);
-
-                 push.finish(function() {
-                     console.log('accept callback finished for data.additionalData.notId: ' + data.additionalData.notId);
-                 }, function() {
-                     console.log('accept callback failed for data.additionalData.notId: ' + data.additionalData.notId);
-                 }, data.additionalData.notId);
+                 finishPush(data);
              };
 
              window.trackDefaultValueAction = function (data){
@@ -181,12 +168,7 @@ angular.module('starter',
                  };
 
                  reminderService.trackReminderNotification(body);
-
-                 push.finish(function() {
-                     console.log('accept callback finished for data.additionalData.notId: ' + data.additionalData.notId);
-                 }, function() {
-                     console.log('accept callback failed for data.additionalData.notId: ' + data.additionalData.notId);
-                 }, data.additionalData.notId);
+                 finishPush(data);
              };
 
              window.snoozeAction = function (data){
@@ -196,12 +178,7 @@ angular.module('starter',
                      trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId
                  };
                  reminderService.snoozeReminderNotification(body);
-
-                 push.finish(function() {
-                     console.log('accept callback finished for data.additionalData.notId: ' + data.additionalData.notId);
-                 }, function() {
-                     console.log('accept callback failed for data.additionalData.notId: ' + data.additionalData.notId);
-                 }, data.additionalData.notId);
+                 finishPush(data);
              };
 
              window.trackLastValueAction = function (data){
@@ -212,12 +189,7 @@ angular.module('starter',
                      modifiedValue: data.additionalData.lastValue
                  };
                  reminderService.trackReminderNotification(body);
-
-                 push.finish(function() {
-                     console.log('accept callback finished for data.additionalData.notId: ' + data.additionalData.notId);
-                 }, function() {
-                     console.log('accept callback failed for data.additionalData.notId: ' + data.additionalData.notId);
-                 }, data.additionalData.notId);
+                 finishPush(data);
              };
 
              window.trackSecondToLastValueAction = function (data){
@@ -228,12 +200,7 @@ angular.module('starter',
                      modifiedValue: data.additionalData.secondToLastValue
                  };
                  reminderService.trackReminderNotification(body);
-
-                 push.finish(function() {
-                     console.log('accept callback finished for data.additionalData.notId: ' + data.additionalData.notId);
-                 }, function() {
-                     console.log('accept callback failed for data.additionalData.notId: ' + data.additionalData.notId);
-                 }, data.additionalData.notId);
+                 finishPush(data);
              };
 
              window.trackThirdToLastValueAction = function (data){
@@ -244,12 +211,7 @@ angular.module('starter',
                      modifiedValue: data.additionalData.thirdToLastValue
                  };
                  reminderService.trackReminderNotification(body);
-
-                 push.finish(function() {
-                     console.log('accept callback finished for data.additionalData.notId: ' + data.additionalData.notId);
-                 }, function() {
-                     console.log('accept callback failed for data.additionalData.notId: ' + data.additionalData.notId);
-                 }, data.additionalData.notId);
+                 finishPush(data);
              };
          }
 
