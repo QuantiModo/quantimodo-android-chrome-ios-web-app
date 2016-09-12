@@ -108,7 +108,7 @@ angular.module('starter',
              };
 
              window.trackOneRatingAction = function (data){
-                 //alert(JSON.stringify(data));
+                 
                  console.log("trackDefaultValueAction Push data: " + JSON.stringify(data));
                  var body = {
                      trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId,
@@ -120,7 +120,7 @@ angular.module('starter',
              };
 
              window.trackTwoRatingAction = function (data){
-                 //alert(JSON.stringify(data));
+                 
                  console.log("trackDefaultValueAction Push data: " + JSON.stringify(data));
                  var body = {
                      trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId,
@@ -132,7 +132,7 @@ angular.module('starter',
              };
 
              window.trackThreeRatingAction = function (data){
-                 //alert(JSON.stringify(data));
+                 
                  console.log("trackDefaultValueAction Push data: " + JSON.stringify(data));
                  var body = {
                      trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId,
@@ -144,7 +144,7 @@ angular.module('starter',
              };
 
              window.trackFourRatingAction = function (data){
-                 //alert(JSON.stringify(data));
+                 
                  console.log("trackDefaultValueAction Push data: " + JSON.stringify(data));
                  var body = {
                      trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId,
@@ -156,7 +156,7 @@ angular.module('starter',
              };
 
              window.trackFiveRatingAction = function (data){
-                 //alert(JSON.stringify(data));
+                 
                  console.log("trackDefaultValueAction Push data: " + JSON.stringify(data));
                  var body = {
                      trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId,
@@ -168,7 +168,7 @@ angular.module('starter',
              };
 
              window.trackDefaultValueAction = function (data){
-                 //alert(JSON.stringify(data));
+                 
                  console.log("trackDefaultValueAction Push data: " + JSON.stringify(data));
                  var body = {
                      trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId
@@ -179,7 +179,7 @@ angular.module('starter',
              };
 
              window.snoozeAction = function (data){
-                 //alert(JSON.stringify(data));
+                 
                  console.log("snoozeAction push data: " + JSON.stringify(data));
                  var body = {
                      trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId
@@ -189,7 +189,7 @@ angular.module('starter',
              };
 
              window.trackLastValueAction = function (data){
-                 //alert(JSON.stringify(data));
+                 
                  console.log("trackLastValueAction Push data: " + JSON.stringify(data));
                  var body = {
                      trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId,
@@ -200,7 +200,7 @@ angular.module('starter',
              };
 
              window.trackSecondToLastValueAction = function (data){
-                 //alert(JSON.stringify(data));
+                 
                  console.log("trackSecondToLastValueAction Push data: " + JSON.stringify(data));
                  var body = {
                      trackingReminderNotification: data.additionalData.trackingReminderNotificationId,
@@ -211,7 +211,7 @@ angular.module('starter',
              };
 
              window.trackThirdToLastValueAction = function (data){
-                 //alert(JSON.stringify(data));
+                 
                  console.log("trackThirdToLastValueAction Push data: " + JSON.stringify(data));
                  var body = {
                      trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId,
