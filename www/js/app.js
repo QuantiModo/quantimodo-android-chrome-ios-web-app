@@ -68,6 +68,8 @@ angular.module('starter',
                  }
              });
 
+             var finishPushes = true;  // Setting to false didn't solve notification dismissal problem
+
              push.on('notification', function(data) {
                  console.log('Received push notification: ' + JSON.stringify(data));
                  qmLocationService.updateLocationVariablesAndPostMeasurementIfChanged();
@@ -78,10 +80,13 @@ angular.module('starter',
                  // data.sound,
                  // data.image,
                  // data.additionalData
-
-                  push.finish(function() {
-                      console.log("processing of push data is finished: " + JSON.stringify(data));
-                  });
+                 if(!finishPushes) {
+                     console.log('Not doing push.finish for data.additionalData.notId: ' + data.additionalData.notId);
+                     return;
+                 }
+                 push.finish(function () {
+                     console.log("processing of push data is finished: " + JSON.stringify(data));
+                 });
              });
 
              push.on('error', function(e) {
@@ -89,15 +94,17 @@ angular.module('starter',
              });
 
              var finishPush = function (data) {
-                 if(ionic.Platform.isAndroid()){
+                 if(!finishPushes){
                      console.log('Not doing push.finish for data.additionalData.notId: ' + data.additionalData.notId);
-                 } else {
-                     push.finish(function() {
-                         console.log('accept callback finished for data.additionalData.notId: ' + data.additionalData.notId);
-                     }, function() {
-                         console.log('accept callback failed for data.additionalData.notId: ' + data.additionalData.notId);
-                     }, data.additionalData.notId);
+                     return;
                  }
+
+                 push.finish(function() {
+                     console.log('accept callback finished for data.additionalData.notId: ' + data.additionalData.notId);
+                 }, function() {
+                     console.log('accept callback failed for data.additionalData.notId: ' + data.additionalData.notId);
+                 }, data.additionalData.notId);
+
              };
 
              window.trackOneRatingAction = function (data){
