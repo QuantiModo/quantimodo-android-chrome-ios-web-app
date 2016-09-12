@@ -98,9 +98,9 @@ angular.module('starter',
                  reminderService.trackReminderNotification(body);
 
                  push.finish(function() {
-                     console.log('accept callback finished');
+                     console.log('accept callback finished for data.additionalData.notId: ' + data.additionalData.notId);
                  }, function() {
-                     console.log('accept callback failed');
+                     console.log('accept callback failed for data.additionalData.notId: ' + data.additionalData.notId);
                  }, data.additionalData.notId);
              };
 
@@ -115,9 +115,9 @@ angular.module('starter',
                  reminderService.trackReminderNotification(body);
 
                  push.finish(function() {
-                     console.log('accept callback finished');
+                     console.log('accept callback finished for data.additionalData.notId: ' + data.additionalData.notId);
                  }, function() {
-                     console.log('accept callback failed');
+                     console.log('accept callback failed for data.additionalData.notId: ' + data.additionalData.notId);
                  }, data.additionalData.notId);
              };
 
@@ -132,9 +132,9 @@ angular.module('starter',
                  reminderService.trackReminderNotification(body);
 
                  push.finish(function() {
-                     console.log('accept callback finished');
+                     console.log('accept callback finished for data.additionalData.notId: ' + data.additionalData.notId);
                  }, function() {
-                     console.log('accept callback failed');
+                     console.log('accept callback failed for data.additionalData.notId: ' + data.additionalData.notId);
                  }, data.additionalData.notId);
              };
 
@@ -149,9 +149,9 @@ angular.module('starter',
                  reminderService.trackReminderNotification(body);
 
                  push.finish(function() {
-                     console.log('accept callback finished');
+                     console.log('accept callback finished for data.additionalData.notId: ' + data.additionalData.notId);
                  }, function() {
-                     console.log('accept callback failed');
+                     console.log('accept callback failed for data.additionalData.notId: ' + data.additionalData.notId);
                  }, data.additionalData.notId);
              };
 
@@ -166,9 +166,9 @@ angular.module('starter',
                  reminderService.trackReminderNotification(body);
 
                  push.finish(function() {
-                     console.log('accept callback finished');
+                     console.log('accept callback finished for data.additionalData.notId: ' + data.additionalData.notId);
                  }, function() {
-                     console.log('accept callback failed');
+                     console.log('accept callback failed for data.additionalData.notId: ' + data.additionalData.notId);
                  }, data.additionalData.notId);
              };
 
@@ -182,9 +182,9 @@ angular.module('starter',
                  reminderService.trackReminderNotification(body);
 
                  push.finish(function() {
-                     console.log('accept callback finished');
+                     console.log('accept callback finished for data.additionalData.notId: ' + data.additionalData.notId);
                  }, function() {
-                     console.log('accept callback failed');
+                     console.log('accept callback failed for data.additionalData.notId: ' + data.additionalData.notId);
                  }, data.additionalData.notId);
              };
 
@@ -197,9 +197,9 @@ angular.module('starter',
                  reminderService.snoozeReminderNotification(body);
 
                  push.finish(function() {
-                     console.log('accept callback finished');
+                     console.log('accept callback finished for data.additionalData.notId: ' + data.additionalData.notId);
                  }, function() {
-                     console.log('accept callback failed');
+                     console.log('accept callback failed for data.additionalData.notId: ' + data.additionalData.notId);
                  }, data.additionalData.notId);
              };
 
@@ -213,9 +213,9 @@ angular.module('starter',
                  reminderService.trackReminderNotification(body);
 
                  push.finish(function() {
-                     console.log('accept callback finished');
+                     console.log('accept callback finished for data.additionalData.notId: ' + data.additionalData.notId);
                  }, function() {
-                     console.log('accept callback failed');
+                     console.log('accept callback failed for data.additionalData.notId: ' + data.additionalData.notId);
                  }, data.additionalData.notId);
              };
 
@@ -229,9 +229,9 @@ angular.module('starter',
                  reminderService.trackReminderNotification(body);
 
                  push.finish(function() {
-                     console.log('accept callback finished');
+                     console.log('accept callback finished for data.additionalData.notId: ' + data.additionalData.notId);
                  }, function() {
-                     console.log('accept callback failed');
+                     console.log('accept callback failed for data.additionalData.notId: ' + data.additionalData.notId);
                  }, data.additionalData.notId);
              };
 
@@ -245,9 +245,9 @@ angular.module('starter',
                  reminderService.trackReminderNotification(body);
 
                  push.finish(function() {
-                     console.log('accept callback finished');
+                     console.log('accept callback finished for data.additionalData.notId: ' + data.additionalData.notId);
                  }, function() {
-                     console.log('accept callback failed');
+                     console.log('accept callback failed for data.additionalData.notId: ' + data.additionalData.notId);
                  }, data.additionalData.notId);
              };
          }
