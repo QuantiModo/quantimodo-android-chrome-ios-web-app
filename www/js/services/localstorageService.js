@@ -72,16 +72,19 @@ angular.module('starter')
             },
 
             setItem:function(key, value){
+                var deferred = $q.defer();
                 var keyIdentifier = config.appSettings.appStorageIdentifier;
                 if ($rootScope.isChromeApp) {
                     // Code running in a Chrome extension (content script, background page, etc.)
                     var obj = {};
                     obj[keyIdentifier+key] = value;
                     chrome.storage.local.set(obj);
-
+                    deferred.resolve();
                 } else {
                     localStorage.setItem(keyIdentifier+key,value);
+                    deferred.resolve();
                 }
+                return deferred.promise;
             },
             
             getItem:function(key,callback){

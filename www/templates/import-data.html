@@ -2,7 +2,7 @@
     <ion-content scroll="true" overflow-scroll="true">
         <ion-refresher on-refresh="init()"></ion-refresher>
 
-        <div  class="list card" ng-if="isMobile">
+        <div  class="list card" ng-if="isMobile && connectors">
             <div ng-if="!connector.hide" class="list card"
                  ng-repeat="connector in connectors" >
                 <div class="item" style="padding-bottom:10px;">

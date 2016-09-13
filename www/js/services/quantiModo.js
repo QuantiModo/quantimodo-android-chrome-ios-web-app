@@ -110,6 +110,7 @@ angular.module('starter')
                     $http(request).success(successHandler).error(function(data,status,headers,config){
                         QuantiModo.errorHandler(data, status, headers, config, request);
                         if (!data && !$rootScope.connectionErrorShowing) {
+                            bugsnagService.reportError('No data returned from this GET request: ' + JSON.stringify(request));
                             $rootScope.connectionErrorShowing = true;
                             $ionicPopup.show({
                                 title: 'NOT CONNECTED',
@@ -179,7 +180,7 @@ angular.module('starter')
                         };
                     }
 
-                    if($rootScope.trackLocation){
+                    if($rootScope.user.trackLocation){
                         request.headers.LOCATION = $rootScope.lastLocationNameAndAddress;
                         request.headers.LATITUDE = $rootScope.lastLatitude;
                         request.headers.LONGITUDE = $rootScope.lastLongitude;
@@ -188,6 +189,7 @@ angular.module('starter')
                     $http(request).success(successHandler).error(function(data,status,headers,config){
                         QuantiModo.errorHandler(data,status,headers,config);
                         if (!data && !$rootScope.connectionErrorShowing) {
+                            bugsnagService.reportError('No data returned from this POST request: ' + JSON.stringify(request));
                             $rootScope.connectionErrorShowing = true;
                             $ionicPopup.show({
                                 title: 'NOT CONNECTED',
@@ -541,7 +543,23 @@ angular.module('starter')
             };
 
 
-            QuantiModo.connectConnector = function(body, successHandler, errorHandler){
+            QuantiModo.connectConnectorWithParams = function(params, lowercaseConnectorName, successHandler, errorHandler){
+                var allowedParams = [
+                    'location',
+                    'username',
+                    'password',
+                    'email'
+                ];
+
+                QuantiModo.get('api/v1/connectors/' + lowercaseConnectorName + '/connect',
+                    allowedParams,
+                    params,
+                    successHandler,
+                    errorHandler);
+            };
+
+
+            QuantiModo.connectConnectorWithToken = function(body, lowercaseConnectorName, successHandler, errorHandler){
                 var requiredProperties = [
                     'connector',
                     'connectorCredentials'
@@ -554,7 +572,7 @@ angular.module('starter')
                     errorHandler);
             };
 
-            QuantiModo.getAccessTokenAndConnect = function(code, connectorLowercaseName, successHandler, errorHandler){
+            QuantiModo.connectWithAuthCode = function(code, connectorLowercaseName, successHandler, errorHandler){
                 var allowedParams = [
                     'code',
                     'noRedirect'
@@ -614,11 +632,16 @@ angular.module('starter')
             // post tracking reminder
             QuantiModo.postTrackingReminder = function(reminder, successHandler, errorHandler) { 
                 console.log(reminder);
+                if(!reminder.timeZoneOffset){
+                    var d = new Date();
+                    reminder.timeZoneOffset = d.getTimezoneOffset();
+                }
                 QuantiModo.post('api/v1/trackingReminders',
                     [
                         'variableId', 
                         'defaultValue',
-                        'reminderFrequency'
+                        'reminderFrequency',
+                        'timeZoneOffset'
                     ],
                     reminder,
                     successHandler,
@@ -697,8 +720,9 @@ angular.module('starter')
 
             // track tracking reminder with default value
             QuantiModo.trackTrackingReminderNotification = function(params, successHandler, errorHandler){
+                var requiredProperties = ['id', 'trackingReminderNotificationId', 'trackingReminderId', 'modifiedValue'];
                 QuantiModo.post('api/v1/trackingReminderNotifications/track',
-                    ['id', 'trackingReminderNotificationId', 'trackingReminderId', 'modifiedValue'],
+                    requiredProperties,
                     params,
                     successHandler,
                     errorHandler);

@@ -105,29 +105,28 @@ angular.module('starter')
 				return;
 			}
 
-			$rootScope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications[trackingReminderNotificationNotificationIndex].hide = true;
-			console.debug('Tracking notification', trackingReminderNotification);
+			$scope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications[trackingReminderNotificationNotificationIndex].hide = true;
+			console.debug('Tracking notification ' + JSON.stringify(trackingReminderNotification));
 			console.log('modifiedReminderValue is ' + modifiedReminderValue);
-			var params = {
+			var body = {
 				trackingReminderNotification: trackingReminderNotification,
 				modifiedValue: modifiedReminderValue
 			};
-			localStorageService.deleteElementOfItemById('trackingReminderNotifications',
-				trackingReminderNotification.id);
-
-	    	reminderService.trackReminderNotification(params)
-	    	.then(function(){
-                notificationService.decrementNotificationBadges();
-                if($rootScope.numberOfPendingNotifications < 2){
-                    $scope.init();
-                }
-	    	}, function(err){
-				if (typeof Bugsnag !== "undefined") {
-					Bugsnag.notify(err, JSON.stringify(err), {}, "error");
-				}
-				console.error(err);
-	    		utilsService.showAlert('Failed to Track Reminder, Try again!', 'assertive');
-	    	});
+	    	reminderService.trackReminderNotification(body)
+				.then(function(){
+					if($rootScope.localNotificationsEnabled){
+						notificationService.decrementNotificationBadges();
+					}
+					if($rootScope.numberOfPendingNotifications < 2){
+						$scope.init();
+					}
+				}, function(err){
+					if (typeof Bugsnag !== "undefined") {
+						Bugsnag.notify(err, JSON.stringify(err), {}, "error");
+					}
+					console.error(err);
+					utilsService.showAlert('Failed to Track Reminder, Try again!', 'assertive');
+				});
 	    };
 
 	    $scope.skip = function(trackingReminderNotification, $event, dividerIndex, trackingReminderNotificationNotificationIndex){
@@ -136,27 +135,28 @@ angular.module('starter')
 				return;
 			}
 
-			$rootScope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications[trackingReminderNotificationNotificationIndex].hide = true;
+			$scope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications[trackingReminderNotificationNotificationIndex].hide = true;
 
-			console.debug('Skipping notification', trackingReminderNotification);
-            localStorageService.deleteElementOfItemById('trackingReminderNotifications',
-                trackingReminderNotification.id);
+			console.debug('Skipping notification ' + JSON.stringify(trackingReminderNotification));
 			var params = {
-				trackingReminderNotificationId: trackingReminderNotification.id
+				trackingReminderNotificationId: trackingReminderNotification.id,
+				trackingReminderNotification: trackingReminderNotification
 			};
 	    	reminderService.skipReminderNotification(params)
-	    	.then(function(){
-                notificationService.decrementNotificationBadges();
-                if($rootScope.numberOfPendingNotifications < 2){
-                    $scope.init();
-                }
-	    	}, function(err){
-				if (typeof Bugsnag !== "undefined") {
-					Bugsnag.notify(err, JSON.stringify(err), {}, "error");
-				}
-	    		utilsService.showAlert('Failed to Skip Reminder, Try again!', 'assertive');
-				console.error(err);
-	    	});
+				.then(function(){
+					if($rootScope.localNotificationsEnabled){
+						notificationService.decrementNotificationBadges();
+					}
+					if($rootScope.numberOfPendingNotifications < 2){
+						$scope.init();
+					}
+				}, function(err){
+					if (typeof Bugsnag !== "undefined") {
+						Bugsnag.notify(err, JSON.stringify(err), {}, "error");
+					}
+					utilsService.showAlert('Failed to Skip Reminder, Try again!', 'assertive');
+					console.error(err);
+				});
 	    };
 
 	    $scope.snooze = function(trackingReminderNotification, $event, dividerIndex, trackingReminderNotificationNotificationIndex){
@@ -165,31 +165,79 @@ angular.module('starter')
 				return;
 			}
 
-			$rootScope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications[trackingReminderNotificationNotificationIndex].hide = true;
-
-			console.debug('Snoozing notification', trackingReminderNotification);
-			localStorageService.deleteElementOfItemById('trackingReminderNotifications',
-				trackingReminderNotification.id);
+			$scope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications[trackingReminderNotificationNotificationIndex].hide = true;
+			console.debug('Snoozing notification ' + JSON.stringify(trackingReminderNotification));
 			var params = {
-				trackingReminderNotificationId: trackingReminderNotification.id
+				trackingReminderNotificationId: trackingReminderNotification.id,
+				trackingReminderNotification: trackingReminderNotification
 			};
 	    	reminderService.snoozeReminderNotification(params)
-	    	.then(function(){
-                notificationService.decrementNotificationBadges();
-                if($rootScope.numberOfPendingNotifications < 2){
-                    $scope.init();
-                }
-	    	}, function(err){
-				if (typeof Bugsnag !== "undefined") {
-					Bugsnag.notify(err, JSON.stringify(err), {}, "error");
-				}
-				console.error(err);
-	    		utilsService.showAlert('Failed to Snooze Reminder, Try again!', 'assertive');
-	    	});
+				.then(function(){
+					if($rootScope.localNotificationsEnabled){
+						notificationService.decrementNotificationBadges();
+					}
+					if($rootScope.numberOfPendingNotifications < 2){
+						$scope.init();
+					}
+				}, function(err){
+					if (typeof Bugsnag !== "undefined") {
+						Bugsnag.notify(err, JSON.stringify(err), {}, "error");
+					}
+					console.error(err);
+					utilsService.showAlert('Failed to Snooze Reminder, Try again!', 'assertive');
+				});
 	    };
 
-	    $scope.init = function(){
+	    var getTrackingReminderNotifications = function () {
+			if($stateParams.today){
+				$scope.showLoader("Getting today's reminder notifications...");
+				reminderService.getFilteredTodayTrackingReminderNotifications($stateParams.variableCategoryName)
+					.then(function (filteredTrackingReminderNotifications) {
+						$scope.filteredTrackingReminderNotifications = filteredTrackingReminderNotifications;
+						if(filteredTrackingReminderNotifications.length === 0){
+							$rootScope.showAllCaughtUpCard = true;
+						}
+						//Stop the ion-refresher from spinning
+						$scope.$broadcast('scroll.refreshComplete');
+						$scope.hideLoader();
+					}, function(){
+						$scope.hideLoader();
+						console.error("failed to get reminder notifications!");
+						//Stop the ion-refresher from spinning
+						$scope.$broadcast('scroll.refreshComplete');
+					});
+			} else {
+				$scope.showLoader("Getting reminder notifications...");
+				reminderService.getFilteredTrackingReminderNotifications($stateParams.variableCategoryName)
+					.then(function (filteredTrackingReminderNotifications) {
+						$scope.filteredTrackingReminderNotifications = filteredTrackingReminderNotifications;
+						if(filteredTrackingReminderNotifications.length === 0){
+							$rootScope.showAllCaughtUpCard = true;
+						}
+						//Stop the ion-refresher from spinning
+						$scope.$broadcast('scroll.refreshComplete');
+						$scope.hideLoader();
+					}, function(){
+						$scope.hideLoader();
+						console.error("failed to get reminder notifications!");
+						//Stop the ion-refresher from spinning
+						$scope.$broadcast('scroll.refreshComplete');
+					});
+			}
+		};
 
+		$scope.refreshTrackingReminderNotifications = function () {
+			if($stateParams.today){
+				getTrackingReminderNotifications();
+			} else {
+				reminderService.refreshTrackingReminderNotifications($stateParams.variableCategoryName)
+					.then(function(){
+						getTrackingReminderNotifications();
+					});
+			}
+		};
+
+	    $scope.init = function(){
 			if (typeof Bugsnag !== "undefined") { Bugsnag.context = "reminderInbox"; }
 			$rootScope.getAccessTokenFromUrlParameter();
 			$rootScope.hideNavigationMenuIfSetInUrlParameter();
@@ -197,37 +245,18 @@ angular.module('starter')
 				console.debug('reminderInboxCtrl init: Intro not seen and hidemenu is false so going to intro state');
 				$state.go('intro');
 			} else {
-
 				$rootScope.showAllCaughtUpCard = false;
 				setPageTitle();
 				authService.checkAuthOrSendToLogin();
 				if (typeof analytics !== 'undefined')  { analytics.trackView("Reminders Inbox Controller"); }
 
-				$scope.showHelpInfoPopupIfNecessary();
-				if(!$stateParams.today){
-					$rootScope.getTrackingReminderNotifications();
-				} else {
-					$scope.showLoader("Getting today's reminder notifications...");
-					reminderService.getTrackingReminderNotifications($stateParams.variableCategoryName, $stateParams.today)
-						.then(function (trackingReminderNotifications) {
-							$rootScope.trackingReminderNotifications = trackingReminderNotifications;
-							if(trackingReminderNotifications.length === 0){
-								$rootScope.showAllCaughtUpCard = true;
-							}
-							//Stop the ion-refresher from spinning
-							$scope.$broadcast('scroll.refreshComplete');
-							$scope.hideLoader();
-						}, function(){
-							$scope.hideLoader();
-							console.error("failed to get reminder notifications!");
-							//Stop the ion-refresher from spinning
-							$scope.$broadcast('scroll.refreshComplete');
-						});
+				getTrackingReminderNotifications();
+
+				if($rootScope.localNotificationsEnabled){
+					console.debug("reminderInbox init: calling refreshTrackingRemindersAndScheduleAlarms");
+					reminderService.refreshTrackingRemindersAndScheduleAlarms();
 				}
 
-				//update alarms and local notifications
-				console.debug("reminderInbox init: calling refreshTrackingRemindersAndScheduleAlarms");
-				reminderService.refreshTrackingRemindersAndScheduleAlarms();
 				var d = new Date();
 				var timeZoneOffsetInMinutes = d.getTimezoneOffset();
 
@@ -266,7 +295,9 @@ angular.module('starter')
 							$scope.showLoader('Skipping all reminder notifications...');
 							reminderService.skipAllReminderNotifications()
 								.then(function(){
-									notificationService.setNotificationBadge(0);
+									if($rootScope.localNotificationsEnabled){
+										notificationService.setNotificationBadge(0);
+									}
 									$scope.init();
 								}, function(err){
 									if (typeof Bugsnag !== "undefined") {
@@ -297,7 +328,7 @@ angular.module('starter')
 	    $scope.editMeasurement = function(trackingReminderNotification, dividerIndex, trackingReminderNotificationNotificationIndex){
 			localStorageService.deleteElementOfItemById('trackingReminderNotifications',
 				trackingReminderNotification.id);
-			$rootScope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications[trackingReminderNotificationNotificationIndex].hide = true;
+			$scope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications[trackingReminderNotificationNotificationIndex].hide = true;
 			$state.go('app.measurementAdd',
 				{
 					reminderNotification: trackingReminderNotification,

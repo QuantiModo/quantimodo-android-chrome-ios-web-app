@@ -1,7 +1,7 @@
 angular.module('starter')
 
 	.factory('authService', function ($http, $q, $state, $ionicLoading, $rootScope, localStorageService, utilsService,
-									  bugsnagService) {
+									  bugsnagService, $timeout) {
 
 		var authService = {
 
@@ -152,6 +152,13 @@ angular.module('starter')
 					}
 				}).then(function (response) {
 					if (response.data.success && response.data.data && response.data.data.token) {
+
+						// This didn't solve the token_invalid issue
+						 // $timeout(function () {
+						 //     console.log('10 second delay to try to solve token_invalid issue');
+							//  deferred.resolve(response.data.data.token);
+						 // }, 10000);
+
 						deferred.resolve(response.data.data.token);
 					} else {
                         deferred.reject(response);

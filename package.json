@@ -6,13 +6,17 @@
   },
   "version": "1.0.0",
   "description": "Perfect your life!",
-  "devDependencies": {},
+  "devDependencies": {
+    "ionic-minify": "^2.0.10"
+  },
   "dependencies": {
+    "async": "^2.0.1",
     "bower": "~1.3.3",
     "event-stream": "^3.3.2",
     "express": "^4.13.3",
     "glob": "^5.0.15",
     "gulp": "^3.5.6",
+    "gulp-angular-templatecache": "1.9.1",
     "gulp-callback": "0.0.3",
     "gulp-change": "^1.0.0",
     "gulp-concat": "^2.2.0",
@@ -27,7 +31,7 @@
     "gulp-zip": "^3.0.2",
     "inquirer": "^0.9.0",
     "ionic": "1.7.16",
-    "ng-cordova-oauth": "git+https://github.com/mikepsinn/ng-cordova-oauth.git#development",
+    "jshint": "^2.9.3",
     "ng-material-floating-button": "^0.6.2",
     "plist": "^1.2.0",
     "q": "^1.4.1",
@@ -61,6 +65,13 @@
         "SENDER_ID": "1052648855194"
       },
       "locator": "phonegap-plugin-push"
+    },
+    {
+      "variables": {
+        "SENDER_ID": "1052648855194"
+      },
+      "locator": "https://github.com/mikepsinn/phonegap-plugin-push#29c241b69109d73c62d62996829265e63606dae3",
+      "id": "phonegap-plugin-push"
     }
   ],
   "cordovaPlatforms": [

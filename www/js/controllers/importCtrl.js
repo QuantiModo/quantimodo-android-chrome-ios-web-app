@@ -86,8 +86,8 @@ angular.module('starter')
 			var myPopup;
 			var options;
 
-			var genericConnection = function(body) {
-				connectorsService.connect(body).then(function(result){
+			var connectWithParams = function(params, lowercaseConnectorName) {
+				connectorsService.connect(params, lowercaseConnectorName).then(function(result){
 					console.log(JSON.stringify(result));
 					$scope.init();
 				}, function (error) {
@@ -102,15 +102,21 @@ angular.module('starter')
 					connectorCredentials: {token: response},
 					connector: connector
 				};
-				genericConnection(body);
+				connectorsService.connectWithToken(body).then(function(result){
+					console.log(JSON.stringify(result));
+					$scope.init();
+				}, function (error) {
+					errorHandler(error);
+					$scope.init();
+				});
 			};
 
-			var getAccessTokenAndConnect = function(authorizationCode, connector){
+			var connectWithAuthCode = function(authorizationCode, connector){
 				console.log(connector.name + " connect result is " + JSON.stringify(authorizationCode));
-				connectorsService.getAccessTokenAndConnect(authorizationCode, connector.name).then(function (){
+				connectorsService.connectWithAuthCode(authorizationCode, connector.name).then(function (){
 					$scope.init();
 				}, function() {
-					console.error("error on getAccessTokenAndConnect for " + connector.name);
+					console.error("error on connectWithAuthCode for " + connector.name);
 					$scope.init();
 				});
 			};
@@ -155,7 +161,7 @@ angular.module('starter')
 				options = {redirect_uri: utilsService.getApiUrl() + '/api/v1/connectors/' + connector.name + '/connect'};
 				$cordovaOauth.fitbit(window.private_keys.FITBIT_CLIENT_ID, scopes, options)
 					.then(function(authorizationCode) {
-						getAccessTokenAndConnect(authorizationCode, connector);
+						connectWithAuthCode(authorizationCode, connector);
 					}, function(error) {
                         errorHandler(error);
 					});
@@ -166,7 +172,7 @@ angular.module('starter')
 				options = {redirect_uri: utilsService.getApiUrl() + '/api/v1/connectors/' + connector.name + '/connect'};
 				$cordovaOauth.fitbit(window.private_keys.RUNKEEPER_CLIENT_ID, scopes, options)
 					.then(function(authorizationCode) {
-						getAccessTokenAndConnect(authorizationCode, connector);
+						connectWithAuthCode(authorizationCode, connector);
 					}, function(error) {
 						errorHandler(error);
 					});
@@ -177,7 +183,7 @@ angular.module('starter')
 				options = {redirect_uri: utilsService.getApiUrl() + '/api/v1/connectors/' + connector.name + '/connect'};
 				$cordovaOauth.rescuetime(window.private_keys.RESCUETIME_CLIENT_ID, scopes, options)
 					.then(function(authorizationCode) {
-						getAccessTokenAndConnect(authorizationCode, connector);
+						connectWithAuthCode(authorizationCode, connector);
 					}, function(error) {
 						errorHandler(error);
 					});
@@ -188,7 +194,7 @@ angular.module('starter')
 				options = {redirect_uri: utilsService.getApiUrl() + '/api/v1/connectors/' + connector.name + '/connect'};
 				$cordovaOauth.slice(window.private_keys.SLICE_CLIENT_ID, scopes, options)
 					.then(function(authorizationCode) {
-						getAccessTokenAndConnect(authorizationCode, connector);
+						connectWithAuthCode(authorizationCode, connector);
 					}, function(error) {
 						errorHandler(error);
 					});
@@ -215,7 +221,7 @@ angular.module('starter')
 				options = {redirect_uri: utilsService.getApiUrl() + '/api/v1/connectors/' + connector.name + '/connect'};
 				$cordovaOauth.googleOffline(window.private_keys.GOOGLE_CLIENT_ID, scopes, options)
 					.then(function(authorizationCode) {
-						getAccessTokenAndConnect(authorizationCode, connector);
+						connectWithAuthCode(authorizationCode, connector);
 					}, function(error) {
 						errorHandler(error);
 					});
@@ -229,7 +235,7 @@ angular.module('starter')
 				options = {redirect_uri: utilsService.getApiUrl() + '/api/v1/connectors/' + connector.name + '/connect'};
 				$cordovaOauth.googleOffline(window.private_keys.GOOGLE_CLIENT_ID, scopes, options)
 					.then(function(authorizationCode) {
-						getAccessTokenAndConnect(authorizationCode, connector);
+						connectWithAuthCode(authorizationCode, connector);
 					}, function(error) {
 						errorHandler(error);
 					});
@@ -242,7 +248,7 @@ angular.module('starter')
 				options = {redirect_uri: utilsService.getApiUrl() + '/api/v1/connectors/' + connector.name + '/connect'};
 				$cordovaOauth.googleOffline(window.private_keys.GOOGLE_CLIENT_ID, scopes, options)
 					.then(function(authorizationCode) {
-						getAccessTokenAndConnect(authorizationCode, connector);
+						connectWithAuthCode(authorizationCode, connector);
 					}, function(error) {
 						errorHandler(error);
 					});
@@ -302,11 +308,7 @@ angular.module('starter')
 					var params = {
 						location: String($scope.data.location)
 					};
-					var body = {
-						connectorCredentials: params,
-						connector: connector
-					};
-					genericConnection(body);
+					connectWithParams(params, connector.name);
 					console.log('Entered zip code. Result: ', res);
 				});
 			}
@@ -346,7 +348,7 @@ angular.module('starter')
 						connectorCredentials: params,
 						connector: connector
 					};
-					genericConnection(body);
+					connectWithParams(params, connector.name);
 				});
 			}
 
@@ -385,11 +387,7 @@ angular.module('starter')
 						username: $scope.data.username,
 						password: $scope.data.password
 					};
-					var body = {
-						connectorCredentials: params,
-						connector: connector
-					};
-					genericConnection(body);
+					connectWithParams(params, connector.name);
 				});
 			}
 
@@ -428,11 +426,7 @@ angular.module('starter')
 						username: $scope.data.username,
 						password: $scope.data.password
 					};
-					var body = {
-						connectorCredentials: params,
-						connector: connector
-					};
-					genericConnection(body);
+					connectWithParams(params, connector.name);
 				});
 			}
 
@@ -467,11 +461,7 @@ angular.module('starter')
 					var params = {
 						email: $scope.data.email
 					};
-					var body = {
-						connectorCredentials: params,
-						connector: connector
-					};
-					genericConnection(body);
+					connectWithParams(params, connector.name);
 				});
 			}
 
@@ -510,11 +500,7 @@ angular.module('starter')
 						username: $scope.data.username,
 						password: $scope.data.password
 					};
-					var body = {
-						connectorCredentials: params,
-						connector: connector
-					};
-					genericConnection(body);
+					connectWithParams(params, connector.name);
 				});
 			}
 		};

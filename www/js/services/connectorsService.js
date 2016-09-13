@@ -1,14 +1,11 @@
 angular.module('starter')
 	// Measurement Service
-	.factory('connectorsService', function($q, $rootScope, QuantiModo, timeService, notificationService,
-										 localStorageService) {
+	.factory('connectorsService', function($q, $rootScope, QuantiModo, timeService, localStorageService) {
 
 		var connectorsService = {};
 
 		connectorsService.getConnectors = function(){
-
 			var deferred = $q.defer();
-
 			localStorageService.getItem('connectors', function(connectors){
 				if(connectors){
 					$rootScope.connectors = JSON.parse(connectors);
@@ -20,7 +17,6 @@ angular.module('starter')
 					});
 				}
 			});
-
 			return deferred.promise;
 
 		};
@@ -47,9 +43,9 @@ angular.module('starter')
 			return deferred.promise;
 		};
 
-		connectorsService.connect = function(body){
+		connectorsService.connectWithParams = function(params, lowercaseConnectorName){
 			var deferred = $q.defer();
-			QuantiModo.connectConnector(body, function(){
+			QuantiModo.connectConnectorWithParams(params, lowercaseConnectorName, function(){
 				connectorsService.refreshConnectors();
 			}, function(){
 				deferred.reject(false);
@@ -57,9 +53,19 @@ angular.module('starter')
 			return deferred.promise;
 		};
 
-		connectorsService.getAccessTokenAndConnect = function(code, lowercaseConnectorName){
+		connectorsService.connectWithToken = function(body){
 			var deferred = $q.defer();
-			QuantiModo.getAccessTokenAndConnect(code, lowercaseConnectorName, function(){
+			QuantiModo.connectConnectorWithToken(body, function(){
+				connectorsService.refreshConnectors();
+			}, function(){
+				deferred.reject(false);
+			});
+			return deferred.promise;
+		};
+
+		connectorsService.connectWithAuthCode = function(code, lowercaseConnectorName){
+			var deferred = $q.defer();
+			QuantiModo.connectWithAuthCode(code, lowercaseConnectorName, function(){
 				connectorsService.refreshConnectors();
 			}, function(){
 				deferred.reject(false);
@@ -70,7 +76,7 @@ angular.module('starter')
 		connectorsService.hideBrokenConnectors = function(connectors){
 			$rootScope.connectors = connectors;
 			for(var i = 0; i < $rootScope.connectors.length; i++){
-				if($rootScope.connectors[i].name === 'facebook') {
+				if($rootScope.connectors[i].name === 'facebook' && $rootScope.isAndroid) {
 					$rootScope.connectors[i].hide = true;
 				}
 			}

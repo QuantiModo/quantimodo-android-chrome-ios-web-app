@@ -13,19 +13,20 @@ angular.module('starter',
         'ionic-timepicker',
         'ngIOS9UIWebViewPatch',
         'ng-mfb',
+        //'templates',
         'fabric',
         'ngCordovaOauth'
     ]
 )
 
-.run(function($ionicPlatform, $ionicHistory, $state, $rootScope, localStorageService, qmLocationService) {
+.run(function($ionicPlatform, $ionicHistory, $state, $rootScope, localStorageService, qmLocationService, reminderService) {
 //.run(function($ionicPlatform, $ionicHistory, $state, $rootScope, $ionicAnalytics) {
 // Database
 //.run(function($ionicPlatform, $ionicHistory, $state, $rootScope, $cordovaSQLite) {
 
     $ionicPlatform.ready(function() {
         //$ionicAnalytics.register();
-        if(ionic.Platform.isAndroid() || ionic.Platform.isIPad() || ionic.Platform.isIOS()){
+        if(ionic.Platform.isIPad() || ionic.Platform.isIOS()){
             window.onerror = function (errorMsg, url, lineNumber) {
                 alert('Error: ' + errorMsg + ' Script: ' + url + ' Line: ' + lineNumber);
             };
@@ -67,20 +68,158 @@ angular.module('starter',
                  }
              });
 
+             var finishPushes = true;  // Setting to false didn't solve notification dismissal problem
+
              push.on('notification', function(data) {
                  console.log('Received push notification: ' + JSON.stringify(data));
                  qmLocationService.updateLocationVariablesAndPostMeasurementIfChanged();
+                 reminderService.refreshTrackingReminderNotifications();
                  // data.message,
                  // data.title,
                  // data.count,
                  // data.sound,
                  // data.image,
                  // data.additionalData
+                 if(!finishPushes) {
+                     console.log('Not doing push.finish for data.additionalData.notId: ' + data.additionalData.notId);
+                     return;
+                 }
+                 push.finish(function () {
+                     console.log("processing of push data is finished: " + JSON.stringify(data));
+                 });
              });
 
              push.on('error', function(e) {
                  alert(e.message);
              });
+
+             var finishPush = function (data) {
+                 if(!finishPushes){
+                     console.log('Not doing push.finish for data.additionalData.notId: ' + data.additionalData.notId);
+                     return;
+                 }
+
+                 push.finish(function() {
+                     console.log('accept callback finished for data.additionalData.notId: ' + data.additionalData.notId);
+                 }, function() {
+                     console.log('accept callback failed for data.additionalData.notId: ' + data.additionalData.notId);
+                 }, data.additionalData.notId);
+
+             };
+
+             window.trackOneRatingAction = function (data){
+                 
+                 console.log("trackDefaultValueAction Push data: " + JSON.stringify(data));
+                 var body = {
+                     trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId,
+                     modifiedValue: 1
+                 };
+
+                 reminderService.trackReminderNotification(body);
+                 finishPush(data);
+             };
+
+             window.trackTwoRatingAction = function (data){
+                 
+                 console.log("trackDefaultValueAction Push data: " + JSON.stringify(data));
+                 var body = {
+                     trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId,
+                     modifiedValue: 2
+                 };
+
+                 reminderService.trackReminderNotification(body);
+                 finishPush(data);
+             };
+
+             window.trackThreeRatingAction = function (data){
+                 
+                 console.log("trackDefaultValueAction Push data: " + JSON.stringify(data));
+                 var body = {
+                     trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId,
+                     modifiedValue: 3
+                 };
+
+                 reminderService.trackReminderNotification(body);
+                 finishPush(data);
+             };
+
+             window.trackFourRatingAction = function (data){
+                 
+                 console.log("trackDefaultValueAction Push data: " + JSON.stringify(data));
+                 var body = {
+                     trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId,
+                     modifiedValue: 4
+                 };
+
+                 reminderService.trackReminderNotification(body);
+                 finishPush(data);
+             };
+
+             window.trackFiveRatingAction = function (data){
+                 
+                 console.log("trackDefaultValueAction Push data: " + JSON.stringify(data));
+                 var body = {
+                     trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId,
+                     modifiedValue: 5
+                 };
+
+                 reminderService.trackReminderNotification(body);
+                 finishPush(data);
+             };
+
+             window.trackDefaultValueAction = function (data){
+                 
+                 console.log("trackDefaultValueAction Push data: " + JSON.stringify(data));
+                 var body = {
+                     trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId
+                 };
+
+                 reminderService.trackReminderNotification(body);
+                 finishPush(data);
+             };
+
+             window.snoozeAction = function (data){
+                 
+                 console.log("snoozeAction push data: " + JSON.stringify(data));
+                 var body = {
+                     trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId
+                 };
+                 reminderService.snoozeReminderNotification(body);
+                 finishPush(data);
+             };
+
+             window.trackLastValueAction = function (data){
+                 
+                 console.log("trackLastValueAction Push data: " + JSON.stringify(data));
+                 var body = {
+                     trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId,
+                     modifiedValue: data.additionalData.lastValue
+                 };
+                 reminderService.trackReminderNotification(body);
+                 finishPush(data);
+             };
+
+             window.trackSecondToLastValueAction = function (data){
+                 
+                 console.log("trackSecondToLastValueAction Push data: " + JSON.stringify(data));
+                 var body = {
+                     trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId,
+                     modifiedValue: data.additionalData.secondToLastValue
+                 };
+                 reminderService.trackReminderNotification(body);
+                 finishPush(data);
+             };
+
+             window.trackThirdToLastValueAction = function (data){
+                 
+                 console.log("trackThirdToLastValueAction Push data: " + JSON.stringify(data));
+                 var body = {
+                     trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId,
+                     modifiedValue: data.additionalData.thirdToLastValue
+                 };
+                 reminderService.trackReminderNotification(body);
+                 finishPush(data);
+             };
          }
 
         if(typeof analytics !== "undefined") {
@@ -122,12 +261,11 @@ angular.module('starter',
             clearInterval(intervalChecker);
 
             if(!window.private_keys) {
-                alert('Please add private config file to www/private_configs folder!  Contact mike@quantimo.do if you need help');
                 console.error('Please add private config file to www/private_configs folder!  Contact mike@quantimo.do if you need help');
                 return;
             }
 
-            $rootScope.appVersion = "1.8.9.0";
+            $rootScope.appVersion = "1.9.2.0";
             $rootScope.appName = config.appSettings.appName;
 
             if (typeof Bugsnag !== "undefined") {
@@ -753,7 +891,7 @@ angular.module('starter',
                     controller: 'FavoriteAddCtrl'
                 }
             }
-        })
+        });
 
     if (window.localStorage.introSeen) {
         console.log("Intro seen so going to inbox");

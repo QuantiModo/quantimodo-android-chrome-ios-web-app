@@ -20,7 +20,7 @@
                         Unit
                     </div>
                     <select
-                            ng-model="state.trackingReminder.abbreviatedUnitName" ng-options="x for x in abbreviatedUnitNames">
+                            ng-model="state.trackingReminder.abbreviatedUnitName" ng-options="x for x in abbreviatedUnitNames" ng-change="unitSelected()">
                     </select>
                 </label>
 

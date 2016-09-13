@@ -1,7 +1,7 @@
 #!/bin/bash
 
-export IONIC_APP_VERSION_NUMBER=1.8.9
-export IONIC_IOS_APP_VERSION_NUMBER="1.8.9.0"
+export IONIC_APP_VERSION_NUMBER=1.9.1
+export IONIC_IOS_APP_VERSION_NUMBER="1.9.2.0"
 
 export RED='\033[0;31m'
 export GREEN='\033[0;32m'
@@ -70,8 +70,8 @@ echo "ANDROID_BUILD_TOOLS is $ANDROID_BUILD_TOOLS"
 
 if [ -z "$ANDROID_KEYSTORE_PASSWORD" ]
   then
-  echo -e "${RED}ERROR: ANDROID_KEYSTORE_PASSWORD does not exist for build_all_apps.sh! Quitting! "
-  exit 1
+      echo -e "${RED}ERROR: ANDROID_KEYSTORE_PASSWORD does not exist for build_all_apps.sh! Quitting! "
+      exit 1
 fi
 
 #echo "Copying everything from ${IONIC_PATH} to $INTERMEDIATE_PATH"
@@ -130,19 +130,23 @@ export LOWERCASE_APP_NAME=quantimodo
 export APP_DESCRIPTION=Perfect your life
 echo "Cannot use exclamation point in app description"
 
-source ${INTERMEDIATE_PATH}/scripts/build_scripts/01_prepare_project.sh
-source ${INTERMEDIATE_PATH}/scripts/build_scripts/03_build_android.sh
-source ${INTERMEDIATE_PATH}/scripts/build_scripts/02_build_chrome.sh
-#source ${INTERMEDIATE_PATH}/scripts/build_scripts/04_build_ios.sh
-#source ${INTERMEDIATE_PATH}/04_reset_workspace.sh
+if [ -z ${BUILD_QUANTIMODO} ];
+    then
+        echo "NOT BUILDING ${APP_DISPLAY_NAME}"
+    else
+        source ${INTERMEDIATE_PATH}/scripts/build_scripts/01_prepare_project.sh
+        source ${INTERMEDIATE_PATH}/scripts/build_scripts/03_build_android.sh
+        source ${INTERMEDIATE_PATH}/scripts/build_scripts/02_build_chrome.sh
+        #source ${INTERMEDIATE_PATH}/scripts/build_scripts/04_build_ios.sh
 
-# We do this at this higher level so Jenkins can detect the exit code
-if [ -f ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${LOWERCASE_APP_NAME}-android-armv7-release-signed.apk ];
-then
-   echo echo "${LOWERCASE_APP_NAME} Android app is ready in ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${LOWERCASE_APP_NAME}-android-armv7-release-signed.apk"
-else
-   echo "ERROR: File ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${LOWERCASE_APP_NAME}-android-armv7-release-signed.apk does not exist. Build FAILED"
-   exit 1
+        # We do this at this higher level so Jenkins can detect the exit code
+        if [ -f ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${LOWERCASE_APP_NAME}-android-armv7-release-signed.apk ];
+        then
+           echo echo "${LOWERCASE_APP_NAME} Android app is ready in ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${LOWERCASE_APP_NAME}-android-armv7-release-signed.apk"
+        else
+           echo "ERROR: File ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${LOWERCASE_APP_NAME}-android-armv7-release-signed.apk does not exist. Build FAILED"
+           exit 1
+        fi
 fi
 
 export APPLE_ID="1046797567"
@@ -151,40 +155,49 @@ export APP_DISPLAY_NAME="MoodiModo"
 export LOWERCASE_APP_NAME=moodimodo
 export APP_DESCRIPTION=Track and find out what affects your mood
 
-source ${INTERMEDIATE_PATH}/scripts/build_scripts/01_prepare_project.sh
-source ${INTERMEDIATE_PATH}/scripts/build_scripts/03_build_android.sh
-source ${INTERMEDIATE_PATH}/scripts/build_scripts/02_build_chrome.sh
-#source ${INTERMEDIATE_PATH}/scripts/build_scripts/04_build_ios.sh
-#source ${INTERMEDIATE_PATH}/04_reset_workspace.sh
+if [ -z ${BUILD_MOODIMODO} ];
+    then
+        echo "NOT BUILDING ${APP_DISPLAY_NAME}"
+    else
+        source ${INTERMEDIATE_PATH}/scripts/build_scripts/01_prepare_project.sh
+        source ${INTERMEDIATE_PATH}/scripts/build_scripts/03_build_android.sh
+        source ${INTERMEDIATE_PATH}/scripts/build_scripts/02_build_chrome.sh
+        #source ${INTERMEDIATE_PATH}/scripts/build_scripts/04_build_ios.sh
 
-# We do this at this higher level so Jenkins can detect the exit code
-if [ -f ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${LOWERCASE_APP_NAME}-android-armv7-release-signed.apk ];
-then
-   echo echo "${LOWERCASE_APP_NAME} Android app is ready in ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${LOWERCASE_APP_NAME}-android-armv7-release-signed.apk"
-else
-   echo "ERROR: File ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${LOWERCASE_APP_NAME}-android-armv7-release-signed.apk does not exist. Build FAILED"
-   exit 1
+        # We do this at this higher level so Jenkins can detect the exit code
+        if [ -f ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${LOWERCASE_APP_NAME}-android-armv7-release-signed.apk ];
+        then
+           echo echo "${LOWERCASE_APP_NAME} Android app is ready in ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${LOWERCASE_APP_NAME}-android-armv7-release-signed.apk"
+        else
+           echo "ERROR: File ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${LOWERCASE_APP_NAME}-android-armv7-release-signed.apk does not exist. Build FAILED"
+           exit 1
+        fi
 fi
 
 export APPLE_ID="1024924226"
 export APP_IDENTIFIER="com.quantimodo.mindfirst"
-export APP_DISPLAY_NAME=Mind First
-echo "Replace doesn't work if we use quotes if there's a space"
+export APP_DISPLAY_NAME=MindFirst
+echo "Replace doesn't work if there's a space"
 export LOWERCASE_APP_NAME=mindfirst
 export APP_DESCRIPTION=Empowering a New Approach to Mind Research
 
-source ${INTERMEDIATE_PATH}/scripts/build_scripts/01_prepare_project.sh
-source ${INTERMEDIATE_PATH}/scripts/build_scripts/03_build_android.sh
-source ${INTERMEDIATE_PATH}/scripts/build_scripts/02_build_chrome.sh
-#source ${INTERMEDIATE_PATH}/scripts/build_scripts/04_build_ios.sh
+if [ -z ${BUILD_MINDFIRST} ];
+    then
+        echo "NOT BUILDING ${APP_DISPLAY_NAME}"
+    else
+        source ${INTERMEDIATE_PATH}/scripts/build_scripts/01_prepare_project.sh
+        source ${INTERMEDIATE_PATH}/scripts/build_scripts/03_build_android.sh
+        source ${INTERMEDIATE_PATH}/scripts/build_scripts/02_build_chrome.sh
+        #source ${INTERMEDIATE_PATH}/scripts/build_scripts/04_build_ios.sh
 
-# We do this at this higher level so Jenkins can detect the exit code
-if [ -f ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${LOWERCASE_APP_NAME}-android-armv7-release-signed.apk ];
-then
-   echo echo "${LOWERCASE_APP_NAME} Android app is ready in ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${LOWERCASE_APP_NAME}-android-armv7-release-signed.apk"
-else
-   echo "ERROR: File ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${LOWERCASE_APP_NAME}-android-armv7-release-signed.apk does not exist. Build FAILED"
-   exit 1
+        # We do this at this higher level so Jenkins can detect the exit code
+        if [ -f ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${LOWERCASE_APP_NAME}-android-armv7-release-signed.apk ];
+        then
+           echo echo "${LOWERCASE_APP_NAME} Android app is ready in ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${LOWERCASE_APP_NAME}-android-armv7-release-signed.apk"
+        else
+           echo "ERROR: File ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${LOWERCASE_APP_NAME}-android-armv7-release-signed.apk does not exist. Build FAILED"
+           exit 1
+        fi
 fi
 
 export APPLE_ID="1115037652"
@@ -193,18 +206,23 @@ export APP_DISPLAY_NAME="EnergyModo"
 export LOWERCASE_APP_NAME=energymodo
 export APP_DESCRIPTION=Track and find out what affects your energy levels
 
-source ${INTERMEDIATE_PATH}/scripts/build_scripts/01_prepare_project.sh
-source ${INTERMEDIATE_PATH}/scripts/build_scripts/03_build_android.sh
-source ${INTERMEDIATE_PATH}/scripts/build_scripts/02_build_chrome.sh
-#source ${INTERMEDIATE_PATH}/scripts/build_scripts/04_build_ios.sh
+if [ -z ${BUILD_ENERGYMODO} ];
+    then
+        echo "NOT BUILDING ${APP_DISPLAY_NAME}"
+    else
+        source ${INTERMEDIATE_PATH}/scripts/build_scripts/01_prepare_project.sh
+        source ${INTERMEDIATE_PATH}/scripts/build_scripts/03_build_android.sh
+        source ${INTERMEDIATE_PATH}/scripts/build_scripts/02_build_chrome.sh
+        #source ${INTERMEDIATE_PATH}/scripts/build_scripts/04_build_ios.sh
 
-# We do this at this higher level so Jenkins can detect the exit code
-if [ -f ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${LOWERCASE_APP_NAME}-android-armv7-release-signed.apk ];
-then
-   echo echo "${LOWERCASE_APP_NAME} Android app is ready in ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${LOWERCASE_APP_NAME}-android-armv7-release-signed.apk"
-else
-   echo "ERROR: File ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${LOWERCASE_APP_NAME}-android-armv7-release-signed.apk does not exist. Build FAILED"
-   exit 1
+        # We do this at this higher level so Jenkins can detect the exit code
+        if [ -f ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${LOWERCASE_APP_NAME}-android-armv7-release-signed.apk ];
+        then
+           echo echo "${LOWERCASE_APP_NAME} Android app is ready in ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${LOWERCASE_APP_NAME}-android-armv7-release-signed.apk"
+        else
+           echo "ERROR: File ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${LOWERCASE_APP_NAME}-android-armv7-release-signed.apk does not exist. Build FAILED"
+           exit 1
+        fi
 fi
 
 export APPLE_ID="1115037661"
@@ -213,18 +231,23 @@ export APP_DISPLAY_NAME="MedTLC"
 export LOWERCASE_APP_NAME=medtlc
 export APP_DESCRIPTION=Medication Track Learn Connect
 
-source ${INTERMEDIATE_PATH}/scripts/build_scripts/01_prepare_project.sh
-source ${INTERMEDIATE_PATH}/scripts/build_scripts/03_build_android.sh
-source ${INTERMEDIATE_PATH}/scripts/build_scripts/02_build_chrome.sh
-#source ${INTERMEDIATE_PATH}/scripts/build_scripts/04_build_ios.sh
+if [ -z ${BUILD_MEDTLC} ];
+    then
+        echo "NOT BUILDING ${APP_DISPLAY_NAME}"
+    else
+        source ${INTERMEDIATE_PATH}/scripts/build_scripts/01_prepare_project.sh
+        source ${INTERMEDIATE_PATH}/scripts/build_scripts/03_build_android.sh
+        source ${INTERMEDIATE_PATH}/scripts/build_scripts/02_build_chrome.sh
+        #source ${INTERMEDIATE_PATH}/scripts/build_scripts/04_build_ios.sh
 
-# We do this at this higher level so Jenkins can detect the exit code
-if [ -f ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${LOWERCASE_APP_NAME}-android-armv7-release-signed.apk ];
-then
-   echo echo "${LOWERCASE_APP_NAME} Android app is ready in ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${LOWERCASE_APP_NAME}-android-armv7-release-signed.apk"
-else
-   echo "ERROR: File ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${LOWERCASE_APP_NAME}-android-armv7-release-signed.apk does not exist. Build FAILED"
-   exit 1
+        # We do this at this higher level so Jenkins can detect the exit code
+        if [ -f ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${LOWERCASE_APP_NAME}-android-armv7-release-signed.apk ];
+        then
+           echo echo "${LOWERCASE_APP_NAME} Android app is ready in ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${LOWERCASE_APP_NAME}-android-armv7-release-signed.apk"
+        else
+           echo "ERROR: File ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${LOWERCASE_APP_NAME}-android-armv7-release-signed.apk does not exist. Build FAILED"
+           exit 1
+        fi
 fi
 
 sudo chmod -R 777 ${DROPBOX_PATH}/QuantiModo/apps

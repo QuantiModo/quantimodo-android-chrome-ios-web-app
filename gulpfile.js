@@ -1065,14 +1065,14 @@ gulp.task('setVersionNumbersWithEnvs', function(){
 	var environmentalVariables = process.env;
 	if(!environmentalVariables.IONIC_APP_VERSION_NUMBER){
 		//throw new Error('Please set IONIC_APP_VERSION_NUMBER env!');
-		environmentalVariables.IONIC_APP_VERSION_NUMBER = '1.8.9';
+		environmentalVariables.IONIC_APP_VERSION_NUMBER = '1.9.1';
 		console.log('No IONIC_APP_VERSION_NUMBER env!  Using hardcoded gulp version number ' +
 			environmentalVariables.IONIC_APP_VERSION_NUMBER);
 	}
 
 	if(!environmentalVariables.IONIC_IOS_APP_VERSION_NUMBER){
 		//throw new Error('Please set IONIC_IOS_APP_VERSION_NUMBER env!');
-		environmentalVariables.IONIC_IOS_APP_VERSION_NUMBER = '1.8.9.0';
+		environmentalVariables.IONIC_IOS_APP_VERSION_NUMBER = '1.9.2.0';
 		console.log('No IONIC_IOS_APP_VERSION_NUMBER env!  Using hardcoded gulp version number ' +
 			environmentalVariables.IONIC_IOS_APP_VERSION_NUMBER);
 	}
@@ -1237,4 +1237,14 @@ gulp.task("sass", function () {
 	return gulp.src(paths.sass)
 		.pipe(sass().on("error", sass.logError))
 		.pipe(gulp.dest(paths.sassCssTarget));
+});
+
+var templateCache = require('gulp-angular-templatecache');
+gulp.task('template', function(done){
+	gulp.src('./www/templates/**/*.html')
+		.pipe(templateCache({
+			standalone:true,
+			root: 'templates'}))
+		.pipe(gulp.dest('./public'))
+		.on('end', done);
 });

@@ -11,6 +11,12 @@ if [ -z "$LOWERCASE_APP_NAME" ]
     exit 1
 fi
 
+if [ -z "$IONIC_PATH" ]
+  then
+    echo -e "${RED}build_android.sh: Please provide lowercase IONIC_PATH ${NC}"
+    exit 1
+fi
+
 if [ -z "$BUILD_PATH" ]
     then
         echo -e "${RED}build_android.sh: No BUILD_PATH!${NC}"

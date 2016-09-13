@@ -209,16 +209,23 @@ angular.module('starter')
                 .then(function(JWTToken){
                     // success
 
-                    console.log("nativeLogin: Mobile device detected and platform is " + platform);
+                    console.debug("nativeLogin: Mobile device detected and platform is " + platform + ". Got JWT token " + JWTToken);
                     var url = authService.generateV2OAuthUrl(JWTToken);
 
                     console.log('nativeLogin: open the auth window via inAppBrowser.');
-                    var ref = window.open(url,'_blank', 'location=no,toolbar=no');
+                    var ref = cordova.InAppBrowser.open(url,'_blank', 'location=yes,toolbar=yes,clearcache=yes,clearsessioncache=yes');
 
-                    console.log('nativeLogin: listen to event when the page changes.');
+                    console.log('nativeLogin: listen to event at ' + url + ' when the page changes.');
+/*
+                    $timeout(function () {
+                        if(!$rootScope.user){
+                            bugsnagService.reportError('Could not get user with url ' + url);
+                        }
+                    }, 30000);
+*/
                     ref.addEventListener('loadstart', function(event) {
 
-                        console.log("nativeLogin: loadstart event", event);
+                        console.debug('nativeLogin: loadstart event is ' + JSON.stringify(event));
                         console.log('nativeLogin: check if changed url is the same as redirection url.');
 
                         if(utilsService.startsWith(event.url, utilsService.getRedirectUri())) {

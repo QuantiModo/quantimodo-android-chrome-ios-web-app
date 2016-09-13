@@ -315,6 +315,7 @@ angular.module('starter')
                 .then(function(){
                     reminderService.addNewReminder($scope.state.trackingReminder)
                         .then(function(){
+                            reminderService.refreshTrackingReminderNotifications();
                             $scope.hideLoader();
                         }, function(err){
                             $scope.hideLoader();
@@ -432,7 +433,6 @@ angular.module('starter')
         function setupReminderEditingFromUrlParameter(reminderIdUrlParameter) {
             reminderService.getTrackingReminderById(reminderIdUrlParameter)
                 .then(function (reminders) {
-                    $scope.state.allReminders = reminders;
                     if (reminders.length !== 1) {
                         utilsService.showAlert("Reminder id " + reminderIdUrlParameter + " not found!", 'assertive');
                         if($stateParams.fromUrl){
@@ -443,7 +443,7 @@ angular.module('starter')
                             $state.go('app.remindersManage');
                         }
                     }
-                    $stateParams.reminder = $scope.state.allReminders[0];
+                    $stateParams.reminder = reminders[0];
                     setupEditReminder($stateParams.reminder);
                     $ionicLoading.hide();
                     $scope.loading = false;
@@ -516,18 +516,13 @@ angular.module('starter')
                 });
         };
 
-        // Deprecated - not used
-        /*
-        // when a unit is selected
-        $scope.unitSelected = function(unit){
-            console.log("selecting_unit",unit);
-
-            // update viewmodel
-            $scope.state.trackingReminder.abbreviatedUnitName = unit.abbreviatedName;
-            $scope.state.showUnits = false;
-            $scope.state.selectedUnitAbbreviatedName = unit.abbreviatedName;
+        $scope.unitSelected = function(){
+            console.log("selecting_unit", $scope.state.trackingReminder.abbreviatedUnitName);
+            $scope.state.trackingReminder.unitName =
+                $rootScope.unitsIndexedByAbbreviatedName[$scope.state.trackingReminder.abbreviatedUnitName].name;
+            $scope.state.trackingReminder.unitId =
+                $rootScope.unitsIndexedByAbbreviatedName[$scope.state.trackingReminder.abbreviatedUnitName].id;
         };
-        */
 
         $scope.toggleShowUnits = function(){
             $scope.state.showUnits=!$scope.state.showUnits;
