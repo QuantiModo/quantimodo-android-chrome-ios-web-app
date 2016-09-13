@@ -110,6 +110,7 @@ angular.module('starter')
                     $http(request).success(successHandler).error(function(data,status,headers,config){
                         QuantiModo.errorHandler(data, status, headers, config, request);
                         if (!data && !$rootScope.connectionErrorShowing) {
+                            bugsnagService.reportError('No data returned from this GET request: ' + JSON.stringify(request));
                             $rootScope.connectionErrorShowing = true;
                             $ionicPopup.show({
                                 title: 'NOT CONNECTED',
@@ -188,6 +189,7 @@ angular.module('starter')
                     $http(request).success(successHandler).error(function(data,status,headers,config){
                         QuantiModo.errorHandler(data,status,headers,config);
                         if (!data && !$rootScope.connectionErrorShowing) {
+                            bugsnagService.reportError('No data returned from this POST request: ' + JSON.stringify(request));
                             $rootScope.connectionErrorShowing = true;
                             $ionicPopup.show({
                                 title: 'NOT CONNECTED',
