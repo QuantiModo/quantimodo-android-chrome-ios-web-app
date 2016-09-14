@@ -136,7 +136,7 @@ angular.module('starter')
 
             console.log('nonNativeMobileLogin: open the auth window via inAppBrowser.');
             // Set location=yes instead of location=no temporarily to try to diagnose intermittent white screen on iOS
-            var ref = window.open(url,'_blank', 'location=yes,toolbar=yes');
+            var ref = window.open(url,'_blank', 'location=no,toolbar=yes');
 
             // Commented because I think it's causing "$apply already in progress" error
             // $timeout(function () {
@@ -228,7 +228,7 @@ angular.module('starter')
                     var url = authService.generateV2OAuthUrl(JWTToken);
 
                     console.log('nativeSocialLogin: open the auth window via inAppBrowser.');
-                    var ref = cordova.InAppBrowser.open(url,'_blank', 'location=yes,toolbar=yes,clearcache=yes,clearsessioncache=yes');
+                    var ref = cordova.InAppBrowser.open(url,'_blank', 'location=no,toolbar=yes,clearcache=no,clearsessioncache=no');
 
                     console.log('nativeSocialLogin: listen to event at ' + url + ' when the page changes.');
 /*
