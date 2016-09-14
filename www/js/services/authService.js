@@ -141,8 +141,9 @@ angular.module('starter')
 				}
 				var url = utilsService.getURL('api/v2/auth/social/authorizeToken');
 
-				url += "provider=" + provider;
-				url += "&accessToken=" + accessToken;
+				url += "provider=" + encodeURIComponent(provider);
+				url += "&accessToken=" + encodeURIComponent(accessToken);
+				url += "&client_id=" + encodeURIComponent(utilsService.getClientId());
 
 				$http({
 					method: 'GET',

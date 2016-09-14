@@ -83,6 +83,7 @@ angular.module('starter')
                     }
                     urlParams.push(encodeURIComponent('appName') + '=' + encodeURIComponent(config.appSettings.appName));
                     urlParams.push(encodeURIComponent('appVersion') + '=' + encodeURIComponent($rootScope.appVersion));
+                    urlParams.push(encodeURIComponent('client_id') + '=' + encodeURIComponent(utilsService.getClientId()));
                     //We can't append access token to Ionic requests for some reason
                     //urlParams.push(encodeURIComponent('access_token') + '=' + encodeURIComponent(tokenObject.accessToken));
 
