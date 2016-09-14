@@ -1065,14 +1065,14 @@ gulp.task('setVersionNumbersWithEnvs', function(){
 	var environmentalVariables = process.env;
 	if(!environmentalVariables.IONIC_APP_VERSION_NUMBER){
 		//throw new Error('Please set IONIC_APP_VERSION_NUMBER env!');
-		environmentalVariables.IONIC_APP_VERSION_NUMBER = '1.9.1';
+		environmentalVariables.IONIC_APP_VERSION_NUMBER = '1.9.3';
 		console.log('No IONIC_APP_VERSION_NUMBER env!  Using hardcoded gulp version number ' +
 			environmentalVariables.IONIC_APP_VERSION_NUMBER);
 	}
 
 	if(!environmentalVariables.IONIC_IOS_APP_VERSION_NUMBER){
 		//throw new Error('Please set IONIC_IOS_APP_VERSION_NUMBER env!');
-		environmentalVariables.IONIC_IOS_APP_VERSION_NUMBER = '1.9.2.0';
+		environmentalVariables.IONIC_IOS_APP_VERSION_NUMBER = '1.9.3.0';
 		console.log('No IONIC_IOS_APP_VERSION_NUMBER env!  Using hardcoded gulp version number ' +
 			environmentalVariables.IONIC_IOS_APP_VERSION_NUMBER);
 	}
