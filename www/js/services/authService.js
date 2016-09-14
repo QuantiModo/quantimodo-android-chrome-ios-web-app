@@ -130,12 +130,12 @@ angular.module('starter')
 
         },
 
-        getJWTToken: function (provider, accessToken) {
+        getTokensAndUserViaNativeSocialLogin: function (provider, accessToken) {
 				var deferred = $q.defer();
 
 				if(!accessToken || accessToken === "null" || accessToken === null){
 					if (typeof Bugsnag !== "undefined") {
-						Bugsnag.notify("No accessToken", "accessToken not provided to getJWTToken function", {}, "error");
+						Bugsnag.notify("No accessToken", "accessToken not provided to getTokensAndUserViaNativeSocialLogin function", {}, "error");
 					}
 					deferred.reject();
 				}
@@ -159,7 +159,7 @@ angular.module('starter')
 							//  deferred.resolve(response.data.data.token);
 						 // }, 10000);
 
-						deferred.resolve(response.data.data.token);
+						deferred.resolve(response.data.data);
 					} else {
                         deferred.reject(response);
                     }

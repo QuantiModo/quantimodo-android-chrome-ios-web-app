@@ -200,22 +200,37 @@ angular.module('starter')
             window.close();
         };
 
-        $scope.nativeLogin = function(platform, accessToken){
+        $scope.nativeSocialLogin = function(provider, accessToken){
             //$scope.showLoader();
             localStorageService.setItem('isWelcomed', true);
             $rootScope.isWelcomed = true;
 
-            authService.getJWTToken(platform, accessToken)
-                .then(function(JWTToken){
-                    // success
+            authService.getTokensAndUserViaNativeSocialLogin(provider, accessToken)
+                .then(function(response){
 
-                    console.debug("nativeLogin: Mobile device detected and platform is " + platform + ". Got JWT token " + JWTToken);
+                    if(response.user){
+                        localStorageService.setItem('user', response.user);
+                        $rootScope.user = response.user;
+                        localStorageService.setItem('accessToken', response.accessToken);
+                        $rootScope.accessToken = response.accessToken;
+                        localStorageService.setItem('refreshToken', response.refreshToken);
+                        $rootScope.refreshToken = response.refreshToken;
+                        localStorageService.setItem('expiresAt', response.expiresAt);
+                        $rootScope.expiresAt = response.expiresAt;
+                        $rootScope.setUserInLocalStorageBugsnagAndRegisterDeviceForPush(response.user);
+                        $rootScope.hideNavigationMenu = false;
+                        $state.go(config.appSettings.defaultState);
+                        return;
+                    }
+
+                    var JWTToken = response.jwtToken;
+                    console.debug("nativeSocialLogin: Mobile device detected and provider is " + provider + ". Got JWT token " + JWTToken);
                     var url = authService.generateV2OAuthUrl(JWTToken);
 
-                    console.log('nativeLogin: open the auth window via inAppBrowser.');
+                    console.log('nativeSocialLogin: open the auth window via inAppBrowser.');
                     var ref = cordova.InAppBrowser.open(url,'_blank', 'location=yes,toolbar=yes,clearcache=yes,clearsessioncache=yes');
 
-                    console.log('nativeLogin: listen to event at ' + url + ' when the page changes.');
+                    console.log('nativeSocialLogin: listen to event at ' + url + ' when the page changes.');
 /*
                     $timeout(function () {
                         if(!$rootScope.user){
@@ -225,8 +240,8 @@ angular.module('starter')
 */
                     ref.addEventListener('loadstart', function(event) {
 
-                        console.debug('nativeLogin: loadstart event is ' + JSON.stringify(event));
-                        console.log('nativeLogin: check if changed url is the same as redirection url.');
+                        console.debug('nativeSocialLogin: loadstart event is ' + JSON.stringify(event));
+                        console.log('nativeSocialLogin: check if changed url is the same as redirection url.');
 
                         if(utilsService.startsWith(event.url, utilsService.getRedirectUri())) {
 
@@ -234,14 +249,14 @@ angular.module('starter')
 
                                 var authorizationCode = authService.getAuthorizationCodeFromUrl(event);
 
-                                console.log('nativeLogin: Got authorization code: ' + authorizationCode + ' Closing inAppBrowser.');
+                                console.log('nativeSocialLogin: Got authorization code: ' + authorizationCode + ' Closing inAppBrowser.');
                                 ref.close();
 
                                 var withJWT = true;
                                 // get access token from authorization code
                                 fetchAccessTokenAndUserDetails(authorizationCode, withJWT);
                             } else {
-                                var errorMessage = "nativeLogin: error occurred: " + utilsService.getUrlParameter(event.url, 'error');
+                                var errorMessage = "nativeSocialLogin: error occurred: " + utilsService.getUrlParameter(event.url, 'error');
                                 bugsnagService.reportError(errorMessage);
                                 console.error(errorMessage);
 
@@ -292,7 +307,7 @@ angular.module('starter')
                             console.error('googleLogin: No userData.accessToken or userData.idToken provided! Fallback to nonNativeMobileLogin...');
                             nonNativeMobileLogin(register);
                         } else {
-                            $scope.nativeLogin('google', tokenForApi);
+                            $scope.nativeSocialLogin('google', tokenForApi);
                         }
                     },
                     function (errorMessage) {
@@ -331,7 +346,7 @@ angular.module('starter')
                         Bugsnag.notify("ERROR: facebookLogin could not get accessToken!  ", JSON.stringify(success), {}, "error");
                     }
 
-                    $scope.nativeLogin('facebook', accessToken);
+                    $scope.nativeSocialLogin('facebook', accessToken);
                 }, function (error) {
                     Bugsnag.notify("ERROR: facebookLogin could not get accessToken!  ", JSON.stringify(error), {}, "error");
                     console.log("facebook login error", error);
