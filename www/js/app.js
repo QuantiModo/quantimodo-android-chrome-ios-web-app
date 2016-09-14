@@ -265,7 +265,7 @@ angular.module('starter',
                 return;
             }
 
-            $rootScope.appVersion = "1.9.2.0";
+            $rootScope.appVersion = "1.9.3.0";
             $rootScope.appName = config.appSettings.appName;
 
             if (typeof Bugsnag !== "undefined") {
