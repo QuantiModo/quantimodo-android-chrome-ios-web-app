@@ -2,7 +2,7 @@
 "use strict";
 var path = require("path");
 var ionic_minify_1 = require("ionic-minify");
-var config = require("../minify-conf.json");
+var config = require("minify-conf.json");
 var minify = config.alwaysRun;
 var cmd = process.env.CORDOVA_CMDLINE;
 var rootDir = process.argv[2];
