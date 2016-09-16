@@ -25,7 +25,7 @@ angular.module('starter')
         // when an old measurement is tapped to remeasure
         $scope.selectVariable = function(variableObject) {
             console.debug("$scope.selectVariable: " + JSON.stringify(variableObject));
-            if($stateParams.doNotIncludePublicVariables){
+            if(variableObject.lastValue !== null){
                 localStorageService.addToOrReplaceElementOfItemByIdOrMoveToFront('userVariables', variableObject);
             }
             localStorageService.addToOrReplaceElementOfItemByIdOrMoveToFront('commonVariables', variableObject);

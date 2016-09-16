@@ -455,17 +455,12 @@ angular.module('starter')
         }
 
         $scope.init = function(){
-            if (typeof Bugsnag !== "undefined") {
-                Bugsnag.context = "reminderAdd";
-            }
-            if (typeof analytics !== 'undefined')  { analytics.trackView("Add Reminder Controller"); }
-
-            authService.checkAuthOrSendToLogin();
+            if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
+            if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
 
             unitService.getUnits().then(function () {
                 var reminderIdUrlParameter = utilsService.getUrlParameter(window.location.href, 'reminderId');
                 var variableIdUrlParameter = utilsService.getUrlParameter(window.location.href, 'variableId');
-
                 if ($stateParams.variableObject) {
                     $scope.variableObject = $stateParams.variableObject;
                     $scope.onVariableSelect($stateParams.variableObject);
@@ -487,7 +482,6 @@ angular.module('starter')
         // when view is changed
     	$scope.$on('$ionicView.enter', function(e) { console.debug("Entering state " + $state.current.name);
             $scope.hideLoader();
-    		$scope.init();
     	});
 
         $scope.deleteReminder = function(){
@@ -605,5 +599,9 @@ angular.module('starter')
             }, 20000);
 
         };
+
+        $scope.$on('$ionicView.beforeEnter', function(){
+            $scope.init();
+        });
 
 	});
