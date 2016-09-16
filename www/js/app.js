@@ -429,7 +429,7 @@ angular.module('starter',
             }
         })
         .state('app.measurementAddSearch', {
-            url: "/track_factors",
+            url: "/measurement-add-search",
             params: {
                 reminder : null,
                 fromState : null,
@@ -445,7 +445,7 @@ angular.module('starter',
             }
         })
         .state('app.measurementAddSearchCategory', {
-            url: "/track_factors_category/:variableCategoryName",
+            url: "/measurement-add-search-category/:variableCategoryName",
             params: {
                 variableCategoryName : null,
                 fromState : null,
