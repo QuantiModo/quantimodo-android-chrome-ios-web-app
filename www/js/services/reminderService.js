@@ -227,9 +227,8 @@ angular.module('starter')
 			var deferred = $q.defer();
 			localStorageService.getItem(localStorageItemName, function(trackingReminderNotifications){
 				trackingReminderNotifications = JSON.parse(trackingReminderNotifications);
-				if(trackingReminderNotifications && trackingReminderNotifications.length > 0){
-					trackingReminderNotifications = JSON.parse(trackingReminderNotifications);
-					$rootScope.numberOfPendingNotifications = trackingReminderNotifications.length;
+				$rootScope.numberOfPendingNotifications = trackingReminderNotifications.length;
+				if(trackingReminderNotifications && trackingReminderNotifications.length){
 					if (window.chrome && window.chrome.browserAction) {
 						chrome.browserAction.setBadgeText({text: String($rootScope.numberOfPendingNotifications)});
 					}
