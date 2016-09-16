@@ -185,24 +185,6 @@ angular.module('starter')
                 });
         }
 
-        $scope.init = function(){
-            if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
-            if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
-            unitService.getUnits().then(function () {
-                var reminderIdUrlParameter = utilsService.getUrlParameter(window.location.href, 'reminderId');
-                var variableIdUrlParameter = utilsService.getUrlParameter(window.location.href, 'variableId');
-                if ($stateParams.reminderNotification && $stateParams.reminderNotification !== null) {
-                    setupEditReminder($stateParams.reminderNotification);
-                } else if(reminderIdUrlParameter) {
-                    setupReminderEditingFromUrlParameter(reminderIdUrlParameter);
-                } else if(variableIdUrlParameter){
-                    setupReminderEditingFromVariableId(variableIdUrlParameter);
-                } else if ($stateParams.variableObject) {
-                    $scope.onVariableSelect($stateParams.variableObject);
-                }
-            });
-	    };
-
         // when view is changed
     	$scope.$on('$ionicView.enter', function(e) { console.debug("Entering state " + $state.current.name);
             $scope.hideLoader();
@@ -316,6 +298,22 @@ angular.module('starter')
         };
 
         $scope.$on('$ionicView.beforeEnter', function(){
-            $scope.init();
+            console.debug('$ionicView.beforeEnter state ' + $state.current.name + '. Getting units now...');
+            if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
+            if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
+            unitService.getUnits().then(function () {
+                console.debug("Got units in " + $state.current.name);
+                var reminderIdUrlParameter = utilsService.getUrlParameter(window.location.href, 'reminderId');
+                var variableIdUrlParameter = utilsService.getUrlParameter(window.location.href, 'variableId');
+                if ($stateParams.reminderNotification && $stateParams.reminderNotification !== null) {
+                    setupEditReminder($stateParams.reminderNotification);
+                } else if(reminderIdUrlParameter) {
+                    setupReminderEditingFromUrlParameter(reminderIdUrlParameter);
+                } else if(variableIdUrlParameter){
+                    setupReminderEditingFromVariableId(variableIdUrlParameter);
+                } else if ($stateParams.variableObject) {
+                    $scope.onVariableSelect($stateParams.variableObject);
+                }
+            });
         });
 	});

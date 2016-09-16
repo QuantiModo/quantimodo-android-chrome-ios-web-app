@@ -226,7 +226,8 @@ angular.module('starter')
 			}
 			var deferred = $q.defer();
 			localStorageService.getItem(localStorageItemName, function(trackingReminderNotifications){
-				if(trackingReminderNotifications){
+				trackingReminderNotifications = JSON.parse(trackingReminderNotifications);
+				if(trackingReminderNotifications && trackingReminderNotifications.length > 0){
 					trackingReminderNotifications = JSON.parse(trackingReminderNotifications);
 					$rootScope.numberOfPendingNotifications = trackingReminderNotifications.length;
 					if (window.chrome && window.chrome.browserAction) {
