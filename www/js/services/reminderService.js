@@ -272,9 +272,11 @@ angular.module('starter')
 		};
 
 		reminderService.refreshTrackingReminderNotifications = function(variableCategoryName){
+			var deferred = $q.defer();
 			if($rootScope.refreshingTrackingReminderNotifications){
 				console.log('Already refreshing reminder notifications');
-				return;
+				deferred.reject();
+				return deferred.promise;
 			}
 			$rootScope.refreshingTrackingReminderNotifications = true;
 			var localStorageItemName = 'trackingReminderNotifications';
@@ -288,7 +290,6 @@ angular.module('starter')
 			if (variableCategoryName) {
 				params.variableCategoryName = variableCategoryName;
 			}
-			var deferred = $q.defer();
 			QuantiModo.getTrackingReminderNotifications(params, function(response){
 				if(response.success) {
 					var trackingRemindersNotifications =
