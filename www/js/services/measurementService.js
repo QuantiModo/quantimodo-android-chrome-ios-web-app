@@ -11,6 +11,9 @@ angular.module('starter')
 
             getAllLocalMeasurements : function(){
                 var primaryOutcomeMeasurements = localStorageService.getItemAsObject('allMeasurements');
+                if(!primaryOutcomeMeasurements) {
+                    primaryOutcomeMeasurements = [];
+                }
                 var measurementsQueue = localStorageService.getItemAsObject('measurementsQueue');
                 if(measurementsQueue){
                     primaryOutcomeMeasurements = primaryOutcomeMeasurements.concat(measurementsQueue);
