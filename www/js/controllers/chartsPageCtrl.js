@@ -198,6 +198,7 @@ angular.module('starter')
         };
         
         $scope.init = function(){
+            $scope.showLoader('Fetching measurements');
             console.log("variablePageCtrl: init");
             if($stateParams.variableObject){
                 $scope.state.variableObject = $stateParams.variableObject;
