@@ -119,24 +119,6 @@ angular.module('starter')
             }
         };
 
-        $scope.onMeasurementStart = function(){
-            localStorageService.getItem('allTrackingData', function(allTrackingData){
-                allTrackingData = allTrackingData? JSON.parse(allTrackingData) : [];
-
-                var matched = allTrackingData.filter(function(x){
-                    return x.abbreviatedUnitName === $scope.state.measurement.abbreviatedUnitName;
-                });
-
-                setTimeout(function(){
-                    var value = matched[matched.length-1]? matched[matched.length-1].value : $scope.state.variableObject.mostCommonValue;
-                    if(value) {
-                        $scope.state.measurement.value = value;
-                    }
-                    console.debug($state.current.name + ": " + 'onMeasurementStart: redrawing view...');
-                    $scope.safeApply();
-                }, 500);
-            });
-        };
 
         $scope.done = function(){
 
@@ -283,7 +265,9 @@ angular.module('starter')
         $scope.init = function(){
             if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
             if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
+            $scope.state.title = 'Record a Measurement';
             unitService.getUnits().then(function () {
+                console.debug($state.current.name + ": " + "got units in init function");
                 if($stateParams.variableObject !== null && typeof $stateParams.variableObject !== "undefined") {
                     console.debug($state.current.name + ": " + "Setting $scope.state.measurement.abbreviatedUnitName by variableObject: " + $stateParams.variableObject.abbreviatedUnitName);
                     if (jQuery.inArray($stateParams.variableObject.abbreviatedUnitName, $rootScope.abbreviatedUnitNames) === -1)
@@ -345,7 +329,8 @@ angular.module('starter')
         };
 
         // update data when view is navigated to
-        $scope.$on('$ionicView.enter', function(e) { console.debug("Entering state " + $state.current.name);
+        $scope.$on('$ionicView.enter', function(e) {
+            console.debug("$ionicView.enter " + $state.current.name);
             $scope.hideLoader();
         });
 
@@ -372,6 +357,7 @@ angular.module('starter')
         };
 
         var setupFromUrlParameters = function() {
+            console.debug($state.current.name + ": " + "setupFromUrlParameters");
             var unit = utilsService.getUrlParameter(location.href, 'unit', true);
             var variableName = utilsService.getUrlParameter(location.href, 'variableName', true);
             var startTimeEpoch = utilsService.getUrlParameter(location.href, 'startTimeEpoch', true);
@@ -388,12 +374,14 @@ angular.module('starter')
         };
 
         var setupFromMeasurementStateParameter = function(){
+            console.debug($state.current.name + ": " + "setupFromMeasurementStateParameter");
             if($stateParams.measurement !== null && typeof $stateParams.measurement !== "undefined"){
                 setupTrackingByMeasurement($stateParams.measurement);
             }
         };
 
         var setupFromReminderStateParameter = function(){
+            console.debug($state.current.name + ": " + "setupFromReminderStateParameter");
             if($stateParams.reminderNotification !== null && typeof $stateParams.reminderNotification !== "undefined"){
                 setupTrackingByReminderNotification();
             }
@@ -679,6 +667,7 @@ angular.module('starter')
         };
 
         $scope.$on('$ionicView.beforeEnter', function(){
+            console.log($state.current.name + ": beforeEnter");
             $scope.init();
         });
 
