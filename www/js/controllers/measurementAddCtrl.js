@@ -196,10 +196,10 @@ angular.module('starter')
                 var params = {
                     trackingReminderNotificationId: $stateParams.reminderNotification.id
                 };
-                QuantiModo.skipTrackingReminderNotification(params, function(response){
-                    console.debug($state.current.name + ": skipTrackingReminderNotification response " + JSON.parse(response));
+                QuantiModo.skipTrackingReminderNotification(params, function(){
+                    console.debug($state.current.name + ": skipTrackingReminderNotification");
                 }, function(err){
-                    console.error(err);
+                    console.error($state.current.name + ": skipTrackingReminderNotification error");
                     if (typeof Bugsnag !== "undefined") {
                         Bugsnag.notifyException(err);
                     }
