@@ -129,14 +129,6 @@ angular.module('starter')
                 console.debug('QuantiModo.post: ' + baseURL + ' body: ' + JSON.stringify(items));
                 QuantiModo.getAccessTokenFromAnySource().then(function(accessToken){
 
-                    if(accessToken && accessToken.indexOf(' ') > -1){
-                        accessToken = null;
-                        localStorageService.deleteItem('accessToken');
-                        localStorageService.deleteItem('accessTokenInUrl');
-                        $rootScope.accessToken = null;
-                        bugsnagService.reportError('ERROR: Access token had white space so probably erroneous! Deleting it now.');
-                    }
-                    
                     //console.log("Token : ", token.accessToken);
                     // configure params
                     for (var i = 0; i < items.length; i++) 
