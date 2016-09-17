@@ -248,6 +248,7 @@ angular.module('starter')
 
 				if (typeof analytics !== 'undefined')  { analytics.trackView("Reminders Inbox Controller"); }
 
+				$scope.refreshTrackingReminderNotifications();
 				//getTrackingReminderNotifications();
 
 				if($rootScope.localNotificationsEnabled){
