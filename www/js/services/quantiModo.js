@@ -53,15 +53,6 @@ angular.module('starter')
             // GET method with the added token
             QuantiModo.get = function(baseURL, allowedParams, params, successHandler, errorHandler){
                 QuantiModo.getAccessTokenFromAnySource().then(function(accessToken){
-                    if(accessToken && accessToken.indexOf(' ') > -1){
-                        accessToken = null;
-                        localStorageService.deleteItem('accessToken');
-                        localStorageService.deleteItem('accessTokenInUrl');
-                        $rootScope.accessToken = null;
-                        if (typeof Bugsnag !== "undefined") {
-                            bugsnagService.reportError('ERROR: Access token had white space so probably erroneous! Deleting it now.');
-                        }
-                    }
 
                     allowedParams.push('limit');
                     allowedParams.push('offset');
