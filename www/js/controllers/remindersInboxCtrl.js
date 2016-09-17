@@ -245,12 +245,10 @@ angular.module('starter')
 				console.debug('reminderInboxCtrl init: Intro not seen and hidemenu is false so going to intro state');
 				$state.go('intro');
 			} else {
-				$rootScope.showAllCaughtUpCard = false;
-				setPageTitle();
-				authService.checkAuthOrSendToLogin();
+
 				if (typeof analytics !== 'undefined')  { analytics.trackView("Reminders Inbox Controller"); }
 
-				getTrackingReminderNotifications();
+				//getTrackingReminderNotifications();
 
 				if($rootScope.localNotificationsEnabled){
 					console.debug("reminderInbox init: calling refreshTrackingRemindersAndScheduleAlarms");
@@ -354,12 +352,17 @@ angular.module('starter')
 					fromUrl: window.location.href
 				});
 		};
-
-        // when view is changed
-    	$scope.$on('$ionicView.enter', function(e) { console.debug("Entering state " + $state.current.name);
+		
+    	$scope.$on('$ionicView.enter', function(e) { console.debug("beforeEnter state " + $state.current.name);
 			$scope.hideLoader();
     		$scope.init();
     	});
+
+		$scope.$on('$ionicView.beforeEnter', function(e) { console.debug("beforeEnter state " + $state.current.name);
+			$rootScope.showAllCaughtUpCard = false;
+			setPageTitle();
+			getTrackingReminderNotifications();
+		});
 
 		// Triggered on a button click, or some other target
 		$scope.showActionSheetForNotification = function(trackingReminderNotification, $event) {
