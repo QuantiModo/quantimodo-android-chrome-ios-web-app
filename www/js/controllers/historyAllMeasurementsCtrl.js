@@ -4,7 +4,7 @@ angular.module('starter')
 	.controller('historyAllMeasurementsCtrl', function($scope, $state, $stateParams, $rootScope, $timeout, $ionicActionSheet,
 													   authService, measurementService,
 													   variableCategoryService, ratingService, localStorageService,
-													   qmLocationService) {
+													   qmLocationService, userService) {
 
 	    $scope.controller_name = "historyAllMeasurementsCtrl";
         
@@ -79,7 +79,7 @@ angular.module('starter')
 				$scope.$broadcast('scroll.refreshComplete');
 	    	}, function(error){
 				Bugsnag.notify(error, JSON.stringify(error), {}, "error");
-	    		console.log('error getting measurements', error);
+	    		console.error('error getting measurements' + JSON.stringify(error));
 				//Stop the ion-refresher from spinning
 				$scope.$broadcast('scroll.refreshComplete');
 				$scope.hideLoader();
@@ -93,13 +93,13 @@ angular.module('starter')
 
 		$scope.trackLocationChange = function() {
 
-			console.log('trackLocation', $scope.state.trackLocation);
+			console.log($state.current.name + ": " + 'trackLocation', $scope.state.trackLocation);
 			$rootScope.user.trackLocation = $scope.state.trackLocation;
 			userService.updateUserSettings({trackLocation: $rootScope.user.trackLocation});
 			if($scope.state.trackLocation){
 				qmLocationService.updateLocationVariablesAndPostMeasurementIfChanged();
 			} else {
-				console.debug("Do not track location");
+				console.debug($state.current.name + ": " + "Do not track location");
 			}
 
 		};
@@ -127,14 +127,14 @@ angular.module('starter')
 					$scope.state.variableCategories = variableCategories;
 				}, function(err){
 					Bugsnag.notify(err, JSON.stringify(err), {}, "error");
-					console.log("error getting variable categories", err);
+					console.log($state.current.name + ": " + "error getting variable categories", err);
 				});
 			getHistory();
 
 	    };
 
         // when view is changed
-    	$scope.$on('$ionicView.enter', function(e) { console.debug("Entering state " + $state.current.name);
+    	$scope.$on('$ionicView.enter', function(e) { console.debug($state.current.name + ": " + "Entering state " + $state.current.name);
 			$scope.hideLoader();
 			$scope.state.offset = 0;
 			$scope.state.trackLocation = $rootScope.user.trackLocation;
@@ -162,10 +162,10 @@ angular.module('starter')
 				],
 				cancelText: '<i class="icon ion-ios-close"></i>Cancel',
 				cancel: function() {
-					console.log('CANCELLED');
+					console.log($state.current.name + ": " + 'CANCELLED');
 				},
 				buttonClicked: function(index) {
-					console.log('BUTTON CLICKED', index);
+					console.log($state.current.name + ": " + 'BUTTON CLICKED', index);
 					if(index === 0){
 						$scope.editMeasurement($scope.state.variableObject);
 					}

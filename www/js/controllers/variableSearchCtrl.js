@@ -24,7 +24,7 @@ angular.module('starter')
         
         // when an old measurement is tapped to remeasure
         $scope.selectVariable = function(variableObject) {
-            console.debug("$scope.selectVariable: " + JSON.stringify(variableObject));
+            console.debug($state.current.name + ": " + "$scope.selectVariable: " + JSON.stringify(variableObject));
             if(variableObject.lastValue !== null){
                 localStorageService.addToOrReplaceElementOfItemByIdOrMoveToFront('userVariables', variableObject);
             }
@@ -84,7 +84,7 @@ angular.module('starter')
             if (typeof Bugsnag !== "undefined") {
                 Bugsnag.context = "variableSearch";
             }
-            console.debug('Initializing variable search controller...');
+            console.debug($state.current.name + ": " + 'Initializing variable search controller...');
             setTitleAndPlaceholderText();
             if (typeof analytics !== 'undefined')  { analytics.trackView("Variable Search Controller"); }
             authService.checkAuthOrSendToLogin();
@@ -98,13 +98,13 @@ angular.module('starter')
 
         // when a query is searched in the search box
         $scope.onVariableSearch = function(){
-            console.log("Search term: ", $scope.state.variableSearchQuery.name);
+            console.log($state.current.name + ": " + "Search term: ", $scope.state.variableSearchQuery.name);
             if($scope.state.variableSearchQuery.name.length > 2){
                 $scope.state.searching = true;
                 if ($stateParams.doNotIncludePublicVariables) { // on variable search page, only show user's variables
                     variableService.searchUserVariables($scope.state.variableSearchQuery.name, $scope.state.variableCategoryName)
                         .then(function(variables){
-                            console.debug("$scope.onVariableSearch: Populating list with " +
+                            console.debug($state.current.name + ": " + "$scope.onVariableSearch: Populating list with " +
                                 "variableService.searchUserVariables results ");
                             $scope.state.showAddVariableButton = false;
                             $scope.state.variableSearchResults = variables;
@@ -114,7 +114,7 @@ angular.module('starter')
                 else { // on add reminder or record measurement search pages; include public variables
                     variableService.searchVariablesIncludePublic($scope.state.variableSearchQuery.name, $scope.state.variableCategoryName)
                         .then(function(variables){
-                            console.debug("$scope.onVariableSearch: Populating list with " +
+                            console.debug($state.current.name + ": " + "$scope.onVariableSearch: Populating list with " +
                                 "variableService.searchVariablesIncludePublic results ");
                             $scope.state.showAddVariableButton = false;
                             $scope.state.variableSearchResults = variables;
@@ -134,7 +134,7 @@ angular.module('starter')
                             // If no results or no exact match, show "+ Add [variable]" button for query
                             // Also, can only favorite existing variables
                             if((variables.length < 1 || !found) && $stateParams.nextState !== "app.favoriteAdd"){
-                                console.debug("$scope.onVariableSearch: Set showAddVariableButton to true");
+                                console.debug($state.current.name + ": " + "$scope.onVariableSearch: Set showAddVariableButton to true");
                                 $scope.state.showAddVariableButton = true;
                                 if ($stateParams.nextState === "app.reminderAdd") {
                                     $scope.state.addNewVariableButtonText = '+ Add ' + $scope.state.variableSearchQuery.name +
@@ -246,7 +246,7 @@ angular.module('starter')
                 variableObject.variableCategoryName = $scope.state.variableCategoryName;
             }
 
-            console.debug("$scope.addNewVariable: " + JSON.stringify(variableObject));
+            console.debug($state.current.name + ": " + "$scope.addNewVariable: " + JSON.stringify(variableObject));
             if ($stateParams.nextState) {
                 $state.go($stateParams.nextState,
                     {
