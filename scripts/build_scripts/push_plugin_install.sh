@@ -26,7 +26,7 @@ bower install --save-dev ionic-platform-web-client
 cordova plugin remove phonegap-plugin-push
 ionic plugin remove phonegap-plugin-push
 
-cordova plugin add https://github.com/mikepsinn/phonegap-plugin-push#29c241b69109d73c62d62996829265e63606dae3 --variable SENDER_ID="${GCM_SENDER_ID}"
+cordova plugin add https://github.com/mikepsinn/phonegap-plugin-push#7f9823c9af8df723801c2a87ddf7d5d82f729dfd --variable SENDER_ID="${GCM_SENDER_ID}"
 #cordova plugin add phonegap-plugin-push --variable SENDER_ID="${GCM_SENDER_ID}"
 
 ionic io init -email ${IONIC_EMAIL} --password ${IONIC_PASSWORD}
