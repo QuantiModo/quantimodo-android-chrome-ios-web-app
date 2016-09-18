@@ -22,7 +22,7 @@ angular.module('starter')
                 var localStorageItemAsString = this.getItemSync(localStorageItemName);
                 var localStorageItemArray = JSON.parse(localStorageItemAsString);
                 if(!localStorageItemArray){
-                    console.error("Local storage item " + localStorageItemName + " not found");
+                    console.warn("Local storage item " + localStorageItemName + " not found");
                 } else {
                     for(var i = 0; i < localStorageItemArray.length; i++){
                         if(localStorageItemArray[i].id !== elementId){
