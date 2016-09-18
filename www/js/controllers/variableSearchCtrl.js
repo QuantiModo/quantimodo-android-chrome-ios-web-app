@@ -269,12 +269,12 @@ angular.module('starter')
 
         $scope.matchEveryWord = function() {
             return function( item ) {
-                var string = JSON.stringify(item).toLowerCase();
-                var words = $scope.state.variableSearchQuery.name.toLowerCase();
+                var variableObjectAsString = JSON.stringify(item).toLowerCase();
+                var lowercaseVariableSearchQuery = $scope.state.variableSearchQuery.name.toLowerCase();
 
-                var filterBy = words.split(/\s+/);
+                var filterBy = lowercaseVariableSearchQuery.split(/\s+/);
 
-                if(words){
+                if(lowercaseVariableSearchQuery){
                     if(!filterBy.length){
                         return true;
                     }
@@ -283,7 +283,7 @@ angular.module('starter')
                 }
 
                 return filterBy.every(function (word){
-                    var exists = string.indexOf(word);
+                    var exists = variableObjectAsString.indexOf(word);
                     if(exists !== -1){
                         return true;
                     }
