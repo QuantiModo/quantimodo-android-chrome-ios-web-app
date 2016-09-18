@@ -97,26 +97,18 @@ angular.module('starter')
             //$scope.showLoader();
             authService.getAccessTokenFromAuthorizationCode(authorization_code, withJWT)
                 .then(function(response) {
-
                     if(response.error){
                         console.error("Error generating access token");
                         console.log('response', response);
                         localStorageService.setItem('user', null);
                     } else {
                         console.log("Access token received",response);
-                        if(typeof withJWT !== "undefined" && withJWT === true) {
-                            QuantiModo.updateAccessToken(response, withJWT);
-                        }
-                        else {
-                            QuantiModo.updateAccessToken(response);
-                        }
-
+                        QuantiModo.saveAccessTokenInLocalStorage(response);
                         console.debug('get user details from server and going to defaultState...');
                         $rootScope.getUserAndSetInLocalStorage();
                         $rootScope.hideNavigationMenu = false;
                         $rootScope.$broadcast('callAppCtrlInit');
                         $state.go(config.appSettings.defaultState);
-
                     }
                 })
                 .catch(function(err){

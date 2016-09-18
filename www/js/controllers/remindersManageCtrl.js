@@ -32,8 +32,8 @@ angular.module('starter')
 	    };
 
 		function showAppropriateHelpInfoCards(){
-			$scope.state.showTreatmentInfoCard = (!$scope.state.trackingReminders.length) && (window.location.href.indexOf('Treatments') > -1);
-			$scope.state.showSymptomInfoCard = (!$scope.state.trackingReminders.length) && (window.location.href.indexOf('Symptom') > -1);
+			$scope.state.showTreatmentInfoCard = ($scope.state.trackingReminders.length === 0) && (window.location.href.indexOf('Treatments') > -1);
+			$scope.state.showSymptomInfoCard = ($scope.state.trackingReminders.length === 0) && (window.location.href.indexOf('Symptom') > -1);
 		}
 
 	    // when date is updated
@@ -73,6 +73,7 @@ angular.module('starter')
 			reminderService.getTrackingReminders($stateParams.variableCategoryName)
 				.then(function (trackingReminders) {
 					$scope.state.trackingReminders = trackingReminders;
+					showAppropriateHelpInfoCards();
 					$scope.hideLoader();
 					//Stop the ion-refresher from spinning
 					$scope.$broadcast('scroll.refreshComplete');
@@ -93,7 +94,7 @@ angular.module('starter')
 				$scope.state.addButtonText = 'Add new ' +
 					pluralize($filter('wordAliases')($stateParams.variableCategoryName.toLowerCase()), 1) + ' reminder';
 			}
-			showAppropriateHelpInfoCards();
+
 			$scope.state.showButtons = true;
 			authService.checkAuthOrSendToLogin();
 			getTrackingReminders();

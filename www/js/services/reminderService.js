@@ -226,14 +226,15 @@ angular.module('starter')
 			}
 			var deferred = $q.defer();
 			localStorageService.getItem(localStorageItemName, function(trackingReminderNotifications){
-				if(trackingReminderNotifications){
-					trackingReminderNotifications = JSON.parse(trackingReminderNotifications);
+				trackingReminderNotifications = JSON.parse(trackingReminderNotifications);
+				if(trackingReminderNotifications && trackingReminderNotifications.length){
 					$rootScope.numberOfPendingNotifications = trackingReminderNotifications.length;
 					if (window.chrome && window.chrome.browserAction) {
 						chrome.browserAction.setBadgeText({text: String($rootScope.numberOfPendingNotifications)});
 					}
 					deferred.resolve(trackingReminderNotifications);
 				} else {
+					$rootScope.numberOfPendingNotifications = 0;
 					reminderService.refreshTrackingReminderNotifications(variableCategoryName)
 						.then(function (trackingReminderNotifications) {
 							deferred.resolve(trackingReminderNotifications);
@@ -272,9 +273,11 @@ angular.module('starter')
 		};
 
 		reminderService.refreshTrackingReminderNotifications = function(variableCategoryName){
+			var deferred = $q.defer();
 			if($rootScope.refreshingTrackingReminderNotifications){
 				console.log('Already refreshing reminder notifications');
-				return;
+				deferred.reject();
+				return deferred.promise;
 			}
 			$rootScope.refreshingTrackingReminderNotifications = true;
 			var localStorageItemName = 'trackingReminderNotifications';
@@ -288,7 +291,6 @@ angular.module('starter')
 			if (variableCategoryName) {
 				params.variableCategoryName = variableCategoryName;
 			}
-			var deferred = $q.defer();
 			QuantiModo.getTrackingReminderNotifications(params, function(response){
 				if(response.success) {
 					var trackingRemindersNotifications =

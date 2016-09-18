@@ -265,7 +265,7 @@ angular.module('starter',
                 return;
             }
 
-            $rootScope.appVersion = "1.9.3.0";
+            $rootScope.appVersion = "1.9.4.0";
             $rootScope.appName = config.appSettings.appName;
 
             if (typeof Bugsnag !== "undefined") {
@@ -429,7 +429,7 @@ angular.module('starter',
             }
         })
         .state('app.measurementAddSearch', {
-            url: "/track_factors",
+            url: "/measurement-add-search",
             params: {
                 reminder : null,
                 fromState : null,
@@ -445,7 +445,7 @@ angular.module('starter',
             }
         })
         .state('app.measurementAddSearchCategory', {
-            url: "/track_factors_category/:variableCategoryName",
+            url: "/measurement-add-search-category/:variableCategoryName",
             params: {
                 variableCategoryName : null,
                 fromState : null,

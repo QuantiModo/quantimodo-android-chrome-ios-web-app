@@ -68,5 +68,12 @@ angular.module('starter')
             
         };
 
+        $scope.$on('$ionicView.beforeEnter', function(){
+            if($rootScope.user){
+                console.log('Already have user so no need to welcome. Going to default state.');
+                $state.go(config.appSettings.defaultState);
+            }
+        });
+
         $scope.init();
     });

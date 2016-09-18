@@ -53,15 +53,6 @@ angular.module('starter')
             // GET method with the added token
             QuantiModo.get = function(baseURL, allowedParams, params, successHandler, errorHandler){
                 QuantiModo.getAccessTokenFromAnySource().then(function(accessToken){
-                    if(accessToken && accessToken.indexOf(' ') > -1){
-                        accessToken = null;
-                        localStorageService.deleteItem('accessToken');
-                        localStorageService.deleteItem('accessTokenInUrl');
-                        $rootScope.accessToken = null;
-                        if (typeof Bugsnag !== "undefined") {
-                            bugsnagService.reportError('ERROR: Access token had white space so probably erroneous! Deleting it now.');
-                        }
-                    }
 
                     allowedParams.push('limit');
                     allowedParams.push('offset');
@@ -138,14 +129,6 @@ angular.module('starter')
                 console.debug('QuantiModo.post: ' + baseURL + ' body: ' + JSON.stringify(items));
                 QuantiModo.getAccessTokenFromAnySource().then(function(accessToken){
 
-                    if(accessToken && accessToken.indexOf(' ') > -1){
-                        accessToken = null;
-                        localStorageService.deleteItem('accessToken');
-                        localStorageService.deleteItem('accessTokenInUrl');
-                        $rootScope.accessToken = null;
-                        bugsnagService.reportError('ERROR: Access token had white space so probably erroneous! Deleting it now.');
-                    }
-                    
                     //console.log("Token : ", token.accessToken);
                     // configure params
                     for (var i = 0; i < items.length; i++) 
@@ -774,13 +757,13 @@ angular.module('starter')
                 }
 
                 if(utilsService.getClientId() !== 'oAuthDisabled') {
-                    QuantiModo._defaultGetAccessToken(deferred);
+                    QuantiModo.getOrRefreshAccessTokenOrLogin(deferred);
                     return deferred.promise;
                 }
 
             };
 
-            QuantiModo._defaultGetAccessToken = function (deferred) {
+            QuantiModo.getOrRefreshAccessTokenOrLogin = function (deferred) {
 
                 console.log('access token resolving flow');
 
@@ -835,7 +818,7 @@ angular.module('starter')
                         console.log('Token refresh failed: ' + data.error);
                         deferred.reject('refresh failed');
                     } else {
-                        var accessTokenRefreshed = QuantiModo.updateAccessToken(data);
+                        var accessTokenRefreshed = QuantiModo.saveAccessTokenInLocalStorage(data);
 
                         console.log('access token successfully updated from api server', data);
                         console.log('resolving toke using response value');
@@ -854,7 +837,7 @@ angular.module('starter')
             };
 
             // extract values from token response and saves in localstorage
-            QuantiModo.updateAccessToken = function (accessResponse) {
+            QuantiModo.saveAccessTokenInLocalStorage = function (accessResponse) {
                 if(accessResponse){
                     var accessToken = accessResponse.accessToken || accessResponse.access_token;
                     var expiresIn = accessResponse.expiresIn || accessResponse.expires_in;

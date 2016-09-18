@@ -374,49 +374,49 @@ config.appSettings  = {
             title : 'Track Anything',
             isSubMenuChild : true,
             showSubMenuVariable : 'showTrackingSubMenu',
-            href : '#/app/track_factors',
+            href : '#/app/measurement-add-search',
             icon : 'ion-android-globe'
         },
         {
             title : 'Record a Meal',
             isSubMenuChild : true,
             showSubMenuVariable : 'showTrackingSubMenu',
-            href : '#/app/track_factors_category/Foods',
+            href : '#/app/measurement-add-search-category/Foods',
             icon : 'ion-ios-nutrition-outline'
         },
         {
             title : 'Rate an Emotion',
             isSubMenuChild : true,
             showSubMenuVariable : 'showTrackingSubMenu',
-            href : '#/app/track_factors_category/Emotions',
+            href : '#/app/measurement-add-search-category/Emotions',
             icon : 'ion-happy-outline'
         },
         {
             title : 'Rate a Symptom',
             isSubMenuChild : true,
             showSubMenuVariable : 'showTrackingSubMenu',
-            href : '#/app/track_factors_category/Symptoms',
+            href : '#/app/measurement-add-search-category/Symptoms',
             icon : 'ion-ios-pulse'
         },
         {
             title : 'Record a Treatment',
             isSubMenuChild : true,
             showSubMenuVariable : 'showTrackingSubMenu',
-            href : '#/app/track_factors_category/Treatments',
+            href : '#/app/measurement-add-search-category/Treatments',
             icon : 'ion-ios-medkit-outline'
         },
         {
             title : 'Record Activity',
             isSubMenuChild : true,
             showSubMenuVariable : 'showTrackingSubMenu',
-            href : '#/app/track_factors_category/Physical Activity',
+            href : '#/app/measurement-add-search-category/Physical Activity',
             icon : 'ion-ios-body-outline'
         },
         {
             title : 'Record Vital Sign',
             isSubMenuChild : true,
             showSubMenuVariable : 'showTrackingSubMenu',
-            href : '#/app/track_factors_category/Vital Signs',
+            href : '#/app/measurement-add-search-category/Vital Signs',
             icon : 'ion-ios-pulse'
         },
         {
@@ -535,12 +535,12 @@ config.appSettings  = {
         },
         {
             title : 'Add How I Feel Response',
-            href : '#/app/track_factors_category/Symptoms',
+            href : '#/app/measurement-add-search-category/Symptoms',
             icon : 'ion-happy-outline'
         },
         {
             title : 'Add Vitals Measurement',
-            href : '#/app/track_factors_category/Vital Signs',
+            href : '#/app/measurement-add-search-category/Vital Signs',
             icon : 'ion-ios-pulse'
         },
         {
