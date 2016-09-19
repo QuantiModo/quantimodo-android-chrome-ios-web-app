@@ -22,7 +22,7 @@ angular.module('starter')
 	    	console.log("favoriteAdd.onVariableSelect:  " + JSON.stringify(selectedVariable));
 
             $scope.state.trackingReminder = $stateParams.variableObject;
-            $scope.setupVariableCategory(selectedVariable.variableCategoryName);
+            setupVariableCategory(selectedVariable.variableCategoryName);
             if (selectedVariable.id) {
                 $scope.state.trackingReminder.variableId = selectedVariable.id;
                 $scope.state.trackingReminder.id = null;
@@ -122,8 +122,16 @@ angular.module('starter')
 	    	$scope.state.title = "Edit " +  trackingReminder.variableName + " to Favorites";
 	    };
 
+        $scope.variableCategorySelectorChange = function(variableCategoryName) {
+            $scope.state.variableCategoryObject = variableCategoryService.getVariableCategoryInfo(variableCategoryName);
+            $scope.state.trackingReminder.abbreviatedUnitName = $scope.state.variableCategoryObject.defaultAbbreviatedUnitName;
+            $scope.state.defaultValuePlaceholderText = 'Enter most common value';
+            $scope.state.defaultValueLabel = 'Default Value';
+            setupVariableCategory(variableCategoryName);
+        };
+
 	    // setup category view
-	    $scope.setupVariableCategory = function(variableCategoryName){
+	    var setupVariableCategory = function(variableCategoryName){
             console.log("variableCategoryName  is " + variableCategoryName);
             if(!variableCategoryName){
                 variableCategoryName = '';

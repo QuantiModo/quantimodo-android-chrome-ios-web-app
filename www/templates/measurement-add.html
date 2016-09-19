@@ -9,7 +9,7 @@
                 <label class="item item-input item-select">
                     <div class="input-label" style="white-space:normal; width: 60%">Select Category</div>
                     <select id="variableCategorySelector" ng-model="state.measurement.variableCategoryName"
-                            ng-change="setupVariableCategory(state.measurement.variableCategoryName)">
+                            ng-change="variableCategorySelectorChange(state.measurement.variableCategoryName)">
                         <option ng-repeat="variableCategory in state.variableCategories"
                                 value="{{variableCategory.name}}">{{variableCategory.name}}</option>
                     </select>
