@@ -8,7 +8,7 @@
                 <!--<label class="item item-input item-select" ng-if="state.showAddVariableCard && !state.trackingReminder.variableCategoryName">-->
                 <label class="item item-input item-select" ng-if="state.showAddVariableCard">
                     <div class="input-label" style="white-space:normal; width: 60%">Select Category</div>
-                    <select id="variableCategorySelector" ng-model="state.trackingReminder.variableCategoryName" ng-change="setupVariableCategory(state.trackingReminder.variableCategoryName)">
+                    <select id="variableCategorySelector" ng-model="state.trackingReminder.variableCategoryName" ng-change="variableCategorySelectorChange(state.trackingReminder.variableCategoryName)">
                         <option ng-repeat="variableCategory in variables.variableCategories" value="{{variableCategory.name}}">{{variableCategory.name}}</option>
                     </select>
                 </label>

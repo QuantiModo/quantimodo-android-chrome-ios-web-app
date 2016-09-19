@@ -232,13 +232,19 @@ angular.module('starter')
                     $state.go(config.appSettings.defaultState);
                 }
             });
+        };
 
-
+        $scope.variableCategorySelectorChange = function(variableCategoryName) {
+            $scope.state.variableCategoryObject = variableCategoryService.getVariableCategoryInfo(variableCategoryName);
+            $scope.state.measurement.abbreviatedUnitName = $scope.state.variableCategoryObject.defaultAbbreviatedUnitName;
+            $scope.state.defaultValuePlaceholderText = 'Enter a value';
+            $scope.state.defaultValueLabel = 'Value';
+            setupVariableCategory(variableCategoryName);
 
         };
 
         // setup category view
-        $scope.setupVariableCategory = function(variableCategoryName){
+        var setupVariableCategory = function(variableCategoryName){
             console.log($state.current.name + ": " + "variableCategoryName  is " + variableCategoryName);
             //$scope.state.showVariableCategorySelector = false;
             if(!variableCategoryName){
@@ -257,9 +263,7 @@ angular.module('starter')
             if($scope.state.variableCategoryObject.defaultValuePlaceholderText){
                 $scope.state.defaultValuePlaceholderText = $scope.state.variableCategoryObject.defaultValuePlaceholderText;
             }
-            $scope.state.variableSearchPlaceholderText = 'Search for a ' + $filter('wordAliases')(pluralize(variableCategoryName, 1)) + '...';
             setupValueFieldType($scope.state.variableCategoryObject.defaultAbbreviatedUnitName, null);
-
         };
 
         $scope.init = function(){
@@ -422,10 +426,10 @@ angular.module('starter')
                 }
                 if($stateParams.variableObject.category){
                     $scope.state.measurement.variableCategoryName = $stateParams.variableObject.category;
-                    $scope.setupVariableCategory($scope.state.measurement.variableCategoryName);
+                    setupVariableCategory($scope.state.measurement.variableCategoryName);
                 } else if($stateParams.variableObject.variableCategoryName) {
                     $scope.state.measurement.variableCategoryName = $stateParams.variableObject.variableCategoryName;
-                    $scope.setupVariableCategory($scope.state.measurement.variableCategoryName);
+                    setupVariableCategory($scope.state.measurement.variableCategoryName);
                 } else {
                     $scope.state.showVariableCategorySelector = true;
                 }
