@@ -43,7 +43,8 @@ angular.module('starter')
 
 	    var getHistory = function(concat){
 			if($scope.state.history.length < 1){
-				$scope.showLoader('Squirrels retrieving measurements...');
+				$scope.state.loading = true;
+				//$scope.showLoader('Squirrels retrieving measurements...');
 			}
 			var params = {
 				offset: $scope.state.offset,
@@ -108,7 +109,7 @@ angular.module('starter')
 	    // constructor
 	    $scope.init = function(){
 			$scope.state.loading = true;
-			$scope.showLoader('Fetching measurements...');
+			//$scope.showLoader('Fetching measurements...');
 			if (typeof analytics !== 'undefined')  { analytics.trackView("All Measurements Controller"); }
 			Bugsnag.context = "historyAll";
 			$scope.state.offset = 0;
