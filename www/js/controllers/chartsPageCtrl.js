@@ -52,7 +52,7 @@ angular.module('starter')
 
         var updateDailyCharts = function(){
 
-            if ($scope.state.history.length > 0) {
+            if ($scope.state.dailyHistory.length > 0) {
                 // FIXME Eventually update fromDate and toDate so calendar can determine domain
                 /*var fromDate = parseInt(localStorageService.getItemSync('fromDate'));
                  var toDate = parseInt(localStorageService.getItemSync('toDate'));
@@ -62,7 +62,7 @@ angular.module('starter')
                  if (!toDate) {
                  toDate = Date.now();
                  }*/
-                if($scope.state.variableObject.fillingValue && $scope.state.variableObject.fillingValue !== -1){
+                if($scope.state.variableObject.fillingValue !== null && $scope.state.variableObject.fillingValue !== -1){
                     $scope.distributionChartConfig =
                         chartService.processDataAndConfigureDistributionChart($scope.state.dailyHistory, $scope.state.variableObject);
                 }
@@ -85,7 +85,7 @@ angular.module('starter')
                 if (!toDate) {
                     toDate = Date.now();
                 }*/
-                if(!$scope.state.variableObject.fillingValue || $scope.state.variableObject.fillingValue === -1){
+                if($scope.state.variableObject.fillingValue === null || $scope.state.variableObject.fillingValue === -1){
                     $scope.distributionChartConfig =
                         chartService.processDataAndConfigureDistributionChart($scope.state.history, $scope.state.variableObject);
                 }
