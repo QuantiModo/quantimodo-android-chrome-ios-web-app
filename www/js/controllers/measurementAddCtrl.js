@@ -101,6 +101,7 @@ angular.module('starter')
             if($scope.state.measurement.variableName === config.appSettings.primaryOutcomeVariableDetails.name){
                 measurementService.deleteMeasurementFromLocalStorage($scope.state.measurement).then(function (){
                     measurementService.deleteMeasurementFromServer($scope.state.measurement).then(function (){
+                        $scope.hideLoader();
                         if($ionicHistory.backView()){
                             $ionicHistory.goBack();
                         } else {
@@ -110,6 +111,7 @@ angular.module('starter')
                 });
             } else {
                 measurementService.deleteMeasurementFromServer($scope.state.measurement).then(function (){
+                    $scope.hideLoader();
                     if($ionicHistory.backView()){
                         $ionicHistory.goBack();
                     } else {
