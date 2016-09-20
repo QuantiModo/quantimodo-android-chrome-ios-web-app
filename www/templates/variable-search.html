@@ -23,10 +23,7 @@
             <p></p>
             <ion-list>
                 <ion-item style="text-align:center;border-bottom: 1px solid rgb(221, 221, 221);" ng-show="state.searching">
-                    <object data="../www/img/circular-loader.gif" type="image/png">
-                        <!--Falling back to /img if /www/img isn't present because Heroku uses different root than mobile apps-->
-                        <img src="../img/circular-loader.gif" />
-                    </object>
+                    <ion-spinner></ion-spinner>
                 </ion-item>
             </ion-list>
             <ion-list ng-show="state.variableSearchResults.length" class>

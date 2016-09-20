@@ -1,5 +1,14 @@
-<ion-view hide-nav-bar="hideNavigationMenu" view-title="{{state.variableObject.variableName}} Charts">
+<ion-view hide-nav-bar="hideNavigationMenu" view-title="{{state.variableObject.name}} Charts">
     <ion-content>
+        <div class="card"  ng-show="state.loading">
+            <div class="item" >
+                <div class="row">
+                    <ion-spinner></ion-spinner>
+                    <p style=" text-align: center; line-height: normal; font-size: 18px;">&nbsp &nbsp Fetching measurements...</p>
+                </div>
+            </div>
+        </div>
+
         <div ng-show="lineChartConfig" class="card primary-outcome-variable-reporting-chart">
             <div class="item item-text-wrap">
                 <highchart id="chart2" config="lineChartConfig"></highchart>
