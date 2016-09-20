@@ -9,7 +9,7 @@ angular.module('starter')
 				for (var i = 0; i < allMeasurements.length; i++) {
 					valueLabel = String(allMeasurements[i].value);
 					if(valueLabel.length > 3) {
-						valueLabel = String(valueLabel.toFixed(2));
+						valueLabel = String(allMeasurements[i].value.toFixed(2));
 					}
 					if(typeof distributionArray[valueLabel] === "undefined"){
 						distributionArray[valueLabel] = 0;

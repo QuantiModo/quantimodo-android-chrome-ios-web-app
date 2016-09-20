@@ -15,7 +15,6 @@ angular.module('starter')
 			units : [],
 			variableCategories : [],
 			hideLoadMoreButton : true,
-			trackLocation : $rootScope.user.trackLocation,
 			showLocationToggle: false,
 			noHistory: false
 	    };
@@ -119,8 +118,10 @@ angular.module('starter')
 				$scope.title = $stateParams.variableCategoryName + ' History';
 				$scope.state.showLocationToggle = $stateParams.variableCategoryName === "Location";
 			}
-			
-            authService.checkAuthOrSendToLogin();
+
+			if($rootScope.user){
+				$scope.state.trackLocation = $rootScope.user.trackLocation;
+			}
 			$scope.showHelpInfoPopupIfNecessary();
 			variableCategoryService.getVariableCategories()
 				.then(function(variableCategories){

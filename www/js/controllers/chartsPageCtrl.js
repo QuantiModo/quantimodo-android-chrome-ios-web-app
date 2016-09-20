@@ -149,7 +149,7 @@ angular.module('starter')
                 console.error("$scope.state.variableObject: " + JSON.stringify($scope.state.variableObject));
                 return;
             }
-            $scope.showLoader('Fetching measurements');
+            //$scope.showLoader('Fetching measurements');
             QuantiModo.getV1MeasurementsDaily(params, function(dailyHistory){
                 $scope.state.dailyHistory = $scope.state.dailyHistory.concat(dailyHistory);
 
@@ -172,7 +172,7 @@ angular.module('starter')
                             $scope.state.variableObject.unitName = dailyHistory[0].unitName;
                         }
                     }
-                    $scope.hideLoader();
+                    //$scope.hideLoader();
                     if ($scope.state.dailyHistory.length > 0) {
                         updateDailyCharts();
                     }
