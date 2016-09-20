@@ -3,18 +3,13 @@
         <div class="list card"  ng-show="state.loading">
             <div class="item" >
                 <div class="row">
-                    <div class="col col-25">
-                        <!--<i style="font-size: 60px;" class="icon positive ion-android-download"></i>-->
-                        <object style="width: 25%;" data="../www/img/circular-loader.gif" type="image/png">
-                            <!--Falling back to /img if /www/img isn't present because Heroku uses different root than mobile apps-->
-                            <img src="../img/circular-loader.gif" />
-                        </object>
-                    </div>
-                    <div class="col col-75">
-                        <p style=" text-align: left; line-height: normal; font-size: 16px;">Fetching measurements...</p>
-                    </div>
+                    <!--<i style="font-size: 60px;" class="icon positive ion-android-download"></i>-->
+                    <object data="../www/img/circular-loader.gif" type="image/png">
+                        <!--Falling back to /img if /www/img isn't present because Heroku uses different root than mobile apps-->
+                        <img src="../img/circular-loader.gif" />
+                    </object>
+                    <p style=" text-align: center; line-height: normal; font-size: 16px;">&nbsp &nbsp Fetching measurements...</p>
                 </div>
-                <h2 style="white-space: normal; text-align: center; line-height: normal; ">Thank you for your patience in this matter.</h2>
             </div>
         </div>
 
