@@ -1,14 +1,10 @@
 <ion-view hide-nav-bar="hideNavigationMenu" view-title="{{state.variableObject.name}} Charts">
     <ion-content>
-        <div class="list card"  ng-show="state.loading">
+        <div class="card"  ng-show="state.loading">
             <div class="item" >
                 <div class="row">
-                    <!--<i style="font-size: 60px;" class="icon positive ion-android-download"></i>-->
-                    <object data="../www/img/circular-loader.gif" type="image/png">
-                        <!--Falling back to /img if /www/img isn't present because Heroku uses different root than mobile apps-->
-                        <img src="../img/circular-loader.gif" />
-                    </object>
-                    <p style=" text-align: center; line-height: normal; font-size: 16px;">&nbsp &nbsp Fetching measurements...</p>
+                    <ion-spinner></ion-spinner>
+                    <p style=" text-align: center; line-height: normal; font-size: 18px;">&nbsp &nbsp Fetching measurements...</p>
                 </div>
             </div>
         </div>

@@ -41,9 +41,8 @@ angular.module('starter')
 	    };
 
 
-	    var getHistory = function(concat){
+	    $scope.getHistory = function(concat){
 			if($scope.state.history.length < 1){
-				$scope.state.loading = true;
 				//$scope.showLoader('Squirrels retrieving measurements...');
 			}
 			var params = {
@@ -90,7 +89,7 @@ angular.module('starter')
 
 	    $scope.getNext = function(){
 	    	$scope.state.offset += $scope.state.limit;
-	    	getHistory(true);
+	    	$scope.getHistory(true);
 	    };
 
 		$scope.trackLocationChange = function() {
@@ -135,7 +134,7 @@ angular.module('starter')
 					Bugsnag.notify(err, JSON.stringify(err), {}, "error");
 					console.log($state.current.name + ": " + "error getting variable categories", err);
 				});
-			getHistory();
+			$scope.getHistory();
 
 	    };
 
