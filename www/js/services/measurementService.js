@@ -177,7 +177,7 @@ angular.module('starter')
                             }
                         ];
 
-                        console.debug('Syncing ', measurementObjects);
+                        console.debug('Syncing measurements to server: ' + JSON.stringify(measurementObjects));
 
                         QuantiModo.postMeasurementsV2(measurements, function (response) {
                             localStorageService.setItem('measurementsQueue', JSON.stringify([]));

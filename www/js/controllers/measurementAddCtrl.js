@@ -101,6 +101,7 @@ angular.module('starter')
             if($scope.state.measurement.variableName === config.appSettings.primaryOutcomeVariableDetails.name){
                 measurementService.deleteMeasurementFromLocalStorage($scope.state.measurement).then(function (){
                     measurementService.deleteMeasurementFromServer($scope.state.measurement).then(function (){
+                        $scope.hideLoader();
                         if($ionicHistory.backView()){
                             $ionicHistory.goBack();
                         } else {
@@ -110,6 +111,7 @@ angular.module('starter')
                 });
             } else {
                 measurementService.deleteMeasurementFromServer($scope.state.measurement).then(function (){
+                    $scope.hideLoader();
                     if($ionicHistory.backView()){
                         $ionicHistory.goBack();
                     } else {
@@ -213,25 +215,12 @@ angular.module('starter')
                 measurementInfo.value = jQuery('#measurementValue').val();
             }
 
-            console.debug($state.current.name + ": " + 'measurementAddCtrl.done is posting this measurement: ' + JSON.stringify(measurementInfo));
+            console.debug($state.current.name + ": " + 'measurementAddCtrl.done is posting this measurement: ' +
+                JSON.stringify(measurementInfo));
 
             // Measurement only - post measurement. This is for adding or editing
-            measurementService.postTrackingMeasurement(measurementInfo, true).then(function() {
-                if($stateParams.fromUrl){
-                    window.location = $stateParams.fromUrl;
-                } else if ($stateParams.fromState){
-                    var variableName = $scope.state.measurement.variableName;
-                    var variableObject = $scope.state.variableObject;
-                    $state.go($stateParams.fromState, {
-                        variableObject: variableObject,
-                        variableName: variableName,
-                        measurementInfo: measurementInfo
-                    });
-                } else {
-                    $rootScope.hideNavigationMenu = false;
-                    $state.go(config.appSettings.defaultState);
-                }
-            });
+            measurementService.postTrackingMeasurement(measurementInfo, true);
+            $state.go(config.appSettings.defaultState);
         };
 
         $scope.variableCategorySelectorChange = function(variableCategoryName) {

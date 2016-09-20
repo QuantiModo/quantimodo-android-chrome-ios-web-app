@@ -52,7 +52,7 @@ angular.module('starter')
 
         var updateDailyCharts = function(){
 
-            if ($scope.state.history.length > 0) {
+            if ($scope.state.dailyHistory.length > 0) {
                 // FIXME Eventually update fromDate and toDate so calendar can determine domain
                 /*var fromDate = parseInt(localStorageService.getItemSync('fromDate'));
                  var toDate = parseInt(localStorageService.getItemSync('toDate'));
@@ -62,7 +62,7 @@ angular.module('starter')
                  if (!toDate) {
                  toDate = Date.now();
                  }*/
-                if($scope.state.variableObject.fillingValue && $scope.state.variableObject.fillingValue !== -1){
+                if($scope.state.variableObject.fillingValue !== null && $scope.state.variableObject.fillingValue !== -1){
                     $scope.distributionChartConfig =
                         chartService.processDataAndConfigureDistributionChart($scope.state.dailyHistory, $scope.state.variableObject);
                 }
@@ -85,7 +85,7 @@ angular.module('starter')
                 if (!toDate) {
                     toDate = Date.now();
                 }*/
-                if(!$scope.state.variableObject.fillingValue || $scope.state.variableObject.fillingValue === -1){
+                if($scope.state.variableObject.fillingValue === null || $scope.state.variableObject.fillingValue === -1){
                     $scope.distributionChartConfig =
                         chartService.processDataAndConfigureDistributionChart($scope.state.history, $scope.state.variableObject);
                 }
@@ -102,7 +102,7 @@ angular.module('starter')
                 console.error("$scope.state.variableObject: " + JSON.stringify($scope.state.variableObject));
                 return;
             }
-            $scope.showLoader('Fetching measurements');
+            //$scope.showLoader('Fetching measurements');
             QuantiModo.getV1Measurements(params, function(history){
                 $scope.state.history = $scope.state.history.concat(history);
                 
@@ -126,6 +126,7 @@ angular.module('starter')
                             $scope.state.variableObject.unitName = history[0].unitName;
                         }
                     }
+                    $scope.state.loading = false;
                     $scope.hideLoader();
                     if ($scope.state.history.length > 0) {
                         updateCharts();
@@ -136,6 +137,7 @@ angular.module('starter')
                     Bugsnag.notify(error, JSON.stringify(error), {}, "error");
                 }
                 console.error('error getting measurements', error);
+                $scope.state.loading = false;
                 $scope.hideLoader();
             }, function(history) {
                 $scope.state.history = $scope.state.history.concat(history);
@@ -149,7 +151,7 @@ angular.module('starter')
                 console.error("$scope.state.variableObject: " + JSON.stringify($scope.state.variableObject));
                 return;
             }
-            $scope.showLoader('Fetching measurements');
+            //$scope.showLoader('Fetching measurements');
             QuantiModo.getV1MeasurementsDaily(params, function(dailyHistory){
                 $scope.state.dailyHistory = $scope.state.dailyHistory.concat(dailyHistory);
 
@@ -172,7 +174,7 @@ angular.module('starter')
                             $scope.state.variableObject.unitName = dailyHistory[0].unitName;
                         }
                     }
-                    $scope.hideLoader();
+                    //$scope.hideLoader();
                     if ($scope.state.dailyHistory.length > 0) {
                         updateDailyCharts();
                     }
@@ -198,7 +200,8 @@ angular.module('starter')
         };
         
         $scope.init = function(){
-            $scope.showLoader('Fetching measurements');
+            //$scope.showLoader('Fetching measurements');
+            $scope.state.loading = true;
             console.log("variablePageCtrl: init");
             if($stateParams.variableObject){
                 $scope.state.variableObject = $stateParams.variableObject;

@@ -1,6 +1,6 @@
 <ion-view hide-nav-bar="hideNavigationMenu" view-title="{{title}}">
      <ion-content>
-         <ion-refresher on-refresh="init()"></ion-refresher>
+         <ion-refresher on-refresh="getHistory()"></ion-refresher>
          <div class="list card" ng-show="state.noHistory">
              <div class="item">
                  <p style=" text-align: center; line-height: normal; font-size: 25px;">No measurements</p>
@@ -32,6 +32,15 @@
                      </div>
                  </div>
 
+             </div>
+         </div>
+
+         <div class="card"  ng-show="state.loading">
+             <div class="item" >
+                 <div class="row">
+                     <ion-spinner></ion-spinner>
+                     <p style=" text-align: center; line-height: normal; font-size: 18px;">&nbsp &nbsp Fetching measurements...</p>
+                 </div>
              </div>
          </div>
 
