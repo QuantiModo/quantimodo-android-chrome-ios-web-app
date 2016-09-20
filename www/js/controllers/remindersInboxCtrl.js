@@ -69,20 +69,24 @@ angular.module('starter')
 
 		var isGhostClick = function ($event) {
 
-				if($event &&
-					$scope.state.lastButtonPressTimeStamp > $event.timeStamp - 3000 &&
-					$scope.state.lastClientX === $event.clientX &&
-					$scope.state.lastClientY === $event.clientY
-				) {
-					console.debug('This event is probably a ghost click so not registering.', $event);
-					return true;
-				} else {
-					console.debug('This Track event is not a ghost click so registering.', $event);
-					$scope.state.lastButtonPressTimeStamp = $event.timeStamp;
-					$scope.state.lastClientX = $event.clientX;
-					$scope.state.lastClientY = $event.clientY;
-					return false;
-				}
+			if(!$rootScope.isMobile){
+				return false;
+			}
+
+			if($event &&
+				$scope.state.lastButtonPressTimeStamp > $event.timeStamp - 3000 &&
+				$scope.state.lastClientX === $event.clientX &&
+				$scope.state.lastClientY === $event.clientY
+			) {
+				console.debug('This event is probably a ghost click so not registering.', $event);
+				return true;
+			} else {
+				console.debug('This Track event is not a ghost click so registering.', $event);
+				$scope.state.lastButtonPressTimeStamp = $event.timeStamp;
+				$scope.state.lastClientX = $event.clientX;
+				$scope.state.lastClientY = $event.clientY;
+				return false;
+			}
 
 		};
 

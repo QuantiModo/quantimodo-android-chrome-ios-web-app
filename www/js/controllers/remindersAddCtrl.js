@@ -167,7 +167,7 @@ angular.module('starter')
 	    	}
 	    	$scope.variableObject=selectedVariable;
 
-            $scope.setupVariableCategory(selectedVariable.variableCategoryName);
+            setupVariableCategory(selectedVariable.variableCategoryName);
             if (selectedVariable.abbreviatedUnitName) {
                 $scope.state.trackingReminder.abbreviatedUnitName = selectedVariable.abbreviatedUnitName;
             }
@@ -345,7 +345,7 @@ angular.module('starter')
 	    // setup editing view
 	    var setupEditReminder = function(trackingReminder){
             $scope.state.trackingReminder = trackingReminder;
-            $scope.setupVariableCategory($scope.state.trackingReminder.variableCategoryName);
+            setupVariableCategory($scope.state.trackingReminder.variableCategoryName);
             $scope.state.trackingReminder.firstDailyReminderTime = null;
             $scope.state.trackingReminder.secondDailyReminderTime = null;
             $scope.state.trackingReminder.thirdDailyReminderTime = null;
@@ -382,11 +382,19 @@ angular.module('starter')
 	    	}
 
 	    	$scope.state.showReminderFrequencyCard = true;
-
 	    };
 
+        $scope.variableCategorySelectorChange = function(variableCategoryName) {
+            $scope.state.variableCategoryObject = variableCategoryService.getVariableCategoryInfo(variableCategoryName);
+            $scope.state.trackingReminder.abbreviatedUnitName = $scope.state.variableCategoryObject.defaultAbbreviatedUnitName;
+            $scope.state.defaultValuePlaceholderText = 'Enter most common value';
+            $scope.state.defaultValueLabel = 'Default Value';
+            setupVariableCategory(variableCategoryName);
+
+        };
+
 	    // setup category view
-	    $scope.setupVariableCategory = function(variableCategoryName){
+	    var setupVariableCategory = function(variableCategoryName){
             console.log("remindersAdd.setupVariableCategory " + variableCategoryName);
             if(!variableCategoryName || variableCategoryName === 'Anything'){
                 variableCategoryName = '';
@@ -466,7 +474,7 @@ angular.module('starter')
                     $scope.onVariableSelect($stateParams.variableObject);
                 } else if($stateParams.variableCategoryName){
                     $scope.state.trackingReminder.variableCategoryName = $stateParams.variableCategoryName;
-                    $scope.setupVariableCategory($scope.state.trackingReminder.variableCategoryName);
+                    setupVariableCategory($scope.state.trackingReminder.variableCategoryName);
                 } else if ($stateParams.reminder && $stateParams.reminder !== null) {
                     setupEditReminder($stateParams.reminder);
                 } else if(reminderIdUrlParameter) {

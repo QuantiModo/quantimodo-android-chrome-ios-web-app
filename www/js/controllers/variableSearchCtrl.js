@@ -98,6 +98,7 @@ angular.module('starter')
 
         // when a query is searched in the search box
         $scope.onVariableSearch = function(){
+            $scope.state.showAddVariableButton = false;
             console.log($state.current.name + ": " + "Search term: ", $scope.state.variableSearchQuery.name);
             if($scope.state.variableSearchQuery.name.length > 2){
                 $scope.state.searching = true;
@@ -175,7 +176,7 @@ angular.module('starter')
                 'commonVariables', 'variableCategoryName', variableCategoryName);
             if(commonVariables && commonVariables.length > 0){
                 if($scope.state.variableSearchQuery.name.length < 3 && $scope.state.variableSearchResults.length < 1) {
-                    $scope.state.variableSearchResults.push(commonVariables);
+                    $scope.state.variableSearchResults = $scope.state.variableSearchResults.concat(commonVariables);
                     $scope.state.searching = false;
                 }
             } else {
@@ -186,7 +187,7 @@ angular.module('starter')
                                 commonVariables = localStorageService.getElementsFromItemWithFilters(
                                     'commonVariables', 'variableCategoryName', variableCategoryName);
                                 if(commonVariables){
-                                    $scope.state.variableSearchResults.push(commonVariables);
+                                    $scope.state.variableSearchResults = $scope.state.variableSearchResults.concat(commonVariables);
                                 }
                                 $scope.state.searching = false;
                             }
@@ -264,6 +265,32 @@ angular.module('starter')
             $scope.hideLoader();
             $scope.init();
         });
+
+
+        $scope.matchEveryWord = function() {
+            return function( item ) {
+                var variableObjectAsString = JSON.stringify(item).toLowerCase();
+                var lowercaseVariableSearchQuery = $scope.state.variableSearchQuery.name.toLowerCase();
+
+                var filterBy = lowercaseVariableSearchQuery.split(/\s+/);
+
+                if(lowercaseVariableSearchQuery){
+                    if(!filterBy.length){
+                        return true;
+                    }
+                } else {
+                    return true;
+                }
+
+                return filterBy.every(function (word){
+                    var exists = variableObjectAsString.indexOf(word);
+                    if(exists !== -1){
+                        return true;
+                    }
+                });
+
+            };
+        };
 
 
     });
