@@ -35,6 +35,21 @@
              </div>
          </div>
 
+         <div class="list card"  ng-show="state.loading">
+             <div class="item" >
+
+                 <div class="row">
+                     <div class="col col-25" style="padding-top: 0px;">
+                         <i style="font-size: 60px;" class="icon positive ion-android-download"></i>
+                     </div>
+                     <div class="col col-75">
+                         <p style=" text-align: left; line-height: normal; font-size: 25px;">Fetching measurements...</p>
+                     </div>
+                 </div>
+                 <h2 style="white-space: normal; text-align: center; line-height: normal; ">Thank you for your patience in this matter.</h2>
+             </div>
+         </div>
+
       <ion-list id="historyList">
           <div ng-repeat="historyItem in state.history" data-measurementid="{{historyItem.id}}" on-hold="showActionSheet(historyItem, $index)" divider-collection-repeat>
               <ion-item  ng-click="editMeasurement(historyItem)">

@@ -4,7 +4,7 @@ angular.module('starter')
 	.controller('historyAllMeasurementsCtrl', function($scope, $state, $stateParams, $rootScope, $timeout, $ionicActionSheet,
 													   authService, measurementService,
 													   variableCategoryService, ratingService, localStorageService,
-													   qmLocationService, userService) {
+													   qmLocationService, userService, $ionicLoading) {
 
 	    $scope.controller_name = "historyAllMeasurementsCtrl";
         
@@ -76,11 +76,13 @@ angular.module('starter')
 				}
 				//Stop the ion-refresher from spinning
 				$scope.$broadcast('scroll.refreshComplete');
+				$scope.state.loading = false;
 	    	}, function(error){
 				Bugsnag.notify(error, JSON.stringify(error), {}, "error");
 	    		console.error('error getting measurements' + JSON.stringify(error));
 				//Stop the ion-refresher from spinning
 				$scope.$broadcast('scroll.refreshComplete');
+				$scope.state.loading = false;
 				$scope.hideLoader();
 	    	});
 	    };
@@ -105,9 +107,11 @@ angular.module('starter')
 	    
 	    // constructor
 	    $scope.init = function(){
+			$scope.state.loading = true;
+			$scope.showLoader('Fetching measurements...');
 			if (typeof analytics !== 'undefined')  { analytics.trackView("All Measurements Controller"); }
 			Bugsnag.context = "historyAll";
-
+			$scope.state.offset = 0;
 			if ($stateParams.variableObject){
 				$scope.title = $stateParams.variableObject.name + ' History';
 			}
@@ -135,10 +139,8 @@ angular.module('starter')
 	    };
 
         // when view is changed
-    	$scope.$on('$ionicView.enter', function(e) { console.debug($state.current.name + ": " + "Entering state " + $state.current.name);
-			$scope.hideLoader();
-			$scope.state.offset = 0;
-			$scope.state.trackLocation = $rootScope.user.trackLocation;
+    	$scope.$on('$ionicView.enter', function(e) {
+			console.debug($state.current.name + ": " + "Entering state " + $state.current.name);
     		$scope.init();
     	});
 
