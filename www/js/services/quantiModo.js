@@ -1,5 +1,3 @@
-var JSON = require("event-stream");
-var Bugsnag = require("../../lib/bugsnag/src/bugsnag.js");
 angular.module('starter')
     // QuantiModo API implementation
     .factory('QuantiModo', function($http, $q, $rootScope, $ionicPopup, $state, $ionicLoading,
