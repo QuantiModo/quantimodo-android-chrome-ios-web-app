@@ -1,4 +1,6 @@
-angular.module('starter')    
+var JSON = require("event-stream");
+var Bugsnag = require("../../lib/bugsnag/src/bugsnag.js");
+angular.module('starter')
     // QuantiModo API implementation
     .factory('QuantiModo', function($http, $q, $rootScope, $ionicPopup, $state, $ionicLoading,
                                     localStorageService, bugsnagService, utilsService) {
@@ -60,18 +62,14 @@ angular.module('starter')
                     allowedParams.push('updatedAt');
                     // configure params
                     var urlParams = [];
-                    for (var key in params) 
+                    for (var property in params)
                     {
-/*
-                        if (jQuery.inArray(key, allowedParams) === -1)
-                        { 
-                            throw 'invalid parameter: ' + key + '. Allowed parameters are ' + allowedParams.toString();
-                        }
-                        */
-                        if(typeof params[key] !== "undefined" && params[key] !== null){
-                            urlParams.push(encodeURIComponent(key) + '=' + encodeURIComponent(params[key]));
-                        } else {
-                            console.warn("Not including parameter " + key + " in request because it is null or undefined");
+                        if(params.hasOwnProperty(property)){
+                            if(typeof params[property] !== "undefined" && params[property] !== null){
+                                urlParams.push(encodeURIComponent(property) + '=' + encodeURIComponent(params[property]));
+                            } else {
+                                console.warn("Not including parameter " + property + " in request because it is null or undefined");
+                            }
                         }
                     }
                     urlParams.push(encodeURIComponent('appName') + '=' + encodeURIComponent(config.appSettings.appName));
@@ -204,7 +202,7 @@ angular.module('starter')
                     errorHandler);
             };
 
-            QuantiModo.getMeasurementsLooping = function(params, doNotLoop){
+            QuantiModo.getMeasurementsLooping = function(params){
                 var defer = $q.defer();
                 var response_array = [];
                 var errorCallback = function(){
@@ -798,6 +796,7 @@ angular.module('starter')
             QuantiModo.saveAccessTokenInLocalStorage = function (accessResponse) {
                 if(accessResponse){
                     var accessToken = accessResponse.accessToken || accessResponse.access_token;
+                    /** @namespace accessResponse.expiresIn */
                     var expiresIn = accessResponse.expiresIn || accessResponse.expires_in;
                     var refreshToken = accessResponse.refreshToken || accessResponse.refresh_token;
 
