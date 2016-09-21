@@ -62,10 +62,12 @@ angular.module('starter')
                     var urlParams = [];
                     for (var key in params) 
                     {
+/*
                         if (jQuery.inArray(key, allowedParams) === -1)
                         { 
-                            throw 'invalid parameter; allowed parameters: ' + allowedParams.toString(); 
+                            throw 'invalid parameter: ' + key + '. Allowed parameters are ' + allowedParams.toString();
                         }
+                        */
                         if(typeof params[key] !== "undefined" && params[key] !== null){
                             urlParams.push(encodeURIComponent(key) + '=' + encodeURIComponent(params[key]));
                         } else {
