@@ -1,4 +1,4 @@
-angular.module('starter')    
+angular.module('starter')
     // QuantiModo API implementation
     .factory('QuantiModo', function($http, $q, $rootScope, $ionicPopup, $state, $ionicLoading,
                                     localStorageService, bugsnagService, utilsService) {
@@ -60,16 +60,14 @@ angular.module('starter')
                     allowedParams.push('updatedAt');
                     // configure params
                     var urlParams = [];
-                    for (var key in params) 
+                    for (var property in params)
                     {
-                        if (jQuery.inArray(key, allowedParams) === -1)
-                        { 
-                            throw 'invalid parameter; allowed parameters: ' + allowedParams.toString(); 
-                        }
-                        if(typeof params[key] !== "undefined" && params[key] !== null){
-                            urlParams.push(encodeURIComponent(key) + '=' + encodeURIComponent(params[key]));
-                        } else {
-                            console.warn("Not including parameter " + key + " in request because it is null or undefined");
+                        if(params.hasOwnProperty(property)){
+                            if(typeof params[property] !== "undefined" && params[property] !== null){
+                                urlParams.push(encodeURIComponent(property) + '=' + encodeURIComponent(params[property]));
+                            } else {
+                                console.warn("Not including parameter " + property + " in request because it is null or undefined");
+                            }
                         }
                     }
                     urlParams.push(encodeURIComponent('appName') + '=' + encodeURIComponent(config.appSettings.appName));
@@ -202,7 +200,7 @@ angular.module('starter')
                     errorHandler);
             };
 
-            QuantiModo.getMeasurementsLooping = function(params, doNotLoop){
+            QuantiModo.getMeasurementsLooping = function(params){
                 var defer = $q.defer();
                 var response_array = [];
                 var errorCallback = function(){
@@ -355,55 +353,11 @@ angular.module('starter')
                     errorHandler);
             };
 
-            // search for public variables
-            QuantiModo.searchVariablesIncludePublic = function(query, successHandler, errorHandler){
-                QuantiModo.get('api/v1/variables/search/' + encodeURIComponent(query),
-                    ['limit','includePublic'],
-                    {'limit' : 100, 'includePublic' : true},
-                    successHandler,
-                    errorHandler);
-            };
-
             // search for user variables
-            QuantiModo.searchUserVariables = function(query, successHandler, errorHandler){
+            QuantiModo.searchUserVariables = function(query, params, successHandler, errorHandler){
                 QuantiModo.get('api/v1/variables/search/' + encodeURIComponent(query),
-                    ['limit','includePublic'],
-                    {'limit' : 100, 'includePublic' : false},
-                    successHandler,
-                    errorHandler);
-            };
-
-            // search for public variables by category
-            QuantiModo.searchVariablesByCategoryIncludePublic = function(query, variableCategoryName, successHandler, errorHandler){
-                var params = {'limit' : 100, 'includePublic': false};
-                if(variableCategoryName && variableCategoryName !== 'Anything'){
-                    params.variableCategoryName = variableCategoryName;
-                }
-                QuantiModo.get('api/v1/variables/search/'+ encodeURIComponent(query),
-                    ['limit','variableCategoryName','includePublic'],
+                    ['limit','includePublic', 'manualTracking'],
                     params,
-                    successHandler,
-                    errorHandler);
-            };
-
-            // search user variables by category
-            QuantiModo.searchUserVariablesByCategory = function(query, variableCategoryName, successHandler, errorHandler){
-                var params = {'limit' : 100, 'includePublic': false};
-                if(variableCategoryName && variableCategoryName !== 'Anything'){
-                    params.variableCategoryName = variableCategoryName;
-                }
-                QuantiModo.get('api/v1/variables/search/'+ encodeURIComponent(query),
-                    ['limit','variableCategoryName','includePublic'],
-                    params,
-                    successHandler,
-                    errorHandler);
-            };
-
-            // get user variables
-            QuantiModo.getVariables = function(successHandler, errorHandler){
-                QuantiModo.get('api/v1/variables',
-                    ['limit'],
-                    { limit:100 },
                     successHandler,
                     errorHandler);
             };
@@ -840,6 +794,7 @@ angular.module('starter')
             QuantiModo.saveAccessTokenInLocalStorage = function (accessResponse) {
                 if(accessResponse){
                     var accessToken = accessResponse.accessToken || accessResponse.access_token;
+                    /** @namespace accessResponse.expiresIn */
                     var expiresIn = accessResponse.expiresIn || accessResponse.expires_in;
                     var refreshToken = accessResponse.refreshToken || accessResponse.refresh_token;
 

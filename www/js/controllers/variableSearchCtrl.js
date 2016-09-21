@@ -103,7 +103,13 @@ angular.module('starter')
             if($scope.state.variableSearchQuery.name.length > 2){
                 $scope.state.searching = true;
                 if ($stateParams.doNotIncludePublicVariables) { // on variable search page, only show user's variables
-                    variableService.searchUserVariables($scope.state.variableSearchQuery.name, $scope.state.variableCategoryName)
+                    params = {
+                        'limit' : 100,
+                        'includePublic' : false,
+                        'variableCategoryName' : $scope.state.variableCategoryName,
+                        'manualTracking': true
+                    }
+                    variableService.searchUserVariables($scope.state.variableSearchQuery.name, params)
                         .then(function(variables){
                             console.debug($state.current.name + ": " + "$scope.onVariableSearch: Populating list with " +
                                 "variableService.searchUserVariables results ");
@@ -113,7 +119,13 @@ angular.module('starter')
                         });
                 }
                 else { // on add reminder or record measurement search pages; include public variables
-                    variableService.searchVariablesIncludePublic($scope.state.variableSearchQuery.name, $scope.state.variableCategoryName)
+                    params = {
+                        'limit' : 100,
+                        'includePublic' : true,
+                        'variableCategoryName' : $scope.state.variableCategoryName,
+                        'manualTracking': true
+                    }
+                    variableService.searchUserVariables($scope.state.variableSearchQuery.name, params)
                         .then(function(variables){
                             console.debug($state.current.name + ": " + "$scope.onVariableSearch: Populating list with " +
                                 "variableService.searchVariablesIncludePublic results ");
