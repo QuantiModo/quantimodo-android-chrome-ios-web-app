@@ -1,8 +1,8 @@
 <ion-view hide-nav-bar="hideNavigationMenu" view-title="{{state.title}}">
 	<ion-content>
-		<ion-refresher on-refresh="init()"></ion-refresher>
+		<ion-refresher on-refresh="refreshReminders()"></ion-refresher>
 
-<!--		<div ng-show="showOnlyOneNotification" class="list card" ng-click="showMoreNotificationInfoPopup()">
+<!--		<div ng-show="user.combineNotifications" class="list card" ng-click="showMoreNotificationInfoPopup()">
 			<a class="item item-icon-left">
 				<i class="icon ion-android-notifications-off positive"></i>
 				Individual Notifications Disabled
@@ -70,8 +70,8 @@
 		</div>
 
 
-		<div class="list card" ng-show="state.allReminders.length" id="remindersList">
-			<div on-hold="showActionSheet(reminder)" class="list card" ng-repeat="reminder in state.allReminders | orderBy:state.orderParameter" ng-if="!reminder.hide">
+		<div class="list card" ng-show="state.trackingReminders.length" id="remindersList">
+			<div on-hold="showActionSheet(reminder)" class="list card" ng-repeat="reminder in state.trackingReminders | orderBy:state.orderParameter" ng-if="!reminder.hide">
 				<div class="item" style="padding-bottom:0px;">
 					<div class="row">
 						<div ng-click="showActionSheet(reminder)" class="col col-20" style="padding-top: 0px;">

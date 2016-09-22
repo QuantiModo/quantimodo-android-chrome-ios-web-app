@@ -70,6 +70,9 @@ angular.module('starter')
                     $rootScope.currentPlatform = "Web";
                 }
             }
+            if($rootScope.isChromeExtension){
+                $rootScope.localNotificationsEnabled = true;
+            }
             $rootScope.qmApiUrl = utilsService.getApiUrl();
         };
 
@@ -93,6 +96,7 @@ angular.module('starter')
         };
 
         utilsService.getRedirectUri = function () {
+            //return 'https://utopia.quantimo.do:4417/ionic/Modo/www/callback/';
             if(!window.private_keys.redirect_uris){
                 return 'https://app.quantimo.do/ionic/Modo/www/callback/';
             }
@@ -116,6 +120,7 @@ angular.module('starter')
         };
 
         utilsService.getApiUrl = function () {
+            //return "https://utopia.quantimo.do:4417";
             if ($rootScope.isWeb && window.private_keys.client_ids.Web === 'oAuthDisabled') {
                 return window.location.origin;
             }

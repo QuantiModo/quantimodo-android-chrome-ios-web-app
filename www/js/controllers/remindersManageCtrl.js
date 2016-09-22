@@ -1,7 +1,7 @@
 angular.module('starter')
 
-	.controller('RemindersManageCtrl', function($scope, $state, $stateParams, $ionicPopup, $ionicLoading, $filter,
-												$rootScope, $ionicActionSheet, $timeout, authService,
+	.controller('RemindersManageCtrl', function($scope, $state, $stateParams, $ionicPopup, $rootScope, $timeout, $ionicLoading, $filter,
+												 $ionicActionSheet,  authService,
 												localStorageService, reminderService, variableCategoryService) {
 
 	    $scope.controller_name = "RemindersManageCtrl";
@@ -15,8 +15,7 @@ angular.module('starter')
 	    	selectedReminder : false,
 	    	reminderDefaultValue : "",
 	    	selected1to5Value : false,
-	    	allReminders : [],
-	    	filteredReminders : [],
+	    	trackingReminders : [],
 	    	measurementDate : new Date(),
 	    	slots : {
 				epochTime: new Date().getTime()/1000,
@@ -33,37 +32,8 @@ angular.module('starter')
 	    };
 
 		function showAppropriateHelpInfoCards(){
-			$scope.state.showTreatmentInfoCard = (!$scope.state.allReminders.length) && (window.location.href.indexOf('Treatments') > -1);
-			$scope.state.showSymptomInfoCard = (!$scope.state.allReminders.length) && (window.location.href.indexOf('Symptom') > -1);
-		}
-
-		function getTrackingRemindersFromLocalStorage(){
-			$scope.state.allReminders = [];
-			var nonFavoriteReminders = [];
-			var unfilteredReminders = JSON.parse(localStorageService.getItemSync('trackingReminders'));
-			unfilteredReminders =
-				variableCategoryService.attachVariableCategoryIcons(unfilteredReminders);
-			if(unfilteredReminders) {
-				for(var k = 0; k < unfilteredReminders.length; k++){
-					if(unfilteredReminders[k].reminderFrequency !== 0){
-						nonFavoriteReminders.push(unfilteredReminders[k]);
-					}
-				}
-				if($stateParams.variableCategoryName !== 'Anything') {
-					for(var j = 0; j < nonFavoriteReminders.length; j++){
-						if($stateParams.variableCategoryName === nonFavoriteReminders[j].variableCategoryName){
-							$scope.state.allReminders.push(nonFavoriteReminders[j]);
-						}
-					}
-					showAppropriateHelpInfoCards();
-				} else {
-					$scope.state.allReminders = nonFavoriteReminders;
-					showAppropriateHelpInfoCards();
-				}
-				$scope.state.allReminders = reminderService.addRatingTimesToDailyReminders($scope.state.allReminders);
-			} else {
-				showAppropriateHelpInfoCards();
-			}
+			$scope.state.showTreatmentInfoCard = ($scope.state.trackingReminders.length === 0) && (window.location.href.indexOf('Treatments') > -1);
+			$scope.state.showSymptomInfoCard = ($scope.state.trackingReminders.length === 0) && (window.location.href.indexOf('Symptom') > -1);
 		}
 
 	    // when date is updated
@@ -87,14 +57,33 @@ angular.module('starter')
 			}
 		};
 
-	    // constructor
+		$scope.refreshReminders = function () {
+			if($rootScope.syncingReminders !== true) {
+				console.debug("ReminderMange init: calling refreshTrackingRemindersAndScheduleAlarms");
+				$scope.showLoader('Reminders coming down the pipes...');
+				reminderService.refreshTrackingRemindersAndScheduleAlarms().then(function () {
+					getTrackingReminders();
+				});
+			} else {
+				$scope.$broadcast('scroll.refreshComplete');
+			}
+		};
+
+		var getTrackingReminders = function(){
+			reminderService.getTrackingReminders($stateParams.variableCategoryName)
+				.then(function (trackingReminders) {
+					$scope.state.trackingReminders = trackingReminders;
+					showAppropriateHelpInfoCards();
+					$scope.hideLoader();
+					//Stop the ion-refresher from spinning
+					$scope.$broadcast('scroll.refreshComplete');
+				});
+		};
+		
 	    $scope.init = function(){
 			if (typeof Bugsnag !== "undefined") {
 				Bugsnag.context = "reminderManage";
 			}
-			getTrackingRemindersFromLocalStorage();
-			authService.checkAuthOrSendToLogin();
-			if (typeof analytics !== 'undefined')  { analytics.trackView("Manage Reminders Controller"); }
 
 			if (!$stateParams.variableCategoryName || $stateParams.variableCategoryName === "Anything") {
 				$scope.state.title = "Manage Reminders";
@@ -107,20 +96,10 @@ angular.module('starter')
 			}
 
 			$scope.state.showButtons = true;
-			$scope.showHelpInfoPopupIfNecessary();
-			if($rootScope.syncingReminders !== true) {
-				console.debug("ReminderMange init: calling refreshTrackingRemindersAndScheduleAlarms");
-				$scope.showLoader('Reminders coming down the pipes...');
-				reminderService.refreshTrackingRemindersAndScheduleAlarms().then(function () {
-					$scope.hideLoader();
-					getTrackingRemindersFromLocalStorage();
-					//Stop the ion-refresher from spinning
-					$scope.$broadcast('scroll.refreshComplete');
-				});
-			} else {
-				$scope.$broadcast('scroll.refreshComplete');
-			}
-
+			authService.checkAuthOrSendToLogin();
+			getTrackingReminders();
+			if (typeof analytics !== 'undefined')  { analytics.trackView("Manage Reminders Controller"); }
+			$scope.refreshReminders();
 			// Triggered on a button click, or some other target
 			$rootScope.showActionSheetMenu = function() {
 				// Show the action sheet
@@ -212,24 +191,27 @@ angular.module('starter')
 
 	    $scope.deleteReminder = function(reminder){
 			localStorageService.deleteElementOfItemById('trackingReminders', reminder.trackingReminderId).then(function(){
-					getTrackingRemindersFromLocalStorage();
+					reminderService.getTrackingReminders($stateParams.variableCategoryName).then(function(trackingReminders){
+						$scope.state.trackingReminders = trackingReminders;
+					});
 				});
 
 			reminderService.deleteReminder(reminder.trackingReminderId)
-	    	.then(function(){
-
-	    	}, function(err){
-				if (typeof Bugsnag !== "undefined") {
-					Bugsnag.notify(err, JSON.stringify(err), {}, "error");
-				}
-	    		$ionicLoading.hide();
-				$scope.loading = false;
-	    		console.error('Failed to Delete Reminder!');
-	    	});
+				.then(function(){
+					reminderService.refreshTrackingReminderNotifications();
+					console.log("Reminder deleted");
+				}, function(err){
+					if (typeof Bugsnag !== "undefined") {
+						Bugsnag.notify(err, JSON.stringify(err), {}, "error");
+					}
+					$ionicLoading.hide();
+					$scope.loading = false;
+					console.error('Failed to Delete Reminder!');
+				});
 	    };
 
         // when view is changed
-    	$scope.$on('$ionicView.enter', function(e){
+    	$scope.$on('$ionicView.enter', function(e) { console.debug("Entering state " + $state.current.name);
 			$scope.hideLoader();
     		$scope.init();
     	});

@@ -1,7 +1,7 @@
 angular.module('starter')
 
     // Controls the Track Page of the App
-    .controller('TrackPrimaryOutcomeCtrl', function($scope, $timeout, $rootScope, $ionicLoading, measurementService, 
+    .controller('TrackPrimaryOutcomeCtrl', function($scope, $state, $timeout, $rootScope, $ionicLoading, measurementService,
                                                     chartService, localStorageService, ratingService) {
         $scope.controller_name = "TrackPrimaryOutcomeCtrl";
         $scope.state = {};
@@ -120,7 +120,7 @@ angular.module('starter')
             updateCharts();
         });
 
-        $scope.$on('$ionicView.enter', function(e) {
+        $scope.$on('$ionicView.enter', function(e) { console.debug("Entering state " + $state.current.name);
             console.log('$ionicView.enter. Updating charts and syncing..');
             $scope.init();
         });

@@ -52,6 +52,10 @@ angular.module('starter')
 			console.debug('modified tally is ' + $scope.state[trackingReminder.id].tally);
 			
             $timeout(function() {
+            	if(typeof $scope.state[trackingReminder.id] === "undefined"){
+            		console.error("$scope.state[trackingReminder.id] is undefined so we can't send tally in favorite controller. Not sure how this is happening.");
+					return;
+				}
                 if($scope.state[trackingReminder.id].tally) {
                     measurementService.postMeasurementByReminder(trackingReminder, $scope.state[trackingReminder.id].tally)
                         .then(function () {
@@ -106,7 +110,7 @@ angular.module('starter')
 		};
 
         // when view is changed
-    	$scope.$on('$ionicView.enter', function(e){
+    	$scope.$on('$ionicView.enter', function(e) { console.debug("Entering state " + $state.current.name);
 			$scope.hideLoader();
     		$scope.init();
     	});
@@ -122,7 +126,7 @@ angular.module('starter')
 			var hideSheet = $ionicActionSheet.show({
 				buttons: [
 					{ text: '<i class="icon ion-gear-a"></i>Change Default Value' },
-					{ text: '<i class="icon ion-edit"></i>Different Value/Time' },
+					{ text: '<i class="icon ion-edit"></i>Different Value/Time/Note' },
 					{ text: '<i class="icon ion-arrow-graph-up-right"></i>Visualize'},
 					{ text: '<i class="icon ion-ios-list-outline"></i>' + 'History'},
 					{ text: '<i class="icon ion-settings"></i>' + 'Variable Settings'},

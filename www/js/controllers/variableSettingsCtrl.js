@@ -3,7 +3,7 @@ angular.module('starter')
     // Controls the variable settings editing Page
     .controller('VariableSettingsCtrl',
         function($scope, $state, $rootScope, $timeout, $ionicPopup, $q, $stateParams, $ionicHistory, $ionicActionSheet,
-                 authService, measurementService, localStorageService, variableService, QuantiModo) {
+                 authService, measurementService, localStorageService, variableService) {
 
         $scope.controller_name = "VariableSettingsCtrl";
 
@@ -360,7 +360,7 @@ angular.module('starter')
         };
         
         // update data when view is navigated to
-        $scope.$on('$ionicView.enter', function(e) {
+        $scope.$on('$ionicView.enter', function(e) { console.debug("Entering state " + $state.current.name);
             $scope.hideLoader();
             $scope.init();
         });

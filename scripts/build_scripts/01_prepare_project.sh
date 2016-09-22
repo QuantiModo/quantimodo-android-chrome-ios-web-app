@@ -2,7 +2,8 @@
 
 if [ -z "$IONIC_APP_VERSION_NUMBER" ]
   then
-    echo "${GREEN}No version parameter second argument given so using ${IONIC_APP_VERSION_NUMBER} as default version number...${NC}"
+    echo "${GREEN}Please provide IONIC_APP_VERSION_NUMBER...${NC}"
+    exit 1
 else
     echo -e "IONIC_APP_VERSION_NUMBER is $IONIC_APP_VERSION_NUMBER...${NC}"
 fi
@@ -73,6 +74,7 @@ cd "${INTERMEDIATE_PATH}"
 echo "Copying generated images from ${INTERMEDIATE_PATH}/resources/android to ${INTERMEDIATE_PATH}/www/img/"
 cp -R ${INTERMEDIATE_PATH}/resources/android/*  "${INTERMEDIATE_PATH}/www/img/"
 
+echo "Removing ${BUILD_PATH}/${LOWERCASE_APP_NAME}"
 rm -rf "${BUILD_PATH}/${LOWERCASE_APP_NAME}"
 
 if [ ! -f ${INTERMEDIATE_PATH}/www/private_configs//${LOWERCASE_APP_NAME}.config.js ]; then

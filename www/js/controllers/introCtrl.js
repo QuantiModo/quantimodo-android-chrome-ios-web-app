@@ -53,6 +53,7 @@ angular.module('starter')
     };
 
     var init = function(){
+
         if($rootScope.user || $rootScope.introSeen){
             $state.go(config.appSettings.defaultState);
         } else {
@@ -77,9 +78,17 @@ angular.module('starter')
 
 
     // when view is changed
-    $scope.$on('$ionicView.enter', function(e) {
+    $scope.$on('$ionicView.enter', function(e) { console.debug("Entering state " + $state.current.name);
         $scope.hideLoader();
         init();
+    });
+
+    $scope.$on('$ionicView.afterEnter', function(){
+        if(navigator && navigator.splashscreen) {
+            console.debug('introCtrl.afterEnter: Hiding splash screen because app is ready');
+            navigator.splashscreen.hide();
+        }
+        localStorage.setItem('introSeen', true);
     });
 
 });

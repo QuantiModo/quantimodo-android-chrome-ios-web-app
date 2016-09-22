@@ -13,22 +13,19 @@ angular.module('starter',
         'ionic-timepicker',
         'ngIOS9UIWebViewPatch',
         'ng-mfb',
-        'fabric'
+        //'templates',
+        'fabric',
+        'ngCordovaOauth'
     ]
 )
 
-.run(function($ionicPlatform, $ionicHistory, $state, $rootScope, localStorageService) {
+.run(function($ionicPlatform, $ionicHistory, $state, $rootScope, localStorageService, qmLocationService, reminderService) {
 //.run(function($ionicPlatform, $ionicHistory, $state, $rootScope, $ionicAnalytics) {
 // Database
 //.run(function($ionicPlatform, $ionicHistory, $state, $rootScope, $cordovaSQLite) {
 
     $ionicPlatform.ready(function() {
         //$ionicAnalytics.register();
-        if(navigator && navigator.splashscreen) {
-            console.debug('Hiding splash screen because app is ready');
-            navigator.splashscreen.hide();
-        }
-
         if(ionic.Platform.isIPad() || ionic.Platform.isIOS()){
             window.onerror = function (errorMsg, url, lineNumber) {
                 alert('Error: ' + errorMsg + ' Script: ' + url + ' Line: ' + lineNumber);
@@ -40,8 +37,11 @@ angular.module('starter',
              var push = PushNotification.init({
                  android: {
                      senderID: "1052648855194",
-                     sound: "false",
-                     vibrate: "false"
+                     badge: true,
+                     sound: false,
+                     vibrate: false,
+                     icon: 'ic_stat_icon_bw',
+                     clearBadge: true
                  },
                  browser: {
                      pushServiceURL: 'http://push.api.phonegap.com/v1/push'
@@ -49,7 +49,8 @@ angular.module('starter',
                  ios: {
                      alert: "false",
                      badge: "true",
-                     sound: "false"
+                     sound: "false",
+                     clearBadge: true
                  },
                  windows: {}
              });
@@ -67,19 +68,158 @@ angular.module('starter',
                  }
              });
 
+             var finishPushes = true;  // Setting to false didn't solve notification dismissal problem
+
              push.on('notification', function(data) {
-                 alert('Received push notification: ' + JSON.stringify(data));
+                 console.log('Received push notification: ' + JSON.stringify(data));
+                 qmLocationService.updateLocationVariablesAndPostMeasurementIfChanged();
+                 reminderService.refreshTrackingReminderNotifications();
                  // data.message,
                  // data.title,
                  // data.count,
                  // data.sound,
                  // data.image,
                  // data.additionalData
+                 if(!finishPushes) {
+                     console.log('Not doing push.finish for data.additionalData.notId: ' + data.additionalData.notId);
+                     return;
+                 }
+                 push.finish(function () {
+                     console.log("processing of push data is finished: " + JSON.stringify(data));
+                 });
              });
 
              push.on('error', function(e) {
                  alert(e.message);
              });
+
+             var finishPush = function (data) {
+                 if(!finishPushes){
+                     console.log('Not doing push.finish for data.additionalData.notId: ' + data.additionalData.notId);
+                     return;
+                 }
+
+                 push.finish(function() {
+                     console.log('accept callback finished for data.additionalData.notId: ' + data.additionalData.notId);
+                 }, function() {
+                     console.log('accept callback failed for data.additionalData.notId: ' + data.additionalData.notId);
+                 }, data.additionalData.notId);
+
+             };
+
+             window.trackOneRatingAction = function (data){
+                 
+                 console.log("trackDefaultValueAction Push data: " + JSON.stringify(data));
+                 var body = {
+                     trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId,
+                     modifiedValue: 1
+                 };
+
+                 reminderService.trackReminderNotification(body);
+                 finishPush(data);
+             };
+
+             window.trackTwoRatingAction = function (data){
+                 
+                 console.log("trackDefaultValueAction Push data: " + JSON.stringify(data));
+                 var body = {
+                     trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId,
+                     modifiedValue: 2
+                 };
+
+                 reminderService.trackReminderNotification(body);
+                 finishPush(data);
+             };
+
+             window.trackThreeRatingAction = function (data){
+                 
+                 console.log("trackDefaultValueAction Push data: " + JSON.stringify(data));
+                 var body = {
+                     trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId,
+                     modifiedValue: 3
+                 };
+
+                 reminderService.trackReminderNotification(body);
+                 finishPush(data);
+             };
+
+             window.trackFourRatingAction = function (data){
+                 
+                 console.log("trackDefaultValueAction Push data: " + JSON.stringify(data));
+                 var body = {
+                     trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId,
+                     modifiedValue: 4
+                 };
+
+                 reminderService.trackReminderNotification(body);
+                 finishPush(data);
+             };
+
+             window.trackFiveRatingAction = function (data){
+                 
+                 console.log("trackDefaultValueAction Push data: " + JSON.stringify(data));
+                 var body = {
+                     trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId,
+                     modifiedValue: 5
+                 };
+
+                 reminderService.trackReminderNotification(body);
+                 finishPush(data);
+             };
+
+             window.trackDefaultValueAction = function (data){
+                 
+                 console.log("trackDefaultValueAction Push data: " + JSON.stringify(data));
+                 var body = {
+                     trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId
+                 };
+
+                 reminderService.trackReminderNotification(body);
+                 finishPush(data);
+             };
+
+             window.snoozeAction = function (data){
+                 
+                 console.log("snoozeAction push data: " + JSON.stringify(data));
+                 var body = {
+                     trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId
+                 };
+                 reminderService.snoozeReminderNotification(body);
+                 finishPush(data);
+             };
+
+             window.trackLastValueAction = function (data){
+                 
+                 console.log("trackLastValueAction Push data: " + JSON.stringify(data));
+                 var body = {
+                     trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId,
+                     modifiedValue: data.additionalData.lastValue
+                 };
+                 reminderService.trackReminderNotification(body);
+                 finishPush(data);
+             };
+
+             window.trackSecondToLastValueAction = function (data){
+                 
+                 console.log("trackSecondToLastValueAction Push data: " + JSON.stringify(data));
+                 var body = {
+                     trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId,
+                     modifiedValue: data.additionalData.secondToLastValue
+                 };
+                 reminderService.trackReminderNotification(body);
+                 finishPush(data);
+             };
+
+             window.trackThirdToLastValueAction = function (data){
+                 
+                 console.log("trackThirdToLastValueAction Push data: " + JSON.stringify(data));
+                 var body = {
+                     trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId,
+                     modifiedValue: data.additionalData.thirdToLastValue
+                 };
+                 reminderService.trackReminderNotification(body);
+                 finishPush(data);
+             };
          }
 
         if(typeof analytics !== "undefined") {
@@ -120,17 +260,17 @@ angular.module('starter',
         if(typeof config !== "undefined"){
             clearInterval(intervalChecker);
 
-            if(!window.private_keys){
-                console.error('intervalChecker: No private config file found!');
+            if(!window.private_keys) {
+                console.error('Please add private config file to www/private_configs folder!  Contact mike@quantimo.do if you need help');
                 return;
             }
 
-            $rootScope.appVersion = "1.8.5.12";
+            $rootScope.appVersion = "1.9.6.0";
             $rootScope.appName = config.appSettings.appName;
 
             if (typeof Bugsnag !== "undefined") {
                 //$rootScope.bugsnagApiKey = window.private_keys.bugsnag_key;
-                Bugsnag.apiKey = "ae7bc49d1285848342342bb5c321a2cf";
+                //Bugsnag.apiKey = "ae7bc49d1285848342342bb5c321a2cf";
                 //Bugsnag.notifyReleaseStages = ['Production','Staging'];
                 Bugsnag.appVersion = $rootScope.appVersion;
                 Bugsnag.metaData = {
@@ -289,7 +429,7 @@ angular.module('starter',
             }
         })
         .state('app.measurementAddSearch', {
-            url: "/track_factors",
+            url: "/measurement-add-search",
             params: {
                 reminder : null,
                 fromState : null,
@@ -305,7 +445,7 @@ angular.module('starter',
             }
         })
         .state('app.measurementAddSearchCategory', {
-            url: "/track_factors_category/:variableCategoryName",
+            url: "/measurement-add-search-category/:variableCategoryName",
             params: {
                 variableCategoryName : null,
                 fromState : null,
@@ -751,11 +891,18 @@ angular.module('starter',
                     controller: 'FavoriteAddCtrl'
                 }
             }
-        })
-    ;
-    
+        });
+
+    if (window.localStorage.introSeen) {
+        console.log("Intro seen so going to inbox");
+        $urlRouterProvider.otherwise('/app/reminders-inbox');
+    } else {
+        console.log("Intro not seen so going to intro");
+        localStorage.setItem('introSeen', true);
+        $urlRouterProvider.otherwise('/');
+    }
       // if none of the above states are matched, use this as the fallback
-      $urlRouterProvider.otherwise('/');
+    
 });
 
 angular.module('exceptionOverride', []).factory('$exceptionHandler', function () {

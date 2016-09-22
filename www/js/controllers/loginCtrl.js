@@ -97,26 +97,18 @@ angular.module('starter')
             //$scope.showLoader();
             authService.getAccessTokenFromAuthorizationCode(authorization_code, withJWT)
                 .then(function(response) {
-
                     if(response.error){
                         console.error("Error generating access token");
                         console.log('response', response);
                         localStorageService.setItem('user', null);
                     } else {
                         console.log("Access token received",response);
-                        if(typeof withJWT !== "undefined" && withJWT === true) {
-                            QuantiModo.updateAccessToken(response, withJWT);
-                        }
-                        else {
-                            QuantiModo.updateAccessToken(response);
-                        }
-
+                        QuantiModo.saveAccessTokenInLocalStorage(response);
                         console.debug('get user details from server and going to defaultState...');
                         $rootScope.getUserAndSetInLocalStorage();
                         $rootScope.hideNavigationMenu = false;
                         $rootScope.$broadcast('callAppCtrlInit');
                         $state.go(config.appSettings.defaultState);
-
                     }
                 })
                 .catch(function(err){
@@ -136,12 +128,13 @@ angular.module('starter')
 
             console.log('nonNativeMobileLogin: open the auth window via inAppBrowser.');
             // Set location=yes instead of location=no temporarily to try to diagnose intermittent white screen on iOS
-            var ref = window.open(url,'_blank', 'location=yes,toolbar=yes');
+            var ref = window.open(url,'_blank', 'location=no,toolbar=yes');
 
-            $timeout(function () {
-                console.log('nonNativeMobileLogin: Automatically closing inAppBrowser auth window after 60 seconds.');
-                ref.close();
-            }, 60000);
+            // Commented because I think it's causing "$apply already in progress" error
+            // $timeout(function () {
+            //     console.log('nonNativeMobileLogin: Automatically closing inAppBrowser auth window after 60 seconds.');
+            //     ref.close();
+            // }, 60000);
 
             console.log('nonNativeMobileLogin: listen to its event when the page changes');
             ref.addEventListener('loadstart', function(event) {
@@ -199,26 +192,48 @@ angular.module('starter')
             window.close();
         };
 
-        $scope.nativeLogin = function(platform, accessToken){
+        $scope.nativeSocialLogin = function(provider, accessToken){
             //$scope.showLoader();
             localStorageService.setItem('isWelcomed', true);
             $rootScope.isWelcomed = true;
 
-            authService.getJWTToken(platform, accessToken)
-                .then(function(JWTToken){
-                    // success
+            authService.getTokensAndUserViaNativeSocialLogin(provider, accessToken)
+                .then(function(response){
 
-                    console.log("nativeLogin: Mobile device detected and platform is " + platform);
+                    if(response.user){
+                        localStorageService.setItem('user', response.user);
+                        $rootScope.user = response.user;
+                        localStorageService.setItem('accessToken', response.accessToken);
+                        $rootScope.accessToken = response.accessToken;
+                        localStorageService.setItem('refreshToken', response.refreshToken);
+                        $rootScope.refreshToken = response.refreshToken;
+                        localStorageService.setItem('expiresAt', response.expiresAt);
+                        $rootScope.expiresAt = response.expiresAt;
+                        $rootScope.setUserInLocalStorageBugsnagAndRegisterDeviceForPush(response.user);
+                        $rootScope.hideNavigationMenu = false;
+                        $state.go(config.appSettings.defaultState);
+                        return;
+                    }
+
+                    var JWTToken = response.jwtToken;
+                    console.debug("nativeSocialLogin: Mobile device detected and provider is " + provider + ". Got JWT token " + JWTToken);
                     var url = authService.generateV2OAuthUrl(JWTToken);
 
-                    console.log('nativeLogin: open the auth window via inAppBrowser.');
-                    var ref = window.open(url,'_blank', 'location=no,toolbar=no');
+                    console.log('nativeSocialLogin: open the auth window via inAppBrowser.');
+                    var ref = cordova.InAppBrowser.open(url,'_blank', 'location=no,toolbar=yes,clearcache=no,clearsessioncache=no');
 
-                    console.log('nativeLogin: listen to event when the page changes.');
+                    console.log('nativeSocialLogin: listen to event at ' + url + ' when the page changes.');
+/*
+                    $timeout(function () {
+                        if(!$rootScope.user){
+                            bugsnagService.reportError('Could not get user with url ' + url);
+                        }
+                    }, 30000);
+*/
                     ref.addEventListener('loadstart', function(event) {
 
-                        console.log("nativeLogin: loadstart event", event);
-                        console.log('nativeLogin: check if changed url is the same as redirection url.');
+                        console.debug('nativeSocialLogin: loadstart event is ' + JSON.stringify(event));
+                        console.log('nativeSocialLogin: check if changed url is the same as redirection url.');
 
                         if(utilsService.startsWith(event.url, utilsService.getRedirectUri())) {
 
@@ -226,14 +241,14 @@ angular.module('starter')
 
                                 var authorizationCode = authService.getAuthorizationCodeFromUrl(event);
 
-                                console.log('nativeLogin: Got authorization code: ' + authorizationCode + ' Closing inAppBrowser.');
+                                console.log('nativeSocialLogin: Got authorization code: ' + authorizationCode + ' Closing inAppBrowser.');
                                 ref.close();
 
                                 var withJWT = true;
                                 // get access token from authorization code
                                 fetchAccessTokenAndUserDetails(authorizationCode, withJWT);
                             } else {
-                                var errorMessage = "nativeLogin: error occurred: " + utilsService.getUrlParameter(event.url, 'error');
+                                var errorMessage = "nativeSocialLogin: error occurred: " + utilsService.getUrlParameter(event.url, 'error');
                                 bugsnagService.reportError(errorMessage);
                                 console.error(errorMessage);
 
@@ -284,7 +299,7 @@ angular.module('starter')
                             console.error('googleLogin: No userData.accessToken or userData.idToken provided! Fallback to nonNativeMobileLogin...');
                             nonNativeMobileLogin(register);
                         } else {
-                            $scope.nativeLogin('google', tokenForApi);
+                            $scope.nativeSocialLogin('google', tokenForApi);
                         }
                     },
                     function (errorMessage) {
@@ -323,7 +338,7 @@ angular.module('starter')
                         Bugsnag.notify("ERROR: facebookLogin could not get accessToken!  ", JSON.stringify(success), {}, "error");
                     }
 
-                    $scope.nativeLogin('facebook', accessToken);
+                    $scope.nativeSocialLogin('facebook', accessToken);
                 }, function (error) {
                     Bugsnag.notify("ERROR: facebookLogin could not get accessToken!  ", JSON.stringify(error), {}, "error");
                     console.log("facebook login error", error);
@@ -377,13 +392,14 @@ angular.module('starter')
         var oAuthBrowserLogin = function (register) {
             //$scope.showLoader();
             var url = authService.generateV1OAuthUrl(register);
+            console.log("Going to try logging by opening new tab at url " + url);
 
             var ref = window.open(url, '_blank');
 
             if (!ref) {
                 alert("You must first unblock popups, and and refresh the page for this to work!");
             } else {
-                // broadcast message question every second to sibling tabs
+                console.log('Opened ' + url + ' and now broadcasting isLoggedIn message question every second to sibling tabs');
                 var interval = setInterval(function () {
                     ref.postMessage('isLoggedIn?', utilsService.getRedirectUri());
                 }, 1000);

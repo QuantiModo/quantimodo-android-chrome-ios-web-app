@@ -22,7 +22,7 @@ angular.module('starter')
 	    	console.log("favoriteAdd.onVariableSelect:  " + JSON.stringify(selectedVariable));
 
             $scope.state.trackingReminder = $stateParams.variableObject;
-            $scope.setupVariableCategory(selectedVariable.variableCategoryName);
+            setupVariableCategory(selectedVariable.variableCategoryName);
             if (selectedVariable.id) {
                 $scope.state.trackingReminder.variableId = selectedVariable.id;
                 $scope.state.trackingReminder.id = null;
@@ -100,20 +100,19 @@ angular.module('starter')
             $scope.state.trackingReminder.reminderFrequency = 0;
             $scope.state.trackingReminder.valueAndFrequencyTextDescription = "As Needed";
 
-            localStorageService.addToOrReplaceElementOfItemByIdOrMoveToFront('trackingReminders', $scope.state.trackingReminder);
-	    	reminderService.addNewReminder($scope.state.trackingReminder)
-	    	.then(function(){
+            localStorageService.addToOrReplaceElementOfItemByIdOrMoveToFront('trackingReminders', $scope.state.trackingReminder)
+                .then(function(){
+                    reminderService.addNewReminder($scope.state.trackingReminder)
+                        .then(function(){
 
-
-	    	}, function(err){
-                console.log(err);
-	    		$ionicLoading.hide();
-                $scope.loading = false;
-	    		utilsService.showAlert('Failed to add favorite! Please contact info@quantimo.do', 'assertive');
-	    	});
-
-            $state.go('app.favorites');
-
+                        }, function(err){
+                            console.log(err);
+                            $ionicLoading.hide();
+                            $scope.loading = false;
+                            utilsService.showAlert('Failed to add favorite! Please contact info@quantimo.do', 'assertive');
+                        });
+                    $state.go('app.favorites');
+                });
 	    };
 
 
@@ -123,8 +122,16 @@ angular.module('starter')
 	    	$scope.state.title = "Edit " +  trackingReminder.variableName + " to Favorites";
 	    };
 
+        $scope.variableCategorySelectorChange = function(variableCategoryName) {
+            $scope.state.variableCategoryObject = variableCategoryService.getVariableCategoryInfo(variableCategoryName);
+            $scope.state.trackingReminder.abbreviatedUnitName = $scope.state.variableCategoryObject.defaultAbbreviatedUnitName;
+            $scope.state.defaultValuePlaceholderText = 'Enter most common value';
+            $scope.state.defaultValueLabel = 'Default Value';
+            setupVariableCategory(variableCategoryName);
+        };
+
 	    // setup category view
-	    $scope.setupVariableCategory = function(variableCategoryName){
+	    var setupVariableCategory = function(variableCategoryName){
             console.log("variableCategoryName  is " + variableCategoryName);
             if(!variableCategoryName){
                 variableCategoryName = '';
@@ -165,7 +172,6 @@ angular.module('starter')
         function setupReminderEditingFromUrlParameter(reminderIdUrlParameter) {
             reminderService.getTrackingReminderById(reminderIdUrlParameter)
                 .then(function (reminders) {
-                    $scope.state.allReminders = reminders;
                     if (reminders.length !== 1) {
                         utilsService.showAlert("Reminder id " + reminderIdUrlParameter + " not found!", 'assertive');
                         if($stateParams.fromUrl){
@@ -176,7 +182,7 @@ angular.module('starter')
                             $state.go('app.remindersManage');
                         }
                     }
-                    $stateParams.reminderNotification = $scope.state.allReminders[0];
+                    $stateParams.reminderNotification = reminders[0];
                     setupEditReminder($stateParams.reminderNotification);
                     $ionicLoading.hide();
                     $scope.loading = false;
@@ -187,33 +193,9 @@ angular.module('starter')
                 });
         }
 
-        $scope.init = function(){
-            if (typeof Bugsnag !== "undefined") {
-                Bugsnag.context = "reminderAdd";
-            }
-            if (typeof analytics !== 'undefined')  { analytics.trackView("Add Favorite Controller"); }
-
-            authService.checkAuthOrSendToLogin();
-            unitService.getUnits().then(function () {
-                var reminderIdUrlParameter = utilsService.getUrlParameter(window.location.href, 'reminderId');
-                var variableIdUrlParameter = utilsService.getUrlParameter(window.location.href, 'variableId');
-
-                if ($stateParams.reminderNotification && $stateParams.reminderNotification !== null) {
-                    setupEditReminder($stateParams.reminderNotification);
-                } else if(reminderIdUrlParameter) {
-                    setupReminderEditingFromUrlParameter(reminderIdUrlParameter);
-                } else if(variableIdUrlParameter){
-                    setupReminderEditingFromVariableId(variableIdUrlParameter);
-                } else if ($stateParams.variableObject) {
-                    $scope.onVariableSelect($stateParams.variableObject);
-                }
-            });
-	    };
-
         // when view is changed
-    	$scope.$on('$ionicView.enter', function(e){
+    	$scope.$on('$ionicView.enter', function(e) { console.debug("Entering state " + $state.current.name);
             $scope.hideLoader();
-    		$scope.init();
     	});
 
         $scope.deleteReminder = function(){
@@ -232,18 +214,13 @@ angular.module('starter')
                 });
         };
 
-        // Deprecated - not used
-        /*
-        // when a unit is selected
-        $scope.unitSelected = function(unit){
-            console.log("selecting_unit",unit);
-
-            // update viewmodel
-            $scope.state.trackingReminder.abbreviatedUnitName = unit.abbreviatedName;
-            $scope.state.showUnits = false;
-            $scope.state.selectedUnitAbbreviatedName = unit.abbreviatedName;
+        $scope.unitSelected = function(){
+            console.log("selecting_unit", $scope.state.trackingReminder.abbreviatedUnitName);
+            $scope.state.trackingReminder.unitName =
+                $rootScope.unitsIndexedByAbbreviatedName[$scope.state.trackingReminder.abbreviatedUnitName].name;
+            $scope.state.trackingReminder.unitId =
+                $rootScope.unitsIndexedByAbbreviatedName[$scope.state.trackingReminder.abbreviatedUnitName].id;
         };
-        */
 
         $scope.toggleShowUnits = function(){
             $scope.state.showUnits=!$scope.state.showUnits;
@@ -328,4 +305,23 @@ angular.module('starter')
 
         };
 
+        $scope.$on('$ionicView.beforeEnter', function(){
+            console.debug('$ionicView.beforeEnter state ' + $state.current.name + '. Getting units now...');
+            if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
+            if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
+            unitService.getUnits().then(function () {
+                console.debug("Got units in " + $state.current.name);
+                var reminderIdUrlParameter = utilsService.getUrlParameter(window.location.href, 'reminderId');
+                var variableIdUrlParameter = utilsService.getUrlParameter(window.location.href, 'variableId');
+                if ($stateParams.reminderNotification && $stateParams.reminderNotification !== null) {
+                    setupEditReminder($stateParams.reminderNotification);
+                } else if(reminderIdUrlParameter) {
+                    setupReminderEditingFromUrlParameter(reminderIdUrlParameter);
+                } else if(variableIdUrlParameter){
+                    setupReminderEditingFromVariableId(variableIdUrlParameter);
+                } else if ($stateParams.variableObject) {
+                    $scope.onVariableSelect($stateParams.variableObject);
+                }
+            });
+        });
 	});

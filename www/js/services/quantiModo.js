@@ -17,57 +17,42 @@ angular.module('starter')
             QuantiModo.errorHandler = function(data, status, headers, config, request){
                 $ionicLoading.hide();
                 if(status === 401){
-                    localStorageService.deleteItem('accessToken');
-                    localStorageService.deleteItem('accessTokenInUrl');
-                    $rootScope.accessToken = null;
-                    localStorageService.deleteItem('user');
-                    $rootScope.user = null;
                     console.warn('QuantiModo.errorHandler: Sending to login because we got 401 with request ' +
                         JSON.stringify(request));
-                    $state.go('app.login');
+                    $rootScope.sendToLogin();
                     return;
                 }
                 if(!data){
                     console.log('QuantiModo.errorHandler: No data property returned from QM API request');
                     return;
                 }
-                if(request) {
-                    error = data.error.message;
-                    if (typeof Bugsnag !== "undefined") {
-                        Bugsnag.notify("API Request to " + request.url + " Failed", error, {}, "error");
-                    }
-                }
                 if(data.success){
                     return;
                 }
-                var error = "Error";
+                var error = "Unknown error";
                 if (data && data.error) {
                     error = data.error;
                 }
                 if (data && data.error && data.error.message) {
                     error = data.error.message;
                 }
-                console.log(error);
+                if(request) {
+                    if (typeof Bugsnag !== "undefined") {
+                        Bugsnag.notify("API Request to " + request.url + " Failed", error, {}, "error");
+                    }
+                }
+                console.error(error);
             };
 
             // Handler when request is failed
             var onRequestFailed = function(error){
-                console.log("Not Allowed! error : "+ error);
+                console.log("Request error : " + error);
             };
 
 
             // GET method with the added token
             QuantiModo.get = function(baseURL, allowedParams, params, successHandler, errorHandler){
                 QuantiModo.getAccessTokenFromAnySource().then(function(accessToken){
-                    if(accessToken && accessToken.indexOf(' ') > -1){
-                        accessToken = null;
-                        localStorageService.deleteItem('accessToken');
-                        localStorageService.deleteItem('accessTokenInUrl');
-                        $rootScope.accessToken = null;
-                        if (typeof Bugsnag !== "undefined") {
-                            bugsnagService.reportError('ERROR: Access token had white space so probably erroneous! Deleting it now.');
-                        }
-                    }
 
                     allowedParams.push('limit');
                     allowedParams.push('offset');
@@ -89,6 +74,7 @@ angular.module('starter')
                     }
                     urlParams.push(encodeURIComponent('appName') + '=' + encodeURIComponent(config.appSettings.appName));
                     urlParams.push(encodeURIComponent('appVersion') + '=' + encodeURIComponent($rootScope.appVersion));
+                    urlParams.push(encodeURIComponent('client_id') + '=' + encodeURIComponent(utilsService.getClientId()));
                     //We can't append access token to Ionic requests for some reason
                     //urlParams.push(encodeURIComponent('access_token') + '=' + encodeURIComponent(tokenObject.accessToken));
 
@@ -116,6 +102,7 @@ angular.module('starter')
                     $http(request).success(successHandler).error(function(data,status,headers,config){
                         QuantiModo.errorHandler(data, status, headers, config, request);
                         if (!data && !$rootScope.connectionErrorShowing) {
+                            bugsnagService.reportError('No data returned from this GET request: ' + JSON.stringify(request));
                             $rootScope.connectionErrorShowing = true;
                             $ionicPopup.show({
                                 title: 'NOT CONNECTED',
@@ -142,14 +129,6 @@ angular.module('starter')
                 console.debug('QuantiModo.post: ' + baseURL + ' body: ' + JSON.stringify(items));
                 QuantiModo.getAccessTokenFromAnySource().then(function(accessToken){
 
-                    if(accessToken && accessToken.indexOf(' ') > -1){
-                        accessToken = null;
-                        localStorageService.deleteItem('accessToken');
-                        localStorageService.deleteItem('accessTokenInUrl');
-                        $rootScope.accessToken = null;
-                        bugsnagService.reportError('ERROR: Access token had white space so probably erroneous! Deleting it now.');
-                    }
-                    
                     //console.log("Token : ", token.accessToken);
                     // configure params
                     for (var i = 0; i < items.length; i++) 
@@ -185,7 +164,7 @@ angular.module('starter')
                         };
                     }
 
-                    if($rootScope.trackLocation){
+                    if($rootScope.user.trackLocation){
                         request.headers.LOCATION = $rootScope.lastLocationNameAndAddress;
                         request.headers.LATITUDE = $rootScope.lastLatitude;
                         request.headers.LONGITUDE = $rootScope.lastLongitude;
@@ -194,6 +173,7 @@ angular.module('starter')
                     $http(request).success(successHandler).error(function(data,status,headers,config){
                         QuantiModo.errorHandler(data,status,headers,config);
                         if (!data && !$rootScope.connectionErrorShowing) {
+                            bugsnagService.reportError('No data returned from this POST request: ' + JSON.stringify(request));
                             $rootScope.connectionErrorShowing = true;
                             $ionicPopup.show({
                                 title: 'NOT CONNECTED',
@@ -528,6 +508,71 @@ angular.module('starter')
                     errorHandler);
             };
 
+            // get units
+            QuantiModo.getConnectors = function(successHandler, errorHandler){
+                QuantiModo.get('api/connectors/list',
+                    [],
+                    {},
+                    successHandler,
+                    errorHandler);
+            };
+
+            // get units
+            QuantiModo.disconnectConnector = function(name, successHandler, errorHandler){
+                QuantiModo.get('api/v1/connectors/' + name + '/disconnect',
+                    [],
+                    {},
+                    successHandler,
+                    errorHandler);
+            };
+
+
+            QuantiModo.connectConnectorWithParams = function(params, lowercaseConnectorName, successHandler, errorHandler){
+                var allowedParams = [
+                    'location',
+                    'username',
+                    'password',
+                    'email'
+                ];
+
+                QuantiModo.get('api/v1/connectors/' + lowercaseConnectorName + '/connect',
+                    allowedParams,
+                    params,
+                    successHandler,
+                    errorHandler);
+            };
+
+
+            QuantiModo.connectConnectorWithToken = function(body, lowercaseConnectorName, successHandler, errorHandler){
+                var requiredProperties = [
+                    'connector',
+                    'connectorCredentials'
+                ];
+
+                QuantiModo.post('api/v1/connectors/connect',
+                    requiredProperties,
+                    body,
+                    successHandler,
+                    errorHandler);
+            };
+
+            QuantiModo.connectWithAuthCode = function(code, connectorLowercaseName, successHandler, errorHandler){
+                var allowedParams = [
+                    'code',
+                    'noRedirect'
+                ];
+                var params = {
+                    noRedirect: true,
+                    code: code
+                };
+
+                QuantiModo.get('api/v1/connectors/' + connectorLowercaseName + '/connect',
+                    allowedParams,
+                    params,
+                    successHandler,
+                    errorHandler);
+            };
+
             // get user data
             QuantiModo.getUser = function(successHandler, errorHandler){
                 if($rootScope.user){
@@ -571,16 +616,16 @@ angular.module('starter')
             // post tracking reminder
             QuantiModo.postTrackingReminder = function(reminder, successHandler, errorHandler) { 
                 console.log(reminder);
+                if(!reminder.timeZoneOffset){
+                    var d = new Date();
+                    reminder.timeZoneOffset = d.getTimezoneOffset();
+                }
                 QuantiModo.post('api/v1/trackingReminders',
                     [
                         'variableId', 
                         'defaultValue',
                         'reminderFrequency',
-                        'variableName',
-                        'variableCategoryName',
-                        'abbreviatedUnitName',
-                        'combinationOperation',
-                        'reminderStartTime'
+                        'timeZoneOffset'
                     ],
                     reminder,
                     successHandler,
@@ -659,8 +704,9 @@ angular.module('starter')
 
             // track tracking reminder with default value
             QuantiModo.trackTrackingReminderNotification = function(params, successHandler, errorHandler){
+                var requiredProperties = ['id', 'trackingReminderNotificationId', 'trackingReminderId', 'modifiedValue'];
                 QuantiModo.post('api/v1/trackingReminderNotifications/track',
-                    ['id', 'trackingReminderNotificationId', 'trackingReminderId', 'modifiedValue'],
+                    requiredProperties,
                     params,
                     successHandler,
                     errorHandler);
@@ -711,13 +757,13 @@ angular.module('starter')
                 }
 
                 if(utilsService.getClientId() !== 'oAuthDisabled') {
-                    QuantiModo._defaultGetAccessToken(deferred);
+                    QuantiModo.getOrRefreshAccessTokenOrLogin(deferred);
                     return deferred.promise;
                 }
 
             };
 
-            QuantiModo._defaultGetAccessToken = function (deferred) {
+            QuantiModo.getOrRefreshAccessTokenOrLogin = function (deferred) {
 
                 console.log('access token resolving flow');
 
@@ -746,10 +792,9 @@ angular.module('starter')
                 } else if (refreshToken) {
                     QuantiModo.refreshAccessToken(refreshToken, deferred);
                 } else {
-                    localStorageService.deleteItem('accessToken');
                     console.warn('Refresh token is undefined. Not enough data for oauth flow. rejecting token promise. ' +
                         'Clearing accessToken from local storage if it exists and sending to login page...');
-                    $state.go('app.login');
+                    $rootScope.sendToLogin();
                     deferred.reject();
                 }
             };
@@ -773,7 +818,7 @@ angular.module('starter')
                         console.log('Token refresh failed: ' + data.error);
                         deferred.reject('refresh failed');
                     } else {
-                        var accessTokenRefreshed = QuantiModo.updateAccessToken(data);
+                        var accessTokenRefreshed = QuantiModo.saveAccessTokenInLocalStorage(data);
 
                         console.log('access token successfully updated from api server', data);
                         console.log('resolving toke using response value');
@@ -792,7 +837,7 @@ angular.module('starter')
             };
 
             // extract values from token response and saves in localstorage
-            QuantiModo.updateAccessToken = function (accessResponse) {
+            QuantiModo.saveAccessTokenInLocalStorage = function (accessResponse) {
                 if(accessResponse){
                     var accessToken = accessResponse.accessToken || accessResponse.access_token;
                     var expiresIn = accessResponse.expiresIn || accessResponse.expires_in;

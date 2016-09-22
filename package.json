@@ -7,17 +7,16 @@
   "version": "1.0.0",
   "description": "Perfect your life!",
   "devDependencies": {
-    "gulp": "^3.9.1",
-    "gulp-typescript": "^2.11.0",
-    "taco-team-build": "^0.2.1",
-    "gulp-sass": "^2.0.4",
-    "event-stream": "^3.3.2"
+    "ionic-minify": "^2.0.10"
   },
   "dependencies": {
+    "async": "^2.0.1",
     "bower": "~1.3.3",
+    "event-stream": "^3.3.2",
     "express": "^4.13.3",
     "glob": "^5.0.15",
     "gulp": "^3.5.6",
+    "gulp-angular-templatecache": "1.9.1",
     "gulp-callback": "0.0.3",
     "gulp-change": "^1.0.0",
     "gulp-concat": "^2.2.0",
@@ -27,10 +26,12 @@
     "gulp-run": "^1.6.12",
     "gulp-sass": "^2.1.1",
     "gulp-shell": "^0.5.1",
+    "gulp-typescript": "^2.11.0",
     "gulp-util": "^3.0.6",
     "gulp-zip": "^3.0.2",
     "inquirer": "^0.9.0",
     "ionic": "1.7.16",
+    "jshint": "^2.9.3",
     "ng-material-floating-button": "^0.6.2",
     "plist": "^1.2.0",
     "q": "^1.4.1",
@@ -38,7 +39,8 @@
     "run-sequence": "^1.1.4",
     "shelljs": "^0.5.3",
     "swagger-js-codegen": "^1.1.4",
-    "xcode" : "0.8.9",
+    "taco-team-build": "^0.2.1",
+    "xcode": "0.8.9",
     "xml2js": "^0.4.15"
   },
   "scripts": {
@@ -63,6 +65,13 @@
         "SENDER_ID": "1052648855194"
       },
       "locator": "phonegap-plugin-push"
+    },
+    {
+      "variables": {
+        "SENDER_ID": "1052648855194"
+      },
+      "locator": "https://github.com/mikepsinn/phonegap-plugin-push#19c179e98347b4d4a09192becdd10fb0a890107b",
+      "id": "phonegap-plugin-push"
     }
   ],
   "cordovaPlatforms": [

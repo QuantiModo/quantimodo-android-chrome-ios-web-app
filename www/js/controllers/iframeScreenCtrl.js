@@ -1,5 +1,5 @@
 angular.module('starter')
-    .controller('IframeScreenCtrl', function ($scope, $ionicLoading, $sce, $state, authService, $rootScope) {
+    .controller('IframeScreenCtrl', function ($scope, $ionicLoading, $sce, $state, authService, $rootScope, QuantiModo) {
 
         $scope.showLoader();
         console.debug('IframeScreenCtrl works!');
@@ -31,7 +31,7 @@ angular.module('starter')
             iFrameUrl = $rootScope.qmApiUrl + '/api/v1/connect/mobile';
             $scope.title = 'Your Variable Relationships';
         }
-        console.debug('importCtrl.init: Going to authService.getAccessTokenFromAnySource');
+        console.debug('iframeScreen.init: Going to authService.getAccessTokenFromAnySource');
         QuantiModo.getAccessTokenFromAnySource().then(function(accessToken) {
 
             if(accessToken){
@@ -46,10 +46,8 @@ angular.module('starter')
 
             $ionicLoading.hide();
         }, function(){
-            console.log("getAccessTokenFromAnySource: No access token. Need to log in.");
-            $state.go('app.login', {
-                fromUrl : window.location.href
-            });
+            console.log("iframeScreen: No access token. Need to log in.");
+            $rootScope.sendToLogin();
             $ionicLoading.hide();
         });
     });

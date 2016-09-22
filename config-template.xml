@@ -16,6 +16,7 @@
   <allow-intent href="mailto:*" />
   <allow-intent href="geo:*" />
   <platform name="android">
+    <hook type="after_prepare" src="hooks/copy_android_notification_icons.sh"/>
     <allow-intent href="market:*" />
   </platform>
   <platform name="ios">
@@ -28,6 +29,7 @@
   <preference name="DisallowOverscroll" value="true" />
   <preference name="android-minSdkVersion" value="16" />
   <preference name="BackupWebStorage" value="none" />
+  <preference name="AutoHideSplashScreen" value="false" />
   <feature name="StatusBar">
     <param name="ios-package" onload="true" value="CDVStatusBar" />
   </feature>

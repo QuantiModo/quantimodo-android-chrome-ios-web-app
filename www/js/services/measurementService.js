@@ -11,6 +11,9 @@ angular.module('starter')
 
             getAllLocalMeasurements : function(){
                 var primaryOutcomeMeasurements = localStorageService.getItemAsObject('allMeasurements');
+                if(!primaryOutcomeMeasurements) {
+                    primaryOutcomeMeasurements = [];
+                }
                 var measurementsQueue = localStorageService.getItemAsObject('measurementsQueue');
                 if(measurementsQueue){
                     primaryOutcomeMeasurements = primaryOutcomeMeasurements.concat(measurementsQueue);
@@ -104,7 +107,7 @@ angular.module('starter')
                                 // if user restarts the app or refreshes the page.
                                 console.log("getPrimaryOutcomeVariableMeasurements is calling measurementService.setDates");
                                 //measurementService.setDates(new Date().getTime(),s*1000);
-                                console.debug("getPrimaryOutcomeVariableMeasurements: allMeasurements length is " + allMeasurements.length);
+                                //console.debug("getPrimaryOutcomeVariableMeasurements: allMeasurements length is " + allMeasurements.length);
                                 //console.debug("getPrimaryOutcomeVariableMeasurements:  Setting allMeasurements to: ", allMeasurements);
                                 localStorageService.setItem('allMeasurements', JSON.stringify(allMeasurements));
                                 console.log("getPrimaryOutcomeVariableMeasurements broadcasting to update charts");
@@ -174,7 +177,7 @@ angular.module('starter')
                             }
                         ];
 
-                        console.debug('Syncing ', measurementObjects);
+                        console.debug('Syncing measurements to server: ' + JSON.stringify(measurementObjects));
 
                         QuantiModo.postMeasurementsV2(measurements, function (response) {
                             localStorageService.setItem('measurementsQueue', JSON.stringify([]));
@@ -202,6 +205,7 @@ angular.module('starter')
                 if (parseInt(oldFromDate) !== parseInt(from) || parseInt(oldToDate) !== parseInt(to)) {
                     console.log("setDates broadcasting to update charts");
                     $rootScope.$broadcast('updateCharts');
+                    $rootScope.$broadcast('updatePrimaryOutcomeHistory');
                 }
 
 			},
