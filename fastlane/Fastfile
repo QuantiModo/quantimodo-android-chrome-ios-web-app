@@ -19,7 +19,7 @@ platform :ios do
   before_all do
     # ENV["SLACK_URL"] = "https://hooks.slack.com/services/..."
 
-    match(git_url: "git@github.com:Abolitionist-Project/ios-certificates.git",
+    match(git_url: "git@github.com:mikepsinn/ios-certificates.git",
           type: "development")
 
     sigh
@@ -41,7 +41,7 @@ platform :ios do
   desc "This will also make sure the profile is up to date"
   lane :beta do
 
-    match(git_url: "git@github.com:Abolitionist-Project/ios-certificates.git",  # more information: https://codesigning.guide
+    match(git_url: "git@github.com:mikepsinn/ios-certificates.git",  # more information: https://codesigning.guide
       type: "appstore")
 
     pem
