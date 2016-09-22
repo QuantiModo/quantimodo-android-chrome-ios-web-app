@@ -133,8 +133,10 @@ angular.module('starter')
                     {
                         var item = items[i];
                         for (var j = 0; j < requiredFields.length; j++) { 
-                            if (!(requiredFields[j] in item)) { 
-                                throw 'missing required field in POST data; required fields: ' + requiredFields.toString(); 
+                            if (!(requiredFields[j] in item)) {
+                                bugsnagService.reportError('Missing required field ' + requiredFields[j] + ' in ' +
+                                    baseURL + ' request!');
+                                //throw 'missing required field in POST data; required fields: ' + requiredFields.toString();
                             } 
                         }
                     }
