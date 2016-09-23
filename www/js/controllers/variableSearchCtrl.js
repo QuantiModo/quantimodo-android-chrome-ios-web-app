@@ -81,13 +81,11 @@ angular.module('starter')
         }
 
         $scope.init = function(){
-            if (typeof Bugsnag !== "undefined") {
-                Bugsnag.context = "variableSearch";
-            }
-            console.debug($state.current.name + ": " + 'Initializing variable search controller...');
+            console.debug($state.current.name + ' initializing...');
+            $rootScope.stateParams = $stateParams;
+            if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
+            if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
             setTitleAndPlaceholderText();
-            if (typeof analytics !== 'undefined')  { analytics.trackView("Variable Search Controller"); }
-            authService.checkAuthOrSendToLogin();
             $scope.showHelpInfoPopupIfNecessary();
             $scope.state.showVariableSearchCard = true;
             if($scope.state.variableSearchResults.length < 10){

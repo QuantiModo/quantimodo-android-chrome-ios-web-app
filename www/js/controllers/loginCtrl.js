@@ -2,7 +2,7 @@ angular.module('starter')
 
     // Handlers the Welcome Page
     .controller('LoginCtrl', function($scope, $state, $rootScope, $ionicLoading, $injector, utilsService, authService,
-                                      localStorageService, $timeout, bugsnagService, QuantiModo) {
+                                      localStorageService, $timeout, bugsnagService, QuantiModo, $stateParams) {
 
         $scope.controller_name = "LoginCtrl";
         console.log("isIos is" + $rootScope.isIos);
@@ -18,15 +18,15 @@ angular.module('starter')
         }
 
         $scope.init = function () {
-            if (typeof Bugsnag !== "undefined") {
-                Bugsnag.context = "login";
-            }
+            console.debug($state.current.name + ' initializing...');
+            $rootScope.stateParams = $stateParams;
+            if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
+            if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
             $scope.hideLoader();
             if($rootScope.helpPopup){
                 console.log('Closing help popup!');
                 $rootScope.helpPopup.close();
             }
-            console.log("login initialized");
             if(!$rootScope.user){
                 $rootScope.getUserAndSetInLocalStorage();
             }

@@ -334,14 +334,12 @@ angular.module('starter')
         }
 
         $scope.init = function(){
-            if (typeof Bugsnag !== "undefined") {
-                Bugsnag.context = "variableSettings";
-            }
+            console.debug($state.current.name + ' initializing...');
+            $rootScope.stateParams = $stateParams;
+            if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
+            if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
             $scope.state.loading = true;
             $scope.showLoader('Getting variable details');
-            authService.checkAuthOrSendToLogin();
-            if (typeof analytics !== 'undefined')  { analytics.trackView("Variable Settings Controller"); }
-
             $scope.showHelpInfoPopupIfNecessary();
             $scope.state.sumAvg = "avg"; // FIXME should this be the default?
             if($stateParams.variableObject){

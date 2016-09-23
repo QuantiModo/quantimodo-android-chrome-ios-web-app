@@ -1,7 +1,7 @@
 angular.module('starter')
 
 	.controller('FavoritesCtrl', function($scope, $state, $ionicActionSheet, $timeout, reminderService, authService, 
-										  localStorageService, measurementService, variableCategoryService) {
+										  localStorageService, measurementService, variableCategoryService, $rootScope, $stateParams) {
 
 	    $scope.controller_name = "FavoritesCtrl";
 
@@ -74,11 +74,9 @@ angular.module('starter')
 		};
 
 	    $scope.init = function(){
-			if (typeof Bugsnag !== "undefined") {
-				Bugsnag.context = "Favorites";
-			}
-			authService.checkAuthOrSendToLogin();
-			if (typeof analytics !== 'undefined')  { analytics.trackView("Favorites Controller"); }
+			$rootScope.stateParams = $stateParams;
+			if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
+			if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
 			getFavoriteTrackingRemindersFromLocalStorage();
 			$scope.showHelpInfoPopupIfNecessary();
 

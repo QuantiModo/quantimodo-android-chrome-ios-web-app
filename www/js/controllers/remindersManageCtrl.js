@@ -81,9 +81,10 @@ angular.module('starter')
 		};
 		
 	    $scope.init = function(){
-			if (typeof Bugsnag !== "undefined") {
-				Bugsnag.context = "reminderManage";
-			}
+			console.debug($state.current.name + ' initializing...');
+			$rootScope.stateParams = $stateParams;
+			if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
+			if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
 
 			if (!$stateParams.variableCategoryName || $stateParams.variableCategoryName === "Anything") {
 				$scope.state.title = "Manage Reminders";
@@ -96,9 +97,7 @@ angular.module('starter')
 			}
 
 			$scope.state.showButtons = true;
-			authService.checkAuthOrSendToLogin();
 			getTrackingReminders();
-			if (typeof analytics !== 'undefined')  { analytics.trackView("Manage Reminders Controller"); }
 			$scope.refreshReminders();
 			// Triggered on a button click, or some other target
 			$rootScope.showActionSheetMenu = function() {
