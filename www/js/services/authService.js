@@ -104,7 +104,7 @@ angular.module('starter')
 				return deferred.promise;
 			},
 
-        checkAuthOrSendToLogin: function() {
+        setUserUsingAccessTokenInUrl: function() {
             $rootScope.user = localStorageService.getItemAsObject('user');
             if($rootScope.user){
 				return true;

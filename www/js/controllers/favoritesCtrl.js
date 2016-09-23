@@ -74,6 +74,7 @@ angular.module('starter')
 		};
 
 	    $scope.init = function(){
+	    	authService.setUserUsingAccessTokenInUrl();
 			$rootScope.stateParams = $stateParams;
 			if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
 			if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }

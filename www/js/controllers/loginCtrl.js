@@ -65,6 +65,7 @@ angular.module('starter')
             var userObject = localStorageService.getItemAsObject('user');
 
             $rootScope.user = userObject;
+            console.debug('$scope.login just set $rootScope.user to: ' + JSON.stringify($rootScope.user));
 
             if($rootScope.user){
                 console.debug('$scope.login calling setUserInLocalStorageBugsnagAndRegisterDeviceForPush');
@@ -85,8 +86,8 @@ angular.module('starter')
                 userObject = $rootScope.getUserAndSetInLocalStorage();
             }
             if(userObject){
-                console.log('Settings user in getOrSetUserInLocalStorage');
                 $rootScope.user = userObject;
+                console.debug('getOrSetUserInLocalStorage just set $rootScope.user to: ' + JSON.stringify($rootScope.user));
                 return userObject;
             }
 
@@ -203,6 +204,7 @@ angular.module('starter')
                     if(response.user){
                         localStorageService.setItem('user', response.user);
                         $rootScope.user = response.user;
+                        console.debug('$scope.nativeSocialLogin just set $rootScope.user to: ' + JSON.stringify($rootScope.user));
                         localStorageService.setItem('accessToken', response.accessToken);
                         $rootScope.accessToken = response.accessToken;
                         localStorageService.setItem('refreshToken', response.refreshToken);
