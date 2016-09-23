@@ -172,6 +172,28 @@ angular.module('starter')
             });
         };
 
+        $scope.onHelpButtonPress = function () {
+            $rootScope.helpButtonPopup = $ionicPopup.show({
+                title: $rootScope.stateParams.title,
+                subTitle: $rootScope.stateParams.helpText,
+                scope: $scope,
+                template: '',
+                buttons: [
+                    {
+                        text: 'OK',
+                        type: 'button-positive'
+                    },
+                    {
+                        text: 'More Help',
+                        type: 'button-positive',
+                        onTap: function(e) {
+                            $state.go('app.help');
+                        }
+                    }
+                ]
+            });
+        };
+
         $scope.showHelpInfoPopupIfNecessary = function (e) {
             localStorageService.getItem('isWelcomed', function (isWelcomed) {
                 if (isWelcomed === true || isWelcomed === "true") {

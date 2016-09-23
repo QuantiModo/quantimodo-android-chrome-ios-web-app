@@ -747,6 +747,7 @@ angular.module('starter',
             url: "/reminders-inbox",
             cache: false,
             params: {
+                title: 'Reminder Inbox',
                 reminderFrequency: null,
                 unit: null,
                 variableName : null,
@@ -804,6 +805,21 @@ angular.module('starter',
                 value : null,
                 fromUrl : null,
                 today : true
+            },
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/reminders-inbox.html",
+                    controller: 'RemindersInboxCtrl'
+                }
+            }
+        })
+        .state('app.remindersInboxTodayTreatments', {
+            url: "/reminders-inbox-today-treatments",
+            params: {
+                title: "Today's Med Schedule",
+                helpText: "Here you can see and record today's scheduled doses.",
+                today : true,
+                variableCategoryName : 'Treatments'
             },
             views: {
                 'menuContent': {

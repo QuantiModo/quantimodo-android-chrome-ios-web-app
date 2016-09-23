@@ -96,6 +96,7 @@ angular.module('starter')
 
         // when a query is searched in the search box
         $scope.onVariableSearch = function(){
+            var params;
             $scope.state.showAddVariableButton = false;
             console.log($state.current.name + ": " + "Search term: ", $scope.state.variableSearchQuery.name);
             if($scope.state.variableSearchQuery.name.length > 2){
@@ -106,7 +107,7 @@ angular.module('starter')
                         'includePublic' : false,
                         'variableCategoryName' : $scope.state.variableCategoryName,
                         'manualTracking': true
-                    }
+                    };
                     variableService.searchUserVariables($scope.state.variableSearchQuery.name, params)
                         .then(function(variables){
                             console.debug($state.current.name + ": " + "$scope.onVariableSearch: Populating list with " +
