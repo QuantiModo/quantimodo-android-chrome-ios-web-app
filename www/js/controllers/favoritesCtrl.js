@@ -192,6 +192,7 @@ angular.module('starter')
 					return true;
 				},
 				destructiveButtonClicked: function() {
+					$scope.state.favorites.splice($index, 1);
                     reminderService.deleteReminder($scope.state.trackingReminder.trackingReminderId)
                         .then(function(){
                             console.debug('Favorite Deleted');
