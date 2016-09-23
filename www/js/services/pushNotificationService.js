@@ -6,14 +6,16 @@ angular.module('starter')
             registerDeviceToken : function(deviceToken){
                 var deferred = $q.defer();
 
-                localStorageService.setItem('deviceToken', deviceToken);
-                $rootScope.deviceToken = deviceToken;
                 console.debug("Posting deviceToken to server: ", deviceToken);
                 QuantiModo.postDeviceToken(deviceToken, function(response){
+                    localStorageService.deleteItem('deviceTokenToSync');
+                    localStorageService.setItem('deviceTokenOnServer', deviceToken);
                     console.debug(response);
                     deferred.resolve();
                 }, function(err){
-                    Bugsnag.notify(err, JSON.stringify(err), {}, "error");
+                    if (typeof Bugsnag !== "undefined") {
+                        Bugsnag.notify(err, JSON.stringify(err), {}, "error");
+                    }
                     deferred.reject(err);
                 });
                 return deferred.promise;

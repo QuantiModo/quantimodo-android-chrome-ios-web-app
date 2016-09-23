@@ -1,6 +1,67 @@
 <ion-view hide-nav-bar="hideNavigationMenu" view-title="Import Data">
-    <ion-content scroll="true" overflow-scroll="true"> 
-        <div id="import-iframe">
+    <ion-content scroll="true" overflow-scroll="true">
+        <ion-refresher on-refresh="init()"></ion-refresher>
+
+        <div  class="list card" ng-if="isMobile && connectors">
+            <div ng-if="!connector.hide" class="list card"
+                 ng-repeat="connector in connectors" >
+                <div class="item" style="padding-bottom:10px;">
+                    <div class="row">
+                        <div class="col col-20" style="padding-top: 10px;">
+                            <img src="{{connector.image}}" alt="Mountain View" style="width:40px;height:40px;">
+                        </div>
+                        <div ng-click="showActionSheetForConnector(connector, $event)" class="col col-70">
+                            <h1 style="white-space: normal;
+									line-height: normal; ">
+                                {{connector.displayName}}
+                            </h1>
+                            <p ng-if="connector.lastUpdate" style="white-space: normal;">
+                                Last updated {{ connector.lastUpdate * 1000 | date : "longDate"}}
+                            </p>
+                            <p ng-if="connector.totalMeasurementsInLastUpdate" style="white-space: normal;">
+                                {{ connector.totalMeasurementsInLastUpdate }} new measurements
+                            </p>
+                            <p ng-if="!connector.lastUpdate" style="white-space: normal;">
+                                {{connector.shortDescription}}
+                            </p>
+                            <p ng-if="connector.updateStatus === 'ERROR'" style="white-space: normal;">
+                                {{ connector.errorMessage }}
+                            </p>
+                        </div>
+                    </div>
+                    <div class="button-bar" ng-if="!connector.connected">
+                        <button ng-if="!connector.qmClient" class="button button-clear button-balanced"
+                                style="text-overflow: clip;"
+                                ng-click="connect(connector)">
+                            <i class="ion-link"> &nbsp; Connect</i>
+                        </button>
+                        <button ng-if="connector.getItUrl" class="button button-clear button-calm"
+                                ng-click="getItHere(connector)"
+                                style="text-overflow: clip;">
+                            <i class="ion-bag"> &nbsp; Get it here!</i>
+                        </button>
+                    </div>
+                    <div class="button-bar" ng-if="connector.connected">
+                        <button ng-if="connector.updateStatus !== 'ERROR'" class="button button-clear button-royal"
+                                style="text-overflow: clip;"
+                                ng-click="">
+                            <i class="ion-ios-cloud-download"> &nbsp; {{connector.updateStatus}}</i>
+                        </button>
+                        <button ng-if="connector.updateStatus === 'ERROR'" class="button button-clear button-balanced"
+                                ng-click="editReminderSettingsByNotification(connector)"
+                                style="text-overflow: clip;">
+                            <i class="ion-link"> &nbsp; Reconnect</i>
+                        </button>
+                        <button ng-if="!connector.qmClient" class="button button-clear button-assertive"
+                                ng-click="disconnect(connector)"
+                                style="text-overflow: clip;">
+                            <i class="ion-close-circled"> Disconnect </i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="import-iframe" ng-if="!isMobile">
         	
         </div>
         <!-- <iframe id="import-iframe" data-tap-disabled="true" style="height:800px;width:100%;" frameborder="0" onload="window.closeLoading();"></iframe> -->

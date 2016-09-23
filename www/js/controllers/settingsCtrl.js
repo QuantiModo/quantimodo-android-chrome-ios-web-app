@@ -3,19 +3,17 @@ angular.module('starter')
 	// Controls the settings page
 	.controller('SettingsCtrl', function( $state, $scope, $ionicPopover, $ionicPopup, localStorageService, $rootScope, 
 										  notificationService, QuantiModo, reminderService, qmLocationService, 
-										  ionicTimePicker, userService, timeService, pushNotificationService) {
+										  ionicTimePicker, userService, timeService, utilsService) {
 		$scope.controller_name = "SettingsCtrl";
 		$scope.state = {};
 		$scope.showReminderFrequencySelector = config.appSettings.settingsPageOptions.showReminderFrequencySelector;
 		$rootScope.isIOS = ionic.Platform.isIPad() || ionic.Platform.isIOS();
 		$rootScope.isAndroid = ionic.Platform.isAndroid();
         $rootScope.isChrome = window.chrome ? true : false;
-	    // populate user data
-		//$scope.state.showOnlyOneNotification = true;
-		$scope.state.showOnlyOneNotification = $rootScope.showOnlyOneNotification;
-		console.debug('CombineNotifications is '+ $scope.state.showOnlyOneNotification);
-		$scope.state.trackLocation = $rootScope.trackLocation;
-		console.debug('trackLocation is '+ $scope.state.trackLocation);
+		if($rootScope.user){
+			$scope.state.trackLocation = $rootScope.user.trackLocation;
+			console.debug('trackLocation is '+ $scope.state.trackLocation);
+		}
 
 		var d = new Date();
 		var timeZoneOffsetInMinutes = d.getTimezoneOffset();
@@ -61,11 +59,6 @@ angular.module('starter')
 			// hide popover
 			$scope.ratingPopover.hide();
 		};
-		
-        // when login is tapped
-	    $scope.loginFromSettings = function(){
-			$state.go('app.login');
-	    };
 
 		$scope.sendSharingInvitation= function() {
 			var subjectLine = "I%27d%20like%20to%20share%20my%20data%20with%20you";
@@ -79,9 +72,10 @@ angular.module('starter')
 		};
 
 		$scope.init = function() {
-			Bugsnag.context = "settings";
+			if (typeof Bugsnag !== "undefined") {
+				Bugsnag.context = "settings";
+			}
 			if (typeof analytics !== 'undefined')  { analytics.trackView("Settings Controller"); }
-			$scope.shouldWeCombineNotifications();
 			qmLocationService.getLocationVariablesFromLocalStorage();
 	    };
 
@@ -106,32 +100,14 @@ angular.module('starter')
 		};
 
 		$scope.combineNotificationChange = function() {
-			var d = new Date();
-			var timeZoneOffsetInMinutes = d.getTimezoneOffset();
-			var params = {
-				timeZoneOffset: timeZoneOffsetInMinutes
-			};
-			
-			console.log('Combine Notification Change', $scope.state.showOnlyOneNotification);
-			$rootScope.showOnlyOneNotification = $scope.state.showOnlyOneNotification;
-			localStorageService.setItem('showOnlyOneNotification', $scope.state.showOnlyOneNotification);
-			if($scope.state.showOnlyOneNotification){
+			userService.updateUserSettings({combineNotifications: $rootScope.user.combineNotifications});
+			if($rootScope.user.combineNotifications){
 				$ionicPopup.alert({
 					title: 'Disabled Multiple Notifications',
-					template: 'You will only get a single generic repeating device notification ' +
-					'instead of a separate device notification for each reminder that you create.  All ' +
+					template: 'You will only get a single generic notification ' +
+					'instead of a separate notification for each reminder that you create.  All ' +
 					'tracking reminder notifications for specific reminders will still show up in your Reminder Inbox.'
 				});
-
-                params.pushNotificationsEnabled = true;
-                userService.updateUserSettings(params);
-                $rootScope.deviceToken = localStorageService.getItemSync('deviceToken');
-                if($rootScope.deviceToken){
-                    //pushNotificationService.registerDeviceToken($rootScope.deviceToken);
-                } else {
-                    //console.error("Could not find device token for push notifications!");
-                }
-
 				notificationService.cancelAllNotifications().then(function() {
 					console.debug("SettingsCtrl combineNotificationChange: Disabled Multiple Notifications and now " +
 						"refreshTrackingRemindersAndScheduleAlarms will schedule a single notification for highest " +
@@ -142,22 +118,11 @@ angular.module('starter')
                     }
 				});
 
-				// notificationService.cancelAllNotifications().then(function() {
-				// 	var intervalToCheckForNotificationsInMinutes = 15;
-				// 	var notificationSettings = {
-				// 		every: intervalToCheckForNotificationsInMinutes
-				// 	};
-				// 	notificationService.scheduleGenericNotification(notificationSettings);
-				// });
 			} else {
 				$ionicPopup.alert({
 					title: 'Enabled Multiple Notifications',
 					template: 'You will get a separate device notification for each reminder that you create.'
 				});
-
-				params.pushNotificationsEnabled = false;
-                userService.updateUserSettings(params);
-
 				notificationService.cancelAllNotifications().then(function() {
 					console.debug("SettingsCtrl combineNotificationChange: Cancelled combined notification and now " +
 						"refreshTrackingRemindersAndScheduleAlarms");
@@ -254,10 +219,9 @@ angular.module('starter')
 		};
 
 		$scope.trackLocationChange = function() {
-
 			console.log('trackLocation', $scope.state.trackLocation);
-			$rootScope.trackLocation = $scope.state.trackLocation;
-			localStorageService.setItem('trackLocation', $scope.state.trackLocation);
+			$rootScope.user.trackLocation = $scope.state.trackLocation;
+			userService.updateUserSettings({trackLocation: $rootScope.user.trackLocation});
 			if($scope.state.trackLocation){
 				$ionicPopup.alert({
 					title: 'Location Tracking Enabled',
@@ -279,21 +243,7 @@ angular.module('starter')
                 console.log('Logging out...');
                 $scope.hideLoader();
                 $rootScope.user = null;
-                $rootScope.isMobile = window.cordova;
-                $rootScope.isBrowser = ionic.Platform.platforms[0] === "browser";
-                if($rootScope.isMobile || !$rootScope.isBrowser){
-                    console.log('startLogout: Open the auth window via inAppBrowser.  Platform is ' + ionic.Platform.platforms[0]);
-                    var ref = window.open(config.getApiUrl() + '/api/v2/auth/logout','_blank', 'location=no,toolbar=yes');
-
-                    console.log('startLogout: listen to its event when the page changes');
-
-                    ref.addEventListener('loadstart', function(event) {
-                        ref.close();
-                        $scope.showDataClearPopup();
-                    });
-                } else {
-                    $scope.showDataClearPopup();
-                }
+				$scope.showDataClearPopup();
             };
 
             function refreshTrackingPageAndGoToWelcome() {
@@ -326,24 +276,16 @@ angular.module('starter')
             };
             
             var completelyResetAppState = function(){
-                $rootScope.user = null;
                 localStorageService.clear();
                 notificationService.cancelAllNotifications();
-              	logoutOfApi();
-                //TODO: Fix this
-                //QuantiModo.logoutOfApi();
-				//hard reload
 				$state.go(config.appSettings.welcomeState, {}, {
 					reload: true
 				});
             };
             
             var afterLogoutDoNotDeleteMeasurements = function(){
-                $rootScope.user = null;
                 clearTokensFromLocalStorage();
                 logoutOfApi();
-                //TODO: Fix this
-                //QuantiModo.logoutOfApi();
                 refreshTrackingPageAndGoToWelcome();
             };
 
@@ -361,7 +303,7 @@ angular.module('starter')
 
 		// when user is logging out
         function logoutOfApi() {
-			var logoutUrl = config.getURL("api/v2/auth/logout");
+			var logoutUrl = utilsService.getURL("api/v2/auth/logout");
 			window.open(logoutUrl,'_blank');
         }
 
@@ -444,9 +386,9 @@ angular.module('starter')
 		};
 
 		// when view is changed
-		$scope.$on('$ionicView.enter', function(e) {
+		$scope.$on('$ionicView.enter', function(e) { console.debug("Entering state " + $state.current.name);
 			$scope.hideLoader();
-			$scope.state.trackLocation = $rootScope.trackLocation;
+			$scope.state.trackLocation = $rootScope.user.trackLocation;
 		});
 
 	    // call constructor

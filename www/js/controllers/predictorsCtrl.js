@@ -15,27 +15,35 @@ angular.module('starter')
         function showPositivePredictors() {
             $scope.state.title = "Positive Predictors of " + $stateParams.variableObject.name;
             $scope.increasingDecreasing = "INCREASING";
-            Bugsnag.context = "positivePredictors";
+            if (typeof Bugsnag !== "undefined") {
+                Bugsnag.context = "positivePredictors";
+            }
             $scope.showLoader('Fetching positive predictors...');
         }
 
         function showNegativePredictors() {
             $scope.state.title = "Negative Predictors of " + $stateParams.variableObject.name;
             $scope.increasingDecreasing = "DECREASING";
-            Bugsnag.context = "negativePredictors";
+            if (typeof Bugsnag !== "undefined") {
+                Bugsnag.context = "negativePredictors";
+            }
             $scope.showLoader('Fetching negative predictors...');
         }
 
         function showPredictors() {
             $scope.state.title = "Predictors of " + $stateParams.variableObject.name;
-            Bugsnag.context = "predictors";
+            if (typeof Bugsnag !== "undefined") {
+                Bugsnag.context = "predictors";
+            }
             $scope.showLoader('Fetching predictors...');
 
         }
 
         function showOutcomes() {
             $scope.state.title = "Likely Outcomes of " + $stateParams.variableObject.name;
-            Bugsnag.context = "outcomes";
+            if (typeof Bugsnag !== "undefined") {
+                Bugsnag.context = "outcomes";
+            }
             $scope.showLoader('Fetching outcomes...');
         }
 
@@ -217,7 +225,7 @@ angular.module('starter')
         };
 
         // when view is changed
-        $scope.$on('$ionicView.enter', function(e){
+        $scope.$on('$ionicView.enter', function(e) { console.debug("Entering state " + $state.current.name);
             $scope.hideLoader();
             $scope.init();
         });

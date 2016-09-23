@@ -29,16 +29,16 @@ angular.module('starter')
 
         $scope.subscribeNotification = true;
 
-        $scope.saveIntervalAndGoToLogin = function(){
-            $scope.saveInterval();
-            $state.go('app.login');
+        $scope.saveIntervalAndGoToLogin = function(primaryOutcomeRatingFrequencyDescription){
+            $scope.saveInterval(primaryOutcomeRatingFrequencyDescription);
+            $rootScope.sendToLogin();
         };
 
         // skip interval reporting is tapped
         $scope.skipInterval = function(){
             $scope.showIntervalCard = false;
             console.debug('skipInterval: Going to login state...');
-            $state.go('app.login');
+            $rootScope.sendToLogin();
         };
 
         // ratingValue is reported
@@ -60,11 +60,20 @@ angular.module('starter')
 
 
         $scope.init = function(){
-            Bugsnag.context = "welcome";
+            if (typeof Bugsnag !== "undefined") {
+                Bugsnag.context = "welcome";
+            }
             console.log("welcome initialization...");
             if (typeof analytics !== 'undefined')  { analytics.trackView("Welcome Controller"); }
             
         };
+
+        $scope.$on('$ionicView.beforeEnter', function(){
+            if($rootScope.user){
+                console.log('Already have user so no need to welcome. Going to default state.');
+                $state.go(config.appSettings.defaultState);
+            }
+        });
 
         $scope.init();
     });

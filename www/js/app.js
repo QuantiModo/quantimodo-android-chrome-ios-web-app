@@ -3,8 +3,7 @@
 
 angular.module('starter',
     [
-        'ionic',
-        'ionic.service.core',
+        'ionic','ionic.service.core',
         //'ionic.service.push',
         //'ionic.service.analytics',
         'oc.lazyLoad',
@@ -14,88 +13,214 @@ angular.module('starter',
         'ionic-timepicker',
         'ngIOS9UIWebViewPatch',
         'ng-mfb',
-        'fabric'
+        //'templates',
+        'fabric',
+        'ngCordovaOauth'
     ]
 )
 
-.run(function($ionicPlatform, $ionicHistory, $state, $rootScope, pushNotificationService, localStorageService) {
+.run(function($ionicPlatform, $ionicHistory, $state, $rootScope, localStorageService, qmLocationService, reminderService) {
 //.run(function($ionicPlatform, $ionicHistory, $state, $rootScope, $ionicAnalytics) {
 // Database
 //.run(function($ionicPlatform, $ionicHistory, $state, $rootScope, $cordovaSQLite) {
 
     $ionicPlatform.ready(function() {
         //$ionicAnalytics.register();
-
-        if(ionic.Platform.isAndroid()){
-            var push = new Ionic.Push({});
-
-            push.register(function(deviceToken) {
-                console.log("Got device token for push notifications: ", deviceToken.token);
-                $rootScope.deviceToken = localStorageService.getItemSync('deviceToken');
-                push.saveToken(deviceToken);
-                if($rootScope.deviceToken !== deviceToken.token){
-                    pushNotificationService.registerDeviceToken(deviceToken.token);
-                }
-            });
+        if(ionic.Platform.isIPad() || ionic.Platform.isIOS()){
+            window.onerror = function (errorMsg, url, lineNumber) {
+                alert('Error: ' + errorMsg + ' Script: ' + url + ' Line: ' + lineNumber);
+            };
         }
 
-        /*
-         window.onNotification = function(e){
-            console.log("window.onNotification: received event", e);
-            switch(e.event){
-                case 'registered':
-                    if(e.regid.length > 0){
+         if (ionic.Platform.isAndroid() || ionic.Platform.isIPad() || ionic.Platform.isIOS()) {
+             console.debug("Going to try to register push");
+             var push = PushNotification.init({
+                 android: {
+                     senderID: "1052648855194",
+                     badge: true,
+                     sound: false,
+                     vibrate: false,
+                     icon: 'ic_stat_icon_bw',
+                     clearBadge: true
+                 },
+                 browser: {
+                     pushServiceURL: 'http://push.api.phonegap.com/v1/push'
+                 },
+                 ios: {
+                     alert: "false",
+                     badge: "true",
+                     sound: "false",
+                     clearBadge: true
+                 },
+                 windows: {}
+             });
 
-                        var deviceToken = e.regid;
-                        pushNotificationService.register(deviceToken).then(function(response){
-                            alert('registered!');
-                        });
-                    }
-                    break;
+             push.on('registration', function(registerResponse) {
+                 console.debug('Registered device for push notifications: ' + JSON.stringify(registerResponse));
+                 // data.registrationId
+                 var newDeviceToken = registerResponse.registrationId;
+                 console.debug("Got device token for push notifications: " + registerResponse.registrationId);
+                 var deviceTokenOnServer = localStorageService.getItemSync('deviceTokenOnServer');
+                 console.debug('deviceTokenOnServer from localStorage is ' + deviceTokenOnServer);
+                 if(deviceTokenOnServer !== registerResponse.registrationId) {
+                     localStorageService.setItem('deviceTokenToSync', newDeviceToken);
+                     console.debug('New push device token does not match push device token on server so saving to localStorage to sync after login');
+                 }
+             });
 
-                case 'message':
-                    alert('msg received: ' + e.message);
-                    /!*
-                     {
-                     "message": "Hello this is a push notification",
-                     "payload": {
-                     "message": "Hello this is a push notification",
-                     "sound": "notification",
-                     "title": "New Message",
-                     "from": "813xxxxxxx",
-                     "collapse_key": "do_not_collapse",
-                     "foreground": true,
-                     "event": "message"
-                     }
-                     }
-                     *!/
-                    break;
+             var finishPushes = true;  // Setting to false didn't solve notification dismissal problem
 
-                case 'error':
-                    alert('error occurred');
-                    break;
+             push.on('notification', function(data) {
+                 console.log('Received push notification: ' + JSON.stringify(data));
+                 qmLocationService.updateLocationVariablesAndPostMeasurementIfChanged();
+                 reminderService.refreshTrackingReminderNotifications();
+                 // data.message,
+                 // data.title,
+                 // data.count,
+                 // data.sound,
+                 // data.image,
+                 // data.additionalData
+                 if(!finishPushes) {
+                     console.log('Not doing push.finish for data.additionalData.notId: ' + data.additionalData.notId);
+                     return;
+                 }
+                 push.finish(function () {
+                     console.log("processing of push data is finished: " + JSON.stringify(data));
+                 });
+             });
 
-            }
-        };
+             push.on('error', function(e) {
+                 alert(e.message);
+             });
 
-        window.errorHandler = function(error){
-            alert('an error occured');
-        };
+             var finishPush = function (data) {
+                 if(!finishPushes){
+                     console.log('Not doing push.finish for data.additionalData.notId: ' + data.additionalData.notId);
+                     return;
+                 }
 
-        var pushNotification = window.plugins.pushNotification;
-        pushNotification.register(
-            window.onNotification,
-            window.errorHandler,
-            {
-                'badge': 'true',
-                'sound': 'true',
-                'alert': 'true',
-                'ecb': 'onNotification',
-                'senderID': window.private_keys.GCM_SENDER_ID
-            }
-        );
+                 push.finish(function() {
+                     console.log('accept callback finished for data.additionalData.notId: ' + data.additionalData.notId);
+                 }, function() {
+                     console.log('accept callback failed for data.additionalData.notId: ' + data.additionalData.notId);
+                 }, data.additionalData.notId);
 
-*/
+             };
+
+             window.trackOneRatingAction = function (data){
+                 
+                 console.log("trackDefaultValueAction Push data: " + JSON.stringify(data));
+                 var body = {
+                     trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId,
+                     modifiedValue: 1
+                 };
+
+                 reminderService.trackReminderNotification(body);
+                 finishPush(data);
+             };
+
+             window.trackTwoRatingAction = function (data){
+                 
+                 console.log("trackDefaultValueAction Push data: " + JSON.stringify(data));
+                 var body = {
+                     trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId,
+                     modifiedValue: 2
+                 };
+
+                 reminderService.trackReminderNotification(body);
+                 finishPush(data);
+             };
+
+             window.trackThreeRatingAction = function (data){
+                 
+                 console.log("trackDefaultValueAction Push data: " + JSON.stringify(data));
+                 var body = {
+                     trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId,
+                     modifiedValue: 3
+                 };
+
+                 reminderService.trackReminderNotification(body);
+                 finishPush(data);
+             };
+
+             window.trackFourRatingAction = function (data){
+                 
+                 console.log("trackDefaultValueAction Push data: " + JSON.stringify(data));
+                 var body = {
+                     trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId,
+                     modifiedValue: 4
+                 };
+
+                 reminderService.trackReminderNotification(body);
+                 finishPush(data);
+             };
+
+             window.trackFiveRatingAction = function (data){
+                 
+                 console.log("trackDefaultValueAction Push data: " + JSON.stringify(data));
+                 var body = {
+                     trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId,
+                     modifiedValue: 5
+                 };
+
+                 reminderService.trackReminderNotification(body);
+                 finishPush(data);
+             };
+
+             window.trackDefaultValueAction = function (data){
+                 
+                 console.log("trackDefaultValueAction Push data: " + JSON.stringify(data));
+                 var body = {
+                     trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId
+                 };
+
+                 reminderService.trackReminderNotification(body);
+                 finishPush(data);
+             };
+
+             window.snoozeAction = function (data){
+                 
+                 console.log("snoozeAction push data: " + JSON.stringify(data));
+                 var body = {
+                     trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId
+                 };
+                 reminderService.snoozeReminderNotification(body);
+                 finishPush(data);
+             };
+
+             window.trackLastValueAction = function (data){
+                 
+                 console.log("trackLastValueAction Push data: " + JSON.stringify(data));
+                 var body = {
+                     trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId,
+                     modifiedValue: data.additionalData.lastValue
+                 };
+                 reminderService.trackReminderNotification(body);
+                 finishPush(data);
+             };
+
+             window.trackSecondToLastValueAction = function (data){
+                 
+                 console.log("trackSecondToLastValueAction Push data: " + JSON.stringify(data));
+                 var body = {
+                     trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId,
+                     modifiedValue: data.additionalData.secondToLastValue
+                 };
+                 reminderService.trackReminderNotification(body);
+                 finishPush(data);
+             };
+
+             window.trackThirdToLastValueAction = function (data){
+                 
+                 console.log("trackThirdToLastValueAction Push data: " + JSON.stringify(data));
+                 var body = {
+                     trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId,
+                     modifiedValue: data.additionalData.thirdToLastValue
+                 };
+                 reminderService.trackReminderNotification(body);
+                 finishPush(data);
+             };
+         }
 
         if(typeof analytics !== "undefined") {
             console.log("Configuring Google Analytics");
@@ -135,31 +260,25 @@ angular.module('starter',
         if(typeof config !== "undefined"){
             clearInterval(intervalChecker);
 
-            if(!window.private_keys){
-                console.error('intervalChecker: No private config file found!');
+            if(!window.private_keys) {
+                console.error('Please add private config file to www/private_configs folder!  Contact mike@quantimo.do if you need help');
                 return;
             }
 
-            $rootScope.appVersion = "1.8.5.2";
+            $rootScope.appVersion = "1.9.6.0";
             $rootScope.appName = config.appSettings.appName;
 
-            if(window.private_keys.bugsnag_key) {
-                //Set Bugsnag Release Stage
-                $rootScope.bugsnagApiKey = window.private_keys.bugsnag_key;
-                Bugsnag.apiKey = window.private_keys.bugsnag_key;
-                Bugsnag.releaseStage = config.getEnv();
-                Bugsnag.notifyReleaseStages = config.bugsnag.notifyReleaseStages;
+            if (typeof Bugsnag !== "undefined") {
+                //$rootScope.bugsnagApiKey = window.private_keys.bugsnag_key;
+                //Bugsnag.apiKey = "ae7bc49d1285848342342bb5c321a2cf";
+                //Bugsnag.notifyReleaseStages = ['Production','Staging'];
                 Bugsnag.appVersion = $rootScope.appVersion;
                 Bugsnag.metaData = {
                     platform: ionic.Platform.platform(),
                     platformVersion: ionic.Platform.version(),
                     appName: config.appSettings.appName
                 };
-            } else {
-                console.error('intervalChecker: No bugsnag_key found in private config!');
             }
-
-
 
             $ionicPlatform.registerBackButtonAction(function (event) {
                 if($ionicHistory.currentStateName() === config.appSettings.defaultState){
@@ -189,8 +308,8 @@ angular.module('starter',
 
 .config(function($stateProvider, $urlRouterProvider, $compileProvider, ionicTimePickerProvider,
                  ionicDatePickerProvider, $ionicConfigProvider) {
-    $compileProvider.imgSrcSanitizationWhitelist(/^\s*(https?|ftp|file|mailto|chrome-extension):/);
-    $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|file|ftp|mailto|chrome-extension):/);
+    $compileProvider.imgSrcSanitizationWhitelist(/^\s*(https?|ftp|file|mailto|chrome-extension|ms-appx-web|ms-appx):/);
+    $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|file|ftp|mailto|chrome-extension|ms-appx-web|ms-appx):/);
     $ionicConfigProvider.tabs.position("bottom"); //Places them at the bottom for all OS
 
     var config_resolver = {
@@ -310,7 +429,7 @@ angular.module('starter',
             }
         })
         .state('app.measurementAddSearch', {
-            url: "/track_factors",
+            url: "/measurement-add-search",
             params: {
                 reminder : null,
                 fromState : null,
@@ -326,7 +445,7 @@ angular.module('starter',
             }
         })
         .state('app.measurementAddSearchCategory', {
-            url: "/track_factors_category/:variableCategoryName",
+            url: "/measurement-add-search-category/:variableCategoryName",
             params: {
                 variableCategoryName : null,
                 fromState : null,
@@ -436,7 +555,8 @@ angular.module('starter',
                 fromState : null,
                 fromUrl : null,
                 measurement : null,
-                variableName : null
+                variableName : null,
+                variableObject : null
             },
             views: {
                 'menuContent': {
@@ -771,15 +891,24 @@ angular.module('starter',
                     controller: 'FavoriteAddCtrl'
                 }
             }
-        })
-    ;
-    
+        });
+
+    if (window.localStorage.introSeen) {
+        console.log("Intro seen so going to inbox");
+        $urlRouterProvider.otherwise('/app/reminders-inbox');
+    } else {
+        console.log("Intro not seen so going to intro");
+        localStorage.setItem('introSeen', true);
+        $urlRouterProvider.otherwise('/');
+    }
       // if none of the above states are matched, use this as the fallback
-      $urlRouterProvider.otherwise('/');
+    
 });
 
 angular.module('exceptionOverride', []).factory('$exceptionHandler', function () {
     return function (exception, cause) {
-        Bugsnag.notifyException(exception, {diagnostics:{cause: cause}});
+        if (typeof Bugsnag !== "undefined") {
+            Bugsnag.notifyException(exception, {diagnostics: {cause: cause}});
+        }
     };
 });

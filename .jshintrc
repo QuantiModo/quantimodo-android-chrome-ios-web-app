@@ -33,6 +33,11 @@
     "module"    : false,
     "require"   : false,
     "Ionic" : false,
-    "XMLHttpRequest" : false
+    "XMLHttpRequest" : false,
+    "process" : false,
+    "defer" : false,
+    "deferred" : false,
+    "PushNotification" : false,
+    "navigator" : false
   }
 }

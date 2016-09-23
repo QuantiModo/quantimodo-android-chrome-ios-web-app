@@ -2,7 +2,7 @@ angular.module('starter')
 
 	// Controls the History Page of the App.
 	.controller('HistoryPrimaryOutcomeCtrl', function($scope, $ionicLoading, $ionicActionSheet, $state, $timeout,
-													  $rootScope, measurementService, ratingService) {
+													  $rootScope, measurementService) {
 
 	    $scope.controller_name = "HistoryPrimaryOutcomeCtrl";
 		$scope.state = {
@@ -18,32 +18,39 @@ angular.module('starter')
 			});
 		};
 
-		function updateHistoryView(){
-			$scope.history = measurementService.getAllLocalMeasurements();
-			//Stop the ion-refresher from spinning
-			$scope.$broadcast('scroll.refreshComplete');
-		}
-
 		$scope.init = function(){
-			console.debug('history page init');
-			Bugsnag.context = "historyPrimary";
-			updateHistoryView();
+			console.debug($state.current.name + ": " + 'history page init');
+			if (typeof Bugsnag !== "undefined") {
+				Bugsnag.context = "historyPrimary";
+			}
+			$scope.history = measurementService.getAllLocalMeasurements();
 			if($rootScope.user){
 				$scope.showLoader($scope.syncDisplayText);
 				measurementService.syncPrimaryOutcomeVariableMeasurements().then(function(){
 					$scope.hideLoader();
-					updateHistoryView();
+					$scope.history = measurementService.getAllLocalMeasurements();
+					//Stop the ion-refresher from spinning
+					$scope.$broadcast('scroll.refreshComplete');
 				});
 			}
 			$scope.hideLoader();
 	    };
 
         // when view is changed
-    	$scope.$on('$ionicView.enter', function(e) {
-    		$scope.init();
+    	$scope.$on('$ionicView.enter', function(e) { console.debug("Entering state " + $state.current.name);
+    		//$scope.init();
     	});
 
-		$scope.showActionSheet = function(measurement, $index) {
+		$scope.$on('$ionicView.beforeEnter', function(){
+			$scope.init();
+		});
+
+		$scope.$on('updatePrimaryOutcomeHistory', function(){
+			console.log($state.current.name + ": " + 'updatePrimaryOutcomeHistory broadcast received..');
+			$scope.history = measurementService.getAllLocalMeasurements();
+		});
+
+		$scope.showActionSheet = function(measurement) {
 
 			$scope.state.measurement = measurement;
 			$scope.state.variableObject = measurement;
@@ -62,10 +69,10 @@ angular.module('starter')
 				],
 				cancelText: '<i class="icon ion-ios-close"></i>Cancel',
 				cancel: function() {
-					console.log('CANCELLED');
+					console.log($state.current.name + ": " + 'CANCELLED');
 				},
 				buttonClicked: function(index) {
-					console.log('BUTTON CLICKED', index);
+					console.log($state.current.name + ": " + 'BUTTON CLICKED', index);
 					if(index === 0){
 						$scope.editMeasurement($scope.state.variableObject);
 					}
@@ -84,7 +91,8 @@ angular.module('starter')
 						$state.go('app.track');
 					}
 					if(index === 4){
-						$scope.goToSettingsForVariableObject($scope.state.variableObject);
+						$state.go('app.variableSettings',
+							{variableName: $scope.state.measurement.variableName});
 					}
 					if(index === 5){
 						$state.go('app.predictors',

@@ -3,22 +3,16 @@ angular.module('starter')
     // Controls the variable settings editing Page
     .controller('VariableSettingsCtrl',
         function($scope, $state, $rootScope, $timeout, $ionicPopup, $q, $stateParams, $ionicHistory, $ionicActionSheet,
-                 authService, measurementService, localStorageService, variableService, QuantiModo) {
+                 authService, measurementService, localStorageService, variableService) {
 
         $scope.controller_name = "VariableSettingsCtrl";
 
-        // state
         $scope.state = {
-            // category object,
             unitCategories : {},
             searchedUnits : [],
             offset : 0
         };
-        $scope.state.title = $stateParams.variableName + ' Variable Settings';
-        $scope.state.variableName = $stateParams.variableName;
-        //$scope.state.userVariableAlias = $stateParams.variableName;
 
-        // cancel activity
         $scope.cancel = function(){
             $ionicHistory.goBack();
         };
@@ -26,9 +20,10 @@ angular.module('starter')
         $scope.resetToDefaultSettings = function() {
             // Populate fields with original settings for variable
 
-            variableService.getPublicVariablesByName($stateParams.variableName).then(function(variableArray) {
+            variableService.getPublicVariablesByName($scope.state.variableObject.name).then(function(variableArray) {
                 var originalVariableObject = variableArray[0];
-                console.log("Original variable object: " + originalVariableObject);
+                console.log("variableService.getPublicVariablesByName: Original variable object: " +
+                    JSON.stringify(originalVariableObject));
 
                 if (originalVariableObject) {
                     if ($scope.state.variableObject.abbreviatedUnitName !== "/5") {
@@ -74,7 +69,7 @@ angular.module('starter')
                     },
                     {
                         text: 'No',
-                        type: 'button-assertive',
+                        type: 'button-assertive'
                     }
                 ]
 
@@ -199,21 +194,20 @@ angular.module('starter')
 
             // populate params
             var params = {
-                user: $scope.variableObject.userId,
-                variableId: $scope.variableObject.id,
+                variableId: $scope.state.variableObject.id,
                 durationOfAction: $scope.state.durationOfAction*60*60,
                 fillingValue: fillingValue,
                 //joinWith
                 maximumAllowedValue: maximumAllowedValue,
                 minimumAllowedValue: minimumAllowedValue,
-                onsetDelay: $scope.state.onsetDelay*60*60,
+                onsetDelay: $scope.state.onsetDelay*60*60
                 //userVariableAlias: $scope.state.userVariableAlias
                 //experimentStartTime
                 //experimentEndTime
             };
             console.log(params);
             variableService.postUserVariable(params).then(function() {
-                console.log("success");
+                console.log("variableService.postUserVariable: success: " + JSON.stringify(params));
             },
             function() {
                 console.log("error");
@@ -243,7 +237,7 @@ angular.module('starter')
                     console.log('CANCELLED');
                 },
                 buttonClicked: function(index) {
-                    console.log('BUTTON CLICKED', index);
+                    console.log('variableSettingsCtrl BUTTON CLICKED: ' + index);
                     if(index === 0){
                         $scope.addToFavoritesUsingVariableObject($scope.state.variableObject);
                     }
@@ -257,6 +251,7 @@ angular.module('starter')
                         $scope.goToChartsPageForVariableObject($scope.state.variableObject);
                     }
                     if(index === 4) {
+                        console.log('variableSettingsCtrl going to history' + JSON.stringify($scope.state.variableObject));
                         $scope.goToHistoryForVariableObject($scope.state.variableObject);
                     }
                     if(index === 5){
@@ -294,9 +289,54 @@ angular.module('starter')
 
         };
 
-        // constructor
+        function setupByVariableObject(variableObject) {
+            $scope.state.title = variableObject.name + ' Variable Settings';
+            $scope.state.variableName = variableObject.name;
+            $scope.state.variableObject = variableObject;
+            $scope.state.sumAvg = variableObject.combinationOperation === "MEAN" ? "avg" : "sum";
+            if (variableObject.abbreviatedUnitName === "/5") {
+                // FIXME hide other fixed range variables as well
+                $scope.state.hideMinMax = true;
+            }
+            else {
+                if (variableObject.minimumAllowedValue !== "-Infinity") {
+                    $scope.state.minimumAllowedValue = variableObject.minimumAllowedValue;
+                }
+                else {
+                    $scope.state.minimumAllowedValue = "";
+                }
+                if (variableObject.maximumAllowedValue !== "Infinity") {
+                    $scope.state.maximumAllowedValue = variableObject.maximumAllowedValue;
+                }
+                else {
+                    $scope.state.maximumAllowedValue = "";
+                }
+            }
+            if (variableObject.fillingValue === null) {
+                $scope.state.fillingValue = "";
+            }
+            else {
+                $scope.state.fillingValue = variableObject.fillingValue;
+            }
+            /*
+             if (variableObject.userVariableAlias) {
+             $scope.state.userVariableAlias = variableObject.userVariableAlias;
+             }
+             else {
+             $scope.state.userVariableAlias = $stateParams.variableName;
+             }
+             */
+
+            $scope.state.onsetDelay = variableObject.onsetDelay / (60 * 60); // seconds -> hours
+            $scope.state.durationOfAction = variableObject.durationOfAction / (60 * 60); // seconds - > hours
+            $scope.state.loading = false;
+            $scope.hideLoader() ;
+        }
+
         $scope.init = function(){
-            Bugsnag.context = "variableSettings";
+            if (typeof Bugsnag !== "undefined") {
+                Bugsnag.context = "variableSettings";
+            }
             $scope.state.loading = true;
             $scope.showLoader('Getting variable details');
             authService.checkAuthOrSendToLogin();
@@ -304,58 +344,24 @@ angular.module('starter')
 
             $scope.showHelpInfoPopupIfNecessary();
             $scope.state.sumAvg = "avg"; // FIXME should this be the default?
-            variableService.getVariablesByName($stateParams.variableName).then(function(variableObject){
-                $scope.state.variableObject = variableObject;
-                console.log(variableObject);
-                $scope.variableObject = variableObject;
-                $scope.state.sumAvg = variableObject.combinationOperation === "MEAN"? "avg" : "sum";
-                $scope.state.variableCategory = variableObject.category;
-                if (variableObject.abbreviatedUnitName === "/5") {
-                    // FIXME hide other fixed range variables as well
-                    $scope.state.hideMinMax = true;
-                }
-                else {
-                    if (variableObject.minimumAllowedValue !== "-Infinity") {
-                        $scope.state.minimumAllowedValue = variableObject.minimumAllowedValue;
-                    }
-                    else {
-                        $scope.state.minimumAllowedValue = "";
-                    }
-                    if (variableObject.maximumAllowedValue !== "Infinity") {
-                        $scope.state.maximumAllowedValue = variableObject.maximumAllowedValue;
-                    }
-                    else {
-                        $scope.state.maximumAllowedValue = "";
-                    }
-                }
-                if (variableObject.fillingValue === null) {
-                    $scope.state.fillingValue = "";
-                }
-                else {
-                    $scope.state.fillingValue = variableObject.fillingValue;
-                }
-                /*
-                if (variableObject.userVariableAlias) {
-                    $scope.state.userVariableAlias = variableObject.userVariableAlias;
-                }
-                else {
-                    $scope.state.userVariableAlias = $stateParams.variableName;
-                }
-                */
-
-                $scope.state.onsetDelay = variableObject.onsetDelay/(60*60); // seconds -> hours
-                $scope.state.durationOfAction = variableObject.durationOfAction/(60*60); // seconds - > hours
-                $scope.state.loading = false;
-                $scope.hideLoader();
-
-            });
+            if($stateParams.variableObject){
+                setupByVariableObject($stateParams.variableObject);
+            } else if ($stateParams.variableName) {
+                $scope.state.title = $stateParams.variableName + ' Variable Settings';
+                $scope.state.variableName = $stateParams.variableName;
+                variableService.getVariablesByName($stateParams.variableName).then(function(variableObject){
+                    $scope.state.variableObject = variableObject;
+                    setupByVariableObject(variableObject);
+                });
+            } else {
+                console.error("Variable name not provided to variable settings controller!");
+                $ionicHistory.goBack();
+            }
         };
         
         // update data when view is navigated to
-        $scope.$on('$ionicView.enter', function(e) {
+        $scope.$on('$ionicView.enter', function(e) { console.debug("Entering state " + $state.current.name);
             $scope.hideLoader();
             $scope.init();
         });
-
-    }
-    );
+    });

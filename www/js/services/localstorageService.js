@@ -22,7 +22,7 @@ angular.module('starter')
                 var localStorageItemAsString = this.getItemSync(localStorageItemName);
                 var localStorageItemArray = JSON.parse(localStorageItemAsString);
                 if(!localStorageItemArray){
-                    console.error("Local storage item " + localStorageItemName + " not found");
+                    console.warn("Local storage item " + localStorageItemName + " not found");
                 } else {
                     for(var i = 0; i < localStorageItemArray.length; i++){
                         if(localStorageItemArray[i].id !== elementId){
@@ -72,16 +72,19 @@ angular.module('starter')
             },
 
             setItem:function(key, value){
+                var deferred = $q.defer();
                 var keyIdentifier = config.appSettings.appStorageIdentifier;
                 if ($rootScope.isChromeApp) {
                     // Code running in a Chrome extension (content script, background page, etc.)
                     var obj = {};
                     obj[keyIdentifier+key] = value;
                     chrome.storage.local.set(obj);
-
+                    deferred.resolve();
                 } else {
                     localStorage.setItem(keyIdentifier+key,value);
+                    deferred.resolve();
                 }
+                return deferred.promise;
             },
             
             getItem:function(key,callback){
@@ -123,7 +126,8 @@ angular.module('starter')
                     });
                 } else {
                     //console.log(localStorage.getItem(keyIdentifier + localStorageItemName));
-                    matchingElements = JSON.parse(localStorage.getItem(keyIdentifier + localStorageItemName));
+                    var itemAsString = localStorage.getItem(keyIdentifier + localStorageItemName);
+                    matchingElements = JSON.parse(itemAsString);
                 }
 
                 if(filterPropertyName && typeof filterPropertyValue !== "undefined" && filterPropertyValue !== null){

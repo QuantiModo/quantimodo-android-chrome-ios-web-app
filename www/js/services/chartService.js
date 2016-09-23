@@ -5,11 +5,16 @@ angular.module('starter')
 
 			generateDistributionArray : function(allMeasurements){
 				var distributionArray = [];
+				var valueLabel;
 				for (var i = 0; i < allMeasurements.length; i++) {
-					if(typeof distributionArray[String(allMeasurements[i].value)] === "undefined"){
-						distributionArray[String(allMeasurements[i].value)] = 0;
+					valueLabel = String(allMeasurements[i].value);
+					if(valueLabel.length > 3) {
+						valueLabel = String(allMeasurements[i].value.toFixed(2));
 					}
-					distributionArray[String(allMeasurements[i].value)] += 1;
+					if(typeof distributionArray[valueLabel] === "undefined"){
+						distributionArray[valueLabel] = 0;
+					}
+					distributionArray[valueLabel] += 1;
 				}
 				return distributionArray;
 			},
@@ -88,13 +93,19 @@ angular.module('starter')
 					data = [0, 0, 0, 0, 0];
 				}
 
+				function isInt(n) {
+					return parseFloat(n) % 1 === 0;
+				}
+
 				for(var propertyName in dataAndLabels) {
 					// propertyName is what you want
 					// you can get the value like this: myObject[propertyName]
 					if(dataAndLabels.hasOwnProperty(propertyName)){
 						xAxisLabels.push(propertyName);
 						if(variableObject.name === config.appSettings.primaryOutcomeVariableDetails.name){
-							data[parseInt(propertyName) - 1] = dataAndLabels[propertyName];
+							if(isInt(propertyName)){
+								data[parseInt(propertyName) - 1] = dataAndLabels[propertyName];
+							}
 						} else {
 							data.push(dataAndLabels[propertyName]);
 						}

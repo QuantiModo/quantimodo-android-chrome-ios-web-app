@@ -8,18 +8,46 @@ var appsManager = { // jshint ignore:line
 	},
 	defaultApp : "moodimodo",
 	getDefaultConfig : function(){
-		return appsManager.apps[appsManager.defaultApp] ? appsManager.apps[appsManager.defaultApp]+'.js' : false;
+		if(appsManager.apps[appsManager.defaultApp]){
+			console.log("getDefaultPrivateConfig returning " + appsManager.apps[appsManager.defaultApp]+'.js');
+			return appsManager.apps[appsManager.defaultApp]+'.js';
+		} else {
+			console.log("ERROR: getDefaultConfig appsManager.apps[appsManager.defaultApp] does not exist");
+			return false;
+		}
 	},
 	getDefaultApp : function(){
+		console.log("getDefaultApp is returning " + appsManager.defaultApp);
 		return appsManager.defaultApp;
 	},
 	getDefaultPrivateConfig : function(){
-		return appsManager.apps[appsManager.defaultApp] ? './private_'+appsManager.apps[appsManager.defaultApp]+'.config.js' : false;
+		if(appsManager.apps[appsManager.defaultApp]){
+			console.log("getDefaultPrivateConfig returning " +
+				'./private_'+appsManager.apps[appsManager.defaultApp]+ '.config.js');
+			return './private_'+appsManager.apps[appsManager.defaultApp]+ '.config.js';
+		} else {
+			console.log("ERROR: getDefaultPrivateConfig appsManager.apps[appsManager.defaultApp] does not exist");
+			return false;
+		}
 	},
 	getAppConfig : function(app){
-		return appsManager.apps[app] ? appsManager.apps[app]+'.js' : appsManager.getDefaultConfig();
+		if(appsManager.apps[app]){
+			console.log("getAppConfig returning " +
+				appsManager.apps[app]+'.js');
+			return appsManager.apps[app]+'.js';
+		} else {
+			console.log("getAppConfig returning appsManager.getDefaultConfig()");
+			return appsManager.getDefaultConfig();
+		}
 	},
 	getPrivateConfig : function(app){
-		return appsManager.apps[app] ? './private_'+appsManager.apps[app]+'.config.js' : appsManager.getDefaultPrivateConfig();
+		if(appsManager.apps[app]){
+			console.log("getPrivateConfig returning " +
+				'./private_'+appsManager.apps[app]+'.config.js');
+			return './private_'+appsManager.apps[app]+'.config.js';
+		} else {
+			console.log("getPrivateConfig returning appsManager.getDefaultPrivateConfig()");
+			return appsManager.getDefaultPrivateConfig();
+		}
 	}
 };

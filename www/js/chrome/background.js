@@ -178,8 +178,12 @@ function showGenericTrackingNotification(alarm)
 					priority: 2
 				};
 				var notificationId = alarm.name;
+				
+				chrome.browserAction.setBadgeText({text: String(numberOfWaitingNotifications)});
 				chrome.notifications.create(notificationId, notificationParams, function(id){});
-            }
+            } else {
+				chrome.browserAction.setBadgeText({text: ""});
+			}
         }
     };
 
@@ -222,16 +226,5 @@ function showTrackingInboxNotification(alarm){
 	}
 
 	console.log('notificationParams: ', notificationParams);
-
-
-
     chrome.notifications.create(notificationId, notificationParams, function(id){});
-
-    var showBadge = (localStorage["showBadge"] || "true") == "true";
-
-    if(showBadge)
-    {
-        var badgeParams = {text:"?"};
-        chrome.browserAction.setBadgeText(badgeParams);
-    }
 }

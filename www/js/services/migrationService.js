@@ -14,13 +14,15 @@ angular.module('starter')
                 else if (storedVersion < 1489){
                     console.debug('Running migration version version1489...');
                     localStorageService.getItem('allMeasurements',function(allMeasurements) {
-                        Bugsnag.user = $rootScope.user;
-                        Bugsnag.notify('Backing up user measurements', allMeasurements, {}, "error");
+                        if (typeof Bugsnag !== "undefined") {
+                            Bugsnag.user = $rootScope.user;
+                            Bugsnag.notify('Backing up user measurements', allMeasurements, {}, "error");
+                        }
                         localStorageService.setItem('allMeasurementsBackup1489', allMeasurements);
                     });
                     localStorageService.deleteItem('allMeasurements');
                     localStorageService.deleteItem('lastSyncTime');
-                    $scope.showLoader("Syncing ' + config.appSettings.primaryOutcomeVariableDetails.name + ' measurements...")
+                    $scope.showLoader("Syncing ' + config.appSettings.primaryOutcomeVariableDetails.name + ' measurements...");
                     measurementService.syncPrimaryOutcomeVariableMeasurements().then(function(){
                         console.log("Measurement sync complete!");
                         $scope.hideLoader();

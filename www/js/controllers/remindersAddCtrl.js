@@ -157,7 +157,7 @@ angular.module('starter')
 
 	    // when a search result is selected
 	    $scope.onVariableSelect = function(selectedVariable){
-	    	console.log("Variable Selected: ", selectedVariable);
+            console.log("remindersAdd.onVariableSelect: " + JSON.stringify(selectedVariable));
 
 	    	if(!selectedVariable.variableCategoryName){
 	    		selectedVariable.variableCategoryName = selectedVariable.category;
@@ -167,7 +167,7 @@ angular.module('starter')
 	    	}
 	    	$scope.variableObject=selectedVariable;
 
-            $scope.setupVariableCategory(selectedVariable.variableCategoryName);
+            setupVariableCategory(selectedVariable.variableCategoryName);
             if (selectedVariable.abbreviatedUnitName) {
                 $scope.state.trackingReminder.abbreviatedUnitName = selectedVariable.abbreviatedUnitName;
             }
@@ -186,25 +186,17 @@ angular.module('starter')
             if (selectedVariable.description) {
                 $scope.state.trackingReminder.variableDescription = selectedVariable.description;
             }
+
+            if (typeof selectedVariable.lastValue !== "undefined"){
+                $scope.state.trackingReminder.defaultValue = Number(selectedVariable.lastValue);
+            }
+
             $scope.state.showReminderFrequencyCard = true;
 
             // Set default value
             if ($scope.state.trackingReminder.abbreviatedUnitName === "/5") {
                 $scope.state.trackingReminder.defaultValue = 3; // Default to 3 ("ok") if variable unit is /5
             }
-            else {
-                // Fill in default value as last value if not /5
-                variableService.getVariablesByName($scope.state.trackingReminder.variableName).then(function (variableObject) {
-                    $scope.state.trackingReminder.defaultValue = parseFloat(variableObject.lastValue);
-                });
-
-            }
-	    };
-
-	    // when frequency is changed
-	    $scope.onFrequencyChange = function(){
-	    	console.log("onFrequencyChange ran");
-            
 	    };
 
 	    // when adding/editing is cancelled
@@ -297,14 +289,6 @@ angular.module('starter')
                 }
             }
 
-/*
-            if($scope.state.reminderEndTimeStringLocal &&
-                $scope.state.reminderEndTimeStringLocal < $scope.state.reminderStartTimeStringLocal) {
-                utilsService.showAlert('Latest reminder time cannot be less than earliest reminder time');
-                return;
-            }
-            */
-
             $scope.showLoader('Saving ' + $scope.state.trackingReminder.variableName + ' reminder...');
             $scope.state.trackingReminder.reminderFrequency = getFrequencyChart()[$scope.state.selectedFrequency];
             $scope.state.trackingReminder.valueAndFrequencyTextDescription = $scope.state.selectedFrequency;
@@ -331,13 +315,13 @@ angular.module('starter')
                 .then(function(){
                     reminderService.addNewReminder($scope.state.trackingReminder)
                         .then(function(){
+                            reminderService.refreshTrackingReminderNotifications();
                             $scope.hideLoader();
                         }, function(err){
                             $scope.hideLoader();
-                            console.log(err);
+                            console.error("addNewReminder ERROR: " + err);
                             $ionicLoading.hide();
                             $scope.loading = false;
-                            utilsService.showAlert('Failed to add Reminder, Try again!', 'assertive');
                         });
 
                     if($stateParams.fromUrl && ($stateParams.fromUrl.indexOf('manage') > -1 )){
@@ -361,7 +345,7 @@ angular.module('starter')
 	    // setup editing view
 	    var setupEditReminder = function(trackingReminder){
             $scope.state.trackingReminder = trackingReminder;
-            $scope.setupVariableCategory($scope.state.trackingReminder.variableCategoryName);
+            setupVariableCategory($scope.state.trackingReminder.variableCategoryName);
             $scope.state.trackingReminder.firstDailyReminderTime = null;
             $scope.state.trackingReminder.secondDailyReminderTime = null;
             $scope.state.trackingReminder.thirdDailyReminderTime = null;
@@ -398,12 +382,20 @@ angular.module('starter')
 	    	}
 
 	    	$scope.state.showReminderFrequencyCard = true;
-
 	    };
 
+        $scope.variableCategorySelectorChange = function(variableCategoryName) {
+            $scope.state.variableCategoryObject = variableCategoryService.getVariableCategoryInfo(variableCategoryName);
+            $scope.state.trackingReminder.abbreviatedUnitName = $scope.state.variableCategoryObject.defaultAbbreviatedUnitName;
+            $scope.state.defaultValuePlaceholderText = 'Enter most common value';
+            $scope.state.defaultValueLabel = 'Default Value';
+            setupVariableCategory(variableCategoryName);
+
+        };
+
 	    // setup category view
-	    $scope.setupVariableCategory = function(variableCategoryName){
-            console.log("variableCategoryName  is " + variableCategoryName);
+	    var setupVariableCategory = function(variableCategoryName){
+            console.log("remindersAdd.setupVariableCategory " + variableCategoryName);
             if(!variableCategoryName || variableCategoryName === 'Anything'){
                 variableCategoryName = '';
             }
@@ -432,14 +424,15 @@ angular.module('starter')
                 variableService.getVariableById(variableId)
                     .then(function (variables) {
                         $scope.variableObject = variables[0];
-                        console.log($scope.variableObject);
+                        console.log('setupReminderEditingFromVariableId got this variable object ' +
+                            JSON.stringify($scope.variableObject));
                         $scope.onVariableSelect($scope.variableObject);
                         $ionicLoading.hide();
                         $scope.loading = false;
                     }, function () {
                         $ionicLoading.hide();
                         $scope.loading = false;
-                        console.log("failed to get variable");
+                        console.error('ERROR: failed to get variable with id ' + variableId);
                     });
 
             }
@@ -448,7 +441,6 @@ angular.module('starter')
         function setupReminderEditingFromUrlParameter(reminderIdUrlParameter) {
             reminderService.getTrackingReminderById(reminderIdUrlParameter)
                 .then(function (reminders) {
-                    $scope.state.allReminders = reminders;
                     if (reminders.length !== 1) {
                         utilsService.showAlert("Reminder id " + reminderIdUrlParameter + " not found!", 'assertive');
                         if($stateParams.fromUrl){
@@ -459,33 +451,30 @@ angular.module('starter')
                             $state.go('app.remindersManage');
                         }
                     }
-                    $stateParams.reminder = $scope.state.allReminders[0];
+                    $stateParams.reminder = reminders[0];
                     setupEditReminder($stateParams.reminder);
                     $ionicLoading.hide();
                     $scope.loading = false;
                 }, function () {
                     $ionicLoading.hide();
                     $scope.loading = false;
-                    console.log("failed to get reminders");
+                    console.error('ERROR: failed to get reminder with reminderIdUrlParameter ' + reminderIdUrlParameter);
                 });
         }
 
         $scope.init = function(){
-            Bugsnag.context = "reminderAdd";
-            if (typeof analytics !== 'undefined')  { analytics.trackView("Add Reminder Controller"); }
-
-            authService.checkAuthOrSendToLogin();
+            if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
+            if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
 
             unitService.getUnits().then(function () {
                 var reminderIdUrlParameter = utilsService.getUrlParameter(window.location.href, 'reminderId');
                 var variableIdUrlParameter = utilsService.getUrlParameter(window.location.href, 'variableId');
-
                 if ($stateParams.variableObject) {
                     $scope.variableObject = $stateParams.variableObject;
                     $scope.onVariableSelect($stateParams.variableObject);
                 } else if($stateParams.variableCategoryName){
                     $scope.state.trackingReminder.variableCategoryName = $stateParams.variableCategoryName;
-                    $scope.setupVariableCategory($scope.state.trackingReminder.variableCategoryName);
+                    setupVariableCategory($scope.state.trackingReminder.variableCategoryName);
                 } else if ($stateParams.reminder && $stateParams.reminder !== null) {
                     setupEditReminder($stateParams.reminder);
                 } else if(reminderIdUrlParameter) {
@@ -499,9 +488,8 @@ angular.module('starter')
 	    };
 
         // when view is changed
-    	$scope.$on('$ionicView.enter', function(e){
+    	$scope.$on('$ionicView.enter', function(e) { console.debug("Entering state " + $state.current.name);
             $scope.hideLoader();
-    		$scope.init();
     	});
 
         $scope.deleteReminder = function(){
@@ -512,7 +500,7 @@ angular.module('starter')
                     } else if ($stateParams.fromState){
                         $state.go($stateParams.fromState);
                     } else {
-                        $rootScope.hideMenu = false;
+                        $rootScope.hideNavigationMenu = false;
                         $state.go('app.remindersManage');
                     }
                 });
@@ -525,22 +513,18 @@ angular.module('starter')
                 }, function(err){
                     $ionicLoading.hide();
                     $scope.loading = false;
-                    utilsService.showAlert('Failed to Delete Reminder, Try again!', 'assertive');
+                    console.error('ERROR: reminderService.deleteReminder Failed to Delete Reminder with id ' +
+                        $scope.state.trackingReminder.id);
                 });
         };
 
-        // Deprecated - not used
-        /*
-        // when a unit is selected
-        $scope.unitSelected = function(unit){
-            console.log("selecting_unit",unit);
-
-            // update viewmodel
-            $scope.state.trackingReminder.abbreviatedUnitName = unit.abbreviatedName;
-            $scope.state.showUnits = false;
-            $scope.state.selectedUnitAbbreviatedName = unit.abbreviatedName;
+        $scope.unitSelected = function(){
+            console.log("selecting_unit", $scope.state.trackingReminder.abbreviatedUnitName);
+            $scope.state.trackingReminder.unitName =
+                $rootScope.unitsIndexedByAbbreviatedName[$scope.state.trackingReminder.abbreviatedUnitName].name;
+            $scope.state.trackingReminder.unitId =
+                $rootScope.unitsIndexedByAbbreviatedName[$scope.state.trackingReminder.abbreviatedUnitName].id;
         };
-        */
 
         $scope.toggleShowUnits = function(){
             $scope.state.showUnits=!$scope.state.showUnits;
@@ -586,7 +570,8 @@ angular.module('starter')
                         $scope.goToHistoryForVariableObject($scope.state.variableObject);
                     }
                     if (index === 4) {
-                        $scope.goToSettingsForVariableObject($scope.state.variableObject);
+                        $state.go('app.variableSettings',
+                            {variableName: $scope.state.trackingReminder.variableName});
                     }
                     if(index === 5){
                         $state.go('app.predictors',
@@ -622,5 +607,9 @@ angular.module('starter')
             }, 20000);
 
         };
+
+        $scope.$on('$ionicView.beforeEnter', function(){
+            $scope.init();
+        });
 
 	});

@@ -4,8 +4,7 @@ angular.module('starter')
         
         // service methods
         var unitService = {
-            
-            // get units
+
             getUnits : function(){
                 var deferred = $q.defer();
 

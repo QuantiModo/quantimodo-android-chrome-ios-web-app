@@ -180,7 +180,7 @@ Here is the complete list of filter parameters by endpoints:
     <td>Restrict the results to a specific unit by providing the unit abbreviation (supports exact name match only)</td>
   </tr>
   <tr>
-    <td>categoryName</td>
+    <td>variableCategoryName</td>
     <td>Restrict the results to a specific unit category by providing the unit category name.</td>
   </tr>
 </table>
@@ -2970,7 +2970,7 @@ It is possible to apply multiple constraints by providing an array of query filt
              * @name Test#getV1Units
              * @param {string} unitName - Unit name
              * @param {string} abbreviatedUnitName - Restrict the results to a specific unit by providing the unit abbreviation.
-             * @param {string} categoryName - Restrict the results to a specific unit category by providing the unit category name.
+             * @param {string} variableCategoryName - Restrict the results to a specific unit category by providing the unit category name.
              * 
              */
             Test.prototype.getV1Units = function(parameters) {
@@ -3003,8 +3003,8 @@ It is possible to apply multiple constraints by providing an array of query filt
                     queryParameters['abbreviatedUnitName'] = parameters['abbreviatedUnitName'];
                 }
 
-                if (parameters['categoryName'] !== undefined) {
-                    queryParameters['categoryName'] = parameters['categoryName'];
+                if (parameters['variableCategoryName'] !== undefined) {
+                    queryParameters['variableCategoryName'] = parameters['variableCategoryName'];
                 }
 
                 if (parameters.$queryParameters) {
@@ -3131,7 +3131,7 @@ It is possible to apply multiple constraints by providing an array of query filt
              * @name Test#getV1UnitsVariable
              * @param {string} unitName - Name of Unit you want to retrieve
              * @param {string} abbreviatedUnitName - Abbreviated Unit Name of the unit you want
-             * @param {string} categoryName - Name of the category you want units for
+             * @param {string} variableCategoryName - Name of the category you want units for
              * @param {string} variable - Name of the variable you want units for
              * 
              */
@@ -3165,8 +3165,8 @@ It is possible to apply multiple constraints by providing an array of query filt
                     queryParameters['abbreviatedUnitName'] = parameters['abbreviatedUnitName'];
                 }
 
-                if (parameters['categoryName'] !== undefined) {
-                    queryParameters['categoryName'] = parameters['categoryName'];
+                if (parameters['variableCategoryName'] !== undefined) {
+                    queryParameters['variableCategoryName'] = parameters['variableCategoryName'];
                 }
 
                 if (parameters['variable'] !== undefined) {
@@ -3727,7 +3727,7 @@ It is possible to apply multiple constraints by providing an array of query filt
              * @method
              * @name Test#getV1VariablesSearchBySearch
              * @param {string} search - Search query which may be an entire variable name or a fragment of one.
-             * @param {string} categoryName - Filter variables by category name. The variable categories include Activity, Causes of Illness, Cognitive Performance, Conditions, Environment, Foods, Location, Miscellaneous, Mood, Nutrition, Physical Activity, Physique, Sleep, Social Interactions, Symptoms, Treatments, Vital Signs, and Work.
+             * @param {string} variableCategoryName - Filter variables by category name. The variable categories include Activity, Causes of Illness, Cognitive Performance, Conditions, Environment, Foods, Location, Miscellaneous, Mood, Nutrition, Physical Activity, Physique, Sleep, Social Interactions, Symptoms, Treatments, Vital Signs, and Work.
              * @param {string} source - Specify a data source name to only return variables from a specific data source.
              * @param {integer} limit - The LIMIT is used to limit the number of results returned. So if you have 1000 results, but only want to the first 10, you would set this to 10 and offset to 0.
              * @param {integer} offset - Now suppose you wanted to show results 11-20. You'd set the offset to 10 and the limit to 10.
@@ -3762,8 +3762,8 @@ It is possible to apply multiple constraints by providing an array of query filt
                     return deferred.promise;
                 }
 
-                if (parameters['categoryName'] !== undefined) {
-                    queryParameters['categoryName'] = parameters['categoryName'];
+                if (parameters['variableCategoryName'] !== undefined) {
+                    queryParameters['variableCategoryName'] = parameters['variableCategoryName'];
                 }
 
                 if (parameters['source'] !== undefined) {

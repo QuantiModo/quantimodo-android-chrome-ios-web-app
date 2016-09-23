@@ -46,15 +46,18 @@ chmod a+x ./scripts/decrypt-key.sh
 chmod a+x ./scripts/add-key.sh
 ./scripts/add-key.sh
 
+chmod -R a+x ./hooks
+
 cp -R apps/${LOWERCASE_APP_NAME}/* $PWD
 #ionic state reset
 #npm install
 #echo "npm has installed"
-#npm install -g gulp
+npm install gulp
 gulp generateXmlConfigAndUpdateAppsJs
 
 
 #ionic resources - We already do this in gulp makeIosApp
+echo "Executing gulp setVersionNumbersWithEnvs"
 gulp setVersionNumbersWithEnvs
 #echo "ionic add ionic-platform-web-client"
 #ionic add ionic-platform-web-client
@@ -72,7 +75,7 @@ echo "Generating image resources for $LOWERCASE_APP_NAME..."
 
 ionic config build
 
-npm install -g cordova ionic ios-sim ios-deploy
+npm install -g cordova@6.0.x ionic@1.7.16 ios-sim ios-deploy
 ionic platform rm ios
 ionic platform add ios@4.1.0
 

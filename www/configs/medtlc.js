@@ -1,37 +1,13 @@
-
-var getPlatform = function(){
-    if(typeof ionic !== "undefined" &&
-        typeof ionic.Platform !== "undefined" &&
-        typeof ionic.Platform.isIOS !== "undefined" &&
-        typeof ionic.Platform.isAndroid !== "undefined" )
-    {
-        return ionic.Platform.isIOS()? "iOS" : ionic.Platform.isAndroid()? "Android" : "Web";
-    }
-    else {
-        return "Ionic";
-    }
-};
-
-window.config = {
-    bugsnag:{
-        notifyReleaseStages:['Production','Staging']
-    },
-    clientSourceName : "MedTLC " + getPlatform(),
-    domain : 'app.quantimo.do',
-    environment: "Development",
-    permissions : ['readmeasurements', 'writemeasurements'],
-    port : '4417',
-    protocol : 'https',
-    shoppingCartEnabled : true
-};
+window.config = {};
 
 config.appSettings  = {
     appName : 'MedTLC',
+    cordovaLocalNotificationsEnabled : false,
     linkToChromeExtension : "https://chrome.google.com/webstore/detail/quantimodo-life-tracking/nojnjdgmjaejpnpehgioddbimopnblga",
     allowOffline : false,
-
+    shoppingCartEnabled : false,
     primaryOutcomeVariable : 'Mood',
-
+    qmApiHostName: 'app.quantimo.do',
     appStorageIdentifier: 'MedTLCData*',
 
     defaultState : 'app.remindersInbox',
@@ -252,7 +228,7 @@ config.appSettings  = {
         hideAddNewReminderButton : true,
         showAddHowIFeelResponseButton : true,
         showAddVitalSignButton : true,
-        title : 'Reminders'
+        title : 'Reminder Inbox'
     },
 
     remindersManage : {
@@ -398,49 +374,49 @@ config.appSettings  = {
             title : 'Track Anything',
             isSubMenuChild : true,
             showSubMenuVariable : 'showTrackingSubMenu',
-            href : '#/app/track_factors',
+            href : '#/app/measurement-add-search',
             icon : 'ion-android-globe'
         },
         {
             title : 'Record a Meal',
             isSubMenuChild : true,
             showSubMenuVariable : 'showTrackingSubMenu',
-            href : '#/app/track_factors_category/Foods',
+            href : '#/app/measurement-add-search-category/Foods',
             icon : 'ion-ios-nutrition-outline'
         },
         {
             title : 'Rate an Emotion',
             isSubMenuChild : true,
             showSubMenuVariable : 'showTrackingSubMenu',
-            href : '#/app/track_factors_category/Emotions',
+            href : '#/app/measurement-add-search-category/Emotions',
             icon : 'ion-happy-outline'
         },
         {
             title : 'Rate a Symptom',
             isSubMenuChild : true,
             showSubMenuVariable : 'showTrackingSubMenu',
-            href : '#/app/track_factors_category/Symptoms',
+            href : '#/app/measurement-add-search-category/Symptoms',
             icon : 'ion-ios-pulse'
         },
         {
             title : 'Record a Treatment',
             isSubMenuChild : true,
             showSubMenuVariable : 'showTrackingSubMenu',
-            href : '#/app/track_factors_category/Treatments',
+            href : '#/app/measurement-add-search-category/Treatments',
             icon : 'ion-ios-medkit-outline'
         },
         {
             title : 'Record Activity',
             isSubMenuChild : true,
             showSubMenuVariable : 'showTrackingSubMenu',
-            href : '#/app/track_factors_category/Physical Activity',
+            href : '#/app/measurement-add-search-category/Physical Activity',
             icon : 'ion-ios-body-outline'
         },
         {
             title : 'Record Vital Sign',
             isSubMenuChild : true,
             showSubMenuVariable : 'showTrackingSubMenu',
-            href : '#/app/track_factors_category/Vital Signs',
+            href : '#/app/measurement-add-search-category/Vital Signs',
             icon : 'ion-ios-pulse'
         },
         {
@@ -559,12 +535,12 @@ config.appSettings  = {
         },
         {
             title : 'Add How I Feel Response',
-            href : '#/app/track_factors_category/Symptoms',
+            href : '#/app/measurement-add-search-category/Symptoms',
             icon : 'ion-happy-outline'
         },
         {
             title : 'Add Vitals Measurement',
-            href : '#/app/track_factors_category/Vital Signs',
+            href : '#/app/measurement-add-search-category/Vital Signs',
             icon : 'ion-ios-pulse'
         },
         {
@@ -702,112 +678,6 @@ config.appSettings  = {
     ]
 
 };
-
-config.getEnv = function(){
-
-    var env = "";
-
-    if(window.location.origin.indexOf('local')> -1){
-        //On localhost
-        env = "Development";
-    }
-    else if(window.location.origin.indexOf('file://')){
-        env = this.environment;
-    }
-    else if(window.location.origin.indexOf('staging.quantimo.do') > -1){
-        env = "Staging";
-    }
-    else if(window.location.origin.indexOf('app.quantimo.do')){
-        env = "Production";
-    }
-
-    return env;
-};
-
-config.getClientId = function(){
-    //if chrome app
-    if (window.chrome && chrome.runtime && chrome.runtime.id) {
-        return window.private_keys.client_ids.Chrome;
-    } else {
-        var platform = getPlatform();
-        return platform === "Ionic"? window.private_keys.client_ids.Web : platform === "Web"? window.private_keys.client_ids.Web : platform === "iOS"? window.private_keys.client_ids.iOS : window.private_keys.client_ids.Android;
-    }
-};
-
-config.getClientSecret = function(){
-    if (window.chrome && chrome.runtime && chrome.runtime.id) {
-        return window.private_keys.client_secrets.Chrome;
-    } else {
-        var platform = getPlatform();
-        return platform === "Ionic"? window.private_keys.client_secrets.Web : platform === "Web"? window.private_keys.client_secrets.Web : platform === "iOS"? window.private_keys.client_secrets.iOS : window.private_keys.client_secrets.Android;
-    }
-};
-
-config.getRedirectUri = function(){
-    if(!window.private_keys.redirect_uris){
-        return 'https://app.quantimo.do/ionic/Modo/www/callback/';
-    }
-    if (window.chrome && chrome.runtime && chrome.runtime.id) {
-        return window.private_keys.redirect_uris.Chrome;
-    } else {
-        var platform = getPlatform();
-        return platform === "Ionic"? window.private_keys.redirect_uris.Web : platform === "Web"? window.private_keys.redirect_uris.Web : platform === "iOS"? window.private_keys.redirect_uris.iOS : window.private_keys.redirect_uris.Android;
-    }
-};
-
-config.getApiUrl = function(){
-    if(!window.private_keys.api_urls){
-        return 'https://app.quantimo.do';
-    }
-    var platform = getPlatform();
-    if (window.chrome && chrome.runtime && chrome.runtime.id) {
-        return window.private_keys.api_urls.Chrome;
-    } else if (platform === 'Web' && window.private_keys.client_ids.Web === 'oAuthDisabled') {
-        return window.location.origin;
-    } else {
-        return platform === "Ionic"? window.private_keys.api_urls.Web : platform === "Web"? window.private_keys.api_urls.Web : platform === "iOS"? window.private_keys.api_urls.iOS : window.private_keys.api_urls.Android;
-    }
-};
-
-config.getAllowOffline = function(){
-    return false;
-};
-
-config.getPermissionString = function(){
-
-    var str = "";
-    for(var i=0; i < config.permissions.length; i++) {
-        str += config.permissions[i] + "%20";
-    }
-    return str.replace(/%20([^%20]*)$/,'$1');
-
-};
-
-config.getURL = function(path){
-    if(typeof path === "undefined") {
-        path = "";
-    }
-    else {
-        path += "?";
-    }
-
-    var url = "";
-
-    if(config.getApiUrl() !== "undefined") {
-        url = config.getApiUrl() + "/" + path;
-    }
-    else 
-    {
-        url = config.protocol + "://" + config.domain + "/" + path;
-    }
-
-    return url;
-};
-
-config.get = function(key){
-	return config[key]? config[key] : false;
-};
-
 
 window.notification_callback = function(reportedVariable, reportingTime){
     var startTime  = Math.floor(reportingTime/1000) || Math.floor(new Date().getTime()/1000);

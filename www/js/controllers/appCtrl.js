@@ -5,15 +5,23 @@ angular.module('starter')
                                     $ionicPopup, $ionicSideMenuDelegate, $ionicPlatform, authService,
                                     measurementService, QuantiModo, notificationService, localStorageService,
                                     reminderService, ratingService, migrationService, ionicDatePicker, unitService,
-                                    variableService, qmLocationService, variableCategoryService, bugsnagService) {
+                                    variableService, qmLocationService, variableCategoryService, bugsnagService,
+                                    pushNotificationService, utilsService, connectorsService, userService) {
 
         $rootScope.loaderImagePath = config.appSettings.loaderImagePath;
         $rootScope.appMigrationVersion = 1489;
-        $rootScope.appVersion = "1.8.5.2";
+        $rootScope.appVersion = "1.9.6.0";
         if (!$rootScope.loaderImagePath) {
             $rootScope.loaderImagePath = 'img/circular-loader.gif';
         }
-        $rootScope.trackLocation = false;
+        if($rootScope.user && typeof $rootScope.user.trackLocation === "undefined"){
+            localStorageService.getItem('trackLocation', function(trackLocation){
+                $rootScope.user.trackLocation = trackLocation;
+                if($rootScope.user.trackLocation){
+                    userService.updateUserSettings({trackLocation: $rootScope.user.trackLocation});
+                }
+            });
+        }
         $rootScope.placeName = null;
         $rootScope.lastLatitude = null;
         $rootScope.lastLongitude = null;
@@ -94,8 +102,8 @@ angular.module('starter')
         };
 
         $scope.setLocalStorageFlagTrue = function (flagName) {
-            localStorageService.setItem(flagName, true);
             $scope[flagName] = true;
+            localStorageService.setItem(flagName, true);
         };
 
         // open datepicker for "from" date
@@ -222,26 +230,6 @@ angular.module('starter')
                 });
         };
 
-        $scope.goToSettingsForVariableObject = function (variableObject) {
-            if (variableObject.variableName) {
-                $state.go('app.variableSettings',
-                    {
-                        variableName: variableObject.variableName,
-                        fromState: $state.current.name,
-                        fromUrl: window.location.href
-                    });
-            }
-            else if (variableObject.name) {
-                $state.go('app.variableSettings',
-                    {
-                        variableName: variableObject.name,
-                        fromState: $state.current.name,
-                        fromUrl: window.location.href
-                    });
-            }
-
-        };
-
         $scope.addToFavoritesUsingVariableObject = function (variableObject) {
             var trackingReminder = {};
             trackingReminder.variableId = variableObject.id;
@@ -253,22 +241,21 @@ angular.module('starter')
 
             if (trackingReminder.abbreviatedUnitName === '/5') {
                 trackingReminder.defaultValue = 3;
-                localStorageService.addToOrReplaceElementOfItemByIdOrMoveToFront('trackingReminders', trackingReminder);
-                reminderService.addNewReminder(trackingReminder)
-                    .then(function () {
-                        console.debug("Saved Reminder", trackingReminder);
-                        reminderService.refreshTrackingRemindersAndScheduleAlarms()
-                        .then(function() {
-                            $state.go('app.favorites',
-                                {
-                                    trackingReminder: trackingReminder,
-                                    fromState: $state.current.name,
-                                    fromUrl: window.location.href
-                                }
-                            );
-                        });
-                    }, function (err) {
-                        console.error('Failed to add Reminder!', trackingReminder);
+                localStorageService.addToOrReplaceElementOfItemByIdOrMoveToFront('trackingReminders', trackingReminder)
+                    .then(function() {
+                        reminderService.addNewReminder(trackingReminder)
+                            .then(function () {
+                                console.debug("Saved to favorites: " + JSON.stringify(trackingReminder));
+                                $state.go('app.favorites',
+                                    {
+                                        trackingReminder: trackingReminder,
+                                        fromState: $state.current.name,
+                                        fromUrl: window.location.href
+                                    }
+                                );
+                            }, function (err) {
+                                console.error('Failed to add favorite!', trackingReminder);
+                            });
                     });
             } else {
                 $state.go('app.favoriteAdd',
@@ -295,11 +282,11 @@ angular.module('starter')
             }
         };
         $scope.showHistorySubMenu = false;
-        $scope.shoppingCartEnabled = config.shoppingCartEnabled;
+        $scope.shoppingCartEnabled = config.appSettings.shoppingCartEnabled;
         $scope.loading = false;
         $ionicLoading.hide();
 
-        setPlatformVariables();
+        utilsService.setPlatformVariables();
 
         /*Wrapper Config*/
         $scope.viewTitle = config.appSettings.appName;
@@ -342,36 +329,12 @@ angular.module('starter')
             $scope.popover = popover;
         });
 
-        var scheduleReminder = function () {
-            if ($rootScope.reminderToSchedule) {
-
-                var trackingReminder = {
-                    variableId: $rootScope.reminderToSchedule.id,
-                    defaultValue: $rootScope.reminderToSchedule.reportedVariableValue,
-                    variableName: $rootScope.reminderToSchedule.name,
-                    frequency: $rootScope.reminderToSchedule.interval,
-                    variableCategoryName: $rootScope.reminderToSchedule.category,
-                    abbreviatedUnitName: $rootScope.reminderToSchedule.unit,
-                    combinationOperation: $rootScope.reminderToSchedule.combinationOperation
-                };
-
-                reminderService.addNewReminder(trackingReminder)
-                    .then(function () {
-                        console.log('reminder scheduled', $rootScope.reminderToSchedule);
-                        delete $rootScope.reminderToSchedule;
-                    }, function (err) {
-                        Bugsnag.notify("reminderService.addNewReminder", JSON.stringify(trackingReminder), {}, "error");
-                        console.log(err);
-                    });
-            }
-        };
-
         // when work on this activity is complete
-        function hideNavigationMenuIfSetInUrlParameter() {
+        $rootScope.hideNavigationMenuIfSetInUrlParameter = function() {
             if (location.href.toLowerCase().indexOf('hidemenu=true') !== -1) {
                 $rootScope.hideNavigationMenu = true;
             }
-        }
+        };
 
         function goToDefaultStateShowMenuClearIntroHistoryAndRedraw() {
 
@@ -425,26 +388,21 @@ angular.module('starter')
 
         $scope.init = function () {
             console.log("Main Constructor Start");
-            $scope.shouldWeCombineNotifications();
+            $rootScope.getAccessTokenFromUrlParameter();
+            $rootScope.hideNavigationMenuIfSetInUrlParameter();
+            localStorageService.getItem('introSeen', function(introSeen){
+                $rootScope.introSeen = introSeen;
+            });
             if (!$rootScope.user) {
                 $rootScope.user = localStorageService.getItemAsObject('user');
             }
-            if (!$rootScope.user && config.getClientId() === 'oAuthDisabled') {
-                //console.debug("appCtrl.init: No user and oAuthDisabled so trying to getUserAndSetInLocalStorage. Note: This interferes with welcome flow.");
-                //console.warn('Disabled getUserAndSetInLocalStorage in appCtrl.init...');
-                //$rootScope.getUserAndSetInLocalStorage();
-            }
             if ($rootScope.user) {
-                $rootScope.setUserForIntercom($rootScope.user);
-                $rootScope.setUserForBugsnag($rootScope.user);
+                console.debug("appCtrl.init calling setUserInLocalStorageBugsnagAndRegisterDeviceForPush");
+                $rootScope.setUserInLocalStorageBugsnagAndRegisterDeviceForPush($rootScope.user);
                 $scope.syncEverything();
             }
-            // Don't think we need this anymore since everyone should have been migrated by now
-            // migrationService.version1466();
-            hideNavigationMenuIfSetInUrlParameter();
-            //goToWelcomeStateIfNotWelcomed();
-            scheduleReminder();
-            if ($rootScope.isIOS || $rootScope.isAndroid) {
+
+            if ($rootScope.isMobile && $rootScope.localNotificationsEnabled) {
                 console.debug("Going to try setting on trigger and on click actions for notifications when device is ready");
                 $ionicPlatform.ready(function () {
                     console.debug("Setting on trigger and on click actions for notifications");
@@ -507,146 +465,11 @@ angular.module('starter')
             $scope.showReminderSubMenu = !$scope.showReminderSubMenu;
         };
 
-        $rootScope.getTrackingReminderNotifications = function (params) {
-            if (!params) {
-                params = {};
-            }
-
-            var groupTrackingReminderNotificationsByDateRange = function (trackingReminderNotifications) {
-                var result = [];
-                var reference = moment().local();
-                var today = reference.clone().startOf('day');
-                var yesterday = reference.clone().subtract(1, 'days').startOf('day');
-                var weekold = reference.clone().subtract(7, 'days').startOf('day');
-                var monthold = reference.clone().subtract(30, 'days').startOf('day');
-
-                var todayResult = trackingReminderNotifications.filter(function (trackingReminderNotification) {
-                    return moment.utc(trackingReminderNotification.trackingReminderNotificationTime).local().isSame(today, 'd') === true;
-                });
-
-                if (todayResult.length) {
-                    result.push({name: "Today", trackingReminderNotifications: todayResult});
-                }
-
-                var yesterdayResult = trackingReminderNotifications.filter(function (trackingReminderNotification) {
-                    return moment.utc(trackingReminderNotification.trackingReminderNotificationTime).local().isSame(yesterday, 'd') === true;
-                });
-
-                if (yesterdayResult.length) {
-                    result.push({name: "Yesterday", trackingReminderNotifications: yesterdayResult});
-                }
-
-                var last7DayResult = trackingReminderNotifications.filter(function (trackingReminderNotification) {
-                    var date = moment.utc(trackingReminderNotification.trackingReminderNotificationTime).local();
-
-                    return date.isAfter(weekold) === true && date.isSame(yesterday, 'd') !== true &&
-                        date.isSame(today, 'd') !== true;
-                });
-
-                if (last7DayResult.length) {
-                    result.push({name: "Last 7 Days", trackingReminderNotifications: last7DayResult});
-                }
-
-                var last30DayResult = trackingReminderNotifications.filter(function (trackingReminderNotification) {
-
-                    var date = moment.utc(trackingReminderNotification.trackingReminderNotificationTime).local();
-
-                    return date.isAfter(monthold) === true && date.isBefore(weekold) === true &&
-                        date.isSame(yesterday, 'd') !== true && date.isSame(today, 'd') !== true;
-                });
-
-                if (last30DayResult.length) {
-                    result.push({name: "Last 30 Days", trackingReminderNotifications: last30DayResult});
-                }
-
-                var olderResult = trackingReminderNotifications.filter(function (trackingReminderNotification) {
-                    return moment.utc(trackingReminderNotification.trackingReminderNotificationTime).local().isBefore(monthold) === true;
-                });
-
-                if (olderResult.length) {
-                    result.push({name: "Older", trackingReminderNotifications: olderResult});
-                }
-
-                return result;
-            };
-
-            $scope.showLoader('Syncing reminder notifications...');
-            $rootScope.trackingReminderNotifications =
-                localStorageService.getElementsFromItemWithFilters('trackingReminderNotifications',
-                    'variableCategoryName', params.variableCategoryName);
-            if($rootScope.trackingReminderNotifications){
-                $rootScope.filteredTrackingReminderNotifications =
-                    groupTrackingReminderNotificationsByDateRange($rootScope.trackingReminderNotifications);
-            }
-
-            reminderService.getTrackingReminderNotifications(params.variableCategoryName, params.today)
-                .then(function (trackingReminderNotifications) {
-
-                    if (trackingReminderNotifications.length !== $rootScope.numberOfPendingNotifications) {
-                        console.debug("New API response trackingReminderNotifications.length (" + trackingReminderNotifications.length +
-                            ") is different from the previous $rootScope.numberOfPendingNotifications (" + $rootScope.numberOfPendingNotifications +
-                            ") so updating or recreating notifications...");
-                        $rootScope.numberOfPendingNotifications = trackingReminderNotifications.length;
-                        if($rootScope.numberOfPendingNotifications === 0){
-                            $rootScope.showAllCaughtUpCard = true;
-                        }
-                        if (window.chrome && window.chrome.browserAction) {
-                            chrome.browserAction.setBadgeText({text: String($rootScope.numberOfPendingNotifications)});
-                        }
-
-                        notificationService.updateOrRecreateNotifications();
-                    } else {
-                        console.debug("New API response trackingReminderNotifications.length (" + trackingReminderNotifications.length +
-                            ") is still the same as the previous $rootScope.numberOfPendingNotifications (" + $rootScope.numberOfPendingNotifications +
-                            ") so no need to update or recreate notifications...");
-                    }
-
-                    if(trackingReminderNotifications){
-                        $rootScope.filteredTrackingReminderNotifications =
-                            groupTrackingReminderNotificationsByDateRange(trackingReminderNotifications);
-                        if(!params.today && !params.variableCategoryName && $rootScope.trackingRemindersNotifications &&
-                            $rootScope.trackingRemindersNotifications.length > 1){
-                            localStorageService.setItem('trackingReminderNotifications',
-                                JSON.stringify($rootScope.trackingRemindersNotifications));
-                        }
-                    }
-
-                    //Stop the ion-refresher from spinning
-                    $scope.$broadcast('scroll.refreshComplete');
-                    $scope.hideLoader();
-                }, function(){
-                    $scope.hideLoader();
-                    console.error("failed to get reminder notifications!");
-                    //Stop the ion-refresher from spinning
-                    $scope.$broadcast('scroll.refreshComplete');
-                });
-        };
-
         $rootScope.updateOrRecreateNotifications = function () {
-            notificationService.updateOrRecreateNotifications();
-        };
-
-        function setPlatformVariables() {
-            $rootScope.isIOS = ionic.Platform.isIPad() || ionic.Platform.isIOS();
-            $rootScope.isAndroid = ionic.Platform.isAndroid();
-            $rootScope.isMobile = ionic.Platform.isAndroid() || ionic.Platform.isIPad() || ionic.Platform.isIOS();
-            $rootScope.isChrome = window.chrome ? true : false;
-            $rootScope.currentPlatform = ionic.Platform.platform();
-            $rootScope.currentPlatformVersion = ionic.Platform.version();
-
-            var currentUrl =  window.location.href;
-            console.log('currentUrl is ' + currentUrl );
-            if (currentUrl.indexOf('chrome-extension') !== -1) {
-                $rootScope.isChromeExtension = true;
-                $rootScope.isChromeApp = false;
-            } 
-
-            if ($rootScope.isChrome && chrome.identity) {
-                $rootScope.isChromeExtension = false;
-                $rootScope.isChromeApp = true;
+            if($rootScope.localNotificationsEnabled){
+                notificationService.updateOrRecreateNotifications();
             }
-        }
-
+        };
 
         $scope.saveInterval = function(primaryOutcomeRatingFrequencyDescription){
             if(primaryOutcomeRatingFrequencyDescription){
@@ -665,58 +488,13 @@ angular.module('starter')
                 "day" : 24 * 60 * 60
             };
 
-
-            try {
-                var intervalBetweenCheckingForNotificationsInMinutes = 15;
-                if($rootScope.showOnlyOneNotification === true){
-                    var notificationSettings = {
-                        every: intervalBetweenCheckingForNotificationsInMinutes
-                    };
-                    console.debug("appCtrl.saveInterval: Going to schedule generic notification",
-                        notificationSettings);
-                    notificationService.scheduleGenericNotification(notificationSettings);
-                }
-            } catch (err) {
-                console.error('scheduleGenericNotification error');
-                bugsnagService.reportError(err);
-                console.error(err);
-            }
-
-            $rootScope.reminderToSchedule = {
-                id: config.appSettings.primaryOutcomeVariableDetails.id,
-                reportedVariableValue: $scope.reportedVariableValue,
-                interval: intervals[$scope.primaryOutcomeRatingFrequencyDescription],
-                variableName: config.appSettings.primaryOutcomeVariableDetails.name,
-                category: config.appSettings.primaryOutcomeVariableDetails.category,
-                unit: config.appSettings.primaryOutcomeVariableDetails.abbreviatedUnitName,
-                combinationOperation : config.appSettings.primaryOutcomeVariableDetails.combinationOperation
+            var reminderToSchedule = {
+                reminderFrequency: intervals[$scope.primaryOutcomeRatingFrequencyDescription],
+                variableId: config.appSettings.primaryOutcomeVariableDetails.id,
+                defaultValue: 3
             };
-
-            localStorageService.setItem('primaryOutcomeRatingFrequencyDescription', $scope.primaryOutcomeRatingFrequencyDescription);
+            reminderService.addToTrackingReminderSyncQueue(reminderToSchedule);
             $scope.showIntervalCard = false;
-        };
-
-        $scope.shouldWeCombineNotifications = function(){
-            localStorageService.getItem('showOnlyOneNotification', function(showOnlyOneNotification){
-                if(showOnlyOneNotification === "false") {
-                    console.debug("showOnlyOneNotification from local storage is a false string: " + showOnlyOneNotification);
-                    $rootScope.showOnlyOneNotification = false;
-                } else if (showOnlyOneNotification === "true") {
-                    $rootScope.showOnlyOneNotification = true;
-                } else {
-                    console.debug("showOnlyOneNotification from local storage is not a false string");
-                    localStorageService.setItem('showOnlyOneNotification', true);
-                    $rootScope.showOnlyOneNotification = true;
-
-                    // notificationService.cancelAllNotifications().then(function() {
-                    //     localStorageService.getItem('primaryOutcomeRatingFrequencyDescription', function (primaryOutcomeRatingFrequencyDescription) {
-                    //         console.debug("Cancelled individual notifications and now scheduling combined one with interval: " + primaryOutcomeRatingFrequencyDescription);
-                    //         $scope.primaryOutcomeRatingFrequencyDescription = primaryOutcomeRatingFrequencyDescription ? primaryOutcomeRatingFrequencyDescription : "daily";
-                    //         $scope.saveInterval($scope.primaryOutcomeRatingFrequencyDescription);
-                    //     });
-                    // });
-                }
-            });
         };
 
         $rootScope.getUserAndSetInLocalStorage = function(){
@@ -724,10 +502,7 @@ angular.module('starter')
             var successHandler = function(userObject) {
                 if (userObject) {
                     console.log('Setting user in getUserAndSetInLocalStorage');
-                    localStorageService.setItem('user', JSON.stringify(userObject));
-                    $rootScope.user = userObject;
-                    $rootScope.setUserForIntercom($rootScope.user);
-                    $rootScope.setUserForBugsnag($rootScope.user);
+                    $rootScope.setUserInLocalStorageBugsnagAndRegisterDeviceForPush(userObject);
                     if ($state.current.name === 'app.login') {
                         goToDefaultStateShowMenuClearIntroHistoryAndRedraw();
                     }
@@ -735,7 +510,7 @@ angular.module('starter')
                 }
             };
             
-            authService.apiGet('api/user/me',
+            QuantiModo.get('api/user/me',
                 [],
                 {},
                 successHandler,
@@ -746,30 +521,13 @@ angular.module('starter')
             );
         };
 
-        $rootScope.setUserForIntercom = function(userObject) {
-            if(userObject){
-                window.intercomSettings = {
-                    app_id: "uwtx2m33",
-                    name: userObject.displayName,
-                    email: userObject.email,
-                    user_id: userObject.id,
-                    app_name: config.appSettings.appName,
-                    app_version: $rootScope.appVersion,
-                    platform: $rootScope.currentPlatform,
-                    platform_version: $rootScope.currentPlatformVersion
-                };
-            }
-            return userObject;
-        };
-
-        $rootScope.setUserForBugsnag = function(userObject) {
-            Bugsnag.metaData = {
-                user: {
-                    name: userObject.displayName,
-                    email: userObject.email
-                }
-            };
-            return userObject;
+        $rootScope.sendToLogin = function(){
+            localStorageService.deleteItem('user');
+            localStorageService.deleteItem('accessToken');
+            localStorageService.deleteItem('accessTokenInUrl');
+            $rootScope.accessToken = null;
+            $rootScope.user = null;
+            $state.go('app.login');
         };
 
         $scope.safeApply = function(fn) {
@@ -820,14 +578,20 @@ angular.module('starter')
         $scope.syncEverything = function () {
             if(!$rootScope.syncedEverything && $rootScope.user){
                 console.debug('syncEverything for this user: ' + JSON.stringify($rootScope.user));
-                measurementService.syncPrimaryOutcomeVariableMeasurements();
-                reminderService.refreshTrackingRemindersAndScheduleAlarms();
-                console.debug("syncEverything: calling refreshTrackingRemindersAndScheduleAlarms");
-                variableService.refreshUserVariables();
-                variableService.refreshCommonVariables();
-                unitService.refreshUnits();
+                //measurementService.syncPrimaryOutcomeVariableMeasurements();
+                if($rootScope.localNotificationsEnabled){
+                    console.debug("syncEverything: calling refreshTrackingRemindersAndScheduleAlarms");
+                    reminderService.refreshTrackingRemindersAndScheduleAlarms();
+                }
+                variableService.getUserVariables();
+                variableService.getCommonVariables();
+                unitService.getUnits();
                 $rootScope.syncedEverything = true;
-                qmLocationService.updateLocationVariablesAndPostMeasurementIfChanged();
+                if($rootScope.user.trackLocation){
+                    qmLocationService.updateLocationVariablesAndPostMeasurementIfChanged();
+                }
+                reminderService.syncTrackingReminderSyncQueueToServer();
+                //connectorsService.getConnectors();
             }
         };
 
@@ -835,7 +599,7 @@ angular.module('starter')
             var emailUrl = 'mailto:?subject=' + subjectLine + '&body=' + emailBody;
             if($rootScope.isChromeExtension){
                 console.debug('isChromeExtension so sending to website to share data');
-                var url = config.getURL("api/v2/account/applications", true);
+                var url = utilsService.getURL("api/v2/account/applications", true);
                 var newTab = window.open(url,'_blank');
                 if(!newTab){
                     alert("Please unblock popups and refresh to access the Data Sharing page.");
@@ -880,6 +644,60 @@ angular.module('starter')
                 );
 
             }, false);
+        };
+
+        $rootScope.getAccessTokenFromUrlParameter = function () {
+            $rootScope.accessTokenInUrl = utilsService.getUrlParameter(location.href, 'accessToken');
+            if (!$rootScope.accessTokenInUrl) {
+                $rootScope.accessTokenInUrl = utilsService.getUrlParameter(location.href, 'access_token');
+            }
+            if($rootScope.accessTokenInUrl){
+                localStorageService.setItem('accessTokenInUrl', $rootScope.accessTokenInUrl);
+                localStorageService.setItem('accessToken', $rootScope.accessTokenInUrl);
+            } else {
+                localStorageService.deleteItem('accessTokenInUrl');
+            }
+
+            return $rootScope.accessTokenInUrl;
+        };
+
+        $rootScope.setUserInLocalStorageBugsnagAndRegisterDeviceForPush = function(userData){
+            if (typeof Bugsnag !== "undefined") {
+                Bugsnag.metaData = {
+                    user: {
+                        name: userData.displayName,
+                        email: userData.email
+                    }
+                };
+            }
+            localStorageService.setItem('user', JSON.stringify(userData));
+            $rootScope.user = userData;
+            window.intercomSettings = {
+                app_id: "uwtx2m33",
+                name: userData.displayName,
+                email: userData.email,
+                user_id: userData.id,
+                app_name: config.appSettings.appName,
+                app_version: $rootScope.appVersion,
+                platform: $rootScope.currentPlatform,
+                platform_version: $rootScope.currentPlatformVersion
+            };
+
+            var deviceTokenOnServer = localStorageService.getItemSync('deviceTokenOnServer');
+            if(deviceTokenOnServer){
+                console.log("This token is already on the server: " + deviceTokenOnServer);
+                return;
+            }
+
+            var deviceTokenToSync = localStorageService.getItemSync('deviceTokenToSync');
+            if(deviceTokenToSync){
+                pushNotificationService.registerDeviceToken(deviceTokenToSync);
+            }
+        };
+
+        $scope.onTextClick = function ($event) {
+            console.log("Auto selecting text so the user doesn't have to press backspace...");
+            $event.target.select();
         };
         
         $scope.init();

@@ -13,9 +13,9 @@
             </div>
             <label class="item item-input">
                 <i class="icon ion-search placeholder-icon"></i>
-                <input ng-model="state.variableSearchQuery"
+                <input ng-model="state.variableSearchQuery.name"
                        ng-model-options="{ debounce: 500 }"
-                       ng-change="onVariableSearch(variableSearchQuery)"
+                       ng-change="onVariableSearch()"
                        id="variableSearchBox"
                        type="search"
                        placeholder={{state.variableSearchPlaceholderText}}>
@@ -23,12 +23,12 @@
             <p></p>
             <ion-list>
                 <ion-item style="text-align:center;border-bottom: 1px solid rgb(221, 221, 221);" ng-show="state.searching">
-                    <img src="../img/circular-loader.gif">
+                    <ion-spinner></ion-spinner>
                 </ion-item>
             </ion-list>
             <ion-list ng-show="state.variableSearchResults.length" class>
                 <!--<ion-item ng-click="selectVariable(item)" ng-repeat="item in state.variableSearchResults | orderBy:'-latestMeasurementTime' | limitTo:5 | unique:'id'  ">-->
-                <ion-item ng-click="selectVariable(item)" ng-repeat="item in state.variableSearchResults | unique:'id'  ">
+                <ion-item ng-click="selectVariable(item)" ng-repeat="item in state.variableSearchResults | filter:matchEveryWord() track by $index">
                     <div>
                         <p style="font-size:18px; white-space: pre;">{{item.name}}</p>
 <!--                        <p>{{item.latestMeasurementTime | fromNow}}</p>-->
@@ -36,7 +36,7 @@
                 </ion-item>
             </ion-list>
 
-            <ion-list ng-show="state.showAddVariableButton">
+            <ion-list ng-if="state.showAddVariableButton">
                 <ion-item style="border-top: 1px solid rgb(221, 221, 221);" ng-click="addNewVariable()">
                     {{state.addNewVariableButtonText}}
                 </ion-item>

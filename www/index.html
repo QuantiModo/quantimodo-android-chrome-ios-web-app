@@ -4,6 +4,8 @@
     <meta charset="utf-8">
     <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
 
+      <!-- DO NOT CHANGE LINE ENDINGS ON <!DOCTYPE html> LINE OR IT WILL ADD WHITE BAR TO TOP OF APP -->
+
     <!-- Very unrestrictive content security policy for development.
     Maybe should be replaced with something more strict.-->
     <!--  Commented this because it messes up Intercom.  I can't remember why I had to add it the other day. 
@@ -19,8 +21,7 @@
       https://js.intercomcdn.com
       'unsafe-inline' 'unsafe-eval'">
     <title></title>-->
-      <meta http-equiv="Content-Security-Policy" content="default-src *; script-src 'self' 'unsafe-inline' 'unsafe-eval' *; style-src  'self' 'unsafe-inline' *">
-
+      <meta http-equiv="Content-Security-Policy" content="ms-appdata *; default-src *; script-src 'self' 'unsafe-inline' 'unsafe-eval' *; style-src  'self' 'unsafe-inline' *">
 
       <title></title>
 
@@ -30,11 +31,13 @@
 
     <link href="css/mfb.css" rel="stylesheet">
 
-
     <link rel="shortcut icon" href="img/icons/icon_16.png">
     <!-- IF using Sass (run gulp sass first), then uncomment below and remove the CSS includes above
     <link href="css/ionic.app.css" rel="stylesheet">
     -->
+
+    <!-- Must use local Bugsnag library because external one causes problems in Chrome extension -->
+    <script src="lib/bugsnag/src/bugsnag.js" data-apikey="ae7bc49d1285848342342bb5c321a2cf"></script>
 
     <!-- load jQuery -->
     <!--Putting jQuery before Angular to see if it fixes double click issue per https://github.com/angular/angular.js/issues/6251 -->
@@ -45,6 +48,8 @@
 <script src="lib/ionic-platform-web-client/dist/ionic.io.bundle.min.js"></script>
     <script src="lib/ngCordova/dist/ng-cordova.js"></script>
 
+      <script src="lib/ng-cordova-oauth/dist/ng-cordova-oauth.min.js"></script>
+
       <!-- google maps -->
       <!--<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?&sensor=false"></script>-->
       <!--<script src="https://maps-api-ssl.google.com/maps/api/js?libraries=places&key=AIzaSyCKicUHwJwH56bXjaKXkVVh2AqrOFE2Ogk"></script>-->
@@ -54,35 +59,27 @@
     <!-- Cordova is bootstrapped by ionic-platform-web-client, uncomment this if you remove ionic-platform-web-client... -->
 <!-- <script src="cordova.js"></script> -->
 
-
+      <!--<script src="lib/templates.js"></script>-->
     <script src="lib/oclazyload/dist/ocLazyLoad.min.js"></script>
-    <script src="lib/highstock-release/highstock.js"></script>
-    <script src="lib/highcharts-ng/dist/highcharts-ng.js"></script>
-    <script src="lib/ionic-datepicker/dist/ionic-datepicker.bundle.min.js"></script>
-    <script src="lib/ionic-timepicker/dist/ionic-timepicker.bundle.min.js"></script>
-    <script src="lib/moment/moment.js"></script>
-    <!-- Must use local Bugsnag library because external one causes problems in Chrome extension -->
-    <script src="lib/bugsnag/src/bugsnag.js"></script>
-    <script src="https://cdn.rawgit.com/quantimodo/import-data/master/connect.js"></script>
-    <script src="lib/pluralize/pluralize.js"></script>
     <script src="lib/ng-material-floating-button/src/mfb-directive.js"></script>
+      <script src="lib/moment/moment.js"></script>
 
       <!-- your app's js -->
     <script src="js/apps.js"></script>
     <script src="js/app.js"></script>
 
+      <script src="js/services/localstorageService.js"></script>
     <script src="js/services/utilsService.js"></script>
     <script src="js/services/authService.js"></script>
     <script src="js/services/quantiModo.js"></script>
+      <script src="js/services/unitService.js"></script>
+      <script src="js/services/reminderService.js"></script>
     <script src="js/services/measurementService.js"></script>
     <script src="js/services/variableService.js"></script>
-    <script src="js/services/reminderService.js"></script>
     <script src="js/services/chartService.js"></script>
     <script src="js/services/notificationService.js"></script>
     <script src="js/services/correlationsService.js"></script>
-    <script src="js/services/localstorageService.js"></script>
     <script src="js/services/variableCategoryService.js"></script>
-    <script src="js/services/unitService.js"></script>
       <script src="js/services/bugsnagService.js"></script>
     <script src="js/services/timeService.js"></script>
     <script src="js/services/ratingService.js"></script>
@@ -90,6 +87,7 @@
       <script src="js/services/qmLocationService.js"></script>
       <script src="js/services/pushNotificationService.js"></script>
       <script src="js/services/userService.js"></script>
+      <script src="js/services/connectorsService.js"></script>
 
     <script src="js/filters/singularize.js"></script>
     <script src="js/filters/fromNow.js"></script>
@@ -103,17 +101,18 @@
     <script src="js/filters/reminderTimes.js"></script>
     <script src="js/filters/wordAliases.js"></script>
 
+      <script src="js/controllers/appCtrl.js"></script>
+      <script src="js/controllers/remindersInboxCtrl.js"></script>
+      <script src="js/controllers/favoritesCtrl.js"></script>
     <script src="js/controllers/introCtrl.js"></script>
     <script src="js/controllers/introPageCtrl.js"></script>
+      <script src="js/controllers/fabric.js"></script>
     <script src="js/controllers/variableSettingsCtrl.js"></script>
-    <script src="js/controllers/appCtrl.js"></script>
     <script src="js/controllers/loginCtrl.js"></script>
     <script src="js/controllers/patch.js"></script>
-    <script src="js/controllers/fabric.js"></script>
     <script src="js/controllers/welcomeCtrl.js"></script>
     <script src="js/controllers/trackPrimaryOutcomeCtrl.js"></script>
     <script src="js/controllers/settingsCtrl.js"></script>
-      <script src="js/controllers/mapCtrl.js"></script>
     <script src="js/controllers/iframeScreenCtrl.js"></script>
     <script src="js/controllers/predictorsCtrl.js"></script>
     <script src="js/controllers/externalCtrl.js"></script>
@@ -121,14 +120,20 @@
     <script src="js/controllers/historyAllMeasurementsCtrl.js"></script>
     <script src="js/controllers/importCtrl.js"></script>
     <script src="js/controllers/variableSearchCtrl.js"></script>
-    <script src="js/controllers/remindersInboxCtrl.js"></script>
     <script src="js/controllers/remindersManageCtrl.js"></script>
     <script src="js/controllers/remindersAddCtrl.js"></script>
       <script src="js/controllers/favoriteAddCtrl.js"></script>
     <script src="js/controllers/measurementAddCtrl.js"></script>
     <script src="js/controllers/chartsPageCtrl.js"></script>
     <script src="js/controllers/studyCtrl.js"></script>
-      <script src="js/controllers/favoritesCtrl.js"></script>
+      <script src="js/controllers/mapCtrl.js"></script>
+
+      <script src="lib/highstock-release/highstock.js"></script>
+      <script src="lib/highcharts-ng/dist/highcharts-ng.js"></script>
+      <script src="lib/ionic-datepicker/dist/ionic-datepicker.bundle.min.js"></script>
+      <script src="lib/ionic-timepicker/dist/ionic-timepicker.bundle.min.js"></script>
+      <script src="https://cdn.rawgit.com/quantimodo/import-data/master/connect.js"></script>
+      <script src="lib/pluralize/pluralize.js"></script>
 
       <script>(function(){var w=window;var ic=w.Intercom;if(typeof ic==="function"){ic('reattach_activator');ic('update',intercomSettings);}else{var d=document;var i=function(){i.c(arguments)};i.q=[];i.c=function(args){i.q.push(args)};w.Intercom=i;function l(){var s=d.createElement('script');s.type='text/javascript';s.async=true;s.src='https://widget.intercom.io/widget/vtynnyja';var x=d.getElementsByTagName('script')[0];x.parentNode.insertBefore(s,x);}if(w.attachEvent){w.attachEvent('onload',l);}else{w.addEventListener('load',l,false);}}})()</script>
 

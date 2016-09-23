@@ -1,5 +1,5 @@
 angular.module('starter')
-	.controller('StudyCtrl', function($scope, authService, $stateParams, $ionicHistory) {
+	.controller('StudyCtrl', function($scope, $state, authService, $stateParams, $ionicHistory) {
 
 		$scope.controller_name = "StudyCtrl";
         
@@ -14,7 +14,7 @@ angular.module('starter')
             }
         };
 
-        $scope.$on('$ionicView.enter', function(e){
+        $scope.$on('$ionicView.enter', function(e) { console.debug("Entering state " + $state.current.name);
             $scope.hideLoader();
             $scope.init();
         });

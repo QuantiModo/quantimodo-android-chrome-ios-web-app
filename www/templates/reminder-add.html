@@ -1,4 +1,5 @@
-<ion-view hide-nav-bar="hideNavigationMenu" view-title="{{state.title}}">
+<ion-view hide-nav-bar="hideNavigationMenu">
+    <ion-nav-title>{{state.title}}</ion-nav-title>
     <ion-content scroll="true" overflow-scroll="true">
 
         <div class="list card" ng-show="state.showReminderFrequencyCard" id="reminderAddCard">
@@ -7,7 +8,7 @@
                 <!--<label class="item item-input item-select" ng-if="state.showAddVariableCard && !state.trackingReminder.variableCategoryName">-->
                 <label class="item item-input item-select" ng-if="state.showAddVariableCard">
                     <div class="input-label" style="white-space:normal; width: 60%">Select Category</div>
-                    <select id="variableCategorySelector" ng-model="state.trackingReminder.variableCategoryName" ng-change="setupVariableCategory(state.trackingReminder.variableCategoryName)">
+                    <select id="variableCategorySelector" ng-model="state.trackingReminder.variableCategoryName" ng-change="variableCategorySelectorChange(state.trackingReminder.variableCategoryName)">
                         <option ng-repeat="variableCategory in variables.variableCategories" value="{{variableCategory.name}}">{{variableCategory.name}}</option>
                     </select>
                 </label>
@@ -21,7 +22,7 @@
                     </div>
 
                     <select id="unitSelector"
-                            ng-model="state.trackingReminder.abbreviatedUnitName" ng-options="x for x in abbreviatedUnitNames">
+                            ng-model="state.trackingReminder.abbreviatedUnitName" ng-options="x for x in abbreviatedUnitNames" ng-change="unitSelected()">
                             <!--ng-model="state.trackingReminder.abbreviatedUnitName" ng-options="x as x.abbreviatedName for x in unitObjects track by x.id">-->
                     </select>
                 </label>
