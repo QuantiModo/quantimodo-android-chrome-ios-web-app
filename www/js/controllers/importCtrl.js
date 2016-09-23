@@ -2,7 +2,7 @@ angular.module('starter')
 	
 	// controls the Import Data page of the app
 	.controller('ImportCtrl', function($scope, $ionicLoading, $state, $rootScope, authService, utilsService, QuantiModo,
-									   connectorsService, $cordovaOauth, bugsnagService, $ionicPopup) {
+									   connectorsService, $cordovaOauth, bugsnagService, $ionicPopup, $stateParams) {
 		
 		$state.go('app');
 		$scope.controller_name = "ImportCtrl";
@@ -22,11 +22,10 @@ angular.module('starter')
 
 	    // constructor
 	    $scope.init = function(){
-			if (typeof Bugsnag !== "undefined") {
-				Bugsnag.context = "importData";
-			}
-			if (typeof analytics !== 'undefined')  { //noinspection JSUnresolvedFunction
-				analytics.trackView("Import Data Controller"); }
+			console.debug($state.current.name + ' initializing...');
+			$rootScope.stateParams = $stateParams;
+			if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
+			if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
 			$scope.showLoader();
 
 			if($rootScope.isMobile){

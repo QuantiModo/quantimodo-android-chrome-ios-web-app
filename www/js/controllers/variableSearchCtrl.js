@@ -81,13 +81,11 @@ angular.module('starter')
         }
 
         $scope.init = function(){
-            if (typeof Bugsnag !== "undefined") {
-                Bugsnag.context = "variableSearch";
-            }
-            console.debug($state.current.name + ": " + 'Initializing variable search controller...');
+            console.debug($state.current.name + ' initializing...');
+            $rootScope.stateParams = $stateParams;
+            if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
+            if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
             setTitleAndPlaceholderText();
-            if (typeof analytics !== 'undefined')  { analytics.trackView("Variable Search Controller"); }
-            authService.checkAuthOrSendToLogin();
             $scope.showHelpInfoPopupIfNecessary();
             $scope.state.showVariableSearchCard = true;
             if($scope.state.variableSearchResults.length < 10){
@@ -98,6 +96,7 @@ angular.module('starter')
 
         // when a query is searched in the search box
         $scope.onVariableSearch = function(){
+            var params;
             $scope.state.showAddVariableButton = false;
             console.log($state.current.name + ": " + "Search term: ", $scope.state.variableSearchQuery.name);
             if($scope.state.variableSearchQuery.name.length > 2){
@@ -108,7 +107,7 @@ angular.module('starter')
                         'includePublic' : false,
                         'variableCategoryName' : $scope.state.variableCategoryName,
                         'manualTracking': true
-                    }
+                    };
                     variableService.searchUserVariables($scope.state.variableSearchQuery.name, params)
                         .then(function(variables){
                             console.debug($state.current.name + ": " + "$scope.onVariableSearch: Populating list with " +

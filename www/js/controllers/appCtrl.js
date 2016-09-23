@@ -172,6 +172,28 @@ angular.module('starter')
             });
         };
 
+        $scope.onHelpButtonPress = function () {
+            $rootScope.helpButtonPopup = $ionicPopup.show({
+                title: $rootScope.stateParams.title,
+                subTitle: $rootScope.stateParams.helpText,
+                scope: $scope,
+                template: '',
+                buttons: [
+                    {
+                        text: 'OK',
+                        type: 'button-positive'
+                    },
+                    {
+                        text: 'More Help',
+                        type: 'button-positive',
+                        onTap: function(e) {
+                            $state.go('app.help');
+                        }
+                    }
+                ]
+            });
+        };
+
         $scope.showHelpInfoPopupIfNecessary = function (e) {
             localStorageService.getItem('isWelcomed', function (isWelcomed) {
                 if (isWelcomed === true || isWelcomed === "true") {
@@ -395,6 +417,7 @@ angular.module('starter')
             });
             if (!$rootScope.user) {
                 $rootScope.user = localStorageService.getItemAsObject('user');
+                console.debug('appCtrl.init just set $rootScope.user from local storage to: ' + JSON.stringify($rootScope.user));
             }
             if ($rootScope.user) {
                 console.debug("appCtrl.init calling setUserInLocalStorageBugsnagAndRegisterDeviceForPush");
@@ -526,6 +549,7 @@ angular.module('starter')
             localStorageService.deleteItem('accessToken');
             localStorageService.deleteItem('accessTokenInUrl');
             $rootScope.accessToken = null;
+            console.debug('appCtrl.sendToLogin just set $rootScope.user to null');
             $rootScope.user = null;
             $state.go('app.login');
         };
@@ -672,6 +696,7 @@ angular.module('starter')
             }
             localStorageService.setItem('user', JSON.stringify(userData));
             $rootScope.user = userData;
+            console.debug('$rootScope.setUserInLocalStorageBugsnagAndRegisterDeviceForPush just set $rootScope.user to: ' + JSON.stringify($rootScope.user));
             window.intercomSettings = {
                 app_id: "uwtx2m33",
                 name: userData.displayName,

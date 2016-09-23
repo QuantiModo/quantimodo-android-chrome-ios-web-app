@@ -1,7 +1,7 @@
 angular.module('starter')
     
     // Handlers the Welcome Page
-    .controller('WelcomeCtrl', function($scope, $state, $rootScope, localStorageService, measurementService) {
+    .controller('WelcomeCtrl', function($scope, $state, $rootScope, localStorageService, measurementService, $stateParams) {
         
         $scope.controller_name = "WelcomeCtrl";
         $rootScope.isIOS = ionic.Platform.isIPad() || ionic.Platform.isIOS();
@@ -60,11 +60,10 @@ angular.module('starter')
 
 
         $scope.init = function(){
-            if (typeof Bugsnag !== "undefined") {
-                Bugsnag.context = "welcome";
-            }
-            console.log("welcome initialization...");
-            if (typeof analytics !== 'undefined')  { analytics.trackView("Welcome Controller"); }
+            console.debug($state.current.name + ' initializing...');
+            $rootScope.stateParams = $stateParams;
+            if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
+            if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
             
         };
 

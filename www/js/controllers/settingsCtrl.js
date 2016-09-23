@@ -3,7 +3,7 @@ angular.module('starter')
 	// Controls the settings page
 	.controller('SettingsCtrl', function( $state, $scope, $ionicPopover, $ionicPopup, localStorageService, $rootScope, 
 										  notificationService, QuantiModo, reminderService, qmLocationService, 
-										  ionicTimePicker, userService, timeService, utilsService) {
+										  ionicTimePicker, userService, timeService, utilsService, $stateParams) {
 		$scope.controller_name = "SettingsCtrl";
 		$scope.state = {};
 		$scope.showReminderFrequencySelector = config.appSettings.settingsPageOptions.showReminderFrequencySelector;
@@ -27,6 +27,7 @@ angular.module('starter')
 		if($rootScope.user && (!$rootScope.user.earliestReminderTime || !$rootScope.user.latestReminderTime)){
 			userService.refreshUser(function(user){
 				$rootScope.user = user;
+                console.debug('SettingsCtrl just set $rootScope.user to: ' + JSON.stringify($rootScope.user));
 			});
 		}
 
@@ -72,10 +73,10 @@ angular.module('starter')
 		};
 
 		$scope.init = function() {
-			if (typeof Bugsnag !== "undefined") {
-				Bugsnag.context = "settings";
-			}
-			if (typeof analytics !== 'undefined')  { analytics.trackView("Settings Controller"); }
+			console.debug($state.current.name + ' initializing...');
+			$rootScope.stateParams = $stateParams;
+			if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
+			if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
 			qmLocationService.getLocationVariablesFromLocalStorage();
 	    };
 

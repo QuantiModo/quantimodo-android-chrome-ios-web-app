@@ -2,7 +2,7 @@ angular.module('starter')
 
 	// Controls the History Page of the App.
 	.controller('HistoryPrimaryOutcomeCtrl', function($scope, $ionicLoading, $ionicActionSheet, $state, $timeout,
-													  $rootScope, measurementService) {
+													  $rootScope, measurementService, $stateParams) {
 
 	    $scope.controller_name = "HistoryPrimaryOutcomeCtrl";
 		$scope.state = {
@@ -19,10 +19,10 @@ angular.module('starter')
 		};
 
 		$scope.init = function(){
-			console.debug($state.current.name + ": " + 'history page init');
-			if (typeof Bugsnag !== "undefined") {
-				Bugsnag.context = "historyPrimary";
-			}
+			console.debug($state.current.name + ' initializing...');
+			$rootScope.stateParams = $stateParams;
+			if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
+			if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
 			$scope.history = measurementService.getAllLocalMeasurements();
 			if($rootScope.user){
 				$scope.showLoader($scope.syncDisplayText);
