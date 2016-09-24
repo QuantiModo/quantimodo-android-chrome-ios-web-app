@@ -450,6 +450,19 @@ angular.module('starter')
 			return deferred.promise;
 		};
 
+		reminderService.addRatingTimesToDailyReminders = function(reminders) {
+			var index;
+			for (index = 0; index < reminders.length; ++index) {
+				if (reminders[index].valueAndFrequencyTextDescription.indexOf('daily') > 0 &&
+					reminders[index].valueAndFrequencyTextDescription.indexOf(' at ') === -1) {
+					reminders[index].valueAndFrequencyTextDescription =
+						reminders[index].valueAndFrequencyTextDescription + ' at ' +
+						reminderService.convertReminderTimeStringToMoment(reminders[index].reminderStartTime).format("h:mm A");
+				}
+			}
+			return reminders;
+		};
+
 		reminderService.convertReminderTimeStringToMoment = function(reminderTimeString) {
 			var now = new Date();
 			var hourOffsetFromUtc = now.getTimezoneOffset()/60;
@@ -583,6 +596,7 @@ angular.module('starter')
 				} else {
 					allReminders = nonFavoriteReminders;
 				}
+				allReminders = reminderService.addRatingTimesToDailyReminders(allReminders);
 				deferred.resolve(allReminders);
 			}
 			return deferred.promise;
