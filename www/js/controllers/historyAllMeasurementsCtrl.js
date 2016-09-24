@@ -108,10 +108,11 @@ angular.module('starter')
 	    // constructor
 	    $scope.init = function(){
 			$scope.state.loading = true;
-			//$scope.showLoader('Fetching measurements...');
-			if (typeof analytics !== 'undefined')  { analytics.trackView("All Measurements Controller"); }
-			Bugsnag.context = "historyAll";
 			$scope.state.offset = 0;
+			$rootScope.stateParams = $stateParams;
+			if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
+			if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
+
 			if ($stateParams.variableObject){
 				$scope.title = $stateParams.variableObject.name + ' History';
 			}

@@ -747,6 +747,7 @@ angular.module('starter',
             url: "/reminders-inbox",
             cache: false,
             params: {
+                title: 'Reminder Inbox',
                 reminderFrequency: null,
                 unit: null,
                 variableName : null,
@@ -809,6 +810,51 @@ angular.module('starter',
                 'menuContent': {
                     templateUrl: "templates/reminders-inbox.html",
                     controller: 'RemindersInboxCtrl'
+                }
+            }
+        })
+        .state('app.manageScheduledMeds', {
+            url: "/manage-scheduled-meds",
+            params: {
+                title: "Manage Scheduled Meds",
+                helpText: "Here you can add and manage your scheduled medications.  Long-press on a medication for more options.  You can drag down to refresh.",
+                addButtonText: "Add scheduled medication",
+                variableCategoryName : 'Treatments'
+            },
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/reminders-manage.html",
+                    controller: 'RemindersManageCtrl'
+                }
+            }
+        })
+        .state('app.todayMedSchedule', {
+            url: "/today-med-schedule",
+            params: {
+                title: "Today's Med Schedule",
+                helpText: "Here you can see and record today's scheduled doses.",
+                today : true,
+                variableCategoryName : 'Treatments'
+            },
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/reminders-inbox.html",
+                    controller: 'RemindersInboxCtrl'
+                }
+            }
+        })
+        .state('app.asNeededMeds', {
+            url: "/as-needed-meds",
+            params: {
+                title: "As Needed Meds",
+                addButtonText: "Add a Medication",
+                helpText: "Here you quickly record doses of medications taken as needed.",
+                variableCategoryName : 'Treatments'
+            },
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/favorites.html",
+                    controller: 'FavoritesCtrl'
                 }
             }
         })

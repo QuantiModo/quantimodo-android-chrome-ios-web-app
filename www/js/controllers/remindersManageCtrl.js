@@ -2,7 +2,7 @@ angular.module('starter')
 
 	.controller('RemindersManageCtrl', function($scope, $state, $stateParams, $ionicPopup, $rootScope, $timeout, $ionicLoading, $filter,
 												 $ionicActionSheet,  authService,
-												localStorageService, reminderService, variableCategoryService) {
+												localStorageService, reminderService) {
 
 	    $scope.controller_name = "RemindersManageCtrl";
 
@@ -81,24 +81,31 @@ angular.module('starter')
 		};
 		
 	    $scope.init = function(){
-			if (typeof Bugsnag !== "undefined") {
-				Bugsnag.context = "reminderManage";
-			}
+			console.debug($state.current.name + ' initializing...');
+			$rootScope.stateParams = $stateParams;
+			if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
+			if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
 
 			if (!$stateParams.variableCategoryName || $stateParams.variableCategoryName === "Anything") {
-				$scope.state.title = "Manage Reminders";
-				$scope.state.addButtonText = "Add new reminder";
+				if(!$rootScope.stateParams.title) {
+					$rootScope.stateParams.title = "Manage Reminders";
+				}
+				if(!$rootScope.stateParams.addButtonText) {
+					$rootScope.stateParams.addButtonText = "Add new reminder";
+				}
 			}
 			else {
-				$scope.state.title = "Manage " + pluralize($filter('wordAliases')($stateParams.variableCategoryName), 1) + " Reminders";
-				$scope.state.addButtonText = 'Add new ' +
-					pluralize($filter('wordAliases')($stateParams.variableCategoryName.toLowerCase()), 1) + ' reminder';
+				if(!$rootScope.stateParams.title){
+					$rootScope.stateParams.title = "Manage " + pluralize($filter('wordAliases')($stateParams.variableCategoryName), 1) + " Reminders";
+				}
+				if(!$rootScope.stateParams.addButtonText) {
+					$rootScope.stateParams.addButtonText = 'Add new ' +
+						pluralize($filter('wordAliases')($stateParams.variableCategoryName.toLowerCase()), 1) + ' reminder';
+				}
 			}
 
 			$scope.state.showButtons = true;
-			authService.checkAuthOrSendToLogin();
 			getTrackingReminders();
-			if (typeof analytics !== 'undefined')  { analytics.trackView("Manage Reminders Controller"); }
 			$scope.refreshReminders();
 			// Triggered on a button click, or some other target
 			$rootScope.showActionSheetMenu = function() {
@@ -189,13 +196,12 @@ angular.module('starter')
 			}
 	    };
 
-	    $scope.deleteReminder = function(reminder){
-			localStorageService.deleteElementOfItemById('trackingReminders', reminder.trackingReminderId).then(function(){
-					reminderService.getTrackingReminders($stateParams.variableCategoryName).then(function(trackingReminders){
-						$scope.state.trackingReminders = trackingReminders;
-					});
-				});
+	    $scope.deleteReminder = function(reminder, $index){
+	    	if($index !== null){
+				$scope.state.trackingReminders = $scope.state.trackingReminders.splice($index, 1);
+			}
 
+			localStorageService.deleteElementOfItemById('trackingReminders', reminder.trackingReminderId);
 			reminderService.deleteReminder(reminder.trackingReminderId)
 				.then(function(){
 					reminderService.refreshTrackingReminderNotifications();

@@ -15,9 +15,9 @@ angular.module('starter')
             showUnits: false,
             selectedFrequency : 'Daily',
             selectedReminder : false,
-            reminderStartTimeEpochTime : timeService.getEpochTimeFromLocalString($rootScope.user.earliestReminderTime),
+            firstReminderStartTimeEpochTime : timeService.getEpochTimeFromLocalString($rootScope.user.earliestReminderTime),
             //reminderEndTimeEpochTime : null,
-            reminderStartTimeStringLocal : $rootScope.user.earliestReminderTime,
+            firstReminderStartTimeLocal : $rootScope.user.earliestReminderTime,
             //reminderEndTimeStringLocal : null,
             measurementSynonymSingularLowercase : 'measurement',
             defaultValueLabel : 'Default Value',
@@ -61,13 +61,30 @@ angular.module('starter')
 	    	]
 	    };
 
-		$scope.openReminderStartTimePicker = function() {
+		$scope.openReminderStartTimePicker = function(order) {
             var defaultStartTimeInSecondsSinceMidnightLocal =
                 timeService.getSecondsSinceMidnightLocalFromLocalString($rootScope.user.earliestReminderTime);
-            if($scope.state.reminderStartTimeStringLocal){
-                defaultStartTimeInSecondsSinceMidnightLocal =
-                    timeService.getSecondsSinceMidnightLocalFromLocalString($scope.state.reminderStartTimeStringLocal);
+		    if(order === 'first') {
+                if($scope.state.firstReminderStartTimeLocal){
+                    defaultStartTimeInSecondsSinceMidnightLocal =
+                        timeService.getSecondsSinceMidnightLocalFromLocalString($scope.state.firstReminderStartTimeLocal);
+                }
             }
+
+            if(order === 'second') {
+                if($scope.state.secondReminderStartTimeLocal){
+                    defaultStartTimeInSecondsSinceMidnightLocal =
+                        timeService.getSecondsSinceMidnightLocalFromLocalString($scope.state.secondReminderStartTimeLocal);
+                }
+            }
+
+            if(order === 'third') {
+                if($scope.state.thirdReminderStartTimeLocal){
+                    defaultStartTimeInSecondsSinceMidnightLocal =
+                        timeService.getSecondsSinceMidnightLocalFromLocalString($scope.state.thirdReminderStartTimeLocal);
+                }
+            }
+
             // Round minutes
             var defaultStartTime = new Date(defaultStartTimeInSecondsSinceMidnightLocal * 1000);
             var defaultStartTimeHours = defaultStartTime.getUTCHours();
@@ -112,8 +129,22 @@ angular.module('starter')
                         console.log('Selected epoch is : ', val, 'and the time is ',
                             selectedTime.getUTCHours(), 'H :', selectedTime.getUTCMinutes(), 'M');
 
-                        $scope.state.reminderStartTimeEpochTime = a.getTime() / 1000;
-                        $scope.state.reminderStartTimeStringLocal = moment(a).format('HH:mm:ss');
+                        if(order === 'first'){
+                            $scope.state.firstReminderStartTimeEpochTime = a.getTime() / 1000;
+                            $scope.state.firstReminderStartTimeLocal = moment(a).format('HH:mm:ss');
+                        }
+
+                        if(order === 'second'){
+                            $scope.state.secondReminderStartTimeEpochTime = a.getTime() / 1000;
+                            $scope.state.secondReminderStartTimeLocal = moment(a).format('HH:mm:ss');
+                        }
+
+                        if(order === 'third'){
+                            $scope.state.hideAdditionalReminderTimeButton = true;
+                            $scope.state.thirdReminderStartTimeEpochTime = a.getTime() / 1000;
+                            $scope.state.thirdReminderStartTimeLocal = moment(a).format('HH:mm:ss');
+                        }
+
                     }
                 },
                 inputTime: defaultStartTimeInSecondsSinceMidnightLocal,
@@ -230,26 +261,31 @@ angular.module('starter')
             $scope.save();
         };
 
-	    // when the reminder is saved/edited
-	    $scope.save = function(){
-
-            if($scope.state.trackingReminder.abbreviatedUnitName === '/5' && !$scope.state.trackingReminder.defaultValue){
-                $scope.state.trackingReminder.defaultValue = 3;
+        $scope.showAdditionalReminderTime = function(){
+            if(!$scope.state.secondReminderStartTimeEpochTime){
+                $scope.openReminderStartTimePicker('second');
+                return;
             }
 
+            if(!$scope.state.thirdReminderStartTimeEpochTime) {
+                $scope.openReminderStartTimePicker('third');
+            }
+        };
+        
+        var validReminderSettings = function(){
             if(!$scope.state.trackingReminder.variableCategoryName) {
                 utilsService.showAlert('Please select a variable category');
-                return;
+                return false;
             }
 
             if(!$scope.state.trackingReminder.variableName) {
                 utilsService.showAlert('Please enter a variable name');
-                return;
+                return false;
             }
 
             if(!$scope.state.trackingReminder.abbreviatedUnitName) {
                 utilsService.showAlert('Please select a unit');
-                return;
+                return false;
             }
             else {
                 $scope.state.trackingReminder.unitId =
@@ -258,7 +294,7 @@ angular.module('starter')
 
             if(!$scope.state.trackingReminder.defaultValue && $scope.state.trackingReminder.defaultValue !== 0) {
                 utilsService.showAlert('Please enter a default value');
-                return;
+                return false;
             }
 
             if($rootScope.unitsIndexedByAbbreviatedName[$scope.state.trackingReminder.abbreviatedUnitName] &&
@@ -271,9 +307,10 @@ angular.module('starter')
                         ' is the smallest possible value for the unit ' +
                         $rootScope.unitsIndexedByAbbreviatedName[$scope.state.trackingReminder.abbreviatedUnitName].name +
                         ".  Please select another unit or value.");
-                    return;
+                    return false;
                 }
             }
+
 
             if($rootScope.unitsIndexedByAbbreviatedName[$scope.state.trackingReminder.abbreviatedUnitName] &&
                 typeof $rootScope.unitsIndexedByAbbreviatedName[$scope.state.trackingReminder.abbreviatedUnitName].maximumValue !== "undefined" &&
@@ -285,35 +322,78 @@ angular.module('starter')
                         ' is the largest possible value for the unit ' +
                         $rootScope.unitsIndexedByAbbreviatedName[$scope.state.trackingReminder.abbreviatedUnitName].name +
                         ".  Please select another unit or value.");
-                    return;
+                    return false;
                 }
+            }
+            
+            return true;
+        };
+        
+        var configureReminderTimeSettings = function(trackingReminder, 
+                                                     reminderStartTimeLocal,
+                                                     reminderStartTimeEpochTime){
+            
+            var updatedTrackingReminder = trackingReminder;
+            
+            updatedTrackingReminder.reminderStartTimeLocal = reminderStartTimeLocal;
+            updatedTrackingReminder.reminderStartTimeEpochTime = reminderStartTimeEpochTime;
+            if(updatedTrackingReminder.reminderFrequency === 86400){
+                if(updatedTrackingReminder.abbreviatedUnitName === '/5'){
+                    updatedTrackingReminder.valueAndFrequencyTextDescription = 'Daily at ' +
+                        timeService.humanFormat(reminderStartTimeLocal);
+                } else {
+                    updatedTrackingReminder.valueAndFrequencyTextDescription = updatedTrackingReminder.defaultValue +
+                        ' ' + updatedTrackingReminder.abbreviatedUnitName + ' daily at ' +
+                        timeService.humanFormat(reminderStartTimeLocal);
+                }
+            }
+            updatedTrackingReminder.reminderStartTime =
+                timeService.getUtcTimeStringFromLocalString(reminderStartTimeLocal);
+
+            updatedTrackingReminder.reminderStartTimeEpochSeconds = reminderStartTimeEpochTime;
+            updatedTrackingReminder.nextReminderTimeEpochSeconds = reminderStartTimeEpochTime;
+            return updatedTrackingReminder;
+        };
+
+	    // when the reminder is saved/edited
+	    $scope.save = function(){
+
+            if($scope.state.trackingReminder.abbreviatedUnitName === '/5' && !$scope.state.trackingReminder.defaultValue){
+                $scope.state.trackingReminder.defaultValue = 3;
+            }
+
+            if(!validReminderSettings()){
+                return;
             }
 
             $scope.showLoader('Saving ' + $scope.state.trackingReminder.variableName + ' reminder...');
             $scope.state.trackingReminder.reminderFrequency = getFrequencyChart()[$scope.state.selectedFrequency];
             $scope.state.trackingReminder.valueAndFrequencyTextDescription = $scope.state.selectedFrequency;
-            if($scope.state.trackingReminder.reminderFrequency === 86400){
-                if($scope.state.trackingReminder.abbreviatedUnitName === '/5'){
-                    $scope.state.trackingReminder.valueAndFrequencyTextDescription = 'Daily at ' +
-                        timeService.humanFormat($scope.state.reminderStartTimeStringLocal);
-                } else {
-                    $scope.state.trackingReminder.valueAndFrequencyTextDescription = $scope.state.trackingReminder.defaultValue +
-                        ' ' + $scope.state.trackingReminder.abbreviatedUnitName + ' daily at ' +
-                        timeService.humanFormat($scope.state.reminderStartTimeStringLocal);
-                }
+
+            var remindersArray = [];
+            remindersArray[0] = JSON.parse(JSON.stringify($scope.state.trackingReminder));
+            remindersArray[0] = configureReminderTimeSettings(remindersArray[0],
+                $scope.state.firstReminderStartTimeLocal, $scope.state.firstReminderStartTimeEpochTime);
+            
+            if($scope.state.secondReminderStartTimeLocal){
+                remindersArray[1] = JSON.parse(JSON.stringify($scope.state.trackingReminder));
+                remindersArray[1].id = null;
+                remindersArray[1] = configureReminderTimeSettings(remindersArray[1],
+                    $scope.state.secondReminderStartTimeLocal, $scope.state.secondReminderStartTimeEpochTime);
             }
-            $scope.state.trackingReminder.reminderStartTime =
-                timeService.getUtcTimeStringFromLocalString($scope.state.reminderStartTimeStringLocal);
-            //End time not reminder specific anymore
-            //$scope.state.trackingReminder.reminderEndTime = $scope.state.reminderEndTimeStringLocal;
-            //$scope.state.trackingReminder.reminderEndTimeEpochSeconds = $scope.state.reminderEndTimeEpochTime;
-            $scope.state.trackingReminder.reminderStartTimeEpochSeconds = $scope.state.reminderStartTimeEpochTime;
-            $scope.state.trackingReminder.nextReminderTimeEpochSeconds = $scope.state.reminderStartTimeEpochTime;
 
 
-            localStorageService.addToOrReplaceElementOfItemByIdOrMoveToFront('trackingReminders', $scope.state.trackingReminder)
+            if($scope.state.thirdReminderStartTimeLocal){
+                remindersArray[2] = JSON.parse(JSON.stringify($scope.state.trackingReminder));
+                remindersArray[2].id = null;
+                remindersArray[2] = configureReminderTimeSettings(remindersArray[2],
+                    $scope.state.thirdReminderStartTimeLocal, $scope.state.thirdReminderStartTimeEpochTime);
+            }
+
+            localStorageService.addToOrReplaceElementOfItemByIdOrMoveToFront('trackingReminders',
+                remindersArray)
                 .then(function(){
-                    reminderService.addNewReminder($scope.state.trackingReminder)
+                    reminderService.postTrackingReminders(remindersArray)
                         .then(function(){
                             reminderService.refreshTrackingReminderNotifications();
                             $scope.hideLoader();
@@ -323,6 +403,8 @@ angular.module('starter')
                             $ionicLoading.hide();
                             $scope.loading = false;
                         });
+
+
 
                     if($stateParams.fromUrl && ($stateParams.fromUrl.indexOf('manage') > -1 )){
                         window.location = $stateParams.fromUrl;
@@ -350,8 +432,8 @@ angular.module('starter')
             $scope.state.trackingReminder.secondDailyReminderTime = null;
             $scope.state.trackingReminder.thirdDailyReminderTime = null;
 	    	$scope.state.title = "Edit " +  trackingReminder.variableName + " Reminder";
-            $scope.state.reminderStartTimeStringLocal = timeService.getLocalTimeStringFromUtcString(trackingReminder.reminderStartTime);
-            $scope.state.reminderStartTimeEpochTime = timeService.getEpochTimeFromLocalString($scope.state.reminderStartTimeStringLocal);
+            $scope.state.firstReminderStartTimeLocal = timeService.getLocalTimeStringFromUtcString(trackingReminder.reminderStartTime);
+            $scope.state.firstReminderStartTimeEpochTime = timeService.getEpochTimeFromLocalString($scope.state.firstReminderStartTimeLocal);
             //$scope.state.reminderEndTimeStringLocal = trackingReminder.reminderEndTime;
             
 	    	var reverseFrequencyChart = {
@@ -463,6 +545,8 @@ angular.module('starter')
         }
 
         $scope.init = function(){
+            console.debug($state.current.name + ' initializing...');
+            $rootScope.stateParams = $stateParams;
             if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
             if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
 

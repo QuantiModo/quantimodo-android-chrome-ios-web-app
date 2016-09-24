@@ -3,52 +3,20 @@ angular.module('starter')
 
 	    var variableService = {};
 
-        variableService.searchVariablesIncludePublic = function(variableSearchQuery, variableCategoryName){
-            var deferred = $q.defer();
-
-            if(!variableSearchQuery){
-                variableSearchQuery = '*';
-            }
-
-            if(variableCategoryName){
-                QuantiModo.searchVariablesByCategoryIncludePublic(variableSearchQuery, variableCategoryName, function(vars){
-                    deferred.resolve(vars);
-                }, function(){
-                    deferred.reject(false);
-                });
-            } else {
-                QuantiModo.searchVariablesIncludePublic(variableSearchQuery, function(vars){
-                    deferred.resolve(vars);
-                }, function(){
-                    deferred.reject(false);
-                });
-            }
-
-            return deferred.promise;
-        };
-
 
         // get user variables (without public)
-        variableService.searchUserVariables = function(variableSearchQuery, variableCategoryName){
+        variableService.searchUserVariables = function(variableSearchQuery, params){
             var deferred = $q.defer();
 
             if(!variableSearchQuery){
                 variableSearchQuery = '*';
             }
 
-            if(variableCategoryName){
-                QuantiModo.searchUserVariablesByCategory(variableSearchQuery, variableCategoryName, function(vars){
-                    deferred.resolve(vars);
-                }, function(){
-                    deferred.reject(false);
-                });
-            } else {
-                QuantiModo.searchUserVariables(variableSearchQuery, function(vars){
-                    deferred.resolve(vars);
-                }, function(){
-                    deferred.reject(false);
-                });
-            }
+            QuantiModo.searchUserVariables(variableSearchQuery, params, function(vars){
+                deferred.resolve(vars);
+            }, function(){
+                deferred.reject(false);
+            });
 
             return deferred.promise;
         };

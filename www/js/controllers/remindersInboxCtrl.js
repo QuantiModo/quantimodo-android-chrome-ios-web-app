@@ -108,8 +108,8 @@ angular.module('starter')
 			if(isGhostClick($event)){
 				return;
 			}
-
-			$scope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications[trackingReminderNotificationNotificationIndex].hide = true;
+			$scope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications.splice(trackingReminderNotificationNotificationIndex, 1);
+			//$scope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications[trackingReminderNotificationNotificationIndex].hide = true;
 			console.debug('Tracking notification ' + JSON.stringify(trackingReminderNotification));
 			console.log('modifiedReminderValue is ' + modifiedReminderValue);
 			var body = {
@@ -139,8 +139,8 @@ angular.module('starter')
 				return;
 			}
 
-			$scope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications[trackingReminderNotificationNotificationIndex].hide = true;
-
+			//$scope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications[trackingReminderNotificationNotificationIndex].hide = true;
+			$scope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications.splice(trackingReminderNotificationNotificationIndex, 1);
 			console.debug('Skipping notification ' + JSON.stringify(trackingReminderNotification));
 			var params = {
 				trackingReminderNotificationId: trackingReminderNotification.id,
@@ -169,7 +169,8 @@ angular.module('starter')
 				return;
 			}
 
-			$scope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications[trackingReminderNotificationNotificationIndex].hide = true;
+			//$scope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications[trackingReminderNotificationNotificationIndex].hide = true;
+			$scope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications.splice(trackingReminderNotificationNotificationIndex, 1);
 			console.debug('Snoozing notification ' + JSON.stringify(trackingReminderNotification));
 			var params = {
 				trackingReminderNotificationId: trackingReminderNotification.id,
@@ -242,15 +243,16 @@ angular.module('starter')
 		};
 
 	    $scope.init = function(){
-			if (typeof Bugsnag !== "undefined") { Bugsnag.context = "reminderInbox"; }
+			console.debug($state.current.name + ' initializing...');
+			$rootScope.stateParams = $stateParams;
+			if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
+			if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
 			$rootScope.getAccessTokenFromUrlParameter();
 			$rootScope.hideNavigationMenuIfSetInUrlParameter();
 	    	if (!$rootScope.hideNavigationMenu && !$rootScope.introSeen && !$rootScope.user && !$rootScope.accessTokenInUrl) {
 				console.debug('reminderInboxCtrl init: Intro not seen and hidemenu is false so going to intro state');
 				$state.go('intro');
 			} else {
-
-				if (typeof analytics !== 'undefined')  { analytics.trackView("Reminders Inbox Controller"); }
 
 				$scope.refreshTrackingReminderNotifications();
 				//getTrackingReminderNotifications();

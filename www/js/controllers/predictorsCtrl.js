@@ -1,7 +1,7 @@
 angular.module('starter')
 
 	.controller('PredictorsCtrl', function($scope, $ionicLoading, $state, $stateParams, $ionicPopup, correlationService,
-                                           authService) {
+                                           $rootScope) {
 
 		$scope.controller_name = "PredictorsCtrl";
         $scope.state = {
@@ -48,6 +48,10 @@ angular.module('starter')
         }
 
         $scope.init = function(){
+            console.debug($state.current.name + ' initializing...');
+            $rootScope.stateParams = $stateParams;
+            if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
+            if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
             $scope.state.correlationObjects = null;
             $scope.state.usersCorrelationObjects = null;
             if(!$stateParams.variableObject){
@@ -63,8 +67,6 @@ angular.module('starter')
                 $scope.state.requestParams.correlationCoefficient = "(lt)0";
             }
             $scope.state.variableObject = $stateParams.variableObject;
-            authService.checkAuthOrSendToLogin();
-            if (typeof analytics !== 'undefined')  {analytics.trackView("Predictors Controller");}
             if($scope.state.requestParams.effect){
                 if ($scope.state.requestParams.correlationCoefficient === "(lt)0") {
                     showNegativePredictors();

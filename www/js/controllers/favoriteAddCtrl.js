@@ -102,7 +102,7 @@ angular.module('starter')
 
             localStorageService.addToOrReplaceElementOfItemByIdOrMoveToFront('trackingReminders', $scope.state.trackingReminder)
                 .then(function(){
-                    reminderService.addNewReminder($scope.state.trackingReminder)
+                    reminderService.postTrackingReminders($scope.state.trackingReminder)
                         .then(function(){
 
                         }, function(err){
@@ -305,10 +305,11 @@ angular.module('starter')
 
         };
 
-        $scope.$on('$ionicView.beforeEnter', function(){
-            console.debug('$ionicView.beforeEnter state ' + $state.current.name + '. Getting units now...');
+        var init = function(){
+            $rootScope.stateParams = $stateParams;
             if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
             if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
+            console.debug('$ionicView.beforeEnter state ' + $state.current.name + '. Getting units now...');
             unitService.getUnits().then(function () {
                 console.debug("Got units in " + $state.current.name);
                 var reminderIdUrlParameter = utilsService.getUrlParameter(window.location.href, 'reminderId');
@@ -323,5 +324,9 @@ angular.module('starter')
                     $scope.onVariableSelect($stateParams.variableObject);
                 }
             });
+        };
+
+        $scope.$on('$ionicView.beforeEnter', function(){
+            init();
         });
 	});

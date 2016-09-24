@@ -1,14 +1,16 @@
 angular.module('starter')
-	.controller('StudyCtrl', function($scope, $state, authService, $stateParams, $ionicHistory) {
+	.controller('StudyCtrl', function($scope, $state, authService, $stateParams, $ionicHistory, $rootScope) {
 
 		$scope.controller_name = "StudyCtrl";
         
         $scope.init = function(){
+            console.debug($state.current.name + ' initializing...');
+            $rootScope.stateParams = $stateParams;
+            if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
+            if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
             $scope.state = {
                 correlationObject: $stateParams.correlationObject
             };
-            authService.checkAuthOrSendToLogin();
-            if (typeof analytics !== 'undefined')  {analytics.trackView("Study Controller");}
             if(!$scope.state.correlationObject) {
                 $ionicHistory.goBack();
             }
