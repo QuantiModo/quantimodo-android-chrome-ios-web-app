@@ -188,13 +188,12 @@ angular.module('starter')
 			}
 	    };
 
-	    $scope.deleteReminder = function(reminder){
-			localStorageService.deleteElementOfItemById('trackingReminders', reminder.trackingReminderId).then(function(){
-					reminderService.getTrackingReminders($stateParams.variableCategoryName).then(function(trackingReminders){
-						$scope.state.trackingReminders = trackingReminders;
-					});
-				});
+	    $scope.deleteReminder = function(reminder, $index){
+	    	if($index !== null){
+				$scope.state.trackingReminders = $scope.state.trackingReminders.splice($index, 1);
+			}
 
+			localStorageService.deleteElementOfItemById('trackingReminders', reminder.trackingReminderId);
 			reminderService.deleteReminder(reminder.trackingReminderId)
 				.then(function(){
 					reminderService.refreshTrackingReminderNotifications();
