@@ -770,7 +770,9 @@ angular.module('starter',
                 variableName : null,
                 dateTime : null,
                 value : null,
-                fromUrl : null
+                fromUrl : null,
+                helpText: "Favorites are variables that you might want to track on a frequent but irregular basis.  Examples: As-needed medications, cups of coffee, or glasses of water",
+                moreHelpText: "Tip: I recommend using reminders instead of favorites whenever possible because they allow you to record regular 0 values as well. Knowing when you didn't take a medication or eat something helps our analytics engine to figure out how these things might be affecting you."
             },
             views: {
                 'menuContent': {
@@ -847,9 +849,11 @@ angular.module('starter',
             url: "/as-needed-meds",
             params: {
                 title: "As Needed Meds",
-                addButtonText: "Add a Medication",
-                helpText: "Here you quickly record doses of medications taken as needed.",
-                variableCategoryName : 'Treatments'
+                addButtonText: "Add as-needed medication",
+                helpText: "Quickly record doses of medications taken as needed just by tapping.  Tap twice for two doses, etc.",
+                variableCategoryName : 'Treatments',
+                addButtonIcon: "ion-ios-medkit-outline",
+                favoriteAddTitle : "Add As-Needed Med"
             },
             views: {
                 'menuContent': {

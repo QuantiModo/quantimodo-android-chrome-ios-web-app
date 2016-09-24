@@ -26,13 +26,8 @@ angular.module('starter')
             if($state.current.name === 'app.favoriteSearch'){
                 $scope.addToFavoritesUsingVariableObject(variableObject);
             } else {
-                $state.go($stateParams.nextState,
-                    {
-                        variableObject : variableObject,
-                        fromState : $state.current.name,
-                        fromUrl: window.location.href,
-                        variableCategoryName: $scope.state.variableCategoryName
-                    });
+                $rootScope.stateParams.variableObject = variableObject;
+                $state.go($stateParams.nextState, $rootScope.stateParams);
             }
         };
 
@@ -225,13 +220,8 @@ angular.module('starter')
 
             console.debug($state.current.name + ": " + "$scope.addNewVariable: " + JSON.stringify(variableObject));
             if ($stateParams.nextState) {
-                $state.go($stateParams.nextState,
-                    {
-                        variableObject : variableObject,
-                        fromState : $state.current.name,
-                        fromUrl: window.location.href
-                    }
-                );
+                $rootScope.stateParams.variableObject = variableObject;
+                $state.go($stateParams.nextState, $rootScope.stateParams);
             }
         };
 

@@ -1,8 +1,9 @@
-<ion-view hide-nav-bar="hideNavigationMenu" view-title="{{state.title}}">
+<ion-view hide-nav-bar="hideNavigationMenu" ">
+    <ion-nav-title>{{state.title}}</ion-nav-title>
     <ion-content scroll="true" overflow-scroll="true">
 
         <div class="list card">
-        	<div class="item item-divider">{{state.trackingReminder.variableName}} favorite default settings</div>
+        	<div class="item item-divider">{{state.trackingReminder.variableName}} Settings</div>
             <div class="list">
                 <!--<label class="item item-input item-select" ng-if="state.showAddVariableCard && !state.trackingReminder.variableCategoryName">-->
                 <label class="item item-input item-select" ng-if="state.showAddVariableCard">
