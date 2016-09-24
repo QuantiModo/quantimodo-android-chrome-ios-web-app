@@ -3,7 +3,7 @@ angular.module('starter')
 	// Controls the settings page
 	.controller('SettingsCtrl', function( $state, $scope, $ionicPopover, $ionicPopup, localStorageService, $rootScope, 
 										  notificationService, QuantiModo, reminderService, qmLocationService, 
-										  ionicTimePicker, userService, timeService, utilsService, $stateParams) {
+										  ionicTimePicker, userService, timeService, utilsService, $stateParams, $ionicHistory) {
 		$scope.controller_name = "SettingsCtrl";
 		$scope.state = {};
 		$scope.showReminderFrequencySelector = config.appSettings.settingsPageOptions.showReminderFrequencySelector;
@@ -240,21 +240,6 @@ angular.module('starter')
 
         $scope.logout = function() {
 
-            var startLogout = function(){
-                console.log('Logging out...');
-                $scope.hideLoader();
-                $rootScope.user = null;
-				$scope.showDataClearPopup();
-            };
-
-            function refreshTrackingPageAndGoToWelcome() {
-                localStorageService.setItem('isWelcomed', false);
-				//hard reload
-				$state.go(config.appSettings.welcomeState, {}, {
-					reload: true
-				});
-            }
-
             $scope.showDataClearPopup = function(){
                 $ionicPopup.show({
                     title:'Clear local storage?',
@@ -275,10 +260,17 @@ angular.module('starter')
 
                 });
             };
+
+			console.log('Logging out...');
+			$scope.hideLoader();
+			$rootScope.user = null;
+			$scope.showDataClearPopup();
             
             var completelyResetAppState = function(){
                 localStorageService.clear();
                 notificationService.cancelAllNotifications();
+				$ionicHistory.clearHistory();
+				$ionicHistory.clearCache();
 				if (utilsService.getClientId() === 'oAuthDisabled') {
 					window.open(utilsService.getURL("api/v2/auth/logout"),'_blank');
 				}
@@ -292,10 +284,13 @@ angular.module('starter')
 				if (utilsService.getClientId() === 'oAuthDisabled') {
 					window.open(utilsService.getURL("api/v2/auth/logout"),'_blank');
 				}
-                refreshTrackingPageAndGoToWelcome();
+				localStorageService.setItem('isWelcomed', false);
+				//hard reload
+				$state.go(config.appSettings.welcomeState, {}, {
+					reload: true
+				});
             };
 
-            startLogout();
         };
 
         // when user is logging out
