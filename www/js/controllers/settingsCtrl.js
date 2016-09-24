@@ -279,6 +279,7 @@ angular.module('starter')
             var completelyResetAppState = function(){
                 localStorageService.clear();
                 notificationService.cancelAllNotifications();
+                window.open(utilsService.getURL("api/v2/auth/logout"),'_blank');
 				$state.go(config.appSettings.welcomeState, {}, {
 					reload: true
 				});
@@ -286,7 +287,7 @@ angular.module('starter')
             
             var afterLogoutDoNotDeleteMeasurements = function(){
                 clearTokensFromLocalStorage();
-                logoutOfApi();
+                window.open(utilsService.getURL("api/v2/auth/logout"),'_blank');
                 refreshTrackingPageAndGoToWelcome();
             };
 
@@ -300,12 +301,6 @@ angular.module('starter')
             localStorageService.deleteItem('accessToken');
             localStorageService.deleteItem('refreshToken');
             localStorageService.deleteItem('expiresAt');
-        }
-
-		// when user is logging out
-        function logoutOfApi() {
-			var logoutUrl = utilsService.getURL("api/v2/auth/logout");
-			window.open(logoutUrl,'_blank');
         }
 
 	    // Convert all data Array to a CSV object
@@ -389,7 +384,9 @@ angular.module('starter')
 		// when view is changed
 		$scope.$on('$ionicView.enter', function(e) { console.debug("Entering state " + $state.current.name);
 			$scope.hideLoader();
-			$scope.state.trackLocation = $rootScope.user.trackLocation;
+            if($rootScope.user){
+                $scope.state.trackLocation = $rootScope.user.trackLocation;
+            }
 		});
 
 	    // call constructor
