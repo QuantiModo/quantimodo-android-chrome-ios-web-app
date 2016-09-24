@@ -265,45 +265,24 @@ config.appSettings  = {
             icon : 'ion-archive'
         },
         {
-            title : 'Favorites',
-            href : '#/app/favorites',
-            icon : 'ion-ios-star'
-        },
-        {
-            title : 'Medications',
-            click : 'togglePrimaryOutcomeSubMenu',
-            showSubMenuVariable : 'showPrimaryOutcomeSubMenu',
-            isSubMenuParent : true,
-            collapsedIcon : 'ion-ios-medkit-outline',
-            expandedIcon : 'ion-chevron-down'
-        },
-        {
-            title : "Today's Meds",
-            isSubMenuChild : true,
-            showSubMenuVariable : 'showPrimaryOutcomeSubMenu',
-            href : '#/app/reminders-inbox-today/Treatments',
-            icon : 'ion-android-sunny'
-        },
-        {
-            title : 'Add Medications',
-            isSubMenuChild : true,
-            showSubMenuVariable : 'showPrimaryOutcomeSubMenu',
-            href : '#/app/reminderSearchCategory/Treatments',
-            icon : 'ion-ios-alarm-outline'
-        },
-        {
-            title : 'Manage Medications',
-            isSubMenuChild : true,
-            showSubMenuVariable : 'showPrimaryOutcomeSubMenu',
+            title : 'Scheduled Meds',
             href : '#/app/reminders-manage/Treatments',
             icon : 'ion-ios-medkit-outline'
         },
         {
-            title : 'History',
-            isSubMenuChild : true,
-            showSubMenuVariable : 'showPrimaryOutcomeSubMenu',
-            href : '#/app/history-all/Treatments',
-            icon : 'ion-ios-list-outline'
+            title : 'As-Needed',
+            href : '#/app/as-needed-meds',
+            icon : 'ion-ios-medkit-outline'
+        },
+        {
+            title : "Today's Meds",
+            href : '#/app/reminders-inbox-today/Treatments',
+            icon : 'ion-android-sunny'
+        },
+        {
+            title : 'Favorites',
+            href : '#/app/favorites',
+            icon : 'ion-ios-star'
         },
         {
             title : 'Manage Reminders',
