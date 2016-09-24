@@ -102,7 +102,7 @@ angular.module('starter')
 
             localStorageService.addToOrReplaceElementOfItemByIdOrMoveToFront('trackingReminders', $scope.state.trackingReminder)
                 .then(function(){
-                    reminderService.addNewReminder($scope.state.trackingReminder)
+                    reminderService.postTrackingReminders($scope.state.trackingReminder)
                         .then(function(){
 
                         }, function(err){

@@ -265,7 +265,7 @@ angular.module('starter')
                 trackingReminder.defaultValue = 3;
                 localStorageService.addToOrReplaceElementOfItemByIdOrMoveToFront('trackingReminders', trackingReminder)
                     .then(function() {
-                        reminderService.addNewReminder(trackingReminder)
+                        reminderService.postTrackingReminders(trackingReminder)
                             .then(function () {
                                 console.debug("Saved to favorites: " + JSON.stringify(trackingReminder));
                                 $state.go('app.favorites',

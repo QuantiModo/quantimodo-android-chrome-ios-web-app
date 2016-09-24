@@ -570,20 +570,18 @@ angular.module('starter')
             };
 
             // post tracking reminder
-            QuantiModo.postTrackingReminder = function(reminder, successHandler, errorHandler) { 
-                console.log(reminder);
-                if(!reminder.timeZoneOffset){
-                    var d = new Date();
-                    reminder.timeZoneOffset = d.getTimezoneOffset();
+            QuantiModo.postTrackingReminders = function(trackingRemindersArray, successHandler, errorHandler) {
+                if(trackingRemindersArray.constructor !== Array){
+                    trackingRemindersArray = [trackingRemindersArray];
                 }
+                var d = new Date();
+                for(var i = 0; i < trackingRemindersArray.length; i++){
+                    trackingRemindersArray[i].timeZoneOffset = d.getTimezoneOffset();
+                }
+
                 QuantiModo.post('api/v1/trackingReminders',
-                    [
-                        'variableId', 
-                        'defaultValue',
-                        'reminderFrequency',
-                        'timeZoneOffset'
-                    ],
-                    reminder,
+                    [],
+                    trackingRemindersArray,
                     successHandler,
                     errorHandler);
             };
