@@ -279,7 +279,9 @@ angular.module('starter')
             var completelyResetAppState = function(){
                 localStorageService.clear();
                 notificationService.cancelAllNotifications();
-                window.open(utilsService.getURL("api/v2/auth/logout"),'_blank');
+				if (utilsService.getClientId() === 'oAuthDisabled') {
+					window.open(utilsService.getURL("api/v2/auth/logout"),'_blank');
+				}
 				$state.go(config.appSettings.welcomeState, {}, {
 					reload: true
 				});
@@ -287,7 +289,9 @@ angular.module('starter')
             
             var afterLogoutDoNotDeleteMeasurements = function(){
                 clearTokensFromLocalStorage();
-                window.open(utilsService.getURL("api/v2/auth/logout"),'_blank');
+				if (utilsService.getClientId() === 'oAuthDisabled') {
+					window.open(utilsService.getURL("api/v2/auth/logout"),'_blank');
+				}
                 refreshTrackingPageAndGoToWelcome();
             };
 
