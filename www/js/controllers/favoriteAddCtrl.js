@@ -111,7 +111,12 @@ angular.module('starter')
                             $scope.loading = false;
                             utilsService.showAlert('Failed to add favorite! Please contact info@quantimo.do', 'assertive');
                         });
-                    $state.go('app.favorites');
+                    var backView = $ionicHistory.backView();
+                    if(backView.stateName.toLowerCase().indexOf('search') > -1){
+                        $ionicHistory.goBack(-2);
+                    } else {
+                        $ionicHistory.goBack();
+                    }
                 });
 	    };
 
