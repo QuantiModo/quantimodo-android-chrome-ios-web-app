@@ -240,6 +240,31 @@ angular.module('starter')
 
         $scope.logout = function() {
 
+			var completelyResetAppState = function(){
+				localStorageService.clear();
+				notificationService.cancelAllNotifications();
+				$ionicHistory.clearHistory();
+				$ionicHistory.clearCache();
+				if (utilsService.getClientId() === 'oAuthDisabled') {
+					window.open(utilsService.getURL("api/v2/auth/logout"),'_blank');
+				}
+				$state.go(config.appSettings.welcomeState, {}, {
+					reload: true
+				});
+			};
+
+			var afterLogoutDoNotDeleteMeasurements = function(){
+				clearTokensFromLocalStorage();
+				if (utilsService.getClientId() === 'oAuthDisabled') {
+					window.open(utilsService.getURL("api/v2/auth/logout"),'_blank');
+				}
+				localStorageService.setItem('isWelcomed', false);
+				//hard reload
+				$state.go(config.appSettings.welcomeState, {}, {
+					reload: true
+				});
+			};
+
             $scope.showDataClearPopup = function(){
                 $ionicPopup.show({
                     title:'Clear local storage?',
@@ -266,30 +291,7 @@ angular.module('starter')
 			$rootScope.user = null;
 			$scope.showDataClearPopup();
             
-            var completelyResetAppState = function(){
-                localStorageService.clear();
-                notificationService.cancelAllNotifications();
-				$ionicHistory.clearHistory();
-				$ionicHistory.clearCache();
-				if (utilsService.getClientId() === 'oAuthDisabled') {
-					window.open(utilsService.getURL("api/v2/auth/logout"),'_blank');
-				}
-				$state.go(config.appSettings.welcomeState, {}, {
-					reload: true
-				});
-            };
-            
-            var afterLogoutDoNotDeleteMeasurements = function(){
-                clearTokensFromLocalStorage();
-				if (utilsService.getClientId() === 'oAuthDisabled') {
-					window.open(utilsService.getURL("api/v2/auth/logout"),'_blank');
-				}
-				localStorageService.setItem('isWelcomed', false);
-				//hard reload
-				$state.go(config.appSettings.welcomeState, {}, {
-					reload: true
-				});
-            };
+
 
         };
 
