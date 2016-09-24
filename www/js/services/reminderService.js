@@ -5,16 +5,9 @@ angular.module('starter')
 
 		var reminderService = {};
 
-		reminderService.addNewReminder = function(trackingReminder){
+		reminderService.postTrackingReminders = function(trackingRemindersArray){
 			var deferred = $q.defer();
-			if(trackingReminder.reminderFrequency !== 0 && !$rootScope.user.combineNotifications){
-				if($rootScope.localNotificationsEnabled){
-					notificationService.scheduleNotificationByReminder(trackingReminder);
-				}
-			}
-
-			trackingReminder.timeZoneOffset = new Date().getTimezoneOffset();
-			QuantiModo.postTrackingReminder(trackingReminder, function(){
+			QuantiModo.postTrackingReminders(trackingRemindersArray, function(){
 				//update alarms and local notifications
 				console.debug("remindersService:  Finished postTrackingReminder so now refreshTrackingRemindersAndScheduleAlarms");
 				reminderService.refreshTrackingRemindersAndScheduleAlarms();
@@ -460,7 +453,8 @@ angular.module('starter')
 		reminderService.addRatingTimesToDailyReminders = function(reminders) {
 			var index;
 			for (index = 0; index < reminders.length; ++index) {
-				if (reminders[index].valueAndFrequencyTextDescription.indexOf('daily') > 0) {
+				if (reminders[index].valueAndFrequencyTextDescription.indexOf('daily') > 0 &&
+					reminders[index].valueAndFrequencyTextDescription.indexOf(' at ') === -1) {
 					reminders[index].valueAndFrequencyTextDescription =
 						reminders[index].valueAndFrequencyTextDescription + ' at ' +
 						reminderService.convertReminderTimeStringToMoment(reminders[index].reminderStartTime).format("h:mm A");
@@ -493,7 +487,7 @@ angular.module('starter')
 		reminderService.syncTrackingReminderSyncQueueToServer = function() {
 			localStorageService.getItem('trackingReminderSyncQueue', function (trackingReminders) {
 				if(trackingReminders){
-					reminderService.addNewReminder(JSON.parse(trackingReminders)).then(function () {
+					reminderService.postTrackingReminders(JSON.parse(trackingReminders)).then(function () {
 						console.log('reminder queue synced' + trackingReminders);
 						localStorageService.deleteItem('trackingReminderSyncQueue');
                         reminderService.refreshTrackingReminderNotifications();
