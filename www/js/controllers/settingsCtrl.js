@@ -3,7 +3,7 @@ angular.module('starter')
 	// Controls the settings page
 	.controller('SettingsCtrl', function( $state, $scope, $ionicPopover, $ionicPopup, localStorageService, $rootScope, 
 										  notificationService, QuantiModo, reminderService, qmLocationService, 
-										  ionicTimePicker, userService, timeService, utilsService, $stateParams) {
+										  ionicTimePicker, userService, timeService, utilsService, $stateParams, $ionicHistory) {
 		$scope.controller_name = "SettingsCtrl";
 		$scope.state = {};
 		$scope.showReminderFrequencySelector = config.appSettings.settingsPageOptions.showReminderFrequencySelector;
@@ -240,20 +240,30 @@ angular.module('starter')
 
         $scope.logout = function() {
 
-            var startLogout = function(){
-                console.log('Logging out...');
-                $scope.hideLoader();
-                $rootScope.user = null;
-				$scope.showDataClearPopup();
-            };
+			var completelyResetAppState = function(){
+				localStorageService.clear();
+				notificationService.cancelAllNotifications();
+				$ionicHistory.clearHistory();
+				$ionicHistory.clearCache();
+				if (utilsService.getClientId() === 'oAuthDisabled') {
+					window.open(utilsService.getURL("api/v2/auth/logout"),'_blank');
+				}
+				$state.go(config.appSettings.welcomeState, {}, {
+					reload: true
+				});
+			};
 
-            function refreshTrackingPageAndGoToWelcome() {
-                localStorageService.setItem('isWelcomed', false);
+			var afterLogoutDoNotDeleteMeasurements = function(){
+				clearTokensFromLocalStorage();
+				if (utilsService.getClientId() === 'oAuthDisabled') {
+					window.open(utilsService.getURL("api/v2/auth/logout"),'_blank');
+				}
+				localStorageService.setItem('isWelcomed', false);
 				//hard reload
 				$state.go(config.appSettings.welcomeState, {}, {
 					reload: true
 				});
-            }
+			};
 
             $scope.showDataClearPopup = function(){
                 $ionicPopup.show({
@@ -275,27 +285,14 @@ angular.module('starter')
 
                 });
             };
-            
-            var completelyResetAppState = function(){
-                localStorageService.clear();
-                notificationService.cancelAllNotifications();
-				if (utilsService.getClientId() === 'oAuthDisabled') {
-					window.open(utilsService.getURL("api/v2/auth/logout"),'_blank');
-				}
-				$state.go(config.appSettings.welcomeState, {}, {
-					reload: true
-				});
-            };
-            
-            var afterLogoutDoNotDeleteMeasurements = function(){
-                clearTokensFromLocalStorage();
-				if (utilsService.getClientId() === 'oAuthDisabled') {
-					window.open(utilsService.getURL("api/v2/auth/logout"),'_blank');
-				}
-                refreshTrackingPageAndGoToWelcome();
-            };
 
-            startLogout();
+			console.log('Logging out...');
+			$scope.hideLoader();
+			$rootScope.user = null;
+			$scope.showDataClearPopup();
+            
+
+
         };
 
         // when user is logging out

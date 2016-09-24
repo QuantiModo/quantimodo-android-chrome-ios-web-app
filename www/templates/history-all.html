@@ -2,8 +2,51 @@
      <ion-content>
          <ion-refresher on-refresh="getHistory()"></ion-refresher>
          <div class="list card" ng-show="state.noHistory">
-             <div class="item">
-                 <p style=" text-align: center; line-height: normal; font-size: 25px;">No measurements</p>
+             <div class="item" style="padding-bottom:10px;">
+                 <p style=" text-align: center; line-height: normal; font-size: 25px;">No Measurements</p>
+
+                 <div class="row">
+                     <div class="col" style="padding-top: 0px;">
+                         <i style="text-align: center; font-size: 60px;" class="icon positive ion-android-sad"></i>
+                     </div>
+                     <div class="col col-75">
+                         <h2 style="white-space: normal; text-align: justify; line-height: normal; ">
+                             Add a reminder and start tracking!
+                         </h2>
+                     </div>
+                 </div>
+                 <div class="row" >
+                     <div class="button-bar">
+                         <button class="button button-clear button-balanced" style="font-size: 14px;"
+                                 ng-click="goToState('app.reminderSearch')">
+                             <i class="ion-android-notifications"> &nbsp; Add a reminder &nbsp;</i>
+                         </button>
+                     </div>
+                 </div>
+                 <div class="row" >
+                     <div class="button-bar">
+                         <button class="button button-clear button-assertive" style="font-size: 14px;"
+                                 ng-click="goToState('app.favorites')">
+                             <i class="ion-star"> &nbsp; Go to favorites &nbsp;</i>
+                         </button>
+                     </div>
+                 </div>
+                 <div class="row" >
+                     <div class="button-bar">
+                         <button class="button button-clear button-royal" style="font-size: 14px;"
+                                 ng-click="goToState('app.measurementAddSearch')">
+                             <i class="ion-compose"> &nbsp; Record a measurement &nbsp;</i>
+                         </button>
+                     </div>
+                 </div>
+                 <div class="row" >
+                     <div class="button-bar">
+                         <button class="button button-clear button-calm" style="font-size: 14px;"
+                                 ng-click="goToState('app.import')">
+                             <i class="ion-ios-list-outline"> &nbsp; Import Data &nbsp;</i>
+                         </button>
+                     </div>
+                 </div>
              </div>
          </div>
          <div ng-show="state.showLocationToggle" class="card sign-in" >
@@ -15,7 +58,7 @@
              </ion-toggle>
           </div>
 
-         <div class="list card"  ng-hide="hideHistoryPageInstructionsCard">
+         <div class="list card"  ng-if="!hideHistoryPageInstructionsCard && !state.noHistory">
              <div class="item" >
                  <p style=" text-align: center; line-height: normal; font-size: 25px;">Past Data</p>
                  <div class="row">
@@ -23,7 +66,7 @@
                          <i style="font-size: 60px;" class="icon positive ion-calendar"></i>
                      </div>
                      <div class="col col-75">
-                         <h2 style="white-space: normal; text-align: left; line-height: normal; ">Edit your past data or add notes by tapping on any measurement below.</h2>
+                         <h2 style="white-space: normal; text-align: left; line-height: normal; ">Edit measurements or add notes by tapping on any measurement below.</h2>
                      </div>
                  </div>
                  <div class="row"  >
