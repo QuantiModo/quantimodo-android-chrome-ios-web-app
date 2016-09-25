@@ -117,7 +117,11 @@ config.appSettings  = {
                 },
                 finalP : {
                     visible : true,
+<<<<<<< Updated upstream
                     content : 'MoodiModo allows you track your <span class="positive">mood</span> and identify the hidden factors which may most influence it.',
+=======
+                    content : 'SuperCell allows you track your <span class="positive">mood</span> and identify the hidden factors which may most influence it.',
+>>>>>>> Stashed changes
                     classes : 'intro-paragraph',
                     buttonBarVisible : true   
                 }
@@ -192,6 +196,7 @@ config.appSettings  = {
             href : '#/app/reminders-inbox',
             icon : 'ion-archive'
         },
+<<<<<<< Updated upstream
         // {
         //     title : 'Favorites',
         //     href : '#/app/favorites',
@@ -205,6 +210,21 @@ config.appSettings  = {
         //     collapsedIcon : 'ion-happy-outline',
         //     expandedIcon : 'ion-chevron-down'
         // },
+=======
+        {
+            title : 'Favorites',
+            href : '#/app/favorites',
+            icon : 'ion-ios-star'
+        },
+        {
+            title : 'Overall Mood',
+            click : 'togglePrimaryOutcomeSubMenu',
+            showSubMenuVariable : 'showPrimaryOutcomeSubMenu',
+            isSubMenuParent : true,
+            collapsedIcon : 'ion-happy-outline',
+            expandedIcon : 'ion-chevron-down'
+        },
+>>>>>>> Stashed changes
         {
             title : 'Charts',
             isSubMenuChild : true,
@@ -212,6 +232,7 @@ config.appSettings  = {
             href : '#/app/track',
             icon : 'ion-arrow-graph-up-right'
         },
+<<<<<<< Updated upstream
         // {
         //     title : 'History',
         //     isSubMenuChild : true,
@@ -235,12 +256,38 @@ config.appSettings  = {
         // },
         {
             title : 'Manage Reminders-will be renamed',
+=======
+        {
+            title : 'History',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showPrimaryOutcomeSubMenu',
+            href : '#/app/history',
+            icon : 'ion-ios-list-outline'
+        },
+        {
+            title : 'Positive Predictors',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showPrimaryOutcomeSubMenu',
+            href : '#/app/predictors/positive',
+            icon : 'ion-happy-outline'
+        },
+        {
+            title : 'Negative Predictors',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showPrimaryOutcomeSubMenu',
+            href : '#/app/predictors/negative',
+            icon : 'ion-sad-outline'
+        },
+        {
+            title : 'Manage Reminders',
+>>>>>>> Stashed changes
             click : 'toggleReminderSubMenu',
             showSubMenuVariable : 'showReminderSubMenu',
             isSubMenuParent : true,
             collapsedIcon : 'ion-android-notifications-none',
             expandedIcon : 'ion-chevron-down'
         },
+<<<<<<< Updated upstream
         // {
         //     title : 'All Reminders',
         //     isSubMenuChild : true,
@@ -276,6 +323,43 @@ config.appSettings  = {
         //     href : '#/app/reminders-manage/Symptoms',
         //     icon : 'ion-sad-outline'
         // },
+=======
+        {
+            title : 'All Reminders',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showReminderSubMenu',
+            href : '#/app/reminders-manage/Anything',
+            icon : 'ion-android-globe'
+        },
+        {
+            title : 'Emotions',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showReminderSubMenu',
+            href : '#/app/reminders-manage/Emotions',
+            icon : 'ion-happy-outline'
+        },
+        {
+            title : 'Foods',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showReminderSubMenu',
+            href : '#/app/reminders-manage/Foods',
+            icon : 'ion-ios-nutrition-outline'
+        },
+        {
+            title : 'Physical Activity',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showReminderSubMenu',
+            href : '#/app/reminders-manage/Physical Activity',
+            icon : 'ion-ios-body-outline'
+        },
+        {
+            title : 'Symptoms',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showReminderSubMenu',
+            href : '#/app/reminders-manage/Symptoms',
+            icon : 'ion-sad-outline'
+        },
+>>>>>>> Stashed changes
         {
             title : 'Treatments',
             isSubMenuChild : true,
@@ -298,6 +382,7 @@ config.appSettings  = {
             collapsedIcon : 'ion-compose',
             expandedIcon : 'ion-chevron-down'
         },
+<<<<<<< Updated upstream
         // {
         //     title : 'Track Anything',
         //     isSubMenuChild : true,
@@ -340,6 +425,50 @@ config.appSettings  = {
         //     href : '#/app/measurement-add-search-category/Physical Activity',
         //     icon : 'ion-ios-body-outline'
         // },
+=======
+        {
+            title : 'Track Anything',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showTrackingSubMenu',
+            href : '#/app/measurement-add-search',
+            icon : 'ion-android-globe'
+        },
+        {
+            title : 'Record a Meal',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showTrackingSubMenu',
+            href : '#/app/measurement-add-search-category/Foods',
+            icon : 'ion-ios-nutrition-outline'
+        },
+        {
+            title : 'Rate an Emotion',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showTrackingSubMenu',
+            href : '#/app/measurement-add-search-category/Emotions',
+            icon : 'ion-happy-outline'
+        },
+        {
+            title : 'Rate a Symptom',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showTrackingSubMenu',
+            href : '#/app/measurement-add-search-category/Symptoms',
+            icon : 'ion-ios-pulse'
+        },
+        {
+            title : 'Record a Treatment',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showTrackingSubMenu',
+            href : '#/app/measurement-add-search-category/Treatments',
+            icon : 'ion-ios-medkit-outline'
+        },
+        {
+            title : 'Record Activity',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showTrackingSubMenu',
+            href : '#/app/measurement-add-search-category/Physical Activity',
+            icon : 'ion-ios-body-outline'
+        },
+>>>>>>> Stashed changes
         {
             title : 'Record Vital Sign',
             isSubMenuChild : true,
@@ -362,6 +491,7 @@ config.appSettings  = {
             href : '#/app/history-all/Anything',
             icon : 'ion-android-globe'
         },
+<<<<<<< Updated upstream
         // {
         //     title : 'Emotions',
         //     isSubMenuChild : true,
@@ -376,6 +506,22 @@ config.appSettings  = {
         //     href : '#/app/history-all/Foods',
         //     icon : 'ion-ios-nutrition-outline'
         // },
+=======
+        {
+            title : 'Emotions',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showHistorySubMenu',
+            href : '#/app/history-all/Emotions',
+            icon : 'ion-happy-outline'
+        },
+        {
+            title : 'Foods',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showHistorySubMenu',
+            href : '#/app/history-all/Foods',
+            icon : 'ion-ios-nutrition-outline'
+        },
+>>>>>>> Stashed changes
         {
             title : 'Symptoms',
             isSubMenuChild : true,
@@ -404,6 +550,7 @@ config.appSettings  = {
             href : '#/app/history-all/Vital Signs',
             icon : 'ion-ios-pulse'
         },
+<<<<<<< Updated upstream
         // {
         //     title : 'Locations',
         //     isSubMenuChild : true,
@@ -411,6 +558,15 @@ config.appSettings  = {
         //     href : '#/app/history-all/Location',
         //     icon : 'ion-ios-location-outline'
         // },
+=======
+        {
+            title : 'Locations',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showHistorySubMenu',
+            href : '#/app/history-all/Location',
+            icon : 'ion-ios-location-outline'
+        },
+>>>>>>> Stashed changes
         {
             title : 'Import Data',
             href : '#/app/import',
@@ -421,6 +577,7 @@ config.appSettings  = {
             href : '#/app/search-variables',
             icon : 'ion-arrow-graph-up-right'
         },
+<<<<<<< Updated upstream
         // {
         //     title : 'Strongest Predictors',
         //     click : 'togglePredictorSearchSubMenu',
@@ -457,6 +614,44 @@ config.appSettings  = {
         //     href : '#/app/predictors/negative',
         //     icon : 'ion-sad-outline'
         // },
+=======
+        {
+            title : 'Strongest Predictors',
+            click : 'togglePredictorSearchSubMenu',
+            showSubMenuVariable : 'showPredictorSearchSubMenu',
+            isSubMenuParent : true,
+            collapsedIcon : 'ion-ios-analytics',
+            expandedIcon : 'ion-chevron-down'
+        },
+        {
+            title : 'For Everyone',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showPredictorSearchSubMenu',
+            href : '#/app/search-common-relationships',
+            icon : 'ion-ios-people'
+        },
+        {
+            title : 'For You',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showPredictorSearchSubMenu',
+            href : '#/app/search-user-relationships',
+            icon : 'ion-person'
+        },
+        {
+            title : 'Positive Mood',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showPredictorSearchSubMenu',
+            href : '#/app/predictors/positive',
+            icon : 'ion-happy-outline'
+        },
+        {
+            title : 'Negative Mood',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showPredictorSearchSubMenu',
+            href : '#/app/predictors/negative',
+            icon : 'ion-sad-outline'
+        },
+>>>>>>> Stashed changes
         {
             title : 'Settings',
             href : '#/app/settings',

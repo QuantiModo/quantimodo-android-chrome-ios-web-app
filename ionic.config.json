@@ -1,12 +1,4 @@
 {
-  "name": "MoodiModo",
-  "app_id": "470c1f1b",
-  "gulpStartupTasks": [
-    "sass",
-    "watch"
-  ],
-  "watchPatterns": [
-    "www/**/*",
-    "!www/lib/**/*"
-  ]
+  "name": "SuperCell",
+  "app_id": "470c1f1b"
 }
