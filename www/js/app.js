@@ -32,7 +32,7 @@ angular.module('starter',
             };
         }
 
-         if (ionic.Platform.isAndroid() || ionic.Platform.isIPad() || ionic.Platform.isIOS()) {
+         if (typeof PushNotification !== "undefined") {
              console.debug("Going to try to register push");
              var push = PushNotification.init({
                  android: {
