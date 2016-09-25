@@ -719,26 +719,19 @@ angular.module('starter')
 
             QuantiModo.getOrRefreshAccessTokenOrLogin = function (deferred) {
 
-                console.log('access token resolving flow');
-
                 var now = new Date().getTime();
                 var expiresAt = localStorageService.getItemSync('expiresAt');
                 var refreshToken = localStorageService.getItemSync('refreshToken');
                 var accessToken = localStorageService.getItemSync('accessToken');
 
-                console.log('Values from local storage:', {
+                console.log('QuantiModo.getOrRefreshAccessTokenOrLogin: Values from local storage:', JSON.stringify({
                     expiresAt: expiresAt,
                     refreshToken: refreshToken,
                     accessToken: accessToken
-                });
+                }));
 
-                // get expired time
                 if (now < expiresAt) {
-
-                    console.log('Current token should not be expired');
-                    // valid token
-                    console.log('Resolving token using value from local storage');
-
+                    console.log('QuantiModo.getOrRefreshAccessTokenOrLogin: Current access token should not be expired. Resolving token using one from local storage');
                     deferred.resolve({
                         accessToken: accessToken
                     });
@@ -746,7 +739,7 @@ angular.module('starter')
                 } else if (refreshToken) {
                     QuantiModo.refreshAccessToken(refreshToken, deferred);
                 } else {
-                    console.warn('Refresh token is undefined. Not enough data for oauth flow. rejecting token promise. ' +
+                    console.warn('QuantiModo.getOrRefreshAccessTokenOrLogin: Refresh token is undefined. Not enough data for oauth flow. rejecting token promise. ' +
                         'Clearing accessToken from local storage if it exists and sending to login page...');
                     $rootScope.sendToLogin();
                     deferred.reject();
@@ -756,12 +749,8 @@ angular.module('starter')
             QuantiModo.refreshAccessToken = function(refreshToken, deferred) {
                 console.log('Refresh token will be used to fetch access token from ' +
                     utilsService.getURL("api/oauth2/token") + ' with client id ' + utilsService.getClientId());
-
                 var url = utilsService.getURL("api/oauth2/token");
-
-                //expire token, refresh
                 $http.post(url, {
-
                     client_id: utilsService.getClientId(),
                     client_secret: utilsService.getClientSecret(),
                     refresh_token: refreshToken,
@@ -773,24 +762,20 @@ angular.module('starter')
                         deferred.reject('refresh failed');
                     } else {
                         var accessTokenRefreshed = QuantiModo.saveAccessTokenInLocalStorage(data);
-
-                        console.log('access token successfully updated from api server', data);
-                        console.log('resolving toke using response value');
-                        // respond
+                        console.log('QuantiModo.refreshAccessToken: access token successfully updated from api server: ' + JSON.stringify(data));
                         deferred.resolve({
                             accessToken: accessTokenRefreshed
                         });
                     }
 
                 }).error(function (response) {
-                    console.log("failed to refresh token from api server", response);
-                    // error refreshing
+                    console.log("QuantiModo.refreshAccessToken: failed to refresh token from api server" + JSON.stringify(response));
                     deferred.reject(response);
                 });
 
             };
 
-            // extract values from token response and saves in localstorage
+            // extract values from token response and saves in local storage
             QuantiModo.saveAccessTokenInLocalStorage = function (accessResponse) {
                 if(accessResponse){
                     var accessToken = accessResponse.accessToken || accessResponse.access_token;
