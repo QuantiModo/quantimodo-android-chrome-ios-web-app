@@ -187,7 +187,7 @@ angular.module('starter')
 */
 
 	    // when a search result is selected
-	    $scope.onVariableSelect = function(selectedVariable){
+	    var setupByVariableObject = function(selectedVariable){
             console.log("remindersAdd.onVariableSelect: " + JSON.stringify(selectedVariable));
 
 	    	if(!selectedVariable.variableCategoryName){
@@ -286,8 +286,7 @@ angular.module('starter')
             if(!$scope.state.trackingReminder.abbreviatedUnitName) {
                 utilsService.showAlert('Please select a unit');
                 return false;
-            }
-            else {
+            } else {
                 $scope.state.trackingReminder.unitId =
                     $rootScope.unitsIndexedByAbbreviatedName[$scope.state.trackingReminder.abbreviatedUnitName].id;
             }
@@ -358,6 +357,11 @@ angular.module('starter')
 	    // when the reminder is saved/edited
 	    $scope.save = function(){
 
+	        if($stateParams.favorite){
+                $scope.state.trackingReminder.reminderFrequency = 0;
+                $scope.state.trackingReminder.valueAndFrequencyTextDescription = "As Needed";
+            }
+
             if($scope.state.trackingReminder.abbreviatedUnitName === '/5' && !$scope.state.trackingReminder.defaultValue){
                 $scope.state.trackingReminder.defaultValue = 3;
             }
@@ -404,18 +408,11 @@ angular.module('starter')
                             $scope.loading = false;
                         });
 
-
-
-                    if($stateParams.fromUrl && ($stateParams.fromUrl.indexOf('manage') > -1 )){
-                        window.location = $stateParams.fromUrl;
+                    var backView = $ionicHistory.backView();
+                    if(backView.stateName.toLowerCase().indexOf('search') > -1){
+                        $ionicHistory.goBack(-2);
                     } else {
-                    	var variableCategoryName = $stateParams.variableCategoryName;
-                    	if (!$stateParams.variableCategoryName) {
-                    		variableCategoryName = 'Anything';
-                    	}
-                        $state.go('app.remindersManage',{
-                            variableCategoryName: variableCategoryName
-                        });
+                        $ionicHistory.goBack();
                     }
                 }
 
@@ -431,7 +428,6 @@ angular.module('starter')
             $scope.state.trackingReminder.firstDailyReminderTime = null;
             $scope.state.trackingReminder.secondDailyReminderTime = null;
             $scope.state.trackingReminder.thirdDailyReminderTime = null;
-	    	$scope.state.title = "Edit " +  trackingReminder.variableName + " Reminder";
             $scope.state.firstReminderStartTimeLocal = timeService.getLocalTimeStringFromUtcString(trackingReminder.reminderStartTime);
             $scope.state.firstReminderStartTimeEpochTime = timeService.getEpochTimeFromLocalString($scope.state.firstReminderStartTimeLocal);
             //$scope.state.reminderEndTimeStringLocal = trackingReminder.reminderEndTime;
@@ -486,7 +482,6 @@ angular.module('starter')
             if (!$scope.state.trackingReminder.abbreviatedUnitName) {
             	$scope.state.trackingReminder.abbreviatedUnitName = $scope.state.variableCategoryObject.defaultAbbreviatedUnitName;
             }
-            $scope.state.title = "Add " + $filter('wordAliases')(pluralize(variableCategoryName, 1)) + " Reminder";
             $scope.state.measurementSynonymSingularLowercase = $scope.state.variableCategoryObject.measurementSynonymSingularLowercase;
             if($scope.state.variableCategoryObject.defaultValueLabel){
                 $scope.state.defaultValueLabel = $scope.state.variableCategoryObject.defaultValueLabel;
@@ -494,8 +489,7 @@ angular.module('starter')
             if($scope.state.variableCategoryObject.defaultValuePlaceholderText){
                 $scope.state.defaultValuePlaceholderText = $scope.state.variableCategoryObject.defaultValuePlaceholderText;
             }
-            $scope.state.variableSearchPlaceholderText = 'Search for a ' + $filter('wordAliases')(pluralize(variableCategoryName, 1)) + '...';
-            
+
             if(variableCategoryName === 'Treatments'){
                 $scope.state.showInstructionsField = true;
             }
@@ -508,7 +502,7 @@ angular.module('starter')
                         $scope.variableObject = variables[0];
                         console.log('setupReminderEditingFromVariableId got this variable object ' +
                             JSON.stringify($scope.variableObject));
-                        $scope.onVariableSelect($scope.variableObject);
+                        setupByVariableObject($scope.variableObject);
                         $ionicLoading.hide();
                         $scope.loading = false;
                     }, function () {
@@ -525,13 +519,7 @@ angular.module('starter')
                 .then(function (reminders) {
                     if (reminders.length !== 1) {
                         utilsService.showAlert("Reminder id " + reminderIdUrlParameter + " not found!", 'assertive');
-                        if($stateParams.fromUrl){
-                            window.location = $stateParams.fromUrl;
-                        } else if  ($stateParams.fromState) {
-                            $state.go($stateParams.fromState);
-                        } else {
-                            $state.go('app.remindersManage');
-                        }
+                        $ionicHistory.goBack();
                     }
                     $stateParams.reminder = reminders[0];
                     setupEditReminder($stateParams.reminder);
@@ -544,18 +532,44 @@ angular.module('starter')
                 });
         }
 
+        var setTitle = function(){
+            if($stateParams.favorite){
+                $scope.state.selectedFrequency = 'Never';
+                if($stateParams.reminder) {
+                    if($stateParams.reminder.variableCategoryName === 'Treatments' ||
+                        $stateParams.variableCategoryName === 'Treatments'){
+                        $scope.state.title = "Modify As-Needed Med";
+                    } else {
+                        $scope.state.title = "Edit Favorite";
+                    }
+                } else {
+                    if($stateParams.variableCategoryName === 'Treatments'){
+                        $scope.state.title = "Add As-Needed Med";
+                    } else {
+                        $scope.state.title = "Add Favorite";
+                    }
+                }
+            } else {
+                if($stateParams.reminder) {
+                    $scope.state.title = "Edit Reminder Settings";
+                } else {
+                    $scope.state.title = "Add Reminder";
+                }
+            }
+        };
+
         $scope.init = function(){
             console.debug($state.current.name + ' initializing...');
             $rootScope.stateParams = $stateParams;
             if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
             if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
-
+            setTitle();
             unitService.getUnits().then(function () {
                 var reminderIdUrlParameter = utilsService.getUrlParameter(window.location.href, 'reminderId');
                 var variableIdUrlParameter = utilsService.getUrlParameter(window.location.href, 'variableId');
                 if ($stateParams.variableObject) {
                     $scope.variableObject = $stateParams.variableObject;
-                    $scope.onVariableSelect($stateParams.variableObject);
+                    setupByVariableObject($stateParams.variableObject);
                 } else if($stateParams.variableCategoryName){
                     $scope.state.trackingReminder.variableCategoryName = $stateParams.variableCategoryName;
                     setupVariableCategory($scope.state.trackingReminder.variableCategoryName);
@@ -579,14 +593,7 @@ angular.module('starter')
         $scope.deleteReminder = function(){
             localStorageService.deleteElementOfItemById('trackingReminders', $scope.state.trackingReminder.id)
                 .then(function(){
-                    if($stateParams.fromUrl){
-                        window.location = $stateParams.fromUrl;
-                    } else if ($stateParams.fromState){
-                        $state.go($stateParams.fromState);
-                    } else {
-                        $rootScope.hideNavigationMenu = false;
-                        $state.go('app.remindersManage');
-                    }
+                    $ionicHistory.goBack();
                 });
 
             reminderService.deleteReminder($scope.state.trackingReminder.id)

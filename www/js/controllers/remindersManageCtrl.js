@@ -198,7 +198,7 @@ angular.module('starter')
 
 	    $scope.deleteReminder = function(reminder, $index){
 	    	if($index !== null){
-				$scope.state.trackingReminders = $scope.state.trackingReminders.splice($index, 1);
+				$scope.state.trackingReminders.splice($index, 1);
 			}
 
 			localStorageService.deleteElementOfItemById('trackingReminders', reminder.trackingReminderId);
@@ -224,11 +224,12 @@ angular.module('starter')
 
 		// Triggered on a button click, or some other target
 		$scope.showActionSheet = function(trackingReminder, $index) {
+			
+			var variableObject = {
+				id : trackingReminder.variableId,
+				name : trackingReminder.variableName
+			};
 
-			$scope.state.trackingReminder = trackingReminder;
-			$scope.state.variableObject = trackingReminder;
-			$scope.state.variableObject.id = trackingReminder.variableId;
-			$scope.state.variableObject.name = trackingReminder.variableName;
 			// Show the action sheet
 			var hideSheet = $ionicActionSheet.show({
 				buttons: [
@@ -249,30 +250,30 @@ angular.module('starter')
 				buttonClicked: function(index) {
 					console.log('BUTTON CLICKED', index);
 					if(index === 0){
-						$scope.edit($scope.state.trackingReminder);
+						$scope.edit(trackingReminder);
 					}
 					if(index === 1){
-						$scope.addToFavoritesUsingVariableObject($scope.state.variableObject);
+						$scope.addToFavoritesUsingVariableObject(variableObject);
 					}
 					if(index === 2){
-						$scope.goToAddMeasurementForVariableObject($scope.state.variableObject);
+						$scope.goToAddMeasurementForVariableObject(variableObject);
 					}
 					if(index === 3){
-						$scope.goToChartsPageForVariableObject($scope.state.variableObject);
+						$scope.goToChartsPageForVariableObject(variableObject);
 					}
 					if(index === 4){
-						$scope.goToHistoryForVariableObject($scope.state.variableObject);
+						$scope.goToHistoryForVariableObject(variableObject);
 					}
 					if (index === 5) {
 						$state.go('app.variableSettings',
-							{variableName: $scope.state.trackingReminder.variableName});
+							{variableName: trackingReminder.variableName});
 					}
 					if(index === 6){
 						$state.go('app.predictors',
 							{
-								variableObject: $scope.state.variableObject,
+								variableObject: variableObject,
 								requestParams: {
-									effect:  $scope.state.variableObject.name,
+									effect:  variableObject.name,
 									correlationCoefficient: "(gt)0"
 								}
 							});
@@ -280,9 +281,9 @@ angular.module('starter')
 					if(index === 7){
 						$state.go('app.predictors',
 							{
-								variableObject: $scope.state.variableObject,
+								variableObject: variableObject,
 								requestParams: {
-									effect:  $scope.state.variableObject.name,
+									effect:  variableObject.name,
 									correlationCoefficient: "(lt)0"
 								}
 							});
@@ -291,7 +292,7 @@ angular.module('starter')
 					return true;
 				},
 				destructiveButtonClicked: function() {
-					$scope.deleteReminder($scope.state.trackingReminder);
+					$scope.deleteReminder(trackingReminder);
 					return true;
 				}
 			});

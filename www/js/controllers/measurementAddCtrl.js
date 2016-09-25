@@ -220,7 +220,12 @@ angular.module('starter')
 
             // Measurement only - post measurement. This is for adding or editing
             measurementService.postTrackingMeasurement(measurementInfo, true);
-            $state.go(config.appSettings.defaultState);
+            var backView = $ionicHistory.backView();
+            if(backView.stateName.toLowerCase().indexOf('search') > -1){
+                $ionicHistory.goBack(-2);
+            } else {
+                $ionicHistory.goBack();
+            }
         };
 
         $scope.variableCategorySelectorChange = function(variableCategoryName) {
