@@ -215,7 +215,7 @@ angular.module('starter')
                 }, function(err){
                     $ionicLoading.hide();
                     $scope.loading = false;
-                    console.error('Failed to Delete favorite, Try again!', 'assertive');
+                    console.error('Failed to delete favorite!  Error is: ' + err);
                 });
         };
 
