@@ -764,6 +764,7 @@ angular.module('starter',
         })
         .state('app.favorites', {
             url: "/favorites",
+            cache: false,
             params: {
                 reminderFrequency: 0,
                 unit: null,
@@ -853,7 +854,6 @@ angular.module('starter',
                 helpText: "Quickly record doses of medications taken as needed just by tapping.  Tap twice for two doses, etc.",
                 variableCategoryName : 'Treatments',
                 addButtonIcon: "ion-ios-medkit-outline",
-                favoriteAddTitle : "Add As-Needed Med"
             },
             views: {
                 'menuContent': {
@@ -888,24 +888,6 @@ angular.module('starter',
                 }
             }
         })
-        .state('app.reminderAddCategory', {
-            url: "/reminder_add/:variableCategoryName",
-            cache: false,
-            params: {
-                variableCategoryName : null,
-                reminder : null,
-                fromState : null,
-                fromUrl : null,
-                measurement : null,
-                variableObject : null
-            },
-            views: {
-                'menuContent': {
-                    templateUrl: "templates/reminder-add.html",
-                    controller: 'RemindersAddCtrl'
-                }
-            }
-        })
         .state('app.reminderAdd', {
             url: "/reminder_add",
             cache: false,
@@ -915,7 +897,8 @@ angular.module('starter',
                 fromState : null,
                 fromUrl : null,
                 measurement : null,
-                variableObject : null
+                variableObject : null,
+                favorite: false
             },
             views: {
                 'menuContent': {
@@ -928,17 +911,19 @@ angular.module('starter',
             url: "/favorite-add",
             cache: false,
             params: {
+                reminder: null,
                 variableCategoryName : null,
                 reminderNotification: null,
                 fromState : null,
                 fromUrl : null,
                 measurement : null,
-                variableObject : null
+                variableObject : null,
+                favorite: true
             },
             views: {
                 'menuContent': {
-                    templateUrl: "templates/favorite-add.html",
-                    controller: 'FavoriteAddCtrl'
+                    templateUrl: "templates/reminder-add.html",
+                    controller: 'RemindersAddCtrl'
                 }
             }
         });
