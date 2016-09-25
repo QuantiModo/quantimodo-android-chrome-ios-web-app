@@ -404,18 +404,11 @@ angular.module('starter')
                             $scope.loading = false;
                         });
 
-
-
-                    if($stateParams.fromUrl && ($stateParams.fromUrl.indexOf('manage') > -1 )){
-                        window.location = $stateParams.fromUrl;
+                    var backView = $ionicHistory.backView();
+                    if(backView.stateName.toLowerCase().indexOf('search') > -1){
+                        $ionicHistory.goBack(-2);
                     } else {
-                    	var variableCategoryName = $stateParams.variableCategoryName;
-                    	if (!$stateParams.variableCategoryName) {
-                    		variableCategoryName = 'Anything';
-                    	}
-                        $state.go('app.remindersManage',{
-                            variableCategoryName: variableCategoryName
-                        });
+                        $ionicHistory.goBack();
                     }
                 }
 

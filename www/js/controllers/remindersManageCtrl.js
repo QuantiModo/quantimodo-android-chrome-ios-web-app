@@ -198,7 +198,7 @@ angular.module('starter')
 
 	    $scope.deleteReminder = function(reminder, $index){
 	    	if($index !== null){
-				$scope.state.trackingReminders = $scope.state.trackingReminders.splice($index, 1);
+				$scope.state.trackingReminders.splice($index, 1);
 			}
 
 			localStorageService.deleteElementOfItemById('trackingReminders', reminder.trackingReminderId);
