@@ -536,13 +536,18 @@ angular.module('starter')
             if($stateParams.favorite){
                 $scope.state.selectedFrequency = 'Never';
                 if($stateParams.reminder) {
-                    if($stateParams.reminder.variableCategoryName === 'Treatments'){
+                    if($stateParams.reminder.variableCategoryName === 'Treatments' ||
+                        $stateParams.variableCategoryName === 'Treatments'){
                         $scope.state.title = "Modify As-Needed Med";
                     } else {
                         $scope.state.title = "Edit Favorite";
                     }
                 } else {
-                    $scope.state.title = "Add Favorite";
+                    if($stateParams.variableCategoryName === 'Treatments'){
+                        $scope.state.title = "Add As-Needed Med";
+                    } else {
+                        $scope.state.title = "Add Favorite";
+                    }
                 }
             } else {
                 if($stateParams.reminder) {
