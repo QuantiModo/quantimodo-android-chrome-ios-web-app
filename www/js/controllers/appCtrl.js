@@ -542,7 +542,7 @@ angular.module('starter')
                 successHandler,
                 function(err){
                     //Bugsnag.notify(err, JSON.stringify(err), {}, "error");
-                    console.debug(err);
+                    console.error("Could not get user!  Error message: " + err.message);
                 }
             );
         };
