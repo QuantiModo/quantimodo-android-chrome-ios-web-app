@@ -4,7 +4,7 @@ angular.module('starter')
 	.controller('RemindersAddCtrl', function($scope, $state, $stateParams, $ionicLoading, $filter, $timeout, $rootScope,
                                              $ionicActionSheet, $ionicHistory, authService, localStorageService,
                                              reminderService, utilsService, ionicTimePicker, variableCategoryService,
-                                             variableService, unitService, timeService) {
+                                             variableService, unitService, timeService, bugsnagService) {
 
 	    $scope.controller_name = "RemindersAddCtrl";
 		console.log('Loading ' + $scope.controller_name);
@@ -15,7 +15,6 @@ angular.module('starter')
             showUnits: false,
             selectedFrequency : 'Daily',
             selectedReminder : false,
-            firstReminderStartTimeEpochTime : timeService.getEpochTimeFromLocalString($rootScope.user.earliestReminderTime),
             //reminderEndTimeEpochTime : null,
             firstReminderStartTimeLocal : $rootScope.user.earliestReminderTime,
             //reminderEndTimeStringLocal : null,
@@ -25,6 +24,12 @@ angular.module('starter')
             variableSearchPlaceholderText : 'Search for a variable...',
             showInstructionsField : false
         };
+
+        if($rootScope.user) {
+            $scope.state.firstReminderStartTimeEpochTime = timeService.getEpochTimeFromLocalString($rootScope.user.earliestReminderTime);
+        } else {
+            bugsnagService.reportError($state.current.name + ': $rootScope.user is not defined!');
+        }
         
         $scope.state.trackingReminder = {
             variableId : null,
