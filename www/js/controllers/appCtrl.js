@@ -638,6 +638,13 @@ angular.module('starter')
         };
 
         $scope.sendWithEmailComposer = function(subjectLine, emailBody){
+            if(!cordova || !cordova.plugins.email){
+                bugsnagService.reportError('Trying to send with cordova.plugins.email even though it is not installed. ' +
+                    ' Using $scope.sendWithMailTo instead.');
+                $scope.sendWithMailTo(subjectLine, emailBody);
+                return;
+            }
+
             document.addEventListener('deviceready', function () {
                 console.debug('deviceready');
                 cordova.plugins.email.isAvailable(
