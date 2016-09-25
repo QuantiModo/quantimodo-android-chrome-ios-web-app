@@ -3,7 +3,7 @@
 		<!--<ion-content scroll="true" overflow-scroll="true">-->
 		<ion-refresher on-refresh="refreshTrackingReminderNotifications()"></ion-refresher>
 
-		<div class="list card"  ng-hide="hideAddTreatmentRemindersCard">
+		<div class="list card"  ng-if="stateParams.today === false && !hideAddTreatmentRemindersCard">
 			<div class="item" style="padding-bottom:10px;">
 				<p style=" text-align: center; line-height: normal; font-size: 25px;">Treatment Tracking</p>
 
@@ -37,7 +37,7 @@
 			</div>
 		</div>
 
-		<div class="list card"  ng-hide="hideAddSymptomRemindersCard">
+		<div class="list card"  ng-if="stateParams.today === false && !hideAddSymptomRemindersCard">
 			<div class="item" style="padding-bottom:10px;">
 				<p style=" text-align: center; line-height: normal; font-size: 25px;">Symptom Ratings</p>
 
@@ -71,7 +71,7 @@
 			</div>
 		</div>
 
-		<div class="list card"  ng-hide="hideAddEmotionRemindersCard">
+		<div class="list card"  ng-if="stateParams.today === false && !hideAddEmotionRemindersCard">
 			<div class="item" style="padding-bottom:10px;">
 				<p style=" text-align: center; line-height: normal; font-size: 25px;">Varying Emotions?</p>
 				<div class="row">
@@ -105,7 +105,7 @@
 			</div>
 		</div>
 
-		<div class="list card"  ng-hide="hideAddFoodRemindersCard">
+		<div class="list card"  ng-if="stateParams.today === false && !hideAddFoodRemindersCard">
 			<div class="item" style="padding-bottom:10px;">
 				<p style=" text-align: center; line-height: normal; font-size: 25px;">Track Diet</p>
 				<div class="row">
@@ -197,7 +197,7 @@
 			</div>
 		</div>-->
 
-        <div class="list card"  ng-hide="hideRecordMeasurementInfoCard">
+        <div class="list card"  ng-if="stateParams.today === false && !hideRecordMeasurementInfoCard">
             <div class="item" style="padding-bottom:10px;">
                 <p style=" text-align: center; line-height: normal; font-size: 25px;">Record Measurements</p>
                 <div class="row">
@@ -229,7 +229,7 @@
             </div>
         </div>
 
-		<div class="list card"  ng-if="!hideLocationTrackingInfoCard && !trackLocation">
+		<div class="list card"  ng-if="stateParams.today === false && !hideLocationTrackingInfoCard && !trackLocation">
 			<div class="item" style="padding-bottom:10px;">
 				<p style=" text-align: center; line-height: normal; font-size: 25px;">Location Tracking</p>
 				<div class="row">
@@ -263,7 +263,7 @@
 			</div>
 		</div>
 
-		<div class="list card"  ng-if="isMobile && !hideChromeExtensionInfoCard">
+		<div class="list card"  ng-if="!stateParams.today && isMobile && !hideChromeExtensionInfoCard">
 			<div class="item" style="padding-bottom:10px;">
 				<p style=" text-align: center; line-height: normal; font-size: 25px;">Track on the Computer</p>
 				<div class="row">
@@ -304,7 +304,7 @@
 		</div>
 
 
-		<div class="list card"  ng-hide="hideImportDataCard">
+		<div class="list card"  ng-if="stateParams.today === false && !hideImportDataCard">
 			<div class="item" style="padding-bottom:10px;">
 				<p style=" text-align: center; line-height: normal; font-size: 25px;">Import Your Data</p>
 				<div class="row">
@@ -505,6 +505,16 @@
 			</a>
 		</div>
 -->
+
+		<div class="card"  ng-show="state.loading">
+			<div class="item" >
+				<div class="row">
+					<ion-spinner></ion-spinner>
+					<p style=" text-align: center; line-height: normal; font-size: 18px;">&nbsp &nbsp One moment please...</p>
+				</div>
+			</div>
+		</div>
+
 
 	</ion-content>
 	<nav id="floatingMaterialButton"

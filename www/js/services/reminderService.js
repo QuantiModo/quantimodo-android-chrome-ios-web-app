@@ -184,10 +184,11 @@ angular.module('starter')
 		};
 
 		reminderService.getTodayTrackingReminderNotifications = function(variableCategoryName){
-			var localMidnightInUtcString = timeService.getLocalMidnightInUtcString();
-			var params = {};
-			params.reminderTime = '(gt)' + localMidnightInUtcString;
-			params.sort = 'reminderTime';
+			var params = {
+				minimumReminderTimeUtcString : timeService.getLocalMidnightInUtcString(),
+				maximumReminderTimeUtcString : timeService.getTomorrowLocalMidnightInUtcString(),
+				sort : 'reminderTime'
+			};
 			if (variableCategoryName) {
 				params.variableCategoryName = variableCategoryName;
 			}
