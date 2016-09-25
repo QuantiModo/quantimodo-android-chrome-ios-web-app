@@ -55,13 +55,12 @@ angular.module('starter')
 
             addToOrReplaceElementOfItemByIdOrMoveToFront : function(localStorageItemName, replacementElementArray){
                 var deferred = $q.defer();
-                var elementsToKeep;
                 if(replacementElementArray.constructor !== Array){
                     replacementElementArray = [replacementElementArray];
                 }
-                elementsToKeep = replacementElementArray;
+                // Have to stringify/parse to create cloned variable or it adds all stored reminders to the array to be posted
+                var elementsToKeep = JSON.parse(JSON.stringify(replacementElementArray));
                 var localStorageItemArray = JSON.parse(this.getItemSync(localStorageItemName));
-
                 var found = false;
                 if(localStorageItemArray){
                     for(var i = 0; i < localStorageItemArray.length; i++){

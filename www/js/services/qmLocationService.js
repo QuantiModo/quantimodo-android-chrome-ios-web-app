@@ -7,7 +7,7 @@ angular.module('starter')
         var qmLocationService = {
 
             getInfo: function (long, lat) {
-                console.log('ok, in getInfo with ' + long + ',' + lat);
+                //console.log('ok, in getInfo with ' + long + ',' + lat);
                 var deferred = $q.defer();
                 qmLocationService.foursquare($http).whatsAt(long, lat).then(function (result) {
                     //console.log('back from fq with '+JSON.stringify(result));
@@ -19,16 +19,16 @@ angular.module('starter')
                             name: bestMatch.name,
                             address: bestMatch.location.formattedAddress.join(", ")
                         };
-                        console.dir(bestMatch);
+                        //console.dir(bestMatch);
                         deferred.resolve(result);
                     } else {
                         //ok, time to try google
                         qmLocationService.geocode($http).lookup(long, lat).then(function (result) {
-                            console.log('back from google with ');
+                            //console.log('back from google with ');
                             if (result.data && result.data.results && result.data.results.length >= 1) {
-                                console.log('did i come in here?');
+                                //console.log('did i come in here?');
                                 var bestMatch = result.data.results[0];
-                                console.log(JSON.stringify(bestMatch));
+                                //console.log(JSON.stringify(bestMatch));
                                 result = {
                                     type: "geocode",
                                     address: bestMatch.formatted_address
@@ -161,11 +161,11 @@ angular.module('starter')
                         localStorageService.setItem('lastLongitude', position.coords.longitude);
 
                         qmLocationService.getInfo($rootScope.lastLongitude, $rootScope.lastLatitude).then(function(result) {
-                            console.log('Result was '+JSON.stringify(result));
+                            //console.log('Result was '+JSON.stringify(result));
                             if(result.type === 'foursquare') {
-                                console.log('Foursquare location name is ' + result.name + ' located at ' + result.address);
+                                //console.log('Foursquare location name is ' + result.name + ' located at ' + result.address);
                             } else if (result.type === 'geocode') {
-                                console.log('geocode address is ' + result.address);
+                                //console.log('geocode address is ' + result.address);
                             } else {
                                 var map = 'https://maps.googleapis.com/maps/api/staticmap?center='+
                                     $rootScope.lastLatitude+','+$rootScope.lastLongitude+
@@ -186,7 +186,7 @@ angular.module('starter')
                             }
                         });
 
-                        console.debug("My coordinates are: ", position.coords);
+                        //console.debug("My coordinates are: ", position.coords);
 
                     }, function(err) {
                         console.log(err);

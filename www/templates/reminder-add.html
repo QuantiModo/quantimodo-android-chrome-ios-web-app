@@ -26,7 +26,7 @@
                             <!--ng-model="state.trackingReminder.abbreviatedUnitName" ng-options="x as x.abbreviatedName for x in unitObjects track by x.id">-->
                     </select>
                 </label>
-                <label class="item item-input item-select">
+                <label class="item item-input item-select" ng-if="!stateParams.favorite">
                     <div class="input-label">
                         Frequency
                     </div>
