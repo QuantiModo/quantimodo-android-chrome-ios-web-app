@@ -5,11 +5,8 @@ var appsManager = { // jshint ignore:line
 		"mindfirst" : "configs/mindfirst",
 		"medtlc" : "configs/medtlc",
 		"quantimodo" : "configs/quantimodo",
-<<<<<<< Updated upstream
-		"supercell" : "configs/supercell",
-=======
 		"supercell" : "configs/supercell"
->>>>>>> Stashed changes
+
 	},
 	defaultApp : "supercell",
 	getDefaultConfig : function(){
