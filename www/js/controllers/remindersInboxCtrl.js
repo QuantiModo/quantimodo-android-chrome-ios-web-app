@@ -62,7 +62,13 @@ angular.module('starter')
 			}
 
 			if($stateParams.today) {
-				$scope.state.title = 'Today';
+				if($stateParams.variableCategoryName === 'Treatments') {
+					$scope.state.title = "Today's Scheduled Meds";
+				} else if ($stateParams.variableCategoryName) {
+					$scope.state.title = "Today's Scheduled " + $stateParams.variableCategoryName;
+				} else {
+					$scope.state.title = 'Today';
+				}
 			}
 
 		};
@@ -195,7 +201,7 @@ angular.module('starter')
 
 	    var getTrackingReminderNotifications = function () {
 			if($stateParams.today){
-				$scope.showLoader("Getting today's reminder notifications...");
+				//$scope.showLoader("Getting today's reminder notifications...");
 				reminderService.getFilteredTodayTrackingReminderNotifications($stateParams.variableCategoryName)
 					.then(function (filteredTrackingReminderNotifications) {
 						$scope.filteredTrackingReminderNotifications = filteredTrackingReminderNotifications;
@@ -205,14 +211,16 @@ angular.module('starter')
 						//Stop the ion-refresher from spinning
 						$scope.$broadcast('scroll.refreshComplete');
 						$scope.hideLoader();
+						$scope.state.loading = false;
 					}, function(){
 						$scope.hideLoader();
 						console.error("failed to get reminder notifications!");
 						//Stop the ion-refresher from spinning
 						$scope.$broadcast('scroll.refreshComplete');
+						$scope.state.loading = false;
 					});
 			} else {
-				$scope.showLoader("Getting reminder notifications...");
+				//$scope.showLoader("Getting reminder notifications...");
 				reminderService.getFilteredTrackingReminderNotifications($stateParams.variableCategoryName)
 					.then(function (filteredTrackingReminderNotifications) {
 						$scope.filteredTrackingReminderNotifications = filteredTrackingReminderNotifications;
@@ -222,11 +230,13 @@ angular.module('starter')
 						//Stop the ion-refresher from spinning
 						$scope.$broadcast('scroll.refreshComplete');
 						$scope.hideLoader();
+						$scope.state.loading = false;
 					}, function(){
 						$scope.hideLoader();
 						console.error("failed to get reminder notifications!");
 						//Stop the ion-refresher from spinning
 						$scope.$broadcast('scroll.refreshComplete');
+						$scope.state.loading = false;
 					});
 			}
 		};
@@ -247,6 +257,7 @@ angular.module('starter')
 			$rootScope.stateParams = $stateParams;
 			if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
 			if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
+			$scope.state.loading = true;
 			$rootScope.getAccessTokenFromUrlParameter();
 			$rootScope.hideNavigationMenuIfSetInUrlParameter();
 	    	if (!$rootScope.hideNavigationMenu && !$rootScope.introSeen && !$rootScope.user && !$rootScope.accessTokenInUrl) {
