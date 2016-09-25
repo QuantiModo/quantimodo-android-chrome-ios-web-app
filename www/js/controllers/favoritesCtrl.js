@@ -9,7 +9,6 @@ angular.module('starter')
 		
 	    $scope.state = {
 	    	selected1to5Value : false,
-			title : 'Favorites',
 			loading : true,
             trackingReminder : null,
             lastSent: new Date()
@@ -23,6 +22,10 @@ angular.module('starter')
 				$scope.state.favorites[i].total = null;
 			}
 		}
+
+		$scope.favoriteAddButtonClick = function () {
+			$scope.goToState('app.favoriteSearch', $rootScope.stateParams);
+		};
 
 		$scope.trackByReminder = function(trackingReminder, modifiedReminderValue){
 			if(!modifiedReminderValue){
@@ -76,6 +79,16 @@ angular.module('starter')
 	    $scope.init = function(){
 	    	authService.setUserUsingAccessTokenInUrl();
 			$rootScope.stateParams = $stateParams;
+			if(!$rootScope.stateParams.title){
+				$rootScope.stateParams.title = 'Favorites';
+			}
+			if(!$rootScope.stateParams.addButtonText){
+				$rootScope.stateParams.addButtonText = 'Add a favorite variable';
+			}
+			if(!$rootScope.stateParams.addButtonIcon){
+				$rootScope.stateParams.addButtonIcon = 'ion-ios-star positive';
+			}
+
 			if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
 			if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
 			getFavoriteTrackingRemindersFromLocalStorage();
@@ -84,19 +97,13 @@ angular.module('starter')
 	    };
 
 	    $scope.editMeasurement = function(trackingReminder){
-			$state.go('app.measurementAdd',
-				{
-					reminderNotification: trackingReminder,
-					fromUrl: window.location.href
-				});
+			$state.go('app.measurementAdd', {trackingReminder: trackingReminder});
 	    };
 
 	    $scope.editReminderSettings = function(trackingReminder){
 	    	$state.go('app.favoriteAdd',
 				{
-					reminderNotification: trackingReminder,
-					fromUrl: window.location.href,
-					fromState : $state.current.name
+					trackingReminder: trackingReminder
 				});
 	    };
 		

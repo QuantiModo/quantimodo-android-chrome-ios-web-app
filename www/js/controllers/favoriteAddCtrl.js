@@ -18,7 +18,7 @@ angular.module('starter')
         };
 
 	    // when a search result is selected
-	    $scope.onVariableSelect = function(selectedVariable){
+	    var setupAddFavoriteByVariableObject = function(selectedVariable){
 	    	console.log("favoriteAdd.onVariableSelect:  " + JSON.stringify(selectedVariable));
 
             $scope.state.trackingReminder = $stateParams.variableObject;
@@ -35,6 +35,9 @@ angular.module('starter')
             }
             if ($scope.state.trackingReminder.abbreviatedUnitName === "/5") {
                 $scope.state.trackingReminder.defaultValue = 3;
+            }
+            if($scope.state.trackingReminder.variableCategoryName === "Treatments"){
+                $scope.state.title = "Add As-Needed Med";
             }
 	    };
 
@@ -124,7 +127,10 @@ angular.module('starter')
 	    // setup editing view
 	    var setupEditReminder = function(trackingReminder){
             $scope.state.trackingReminder = trackingReminder;
-	    	$scope.state.title = "Edit " +  trackingReminder.variableName + " to Favorites";
+	    	$scope.state.title = "Edit Favorite";
+            if($scope.state.trackingReminder.variableCategoryName === 'Treatments'){
+                $scope.state.title = "Modify As-Needed Med";
+            }
 	    };
 
         $scope.variableCategorySelectorChange = function(variableCategoryName) {
@@ -143,7 +149,9 @@ angular.module('starter')
             }
             $scope.state.trackingReminder.variableCategoryName = variableCategoryName;
             $scope.state.variableCategoryObject = variableCategoryService.getVariableCategoryInfo(variableCategoryName);
-            $scope.state.trackingReminder.abbreviatedUnitName = $scope.state.variableCategoryObject.defaultAbbreviatedUnitName;
+            if(!$scope.state.trackingReminder.abbreviatedUnitName){
+                $scope.state.trackingReminder.abbreviatedUnitName = $scope.state.variableCategoryObject.defaultAbbreviatedUnitName;
+            }
             $scope.state.measurementSynonymSingularLowercase = $scope.state.variableCategoryObject.measurementSynonymSingularLowercase;
             if($scope.state.variableCategoryObject.defaultValueLabel){
                 $scope.state.defaultValueLabel = $scope.state.variableCategoryObject.defaultValueLabel;
@@ -156,13 +164,13 @@ angular.module('starter')
             }
 	    };
 
-        function setupReminderEditingFromVariableId(variableId) {
+        function setupAddFavoriteByVariableId(variableId) {
             if(variableId){
                 variableService.getVariableById(variableId)
                     .then(function (variables) {
                         $scope.variableObject = variables[0];
                         console.log($scope.variableObject);
-                        $scope.onVariableSelect($scope.variableObject);
+                        setupAddFavoriteByVariableObject($scope.variableObject);
                         $ionicLoading.hide();
                         $scope.loading = false;
                     }, function () {
@@ -324,9 +332,9 @@ angular.module('starter')
                 } else if(reminderIdUrlParameter) {
                     setupReminderEditingFromUrlParameter(reminderIdUrlParameter);
                 } else if(variableIdUrlParameter){
-                    setupReminderEditingFromVariableId(variableIdUrlParameter);
+                    setupAddFavoriteByVariableId(variableIdUrlParameter);
                 } else if ($stateParams.variableObject) {
-                    $scope.onVariableSelect($stateParams.variableObject);
+                    setupAddFavoriteByVariableObject($stateParams.variableObject);
                 }
             });
         };

@@ -266,11 +266,11 @@ config.appSettings  = {
         },
         {
             title : 'Scheduled Meds',
-            href : '#/app/reminders-manage/Treatments',
+            href : '#/app/manage-scheduled-meds',
             icon : 'ion-ios-medkit-outline'
         },
         {
-            title : 'As-Needed',
+            title : 'As-Needed Meds',
             href : '#/app/as-needed-meds',
             icon : 'ion-ios-medkit-outline'
         },
