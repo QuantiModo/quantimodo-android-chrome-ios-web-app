@@ -1,31 +1,26 @@
 <ion-view hide-nav-bar="hideNavigationMenu" view-title="{{state.title}}">
     <ion-content>
-        <div class="card" ng-show="state.showVariableSearchCard">
-            <div ng-show="state.showTrackingHelpQuestion" class="item item-text-wrap">
-                <div>
-                    <div>
-                        <!--<span class="heading positive">Track {{state.measurement.variableCategoryName}}</span>-->
-                        <ul class="from-top">
-                            <li>{{state.helpText}}</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-            <label class="item item-input">
-                <i class="icon ion-search placeholder-icon"></i>
-                <input ng-model="state.variableSearchQuery.name"
+      
+            <div class="bar bar-header item-input-inset">
+              <label class="item-input-wrapper">
+                <i class="icon ion-ios-search placeholder-icon"></i>
+                <input type="search" ng-model="state.variableSearchQuery.name"
                        ng-model-options="{ debounce: 500 }"
                        ng-change="onVariableSearch()"
                        id="variableSearchBox"
                        type="search"
                        placeholder={{state.variableSearchPlaceholderText}}>
-            </label>
-            <p></p>
-            <ion-list>
+              </label>
+              <button class="button button-positive">
+                Cancel
+              </button>
+            </div>
+            
+       
                 <ion-item style="text-align:center;border-bottom: 1px solid rgb(221, 221, 221);" ng-show="state.searching">
                     <ion-spinner></ion-spinner>
                 </ion-item>
-            </ion-list>
+        
             <ion-list ng-show="state.variableSearchResults.length" class>
                 <!--<ion-item ng-click="selectVariable(item)" ng-repeat="item in state.variableSearchResults | orderBy:'-latestMeasurementTime' | limitTo:5 | unique:'id'  ">-->
                 <ion-item ng-click="selectVariable(item)" ng-repeat="item in state.variableSearchResults | filter:matchEveryWord() track by $index">
