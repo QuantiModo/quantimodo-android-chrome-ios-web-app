@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <widget id="com.quantimodo.moodimodoapp" version="1.9.8" ios-CFBundleVersion="1.9.8.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
-  <name>MoodiModo</name>
+  <name>supercell</name>
   <description>&#xD;
-        The mood-tracking app from QuantiModo
+        This is just super cell.
     </description>
   <author email="mike@quantimo.do" href="https://quantimo.do/">
       QuantiModo

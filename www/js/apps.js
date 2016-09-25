@@ -4,9 +4,10 @@ var appsManager = { // jshint ignore:line
 		"energymodo" : "configs/energymodo",
 		"mindfirst" : "configs/mindfirst",
 		"medtlc" : "configs/medtlc",
-		"quantimodo" : "configs/quantimodo"
+		"quantimodo" : "configs/quantimodo",
+		"supercell" : "configs/supercell",
 	},
-	defaultApp : "moodimodo",
+	defaultApp : "supercell",
 	getDefaultConfig : function(){
 		if(appsManager.apps[appsManager.defaultApp]){
 			console.log("getDefaultPrivateConfig returning " + appsManager.apps[appsManager.defaultApp]+'.js');
