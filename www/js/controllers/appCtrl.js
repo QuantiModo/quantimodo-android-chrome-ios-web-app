@@ -417,6 +417,9 @@ angular.module('starter')
             });
             if (!$rootScope.user) {
                 $rootScope.user = localStorageService.getItemAsObject('user');
+                if(!$rootScope.user) {
+                    $rootScope.getUserAndSetInLocalStorage();
+                }
                 console.debug('appCtrl.init just set $rootScope.user from local storage to: ' + JSON.stringify($rootScope.user));
             }
             if ($rootScope.user) {
