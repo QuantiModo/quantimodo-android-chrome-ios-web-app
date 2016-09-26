@@ -435,7 +435,8 @@ angular.module('starter',
                 fromState : null,
                 measurement : null,
                 variableObject : null,
-                nextState: 'app.measurementAdd'
+                nextState: 'app.measurementAdd',
+                variableCategoryName: null
             },
             views: {
                 'menuContent': {
