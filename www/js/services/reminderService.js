@@ -214,29 +214,26 @@ angular.module('starter')
 		};
 
 		reminderService.getTrackingReminderNotifications = function(variableCategoryName){
-			var localStorageItemName = 'trackingReminderNotifications';
-			if(variableCategoryName){
-				localStorageItemName = localStorageItemName + variableCategoryName;
-			}
 			var deferred = $q.defer();
-			localStorageService.getItem(localStorageItemName, function(trackingReminderNotifications){
-				trackingReminderNotifications = JSON.parse(trackingReminderNotifications);
-				if(trackingReminderNotifications && trackingReminderNotifications.length){
-					$rootScope.numberOfPendingNotifications = trackingReminderNotifications.length;
-					if (window.chrome && window.chrome.browserAction) {
-						chrome.browserAction.setBadgeText({text: String($rootScope.numberOfPendingNotifications)});
-					}
-					deferred.resolve(trackingReminderNotifications);
-				} else {
-					$rootScope.numberOfPendingNotifications = 0;
-					reminderService.refreshTrackingReminderNotifications(variableCategoryName)
-						.then(function (trackingReminderNotifications) {
-							deferred.resolve(trackingReminderNotifications);
-						}, function(){
-							console.error("failed to get reminder notifications!");
-						});
+			var trackingReminderNotifications = localStorageService.getElementsFromItemWithFilters(
+				'trackingReminderNotifications', 'variableCategoryName', variableCategoryName);
+			if(trackingReminderNotifications && trackingReminderNotifications.length){
+				$rootScope.numberOfPendingNotifications = trackingReminderNotifications.length;
+				if (window.chrome && window.chrome.browserAction && !variableCategoryName) {
+					chrome.browserAction.setBadgeText({text: String($rootScope.numberOfPendingNotifications)});
 				}
-			});
+				deferred.resolve(trackingReminderNotifications);
+			} else {
+				$rootScope.numberOfPendingNotifications = 0;
+				reminderService.refreshTrackingReminderNotifications()
+					.then(function (trackingReminderNotifications) {
+						trackingReminderNotifications = localStorageService.getElementsFromItemWithFilters(
+							'trackingReminderNotifications', 'variableCategoryName', variableCategoryName);
+						deferred.resolve(trackingReminderNotifications);
+					}, function(){
+						console.error("failed to get reminder notifications!");
+					});
+			}
 			return deferred.promise;
 		};
 
@@ -266,7 +263,7 @@ angular.module('starter')
 			return deferred.promise;
 		};
 
-		reminderService.refreshTrackingReminderNotifications = function(variableCategoryName){
+		reminderService.refreshTrackingReminderNotifications = function(){
 			var deferred = $q.defer();
 			if($rootScope.refreshingTrackingReminderNotifications){
 				console.log('Already refreshing reminder notifications');
@@ -274,17 +271,10 @@ angular.module('starter')
 				return deferred.promise;
 			}
 			$rootScope.refreshingTrackingReminderNotifications = true;
-			var localStorageItemName = 'trackingReminderNotifications';
-			if(variableCategoryName){
-				localStorageItemName = localStorageItemName + variableCategoryName;
-			}
 			var currentDateTimeInUtcStringPlus5Min = timeService.getCurrentDateTimeInUtcStringPlusMin(5);
 			var params = {};
 			params.reminderTime = '(lt)' + currentDateTimeInUtcStringPlus5Min;
 			params.sort = '-reminderTime';
-			if (variableCategoryName) {
-				params.variableCategoryName = variableCategoryName;
-			}
 			QuantiModo.getTrackingReminderNotifications(params, function(response){
 				if(response.success) {
 					var trackingRemindersNotifications =
@@ -293,7 +283,7 @@ angular.module('starter')
 					if (window.chrome && window.chrome.browserAction) {
 						chrome.browserAction.setBadgeText({text: String($rootScope.numberOfPendingNotifications)});
 					}
-					localStorageService.setItem(localStorageItemName, JSON.stringify(trackingRemindersNotifications));
+					localStorageService.setItem('trackingReminderNotifications', JSON.stringify(trackingRemindersNotifications));
 					$rootScope.refreshingTrackingReminderNotifications = false;
 					deferred.resolve(trackingRemindersNotifications);
 				}

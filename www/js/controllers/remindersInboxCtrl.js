@@ -245,7 +245,7 @@ angular.module('starter')
 			if($stateParams.today){
 				getTrackingReminderNotifications();
 			} else {
-				reminderService.refreshTrackingReminderNotifications($stateParams.variableCategoryName)
+				reminderService.refreshTrackingReminderNotifications()
 					.then(function(){
 						getTrackingReminderNotifications();
 					});
