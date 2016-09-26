@@ -118,11 +118,13 @@ config.appSettings  = {
                 finalP : {
                     visible : true,
 <<<<<<< Updated upstream
+
                     content : 'MoodiModo allows you track your <span class="positive">mood</span> and identify the hidden factors which may most influence it.',
+             classes : 'intro-paragraph',
 =======
                     content : 'SuperCell allows you track your <span class="positive">mood</span> and identify the hidden factors which may most influence it.',
->>>>>>> Stashed changes
                     classes : 'intro-paragraph',
+>>>>>>> Stashed changes
                     buttonBarVisible : true   
                 }
             }
@@ -197,6 +199,7 @@ config.appSettings  = {
             icon : 'ion-archive'
         },
 <<<<<<< Updated upstream
+
         // {
         //     title : 'Favorites',
         //     href : '#/app/favorites',
@@ -210,7 +213,9 @@ config.appSettings  = {
         //     collapsedIcon : 'ion-happy-outline',
         //     expandedIcon : 'ion-chevron-down'
         // },
+
 =======
+>>>>>>> Stashed changes
         {
             title : 'Favorites',
             href : '#/app/favorites',
@@ -224,6 +229,9 @@ config.appSettings  = {
             collapsedIcon : 'ion-happy-outline',
             expandedIcon : 'ion-chevron-down'
         },
+<<<<<<< Updated upstream
+
+=======
 >>>>>>> Stashed changes
         {
             title : 'Charts',
@@ -233,6 +241,7 @@ config.appSettings  = {
             icon : 'ion-arrow-graph-up-right'
         },
 <<<<<<< Updated upstream
+
         // {
         //     title : 'History',
         //     isSubMenuChild : true,
@@ -255,8 +264,11 @@ config.appSettings  = {
         //     icon : 'ion-sad-outline'
         // },
         {
-            title : 'Manage Reminders-will be renamed',
+            title : 'Manage Reminders-will be renamed'
+        },
+
 =======
+>>>>>>> Stashed changes
         {
             title : 'History',
             isSubMenuChild : true,
@@ -280,6 +292,9 @@ config.appSettings  = {
         },
         {
             title : 'Manage Reminders',
+<<<<<<< Updated upstream
+       
+=======
 >>>>>>> Stashed changes
             click : 'toggleReminderSubMenu',
             showSubMenuVariable : 'showReminderSubMenu',
@@ -288,6 +303,7 @@ config.appSettings  = {
             expandedIcon : 'ion-chevron-down'
         },
 <<<<<<< Updated upstream
+        
         // {
         //     title : 'All Reminders',
         //     isSubMenuChild : true,
@@ -323,7 +339,9 @@ config.appSettings  = {
         //     href : '#/app/reminders-manage/Symptoms',
         //     icon : 'ion-sad-outline'
         // },
+
 =======
+>>>>>>> Stashed changes
         {
             title : 'All Reminders',
             isSubMenuChild : true,
@@ -359,6 +377,9 @@ config.appSettings  = {
             href : '#/app/reminders-manage/Symptoms',
             icon : 'ion-sad-outline'
         },
+<<<<<<< Updated upstream
+    
+=======
 >>>>>>> Stashed changes
         {
             title : 'Treatments',
@@ -383,6 +404,7 @@ config.appSettings  = {
             expandedIcon : 'ion-chevron-down'
         },
 <<<<<<< Updated upstream
+    
         // {
         //     title : 'Track Anything',
         //     isSubMenuChild : true,
@@ -425,7 +447,9 @@ config.appSettings  = {
         //     href : '#/app/measurement-add-search-category/Physical Activity',
         //     icon : 'ion-ios-body-outline'
         // },
+    
 =======
+>>>>>>> Stashed changes
         {
             title : 'Track Anything',
             isSubMenuChild : true,
@@ -468,6 +492,9 @@ config.appSettings  = {
             href : '#/app/measurement-add-search-category/Physical Activity',
             icon : 'ion-ios-body-outline'
         },
+<<<<<<< Updated upstream
+        
+=======
 >>>>>>> Stashed changes
         {
             title : 'Record Vital Sign',
@@ -492,6 +519,7 @@ config.appSettings  = {
             icon : 'ion-android-globe'
         },
 <<<<<<< Updated upstream
+    
         // {
         //     title : 'Emotions',
         //     isSubMenuChild : true,
@@ -506,7 +534,9 @@ config.appSettings  = {
         //     href : '#/app/history-all/Foods',
         //     icon : 'ion-ios-nutrition-outline'
         // },
+    
 =======
+>>>>>>> Stashed changes
         {
             title : 'Emotions',
             isSubMenuChild : true,
@@ -521,6 +551,9 @@ config.appSettings  = {
             href : '#/app/history-all/Foods',
             icon : 'ion-ios-nutrition-outline'
         },
+<<<<<<< Updated upstream
+    
+=======
 >>>>>>> Stashed changes
         {
             title : 'Symptoms',
@@ -551,6 +584,7 @@ config.appSettings  = {
             icon : 'ion-ios-pulse'
         },
 <<<<<<< Updated upstream
+      
         // {
         //     title : 'Locations',
         //     isSubMenuChild : true,
@@ -558,7 +592,9 @@ config.appSettings  = {
         //     href : '#/app/history-all/Location',
         //     icon : 'ion-ios-location-outline'
         // },
+    
 =======
+>>>>>>> Stashed changes
         {
             title : 'Locations',
             isSubMenuChild : true,
@@ -566,6 +602,9 @@ config.appSettings  = {
             href : '#/app/history-all/Location',
             icon : 'ion-ios-location-outline'
         },
+<<<<<<< Updated upstream
+    
+=======
 >>>>>>> Stashed changes
         {
             title : 'Import Data',
@@ -578,6 +617,7 @@ config.appSettings  = {
             icon : 'ion-arrow-graph-up-right'
         },
 <<<<<<< Updated upstream
+
         // {
         //     title : 'Strongest Predictors',
         //     click : 'togglePredictorSearchSubMenu',
@@ -614,7 +654,9 @@ config.appSettings  = {
         //     href : '#/app/predictors/negative',
         //     icon : 'ion-sad-outline'
         // },
+
 =======
+>>>>>>> Stashed changes
         {
             title : 'Strongest Predictors',
             click : 'togglePredictorSearchSubMenu',
@@ -651,6 +693,9 @@ config.appSettings  = {
             href : '#/app/predictors/negative',
             icon : 'ion-sad-outline'
         },
+<<<<<<< Updated upstream
+
+=======
 >>>>>>> Stashed changes
         {
             title : 'Settings',
