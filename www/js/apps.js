@@ -5,8 +5,7 @@ var appsManager = { // jshint ignore:line
 		"mindfirst" : "configs/mindfirst",
 		"medtlc" : "configs/medtlc",
 		"quantimodo" : "configs/quantimodo",
-		"supercell" : "configs/supercell"
-
+		"supercell":"configs/supercell"
 	},
 	defaultApp : "supercell",
 	getDefaultConfig : function(){
