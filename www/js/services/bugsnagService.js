@@ -1,12 +1,15 @@
 angular.module('starter')
     // Measurement Service
-    .factory('bugsnagService', function(utilsService, $rootScope) {
+    .factory('bugsnagService', function(utilsService) {
         
         // service methods
         var bugsnagService = {
 
             reportError : function(exception){
-                var message = exception.toString();
+                var message = 'No error or exception data provided to bugsnagService';
+                if(exception){
+                    message = exception.toString();
+                }
                 console.error('ERROR: ' + message);
                 var stacktrace;
                 if(typeof exception.stack !== 'undefined'){
