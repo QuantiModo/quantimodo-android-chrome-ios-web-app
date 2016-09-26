@@ -417,6 +417,9 @@ angular.module('starter')
             });
             if (!$rootScope.user) {
                 $rootScope.user = localStorageService.getItemAsObject('user');
+                if(!$rootScope.user && utilsService.getClientId() === 'oAuthDisabled') {
+                    $rootScope.getUserAndSetInLocalStorage();
+                }
                 console.debug('appCtrl.init just set $rootScope.user from local storage to: ' + JSON.stringify($rootScope.user));
             }
             if ($rootScope.user) {
@@ -466,6 +469,10 @@ angular.module('starter')
 
         $scope.togglePhysicalActivitySubMenu = function () {
             $scope.showPhysicalActivitySubMenu = !$scope.showPhysicalActivitySubMenu;
+        };
+
+        $scope.toggleVitalSignsSubMenu = function () {
+            $scope.showVitalSignsSubMenu = !$scope.showVitalSignsSubMenu;
         };
 
         $scope.toggleTrackingSubMenu = function () {
@@ -539,7 +546,7 @@ angular.module('starter')
                 successHandler,
                 function(err){
                     //Bugsnag.notify(err, JSON.stringify(err), {}, "error");
-                    console.debug(err);
+                    console.error("Could not get user!  Error message: " + err.message);
                 }
             );
         };

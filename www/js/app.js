@@ -32,7 +32,7 @@ angular.module('starter',
             };
         }
 
-         if (ionic.Platform.isAndroid() || ionic.Platform.isIPad() || ionic.Platform.isIOS()) {
+         if (typeof PushNotification !== "undefined") {
              console.debug("Going to try to register push");
              var push = PushNotification.init({
                  android: {
@@ -435,7 +435,8 @@ angular.module('starter',
                 fromState : null,
                 measurement : null,
                 variableObject : null,
-                nextState: 'app.measurementAdd'
+                nextState: 'app.measurementAdd',
+                variableCategoryName: null
             },
             views: {
                 'menuContent': {
@@ -753,7 +754,8 @@ angular.module('starter',
                 variableName : null,
                 dateTime : null,
                 value : null,
-                fromUrl : null
+                fromUrl : null,
+                showHelpCards: true
             },
             views: {
                 'menuContent': {

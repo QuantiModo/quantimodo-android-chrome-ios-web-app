@@ -93,6 +93,14 @@ angular.module('starter')
 				return localMidnightInUtcString;
 			},
 
+			getTomorrowLocalMidnightInUtcString: function () {
+				var tomorrowLocalMidnightMoment = moment(0, "HH");
+				var timeFormat = 'YYYY-MM-DD HH:mm:ss';
+				tomorrowLocalMidnightMoment.add(1, 'days');
+				var tomorrowLocalMidnightInUtcString = tomorrowLocalMidnightMoment.utc().format(timeFormat);
+				return tomorrowLocalMidnightInUtcString;
+			},
+
 			
 			getCurrentTimeInUtcString: function () {
 				var currentMoment = moment();
