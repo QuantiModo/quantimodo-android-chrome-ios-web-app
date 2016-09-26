@@ -117,15 +117,10 @@ config.appSettings  = {
                 },
                 finalP : {
                     visible : true,
-<<<<<<< Updated upstream
 
-                    content : 'MoodiModo allows you track your <span class="positive">mood</span> and identify the hidden factors which may most influence it.',
-             classes : 'intro-paragraph',
-=======
                     content : 'SuperCell allows you track your <span class="positive">mood</span> and identify the hidden factors which may most influence it.',
                     classes : 'intro-paragraph',
->>>>>>> Stashed changes
-                    buttonBarVisible : true   
+
                 }
             }
         },
@@ -200,6 +195,7 @@ config.appSettings  = {
         },
 <<<<<<< Updated upstream
 
+
         // {
         //     title : 'Favorites',
         //     href : '#/app/favorites',
@@ -213,6 +209,7 @@ config.appSettings  = {
         //     collapsedIcon : 'ion-happy-outline',
         //     expandedIcon : 'ion-chevron-down'
         // },
+
 
 =======
 >>>>>>> Stashed changes
@@ -242,6 +239,7 @@ config.appSettings  = {
         },
 <<<<<<< Updated upstream
 
+
         // {
         //     title : 'History',
         //     isSubMenuChild : true,
@@ -266,6 +264,7 @@ config.appSettings  = {
         {
             title : 'Manage Reminders-will be renamed'
         },
+
 
 =======
 >>>>>>> Stashed changes
@@ -293,7 +292,7 @@ config.appSettings  = {
         {
             title : 'Manage Reminders',
 <<<<<<< Updated upstream
-       
+
 =======
 >>>>>>> Stashed changes
             click : 'toggleReminderSubMenu',
@@ -303,6 +302,7 @@ config.appSettings  = {
             expandedIcon : 'ion-chevron-down'
         },
 <<<<<<< Updated upstream
+
         
         // {
         //     title : 'All Reminders',
@@ -339,6 +339,7 @@ config.appSettings  = {
         //     href : '#/app/reminders-manage/Symptoms',
         //     icon : 'ion-sad-outline'
         // },
+
 
 =======
 >>>>>>> Stashed changes
@@ -378,7 +379,7 @@ config.appSettings  = {
             icon : 'ion-sad-outline'
         },
 <<<<<<< Updated upstream
-    
+
 =======
 >>>>>>> Stashed changes
         {
@@ -404,6 +405,7 @@ config.appSettings  = {
             expandedIcon : 'ion-chevron-down'
         },
 <<<<<<< Updated upstream
+
     
         // {
         //     title : 'Track Anything',
@@ -448,6 +450,7 @@ config.appSettings  = {
         //     icon : 'ion-ios-body-outline'
         // },
     
+
 =======
 >>>>>>> Stashed changes
         {
@@ -493,7 +496,7 @@ config.appSettings  = {
             icon : 'ion-ios-body-outline'
         },
 <<<<<<< Updated upstream
-        
+
 =======
 >>>>>>> Stashed changes
         {
@@ -519,6 +522,7 @@ config.appSettings  = {
             icon : 'ion-android-globe'
         },
 <<<<<<< Updated upstream
+
     
         // {
         //     title : 'Emotions',
@@ -534,7 +538,7 @@ config.appSettings  = {
         //     href : '#/app/history-all/Foods',
         //     icon : 'ion-ios-nutrition-outline'
         // },
-    
+   
 =======
 >>>>>>> Stashed changes
         {
@@ -552,7 +556,7 @@ config.appSettings  = {
             icon : 'ion-ios-nutrition-outline'
         },
 <<<<<<< Updated upstream
-    
+
 =======
 >>>>>>> Stashed changes
         {
@@ -584,6 +588,7 @@ config.appSettings  = {
             icon : 'ion-ios-pulse'
         },
 <<<<<<< Updated upstream
+
       
         // {
         //     title : 'Locations',
@@ -592,7 +597,7 @@ config.appSettings  = {
         //     href : '#/app/history-all/Location',
         //     icon : 'ion-ios-location-outline'
         // },
-    
+
 =======
 >>>>>>> Stashed changes
         {
@@ -603,7 +608,7 @@ config.appSettings  = {
             icon : 'ion-ios-location-outline'
         },
 <<<<<<< Updated upstream
-    
+
 =======
 >>>>>>> Stashed changes
         {
@@ -617,6 +622,7 @@ config.appSettings  = {
             icon : 'ion-arrow-graph-up-right'
         },
 <<<<<<< Updated upstream
+
 
         // {
         //     title : 'Strongest Predictors',
