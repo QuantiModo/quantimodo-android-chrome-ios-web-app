@@ -28,7 +28,6 @@ angular.module('starter')
 			},
 			variable : {},
 			isDisabled : false,
-			title : 'Reminder Inbox',
 			loading : true,
 			lastButtonPressTimeStamp : 0,
 			lastClientX : 0,
@@ -54,11 +53,7 @@ angular.module('starter')
 
 		var setPageTitle = function(){
 			if(typeof(config.appSettings.remindersInbox.title) !== 'undefined'){
-				$scope.state.title = config.appSettings.remindersInbox.title;
-			}
-
-			if($stateParams.variableCategoryName){
-				$scope.state.title = $filter('wordAliases')($stateParams.variableCategoryName) + " " + $filter('wordAliases')("Reminder Inbox");
+				//$scope.state.title = config.appSettings.remindersInbox.title;
 			}
 
 			if($stateParams.today) {
@@ -67,10 +62,17 @@ angular.module('starter')
 				} else if ($stateParams.variableCategoryName) {
 					$scope.state.title = "Today's Scheduled " + $stateParams.variableCategoryName;
 				} else {
-					$scope.state.title = 'Today';
+					$scope.state.title = "Today's Reminder Notifications";
+				}
+			} else {
+				if($stateParams.variableCategoryName === 'Treatments') {
+					$scope.state.title = 'Overdue Meds';
+				} else if ($stateParams.variableCategoryName) {
+					$scope.state.title = $filter('wordAliases')($stateParams.variableCategoryName) + " " + $filter('wordAliases')("Reminder Inbox");
+				} else {
+					$scope.state.title = 'Reminder Inbox';
 				}
 			}
-
 		};
 
 		var isGhostClick = function ($event) {

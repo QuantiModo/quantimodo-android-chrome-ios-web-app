@@ -471,6 +471,10 @@ angular.module('starter')
             $scope.showPhysicalActivitySubMenu = !$scope.showPhysicalActivitySubMenu;
         };
 
+        $scope.toggleVitalSignsSubMenu = function () {
+            $scope.showVitalSignsSubMenu = !$scope.showVitalSignsSubMenu;
+        };
+
         $scope.toggleTrackingSubMenu = function () {
             $scope.showTrackingSubMenu = !$scope.showTrackingSubMenu;
         };
