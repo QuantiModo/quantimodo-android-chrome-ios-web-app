@@ -754,7 +754,8 @@ angular.module('starter',
                 variableName : null,
                 dateTime : null,
                 value : null,
-                fromUrl : null
+                fromUrl : null,
+                showHelpCards: true
             },
             views: {
                 'menuContent': {
