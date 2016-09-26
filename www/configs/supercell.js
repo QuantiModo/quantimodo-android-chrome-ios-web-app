@@ -193,7 +193,7 @@ config.appSettings  = {
             href : '#/app/reminders-inbox',
             icon : 'ion-archive'
         },
-<<<<<<< Updated upstream
+
 
 
         // {
@@ -211,8 +211,6 @@ config.appSettings  = {
         // },
 
 
-=======
->>>>>>> Stashed changes
         {
             title : 'Favorites',
             href : '#/app/favorites',
@@ -226,10 +224,7 @@ config.appSettings  = {
             collapsedIcon : 'ion-happy-outline',
             expandedIcon : 'ion-chevron-down'
         },
-<<<<<<< Updated upstream
 
-=======
->>>>>>> Stashed changes
         {
             title : 'Charts',
             isSubMenuChild : true,
@@ -237,7 +232,7 @@ config.appSettings  = {
             href : '#/app/track',
             icon : 'ion-arrow-graph-up-right'
         },
-<<<<<<< Updated upstream
+
 
 
         // {
@@ -265,9 +260,6 @@ config.appSettings  = {
             title : 'Manage Reminders-will be renamed'
         },
 
-
-=======
->>>>>>> Stashed changes
         {
             title : 'History',
             isSubMenuChild : true,
@@ -291,17 +283,14 @@ config.appSettings  = {
         },
         {
             title : 'Manage Reminders',
-<<<<<<< Updated upstream
 
-=======
->>>>>>> Stashed changes
             click : 'toggleReminderSubMenu',
             showSubMenuVariable : 'showReminderSubMenu',
             isSubMenuParent : true,
             collapsedIcon : 'ion-android-notifications-none',
             expandedIcon : 'ion-chevron-down'
         },
-<<<<<<< Updated upstream
+
 
         
         // {
@@ -340,9 +329,6 @@ config.appSettings  = {
         //     icon : 'ion-sad-outline'
         // },
 
-
-=======
->>>>>>> Stashed changes
         {
             title : 'All Reminders',
             isSubMenuChild : true,
@@ -378,10 +364,7 @@ config.appSettings  = {
             href : '#/app/reminders-manage/Symptoms',
             icon : 'ion-sad-outline'
         },
-<<<<<<< Updated upstream
 
-=======
->>>>>>> Stashed changes
         {
             title : 'Treatments',
             isSubMenuChild : true,
@@ -404,7 +387,7 @@ config.appSettings  = {
             collapsedIcon : 'ion-compose',
             expandedIcon : 'ion-chevron-down'
         },
-<<<<<<< Updated upstream
+
 
     
         // {
@@ -451,8 +434,6 @@ config.appSettings  = {
         // },
     
 
-=======
->>>>>>> Stashed changes
         {
             title : 'Track Anything',
             isSubMenuChild : true,
@@ -495,10 +476,7 @@ config.appSettings  = {
             href : '#/app/measurement-add-search-category/Physical Activity',
             icon : 'ion-ios-body-outline'
         },
-<<<<<<< Updated upstream
 
-=======
->>>>>>> Stashed changes
         {
             title : 'Record Vital Sign',
             isSubMenuChild : true,
@@ -521,7 +499,7 @@ config.appSettings  = {
             href : '#/app/history-all/Anything',
             icon : 'ion-android-globe'
         },
-<<<<<<< Updated upstream
+
 
     
         // {
@@ -539,8 +517,7 @@ config.appSettings  = {
         //     icon : 'ion-ios-nutrition-outline'
         // },
    
-=======
->>>>>>> Stashed changes
+
         {
             title : 'Emotions',
             isSubMenuChild : true,
@@ -555,10 +532,7 @@ config.appSettings  = {
             href : '#/app/history-all/Foods',
             icon : 'ion-ios-nutrition-outline'
         },
-<<<<<<< Updated upstream
 
-=======
->>>>>>> Stashed changes
         {
             title : 'Symptoms',
             isSubMenuChild : true,
@@ -587,7 +561,7 @@ config.appSettings  = {
             href : '#/app/history-all/Vital Signs',
             icon : 'ion-ios-pulse'
         },
-<<<<<<< Updated upstream
+
 
       
         // {
@@ -598,8 +572,7 @@ config.appSettings  = {
         //     icon : 'ion-ios-location-outline'
         // },
 
-=======
->>>>>>> Stashed changes
+
         {
             title : 'Locations',
             isSubMenuChild : true,
@@ -607,10 +580,7 @@ config.appSettings  = {
             href : '#/app/history-all/Location',
             icon : 'ion-ios-location-outline'
         },
-<<<<<<< Updated upstream
 
-=======
->>>>>>> Stashed changes
         {
             title : 'Import Data',
             href : '#/app/import',
@@ -621,7 +591,7 @@ config.appSettings  = {
             href : '#/app/search-variables',
             icon : 'ion-arrow-graph-up-right'
         },
-<<<<<<< Updated upstream
+
 
 
         // {
@@ -661,8 +631,7 @@ config.appSettings  = {
         //     icon : 'ion-sad-outline'
         // },
 
-=======
->>>>>>> Stashed changes
+
         {
             title : 'Strongest Predictors',
             click : 'togglePredictorSearchSubMenu',
@@ -699,10 +668,7 @@ config.appSettings  = {
             href : '#/app/predictors/negative',
             icon : 'ion-sad-outline'
         },
-<<<<<<< Updated upstream
 
-=======
->>>>>>> Stashed changes
         {
             title : 'Settings',
             href : '#/app/settings',
