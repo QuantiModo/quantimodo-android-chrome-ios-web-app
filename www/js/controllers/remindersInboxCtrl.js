@@ -267,6 +267,10 @@ angular.module('starter')
 				$state.go('intro');
 			} else {
 
+				if(navigator && navigator.splashscreen) {
+					console.debug('ReminderInbox: Hiding splash screen because app is ready');
+					navigator.splashscreen.hide();
+				}
 				$scope.refreshTrackingReminderNotifications();
 				//getTrackingReminderNotifications();
 
@@ -335,10 +339,6 @@ angular.module('starter')
 
 				};
 
-				if(navigator && navigator.splashscreen) {
-					console.debug('ReminderInbox: Hiding splash screen because app is ready');
-					navigator.splashscreen.hide();
-				}
 			}
 
 		};
