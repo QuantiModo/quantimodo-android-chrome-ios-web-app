@@ -166,9 +166,10 @@ angular.module('starter')
                     }
 
                     if($rootScope.user.trackLocation){
-                        request.headers.LOCATION = $rootScope.lastLocationNameAndAddress;
-                        request.headers.LATITUDE = $rootScope.lastLatitude;
-                        request.headers.LONGITUDE = $rootScope.lastLongitude;
+                        // Commented because of CORS errors
+                        //request.headers.LOCATION = $rootScope.lastLocationNameAndAddress;
+                        //request.headers.LATITUDE = $rootScope.lastLatitude;
+                        //request.headers.LONGITUDE = $rootScope.lastLongitude;
                     }
 
                     $http(request).success(successHandler).error(function(data,status,headers,config){
