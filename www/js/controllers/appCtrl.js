@@ -355,6 +355,8 @@ angular.module('starter')
         $rootScope.hideNavigationMenuIfSetInUrlParameter = function() {
             if (location.href.toLowerCase().indexOf('hidemenu=true') !== -1) {
                 $rootScope.hideNavigationMenu = true;
+            } else {
+                $rootScope.hideNavigationMenu = false;
             }
         };
 
@@ -545,8 +547,7 @@ angular.module('starter')
                 {},
                 successHandler,
                 function(err){
-                    //Bugsnag.notify(err, JSON.stringify(err), {}, "error");
-                    console.error("Could not get user!  Error message: " + err.message);
+                    bugsnagService.reportError(err);
                 }
             );
         };

@@ -52,6 +52,7 @@ angular.module('starter')
 
             // GET method with the added token
             QuantiModo.get = function(baseURL, allowedParams, params, successHandler, errorHandler){
+                console.debug('QuantiModo.get: Going to try to make request to ' + baseURL + " with params: " + JSON.stringify(params));
                 QuantiModo.getAccessTokenFromAnySource().then(function(accessToken){
 
                     allowedParams.push('limit');
@@ -124,7 +125,7 @@ angular.module('starter')
 
             // POST method with the added token
             QuantiModo.post = function(baseURL, requiredFields, items, successHandler, errorHandler){
-                console.debug('QuantiModo.post: ' + baseURL + ' body: ' + JSON.stringify(items));
+                console.debug('QuantiModo.post: About to try to post request to ' + baseURL + ' with body: ' + JSON.stringify(items));
                 QuantiModo.getAccessTokenFromAnySource().then(function(accessToken){
 
                     //console.log("Token : ", token.accessToken);
@@ -165,9 +166,10 @@ angular.module('starter')
                     }
 
                     if($rootScope.user.trackLocation){
-                        request.headers.LOCATION = $rootScope.lastLocationNameAndAddress;
-                        request.headers.LATITUDE = $rootScope.lastLatitude;
-                        request.headers.LONGITUDE = $rootScope.lastLongitude;
+                        // Commented because of CORS errors
+                        //request.headers.LOCATION = $rootScope.lastLocationNameAndAddress;
+                        //request.headers.LATITUDE = $rootScope.lastLatitude;
+                        //request.headers.LONGITUDE = $rootScope.lastLongitude;
                     }
 
                     $http(request).success(successHandler).error(function(data,status,headers,config){

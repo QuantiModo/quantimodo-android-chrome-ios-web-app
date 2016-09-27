@@ -129,7 +129,11 @@ angular.module('starter')
 
             console.log('nonNativeMobileLogin: open the auth window via inAppBrowser.');
             // Set location=yes instead of location=no temporarily to try to diagnose intermittent white screen on iOS
-            var ref = window.open(url,'_blank', 'location=no,toolbar=yes');
+
+            //var ref = window.open(url,'_blank', 'location=no,toolbar=yes');
+            // Try clearing inAppBrowser cache to avoid intermittent connectors page redirection problem
+            // Note:  Clearing cache didn't solve the problem, but I'll leave it because I don't think it hurts anything
+            var ref = window.open(url,'_blank', 'location=no,toolbar=yes,clearcache=yes,clearsessioncache=yes');
 
             // Commented because I think it's causing "$apply already in progress" error
             // $timeout(function () {

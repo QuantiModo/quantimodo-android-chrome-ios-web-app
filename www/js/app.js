@@ -784,6 +784,41 @@ angular.module('starter',
                 }
             }
         })
+        .state('app.favoritesVitalSigns', {
+            url: "/favorites-vital-signs",
+            cache: false,
+            params: {
+                title: "Vital Signs",
+                helpText: "Add some explanation about the page",
+                moreHelpText: "Optional extra help text",
+                presetVariables: [
+                    {
+                        variableName: 'Pulse',
+                        icon: 'ion-heart',
+                        abbreviatedUnitName: 'bpm',
+                        variableDescription: 'showValueField',
+                        defaultValueLabel: "BPM",
+                        defaultValuePlaceholderText: "Enter Pulse",
+                        variableCategoryName: "Vital Signs"
+                    },
+                    {
+                        variableName: 'Other Vital Sign',
+                        icon: 'ion-heart',
+                        abbreviatedUnitName: 'bpm',
+                        variableDescription: 'showField',
+                        defaultValueLabel: "BPM",
+                        defaultValuePlaceholderText: "Enter Pulse",
+                        variableCategoryName: "Vital Signs"
+                    }
+                ]
+            },
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/favorites.html",
+                    controller: 'FavoritesCtrl'
+                }
+            }
+        })
         .state('app.remindersInboxToday', {
             url: "/reminders-inbox-today",
             params: {
