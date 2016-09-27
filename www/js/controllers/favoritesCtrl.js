@@ -129,8 +129,7 @@ angular.module('starter')
 				name: favorite.variableName
 			};
 
-			// Show the action sheet
-			var hideSheet = $ionicActionSheet.show({
+			var actionMenuButtons = {
 				buttons: [
 					{ text: '<i class="icon ion-gear-a"></i>Change Default Value' },
 					{ text: '<i class="icon ion-edit"></i>Different Value/Time/Note' },
@@ -214,7 +213,14 @@ angular.module('starter')
                         });
 					return true;
 				}
-			});
+			};
+
+			if(config.appSettings.favoritesController.actionMenuButtons){
+				actionMenuButtons = config.appSettings.favoritesController.actionMenuButtons;
+			}
+
+			// Show the action sheet
+			var hideSheet = $ionicActionSheet.show(actionMenuButtons);
 
 
 			$timeout(function() {
