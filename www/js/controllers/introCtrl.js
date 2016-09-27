@@ -1,6 +1,6 @@
 angular.module('starter')
 .controller('IntroCtrl', function($scope, $state, localStorageService, $ionicSlideBoxDelegate, $ionicLoading,
-                                  $rootScope) {
+                                  $rootScope, $stateParams) {
 
     $scope.viewTitle = config.appSettings.appName;
     $scope.primaryOutcomeVariable = config.appSettings.primaryOutcomeVariable;
@@ -57,9 +57,10 @@ angular.module('starter')
         if($rootScope.user || $rootScope.introSeen){
             $state.go(config.appSettings.defaultState);
         } else {
-            if (typeof Bugsnag !== 'undefined') {
-                Bugsnag.context = "intro";
-            }
+            console.debug($state.current.name + ' initializing...');
+            $rootScope.stateParams = $stateParams;
+            if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
+            if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
            
 
             $scope.showLoader();

@@ -11,7 +11,7 @@ QuantiModo makes it easy to retrieve normalized user data from a wide array of d
 
  Before you get started, you will need to:
 
- * Ceate an account at [QuantiModo](https://app.quantimo.do)
+ * Create an account at [QuantiModo](https://app.quantimo.do)
 
  * Sign in, and add some data at [https://app.quantimo.do/connect](https://app.quantimo.do/connect) to try out the API for yourself
 
@@ -30,7 +30,7 @@ Basically you need to redirect users to `/api/v1/oauth2/authorize` endpoint to g
 * `response_type` If the value is code, launches a Basic flow, requiring a POST to the token endpoint to obtain the tokens. If the value is token id_token or id_token token, launches an Implicit flow, requiring the use of Javascript at the redirect URI to retrieve tokens from the URI #fragment.
 
 ### Request Access Token
-After user approves your access to the given scope, you'll recevive an authorization code to request an access token. This time make a `POST` request to `/api/v1/oauth2/token` with parameters including:
+After user approves your access to the given scope, you'll receive an authorization code to request an access token. This time make a `POST` request to `/api/v1/oauth2/token` with parameters including:
 * `grant_type` Can be `authorization_code` or `refresh_token` since we are getting the `access_token` for the first time we don't have a `refresh_token` so this must be `authorization_code`.
 * `client_id` The client id you used to receive an `authorization_code`.
 * `client_secret` Your client secret which you received with the client id.

@@ -28,7 +28,6 @@ angular.module('starter')
 			},
 			variable : {},
 			isDisabled : false,
-			title : 'Reminder Inbox',
 			loading : true,
 			lastButtonPressTimeStamp : 0,
 			lastClientX : 0,
@@ -54,17 +53,26 @@ angular.module('starter')
 
 		var setPageTitle = function(){
 			if(typeof(config.appSettings.remindersInbox.title) !== 'undefined'){
-				$scope.state.title = config.appSettings.remindersInbox.title;
-			}
-
-			if($stateParams.variableCategoryName){
-				$scope.state.title = $filter('wordAliases')($stateParams.variableCategoryName) + " " + $filter('wordAliases')("Reminder Inbox");
+				//$scope.state.title = config.appSettings.remindersInbox.title;
 			}
 
 			if($stateParams.today) {
-				$scope.state.title = 'Today';
+				if($stateParams.variableCategoryName === 'Treatments') {
+					$scope.state.title = "Today's Scheduled Meds";
+				} else if ($stateParams.variableCategoryName) {
+					$scope.state.title = "Today's Scheduled " + $stateParams.variableCategoryName;
+				} else {
+					$scope.state.title = "Today's Reminder Notifications";
+				}
+			} else {
+				if($stateParams.variableCategoryName === 'Treatments') {
+					$scope.state.title = 'Overdue Meds';
+				} else if ($stateParams.variableCategoryName) {
+					$scope.state.title = $filter('wordAliases')($stateParams.variableCategoryName) + " " + $filter('wordAliases')("Reminder Inbox");
+				} else {
+					$scope.state.title = 'Reminder Inbox';
+				}
 			}
-
 		};
 
 		var isGhostClick = function ($event) {
@@ -108,8 +116,8 @@ angular.module('starter')
 			if(isGhostClick($event)){
 				return;
 			}
-
-			$scope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications[trackingReminderNotificationNotificationIndex].hide = true;
+			$scope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications.splice(trackingReminderNotificationNotificationIndex, 1);
+			//$scope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications[trackingReminderNotificationNotificationIndex].hide = true;
 			console.debug('Tracking notification ' + JSON.stringify(trackingReminderNotification));
 			console.log('modifiedReminderValue is ' + modifiedReminderValue);
 			var body = {
@@ -139,8 +147,8 @@ angular.module('starter')
 				return;
 			}
 
-			$scope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications[trackingReminderNotificationNotificationIndex].hide = true;
-
+			//$scope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications[trackingReminderNotificationNotificationIndex].hide = true;
+			$scope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications.splice(trackingReminderNotificationNotificationIndex, 1);
 			console.debug('Skipping notification ' + JSON.stringify(trackingReminderNotification));
 			var params = {
 				trackingReminderNotificationId: trackingReminderNotification.id,
@@ -169,7 +177,8 @@ angular.module('starter')
 				return;
 			}
 
-			$scope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications[trackingReminderNotificationNotificationIndex].hide = true;
+			//$scope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications[trackingReminderNotificationNotificationIndex].hide = true;
+			$scope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications.splice(trackingReminderNotificationNotificationIndex, 1);
 			console.debug('Snoozing notification ' + JSON.stringify(trackingReminderNotification));
 			var params = {
 				trackingReminderNotificationId: trackingReminderNotification.id,
@@ -194,7 +203,7 @@ angular.module('starter')
 
 	    var getTrackingReminderNotifications = function () {
 			if($stateParams.today){
-				$scope.showLoader("Getting today's reminder notifications...");
+				//$scope.showLoader("Getting today's reminder notifications...");
 				reminderService.getFilteredTodayTrackingReminderNotifications($stateParams.variableCategoryName)
 					.then(function (filteredTrackingReminderNotifications) {
 						$scope.filteredTrackingReminderNotifications = filteredTrackingReminderNotifications;
@@ -204,14 +213,16 @@ angular.module('starter')
 						//Stop the ion-refresher from spinning
 						$scope.$broadcast('scroll.refreshComplete');
 						$scope.hideLoader();
+						$scope.state.loading = false;
 					}, function(){
 						$scope.hideLoader();
 						console.error("failed to get reminder notifications!");
 						//Stop the ion-refresher from spinning
 						$scope.$broadcast('scroll.refreshComplete');
+						$scope.state.loading = false;
 					});
 			} else {
-				$scope.showLoader("Getting reminder notifications...");
+				//$scope.showLoader("Getting reminder notifications...");
 				reminderService.getFilteredTrackingReminderNotifications($stateParams.variableCategoryName)
 					.then(function (filteredTrackingReminderNotifications) {
 						$scope.filteredTrackingReminderNotifications = filteredTrackingReminderNotifications;
@@ -221,11 +232,13 @@ angular.module('starter')
 						//Stop the ion-refresher from spinning
 						$scope.$broadcast('scroll.refreshComplete');
 						$scope.hideLoader();
+						$scope.state.loading = false;
 					}, function(){
 						$scope.hideLoader();
 						console.error("failed to get reminder notifications!");
 						//Stop the ion-refresher from spinning
 						$scope.$broadcast('scroll.refreshComplete');
+						$scope.state.loading = false;
 					});
 			}
 		};
@@ -234,7 +247,7 @@ angular.module('starter')
 			if($stateParams.today){
 				getTrackingReminderNotifications();
 			} else {
-				reminderService.refreshTrackingReminderNotifications($stateParams.variableCategoryName)
+				reminderService.refreshTrackingReminderNotifications()
 					.then(function(){
 						getTrackingReminderNotifications();
 					});
@@ -242,15 +255,17 @@ angular.module('starter')
 		};
 
 	    $scope.init = function(){
-			if (typeof Bugsnag !== "undefined") { Bugsnag.context = "reminderInbox"; }
+			console.debug($state.current.name + ' initializing...');
+			$rootScope.stateParams = $stateParams;
+			if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
+			if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
+			$scope.state.loading = true;
 			$rootScope.getAccessTokenFromUrlParameter();
 			$rootScope.hideNavigationMenuIfSetInUrlParameter();
 	    	if (!$rootScope.hideNavigationMenu && !$rootScope.introSeen && !$rootScope.user && !$rootScope.accessTokenInUrl) {
 				console.debug('reminderInboxCtrl init: Intro not seen and hidemenu is false so going to intro state');
 				$state.go('intro');
 			} else {
-
-				if (typeof analytics !== 'undefined')  { analytics.trackView("Reminders Inbox Controller"); }
 
 				$scope.refreshTrackingReminderNotifications();
 				//getTrackingReminderNotifications();

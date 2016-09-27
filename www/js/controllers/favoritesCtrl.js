@@ -1,7 +1,7 @@
 angular.module('starter')
 
 	.controller('FavoritesCtrl', function($scope, $state, $ionicActionSheet, $timeout, reminderService, authService, 
-										  localStorageService, measurementService, variableCategoryService) {
+										  localStorageService, measurementService, variableCategoryService, $rootScope, $stateParams) {
 
 	    $scope.controller_name = "FavoritesCtrl";
 
@@ -9,7 +9,6 @@ angular.module('starter')
 		
 	    $scope.state = {
 	    	selected1to5Value : false,
-			title : 'Favorites',
 			loading : true,
             trackingReminder : null,
             lastSent: new Date()
@@ -23,6 +22,10 @@ angular.module('starter')
 				$scope.state.favorites[i].total = null;
 			}
 		}
+
+		$scope.favoriteAddButtonClick = function () {
+			$scope.goToState('app.favoriteSearch', $rootScope.stateParams);
+		};
 
 		$scope.trackByReminder = function(trackingReminder, modifiedReminderValue){
 			if(!modifiedReminderValue){
@@ -74,40 +77,24 @@ angular.module('starter')
 		};
 
 	    $scope.init = function(){
-			if (typeof Bugsnag !== "undefined") {
-				Bugsnag.context = "Favorites";
+	    	authService.setUserUsingAccessTokenInUrl();
+			$rootScope.stateParams = $stateParams;
+			if(!$rootScope.stateParams.title){
+				$rootScope.stateParams.title = 'Favorites';
 			}
-			authService.checkAuthOrSendToLogin();
-			if (typeof analytics !== 'undefined')  { analytics.trackView("Favorites Controller"); }
+			if(!$rootScope.stateParams.addButtonText){
+				$rootScope.stateParams.addButtonText = 'Add a favorite variable';
+			}
+			if(!$rootScope.stateParams.addButtonIcon){
+				$rootScope.stateParams.addButtonIcon = 'ion-ios-star positive';
+			}
+
+			if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
+			if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
 			getFavoriteTrackingRemindersFromLocalStorage();
 			$scope.showHelpInfoPopupIfNecessary();
 
 	    };
-
-	    $scope.editMeasurement = function(trackingReminder){
-			$state.go('app.measurementAdd',
-				{
-					reminderNotification: trackingReminder,
-					fromUrl: window.location.href
-				});
-	    };
-
-	    $scope.editReminderSettings = function(trackingReminder){
-	    	$state.go('app.favoriteAdd',
-				{
-					reminderNotification: trackingReminder,
-					fromUrl: window.location.href,
-					fromState : $state.current.name
-				});
-	    };
-		
-		$scope.goToReminderSearchCategory = function(variableCategoryName) {
-			$state.go('app.reminderSearchCategory',
-				{
-					variableCategoryName : variableCategoryName,
-					fromUrl: window.location.href
-				});
-		};
 
         // when view is changed
     	$scope.$on('$ionicView.enter', function(e) { console.debug("Entering state " + $state.current.name);
@@ -118,10 +105,11 @@ angular.module('starter')
 		// Triggered on a button click, or some other target
 		$scope.showActionSheet = function(favorite, $index) {
 
-		    $scope.state.trackingReminder = favorite;
-			$scope.state.variableObject = favorite;
-			$scope.state.variableObject.id = favorite.variableId;
-			$scope.state.variableObject.name = favorite.variableName;
+			var variableObject = {
+				id: favorite.variableId,
+				name: favorite.variableName
+			};
+
 			// Show the action sheet
 			var hideSheet = $ionicActionSheet.show({
 				buttons: [
@@ -142,30 +130,30 @@ angular.module('starter')
 				buttonClicked: function(index) {
 					console.log('BUTTON CLICKED', index);
 					if(index === 0){
-						$scope.editReminderSettings($scope.state.trackingReminder);
+						$state.go('app.favoriteAdd', {reminder: favorite});
 					}
 					if(index === 1){
-						$scope.editMeasurement($scope.state.variableObject);
+						$state.go('app.measurementAdd', {variableObject: variableObject});
 					}
                     if(index === 2){
 						$state.go('app.charts',
 							{
-								trackingReminder: $scope.state.trackingReminder,
+								trackingReminder: favorite,
 								fromState: $state.current.name,
 								fromUrl: window.location.href
 							});
                     }
 					if (index === 3) {
-						$scope.goToHistoryForVariableObject($scope.state.variableObject);
+						$scope.goToHistoryForVariableObject(variableObject);
 					}
 					if (index === 4) {
 						$state.go('app.variableSettings',
-							{variableName: $scope.state.trackingReminder.variableName});
+							{variableName: favorite.variableName});
 					}
 					if(index === 5){
 						$state.go('app.reminderAdd',
 							{
-								variableObject: $scope.state.variableObject,
+								variableObject: variableObject,
 								fromState: $state.current.name,
 								fromUrl: window.location.href
 							});
@@ -173,9 +161,9 @@ angular.module('starter')
 					if(index === 6){
 						$state.go('app.predictors',
 							{
-								variableObject: $scope.state.variableObject,
+								variableObject: variableObject,
 								requestParams: {
-									effect:  $scope.state.variableObject.name,
+									effect:  favorite.variableName,
 									correlationCoefficient: "(gt)0"
 								}
 							});
@@ -183,9 +171,9 @@ angular.module('starter')
 					if(index === 6){
 						$state.go('app.predictors',
 							{
-								variableObject: $scope.state.variableObject,
+								variableObject: variableObject,
 								requestParams: {
-									effect:  $scope.state.variableObject.name,
+									effect:  favorite.variableName,
 									correlationCoefficient: "(lt)0"
 								}
 							});
@@ -194,13 +182,14 @@ angular.module('starter')
 					return true;
 				},
 				destructiveButtonClicked: function() {
-                    reminderService.deleteReminder($scope.state.trackingReminder.trackingReminderId)
+					$scope.state.favorites.splice($index, 1);
+                    reminderService.deleteReminder(favorite.id)
                         .then(function(){
-                            console.debug('Favorite Deleted');
+                            console.debug('Favorite deleted: ' + JSON.stringify(favorite));
                         }, function(err){
-                            console.error('Failed to Delete Favorite, Try again!', 'assertive');
+                            console.error('Failed to Delete Favorite!  Error is ' + err.message + '.  Favorite is ' + JSON.stringify(favorite));
                         });
-                    localStorageService.deleteElementOfItemById('trackingReminders', $scope.state.trackingReminder.trackingReminderId)
+                    localStorageService.deleteElementOfItemById('trackingReminders', favorite.id)
                         .then(function(){
                             $scope.init();
                         });

@@ -2,7 +2,7 @@ angular.module('starter')
 
     // Controls the Track Page of the App
     .controller('TrackPrimaryOutcomeCtrl', function($scope, $state, $timeout, $rootScope, $ionicLoading, measurementService,
-                                                    chartService, localStorageService, ratingService) {
+                                                    chartService, localStorageService, ratingService, $stateParams) {
         $scope.controller_name = "TrackPrimaryOutcomeCtrl";
         $scope.state = {};
 
@@ -98,11 +98,12 @@ angular.module('starter')
 
         $scope.init = function(){
             $ionicLoading.hide();
-            if (typeof Bugsnag !== "undefined") {
-                Bugsnag.context = "trackPrimary";
-            }
+            console.debug($state.current.name + ' initializing...');
+            $rootScope.stateParams = $stateParams;
+            if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
+            if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
+
             updateCharts();
-            console.log('Track state brought in focus. Updating charts and syncing..');
             $scope.showRatingFaces = true;
             $scope.timeRemaining = false;
             if($rootScope.user){
@@ -112,7 +113,6 @@ angular.module('starter')
                     $ionicLoading.hide();
                 });
             }
-            if (typeof analytics !== 'undefined')  { analytics.trackView("Track Primary Outcome Controller"); }
         };
 
         $scope.$on('updateCharts', function(){

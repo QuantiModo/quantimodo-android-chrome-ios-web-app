@@ -32,7 +32,7 @@ angular.module('starter',
             };
         }
 
-         if (ionic.Platform.isAndroid() || ionic.Platform.isIPad() || ionic.Platform.isIOS()) {
+         if (typeof PushNotification !== "undefined") {
              console.debug("Going to try to register push");
              var push = PushNotification.init({
                  android: {
@@ -265,7 +265,7 @@ angular.module('starter',
                 return;
             }
 
-            $rootScope.appVersion = "1.9.6.0";
+            $rootScope.appVersion = "1.9.8.0";
             $rootScope.appName = config.appSettings.appName;
 
             if (typeof Bugsnag !== "undefined") {
@@ -435,7 +435,8 @@ angular.module('starter',
                 fromState : null,
                 measurement : null,
                 variableObject : null,
-                nextState: 'app.measurementAdd'
+                nextState: 'app.measurementAdd',
+                variableCategoryName: null
             },
             views: {
                 'menuContent': {
@@ -747,12 +748,14 @@ angular.module('starter',
             url: "/reminders-inbox",
             cache: false,
             params: {
+                title: 'Reminder Inbox',
                 reminderFrequency: null,
                 unit: null,
                 variableName : null,
                 dateTime : null,
                 value : null,
-                fromUrl : null
+                fromUrl : null,
+                showHelpCards: true
             },
             views: {
                 'menuContent': {
@@ -763,13 +766,16 @@ angular.module('starter',
         })
         .state('app.favorites', {
             url: "/favorites",
+            cache: false,
             params: {
                 reminderFrequency: 0,
                 unit: null,
                 variableName : null,
                 dateTime : null,
                 value : null,
-                fromUrl : null
+                fromUrl : null,
+                helpText: "Favorites are variables that you might want to track on a frequent but irregular basis.  Examples: As-needed medications, cups of coffee, or glasses of water",
+                moreHelpText: "Tip: I recommend using reminders instead of favorites whenever possible because they allow you to record regular 0 values as well. Knowing when you didn't take a medication or eat something helps our analytics engine to figure out how these things might be affecting you."
             },
             views: {
                 'menuContent': {
@@ -812,6 +818,52 @@ angular.module('starter',
                 }
             }
         })
+        .state('app.manageScheduledMeds', {
+            url: "/manage-scheduled-meds",
+            params: {
+                title: "Manage Scheduled Meds",
+                helpText: "Here you can add and manage your scheduled medications.  Long-press on a medication for more options.  You can drag down to refresh.",
+                addButtonText: "Add scheduled medication",
+                variableCategoryName : 'Treatments'
+            },
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/reminders-manage.html",
+                    controller: 'RemindersManageCtrl'
+                }
+            }
+        })
+        .state('app.todayMedSchedule', {
+            url: "/today-med-schedule",
+            params: {
+                title: "Today's Med Schedule",
+                helpText: "Here you can see and record today's scheduled doses.",
+                today : true,
+                variableCategoryName : 'Treatments'
+            },
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/reminders-inbox.html",
+                    controller: 'RemindersInboxCtrl'
+                }
+            }
+        })
+        .state('app.asNeededMeds', {
+            url: "/as-needed-meds",
+            params: {
+                title: "As Needed Meds",
+                addButtonText: "Add as-needed medication",
+                helpText: "Quickly record doses of medications taken as needed just by tapping.  Tap twice for two doses, etc.",
+                variableCategoryName : 'Treatments',
+                addButtonIcon: "ion-ios-medkit-outline",
+            },
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/favorites.html",
+                    controller: 'FavoritesCtrl'
+                }
+            }
+        })
         .state('app.remindersInboxCategory', {
             url: "/reminders-inbox/:variableCategoryName",
             params: {
@@ -838,24 +890,6 @@ angular.module('starter',
                 }
             }
         })
-        .state('app.reminderAddCategory', {
-            url: "/reminder_add/:variableCategoryName",
-            cache: false,
-            params: {
-                variableCategoryName : null,
-                reminder : null,
-                fromState : null,
-                fromUrl : null,
-                measurement : null,
-                variableObject : null
-            },
-            views: {
-                'menuContent': {
-                    templateUrl: "templates/reminder-add.html",
-                    controller: 'RemindersAddCtrl'
-                }
-            }
-        })
         .state('app.reminderAdd', {
             url: "/reminder_add",
             cache: false,
@@ -865,7 +899,8 @@ angular.module('starter',
                 fromState : null,
                 fromUrl : null,
                 measurement : null,
-                variableObject : null
+                variableObject : null,
+                favorite: false
             },
             views: {
                 'menuContent': {
@@ -878,17 +913,19 @@ angular.module('starter',
             url: "/favorite-add",
             cache: false,
             params: {
+                reminder: null,
                 variableCategoryName : null,
                 reminderNotification: null,
                 fromState : null,
                 fromUrl : null,
                 measurement : null,
-                variableObject : null
+                variableObject : null,
+                favorite: true
             },
             views: {
                 'menuContent': {
-                    templateUrl: "templates/favorite-add.html",
-                    controller: 'FavoriteAddCtrl'
+                    templateUrl: "templates/reminder-add.html",
+                    controller: 'RemindersAddCtrl'
                 }
             }
         });

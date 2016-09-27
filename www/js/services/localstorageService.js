@@ -53,15 +53,25 @@ angular.module('starter')
                 return deferred.promise;
             },
 
-            addToOrReplaceElementOfItemByIdOrMoveToFront : function(localStorageItemName, replacementElement){
+            addToOrReplaceElementOfItemByIdOrMoveToFront : function(localStorageItemName, replacementElementArray){
                 var deferred = $q.defer();
-                var elementsToKeep = [];
-                elementsToKeep.push(replacementElement);
-
+                if(replacementElementArray.constructor !== Array){
+                    replacementElementArray = [replacementElementArray];
+                }
+                // Have to stringify/parse to create cloned variable or it adds all stored reminders to the array to be posted
+                var elementsToKeep = JSON.parse(JSON.stringify(replacementElementArray));
                 var localStorageItemArray = JSON.parse(this.getItemSync(localStorageItemName));
+                var found = false;
                 if(localStorageItemArray){
                     for(var i = 0; i < localStorageItemArray.length; i++){
-                        if(localStorageItemArray[i].id !== replacementElement.id){
+                        found = false;
+                        for (var j = 0; j < replacementElementArray.length; j++){
+                            if(replacementElementArray[j].id &&
+                                localStorageItemArray[i].id === replacementElementArray[j].id){
+                                found = true;
+                            }
+                        }
+                        if(!found){
                             elementsToKeep.push(localStorageItemArray[i]);
                         }
                     }

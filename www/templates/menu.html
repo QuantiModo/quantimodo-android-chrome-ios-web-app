@@ -2,13 +2,14 @@
     <ion-side-menu-content>
         <ion-nav-bar class="bar-positive">
             <ion-nav-buttons side="left">
-                <button ng-hide="hideNavigationMenu || (hideNavigationMenu && !isWelcomed ) " class="button button-icon button-clear ion-navicon" menu-toggle="left">
+                <button ng-hide="hideNavigationMenu" class="button button-icon button-clear ion-navicon" menu-toggle="left">
                 </button>
             </ion-nav-buttons>
 
             <ion-nav-buttons side="right">
                 <div class="buttons">
                     <button class="button button-icon ion-calendar" ng-show="showCalendarButton" ng-click="showCalendarPopup($event)"></button>
+                    <button class="button button-icon ion-help-circled" ng-show="stateParams.helpText" ng-click="onHelpButtonPress()"></button>
                     <button class="button button-icon ion-android-more-vertical" ng-show="showMoreMenuButton" ng-click="showActionSheetMenu()"></button>
                 </div>
             </ion-nav-buttons>

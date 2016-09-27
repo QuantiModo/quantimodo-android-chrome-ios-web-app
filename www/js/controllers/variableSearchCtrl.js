@@ -4,20 +4,13 @@ angular.module('starter')
 
         $scope.controller_name = "VariableSearchCtrl";
 
-        var variableCategoryName = $stateParams.variableCategoryName;
-        var variableCategoryObject = variableCategoryService.getVariableCategoryInfo(variableCategoryName);
-
         $scope.state = {
-            searching: true,
             showVariableSearchCard: false,
             showAddVariableButton: false,
             showVariableCategorySelector: false,
             variableSearchResults : [],
-            variableCategoryName: variableCategoryName,
-            variableCategoryObject : variableCategoryObject,
-            // variables
-            variableName : "",
-            helpText: variableCategoryObject.helpText,
+            variableCategoryName: $stateParams.variableCategoryName,
+            helpText: variableCategoryService.getVariableCategoryInfo($stateParams.variableCategoryName).helpText,
             variableSearchQuery : {name:''},
             trackingReminder: {}
         };
@@ -33,61 +26,26 @@ angular.module('starter')
             if($state.current.name === 'app.favoriteSearch'){
                 $scope.addToFavoritesUsingVariableObject(variableObject);
             } else {
-                $state.go($stateParams.nextState,
-                    {
-                        variableObject : variableObject,
-                        fromState : $state.current.name,
-                        fromUrl: window.location.href,
-                        variableCategoryName: $stateParams.variableCategoryName
-                    });
+                $rootScope.stateParams.variableObject = variableObject;
+                $state.go($stateParams.nextState, $rootScope.stateParams);
             }
         };
 
-        function setTitleAndPlaceholderText() {
-            if (variableCategoryName && variableCategoryName !== 'Anything') {
-                $scope.state.variableSearchPlaceholderText = "Search for a " + $filter('wordAliases')(pluralize(variableCategoryName, 1).toLowerCase()) + " here...";
-            } else {
-                $scope.state.variableSearchPlaceholderText = "Search for a variable here...";
-            }
-
-            if ($stateParams.nextState === "app.reminderAdd") {
-                if (variableCategoryName && variableCategoryName !== 'Anything') {
-                    $scope.state.title = $filter('wordAliases')('Add') + " " + $filter('wordAliases')(pluralize(variableCategoryName, 1)) + " Reminder";
-                } else {
-                    $scope.state.title = $filter('wordAliases')('Add Reminder');
-                }
-            }
-
-            if ($stateParams.nextState === "app.favoriteAdd") {
-                if (variableCategoryName && variableCategoryName !== 'Anything') {
-                    $scope.state.title = $filter('wordAliases')('Add') + " " + $filter('wordAliases')(pluralize(variableCategoryName, 1)) + " Favorite";
-                } else {
-                    $scope.state.title = $filter('wordAliases')('Add Favorite');
-                }
-            }
-            else if ($stateParams.doNotIncludePublicVariables || $stateParams.nextState === "app.charts") {
-                $scope.state.variableSearchPlaceholderText = "Search for a variable here...";
-                $scope.state.title = $filter('wordAliases')('Your Variables');
-            }
-            else if ($stateParams.nextState === "app.measurementAdd") {
-                if (variableCategoryName && variableCategoryName !== 'Anything') {
-                    $scope.state.variableSearchPlaceholderText = "Search for a " + $filter('wordAliases')(pluralize(variableCategoryName, 1).toLowerCase()) + " here...";
-                    $scope.state.title = $filter('wordAliases')('Record') + " " + $filter('wordAliases')(variableCategoryName);
-                } else {
-                    $scope.state.variableSearchPlaceholderText = "Search for a variable here...";
-                    $scope.state.title = $filter('wordAliases')('Record a Measurement');
-                }
-            }
-        }
-
         $scope.init = function(){
-            if (typeof Bugsnag !== "undefined") {
-                Bugsnag.context = "variableSearch";
+            console.debug($state.current.name + ' initializing...');
+            $rootScope.stateParams = $stateParams;
+            if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
+            if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
+
+            $scope.state.variableSearchPlaceholderText = "Search for a variable here...";
+            $scope.state.title = "Select Variable";
+
+            if ($scope.state.variableCategoryName && $scope.state.variableCategoryName !== 'Anything') {
+                $scope.state.variableSearchPlaceholderText = "Search for a " +
+                    $filter('wordAliases')(pluralize($scope.state.variableCategoryName, 1).toLowerCase()) + " here...";
+                $scope.state.title = "Select " + $filter('wordAliases')(pluralize($scope.state.variableCategoryName, 1));
             }
-            console.debug($state.current.name + ": " + 'Initializing variable search controller...');
-            setTitleAndPlaceholderText();
-            if (typeof analytics !== 'undefined')  { analytics.trackView("Variable Search Controller"); }
-            authService.checkAuthOrSendToLogin();
+
             $scope.showHelpInfoPopupIfNecessary();
             $scope.state.showVariableSearchCard = true;
             if($scope.state.variableSearchResults.length < 10){
@@ -98,12 +56,19 @@ angular.module('starter')
 
         // when a query is searched in the search box
         $scope.onVariableSearch = function(){
+            var params;
             $scope.state.showAddVariableButton = false;
             console.log($state.current.name + ": " + "Search term: ", $scope.state.variableSearchQuery.name);
             if($scope.state.variableSearchQuery.name.length > 2){
                 $scope.state.searching = true;
                 if ($stateParams.doNotIncludePublicVariables) { // on variable search page, only show user's variables
-                    variableService.searchUserVariables($scope.state.variableSearchQuery.name, $scope.state.variableCategoryName)
+                    params = {
+                        'limit' : 100,
+                        'includePublic' : false,
+                        'variableCategoryName' : $scope.state.variableCategoryName,
+                        'manualTracking': true
+                    };
+                    variableService.searchUserVariables($scope.state.variableSearchQuery.name, params)
                         .then(function(variables){
                             console.debug($state.current.name + ": " + "$scope.onVariableSearch: Populating list with " +
                                 "variableService.searchUserVariables results ");
@@ -113,7 +78,13 @@ angular.module('starter')
                         });
                 }
                 else { // on add reminder or record measurement search pages; include public variables
-                    variableService.searchVariablesIncludePublic($scope.state.variableSearchQuery.name, $scope.state.variableCategoryName)
+                    params = {
+                        'limit' : 100,
+                        'includePublic' : true,
+                        'variableCategoryName' : $scope.state.variableCategoryName,
+                        'manualTracking': true
+                    };
+                    variableService.searchUserVariables($scope.state.variableSearchQuery.name, params)
                         .then(function(variables){
                             console.debug($state.current.name + ": " + "$scope.onVariableSearch: Populating list with " +
                                 "variableService.searchVariablesIncludePublic results ");
@@ -133,8 +104,7 @@ angular.module('starter')
                                 }
                             }
                             // If no results or no exact match, show "+ Add [variable]" button for query
-                            // Also, can only favorite existing variables
-                            if((variables.length < 1 || !found) && $stateParams.nextState !== "app.favoriteAdd"){
+                            if((variables.length < 1 || !found)){
                                 console.debug($state.current.name + ": " + "$scope.onVariableSearch: Set showAddVariableButton to true");
                                 $scope.state.showAddVariableButton = true;
                                 if ($stateParams.nextState === "app.reminderAdd") {
@@ -160,8 +130,8 @@ angular.module('starter')
 
 
         var populateCommonVariables = function(){
-            if (variableCategoryName === 'Anything') {
-                variableCategoryName = null;
+            if ($scope.state.variableCategoryName === 'Anything') {
+                $scope.state.variableCategoryName = null;
             }
             
             if($scope.state.variableSearchQuery.name.length > 2){
@@ -173,7 +143,7 @@ angular.module('starter')
             }
 
             var commonVariables = localStorageService.getElementsFromItemWithFilters(
-                'commonVariables', 'variableCategoryName', variableCategoryName);
+                'commonVariables', 'variableCategoryName', $scope.state.variableCategoryName);
             if(commonVariables && commonVariables.length > 0){
                 if($scope.state.variableSearchQuery.name.length < 3 && $scope.state.variableSearchResults.length < 1) {
                     $scope.state.variableSearchResults = $scope.state.variableSearchResults.concat(commonVariables);
@@ -185,7 +155,7 @@ angular.module('starter')
                         variableService.refreshCommonVariables().then(function () {
                             if ($scope.state.variableSearchQuery.name.length < 3 && $scope.state.variableSearchResults.length < 1) {
                                 commonVariables = localStorageService.getElementsFromItemWithFilters(
-                                    'commonVariables', 'variableCategoryName', variableCategoryName);
+                                    'commonVariables', 'variableCategoryName', $scope.state.variableCategoryName);
                                 if(commonVariables){
                                     $scope.state.variableSearchResults = $scope.state.variableSearchResults.concat(commonVariables);
                                 }
@@ -205,12 +175,12 @@ angular.module('starter')
             if(!$scope.state.variableSearchResults || $scope.state.variableSearchResults.length < 1){
                 $scope.state.searching = true;
             }
-            if (variableCategoryName === 'Anything') {
-                variableCategoryName = null;
+            if ($scope.state.variableCategoryName === 'Anything') {
+                $scope.state.variableCategoryName = null;
             }
 
             var userVariables = localStorageService.getElementsFromItemWithFilters(
-                'userVariables', 'variableCategoryName', variableCategoryName);
+                'userVariables', 'variableCategoryName', $scope.state.variableCategoryName);
             if(userVariables && userVariables.length > 0){
                 if($scope.state.variableSearchQuery.name.length < 3) {
                     $scope.state.variableSearchResults = userVariables;
@@ -225,7 +195,7 @@ angular.module('starter')
                         variableService.refreshUserVariables().then(function () {
                             if ($scope.state.variableSearchQuery.name.length < 3 && $scope.state.variableSearchResults.length < 1) {
                                 userVariables = localStorageService.getElementsFromItemWithFilters(
-                                    'userVariables', 'variableCategoryName', variableCategoryName);
+                                    'userVariables', 'variableCategoryName', $scope.state.variableCategoryName);
                                 if(userVariables){
                                     $scope.state.variableSearchResults = userVariables;
                                 }
@@ -249,13 +219,8 @@ angular.module('starter')
 
             console.debug($state.current.name + ": " + "$scope.addNewVariable: " + JSON.stringify(variableObject));
             if ($stateParams.nextState) {
-                $state.go($stateParams.nextState,
-                    {
-                        variableObject : variableObject,
-                        fromState : $state.current.name,
-                        fromUrl: window.location.href
-                    }
-                );
+                $rootScope.stateParams.variableObject = variableObject;
+                $state.go($stateParams.nextState, $rootScope.stateParams);
             }
         };
 

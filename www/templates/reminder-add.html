@@ -26,7 +26,7 @@
                             <!--ng-model="state.trackingReminder.abbreviatedUnitName" ng-options="x as x.abbreviatedName for x in unitObjects track by x.id">-->
                     </select>
                 </label>
-                <label class="item item-input item-select">
+                <label class="item item-input item-select" ng-if="!stateParams.favorite">
                     <div class="input-label">
                         Frequency
                     </div>
@@ -36,16 +36,40 @@
                 </label>
             </div>
             <div class="list card" ng-show="state.selectedFrequency === 'Daily'">
-                    <label class="item item-input">
-                        <div class="input-label" >
-                            Reminder time
-                        </div>
-                        <button class="button button-block up-top"
-                                style="text-align:left;font-size:14px;border:none;color:black;background-color: white;margin-bottom: 0px;margin-top: 0px;padding-left: 0px;"
-                                ng-click="openReminderStartTimePicker()">
-                            {{state.reminderStartTimeEpochTime | fromUnixTimestampToLocalTimeOfDay}}
-                        </button>
-                    </label>
+                <label class="item item-input">
+                    <div class="input-label" >
+                        Reminder time
+                    </div>
+                    <button class="button button-block up-top"
+                            style="text-align:left;font-size:14px;border:none;color:black;background-color: white;margin-bottom: 0px;margin-top: 0px;padding-left: 0px;"
+                            ng-click="openReminderStartTimePicker('first')">
+                        {{state.firstReminderStartTimeEpochTime | fromUnixTimestampToLocalTimeOfDay}}
+                    </button>
+                </label>
+                <label ng-show="state.secondReminderStartTimeEpochTime" class="item item-input">
+                    <div class="input-label" >
+                        2nd reminder time
+                    </div>
+                    <button class="button button-block up-top"
+                            style="text-align:left;font-size:14px;border:none;color:black;background-color: white;margin-bottom: 0px;margin-top: 0px;padding-left: 0px;"
+                            ng-click="openReminderStartTimePicker('second')">
+                        {{state.secondReminderStartTimeEpochTime | fromUnixTimestampToLocalTimeOfDay}}
+                    </button>
+                </label>
+                <label ng-show="state.thirdReminderStartTimeEpochTime" class="item item-input">
+                    <div class="input-label" >
+                        3nd reminder time
+                    </div>
+                    <button class="button button-block up-top"
+                            style="text-align:left;font-size:14px;border:none;color:black;background-color: white;margin-bottom: 0px;margin-top: 0px;padding-left: 0px;"
+                            ng-click="openReminderStartTimePicker('third')">
+                        {{state.thirdReminderStartTimeEpochTime | fromUnixTimestampToLocalTimeOfDay}}
+                    </button>
+                </label>
+                <lable ng-hide="state.hideAdditionalReminderTimeButton" ng-click="showAdditionalReminderTime()"
+                        class="item icon-left ion-clock">
+                    Add additional time
+                </lable>
             </div>
 <!--            <div class="list card" ng-show="state.selectedFrequency !== 'Daily'">
                 <label class="item item-input">
@@ -71,6 +95,7 @@
                     </button>
                 </label>
             </div>-->
+
             <label class="item item-input" ng-show="state.showInstructionsField">
                 <span class="input-label">Instructions</span>
                 <input type="text" ng-model="state.trackingReminder.instructions" id="instructions" placeholder="Enter instructions here..." >

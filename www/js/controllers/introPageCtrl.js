@@ -2,7 +2,7 @@ angular.module('starter')
 
     // Controls the Track Page of the App
     .controller('IntroPageCtrl', function($scope, $ionicModal, $state, $ionicLoading, $ionicSlideBoxDelegate,
-                                          $rootScope) {
+                                          $rootScope, $stateParams) {
 
         $scope.controller_name = "IntroPageCtrl";
 
@@ -36,8 +36,10 @@ angular.module('starter')
         };
 
         var init = function(){
-            if (typeof Bugsnag !== "undefined") { Bugsnag.context = "introPage"; }
-            //$scope.showLoader();
+            console.debug($state.current.name + ' initializing...');
+            $rootScope.stateParams = $stateParams;
+            if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
+            if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
             $scope.myIntro.ready = true;
             $ionicLoading.hide();
         };

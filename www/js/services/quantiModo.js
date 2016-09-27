@@ -1,4 +1,4 @@
-angular.module('starter')    
+angular.module('starter')
     // QuantiModo API implementation
     .factory('QuantiModo', function($http, $q, $rootScope, $ionicPopup, $state, $ionicLoading,
                                     localStorageService, bugsnagService, utilsService) {
@@ -52,6 +52,7 @@ angular.module('starter')
 
             // GET method with the added token
             QuantiModo.get = function(baseURL, allowedParams, params, successHandler, errorHandler){
+                console.debug('QuantiModo.get: Going to try to make request to ' + baseURL + " with params: " + JSON.stringify(params));
                 QuantiModo.getAccessTokenFromAnySource().then(function(accessToken){
 
                     allowedParams.push('limit');
@@ -60,16 +61,14 @@ angular.module('starter')
                     allowedParams.push('updatedAt');
                     // configure params
                     var urlParams = [];
-                    for (var key in params) 
+                    for (var property in params)
                     {
-                        if (jQuery.inArray(key, allowedParams) === -1)
-                        { 
-                            throw 'invalid parameter; allowed parameters: ' + allowedParams.toString(); 
-                        }
-                        if(typeof params[key] !== "undefined" && params[key] !== null){
-                            urlParams.push(encodeURIComponent(key) + '=' + encodeURIComponent(params[key]));
-                        } else {
-                            console.warn("Not including parameter " + key + " in request because it is null or undefined");
+                        if(params.hasOwnProperty(property)){
+                            if(typeof params[property] !== "undefined" && params[property] !== null){
+                                urlParams.push(encodeURIComponent(property) + '=' + encodeURIComponent(params[property]));
+                            } else {
+                                console.warn("Not including parameter " + property + " in request because it is null or undefined");
+                            }
                         }
                     }
                     urlParams.push(encodeURIComponent('appName') + '=' + encodeURIComponent(config.appSettings.appName));
@@ -126,7 +125,7 @@ angular.module('starter')
 
             // POST method with the added token
             QuantiModo.post = function(baseURL, requiredFields, items, successHandler, errorHandler){
-                console.debug('QuantiModo.post: ' + baseURL + ' body: ' + JSON.stringify(items));
+                console.debug('QuantiModo.post: About to try to post request to ' + baseURL + ' with body: ' + JSON.stringify(items));
                 QuantiModo.getAccessTokenFromAnySource().then(function(accessToken){
 
                     //console.log("Token : ", token.accessToken);
@@ -135,8 +134,10 @@ angular.module('starter')
                     {
                         var item = items[i];
                         for (var j = 0; j < requiredFields.length; j++) { 
-                            if (!(requiredFields[j] in item)) { 
-                                throw 'missing required field in POST data; required fields: ' + requiredFields.toString(); 
+                            if (!(requiredFields[j] in item)) {
+                                bugsnagService.reportError('Missing required field ' + requiredFields[j] + ' in ' +
+                                    baseURL + ' request!');
+                                //throw 'missing required field in POST data; required fields: ' + requiredFields.toString();
                             } 
                         }
                     }
@@ -202,7 +203,7 @@ angular.module('starter')
                     errorHandler);
             };
 
-            QuantiModo.getMeasurementsLooping = function(params, doNotLoop){
+            QuantiModo.getMeasurementsLooping = function(params){
                 var defer = $q.defer();
                 var response_array = [];
                 var errorCallback = function(){
@@ -355,55 +356,11 @@ angular.module('starter')
                     errorHandler);
             };
 
-            // search for public variables
-            QuantiModo.searchVariablesIncludePublic = function(query, successHandler, errorHandler){
-                QuantiModo.get('api/v1/variables/search/' + encodeURIComponent(query),
-                    ['limit','includePublic'],
-                    {'limit' : 100, 'includePublic' : true},
-                    successHandler,
-                    errorHandler);
-            };
-
             // search for user variables
-            QuantiModo.searchUserVariables = function(query, successHandler, errorHandler){
+            QuantiModo.searchUserVariables = function(query, params, successHandler, errorHandler){
                 QuantiModo.get('api/v1/variables/search/' + encodeURIComponent(query),
-                    ['limit','includePublic'],
-                    {'limit' : 100, 'includePublic' : false},
-                    successHandler,
-                    errorHandler);
-            };
-
-            // search for public variables by category
-            QuantiModo.searchVariablesByCategoryIncludePublic = function(query, variableCategoryName, successHandler, errorHandler){
-                var params = {'limit' : 100, 'includePublic': false};
-                if(variableCategoryName && variableCategoryName !== 'Anything'){
-                    params.variableCategoryName = variableCategoryName;
-                }
-                QuantiModo.get('api/v1/variables/search/'+ encodeURIComponent(query),
-                    ['limit','variableCategoryName','includePublic'],
+                    ['limit','includePublic', 'manualTracking'],
                     params,
-                    successHandler,
-                    errorHandler);
-            };
-
-            // search user variables by category
-            QuantiModo.searchUserVariablesByCategory = function(query, variableCategoryName, successHandler, errorHandler){
-                var params = {'limit' : 100, 'includePublic': false};
-                if(variableCategoryName && variableCategoryName !== 'Anything'){
-                    params.variableCategoryName = variableCategoryName;
-                }
-                QuantiModo.get('api/v1/variables/search/'+ encodeURIComponent(query),
-                    ['limit','variableCategoryName','includePublic'],
-                    params,
-                    successHandler,
-                    errorHandler);
-            };
-
-            // get user variables
-            QuantiModo.getVariables = function(successHandler, errorHandler){
-                QuantiModo.get('api/v1/variables',
-                    ['limit'],
-                    { limit:100 },
                     successHandler,
                     errorHandler);
             };
@@ -614,20 +571,18 @@ angular.module('starter')
             };
 
             // post tracking reminder
-            QuantiModo.postTrackingReminder = function(reminder, successHandler, errorHandler) { 
-                console.log(reminder);
-                if(!reminder.timeZoneOffset){
-                    var d = new Date();
-                    reminder.timeZoneOffset = d.getTimezoneOffset();
+            QuantiModo.postTrackingReminders = function(trackingRemindersArray, successHandler, errorHandler) {
+                if(trackingRemindersArray.constructor !== Array){
+                    trackingRemindersArray = [trackingRemindersArray];
                 }
+                var d = new Date();
+                for(var i = 0; i < trackingRemindersArray.length; i++){
+                    trackingRemindersArray[i].timeZoneOffset = d.getTimezoneOffset();
+                }
+
                 QuantiModo.post('api/v1/trackingReminders',
-                    [
-                        'variableId', 
-                        'defaultValue',
-                        'reminderFrequency',
-                        'timeZoneOffset'
-                    ],
-                    reminder,
+                    [],
+                    trackingRemindersArray,
                     successHandler,
                     errorHandler);
             };
@@ -765,26 +720,19 @@ angular.module('starter')
 
             QuantiModo.getOrRefreshAccessTokenOrLogin = function (deferred) {
 
-                console.log('access token resolving flow');
-
                 var now = new Date().getTime();
                 var expiresAt = localStorageService.getItemSync('expiresAt');
                 var refreshToken = localStorageService.getItemSync('refreshToken');
                 var accessToken = localStorageService.getItemSync('accessToken');
 
-                console.log('Values from local storage:', {
+                console.log('QuantiModo.getOrRefreshAccessTokenOrLogin: Values from local storage:', JSON.stringify({
                     expiresAt: expiresAt,
                     refreshToken: refreshToken,
                     accessToken: accessToken
-                });
+                }));
 
-                // get expired time
                 if (now < expiresAt) {
-
-                    console.log('Current token should not be expired');
-                    // valid token
-                    console.log('Resolving token using value from local storage');
-
+                    console.log('QuantiModo.getOrRefreshAccessTokenOrLogin: Current access token should not be expired. Resolving token using one from local storage');
                     deferred.resolve({
                         accessToken: accessToken
                     });
@@ -792,7 +740,7 @@ angular.module('starter')
                 } else if (refreshToken) {
                     QuantiModo.refreshAccessToken(refreshToken, deferred);
                 } else {
-                    console.warn('Refresh token is undefined. Not enough data for oauth flow. rejecting token promise. ' +
+                    console.warn('QuantiModo.getOrRefreshAccessTokenOrLogin: Refresh token is undefined. Not enough data for oauth flow. rejecting token promise. ' +
                         'Clearing accessToken from local storage if it exists and sending to login page...');
                     $rootScope.sendToLogin();
                     deferred.reject();
@@ -802,12 +750,8 @@ angular.module('starter')
             QuantiModo.refreshAccessToken = function(refreshToken, deferred) {
                 console.log('Refresh token will be used to fetch access token from ' +
                     utilsService.getURL("api/oauth2/token") + ' with client id ' + utilsService.getClientId());
-
                 var url = utilsService.getURL("api/oauth2/token");
-
-                //expire token, refresh
                 $http.post(url, {
-
                     client_id: utilsService.getClientId(),
                     client_secret: utilsService.getClientSecret(),
                     refresh_token: refreshToken,
@@ -819,27 +763,24 @@ angular.module('starter')
                         deferred.reject('refresh failed');
                     } else {
                         var accessTokenRefreshed = QuantiModo.saveAccessTokenInLocalStorage(data);
-
-                        console.log('access token successfully updated from api server', data);
-                        console.log('resolving toke using response value');
-                        // respond
+                        console.log('QuantiModo.refreshAccessToken: access token successfully updated from api server: ' + JSON.stringify(data));
                         deferred.resolve({
                             accessToken: accessTokenRefreshed
                         });
                     }
 
                 }).error(function (response) {
-                    console.log("failed to refresh token from api server", response);
-                    // error refreshing
+                    console.log("QuantiModo.refreshAccessToken: failed to refresh token from api server" + JSON.stringify(response));
                     deferred.reject(response);
                 });
 
             };
 
-            // extract values from token response and saves in localstorage
+            // extract values from token response and saves in local storage
             QuantiModo.saveAccessTokenInLocalStorage = function (accessResponse) {
                 if(accessResponse){
                     var accessToken = accessResponse.accessToken || accessResponse.access_token;
+                    /** @namespace accessResponse.expiresIn */
                     var expiresIn = accessResponse.expiresIn || accessResponse.expires_in;
                     var refreshToken = accessResponse.refreshToken || accessResponse.refresh_token;
 

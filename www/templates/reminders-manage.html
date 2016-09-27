@@ -1,4 +1,5 @@
-<ion-view hide-nav-bar="hideNavigationMenu" view-title="{{state.title}}">
+<ion-view hide-nav-bar="hideNavigationMenu">
+	<ion-nav-title>{{stateParams.title}}</ion-nav-title>
 	<ion-content>
 		<ion-refresher on-refresh="refreshReminders()"></ion-refresher>
 
@@ -65,13 +66,13 @@
 		<div ng-show="state.showButtons" class="list card" ng-click="addNewReminderButtonClick()">
 			<a id="addReminderButton" class="item item-icon-left">
 				<i class="icon ion-plus positive"></i>
-				{{state.addButtonText}}
+				{{stateParams.addButtonText}}
 			</a>
 		</div>
 
 
 		<div class="list card" ng-show="state.trackingReminders.length" id="remindersList">
-			<div on-hold="showActionSheet(reminder)" class="list card" ng-repeat="reminder in state.trackingReminders | orderBy:state.orderParameter" ng-if="!reminder.hide">
+			<div on-hold="showActionSheet(reminder)" class="list card" ng-repeat="reminder in state.trackingReminders | orderBy:state.orderParameter track by $index" ng-if="!reminder.hide">
 				<div class="item" style="padding-bottom:0px;">
 					<div class="row">
 						<div ng-click="showActionSheet(reminder)" class="col col-20" style="padding-top: 0px;">

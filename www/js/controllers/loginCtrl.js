@@ -2,7 +2,7 @@ angular.module('starter')
 
     // Handlers the Welcome Page
     .controller('LoginCtrl', function($scope, $state, $rootScope, $ionicLoading, $injector, utilsService, authService,
-                                      localStorageService, $timeout, bugsnagService, QuantiModo) {
+                                      localStorageService, $timeout, bugsnagService, QuantiModo, $stateParams) {
 
         $scope.controller_name = "LoginCtrl";
         console.log("isIos is" + $rootScope.isIos);
@@ -18,15 +18,15 @@ angular.module('starter')
         }
 
         $scope.init = function () {
-            if (typeof Bugsnag !== "undefined") {
-                Bugsnag.context = "login";
-            }
+            console.debug($state.current.name + ' initializing...');
+            $rootScope.stateParams = $stateParams;
+            if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
+            if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
             $scope.hideLoader();
             if($rootScope.helpPopup){
                 console.log('Closing help popup!');
                 $rootScope.helpPopup.close();
             }
-            console.log("login initialized");
             if(!$rootScope.user){
                 $rootScope.getUserAndSetInLocalStorage();
             }
@@ -65,6 +65,7 @@ angular.module('starter')
             var userObject = localStorageService.getItemAsObject('user');
 
             $rootScope.user = userObject;
+            console.debug('$scope.login just set $rootScope.user to: ' + JSON.stringify($rootScope.user));
 
             if($rootScope.user){
                 console.debug('$scope.login calling setUserInLocalStorageBugsnagAndRegisterDeviceForPush');
@@ -85,8 +86,8 @@ angular.module('starter')
                 userObject = $rootScope.getUserAndSetInLocalStorage();
             }
             if(userObject){
-                console.log('Settings user in getOrSetUserInLocalStorage');
                 $rootScope.user = userObject;
+                console.debug('getOrSetUserInLocalStorage just set $rootScope.user to: ' + JSON.stringify($rootScope.user));
                 return userObject;
             }
 
@@ -128,7 +129,11 @@ angular.module('starter')
 
             console.log('nonNativeMobileLogin: open the auth window via inAppBrowser.');
             // Set location=yes instead of location=no temporarily to try to diagnose intermittent white screen on iOS
-            var ref = window.open(url,'_blank', 'location=no,toolbar=yes');
+
+            //var ref = window.open(url,'_blank', 'location=no,toolbar=yes');
+            // Try clearing inAppBrowser cache to avoid intermittent connectors page redirection problem
+            // Note:  Clearing cache didn't solve the problem, but I'll leave it because I don't think it hurts anything
+            var ref = window.open(url,'_blank', 'location=no,toolbar=yes,clearcache=yes,clearsessioncache=yes');
 
             // Commented because I think it's causing "$apply already in progress" error
             // $timeout(function () {
@@ -203,6 +208,7 @@ angular.module('starter')
                     if(response.user){
                         localStorageService.setItem('user', response.user);
                         $rootScope.user = response.user;
+                        console.debug('$scope.nativeSocialLogin just set $rootScope.user to: ' + JSON.stringify($rootScope.user));
                         localStorageService.setItem('accessToken', response.accessToken);
                         $rootScope.accessToken = response.accessToken;
                         localStorageService.setItem('refreshToken', response.refreshToken);

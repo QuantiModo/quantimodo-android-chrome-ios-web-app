@@ -3,7 +3,7 @@ angular.module('starter')
 	// Controls the settings page
 	.controller('SettingsCtrl', function( $state, $scope, $ionicPopover, $ionicPopup, localStorageService, $rootScope, 
 										  notificationService, QuantiModo, reminderService, qmLocationService, 
-										  ionicTimePicker, userService, timeService, utilsService) {
+										  ionicTimePicker, userService, timeService, utilsService, $stateParams, $ionicHistory) {
 		$scope.controller_name = "SettingsCtrl";
 		$scope.state = {};
 		$scope.showReminderFrequencySelector = config.appSettings.settingsPageOptions.showReminderFrequencySelector;
@@ -27,6 +27,7 @@ angular.module('starter')
 		if($rootScope.user && (!$rootScope.user.earliestReminderTime || !$rootScope.user.latestReminderTime)){
 			userService.refreshUser(function(user){
 				$rootScope.user = user;
+                console.debug('SettingsCtrl just set $rootScope.user to: ' + JSON.stringify($rootScope.user));
 			});
 		}
 
@@ -72,10 +73,10 @@ angular.module('starter')
 		};
 
 		$scope.init = function() {
-			if (typeof Bugsnag !== "undefined") {
-				Bugsnag.context = "settings";
-			}
-			if (typeof analytics !== 'undefined')  { analytics.trackView("Settings Controller"); }
+			console.debug($state.current.name + ' initializing...');
+			$rootScope.stateParams = $stateParams;
+			if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
+			if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
 			qmLocationService.getLocationVariablesFromLocalStorage();
 	    };
 
@@ -239,20 +240,30 @@ angular.module('starter')
 
         $scope.logout = function() {
 
-            var startLogout = function(){
-                console.log('Logging out...');
-                $scope.hideLoader();
-                $rootScope.user = null;
-				$scope.showDataClearPopup();
-            };
+			var completelyResetAppState = function(){
+				localStorageService.clear();
+				notificationService.cancelAllNotifications();
+				$ionicHistory.clearHistory();
+				$ionicHistory.clearCache();
+				if (utilsService.getClientId() === 'oAuthDisabled') {
+					window.open(utilsService.getURL("api/v2/auth/logout"),'_blank');
+				}
+				$state.go(config.appSettings.welcomeState, {}, {
+					reload: true
+				});
+			};
 
-            function refreshTrackingPageAndGoToWelcome() {
-                localStorageService.setItem('isWelcomed', false);
+			var afterLogoutDoNotDeleteMeasurements = function(){
+				clearTokensFromLocalStorage();
+				if (utilsService.getClientId() === 'oAuthDisabled') {
+					window.open(utilsService.getURL("api/v2/auth/logout"),'_blank');
+				}
+				localStorageService.setItem('isWelcomed', false);
 				//hard reload
 				$state.go(config.appSettings.welcomeState, {}, {
 					reload: true
 				});
-            }
+			};
 
             $scope.showDataClearPopup = function(){
                 $ionicPopup.show({
@@ -274,22 +285,14 @@ angular.module('starter')
 
                 });
             };
-            
-            var completelyResetAppState = function(){
-                localStorageService.clear();
-                notificationService.cancelAllNotifications();
-				$state.go(config.appSettings.welcomeState, {}, {
-					reload: true
-				});
-            };
-            
-            var afterLogoutDoNotDeleteMeasurements = function(){
-                clearTokensFromLocalStorage();
-                logoutOfApi();
-                refreshTrackingPageAndGoToWelcome();
-            };
 
-            startLogout();
+			console.log('Logging out...');
+			$scope.hideLoader();
+			$rootScope.user = null;
+			$scope.showDataClearPopup();
+            
+
+
         };
 
         // when user is logging out
@@ -299,12 +302,6 @@ angular.module('starter')
             localStorageService.deleteItem('accessToken');
             localStorageService.deleteItem('refreshToken');
             localStorageService.deleteItem('expiresAt');
-        }
-
-		// when user is logging out
-        function logoutOfApi() {
-			var logoutUrl = utilsService.getURL("api/v2/auth/logout");
-			window.open(logoutUrl,'_blank');
         }
 
 	    // Convert all data Array to a CSV object
@@ -388,7 +385,9 @@ angular.module('starter')
 		// when view is changed
 		$scope.$on('$ionicView.enter', function(e) { console.debug("Entering state " + $state.current.name);
 			$scope.hideLoader();
-			$scope.state.trackLocation = $rootScope.user.trackLocation;
+            if($rootScope.user){
+                $scope.state.trackLocation = $rootScope.user.trackLocation;
+            }
 		});
 
 	    // call constructor
