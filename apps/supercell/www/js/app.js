@@ -8,7 +8,7 @@ var appsManager = {
 		"supercell" : "configs/supercell",
 	},
 
-	defaultApp : "moodimodo",
+	defaultApp : "supercell",
 	getDefaultConfig : function(){
 		return appsManager.apps[appsManager.defaultApp] ? appsManager.apps[appsManager.defaultApp]+'.js' : false;
 	},

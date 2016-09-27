@@ -631,37 +631,7 @@ angular.module('starter',
                 }
             }
         })
-        .state('app.predictors', {
-            url: "/predictors/:valence",
-            params: {
-                variableObject : null,
-                requestParams : {
-                    cause: null,
-                    effect: null,
-                    correlationCoefficient: null
-                }
-            },
-            cache: false,
-            views: {
-                'menuContent': {
-                  templateUrl: "templates/predictors.html",
-                  controller: 'PredictorsCtrl'
-                }
-            }
-        })
-        .state('app.study', {
-            cache: false,
-            url: "/study",
-            params: {
-                correlationObject: null
-            },
-            views: {
-                'menuContent': {
-                    templateUrl: "templates/study-page.html",
-                    controller: 'StudyCtrl'
-                }
-            }
-        })
+        
         .state('app.settings', {
             url: "/settings",
             views: {

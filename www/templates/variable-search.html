@@ -1,32 +1,12 @@
 <ion-view hide-nav-bar="hideNavigationMenu" view-title="{{state.title}}">
     <ion-content>
-      
-            <div class="bar bar-header item-input-inset">
-              <label class="item-input-wrapper">
-                <i class="icon ion-ios-search placeholder-icon"></i>
-                <input type="search" ng-model="state.variableSearchQuery.name"
-                       ng-model-options="{ debounce: 500 }"
-                       ng-change="onVariableSearch()"
-                       id="variableSearchBox"
-                       type="search"
-                       placeholder={{state.variableSearchPlaceholderText}}>
-              </label>
-              <button class="button button-positive">
-                Cancel
-              </button>
-            </div>
-            
-       
-                <ion-item style="text-align:center;border-bottom: 1px solid rgb(221, 221, 221);" ng-show="state.searching">
-                    <ion-spinner></ion-spinner>
-                </ion-item>
-        
-            <ion-list ng-show="state.variableSearchResults.length" class>
+    
+           <ion-list ng-show="state.variableSearchResults.length" class>
                 <!--<ion-item ng-click="selectVariable(item)" ng-repeat="item in state.variableSearchResults | orderBy:'-latestMeasurementTime' | limitTo:5 | unique:'id'  ">-->
                 <ion-item ng-click="selectVariable(item)" ng-repeat="item in state.variableSearchResults | filter:matchEveryWord() track by $index">
                     <div>
                         <p style="font-size:18px; white-space: pre;">{{item.name}}</p>
-<!--                        <p>{{item.latestMeasurementTime | fromNow}}</p>-->
+                        <p>{{item.latestMeasurementTime | fromNow}}</p>
                     </div>
                 </ion-item>
             </ion-list>
@@ -36,8 +16,8 @@
                     {{state.addNewVariableButtonText}}
                 </ion-item>
             </ion-list>
-        </div>
-
+        </div> -->
+ 
 
     </ion-content>
 </ion-view>

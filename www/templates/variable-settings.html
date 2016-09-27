@@ -22,39 +22,9 @@
                         <span class="input-label left-text">Unit</span>
                         <span class="input-label right-text ">{{state.variableObject.unitName}}</span>
                     </label>
-                <div class="item item-divider ng-binding">Data Optimization</div>
-                    <!--
-                    <label class="item item-input item-select">
-                        <div class="input-label" style="white-space:normal; width: 60%">Combination method:</div>
-                        <select ng-model="state.sumAvg">
-                            <option value="sum" name="group">Sum</option>
-                            <option value="avg" name="group">Avg</option>
-                        </select>
-                    </label>
-                    -->
-                    <div ng-hide="state.hideMinMax" class="item item-input">
-                        <span class="input-label left-span" ng-click="showExplanationsPopup('Minimum value')">Minimum Value <i class="icon ion-help-circled"></i></span>
-                        <span class="right-span"><input class="right-input" ng-model="state.minimumAllowedValue" type="number" placeholder="-Infinity"></span>
-                    </div>
-                    <div ng-hide="state.hideMinMax" class="item item-input">
-                        <span class="input-label left-span" ng-click="showExplanationsPopup('Maximum value')">Maximum Value <i class="icon ion-help-circled"></i></span>
-                        <span class="right-span"><input class="right-input" ng-model="state.maximumAllowedValue" type="number" placeholder="Infinity"></span>
-                    </div>
-                    <div class="item item-input">
-                        <span class="input-label left-span" ng-click="showExplanationsPopup('Onset delay')">Onset Delay (hours) <i class="icon ion-help-circled"></i></span>
-                        <span class="right-span" style="width:45%"><input class="right-input" ng-model="state.onsetDelay" type="number"></span>
-                    </div>
-                    <div class="item item-input">
-                        <span class="input-label left-span" ng-click="showExplanationsPopup('Duration of action')">Duration of Action (hours) <i class="icon ion-help-circled"></i></span>
-                        <span class="right-span" style="width: 34%"><input class="right-input" ng-model="state.durationOfAction" type="number"></span>
-                    </div>
-                    <div class="item item-input">
-                        <span class="input-label left-span" ng-click="showExplanationsPopup('Filling value')">Filling Value <i class="icon ion-help-circled"></i></span>
-                        <span class="right-span"><input class="right-input" ng-model="state.fillingValue" type="number" placeholder="None"></span>
-                    </div>
-            </div>
+            
 
-            <div class="card" >
+           <!--  <div class="card" >
                 <div class="row">
                     <div class="col">
                         <button class="button button-block icon-left ion-android-cancel button-balanced" ng-click="resetToDefaultSettings()">Reset to Default Settings</button>
@@ -62,8 +32,8 @@
                 </div>
                 <div class="row">
                     <div class="col col-50">
-                        <button class="button button-block icon-left ion-android-cancel button-assertive" ng-click="cancel()">Cancel</button>
-                    </div>
+                        <button class="button button-block icon-left ion-android-cancel button-clear" ng-click="cancel()">Cancel</button>
+                    </div> -->
                     <div class="col col-50">
                         <button class="button button-block icon-left ion-android-done button-balanced" ng-click="save()">Save</button>
                     </div>
