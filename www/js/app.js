@@ -796,13 +796,19 @@ angular.module('starter',
                         variableName: 'Pulse',
                         icon: 'ion-heart',
                         abbreviatedUnitName: 'bpm',
-                        variableDescription: 'showField'
+                        variableDescription: 'showValueField',
+                        defaultValueLabel: "BPM",
+                        defaultValuePlaceholderText: "Enter Pulse",
+                        variableCategoryName: "Vital Signs"
                     },
                     {
                         variableName: 'Other Vital Sign',
                         icon: 'ion-heart',
                         abbreviatedUnitName: 'bpm',
-                        variableDescription: 'showField'
+                        variableDescription: 'showField',
+                        defaultValueLabel: "BPM",
+                        defaultValuePlaceholderText: "Enter Pulse",
+                        variableCategoryName: "Vital Signs"
                     }
                 ]
             },

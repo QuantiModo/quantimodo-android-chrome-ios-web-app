@@ -27,6 +27,21 @@ angular.module('starter')
 			$scope.goToState('app.favoriteSearch', $rootScope.stateParams);
 		};
 
+
+		$scope.trackByValueField = function(trackingReminder, $index){
+			$scope.state.favorites[$index].displayTotal = $scope.state.favorites[$index].total + " " + $scope.state.favorites[$index].abbreviatedUnitName;
+			measurementService.postMeasurementByReminder(trackingReminder, $scope.state.favorites[$index].total)
+				.then(function () {
+					console.debug("Successfully measurementService.postMeasurementByReminder: " + JSON.stringify(trackingReminder));
+				}, function (err) {
+					if (typeof Bugsnag !== "undefined") {
+						Bugsnag.notify(err, JSON.stringify(err), {}, "error");
+					}
+					console.error(err);
+					console.error('Failed to Track by favorite, Try again!');
+				});
+		};
+
 		$scope.trackByReminder = function(trackingReminder, modifiedReminderValue){
 			if(!modifiedReminderValue){
 				modifiedReminderValue = trackingReminder.defaultValue;

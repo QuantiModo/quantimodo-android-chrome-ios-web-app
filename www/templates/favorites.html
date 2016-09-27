@@ -13,7 +13,9 @@
                     <div class="col col-70">
                         <h2 ng-click="showActionSheet(favorite, $index)" ng-if="favorite.abbreviatedUnitName !== '/5'" style="white-space: normal; line-height: normal; text-align: center; ">{{favorite.displayTotal}}&nbsp{{favorite.variableName}}</h2>
                         <h2 ng-click="showActionSheet(favorite, $index)" ng-if="favorite.abbreviatedUnitName == '/5'" style="white-space: normal; line-height: normal; text-align: center; ">{{favorite.displayTotal}} {{favorite.variableName}}</h2>
-						<button ng-if="favorite.abbreviatedUnitName != '/5'" class="button button-clear button-balanced" style="text-overflow: clip; font-size: 14px; width:100%; " ng-click="trackByReminder(favorite, null)">
+						<button ng-if="favorite.abbreviatedUnitName != '/5' && favorite.variableDescription !== 'showValueField'"
+                                class="button button-clear button-balanced" style="text-overflow: clip; font-size: 14px; width:100%; "
+                                ng-click="trackByReminder(favorite, null, $index)">
 							<i class="ion-android-done"> &nbsp; Record {{favorite.defaultValue}} {{favorite.abbreviatedUnitName}}</i>
 						</button>
 					</div>
@@ -21,6 +23,12 @@
                         <i style="font-size: 20px;" class="icon positive ion-more"></i>
                     </div>
                 </div>
+                <label ng-if="favorite.variableDescription === 'showValueField'" class="item item-input">
+                    <input type="number" ng-model="favorite.total" id="total"
+                           ng-click="onTextClick($event)" placeholder={{favorite.defaultValuePlaceholderText}} >
+                    <span class="input-label">{{favorite.defaultValueLabel}}</span>
+                    <i style="font-size: 40px;" class="icon positive ion-checkmark-round" on-tap="trackByValueField(favorite, $index)"></i>
+                </label>
                 <div class="primary-outcome-variable-reporting"
                      ng-if="!favorite.variableDescription && favorite.abbreviatedUnitName === '/5'">
                     <div class="primary-outcome-variable-rating-buttons" >
