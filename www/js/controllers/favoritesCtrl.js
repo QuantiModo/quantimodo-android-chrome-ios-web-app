@@ -91,7 +91,11 @@ angular.module('starter')
 
 			if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
 			if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
-			getFavoriteTrackingRemindersFromLocalStorage();
+			if($stateParams.presetVariables){
+				$scope.state.favorites = $stateParams.presetVariables
+			} else {
+				getFavoriteTrackingRemindersFromLocalStorage();
+			}
 			$scope.showHelpInfoPopupIfNecessary();
 
 	    };
