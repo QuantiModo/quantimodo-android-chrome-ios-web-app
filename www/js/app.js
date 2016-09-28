@@ -815,29 +815,83 @@ angular.module('starter',
                     {
                         variableName: 'Temperature',
                         /*icon: 'ion-heart',*/
-                        abbreviatedUnitName: 'CEL/FAH',
+                        abbreviatedUnitName: 'cel/fah',
                         variableDescription: 'showField',
-                        defaultValueLabel: "cel/FAH",
+                        defaultValueLabel: "CEL/FAH",
                         defaultValuePlaceholderText: "Enter Temperature",
+                        variableCategoryName: "Vital Signs"
+                    },
+                       {
+                        variableName: 'Blood Oxygen Saturation',
+                        /*icon: 'ion-heart',*/
+                        abbreviatedUnitName: '%',
+                        variableDescription: 'showField',
+                        defaultValueLabel: "%",
+                        defaultValuePlaceholderText: "Enter Oxygen Saturation",
+                        variableCategoryName: "Vital Signs"
+                    },
+                      {
+                        variableName: 'Breath Rate',
+                        /*icon: 'ion-heart',*/
+                        abbreviatedUnitName: 'breathes/min',
+                        variableDescription: 'showField',
+                        defaultValueLabel: "BREATHES/MIN",
+                        defaultValuePlaceholderText: "Enter Oxygen Saturation",
                         variableCategoryName: "Vital Signs"
                     },
                      {
                         variableName: 'Weight',
                         /*icon: 'ion-heart',*/
-                        abbreviatedUnitName: 'KG',
+                        abbreviatedUnitName: 'kg/lb',
                         variableDescription: 'showField',
-                        defaultValueLabel: "Kg",
+                        defaultValueLabel: "KG/LB",
                         defaultValuePlaceholderText: "Enter Weight",
-                        variableCategoryName: "Body Measurement"
+                        variableCategoryName: "Body Measurements"
                     },
                     {
                         variableName: 'Height',
                         /*icon: 'ion-heart',*/
-                        abbreviatedUnitName: 'cm',
+                        abbreviatedUnitName: 'cm/inch',
                         variableDescription: 'showField',
-                        defaultValueLabel: "CM",
+                        defaultValueLabel: "CM/INCH",
                         defaultValuePlaceholderText: "Enter Height",
-                        variableCategoryName: "Body Measurement"
+                        variableCategoryName: "Body Measurements"
+                    },
+                     {
+                        variableName: 'BMI',
+                        /*icon: 'ion-heart',*/
+                        abbreviatedUnitName: 'kg/m2'),
+                        variableDescription: 'showField',
+                        defaultValueLabel: "KG/M2",
+                        defaultValuePlaceholderText: "Enter BMI",
+                        variableCategoryName: "Body Measurements"
+                    },
+                    {
+                        variableName: 'Glucose Level',
+                        /*icon: 'ion-heart',*/
+                        abbreviatedUnitName: 'mmol/l'),
+                        variableDescription: 'showField',
+                        defaultValueLabel: "MMOL/L",
+                        defaultValuePlaceholderText: "Enter Glucose Level",
+                        variableCategoryName: "Other Measurements"
+                    },
+                    {
+                        variableName: 'Poo',
+                        /*icon: 'ion-heart',*/
+                        abbreviatedUnitName: ''),
+                        variableDescription: 'showField',
+                        defaultValueLabel: "",
+                        defaultValuePlaceholderText: "Enter Poo",
+                        variableCategoryName: "Other Measurements"
+                    },
+                     {
+                        variableName: 'Symptoms',
+                        /*icon: 'ion-heart',*/
+                        abbreviatedUnitName: ''),
+                        variableDescription: 'showField',
+                        defaultValueLabel: "",
+                        defaultValuePlaceholderText: "Enter Symptoms",
+                        variableCategoryName: "Other Measurements"
                     }
                 ]
             },
