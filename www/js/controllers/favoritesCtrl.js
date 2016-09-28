@@ -140,8 +140,10 @@ angular.module('starter')
 					{ text: '<i class="icon ion-arrow-down-a"></i>Negative Predictors'}
 				];
 
-			if(config.appSettings.favoritesController.actionMenuButtons){
-				actionMenuButtons = config.appSettings.favoritesController.actionMenuButtons;
+			if(config.appSettings.favoritesController){
+				if(config.appSettings.favoritesController.actionMenuButtons){
+					actionMenuButtons = config.appSettings.favoritesController.actionMenuButtons;
+				}
 			}
 
 			// Show the action sheet
