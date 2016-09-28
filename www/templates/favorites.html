@@ -4,7 +4,7 @@
 	<!--<ion-content scroll="true" overflow-scroll="true">-->
 
 		<ion-content >
-        <div class="list card" id="favoritesList" ng-if="state.favorites.length" ng-repeat="favorite in state.favorites" on-hold="showActionSheet(favorite, $index)">
+        <div class="list card" id="favoritesList" ng-if="state.favorites.length" ng-repeat="favorite in state.favorites track by $index" on-hold="showActionSheet(favorite, $index)">
             <div class="item" style="padding-bottom:0px;">
                 <div class="row">
                     <div ng-click="showActionSheet(favorite, $index)" class="col col-10" style="padding-top: 0px; text-align: center;">
@@ -23,7 +23,7 @@
                         <i style="font-size: 20px;" class="icon positive ion-more"></i>
                     </div>
                 </div>
-                <label ng-if="!favorite.defaultValue" class="item item-input">
+                <label ng-if="favorite.defaultValue === null && favorite.abbreviatedUnitName !== '/5'" class="item item-input">
                     <input type="number" ng-model="favorite.total" id="defaultValueField"
                            ng-click="onTextClick($event)"
                            placeholder="Enter {{favorite.variableName}} value"
