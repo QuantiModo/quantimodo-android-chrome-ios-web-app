@@ -594,6 +594,38 @@ angular.module('starter',
                 }
             }
         })
+        .state('app.searchVariablesWithUserPredictors', {
+            url: "/search-variables-with-user-predictors",
+            cache: false,
+            params: {
+                variableCategoryName: null,
+                doNotIncludePublicVariables: true,
+                nextState: 'app.predictors',
+                variableSearchParameters: { numberOfUserCorrelations: '(gt)1'}
+            },
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/variable-search.html",
+                    controller: 'VariableSearchCtrl'
+                }
+            }
+        })
+        .state('app.searchVariablesWithCommonPredictors', {
+            url: "/search-variables-with-common-predictors",
+            cache: false,
+            params: {
+                variableCategoryName: null,
+                doNotIncludePublicVariables: true,
+                nextState: 'app.predictors',
+                variableSearchParameters: { numberOfUserCorrelations: '(gt)1'}
+            },
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/variable-search.html",
+                    controller: 'VariableSearchCtrl'
+                }
+            }
+        })
         .state('app.charts', {
             url: "/variables/:variableName",
             cache: false,
