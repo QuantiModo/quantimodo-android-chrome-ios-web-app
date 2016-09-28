@@ -114,11 +114,14 @@
                         <i style="font-size: 20px;" class="icon positive ion-more"></i>
                     </div>
                 </div>
-                <label ng-if="favorite.variableDescription === 'showValueField'" class="item item-input">
-                    <input type="number" ng-model="favorite.total" id="total"
-                           ng-click="onTextClick($event)" placeholder={{favorite.defaultValuePlaceholderText}} >
-                    <span class="input-label">{{favorite.defaultValueLabel}}</span>
-                    <i style="font-size: 40px;" class="icon positive ion-checkmark-round" on-tap="trackByValueField(favorite, $index)"></i>
+                <label ng-if="favorite.showValueField" class="item item-input">
+                    <span class="input-label">Record</span>
+                    <input type="number" ng-model="favorite.newDefaultValue" id="defaultValueField"
+                           ng-click="onTextClick($event)"
+                           placeholder={{favorite.defaultValuePlaceholderText}}
+                           style="text-align: center; max-width: 100px;"
+                    >
+                    <span class="input-label">{{favorite.abbreviatedUnitName}} &nbsp <i style="font-size: 20px;" class="icon positive ion-checkmark-round" on-tap="trackByValueField(favorite, $index)"></i></span>
                 </label>
                 <div class="primary-outcome-variable-reporting"
                      ng-if="!favorite.variableDescription && favorite.abbreviatedUnitName === '/5'">
@@ -171,6 +174,7 @@
                     <div ng-if="stateParams.moreHelpText" class="row">
                         <p style="white-space: normal; text-align: center; line-height: normal; ">
                             {{stateParams.moreHelpText}}
+                            <br><br>
                         </p>
                     </div>
                 </div>

@@ -16,7 +16,10 @@ angular.module('starter')
 			variableCategories : [],
 			hideLoadMoreButton : true,
 			showLocationToggle: false,
-			noHistory: false
+			noHistory: false,
+			helpCardTitle: "Past Measurements",
+			title: "Measurement History",
+			loadingText: "Fetching measurements..."
 	    };
 
 	    $scope.editMeasurement = function(measurement){
@@ -113,15 +116,15 @@ angular.module('starter')
 			if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
 			if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
 
-			if ($stateParams.variableObject){
-				$scope.title = $stateParams.variableObject.name + ' History';
-			}
-			else if (!$stateParams.variableCategoryName || $stateParams.variableCategoryName === "Anything") {
-				$scope.title = 'Measurement History';
-			}
-			else {
-				$scope.title = $stateParams.variableCategoryName + ' History';
+
+			if ($stateParams.variableCategoryName) {
+				$scope.state.title = $stateParams.variableCategoryName + ' History';
 				$scope.state.showLocationToggle = $stateParams.variableCategoryName === "Location";
+
+			}
+
+			if ($stateParams.variableObject) {
+				$scope.state.title = $stateParams.variableObject.name + ' History';
 			}
 
 			if($rootScope.user){

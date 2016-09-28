@@ -20,6 +20,7 @@ angular.module('starter')
 			$scope.state.favorites = variableCategoryService.attachVariableCategoryIcons($scope.state.favorites);
 			for(var i = 0; i < $scope.state.favorites.length; i++){
 				$scope.state.favorites[i].total = null;
+				$scope.state.favorites[i].newDefaultValue = $scope.state.favorites[i].defaultValue;
 			}
 		}
 
@@ -29,10 +30,15 @@ angular.module('starter')
 
 
 		$scope.trackByValueField = function(trackingReminder, $index){
-			$scope.state.favorites[$index].displayTotal = $scope.state.favorites[$index].total + " " + $scope.state.favorites[$index].abbreviatedUnitName;
-			measurementService.postMeasurementByReminder(trackingReminder, $scope.state.favorites[$index].total)
+			if($scope.state.favorites[$index].newDefaultValue !== $scope.state.favorites[$index].defaultValue){
+				$scope.state.favorites[$index].defaultValue = $scope.state.favorites[$index].newDefaultValue;
+				localStorageService.addToOrReplaceElementOfItemByIdOrMoveToFront($scope.state.favorites[$index]);
+				reminderService.postTrackingReminders([$scope.state.favorites[$index]]);
+			}
+			$scope.state.favorites[$index].displayTotal = "Recorded " + $scope.state.favorites[$index].newDefaultValue + " " + $scope.state.favorites[$index].abbreviatedUnitName;
+			measurementService.postMeasurementByReminder($scope.state.favorites[$index], $scope.state.favorites[$index].newDefaultValue)
 				.then(function () {
-					console.debug("Successfully measurementService.postMeasurementByReminder: " + JSON.stringify(trackingReminder));
+					console.debug("Successfully measurementService.postMeasurementByReminder: " + JSON.stringify($scope.state.favorites[$index]));
 				}, function (err) {
 					if (typeof Bugsnag !== "undefined") {
 						Bugsnag.notify(err, JSON.stringify(err), {}, "error");
@@ -107,7 +113,7 @@ angular.module('starter')
 			if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
 			if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
 			if($stateParams.presetVariables){
-				$scope.state.favorites = $stateParams.presetVariables
+				$scope.state.favorites = $stateParams.presetVariables;
 			} else {
 				getFavoriteTrackingRemindersFromLocalStorage();
 			}
@@ -140,8 +146,10 @@ angular.module('starter')
 					{ text: '<i class="icon ion-arrow-down-a"></i>Negative Predictors'}
 				];
 
-			if(config.appSettings.favoritesController.actionMenuButtons){
-				actionMenuButtons = config.appSettings.favoritesController.actionMenuButtons;
+			if(config.appSettings.favoritesController){
+				if(config.appSettings.favoritesController.actionMenuButtons){
+					actionMenuButtons = config.appSettings.favoritesController.actionMenuButtons;
+				}
 			}
 
 			// Show the action sheet

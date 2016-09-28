@@ -2,7 +2,7 @@ angular.module('starter')
 
     // Handlers the Welcome Page
     .controller('LoginCtrl', function($scope, $state, $rootScope, $ionicLoading, $injector, utilsService, authService,
-                                      localStorageService, $timeout, bugsnagService, QuantiModo, $stateParams) {
+                                      localStorageService, $timeout, bugsnagService, QuantiModo, $stateParams, reminderService) {
 
         $scope.state = { loading: false};
         $scope.controller_name = "LoginCtrl";
@@ -81,7 +81,7 @@ angular.module('starter')
                     analytics.trackView("Login Controller");
                     analytics.setUserId(userObject.id);
                 }
-
+                reminderService.createDefaultReminders();
             }
         };
 
