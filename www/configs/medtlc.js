@@ -258,6 +258,16 @@ config.appSettings  = {
         }
     },
 
+    defaultReminders : [
+        {
+            variableName : 'Heart Rate (Pulse)',
+            defaultValue :  null,
+            abbreviatedUnitName: 'bpm',
+            reminderFrequency : 0,
+            imageUrl: 'ion-heart'
+        }
+    ],
+
     menu : [
         {
             title : 'Reminder Inbox',
