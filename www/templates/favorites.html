@@ -1,8 +1,101 @@
 <ion-view hide-nav-bar="hideNavigationMenu" view-title="{{stateParams.title}}">
+     <ion-nav-buttons side="left" ng-show="false">
+        <button class="button button-icon icon ion-navicon"></button>
+     </ion-nav-buttons>
+     <ion-nav-buttons side="right" ng-show="false">
+        <button class="button button-clear button-positive">Input</button>
+     </ion-nav-buttons>
+  <ion-content>  
 
-    <ion-content>
-	<!--<ion-content scroll="true" overflow-scroll="true">-->
+   <!--vital signs part-->
 
+    <div class="item item-divider narrow">Vital Signs</div>
+   
+       
+        <a class="item item-icon-left item-icon-right" href="#">
+      
+                <i class="select1" ng-class="{'icon ion-ios-circle-filled positive': selected1, 'icon ion-ios-circle-outline': !selected1}" ng-click="selected1=!selected1"></i>
+             <p>Blood Pressure</p>
+
+           <i class="icon ion-ios-trash-outline positive"></i>
+        </a>
+
+         <a class="item item-icon-left item-icon-right" href="#">
+      
+                <i class="select2" ng-class="{'icon ion-ios-circle-filled positive': selected2, 'icon ion-ios-circle-outline': !selected2}" ng-click="selected2=!selected2"></i>
+           <p>  Heart Rate</p>
+           <i class="icon ion-ios-trash-outline positive"></i>
+        </a>
+        
+        <a class="item item-icon-left item-icon-right" href="#">
+      
+                <i class="select4" ng-class="{'icon ion-ios-circle-filled positive': selected4, 'icon ion-ios-circle-outline': !selected4}" ng-click="selected4=!selected4"></i>
+            <p> Blood Oxygen Saturation</p>
+            <i class="icon ion-ios-trash-outline positive"></i>
+        </a>
+        <a class="item item-icon-left item-icon-right" href="#">
+      
+                <i class="select9" ng-class="{'icon ion-ios-circle-filled positive': selected9, 'icon ion-ios-circle-outline': !selected9}" ng-click="selected9=!selected9"></i>
+            <p> Breath Rate</p>
+            <i class="icon ion-ios-trash-outline positive"></i>
+        </a>
+        <a class="item item-icon-left item-icon-right" href="#">
+      
+                <i class="select5" ng-class="{'icon ion-ios-circle-filled positive': selected5, 'icon ion-ios-circle-outline': !selected5}" ng-click="selected5=!selected5"></i>
+            <p> Temperature</p>
+            <i class="icon ion-ios-trash-outline positive"></i>
+        </a>
+    <!--end of vital signs-->
+    <!--body measurement part start-->
+    <div class="item item-divider narrow">Body Measurement</div>
+         <a class="item item-icon-left item-icon-right" href="#">
+      
+                <i class="select6" ng-class="{'icon ion-ios-circle-filled positive': selected6, 'icon ion-ios-circle-outline': !selected6}" ng-click="selected6=!selected6"></i>
+           <p> Height</p>
+           <i class="icon ion-ios-trash-outline positive"></i>
+        </a>
+        <a class="item item-icon-left item-icon-right" href="#">
+      
+                <i class="select7" ng-class="{'icon ion-ios-circle-filled positive': selected7, 'icon ion-ios-circle-outline': !selected7}" ng-click="selected7=!selected7"></i>
+           <p> Weight</p>
+           <i class="icon ion-ios-trash-outline positive"></i>
+        </a>
+        <a class="item item-icon-left item-icon-right" href="#">
+      
+                <i class="select8" ng-class="{'icon ion-ios-circle-filled positive': selected8, 'icon ion-ios-circle-outline': !selected8}" ng-click="selected8=!selected8"></i>
+           <p> BMI</p>
+           <i class="icon ion-ios-trash-outline positive"></i>
+        </a>
+       <!--body measurement part end-->
+       <!--Other measurement part start-->
+    <div class="item item-divider narrow">Others</div>
+         <a class="item item-icon-left item-icon-right" href="#">
+      
+                <i class="select10" ng-class="{'icon ion-ios-circle-filled positive': selected10, 'icon ion-ios-circle-outline': !selected10}" ng-click="selected10=!selected10"></i>
+           <p> Glucose Level</p>
+           <i class="icon ion-ios-trash-outline positive"></i>
+        </a>
+        <a class="item item-icon-left item-icon-left" href="#">
+      
+                <i class="select11" ng-class="{'icon ion-ios-circle-filled positive': selected11, 'icon ion-ios-circle-outline': !selected11}" ng-click="selected11=!selected11"></i>
+           <p> Poo</p>
+        </a>
+        <a class="item item-icon-left item-icon-left" href="#">
+      
+                <i class="select12" ng-class="{'icon ion-ios-circle-filled positive': selected12, 'icon ion-ios-circle-outline': !selected12}" ng-click="selected12=!selected12"></i>
+           <p> Symptoms</p>
+        </a>
+       <!--body measurement part end-->
+   
+
+     <li class="item ion-plus">&nbsp;&nbsp;&nbsp;add</li>
+  </ion-list>
+
+
+    </ion-content>
+</ion-view>
+
+<!-- 
 		<ion-content >
         <div class="list card" id="favoritesList" ng-if="state.favorites.length" ng-repeat="favorite in state.favorites" on-hold="showActionSheet(favorite, $index)">
             <div class="item" style="padding-bottom:0px;">
@@ -84,10 +177,7 @@
                     </div>
                 </div>
             </div>
-
-		</ion-content>
-
-
+ -->
 	</ion-content>
 	<nav mfb-menu position="bl" effect="slidein-spring"
 		 active-icon="ion-minus-round" resting-icon="ion-plus-round"

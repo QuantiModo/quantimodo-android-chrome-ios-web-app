@@ -796,21 +796,48 @@ angular.module('starter',
                 presetVariables: [
                     {
                         variableName: 'Pulse',
-                        icon: 'ion-heart',
+                        /*icon: 'ion-heart',*/
                         abbreviatedUnitName: 'bpm',
                         variableDescription: 'showValueField',
                         defaultValueLabel: "BPM",
                         defaultValuePlaceholderText: "Enter Pulse",
                         variableCategoryName: "Vital Signs"
                     },
-                    {
-                        variableName: 'Other Vital Sign',
-                        icon: 'ion-heart',
-                        abbreviatedUnitName: 'bpm',
-                        variableDescription: 'showField',
-                        defaultValueLabel: "BPM",
-                        defaultValuePlaceholderText: "Enter Pulse",
+                        {
+                        variableName: 'Blood Pressure',
+                        /*icon: 'ion-heart',*/
+                        abbreviatedUnitName: 'mmHg',
+                        variableDescription: 'showValueField',
+                        defaultValueLabel: "MMHG",
+                        defaultValuePlaceholderText: "Enter Blood Pressure",
                         variableCategoryName: "Vital Signs"
+                    },
+                    {
+                        variableName: 'Temperature',
+                        /*icon: 'ion-heart',*/
+                        abbreviatedUnitName: 'CEL/FAH',
+                        variableDescription: 'showField',
+                        defaultValueLabel: "cel/FAH",
+                        defaultValuePlaceholderText: "Enter Temperature",
+                        variableCategoryName: "Vital Signs"
+                    },
+                     {
+                        variableName: 'Weight',
+                        /*icon: 'ion-heart',*/
+                        abbreviatedUnitName: 'KG',
+                        variableDescription: 'showField',
+                        defaultValueLabel: "Kg",
+                        defaultValuePlaceholderText: "Enter Weight",
+                        variableCategoryName: "Body Measurement"
+                    },
+                    {
+                        variableName: 'Height',
+                        /*icon: 'ion-heart',*/
+                        abbreviatedUnitName: 'cm',
+                        variableDescription: 'showField',
+                        defaultValueLabel: "CM",
+                        defaultValuePlaceholderText: "Enter Height",
+                        variableCategoryName: "Body Measurement"
                     }
                 ]
             },
