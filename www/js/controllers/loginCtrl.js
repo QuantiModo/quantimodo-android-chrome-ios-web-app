@@ -4,6 +4,7 @@ angular.module('starter')
     .controller('LoginCtrl', function($scope, $state, $rootScope, $ionicLoading, $injector, utilsService, authService,
                                       localStorageService, $timeout, bugsnagService, QuantiModo, $stateParams) {
 
+        $scope.state = { loading: false};
         $scope.controller_name = "LoginCtrl";
         console.log("isIos is" + $rootScope.isIos);
         $rootScope.hideNavigationMenu = true;
@@ -26,6 +27,10 @@ angular.module('starter')
             if($rootScope.helpPopup){
                 console.log('Closing help popup!');
                 $rootScope.helpPopup.close();
+            }
+            if(navigator && navigator.splashscreen) {
+                console.debug('ReminderInbox: Hiding splash screen because app is ready');
+                navigator.splashscreen.hide();
             }
             if(!$rootScope.user){
                 $rootScope.getUserAndSetInLocalStorage();
