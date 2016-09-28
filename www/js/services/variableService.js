@@ -175,7 +175,7 @@ angular.module('starter')
                 var parameters = {
                     limit: 200,
                     sort: "-numberOfUserVariables",
-                    numberOfUserVariables: "(gt)5"
+                    numberOfUserVariables: "(gt)3"
                 };
 
 
