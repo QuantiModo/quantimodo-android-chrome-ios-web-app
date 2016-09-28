@@ -804,7 +804,7 @@ angular.module('starter',
                         variableCategoryName: "Vital Signs"
                     },
                         {
-                        variableName: 'Blood Pressure',
+                        variableName: 'Systolic Blood Pressure (Top Number)',
                         /*icon: 'ion-heart',*/
                         abbreviatedUnitName: 'mmHg',
                         variableDescription: 'showValueField',
@@ -812,17 +812,27 @@ angular.module('starter',
                         defaultValuePlaceholderText: "Enter Blood Pressure",
                         variableCategoryName: "Vital Signs"
                     },
-                    {
-                        variableName: 'Temperature',
+                     {
+                        variableName: 'Diastolic Blood Pressure (Bottom Number)',
                         /*icon: 'ion-heart',*/
-                        abbreviatedUnitName: 'cel/fah',
+                        abbreviatedUnitName: 'mmHg',
+                        variableDescription: 'showValueField',
+                        defaultValueLabel: "MMHG",
+                        defaultValuePlaceholderText: "Enter Blood Pressure",
+                        variableCategoryName: "Vital Signs"
+                    },
+
+                    {
+                        variableName: 'Core Body Temperature',
+                        /*icon: 'ion-heart',*/
+                        abbreviatedUnitName: 'C',
                         variableDescription: 'showField',
-                        defaultValueLabel: "CEL/FAH",
+                        defaultValueLabel: "C",
                         defaultValuePlaceholderText: "Enter Temperature",
                         variableCategoryName: "Vital Signs"
                     },
                        {
-                        variableName: 'Blood Oxygen Saturation',
+                        variableName: 'Oxygen Saturation',
                         /*icon: 'ion-heart',*/
                         abbreviatedUnitName: '%',
                         variableDescription: 'showField',
@@ -831,67 +841,67 @@ angular.module('starter',
                         variableCategoryName: "Vital Signs"
                     },
                       {
-                        variableName: 'Breath Rate',
+                        variableName: 'Respiratory Rate (Ventilation/Breath/RR/Respiration)',
                         /*icon: 'ion-heart',*/
-                        abbreviatedUnitName: 'breathes/min',
+                        abbreviatedUnitName: '/minute',
                         variableDescription: 'showField',
-                        defaultValueLabel: "BREATHES/MIN",
+                        defaultValueLabel: "/MINUTE",
                         defaultValuePlaceholderText: "Enter Oxygen Saturation",
                         variableCategoryName: "Vital Signs"
                     },
-                     {
+                     {  /* unit is lb not kg. variable cat. in rest is physique, planned to put in body measurements*/
                         variableName: 'Weight',
                         /*icon: 'ion-heart',*/
-                        abbreviatedUnitName: 'kg/lb',
+                        abbreviatedUnitName: 'lb',
                         variableDescription: 'showField',
-                        defaultValueLabel: "KG/LB",
+                        defaultValueLabel: "LB",
                         defaultValuePlaceholderText: "Enter Weight",
-                        variableCategoryName: "Body Measurements"
+                        variableCategoryName: "Physique"
                     },
-                    {
+                    {  /*unit and category name issue*/
                         variableName: 'Height',
                         /*icon: 'ion-heart',*/
-                        abbreviatedUnitName: 'cm/inch',
+                        abbreviatedUnitName: 'cm',
                         variableDescription: 'showField',
-                        defaultValueLabel: "CM/INCH",
+                        defaultValueLabel: "CM",
                         defaultValuePlaceholderText: "Enter Height",
-                        variableCategoryName: "Body Measurements"
+                        variableCategoryName: "Physique"
                     },
-                     {
-                        variableName: 'BMI',
+                     { /*category issue, would like to put in body measurements*/
+                        variableName: 'Body Mass Index or BMI',
                         /*icon: 'ion-heart',*/
-                        abbreviatedUnitName: 'kg/m2',
+                        abbreviatedUnitName: 'index',
                         variableDescription: 'showField',
-                        defaultValueLabel: "KG/M2",
+                        defaultValueLabel: "index",
                         defaultValuePlaceholderText: "Enter BMI",
-                        variableCategoryName: "Body Measurements"
+                        variableCategoryName: "Physique"
                     },
-                    {
-                        variableName: 'Glucose Level',
+                    {  /* units, internationally is mmol/l, then category would like to put into Others*/
+                        variableName: 'Blood Glucose Sugar',
                         /*icon: 'ion-heart',*/
-                        abbreviatedUnitName: 'mmol/l',
+                        abbreviatedUnitName: 'mg/dL',
                         variableDescription: 'showField',
-                        defaultValueLabel: "MMOL/L",
+                        defaultValueLabel: "MG/DL",
                         defaultValuePlaceholderText: "Enter Glucose Level",
-                        variableCategoryName: "Other Measurements"
+                        variableCategoryName: "Vital Signs"
                     },
-                    {
-                        variableName: 'Poo',
+                    {  /*no general item for such a variable*/
+                        variableName: 'Bowel',
                         /*icon: 'ion-heart',*/
                         abbreviatedUnitName: '',
                         variableDescription: 'showField',
                         defaultValueLabel: "",
-                        defaultValuePlaceholderText: "Enter Poo",
+                        defaultValuePlaceholderText: "Enter Bowel",
                         variableCategoryName: "Other Measurements"
                     },
                      {
                         variableName: 'Symptoms',
                         /*icon: 'ion-heart',*/
-                        abbreviatedUnitName: '',
+                        abbreviatedUnitName: '/1',
                         variableDescription: 'showField',
-                        defaultValueLabel: "",
+                        defaultValueLabel: "/1",
                         defaultValuePlaceholderText: "Enter Symptoms",
-                        variableCategoryName: "Other Measurements"
+                        variableCategoryName: "Symptoms"
                     }
                 ]
             },
