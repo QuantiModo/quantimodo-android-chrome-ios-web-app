@@ -860,7 +860,7 @@ angular.module('starter',
                      {
                         variableName: 'BMI',
                         /*icon: 'ion-heart',*/
-                        abbreviatedUnitName: 'kg/m2'),
+                        abbreviatedUnitName: 'kg/m2',
                         variableDescription: 'showField',
                         defaultValueLabel: "KG/M2",
                         defaultValuePlaceholderText: "Enter BMI",
@@ -869,7 +869,7 @@ angular.module('starter',
                     {
                         variableName: 'Glucose Level',
                         /*icon: 'ion-heart',*/
-                        abbreviatedUnitName: 'mmol/l'),
+                        abbreviatedUnitName: 'mmol/l',
                         variableDescription: 'showField',
                         defaultValueLabel: "MMOL/L",
                         defaultValuePlaceholderText: "Enter Glucose Level",
@@ -878,7 +878,7 @@ angular.module('starter',
                     {
                         variableName: 'Poo',
                         /*icon: 'ion-heart',*/
-                        abbreviatedUnitName: ''),
+                        abbreviatedUnitName: '',
                         variableDescription: 'showField',
                         defaultValueLabel: "",
                         defaultValuePlaceholderText: "Enter Poo",
@@ -887,7 +887,7 @@ angular.module('starter',
                      {
                         variableName: 'Symptoms',
                         /*icon: 'ion-heart',*/
-                        abbreviatedUnitName: ''),
+                        abbreviatedUnitName: '',
                         variableDescription: 'showField',
                         defaultValueLabel: "",
                         defaultValuePlaceholderText: "Enter Symptoms",
