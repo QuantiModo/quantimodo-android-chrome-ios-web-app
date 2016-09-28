@@ -30,12 +30,12 @@ angular.module('starter')
 
 
 		$scope.trackByValueField = function(trackingReminder, $index){
-			if($scope.state.favorites[$index].newDefaultValue !== $scope.state.favorites[$index].defaultValue){
-				$scope.state.favorites[$index].defaultValue = $scope.state.favorites[$index].newDefaultValue;
-				localStorageService.addToOrReplaceElementOfItemByIdOrMoveToFront($scope.state.favorites[$index]);
-				reminderService.postTrackingReminders([$scope.state.favorites[$index]]);
-			}
-			$scope.state.favorites[$index].displayTotal = "Recorded " + $scope.state.favorites[$index].newDefaultValue + " " + $scope.state.favorites[$index].abbreviatedUnitName;
+			// if($scope.state.favorites[$index].newDefaultValue !== $scope.state.favorites[$index].defaultValue){
+			// 	$scope.state.favorites[$index].defaultValue = $scope.state.favorites[$index].newDefaultValue;
+			// 	localStorageService.addToOrReplaceElementOfItemByIdOrMoveToFront($scope.state.favorites[$index]);
+			// 	reminderService.postTrackingReminders([$scope.state.favorites[$index]]);
+			// }
+			$scope.state.favorites[$index].displayTotal = "Recorded " + $scope.state.favorites[$index].total + " " + $scope.state.favorites[$index].abbreviatedUnitName;
 			measurementService.postMeasurementByReminder($scope.state.favorites[$index], $scope.state.favorites[$index].newDefaultValue)
 				.then(function () {
 					console.debug("Successfully measurementService.postMeasurementByReminder: " + JSON.stringify($scope.state.favorites[$index]));

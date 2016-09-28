@@ -264,7 +264,88 @@ config.appSettings  = {
             defaultValue :  null,
             abbreviatedUnitName: 'bpm',
             reminderFrequency : 0,
-            imageUrl: 'ion-heart'
+            icon: 'ion-heart',
+            variableCategoryName : 'Vital Signs'
+        },
+        {
+            variableName: 'Systolic Blood Pressure (Top Number)',
+            icon: 'ion-heart',
+            abbreviatedUnitName: 'mmHg',
+            reminderFrequency : 0,
+            defaultValue :  null,
+            variableCategoryName : 'Vital Signs'
+        },
+        {
+            variableName: 'Diastolic Blood Pressure (Bottom Number)',
+            icon: 'ion-heart',
+            abbreviatedUnitName: 'mmHg',
+            reminderFrequency : 0,
+            defaultValue :  null,
+            variableCategoryName : 'Vital Signs'
+        },
+        {
+            variableName: 'Core Body Temperature',
+            icon: null,
+            abbreviatedUnitName: 'C',
+            reminderFrequency : 0,
+            defaultValue :  null,
+            variableCategoryName : 'Vital Signs'
+        },
+        {
+            variableName: 'Oxygen Saturation',
+            icon: null,
+            abbreviatedUnitName: '%',
+            reminderFrequency : 0,
+            defaultValue :  null,
+            variableCategoryName : 'Vital Signs'
+        },
+        {
+            variableName: 'Respiratory Rate (Ventilation/Breath/RR/Respiration)',
+            icon: null,
+            abbreviatedUnitName: '/minute',
+            reminderFrequency : 0,
+            defaultValue :  null,
+            variableCategoryName : 'Vital Signs'
+        },
+        {
+            variableName: 'Weight',
+            icon: null,
+            abbreviatedUnitName: 'lb',
+            reminderFrequency : 0,
+            defaultValue :  null,
+            variableCategoryName : 'Physique'
+        },
+        {
+            variableName: 'Height',
+            icon: null,
+            abbreviatedUnitName: 'cm',
+            reminderFrequency : 0,
+            defaultValue :  null,
+            variableCategoryName : 'Physique'
+        },
+        {
+            variableName: 'Body Mass Index or BMI',
+            icon: null,
+            abbreviatedUnitName: 'index',
+            reminderFrequency : 0,
+            defaultValue :  null,
+            variableCategoryName : 'Physique'
+        },
+        {
+            variableName: 'Blood Glucose Sugar',
+            icon: null,
+            abbreviatedUnitName: 'mg/dL',
+            reminderFrequency : 0,
+            defaultValue :  null,
+            variableCategoryName : 'Vital Signs'
+        },
+        {
+            variableName: 'Bowel Movements Count (Poop)',
+            icon: null,
+            abbreviatedUnitName: 'count',
+            reminderFrequency : 0,
+            defaultValue :  null,
+            variableCategoryName : 'Symptoms'
         }
     ],
 
