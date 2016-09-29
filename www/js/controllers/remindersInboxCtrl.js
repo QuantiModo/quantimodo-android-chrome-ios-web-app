@@ -2,7 +2,7 @@ angular.module('starter')
 
 	.controller('RemindersInboxCtrl', function($scope, $state, $stateParams, $rootScope, $filter, $ionicPlatform,
 											   $ionicActionSheet, $timeout, authService, reminderService, utilsService,
-											   notificationService, userService, localStorageService) {
+											   notificationService, userService, localStorageService, $ionicLoading) {
 
 	    $scope.controller_name = "RemindersInboxCtrl";
 
@@ -113,6 +113,9 @@ angular.module('starter')
 
 		$scope.track = function(trackingReminderNotification, modifiedReminderValue, $event, dividerIndex, trackingReminderNotificationNotificationIndex){
 
+			$ionicLoading.show({
+				template: '<ion-spinner></ion-spinner>'
+			});
 			if(isGhostClick($event)){
 				return;
 			}
@@ -140,9 +143,15 @@ angular.module('starter')
 					console.error(err);
 					utilsService.showAlert('Failed to Track Reminder, Try again!', 'assertive');
 				});
+			$ionicLoading.hide().then(function(){
+				console.log("The loading indicator is now hidden");
+			});
 	    };
 
 	    $scope.skip = function(trackingReminderNotification, $event, dividerIndex, trackingReminderNotificationNotificationIndex){
+			$ionicLoading.show({
+				template: '<ion-spinner></ion-spinner>'
+			});
 
 			if(isGhostClick($event)){
 				return;
@@ -171,10 +180,16 @@ angular.module('starter')
 					utilsService.showAlert('Failed to Skip Reminder, Try again!', 'assertive');
 					console.error(err);
 				});
+			$ionicLoading.hide().then(function(){
+				console.log("The loading indicator is now hidden");
+			});
 	    };
 
 	    $scope.snooze = function(trackingReminderNotification, $event, dividerIndex, trackingReminderNotificationNotificationIndex){
 
+			$ionicLoading.show({
+				template: '<ion-spinner></ion-spinner>'
+			});
 			if(isGhostClick($event)){
 				return;
 			}
@@ -202,6 +217,9 @@ angular.module('starter')
 					console.error(err);
 					utilsService.showAlert('Failed to Snooze Reminder, Try again!', 'assertive');
 				});
+			$ionicLoading.hide().then(function(){
+				console.log("The loading indicator is now hidden");
+			});
 	    };
 
 	    var getTrackingReminderNotifications = function () {
