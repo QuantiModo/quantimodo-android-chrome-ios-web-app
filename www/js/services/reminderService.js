@@ -609,5 +609,22 @@ angular.module('starter')
 			return deferred.promise;
 		};
 
-		return reminderService;
+		// return reminderService;
+		// reminderService.createDefaultReminders = function () {
+		// 	var deferred = $q.defer();
+		// 	localStorageService.getItem('defaultRemindersCreated', function (defaultRemindersCreated) {
+		// 		if(JSON.parse(defaultRemindersCreated) !== true) {
+		// 			var defaultReminders = config.appSettings.defaultReminders;
+		// 			if(defaultReminders && defaultReminders.length){
+		// 				console.debug('Creating default reminders ' + JSON.stringify(defaultReminders));
+		// 				reminderService.postTrackingReminders(defaultReminders);
+		// 				localStorageService.setItem('defaultRemindersCreated', true);
+		// 				deferred.resolve();
+		// 			}
+		// 		}
+		// 	});
+		// 	return deferred.promise;
+		// };
+
+		 return reminderService;
 	});

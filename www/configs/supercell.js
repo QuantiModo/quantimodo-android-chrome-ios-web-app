@@ -74,11 +74,9 @@ config.appSettings  = {
         'img/rating/ic_5.png'
     ],
 
-    /* END NEW STUFF */
-
-    welcomeText : "Let's start off by reporting your first mood on the card below",
-    primaryOutcomeVariableTrackingQuestion : "How are you?",
-    primaryOutcomeVariableAverageText : "Your average mood is ",
+    welcomeText:"Let's start off by adding your first medication!",
+    primaryOutcomeVariableTrackingQuestion:"How are you",
+    primaryOutcomeVariableAverageText:"Your average mood is ",
     mobileNotificationImage : "file://img/icons/icon_128.png",
     mobileNotificationText : "Time to track!",
     ratingValueToTextConversionDataSet: {
@@ -108,7 +106,7 @@ config.appSettings  = {
 
                 firstP : {
                     visible : true,
-                    content : 'Welcome to SuperCell',
+                    content : 'Welcome to MedTLC',
                     classes : 'intro-header positive'
                 }, 
                 logoDiv : {
@@ -117,7 +115,7 @@ config.appSettings  = {
                 },
                 finalP : {
                     visible : true,
-                    content : 'SuperCell allows you track your <span class="positive">mood</span> and identify the hidden factors which may most influence it.',
+                    content : 'Medication - Track. Learn. Connect.',
                     classes : 'intro-paragraph',
                     buttonBarVisible : true   
                 }
@@ -127,24 +125,74 @@ config.appSettings  = {
             img : {
                 width : '180',
                 height : '180',
-                url : 'img/rating/ic_face_ecstatic.png'
+                url : 'img/pill_icon.png'
             },
             content : {
-
                 firstP : {
                     visible : true,
-                    content : 'Thank you for helping us derive a mathematical equation for happiness!',
-                    classes : 'intro-paragraph positive'
-                }, 
-                
+                    content : 'Medications',
+                    classes : 'intro-header positive'
+                },
                 logoDiv : {
                     visible : true,
                     id : 'logo'
                 },
                 finalP: {
                     visible : true,
-                    content : 'Now start tracking and optimize your life!',
+                    content : 'Add medications on the Add Medications page.',
                     classes : 'intro-paragraph-small',
+                    buttonBarVisible : true
+                }
+            }
+        },
+        {
+            // Add icons instead of screen-shot
+            img : {
+                width : '180',
+                height : '180',
+                url : 'img/symptoms_icon.png'
+            },
+            content : {
+
+                firstP : {
+                    visible : true,
+                    content : 'Record How You Feel',
+                    classes : 'intro-header positive'
+                },
+
+                logoDiv : {
+                    visible : true,
+                    id : 'logo'
+                },
+
+                finalP: {
+                    visible : true,
+                    content : ' Record "How I Feel" responses to provide critical feedback to your doctor. This feedback is one of the strongest features of MedTLC. It gives your doctor the data needed to change medications and adjust dosages when necessary, due to adverse reaction to a single drug, multiple drug interactions, and dosages that cause unwanted effects.',
+                    classes : 'intro-paragraph-small',
+                    buttonBarVisible : true
+                }
+            }
+        },
+        {
+            img : {
+                width : '180',
+                height : '180',
+                url : 'img/doctor_icon.png'
+            },
+            content : {
+                firstP : {
+                    visible : true,
+                    content : 'Connect with Your Physician',
+                    classes : 'intro-header positive'
+                }, 
+                logoDiv : {
+                    visible : true,
+                    id : 'logo'
+                },
+                finalP: {
+                    visible : true,
+                    content : 'Print or send reports of your responses to your doctors.',
+                    classes : 'intro-paragraph',
                     buttonBarVisible : true
                 }
             }
@@ -152,15 +200,34 @@ config.appSettings  = {
     ],
 
     helpPopupMessages : {
-        "#/app/example" :'You can see and edit your past mood ratings and notes by tapping on any item in the list.  <br/> <br/>You can also add a note by tapping on a mood rating in the list.',
-    },
-
-    remindersInbox : {
-
-    },
-
+        "#/app/example": 'If you\'ve already added some side effect or response tracking reminders, here\'s where your medication notifications should appear when it\'s time to take them.  Once you have some notifications, you can use those to record how you feel.',
+       },
+    
     wordAliases : {
-        
+        //"Treatments" : "Medications",
+        //"treatments" : "medications",
+        //"Treatment" : "Medication",
+        //"treatment" : "medication",
+        //"Treatment Reminder" : "Medication",
+        //"treatment reminder" : "medication",
+        //"Reminder Inbox" : "Reminders",
+        //"Track" : "Record",
+        //"Symptom" : "Response",
+        //"Symptoms" : "Responses",
+        //"symptom" : "response",
+        //"symptoms" : "responses"
+    },
+    
+    remindersInbox : {
+        showAddNewMedicationButton : true,
+        hideAddNewReminderButton : true,
+        showAddHowIFeelResponseButton : true,
+        showAddVitalSignButton : true,
+        title : 'Reminder Inbox'
+    },
+
+    remindersManage : {
+        hideAddNewReminderButton : true
     },
 
     floatingMaterialButton : {
@@ -175,29 +242,108 @@ config.appSettings  = {
             stateAndParameters: "'app.measurementAddSearch'"
         },
         button3 : {
-            icon: 'ion-ios-cloud-download-outline',
-            label: 'Import Data',
-            stateAndParameters: "'app.import'"
+            icon: 'ion-ios-medkit-outline',
+            label: 'Record a Dose',
+            stateAndParameters: "'app.measurementAddSearch', {variableCategoryName: 'Treatments'}"
         },
         button4 : {
-            icon: 'ion-ios-star',
-            label: 'Add a Favorite Variable',
-            stateAndParameters: "'app.favoriteSearch'"
+            icon: 'ion-sad-outline',
+            label: 'Rate a Symptom',
+            stateAndParameters: "'app.measurementAddSearch', {variableCategoryName: 'Symptoms'}"
         }
     },
 
-    favoritesController : {
-        actionMenuButtons : [
-                { text: '<i class="icon ion-gear-a"></i>Change Default Value' },
-                { text: '<i class="icon ion-edit"></i>Different Value/Time/Note' },
-                { text: '<i class="icon ion-arrow-graph-up-right"></i>Visualize'},
-                { text: '<i class="icon ion-ios-list-outline"></i>' + 'History'},
-                { text: '<i class="icon ion-settings"></i>' + 'Variable Settings'},
-                { text: '<i class="icon ion-android-notifications-none"></i>Add Reminder'},
-                { text: '<i class="icon ion-arrow-up-a"></i>Positive Predictors'},
-                { text: '<i class="icon ion-arrow-down-a"></i>Negative Predictors'}
-            ]
-    },
+    defaultReminders : [
+        {
+            variableName : 'Heart Rate (Pulse)',
+            defaultValue :  null,
+            abbreviatedUnitName: 'bpm',
+            reminderFrequency : 0,
+            icon: 'ion-heart',
+            variableCategoryName : 'Vital Signs'
+        },
+        {
+            variableName: 'Systolic Blood Pressure (Top Number)',
+            icon: 'ion-heart',
+            abbreviatedUnitName: 'mmHg',
+            reminderFrequency : 0,
+            defaultValue :  null,
+            variableCategoryName : 'Vital Signs'
+        },
+        {
+            variableName: 'Diastolic Blood Pressure (Bottom Number)',
+            icon: 'ion-heart',
+            abbreviatedUnitName: 'mmHg',
+            reminderFrequency : 0,
+            defaultValue :  null,
+            variableCategoryName : 'Vital Signs'
+        },
+        {
+            variableName: 'Core Body Temperature',
+            icon: null,
+            abbreviatedUnitName: 'C',
+            reminderFrequency : 0,
+            defaultValue :  null,
+            variableCategoryName : 'Vital Signs'
+        },
+        {
+            variableName: 'Oxygen Saturation',
+            icon: null,
+            abbreviatedUnitName: '%',
+            reminderFrequency : 0,
+            defaultValue :  null,
+            variableCategoryName : 'Vital Signs'
+        },
+        {
+            variableName: 'Respiratory Rate (Ventilation/Breath/RR/Respiration)',
+            icon: null,
+            abbreviatedUnitName: '/minute',
+            reminderFrequency : 0,
+            defaultValue :  null,
+            variableCategoryName : 'Vital Signs'
+        },
+        {
+            variableName: 'Weight',
+            icon: null,
+            abbreviatedUnitName: 'lb',
+            reminderFrequency : 0,
+            defaultValue :  null,
+            variableCategoryName : 'Physique'
+        },
+        {
+            variableName: 'Height',
+            icon: null,
+            abbreviatedUnitName: 'cm',
+            reminderFrequency : 0,
+            defaultValue :  null,
+            variableCategoryName : 'Physique'
+        },
+        {
+            variableName: 'Body Mass Index or BMI',
+            icon: null,
+            abbreviatedUnitName: 'index',
+            reminderFrequency : 0,
+            defaultValue :  null,
+            variableCategoryName : 'Physique'
+        },
+        {
+            variableName: 'Blood Glucose Sugar',
+            icon: null,
+            abbreviatedUnitName: 'mg/dL',
+            reminderFrequency : 0,
+            defaultValue :  null,
+            variableCategoryName : 'Vital Signs'
+        },
+        {
+            variableName: 'Bowel Movements Count (Poop)',
+            icon: null,
+            abbreviatedUnitName: 'count',
+            reminderFrequency : 0,
+            defaultValue :  null,
+            variableCategoryName : 'Symptoms'
+        }
+    ],
+
 
     menu : [
         {
@@ -207,7 +353,7 @@ config.appSettings  = {
         },
         {
             title : 'Favorites',
-            href : '#/app/favorites',
+            href : '#/app/favorites-vital-signs',
             icon : 'ion-ios-star'
         },
         {
