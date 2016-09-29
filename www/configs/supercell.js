@@ -286,7 +286,7 @@ config.appSettings  = {
         },
         {
             title : 'Favorites',
-            href : '#/app/favorites-vital-signs',
+            href : '#/app/favorites',
             icon : 'ion-ios-star'
         },
         {
