@@ -188,7 +188,7 @@ config.appSettings  = {
 
     defaultReminders : [
         {
-            variableName : 'Heart Rate (Pulse)',
+            variableName : 'Pulse',
             defaultValue :  null,
             abbreviatedUnitName: 'bpm',
             reminderFrequency : 0,
@@ -228,7 +228,7 @@ config.appSettings  = {
             variableCategoryName : 'Vital Signs'
         },
         {
-            variableName: 'Respiratory Rate (Ventilation/Breath/RR/Respiration)',
+            variableName: 'Respiratory Rate',
             icon: null,
             abbreviatedUnitName: '/minute',
             reminderFrequency : 0,
@@ -252,7 +252,7 @@ config.appSettings  = {
             variableCategoryName : 'Physique'
         },
         {
-            variableName: 'Body Mass Index or BMI',
+            variableName: 'BMI',
             icon: null,
             abbreviatedUnitName: 'index',
             reminderFrequency : 0,
@@ -268,7 +268,7 @@ config.appSettings  = {
             variableCategoryName : 'Vital Signs'
         },
         {
-            variableName: 'Bowel Movements Count (Poop)',
+            variableName: 'Bowel Movements Count(Poop)',
             icon: null,
             abbreviatedUnitName: 'count',
             reminderFrequency : 0,

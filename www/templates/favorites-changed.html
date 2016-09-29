@@ -1,4 +1,4 @@
-<ion-view hide-nav-bar="hideNavigationMenu" view-title="{{stateParams.title}}" has-subheader="true">
+<!-- <ion-view hide-nav-bar="hideNavigationMenu" view-title="{{stateParams.title}}" has-subheader="true">
      <ion-nav-buttons side="left" ng-show="false">
         <button class="button button-icon icon ion-navicon"></button>
      </ion-nav-buttons>
@@ -44,7 +44,7 @@
             <i class="icon ion-ios-trash-outline positive"></i>
         </a>
     <!--end of vital signs-->
-    <!--body measurement part start-->
+    body measurement part start
     <div class="item item-divider narrow">Body Measurement</div>
          <a class="item item-icon-left item-icon-right" href="#">
       
@@ -91,7 +91,7 @@
 
 
     </ion-content>
-</ion-view>
+</ion-view> -->
 
 <!-- 
 		<ion-content >
@@ -114,14 +114,11 @@
                         <i style="font-size: 20px;" class="icon positive ion-more"></i>
                     </div>
                 </div>
-                <label ng-if="favorite.showValueField" class="item item-input">
-                    <span class="input-label">Record</span>
-                    <input type="number" ng-model="favorite.newDefaultValue" id="defaultValueField"
-                           ng-click="onTextClick($event)"
-                           placeholder={{favorite.defaultValuePlaceholderText}}
-                           style="text-align: center; max-width: 100px;"
-                    >
-                    <span class="input-label">{{favorite.abbreviatedUnitName}} &nbsp <i style="font-size: 20px;" class="icon positive ion-checkmark-round" on-tap="trackByValueField(favorite, $index)"></i></span>
+                <label ng-if="favorite.variableDescription === 'showValueField'" class="item item-input">
+                    <input type="number" ng-model="favorite.total" id="total"
+                           ng-click="onTextClick($event)" placeholder={{favorite.defaultValuePlaceholderText}} >
+                    <span class="input-label">{{favorite.defaultValueLabel}}</span>
+                    <i style="font-size: 40px;" class="icon positive ion-checkmark-round" on-tap="trackByValueField(favorite, $index)"></i>
                 </label>
                 <div class="primary-outcome-variable-reporting"
                      ng-if="!favorite.variableDescription && favorite.abbreviatedUnitName === '/5'">
@@ -174,7 +171,6 @@
                     <div ng-if="stateParams.moreHelpText" class="row">
                         <p style="white-space: normal; text-align: center; line-height: normal; ">
                             {{stateParams.moreHelpText}}
-                            <br><br>
                         </p>
                     </div>
                 </div>

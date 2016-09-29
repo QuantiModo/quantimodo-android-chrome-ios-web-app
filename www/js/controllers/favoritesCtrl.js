@@ -1,10 +1,12 @@
 angular.module('starter')
 
+	// .controller('FavoritesCtrl', function($scope, $state, $ionicActionSheet, $timeout, reminderService, authService, 
+	// 									  localStorageService, measurementService, variableCategoryService, $rootScope, $stateParams) {
 	.controller('FavoritesCtrl', function($scope, $state, $ionicActionSheet, $timeout, reminderService, authService, 
 										  localStorageService, measurementService, variableCategoryService, $rootScope, $stateParams) {
 
 	    $scope.controller_name = "FavoritesCtrl";
-
+	
 		console.log('Loading ' + $scope.controller_name);
 		
 	    $scope.state = {
@@ -13,6 +15,7 @@ angular.module('starter')
             trackingReminder : null,
             lastSent: new Date()
 	    };
+
 
 		function getFavoriteTrackingRemindersFromLocalStorage(){
 			$scope.state.favorites =
@@ -23,7 +26,7 @@ angular.module('starter')
 				$scope.state.favorites[i].newDefaultValue = $scope.state.favorites[i].defaultValue;
 			}
 		}
-
+			
 		$scope.favoriteAddButtonClick = function () {
 			$scope.goToState('app.favoriteSearch', $rootScope.stateParams);
 		};
