@@ -17,7 +17,7 @@ ionic plugin add cordova-plugin-datepicker
 ionic plugin add cordova-plugin-file-opener2
 ionic plugin add cordova-plugin-ios-non-exempt-encryption
 ionic plugin add cordova-plugin-email-composer
-ionic plugin add cordova-plugin-geolocation
+ionic plugin add cordova-plugin-geolocation@2.4.0
 ionic plugin add cordova-plugin-facebook4@1.7.1 --save --variable APP_ID="${FACEBOOK_APP_ID}" --variable APP_NAME="${FACEBOOK_APP_NAME}"
 #ionic plugin add https://github.com/mikepsinn/cordova-plugin-googleplus.git --variable REVERSED_CLIENT_ID=${REVERSED_CLIENT_ID}
 #ionic plugin add phonegap-plugin-push --variable SENDER_ID="${GCM_SENDER_ID}"

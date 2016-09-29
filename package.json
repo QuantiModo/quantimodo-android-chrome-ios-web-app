@@ -59,7 +59,7 @@
     "cordova-plugin-file-opener2",
     "cordova-plugin-ios-non-exempt-encryption",
     "cordova-plugin-email-composer",
-    "cordova-plugin-geolocation",
+    "cordova-plugin-geolocation@2.4.0",
     {
       "variables": {
         "SENDER_ID": "1052648855194"

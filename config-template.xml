@@ -50,7 +50,7 @@
   </vs:platformSpecificValues>
   <preference name="WindowsStoreDisplayName" value="MoodiModo" />
   <plugin name="cordova-plugin-datepicker" version="0.9.3" />
-  <plugin name="cordova-plugin-geolocation" version="2.1.0" />
+  <plugin name="cordova-plugin-geolocation" version="2.4.0" />
   <plugin name="cordova-plugin-inappbrowser" version="1.2.1" />
   <plugin name="ionic-plugin-keyboard" version="2.2.1" />
   <plugin name="cordova-plugin-statusbar" version="2.1.3" />
