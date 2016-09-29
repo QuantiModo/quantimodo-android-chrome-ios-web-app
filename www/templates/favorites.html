@@ -23,7 +23,7 @@
             <label ng-if="favorite.defaultValue === null && favorite.abbreviatedUnitName !== '/5'" class="item item-input">
                 <input type="number" ng-model="favorite.total" id="defaultValueField"
                        ng-click="onTextClick($event)"
-                       placeholder="Enter {{favorite.variableName}} value"
+                       placeholder="Enter value"
                        style="text-align: center"
                 >
                 <span on-tap="trackByValueField(favorite, $index)" class="input-label">{{favorite.abbreviatedUnitName}} &nbsp <i style="font-size: 20px;" class="icon positive ion-checkmark-round" on-tap="trackByValueField(favorite, $index)"></i></span>
