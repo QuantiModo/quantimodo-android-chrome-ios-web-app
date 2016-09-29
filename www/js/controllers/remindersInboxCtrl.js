@@ -116,8 +116,9 @@ angular.module('starter')
 			if(isGhostClick($event)){
 				return;
 			}
-			$scope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications.splice(trackingReminderNotificationNotificationIndex, 1);
-			//$scope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications[trackingReminderNotificationNotificationIndex].hide = true;
+			// Removing instead of hiding reminder notifications seems to cause weird dismissal problems
+			//$scope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications.splice(trackingReminderNotificationNotificationIndex, 1);
+			$scope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications[trackingReminderNotificationNotificationIndex].hide = true;
 			console.debug('Tracking notification ' + JSON.stringify(trackingReminderNotification));
 			console.log('modifiedReminderValue is ' + modifiedReminderValue);
 			var body = {
@@ -147,8 +148,9 @@ angular.module('starter')
 				return;
 			}
 
-			//$scope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications[trackingReminderNotificationNotificationIndex].hide = true;
-			$scope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications.splice(trackingReminderNotificationNotificationIndex, 1);
+			$scope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications[trackingReminderNotificationNotificationIndex].hide = true;
+			// Removing seems to cause weird dismissal problems
+			//$scope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications.splice(trackingReminderNotificationNotificationIndex, 1);
 			console.debug('Skipping notification ' + JSON.stringify(trackingReminderNotification));
 			var params = {
 				trackingReminderNotificationId: trackingReminderNotification.id,
@@ -177,8 +179,9 @@ angular.module('starter')
 				return;
 			}
 
-			//$scope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications[trackingReminderNotificationNotificationIndex].hide = true;
-			$scope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications.splice(trackingReminderNotificationNotificationIndex, 1);
+			$scope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications[trackingReminderNotificationNotificationIndex].hide = true;
+			// Removing seems to cause weird dismissal problems
+			//$scope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications.splice(trackingReminderNotificationNotificationIndex, 1);
 			console.debug('Snoozing notification ' + JSON.stringify(trackingReminderNotification));
 			var params = {
 				trackingReminderNotificationId: trackingReminderNotification.id,
@@ -407,8 +410,8 @@ angular.module('starter')
 					{ text: '<i class="icon ion-arrow-graph-up-right"></i>' + 'Visualize'},
 					{ text: '<i class="icon ion-ios-list-outline"></i>' + 'History'},
 					{ text: '<i class="icon ion-settings"></i>' + 'Variable Settings'},
-					{ text: '<i class="icon ion-arrow-up-a"></i>Positive Predictors'},
-					{ text: '<i class="icon ion-arrow-down-a"></i>Negative Predictors'}
+					// { text: '<i class="icon ion-arrow-up-a"></i>Positive Predictors'},
+					// { text: '<i class="icon ion-arrow-down-a"></i>Negative Predictors'}
 				],
 				destructiveText: '<i class="icon ion-trash-a"></i>Skip All Notifications',
 				cancelText: '<i class="icon ion-ios-close"></i>Cancel',

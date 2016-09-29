@@ -74,9 +74,11 @@ config.appSettings  = {
         'img/rating/ic_5.png'
     ],
 
+    /* END NEW STUFF */
+
     welcomeText:"Let's start off by adding your first medication!",
-    primaryOutcomeVariableTrackingQuestion:"How are you",
-    primaryOutcomeVariableAverageText:"Your average mood is ",
+    primaryOutcomeVariableTrackingQuestion : "How are you",
+    primaryOutcomeVariableAverageText : "Your average mood is ",
     mobileNotificationImage : "file://img/icons/icon_128.png",
     mobileNotificationText : "Time to track!",
     ratingValueToTextConversionDataSet: {
@@ -106,7 +108,7 @@ config.appSettings  = {
 
                 firstP : {
                     visible : true,
-                    content : 'Welcome to MedTLC',
+                    content : 'Welcome to SuperCell',
                     classes : 'intro-header positive'
                 }, 
                 logoDiv : {
@@ -115,7 +117,7 @@ config.appSettings  = {
                 },
                 finalP : {
                     visible : true,
-                    content : 'Medication - Track. Learn. Connect.',
+                    content : 'SuperCell allows you track your <span class="positive">mood</span> and identify the hidden factors which may most influence it.',
                     classes : 'intro-paragraph',
                     buttonBarVisible : true   
                 }
@@ -125,74 +127,24 @@ config.appSettings  = {
             img : {
                 width : '180',
                 height : '180',
-                url : 'img/pill_icon.png'
-            },
-            content : {
-                firstP : {
-                    visible : true,
-                    content : 'Medications',
-                    classes : 'intro-header positive'
-                },
-                logoDiv : {
-                    visible : true,
-                    id : 'logo'
-                },
-                finalP: {
-                    visible : true,
-                    content : 'Add medications on the Add Medications page.',
-                    classes : 'intro-paragraph-small',
-                    buttonBarVisible : true
-                }
-            }
-        },
-        {
-            // Add icons instead of screen-shot
-            img : {
-                width : '180',
-                height : '180',
-                url : 'img/symptoms_icon.png'
+                url : 'img/rating/ic_face_ecstatic.png'
             },
             content : {
 
                 firstP : {
                     visible : true,
-                    content : 'Record How You Feel',
-                    classes : 'intro-header positive'
-                },
-
-                logoDiv : {
-                    visible : true,
-                    id : 'logo'
-                },
-
-                finalP: {
-                    visible : true,
-                    content : ' Record "How I Feel" responses to provide critical feedback to your doctor. This feedback is one of the strongest features of MedTLC. It gives your doctor the data needed to change medications and adjust dosages when necessary, due to adverse reaction to a single drug, multiple drug interactions, and dosages that cause unwanted effects.',
-                    classes : 'intro-paragraph-small',
-                    buttonBarVisible : true
-                }
-            }
-        },
-        {
-            img : {
-                width : '180',
-                height : '180',
-                url : 'img/doctor_icon.png'
-            },
-            content : {
-                firstP : {
-                    visible : true,
-                    content : 'Connect with Your Physician',
-                    classes : 'intro-header positive'
+                    content : 'Thank you for helping us derive a mathematical equation for happiness!',
+                    classes : 'intro-paragraph positive'
                 }, 
+                
                 logoDiv : {
                     visible : true,
                     id : 'logo'
                 },
                 finalP: {
                     visible : true,
-                    content : 'Print or send reports of your responses to your doctors.',
-                    classes : 'intro-paragraph',
+                    content : 'Now start tracking and optimize your life!',
+                    classes : 'intro-paragraph-small',
                     buttonBarVisible : true
                 }
             }
@@ -200,34 +152,15 @@ config.appSettings  = {
     ],
 
     helpPopupMessages : {
-        "#/app/example": 'If you\'ve already added some side effect or response tracking reminders, here\'s where your medication notifications should appear when it\'s time to take them.  Once you have some notifications, you can use those to record how you feel.',
-       },
-    
-    wordAliases : {
-        //"Treatments" : "Medications",
-        //"treatments" : "medications",
-        //"Treatment" : "Medication",
-        //"treatment" : "medication",
-        //"Treatment Reminder" : "Medication",
-        //"treatment reminder" : "medication",
-        //"Reminder Inbox" : "Reminders",
-        //"Track" : "Record",
-        //"Symptom" : "Response",
-        //"Symptoms" : "Responses",
-        //"symptom" : "response",
-        //"symptoms" : "responses"
-    },
-    
-    remindersInbox : {
-        showAddNewMedicationButton : true,
-        hideAddNewReminderButton : true,
-        showAddHowIFeelResponseButton : true,
-        showAddVitalSignButton : true,
-        title : 'Reminder Inbox'
+        "#/app/example" :'You can see and edit your past mood ratings and notes by tapping on any item in the list.  <br/> <br/>You can also add a note by tapping on a mood rating in the list.',
     },
 
-    remindersManage : {
-        hideAddNewReminderButton : true
+    remindersInbox : {
+
+    },
+
+    wordAliases : {
+        
     },
 
     floatingMaterialButton : {

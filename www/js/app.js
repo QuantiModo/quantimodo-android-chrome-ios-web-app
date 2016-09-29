@@ -663,7 +663,37 @@ angular.module('starter',
                 }
             }
         })
-        
+        .state('app.predictors', {
+            url: "/predictors/:valence",
+            params: {
+                variableObject : null,
+                requestParams : {
+                    cause: null,
+                    effect: null,
+                    correlationCoefficient: null
+                }
+            },
+            cache: false,
+            views: {
+                'menuContent': {
+                  templateUrl: "templates/predictors.html",
+                  controller: 'PredictorsCtrl'
+                }
+            }
+        })
+        .state('app.study', {
+            cache: false,
+            url: "/study",
+            params: {
+                correlationObject: null
+            },
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/study-page.html",
+                    controller: 'StudyCtrl'
+                }
+            }
+        })
         .state('app.settings', {
             url: "/settings",
             views: {
@@ -786,124 +816,11 @@ angular.module('starter',
                 }
             }
         })
-        .state('app.favoritesVitalSigns', {
-            url: "/favorites-vital-signs",
+        .state('app.favoritesCategory', {
+            url: "/favorites/:variableCategoryName",
             cache: false,
             params: {
-                title: "Vital Signs",
-                helpText: "Add some explanation about the page",
-                moreHelpText: "Optional extra help text",
-                presetVariables: [
-                    {
-                        variableName: 'Pulse',
-                        /*icon: 'ion-heart',*/
-                        abbreviatedUnitName: 'bpm',
-                        variableDescription: 'showValueField',
-                        defaultValueLabel: "BPM",
-                        defaultValuePlaceholderText: "Enter Pulse",
-                        variableCategoryName: "Vital Signs"
-                    },
-                        {
-                        variableName: 'Systolic Blood Pressure (Top Number)',
-                        /*icon: 'ion-heart',*/
-                        abbreviatedUnitName: 'mmHg',
-                        variableDescription: 'showValueField',
-                        defaultValueLabel: "MMHG",
-                        defaultValuePlaceholderText: "Enter Blood Pressure",
-                        variableCategoryName: "Vital Signs"
-                    },
-                     {
-                        variableName: 'Diastolic Blood Pressure (Bottom Number)',
-                        /*icon: 'ion-heart',*/
-                        abbreviatedUnitName: 'mmHg',
-                        variableDescription: 'showValueField',
-                        defaultValueLabel: "MMHG",
-                        defaultValuePlaceholderText: "Enter Blood Pressure",
-                        variableCategoryName: "Vital Signs"
-                    },
-
-                    {
-                        variableName: 'Core Body Temperature',
-                        /*icon: 'ion-heart',*/
-                        abbreviatedUnitName: 'C',
-                        variableDescription: 'showField',
-                        defaultValueLabel: "C",
-                        defaultValuePlaceholderText: "Enter Temperature",
-                        variableCategoryName: "Vital Signs"
-                    },
-                       {
-                        variableName: 'Oxygen Saturation',
-                        /*icon: 'ion-heart',*/
-                        abbreviatedUnitName: '%',
-                        variableDescription: 'showField',
-                        defaultValueLabel: "%",
-                        defaultValuePlaceholderText: "Enter Oxygen Saturation",
-                        variableCategoryName: "Vital Signs"
-                    },
-                      {
-                        variableName: 'Respiratory Rate (Ventilation/Breath/RR/Respiration)',
-                        /*icon: 'ion-heart',*/
-                        abbreviatedUnitName: '/minute',
-                        variableDescription: 'showField',
-                        defaultValueLabel: "/MINUTE",
-                        defaultValuePlaceholderText: "Enter Oxygen Saturation",
-                        variableCategoryName: "Vital Signs"
-                    },
-                     {  /* unit is lb not kg. variable cat. in rest is physique, planned to put in body measurements*/
-                        variableName: 'Weight',
-                        /*icon: 'ion-heart',*/
-                        abbreviatedUnitName: 'lb',
-                        variableDescription: 'showField',
-                        defaultValueLabel: "LB",
-                        defaultValuePlaceholderText: "Enter Weight",
-                        variableCategoryName: "Physique"
-                    },
-                    {  /*unit and category name issue*/
-                        variableName: 'Height',
-                        /*icon: 'ion-heart',*/
-                        abbreviatedUnitName: 'cm',
-                        variableDescription: 'showField',
-                        defaultValueLabel: "CM",
-                        defaultValuePlaceholderText: "Enter Height",
-                        variableCategoryName: "Physique"
-                    },
-                     { /*category issue, would like to put in body measurements*/
-                        variableName: 'Body Mass Index or BMI',
-                        /*icon: 'ion-heart',*/
-                        abbreviatedUnitName: 'index',
-                        variableDescription: 'showField',
-                        defaultValueLabel: "index",
-                        defaultValuePlaceholderText: "Enter BMI",
-                        variableCategoryName: "Physique"
-                    },
-                    {  /* units, internationally is mmol/l, then category would like to put into Others*/
-                        variableName: 'Blood Glucose Sugar',
-                        /*icon: 'ion-heart',*/
-                        abbreviatedUnitName: 'mg/dL',
-                        variableDescription: 'showField',
-                        defaultValueLabel: "MG/DL",
-                        defaultValuePlaceholderText: "Enter Glucose Level",
-                        variableCategoryName: "Vital Signs"
-                    },
-                    {  /*no general item for such a variable*/
-                        variableName: 'Bowel',
-                        /*icon: 'ion-heart',*/
-                        abbreviatedUnitName: '',
-                        variableDescription: 'showField',
-                        defaultValueLabel: "",
-                        defaultValuePlaceholderText: "Enter Bowel",
-                        variableCategoryName: "Other Measurements"
-                    },
-                     {
-                        variableName: 'Symptoms',
-                        /*icon: 'ion-heart',*/
-                        abbreviatedUnitName: '/1',
-                        variableDescription: 'showField',
-                        defaultValueLabel: "/1",
-                        defaultValuePlaceholderText: "Enter Symptoms",
-                        variableCategoryName: "Symptoms"
-                    }
-                ]
+                variableCategoryName: null
             },
             views: {
                 'menuContent': {
