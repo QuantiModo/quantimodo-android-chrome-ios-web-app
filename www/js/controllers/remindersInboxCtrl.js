@@ -110,6 +110,40 @@ angular.module('starter')
 			}
 		};
 
+		$scope.trackByValueField = function(trackingReminderNotification, $event, dividerIndex, trackingReminderNotificationNotificationIndex){
+
+			$ionicLoading.show({
+				template: '<ion-spinner></ion-spinner>'
+			});
+			if(isGhostClick($event)){
+				return;
+			}
+			$scope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications[trackingReminderNotificationNotificationIndex].hide = true;
+			console.log('modifiedReminderValue is ' + $scope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications[trackingReminderNotificationNotificationIndex].total);
+			var body = {
+				trackingReminderNotification: trackingReminderNotification,
+				modifiedValue: $scope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications[trackingReminderNotificationNotificationIndex].total
+			};
+			reminderService.trackReminderNotification(body)
+				.then(function(){
+					if($rootScope.localNotificationsEnabled){
+						notificationService.decrementNotificationBadges();
+					}
+					if($rootScope.numberOfPendingNotifications < 2){
+						$scope.init();
+					}
+				}, function(err){
+					if (typeof Bugsnag !== "undefined") {
+						Bugsnag.notify(err, JSON.stringify(err), {}, "error");
+					}
+					console.error(err);
+					utilsService.showAlert('Failed to Track Reminder, Try again!', 'assertive');
+				});
+			$ionicLoading.hide().then(function(){
+				console.log("The loading indicator is now hidden");
+			});
+		};
+
 
 		$scope.track = function(trackingReminderNotification, modifiedReminderValue, $event, dividerIndex, trackingReminderNotificationNotificationIndex){
 
