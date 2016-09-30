@@ -356,10 +356,15 @@
 								<i style="font-size: 40px;" class="icon positive {{trackingReminderNotification.icon}}"></i>
 							</div>
 							<div ng-click="showActionSheetForNotification(trackingReminderNotification, $event)" class="col col-70">
-								<h2 ng-if="trackingReminderNotification.abbreviatedUnitName != '/5'"
+								<h2 ng-if="trackingReminderNotification.defaultValue !== null && trackingReminderNotification.abbreviatedUnitName != '/5'"
 									style="white-space: normal;
 									line-height: normal; ">
 									{{trackingReminderNotification.defaultValue}}&nbsp;{{trackingReminderNotification.unitName.toLowerCase()}} {{trackingReminderNotification.variableName}}
+								</h2>
+								<h2 ng-if="trackingReminderNotification.defaultValue === null && trackingReminderNotification.abbreviatedUnitName != '/5'"
+									style="white-space: normal;
+									line-height: normal; ">
+									{{trackingReminderNotification.variableName}}
 								</h2>
 								<h2 ng-if="trackingReminderNotification.abbreviatedUnitName == '/5'"
 									style="white-space: normal;
@@ -405,7 +410,8 @@
 								</i>
 							</span>
 						</label>
-						<div class="row" ng-if="trackingReminderNotification.abbreviatedUnitName !== '/5' " >
+						<div class="row" ng-if="trackingReminderNotification.defaultValue !== null &&
+												trackingReminderNotification.abbreviatedUnitName !== '/5' " >
 							<div class="button-bar">
 								<button ng-show="trackingReminderNotification.defaultValue"
 										class="button button-clear button-assertive"
@@ -420,7 +426,8 @@
 								</button>
 							</div>
 						</div>
-						<div class="row" ng-if="trackingReminderNotification.abbreviatedUnitName !== '/5' " >
+						<div class="row" ng-if="trackingReminderNotification.defaultValue !== null &&
+												trackingReminderNotification.abbreviatedUnitName !== '/5' " >
 							<div class="button-bar">
 								<button class="button button-clear button-calm"
 										style="text-overflow: clip; font-size: 14px;"
