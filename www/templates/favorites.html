@@ -1,6 +1,12 @@
 <ion-view hide-nav-bar="hideNavigationMenu" >
     <ion-nav-title>{{stateParams.title}}</ion-nav-title>
     <ion-content >
+        <div class="list card" ng-click="favoriteAddButtonClick()">
+            <a id="addFavoriteBtn" style="white-space: normal; " class="item item-icon-left">
+                <i class="icon {{stateParams.addButtonIcon}}"></i>
+                {{stateParams.addButtonText}}
+            </a>
+        </div>
         <div class="list card" id="bloodPressureCard"
              ng-if="state.bloodPressure.diastolicReminder && state.bloodPressure.systolicReminder"
              on-hold="showActionSheet(favorite, $index)">
@@ -104,12 +110,6 @@
                     <br>
                 </div>
             </div>
-        </div>
-        <div class="list card" ng-click="favoriteAddButtonClick()">
-            <a id="addFavoriteBtn" style="white-space: normal; " class="item item-icon-left">
-                <i class="icon {{stateParams.addButtonIcon}}"></i>
-                {{stateParams.addButtonText}}
-            </a>
         </div>
         <div class="list card" id="noFavoritesExplanation" ng-if="state.favorites.length === 0" >
             <div class="item" style="padding-bottom:0px;">
