@@ -20,7 +20,6 @@ angular.module('starter')
 			$scope.state.favorites = variableCategoryService.attachVariableCategoryIcons($scope.state.favorites);
 			for(var i = 0; i < $scope.state.favorites.length; i++){
 				$scope.state.favorites[i].total = null;
-				$scope.state.favorites[i].newDefaultValue = $scope.state.favorites[i].defaultValue;
 			}
 		}
 
@@ -36,7 +35,7 @@ angular.module('starter')
 			// 	reminderService.postTrackingReminders([$scope.state.favorites[$index]]);
 			// }
 			$scope.state.favorites[$index].displayTotal = "Recorded " + $scope.state.favorites[$index].total + " " + $scope.state.favorites[$index].abbreviatedUnitName;
-			measurementService.postMeasurementByReminder($scope.state.favorites[$index], $scope.state.favorites[$index].newDefaultValue)
+			measurementService.postMeasurementByReminder($scope.state.favorites[$index], $scope.state.favorites[$index].total)
 				.then(function () {
 					console.debug("Successfully measurementService.postMeasurementByReminder: " + JSON.stringify($scope.state.favorites[$index]));
 				}, function (err) {
