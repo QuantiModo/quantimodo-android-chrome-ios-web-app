@@ -265,7 +265,7 @@ angular.module('starter',
                 return;
             }
 
-            $rootScope.appVersion = "1.9.8.0";
+            $rootScope.appVersion = "1.9.9.0";
             $rootScope.appName = config.appSettings.appName;
 
             if (typeof Bugsnag !== "undefined") {
@@ -462,7 +462,7 @@ angular.module('starter',
             }
         })
         .state('app.reminderSearchCategory', {
-            url: "/reminderSearchCategory/:variableCategoryName",
+            url: "/reminder-search-category/:variableCategoryName",
             params: {
                 variableCategoryName : null,
                 fromState : null,
@@ -479,7 +479,7 @@ angular.module('starter',
             }
         })
         .state('app.reminderSearch', {
-            url: "/reminderSearch",
+            url: "/reminder-search",
             params: {
                 variableCategoryName : null,
                 fromState : null,
@@ -577,7 +577,7 @@ angular.module('starter',
             }
         })
         .state('app.chartsSearch', {
-            url: "/search-variables",
+            url: "/charts-search",
             cache: false,
             params: {
                 variableCategoryName: null,
@@ -627,7 +627,7 @@ angular.module('starter',
             }
         })
         .state('app.charts', {
-            url: "/variables/:variableName",
+            url: "/charts/:variableName",
             cache: false,
             params: {
                 trackingReminder : null,

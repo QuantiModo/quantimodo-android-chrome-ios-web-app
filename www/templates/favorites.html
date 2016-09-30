@@ -4,16 +4,17 @@
 	<!--<ion-content scroll="true" overflow-scroll="true">-->
 
 		<ion-content >
-        <div class="list card" id="favoritesList" ng-if="state.favorites.length" ng-repeat="favorite in state.favorites track by $index" on-hold="showActionSheet(favorite, $index)">
+        <div class="list-item" id="favoritesList" ng-if="state.favorites.length" ng-repeat="favorite in state.favorites track by $index" on-hold="showActionSheet(favorite, $index)">
             <div class="item" style="padding-bottom:0px;">
                 <div class="row">
                     <div ng-click="showActionSheet(favorite, $index)" class="col col-10" style="padding-top: 0px; text-align: center;">
                         <i style="font-size: 40px;" class="icon positive {{favorite.icon}}"></i>
                     </div>
                     <div class="col col-70">
-                        <h2 ng-click="showActionSheet(favorite, $index)" ng-if="favorite.abbreviatedUnitName !== '/5'" style="white-space: normal; line-height: normal; text-align: center; ">{{favorite.variableName}}&nbsp{{favorite.displayTotal}}</h2> 
+                        <h2 ng-click="showActionSheet(favorite, $index)" ng-if="favorite.abbreviatedUnitName !== '/5'&&favorite.abbreviatedUnitName"!=="Blood Pressure" style="white-space: normal; line-height: normal; text-align: center; ">{{favorite.variableName}}&nbsp{{favorite.displayTotal}}</h2>
+                         <h2 ng-click="showActionSheet(favorite, $index)" ng-if="favorite.abbreviatedUnitName === '/5'" style="white-space: normal; line-height: normal; text-align: center; ">{{favorite.variableName}}&nbsp{{favorite.displayTotal}}</h2> 
 
-                        <h2 ng-click="showActionSheet(favorite, $index)" ng-if="favorite.abbreviatedUnitName == '/5'" style="white-space: normal; line-height: normal; text-align: center; ">{{favorite.variableName}} {{favorite.displayTotal}} </h2>
+                       <!--  <h2 ng-click="showActionSheet(favorite, $index)" ng-if="favorite.abbreviatedUnitName === 'Blood Pressure'" style="white-space: normal; line-height: normal; text-align: center; ">{{favorite.topNumber}}{{favorite.displayTotal}}/{{favorite.lowNumber}}{{favorite.displayTotal}} </h2> -->
 						<button ng-if="favorite.abbreviatedUnitName != '/5' && favorite.defaultValue !== null"
                                 class="button button-clear button-balanced" style="text-overflow: clip; font-size: 14px; width:100%; "
                                 ng-click="trackByReminder(favorite, null, $index)">
@@ -66,13 +67,13 @@
                 </div>
             </div>
         </div>
-            <div class="list card" ng-click="favoriteAddButtonClick()">
+            <div class="list" ng-click="favoriteAddButtonClick()">
                 <a id="addFavoriteBtn" style="white-space: normal; " class="item item-icon-left">
                     <i class="icon {{stateParams.addButtonIcon}}"></i>
                     {{stateParams.addButtonText}}
                 </a>
             </div>
-            <div class="list card" id="noFavoritesExplanation" ng-if="state.favorites.length === 0" >
+            <div class="list" id="noFavoritesExplanation" ng-if="state.favorites.length === 0" >
                 <div class="item" style="padding-bottom:0px;">
                     <div class="row">
                         <h2 style="white-space: normal; text-align: center; line-height: normal; ">
