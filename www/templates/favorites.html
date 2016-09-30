@@ -57,6 +57,7 @@
                   </div>
 
                   <div ng-if="favorite.variableName !== 'Blood Pressure' && favorite.defaultValue === null && favorite.abbreviatedUnitName !== '/5'" class="col  col-40 item item-input-inset inputMea">
+
                      <input type="number" ng-model="favorite.total" id="defaultValueField"
                            ng-click="onTextClick($event)"
                            placeholder="Enter value    {{favorite.abbreviatedUnitName}} ">  

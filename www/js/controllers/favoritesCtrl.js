@@ -110,7 +110,7 @@ angular.module('starter')
 				$rootScope.stateParams.addButtonText = 'Add a favorite variable';
 			}
 			if(!$rootScope.stateParams.addButtonIcon){
-				$rootScope.stateParams.addButtonIcon = 'ion-ios-star positive';
+				$rootScope.stateParams.addButtonIcon = 'ion-ios-star-outline positive';
 			}
 
 			if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
@@ -139,12 +139,12 @@ angular.module('starter')
 			};
 
 			var actionMenuButtons = [
-					{ text: '<i class="icon ion-gear-a"></i>Change Default Value' },
-					{ text: '<i class="icon ion-edit"></i>Different Value/Time/Note' },
-					{ text: '<i class="icon ion-arrow-graph-up-right"></i>Charts'},
-					{ text: '<i class="icon ion-ios-list-outline"></i>' + 'History'},
-					{ text: '<i class="icon ion-settings"></i>' + 'Variable Settings'},
-					{ text: '<i class="icon ion-android-notifications-none"></i>Add Reminder'},
+					//{ text: '<i class="icon ion-gear-a"></i>Change Default Value' },
+					{ text: '<i class="icon positive ion-edit"></i>Edit/Add note' },
+					{ text: '<i class="icon positive ion-arrow-graph-up-right"></i>Charts'},
+					{ text: '<i class="icon positive ion-ios-list-outline"></i>' + 'History'},
+					{ text: '<i class="icon positive ion-settings"></i>' + 'Variable Settings'},
+					{ text: '<i class="icon positive ion-android-notifications-none"></i>Add Reminder'},
 					// { text: '<i class="icon ion-arrow-up-a"></i>Positive Predictors'},
 					// { text: '<i class="icon ion-arrow-down-a"></i>Negative Predictors'}
 				];
@@ -158,8 +158,8 @@ angular.module('starter')
 			// Show the action sheet
 			var hideSheet = $ionicActionSheet.show({
 				buttons: actionMenuButtons,
-				destructiveText: '<i class="icon ion-trash-a"></i>Delete From Favorites',
-				cancelText: '<i class="icon ion-ios-close"></i>Cancel',
+				destructiveText: '<i class="icon assertive ion-trash-a"></i>Delete From Favorites',
+				cancelText: '<i class="icon ion-ios-close positive"></i>Cancel',
 				cancel: function() {
 					console.log('CANCELLED');
 				},

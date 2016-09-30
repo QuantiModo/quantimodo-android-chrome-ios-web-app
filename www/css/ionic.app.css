@@ -3765,10 +3765,10 @@ a.subdued {
     border-radius: 0;
     border-color: #d1d3d6;
     background-color: transparent;
-    color: #007aff;
-    font-size: 21px; }
+    color: #808080 !important;
+    font-size: 18px; }
     .action-sheet .button:hover {
-      color: #007aff; }
+      color: #808080 !important; }
     .action-sheet .button.destructive {
       color: #ff3b30; }
       .action-sheet .button.destructive:hover {
@@ -3776,7 +3776,7 @@ a.subdued {
   .action-sheet .button.active, .action-sheet .button.activated {
     box-shadow: none;
     border-color: #d1d3d6;
-    color: #007aff;
+    color: #808080 !important;
     background: #e4e5e7; }
 
 .action-sheet-has-icons .icon {
