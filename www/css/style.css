@@ -1,3 +1,13 @@
+.resetButton{
+  float:right;
+  margin-right:10%;
+}
+.nonBorder{
+  border:none
+}
+.inputMea{
+  border-radius:8px;
+}
 body
 {
     font-family: 'Helvetica', 'Arial', sans-serif;
