@@ -390,6 +390,21 @@
 								<i class="ion-settings"> &nbsp; Settings</i>
 							</button>
 						</div>
+						<label ng-if="trackingReminderNotification.defaultValue === null && trackingReminderNotification.abbreviatedUnitName !== '/5'"
+							   class="item item-input">
+							<input type="number" ng-model="trackingReminderNotification.total" id="defaultValueField"
+								   ng-click="onTextClick($event)"
+								   placeholder="Enter value"
+								   style="text-align: center">
+							<span on-tap="trackByValueField(trackingReminderNotification, $event, dividerIndex, trackingReminderNotificationIndex)"
+								  class="input-label">
+								{{trackingReminderNotification.abbreviatedUnitName}} &nbsp
+								<i style="font-size: 20px;"
+								   class="icon positive ion-checkmark-round"
+								   on-tap="trackByValueField(trackingReminderNotification, $event, dividerIndex, trackingReminderNotificationIndex)">
+								</i>
+							</span>
+						</label>
 						<div class="row" ng-if="trackingReminderNotification.abbreviatedUnitName !== '/5' " >
 							<div class="button-bar">
 								<button ng-show="trackingReminderNotification.defaultValue"
