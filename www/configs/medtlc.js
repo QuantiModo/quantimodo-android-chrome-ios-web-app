@@ -268,7 +268,7 @@ config.appSettings  = {
             variableCategoryName : 'Vital Signs'
         },
         {
-            variableName: 'Systolic Blood Pressure (Top Number)',
+            variableName: 'Blood Pressure (Systolic - Top Number)',
             icon: 'ion-heart',
             abbreviatedUnitName: 'mmHg',
             reminderFrequency : 0,
@@ -276,7 +276,7 @@ config.appSettings  = {
             variableCategoryName : 'Vital Signs'
         },
         {
-            variableName: 'Diastolic Blood Pressure (Bottom Number)',
+            variableName: 'Blood Pressure (Diastolic - Bottom Number)',
             icon: 'ion-heart',
             abbreviatedUnitName: 'mmHg',
             reminderFrequency : 0,
