@@ -1,10 +1,10 @@
 <ion-view hide-nav-bar="hideNavigationMenu" >
-    <ion-nav-title>{{stateParams.title}}</ion-nav-title>
+    <ion-nav-title>{{state.title}}</ion-nav-title>
     <ion-content >
         <div class="list card" ng-click="favoriteAddButtonClick()">
             <a id="addFavoriteBtn" style="white-space: normal; " class="item item-icon-left">
-                <i class="icon {{stateParams.addButtonIcon}}"></i>
-                {{stateParams.addButtonText}}
+                <i class="icon {{state.addButtonIcon}}"></i>
+                {{state.addButtonText}}
             </a>
         </div>
         <div class="list card" id="bloodPressureCard"
@@ -115,14 +115,14 @@
             <div class="item" style="padding-bottom:0px;">
                 <div class="row">
                     <h2 style="white-space: normal; text-align: center; line-height: normal; ">
-                        {{stateParams.helpText}}
+                        {{state.helpText}}
                         <br><br>
                     </h2>
 
                 </div>
-                <div ng-if="stateParams.moreHelpText" class="row">
+                <div ng-if="state.moreHelpText" class="row">
                     <p style="white-space: normal; text-align: center; line-height: normal; ">
-                        {{stateParams.moreHelpText}}
+                        {{state.moreHelpText}}
                         <br><br>
                     </p>
                 </div>

@@ -12,8 +12,14 @@ angular.module('starter')
             variableCategoryName: $stateParams.variableCategoryName,
             helpText: variableCategoryService.getVariableCategoryInfo($stateParams.variableCategoryName).helpText,
             variableSearchQuery : {name:''},
-            trackingReminder: {}
+            trackingReminder: {},
+            noVariablesFoundCard: {
+                show: false,
+                title: 'No Variables Found'
+            },
+            searching: true
         };
+
         
         // when an old measurement is tapped to remeasure
         $scope.selectVariable = function(variableObject) {
@@ -31,6 +37,10 @@ angular.module('starter')
             }
         };
 
+        $scope.goToStateFromVariableSearch = function(stateName){
+            $state.go(stateName, $stateParams);
+        };
+
         $scope.init = function(){
             console.debug($state.current.name + ' initializing...');
             $rootScope.stateParams = $stateParams;
@@ -44,6 +54,8 @@ angular.module('starter')
                 $scope.state.variableSearchPlaceholderText = "Search for a " +
                     $filter('wordAliases')(pluralize($scope.state.variableCategoryName, 1).toLowerCase()) + " here...";
                 $scope.state.title = "Select " + $filter('wordAliases')(pluralize($scope.state.variableCategoryName, 1));
+                $scope.state.noVariablesFoundCard.title = 'No ' + $stateParams.variableCategoryName + ' Found';
+
             }
 
             $scope.showHelpInfoPopupIfNecessary();
@@ -75,6 +87,11 @@ angular.module('starter')
                             $scope.state.showAddVariableButton = false;
                             $scope.state.variableSearchResults = variables;
                             $scope.state.searching = false;
+                            if(!$scope.state.variableSearchResults){
+                                $scope.state.noVariablesFoundCard.show = true;
+                            } else {
+                                $scope.state.noVariablesFoundCard.show = false;
+                            }
                         });
                 }
                 else { // on add reminder or record measurement search pages; include public variables
@@ -185,8 +202,12 @@ angular.module('starter')
                 if($scope.state.variableSearchQuery.name.length < 3) {
                     $scope.state.variableSearchResults = userVariables;
                     $scope.state.searching = false;
+                    $scope.state.noVariablesFoundCard.show = false;
                 }
             } else {
+                if($stateParams.doNotIncludePublicVariables){
+                    $scope.state.noVariablesFoundCard.show = true;
+                }
                 if($scope.state.variableSearchResults.length < 1 && !$stateParams.doNotIncludePublicVariables){
                     populateCommonVariables();
                 }
