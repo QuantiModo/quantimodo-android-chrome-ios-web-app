@@ -145,6 +145,10 @@ angular.module('starter')
             }
         };
 
+        $scope.$on('populateUserVariables', function(){
+            console.log('populateUserVariables broadcast received..');
+            populateUserVariables();
+        });
 
         var populateCommonVariables = function(){
             if ($scope.state.variableCategoryName === 'Anything') {

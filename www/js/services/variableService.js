@@ -123,8 +123,11 @@ angular.module('starter')
                 var deferred = $q.defer();
 
                 QuantiModo.getUserVariables(null, function(userVariables){
-                    localStorageService.setItem('userVariables', JSON.stringify(userVariables));
-                    $rootScope.syncingUserVariables = false;
+                    localStorageService.setItem('userVariables', JSON.stringify(userVariables))
+                        .then(function () {
+                            $rootScope.$broadcast('populateUserVariables');
+                            $rootScope.syncingUserVariables = false;
+                        });
                     deferred.resolve(userVariables);
                 }, function(){
                     $rootScope.syncingUserVariables = false;
