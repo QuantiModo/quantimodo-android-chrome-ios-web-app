@@ -303,6 +303,7 @@ angular.module('starter')
 		};
 
 		$scope.refreshTrackingReminderNotifications = function () {
+			$scope.state.loading = true;
 			if($stateParams.today){
 				getTrackingReminderNotifications();
 			} else {
