@@ -119,6 +119,7 @@ angular.module('starter')
 				return;
 			}
 			$scope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications[trackingReminderNotificationNotificationIndex].hide = true;
+			$rootScope.numberOfPendingNotifications = $rootScope.numberOfPendingNotifications - 1;
 			console.log('modifiedReminderValue is ' + $scope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications[trackingReminderNotificationNotificationIndex].total);
 			var body = {
 				trackingReminderNotification: trackingReminderNotification,
@@ -156,6 +157,7 @@ angular.module('starter')
 			// Removing instead of hiding reminder notifications seems to cause weird dismissal problems
 			//$scope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications.splice(trackingReminderNotificationNotificationIndex, 1);
 			$scope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications[trackingReminderNotificationNotificationIndex].hide = true;
+			$rootScope.numberOfPendingNotifications = $rootScope.numberOfPendingNotifications - 1;
 			console.debug('Tracking notification ' + JSON.stringify(trackingReminderNotification));
 			console.log('modifiedReminderValue is ' + modifiedReminderValue);
 			var body = {
@@ -192,6 +194,7 @@ angular.module('starter')
 			}
 
 			$scope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications[trackingReminderNotificationNotificationIndex].hide = true;
+			$rootScope.numberOfPendingNotifications = $rootScope.numberOfPendingNotifications - 1;
 			// Removing seems to cause weird dismissal problems
 			//$scope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications.splice(trackingReminderNotificationNotificationIndex, 1);
 			console.debug('Skipping notification ' + JSON.stringify(trackingReminderNotification));
@@ -229,6 +232,7 @@ angular.module('starter')
 			}
 
 			$scope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications[trackingReminderNotificationNotificationIndex].hide = true;
+			$rootScope.numberOfPendingNotifications = $rootScope.numberOfPendingNotifications - 1;
 			// Removing seems to cause weird dismissal problems
 			//$scope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications.splice(trackingReminderNotificationNotificationIndex, 1);
 			console.debug('Snoozing notification ' + JSON.stringify(trackingReminderNotification));
