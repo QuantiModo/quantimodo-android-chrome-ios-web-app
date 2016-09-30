@@ -303,8 +303,6 @@ angular.module('starter')
 
 
 					if(bloodPressure){
-						$scope.state.bloodPressure.systolicReminder = null;
-						$scope.state.bloodPressure.diastolicReminder = null;
 						reminderService.deleteReminder($scope.state.bloodPressure.diastolicReminder.id)
 							.then(function(){
 								console.debug('Favorite deleted: ' + JSON.stringify($scope.state.bloodPressure.diastolicReminder));
@@ -325,6 +323,8 @@ angular.module('starter')
 							.then(function(){
 								//$scope.init();
 							});
+						$scope.state.bloodPressure.systolicReminder = null;
+						$scope.state.bloodPressure.diastolicReminder = null;
 
 						return true;
 					}
