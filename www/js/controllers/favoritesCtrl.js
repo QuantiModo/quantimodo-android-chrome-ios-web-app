@@ -13,18 +13,32 @@ angular.module('starter')
 			loading : true,
             trackingReminder : null,
             lastSent: new Date(),
+			title: "Favorites",
 			bloodPressure: {
             	systolicValue: null,
 				diastolicValue: null,
 				displayTotal: "Blood Pressure",
 				diastolicReminder : null,
 				systolicReminder : null
-			}
+			},
+			favorites: [],
+			addButtonText: "Add a Favorite Variable",
+			addButtonIcon: "ion-ios-star",
+			helpText: "Favorites are variables that you might want to track on a frequent but irregular basis.  Examples: As-needed medications, cups of coffee, or glasses of water",
+			moreHelpText: "Tip: I recommend using reminders instead of favorites whenever possible because they allow you to record regular 0 values as well. Knowing when you didn't take a medication or eat something helps our analytics engine to figure out how these things might be affecting you."
 	    };
 
 		function getFavoriteTrackingRemindersFromLocalStorage(){
-			$scope.state.favorites =
-				localStorageService.getElementsFromItemWithFilters('trackingReminders', 'reminderFrequency', 0);
+			var favorites = localStorageService.getElementsFromItemWithFilters('trackingReminders', 'reminderFrequency', 0);
+			for(i = 0; i < favorites.length; i++){
+				if($stateParams.variableCategoryName && $stateParams.variableCategoryName !== 'Anything'){
+					if($stateParams.variableCategoryName === favorites[i].variableCategoryName){
+						$scope.state.favorites.push(favorites[i]);
+					}
+				} else {
+					$scope.state.favorites.push(favorites[i]);
+				}
+			}
 			$scope.state.favorites = variableCategoryService.attachVariableCategoryIcons($scope.state.favorites);
 			var i;
 			for(i = 0; i < $scope.state.favorites.length; i++){
@@ -164,14 +178,16 @@ angular.module('starter')
 	    $scope.init = function(){
 	    	authService.setUserUsingAccessTokenInUrl();
 			$rootScope.stateParams = $stateParams;
-			if(!$rootScope.stateParams.title){
-				$rootScope.stateParams.title = 'Favorites';
+
+			if($stateParams.variableCategoryName && $stateParams.variableCategoryName  !== 'Anything'){
+				$scope.state.addButtonText = "Add favorite " + pluralize($stateParams.variableCategoryName, 1).toLowerCase();
+				$scope.state.title = pluralize($stateParams.variableCategoryName, 1) + " Favorites";
 			}
-			if(!$rootScope.stateParams.addButtonText){
-				$rootScope.stateParams.addButtonText = 'Add a favorite variable';
-			}
-			if(!$rootScope.stateParams.addButtonIcon){
-				$rootScope.stateParams.addButtonIcon = 'ion-ios-star positive';
+			if($stateParams.variableCategoryName === 'Treatments') {
+				$scope.state.addButtonText = "Add as-needed medication";
+				$scope.state.helpText = "Quickly record doses of medications taken as needed just by tapping.  Tap twice for two doses, etc.";
+				$scope.state.addButtonIcon = "ion-ios-medkit-outline";
+				$scope.state.title = 'As-Needed Meds';
 			}
 
 			if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }

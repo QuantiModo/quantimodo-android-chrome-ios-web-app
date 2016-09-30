@@ -594,6 +594,24 @@ angular.module('starter',
                 }
             }
         })
+        .state('app.chartSearchCategory', {
+            url: "/chart-search-category/:variableCategoryName",
+            cache: false,
+            params: {
+                variableCategoryName: null,
+                fromState: null,
+                fromUrl: null,
+                measurement: null,
+                doNotIncludePublicVariables: true,
+                nextState: 'app.charts'
+            },
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/variable-search.html",
+                    controller: 'VariableSearchCtrl'
+                }
+            }
+        })
         .state('app.searchVariablesWithUserPredictors', {
             url: "/search-variables-with-user-predictors",
             cache: false,
@@ -805,9 +823,7 @@ angular.module('starter',
                 variableName : null,
                 dateTime : null,
                 value : null,
-                fromUrl : null,
-                helpText: "Favorites are variables that you might want to track on a frequent but irregular basis.  Examples: As-needed medications, cups of coffee, or glasses of water",
-                moreHelpText: "Tip: I recommend using reminders instead of favorites whenever possible because they allow you to record regular 0 values as well. Knowing when you didn't take a medication or eat something helps our analytics engine to figure out how these things might be affecting you."
+                fromUrl : null
             },
             views: {
                 'menuContent': {
@@ -817,7 +833,7 @@ angular.module('starter',
             }
         })
         .state('app.favoritesCategory', {
-            url: "/favorites/:variableCategoryName",
+            url: "/favorites-category/:variableCategoryName",
             cache: false,
             params: {
                 variableCategoryName: null
@@ -897,10 +913,7 @@ angular.module('starter',
             url: "/as-needed-meds",
             params: {
                 title: "As Needed Meds",
-                addButtonText: "Add as-needed medication",
-                helpText: "Quickly record doses of medications taken as needed just by tapping.  Tap twice for two doses, etc.",
-                variableCategoryName : 'Treatments',
-                addButtonIcon: "ion-ios-medkit-outline",
+                variableCategoryName : 'Treatments'
             },
             views: {
                 'menuContent': {

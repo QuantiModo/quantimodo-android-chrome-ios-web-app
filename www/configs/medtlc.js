@@ -338,14 +338,6 @@ config.appSettings  = {
             reminderFrequency : 0,
             defaultValue :  null,
             variableCategoryName : 'Vital Signs'
-        },
-        {
-            variableName: 'Bowel Movements Count (Poop)',
-            icon: null,
-            abbreviatedUnitName: 'count',
-            reminderFrequency : 0,
-            defaultValue :  null,
-            variableCategoryName : 'Symptoms'
         }
     ],
 
@@ -437,6 +429,20 @@ config.appSettings  = {
             icon : 'ion-ios-paper-outline'
         },
         {
+            title : 'Favorites',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showSymptomsSubMenu',
+            href : '#/app/favorites-category/Symptoms',
+            icon : 'ion-ios-star'
+        },
+        {
+            title : 'Charts',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showSymptomsSubMenu',
+            href : '#/app/charts-search-category/Symptoms',
+            icon : 'ion-arrow-graph-up-right'
+        },
+        {
             title : 'Vital Signs',
             click : 'toggleVitalSignsSubMenu',
             showSubMenuVariable : 'showVitalSignsSubMenu',
@@ -464,6 +470,20 @@ config.appSettings  = {
             showSubMenuVariable : 'showVitalSignsSubMenu',
             href : '#/app/history-all/Vital Signs',
             icon : 'ion-ios-paper-outline'
+        },
+        {
+            title : 'Favorites',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showVitalSignsSubMenu',
+            href : '#/app/favorites-category/Vital Signs',
+            icon : 'ion-ios-star'
+        },
+        {
+            title : 'Charts',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showVitalSignsSubMenu',
+            href : '#/app/charts-search-category/Vital Signs',
+            icon : 'ion-arrow-graph-up-right'
         },
         {
             title : 'Physical Activity',
@@ -495,6 +515,20 @@ config.appSettings  = {
             icon : 'ion-ios-paper-outline'
         },
         {
+            title : 'Favorites',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showPhysicalActivitySubMenu',
+            href : '#/app/favorites-category/Physical Activity',
+            icon : 'ion-ios-star'
+        },
+        {
+            title : 'Charts',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showPhysicalActivitySubMenu',
+            href : '#/app/charts-search-category/Physical Activity',
+            icon : 'ion-arrow-graph-up-right'
+        },
+        {
             title : 'Emotions',
             click : 'toggleEmotionsSubMenu',
             showSubMenuVariable : 'showEmotionsSubMenu',
@@ -524,6 +558,20 @@ config.appSettings  = {
             icon : 'ion-ios-paper-outline'
         },
         {
+            title : 'Favorites',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showEmotionsSubMenu',
+            href : '#/app/favorites-category/Emotions',
+            icon : 'ion-ios-star'
+        },
+        {
+            title : 'Charts',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showEmotionsSubMenu',
+            href : '#/app/charts-search-category/Emotions',
+            icon : 'ion-arrow-graph-up-right'
+        },
+        {
             title : 'Diet',
             click : 'toggleDietSubMenu',
             showSubMenuVariable : 'showDietSubMenu',
@@ -551,6 +599,20 @@ config.appSettings  = {
             showSubMenuVariable : 'showDietSubMenu',
             href : '#/app/history-all/Foods',
             icon : 'ion-ios-paper-outline'
+        },
+        {
+            title : 'Favorites',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showDietSubMenu',
+            href : '#/app/favorites-category/Foods',
+            icon : 'ion-ios-star'
+        },
+        {
+            title : 'Charts',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showDietSubMenu',
+            href : '#/app/charts-search-category/Foods',
+            icon : 'ion-arrow-graph-up-right'
         },
         {
             title : 'Favorites',
@@ -742,8 +804,60 @@ config.appSettings  = {
         },
         {
             title : 'Charts',
-            href : '#/app/charts-search',
-            icon : 'ion-arrow-graph-up-right'
+            click : 'toggleChartSearchSubMenu',
+            showSubMenuVariable : 'showChartSearchSubMenu',
+            isSubMenuParent : true,
+            collapsedIcon : 'ion-arrow-graph-up-right',
+            expandedIcon : 'ion-chevron-down'
+        },
+        {
+            title : 'All Variables',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showChartSearchSubMenu',
+            href : '#/app/chart-search-category/Anything',
+            icon : 'ion-android-globe'
+        },
+        {
+            title : 'Emotions',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showChartSearchSubMenu',
+            href : '#/app/chart-search-category/Emotions',
+            icon : 'ion-happy-outline'
+        },
+        {
+            title : 'Foods',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showChartSearchSubMenu',
+            href : '#/app/chart-search-category/Foods',
+            icon : 'ion-ios-nutrition-outline'
+        },
+        {
+            title : 'Physical Activity',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showChartSearchSubMenu',
+            href : '#/app/chart-search-category/Physical Activity',
+            icon : 'ion-ios-body-outline'
+        },
+        {
+            title : 'Symptoms',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showChartSearchSubMenu',
+            href : '#/app/chart-search-category/Symptoms',
+            icon : 'ion-sad-outline'
+        },
+        {
+            title : 'Treatments',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showChartSearchSubMenu',
+            href : '#/app/chart-search-category/Treatments',
+            icon : 'ion-ios-medkit-outline'
+        },
+        {
+            title : 'Vital Signs',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showChartSearchSubMenu',
+            href : '#/app/chart-search-category/Vital Signs',
+            icon : 'ion-ios-pulse'
         },
         {
             title : 'Strongest Predictors',
