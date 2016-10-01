@@ -180,8 +180,9 @@ angular.module('starter')
 			$rootScope.stateParams = $stateParams;
 
 			if($stateParams.variableCategoryName && $stateParams.variableCategoryName  !== 'Anything'){
-				$scope.state.addButtonText = "Add favorite " + pluralize($stateParams.variableCategoryName, 1).toLowerCase();
-				$scope.state.title = pluralize($stateParams.variableCategoryName, 1) + " Favorites";
+				$scope.state.variableCategoryObject = variableCategoryService.getVariableCategoryInfo($stateParams.variableCategoryName);
+				$scope.state.addButtonText = "Add favorite " + $scope.state.variableCategoryObject.variableCategoryNameSingular.toLowerCase();
+				$scope.state.title = $scope.state.variableCategoryObject.variableCategoryNameSingular + " Favorites";
 			}
 			if($stateParams.variableCategoryName === 'Treatments') {
 				$scope.state.addButtonText = "Add as-needed medication";
@@ -202,7 +203,7 @@ angular.module('starter')
 	    };
 
         // when view is changed
-    	$scope.$on('$ionicView.enter', function(e) { console.debug("Entering state " + $state.current.name);
+    	$scope.$on('$ionicView.beforeEnter', function(e) { console.debug("Entering state " + $state.current.name);
 			$scope.hideLoader();
     		$scope.init();
     	});
