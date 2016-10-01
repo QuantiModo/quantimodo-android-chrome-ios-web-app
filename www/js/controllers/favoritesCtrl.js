@@ -17,9 +17,7 @@ angular.module('starter')
 			bloodPressure: {
             	systolicValue: null,
 				diastolicValue: null,
-				displayTotal: "Blood Pressure",
-				diastolicReminder : null,
-				systolicReminder : null
+				displayTotal: "Blood Pressure"
 			},
 			favorites: [],
 			addButtonText: "Add a Favorite Variable",
@@ -43,15 +41,8 @@ angular.module('starter')
 			var i;
 			for(i = 0; i < $scope.state.favorites.length; i++){
 				$scope.state.favorites[i].total = null;
-				if($scope.state.favorites[i].variableName.indexOf('Systolic') > -1){
-					$scope.state.bloodPressure.systolicReminder = $scope.state.favorites[i];
-					$scope.state.favorites.splice(i, 1);
-				}
-			}
-
-			for(i = 0; i < $scope.state.favorites.length; i++){
-				if($scope.state.favorites[i].variableName.indexOf('Diastolic') > -1){
-					$scope.state.bloodPressure.diastolicReminder = $scope.state.favorites[i];
+				if($scope.state.favorites[i].variableName.toLowerCase().indexOf('blood pressure') > -1){
+					$scope.state.bloodPressure.reminderId = $scope.state.favorites[i].id;
 					$scope.state.favorites.splice(i, 1);
 				}
 			}
@@ -85,19 +76,9 @@ angular.module('starter')
 				utilsService.showAlert('Please enter both values for blood pressure.');
 			}
 			$scope.state.bloodPressure.displayTotal = "Recorded " + $scope.state.bloodPressure.systolicValue + "/" + $scope.state.bloodPressure.diastolicValue + ' Blood Pressure';
-			measurementService.postMeasurementByReminder($scope.state.bloodPressure.diastolicReminder, $scope.state.bloodPressure.diastolicValue)
+			measurementService.postBloodPressureMeasurements($scope.state.bloodPressure)
 				.then(function () {
-					console.debug("Successfully measurementService.postMeasurementByReminder: " + JSON.stringify($scope.state.bloodPressure.diastolicReminder));
-				}, function (err) {
-					if (typeof Bugsnag !== "undefined") {
-						Bugsnag.notify(err, JSON.stringify(err), {}, "error");
-					}
-					console.error(err);
-					console.error('Failed to Track by favorite, Try again!');
-				});
-			measurementService.postMeasurementByReminder($scope.state.bloodPressure.systolicReminder, $scope.state.bloodPressure.systolicValue)
-				.then(function () {
-					console.debug("Successfully measurementService.postMeasurementByReminder: " + JSON.stringify($scope.state.bloodPressure.systolicReminder));
+					console.debug("Successfully measurementService.postMeasurementByReminder: " + JSON.stringify($scope.state.bloodPressure));
 				}, function (err) {
 					if (typeof Bugsnag !== "undefined") {
 						Bugsnag.notify(err, JSON.stringify(err), {}, "error");
@@ -317,34 +298,20 @@ angular.module('starter')
 						return true;
 					}
 
-
 					if(bloodPressure){
-						reminderService.deleteReminder($scope.state.bloodPressure.diastolicReminder.id)
+						reminderService.deleteReminder($scope.state.bloodPressure.reminderId)
 							.then(function(){
-								console.debug('Favorite deleted: ' + JSON.stringify($scope.state.bloodPressure.diastolicReminder));
+								console.debug('Favorite deleted: ' + JSON.stringify($scope.state.bloodPressure));
 							}, function(err){
-								console.error('Failed to Delete Favorite!  Error is ' + err.message + '.  Favorite is ' + JSON.stringify($scope.state.bloodPressure.diastolicReminder));
+								console.error('Failed to Delete Favorite!  Error is ' + err.message + '.  Favorite is ' + JSON.stringify($scope.state.bloodPressure));
 							});
-						localStorageService.deleteElementOfItemById('trackingReminders', $scope.state.bloodPressure.diastolicReminder.id)
+						localStorageService.deleteElementOfItemById('trackingReminders', $scope.state.bloodPressure.reminderId)
 							.then(function(){
 								//$scope.init();
 							});
-						reminderService.deleteReminder($scope.state.bloodPressure.systolicReminder.id)
-							.then(function(){
-								console.debug('Favorite deleted: ' + JSON.stringify($scope.state.bloodPressure.systolicReminder));
-							}, function(err){
-								console.error('Failed to Delete Favorite!  Error is ' + err.message + '.  Favorite is ' + JSON.stringify($scope.state.bloodPressure.systolicReminder));
-							});
-						localStorageService.deleteElementOfItemById('trackingReminders', $scope.state.bloodPressure.systolicReminder.id)
-							.then(function(){
-								//$scope.init();
-							});
-						$scope.state.bloodPressure.systolicReminder = null;
-						$scope.state.bloodPressure.diastolicReminder = null;
-
+						$scope.state.bloodPressure.reminderId = null;
 						return true;
 					}
-
 				}
 			});
 

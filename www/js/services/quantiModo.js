@@ -290,11 +290,12 @@ angular.module('starter')
 
             // post new Measurements for user
             QuantiModo.postMeasurementsV2 = function(measurementSet, successHandler, errorHandler){
-                if(!measurementSet[0].measurements){
+                if(!measurementSet[0].measurements && !measurementSet[0].value){
                     console.error("No measurementSet.measurements provided to QuantiModo.postMeasurementsV2");
                 } else {
                     QuantiModo.post('api/measurements/v2',
-                        ['measurements', 'variableName', 'source', 'variableCategoryName', 'abbreviatedUnitName'],
+                        //['measurements', 'variableName', 'source', 'variableCategoryName', 'abbreviatedUnitName'],
+                        [],
                         measurementSet,
                         successHandler,
                         errorHandler);
