@@ -219,6 +219,11 @@ angular.module('starter')
             if (selectedVariable.variableName) {
                 $scope.state.trackingReminder.variableName = selectedVariable.variableName;
             }
+
+            if($scope.state.trackingReminder.variableName.toLowerCase().indexOf('blood pressure') > -1 ||
+                $scope.state.trackingReminder.abbreviatedUnitName === '/5') {
+                $scope.state.hideDefaultValueField = true;
+            }
             if (selectedVariable.description) {
                 $scope.state.trackingReminder.variableDescription = selectedVariable.description;
             }
