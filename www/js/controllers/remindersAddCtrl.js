@@ -224,14 +224,14 @@ angular.module('starter')
             }
 
             if (typeof selectedVariable.lastValue !== "undefined"){
-                $scope.state.trackingReminder.defaultValue = Number(selectedVariable.lastValue);
+                //$scope.state.trackingReminder.defaultValue = Number(selectedVariable.lastValue);
             }
 
             $scope.state.showReminderFrequencyCard = true;
 
             // Set default value
             if ($scope.state.trackingReminder.abbreviatedUnitName === "/5") {
-                $scope.state.trackingReminder.defaultValue = 3; // Default to 3 ("ok") if variable unit is /5
+                //$scope.state.trackingReminder.defaultValue = 3; // Default to 3 ("ok") if variable unit is /5
             }
 	    };
 
@@ -297,15 +297,15 @@ angular.module('starter')
             }
 
             if(!$stateParams.favorite && !$scope.state.trackingReminder.defaultValue && $scope.state.trackingReminder.defaultValue !== 0) {
-                utilsService.showAlert('Please enter a default value');
-                return false;
+                //utilsService.showAlert('Please enter a default value');
+                //return false;
             }
 
             if($rootScope.unitsIndexedByAbbreviatedName[$scope.state.trackingReminder.abbreviatedUnitName] &&
                 typeof $rootScope.unitsIndexedByAbbreviatedName[$scope.state.trackingReminder.abbreviatedUnitName].minimumValue !== "undefined" &&
                 $rootScope.unitsIndexedByAbbreviatedName[$scope.state.trackingReminder.abbreviatedUnitName].minimumValue !== null)
             {
-                if($scope.state.trackingReminder.defaultValue <
+                if($scope.state.trackingReminder.defaultValue !== null && $scope.state.trackingReminder.defaultValue <
                     $rootScope.unitsIndexedByAbbreviatedName[$scope.state.trackingReminder.abbreviatedUnitName].minimumValue){
                     utilsService.showAlert($rootScope.unitsIndexedByAbbreviatedName[$scope.state.trackingReminder.abbreviatedUnitName].minimumValue +
                         ' is the smallest possible value for the unit ' +
@@ -320,7 +320,7 @@ angular.module('starter')
                 typeof $rootScope.unitsIndexedByAbbreviatedName[$scope.state.trackingReminder.abbreviatedUnitName].maximumValue !== "undefined" &&
                 $rootScope.unitsIndexedByAbbreviatedName[$scope.state.trackingReminder.abbreviatedUnitName].maximumValue !== null)
             {
-                if($scope.state.trackingReminder.defaultValue >
+                if($scope.state.trackingReminder.defaultValue !== null && $scope.state.trackingReminder.defaultValue >
                     $rootScope.unitsIndexedByAbbreviatedName[$scope.state.trackingReminder.abbreviatedUnitName].maximumValue){
                     utilsService.showAlert($rootScope.unitsIndexedByAbbreviatedName[$scope.state.trackingReminder.abbreviatedUnitName].maximumValue +
                         ' is the largest possible value for the unit ' +
@@ -368,7 +368,7 @@ angular.module('starter')
             }
 
             if($scope.state.trackingReminder.abbreviatedUnitName === '/5' && !$scope.state.trackingReminder.defaultValue){
-                $scope.state.trackingReminder.defaultValue = 3;
+                //$scope.state.trackingReminder.defaultValue = 3;
             }
 
             if(!validReminderSettings()){

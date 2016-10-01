@@ -1,36 +1,65 @@
 angular.module('starter')
 
-	// .controller('FavoritesCtrl', function($scope, $state, $ionicActionSheet, $timeout, reminderService, authService, 
-	// 									  localStorageService, measurementService, variableCategoryService, $rootScope, $stateParams) {
 	.controller('FavoritesCtrl', function($scope, $state, $ionicActionSheet, $timeout, reminderService, authService, 
-										  localStorageService, measurementService, variableCategoryService, $rootScope, $stateParams) {
+										  localStorageService, measurementService, variableCategoryService, $rootScope,
+										  $stateParams, utilsService) {
 
 	    $scope.controller_name = "FavoritesCtrl";
-	
+
 		console.log('Loading ' + $scope.controller_name);
 		
 	    $scope.state = {
 	    	selected1to5Value : false,
 			loading : true,
             trackingReminder : null,
-            lastSent: new Date()
+            lastSent: new Date(),
+			title: "Favorites",
+			bloodPressure: {
+            	systolicValue: null,
+				diastolicValue: null,
+				displayTotal: "Blood Pressure",
+				diastolicReminder : null,
+				systolicReminder : null
+			},
+			favorites: [],
+			addButtonText: "Add a Favorite Variable",
+			addButtonIcon: "ion-ios-star",
+			helpText: "Favorites are variables that you might want to track on a frequent but irregular basis.  Examples: As-needed medications, cups of coffee, or glasses of water",
+			moreHelpText: "Tip: I recommend using reminders instead of favorites whenever possible because they allow you to record regular 0 values as well. Knowing when you didn't take a medication or eat something helps our analytics engine to figure out how these things might be affecting you."
 	    };
 
-
 		function getFavoriteTrackingRemindersFromLocalStorage(){
-			$scope.state.favorites =
-				localStorageService.getElementsFromItemWithFilters('trackingReminders', 'reminderFrequency', 0);
+			var favorites = localStorageService.getElementsFromItemWithFilters('trackingReminders', 'reminderFrequency', 0);
+			for(i = 0; i < favorites.length; i++){
+				if($stateParams.variableCategoryName && $stateParams.variableCategoryName !== 'Anything'){
+					if($stateParams.variableCategoryName === favorites[i].variableCategoryName){
+						$scope.state.favorites.push(favorites[i]);
+					}
+				} else {
+					$scope.state.favorites.push(favorites[i]);
+				}
+			}
 			$scope.state.favorites = variableCategoryService.attachVariableCategoryIcons($scope.state.favorites);
-			for(var i = 0; i < $scope.state.favorites.length; i++){
+			var i;
+			for(i = 0; i < $scope.state.favorites.length; i++){
 				$scope.state.favorites[i].total = null;
-				$scope.state.favorites[i].newDefaultValue = $scope.state.favorites[i].defaultValue;
+				if($scope.state.favorites[i].variableName.indexOf('Systolic') > -1){
+					$scope.state.bloodPressure.systolicReminder = $scope.state.favorites[i];
+					$scope.state.favorites.splice(i, 1);
+				}
+			}
+
+			for(i = 0; i < $scope.state.favorites.length; i++){
+				if($scope.state.favorites[i].variableName.indexOf('Diastolic') > -1){
+					$scope.state.bloodPressure.diastolicReminder = $scope.state.favorites[i];
+					$scope.state.favorites.splice(i, 1);
+				}
 			}
 		}
-			
+
 		$scope.favoriteAddButtonClick = function () {
 			$scope.goToState('app.favoriteSearch', $rootScope.stateParams);
 		};
-
 
 		$scope.trackByValueField = function(trackingReminder, $index){
 			// if($scope.state.favorites[$index].newDefaultValue !== $scope.state.favorites[$index].defaultValue){
@@ -39,7 +68,53 @@ angular.module('starter')
 			// 	reminderService.postTrackingReminders([$scope.state.favorites[$index]]);
 			// }
 			$scope.state.favorites[$index].displayTotal = "Recorded " + $scope.state.favorites[$index].total + " " + $scope.state.favorites[$index].abbreviatedUnitName;
-			measurementService.postMeasurementByReminder($scope.state.favorites[$index], $scope.state.favorites[$index].newDefaultValue)
+			measurementService.postMeasurementByReminder($scope.state.favorites[$index], $scope.state.favorites[$index].total)
+				.then(function () {
+					console.debug("Successfully measurementService.postMeasurementByReminder: " + JSON.stringify($scope.state.favorites[$index]));
+				}, function (err) {
+					if (typeof Bugsnag !== "undefined") {
+						Bugsnag.notify(err, JSON.stringify(err), {}, "error");
+					}
+					console.error(err);
+					console.error('Failed to Track by favorite, Try again!');
+				});
+		};
+
+		$scope.trackBloodPressure = function(){
+			if(!$scope.state.bloodPressure.diastolicValue || !$scope.state.bloodPressure.systolicValue){
+				utilsService.showAlert('Please enter both values for blood pressure.');
+			}
+			$scope.state.bloodPressure.displayTotal = "Recorded " + $scope.state.bloodPressure.systolicValue + "/" + $scope.state.bloodPressure.diastolicValue + ' Blood Pressure';
+			measurementService.postMeasurementByReminder($scope.state.bloodPressure.diastolicReminder, $scope.state.bloodPressure.diastolicValue)
+				.then(function () {
+					console.debug("Successfully measurementService.postMeasurementByReminder: " + JSON.stringify($scope.state.bloodPressure.diastolicReminder));
+				}, function (err) {
+					if (typeof Bugsnag !== "undefined") {
+						Bugsnag.notify(err, JSON.stringify(err), {}, "error");
+					}
+					console.error(err);
+					console.error('Failed to Track by favorite, Try again!');
+				});
+			measurementService.postMeasurementByReminder($scope.state.bloodPressure.systolicReminder, $scope.state.bloodPressure.systolicValue)
+				.then(function () {
+					console.debug("Successfully measurementService.postMeasurementByReminder: " + JSON.stringify($scope.state.bloodPressure.systolicReminder));
+				}, function (err) {
+					if (typeof Bugsnag !== "undefined") {
+						Bugsnag.notify(err, JSON.stringify(err), {}, "error");
+					}
+					console.error(err);
+					console.error('Failed to Track by favorite, Try again!');
+				});
+		};
+
+		$scope.trackByValueField = function(trackingReminder, $index){
+			// if($scope.state.favorites[$index].newDefaultValue !== $scope.state.favorites[$index].defaultValue){
+			// 	$scope.state.favorites[$index].defaultValue = $scope.state.favorites[$index].newDefaultValue;
+			// 	localStorageService.addToOrReplaceElementOfItemByIdOrMoveToFront($scope.state.favorites[$index]);
+			// 	reminderService.postTrackingReminders([$scope.state.favorites[$index]]);
+			// }
+			$scope.state.favorites[$index].displayTotal = "Recorded " + $scope.state.favorites[$index].total + " " + $scope.state.favorites[$index].abbreviatedUnitName;
+			measurementService.postMeasurementByReminder($scope.state.favorites[$index], $scope.state.favorites[$index].total)
 				.then(function () {
 					console.debug("Successfully measurementService.postMeasurementByReminder: " + JSON.stringify($scope.state.favorites[$index]));
 				}, function (err) {
@@ -103,14 +178,16 @@ angular.module('starter')
 	    $scope.init = function(){
 	    	authService.setUserUsingAccessTokenInUrl();
 			$rootScope.stateParams = $stateParams;
-			if(!$rootScope.stateParams.title){
-				$rootScope.stateParams.title = 'Favorites';
+
+			if($stateParams.variableCategoryName && $stateParams.variableCategoryName  !== 'Anything'){
+				$scope.state.addButtonText = "Add favorite " + pluralize($stateParams.variableCategoryName, 1).toLowerCase();
+				$scope.state.title = pluralize($stateParams.variableCategoryName, 1) + " Favorites";
 			}
-			if(!$rootScope.stateParams.addButtonText){
-				$rootScope.stateParams.addButtonText = 'Add a favorite variable';
-			}
-			if(!$rootScope.stateParams.addButtonIcon){
-				$rootScope.stateParams.addButtonIcon = 'ion-ios-star-outline positive';
+			if($stateParams.variableCategoryName === 'Treatments') {
+				$scope.state.addButtonText = "Add as-needed medication";
+				$scope.state.helpText = "Quickly record doses of medications taken as needed just by tapping.  Tap twice for two doses, etc.";
+				$scope.state.addButtonIcon = "ion-ios-medkit-outline";
+				$scope.state.title = 'As-Needed Meds';
 			}
 
 			if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
@@ -131,23 +208,25 @@ angular.module('starter')
     	});
 
 		// Triggered on a button click, or some other target
-		$scope.showActionSheet = function(favorite, $index) {
+		$scope.showActionSheet = function(favorite, $index, bloodPressure) {
 
 			var variableObject = {
 				id: favorite.variableId,
 				name: favorite.variableName
 			};
 
+
 			var actionMenuButtons = [
-					//{ text: '<i class="icon ion-gear-a"></i>Change Default Value' },
-					{ text: '<i class="icon positive ion-edit"></i>Edit/Add note' },
-					{ text: '<i class="icon positive ion-arrow-graph-up-right"></i>Charts'},
-					{ text: '<i class="icon positive ion-ios-list-outline"></i>' + 'History'},
-					{ text: '<i class="icon positive ion-settings"></i>' + 'Variable Settings'},
-					{ text: '<i class="icon positive ion-android-notifications-none"></i>Add Reminder'},
+					{ text: '<i class="icon ion-gear-a"></i>Change Default Value' },
+					{ text: '<i class="icon ion-edit"></i>Different Value/Time/Note' },
+					{ text: '<i class="icon ion-arrow-graph-up-right"></i>Charts'},
+					{ text: '<i class="icon ion-ios-list-outline"></i>' + 'History'},
+					{ text: '<i class="icon ion-settings"></i>' + 'Variable Settings'},
+					{ text: '<i class="icon ion-android-notifications-none"></i>Add Reminder'},
 					// { text: '<i class="icon ion-arrow-up-a"></i>Positive Predictors'},
 					// { text: '<i class="icon ion-arrow-down-a"></i>Negative Predictors'}
 				];
+
 
 			if(config.appSettings.favoritesController){
 				if(config.appSettings.favoritesController.actionMenuButtons){
@@ -155,11 +234,16 @@ angular.module('starter')
 				}
 			}
 
+
+			if(bloodPressure){
+				actionMenuButtons = [];
+			}
+
 			// Show the action sheet
 			var hideSheet = $ionicActionSheet.show({
 				buttons: actionMenuButtons,
-				destructiveText: '<i class="icon assertive ion-trash-a"></i>Delete From Favorites',
-				cancelText: '<i class="icon ion-ios-close positive"></i>Cancel',
+				destructiveText: '<i class="icon ion-trash-a"></i>Delete From Favorites',
+				cancelText: '<i class="icon ion-ios-close"></i>Cancel',
 				cancel: function() {
 					console.log('CANCELLED');
 				},
@@ -218,18 +302,49 @@ angular.module('starter')
 					return true;
 				},
 				destructiveButtonClicked: function() {
-					$scope.state.favorites.splice($index, 1);
-					reminderService.deleteReminder(favorite.id)
-						.then(function(){
-							console.debug('Favorite deleted: ' + JSON.stringify(favorite));
-						}, function(err){
-							console.error('Failed to Delete Favorite!  Error is ' + err.message + '.  Favorite is ' + JSON.stringify(favorite));
-						});
-					localStorageService.deleteElementOfItemById('trackingReminders', favorite.id)
-						.then(function(){
-							$scope.init();
-						});
-					return true;
+					if(!bloodPressure){
+						$scope.state.favorites.splice($index, 1);
+						reminderService.deleteReminder(favorite.id)
+							.then(function(){
+								console.debug('Favorite deleted: ' + JSON.stringify(favorite));
+							}, function(err){
+								console.error('Failed to Delete Favorite!  Error is ' + err.message + '.  Favorite is ' + JSON.stringify(favorite));
+							});
+						localStorageService.deleteElementOfItemById('trackingReminders', favorite.id)
+							.then(function(){
+								//$scope.init();
+							});
+						return true;
+					}
+
+
+					if(bloodPressure){
+						reminderService.deleteReminder($scope.state.bloodPressure.diastolicReminder.id)
+							.then(function(){
+								console.debug('Favorite deleted: ' + JSON.stringify($scope.state.bloodPressure.diastolicReminder));
+							}, function(err){
+								console.error('Failed to Delete Favorite!  Error is ' + err.message + '.  Favorite is ' + JSON.stringify($scope.state.bloodPressure.diastolicReminder));
+							});
+						localStorageService.deleteElementOfItemById('trackingReminders', $scope.state.bloodPressure.diastolicReminder.id)
+							.then(function(){
+								//$scope.init();
+							});
+						reminderService.deleteReminder($scope.state.bloodPressure.systolicReminder.id)
+							.then(function(){
+								console.debug('Favorite deleted: ' + JSON.stringify($scope.state.bloodPressure.systolicReminder));
+							}, function(err){
+								console.error('Failed to Delete Favorite!  Error is ' + err.message + '.  Favorite is ' + JSON.stringify($scope.state.bloodPressure.systolicReminder));
+							});
+						localStorageService.deleteElementOfItemById('trackingReminders', $scope.state.bloodPressure.systolicReminder.id)
+							.then(function(){
+								//$scope.init();
+							});
+						$scope.state.bloodPressure.systolicReminder = null;
+						$scope.state.bloodPressure.diastolicReminder = null;
+
+						return true;
+					}
+
 				}
 			});
 

@@ -117,7 +117,7 @@ angular.module('starter')
 			if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
 
 
-			if ($stateParams.variableCategoryName) {
+			if ($stateParams.variableCategoryName && $stateParams.variableCategoryName !== 'Anything') {
 				$scope.state.title = $stateParams.variableCategoryName + ' History';
 				$scope.state.showLocationToggle = $stateParams.variableCategoryName === "Location";
 

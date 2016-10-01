@@ -485,6 +485,10 @@ angular.module('starter')
             $scope.showPredictorSearchSubMenu = !$scope.showPredictorSearchSubMenu;
         };
 
+        $scope.toggleChartSearchSubMenu = function () {
+            $scope.showChartSearchSubMenu = !$scope.showChartSearchSubMenu;
+        };
+
         $scope.toggleOutcomePredictorSubMenu = function () {
             $scope.showOutcomePredictorSubMenu = !$scope.showOutcomePredictorSubMenu;
         };
