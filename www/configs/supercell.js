@@ -193,7 +193,8 @@ config.appSettings  = {
             abbreviatedUnitName: 'bpm',
             reminderFrequency : 0,
             icon: 'ion-heart',
-            variableCategoryName : 'Vital Signs'
+            variableCategoryName : 'Vital Signs',
+            img:'https://maxcdn.icons8.com/windows10/PNG/96/Programming/system_task-100.png'
         },
         {
             variableName: 'Blood Pressure (Systolic - Top Number)',
@@ -201,7 +202,8 @@ config.appSettings  = {
             abbreviatedUnitName: 'mmHg',
             reminderFrequency : 0,
             defaultValue :  null,
-            variableCategoryName : 'Vital Signs'
+            variableCategoryName : 'Vital Signs',
+            img:'https://maxcdn.icons8.com/iOS7/PNG/100/Travel/scuba_pressure_gauge-100.png'
         },
         {
             variableName: 'Blood Pressure (Diastolic - Bottom Number)',
@@ -209,7 +211,8 @@ config.appSettings  = {
             abbreviatedUnitName: 'mmHg',
             reminderFrequency : 0,
             defaultValue :  null,
-            variableCategoryName : 'Vital Signs'
+            variableCategoryName : 'Vital Signs',
+            img:'https://maxcdn.icons8.com/iOS7/PNG/100/Travel/scuba_pressure_gauge-100.png'
         },
         {
             variableName: 'Core Body Temperature',
@@ -217,7 +220,8 @@ config.appSettings  = {
             abbreviatedUnitName: 'C',
             reminderFrequency : 0,
             defaultValue :  null,
-            variableCategoryName : 'Vital Signs'
+            variableCategoryName : 'Vital Signs',
+            img:'https://maxcdn.icons8.com/iOS7/PNG/100/Science/temperature-100.png'
         },
         {
             variableName: 'Oxygen Saturation',
@@ -225,7 +229,8 @@ config.appSettings  = {
             abbreviatedUnitName: '%',
             reminderFrequency : 0,
             defaultValue :  null,
-            variableCategoryName : 'Vital Signs'
+            variableCategoryName : 'Vital Signs',
+            img:'https://maxcdn.icons8.com/iOS7/PNG/100/Science/oxygen-100.png'
         },
         {
             variableName: 'Respiratory Rate',
@@ -233,7 +238,8 @@ config.appSettings  = {
             abbreviatedUnitName: '/minute',
             reminderFrequency : 0,
             defaultValue :  null,
-            variableCategoryName : 'Vital Signs'
+            variableCategoryName : 'Vital Signs',
+            img:'https://maxcdn.icons8.com/iOS7/PNG/100/Healthcare/lungs-100.png'
         },
         {
             variableName: 'Weight',
@@ -241,7 +247,8 @@ config.appSettings  = {
             abbreviatedUnitName: 'lb',
             reminderFrequency : 0,
             defaultValue :  null,
-            variableCategoryName : 'Physique'
+            variableCategoryName : 'Physique',
+            img:'https://maxcdn.icons8.com/iOS7/PNG/100/Science/weight-100.png'
         },
         {
             variableName: 'Height',
@@ -249,7 +256,8 @@ config.appSettings  = {
             abbreviatedUnitName: 'cm',
             reminderFrequency : 0,
             defaultValue :  null,
-            variableCategoryName : 'Physique'
+            variableCategoryName : 'Physique',
+            img:'https://maxcdn.icons8.com/iOS7/PNG/100/Science/height-100.png'
         },
         {
             variableName: 'BMI',
@@ -257,7 +265,8 @@ config.appSettings  = {
             abbreviatedUnitName: 'index',
             reminderFrequency : 0,
             defaultValue :  null,
-            variableCategoryName : 'Physique'
+            variableCategoryName : 'Physique',
+            img:'https://maxcdn.icons8.com/iOS7/PNG/100/Healthcare/body_scan-100.png'
         },
         {
             variableName: 'Blood Glucose Sugar',
@@ -265,7 +274,8 @@ config.appSettings  = {
             abbreviatedUnitName: 'mg/dL',
             reminderFrequency : 0,
             defaultValue :  null,
-            variableCategoryName : 'Vital Signs'
+            variableCategoryName : 'Vital Signs',
+            img:'https://maxcdn.icons8.com/iOS7/PNG/100/Industry/water-100.png'
         },
         {
             variableName: 'Bowel Movements Count(Poop)',
@@ -273,7 +283,8 @@ config.appSettings  = {
             abbreviatedUnitName: 'count',
             reminderFrequency : 0,
             defaultValue :  null,
-            variableCategoryName : 'Symptoms'
+            variableCategoryName : 'Symptoms',
+            img:'https://maxcdn.icons8.com/iOS7/PNG/100/Messaging/poo-100.png'
         }
     ],
 
