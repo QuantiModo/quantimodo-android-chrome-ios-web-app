@@ -74,6 +74,7 @@ angular.module('starter')
 		$scope.trackBloodPressure = function(){
 			if(!$scope.state.bloodPressure.diastolicValue || !$scope.state.bloodPressure.systolicValue){
 				utilsService.showAlert('Please enter both values for blood pressure.');
+				return;
 			}
 			$scope.state.bloodPressure.displayTotal = "Recorded " + $scope.state.bloodPressure.systolicValue + "/" + $scope.state.bloodPressure.diastolicValue + ' Blood Pressure';
 			measurementService.postBloodPressureMeasurements($scope.state.bloodPressure)

@@ -575,6 +575,7 @@ angular.module('starter')
                     source: config.appSettings.appName + $rootScope.currentPlatform,
                     startTimeEpoch:  startTimeEpochSeconds,
                     value: parameters.systolicValue,
+                    note: parameters.note,
                     latitude: $rootScope.lastLatitude,
                     longitude: $rootScope.lastLongitude,
                     location: $rootScope.lastLocationNameAndAddress
@@ -584,6 +585,7 @@ angular.module('starter')
                     source: config.appSettings.appName + $rootScope.currentPlatform,
                     startTimeEpoch:  startTimeEpochSeconds,
                     value: parameters.diastolicValue,
+                    note: parameters.note,
                     latitude: $rootScope.lastLatitude,
                     longitude: $rootScope.lastLongitude,
                     location: $rootScope.lastLocationNameAndAddress
