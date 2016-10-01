@@ -302,8 +302,17 @@ angular.module('starter')
 			}
 		};
 
-		$scope.refreshTrackingReminderNotifications = function () {
+		var showLoader = function () {
 			$scope.state.loading = true;
+			$timeout(function() {
+				if($scope.state.loading) {
+					$scope.state.loading = false;
+				}
+			}, 10000);
+		};
+
+		$scope.refreshTrackingReminderNotifications = function () {
+			showLoader();
 			if($stateParams.today){
 				getTrackingReminderNotifications();
 			} else {
@@ -319,7 +328,7 @@ angular.module('starter')
 			$rootScope.stateParams = $stateParams;
 			if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
 			if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
-			$scope.state.loading = true;
+			showLoader();
 			$rootScope.getAccessTokenFromUrlParameter();
 			$rootScope.hideNavigationMenuIfSetInUrlParameter();
 	    	if (!$rootScope.hideNavigationMenu && !$rootScope.introSeen && !$rootScope.user && !$rootScope.accessTokenInUrl) {
