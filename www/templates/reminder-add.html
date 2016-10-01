@@ -12,11 +12,11 @@
                         <option ng-repeat="variableCategory in variables.variableCategories" value="{{variableCategory.name}}">{{variableCategory.name}}</option>
                     </select>
                 </label>
-                <label ng-if="(state.trackingReminder.abbreviatedUnitName !== '/5')" class="item item-input">
+                <label ng-if="!state.hideDefaultValueField" class="item item-input">
                     <span class="input-label">{{state.defaultValueLabel}}</span>
                     <input type="number" ng-model="state.trackingReminder.defaultValue" id="defaultValue" placeholder={{state.defaultValuePlaceholderText}} >
                 </label>
-                <label ng-if="(state.trackingReminder.abbreviatedUnitName !== '/5')" class="item item-input item-select">
+                <label ng-if="!state.hideDefaultValueField" class="item item-input item-select">
                     <div class="input-label">
                         Unit
                     </div>
