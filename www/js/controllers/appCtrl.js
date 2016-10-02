@@ -623,9 +623,7 @@ angular.module('starter')
                 variableService.getCommonVariables();
                 unitService.getUnits();
                 $rootScope.syncedEverything = true;
-                if($rootScope.user.trackLocation){
-                    qmLocationService.updateLocationVariablesAndPostMeasurementIfChanged();
-                }
+                qmLocationService.updateLocationVariablesAndPostMeasurementIfChanged();
                 reminderService.syncTrackingReminderSyncQueueToServer();
                 //connectorsService.getConnectors();
             }
