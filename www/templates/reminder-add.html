@@ -13,7 +13,8 @@
                     </select>
                 </label>
                 <label ng-if="!state.hideDefaultValueField" class="item item-input">
-                    <span class="input-label">{{state.defaultValueLabel}}</span>
+                    <!--<span class="input-label">{{state.defaultValueLabel}}</span>-->
+                    <span class="input-label left-span" on-tap="showExplanationsPopup('Default Value')">{{state.defaultValueLabel}} <i class="icon ion-help-circled"></i></span>
                     <input type="number" ng-model="state.trackingReminder.defaultValue" id="defaultValue" placeholder={{state.defaultValuePlaceholderText}} >
                 </label>
                 <label ng-if="!state.hideDefaultValueField" class="item item-input item-select">
