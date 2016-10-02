@@ -21,7 +21,6 @@ angular.module('starter')
             measurementSynonymSingularLowercase : 'measurement',
             defaultValueLabel : 'Default Value',
             defaultValuePlaceholderText : 'Enter typical value',
-            variableSearchPlaceholderText : 'Search for a variable...',
             showInstructionsField : false
         };
 

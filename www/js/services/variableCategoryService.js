@@ -13,10 +13,8 @@ angular.module('starter')
                         defaultAbbreviatedUnitName: '',
                         helpText: "What do you want to record?",
                         variableCategoryNameSingular: "anything",
-                        variableSearchPlaceholderText : "Search for a variable here...",
                         defaultValuePlaceholderText : "Enter most common value here...",
                         defaultValueLabel : 'Value',
-                        addNewVariableButtonText : '+ Add a new variable',
                         addNewVariableCardText : 'Add a new variable',
                         variableCategoryName : '',
                         defaultValue : '',
@@ -138,42 +136,16 @@ angular.module('starter')
                         icon: "ion-ios-pulse"
                     }
                 };
-
-
+                
                 var selectedVariableCategoryObject = variableCategoryInfo.Anything;
-
                 if(variableCategoryName && variableCategoryInfo[variableCategoryName]){
                     selectedVariableCategoryObject =  variableCategoryInfo[variableCategoryName];
-
-                    if(!selectedVariableCategoryObject.addNewVariableButtonText){
-                        selectedVariableCategoryObject.addNewVariableButtonText =
-                            "+ Add a new " + $filter('wordAliases')(pluralize(variableCategoryName.toLowerCase(), 1));
-                    }
-
-                    if(!selectedVariableCategoryObject.nameSingularLowercase){
-                        selectedVariableCategoryObject.nameSingularLowercase =
-                            $filter('wordAliases')(pluralize(selectedVariableCategoryObject.variableCategoryName.toLowerCase()), 1);
-                    }
-
-                    if(!selectedVariableCategoryObject.addNewVariableCardText){
-                        selectedVariableCategoryObject.addNewVariableCardText = "Add a new " +
-                            $filter('wordAliases')(pluralize(selectedVariableCategoryObject.variableCategoryName.toLowerCase(), 1));
-                    }
-
-                    if(!selectedVariableCategoryObject.variableSearchPlaceholderText){
-                        if(variableCategoryName){
-                            selectedVariableCategoryObject.variableSearchPlaceholderText =
-                                "Search for a " +
-                                $filter('wordAliases')(pluralize(selectedVariableCategoryObject.variableCategoryName.toLowerCase(), 1)) +
-                                " here...";
-                        }
-                    }
                 }
                 
                 return selectedVariableCategoryObject;
             },
 
-            // refresh local variable categroies with QuantiModo API
+            // refresh local variable categories with QuantiModo API
             refreshVariableCategories : function(){
                 var deferred = $q.defer();
 
