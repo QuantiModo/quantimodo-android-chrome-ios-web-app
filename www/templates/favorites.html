@@ -73,9 +73,8 @@
                     <input type="number" ng-model="favorite.total" id="defaultValueField"
                            ng-click="onTextClick($event)"
                            placeholder="Enter value"
-                           style="text-align: center"
-                    >
-                    <span on-tap="trackByValueField(favorite, $index)" class="input-label">{{favorite.abbreviatedUnitName}} &nbsp <i style="font-size: 20px;" class="icon positive ion-checkmark-round" on-tap="trackByValueField(favorite, $index)"></i></span>
+                           style="text-align: center">
+                    <span on-tap="trackByValueField(favorite, $index)" class="input-label">{{favorite.abbreviatedUnitName}} &nbsp <i style="font-size: 20px;" class="icon positive ion-checkmark-round"></i></span>
                 </label>
                 <div class="primary-outcome-variable-reporting"
                      ng-if="!favorite.variableDescription && favorite.abbreviatedUnitName === '/5'">
