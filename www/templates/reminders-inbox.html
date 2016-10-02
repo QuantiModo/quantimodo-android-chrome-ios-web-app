@@ -472,7 +472,7 @@
 			</div>
 		</div>
 
-		<div class="list card"  ng-if="showAllCaughtUpCard && !state.loading">
+		<div class="list card"  ng-if="!state.loading && state.numberOfDisplayedNotifications === 0">
 			<div class="item" style="padding-bottom:10px;">
 				<p style=" text-align: center; line-height: normal; font-size: 25px;">All caught up!</p>
 
