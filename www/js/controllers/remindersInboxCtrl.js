@@ -31,7 +31,8 @@ angular.module('starter')
 			loading : true,
 			lastButtonPressTimeStamp : 0,
 			lastClientX : 0,
-			lastClientY : 0
+			lastClientY : 0,
+			numberOfDisplayedNotifications : 0
 	    };
 
 		if(typeof config.appSettings.remindersInbox.showAddHowIFeelResponseButton !== 'undefined'){
@@ -119,7 +120,8 @@ angular.module('starter')
 				return;
 			}
 			$scope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications[trackingReminderNotificationNotificationIndex].hide = true;
-			$rootScope.numberOfPendingNotifications = $rootScope.numberOfPendingNotifications - 1;
+			$rootScope.numberOfPendingNotifications--;
+			$scope.state.numberOfDisplayedNotifications--;
 			console.log('modifiedReminderValue is ' + $scope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications[trackingReminderNotificationNotificationIndex].total);
 			var body = {
 				trackingReminderNotification: trackingReminderNotification,
@@ -130,8 +132,8 @@ angular.module('starter')
 					if($rootScope.localNotificationsEnabled){
 						notificationService.decrementNotificationBadges();
 					}
-					if($rootScope.numberOfPendingNotifications < 2){
-						$scope.init();
+					if($scope.state.numberOfDisplayedNotifications < 2){
+						$scope.refreshTrackingReminderNotifications();
 					}
 				}, function(err){
 					if (typeof Bugsnag !== "undefined") {
@@ -157,7 +159,8 @@ angular.module('starter')
 			// Removing instead of hiding reminder notifications seems to cause weird dismissal problems
 			//$scope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications.splice(trackingReminderNotificationNotificationIndex, 1);
 			$scope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications[trackingReminderNotificationNotificationIndex].hide = true;
-			$rootScope.numberOfPendingNotifications = $rootScope.numberOfPendingNotifications - 1;
+			$rootScope.numberOfPendingNotifications--;
+			$scope.state.numberOfDisplayedNotifications--;
 			console.debug('Tracking notification ' + JSON.stringify(trackingReminderNotification));
 			console.log('modifiedReminderValue is ' + modifiedReminderValue);
 			var body = {
@@ -169,8 +172,8 @@ angular.module('starter')
 					if($rootScope.localNotificationsEnabled){
 						notificationService.decrementNotificationBadges();
 					}
-					if($rootScope.numberOfPendingNotifications < 2){
-						$scope.init();
+					if($scope.state.numberOfDisplayedNotifications < 2){
+						$scope.refreshTrackingReminderNotifications();
 					}
 				}, function(err){
 					if (typeof Bugsnag !== "undefined") {
@@ -194,7 +197,8 @@ angular.module('starter')
 			}
 
 			$scope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications[trackingReminderNotificationNotificationIndex].hide = true;
-			$rootScope.numberOfPendingNotifications = $rootScope.numberOfPendingNotifications - 1;
+			$rootScope.numberOfPendingNotifications--;
+			$scope.state.numberOfDisplayedNotifications--;
 			// Removing seems to cause weird dismissal problems
 			//$scope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications.splice(trackingReminderNotificationNotificationIndex, 1);
 			console.debug('Skipping notification ' + JSON.stringify(trackingReminderNotification));
@@ -207,8 +211,8 @@ angular.module('starter')
 					if($rootScope.localNotificationsEnabled){
 						notificationService.decrementNotificationBadges();
 					}
-					if($rootScope.numberOfPendingNotifications < 2){
-						$scope.init();
+					if($scope.state.numberOfDisplayedNotifications < 2){
+						$scope.refreshTrackingReminderNotifications();
 					}
 				}, function(err){
 					if (typeof Bugsnag !== "undefined") {
@@ -232,7 +236,8 @@ angular.module('starter')
 			}
 
 			$scope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications[trackingReminderNotificationNotificationIndex].hide = true;
-			$rootScope.numberOfPendingNotifications = $rootScope.numberOfPendingNotifications - 1;
+			$rootScope.numberOfPendingNotifications--;
+			$scope.state.numberOfDisplayedNotifications--;
 			// Removing seems to cause weird dismissal problems
 			//$scope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications.splice(trackingReminderNotificationNotificationIndex, 1);
 			console.debug('Snoozing notification ' + JSON.stringify(trackingReminderNotification));
@@ -246,7 +251,7 @@ angular.module('starter')
 						notificationService.decrementNotificationBadges();
 					}
 					if($rootScope.numberOfPendingNotifications < 2){
-						$scope.init();
+						$scope.refreshTrackingReminderNotifications();
 					}
 				}, function(err){
 					if (typeof Bugsnag !== "undefined") {
@@ -260,10 +265,30 @@ angular.module('starter')
 			});
 	    };
 
+		var getFilteredTrackingReminderNotifications = function(variableCategoryName){
+			reminderService.getTrackingReminderNotifications(variableCategoryName)
+				.then(function (trackingReminderNotifications) {
+					$scope.state.numberOfDisplayedNotifications = trackingReminderNotifications.length;
+					return reminderService.groupTrackingReminderNotificationsByDateRange(trackingReminderNotifications);
+				}, function(){
+					console.error("failed to get filtered reminder notifications!");
+				});
+		};
+
+		var getFilteredTodayTrackingReminderNotifications = function(variableCategoryName){
+			reminderService.getTodayTrackingReminderNotifications(variableCategoryName)
+				.then(function (trackingReminderNotifications) {
+					$scope.state.numberOfDisplayedNotifications = trackingReminderNotifications.length;
+					return reminderService.groupTrackingReminderNotificationsByDateRange(trackingReminderNotifications);
+				}, function(){
+					console.error("failed to get filtered reminder notifications!");
+				});
+		};
+
 	    var getTrackingReminderNotifications = function () {
 			if($stateParams.today){
 				//$scope.showLoader("Getting today's reminder notifications...");
-				reminderService.getFilteredTodayTrackingReminderNotifications($stateParams.variableCategoryName)
+				getFilteredTodayTrackingReminderNotifications($stateParams.variableCategoryName)
 					.then(function (filteredTrackingReminderNotifications) {
 						$scope.filteredTrackingReminderNotifications = filteredTrackingReminderNotifications;
 						if(filteredTrackingReminderNotifications.length === 0){
@@ -282,7 +307,7 @@ angular.module('starter')
 					});
 			} else {
 				//$scope.showLoader("Getting reminder notifications...");
-				reminderService.getFilteredTrackingReminderNotifications($stateParams.variableCategoryName)
+				getFilteredTrackingReminderNotifications($stateParams.variableCategoryName)
 					.then(function (filteredTrackingReminderNotifications) {
 						$scope.filteredTrackingReminderNotifications = filteredTrackingReminderNotifications;
 						if(filteredTrackingReminderNotifications.length === 0){
