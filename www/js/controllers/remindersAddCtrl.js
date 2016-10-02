@@ -4,7 +4,7 @@ angular.module('starter')
 	.controller('RemindersAddCtrl', function($scope, $state, $stateParams, $ionicLoading, $filter, $timeout, $rootScope,
                                              $ionicActionSheet, $ionicHistory, authService, localStorageService,
                                              reminderService, utilsService, ionicTimePicker, variableCategoryService,
-                                             variableService, unitService, timeService, bugsnagService) {
+                                             variableService, unitService, timeService, bugsnagService, $ionicPopup) {
 
 	    $scope.controller_name = "RemindersAddCtrl";
 		console.log('Loading ' + $scope.controller_name);
@@ -218,6 +218,11 @@ angular.module('starter')
             }
             if (selectedVariable.variableName) {
                 $scope.state.trackingReminder.variableName = selectedVariable.variableName;
+            }
+
+            if($scope.state.trackingReminder.variableName.toLowerCase().indexOf('blood pressure') > -1 ||
+                $scope.state.trackingReminder.abbreviatedUnitName === '/5') {
+                $scope.state.hideDefaultValueField = true;
             }
             if (selectedVariable.description) {
                 $scope.state.trackingReminder.variableDescription = selectedVariable.description;
@@ -541,8 +546,7 @@ angular.module('starter')
             if($stateParams.favorite){
                 $scope.state.selectedFrequency = 'Never';
                 if($stateParams.reminder) {
-                    if($stateParams.reminder.variableCategoryName === 'Treatments' ||
-                        $stateParams.variableCategoryName === 'Treatments'){
+                    if($stateParams.variableCategoryName === 'Treatments'){
                         $scope.state.title = "Modify As-Needed Med";
                     } else {
                         $scope.state.title = "Edit Favorite";
@@ -565,6 +569,12 @@ angular.module('starter')
 
         $scope.init = function(){
             console.debug($state.current.name + ' initializing...');
+            if($stateParams.variableObject){
+                $stateParams.variableCategoryName = $stateParams.variableObject.variableCategoryName;
+            }
+            if($stateParams.reminder){
+                $stateParams.variableCategoryName = $stateParams.reminder.variableCategoryName;
+            }
             $rootScope.stateParams = $stateParams;
             if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
             if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
@@ -575,15 +585,15 @@ angular.module('starter')
                 if ($stateParams.variableObject) {
                     $scope.variableObject = $stateParams.variableObject;
                     setupByVariableObject($stateParams.variableObject);
-                } else if($stateParams.variableCategoryName){
-                    $scope.state.trackingReminder.variableCategoryName = $stateParams.variableCategoryName;
-                    setupVariableCategory($scope.state.trackingReminder.variableCategoryName);
                 } else if ($stateParams.reminder && $stateParams.reminder !== null) {
                     setupEditReminder($stateParams.reminder);
                 } else if(reminderIdUrlParameter) {
                     setupReminderEditingFromUrlParameter(reminderIdUrlParameter);
                 } else if(variableIdUrlParameter) {
                     setupReminderEditingFromVariableId(variableIdUrlParameter);
+                } else if($stateParams.variableCategoryName){
+                    $scope.state.trackingReminder.variableCategoryName = $stateParams.variableCategoryName;
+                    setupVariableCategory($scope.state.trackingReminder.variableCategoryName);
                 } else {
                     $ionicHistory.goBack();
                 }
@@ -701,6 +711,26 @@ angular.module('starter')
             $timeout(function() {
                 hideSheet();
             }, 20000);
+
+        };
+
+        $scope.showExplanationsPopup = function(helpTitle) {
+            var explanationText;
+            if (helpTitle === "Default Value") {
+                explanationText = "If specified, there will be a button that allows you to quickly record this value.";
+            }
+
+            $ionicPopup.show({
+                title: helpTitle,
+                subTitle: explanationText,
+                scope: $scope,
+                buttons: [
+                    {
+                        text: 'OK',
+                        type: 'button-positive'
+                    }
+                ]
+            });
 
         };
 
