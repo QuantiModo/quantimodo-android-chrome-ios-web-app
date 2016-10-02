@@ -4,7 +4,7 @@ angular.module('starter')
 	.controller('RemindersAddCtrl', function($scope, $state, $stateParams, $ionicLoading, $filter, $timeout, $rootScope,
                                              $ionicActionSheet, $ionicHistory, authService, localStorageService,
                                              reminderService, utilsService, ionicTimePicker, variableCategoryService,
-                                             variableService, unitService, timeService, bugsnagService) {
+                                             variableService, unitService, timeService, bugsnagService, $ionicPopup) {
 
 	    $scope.controller_name = "RemindersAddCtrl";
 		console.log('Loading ' + $scope.controller_name);
@@ -706,6 +706,26 @@ angular.module('starter')
             $timeout(function() {
                 hideSheet();
             }, 20000);
+
+        };
+
+        $scope.showExplanationsPopup = function(helpTitle) {
+            var explanationText;
+            if (helpTitle === "Default Value") {
+                explanationText = "If specified, there will be a button that allows you to quickly record this value.";
+            }
+
+            $ionicPopup.show({
+                title: helpTitle,
+                subTitle: explanationText,
+                scope: $scope,
+                buttons: [
+                    {
+                        text: 'OK',
+                        type: 'button-positive'
+                    }
+                ]
+            });
 
         };
 
