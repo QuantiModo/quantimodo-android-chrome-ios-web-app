@@ -576,8 +576,8 @@ angular.module('starter',
                 }
             }
         })
-        .state('app.chartsSearch', {
-            url: "/charts-search",
+        .state('app.chartSearch', {
+            url: "/chart-search",
             cache: false,
             params: {
                 variableCategoryName: null,
