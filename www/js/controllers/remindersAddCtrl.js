@@ -585,15 +585,15 @@ angular.module('starter')
                 if ($stateParams.variableObject) {
                     $scope.variableObject = $stateParams.variableObject;
                     setupByVariableObject($stateParams.variableObject);
-                } else if($stateParams.variableCategoryName){
-                    $scope.state.trackingReminder.variableCategoryName = $stateParams.variableCategoryName;
-                    setupVariableCategory($scope.state.trackingReminder.variableCategoryName);
                 } else if ($stateParams.reminder && $stateParams.reminder !== null) {
                     setupEditReminder($stateParams.reminder);
                 } else if(reminderIdUrlParameter) {
                     setupReminderEditingFromUrlParameter(reminderIdUrlParameter);
                 } else if(variableIdUrlParameter) {
                     setupReminderEditingFromVariableId(variableIdUrlParameter);
+                } else if($stateParams.variableCategoryName){
+                    $scope.state.trackingReminder.variableCategoryName = $stateParams.variableCategoryName;
+                    setupVariableCategory($scope.state.trackingReminder.variableCategoryName);
                 } else {
                     $ionicHistory.goBack();
                 }
