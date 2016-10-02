@@ -2,6 +2,7 @@ window.config = {};
 
 config.appSettings  = {
     appName : 'MedTLC',
+    apiUrl : 'https://app.quantimo.do',
     cordovaLocalNotificationsEnabled : false,
     linkToChromeExtension : "https://chrome.google.com/webstore/detail/quantimodo-life-tracking/nojnjdgmjaejpnpehgioddbimopnblga",
     allowOffline : false,
