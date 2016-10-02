@@ -164,9 +164,10 @@ angular.module('starter')
 			if($stateParams.variableCategoryName && $stateParams.variableCategoryName  !== 'Anything'){
 				$scope.state.addButtonText = "Add favorite " + pluralize($stateParams.variableCategoryName, 1).toLowerCase();
 				$scope.state.title = pluralize($stateParams.variableCategoryName, 1) + " Favorites";
+				$scope.state.moreHelpText = null;
 			}
 			if($stateParams.variableCategoryName === 'Treatments') {
-				$scope.state.addButtonText = "Add as-needed medication";
+				$scope.state.addButtonText = "Add an as-needed medication";
 				$scope.state.helpText = "Quickly record doses of medications taken as needed just by tapping.  Tap twice for two doses, etc.";
 				$scope.state.addButtonIcon = "ion-ios-medkit-outline";
 				$scope.state.title = 'As-Needed Meds';
