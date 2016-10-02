@@ -95,6 +95,10 @@ angular.module('starter')
 			// 	localStorageService.addToOrReplaceElementOfItemByIdOrMoveToFront($scope.state.favorites[$index]);
 			// 	reminderService.postTrackingReminders([$scope.state.favorites[$index]]);
 			// }
+			if($scope.state.favorites[$index].total == null){
+				utilsService.showAlert('Please specify a value for ' + $scope.state.favorites[$index].variableName);
+				return;
+			}
 			$scope.state.favorites[$index].displayTotal = "Recorded " + $scope.state.favorites[$index].total + " " + $scope.state.favorites[$index].abbreviatedUnitName;
 			measurementService.postMeasurementByReminder($scope.state.favorites[$index], $scope.state.favorites[$index].total)
 				.then(function () {
