@@ -96,17 +96,7 @@ angular.module('starter')
         };
 
         utilsService.getRedirectUri = function () {
-            //return 'https://utopia.quantimo.do:4417/ionic/Modo/www/callback/';
-            if(!window.private_keys.redirect_uris){
-                return 'https://app.quantimo.do/ionic/Modo/www/callback/';
-            }
-            if (window.chrome && chrome.runtime && chrome.runtime.id) {
-                return window.private_keys.redirect_uris.Chrome;
-            }
-            if ($rootScope.isIOS) { return window.private_keys.redirect_uris.iOS; }
-            if ($rootScope.isAndroid) { return window.private_keys.redirect_uris.Android; }
-            if ($rootScope.isWindows) { return window.private_keys.redirect_uris.Windows; }
-            return window.private_keys.redirect_uris.Web;
+            return utilsService.getApiUrl() +  '/ionic/Modo/www/callback/';
         };
 
         utilsService.getProtocol = function () {
@@ -120,14 +110,12 @@ angular.module('starter')
         };
 
         utilsService.getApiUrl = function () {
-            //return "https://utopia.quantimo.do:4417";
             if ($rootScope.isWeb && window.private_keys.client_ids.Web === 'oAuthDisabled') {
                 return window.location.origin;
             }
-            if ($rootScope.isWeb) { return window.private_keys.api_urls.Web; }
-            if ($rootScope.isIOS) { return window.private_keys.api_urls.iOS; }
-            if ($rootScope.isAndroid) { return window.private_keys.api_urls.Android; }
-            if ($rootScope.isWindows) { return window.private_keys.api_urls.Windows; }
+            if(config.apiUrl){
+                return config.apiUrl;
+            }
             return "https://app.quantimo.do";
         };
 
