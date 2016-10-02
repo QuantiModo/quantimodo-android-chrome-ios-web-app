@@ -431,7 +431,7 @@ config.appSettings  = {
         },
         {
             title : 'Charts',
-            href : '#/app/charts-search',
+            href : '#/app/chart-search',
             icon : 'ion-arrow-graph-up-right'
         },
         {

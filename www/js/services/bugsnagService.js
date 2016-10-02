@@ -1,28 +1,30 @@
 angular.module('starter')
     // Measurement Service
-    .factory('bugsnagService', function(utilsService) {
-        
-        // service methods
+    .factory('bugsnagService', function(utilsService, $q) {
+
+
         var bugsnagService = {
 
-            reportError : function(exception){
-                var message = 'No error or exception data provided to bugsnagService';
-                if(exception){
-                    message = exception.toString();
+            reportError : function(exceptionOrError){
+                var deferred = $q.defer();
+                var stringifiedExceptionOrError = 'No error or exception data provided to bugsnagService';
+                if(exceptionOrError){
+                    stringifiedExceptionOrError = JSON.stringify(exceptionOrError);
                 }
-                console.error('ERROR: ' + message);
-                var stacktrace;
-                if(typeof exception.stack !== 'undefined'){
-                    stacktrace = exception.stack.toLocaleString();
-                } else {
-                    stacktrace = "No stack trace provided with exception";
+                console.error('ERROR: ' + stringifiedExceptionOrError);
+                var stacktrace = 'No stacktrace provided to bugsnagService';
+                if(typeof exceptionOrError.stack !== 'undefined'){
+                    stacktrace = exceptionOrError.stack.toLocaleString();
                 }
 
                 if (typeof Bugsnag !== "undefined") {
                     Bugsnag.releaseStage = utilsService.getEnv();
-                    //Bugsnag.apiKey = "ae7bc49d1285848342342bb5c321a2cf";
-                    Bugsnag.notify("ERROR: " + message, "Stacktrace: " + stacktrace, {}, "error");
+                    Bugsnag.notify("ERROR: " + stringifiedExceptionOrError, "Stacktrace: " + stacktrace, {}, "error");
+                    deferred.resolve();
+                } else {
+                    deferred.reject();
                 }
+                return deferred.promise;
             }
         };
 

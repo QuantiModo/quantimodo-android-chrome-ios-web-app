@@ -2,6 +2,7 @@ window.config = {};
 
 config.appSettings  = {
     appName : 'MedTLC',
+    apiUrl : 'https://app.quantimo.do',
     cordovaLocalNotificationsEnabled : false,
     linkToChromeExtension : "https://chrome.google.com/webstore/detail/quantimodo-life-tracking/nojnjdgmjaejpnpehgioddbimopnblga",
     allowOffline : false,
@@ -439,7 +440,7 @@ config.appSettings  = {
             title : 'Charts',
             isSubMenuChild : true,
             showSubMenuVariable : 'showSymptomsSubMenu',
-            href : '#/app/charts-search-category/Symptoms',
+            href : '#/app/chart-search-category/Symptoms',
             icon : 'ion-arrow-graph-up-right'
         },
         {
@@ -482,7 +483,7 @@ config.appSettings  = {
             title : 'Charts',
             isSubMenuChild : true,
             showSubMenuVariable : 'showVitalSignsSubMenu',
-            href : '#/app/charts-search-category/Vital Signs',
+            href : '#/app/chart-search-category/Vital Signs',
             icon : 'ion-arrow-graph-up-right'
         },
         {
@@ -525,7 +526,7 @@ config.appSettings  = {
             title : 'Charts',
             isSubMenuChild : true,
             showSubMenuVariable : 'showPhysicalActivitySubMenu',
-            href : '#/app/charts-search-category/Physical Activity',
+            href : '#/app/chart-search-category/Physical Activity',
             icon : 'ion-arrow-graph-up-right'
         },
         {
@@ -568,7 +569,7 @@ config.appSettings  = {
             title : 'Charts',
             isSubMenuChild : true,
             showSubMenuVariable : 'showEmotionsSubMenu',
-            href : '#/app/charts-search-category/Emotions',
+            href : '#/app/chart-search-category/Emotions',
             icon : 'ion-arrow-graph-up-right'
         },
         {
@@ -611,7 +612,7 @@ config.appSettings  = {
             title : 'Charts',
             isSubMenuChild : true,
             showSubMenuVariable : 'showDietSubMenu',
-            href : '#/app/charts-search-category/Foods',
+            href : '#/app/chart-search-category/Foods',
             icon : 'ion-arrow-graph-up-right'
         },
         {

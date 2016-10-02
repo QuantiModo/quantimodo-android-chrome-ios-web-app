@@ -8,20 +8,20 @@
             </a>
         </div>
         <div class="list card" id="bloodPressureCard"
-             ng-if="state.bloodPressure.diastolicReminder && state.bloodPressure.systolicReminder"
+             ng-if="state.bloodPressure.reminderId"
              on-hold="showActionSheet(favorite, $index)">
             <div class="item" style="padding-bottom:0px;">
                 <div class="row">
-                    <div ng-click="showActionSheet(state.bloodPressure.systolicReminder, $index, true)" class="col col-10" style="padding-top: 0px; text-align: center;">
+                    <div ng-click="showActionSheet(state.bloodPressure, $index, true)" class="col col-10" style="padding-top: 0px; text-align: center;">
                         <i style="font-size: 40px;" class="icon positive ion-heart"></i>
                     </div>
                     <div class="col col-70">
-                        <h2 ng-click="showActionSheet(state.bloodPressure.systolicReminder, $index, true)"
+                        <h2 ng-click="showActionSheet(state.bloodPressure, $index, true)"
                             style="white-space: normal; line-height: normal;
                             text-align: center; ">{{state.bloodPressure.displayTotal}}
                         </h2>
                     </div>
-                    <div ng-click="showActionSheet(state.bloodPressure.systolicReminder, $index, true)" class="col col-10">
+                    <div ng-click="showActionSheet(state.bloodPressure, $index, true)" class="col col-10">
                         <i style="font-size: 20px;" class="icon positive ion-more"></i>
                     </div>
                 </div>
@@ -32,7 +32,7 @@
                            style="text-align: center">
                     <span on-tap="trackBloodPressure()"
                           class="input-label">
-                        {{state.bloodPressure.systolicReminder.abbreviatedUnitName}}
+                        mmHg
                     </span>
                 </label>
                 <label class="item item-input">
@@ -42,10 +42,9 @@
                            style="text-align: center">
                     <span on-tap="trackBloodPressure()"
                           class="input-label">
-                        {{state.bloodPressure.systolicReminder.abbreviatedUnitName}} &nbsp
+                        mmHg &nbsp
                         <i style="font-size: 20px;"
-                           class="icon positive ion-checkmark-round"
-                           on-tap="trackBloodPressure()">
+                           class="icon positive ion-checkmark-round">
                         </i>
                     </span>
                 </label>
@@ -74,9 +73,8 @@
                     <input type="number" ng-model="favorite.total" id="defaultValueField"
                            ng-click="onTextClick($event)"
                            placeholder="Enter value"
-                           style="text-align: center"
-                    >
-                    <span on-tap="trackByValueField(favorite, $index)" class="input-label">{{favorite.abbreviatedUnitName}} &nbsp <i style="font-size: 20px;" class="icon positive ion-checkmark-round" on-tap="trackByValueField(favorite, $index)"></i></span>
+                           style="text-align: center">
+                    <span on-tap="trackByValueField(favorite, $index)" class="input-label">{{favorite.abbreviatedUnitName}} &nbsp <i style="font-size: 20px;" class="icon positive ion-checkmark-round"></i></span>
                 </label>
                 <div class="primary-outcome-variable-reporting"
                      ng-if="!favorite.variableDescription && favorite.abbreviatedUnitName === '/5'">
@@ -115,6 +113,8 @@
             <div class="item" style="padding-bottom:0px;">
                 <div class="row">
                     <h2 style="white-space: normal; text-align: center; line-height: normal; ">
+                        <i class="icon positive ion-information-circled"></i>
+                        &nbsp
                         {{state.helpText}}
                         <br><br>
                     </h2>

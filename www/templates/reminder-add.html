@@ -3,7 +3,7 @@
     <ion-content scroll="true" overflow-scroll="true">
 
         <div class="list card" ng-show="state.showReminderFrequencyCard" id="reminderAddCard">
-        	<div class="item item-divider">{{state.trackingReminder.variableName}} reminder settings</div>
+        	<div class="item item-divider">{{state.trackingReminder.variableName}} settings</div>
             <div class="list">
                 <!--<label class="item item-input item-select" ng-if="state.showAddVariableCard && !state.trackingReminder.variableCategoryName">-->
                 <label class="item item-input item-select" ng-if="state.showAddVariableCard">
@@ -12,11 +12,12 @@
                         <option ng-repeat="variableCategory in variables.variableCategories" value="{{variableCategory.name}}">{{variableCategory.name}}</option>
                     </select>
                 </label>
-                <label ng-if="(state.trackingReminder.abbreviatedUnitName !== '/5')" class="item item-input">
-                    <span class="input-label">{{state.defaultValueLabel}}</span>
+                <label ng-if="!state.hideDefaultValueField" class="item item-input">
+                    <!--<span class="input-label">{{state.defaultValueLabel}}</span>-->
+                    <span class="input-label left-span" on-tap="showExplanationsPopup('Default Value')">{{state.defaultValueLabel}} <i class="icon ion-help-circled"></i></span>
                     <input type="number" ng-model="state.trackingReminder.defaultValue" id="defaultValue" placeholder={{state.defaultValuePlaceholderText}} >
                 </label>
-                <label ng-if="(state.trackingReminder.abbreviatedUnitName !== '/5')" class="item item-input item-select">
+                <label ng-if="!state.hideDefaultValueField" class="item item-input item-select">
                     <div class="input-label">
                         Unit
                     </div>

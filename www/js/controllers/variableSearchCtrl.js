@@ -133,7 +133,7 @@ angular.module('starter')
                                         ' measurement';
                                 }
                                 else {
-                                    $scope.state.addNewVariableButtonText = $scope.state.variableSearchQuery.name;
+                                    $scope.state.addNewVariableButtonText = '+ ' + $scope.state.variableSearchQuery.name;
                                 }
 
                             }
