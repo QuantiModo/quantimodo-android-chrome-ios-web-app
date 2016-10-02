@@ -96,6 +96,20 @@
                     </button>
                 </label>
             </div>-->
+            <div ng-if="" aclass="row labeled-control">
+                <div class="col col-l">
+                        <span>
+                            End Date
+                        </span>
+                </div>
+                <div class="col" style="padding-top: 15px;">
+                    <button class="button button-block measure-date up-top"
+                            style="font-size:14px;border:none;color:black;background-color: white;margin-bottom: 0px;margin-top: 0px;padding-left: 0px; text-align:left;"
+                            ng-click="openStopTrackingDatePicker()">
+                        {{ state.selectedStopTrackingDate | date:'dd - MMMM - yyyy' }}
+                    </button>
+                </div>
+            </div>
 
             <label class="item item-input" ng-show="state.showInstructionsField">
                 <span class="input-label">Instructions</span>
