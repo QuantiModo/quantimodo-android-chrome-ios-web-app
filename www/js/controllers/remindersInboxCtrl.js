@@ -31,8 +31,7 @@ angular.module('starter')
 			loading : true,
 			lastButtonPressTimeStamp : 0,
 			lastClientX : 0,
-			lastClientY : 0,
-			numberOfDisplayedNotifications : 0
+			lastClientY : 0
 	    };
 
 		if(typeof config.appSettings.remindersInbox.showAddHowIFeelResponseButton !== 'undefined'){
@@ -271,9 +270,6 @@ angular.module('starter')
 					$scope.state.numberOfDisplayedNotifications = trackingReminderNotifications.length;
 					$scope.filteredTrackingReminderNotifications =
 						reminderService.groupTrackingReminderNotificationsByDateRange(trackingReminderNotifications);
-					if($scope.filteredTrackingReminderNotifications.length === 0){
-						$rootScope.showAllCaughtUpCard = true;
-					}
 					//Stop the ion-refresher from spinning
 					$scope.$broadcast('scroll.refreshComplete');
 					$scope.hideLoader();
@@ -292,9 +288,6 @@ angular.module('starter')
 				.then(function (trackingReminderNotifications) {
 					$scope.state.numberOfDisplayedNotifications = trackingReminderNotifications.length;
 					$scope.filteredTrackingReminderNotifications = reminderService.groupTrackingReminderNotificationsByDateRange(trackingReminderNotifications);
-					if($scope.filteredTrackingReminderNotifications.length === 0){
-						$rootScope.showAllCaughtUpCard = true;
-					}
 					//Stop the ion-refresher from spinning
 					$scope.$broadcast('scroll.refreshComplete');
 					$scope.hideLoader();
@@ -465,7 +458,6 @@ angular.module('starter')
     	});
 
 		$scope.$on('$ionicView.beforeEnter', function(e) { console.debug("beforeEnter state " + $state.current.name);
-			$rootScope.showAllCaughtUpCard = false;
 			setPageTitle();
 			getTrackingReminderNotifications();
 		});
