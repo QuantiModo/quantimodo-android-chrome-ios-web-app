@@ -265,65 +265,57 @@ angular.module('starter')
 			});
 	    };
 
-		var getFilteredTrackingReminderNotifications = function(variableCategoryName){
-			reminderService.getTrackingReminderNotifications(variableCategoryName)
+		var getFilteredTrackingReminderNotifications = function(){
+			reminderService.getTrackingReminderNotifications($stateParams.variableCategoryName)
 				.then(function (trackingReminderNotifications) {
 					$scope.state.numberOfDisplayedNotifications = trackingReminderNotifications.length;
-					return reminderService.groupTrackingReminderNotificationsByDateRange(trackingReminderNotifications);
+					$scope.filteredTrackingReminderNotifications =
+						reminderService.groupTrackingReminderNotificationsByDateRange(trackingReminderNotifications);
+					if($scope.filteredTrackingReminderNotifications.length === 0){
+						$rootScope.showAllCaughtUpCard = true;
+					}
+					//Stop the ion-refresher from spinning
+					$scope.$broadcast('scroll.refreshComplete');
+					$scope.hideLoader();
+					$scope.state.loading = false;
 				}, function(){
-					console.error("failed to get filtered reminder notifications!");
+					$scope.hideLoader();
+					console.error("failed to get reminder notifications!");
+					//Stop the ion-refresher from spinning
+					$scope.$broadcast('scroll.refreshComplete');
+					$scope.state.loading = false;
 				});
 		};
 
-		var getFilteredTodayTrackingReminderNotifications = function(variableCategoryName){
-			reminderService.getTodayTrackingReminderNotifications(variableCategoryName)
+		var getFilteredTodayTrackingReminderNotifications = function(){
+			reminderService.getTodayTrackingReminderNotifications($stateParams.variableCategoryName)
 				.then(function (trackingReminderNotifications) {
 					$scope.state.numberOfDisplayedNotifications = trackingReminderNotifications.length;
-					return reminderService.groupTrackingReminderNotificationsByDateRange(trackingReminderNotifications);
+					$scope.filteredTrackingReminderNotifications = reminderService.groupTrackingReminderNotificationsByDateRange(trackingReminderNotifications);
+					if($scope.filteredTrackingReminderNotifications.length === 0){
+						$rootScope.showAllCaughtUpCard = true;
+					}
+					//Stop the ion-refresher from spinning
+					$scope.$broadcast('scroll.refreshComplete');
+					$scope.hideLoader();
+					$scope.state.loading = false;
 				}, function(){
-					console.error("failed to get filtered reminder notifications!");
+					$scope.hideLoader();
+					console.error("failed to get reminder notifications!");
+					//Stop the ion-refresher from spinning
+					$scope.$broadcast('scroll.refreshComplete');
+					$scope.state.loading = false;
 				});
 		};
 
 	    var getTrackingReminderNotifications = function () {
 			if($stateParams.today){
 				//$scope.showLoader("Getting today's reminder notifications...");
-				getFilteredTodayTrackingReminderNotifications($stateParams.variableCategoryName)
-					.then(function (filteredTrackingReminderNotifications) {
-						$scope.filteredTrackingReminderNotifications = filteredTrackingReminderNotifications;
-						if(filteredTrackingReminderNotifications.length === 0){
-							$rootScope.showAllCaughtUpCard = true;
-						}
-						//Stop the ion-refresher from spinning
-						$scope.$broadcast('scroll.refreshComplete');
-						$scope.hideLoader();
-						$scope.state.loading = false;
-					}, function(){
-						$scope.hideLoader();
-						console.error("failed to get reminder notifications!");
-						//Stop the ion-refresher from spinning
-						$scope.$broadcast('scroll.refreshComplete');
-						$scope.state.loading = false;
-					});
+				getFilteredTodayTrackingReminderNotifications();
 			} else {
 				//$scope.showLoader("Getting reminder notifications...");
-				getFilteredTrackingReminderNotifications($stateParams.variableCategoryName)
-					.then(function (filteredTrackingReminderNotifications) {
-						$scope.filteredTrackingReminderNotifications = filteredTrackingReminderNotifications;
-						if(filteredTrackingReminderNotifications.length === 0){
-							$rootScope.showAllCaughtUpCard = true;
-						}
-						//Stop the ion-refresher from spinning
-						$scope.$broadcast('scroll.refreshComplete');
-						$scope.hideLoader();
-						$scope.state.loading = false;
-					}, function(){
-						$scope.hideLoader();
-						console.error("failed to get reminder notifications!");
-						//Stop the ion-refresher from spinning
-						$scope.$broadcast('scroll.refreshComplete');
-						$scope.state.loading = false;
-					});
+				getFilteredTrackingReminderNotifications();
+
 			}
 		};
 
