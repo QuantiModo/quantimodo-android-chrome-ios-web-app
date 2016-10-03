@@ -53,7 +53,6 @@ angular.module('starter')
     };
 
     var init = function(){
-
         $rootScope.introSeen = localStorage.getItem('introSeen');
         if($rootScope.user ||$rootScope.introSeen){
             console.debug('introCtrl init: Going to default state: ' + config.appSettings.defaultState);
@@ -68,10 +67,8 @@ angular.module('starter')
         }
     };
 
-
     // when view is changed
-    $scope.$on('$ionicView.enter', function(e) { console.debug("Entering state " + $state.current.name);
-        $scope.hideLoader();
+    $scope.$on('$ionicView.beforeEnter', function(e) { console.debug("Entering state " + $state.current.name);
         init();
     });
 
