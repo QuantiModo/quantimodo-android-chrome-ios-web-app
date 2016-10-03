@@ -341,84 +341,79 @@ angular.module('starter')
 			showLoader();
 			$rootScope.getAccessTokenFromUrlParameter();
 			$rootScope.hideNavigationMenuIfSetInUrlParameter();
-	    	if (!$rootScope.hideNavigationMenu && !$rootScope.introSeen && !$rootScope.user && !$rootScope.accessTokenInUrl) {
-				console.debug('reminderInboxCtrl init: Intro not seen and hidemenu is false so going to intro state');
-				$state.go('intro');
-			} else {
+			$scope.refreshTrackingReminderNotifications();
+			//getTrackingReminderNotifications();
 
-				$scope.refreshTrackingReminderNotifications();
-				//getTrackingReminderNotifications();
-
-				if($rootScope.localNotificationsEnabled){
-					console.debug("reminderInbox init: calling refreshTrackingRemindersAndScheduleAlarms");
-					reminderService.refreshTrackingRemindersAndScheduleAlarms();
-				}
-
-				var d = new Date();
-				var timeZoneOffsetInMinutes = d.getTimezoneOffset();
-
-				if($rootScope.user && $rootScope.user.timeZoneOffset !== timeZoneOffsetInMinutes ){
-					var params = {
-						timeZoneOffset: timeZoneOffsetInMinutes
-					};
-					userService.updateUserSettings(params);
-				}
-				if(!$rootScope.user){
-					userService.refreshUser();
-				}
-
-				notificationService.shouldWeUseIonicLocalNotifications();
-
-				// Triggered on a button click, or some other target
-				$rootScope.showActionSheetMenu = function() {
-					// Show the action sheet
-					var hideSheet = $ionicActionSheet.show({
-						buttons: [
-
-						],
-						destructiveText: '<i class="icon ion-trash-a"></i>Clear All Notifications',
-						cancelText: '<i class="icon ion-ios-close"></i>Cancel',
-						cancel: function() {
-							console.log('CANCELLED');
-						},
-						buttonClicked: function(index) {
-							console.log('BUTTON CLICKED', index);
-							if(index === 0){
-
-							}
-							return true;
-						},
-						destructiveButtonClicked: function() {
-							$scope.showLoader('Skipping all reminder notifications...');
-							reminderService.skipAllReminderNotifications()
-								.then(function(){
-									if($rootScope.localNotificationsEnabled){
-										notificationService.setNotificationBadge(0);
-									}
-									$scope.init();
-								}, function(err){
-									if (typeof Bugsnag !== "undefined") {
-										Bugsnag.notify(err, JSON.stringify(err), {}, "error");
-									}
-									console.error(err);
-									utilsService.showAlert('Failed to skip all notifications, Try again!', 'assertive');
-								});
-							return true;
-						}
-					});
-
-
-					$timeout(function() {
-						hideSheet();
-					}, 20000);
-
-				};
-
-				if(navigator && navigator.splashscreen) {
-					console.debug('ReminderInbox: Hiding splash screen because app is ready');
-					navigator.splashscreen.hide();
-				}
+			if($rootScope.localNotificationsEnabled){
+				console.debug("reminderInbox init: calling refreshTrackingRemindersAndScheduleAlarms");
+				reminderService.refreshTrackingRemindersAndScheduleAlarms();
 			}
+
+			var d = new Date();
+			var timeZoneOffsetInMinutes = d.getTimezoneOffset();
+
+			if($rootScope.user && $rootScope.user.timeZoneOffset !== timeZoneOffsetInMinutes ){
+				var params = {
+					timeZoneOffset: timeZoneOffsetInMinutes
+				};
+				userService.updateUserSettings(params);
+			}
+			if(!$rootScope.user){
+				userService.refreshUser();
+			}
+
+			notificationService.shouldWeUseIonicLocalNotifications();
+
+			// Triggered on a button click, or some other target
+			$rootScope.showActionSheetMenu = function() {
+				// Show the action sheet
+				var hideSheet = $ionicActionSheet.show({
+					buttons: [
+
+					],
+					destructiveText: '<i class="icon ion-trash-a"></i>Clear All Notifications',
+					cancelText: '<i class="icon ion-ios-close"></i>Cancel',
+					cancel: function() {
+						console.log('CANCELLED');
+					},
+					buttonClicked: function(index) {
+						console.log('BUTTON CLICKED', index);
+						if(index === 0){
+
+						}
+						return true;
+					},
+					destructiveButtonClicked: function() {
+						$scope.showLoader('Skipping all reminder notifications...');
+						reminderService.skipAllReminderNotifications()
+							.then(function(){
+								if($rootScope.localNotificationsEnabled){
+									notificationService.setNotificationBadge(0);
+								}
+								$scope.init();
+							}, function(err){
+								if (typeof Bugsnag !== "undefined") {
+									Bugsnag.notify(err, JSON.stringify(err), {}, "error");
+								}
+								console.error(err);
+								utilsService.showAlert('Failed to skip all notifications, Try again!', 'assertive');
+							});
+						return true;
+					}
+				});
+
+
+				$timeout(function() {
+					hideSheet();
+				}, 20000);
+
+			};
+
+			if(navigator && navigator.splashscreen) {
+				console.debug('ReminderInbox: Hiding splash screen because app is ready');
+				navigator.splashscreen.hide();
+			}
+
 
 		};
 

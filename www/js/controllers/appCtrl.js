@@ -412,7 +412,6 @@ angular.module('starter')
             console.log("Main Constructor Start");
             $rootScope.getAccessTokenFromUrlParameter();
             $rootScope.hideNavigationMenuIfSetInUrlParameter();
-            $rootScope.introSeen = localStorage.getItem('introSeen');
             if (!$rootScope.user) {
                 $rootScope.user = localStorageService.getItemAsObject('user');
                 if(!$rootScope.user && utilsService.getClientId() === 'oAuthDisabled') {
@@ -731,7 +730,6 @@ angular.module('starter')
             if(deviceTokenToSync){
                 pushNotificationService.registerDeviceToken(deviceTokenToSync);
             }
-            localStorage.setItem('introSeen', true);
         };
 
         $scope.onTextClick = function ($event) {
