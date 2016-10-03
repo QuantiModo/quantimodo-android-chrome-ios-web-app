@@ -60,7 +60,7 @@ angular.module('starter')
 		$scope.refreshReminders = function () {
 			if($rootScope.syncingReminders !== true) {
 				console.debug("ReminderMange init: calling refreshTrackingRemindersAndScheduleAlarms");
-				$scope.showLoader('Reminders coming down the pipes...');
+				$scope.showLoader('Syncing...');
 				reminderService.refreshTrackingRemindersAndScheduleAlarms().then(function () {
 					getTrackingReminders();
 				});
@@ -196,12 +196,21 @@ angular.module('starter')
 			}
 	    };
 
-	    $scope.deleteReminder = function(reminder, $index){
-	    	if($index !== null){
-				$scope.state.trackingReminders.splice($index, 1);
-			}
+	    $scope.deleteReminder = function(reminder){
 
-			localStorageService.deleteElementOfItemById('trackingReminders', reminder.trackingReminderId);
+			// Splicing doesn't work for some reason
+            // if($index !== null){
+			// 	$scope.state.trackingReminders.splice($index, 1);
+			// }
+
+			localStorageService.deleteElementOfItemById('trackingReminders', reminder.trackingReminderId)
+				.then(function(){
+					reminderService.getTrackingRemindersFromLocalStorage($stateParams.variableCategoryName)
+						.then(function (trackingReminders) {
+							$scope.state.trackingReminders = trackingReminders;
+						});
+				});
+
 			reminderService.deleteReminder(reminder.trackingReminderId)
 				.then(function(){
 					reminderService.refreshTrackingReminderNotifications();
