@@ -1,7 +1,7 @@
 angular.module('starter')
 
 	.controller('RemindersManageCtrl', function($scope, $state, $stateParams, $ionicPopup, $rootScope, $timeout, $ionicLoading, $filter,
-												 $ionicActionSheet,  authService,
+												 $ionicActionSheet,  QuantiModo,
 												localStorageService, reminderService) {
 
 	    $scope.controller_name = "RemindersManageCtrl";

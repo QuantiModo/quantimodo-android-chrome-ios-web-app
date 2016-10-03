@@ -1,6 +1,6 @@
 angular.module('starter')
 .controller('IntroCtrl', function($scope, $state, localStorageService, $ionicSlideBoxDelegate, $ionicLoading,
-                                  $rootScope, $stateParams) {
+                                  $rootScope, $stateParams, QuantiModo) {
 
     $scope.viewTitle = config.appSettings.appName;
     $scope.primaryOutcomeVariable = config.appSettings.primaryOutcomeVariable;
@@ -32,7 +32,7 @@ angular.module('starter')
 
     // when view is changed
     $scope.$on('$ionicView.beforeEnter', function(e) { console.debug("Entering state " + $state.current.name);
-        if($rootScope.getAccessTokenFromUrlParameter()){
+        if(QuantiModo.getAccessTokenFromUrlParameter()){
             console.debug('introCtrl beforeEnter: Skipping to default state: ' + config.appSettings.defaultState);
             $state.go(config.appSettings.defaultState);
         } else {
@@ -41,7 +41,6 @@ angular.module('starter')
             if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
             if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
             $scope.myIntro.ready = true;
-            $scope.hideLoader();
         }
         localStorage.setItem('introSeen', true);
     });

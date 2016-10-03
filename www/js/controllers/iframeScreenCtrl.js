@@ -1,5 +1,5 @@
 angular.module('starter')
-    .controller('IframeScreenCtrl', function ($scope, $ionicLoading, $sce, $state, authService, $rootScope, QuantiModo) {
+    .controller('IframeScreenCtrl', function ($scope, $ionicLoading, $sce, $state, $rootScope, QuantiModo) {
 
         $scope.showLoader();
         console.debug('IframeScreenCtrl works!');
@@ -31,7 +31,7 @@ angular.module('starter')
             iFrameUrl = $rootScope.qmApiUrl + '/api/v1/connect/mobile';
             $scope.title = 'Your Variable Relationships';
         }
-        console.debug('iframeScreen.init: Going to authService.getAccessTokenFromAnySource');
+        console.debug('iframeScreen.init: Going to QuantiModo.getAccessTokenFromAnySource');
         QuantiModo.getAccessTokenFromAnySource().then(function(accessToken) {
 
             if(accessToken){

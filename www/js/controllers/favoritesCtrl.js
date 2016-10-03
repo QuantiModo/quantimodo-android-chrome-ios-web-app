@@ -1,6 +1,6 @@
 angular.module('starter')
 
-	.controller('FavoritesCtrl', function($scope, $state, $ionicActionSheet, $timeout, reminderService, authService, 
+	.controller('FavoritesCtrl', function($scope, $state, $ionicActionSheet, $timeout, reminderService, QuantiModo,
 										  localStorageService, measurementService, variableCategoryService, $rootScope,
 										  $stateParams, utilsService) {
 
@@ -162,7 +162,7 @@ angular.module('starter')
 		};
 
 	    $scope.init = function(){
-	    	authService.setUserUsingAccessTokenInUrl();
+	    	QuantiModo.setUserUsingAccessTokenInUrl();
 			$rootScope.stateParams = $stateParams;
 
 			if($stateParams.variableCategoryName && $stateParams.variableCategoryName  !== 'Anything'){

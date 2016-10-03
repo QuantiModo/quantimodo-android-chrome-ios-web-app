@@ -3,7 +3,7 @@ angular.module('starter')
     // Controls the variable settings editing Page
     .controller('VariableSettingsCtrl',
         function($scope, $state, $rootScope, $timeout, $ionicPopup, $q, $stateParams, $ionicHistory, $ionicActionSheet,
-                 authService, measurementService, localStorageService, variableService) {
+                 QuantiModo, measurementService, localStorageService, variableService) {
 
         $scope.controller_name = "VariableSettingsCtrl";
 
