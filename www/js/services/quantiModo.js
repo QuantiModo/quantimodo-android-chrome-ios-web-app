@@ -27,7 +27,22 @@ angular.module('starter')
                     return;
                 }
                 if(!data){
-                    console.log('QuantiModo.errorHandler: No data property returned from QM API request');
+                    bugsnagService.reportError('No data returned from this request: ' + JSON.stringify(request));
+                    if (!$rootScope.connectionErrorShowing) {
+                        $rootScope.connectionErrorShowing = true;
+                        $ionicPopup.show({
+                            title: 'NOT CONNECTED',
+                            subTitle: 'Either you are not connected to the internet or the QuantiModo server cannot be reached.',
+                            buttons:[
+                                {text: 'OK',
+                                    type: 'button-positive',
+                                    onTap: function(){
+                                        $rootScope.connectionErrorShowing = false;
+                                    }
+                                }
+                            ]
+                        });
+                    }
                     return;
                 }
                 if(data.success){
@@ -44,22 +59,6 @@ angular.module('starter')
                     if (typeof Bugsnag !== "undefined") {
                         Bugsnag.notify("API Request to " + request.url + " Failed", error, {}, "error");
                     }
-                }
-                if (!data && !$rootScope.connectionErrorShowing) {
-                    bugsnagService.reportError('No data returned from this GET request: ' + JSON.stringify(request));
-                    $rootScope.connectionErrorShowing = true;
-                    $ionicPopup.show({
-                        title: 'NOT CONNECTED',
-                        subTitle: 'Either you are not connected to the internet or the QuantiModo server cannot be reached.',
-                        buttons:[
-                            {text: 'OK',
-                                type: 'button-positive',
-                                onTap: function(){
-                                    $rootScope.connectionErrorShowing = false;
-                                }
-                            }
-                        ]
-                    });
                 }
 
                 console.error(error);
@@ -178,22 +177,7 @@ angular.module('starter')
 
                     $http(request).success(successHandler).error(function(data,status,headers,config){
                         QuantiModo.errorHandler(data,status,headers,config);
-                        if (!data && !$rootScope.connectionErrorShowing) {
-                            bugsnagService.reportError('No data returned from this POST request: ' + JSON.stringify(request));
-                            $rootScope.connectionErrorShowing = true;
-                            $ionicPopup.show({
-                                title: 'NOT CONNECTED',
-                                subTitle: 'Either you are not connected to the internet or the QuantiModo server cannot be reached.',
-                                buttons:[
-                                    {text: 'OK',
-                                        type: 'button-positive',
-                                        onTap: function(){
-                                            $rootScope.connectionErrorShowing = false;
-                                        }
-                                    }
-                                ]
-                            });
-                        }
+                        errorHandler(data);
                     });
 
                 }, errorHandler);
