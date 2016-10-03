@@ -97,10 +97,9 @@ angular.module('starter')
 			}
 	    };
 
-	    $scope.$on('$ionicView.enter', function(e) { console.debug("Entering state " + $state.current.name);
+	    $scope.$on('$ionicView.beforeEnter', function(e) { console.debug("Entering state " + $state.current.name);
 			init();
 	    });
-
 
 		$scope.connect = function(connector){
 
