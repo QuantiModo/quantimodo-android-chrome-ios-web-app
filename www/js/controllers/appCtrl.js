@@ -2,7 +2,7 @@ angular.module('starter')
     // Parent Controller
     // This controller runs before every one else
 	.controller('AppCtrl', function($scope, $timeout, $ionicPopover, $ionicLoading, $state, $ionicHistory, $rootScope,
-                                    $ionicPopup, $ionicSideMenuDelegate, $ionicPlatform, authService,
+                                    $ionicPopup, $ionicSideMenuDelegate, $ionicPlatform,
                                     measurementService, QuantiModo, notificationService, localStorageService,
                                     reminderService, ratingService, migrationService, ionicDatePicker, unitService,
                                     variableService, qmLocationService, variableCategoryService, bugsnagService,
@@ -410,7 +410,7 @@ angular.module('starter')
 
         $scope.init = function () {
             console.log("Main Constructor Start");
-            $rootScope.getAccessTokenFromUrlParameter();
+            QuantiModo.getAccessTokenFromUrlParameter();
             $rootScope.hideNavigationMenuIfSetInUrlParameter();
             if (!$rootScope.user) {
                 $rootScope.user = localStorageService.getItemAsObject('user');
@@ -680,21 +680,6 @@ angular.module('starter')
                 );
 
             }, false);
-        };
-
-        $rootScope.getAccessTokenFromUrlParameter = function () {
-            $rootScope.accessTokenInUrl = utilsService.getUrlParameter(location.href, 'accessToken');
-            if (!$rootScope.accessTokenInUrl) {
-                $rootScope.accessTokenInUrl = utilsService.getUrlParameter(location.href, 'access_token');
-            }
-            if($rootScope.accessTokenInUrl){
-                localStorageService.setItem('accessTokenInUrl', $rootScope.accessTokenInUrl);
-                localStorageService.setItem('accessToken', $rootScope.accessTokenInUrl);
-            } else {
-                localStorageService.deleteItem('accessTokenInUrl');
-            }
-
-            return $rootScope.accessTokenInUrl;
         };
 
         $rootScope.setUserInLocalStorageBugsnagAndRegisterDeviceForPush = function(userData){

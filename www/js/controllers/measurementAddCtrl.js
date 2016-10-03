@@ -1,7 +1,7 @@
 angular.module('starter')
 
     .controller('MeasurementAddCtrl', function($scope, $q, $timeout, $state, $rootScope, $stateParams, $filter,
-                                               $ionicActionSheet, $ionicHistory, authService, measurementService,
+                                               $ionicActionSheet, $ionicHistory, measurementService,
                                                utilsService, localStorageService, variableCategoryService,
                                                ionicTimePicker, ionicDatePicker, unitService, QuantiModo) {
 

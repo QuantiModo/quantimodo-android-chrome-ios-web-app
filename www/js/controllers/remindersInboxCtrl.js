@@ -1,7 +1,7 @@
 angular.module('starter')
 
 	.controller('RemindersInboxCtrl', function($scope, $state, $stateParams, $rootScope, $filter, $ionicPlatform,
-											   $ionicActionSheet, $timeout, authService, reminderService, utilsService,
+											   $ionicActionSheet, $timeout, QuantiModo, reminderService, utilsService,
 											   notificationService, userService, localStorageService, $ionicLoading) {
 
 	    $scope.controller_name = "RemindersInboxCtrl";
@@ -339,7 +339,7 @@ angular.module('starter')
 			if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
 			if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
 			showLoader();
-			$rootScope.getAccessTokenFromUrlParameter();
+			QuantiModo.getAccessTokenFromUrlParameter();
 			$rootScope.hideNavigationMenuIfSetInUrlParameter();
 			$scope.refreshTrackingReminderNotifications();
 			//getTrackingReminderNotifications();

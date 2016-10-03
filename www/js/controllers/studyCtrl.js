@@ -1,5 +1,5 @@
 angular.module('starter')
-	.controller('StudyCtrl', function($scope, $state, authService, $stateParams, $ionicHistory, $rootScope) {
+	.controller('StudyCtrl', function($scope, $state, QuantiModo, $stateParams, $ionicHistory, $rootScope) {
 
 		$scope.controller_name = "StudyCtrl";
         

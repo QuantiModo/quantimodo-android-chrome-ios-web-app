@@ -1,7 +1,7 @@
 angular.module('starter')
 	
 	// controls the Import Data page of the app
-	.controller('ImportCtrl', function($scope, $ionicLoading, $state, $rootScope, authService, utilsService, QuantiModo,
+	.controller('ImportCtrl', function($scope, $ionicLoading, $state, $rootScope, utilsService, QuantiModo,
 									   connectorsService, $cordovaOauth, bugsnagService, $ionicPopup, $stateParams) {
 		
 		$state.go('app');
@@ -33,7 +33,7 @@ angular.module('starter')
 				connectorsService.getConnectors();
 				connectorsService.refreshConnectors();
 			} else {
-				console.debug('importCtrl.init: Going to authService.getAccessTokenFromAnySource');
+				console.debug('importCtrl.init: Going to QuantiModo.getAccessTokenFromAnySource');
 				QuantiModo.getAccessTokenFromAnySource().then(function(accessToken){
 					$ionicLoading.hide();
 					if(ionic.Platform.platforms[0] === "browser"){

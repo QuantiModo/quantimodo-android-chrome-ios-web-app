@@ -2,9 +2,9 @@ angular.module('starter')
 
 	// Controls the History Page of the App.
 	.controller('historyAllMeasurementsCtrl', function($scope, $state, $stateParams, $rootScope, $timeout, $ionicActionSheet,
-													   authService, measurementService,
+													   QuantiModo, measurementService,
 													   variableCategoryService, ratingService, localStorageService,
-													   qmLocationService, userService, $ionicLoading) {
+													   qmLocationService, userService) {
 
 	    $scope.controller_name = "historyAllMeasurementsCtrl";
         
