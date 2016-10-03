@@ -65,7 +65,7 @@ angular.module('starter')
 
             $scope.showLoader();
 
-            $rootScope.introSeen = localStorageService.getItem('introSeen');
+            $rootScope.introSeen = localStorage.getItem('introSeen');
             if($rootScope.introSeen){
                 console.debug('introCtrl init: Going to default state: ' + config.appSettings.defaultState);
                 $state.go(config.appSettings.defaultState);
