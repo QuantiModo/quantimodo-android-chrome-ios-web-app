@@ -472,7 +472,7 @@
 			</div>
 		</div>
 
-		<div class="list card"  ng-if="showAllCaughtUpCard && !state.loading">
+		<div class="list card"  ng-if="!state.loading && state.numberOfDisplayedNotifications === 0">
 			<div class="item" style="padding-bottom:10px;">
 				<p style=" text-align: center; line-height: normal; font-size: 25px;">All caught up!</p>
 
@@ -554,7 +554,7 @@
 		 active-icon="ion-minus-round"
 		 resting-icon="ion-plus-round"
 		 toggling-method="click"
-		 ng-hide="hideNavigationMenu || (hideNavigationMenu && !isWelcomed)">
+		 ng-hide="hideNavigationMenu">
 		<button mfb-button icon={{floatingMaterialButton.button1.icon}} label={{floatingMaterialButton.button1.label}}
 				ng-click="goToState({{floatingMaterialButton.button1.stateAndParameters}})"></button>
 		<button mfb-button icon={{floatingMaterialButton.button2.icon}} label={{floatingMaterialButton.button2.label}}

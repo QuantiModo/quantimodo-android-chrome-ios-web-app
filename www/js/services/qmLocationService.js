@@ -1,7 +1,7 @@
 angular.module('starter')
     // Measurement Service
     .factory('qmLocationService', function($http, $q, $rootScope, $cordovaGeolocation, $ionicPlatform,
-                                           localStorageService, measurementService) {
+                                           localStorageService, measurementService, bugsnagService) {
         
         // service methods
         var qmLocationService = {
@@ -143,9 +143,16 @@ angular.module('starter')
             },
 
             updateLocationVariablesAndPostMeasurementIfChanged : function () {
+                var deferred = $q.defer();
                 qmLocationService.getLocationVariablesFromLocalStorage();
-                if(!$rootScope.user){return;}
-                if(!$rootScope.user.trackLocation){return;}
+                if(!$rootScope.user){
+                    deferred.reject();
+                    return deferred.promise;
+                }
+                if(!$rootScope.user.trackLocation){
+                    deferred.reject();
+                    return deferred.promise;
+                }
 
                 $ionicPlatform.ready(function() {
                     var posOptions = {
@@ -184,15 +191,19 @@ angular.module('starter')
                                     qmLocationService.postLocationMeasurementAndSetLocationVariables(currentTimeEpochSeconds, result);
                                 }
                             }
+                            deferred.resolve(result);
                         });
 
                         //console.debug("My coordinates are: ", position.coords);
 
                     }, function(err) {
-                        console.log(err);
+                        deferred.reject(err);
+                        bugsnagService.reportError(err);
                     });
 
                 });
+
+                return deferred.promise;
             }
         };
 

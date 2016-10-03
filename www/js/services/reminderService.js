@@ -237,32 +237,6 @@ angular.module('starter')
 			return deferred.promise;
 		};
 
-		reminderService.getFilteredTrackingReminderNotifications = function(variableCategoryName){
-			var deferred = $q.defer();
-			reminderService.getTrackingReminderNotifications(variableCategoryName)
-				.then(function (trackingReminderNotifications) {
-					var filteredTrackingReminderNotifications =
-						reminderService.groupTrackingReminderNotificationsByDateRange(trackingReminderNotifications);
-					deferred.resolve(filteredTrackingReminderNotifications);
-				}, function(){
-					console.error("failed to get filtered reminder notifications!");
-				});
-			return deferred.promise;
-		};
-
-		reminderService.getFilteredTodayTrackingReminderNotifications = function(variableCategoryName){
-			var deferred = $q.defer();
-			reminderService.getTodayTrackingReminderNotifications(variableCategoryName)
-				.then(function (trackingReminderNotifications) {
-					var filteredTrackingReminderNotifications =
-						reminderService.groupTrackingReminderNotificationsByDateRange(trackingReminderNotifications);
-					deferred.resolve(filteredTrackingReminderNotifications);
-				}, function(){
-					console.error("failed to get filtered reminder notifications!");
-				});
-			return deferred.promise;
-		};
-
 		reminderService.refreshTrackingReminderNotifications = function(){
 			var deferred = $q.defer();
 			if($rootScope.refreshingTrackingReminderNotifications){

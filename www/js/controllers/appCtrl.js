@@ -414,9 +414,7 @@ angular.module('starter')
             console.log("Main Constructor Start");
             $rootScope.getAccessTokenFromUrlParameter();
             $rootScope.hideNavigationMenuIfSetInUrlParameter();
-            localStorageService.getItem('introSeen', function(introSeen){
-                $rootScope.introSeen = introSeen;
-            });
+            $rootScope.introSeen = localStorage.getItem('introSeen');
             if (!$rootScope.user) {
                 $rootScope.user = localStorageService.getItemAsObject('user');
                 if(!$rootScope.user && utilsService.getClientId() === 'oAuthDisabled') {
@@ -623,9 +621,7 @@ angular.module('starter')
                 variableService.getCommonVariables();
                 unitService.getUnits();
                 $rootScope.syncedEverything = true;
-                if($rootScope.user.trackLocation){
-                    qmLocationService.updateLocationVariablesAndPostMeasurementIfChanged();
-                }
+                qmLocationService.updateLocationVariablesAndPostMeasurementIfChanged();
                 reminderService.syncTrackingReminderSyncQueueToServer();
                 //connectorsService.getConnectors();
             }
@@ -737,6 +733,7 @@ angular.module('starter')
             if(deviceTokenToSync){
                 pushNotificationService.registerDeviceToken(deviceTokenToSync);
             }
+            localStorage.setItem('introSeen', true);
         };
 
         $scope.onTextClick = function ($event) {
