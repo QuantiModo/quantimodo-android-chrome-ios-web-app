@@ -54,26 +54,17 @@ angular.module('starter')
 
     var init = function(){
 
-        if($rootScope.user || $rootScope.introSeen){
+        $rootScope.introSeen = localStorage.getItem('introSeen');
+        if($rootScope.user ||$rootScope.introSeen){
+            console.debug('introCtrl init: Going to default state: ' + config.appSettings.defaultState);
             $state.go(config.appSettings.defaultState);
         } else {
             console.debug($state.current.name + ' initializing...');
             $rootScope.stateParams = $stateParams;
             if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
             if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
-           
-
-            $scope.showLoader();
-
-            $rootScope.introSeen = localStorageService.getItem('introSeen');
-            if($rootScope.introSeen){
-                console.debug('introCtrl init: Going to default state: ' + config.appSettings.defaultState);
-                $state.go(config.appSettings.defaultState);
-            } else {
-                $scope.myIntro.ready = true;
-            }
+            $scope.myIntro.ready = true;
             $scope.hideLoader();
-
         }
     };
 
