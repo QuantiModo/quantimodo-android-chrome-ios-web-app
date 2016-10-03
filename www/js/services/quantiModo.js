@@ -1,6 +1,6 @@
 angular.module('starter')
     // QuantiModo API implementation
-    .factory('QuantiModo', function($http, $q, $rootScope, $ionicPopup, $state, $ionicLoading,
+    .factory('QuantiModo', function($http, $q, $rootScope, $ionicPopup, $state,
                                     localStorageService, bugsnagService, utilsService) {
             var QuantiModo = {};
             $rootScope.connectionErrorShowing = false; // to prevent more than one popup
@@ -15,7 +15,11 @@ angular.module('starter')
             };
 
             QuantiModo.errorHandler = function(data, status, headers, config, request){
-                $ionicLoading.hide();
+                if(status === 302){
+                    console.warn('QuantiModo.errorHandler: Got 302 response from ' + JSON.stringify(request));
+                    return;
+                }
+
                 if(status === 401){
                     console.warn('QuantiModo.errorHandler: Sending to login because we got 401 with request ' +
                         JSON.stringify(request));
@@ -41,6 +45,23 @@ angular.module('starter')
                         Bugsnag.notify("API Request to " + request.url + " Failed", error, {}, "error");
                     }
                 }
+                if (!data && !$rootScope.connectionErrorShowing) {
+                    bugsnagService.reportError('No data returned from this GET request: ' + JSON.stringify(request));
+                    $rootScope.connectionErrorShowing = true;
+                    $ionicPopup.show({
+                        title: 'NOT CONNECTED',
+                        subTitle: 'Either you are not connected to the internet or the QuantiModo server cannot be reached.',
+                        buttons:[
+                            {text: 'OK',
+                                type: 'button-positive',
+                                onTap: function(){
+                                    $rootScope.connectionErrorShowing = false;
+                                }
+                            }
+                        ]
+                    });
+                }
+
                 console.error(error);
             };
 
@@ -53,7 +74,7 @@ angular.module('starter')
             // GET method with the added token
             QuantiModo.get = function(baseURL, allowedParams, params, successHandler, errorHandler){
                 console.debug('QuantiModo.get: Going to try to make request to ' + baseURL + " with params: " + JSON.stringify(params));
-                QuantiModo.getAccessTokenFromAnySource().then(function(accessToken){
+                QuantiModo.getAccessTokenFromAnySource().then(function(accessToken) {
 
                     allowedParams.push('limit');
                     allowedParams.push('offset');
@@ -61,10 +82,9 @@ angular.module('starter')
                     allowedParams.push('updatedAt');
                     // configure params
                     var urlParams = [];
-                    for (var property in params)
-                    {
-                        if(params.hasOwnProperty(property)){
-                            if(typeof params[property] !== "undefined" && params[property] !== null){
+                    for (var property in params) {
+                        if (params.hasOwnProperty(property)) {
+                            if (typeof params[property] !== "undefined" && params[property] !== null) {
                                 urlParams.push(encodeURIComponent(property) + '=' + encodeURIComponent(params[property]));
                             } else {
                                 console.warn("Not including parameter " + property + " in request because it is null or undefined");
@@ -88,7 +108,7 @@ angular.module('starter')
                         }
                     };
 
-                    if(accessToken) {
+                    if (accessToken) {
                         request.headers = {
                             "Authorization": "Bearer " + accessToken,
                             'Content-Type': "application/json"
@@ -98,30 +118,14 @@ angular.module('starter')
                     //console.log("Making this request: " + JSON.stringify(request));
                     console.debug('QuantiModo.get: ' + request.url);
 
-                    $http(request).success(successHandler).error(function(data,status,headers,config){
-                        QuantiModo.errorHandler(data, status, headers, config, request);
-                        if (!data && !$rootScope.connectionErrorShowing) {
-                            bugsnagService.reportError('No data returned from this GET request: ' + JSON.stringify(request));
-                            $rootScope.connectionErrorShowing = true;
-                            $ionicPopup.show({
-                                title: 'NOT CONNECTED',
-                                subTitle: 'Either you are not connected to the internet or the QuantiModo server cannot be reached.',
-                                buttons:[
-                                    {text: 'OK',
-                                        type: 'button-positive',
-                                        onTap: function(){
-                                            $rootScope.connectionErrorShowing = false;
-                                        }
-                                    }
-                                ]
-                            });
-                        }
-                        errorHandler(data);
+                    $http(request)
+                        .success(successHandler)
+                        .error(function (data, status, headers, config) {
+                            QuantiModo.errorHandler(data, status, headers, config, request);
+                            errorHandler(data);
+                        }, onRequestFailed);
                     });
-
-                }, onRequestFailed);
-            };
-
+                };
 
             // POST method with the added token
             QuantiModo.post = function(baseURL, requiredFields, items, successHandler, errorHandler){
@@ -943,7 +947,6 @@ angular.module('starter')
                         $rootScope.setUserInLocalStorageBugsnagAndRegisterDeviceForPush(userCredentialsResp.data);
                     },
                     function (errorResp) {
-                        $ionicLoading.hide();
                         console.error('checkAuthOrSendToLogin: Could not get user with ' + url +
                             '. Going to login page. Error response: ' + errorResp.message);
                         $rootScope.sendToLogin();
