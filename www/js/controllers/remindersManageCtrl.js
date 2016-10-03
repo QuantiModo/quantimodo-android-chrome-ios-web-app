@@ -32,8 +32,10 @@ angular.module('starter')
 	    };
 
 		function showAppropriateHelpInfoCards(){
-			$scope.state.showTreatmentInfoCard = ($scope.state.trackingReminders.length === 0) && (window.location.href.indexOf('Treatments') > -1);
-			$scope.state.showSymptomInfoCard = ($scope.state.trackingReminders.length === 0) && (window.location.href.indexOf('Symptom') > -1);
+			$scope.state.showTreatmentInfoCard = ($scope.state.trackingReminders.length === 0) &&
+				(window.location.href.indexOf('Treatments') > -1 || $stateParams.variableCategoryName === 'Anything');
+			$scope.state.showSymptomInfoCard = ($scope.state.trackingReminders.length === 0) &&
+				(window.location.href.indexOf('Symptom') > -1 || $stateParams.variableCategoryName === 'Anything');
 		}
 
 	    // when date is updated
