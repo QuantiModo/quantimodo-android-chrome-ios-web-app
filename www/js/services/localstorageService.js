@@ -31,7 +31,7 @@ angular.module('starter')
                     }
                     this.setItem(localStorageItemName, JSON.stringify(elementsToKeep));
                 }
-                deferred.resolve();
+                deferred.resolve(elementsToKeep);
                 return deferred.promise;
             },
 
