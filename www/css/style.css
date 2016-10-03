@@ -1,3 +1,10 @@
+/*favorite page */
+
+/* to increase the input area width */
+.yiInput{
+ 
+  width: 500px!important;}
+
 .resetButton{
   float:right;
   margin-right:10%;
