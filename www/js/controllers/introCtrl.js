@@ -12,7 +12,6 @@ angular.module('starter')
         slideIndex : 0,
         // Called to navigate to the main app
         startApp : function() {
-            $rootScope.introSeen = true;
             localStorage.setItem('introSeen', true);
             console.debug('startApp: Going to welcome state...');
             $state.go(config.appSettings.welcomeState);
@@ -32,29 +31,14 @@ angular.module('starter')
         }
     };
 
-    $scope.showLoader = function (loadingText) {
-        if(!loadingText){
-            loadingText = '';
-        }
-        $scope.loading = true;
-        $ionicLoading.show({
-            template: loadingText+ '<br><br><img src={{loaderImagePath}}>',
-            content: 'Loading',
-            animation: 'fade-in',
-            showBackdrop: false,
-            maxWidth: 1000,
-            showDelay: 0
-        });
-    };
-
     $scope.hideLoader = function () {
         $scope.loading = false;
         $ionicLoading.hide();
     };
 
-    var init = function(){
-        $rootScope.introSeen = localStorage.getItem('introSeen');
-        if($rootScope.user ||$rootScope.introSeen){
+    // when view is changed
+    $scope.$on('$ionicView.beforeEnter', function(e) { console.debug("Entering state " + $state.current.name);
+        if($rootScope.user || window.localStorage.introSeen){
             console.debug('introCtrl init: Going to default state: ' + config.appSettings.defaultState);
             $state.go(config.appSettings.defaultState);
         } else {
@@ -65,11 +49,6 @@ angular.module('starter')
             $scope.myIntro.ready = true;
             $scope.hideLoader();
         }
-    };
-
-    // when view is changed
-    $scope.$on('$ionicView.beforeEnter', function(e) { console.debug("Entering state " + $state.current.name);
-        init();
     });
 
     $scope.$on('$ionicView.afterEnter', function(){

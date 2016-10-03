@@ -35,22 +35,13 @@ angular.module('starter')
             }
         };
 
-        var init = function(){
+        $scope.$on('$ionicView.beforeEnter', function(e) {
             console.debug($state.current.name + ' initializing...');
             $rootScope.stateParams = $stateParams;
             if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
             if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
             $scope.myIntro.ready = true;
-            $ionicLoading.hide();
-        };
-
-        // when view is changed
-        $scope.$on(
-            '$ionicView.enter', function(e) {
-                $scope.hideLoader();
-                init();
-            }
-        );
+        });
 
         $scope.$on('$ionicView.afterEnter', function(){
             if(navigator && navigator.splashscreen) {
