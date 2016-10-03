@@ -13,7 +13,7 @@ angular.module('starter')
         // Called to navigate to the main app
         startApp : function() {
             $rootScope.introSeen = true;
-            localStorageService.setItem('introSeen', true);
+            localStorage.setItem('introSeen', true);
             console.debug('startApp: Going to welcome state...');
             $state.go(config.appSettings.welcomeState);
         },
@@ -65,15 +65,15 @@ angular.module('starter')
 
             $scope.showLoader();
 
-            localStorageService.getItem('introSeen', function(introSeen){
-                if(introSeen){
-                    console.debug('introCtrl init: Going to default state: ' + config.appSettings.defaultState);
-                    $state.go(config.appSettings.defaultState);
-                } else {
-                    $scope.myIntro.ready = true;
-                }
-                $scope.hideLoader();
-            });
+            $rootScope.introSeen = localStorageService.getItem('introSeen');
+            if($rootScope.introSeen){
+                console.debug('introCtrl init: Going to default state: ' + config.appSettings.defaultState);
+                $state.go(config.appSettings.defaultState);
+            } else {
+                $scope.myIntro.ready = true;
+            }
+            $scope.hideLoader();
+
         }
     };
 
