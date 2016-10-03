@@ -411,10 +411,13 @@ angular.module('starter',
         })
         .state('app.intro', {
             url: "/intro",
+            params: {
+                doNotRedirect: true
+            },
             views: {
                 'menuContent': {
                     templateUrl: "templates/intro-tour.html",
-                    controller: 'IntroPageCtrl'
+                    controller: 'IntroCtrl'
                 }
             }
         })
