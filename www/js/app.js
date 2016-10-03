@@ -1003,7 +1003,6 @@ angular.module('starter',
         $urlRouterProvider.otherwise('/app/reminders-inbox');
     } else {
         console.log("Intro not seen so going to intro");
-        localStorage.setItem('introSeen', true);
         $urlRouterProvider.otherwise('/');
     }
       // if none of the above states are matched, use this as the fallback

@@ -730,7 +730,6 @@ angular.module('starter')
             if(deviceTokenToSync){
                 pushNotificationService.registerDeviceToken(deviceTokenToSync);
             }
-            localStorage.setItem('introSeen', true);
         };
 
         $scope.onTextClick = function ($event) {

@@ -12,7 +12,6 @@ angular.module('starter')
         slideIndex : 0,
         // Called to navigate to the main app
         startApp : function() {
-            localStorage.setItem('introSeen', true);
             console.debug('startApp: Going to welcome state...');
             $state.go(config.appSettings.welcomeState);
         },
@@ -34,7 +33,7 @@ angular.module('starter')
     // when view is changed
     $scope.$on('$ionicView.beforeEnter', function(e) { console.debug("Entering state " + $state.current.name);
         if($rootScope.user || window.localStorage.introSeen || $rootScope.getAccessTokenFromUrlParameter()){
-            console.debug('introCtrl init: Skipping to default state: ' + config.appSettings.defaultState);
+            console.debug('introCtrl beforeEnter: Skipping to default state: ' + config.appSettings.defaultState);
             $state.go(config.appSettings.defaultState);
         } else {
             console.debug($state.current.name + ' initializing...');
@@ -44,6 +43,7 @@ angular.module('starter')
             $scope.myIntro.ready = true;
             $scope.hideLoader();
         }
+        localStorage.setItem('introSeen', true);
     });
 
     $scope.$on('$ionicView.afterEnter', function(){
