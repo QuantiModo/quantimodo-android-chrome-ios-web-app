@@ -31,6 +31,7 @@ angular.module('starter')
 
 		var goToWebImportDataPage = function() {
 			console.debug('importCtrl.init: Going to QuantiModo.getAccessTokenFromAnySource');
+			$state.go(config.appSettings.defaultState);
 			QuantiModo.getAccessTokenFromAnySource().then(function(accessToken){
 				$ionicLoading.hide();
 				if(ionic.Platform.platforms[0] === "browser"){
@@ -67,6 +68,18 @@ angular.module('starter')
 			});
 		};
 
+		var loadNativeConnectorPage = function(){
+			console.log('importCtrl: $rootScope.isMobile so using native connector page');
+			connectorsService.getConnectors()
+				.then(function(connectors){
+					$scope.connectors = connectors;
+					$ionicLoading.hide().then(function(){
+						console.log("The loading indicator is now hidden");
+					});
+					$scope.refreshConnectors();
+				});
+		};
+
 	    // constructor
 	    var init = function(){
 			console.debug($state.current.name + ' initializing...');
@@ -77,16 +90,8 @@ angular.module('starter')
 				template: '<ion-spinner></ion-spinner>'
 			});
 
-			if($rootScope.isMobile || true){
-				console.log('importCtrl: $rootScope.isMobile so using native connector page');
-				connectorsService.getConnectors()
-					.then(function(connectors){
-						$scope.connectors = connectors;
-						$ionicLoading.hide().then(function(){
-							console.log("The loading indicator is now hidden");
-						});
-						$scope.refreshConnectors();
-					});
+			if($rootScope.isMobile){
+				loadNativeConnectorPage();
 			} else {
 				goToWebImportDataPage();
 			}
@@ -105,9 +110,6 @@ angular.module('starter')
 			connector.loadingText = 'Connecting...';
 
 			var connectWithParams = function(params, lowercaseConnectorName) {
-				$ionicLoading.show({
-					template: '<ion-spinner></ion-spinner>'
-				});
 				connectorsService.connectWithParams(params, lowercaseConnectorName)
 					.then(function(result){
 						console.log(JSON.stringify(result));
@@ -119,9 +121,6 @@ angular.module('starter')
 			};
 
 			var connectWithToken = function(response) {
-				$ionicLoading.show({
-					template: '<ion-spinner></ion-spinner>'
-				});
 				console.log("Response Object -> " + JSON.stringify(response));
 				var body = {
 					connectorCredentials: {token: response},
@@ -137,9 +136,6 @@ angular.module('starter')
 			};
 
 			var connectWithAuthCode = function(authorizationCode, connector){
-				$ionicLoading.show({
-					template: '<ion-spinner></ion-spinner>'
-				});
 				console.log(connector.name + " connect result is " + JSON.stringify(authorizationCode));
 				connectorsService.connectWithAuthCode(authorizationCode, connector.name).then(function (){
 					$scope.refreshConnectors();
