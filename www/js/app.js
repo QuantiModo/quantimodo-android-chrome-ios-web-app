@@ -265,7 +265,7 @@ angular.module('starter',
                 return;
             }
 
-            $rootScope.appVersion = "1.9.8.0";
+            $rootScope.appVersion = "1.9.9.4";
             $rootScope.appName = config.appSettings.appName;
 
             if (typeof Bugsnag !== "undefined") {
@@ -411,10 +411,13 @@ angular.module('starter',
         })
         .state('app.intro', {
             url: "/intro",
+            params: {
+                doNotRedirect: true
+            },
             views: {
                 'menuContent': {
                     templateUrl: "templates/intro-tour.html",
-                    controller: 'IntroPageCtrl'
+                    controller: 'IntroCtrl'
                 }
             }
         })
@@ -462,7 +465,7 @@ angular.module('starter',
             }
         })
         .state('app.reminderSearchCategory', {
-            url: "/reminderSearchCategory/:variableCategoryName",
+            url: "/reminder-search-category/:variableCategoryName",
             params: {
                 variableCategoryName : null,
                 fromState : null,
@@ -479,7 +482,7 @@ angular.module('starter',
             }
         })
         .state('app.reminderSearch', {
-            url: "/reminderSearch",
+            url: "/reminder-search",
             params: {
                 variableCategoryName : null,
                 fromState : null,
@@ -576,8 +579,8 @@ angular.module('starter',
                 }
             }
         })
-        .state('app.chartsSearch', {
-            url: "/search-variables",
+        .state('app.chartSearch', {
+            url: "/chart-search",
             cache: false,
             params: {
                 variableCategoryName: null,
@@ -594,8 +597,58 @@ angular.module('starter',
                 }
             }
         })
+        .state('app.chartSearchCategory', {
+            url: "/chart-search-category/:variableCategoryName",
+            cache: false,
+            params: {
+                variableCategoryName: null,
+                fromState: null,
+                fromUrl: null,
+                measurement: null,
+                doNotIncludePublicVariables: true,
+                nextState: 'app.charts'
+            },
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/variable-search.html",
+                    controller: 'VariableSearchCtrl'
+                }
+            }
+        })
+        .state('app.searchVariablesWithUserPredictors', {
+            url: "/search-variables-with-user-predictors",
+            cache: false,
+            params: {
+                variableCategoryName: null,
+                doNotIncludePublicVariables: true,
+                nextState: 'app.predictors',
+                variableSearchParameters: { numberOfUserCorrelations: '(gt)1'}
+            },
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/variable-search.html",
+                    controller: 'VariableSearchCtrl'
+                }
+            }
+        })
+        .state('app.searchVariablesWithCommonPredictors', {
+            url: "/search-variables-with-common-predictors",
+            cache: false,
+            params: {
+                variableCategoryName: null,
+                doNotIncludePublicVariables: true,
+                nextState: 'app.predictors',
+                variableSearchParameters: { numberOfUserCorrelations: '(gt)1'}
+            },
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/variable-search.html",
+                    controller: 'VariableSearchCtrl'
+                }
+            }
+        })
         .state('app.charts', {
-            url: "/variables/:variableName",
+            url: "/charts/:variableName",
             cache: false,
             params: {
                 trackingReminder : null,
@@ -732,9 +785,19 @@ angular.module('starter',
             url: "/history-all/:variableCategoryName",
             cache: false,
             params: {
-                variableCategoryName : null,
-                fromState : null,
-                fromUrl : null,
+                variableCategoryName : null
+            },
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/history-all.html",
+                    controller: 'historyAllMeasurementsCtrl'
+                }
+            }
+        })
+        .state('app.historyAllVariable', {
+            url: "/history-all/:variableName",
+            cache: false,
+            params: {
                 variableObject : null
             },
             views: {
@@ -773,9 +836,20 @@ angular.module('starter',
                 variableName : null,
                 dateTime : null,
                 value : null,
-                fromUrl : null,
-                helpText: "Favorites are variables that you might want to track on a frequent but irregular basis.  Examples: As-needed medications, cups of coffee, or glasses of water",
-                moreHelpText: "Tip: I recommend using reminders instead of favorites whenever possible because they allow you to record regular 0 values as well. Knowing when you didn't take a medication or eat something helps our analytics engine to figure out how these things might be affecting you."
+                fromUrl : null
+            },
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/favorites.html",
+                    controller: 'FavoritesCtrl'
+                }
+            }
+        })
+        .state('app.favoritesCategory', {
+            url: "/favorites-category/:variableCategoryName",
+            cache: false,
+            params: {
+                variableCategoryName: null
             },
             views: {
                 'menuContent': {
@@ -852,10 +926,7 @@ angular.module('starter',
             url: "/as-needed-meds",
             params: {
                 title: "As Needed Meds",
-                addButtonText: "Add as-needed medication",
-                helpText: "Quickly record doses of medications taken as needed just by tapping.  Tap twice for two doses, etc.",
-                variableCategoryName : 'Treatments',
-                addButtonIcon: "ion-ios-medkit-outline",
+                variableCategoryName : 'Treatments'
             },
             views: {
                 'menuContent': {
@@ -935,7 +1006,6 @@ angular.module('starter',
         $urlRouterProvider.otherwise('/app/reminders-inbox');
     } else {
         console.log("Intro not seen so going to intro");
-        localStorage.setItem('introSeen', true);
         $urlRouterProvider.otherwise('/');
     }
       // if none of the above states are matched, use this as the fallback

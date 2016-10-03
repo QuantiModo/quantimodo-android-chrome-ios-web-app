@@ -1,7 +1,7 @@
 angular.module('starter')
 
 	.controller('RemindersManageCtrl', function($scope, $state, $stateParams, $ionicPopup, $rootScope, $timeout, $ionicLoading, $filter,
-												 $ionicActionSheet,  authService,
+												 $ionicActionSheet,  QuantiModo,
 												localStorageService, reminderService) {
 
 	    $scope.controller_name = "RemindersManageCtrl";
@@ -60,7 +60,7 @@ angular.module('starter')
 		$scope.refreshReminders = function () {
 			if($rootScope.syncingReminders !== true) {
 				console.debug("ReminderMange init: calling refreshTrackingRemindersAndScheduleAlarms");
-				$scope.showLoader('Reminders coming down the pipes...');
+				$scope.showLoader('Syncing...');
 				reminderService.refreshTrackingRemindersAndScheduleAlarms().then(function () {
 					getTrackingReminders();
 				});
@@ -196,12 +196,21 @@ angular.module('starter')
 			}
 	    };
 
-	    $scope.deleteReminder = function(reminder, $index){
-	    	if($index !== null){
-				$scope.state.trackingReminders.splice($index, 1);
-			}
+	    $scope.deleteReminder = function(reminder){
 
-			localStorageService.deleteElementOfItemById('trackingReminders', reminder.trackingReminderId);
+			// Splicing doesn't work for some reason
+            // if($index !== null){
+			// 	$scope.state.trackingReminders.splice($index, 1);
+			// }
+
+			localStorageService.deleteElementOfItemById('trackingReminders', reminder.trackingReminderId)
+				.then(function(){
+					reminderService.getTrackingRemindersFromLocalStorage($stateParams.variableCategoryName)
+						.then(function (trackingReminders) {
+							$scope.state.trackingReminders = trackingReminders;
+						});
+				});
+
 			reminderService.deleteReminder(reminder.trackingReminderId)
 				.then(function(){
 					reminderService.refreshTrackingReminderNotifications();
@@ -239,8 +248,8 @@ angular.module('starter')
 					{ text: '<i class="icon ion-arrow-graph-up-right"></i>' + 'Visualize'},
 					{ text: '<i class="icon ion-ios-list-outline"></i>' + 'History'},
 					{ text: '<i class="icon ion-settings"></i>' + 'Variable Settings'},
-					{ text: '<i class="icon ion-arrow-up-a"></i>Positive Predictors'},
-					{ text: '<i class="icon ion-arrow-down-a"></i>Negative Predictors'}
+					// { text: '<i class="icon ion-arrow-up-a"></i>Positive Predictors'},
+					// { text: '<i class="icon ion-arrow-down-a"></i>Negative Predictors'}
 				],
 				destructiveText: '<i class="icon ion-trash-a"></i>Delete Reminder',
 				cancelText: '<i class="icon ion-ios-close"></i>Cancel',

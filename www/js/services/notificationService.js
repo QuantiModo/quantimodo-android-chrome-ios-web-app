@@ -297,7 +297,6 @@ angular.module('starter')
 
         notificationService.decrementNotificationBadges = function(){
             if($rootScope.numberOfPendingNotifications > 0){
-                $rootScope.numberOfPendingNotifications = $rootScope.numberOfPendingNotifications - 1;
                 if (window.chrome && window.chrome.browserAction) {
                     chrome.browserAction.setBadgeText({
                         text: String($rootScope.numberOfPendingNotifications)

@@ -1,14 +1,14 @@
 <ion-view hide-nav-bar="hideNavigationMenu" view-title="Import Data">
     <ion-content scroll="true" overflow-scroll="true">
-        <ion-refresher on-refresh="init()"></ion-refresher>
+        <ion-refresher on-refresh="refreshConnectors()"></ion-refresher>
 
-        <div  class="list card" ng-if="isMobile && connectors">
+        <div  class="list card" ng-if="connectors">
             <div ng-if="!connector.hide" class="list card"
                  ng-repeat="connector in connectors" >
                 <div class="item" style="padding-bottom:10px;">
                     <div class="row">
                         <div class="col col-20" style="padding-top: 10px;">
-                            <img src="{{connector.image}}" alt="Mountain View" style="width:40px;height:40px;">
+                            <img src="{{connector.image}}" alt="Connector Image" style="width:40px;height:40px;">
                         </div>
                         <div ng-click="showActionSheetForConnector(connector, $event)" class="col col-70">
                             <h1 style="white-space: normal;
@@ -29,7 +29,7 @@
                             </p>
                         </div>
                     </div>
-                    <div class="button-bar" ng-if="!connector.connected">
+                    <div class="button-bar" ng-if="!connector.connected && !connector.loadingText">
                         <button ng-if="!connector.qmClient" class="button button-clear button-balanced"
                                 style="text-overflow: clip;"
                                 ng-click="connect(connector)">
@@ -41,7 +41,7 @@
                             <i class="ion-bag"> &nbsp; Get it here!</i>
                         </button>
                     </div>
-                    <div class="button-bar" ng-if="connector.connected">
+                    <div class="button-bar" ng-if="connector.connected && !connector.loadingText">
                         <button ng-if="connector.updateStatus !== 'ERROR'" class="button button-clear button-royal"
                                 style="text-overflow: clip;"
                                 ng-click="">
@@ -58,17 +58,24 @@
                             <i class="ion-close-circled"> Disconnect </i>
                         </button>
                     </div>
+                    <div class="button-bar" ng-if="connector.loadingText">
+                        <button class="button button-clear button-royal"
+                                style="text-overflow: clip;"
+                                ng-click="">
+                            <i class="ion-ios-cloud-download"> &nbsp; {{connector.loadingText}}</i>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
-        <div id="import-iframe" ng-if="!isMobile">
+<!--        <div id="import-iframe" ng-if="!isMobile">
         	
-        </div>
+        </div>-->
         <!-- <iframe id="import-iframe" data-tap-disabled="true" style="height:800px;width:100%;" frameborder="0" onload="window.closeLoading();"></iframe> -->
     </ion-content>
     <nav mfb-menu position="bl" effect="slidein-spring"
          active-icon="ion-minus-round" resting-icon="ion-plus-round"
-         toggling-method="click" ng-hide="hideNavigationMenu || (hideNavigationMenu && !isWelcomed)">
+         toggling-method="click" ng-hide="hideNavigationMenu">
         <button mfb-button icon={{floatingMaterialButton.button1.icon}} label={{floatingMaterialButton.button1.label}} ng-click="goToState({{floatingMaterialButton.button1.stateAndParameters}})"></button>
         <button mfb-button icon={{floatingMaterialButton.button2.icon}} label={{floatingMaterialButton.button2.label}} ng-click="goToState({{floatingMaterialButton.button2.stateAndParameters}})"></button>
         <button mfb-button icon={{floatingMaterialButton.button3.icon}} label={{floatingMaterialButton.button3.label}} ng-click="goToState({{floatingMaterialButton.button3.stateAndParameters}})"></button>

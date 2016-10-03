@@ -1,9 +1,10 @@
 angular.module('starter')
 
     // Handlers the Welcome Page
-    .controller('LoginCtrl', function($scope, $state, $rootScope, $ionicLoading, $injector, utilsService, authService,
-                                      localStorageService, $timeout, bugsnagService, QuantiModo, $stateParams) {
+    .controller('LoginCtrl', function($scope, $state, $rootScope, $ionicLoading, $injector, utilsService,
+                                      localStorageService, $timeout, bugsnagService, QuantiModo, $stateParams, reminderService) {
 
+        $scope.state = { loading: false};
         $scope.controller_name = "LoginCtrl";
         console.log("isIos is" + $rootScope.isIos);
         $rootScope.hideNavigationMenu = true;
@@ -26,6 +27,10 @@ angular.module('starter')
             if($rootScope.helpPopup){
                 console.log('Closing help popup!');
                 $rootScope.helpPopup.close();
+            }
+            if(navigator && navigator.splashscreen) {
+                console.debug('ReminderInbox: Hiding splash screen because app is ready');
+                navigator.splashscreen.hide();
             }
             if(!$rootScope.user){
                 $rootScope.getUserAndSetInLocalStorage();
@@ -76,7 +81,7 @@ angular.module('starter')
                     analytics.trackView("Login Controller");
                     analytics.setUserId(userObject.id);
                 }
-
+                reminderService.createDefaultReminders();
             }
         };
 
@@ -96,7 +101,7 @@ angular.module('starter')
         // get Access Token
         var fetchAccessTokenAndUserDetails = function(authorization_code, withJWT) {
             //$scope.showLoader();
-            authService.getAccessTokenFromAuthorizationCode(authorization_code, withJWT)
+            QuantiModo.getAccessTokenFromAuthorizationCode(authorization_code, withJWT)
                 .then(function(response) {
                     if(response.error){
                         console.error("Error generating access token");
@@ -125,7 +130,7 @@ angular.module('starter')
             //console.log("nonNativeMobileLogin: Mobile device detected and ionic platform is " + ionic.Platform.platforms[0]);
             console.log(JSON.stringify(ionic.Platform.platforms));
 
-            var url = authService.generateV1OAuthUrl(register);
+            var url = QuantiModo.generateV1OAuthUrl(register);
 
             console.log('nonNativeMobileLogin: open the auth window via inAppBrowser.');
             // Set location=yes instead of location=no temporarily to try to diagnose intermittent white screen on iOS
@@ -154,7 +159,7 @@ angular.module('starter')
                     console.log('nonNativeMobileLogin: event.url starts with ' + utilsService.getRedirectUri());
                     if(!utilsService.getUrlParameter(event.url,'error')) {
 
-                        var authorizationCode = authService.getAuthorizationCodeFromUrl(event);
+                        var authorizationCode = QuantiModo.getAuthorizationCodeFromUrl(event);
                         console.log('nonNativeMobileLogin: Closing inAppBrowser.');
                         ref.close();
                         console.log('nonNativeMobileLogin: Going to get an access token using authorization code.');
@@ -175,13 +180,13 @@ angular.module('starter')
         var chromeAppLogin = function(register){
           //$scope.showLoader();
           console.log("login: Use Chrome app (content script, background page, etc.");
-          var url = authService.generateV1OAuthUrl(register);
+          var url = QuantiModo.generateV1OAuthUrl(register);
           chrome.identity.launchWebAuthFlow({
               'url': url,
               'interactive': true
           }, function() {
-              var authorizationCode = authService.getAuthorizationCodeFromUrl(event);
-              authService.getAccessTokenFromAuthorizationCode(authorizationCode);
+              var authorizationCode = QuantiModo.getAuthorizationCodeFromUrl(event);
+              QuantiModo.getAccessTokenFromAuthorizationCode(authorizationCode);
           });
         };
 
@@ -202,7 +207,7 @@ angular.module('starter')
             localStorageService.setItem('isWelcomed', true);
             $rootScope.isWelcomed = true;
 
-            authService.getTokensAndUserViaNativeSocialLogin(provider, accessToken)
+            QuantiModo.getTokensAndUserViaNativeSocialLogin(provider, accessToken)
                 .then(function(response){
 
                     if(response.user){
@@ -223,7 +228,7 @@ angular.module('starter')
 
                     var JWTToken = response.jwtToken;
                     console.debug("nativeSocialLogin: Mobile device detected and provider is " + provider + ". Got JWT token " + JWTToken);
-                    var url = authService.generateV2OAuthUrl(JWTToken);
+                    var url = QuantiModo.generateV2OAuthUrl(JWTToken);
 
                     console.log('nativeSocialLogin: open the auth window via inAppBrowser.');
                     var ref = cordova.InAppBrowser.open(url,'_blank', 'location=no,toolbar=yes,clearcache=no,clearsessioncache=no');
@@ -245,7 +250,7 @@ angular.module('starter')
 
                             if(!utilsService.getUrlParameter(event.url,'error')) {
 
-                                var authorizationCode = authService.getAuthorizationCodeFromUrl(event);
+                                var authorizationCode = QuantiModo.getAuthorizationCodeFromUrl(event);
 
                                 console.log('nativeSocialLogin: Got authorization code: ' + authorizationCode + ' Closing inAppBrowser.');
                                 ref.close();
@@ -397,7 +402,7 @@ angular.module('starter')
 
         var oAuthBrowserLogin = function (register) {
             //$scope.showLoader();
-            var url = authService.generateV1OAuthUrl(register);
+            var url = QuantiModo.generateV1OAuthUrl(register);
             console.log("Going to try logging by opening new tab at url " + url);
 
             var ref = window.open(url, '_blank');
@@ -426,7 +431,7 @@ angular.module('starter')
                         if (utilsService.startsWith(iframe_url, utilsService.getRedirectUri())) {
                             // if there is no error
                             if (!utilsService.getUrlParameter(iframe_url, 'error')) {
-                                var authorizationCode = authService.getAuthorizationCodeFromUrl(event);
+                                var authorizationCode = QuantiModo.getAuthorizationCodeFromUrl(event);
                                 // get access token from authorization code
                                 fetchAccessTokenAndUserDetails(authorizationCode);
 

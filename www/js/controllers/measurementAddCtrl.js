@@ -1,7 +1,7 @@
 angular.module('starter')
 
     .controller('MeasurementAddCtrl', function($scope, $q, $timeout, $state, $rootScope, $stateParams, $filter,
-                                               $ionicActionSheet, $ionicHistory, authService, measurementService,
+                                               $ionicActionSheet, $ionicHistory, measurementService,
                                                utilsService, localStorageService, variableCategoryService,
                                                ionicTimePicker, ionicDatePicker, unitService, QuantiModo) {
 
@@ -42,7 +42,37 @@ angular.module('starter')
             ],
             hideReminderMeButton : false,
             showMoreMenuButton: true,
-            editReminder : false
+            editReminder : false,
+            bloodPressure : {
+                diastolicValue: null,
+                systolicValue: null,
+                show: false
+            }
+        };
+
+        var trackBloodPressure = function(){
+            if(!$scope.state.bloodPressure.diastolicValue || !$scope.state.bloodPressure.systolicValue){
+                utilsService.showAlert('Please enter both values for blood pressure.');
+                return;
+            }
+            $scope.state.bloodPressure.startTimeEpoch = $scope.selectedDate.getTime()/1000;
+            $scope.state.bloodPressure.note = $scope.state.measurement.note;
+            measurementService.postBloodPressureMeasurements($scope.state.bloodPressure)
+                .then(function () {
+                    console.debug("Successfully measurementService.postMeasurementByReminder: " + JSON.stringify($scope.state.bloodPressure));
+                }, function (err) {
+                    if (typeof Bugsnag !== "undefined") {
+                        Bugsnag.notify(err, JSON.stringify(err), {}, "error");
+                    }
+                    console.error(err);
+                    console.error('Failed to Track by favorite, Try again!');
+                });
+            var backView = $ionicHistory.backView();
+            if(backView.stateName.toLowerCase().indexOf('search') > -1){
+                $ionicHistory.goBack(-2);
+            } else {
+                $ionicHistory.goBack();
+            }
         };
 
         $scope.openMeasurementStartTimePicker = function() {
@@ -123,6 +153,11 @@ angular.module('starter')
 
 
         $scope.done = function(){
+
+            if($scope.state.bloodPressure.show){
+                trackBloodPressure();
+                return;
+            }
 
             // Validation
             if($scope.state.measurement.value === '' || typeof $scope.state.measurement.value === 'undefined'){
@@ -420,6 +455,11 @@ angular.module('starter')
                 if (!$scope.state.measurement.variableName) {
                     $scope.state.measurement.variableName = $stateParams.variableObject.variableName;
                 }
+
+                if($scope.state.measurement.variableName.toLowerCase().indexOf('blood pressure') > -1) {
+                    $scope.state.bloodPressure.show = true;
+                }
+
                 if($stateParams.variableObject.category){
                     $scope.state.measurement.variableCategoryName = $stateParams.variableObject.category;
                     setupVariableCategory($scope.state.measurement.variableCategoryName);
@@ -502,6 +542,7 @@ angular.module('starter')
                 $scope.showPositiveRatingFaceButtons = false;
                 $scope.showNumericRatingNumberButtons = false;
             }
+
         }
 
         function setVariableObjectFromMeasurement() {
@@ -604,8 +645,8 @@ angular.module('starter')
                     { text: '<i class="icon ion-arrow-graph-up-right"></i>Visualize'},
                     { text: '<i class="icon ion-ios-list-outline"></i>History' },
                     { text: '<i class="icon ion-settings"></i>' + 'Variable Settings'},
-                    { text: '<i class="icon ion-arrow-up-a"></i>Positive Predictors'},
-                    { text: '<i class="icon ion-arrow-down-a"></i>Negative Predictors'}
+                    // { text: '<i class="icon ion-arrow-up-a"></i>Positive Predictors'},
+                    // { text: '<i class="icon ion-arrow-down-a"></i>Negative Predictors'}
                 ],
                 destructiveText: '<i class="icon ion-trash-a"></i>Delete Measurement',
                 cancelText: '<i class="icon ion-ios-close"></i>Cancel',

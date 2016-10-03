@@ -22,10 +22,8 @@ angular.module('starter')
                     });
                     localStorageService.deleteItem('allMeasurements');
                     localStorageService.deleteItem('lastSyncTime');
-                    $scope.showLoader("Syncing ' + config.appSettings.primaryOutcomeVariableDetails.name + ' measurements...");
                     measurementService.syncPrimaryOutcomeVariableMeasurements().then(function(){
                         console.log("Measurement sync complete!");
-                        $scope.hideLoader();
                     });
                     localStorageService.setItem('appMigrationVersion', 1489);
                 }

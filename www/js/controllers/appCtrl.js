@@ -2,7 +2,7 @@ angular.module('starter')
     // Parent Controller
     // This controller runs before every one else
 	.controller('AppCtrl', function($scope, $timeout, $ionicPopover, $ionicLoading, $state, $ionicHistory, $rootScope,
-                                    $ionicPopup, $ionicSideMenuDelegate, $ionicPlatform, authService,
+                                    $ionicPopup, $ionicSideMenuDelegate, $ionicPlatform,
                                     measurementService, QuantiModo, notificationService, localStorageService,
                                     reminderService, ratingService, migrationService, ionicDatePicker, unitService,
                                     variableService, qmLocationService, variableCategoryService, bugsnagService,
@@ -10,7 +10,7 @@ angular.module('starter')
 
         $rootScope.loaderImagePath = config.appSettings.loaderImagePath;
         $rootScope.appMigrationVersion = 1489;
-        $rootScope.appVersion = "1.9.8.0";
+        $rootScope.appVersion = "1.9.9.4";
         if (!$rootScope.loaderImagePath) {
             $rootScope.loaderImagePath = 'img/circular-loader.gif';
         }
@@ -226,11 +226,9 @@ angular.module('starter')
         };
 
         $scope.goToHistoryForVariableObject = function (variableObject) {
-            $state.go('app.historyAll',
+            $state.go('app.historyAllVariable',
                 {
-                    variableObject: variableObject,
-                    fromState: $state.current.name,
-                    fromUrl: window.location.href
+                    variableObject: variableObject
                 });
         };
 
@@ -412,11 +410,8 @@ angular.module('starter')
 
         $scope.init = function () {
             console.log("Main Constructor Start");
-            $rootScope.getAccessTokenFromUrlParameter();
+            QuantiModo.getAccessTokenFromUrlParameter();
             $rootScope.hideNavigationMenuIfSetInUrlParameter();
-            localStorageService.getItem('introSeen', function(introSeen){
-                $rootScope.introSeen = introSeen;
-            });
             if (!$rootScope.user) {
                 $rootScope.user = localStorageService.getItemAsObject('user');
                 if(!$rootScope.user && utilsService.getClientId() === 'oAuthDisabled') {
@@ -483,6 +478,10 @@ angular.module('starter')
 
         $scope.togglePredictorSearchSubMenu = function () {
             $scope.showPredictorSearchSubMenu = !$scope.showPredictorSearchSubMenu;
+        };
+
+        $scope.toggleChartSearchSubMenu = function () {
+            $scope.showChartSearchSubMenu = !$scope.showChartSearchSubMenu;
         };
 
         $scope.toggleOutcomePredictorSubMenu = function () {
@@ -619,9 +618,7 @@ angular.module('starter')
                 variableService.getCommonVariables();
                 unitService.getUnits();
                 $rootScope.syncedEverything = true;
-                if($rootScope.user.trackLocation){
-                    qmLocationService.updateLocationVariablesAndPostMeasurementIfChanged();
-                }
+                qmLocationService.updateLocationVariablesAndPostMeasurementIfChanged();
                 reminderService.syncTrackingReminderSyncQueueToServer();
                 //connectorsService.getConnectors();
             }
@@ -683,21 +680,6 @@ angular.module('starter')
                 );
 
             }, false);
-        };
-
-        $rootScope.getAccessTokenFromUrlParameter = function () {
-            $rootScope.accessTokenInUrl = utilsService.getUrlParameter(location.href, 'accessToken');
-            if (!$rootScope.accessTokenInUrl) {
-                $rootScope.accessTokenInUrl = utilsService.getUrlParameter(location.href, 'access_token');
-            }
-            if($rootScope.accessTokenInUrl){
-                localStorageService.setItem('accessTokenInUrl', $rootScope.accessTokenInUrl);
-                localStorageService.setItem('accessToken', $rootScope.accessTokenInUrl);
-            } else {
-                localStorageService.deleteItem('accessTokenInUrl');
-            }
-
-            return $rootScope.accessTokenInUrl;
         };
 
         $rootScope.setUserInLocalStorageBugsnagAndRegisterDeviceForPush = function(userData){

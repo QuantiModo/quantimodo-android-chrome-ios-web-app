@@ -237,32 +237,6 @@ angular.module('starter')
 			return deferred.promise;
 		};
 
-		reminderService.getFilteredTrackingReminderNotifications = function(variableCategoryName){
-			var deferred = $q.defer();
-			reminderService.getTrackingReminderNotifications(variableCategoryName)
-				.then(function (trackingReminderNotifications) {
-					var filteredTrackingReminderNotifications =
-						reminderService.groupTrackingReminderNotificationsByDateRange(trackingReminderNotifications);
-					deferred.resolve(filteredTrackingReminderNotifications);
-				}, function(){
-					console.error("failed to get filtered reminder notifications!");
-				});
-			return deferred.promise;
-		};
-
-		reminderService.getFilteredTodayTrackingReminderNotifications = function(variableCategoryName){
-			var deferred = $q.defer();
-			reminderService.getTodayTrackingReminderNotifications(variableCategoryName)
-				.then(function (trackingReminderNotifications) {
-					var filteredTrackingReminderNotifications =
-						reminderService.groupTrackingReminderNotificationsByDateRange(trackingReminderNotifications);
-					deferred.resolve(filteredTrackingReminderNotifications);
-				}, function(){
-					console.error("failed to get filtered reminder notifications!");
-				});
-			return deferred.promise;
-		};
-
 		reminderService.refreshTrackingReminderNotifications = function(){
 			var deferred = $q.defer();
 			if($rootScope.refreshingTrackingReminderNotifications){
@@ -476,6 +450,7 @@ angular.module('starter')
 		};
 
 		reminderService.syncTrackingReminderSyncQueueToServer = function() {
+			reminderService.createDefaultReminders();
 			localStorageService.getItem('trackingReminderSyncQueue', function (trackingReminders) {
 				if(trackingReminders){
 					reminderService.postTrackingReminders(JSON.parse(trackingReminders)).then(function () {
@@ -485,6 +460,8 @@ angular.module('starter')
 					}, function (err) {
 						bugsnagService.reportError(err);
 					});
+				} else {
+					console.log('No reminders to sync');
 				}
 			});
 		};
@@ -590,6 +567,33 @@ angular.module('starter')
 				allReminders = reminderService.addRatingTimesToDailyReminders(allReminders);
 				deferred.resolve(allReminders);
 			}
+			return deferred.promise;
+		};
+
+		reminderService.createDefaultReminders = function () {
+			var deferred = $q.defer();
+
+			localStorageService.getItem('defaultRemindersCreated', function (defaultRemindersCreated) {
+				if(JSON.parse(defaultRemindersCreated) !== true) {
+					var defaultReminders = config.appSettings.defaultReminders;
+					if(defaultReminders && defaultReminders.length){
+						localStorageService.addToOrReplaceElementOfItemByIdOrMoveToFront('trackingReminders', defaultReminders);
+						console.debug('Creating default reminders ' + JSON.stringify(defaultReminders));
+						reminderService.postTrackingReminders(defaultReminders).then(function () {
+							console.debug('Default reminders created ' + JSON.stringify(defaultReminders));
+							reminderService.refreshTrackingReminderNotifications();
+							reminderService.refreshTrackingRemindersAndScheduleAlarms();
+							localStorageService.setItem('defaultRemindersCreated', true);
+							deferred.resolve();
+						}, function (err) {
+							bugsnagService.reportError(err);
+							deferred.reject();
+						});
+					}
+				} else {
+					console.log('Default reminders already created');
+				}
+			});
 			return deferred.promise;
 		};
 

@@ -413,7 +413,7 @@ config.appSettings  = {
         },
         {
             title : 'Charts',
-            href : '#/app/search-variables',
+            href : '#/app/chart-search',
             icon : 'ion-arrow-graph-up-right'
         },
         {

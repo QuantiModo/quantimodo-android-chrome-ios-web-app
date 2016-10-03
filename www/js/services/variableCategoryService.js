@@ -12,11 +12,9 @@ angular.module('starter')
                     "Anything": {
                         defaultAbbreviatedUnitName: '',
                         helpText: "What do you want to record?",
-                        variableCategoryNameSingularLowercase: "anything",
-                        variableSearchPlaceholderText : "Search for a variable here...",
+                        variableCategoryNameSingular: "anything",
                         defaultValuePlaceholderText : "Enter most common value here...",
                         defaultValueLabel : 'Value',
-                        addNewVariableButtonText : '+ Add a new variable',
                         addNewVariableCardText : 'Add a new variable',
                         variableCategoryName : '',
                         defaultValue : '',
@@ -27,7 +25,7 @@ angular.module('starter')
                         defaultAbbreviatedUnitName: 'min',
                         helpText: "What activity do you want to record?",
                         variableCategoryName: "Activity",
-                        variableCategoryNameSingularLowercase: "activity",
+                        variableCategoryNameSingular: "Activity",
                         measurementSynonymSingularLowercase : "activity",
                         icon: "ion-ios-body"
                     },
@@ -35,7 +33,7 @@ angular.module('starter')
                         defaultAbbreviatedUnitName: "/5",
                         helpText: "What emotion do you want to rate?",
                         variableCategoryName: "Emotions",
-                        variableCategoryNameSingularLowercase: "emotion",
+                        variableCategoryNameSingular: "Emotion",
                         measurementSynonymSingularLowercase : "rating",
                         icon: "ion-happy-outline"
                     },
@@ -43,7 +41,7 @@ angular.module('starter')
                         defaultAbbreviatedUnitName: '',
                         helpText: "What environmental variable do you want to record?",
                         variableCategoryName: "Environment",
-                        variableCategoryNameSingularLowercase: "environment",
+                        variableCategoryNameSingular: "Environment",
                         measurementSynonymSingularLowercase : "environmental measurement",
                         icon: "ion-ios-partlysunny-outline"
                     },
@@ -51,7 +49,7 @@ angular.module('starter')
                         defaultAbbreviatedUnitName: "serving",
                         helpText: "What did you eat?",
                         variableCategoryName: "Foods",
-                        variableCategoryNameSingularLowercase: "food",
+                        variableCategoryNameSingular: "Food",
                         measurementSynonymSingularLowercase : "meal",
                         icon: "ion-fork"
                     },
@@ -59,7 +57,7 @@ angular.module('starter')
                         defaultAbbreviatedUnitName: "min",
                         helpText: "What location do you want to record?",
                         variableCategoryName: "Location",
-                        variableCategoryNameSingularLowercase: "location",
+                        variableCategoryNameSingular: "Location",
                         measurementSynonymSingularLowercase : "location",
                         icon: "ion-ios-location"
                     },
@@ -67,7 +65,7 @@ angular.module('starter')
                         defaultAbbreviatedUnitName: "count",
                         helpText: "What music did you listen to?",
                         variableCategoryName: "Music",
-                        variableCategoryNameSingularLowercase: "music",
+                        variableCategoryNameSingular: "Music",
                         measurementSynonymSingularLowercase : "music",
                         icon: "ion-music-note"
                     },
@@ -75,7 +73,7 @@ angular.module('starter')
                         defaultAbbreviatedUnitName: "g",
                         helpText: "What nutrient do you want to track?",
                         variableCategoryName: "Nutrients",
-                        variableCategoryNameSingularLowercase: "nutrient",
+                        variableCategoryNameSingular: "Nutrient",
                         measurementSynonymSingularLowercase : "nutrient",
                         icon: "ion-fork"
                     },
@@ -83,7 +81,7 @@ angular.module('starter')
                         defaultAbbreviatedUnitName: "$",
                         helpText: "What did you pay for?",
                         variableCategoryName: "Payments",
-                        variableCategoryNameSingularLowercase: "payment",
+                        variableCategoryNameSingular: "Payment",
                         measurementSynonymSingularLowercase : "payment",
                         icon: "ion-cash"
                     },
@@ -91,7 +89,7 @@ angular.module('starter')
                         defaultAbbreviatedUnitName: '',
                         helpText: "What physical activity do you want to record?",
                         variableCategoryName: "Physical Activity",
-                        variableCategoryNameSingularLowercase: "physical activity",
+                        variableCategoryNameSingular: "Physical Activity",
                         measurementSynonymSingularLowercase : "activity",
                         icon: "ion-ios-body"
                     },
@@ -99,7 +97,7 @@ angular.module('starter')
                         defaultAbbreviatedUnitName: '',
                         helpText: "What aspect of your physique do you want to record?",
                         variableCategoryName: "Physique",
-                        variableCategoryNameSingularLowercase: "physique",
+                        variableCategoryNameSingular: "Physique",
                         measurementSynonymSingularLowercase : "physique measurement",
                         icon: "ion-ios-body"
                     },
@@ -107,15 +105,15 @@ angular.module('starter')
                         defaultAbbreviatedUnitName: "",
                         helpText: "What aspect of sleep do you want to record?",
                         variableCategoryName: "Sleep",
-                        variableCategoryNameSingularLowercase: "sleep",
-                        measurementSynonymSingularLowercase : "sleep",
+                        variableCategoryNameSingular: "Sleep",
+                        measurementSynonymSingularLowercase : "Sleep Measurement",
                         icon: "ion-ios-moon-outline"
                     },
                     "Symptoms": {
                         defaultAbbreviatedUnitName: "/5",
                         helpText: "What symptom do you want to record?",
                         variableCategoryName: "Symptoms",
-                        variableCategoryNameSingularLowercase: "symptom",
+                        variableCategoryNameSingular: "Symptom",
                         measurementSynonymSingularLowercase : "rating",
                         icon: "ion-sad-outline"
                     },
@@ -123,7 +121,7 @@ angular.module('starter')
                         defaultAbbreviatedUnitName : "mg",
                         helpText : "What treatment do you want to record?",
                         variableCategoryName : "Treatments",
-                        variableCategoryNameSingularLowercase : "treatment",
+                        variableCategoryNameSingular : "Treatment",
                         defaultValueLabel : "Dosage",
                         defaultValuePlaceholderText : "Enter dose value here...",
                         measurementSynonymSingularLowercase : "dose",
@@ -133,47 +131,21 @@ angular.module('starter')
                         defaultAbbreviatedUnitName: '',
                         helpText: "What vital sign do you want to record?",
                         variableCategoryName: "Vital Signs",
-                        variableCategoryNameSingularLowercase: "vital sign",
+                        variableCategoryNameSingular: "Vital Sign",
                         measurementSynonymSingularLowercase : "measurement",
                         icon: "ion-ios-pulse"
                     }
                 };
-
-
+                
                 var selectedVariableCategoryObject = variableCategoryInfo.Anything;
-
                 if(variableCategoryName && variableCategoryInfo[variableCategoryName]){
                     selectedVariableCategoryObject =  variableCategoryInfo[variableCategoryName];
-
-                    if(!selectedVariableCategoryObject.addNewVariableButtonText){
-                        selectedVariableCategoryObject.addNewVariableButtonText =
-                            "+ Add a new " + $filter('wordAliases')(pluralize(variableCategoryName.toLowerCase(), 1));
-                    }
-
-                    if(!selectedVariableCategoryObject.nameSingularLowercase){
-                        selectedVariableCategoryObject.nameSingularLowercase =
-                            $filter('wordAliases')(pluralize(selectedVariableCategoryObject.variableCategoryName.toLowerCase()), 1);
-                    }
-
-                    if(!selectedVariableCategoryObject.addNewVariableCardText){
-                        selectedVariableCategoryObject.addNewVariableCardText = "Add a new " +
-                            $filter('wordAliases')(pluralize(selectedVariableCategoryObject.variableCategoryName.toLowerCase(), 1));
-                    }
-
-                    if(!selectedVariableCategoryObject.variableSearchPlaceholderText){
-                        if(variableCategoryName){
-                            selectedVariableCategoryObject.variableSearchPlaceholderText =
-                                "Search for a " +
-                                $filter('wordAliases')(pluralize(selectedVariableCategoryObject.variableCategoryName.toLowerCase(), 1)) +
-                                " here...";
-                        }
-                    }
                 }
                 
                 return selectedVariableCategoryObject;
             },
 
-            // refresh local variable categroies with QuantiModo API
+            // refresh local variable categories with QuantiModo API
             refreshVariableCategories : function(){
                 var deferred = $q.defer();
 
@@ -225,7 +197,9 @@ angular.module('starter')
                 for(var i = 0; i < dataArray.length; i++){
                     variableCategoryInfo = this.getVariableCategoryInfo(dataArray[i].variableCategoryName);
                     if(variableCategoryInfo.icon){
-                        dataArray[i].icon = variableCategoryInfo.icon;
+                        if(!dataArray[i].icon){
+                            dataArray[i].icon = variableCategoryInfo.icon;
+                        }
                     } else {
                         console.warn('Could not find icon for variableCategoryName ' + dataArray[i].variableCategoryName);
                         return 'ion-speedometer';

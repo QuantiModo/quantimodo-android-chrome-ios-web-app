@@ -186,6 +186,19 @@ config.appSettings  = {
         }
     },
 
+    favoritesController : {
+        actionMenuButtons : [
+                { text: '<i class="icon ion-gear-a"></i>Change Default Value' },
+                { text: '<i class="icon ion-edit"></i>Different Value/Time/Note' },
+                { text: '<i class="icon ion-arrow-graph-up-right"></i>Visualize'},
+                { text: '<i class="icon ion-ios-list-outline"></i>' + 'History'},
+                { text: '<i class="icon ion-settings"></i>' + 'Variable Settings'},
+                { text: '<i class="icon ion-android-notifications-none"></i>Add Reminder'},
+                { text: '<i class="icon ion-arrow-up-a"></i>Positive Predictors'},
+                { text: '<i class="icon ion-arrow-down-a"></i>Negative Predictors'}
+            ]
+    },
+
     menu : [
         {
             title : 'Reminder Inbox',
@@ -418,7 +431,7 @@ config.appSettings  = {
         },
         {
             title : 'Charts',
-            href : '#/app/search-variables',
+            href : '#/app/chart-search',
             icon : 'ion-arrow-graph-up-right'
         },
         {

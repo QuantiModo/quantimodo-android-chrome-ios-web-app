@@ -2,6 +2,7 @@ window.config = {};
 
 config.appSettings  = {
     appName : 'MedTLC',
+    apiUrl : 'https://app.quantimo.do',
     cordovaLocalNotificationsEnabled : false,
     linkToChromeExtension : "https://chrome.google.com/webstore/detail/quantimodo-life-tracking/nojnjdgmjaejpnpehgioddbimopnblga",
     allowOffline : false,
@@ -258,6 +259,89 @@ config.appSettings  = {
         }
     },
 
+    defaultReminders : [
+        {
+            variableName : 'Heart Rate (Pulse)',
+            defaultValue :  null,
+            abbreviatedUnitName: 'bpm',
+            reminderFrequency : 0,
+            icon: 'ion-heart',
+            variableCategoryName : 'Vital Signs'
+        },
+        {
+            variableName: 'Blood Pressure (Systolic - Top Number)',
+            icon: 'ion-heart',
+            abbreviatedUnitName: 'mmHg',
+            reminderFrequency : 0,
+            defaultValue :  null,
+            variableCategoryName : 'Vital Signs'
+        },
+        {
+            variableName: 'Blood Pressure (Diastolic - Bottom Number)',
+            icon: 'ion-heart',
+            abbreviatedUnitName: 'mmHg',
+            reminderFrequency : 0,
+            defaultValue :  null,
+            variableCategoryName : 'Vital Signs'
+        },
+        {
+            variableName: 'Core Body Temperature',
+            icon: null,
+            abbreviatedUnitName: 'C',
+            reminderFrequency : 0,
+            defaultValue :  null,
+            variableCategoryName : 'Vital Signs'
+        },
+        {
+            variableName: 'Oxygen Saturation',
+            icon: null,
+            abbreviatedUnitName: '%',
+            reminderFrequency : 0,
+            defaultValue :  null,
+            variableCategoryName : 'Vital Signs'
+        },
+        {
+            variableName: 'Respiratory Rate (Ventilation/Breath/RR/Respiration)',
+            icon: null,
+            abbreviatedUnitName: '/minute',
+            reminderFrequency : 0,
+            defaultValue :  null,
+            variableCategoryName : 'Vital Signs'
+        },
+        {
+            variableName: 'Weight',
+            icon: null,
+            abbreviatedUnitName: 'lb',
+            reminderFrequency : 0,
+            defaultValue :  null,
+            variableCategoryName : 'Physique'
+        },
+        {
+            variableName: 'Height',
+            icon: null,
+            abbreviatedUnitName: 'cm',
+            reminderFrequency : 0,
+            defaultValue :  null,
+            variableCategoryName : 'Physique'
+        },
+        {
+            variableName: 'Body Mass Index or BMI',
+            icon: null,
+            abbreviatedUnitName: 'index',
+            reminderFrequency : 0,
+            defaultValue :  null,
+            variableCategoryName : 'Physique'
+        },
+        {
+            variableName: 'Blood Glucose Sugar',
+            icon: null,
+            abbreviatedUnitName: 'mg/dL',
+            reminderFrequency : 0,
+            defaultValue :  null,
+            variableCategoryName : 'Vital Signs'
+        }
+    ],
+
     menu : [
         {
             title : 'Reminder Inbox',
@@ -346,6 +430,20 @@ config.appSettings  = {
             icon : 'ion-ios-paper-outline'
         },
         {
+            title : 'Favorites',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showSymptomsSubMenu',
+            href : '#/app/favorites-category/Symptoms',
+            icon : 'ion-ios-star'
+        },
+        {
+            title : 'Charts',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showSymptomsSubMenu',
+            href : '#/app/chart-search-category/Symptoms',
+            icon : 'ion-arrow-graph-up-right'
+        },
+        {
             title : 'Vital Signs',
             click : 'toggleVitalSignsSubMenu',
             showSubMenuVariable : 'showVitalSignsSubMenu',
@@ -373,6 +471,20 @@ config.appSettings  = {
             showSubMenuVariable : 'showVitalSignsSubMenu',
             href : '#/app/history-all/Vital Signs',
             icon : 'ion-ios-paper-outline'
+        },
+        {
+            title : 'Favorites',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showVitalSignsSubMenu',
+            href : '#/app/favorites-category/Vital Signs',
+            icon : 'ion-ios-star'
+        },
+        {
+            title : 'Charts',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showVitalSignsSubMenu',
+            href : '#/app/chart-search-category/Vital Signs',
+            icon : 'ion-arrow-graph-up-right'
         },
         {
             title : 'Physical Activity',
@@ -404,6 +516,20 @@ config.appSettings  = {
             icon : 'ion-ios-paper-outline'
         },
         {
+            title : 'Favorites',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showPhysicalActivitySubMenu',
+            href : '#/app/favorites-category/Physical Activity',
+            icon : 'ion-ios-star'
+        },
+        {
+            title : 'Charts',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showPhysicalActivitySubMenu',
+            href : '#/app/chart-search-category/Physical Activity',
+            icon : 'ion-arrow-graph-up-right'
+        },
+        {
             title : 'Emotions',
             click : 'toggleEmotionsSubMenu',
             showSubMenuVariable : 'showEmotionsSubMenu',
@@ -433,6 +559,20 @@ config.appSettings  = {
             icon : 'ion-ios-paper-outline'
         },
         {
+            title : 'Favorites',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showEmotionsSubMenu',
+            href : '#/app/favorites-category/Emotions',
+            icon : 'ion-ios-star'
+        },
+        {
+            title : 'Charts',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showEmotionsSubMenu',
+            href : '#/app/chart-search-category/Emotions',
+            icon : 'ion-arrow-graph-up-right'
+        },
+        {
             title : 'Diet',
             click : 'toggleDietSubMenu',
             showSubMenuVariable : 'showDietSubMenu',
@@ -460,6 +600,20 @@ config.appSettings  = {
             showSubMenuVariable : 'showDietSubMenu',
             href : '#/app/history-all/Foods',
             icon : 'ion-ios-paper-outline'
+        },
+        {
+            title : 'Favorites',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showDietSubMenu',
+            href : '#/app/favorites-category/Foods',
+            icon : 'ion-ios-star'
+        },
+        {
+            title : 'Charts',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showDietSubMenu',
+            href : '#/app/chart-search-category/Foods',
+            icon : 'ion-arrow-graph-up-right'
         },
         {
             title : 'Favorites',
@@ -651,8 +805,60 @@ config.appSettings  = {
         },
         {
             title : 'Charts',
-            href : '#/app/search-variables',
-            icon : 'ion-arrow-graph-up-right'
+            click : 'toggleChartSearchSubMenu',
+            showSubMenuVariable : 'showChartSearchSubMenu',
+            isSubMenuParent : true,
+            collapsedIcon : 'ion-arrow-graph-up-right',
+            expandedIcon : 'ion-chevron-down'
+        },
+        {
+            title : 'All Variables',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showChartSearchSubMenu',
+            href : '#/app/chart-search-category/Anything',
+            icon : 'ion-android-globe'
+        },
+        {
+            title : 'Emotions',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showChartSearchSubMenu',
+            href : '#/app/chart-search-category/Emotions',
+            icon : 'ion-happy-outline'
+        },
+        {
+            title : 'Foods',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showChartSearchSubMenu',
+            href : '#/app/chart-search-category/Foods',
+            icon : 'ion-ios-nutrition-outline'
+        },
+        {
+            title : 'Physical Activity',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showChartSearchSubMenu',
+            href : '#/app/chart-search-category/Physical Activity',
+            icon : 'ion-ios-body-outline'
+        },
+        {
+            title : 'Symptoms',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showChartSearchSubMenu',
+            href : '#/app/chart-search-category/Symptoms',
+            icon : 'ion-sad-outline'
+        },
+        {
+            title : 'Treatments',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showChartSearchSubMenu',
+            href : '#/app/chart-search-category/Treatments',
+            icon : 'ion-ios-medkit-outline'
+        },
+        {
+            title : 'Vital Signs',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showChartSearchSubMenu',
+            href : '#/app/chart-search-category/Vital Signs',
+            icon : 'ion-ios-pulse'
         },
         {
             title : 'Strongest Predictors',
@@ -711,7 +917,7 @@ config.appSettings  = {
         },
         {
             title : 'Add Medications',
-            href : '#/app/reminderSearchCategory/Treatments',
+            href : '#/app/reminder-search-category/Treatments',
             icon : 'ion-ios-alarm-outline'
         },
         {

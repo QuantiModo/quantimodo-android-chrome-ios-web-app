@@ -2,9 +2,9 @@ angular.module('starter')
 
 	// Controls the History Page of the App.
 	.controller('historyAllMeasurementsCtrl', function($scope, $state, $stateParams, $rootScope, $timeout, $ionicActionSheet,
-													   authService, measurementService,
+													   QuantiModo, measurementService,
 													   variableCategoryService, ratingService, localStorageService,
-													   qmLocationService, userService, $ionicLoading) {
+													   qmLocationService, userService) {
 
 	    $scope.controller_name = "historyAllMeasurementsCtrl";
         
@@ -16,7 +16,10 @@ angular.module('starter')
 			variableCategories : [],
 			hideLoadMoreButton : true,
 			showLocationToggle: false,
-			noHistory: false
+			noHistory: false,
+			helpCardTitle: "Past Measurements",
+			title: "Measurement History",
+			loadingText: "Fetching measurements..."
 	    };
 
 	    $scope.editMeasurement = function(measurement){
@@ -113,15 +116,15 @@ angular.module('starter')
 			if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
 			if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
 
-			if ($stateParams.variableObject){
-				$scope.title = $stateParams.variableObject.name + ' History';
-			}
-			else if (!$stateParams.variableCategoryName || $stateParams.variableCategoryName === "Anything") {
-				$scope.title = 'Measurement History';
-			}
-			else {
-				$scope.title = $stateParams.variableCategoryName + ' History';
+
+			if ($stateParams.variableCategoryName && $stateParams.variableCategoryName !== 'Anything') {
+				$scope.state.title = $stateParams.variableCategoryName + ' History';
 				$scope.state.showLocationToggle = $stateParams.variableCategoryName === "Location";
+
+			}
+
+			if ($stateParams.variableObject) {
+				$scope.state.title = $stateParams.variableObject.name + ' History';
 			}
 
 			if($rootScope.user){
@@ -161,8 +164,8 @@ angular.module('starter')
 					{ text: '<i class="icon ion-arrow-graph-up-right"></i>Visualize'},
 					{ text: '<i class="icon ion-ios-list-outline"></i>' + 'History'},
 					{ text: '<i class="icon ion-settings"></i>' + 'Variable Settings'},
-					{ text: '<i class="icon ion-arrow-up-a"></i>Positive Predictors'},
-					{ text: '<i class="icon ion-arrow-down-a"></i>Negative Predictors'}
+					// { text: '<i class="icon ion-arrow-up-a"></i>Positive Predictors'},
+					// { text: '<i class="icon ion-arrow-down-a"></i>Negative Predictors'}
 				],
 				cancelText: '<i class="icon ion-ios-close"></i>Cancel',
 				cancel: function() {

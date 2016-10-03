@@ -2,9 +2,10 @@ angular.module('starter')
 
 	// Controls the History Page of the App.
 	.controller('RemindersAddCtrl', function($scope, $state, $stateParams, $ionicLoading, $filter, $timeout, $rootScope,
-                                             $ionicActionSheet, $ionicHistory, authService, localStorageService,
+                                             $ionicActionSheet, $ionicHistory, QuantiModo, localStorageService,
                                              reminderService, utilsService, ionicTimePicker, variableCategoryService,
-                                             variableService, unitService, timeService, bugsnagService) {
+                                             variableService, unitService, timeService, bugsnagService, $ionicPopup,
+                                             ionicDatePicker) {
 
 	    $scope.controller_name = "RemindersAddCtrl";
 		console.log('Loading ' + $scope.controller_name);
@@ -21,8 +22,8 @@ angular.module('starter')
             measurementSynonymSingularLowercase : 'measurement',
             defaultValueLabel : 'Default Value',
             defaultValuePlaceholderText : 'Enter typical value',
-            variableSearchPlaceholderText : 'Search for a variable...',
-            showInstructionsField : false
+            showInstructionsField : false,
+            selectedStopTrackingDate: null
         };
 
         if($rootScope.user) {
@@ -160,6 +161,28 @@ angular.module('starter')
 			ionicTimePicker.openTimePicker($scope.state.timePickerConfiguration);
 		};
 
+        $scope.openStopTrackingDatePicker = function() {
+            var now = new Date();
+            $scope.state.stopTrackingDatePickerConfiguration = {
+                callback: function(val) {
+                    if (typeof(val)==='undefined') {
+                        console.log('Date not selected');
+                    } else {
+                        // clears out hours and minutes
+
+                        $scope.state.selectedStopTrackingDate = new Date(val);
+                    }
+                },
+                from: new Date(),
+                to: new Date(now.getTime() + 365 * 24 * 60 * 60 * 1000)
+            };
+
+            if($scope.state.selectedStopTrackingDate){
+                $scope.state.stopTrackingDatePickerConfiguration.inputDate = $scope.state.selectedStopTrackingDate;
+            }
+            ionicDatePicker.openDatePicker($scope.state.stopTrackingDatePickerConfiguration);
+        };
+
 /*
 
         $scope.openReminderEndTimePicker = function() {
@@ -219,19 +242,24 @@ angular.module('starter')
             if (selectedVariable.variableName) {
                 $scope.state.trackingReminder.variableName = selectedVariable.variableName;
             }
+
+            if($scope.state.trackingReminder.variableName.toLowerCase().indexOf('blood pressure') > -1 ||
+                $scope.state.trackingReminder.abbreviatedUnitName === '/5') {
+                $scope.state.hideDefaultValueField = true;
+            }
             if (selectedVariable.description) {
                 $scope.state.trackingReminder.variableDescription = selectedVariable.description;
             }
 
             if (typeof selectedVariable.lastValue !== "undefined"){
-                $scope.state.trackingReminder.defaultValue = Number(selectedVariable.lastValue);
+                //$scope.state.trackingReminder.defaultValue = Number(selectedVariable.lastValue);
             }
 
             $scope.state.showReminderFrequencyCard = true;
 
             // Set default value
             if ($scope.state.trackingReminder.abbreviatedUnitName === "/5") {
-                $scope.state.trackingReminder.defaultValue = 3; // Default to 3 ("ok") if variable unit is /5
+                //$scope.state.trackingReminder.defaultValue = 3; // Default to 3 ("ok") if variable unit is /5
             }
 	    };
 
@@ -296,16 +324,16 @@ angular.module('starter')
                     $rootScope.unitsIndexedByAbbreviatedName[$scope.state.trackingReminder.abbreviatedUnitName].id;
             }
 
-            if(!$scope.state.trackingReminder.defaultValue && $scope.state.trackingReminder.defaultValue !== 0) {
-                utilsService.showAlert('Please enter a default value');
-                return false;
+            if(!$stateParams.favorite && !$scope.state.trackingReminder.defaultValue && $scope.state.trackingReminder.defaultValue !== 0) {
+                //utilsService.showAlert('Please enter a default value');
+                //return false;
             }
 
             if($rootScope.unitsIndexedByAbbreviatedName[$scope.state.trackingReminder.abbreviatedUnitName] &&
                 typeof $rootScope.unitsIndexedByAbbreviatedName[$scope.state.trackingReminder.abbreviatedUnitName].minimumValue !== "undefined" &&
                 $rootScope.unitsIndexedByAbbreviatedName[$scope.state.trackingReminder.abbreviatedUnitName].minimumValue !== null)
             {
-                if($scope.state.trackingReminder.defaultValue <
+                if($scope.state.trackingReminder.defaultValue !== null && $scope.state.trackingReminder.defaultValue <
                     $rootScope.unitsIndexedByAbbreviatedName[$scope.state.trackingReminder.abbreviatedUnitName].minimumValue){
                     utilsService.showAlert($rootScope.unitsIndexedByAbbreviatedName[$scope.state.trackingReminder.abbreviatedUnitName].minimumValue +
                         ' is the smallest possible value for the unit ' +
@@ -320,7 +348,7 @@ angular.module('starter')
                 typeof $rootScope.unitsIndexedByAbbreviatedName[$scope.state.trackingReminder.abbreviatedUnitName].maximumValue !== "undefined" &&
                 $rootScope.unitsIndexedByAbbreviatedName[$scope.state.trackingReminder.abbreviatedUnitName].maximumValue !== null)
             {
-                if($scope.state.trackingReminder.defaultValue >
+                if($scope.state.trackingReminder.defaultValue !== null && $scope.state.trackingReminder.defaultValue >
                     $rootScope.unitsIndexedByAbbreviatedName[$scope.state.trackingReminder.abbreviatedUnitName].maximumValue){
                     utilsService.showAlert($rootScope.unitsIndexedByAbbreviatedName[$scope.state.trackingReminder.abbreviatedUnitName].maximumValue +
                         ' is the largest possible value for the unit ' +
@@ -368,7 +396,7 @@ angular.module('starter')
             }
 
             if($scope.state.trackingReminder.abbreviatedUnitName === '/5' && !$scope.state.trackingReminder.defaultValue){
-                $scope.state.trackingReminder.defaultValue = 3;
+                //$scope.state.trackingReminder.defaultValue = 3;
             }
 
             if(!validReminderSettings()){
@@ -378,6 +406,10 @@ angular.module('starter')
             $scope.showLoader('Saving ' + $scope.state.trackingReminder.variableName + ' reminder...');
             $scope.state.trackingReminder.reminderFrequency = getFrequencyChart()[$scope.state.selectedFrequency];
             $scope.state.trackingReminder.valueAndFrequencyTextDescription = $scope.state.selectedFrequency;
+            if($scope.state.selectedStopTrackingDate){
+                var dateFormat = 'YYYY-MM-DD';
+                $scope.state.trackingReminder.stopTrackingDate = moment($scope.state.selectedStopTrackingDate).format(dateFormat);
+            }
 
             var remindersArray = [];
             remindersArray[0] = JSON.parse(JSON.stringify($scope.state.trackingReminder));
@@ -436,6 +468,9 @@ angular.module('starter')
             $scope.state.firstReminderStartTimeLocal = timeService.getLocalTimeStringFromUtcString(trackingReminder.reminderStartTime);
             $scope.state.firstReminderStartTimeEpochTime = timeService.getEpochTimeFromLocalString($scope.state.firstReminderStartTimeLocal);
             //$scope.state.reminderEndTimeStringLocal = trackingReminder.reminderEndTime;
+            if(trackingReminder.stopTrackingDate){
+                $scope.state.selectedStopTrackingDate = new Date(trackingReminder.stopTrackingDate);
+            }
             
 	    	var reverseFrequencyChart = {
 	    		86400: "Daily",
@@ -541,8 +576,7 @@ angular.module('starter')
             if($stateParams.favorite){
                 $scope.state.selectedFrequency = 'Never';
                 if($stateParams.reminder) {
-                    if($stateParams.reminder.variableCategoryName === 'Treatments' ||
-                        $stateParams.variableCategoryName === 'Treatments'){
+                    if($stateParams.variableCategoryName === 'Treatments'){
                         $scope.state.title = "Modify As-Needed Med";
                     } else {
                         $scope.state.title = "Edit Favorite";
@@ -565,6 +599,12 @@ angular.module('starter')
 
         $scope.init = function(){
             console.debug($state.current.name + ' initializing...');
+            if($stateParams.variableObject){
+                $stateParams.variableCategoryName = $stateParams.variableObject.variableCategoryName;
+            }
+            if($stateParams.reminder){
+                $stateParams.variableCategoryName = $stateParams.reminder.variableCategoryName;
+            }
             $rootScope.stateParams = $stateParams;
             if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
             if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
@@ -575,15 +615,15 @@ angular.module('starter')
                 if ($stateParams.variableObject) {
                     $scope.variableObject = $stateParams.variableObject;
                     setupByVariableObject($stateParams.variableObject);
-                } else if($stateParams.variableCategoryName){
-                    $scope.state.trackingReminder.variableCategoryName = $stateParams.variableCategoryName;
-                    setupVariableCategory($scope.state.trackingReminder.variableCategoryName);
                 } else if ($stateParams.reminder && $stateParams.reminder !== null) {
                     setupEditReminder($stateParams.reminder);
                 } else if(reminderIdUrlParameter) {
                     setupReminderEditingFromUrlParameter(reminderIdUrlParameter);
                 } else if(variableIdUrlParameter) {
                     setupReminderEditingFromVariableId(variableIdUrlParameter);
+                } else if($stateParams.variableCategoryName){
+                    $scope.state.trackingReminder.variableCategoryName = $stateParams.variableCategoryName;
+                    setupVariableCategory($scope.state.trackingReminder.variableCategoryName);
                 } else {
                     $ionicHistory.goBack();
                 }
@@ -642,8 +682,8 @@ angular.module('starter')
                     { text: '<i class="icon ion-arrow-graph-up-right"></i>Visualize'},
                     { text: '<i class="icon ion-ios-list-outline"></i>History' },
                     { text: '<i class="icon ion-settings"></i>' + 'Variable Settings'},
-                    { text: '<i class="icon ion-arrow-up-a"></i>Positive Predictors'},
-                    { text: '<i class="icon ion-arrow-down-a"></i>Negative Predictors'}
+                    // { text: '<i class="icon ion-arrow-up-a"></i>Positive Predictors'},
+                    // { text: '<i class="icon ion-arrow-down-a"></i>Negative Predictors'}
                 ],
                 destructiveText: '<i class="icon ion-trash-a"></i>Delete Favorite',
                 cancelText: '<i class="icon ion-ios-close"></i>Cancel',
@@ -701,6 +741,26 @@ angular.module('starter')
             $timeout(function() {
                 hideSheet();
             }, 20000);
+
+        };
+
+        $scope.showExplanationsPopup = function(helpTitle) {
+            var explanationText;
+            if (helpTitle === "Default Value") {
+                explanationText = "If specified, there will be a button that allows you to quickly record this value.";
+            }
+
+            $ionicPopup.show({
+                title: helpTitle,
+                subTitle: explanationText,
+                scope: $scope,
+                buttons: [
+                    {
+                        text: 'OK',
+                        type: 'button-positive'
+                    }
+                ]
+            });
 
         };
 

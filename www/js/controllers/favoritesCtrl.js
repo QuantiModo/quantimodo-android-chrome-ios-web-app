@@ -1,7 +1,8 @@
 angular.module('starter')
 
-	.controller('FavoritesCtrl', function($scope, $state, $ionicActionSheet, $timeout, reminderService, authService, 
-										  localStorageService, measurementService, variableCategoryService, $rootScope, $stateParams) {
+	.controller('FavoritesCtrl', function($scope, $state, $ionicActionSheet, $timeout, reminderService, QuantiModo,
+										  localStorageService, measurementService, variableCategoryService, $rootScope,
+										  $stateParams, utilsService) {
 
 	    $scope.controller_name = "FavoritesCtrl";
 
@@ -11,20 +12,104 @@ angular.module('starter')
 	    	selected1to5Value : false,
 			loading : true,
             trackingReminder : null,
-            lastSent: new Date()
+            lastSent: new Date(),
+			title: "Favorites",
+			bloodPressure: {
+            	systolicValue: null,
+				diastolicValue: null,
+				displayTotal: "Blood Pressure"
+			},
+			favorites: [],
+			addButtonText: "Add a Favorite Variable",
+			addButtonIcon: "ion-ios-star",
+			helpText: "Favorites are variables that you might want to track on a frequent but irregular basis.  Examples: As-needed medications, cups of coffee, or glasses of water",
+			moreHelpText: "Tip: I recommend using reminders instead of favorites whenever possible because they allow you to record regular 0 values as well. Knowing when you didn't take a medication or eat something helps our analytics engine to figure out how these things might be affecting you."
 	    };
 
 		function getFavoriteTrackingRemindersFromLocalStorage(){
-			$scope.state.favorites =
-				localStorageService.getElementsFromItemWithFilters('trackingReminders', 'reminderFrequency', 0);
+			var favorites = localStorageService.getElementsFromItemWithFilters('trackingReminders', 'reminderFrequency', 0);
+			for(i = 0; i < favorites.length; i++){
+				if($stateParams.variableCategoryName && $stateParams.variableCategoryName !== 'Anything'){
+					if($stateParams.variableCategoryName === favorites[i].variableCategoryName){
+						$scope.state.favorites.push(favorites[i]);
+					}
+				} else {
+					$scope.state.favorites.push(favorites[i]);
+				}
+			}
 			$scope.state.favorites = variableCategoryService.attachVariableCategoryIcons($scope.state.favorites);
-			for(var i = 0; i < $scope.state.favorites.length; i++){
+			var i;
+			for(i = 0; i < $scope.state.favorites.length; i++){
 				$scope.state.favorites[i].total = null;
+				if($scope.state.favorites[i].variableName.toLowerCase().indexOf('blood pressure') > -1){
+					$scope.state.bloodPressure.reminderId = $scope.state.favorites[i].id;
+					$scope.state.favorites.splice(i, 1);
+				}
 			}
 		}
 
 		$scope.favoriteAddButtonClick = function () {
 			$scope.goToState('app.favoriteSearch', $rootScope.stateParams);
+		};
+
+		$scope.trackByValueField = function(trackingReminder, $index){
+			// if($scope.state.favorites[$index].newDefaultValue !== $scope.state.favorites[$index].defaultValue){
+			// 	$scope.state.favorites[$index].defaultValue = $scope.state.favorites[$index].newDefaultValue;
+			// 	localStorageService.addToOrReplaceElementOfItemByIdOrMoveToFront($scope.state.favorites[$index]);
+			// 	reminderService.postTrackingReminders([$scope.state.favorites[$index]]);
+			// }
+			$scope.state.favorites[$index].displayTotal = "Recorded " + $scope.state.favorites[$index].total + " " + $scope.state.favorites[$index].abbreviatedUnitName;
+			measurementService.postMeasurementByReminder($scope.state.favorites[$index], $scope.state.favorites[$index].total)
+				.then(function () {
+					console.debug("Successfully measurementService.postMeasurementByReminder: " + JSON.stringify($scope.state.favorites[$index]));
+				}, function (err) {
+					if (typeof Bugsnag !== "undefined") {
+						Bugsnag.notify(err, JSON.stringify(err), {}, "error");
+					}
+					console.error(err);
+					console.error('Failed to Track by favorite, Try again!');
+				});
+		};
+
+		$scope.trackBloodPressure = function(){
+			if(!$scope.state.bloodPressure.diastolicValue || !$scope.state.bloodPressure.systolicValue){
+				utilsService.showAlert('Please enter both values for blood pressure.');
+				return;
+			}
+			$scope.state.bloodPressure.displayTotal = "Recorded " + $scope.state.bloodPressure.systolicValue + "/" + $scope.state.bloodPressure.diastolicValue + ' Blood Pressure';
+			measurementService.postBloodPressureMeasurements($scope.state.bloodPressure)
+				.then(function () {
+					console.debug("Successfully measurementService.postMeasurementByReminder: " + JSON.stringify($scope.state.bloodPressure));
+				}, function (err) {
+					if (typeof Bugsnag !== "undefined") {
+						Bugsnag.notify(err, JSON.stringify(err), {}, "error");
+					}
+					console.error(err);
+					console.error('Failed to Track by favorite, Try again!');
+				});
+		};
+
+		$scope.trackByValueField = function(trackingReminder, $index){
+			// if($scope.state.favorites[$index].newDefaultValue !== $scope.state.favorites[$index].defaultValue){
+			// 	$scope.state.favorites[$index].defaultValue = $scope.state.favorites[$index].newDefaultValue;
+			// 	localStorageService.addToOrReplaceElementOfItemByIdOrMoveToFront($scope.state.favorites[$index]);
+			// 	reminderService.postTrackingReminders([$scope.state.favorites[$index]]);
+			// }
+			if($scope.state.favorites[$index].total == null){
+				utilsService.showAlert('Please specify a value for ' + $scope.state.favorites[$index].variableName);
+				return;
+			}
+			$scope.state.favorites[$index].displayTotal = "Recorded " + $scope.state.favorites[$index].total + " " + $scope.state.favorites[$index].abbreviatedUnitName;
+			measurementService.postMeasurementByReminder($scope.state.favorites[$index], $scope.state.favorites[$index].total)
+				.then(function () {
+					console.debug("Successfully measurementService.postMeasurementByReminder: " + JSON.stringify($scope.state.favorites[$index]));
+				}, function (err) {
+					if (typeof Bugsnag !== "undefined") {
+						Bugsnag.notify(err, JSON.stringify(err), {}, "error");
+					}
+					console.error(err);
+					console.error('Failed to Track by favorite, Try again!');
+				});
 		};
 
 		$scope.trackByReminder = function(trackingReminder, modifiedReminderValue){
@@ -77,21 +162,28 @@ angular.module('starter')
 		};
 
 	    $scope.init = function(){
-	    	authService.setUserUsingAccessTokenInUrl();
+	    	QuantiModo.setUserUsingAccessTokenInUrl();
 			$rootScope.stateParams = $stateParams;
-			if(!$rootScope.stateParams.title){
-				$rootScope.stateParams.title = 'Favorites';
+
+			if($stateParams.variableCategoryName && $stateParams.variableCategoryName  !== 'Anything'){
+				$scope.state.addButtonText = "Add favorite " + pluralize($stateParams.variableCategoryName, 1).toLowerCase();
+				$scope.state.title = pluralize($stateParams.variableCategoryName, 1) + " Favorites";
+				$scope.state.moreHelpText = null;
 			}
-			if(!$rootScope.stateParams.addButtonText){
-				$rootScope.stateParams.addButtonText = 'Add a favorite variable';
-			}
-			if(!$rootScope.stateParams.addButtonIcon){
-				$rootScope.stateParams.addButtonIcon = 'ion-ios-star positive';
+			if($stateParams.variableCategoryName === 'Treatments') {
+				$scope.state.addButtonText = "Add an as-needed medication";
+				$scope.state.helpText = "Quickly record doses of medications taken as needed just by tapping.  Tap twice for two doses, etc.";
+				$scope.state.addButtonIcon = "ion-ios-medkit-outline";
+				$scope.state.title = 'As-Needed Meds';
 			}
 
 			if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
 			if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
-			getFavoriteTrackingRemindersFromLocalStorage();
+			if($stateParams.presetVariables){
+				$scope.state.favorites = $stateParams.presetVariables;
+			} else {
+				getFavoriteTrackingRemindersFromLocalStorage();
+			}
 			$scope.showHelpInfoPopupIfNecessary();
 
 	    };
@@ -103,25 +195,40 @@ angular.module('starter')
     	});
 
 		// Triggered on a button click, or some other target
-		$scope.showActionSheet = function(favorite, $index) {
+		$scope.showActionSheet = function(favorite, $index, bloodPressure) {
 
 			var variableObject = {
 				id: favorite.variableId,
 				name: favorite.variableName
 			};
 
-			// Show the action sheet
-			var hideSheet = $ionicActionSheet.show({
-				buttons: [
+
+			var actionMenuButtons = [
 					{ text: '<i class="icon ion-gear-a"></i>Change Default Value' },
 					{ text: '<i class="icon ion-edit"></i>Different Value/Time/Note' },
-					{ text: '<i class="icon ion-arrow-graph-up-right"></i>Visualize'},
+					{ text: '<i class="icon ion-arrow-graph-up-right"></i>Charts'},
 					{ text: '<i class="icon ion-ios-list-outline"></i>' + 'History'},
 					{ text: '<i class="icon ion-settings"></i>' + 'Variable Settings'},
 					{ text: '<i class="icon ion-android-notifications-none"></i>Add Reminder'},
-					{ text: '<i class="icon ion-arrow-up-a"></i>Positive Predictors'},
-					{ text: '<i class="icon ion-arrow-down-a"></i>Negative Predictors'}
-				],
+					// { text: '<i class="icon ion-arrow-up-a"></i>Positive Predictors'},
+					// { text: '<i class="icon ion-arrow-down-a"></i>Negative Predictors'}
+				];
+
+
+			if(config.appSettings.favoritesController){
+				if(config.appSettings.favoritesController.actionMenuButtons){
+					actionMenuButtons = config.appSettings.favoritesController.actionMenuButtons;
+				}
+			}
+
+
+			if(bloodPressure){
+				actionMenuButtons = [];
+			}
+
+			// Show the action sheet
+			var hideSheet = $ionicActionSheet.show({
+				buttons: actionMenuButtons,
 				destructiveText: '<i class="icon ion-trash-a"></i>Delete From Favorites',
 				cancelText: '<i class="icon ion-ios-close"></i>Cancel',
 				cancel: function() {
@@ -135,14 +242,14 @@ angular.module('starter')
 					if(index === 1){
 						$state.go('app.measurementAdd', {variableObject: variableObject});
 					}
-                    if(index === 2){
+					if(index === 2){
 						$state.go('app.charts',
 							{
 								trackingReminder: favorite,
 								fromState: $state.current.name,
 								fromUrl: window.location.href
 							});
-                    }
+					}
 					if (index === 3) {
 						$scope.goToHistoryForVariableObject(variableObject);
 					}
@@ -182,18 +289,35 @@ angular.module('starter')
 					return true;
 				},
 				destructiveButtonClicked: function() {
-					$scope.state.favorites.splice($index, 1);
-                    reminderService.deleteReminder(favorite.id)
-                        .then(function(){
-                            console.debug('Favorite deleted: ' + JSON.stringify(favorite));
-                        }, function(err){
-                            console.error('Failed to Delete Favorite!  Error is ' + err.message + '.  Favorite is ' + JSON.stringify(favorite));
-                        });
-                    localStorageService.deleteElementOfItemById('trackingReminders', favorite.id)
-                        .then(function(){
-                            $scope.init();
-                        });
-					return true;
+					if(!bloodPressure){
+						$scope.state.favorites.splice($index, 1);
+						reminderService.deleteReminder(favorite.id)
+							.then(function(){
+								console.debug('Favorite deleted: ' + JSON.stringify(favorite));
+							}, function(err){
+								console.error('Failed to Delete Favorite!  Error is ' + err.message + '.  Favorite is ' + JSON.stringify(favorite));
+							});
+						localStorageService.deleteElementOfItemById('trackingReminders', favorite.id)
+							.then(function(){
+								//$scope.init();
+							});
+						return true;
+					}
+
+					if(bloodPressure){
+						reminderService.deleteReminder($scope.state.bloodPressure.reminderId)
+							.then(function(){
+								console.debug('Favorite deleted: ' + JSON.stringify($scope.state.bloodPressure));
+							}, function(err){
+								console.error('Failed to Delete Favorite!  Error is ' + err.message + '.  Favorite is ' + JSON.stringify($scope.state.bloodPressure));
+							});
+						localStorageService.deleteElementOfItemById('trackingReminders', $scope.state.bloodPressure.reminderId)
+							.then(function(){
+								//$scope.init();
+							});
+						$scope.state.bloodPressure.reminderId = null;
+						return true;
+					}
 				}
 			});
 

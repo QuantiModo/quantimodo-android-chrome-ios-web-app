@@ -1,6 +1,6 @@
 angular.module('starter')
 	// Measurement Service
-	.factory('measurementService', function($q, $rootScope, $ionicLoading, QuantiModo, localStorageService,
+	.factory('measurementService', function($q, $rootScope, QuantiModo, localStorageService,
                                             ratingService, utilsService) {
 
         //flag to indicate if data syncing is in progress
@@ -209,6 +209,8 @@ angular.module('starter')
                 }
 
 			},
+
+
 
 			// retrieve date to end on
 			getToDate : function(callback){
@@ -556,5 +558,50 @@ angular.module('starter')
                 return deferred.promise;
             },
 		};
+
+		measurementService.postBloodPressureMeasurements = function(parameters){
+            var deferred = $q.defer();
+		    var startTimeEpochSeconds;
+            if(!parameters.startTimeEpochSeconds){
+                var startTimeEpochMilliseconds = new Date();
+                startTimeEpochSeconds = startTimeEpochMilliseconds/1000;
+            } else {
+                startTimeEpochSeconds = parameters.startTimeEpochSeconds;
+            }
+
+            var measurementSets = [
+                {
+                    variableId: 1874,
+                    source: config.appSettings.appName + $rootScope.currentPlatform,
+                    startTimeEpoch:  startTimeEpochSeconds,
+                    value: parameters.systolicValue,
+                    note: parameters.note,
+                    latitude: $rootScope.lastLatitude,
+                    longitude: $rootScope.lastLongitude,
+                    location: $rootScope.lastLocationNameAndAddress
+                },
+                {
+                    variableId: 5554981,
+                    source: config.appSettings.appName + $rootScope.currentPlatform,
+                    startTimeEpoch:  startTimeEpochSeconds,
+                    value: parameters.diastolicValue,
+                    note: parameters.note,
+                    latitude: $rootScope.lastLatitude,
+                    longitude: $rootScope.lastLongitude,
+                    location: $rootScope.lastLocationNameAndAddress
+                }
+            ];
+
+            QuantiModo.postMeasurementsV2(measurementSets, function(response){
+                if(response.success) {
+                    console.log("QuantiModo.postMeasurementsV2 success: " + JSON.stringify(response));
+                    deferred.resolve(response);
+                } else {
+                    deferred.reject(response);
+                }
+            });
+            return deferred.promise;
+        };
+
 		return measurementService;
 	});
