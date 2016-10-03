@@ -31,15 +31,10 @@ angular.module('starter')
         }
     };
 
-    $scope.hideLoader = function () {
-        $scope.loading = false;
-        $ionicLoading.hide();
-    };
-
     // when view is changed
     $scope.$on('$ionicView.beforeEnter', function(e) { console.debug("Entering state " + $state.current.name);
-        if($rootScope.user || window.localStorage.introSeen){
-            console.debug('introCtrl init: Going to default state: ' + config.appSettings.defaultState);
+        if($rootScope.user || window.localStorage.introSeen || $rootScope.getAccessTokenFromUrlParameter()){
+            console.debug('introCtrl init: Skipping to default state: ' + config.appSettings.defaultState);
             $state.go(config.appSettings.defaultState);
         } else {
             console.debug($state.current.name + ' initializing...');
