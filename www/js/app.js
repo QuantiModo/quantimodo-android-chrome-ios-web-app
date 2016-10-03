@@ -782,9 +782,19 @@ angular.module('starter',
             url: "/history-all/:variableCategoryName",
             cache: false,
             params: {
-                variableCategoryName : null,
-                fromState : null,
-                fromUrl : null,
+                variableCategoryName : null
+            },
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/history-all.html",
+                    controller: 'historyAllMeasurementsCtrl'
+                }
+            }
+        })
+        .state('app.historyAllVariable', {
+            url: "/history-all/:variableName",
+            cache: false,
+            params: {
                 variableObject : null
             },
             views: {

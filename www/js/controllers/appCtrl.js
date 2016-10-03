@@ -226,11 +226,9 @@ angular.module('starter')
         };
 
         $scope.goToHistoryForVariableObject = function (variableObject) {
-            $state.go('app.historyAll',
+            $state.go('app.historyAllVariable',
                 {
-                    variableObject: variableObject,
-                    fromState: $state.current.name,
-                    fromUrl: window.location.href
+                    variableObject: variableObject
                 });
         };
 
