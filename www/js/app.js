@@ -265,7 +265,7 @@ angular.module('starter',
                 return;
             }
 
-            $rootScope.appVersion = "1.9.9.0";
+            $rootScope.appVersion = "1.9.9.4";
             $rootScope.appName = config.appSettings.appName;
 
             if (typeof Bugsnag !== "undefined") {
@@ -411,10 +411,13 @@ angular.module('starter',
         })
         .state('app.intro', {
             url: "/intro",
+            params: {
+                doNotRedirect: true
+            },
             views: {
                 'menuContent': {
                     templateUrl: "templates/intro-tour.html",
-                    controller: 'IntroPageCtrl'
+                    controller: 'IntroCtrl'
                 }
             }
         })
@@ -782,9 +785,19 @@ angular.module('starter',
             url: "/history-all/:variableCategoryName",
             cache: false,
             params: {
-                variableCategoryName : null,
-                fromState : null,
-                fromUrl : null,
+                variableCategoryName : null
+            },
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/history-all.html",
+                    controller: 'historyAllMeasurementsCtrl'
+                }
+            }
+        })
+        .state('app.historyAllVariable', {
+            url: "/history-all/:variableName",
+            cache: false,
+            params: {
                 variableObject : null
             },
             views: {
@@ -993,7 +1006,6 @@ angular.module('starter',
         $urlRouterProvider.otherwise('/app/reminders-inbox');
     } else {
         console.log("Intro not seen so going to intro");
-        localStorage.setItem('introSeen', true);
         $urlRouterProvider.otherwise('/');
     }
       // if none of the above states are matched, use this as the fallback

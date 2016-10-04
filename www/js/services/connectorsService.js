@@ -8,12 +8,12 @@ angular.module('starter')
 			var deferred = $q.defer();
 			localStorageService.getItem('connectors', function(connectors){
 				if(connectors){
-					$rootScope.connectors = JSON.parse(connectors);
-					connectorsService.hideBrokenConnectors($rootScope.connectors);
-					deferred.resolve($rootScope.connectors);
+					connectors = JSON.parse(connectors);
+					connectors = connectorsService.hideBrokenConnectors(connectors);
+					deferred.resolve(connectors);
 				} else {
 					connectorsService.refreshConnectors().then(function(){
-						deferred.resolve($rootScope.connectors);
+						deferred.resolve(connectors);
 					});
 				}
 			});
@@ -25,8 +25,8 @@ angular.module('starter')
 			var deferred = $q.defer();
 			QuantiModo.getConnectors(function(connectors){
 				localStorageService.setItem('connectors', JSON.stringify(connectors));
-				connectorsService.hideBrokenConnectors(connectors);
-				deferred.resolve($rootScope.connectors);
+				connectors = connectorsService.hideBrokenConnectors(connectors);
+				deferred.resolve(connectors);
 			}, function(){
 				deferred.reject(false);
 			});
@@ -74,12 +74,12 @@ angular.module('starter')
 		};
 
 		connectorsService.hideBrokenConnectors = function(connectors){
-			$rootScope.connectors = connectors;
-			for(var i = 0; i < $rootScope.connectors.length; i++){
-				if($rootScope.connectors[i].name === 'facebook' && $rootScope.isAndroid) {
-					$rootScope.connectors[i].hide = true;
+			for(var i = 0; i < connectors.length; i++){
+				if(connectors[i].name === 'facebook' && $rootScope.isAndroid) {
+					connectors[i].hide = true;
 				}
 			}
+			return connectors;
 		};
 
 		return connectorsService;

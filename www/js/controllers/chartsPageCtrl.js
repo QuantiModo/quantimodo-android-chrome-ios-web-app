@@ -116,16 +116,7 @@ angular.module('starter')
                     };
                     updateCharts();
                     getHistoryForVariable(params);
-                }
-                else {
-                    if (history[0]) {
-                        if(!$scope.state.variableObject.abbreviatedUnitName){
-                            $scope.state.variableObject.abbreviatedUnitName = history[0].abbreviatedUnitName;
-                        }
-                        if(!$scope.state.variableObject.unitName){
-                            $scope.state.variableObject.unitName = history[0].unitName;
-                        }
-                    }
+                } else {
                     $scope.state.loading = false;
                     $scope.hideLoader();
                     if ($scope.state.history.length > 0) {
@@ -166,15 +157,6 @@ angular.module('starter')
                     updateDailyCharts();
                     getDailyHistoryForVariable(params);
                 } else {
-                    if (dailyHistory[0]) {
-                        if(!$scope.state.variableObject.abbreviatedUnitName){
-                            $scope.state.variableObject.abbreviatedUnitName = dailyHistory[0].abbreviatedUnitName;
-                        }
-                        if(!$scope.state.variableObject.unitName){
-                            $scope.state.variableObject.unitName = dailyHistory[0].unitName;
-                        }
-                    }
-                    //$scope.hideLoader();
                     if ($scope.state.dailyHistory.length > 0) {
                         updateDailyCharts();
                     }

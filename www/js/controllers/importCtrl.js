@@ -1,10 +1,9 @@
 angular.module('starter')
 	
 	// controls the Import Data page of the app
-	.controller('ImportCtrl', function($scope, $ionicLoading, $state, $rootScope, authService, utilsService, QuantiModo,
+	.controller('ImportCtrl', function($scope, $ionicLoading, $state, $rootScope, utilsService, QuantiModo,
 									   connectorsService, $cordovaOauth, bugsnagService, $ionicPopup, $stateParams) {
-		
-		$state.go('app');
+
 		$scope.controller_name = "ImportCtrl";
 		
 		/*// redirect if not logged in
@@ -20,62 +19,86 @@ angular.module('starter')
 	        $ionicLoading.hide();
 	    };
 
+	    $scope.refreshConnectors = function(){
+			connectorsService.refreshConnectors()
+				.then(function(connectors){
+					$scope.connectors = connectors;
+					$ionicLoading.hide().then(function(){
+						console.log("The loading indicator is now hidden");
+					});
+				});
+		};
+
+		var goToWebImportDataPage = function() {
+			console.debug('importCtrl.init: Going to QuantiModo.getAccessTokenFromAnySource');
+			$state.go(config.appSettings.defaultState);
+			QuantiModo.getAccessTokenFromAnySource().then(function(accessToken){
+				$ionicLoading.hide();
+				if(ionic.Platform.platforms[0] === "browser"){
+					console.log("Browser Detected");
+
+					var url = utilsService.getURL("api/v2/account/connectors", true);
+					if(accessToken){
+						url += "access_token=" + accessToken;
+					}
+					var newTab = window.open(url,'_blank');
+
+					if(!newTab){
+						alert("Please unblock popups and refresh to access the Import Data page.");
+					}
+					$rootScope.hideNavigationMenu = false;
+					//noinspection JSCheckFunctionSignatures
+					$state.go(config.appSettings.defaultState);
+				} else {
+					var targetUrl = utilsService.getURL("api/v1/connect/mobile", true);
+					if(accessToken){
+						targetUrl += "access_token=" + accessToken;
+					}
+					var ref = window.open(targetUrl,'_blank', 'location=no,toolbar=yes');
+					ref.addEventListener('exit', function(){
+						$rootScope.hideNavigationMenu = false;
+						//noinspection JSCheckFunctionSignatures
+						$state.go(config.appSettings.defaultState);
+					});
+				}
+			}, function(){
+				$ionicLoading.hide();
+				console.log('importCtrl: Could not get getAccessTokenFromAnySource.  Going to login page...');
+				$rootScope.sendToLogin();
+			});
+		};
+
+		var loadNativeConnectorPage = function(){
+			console.log('importCtrl: $rootScope.isMobile so using native connector page');
+			connectorsService.getConnectors()
+				.then(function(connectors){
+					$scope.connectors = connectors;
+					$ionicLoading.hide().then(function(){
+						console.log("The loading indicator is now hidden");
+					});
+					$scope.refreshConnectors();
+				});
+		};
+
 	    // constructor
-	    $scope.init = function(){
+	    var init = function(){
 			console.debug($state.current.name + ' initializing...');
 			$rootScope.stateParams = $stateParams;
 			if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
 			if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
-			$scope.showLoader();
+			$ionicLoading.show({
+				template: '<ion-spinner></ion-spinner>'
+			});
 
 			if($rootScope.isMobile){
-				console.log('importCtrl: $rootScope.isMobile so using native connector page');
-				connectorsService.getConnectors();
-				connectorsService.refreshConnectors();
+				loadNativeConnectorPage();
 			} else {
-				console.debug('importCtrl.init: Going to authService.getAccessTokenFromAnySource');
-				QuantiModo.getAccessTokenFromAnySource().then(function(accessToken){
-					$ionicLoading.hide();
-					if(ionic.Platform.platforms[0] === "browser"){
-						console.log("Browser Detected");
-
-						var url = utilsService.getURL("api/v2/account/connectors", true);
-						if(accessToken){
-							url += "access_token=" + accessToken;
-						}
-						var newTab = window.open(url,'_blank');
-
-						if(!newTab){
-							alert("Please unblock popups and refresh to access the Import Data page.");
-						}
-						$rootScope.hideNavigationMenu = false;
-						//noinspection JSCheckFunctionSignatures
-						$state.go(config.appSettings.defaultState);
-					} else {
-						var targetUrl = utilsService.getURL("api/v1/connect/mobile", true);
-						if(accessToken){
-							targetUrl += "access_token=" + accessToken;
-						}
-						var ref = window.open(targetUrl,'_blank', 'location=no,toolbar=yes');
-						ref.addEventListener('exit', function(){
-							$rootScope.hideNavigationMenu = false;
-							//noinspection JSCheckFunctionSignatures
-							$state.go(config.appSettings.defaultState);
-						});
-					}
-				}, function(){
-					$ionicLoading.hide();
-					console.log('importCtrl: Could not get getAccessTokenFromAnySource.  Going to login page...');
-					$rootScope.sendToLogin();
-				});
+				goToWebImportDataPage();
 			}
 	    };
 
-	    // call the constructor
-	    // when view is changed
 	    $scope.$on('$ionicView.enter', function(e) { console.debug("Entering state " + $state.current.name);
-			$scope.hideLoader();
-			$scope.init();
+			init();
 	    });
 
 
@@ -84,15 +107,17 @@ angular.module('starter')
 			var scopes;
 			var myPopup;
 			var options;
+			connector.loadingText = 'Connecting...';
 
 			var connectWithParams = function(params, lowercaseConnectorName) {
-				connectorsService.connect(params, lowercaseConnectorName).then(function(result){
-					console.log(JSON.stringify(result));
-					$scope.init();
-				}, function (error) {
-                    errorHandler(error);
-					$scope.init();
-				});
+				connectorsService.connectWithParams(params, lowercaseConnectorName)
+					.then(function(result){
+						console.log(JSON.stringify(result));
+						$scope.refreshConnectors();
+					}, function (error) {
+						errorHandler(error);
+						$scope.refreshConnectors();
+					});
 			};
 
 			var connectWithToken = function(response) {
@@ -103,26 +128,25 @@ angular.module('starter')
 				};
 				connectorsService.connectWithToken(body).then(function(result){
 					console.log(JSON.stringify(result));
-					$scope.init();
+					$scope.refreshConnectors();
 				}, function (error) {
 					errorHandler(error);
-					$scope.init();
+					$scope.refreshConnectors();
 				});
 			};
 
 			var connectWithAuthCode = function(authorizationCode, connector){
 				console.log(connector.name + " connect result is " + JSON.stringify(authorizationCode));
 				connectorsService.connectWithAuthCode(authorizationCode, connector.name).then(function (){
-					$scope.init();
+					$scope.refreshConnectors();
 				}, function() {
 					console.error("error on connectWithAuthCode for " + connector.name);
-					$scope.init();
+					$scope.refreshConnectors();
 				});
 			};
 
 			var errorHandler = function(error){
                 bugsnagService.reportError(error);
-                alert("Error: " + error);
             };
 
 			if(connector.name === 'github') {
@@ -282,9 +306,9 @@ angular.module('starter')
 				myPopup = $ionicPopup.show({
 					template: '<label class="item item-input">' +
 					'<i class="icon ion-location placeholder-icon"></i>' +
-					'<input type="number" placeholder="Zip Code" ng-model="data.location"></label>',
+					'<input type="text" placeholder="Zip Code or City, Country" ng-model="data.location"></label>',
 					title: connector.displayName,
-					subTitle: 'Enter Your Zip Code',
+					subTitle: 'Enter Your Zip Code or City, Country/State',
 					scope: $scope,
 					buttons: [
 						{ text: 'Cancel' },
@@ -505,8 +529,9 @@ angular.module('starter')
 		};
 
 		$scope.disconnect = function (connector){
+			connector.loadingText = 'Disconnecting...';
 			connectorsService.disconnect(connector.name).then(function (){
-				$scope.init();
+				$scope.refreshConnectors();
 			}, function() {
 				console.error("error disconnecting " + connector.name);
 			});

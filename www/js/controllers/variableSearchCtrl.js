@@ -1,6 +1,6 @@
 angular.module('starter')
     .controller('VariableSearchCtrl', function($scope, $state, $rootScope, $stateParams, $filter, localStorageService, 
-                                               authService,  variableCategoryService, variableService) {
+                                               QuantiModo,  variableCategoryService, variableService) {
 
         $scope.controller_name = "VariableSearchCtrl";
 

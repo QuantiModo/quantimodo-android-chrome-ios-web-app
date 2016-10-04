@@ -1,6 +1,6 @@
 angular.module('starter')
     // QuantiModo API implementation
-    .factory('QuantiModo', function($http, $q, $rootScope, $ionicPopup, $state, $ionicLoading,
+    .factory('QuantiModo', function($http, $q, $rootScope, $ionicPopup, $state,
                                     localStorageService, bugsnagService, utilsService) {
             var QuantiModo = {};
             $rootScope.connectionErrorShowing = false; // to prevent more than one popup
@@ -15,7 +15,11 @@ angular.module('starter')
             };
 
             QuantiModo.errorHandler = function(data, status, headers, config, request){
-                $ionicLoading.hide();
+                if(status === 302){
+                    console.warn('QuantiModo.errorHandler: Got 302 response from ' + JSON.stringify(request));
+                    return;
+                }
+
                 if(status === 401){
                     console.warn('QuantiModo.errorHandler: Sending to login because we got 401 with request ' +
                         JSON.stringify(request));
@@ -23,7 +27,22 @@ angular.module('starter')
                     return;
                 }
                 if(!data){
-                    console.log('QuantiModo.errorHandler: No data property returned from QM API request');
+                    bugsnagService.reportError('No data returned from this request: ' + JSON.stringify(request));
+                    if (!$rootScope.connectionErrorShowing) {
+                        $rootScope.connectionErrorShowing = true;
+                        $ionicPopup.show({
+                            title: 'NOT CONNECTED',
+                            subTitle: 'Either you are not connected to the internet or the QuantiModo server cannot be reached.',
+                            buttons:[
+                                {text: 'OK',
+                                    type: 'button-positive',
+                                    onTap: function(){
+                                        $rootScope.connectionErrorShowing = false;
+                                    }
+                                }
+                            ]
+                        });
+                    }
                     return;
                 }
                 if(data.success){
@@ -41,6 +60,7 @@ angular.module('starter')
                         Bugsnag.notify("API Request to " + request.url + " Failed", error, {}, "error");
                     }
                 }
+
                 console.error(error);
             };
 
@@ -53,7 +73,7 @@ angular.module('starter')
             // GET method with the added token
             QuantiModo.get = function(baseURL, allowedParams, params, successHandler, errorHandler){
                 console.debug('QuantiModo.get: Going to try to make request to ' + baseURL + " with params: " + JSON.stringify(params));
-                QuantiModo.getAccessTokenFromAnySource().then(function(accessToken){
+                QuantiModo.getAccessTokenFromAnySource().then(function(accessToken) {
 
                     allowedParams.push('limit');
                     allowedParams.push('offset');
@@ -61,10 +81,9 @@ angular.module('starter')
                     allowedParams.push('updatedAt');
                     // configure params
                     var urlParams = [];
-                    for (var property in params)
-                    {
-                        if(params.hasOwnProperty(property)){
-                            if(typeof params[property] !== "undefined" && params[property] !== null){
+                    for (var property in params) {
+                        if (params.hasOwnProperty(property)) {
+                            if (typeof params[property] !== "undefined" && params[property] !== null) {
                                 urlParams.push(encodeURIComponent(property) + '=' + encodeURIComponent(params[property]));
                             } else {
                                 console.warn("Not including parameter " + property + " in request because it is null or undefined");
@@ -88,7 +107,7 @@ angular.module('starter')
                         }
                     };
 
-                    if(accessToken) {
+                    if (accessToken) {
                         request.headers = {
                             "Authorization": "Bearer " + accessToken,
                             'Content-Type': "application/json"
@@ -98,30 +117,14 @@ angular.module('starter')
                     //console.log("Making this request: " + JSON.stringify(request));
                     console.debug('QuantiModo.get: ' + request.url);
 
-                    $http(request).success(successHandler).error(function(data,status,headers,config){
-                        QuantiModo.errorHandler(data, status, headers, config, request);
-                        if (!data && !$rootScope.connectionErrorShowing) {
-                            bugsnagService.reportError('No data returned from this GET request: ' + JSON.stringify(request));
-                            $rootScope.connectionErrorShowing = true;
-                            $ionicPopup.show({
-                                title: 'NOT CONNECTED',
-                                subTitle: 'Either you are not connected to the internet or the QuantiModo server cannot be reached.',
-                                buttons:[
-                                    {text: 'OK',
-                                        type: 'button-positive',
-                                        onTap: function(){
-                                            $rootScope.connectionErrorShowing = false;
-                                        }
-                                    }
-                                ]
-                            });
-                        }
-                        errorHandler(data);
+                    $http(request)
+                        .success(successHandler)
+                        .error(function (data, status, headers, config) {
+                            QuantiModo.errorHandler(data, status, headers, config, request);
+                            errorHandler(data);
+                        }, onRequestFailed);
                     });
-
-                }, onRequestFailed);
-            };
-
+                };
 
             // POST method with the added token
             QuantiModo.post = function(baseURL, requiredFields, items, successHandler, errorHandler){
@@ -174,22 +177,7 @@ angular.module('starter')
 
                     $http(request).success(successHandler).error(function(data,status,headers,config){
                         QuantiModo.errorHandler(data,status,headers,config);
-                        if (!data && !$rootScope.connectionErrorShowing) {
-                            bugsnagService.reportError('No data returned from this POST request: ' + JSON.stringify(request));
-                            $rootScope.connectionErrorShowing = true;
-                            $ionicPopup.show({
-                                title: 'NOT CONNECTED',
-                                subTitle: 'Either you are not connected to the internet or the QuantiModo server cannot be reached.',
-                                buttons:[
-                                    {text: 'OK',
-                                        type: 'button-positive',
-                                        onTap: function(){
-                                            $rootScope.connectionErrorShowing = false;
-                                        }
-                                    }
-                                ]
-                            });
-                        }
+                        errorHandler(data);
                     });
 
                 }, errorHandler);
@@ -669,6 +657,21 @@ angular.module('starter')
                     errorHandler);
             };
 
+            QuantiModo.getAccessTokenFromUrlParameter = function () {
+                $rootScope.accessTokenInUrl = utilsService.getUrlParameter(location.href, 'accessToken');
+                if (!$rootScope.accessTokenInUrl) {
+                    $rootScope.accessTokenInUrl = utilsService.getUrlParameter(location.href, 'access_token');
+                }
+                if($rootScope.accessTokenInUrl){
+                    localStorageService.setItem('accessTokenInUrl', $rootScope.accessTokenInUrl);
+                    localStorageService.setItem('accessToken', $rootScope.accessTokenInUrl);
+                } else {
+                    localStorageService.deleteItem('accessTokenInUrl');
+                }
+
+                return $rootScope.accessTokenInUrl;
+            };
+
             // if not logged in, returns rejects
             QuantiModo.getAccessTokenFromAnySource = function () {
 
@@ -680,7 +683,7 @@ angular.module('starter')
                     return deferred.promise;
                 }
 
-                $rootScope.accessTokenInUrl = $rootScope.getAccessTokenFromUrlParameter();
+                $rootScope.accessTokenInUrl = QuantiModo.getAccessTokenFromUrlParameter();
 
                 if ($rootScope.accessTokenInUrl) {
                     var url = utilsService.getURL("api/user") + 'accessToken=' + $rootScope.accessTokenInUrl;
@@ -808,6 +811,173 @@ angular.module('starter')
                 } else {
                     return "";
                 }
+            };
+
+
+
+            QuantiModo.convertToObjectIfJsonString = function (stringOrObject) {
+                try {
+                    stringOrObject = JSON.parse(stringOrObject);
+                } catch (e) {
+                    return stringOrObject;
+                }
+                return stringOrObject;
+            };
+
+            QuantiModo.generateV1OAuthUrl= function(register) {
+                var url = $rootScope.qmApiUrl + "/api/oauth2/authorize?";
+                // add params
+                url += "response_type=code";
+                url += "&client_id=" + utilsService.getClientId();
+                url += "&client_secret=" + utilsService.getClientSecret();
+                url += "&scope=" + utilsService.getPermissionString();
+                url += "&state=testabcd";
+                if(register === true){
+                    url += "&register=true";
+                }
+                //url += "&redirect_uri=" + utilsService.getRedirectUri();
+                return url;
+            };
+
+            QuantiModo.generateV2OAuthUrl= function(JWTToken) {
+                var url = utilsService.getURL("api/v2/bshaffer/oauth/authorize", true);
+                url += "response_type=code";
+                url += "&client_id=" + utilsService.getClientId();
+                url += "&client_secret=" + utilsService.getClientSecret();
+                url += "&scope=" + utilsService.getPermissionString();
+                url += "&state=testabcd";
+                url += "&token=" + JWTToken;
+                //url += "&redirect_uri=" + utilsService.getRedirectUri();
+                return url;
+            };
+
+            QuantiModo.getAuthorizationCodeFromUrl = function(event) {
+                console.log('extracting authorization code from event: ' + JSON.stringify(event));
+                var authorizationUrl = event.url;
+                if(!authorizationUrl) {
+                    authorizationUrl = event.data;
+                }
+
+                var authorizationCode = utilsService.getUrlParameter(authorizationUrl, 'code');
+
+                if(!authorizationCode) {
+                    authorizationCode = utilsService.getUrlParameter(authorizationUrl, 'token');
+                }
+                return authorizationCode;
+            };
+
+            // get access token from authorization code
+            QuantiModo.getAccessTokenFromAuthorizationCode= function (authorizationCode) {
+                console.log("Authorization code is " + authorizationCode);
+
+                var deferred = $q.defer();
+
+                var url = utilsService.getURL("api/oauth2/token");
+
+                // make request
+                var request = {
+                    method: 'POST',
+                    url: url,
+                    responseType: 'json',
+                    headers: {
+                        'Content-Type': "application/json"
+                    },
+                    data: {
+                        client_id: utilsService.getClientId(),
+                        client_secret: utilsService.getClientSecret(),
+                        grant_type: 'authorization_code',
+                        code: authorizationCode,
+                        redirect_uri: utilsService.getRedirectUri()
+                    }
+                };
+
+                console.log('getAccessTokenFromAuthorizationCode: request is ', request);
+                console.log(JSON.stringify(request));
+
+                // post
+                $http(request).success(function (response) {
+                    if(response.error){
+                        bugsnagService.reportError(response);
+                        alert(response.error + ": " + response.error_description + ".  Please try again or contact mike@quantimo.do.");
+                        deferred.reject(response);
+                    } else {
+                        console.log('getAccessTokenFromAuthorizationCode: Successful response is ', response);
+                        console.log(JSON.stringify(response));
+                        deferred.resolve(response);
+                    }
+                }).error(function (response) {
+                    console.log('getAccessTokenFromAuthorizationCode: Error response is ', response);
+                    console.log(JSON.stringify(response));
+                    deferred.reject(response);
+                });
+
+                return deferred.promise;
+            };
+
+            QuantiModo.setUserUsingAccessTokenInUrl= function() {
+                $rootScope.user = localStorageService.getItemAsObject('user');
+                if($rootScope.user){
+                    return true;
+                }
+
+                var url = utilsService.getURL("api/user");
+                if(QuantiModo.getAccessTokenFromUrlParameter()){
+                    url = url + 'accessToken=' + $rootScope.accessTokenInUrl;
+                }
+
+                $http.get(url).then(
+                    function (userCredentialsResp) {
+                        console.log('QuantiModo.getAccessTokenFromAnySource calling setUserInLocalStorageBugsnagAndRegisterDeviceForPush');
+                        $rootScope.setUserInLocalStorageBugsnagAndRegisterDeviceForPush(userCredentialsResp.data);
+                    },
+                    function (errorResp) {
+                        console.error('checkAuthOrSendToLogin: Could not get user with ' + url +
+                            '. Going to login page. Error response: ' + errorResp.message);
+                        $rootScope.sendToLogin();
+                    }
+                );
+
+            };
+
+            QuantiModo.getTokensAndUserViaNativeSocialLogin= function (provider, accessToken) {
+                var deferred = $q.defer();
+
+                if(!accessToken || accessToken === "null" || accessToken === null){
+                    if (typeof Bugsnag !== "undefined") {
+                        Bugsnag.notify("No accessToken", "accessToken not provided to getTokensAndUserViaNativeSocialLogin function", {}, "error");
+                    }
+                    deferred.reject();
+                }
+                var url = utilsService.getURL('api/v2/auth/social/authorizeToken');
+
+                url += "provider=" + encodeURIComponent(provider);
+                url += "&accessToken=" + encodeURIComponent(accessToken);
+                url += "&client_id=" + encodeURIComponent(utilsService.getClientId());
+
+                $http({
+                    method: 'GET',
+                    url: url,
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }).then(function (response) {
+                    if (response.data.success && response.data.data && response.data.data.token) {
+
+                        // This didn't solve the token_invalid issue
+                        // $timeout(function () {
+                        //     console.log('10 second delay to try to solve token_invalid issue');
+                        //  deferred.resolve(response.data.data.token);
+                        // }, 10000);
+
+                        deferred.resolve(response.data.data);
+                    } else {
+                        deferred.reject(response);
+                    }
+                }, function (response) {
+                    deferred.reject(response);
+                });
+
+                return deferred.promise;
             };
 
             return QuantiModo;
