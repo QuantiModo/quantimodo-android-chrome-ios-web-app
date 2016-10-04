@@ -1,5 +1,5 @@
 angular.module('starter')
-	.factory('variableService', function($q, $rootScope, QuantiModo, localStorageService) {
+	.factory('variableService', function($q, $rootScope, QuantiModo, localStorageService, $timeout) {
 
 	    var variableService = {};
 
