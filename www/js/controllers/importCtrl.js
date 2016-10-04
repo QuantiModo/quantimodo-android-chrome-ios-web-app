@@ -73,9 +73,11 @@ angular.module('starter')
 			connectorsService.getConnectors()
 				.then(function(connectors){
 					$scope.connectors = connectors;
-					$ionicLoading.hide().then(function(){
-						console.log("The loading indicator is now hidden");
-					});
+                    if(connectors) {
+                        $ionicLoading.hide().then(function(){
+                            console.log("The loading indicator is now hidden");
+                        });
+                    }
 					$scope.refreshConnectors();
 				});
 		};
