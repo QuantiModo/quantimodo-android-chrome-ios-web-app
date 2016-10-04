@@ -3,11 +3,9 @@
 	<ion-content>
 		<!--<ion-content scroll="true" overflow-scroll="true">-->
 		<ion-refresher on-refresh="refreshTrackingReminderNotifications()"></ion-refresher>
-
 		<div class="list card"  ng-if="stateParams.showHelpCards === true && !hideAddTreatmentRemindersCard">
 			<div class="item" style="padding-bottom:10px;">
 				<p style=" text-align: center; line-height: normal; font-size: 25px;">Treatment Tracking</p>
-
 				<div class="row">
 					<div class="col" style="padding-top: 0px;">
 						<i style="text-align: center; font-size: 60px;" class="icon positive ion-ios-medkit-outline"></i>
@@ -37,7 +35,6 @@
 				</div>
 			</div>
 		</div>
-
 		<div class="list card"  ng-if="stateParams.showHelpCards === true && !hideAddSymptomRemindersCard">
 			<div class="item" style="padding-bottom:10px;">
 				<p style=" text-align: center; line-height: normal; font-size: 25px;">Symptom Ratings</p>
@@ -71,7 +68,6 @@
 				</div>
 			</div>
 		</div>
-
 		<div class="list card"  ng-if="stateParams.showHelpCards === true && !hideAddEmotionRemindersCard">
 			<div class="item" style="padding-bottom:10px;">
 				<p style=" text-align: center; line-height: normal; font-size: 25px;">Varying Emotions?</p>
@@ -105,7 +101,6 @@
 				</div>
 			</div>
 		</div>
-
 		<div class="list card"  ng-if="stateParams.showHelpCards === true && !hideAddFoodRemindersCard">
 			<div class="item" style="padding-bottom:10px;">
 				<p style=" text-align: center; line-height: normal; font-size: 25px;">Track Diet</p>
@@ -145,7 +140,6 @@
 				</div>
 			</div>
 		</div>
-
 <!--		<div class="list card"  ng-hide="hideNotificationSettingsInfoCard">
 			<div class="item" style="padding-bottom:10px;">
 				<p style=" text-align: center; line-height: normal; font-size: 25px;">Notification Settings</p>
@@ -197,7 +191,6 @@
 				</div>
 			</div>
 		</div>-->
-
         <div class="list card"  ng-if="stateParams.showHelpCards === true && !hideRecordMeasurementInfoCard">
             <div class="item" style="padding-bottom:10px;">
                 <p style=" text-align: center; line-height: normal; font-size: 25px;">Record Measurements</p>
@@ -229,7 +222,6 @@
                 </div>
             </div>
         </div>
-
 		<div class="list card"  ng-if="stateParams.showHelpCards === true && !hideLocationTrackingInfoCard && !trackLocation">
 			<div class="item" style="padding-bottom:10px;">
 				<p style=" text-align: center; line-height: normal; font-size: 25px;">Location Tracking</p>
@@ -263,7 +255,6 @@
 				</div>
 			</div>
 		</div>
-
 		<div class="list card"  ng-if="stateParams.showHelpCards === true && isMobile && !hideChromeExtensionInfoCard">
 			<div class="item" style="padding-bottom:10px;">
 				<p style=" text-align: center; line-height: normal; font-size: 25px;">Track on the Computer</p>
@@ -303,8 +294,6 @@
 				</div>
 			</div>
 		</div>
-
-
 		<div class="list card"  ng-if="stateParams.showHelpCards === true && !hideImportDataCard">
 			<div class="item" style="padding-bottom:10px;">
 				<p style=" text-align: center; line-height: normal; font-size: 25px;">Import Your Data</p>
@@ -337,15 +326,12 @@
 				</div>
 			</div>
 		</div>
-
 		<div  class="list card" ng-if="filteredTrackingReminderNotifications.length">
 			<div ng-repeat="divider in filteredTrackingReminderNotifications" ng-init="dividerIndex = $index"
 				 id="{{divider.name}}Reminders">
-
 				<div class="item item-divider" style="">
 					{{divider.name}}
 				</div>
-
 				<div on-hold="showActionSheetForNotification(trackingReminderNotification, $event)" class="list card"
 					 ng-show="!trackingReminderNotification.hide"
 					 ng-repeat="trackingReminderNotification in divider.trackingReminderNotifications"
@@ -471,11 +457,9 @@
 				</div>
 			</div>
 		</div>
-
 		<div class="list card"  ng-if="!state.loading && state.numberOfDisplayedNotifications === 0">
 			<div class="item" style="padding-bottom:10px;">
 				<p style=" text-align: center; line-height: normal; font-size: 25px;">All caught up!</p>
-
 				<div class="row">
 					<div class="col" style="padding-top: 0px;">
 						<i style="text-align: center; font-size: 60px;" class="icon positive ion-android-sunny"></i>
@@ -529,14 +513,12 @@
 			</div>
 		</div>
 <!--
-
 		<div ng-if="!isSyncing && numberOfPendingNotifications !== null" class="button-bar">
 			<a class="button button-clear button-calm" ng-click="init()" style="text-overflow: clip;">
 				<i class="ion-refresh">  Refresh</i>
 			</a>
 		</div>
 -->
-
 		<div class="card"  ng-show="state.loading">
 			<div class="item" >
 				<div class="row">
@@ -545,8 +527,6 @@
 				</div>
 			</div>
 		</div>
-
-
 	</ion-content>
 	<nav id="floatingMaterialButton"
 		 mfb-menu position="bl"
