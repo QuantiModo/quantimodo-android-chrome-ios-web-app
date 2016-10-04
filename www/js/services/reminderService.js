@@ -230,7 +230,7 @@ angular.module('starter')
 				deferred.resolve(trackingReminderNotifications);
 			} else {
 				$rootScope.numberOfPendingNotifications = 0;
-				reminderService.refreshTrackingReminderNotifications().then(function (trackingReminderNotifications) {
+				reminderService.refreshTrackingReminderNotifications().then(function () {
 					trackingReminderNotifications = localStorageService.getElementsFromItemWithFilters(
 						'trackingReminderNotifications', 'variableCategoryName', variableCategoryName);
 					deferred.resolve(trackingReminderNotifications);
