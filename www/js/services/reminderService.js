@@ -122,18 +122,23 @@ angular.module('starter')
 		};
 
 		reminderService.refreshTrackingRemindersAndScheduleAlarms = function(){
-			if($rootScope.syncingReminders !== true){
+			var deferred = $q.defer();
+			if($rootScope.syncingReminders){
+				console.warn('Already refreshTrackingRemindersAndScheduleAlarms within last 10 seconds! Rejecting promise!');
+				deferred.reject('Already refreshTrackingRemindersAndScheduleAlarms within last 10 seconds! Rejecting promise!');
+				return deferred.promise;
+			}
+
+			if(!$rootScope.syncingReminders){
 				$rootScope.syncingReminders = true;
-				var deferred = $q.defer();
+				$timeout(function() {
+					// Set to false after 30 seconds because it seems to get stuck on true sometimes for some reason
+					$rootScope.syncingReminders = false;
+				}, 10000);
 
 				var params = {
 					limit: 200
 				};
-
-				$timeout(function() {
-					// Set to false after 30 seconds because it seems to get stuck on true sometimes for some reason
-					$rootScope.syncingReminders = false;
-				}, 30000);
 
 				QuantiModo.getTrackingReminders(params, function(remindersResponse){
 					var trackingReminders = remindersResponse.data;
@@ -240,11 +245,15 @@ angular.module('starter')
 		reminderService.refreshTrackingReminderNotifications = function(){
 			var deferred = $q.defer();
 			if($rootScope.refreshingTrackingReminderNotifications){
-				console.log('Already refreshing reminder notifications');
-				deferred.reject();
+				console.log('Already called refreshTrackingReminderNotifications within last 10 seconds!  Rejecting promise!');
+				deferred.reject('Already called refreshTrackingReminderNotifications within last 10 seconds!  Rejecting promise!');
 				return deferred.promise;
 			}
 			$rootScope.refreshingTrackingReminderNotifications = true;
+			$timeout(function() {
+				// Set to false after 10 seconds because it seems to get stuck on true sometimes for some reason
+				$rootScope.refreshingTrackingReminderNotifications = false;
+			}, 10000);
 			var currentDateTimeInUtcStringPlus5Min = timeService.getCurrentDateTimeInUtcStringPlusMin(5);
 			var params = {};
 			params.reminderTime = '(lt)' + currentDateTimeInUtcStringPlus5Min;
