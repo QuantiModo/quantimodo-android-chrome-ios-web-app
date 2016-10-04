@@ -118,9 +118,19 @@ angular.module('starter')
         };
 
         variableService.refreshUserVariables = function(){
+            var deferred = $q.defer();
+            if($rootScope.syncingUserVariables){
+                console.log('Already called refreshUserVariables within last 10 seconds!  Rejecting promise!');
+                deferred.reject('Already called refreshUserVariables within last 10 seconds!  Rejecting promise!');
+                return deferred.promise;
+            }
+
             if(!$rootScope.syncingUserVariables){
                 $rootScope.syncingUserVariables = true;
-                var deferred = $q.defer();
+                $timeout(function() {
+                    // Set to false after 10 seconds because it seems to get stuck on true sometimes for some reason
+                    $rootScope.syncingUserVariables = false;
+                }, 10000);
 
                 QuantiModo.getUserVariables(null, function(userVariables){
                     localStorageService.setItem('userVariables', JSON.stringify(userVariables))
@@ -156,9 +166,19 @@ angular.module('starter')
         };
 
         variableService.refreshCommonVariables = function(){
+            var deferred = $q.defer();
+            if($rootScope.syncingCommonVariables){
+                console.log('Already called refreshCommonVariables within last 10 seconds!  Rejecting promise!');
+                deferred.reject('Already called refreshCommonVariables within last 10 seconds!  Rejecting promise!');
+                return deferred.promise;
+            }
+
             if(!$rootScope.syncingCommonVariables){
                 $rootScope.syncingCommonVariables = true;
-                var deferred = $q.defer();
+                $timeout(function() {
+                    // Set to false after 10 seconds because it seems to get stuck on true sometimes for some reason
+                    $rootScope.syncingCommonVariables = false;
+                }, 10000);
 
                 var successHandler = function(commonVariables) {
                     localStorageService.setItem('commonVariables', JSON.stringify(commonVariables));
