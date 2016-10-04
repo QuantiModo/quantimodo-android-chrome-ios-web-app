@@ -436,7 +436,11 @@ angular.module('starter')
                 .then(function(){
                     reminderService.postTrackingReminders(remindersArray)
                         .then(function(){
-                            reminderService.refreshTrackingReminderNotifications();
+                            reminderService.refreshTrackingReminderNotifications().then(function(){
+                                console.debug('reminderAddCtrl.save successfully refreshed notifications');
+                            }, function (error) {
+                                console.error('reminderAddCtrl.save: ' + error);
+                            });
                             $scope.hideLoader();
                         }, function(err){
                             $scope.hideLoader();
