@@ -143,28 +143,33 @@ angular.module('starter')
 				QuantiModo.getTrackingReminders(params, function(remindersResponse){
 					var trackingReminders = remindersResponse.data;
 					if(remindersResponse.success) {
-						if($rootScope.user.combineNotifications !== true){
-							try {
-								if($rootScope.localNotificationsEnabled){
-									notificationService.scheduleUpdateOrDeleteGenericNotificationsByDailyReminderTimes(trackingReminders);
+						if($rootScope.user){
+							if($rootScope.user.combineNotifications !== true){
+								try {
+									if($rootScope.localNotificationsEnabled){
+										notificationService.scheduleUpdateOrDeleteGenericNotificationsByDailyReminderTimes(trackingReminders);
+									}
+								} catch (err) {
+									console.error('scheduleUpdateOrDeleteGenericNotificationsByDailyReminderTimes error: ' + err);
+									if (typeof Bugsnag !== "undefined") {
+										bugsnagService.reportError(err);
+									}
 								}
-							} catch (err) {
-								console.error('scheduleUpdateOrDeleteGenericNotificationsByDailyReminderTimes error: ' + err);
-								if (typeof Bugsnag !== "undefined") {
+								//notificationService.scheduleAllNotificationsByTrackingReminders(trackingReminders);
+							} else {
+								try {
+									if($rootScope.localNotificationsEnabled){
+										notificationService.scheduleUpdateOrDeleteGenericNotificationsByDailyReminderTimes(trackingReminders);
+									}
+								} catch (err) {
+									console.error('scheduleUpdateOrDeleteGenericNotificationsByDailyReminderTimes error: ' + err);
 									bugsnagService.reportError(err);
 								}
 							}
-							//notificationService.scheduleAllNotificationsByTrackingReminders(trackingReminders);
 						} else {
-							try {
-								if($rootScope.localNotificationsEnabled){
-									notificationService.scheduleUpdateOrDeleteGenericNotificationsByDailyReminderTimes(trackingReminders);
-								}
-							} catch (err) {
-								console.error('scheduleUpdateOrDeleteGenericNotificationsByDailyReminderTimes error: ' + err);
-								bugsnagService.reportError(err);
-							}
+							bugsnagService.reportError('No $rootScope.user in successful QuantiModo.getTrackingReminders callback! How did this happen?');
 						}
+
 						localStorageService.setItem('trackingReminders', JSON.stringify(trackingReminders));
 						$rootScope.syncingReminders = false;
 						deferred.resolve(trackingReminders);
