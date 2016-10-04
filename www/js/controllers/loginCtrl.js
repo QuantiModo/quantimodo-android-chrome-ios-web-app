@@ -337,6 +337,13 @@ angular.module('starter')
         $scope.facebookLogin = function(){
             $scope.showLoader('Logging you in...');
             console.log("$scope.facebookLogin about to try $cordovaFacebook.login");
+            $scope.hideFacebookButton = true; // Hide button so user tries other options if it didn't work
+            $timeout(function () {
+                if(!$rootScope.user){
+                    bugsnagService.reportError('Could not get user $scope.facebookLogin within 30 seconds!');
+                }
+            }, 30000);
+
             $cordovaFacebook.login(["public_profile", "email", "user_friends"])
                 .then(function(success) {
                     // success
