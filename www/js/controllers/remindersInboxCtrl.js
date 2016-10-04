@@ -301,6 +301,11 @@ angular.module('starter')
 				});
 		};
 
+		$scope.$on('getTrackingReminderNotifications', function(){
+			console.log('getTrackingReminderNotifications broadcast received..');
+			getTrackingReminderNotifications();
+		});
+
 	    var getTrackingReminderNotifications = function () {
 			if($stateParams.today){
 				//$scope.showLoader("Getting today's reminder notifications...");

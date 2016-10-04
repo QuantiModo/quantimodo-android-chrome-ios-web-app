@@ -268,6 +268,7 @@ angular.module('starter')
 					}
 					localStorageService.setItem('trackingReminderNotifications', JSON.stringify(trackingRemindersNotifications));
 					$rootScope.refreshingTrackingReminderNotifications = false;
+					$rootScope.$broadcast('getTrackingReminderNotifications');
 					deferred.resolve(trackingRemindersNotifications);
 				}
 				else {
