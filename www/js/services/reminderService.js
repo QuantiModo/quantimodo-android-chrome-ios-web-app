@@ -245,7 +245,7 @@ angular.module('starter')
 		reminderService.refreshTrackingReminderNotifications = function(){
 			var deferred = $q.defer();
 			if($rootScope.refreshingTrackingReminderNotifications){
-				console.log('Already called refreshTrackingReminderNotifications within last 10 seconds!  Rejecting promise!');
+				console.warn('Already called refreshTrackingReminderNotifications within last 10 seconds!  Rejecting promise!');
 				deferred.reject('Already called refreshTrackingReminderNotifications within last 10 seconds!  Rejecting promise!');
 				return deferred.promise;
 			}

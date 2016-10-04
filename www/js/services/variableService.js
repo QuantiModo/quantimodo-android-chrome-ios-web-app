@@ -120,7 +120,7 @@ angular.module('starter')
         variableService.refreshUserVariables = function(){
             var deferred = $q.defer();
             if($rootScope.syncingUserVariables){
-                console.log('Already called refreshUserVariables within last 10 seconds!  Rejecting promise!');
+                console.warn('Already called refreshUserVariables within last 10 seconds!  Rejecting promise!');
                 deferred.reject('Already called refreshUserVariables within last 10 seconds!  Rejecting promise!');
                 return deferred.promise;
             }
@@ -168,7 +168,7 @@ angular.module('starter')
         variableService.refreshCommonVariables = function(){
             var deferred = $q.defer();
             if($rootScope.syncingCommonVariables){
-                console.log('Already called refreshCommonVariables within last 10 seconds!  Rejecting promise!');
+                console.warn('Already called refreshCommonVariables within last 10 seconds!  Rejecting promise!');
                 deferred.reject('Already called refreshCommonVariables within last 10 seconds!  Rejecting promise!');
                 return deferred.promise;
             }
