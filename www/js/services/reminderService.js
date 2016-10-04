@@ -230,14 +230,13 @@ angular.module('starter')
 				deferred.resolve(trackingReminderNotifications);
 			} else {
 				$rootScope.numberOfPendingNotifications = 0;
-				reminderService.refreshTrackingReminderNotifications()
-					.then(function (trackingReminderNotifications) {
-						trackingReminderNotifications = localStorageService.getElementsFromItemWithFilters(
-							'trackingReminderNotifications', 'variableCategoryName', variableCategoryName);
-						deferred.resolve(trackingReminderNotifications);
-					}, function(){
-						console.error("failed to get reminder notifications!");
-					});
+				reminderService.refreshTrackingReminderNotifications().then(function (trackingReminderNotifications) {
+					trackingReminderNotifications = localStorageService.getElementsFromItemWithFilters(
+						'trackingReminderNotifications', 'variableCategoryName', variableCategoryName);
+					deferred.resolve(trackingReminderNotifications);
+				}, function(){
+					console.error('reminderService.getTrackingReminderNotifications: ' + error);
+				});
 			}
 			return deferred.promise;
 		};
@@ -466,7 +465,11 @@ angular.module('starter')
 					reminderService.postTrackingReminders(JSON.parse(trackingReminders)).then(function () {
 						console.log('reminder queue synced' + trackingReminders);
 						localStorageService.deleteItem('trackingReminderSyncQueue');
-                        reminderService.refreshTrackingReminderNotifications();
+                        reminderService.refreshTrackingReminderNotifications().then(function(){
+							console.debug('reminderService.syncTrackingReminderSyncQueueToServer successfully refreshed notifications');
+						}, function (error) {
+							console.error('reminderService.syncTrackingReminderSyncQueueToServer: ' + error);
+						});
 					}, function (err) {
 						bugsnagService.reportError(err);
 					});
@@ -591,7 +594,11 @@ angular.module('starter')
 						console.debug('Creating default reminders ' + JSON.stringify(defaultReminders));
 						reminderService.postTrackingReminders(defaultReminders).then(function () {
 							console.debug('Default reminders created ' + JSON.stringify(defaultReminders));
-							reminderService.refreshTrackingReminderNotifications();
+							reminderService.refreshTrackingReminderNotifications().then(function(){
+								console.debug('reminderService.createDefaultReminders successfully refreshed notifications');
+							}, function (error) {
+								console.error('reminderService.createDefaultReminders: ' + error);
+							});
 							reminderService.refreshTrackingRemindersAndScheduleAlarms();
 							localStorageService.setItem('defaultRemindersCreated', true);
 							deferred.resolve();

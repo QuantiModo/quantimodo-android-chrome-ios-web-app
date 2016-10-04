@@ -331,10 +331,11 @@ angular.module('starter')
 			if($stateParams.today){
 				getTrackingReminderNotifications();
 			} else {
-				reminderService.refreshTrackingReminderNotifications()
-					.then(function(){
-						getTrackingReminderNotifications();
-					});
+				reminderService.refreshTrackingReminderNotifications().then(function(){
+					getTrackingReminderNotifications();
+				}, function (error) {
+					console.error('$scope.refreshTrackingReminderNotifications: ' + error);
+				});
 			}
 		};
 

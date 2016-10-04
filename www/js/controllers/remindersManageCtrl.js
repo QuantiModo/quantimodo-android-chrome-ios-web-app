@@ -215,7 +215,11 @@ angular.module('starter')
 
 			reminderService.deleteReminder(reminder.trackingReminderId)
 				.then(function(){
-					reminderService.refreshTrackingReminderNotifications();
+					reminderService.refreshTrackingReminderNotifications().then(function(){
+						console.debug('reminderService.deleteReminder successfully refreshed notifications');
+					}, function (error) {
+						console.error('reminderService.deleteReminder: ' + error);
+					});
 					console.log("Reminder deleted");
 				}, function(err){
 					if (typeof Bugsnag !== "undefined") {
