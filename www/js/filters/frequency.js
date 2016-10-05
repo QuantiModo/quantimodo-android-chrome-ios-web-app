@@ -16,5 +16,5 @@ angular.module('starter')
 			};
 
 			return reverseFrequencyChart[value];
-		}
+		};
 	});

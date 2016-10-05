@@ -98,12 +98,12 @@ angular.module('starter')
 			reminderService.getTrackingRemindersFromLocalStorage(variableCategoryName)
 				.then(function (trackingReminders) {
 					if (trackingReminders) {
-						deferred.resolve(trackingReminders)
+						deferred.resolve(trackingReminders);
 					} else {
 						reminderService.refreshTrackingRemindersAndScheduleAlarms.then(function () {
 							reminderService.getTrackingRemindersFromLocalStorage(variableCategoryName)
 								.then(function (trackingReminders) {
-									deferred.resolve(trackingReminders)
+									deferred.resolve(trackingReminders);
 								});
 						});
 					}
