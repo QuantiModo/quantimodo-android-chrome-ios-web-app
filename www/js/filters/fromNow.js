@@ -5,8 +5,10 @@ angular.module('starter')
 	    	if(value){
 	    		var d = new Date(value * 1000);
 	    		return moment(d).fromNow();
-	    	} else return "";
-	    }
+	    	} else {
+				return "";
+			}
+	    };
 	})
 	.filter('unique', function() {
 	   return function(collection, keyname) {
