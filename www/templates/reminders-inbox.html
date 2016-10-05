@@ -326,7 +326,7 @@
 				</div>
 			</div>
 		</div>
-		<div  class="list card" ng-if="filteredTrackingReminderNotifications.length">
+		<div  class="list card" ng-if="filteredTrackingReminderNotifications.length && state.numberOfDisplayedNotifications">
 			<div ng-repeat="divider in filteredTrackingReminderNotifications" ng-init="dividerIndex = $index"
 				 id="{{divider.name}}Reminders">
 				<div class="item item-divider" style="">
