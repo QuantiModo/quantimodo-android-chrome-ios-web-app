@@ -976,8 +976,9 @@ angular.module('starter')
                     } else {
                         deferred.reject(response);
                     }
-                }, function (response) {
-                    deferred.reject(response);
+                }, function (error) {
+                    bugsnagService.reportError(error);
+                    deferred.reject(error);
                 });
 
                 return deferred.promise;
