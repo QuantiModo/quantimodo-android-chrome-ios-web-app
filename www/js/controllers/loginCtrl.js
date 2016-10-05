@@ -272,7 +272,6 @@ angular.module('starter')
                 });
         };
 
-        // log in with google
         $scope.googleLogin = function(register){
             $timeout(function () {
                 if(!$rootScope.user){
@@ -291,9 +290,7 @@ angular.module('starter')
                         'offline': true // optional, but requires the webClientId - if set to true the plugin will also return a serverAuthCode, which can be used to grant offline access to a non-Google server
                     },
                     function (userData) {
-                        $ionicLoading.hide();
-                        console.debug('successfully logged in');
-                        console.debug('google->', JSON.stringify(userData));
+                        console.debug('$scope.googleLogin: successfully got user data-> ', JSON.stringify(userData));
                         var tokenForApi = null;
 
                         /** @namespace userData.oauthToken */
