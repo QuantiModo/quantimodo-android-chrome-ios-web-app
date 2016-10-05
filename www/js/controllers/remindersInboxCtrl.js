@@ -2,7 +2,7 @@ angular.module('starter')
 
 	.controller('RemindersInboxCtrl', function($scope, $state, $stateParams, $rootScope, $filter, $ionicPlatform,
 											   $ionicActionSheet, $timeout, QuantiModo, reminderService, utilsService,
-											   notificationService, userService, localStorageService, $ionicLoading) {
+											   notificationService, userService, localStorageService, bugsnagService) {
 
 	    $scope.controller_name = "RemindersInboxCtrl";
 
