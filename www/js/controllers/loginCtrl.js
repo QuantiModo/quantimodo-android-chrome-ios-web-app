@@ -50,6 +50,13 @@ angular.module('starter')
 
         // User wants to login
         $scope.login = function(register) {
+
+            $timeout(function () {
+                if(!$rootScope.user){
+                    bugsnagService.reportError('$scope.login: Could not get user within 30 seconds!');
+                    //utilsService.showAlert('Facebook Login Issue', 'Please try to sign in using on of the other methods below');
+                }
+            }, 30000);
             
             $scope.showLoader('Logging you in...');
             localStorageService.setItem('isWelcomed', true);
@@ -267,6 +274,12 @@ angular.module('starter')
 
         // log in with google
         $scope.googleLogin = function(register){
+            $timeout(function () {
+                if(!$rootScope.user){
+                    bugsnagService.reportError('$scope.googleLogin: Could not get user within 30 seconds!');
+                    //utilsService.showAlert('Facebook Login Issue', 'Please try to sign in using on of the other methods below');
+                }
+            }, 30000);
             $scope.showLoader('Logging you in...');
             document.addEventListener('deviceready', deviceReady, false);
             function deviceReady() {
