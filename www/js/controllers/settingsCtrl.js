@@ -383,13 +383,11 @@ angular.module('starter')
 		};
 
 		// when view is changed
-		$scope.$on('$ionicView.enter', function(e) { console.debug("Entering state " + $state.current.name);
-			$scope.hideLoader();
+		$scope.$on('$ionicView.beforeEnter', function(e) { console.debug("Entering state " + $state.current.name);
+			$scope.init();
             if($rootScope.user){
                 $scope.state.trackLocation = $rootScope.user.trackLocation;
             }
 		});
 
-	    // call constructor
-	    $scope.init();
 	});

@@ -272,7 +272,20 @@ angular.module('starter')
                 });
         };
 
+        $scope.hideLoader = function () {
+            $scope.state.loading = false;
+            $ionicLoading.hide();
+        };
+
+        $scope.showLoader = function () {
+            $scope.state.loading = true;
+            $timeout(function () {
+                $scope.hideLoader();
+            }, 30000);
+        };
+
         $scope.googleLogin = function(register){
+
             $timeout(function () {
                 if(!$rootScope.user){
                     bugsnagService.reportError('$scope.googleLogin: Could not get user within 30 seconds!');
