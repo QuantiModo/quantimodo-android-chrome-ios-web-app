@@ -113,8 +113,8 @@ angular.module('starter')
             if ($rootScope.isWeb && window.private_keys.client_ids.Web === 'oAuthDisabled') {
                 return window.location.origin;
             }
-            if(config.apiUrl){
-                return config.apiUrl;
+            if(window.private_keys.apiUrl){
+                return window.private_keys.apiUrl;
             }
             return "https://app.quantimo.do";
         };
