@@ -13,9 +13,7 @@ angular.module('starter')
 				reminderService.refreshTrackingRemindersAndScheduleAlarms();
 				deferred.resolve();
 			}, function(err){
-				if (typeof Bugsnag !== "undefined") {
-					Bugsnag.notify(err, JSON.stringify(err), {}, "error");
-				}
+				bugsnagService.reportError(err);
 				deferred.reject(err);
 			});
 
@@ -33,9 +31,7 @@ angular.module('starter')
 					deferred.reject();
 				}
 			}, function(err){
-				if (typeof Bugsnag !== "undefined") {
-					Bugsnag.notify(err, JSON.stringify(err), {}, "error");
-				}
+				bugsnagService.reportError(err);
 				deferred.reject(err);
 			});
 
@@ -53,9 +49,7 @@ angular.module('starter')
 					deferred.reject();
 				}
 			}, function(err){
-				if (typeof Bugsnag !== "undefined") {
-					Bugsnag.notify(err, JSON.stringify(err), {}, "error");
-				}
+				bugsnagService.reportError(err);
 				deferred.reject(err);
 			});
 
@@ -74,9 +68,7 @@ angular.module('starter')
 					deferred.reject();
 				}
 			}, function(err){
-				if (typeof Bugsnag !== "undefined") {
-					Bugsnag.notify(err, JSON.stringify(err), {}, "error");
-				}
+				bugsnagService.reportError(err);
 				deferred.reject(err);
 			});
 
@@ -94,9 +86,7 @@ angular.module('starter')
 					deferred.reject();
 				}
 			}, function(err){
-				if (typeof Bugsnag !== "undefined") {
-					Bugsnag.notify(err, JSON.stringify(err), {}, "error");
-				}
+				bugsnagService.reportError(err);
 				deferred.reject(err);
 			});
 
@@ -176,16 +166,12 @@ angular.module('starter')
 					}
 					else {
 						$rootScope.syncingReminders = false;
-						deferred.reject("error");
-						if (typeof Bugsnag !== "undefined") {
-							Bugsnag.notify(remindersResponse, JSON.stringify(remindersResponse), {}, "error");
-						}
+						bugsnagService.reportError('No success from getTrackingReminders request');
+						deferred.reject('No success from getTrackingReminders request');
 					}
 				}, function(err){
 					$rootScope.syncingReminders = false;
-					if (typeof Bugsnag !== "undefined") {
-						Bugsnag.notify(err, JSON.stringify(err), {}, "error");
-					}
+					bugsnagService.reportError(err);
 					deferred.reject(err);
 				});
 
@@ -214,9 +200,7 @@ angular.module('starter')
 					deferred.reject("error");
 				}
 			}, function(err){
-				if (typeof Bugsnag !== "undefined") {
-					Bugsnag.notify(err, JSON.stringify(err), {}, "error");
-				}
+				bugsnagService.reportError(err);
 				deferred.reject(err);
 			});
 
@@ -239,8 +223,9 @@ angular.module('starter')
 					trackingReminderNotifications = localStorageService.getElementsFromItemWithFilters(
 						'trackingReminderNotifications', 'variableCategoryName', variableCategoryName);
 					deferred.resolve(trackingReminderNotifications);
-				}, function(){
-					console.error('reminderService.getTrackingReminderNotifications: ' + error);
+				}, function(error){
+					bugsnagService.reportError('reminderService.getTrackingReminderNotifications: ' + error);
+					deferred.reject(error);
 				});
 			}
 			return deferred.promise;
@@ -280,9 +265,7 @@ angular.module('starter')
 					deferred.reject("error");
 				}
 			}, function(err){
-				if (typeof Bugsnag !== "undefined") {
-					Bugsnag.notify(err, JSON.stringify(err), {}, "error");
-				}
+				bugsnagService.reportError(err);
 				$rootScope.refreshingTrackingReminderNotifications = false;
 				deferred.reject(err);
 			});
@@ -302,9 +285,7 @@ angular.module('starter')
 					deferred.reject("error");
 				}
 			}, function(err){
-				if (typeof Bugsnag !== "undefined") {
-					Bugsnag.notify(err, JSON.stringify(err), {}, "error");
-				}
+				bugsnagService.reportError(err);
 				deferred.reject(err);
 			});
 			return deferred.promise;
@@ -356,9 +337,7 @@ angular.module('starter')
 			};
 
 			var errorHandler = function(err){
-				if (typeof Bugsnag !== "undefined") {
-					Bugsnag.notify(err, JSON.stringify(err), {}, "error");
-				}
+				bugsnagService.reportError(err);
 				deferred.reject(err);
 			};
 
@@ -420,9 +399,7 @@ angular.module('starter')
 					deferred.reject();
 				}
 			}, function(err){
-				if (typeof Bugsnag !== "undefined") {
-					Bugsnag.notify(err, JSON.stringify(err), {}, "error");
-				}
+				bugsnagService.reportError(err);
 				deferred.reject(err);
 			});
 
