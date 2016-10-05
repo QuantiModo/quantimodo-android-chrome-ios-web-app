@@ -10,12 +10,7 @@
      </div>
      
        <div class="list listReduceHeight ">
-
-       <!--part one vital signs-->
-
-           <!-- <div class="item item-divider narrow " >Vital Signs</div>
-           <!-blood pressure-->
-
+             <!--blood pressure part-->
               <div class="row" id="bloodPressureCard" ng-if="state.bloodPressure.reminderId"  on-hold="showActionSheet(favorite, $index)">
                   <div class="col col-20" >
                      <a class="item item-avatar nonBorder" href="#"> 
@@ -38,8 +33,7 @@
                            ng-click="onTextClick($event)"
                            placeholder="Diastolic BP">
                           <p>mmHg </p> 
-                    
-                   
+
 
                     <div class="resetButton">
                           <button class="button button-small button-outline button-royal" on-tap="trackBloodPressure()" ng-click="onTextClick($event)"> 
@@ -53,46 +47,47 @@
                   </div> 
                 </div>
 
-                 <!-- blood pressure-->
+               <!-- blood pressure-->
 
-                <!--eng of test part blood pressure-->
-                <div class="row" id="favoritesList" ng-if="state.favorites.length && favorite.variableName !== 'Blood Pressure'" ng-repeat="favorite in state.favorites track by $index" on-hold="showActionSheet(favorite, $index)">
-                  <div class="col col-20" >
-                     <a class="item item-avatar nonBorder" href="#"> 
-                        <img src="{{favorite.img}}">
-                     <!--      <i class="icon {{favorite.icon}} clear"></i>  -->
-                         <!--  <p>{{favorite.variableName}}</p> -->
-                         <!--  <p> {{favorite.abbreviatedUnitName}}</p> -->
-                     </a> 
-                  </div>
+                <!--other favorite part-->
+                <div class="row" id="favoritesList"  ng-if="state.favorites.length" ng-repeat="favorite in state.favorites track by $index" on-hold="showActionSheet(favorite, $index)">      
+                    <div  class="col col-20" >
+                       <a ng-click="showActionSheet(favorite, $index)" class="item item-avatar nonBorder"> 
+                          <img src="{{favorite.img}}">
+                       </a> 
+                    </div>
 
+                    <div class="col col-70 item item-input-inset inputMea">
+                   
+                       <!--input value part-->
+                       <input  class="yiInput" type="number" ng-model="favorite.total" id="defaultValueField"  
+                             placeholder="{{favorite.variableName}}">
+                            <p ng-click="showActionSheet(favorite, $index)" >{{favorite.abbreviatedUnitName}} </p> 
+                       <!--alternative 1. -->
+                        <div ng-if="favorite.abbreviatedUnitName != '/5' && favorite.defaultValue !== null" ng-click="trackByReminder(favorite, null, $index)" class="resetButton">
+                              <i class="ion-android-done"> &nbsp; Record {{favorite.defaultValue}} {{favorite.abbreviatedUnitName}}</i>
 
-                  <div ng-if="favorite.variableName !== 'Blood Pressure' && favorite.defaultValue === null && favorite.abbreviatedUnitName !== '/5'" class="col  col-70 item item-input-inset inputMea">
-
-                     <input class="yiInput" type="number" ng-model="favorite.total" id="defaultValueField"
-                           ng-click="onTextClick($event)"
-                           placeholder="{{favorite.variableName}}">
-                          <p>{{favorite.abbreviatedUnitName}} </p> 
-
-                      <div class="resetButton">
-                          <button class="button button-small button-outline button-royal" on-tap="trackByValueField(favorite, $index)" ng-click="onTextClick($event)">
-                     
-                          save 
-                          </button>
+                        </div> 
+                        <!--end of alternative 1-->
+                        <!--alternative 2-->
+                        <div ng-if="favorite.abbreviatedUnitName !== '/5'&&favorite.defaultValue === null " class="resetButton">
                           
-                      </div>
-                  </div> 
+                            <div ng-click="onTextClick($event)" ng-model="favorite.total" id="defaultValueField" class="resetButton">
+                                <button on-tap="trackByValueField(favorite, $index)"  class="button button-small button-outline button-royal" >
+                                   save
+                                </button>
+                            </div>
+                          <!--end of alternative 2-->
+
+                        </div>       
+                    </div> 
 
                     <div ng-click="showActionSheet(favorite, $index)" class="col col-10">
-                        <i style="font-size: 20px;" class="icon ion-android-more-vertical"></i>
+                                <i style="font-size: 20px;" class="icon ion-android-more-vertical"></i>
                     </div>
                 </div>
-
-                <!--not belongs to favorite list-->
-                
-                <!--end of not favorite variables-->
-
-              </div>
+                <!--end of other favorite part-->
+            </div>
           <!--end of whole content-->
        
      </ion-content>
