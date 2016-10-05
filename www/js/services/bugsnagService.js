@@ -8,15 +8,14 @@ angular.module('starter')
             reportError : function(exceptionOrError){
                 var deferred = $q.defer();
                 var stringifiedExceptionOrError = 'No error or exception data provided to bugsnagService';
+                var stacktrace = 'No stacktrace provided to bugsnagService';
                 if(exceptionOrError){
                     stringifiedExceptionOrError = JSON.stringify(exceptionOrError);
+                    if(typeof exceptionOrError.stack !== 'undefined'){
+                        stacktrace = exceptionOrError.stack.toLocaleString();
+                    }
                 }
                 console.error('ERROR: ' + stringifiedExceptionOrError);
-                var stacktrace = 'No stacktrace provided to bugsnagService';
-                if(typeof exceptionOrError.stack !== 'undefined'){
-                    stacktrace = exceptionOrError.stack.toLocaleString();
-                }
-
                 if (typeof Bugsnag !== "undefined") {
                     Bugsnag.releaseStage = utilsService.getEnv();
                     Bugsnag.notify("ERROR: " + stringifiedExceptionOrError, "Stacktrace: " + stacktrace, {}, "error");
