@@ -704,7 +704,7 @@ angular.module('starter')
 
             var deviceTokenToSync = localStorageService.getItemSync('deviceTokenToSync');
             if(deviceTokenToSync){
-                pushNotificationService.registerDeviceToken(deviceTokenToSync);
+                QuantiModo.registerDeviceToken(deviceTokenToSync);
             }
         };
 
