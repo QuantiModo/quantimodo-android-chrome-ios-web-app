@@ -388,6 +388,9 @@ angular.module('starter')
 		};
 
 	    $scope.editMeasurement = function(trackingReminderNotification, dividerIndex, trackingReminderNotificationNotificationIndex){
+			$scope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications[trackingReminderNotificationNotificationIndex].hide = true;
+			$rootScope.numberOfPendingNotifications--;
+			$scope.state.numberOfDisplayedNotifications--;
 			localStorageService.deleteElementOfItemById('trackingReminderNotifications',
 				trackingReminderNotification.id);
 			$scope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications[trackingReminderNotificationNotificationIndex].hide = true;
