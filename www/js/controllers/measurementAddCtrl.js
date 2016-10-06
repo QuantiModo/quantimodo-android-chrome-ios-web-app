@@ -168,15 +168,15 @@ angular.module('starter')
                 utilsService.showAlert('Please enter a variable name');
                 return;
             }
-            if(!$scope.state.measurement.variableCategoryName){
-                utilsService.showAlert('Please select a variable category');
-                return;
-            }
+            // if(!$scope.state.measurement.variableCategoryName){
+            //     utilsService.showAlert('Please select a variable category');
+            //     return;
+            // }
 
-            if(!$scope.state.measurement.abbreviatedUnitName && !$scope.abbreviatedUnitName){
-                utilsService.showAlert('Please select a unit');
-                return;
-            }
+            // if(!$scope.state.measurement.abbreviatedUnitName && !$scope.abbreviatedUnitName){
+            //     utilsService.showAlert('Please select a unit');
+            //     return;
+            // }
             else {
                 $scope.state.measurement.unitId =
                     $rootScope.unitsIndexedByAbbreviatedName[$scope.state.measurement.abbreviatedUnitName].id;
