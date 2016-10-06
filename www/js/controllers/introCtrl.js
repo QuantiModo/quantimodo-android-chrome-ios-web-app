@@ -4,7 +4,7 @@ angular.module('starter')
 
     $scope.viewTitle = config.appSettings.appName;
     $scope.primaryOutcomeVariable = config.appSettings.primaryOutcomeVariable;
-    $scope.introConfiguration = config.appSettings.intro;
+    $scope.introSlides = config.appSettings.intro;
 
     $scope.myIntro = {
         ready : false,

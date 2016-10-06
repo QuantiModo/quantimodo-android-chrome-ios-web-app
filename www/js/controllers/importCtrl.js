@@ -73,9 +73,11 @@ angular.module('starter')
 			connectorsService.getConnectors()
 				.then(function(connectors){
 					$scope.connectors = connectors;
-					$ionicLoading.hide().then(function(){
-						console.log("The loading indicator is now hidden");
-					});
+                    if(connectors) {
+                        $ionicLoading.hide().then(function(){
+                            console.log("The loading indicator is now hidden");
+                        });
+                    }
 					$scope.refreshConnectors();
 				});
 		};
@@ -97,10 +99,9 @@ angular.module('starter')
 			}
 	    };
 
-	    $scope.$on('$ionicView.enter', function(e) { console.debug("Entering state " + $state.current.name);
+	    $scope.$on('$ionicView.beforeEnter', function(e) { console.debug("Entering state " + $state.current.name);
 			init();
 	    });
-
 
 		$scope.connect = function(connector){
 

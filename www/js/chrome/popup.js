@@ -17,16 +17,17 @@ function setFaceButtonListeners() {
 var onFaceButtonClicked = function() {
     // Figure out what rating was selected
     var buttonId = this.id;
+    var ratingValue;
     if (buttonId === "buttonMoodDepressed") {
-        var ratingValue = 1;
+        ratingValue = 1;
     } else if (buttonId === "buttonMoodSad") {
-        var ratingValue = 2;
+        ratingValue = 2;
     } else if (buttonId === "buttonMoodOk") {
-        var ratingValue = 3;
+        ratingValue = 3;
     } else if (buttonId === "buttonMoodHappy") {
-        var ratingValue = 4;
+        ratingValue = 4;
     } else if (buttonId === "buttonMoodEcstatic") {
-        var ratingValue = 5;
+        ratingValue = 5;
     } else {
         console.log("How did I get here...");
         return;
@@ -90,7 +91,7 @@ document.addEventListener('DOMContentLoaded', function() {
     var xhr = new XMLHttpRequest();
     xhr.open("GET", "https://app.quantimo.do/api/user/me", true);
     xhr.onreadystatechange = function() {
-        if (xhr.readyState == 4) {
+        if (xhr.readyState === 4) {
             var userObject = JSON.parse(xhr.responseText);
             /*
              * it should hide and show sign in button based upon if the user is logged in or not

@@ -28,7 +28,7 @@ angular.module('starter')
 				if(!reminder.reminderStartTime){
                     reminder.reminderStartTime = '00:00:00';
 				}
-				return 'daily at ' + parseDate(reminder.reminderStartTime).format("hh:mm A")
+				return 'daily at ' + parseDate(reminder.reminderStartTime).format("hh:mm A");
 			}
 
 			return reminder.frequencyTextDescription;
