@@ -36,7 +36,7 @@ angular.module('starter')
                 $rootScope.getUserAndSetInLocalStorage();
             }
             if($rootScope.user){
-                $ionicLoading.hide();
+                $scope.hideLoader();
                 console.log("Already logged in on login page.  Going to default state...");
                 $rootScope.hideNavigationMenu = false;
                 $state.go(config.appSettings.defaultState);
@@ -266,7 +266,7 @@ angular.module('starter')
 
                     });
                 }, function(error){
-                    $ionicLoading.hide();
+                    $scope.hideLoader();
                     bugsnagService.reportError("QuantiModo.getTokensAndUserViaNativeSocialLogin error occurred! " +
                         "Couldn't generate JWT! Error response: " + JSON.stringify(error));
                 });
@@ -325,10 +325,8 @@ angular.module('starter')
                         }
                     },
                     function (errorMessage) {
-                        $ionicLoading.hide();
-                        Bugsnag.notify("ERROR: googleLogin could not get userData!  Fallback to nonNativeMobileLogin...", JSON.stringify(errorMessage), {}, "error");
-                        console.error("Google login error: ", errorMessage);
-                        console.debug('googleLogin: Fallback to nonNativeMobileLogin...');
+                        $scope.hideLoader();
+                        bugsnagService.reportError("ERROR: googleLogin could not get userData!  Fallback to nonNativeMobileLogin. Error: " + JSON.stringify(errorMessage));
                         nonNativeMobileLogin(register);
                     }
                 );

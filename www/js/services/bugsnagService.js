@@ -13,12 +13,14 @@ angular.module('starter')
                     stringifiedExceptionOrError = JSON.stringify(exceptionOrError);
                     if(typeof exceptionOrError.stack !== 'undefined'){
                         stacktrace = exceptionOrError.stack.toLocaleString();
+                    } else {
+                        stacktrace = stringifiedExceptionOrError;
                     }
                 }
                 console.error('ERROR: ' + stringifiedExceptionOrError);
                 if (typeof Bugsnag !== "undefined") {
                     Bugsnag.releaseStage = utilsService.getEnv();
-                    Bugsnag.notify("ERROR: " + stringifiedExceptionOrError, "Stacktrace: " + stacktrace, {}, "error");
+                    Bugsnag.notify(stringifiedExceptionOrError, stacktrace, {}, "error");
                     deferred.resolve();
                 } else {
                     deferred.reject();
