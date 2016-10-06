@@ -32,8 +32,10 @@ angular.module('starter')
 	    };
 
 		function showAppropriateHelpInfoCards(){
-			$scope.state.showTreatmentInfoCard = ($scope.state.trackingReminders.length === 0) && (window.location.href.indexOf('Treatments') > -1);
-			$scope.state.showSymptomInfoCard = ($scope.state.trackingReminders.length === 0) && (window.location.href.indexOf('Symptom') > -1);
+			$scope.state.showTreatmentInfoCard = ($scope.state.trackingReminders.length === 0) &&
+				(window.location.href.indexOf('Treatments') > -1 || $stateParams.variableCategoryName === 'Anything');
+			$scope.state.showSymptomInfoCard = ($scope.state.trackingReminders.length === 0) &&
+				(window.location.href.indexOf('Symptom') > -1 || $stateParams.variableCategoryName === 'Anything');
 		}
 
 	    // when date is updated
@@ -213,7 +215,11 @@ angular.module('starter')
 
 			reminderService.deleteReminder(reminder.trackingReminderId)
 				.then(function(){
-					reminderService.refreshTrackingReminderNotifications();
+					reminderService.refreshTrackingReminderNotifications().then(function(){
+						console.debug('reminderService.deleteReminder successfully refreshed notifications');
+					}, function (error) {
+						console.error('reminderService.deleteReminder: ' + error);
+					});
 					console.log("Reminder deleted");
 				}, function(err){
 					if (typeof Bugsnag !== "undefined") {

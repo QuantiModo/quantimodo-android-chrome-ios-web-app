@@ -168,12 +168,15 @@ angular.module('starter')
                         };
                     }
 
-                    if($rootScope.user.trackLocation){
-                        // Commented because of CORS errors
-                        //request.headers.LOCATION = $rootScope.lastLocationNameAndAddress;
-                        //request.headers.LATITUDE = $rootScope.lastLatitude;
-                        //request.headers.LONGITUDE = $rootScope.lastLongitude;
+                    /*   Commented because of CORS errors
+                    if($rootScope.user){
+                        if($rootScope.user.trackLocation){
+                            request.headers.LOCATION = $rootScope.lastLocationNameAndAddress;
+                            request.headers.LATITUDE = $rootScope.lastLatitude;
+                            request.headers.LONGITUDE = $rootScope.lastLongitude;
+                        }
                     }
+                    */
 
                     $http(request).success(successHandler).error(function(data,status,headers,config){
                         QuantiModo.errorHandler(data,status,headers,config);
@@ -939,20 +942,20 @@ angular.module('starter')
 
             };
 
-            QuantiModo.getTokensAndUserViaNativeSocialLogin= function (provider, accessToken) {
+            QuantiModo.getTokensAndUserViaNativeSocialLogin = function (provider, accessToken) {
                 var deferred = $q.defer();
 
-                if(!accessToken || accessToken === "null" || accessToken === null){
-                    if (typeof Bugsnag !== "undefined") {
-                        Bugsnag.notify("No accessToken", "accessToken not provided to getTokensAndUserViaNativeSocialLogin function", {}, "error");
-                    }
-                    deferred.reject();
+                if(!accessToken || accessToken === "null"){
+                    bugsnagService.reportError("accessToken not provided to getTokensAndUserViaNativeSocialLogin function");
+                    deferred.reject("accessToken not provided to getTokensAndUserViaNativeSocialLogin function");
                 }
                 var url = utilsService.getURL('api/v2/auth/social/authorizeToken');
 
                 url += "provider=" + encodeURIComponent(provider);
                 url += "&accessToken=" + encodeURIComponent(accessToken);
                 url += "&client_id=" + encodeURIComponent(utilsService.getClientId());
+
+                console.log('QuantiModo.getTokensAndUserViaNativeSocialLogin about to make request to ' + url);
 
                 $http({
                     method: 'GET',
@@ -973,8 +976,9 @@ angular.module('starter')
                     } else {
                         deferred.reject(response);
                     }
-                }, function (response) {
-                    deferred.reject(response);
+                }, function (error) {
+                    bugsnagService.reportError(error);
+                    deferred.reject(error);
                 });
 
                 return deferred.promise;

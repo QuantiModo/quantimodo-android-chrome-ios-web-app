@@ -1,14 +1,23 @@
 <ion-view hide-nav-bar="hideNavigationMenu" view-title="{{viewTitle}}">
 	<ion-content>
-		<div class="card sign-in" >
-	        <div class="item item-text-wrap">
+		<div class="card"  ng-show="state.loading">
+			<div class="item" >
+				<div class="row">
+					<ion-spinner></ion-spinner>
+					<p style=" text-align: center; line-height: normal; font-size: 18px;">&nbsp &nbsp Signing you in...</p>
+				</div>
+			</div>
+		</div>
+
+		<div class="card sign-in" ng-hide="state.loading">
+	        <div class="item item-text-wrap" >
 	            <h1 class="positive">{{headline}}</h1>
 	            <br/>
 				<ul>
 					<li>By creating a FREE account you'll be able to:</li>
 					<li ng-repeat="feature in features">{{feature}}</li>
 				</ul>
-	            <button ng-show="isIOS" class="button button-block button-positive" ng-click="facebookLogin()">
+	            <button ng-show="isIOS && !hideFacebookButton" class="button button-block button-positive" ng-click="facebookLogin()">
 					<i class="icon ion-social-facebook"></i>
 					&nbsp Facebook Sign In
 	            </button>
@@ -39,14 +48,6 @@
 	        </div>
 	    </div>
 
-		<div class="card"  ng-show="state.loading">
-			<div class="item" >
-				<div class="row">
-					<ion-spinner></ion-spinner>
-					<p style=" text-align: center; line-height: normal; font-size: 18px;">&nbsp &nbsp Signing you in...</p>
-				</div>
-			</div>
-		</div>
 
 
 	</ion-content>

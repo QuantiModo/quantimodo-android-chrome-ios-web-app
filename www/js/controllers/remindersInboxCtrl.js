@@ -2,7 +2,7 @@ angular.module('starter')
 
 	.controller('RemindersInboxCtrl', function($scope, $state, $stateParams, $rootScope, $filter, $ionicPlatform,
 											   $ionicActionSheet, $timeout, QuantiModo, reminderService, utilsService,
-											   notificationService, userService, localStorageService, $ionicLoading) {
+											   notificationService, userService, localStorageService, bugsnagService) {
 
 	    $scope.controller_name = "RemindersInboxCtrl";
 
@@ -112,9 +112,6 @@ angular.module('starter')
 
 		$scope.trackByValueField = function(trackingReminderNotification, $event, dividerIndex, trackingReminderNotificationNotificationIndex){
 
-			$ionicLoading.show({
-				template: '<ion-spinner></ion-spinner>'
-			});
 			if(isGhostClick($event)){
 				return;
 			}
@@ -135,23 +132,13 @@ angular.module('starter')
 						$scope.refreshTrackingReminderNotifications();
 					}
 				}, function(err){
-					if (typeof Bugsnag !== "undefined") {
-						Bugsnag.notify(err, JSON.stringify(err), {}, "error");
-					}
-					console.error(err);
-					utilsService.showAlert('Failed to Track Reminder, Try again!', 'assertive');
+					bugsnagService.reportError(err);
 				});
-			$ionicLoading.hide().then(function(){
-				console.log("The loading indicator is now hidden");
-			});
 		};
 
 
 		$scope.track = function(trackingReminderNotification, modifiedReminderValue, $event, dividerIndex, trackingReminderNotificationNotificationIndex){
 
-			$ionicLoading.show({
-				template: '<ion-spinner></ion-spinner>'
-			});
 			if(isGhostClick($event)){
 				return;
 			}
@@ -175,21 +162,11 @@ angular.module('starter')
 						$scope.refreshTrackingReminderNotifications();
 					}
 				}, function(err){
-					if (typeof Bugsnag !== "undefined") {
-						Bugsnag.notify(err, JSON.stringify(err), {}, "error");
-					}
-					console.error(err);
-					utilsService.showAlert('Failed to Track Reminder, Try again!', 'assertive');
+					bugsnagService.reportError(err);
 				});
-			$ionicLoading.hide().then(function(){
-				console.log("The loading indicator is now hidden");
-			});
 	    };
 
 	    $scope.skip = function(trackingReminderNotification, $event, dividerIndex, trackingReminderNotificationNotificationIndex){
-			$ionicLoading.show({
-				template: '<ion-spinner></ion-spinner>'
-			});
 
 			if(isGhostClick($event)){
 				return;
@@ -214,22 +191,11 @@ angular.module('starter')
 						$scope.refreshTrackingReminderNotifications();
 					}
 				}, function(err){
-					if (typeof Bugsnag !== "undefined") {
-						Bugsnag.notify(err, JSON.stringify(err), {}, "error");
-					}
-					utilsService.showAlert('Failed to Skip Reminder, Try again!', 'assertive');
-					console.error(err);
+					bugsnagService.reportError(err);
 				});
-			$ionicLoading.hide().then(function(){
-				console.log("The loading indicator is now hidden");
-			});
 	    };
 
 	    $scope.snooze = function(trackingReminderNotification, $event, dividerIndex, trackingReminderNotificationNotificationIndex){
-
-			$ionicLoading.show({
-				template: '<ion-spinner></ion-spinner>'
-			});
 			if(isGhostClick($event)){
 				return;
 			}
@@ -253,15 +219,8 @@ angular.module('starter')
 						$scope.refreshTrackingReminderNotifications();
 					}
 				}, function(err){
-					if (typeof Bugsnag !== "undefined") {
-						Bugsnag.notify(err, JSON.stringify(err), {}, "error");
-					}
-					console.error(err);
-					utilsService.showAlert('Failed to Snooze Reminder, Try again!', 'assertive');
+					bugsnagService.reportError(err);
 				});
-			$ionicLoading.hide().then(function(){
-				console.log("The loading indicator is now hidden");
-			});
 	    };
 
 		var getFilteredTrackingReminderNotifications = function(){
@@ -301,6 +260,11 @@ angular.module('starter')
 				});
 		};
 
+		$scope.$on('getTrackingReminderNotifications', function(){
+			console.log('getTrackingReminderNotifications broadcast received..');
+			getTrackingReminderNotifications();
+		});
+
 	    var getTrackingReminderNotifications = function () {
 			if($stateParams.today){
 				//$scope.showLoader("Getting today's reminder notifications...");
@@ -326,11 +290,17 @@ angular.module('starter')
 			if($stateParams.today){
 				getTrackingReminderNotifications();
 			} else {
-				reminderService.refreshTrackingReminderNotifications()
-					.then(function(){
-						getTrackingReminderNotifications();
-					});
+				reminderService.refreshTrackingReminderNotifications().then(function(){
+					getTrackingReminderNotifications();
+				}, function (error) {
+					console.error('$scope.refreshTrackingReminderNotifications: ' + error);
+				});
 			}
+		};
+
+		$scope.setLocalStorageFlagTrue = function (flagName) {
+			$scope[flagName] = true;
+			localStorageService.setItem(flagName, true);
 		};
 
 	    $scope.init = function(){
@@ -454,6 +424,16 @@ angular.module('starter')
 
 		$scope.$on('$ionicView.beforeEnter', function(e) { console.debug("beforeEnter state " + $state.current.name);
 			setPageTitle();
+			$scope.hideAddTreatmentRemindersCard = localStorageService.getItemSync('hideAddTreatmentRemindersCard');
+			$scope.hideAddFoodRemindersCard = localStorageService.getItemSync('hideAddFoodRemindersCard');
+			$scope.hideAddSymptomRemindersCard = localStorageService.getItemSync('hideAddSymptomRemindersCard');
+			$scope.hideAddEmotionRemindersCard = localStorageService.getItemSync('hideAddEmotionRemindersCard');
+			$scope.hideHistoryPageInstructionsCard = localStorageService.getItemSync('hideHistoryPageInstructionsCard');
+			$scope.hideImportDataCard = localStorageService.getItemSync('hideImportDataCard');
+			$scope.hideRecordMeasurementInfoCard = localStorageService.getItemSync('hideRecordMeasurementInfoCard');
+			$scope.hideNotificationSettingsInfoCard = localStorageService.getItemSync('hideNotificationSettingsInfoCard');
+			$scope.hideLocationTrackingInfoCard = localStorageService.getItemSync('hideLocationTrackingInfoCard');
+			$scope.hideChromeExtensionInfoCard = localStorageService.getItemSync('hideChromeExtensionInfoCard');
 			getTrackingReminderNotifications();
 		});
 

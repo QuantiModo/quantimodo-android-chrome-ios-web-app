@@ -11,5 +11,5 @@ angular.module('starter')
 			};
 
 			return track_factors[value]? track_factors[value] : 0;
-		}
+		};
 	});

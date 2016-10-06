@@ -1,7 +1,6 @@
 <ion-view hide-nav-bar="hideNavigationMenu" view-title="Import Data">
     <ion-content scroll="true" overflow-scroll="true">
         <ion-refresher on-refresh="refreshConnectors()"></ion-refresher>
-
         <div  class="list card" ng-if="connectors">
             <div ng-if="!connector.hide" class="list card"
                  ng-repeat="connector in connectors" >

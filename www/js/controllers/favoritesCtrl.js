@@ -95,7 +95,7 @@ angular.module('starter')
 			// 	localStorageService.addToOrReplaceElementOfItemByIdOrMoveToFront($scope.state.favorites[$index]);
 			// 	reminderService.postTrackingReminders([$scope.state.favorites[$index]]);
 			// }
-			if($scope.state.favorites[$index].total == null){
+			if($scope.state.favorites[$index].total === null){
 				utilsService.showAlert('Please specify a value for ' + $scope.state.favorites[$index].variableName);
 				return;
 			}

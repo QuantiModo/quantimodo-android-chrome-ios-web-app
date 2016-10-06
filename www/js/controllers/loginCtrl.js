@@ -50,6 +50,13 @@ angular.module('starter')
 
         // User wants to login
         $scope.login = function(register) {
+
+            $timeout(function () {
+                if(!$rootScope.user){
+                    bugsnagService.reportError('$scope.login: Could not get user within 30 seconds!');
+                    //utilsService.showAlert('Facebook Login Issue', 'Please try to sign in using on of the other methods below');
+                }
+            }, 30000);
             
             $scope.showLoader('Logging you in...');
             localStorageService.setItem('isWelcomed', true);
@@ -148,28 +155,18 @@ angular.module('starter')
 
             console.log('nonNativeMobileLogin: listen to its event when the page changes');
             ref.addEventListener('loadstart', function(event) {
-
-                console.log(JSON.stringify(event));
-                console.log('nonNativeMobileLogin: The event.url is ' + event.url);
-                console.log('nonNativeMobileLogin: The redirection url is ' + utilsService.getRedirectUri());
-
-                console.log('nonNativeMobileLogin: Checking if changed url is the same as redirection url.');
+                console.log('nonNativeMobileLogin: Checking if changed url ' + event.url + ' is the same as redirection url ' + utilsService.getRedirectUri());
                 if(utilsService.startsWith(event.url, utilsService.getRedirectUri())) {
-
                     console.log('nonNativeMobileLogin: event.url starts with ' + utilsService.getRedirectUri());
                     if(!utilsService.getUrlParameter(event.url,'error')) {
-
                         var authorizationCode = QuantiModo.getAuthorizationCodeFromUrl(event);
-                        console.log('nonNativeMobileLogin: Closing inAppBrowser.');
                         ref.close();
                         console.log('nonNativeMobileLogin: Going to get an access token using authorization code.');
                         fetchAccessTokenAndUserDetails(authorizationCode);
 
                     } else {
                         var errorMessage = "nonNativeMobileLogin: error occurred:" + utilsService.getUrlParameter(event.url, 'error');
-                        console.log(errorMessage);
                         bugsnagService.reportError(errorMessage);
-                        console.error('nonNativeMobileLogin: close inAppBrowser');
                         ref.close();
                     }
                 }
@@ -206,9 +203,13 @@ angular.module('starter')
             //$scope.showLoader();
             localStorageService.setItem('isWelcomed', true);
             $rootScope.isWelcomed = true;
+            console.log('$scope.nativeSocialLogin: Going to try to QuantiModo.getTokensAndUserViaNativeSocialLogin for ' +
+                provider + ' provider');
 
             QuantiModo.getTokensAndUserViaNativeSocialLogin(provider, accessToken)
                 .then(function(response){
+                    console.log('$scope.nativeSocialLogin: Response from QuantiModo.getTokensAndUserViaNativeSocialLogin:' +
+                        JSON.stringify(response));
 
                     if(response.user){
                         localStorageService.setItem('user', response.user);
@@ -247,11 +248,8 @@ angular.module('starter')
                         console.log('nativeSocialLogin: check if changed url is the same as redirection url.');
 
                         if(utilsService.startsWith(event.url, utilsService.getRedirectUri())) {
-
                             if(!utilsService.getUrlParameter(event.url,'error')) {
-
                                 var authorizationCode = QuantiModo.getAuthorizationCodeFromUrl(event);
-
                                 console.log('nativeSocialLogin: Got authorization code: ' + authorizationCode + ' Closing inAppBrowser.');
                                 ref.close();
 
@@ -261,24 +259,39 @@ angular.module('starter')
                             } else {
                                 var errorMessage = "nativeSocialLogin: error occurred: " + utilsService.getUrlParameter(event.url, 'error');
                                 bugsnagService.reportError(errorMessage);
-                                console.error(errorMessage);
-
                                 // close inAppBrowser
                                 ref.close();
                             }
                         }
 
                     });
-                }, function(){
-                    // error
-
+                }, function(error){
                     $ionicLoading.hide();
-                    console.log("error occurred, couldn't generate JWT");
+                    bugsnagService.reportError("QuantiModo.getTokensAndUserViaNativeSocialLogin error occurred! " +
+                        "Couldn't generate JWT! Error response: " + JSON.stringify(error));
                 });
         };
 
-        // log in with google
+        $scope.hideLoader = function () {
+            $scope.state.loading = false;
+            $ionicLoading.hide();
+        };
+
+        $scope.showLoader = function () {
+            $scope.state.loading = true;
+            $timeout(function () {
+                $scope.hideLoader();
+            }, 30000);
+        };
+
         $scope.googleLogin = function(register){
+
+            $timeout(function () {
+                if(!$rootScope.user){
+                    bugsnagService.reportError('$scope.googleLogin: Could not get user within 30 seconds!');
+                    //utilsService.showAlert('Facebook Login Issue', 'Please try to sign in using on of the other methods below');
+                }
+            }, 30000);
             $scope.showLoader('Logging you in...');
             document.addEventListener('deviceready', deviceReady, false);
             function deviceReady() {
@@ -290,9 +303,7 @@ angular.module('starter')
                         'offline': true // optional, but requires the webClientId - if set to true the plugin will also return a serverAuthCode, which can be used to grant offline access to a non-Google server
                     },
                     function (userData) {
-                        $ionicLoading.hide();
-                        console.debug('successfully logged in');
-                        console.debug('google->', JSON.stringify(userData));
+                        console.debug('$scope.googleLogin: successfully got user data-> ', JSON.stringify(userData));
                         var tokenForApi = null;
 
                         /** @namespace userData.oauthToken */
@@ -337,18 +348,22 @@ angular.module('starter')
         $scope.facebookLogin = function(){
             $scope.showLoader('Logging you in...');
             console.log("$scope.facebookLogin about to try $cordovaFacebook.login");
+            $scope.hideFacebookButton = true; // Hide button so user tries other options if it didn't work
+            $timeout(function () {
+                if(!$rootScope.user){
+                    bugsnagService.reportError('Could not get user $scope.facebookLogin within 30 seconds!');
+                    utilsService.showAlert('Facebook Login Issue', 'Please try to sign in using on of the other methods below');
+                }
+            }, 30000);
+
             $cordovaFacebook.login(["public_profile", "email", "user_friends"])
-                .then(function(success) {
-                    // success
-                    $ionicLoading.hide();
-                    console.log("facebookLogin_success");
-                    console.log("facebook->", JSON.stringify(success));
-                    var accessToken = success.authResponse.accessToken;
-
+                .then(function(response) {
+                    console.log("facebookLogin_success response->", JSON.stringify(response));
+                    var accessToken = response.authResponse.accessToken;
                     if(!accessToken){
-                        Bugsnag.notify("ERROR: facebookLogin could not get accessToken!  ", JSON.stringify(success), {}, "error");
+                        bugsnagService.reportError('ERROR: facebookLogin could not get accessToken! response: ' + JSON.stringify(response));
+                        utilsService.showAlert('Facebook Login Issue', 'Please try to sign in using on of the other methods below');
                     }
-
                     $scope.nativeSocialLogin('facebook', accessToken);
                 }, function (error) {
                     Bugsnag.notify("ERROR: facebookLogin could not get accessToken!  ", JSON.stringify(error), {}, "error");
