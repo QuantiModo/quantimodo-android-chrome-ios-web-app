@@ -101,7 +101,7 @@ config.appSettings  = {
             },
             content : {
 
-                firstP : {
+                firstParagraph : {
                     visible : true,
                     content : 'Welcome to EnergyModo',
                     classes : 'intro-header positive'
@@ -110,7 +110,7 @@ config.appSettings  = {
                     visible : true,
                     id : 'logo'
                 },
-                finalP : {
+                finalParagraph : {
                     visible : true,
                     content : 'EnergyModo allows you track your <span class="positive">energy level</span> and identify the hidden factors which may most influence it.',
                     classes : 'intro-paragraph',
@@ -126,7 +126,7 @@ config.appSettings  = {
             },
             content : {
 
-                firstP : {
+                firstParagraph : {
                     visible : true,
                     content : 'We are feeling energized that you\'re helping us derive a mathematical equation for optimal energy levels!',
                     classes : 'intro-paragraph positive'
@@ -136,7 +136,7 @@ config.appSettings  = {
                     visible : true,
                     id : 'logo'
                 },
-                finalP: {
+                finalParagraph: {
                     visible : true,
                     content : 'Start tracking and optimize your life!',
                     classes : 'intro-paragraph-small',
