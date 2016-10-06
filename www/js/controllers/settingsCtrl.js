@@ -241,6 +241,9 @@ angular.module('starter')
         $scope.logout = function() {
 
 			var completelyResetAppState = function(){
+				// Getting token so we can post as the new user if they log in again
+				$rootScope.deviceTokenToSync = localStorageService.getItemSync('deviceTokenOnServer');
+				QuantiModo.deleteDeviceToken($rootScope.deviceTokenToSync);
 				localStorageService.clear();
 				notificationService.cancelAllNotifications();
 				$ionicHistory.clearHistory();
@@ -248,17 +251,22 @@ angular.module('starter')
 				if (utilsService.getClientId() === 'oAuthDisabled') {
 					window.open(utilsService.getURL("api/v2/auth/logout"),'_blank');
 				}
+				localStorageService.setItem('deviceTokenToSync', $rootScope.deviceTokenToSync);
 				$state.go(config.appSettings.welcomeState, {}, {
 					reload: true
 				});
 			};
 
 			var afterLogoutDoNotDeleteMeasurements = function(){
+				// Getting token so we can post as the new user if they log in again
+				$rootScope.deviceTokenToSync = localStorageService.getItemSync('deviceTokenOnServer');
+				QuantiModo.deleteDeviceToken($rootScope.deviceTokenToSync);
 				clearTokensFromLocalStorage();
 				if (utilsService.getClientId() === 'oAuthDisabled') {
 					window.open(utilsService.getURL("api/v2/auth/logout"),'_blank');
 				}
 				localStorageService.setItem('isWelcomed', false);
+				localStorageService.setItem('deviceTokenToSync', $rootScope.deviceTokenToSync);
 				//hard reload
 				$state.go(config.appSettings.welcomeState, {}, {
 					reload: true
