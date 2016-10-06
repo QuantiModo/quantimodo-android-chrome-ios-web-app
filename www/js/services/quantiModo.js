@@ -66,7 +66,8 @@ angular.module('starter')
 
         // Handler when request is failed
         var onRequestFailed = function(error){
-            console.log("Request error : " + error);
+            bugsnagService.reportError(error);
+            console.error("Request error : " + error);
         };
 
 
