@@ -4,57 +4,57 @@
 
     <ion-slide-box on-slide-changed="myIntro.slideChanged(index)" >
 
-        <ion-slide ng-repeat="introConf in introConfiguration" ng-show="myIntro.ready">
+        <ion-slide ng-repeat="introSlide in introSlides" ng-show="myIntro.ready" ">
 
             <div ng-click="myIntro.previous()" ng-show="myIntro.slideIndex > 0" class="previous">
                 <span class="ion-chevron-left positive" data-pack="default" data-tags="talk"></span>
             </div>
             
-            <div ng-click="myIntro.next()" ng-show="myIntro.slideIndex != introConfiguration.length-1" class="next">
+            <div ng-click="myIntro.next()" ng-show="myIntro.slideIndex != introSlides.length-1" class="next">
                 <span class="ion-chevron-right positive" data-pack="default" data-tags="talk"></span>
             </div>
             
-            <div ng-click="myIntro.startApp()" ng-show="myIntro.slideIndex == introConfiguration.length-1" class="next">
+            <div ng-click="myIntro.startApp()" ng-show="myIntro.slideIndex == introSlides.length-1" class="next">
                 <span class="ion-chevron-right positive" data-pack="default" data-tags="talk"></span>
             </div>
 
             <div class="content intro-content">
                 
-                <p ng-if="introConf.content.firstP" class="{{introConf.content.firstP.classes}}" ng-bind-html="introConf.content.firstP.content">
+                <p ng-if="introSlide.content.firstParagraph" class="{{introSlide.content.firstParagraph.classes}}" ng-bind-html="introSlide.content.firstParagraph.content">
                 </p>
                 
-                <div ng-if="introConf.content.showOutcomeVariableImages" >
+                <div ng-if="introSlide.content.showOutcomeVariableImages" >
                     <div class="ponka" style="display:inline-block" ng-repeat="option in positiveRatingOptions">
-                        <img style="width:{{introConf.img.width}}px; height:{{introConf.img.height}}px;" class="intro-primary-outcome-variable" ng-src="{{option.img}}">
+                        <img style="width:{{introSlide.img.width}}px; height:{{introSlide.img.height}}px;" class="intro-primary-outcome-variable" ng-src="{{option.img}}">
                         <p>{{option.displayDescription}}</p>
                     </div>
 
                 </div>
 
-                <br ng-if="introConf.content.showFirstBr" />
+                <br ng-if="introSlide.content.showFirstLineBreak" />
 
-                <div ng-if="introConf.content.logoDiv" id="{{introConf.content.logoDiv.id}}">
-                    <img style="width:{{introConf.img.width}}px; height:{{introConf.img.height}}px;" ng-src="{{introConf.img.url}}">
+                <div ng-if="introSlide.content.logoDiv" id="{{introSlide.content.logoDiv.id}}">
+                    <img style="width:{{introSlide.img.width}}px; height:{{introSlide.img.height}}px;" ng-src="{{introSlide.img.url}}">
                 </div>
                 
-                <br ng-if="introConf.content.showSecondBr" />
-                <p ng-if="introConf.content.finalP" class="{{introConf.content.finalP.classes}}">
-                    <span ng-bind-html="introConf.content.finalP.content"></span>
+                <br ng-if="introSlide.content.showSecondBr" />
+                <p ng-if="introSlide.content.finalParagraph" class="{{introSlide.content.finalParagraph.classes}}">
+                    <span ng-bind-html="introSlide.content.finalParagraph.content"></span>
                     <br>
                     <br>
                     <br>
-                    <div ng-if="introConf.content.finalP && introConf.content.finalP.buttonBarVisible">
+                    <div ng-if="introSlide.content.finalParagraph && introSlide.content.finalParagraph.buttonBarVisible">
                         <div class="button-bar">
-                            <a id="skipButtonIntro" class="button button-positive" ng-show="myIntro.slideIndex != introConfiguration.length-1 " ng-click="myIntro.startApp()">
+                            <a id="skipButtonIntro" class="button button-positive" ng-show="myIntro.slideIndex != introSlides.length-1 " ng-click="myIntro.startApp()">
                                 Skip
                             </a>
-                            <a id="backButtonIntro" class="button button-positive" ng-show="myIntro.slideIndex > 0 && myIntro.slideIndex < introConfiguration.length-1" ng-click="myIntro.previous()">
+                            <a id="backButtonIntro" class="button button-positive" ng-show="myIntro.slideIndex > 0 && myIntro.slideIndex < introSlides.length-1" ng-click="myIntro.previous()">
                                 Back
                             </a>
-                            <a id="nextButtonIntro" class="button button-positive" ng-show="myIntro.slideIndex != introConfiguration.length-1 && myIntro.slideIndex != introConfiguration.length-1" ng-click="myIntro.next()">
+                            <a id="nextButtonIntro" class="button button-positive" ng-show="myIntro.slideIndex != introSlides.length-1 && myIntro.slideIndex != introSlides.length-1" ng-click="myIntro.next()">
                                 Next
                             </a>
-                            <a id="goButtonIntro" class="button button-positive" ng-show="myIntro.slideIndex == introConfiguration.length-1" ng-click="myIntro.startApp()">
+                            <a id="goButtonIntro" class="button button-positive" ng-show="myIntro.slideIndex == introSlides.length-1" ng-click="myIntro.startApp()">
                                 Go
                             </a>
                         </div>
