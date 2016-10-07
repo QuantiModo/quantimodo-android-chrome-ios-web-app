@@ -179,8 +179,8 @@ angular.module('starter')
                 }
                 */
 
-                $http(request).success(successHandler).error(function(data,status,headers,config){
-                    QuantiModo.errorHandler(data,status,headers,config);
+                $http(request).success(successHandler).error(function(data, status, headers, config){
+                    QuantiModo.errorHandler(data, status, headers, config, request);
                     errorHandler(data);
                 });
 
