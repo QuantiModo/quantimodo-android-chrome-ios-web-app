@@ -71,7 +71,7 @@
   <plugin name="cordova-plugin-console" spec="~1.0.3"/>
   <plugin name="cordova-plugin-whitelist" spec="~1.2.2"/>
   <plugin name="cordova-plugin-splashscreen" spec="~3.2.2"/>
-  <plugin name="phonegap-plugin-push" version="1.8.1">
+  <plugin name="phonegap-plugin-push" version="1.8.2">
     <variable name="SENDER_ID" value="1052648855194"/>
   </plugin>
   <plugin name="cordova-plugin-facebook4" version="1.7.2">
