@@ -6,11 +6,11 @@ angular.module('starter')
                                     measurementService, QuantiModo, notificationService, localStorageService,
                                     reminderService, ratingService, migrationService, ionicDatePicker, unitService,
                                     variableService, qmLocationService, variableCategoryService, bugsnagService,
-                                    pushNotificationService, utilsService, connectorsService, userService) {
+                                    utilsService, connectorsService, userService) {
 
         $rootScope.loaderImagePath = config.appSettings.loaderImagePath;
         $rootScope.appMigrationVersion = 1489;
-        $rootScope.appVersion = "2.0.0.6";
+        $rootScope.appVersion = "2.0.1.0";
         if (!$rootScope.loaderImagePath) {
             $rootScope.loaderImagePath = 'img/circular-loader.gif';
         }
@@ -704,7 +704,7 @@ angular.module('starter')
 
             var deviceTokenToSync = localStorageService.getItemSync('deviceTokenToSync');
             if(deviceTokenToSync){
-                pushNotificationService.registerDeviceToken(deviceTokenToSync);
+                QuantiModo.registerDeviceToken(deviceTokenToSync);
             }
         };
 

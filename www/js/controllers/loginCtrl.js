@@ -36,7 +36,7 @@ angular.module('starter')
                 $rootScope.getUserAndSetInLocalStorage();
             }
             if($rootScope.user){
-                $ionicLoading.hide();
+                $scope.hideLoader();
                 console.log("Already logged in on login page.  Going to default state...");
                 $rootScope.hideNavigationMenu = false;
                 $state.go(config.appSettings.defaultState);
@@ -105,14 +105,12 @@ angular.module('starter')
 
         };
 
-        // get Access Token
         var fetchAccessTokenAndUserDetails = function(authorization_code, withJWT) {
-            //$scope.showLoader();
             QuantiModo.getAccessTokenFromAuthorizationCode(authorization_code, withJWT)
                 .then(function(response) {
                     if(response.error){
+                        bugsnagService.reportError(response.error);
                         console.error("Error generating access token");
-                        console.log('response', response);
                         localStorageService.setItem('user', null);
                     } else {
                         console.log("Access token received",response);
@@ -125,27 +123,21 @@ angular.module('starter')
                     }
                 })
                 .catch(function(err){
-                    Bugsnag.notify(err, JSON.stringify(err), {}, "error");
-                    console.log("error in generating access token", err);
+                    bugsnagService.reportError(err);
+                    console.error("error in generating access token", err);
                     // set flags
                     localStorageService.setItem('user', null);
                 });
         };
 
         var nonNativeMobileLogin = function(register) {
-            //$scope.showLoader();
-            //console.log("nonNativeMobileLogin: Mobile device detected and ionic platform is " + ionic.Platform.platforms[0]);
-            console.log(JSON.stringify(ionic.Platform.platforms));
-
-            var url = QuantiModo.generateV1OAuthUrl(register);
-
             console.log('nonNativeMobileLogin: open the auth window via inAppBrowser.');
             // Set location=yes instead of location=no temporarily to try to diagnose intermittent white screen on iOS
 
             //var ref = window.open(url,'_blank', 'location=no,toolbar=yes');
             // Try clearing inAppBrowser cache to avoid intermittent connectors page redirection problem
             // Note:  Clearing cache didn't solve the problem, but I'll leave it because I don't think it hurts anything
-            var ref = window.open(url,'_blank', 'location=no,toolbar=yes,clearcache=yes,clearsessioncache=yes');
+            var ref = window.open(QuantiModo.generateV1OAuthUrl(register),'_blank', 'location=no,toolbar=yes,clearcache=yes,clearsessioncache=yes');
 
             // Commented because I think it's causing "$apply already in progress" error
             // $timeout(function () {
@@ -175,7 +167,6 @@ angular.module('starter')
         };
 
         var chromeAppLogin = function(register){
-          //$scope.showLoader();
           console.log("login: Use Chrome app (content script, background page, etc.");
           var url = QuantiModo.generateV1OAuthUrl(register);
           chrome.identity.launchWebAuthFlow({
@@ -188,19 +179,16 @@ angular.module('starter')
         };
 
         var chromeExtensionLogin = function(register) {
-            //$scope.showLoader();
             var loginUrl = utilsService.getURL("api/v2/auth/login");
             if (register === true) {
-            loginUrl = utilsService.getURL("api/v2/auth/register");
+                loginUrl = utilsService.getURL("api/v2/auth/register");
             }
             console.log("Using Chrome extension, so we use sessions instead of OAuth flow. ");
             chrome.tabs.create({ url: loginUrl });
-            console.debug("Closing window");
             window.close();
         };
 
         $scope.nativeSocialLogin = function(provider, accessToken){
-            //$scope.showLoader();
             localStorageService.setItem('isWelcomed', true);
             $rootScope.isWelcomed = true;
             console.log('$scope.nativeSocialLogin: Going to try to QuantiModo.getTokensAndUserViaNativeSocialLogin for ' +
@@ -261,12 +249,13 @@ angular.module('starter')
                                 bugsnagService.reportError(errorMessage);
                                 // close inAppBrowser
                                 ref.close();
+                                $scope.hideLoader();
                             }
                         }
 
                     });
                 }, function(error){
-                    $ionicLoading.hide();
+                    $scope.hideLoader();
                     bugsnagService.reportError("QuantiModo.getTokensAndUserViaNativeSocialLogin error occurred! " +
                         "Couldn't generate JWT! Error response: " + JSON.stringify(error));
                 });
@@ -278,10 +267,11 @@ angular.module('starter')
         };
 
         $scope.showLoader = function () {
-            $scope.state.loading = true;
+            //$scope.state.loading = true;
+            $rootScope.syncDisplayText = 'Logging you in...';
             $timeout(function () {
                 $scope.hideLoader();
-            }, 30000);
+            }, 15000);
         };
 
         $scope.googleLogin = function(register){
@@ -325,10 +315,8 @@ angular.module('starter')
                         }
                     },
                     function (errorMessage) {
-                        $ionicLoading.hide();
-                        Bugsnag.notify("ERROR: googleLogin could not get userData!  Fallback to nonNativeMobileLogin...", JSON.stringify(errorMessage), {}, "error");
-                        console.error("Google login error: ", errorMessage);
-                        console.debug('googleLogin: Fallback to nonNativeMobileLogin...');
+                        $scope.hideLoader();
+                        bugsnagService.reportError("ERROR: googleLogin could not get userData!  Fallback to nonNativeMobileLogin. Error: " + JSON.stringify(errorMessage));
                         nonNativeMobileLogin(register);
                     }
                 );

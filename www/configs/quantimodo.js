@@ -107,7 +107,7 @@ config.appSettings  = {
             },
             content : {
 
-                firstP : {
+                firstParagraph : {
                     visible : true,
                     content : 'Welcome to QuantiModo',
                     classes : 'intro-header positive'
@@ -116,7 +116,7 @@ config.appSettings  = {
                     visible : true,
                     id : 'logo'
                 },
-                finalP : {
+                finalParagraph : {
                     visible : true,
                     content : 'QuantiModo allows you track your health and happiness and identify hidden factors which most influence them.',
                     classes : 'intro-paragraph',
@@ -132,7 +132,7 @@ config.appSettings  = {
             },
             content : {
 
-                firstP : {
+                firstParagraph : {
                     visible : true,
                     content : 'Thank you for helping us derive a mathematical equation for happiness!',
                     classes : 'intro-paragraph positive'
@@ -142,7 +142,7 @@ config.appSettings  = {
                     visible : true,
                     id : 'logo'
                 },
-                finalP: {
+                finalParagraph: {
                     visible : true,
                     content : 'Now start tracking and optimize your life!',
                     classes : 'intro-paragraph-small',

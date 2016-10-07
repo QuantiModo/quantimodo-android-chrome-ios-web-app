@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<widget id="com.quantimodo.moodimodoapp" version="2.0.0" ios-CFBundleVersion="2.0.0.6" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget id="com.quantimodo.moodimodoapp" version="2.0.1" ios-CFBundleVersion="2.0.1.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
   <name>MoodiModo</name>
   <description>&#xD;
         The mood-tracking app from QuantiModo
@@ -71,7 +71,7 @@
   <plugin name="cordova-plugin-console" spec="~1.0.3"/>
   <plugin name="cordova-plugin-whitelist" spec="~1.2.2"/>
   <plugin name="cordova-plugin-splashscreen" spec="~3.2.2"/>
-  <plugin name="phonegap-plugin-push" version="1.8.1">
+  <plugin name="phonegap-plugin-push" version="1.8.2">
     <variable name="SENDER_ID" value="1052648855194"/>
   </plugin>
   <plugin name="cordova-plugin-facebook4" version="1.7.2">
@@ -84,7 +84,7 @@
   <plugin name="ionic-plugin-keyboard" version="2.2.1"/>
   <plugin name="cordova-plugin-statusbar" version="2.1.3"/>
   <vs:platformSpecificValues xmlns:vs="http://schemas.microsoft.com/appx/2014/htmlapps">
-    <vs:platformSpecificWidget platformName="windows" version="2.0.0.6" id="com.quantimodo.moodimodoapp"/>
+    <vs:platformSpecificWidget platformName="windows" version="2.0.1.0" id="com.quantimodo.moodimodoapp"/>
   </vs:platformSpecificValues>
   <icon src="resources\ios\icon\icon-small@3x.png"/>
 </widget>
