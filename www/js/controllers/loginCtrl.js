@@ -278,7 +278,9 @@ angular.module('starter')
 
             $timeout(function () {
                 if(!$rootScope.user){
-                    bugsnagService.reportError('$scope.googleLogin: Could not get user within 30 seconds!');
+                    bugsnagService.reportError('$scope.googleLogin: Could not get user within 30 seconds! Fallback to non-native registration...');
+                    register = true;
+                    nonNativeMobileLogin(register);
                     //utilsService.showAlert('Facebook Login Issue', 'Please try to sign in using on of the other methods below');
                 }
             }, 30000);
@@ -308,7 +310,8 @@ angular.module('starter')
 
                         if(!tokenForApi){
                             Bugsnag.notify("ERROR: googleLogin could not get userData.oauthToken!  ", JSON.stringify(userData), {}, "error");
-                            console.error('googleLogin: No userData.accessToken or userData.idToken provided! Fallback to nonNativeMobileLogin...');
+                            console.error('googleLogin: No userData.accessToken or userData.idToken provided! Fallback to nonNativeMobileLogin registration...');
+                            register = true;
                             nonNativeMobileLogin(register);
                         } else {
                             $scope.nativeSocialLogin('google', tokenForApi);
@@ -316,7 +319,8 @@ angular.module('starter')
                     },
                     function (errorMessage) {
                         $scope.hideLoader();
-                        bugsnagService.reportError("ERROR: googleLogin could not get userData!  Fallback to nonNativeMobileLogin. Error: " + JSON.stringify(errorMessage));
+                        bugsnagService.reportError("ERROR: googleLogin could not get userData!  Fallback to nonNativeMobileLogin registration. Error: " + JSON.stringify(errorMessage));
+                        register = true;
                         nonNativeMobileLogin(register);
                     }
                 );
@@ -339,8 +343,9 @@ angular.module('starter')
             $scope.hideFacebookButton = true; // Hide button so user tries other options if it didn't work
             $timeout(function () {
                 if(!$rootScope.user){
-                    bugsnagService.reportError('Could not get user $scope.facebookLogin within 30 seconds!');
-                    utilsService.showAlert('Facebook Login Issue', 'Please try to sign in using on of the other methods below');
+                    bugsnagService.reportError('Could not get user $scope.facebookLogin within 30 seconds! Falling back to non-native registration...');
+                    var register = true;
+                    nonNativeMobileLogin(register);
                 }
             }, 30000);
 
