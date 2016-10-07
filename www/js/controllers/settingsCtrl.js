@@ -3,7 +3,7 @@ angular.module('starter')
 	// Controls the settings page
 	.controller('SettingsCtrl', function( $state, $scope, $ionicPopover, $ionicPopup, localStorageService, $rootScope, 
 										  notificationService, QuantiModo, reminderService, qmLocationService, 
-										  ionicTimePicker, userService, timeService, utilsService, $stateParams, $ionicHistory) {
+										  ionicTimePicker, userService, timeService, utilsService, $stateParams, $ionicHistory, bugsnagService) {
 		$scope.controller_name = "SettingsCtrl";
 		$scope.state = {};
 		$scope.showReminderFrequencySelector = config.appSettings.settingsPageOptions.showReminderFrequencySelector;
@@ -104,7 +104,7 @@ angular.module('starter')
 			userService.updateUserSettings({combineNotifications: $rootScope.user.combineNotifications});
 			if($rootScope.user.combineNotifications){
 				$ionicPopup.alert({
-					title: 'Disabled Multiple Notifications',
+					title: 'Disabled Individual Notifications',
 					template: 'You will only get a single generic notification ' +
 					'instead of a separate notification for each reminder that you create.  All ' +
 					'tracking reminder notifications for specific reminders will still show up in your Reminder Inbox.'
@@ -337,15 +337,11 @@ angular.module('starter')
 			});
 
 			QuantiModo.postMeasurementsCsvExport(function(response){
-				if(response.success) {
-
-				} else {
-					alert("Could not export measurements.");
-					console.log("error", response);
+				if(!response.success) {
+					bugsnagService.reportError("Could not export measurements. Response: " + JSON.stringify(response));
 				}
-			}, function(response){
-				alert("Could not export measurements.");
-				console.log("error", response);
+			}, function(error){
+				bugsnagService.reportError("Could not export measurements. Response: " + JSON.stringify(error));
 			});
 		};
 
@@ -357,15 +353,11 @@ angular.module('starter')
 			});
 
 			QuantiModo.postMeasurementsPdfExport(function(response){
-				if(response.success) {
-
-				} else {
-					alert("Could not export measurements.");
-					console.log("error", response);
+				if(!response.success) {
+					bugsnagService.reportError("Could not export measurements. Response: " + JSON.stringify(response));
 				}
-			}, function(response){
-				alert("Could not export measurements.");
-				console.log("error", response);
+			}, function(error){
+				bugsnagService.reportError("Could not export measurements. Response: " + JSON.stringify(error));
 			});
 		};
 
@@ -377,16 +369,11 @@ angular.module('starter')
 			});
 			
 			QuantiModo.postMeasurementsXlsExport(function(response){
-				if(response.success) {
-
-
-				} else {
-					alert("Could not export measurements.");
-					console.log("error", response);
+				if(!response.success) {
+					bugsnagService.reportError("Could not export measurements.");
 				}
-			}, function(response){
-				alert("Could not export measurements.");
-				console.log("error", response);
+			}, function(error){
+				bugsnagService.reportError("Could not export measurements. Response: " + JSON.stringify(error));
 			});
 		};
 

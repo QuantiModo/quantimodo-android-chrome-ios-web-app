@@ -609,16 +609,21 @@ angular.module('starter')
 
         QuantiModo.deleteDeviceToken = function(deviceToken, successHandler, errorHandler) {
             var deferred = $q.defer();
-            var params = {
-                deviceToken: deviceToken
-            };
-            QuantiModo.post('api/v1/deviceTokens/delete',
-                [
-                    'deviceToken'
-                ],
-                params,
-                successHandler,
-                errorHandler);
+            if(!deviceToken){
+                deferred.reject('No deviceToken provided to QuantiModo.deleteDeviceToken');
+            } else {
+                var params = {
+                    deviceToken: deviceToken
+                };
+                QuantiModo.post('api/v1/deviceTokens/delete',
+                    [
+                        'deviceToken'
+                    ],
+                    params,
+                    successHandler,
+                    errorHandler);
+                deferred.resolve();
+            }
             return deferred.promise;
         };
 
