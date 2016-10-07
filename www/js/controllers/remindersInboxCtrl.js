@@ -131,8 +131,8 @@ angular.module('starter')
 					if($scope.state.numberOfDisplayedNotifications < 2){
 						$scope.refreshTrackingReminderNotifications();
 					}
-				}, function(err){
-					bugsnagService.reportError(err);
+				}, function(error){
+					if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error(error);
 				});
 		};
 
@@ -161,8 +161,8 @@ angular.module('starter')
 					if($scope.state.numberOfDisplayedNotifications < 2){
 						$scope.refreshTrackingReminderNotifications();
 					}
-				}, function(err){
-					bugsnagService.reportError(err);
+				}, function(error){
+					if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error(error);
 				});
 	    };
 
@@ -190,8 +190,8 @@ angular.module('starter')
 					if($scope.state.numberOfDisplayedNotifications < 2){
 						$scope.refreshTrackingReminderNotifications();
 					}
-				}, function(err){
-					bugsnagService.reportError(err);
+				}, function(error){
+					if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error(error);
 				});
 	    };
 
@@ -218,8 +218,8 @@ angular.module('starter')
 					if($rootScope.numberOfPendingNotifications < 2){
 						$scope.refreshTrackingReminderNotifications();
 					}
-				}, function(err){
-					bugsnagService.reportError(err);
+				}, function(error){
+					if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error(error);
 				});
 	    };
 
@@ -251,7 +251,8 @@ angular.module('starter')
 					$scope.$broadcast('scroll.refreshComplete');
 					$scope.hideLoader();
 					$scope.state.loading = false;
-				}, function(){
+				}, function(error){
+					console.log(error);
 					$scope.hideLoader();
 					console.error("failed to get reminder notifications!");
 					//Stop the ion-refresher from spinning
@@ -361,11 +362,11 @@ angular.module('starter')
 									notificationService.setNotificationBadge(0);
 								}
 								$scope.init();
-							}, function(err){
+							}, function(error){
 								if (typeof Bugsnag !== "undefined") {
-									Bugsnag.notify(err, JSON.stringify(err), {}, "error");
+									Bugsnag.notify(error, JSON.stringify(error), {}, "error");
 								}
-								console.error(err);
+								console.error(error);
 								utilsService.showAlert('Failed to skip all notifications, Try again!', 'assertive');
 							});
 						return true;
@@ -528,12 +529,12 @@ angular.module('starter')
 						.then(function(){
 							$scope.hideLoader();
 							$scope.init();
-						}, function(err){
+						}, function(error){
 							$scope.hideLoader();
 							if (typeof Bugsnag !== "undefined") {
-								Bugsnag.notify(err, JSON.stringify(err), {}, "error");
+								Bugsnag.notify(error, JSON.stringify(error), {}, "error");
 							}
-							console.error(err);
+							console.error(error);
 							utilsService.showAlert('Failed to skip all notifications for , Try again!', 'assertive');
 						});
 					return true;

@@ -51,9 +51,9 @@ angular.module('starter')
 
 				$ionicLoading.hide();
 
-			}, function(err) {
+			}, function(error) {
 				$ionicLoading.hide();
-				console.log(err);
+				console.error(error);
 			});
 
 

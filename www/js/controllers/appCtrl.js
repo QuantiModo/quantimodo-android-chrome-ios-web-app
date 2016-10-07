@@ -264,7 +264,7 @@ angular.module('starter')
                                         fromUrl: window.location.href
                                     }
                                 );
-                            }, function (err) {
+                            }, function(error) {
                                 console.error('Failed to add favorite!', trackingReminder);
                             });
                     });
@@ -536,8 +536,8 @@ angular.module('starter')
                 [],
                 {},
                 successHandler,
-                function(err){
-                    bugsnagService.reportError(err);
+                function(error){
+                    if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error(error);
                 }
             );
         };

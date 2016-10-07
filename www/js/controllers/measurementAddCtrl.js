@@ -60,11 +60,11 @@ angular.module('starter')
             measurementService.postBloodPressureMeasurements($scope.state.bloodPressure)
                 .then(function () {
                     console.debug("Successfully measurementService.postMeasurementByReminder: " + JSON.stringify($scope.state.bloodPressure));
-                }, function (err) {
+                }, function(error) {
                     if (typeof Bugsnag !== "undefined") {
-                        Bugsnag.notify(err, JSON.stringify(err), {}, "error");
+                        Bugsnag.notify(error, JSON.stringify(error), {}, "error");
                     }
-                    console.error(err);
+                    console.error(error);
                     console.error('Failed to Track by favorite, Try again!');
                 });
             var backView = $ionicHistory.backView();
@@ -217,10 +217,10 @@ angular.module('starter')
                 };
                 QuantiModo.skipTrackingReminderNotification(params, function(){
                     console.debug($state.current.name + ": skipTrackingReminderNotification");
-                }, function(err){
+                }, function(error){
                     console.error($state.current.name + ": skipTrackingReminderNotification error");
                     if (typeof Bugsnag !== "undefined") {
-                        Bugsnag.notifyException(err);
+                        Bugsnag.notifyException(error);
                     }
                 });
             }

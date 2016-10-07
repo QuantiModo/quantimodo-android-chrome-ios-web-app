@@ -122,10 +122,7 @@ angular.module('starter')
                         $state.go(config.appSettings.defaultState);
                     }
                 })
-                .catch(function(err){
-                    bugsnagService.reportError(err);
-                    console.error("error in generating access token", err);
-                    // set flags
+                .catch(function(exception){ if (typeof Bugsnag !== "undefined") { Bugsnag.notifyException(exception); }
                     localStorageService.setItem('user', null);
                 });
         };

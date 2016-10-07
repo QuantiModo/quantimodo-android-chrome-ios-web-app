@@ -66,7 +66,7 @@ angular.module('starter')
 
         // Handler when request is failed
         var onRequestFailed = function(error){
-            bugsnagService.reportError(error);
+            if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error(error);
             console.error("Request error : " + error);
         };
 
@@ -842,7 +842,7 @@ angular.module('starter')
         QuantiModo.convertToObjectIfJsonString = function (stringOrObject) {
             try {
                 stringOrObject = JSON.parse(stringOrObject);
-            } catch (e) {
+            } catch (exception) { if (typeof Bugsnag !== "undefined") { Bugsnag.notifyException(exception); }
                 return stringOrObject;
             }
             return stringOrObject;
@@ -998,7 +998,7 @@ angular.module('starter')
                     deferred.reject(response);
                 }
             }, function (error) {
-                bugsnagService.reportError(error);
+                if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error(error);
                 deferred.reject(error);
             });
 
@@ -1014,11 +1014,11 @@ angular.module('starter')
                 localStorageService.setItem('deviceTokenOnServer', deviceToken);
                 console.debug(response);
                 deferred.resolve();
-            }, function(err){
+            }, function(error){
                 if (typeof Bugsnag !== "undefined") {
-                    Bugsnag.notify(err, JSON.stringify(err), {}, "error");
+                    Bugsnag.notify(error, JSON.stringify(error), {}, "error");
                 }
-                deferred.reject(err);
+                deferred.reject(error);
             });
             return deferred.promise;
         };

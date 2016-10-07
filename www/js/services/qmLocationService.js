@@ -196,9 +196,9 @@ angular.module('starter')
 
                         //console.debug("My coordinates are: ", position.coords);
 
-                    }, function(err) {
-                        deferred.reject(err);
-                        bugsnagService.reportError(err);
+                    }, function(error) {
+                        deferred.reject(error);
+                        if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error(error);
                     });
 
                 });
