@@ -442,9 +442,9 @@ angular.module('starter')
                                 console.error('reminderAddCtrl.save: ' + error);
                             });
                             $scope.hideLoader();
-                        }, function(err){
+                        }, function(error){
                             $scope.hideLoader();
-                            console.error("addNewReminder ERROR: " + err);
+                            console.error("addNewReminder ERROR: " + error);
                             $ionicLoading.hide();
                             $scope.loading = false;
                         });
@@ -650,7 +650,7 @@ angular.module('starter')
                     $ionicLoading.hide();
                     $scope.loading = false;
                     console.debug('Reminder Deleted');
-                }, function(err){
+                }, function(error){
                     $ionicLoading.hide();
                     $scope.loading = false;
                     console.error('ERROR: reminderService.deleteReminder Failed to Delete Reminder with id ' +
