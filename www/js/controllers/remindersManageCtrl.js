@@ -221,10 +221,8 @@ angular.module('starter')
 						console.error('reminderService.deleteReminder: ' + error);
 					});
 					console.log("Reminder deleted");
-				}, function(err){
-					if (typeof Bugsnag !== "undefined") {
-						Bugsnag.notify(err, JSON.stringify(err), {}, "error");
-					}
+				}, function(error){
+					if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error(error);
 					$ionicLoading.hide();
 					$scope.loading = false;
 					console.error('Failed to Delete Reminder!');

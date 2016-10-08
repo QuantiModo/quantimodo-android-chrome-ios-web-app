@@ -134,9 +134,9 @@ angular.module('starter')
 			variableCategoryService.getVariableCategories()
 				.then(function(variableCategories){
 					$scope.state.variableCategories = variableCategories;
-				}, function(err){
-					Bugsnag.notify(err, JSON.stringify(err), {}, "error");
-					console.log($state.current.name + ": " + "error getting variable categories", err);
+				}, function(error){
+					Bugsnag.notify(error, JSON.stringify(error), {}, "error");
+					console.log($state.current.name + ": " + "error getting variable categories", error);
 				});
 			$scope.getHistory();
 

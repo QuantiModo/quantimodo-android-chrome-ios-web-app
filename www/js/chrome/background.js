@@ -193,7 +193,7 @@ function showGenericTrackingNotification(alarm)
 function IsJsonString(str) {
     try {
         JSON.parse(str);
-    } catch (e) {
+    } catch (exception) { if (typeof Bugsnag !== "undefined") { Bugsnag.notifyException(exception); }
         return false;
     }
     return true;

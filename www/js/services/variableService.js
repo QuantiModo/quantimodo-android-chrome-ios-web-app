@@ -90,10 +90,8 @@ angular.module('starter')
                 localStorageService.deleteElementOfItemById('userVariables', variableId);
                 deferred.resolve();
             }, function(error) {
-                if (typeof Bugsnag !== "undefined") {
-                    Bugsnag.notify(error, JSON.stringify(error), {}, "error");
-                }
-                console.log('Error deleting all measurements for variable: ', error);
+                if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); }
+                console.error('Error deleting all measurements for variable: ', error);
                 deferred.reject(error);
             });
 
@@ -186,12 +184,9 @@ angular.module('starter')
                     deferred.resolve(commonVariables);
                 };
 
-                var errorHandler = function(err) {
+                var errorHandler = function(error) {
                     $rootScope.syncingCommonVariables = false;
-                    console.error(err);
-                    if (typeof Bugsnag !== "undefined") {
-                        Bugsnag.notify("ERROR: " + err, err, {}, "error");
-                    }
+                    if (typeof Bugsnag !== "undefined") { Bugsnag.notify("ERROR: " + error, error, {}, "error"); } console.error(error);
                     deferred.reject(false);
                 };
 

@@ -147,7 +147,7 @@ angular.module('starter')
 			};
 
 			var errorHandler = function(error){
-                bugsnagService.reportError(error);
+                if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error(error);
             };
 
 			if(connector.name === 'github') {
