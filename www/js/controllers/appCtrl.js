@@ -287,8 +287,7 @@ angular.module('starter')
         $scope.closeMenuIfNeeded = function (menuItem) {
             if (menuItem.click) {
                 $scope[menuItem.click] && $scope[menuItem.click]();
-            }
-            else if (!menuItem.isSubMenuParent) {
+            } else if (!menuItem.isSubMenuParent) {
                 $scope.closeMenu();
             }
         };
