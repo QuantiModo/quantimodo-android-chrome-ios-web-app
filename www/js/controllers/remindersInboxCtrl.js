@@ -445,7 +445,7 @@ angular.module('starter')
 		});
 
 		// Triggered on a button click, or some other target
-		$scope.showActionSheetForNotification = function(trackingReminderNotification, $event) {
+		$scope.showActionSheetForNotification = function(trackingReminderNotification, $event, dividerIndex, trackingReminderNotificationIndex) {
 
 			if(isGhostClick($event)){
 				return;
@@ -478,7 +478,7 @@ angular.module('starter')
 				buttonClicked: function(index) {
 					console.log('BUTTON CLICKED', index);
 					if(index === 0){
-						$scope.editReminderSettingsByNotification($scope.state.trackingReminderNotification);
+						$scope.editReminderSettingsByNotification($scope.state.trackingReminderNotification, dividerIndex, trackingReminderNotificationIndex);
 					}
 					if(index === 1){
 						$scope.addToFavoritesUsingVariableObject($scope.state.variableObject);
