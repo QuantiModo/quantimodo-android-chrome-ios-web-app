@@ -2,7 +2,7 @@ angular.module('starter')
 	
 	// controls the Import Data page of the app
 	.controller('ImportCtrl', function($scope, $ionicLoading, $state, $rootScope, utilsService, QuantiModo,
-									   connectorsService, $cordovaOauth, bugsnagService, $ionicPopup, $stateParams) {
+									   connectorsService, $cordovaOauth, $ionicPopup, $stateParams) {
 
 		$scope.controller_name = "ImportCtrl";
 		
