@@ -299,11 +299,6 @@ angular.module('starter')
 			}
 		};
 
-		$scope.setLocalStorageFlagTrue = function (flagName) {
-			$scope[flagName] = true;
-			localStorageService.setItem(flagName, true);
-		};
-
 	    $scope.init = function(){
 			console.debug($state.current.name + ' initializing...');
 			$rootScope.stateParams = $stateParams;
