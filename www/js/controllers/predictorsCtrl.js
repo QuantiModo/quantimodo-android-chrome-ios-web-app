@@ -198,7 +198,7 @@ angular.module('starter')
 
         // open store in inAppbrowser
 	    $scope.openStore = function(name){
-            console.log("open store for ", name);
+            console.debug("open store for ", name);
 	    	// make url
 	    	name = name.split(' ').join('+');
             // launch inAppBrowser

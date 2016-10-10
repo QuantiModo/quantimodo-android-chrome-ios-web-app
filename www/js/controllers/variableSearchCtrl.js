@@ -70,7 +70,7 @@ angular.module('starter')
         $scope.onVariableSearch = function(){
             var params;
             $scope.state.showAddVariableButton = false;
-            console.log($state.current.name + ": " + "Search term: ", $scope.state.variableSearchQuery.name);
+            console.debug($state.current.name + ": " + "Search term: ", $scope.state.variableSearchQuery.name);
             if($scope.state.variableSearchQuery.name.length > 2){
                 $scope.state.searching = true;
                 if ($stateParams.doNotIncludePublicVariables) { // on variable search page, only show user's variables
@@ -146,7 +146,7 @@ angular.module('starter')
         };
 
         $scope.$on('populateUserVariables', function(){
-            console.log('populateUserVariables broadcast received..');
+            console.debug('populateUserVariables broadcast received..');
             populateUserVariables();
         });
 

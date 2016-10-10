@@ -20,7 +20,7 @@ angular.module('starter')
         };
 
         $scope.addNewReminderButtonClick = function() {
-            console.log("addNewReminderButtonClick");
+            console.debug("addNewReminderButtonClick");
             $state.go('app.reminderAdd', {
                 variableObject: $scope.state.variableObject,
                 fromState: $state.current.name
@@ -184,7 +184,7 @@ angular.module('starter')
         $scope.init = function(){
             //$scope.showLoader('Fetching measurements');
             $scope.state.loading = true;
-            console.log("variablePageCtrl: init");
+            console.debug("variablePageCtrl: init");
             if($stateParams.variableObject){
                 $scope.state.variableObject = $stateParams.variableObject;
             } else if ($stateParams.trackingReminder){
@@ -233,10 +233,10 @@ angular.module('starter')
                 //destructiveText: '<i class="icon ion-trash-a"></i>Delete Favorite',
                 cancelText: '<i class="icon ion-ios-close"></i>Cancel',
                 cancel: function() {
-                    console.log('CANCELLED');
+                    console.debug('CANCELLED');
                 },
                 buttonClicked: function(index) {
-                    console.log('BUTTON CLICKED', index);
+                    console.debug('BUTTON CLICKED', index);
                     if(index === 0){
                         $scope.addToFavoritesUsingVariableObject($scope.state.variableObject);
                     }
