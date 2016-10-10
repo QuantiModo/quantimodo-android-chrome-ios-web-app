@@ -125,8 +125,7 @@
                 .replace(/\t=(.*?)%>/g, "',$1,'")
                 .split("\t").join("');")
                 .split("%>").join("p.push('")
-                .split("\r").join("\\'")
-            + "');}return p.join('');");
+                .split("\r").join("\\'") + "');}return p.join('');");
         return fn(data);
     }
 
@@ -137,7 +136,7 @@
     }
 
     function countObjectAttributes(o) {
-        if (typeof o != "object") {
+        if (typeof o !== "object") {
             return null;
         }
         var count = 0;
@@ -495,12 +494,12 @@
                 var fields = block.querySelector('.qm-account-block-fields');
                 var span = document.createElement('span');
                 span.setAttribute('class', 'qm-account-block-field-text');
-                span.innerHTML = parameter['displayName'];
+                span.innerHTML = parameter.displayName;
                 var input = document.createElement('input');
-                input.setAttribute('type', parameter['type']);
-                input.value = parameter['defaultValue'];
-                input.setAttribute('name', parameter['key']);
-                input.setAttribute('placeholder', parameter['placeholder']);
+                input.setAttribute('type', parameter.type);
+                input.value = parameter.defaultValue;
+                input.setAttribute('name', parameter.key);
+                input.setAttribute('placeholder', parameter.placeholder);
                 input.setAttribute('class', 'qm-account-block-field-input');
                 fields.appendChild(span);
                 fields.appendChild(input);
@@ -509,7 +508,7 @@
 
                 input.addEventListener('keypress', function (event) {
 
-                    if (event.keyCode == 13) {
+                    if (event.keyCode === 13) {
 
                         var block = closest(event.target, '.qm-account-block');
                         var connectButton = block.getElementsByClassName('qm-account-connect-button')[0];

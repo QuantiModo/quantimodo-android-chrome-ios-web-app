@@ -60,6 +60,18 @@ angular.module('starter')
 			}
 		};
 	})
+	.filter('timeOfDayDayOfWeekDate', function(){
+		return function(time){
+			if(time){
+				if(typeof time === "number") {
+					return moment(time * 1000).format("h:mm a dddd, MMMM Do YYYY");
+				}
+				return moment.utc(time).local().format("h:mm a dddd, MMMM Do YYYY");
+			} else {
+				return "";
+			}
+		};
+	})
 	.filter('justDate', function(){
 		return function(time){
 			if(time){

@@ -6,7 +6,7 @@ angular.module('starter')
 
 	    $scope.controller_name = "FavoritesCtrl";
 
-		console.log('Loading ' + $scope.controller_name);
+		console.debug('Loading ' + $scope.controller_name);
 		
 	    $scope.state = {
 	    	selected1to5Value : false,
@@ -62,11 +62,8 @@ angular.module('starter')
 			measurementService.postMeasurementByReminder($scope.state.favorites[$index], $scope.state.favorites[$index].total)
 				.then(function () {
 					console.debug("Successfully measurementService.postMeasurementByReminder: " + JSON.stringify($scope.state.favorites[$index]));
-				}, function (err) {
-					if (typeof Bugsnag !== "undefined") {
-						Bugsnag.notify(err, JSON.stringify(err), {}, "error");
-					}
-					console.error(err);
+				}, function(error) {
+					if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error(error);
 					console.error('Failed to Track by favorite, Try again!');
 				});
 		};
@@ -80,11 +77,8 @@ angular.module('starter')
 			measurementService.postBloodPressureMeasurements($scope.state.bloodPressure)
 				.then(function () {
 					console.debug("Successfully measurementService.postMeasurementByReminder: " + JSON.stringify($scope.state.bloodPressure));
-				}, function (err) {
-					if (typeof Bugsnag !== "undefined") {
-						Bugsnag.notify(err, JSON.stringify(err), {}, "error");
-					}
-					console.error(err);
+				}, function(error) {
+					if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error(error);
 					console.error('Failed to Track by favorite, Try again!');
 				});
 		};
@@ -103,11 +97,9 @@ angular.module('starter')
 			measurementService.postMeasurementByReminder($scope.state.favorites[$index], $scope.state.favorites[$index].total)
 				.then(function () {
 					console.debug("Successfully measurementService.postMeasurementByReminder: " + JSON.stringify($scope.state.favorites[$index]));
-				}, function (err) {
-					if (typeof Bugsnag !== "undefined") {
-						Bugsnag.notify(err, JSON.stringify(err), {}, "error");
-					}
-					console.error(err);
+				}, function(error) {
+					if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error(error);
+					console.error(error);
 					console.error('Failed to Track by favorite, Try again!');
 				});
 		};
@@ -117,7 +109,7 @@ angular.module('starter')
 				modifiedReminderValue = trackingReminder.defaultValue;
 			}
 			console.debug('Tracking reminder', trackingReminder);
-			console.log('modifiedReminderValue is ' + modifiedReminderValue);
+			console.debug('modifiedReminderValue is ' + modifiedReminderValue);
 			for(var i = 0; i < $scope.state.favorites.length; i++){
 				if($scope.state.favorites[i].id === trackingReminder.id){
 					if($scope.state.favorites[i].abbreviatedUnitName !== '/5') {
@@ -148,11 +140,11 @@ angular.module('starter')
                     measurementService.postMeasurementByReminder(trackingReminder, $scope.state[trackingReminder.id].tally)
                         .then(function () {
                         	console.debug("Successfully measurementService.postMeasurementByReminder: " + JSON.stringify(trackingReminder));
-                        }, function (err) {
+                        }, function(error) {
 							if (typeof Bugsnag !== "undefined") {
-								Bugsnag.notify(err, JSON.stringify(err), {}, "error");
+								Bugsnag.notify(error, JSON.stringify(error), {}, "error");
 							}
-                            console.error(err);
+                            console.error(error);
                             console.error('Failed to Track by favorite, Try again!');
                         });
                     $scope.state[trackingReminder.id].tally = 0;
@@ -232,15 +224,15 @@ angular.module('starter')
 				destructiveText: '<i class="icon ion-trash-a"></i>Delete From Favorites',
 				cancelText: '<i class="icon ion-ios-close"></i>Cancel',
 				cancel: function() {
-					console.log('CANCELLED');
+					console.debug('CANCELLED');
 				},
 				buttonClicked: function(index) {
-					console.log('BUTTON CLICKED', index);
+					console.debug('BUTTON CLICKED', index);
 					if(index === 0){
 						$state.go('app.favoriteAdd', {reminder: favorite});
 					}
 					if(index === 1){
-						$state.go('app.measurementAdd', {variableObject: variableObject});
+						$state.go('app.measurementAdd', {trackingReminder: favorite});
 					}
 					if(index === 2){
 						$state.go('app.charts',
@@ -294,8 +286,8 @@ angular.module('starter')
 						reminderService.deleteReminder(favorite.id)
 							.then(function(){
 								console.debug('Favorite deleted: ' + JSON.stringify(favorite));
-							}, function(err){
-								console.error('Failed to Delete Favorite!  Error is ' + err.message + '.  Favorite is ' + JSON.stringify(favorite));
+							}, function(error){
+								console.error('Failed to Delete Favorite!  Error is ' + error.message + '.  Favorite is ' + JSON.stringify(favorite));
 							});
 						localStorageService.deleteElementOfItemById('trackingReminders', favorite.id)
 							.then(function(){
@@ -308,8 +300,8 @@ angular.module('starter')
 						reminderService.deleteReminder($scope.state.bloodPressure.reminderId)
 							.then(function(){
 								console.debug('Favorite deleted: ' + JSON.stringify($scope.state.bloodPressure));
-							}, function(err){
-								console.error('Failed to Delete Favorite!  Error is ' + err.message + '.  Favorite is ' + JSON.stringify($scope.state.bloodPressure));
+							}, function(error){
+								console.error('Failed to Delete Favorite!  Error is ' + error.message + '.  Favorite is ' + JSON.stringify($scope.state.bloodPressure));
 							});
 						localStorageService.deleteElementOfItemById('trackingReminders', $scope.state.bloodPressure.reminderId)
 							.then(function(){

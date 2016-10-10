@@ -23,7 +23,7 @@ angular.module('starter')
                     localStorageService.deleteItem('allMeasurements');
                     localStorageService.deleteItem('lastSyncTime');
                     measurementService.syncPrimaryOutcomeVariableMeasurements().then(function(){
-                        console.log("Measurement sync complete!");
+                        console.debug("Measurement sync complete!");
                     });
                     localStorageService.setItem('appMigrationVersion', 1489);
                 }

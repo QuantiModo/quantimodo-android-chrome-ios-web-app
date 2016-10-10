@@ -6,16 +6,16 @@ angular.module('starter')
 
         $scope.state = { loading: false};
         $scope.controller_name = "LoginCtrl";
-        console.log("isIos is" + $rootScope.isIos);
+        console.debug("isIos is" + $rootScope.isIos);
         $rootScope.hideNavigationMenu = true;
         $scope.headline = config.appSettings.headline;
         $scope.features = config.appSettings.features;
         var $cordovaFacebook = {};
         if (($rootScope.isIOS || $rootScope.isAndroid) && $injector.has('$cordovaFacebook')) {
-            console.log('Injecting $cordovaFacebook');
+            console.debug('Injecting $cordovaFacebook');
             $cordovaFacebook = $injector.get('$cordovaFacebook');
         } else {
-            console.log("Could not inject $cordovaFacebook");
+            console.debug("Could not inject $cordovaFacebook");
         }
 
         $scope.init = function () {
@@ -25,7 +25,7 @@ angular.module('starter')
             if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
             $scope.hideLoader();
             if($rootScope.helpPopup){
-                console.log('Closing help popup!');
+                console.debug('Closing help popup!');
                 $rootScope.helpPopup.close();
             }
             if(navigator && navigator.splashscreen) {
@@ -37,7 +37,7 @@ angular.module('starter')
             }
             if($rootScope.user){
                 $scope.hideLoader();
-                console.log("Already logged in on login page.  Going to default state...");
+                console.debug("Already logged in on login page.  Going to default state...");
                 $rootScope.hideNavigationMenu = false;
                 $state.go(config.appSettings.defaultState);
             }
@@ -67,10 +67,10 @@ angular.module('starter')
             } else if ($rootScope.isChromeExtension) {
                 chromeExtensionLogin(register);
             } else if ($rootScope.isAndroid || $rootScope.isIOS || $rootScope.isWindows) {
-                console.log("$scope.login: Browser and Chrome Not Detected.  Assuming mobile platform and using nonNativeMobileLogin");
+                console.debug("$scope.login: Browser and Chrome Not Detected.  Assuming mobile platform and using nonNativeMobileLogin");
                 nonNativeMobileLogin(register);
             } else {
-                console.log("$scope.login: Not windows, android or is so assuming browser.");
+                console.debug("$scope.login: Not windows, android or is so assuming browser.");
                 browserLogin(register);
             }
 
@@ -113,7 +113,7 @@ angular.module('starter')
                         console.error("Error generating access token");
                         localStorageService.setItem('user', null);
                     } else {
-                        console.log("Access token received",response);
+                        console.debug("Access token received",response);
                         QuantiModo.saveAccessTokenInLocalStorage(response);
                         console.debug('get user details from server and going to defaultState...');
                         $rootScope.getUserAndSetInLocalStorage();
@@ -122,16 +122,13 @@ angular.module('starter')
                         $state.go(config.appSettings.defaultState);
                     }
                 })
-                .catch(function(err){
-                    bugsnagService.reportError(err);
-                    console.error("error in generating access token", err);
-                    // set flags
+                .catch(function(exception){ if (typeof Bugsnag !== "undefined") { Bugsnag.notifyException(exception); }
                     localStorageService.setItem('user', null);
                 });
         };
 
         var nonNativeMobileLogin = function(register) {
-            console.log('nonNativeMobileLogin: open the auth window via inAppBrowser.');
+            console.debug('nonNativeMobileLogin: open the auth window via inAppBrowser.');
             // Set location=yes instead of location=no temporarily to try to diagnose intermittent white screen on iOS
 
             //var ref = window.open(url,'_blank', 'location=no,toolbar=yes');
@@ -141,19 +138,19 @@ angular.module('starter')
 
             // Commented because I think it's causing "$apply already in progress" error
             // $timeout(function () {
-            //     console.log('nonNativeMobileLogin: Automatically closing inAppBrowser auth window after 60 seconds.');
+            //     console.debug('nonNativeMobileLogin: Automatically closing inAppBrowser auth window after 60 seconds.');
             //     ref.close();
             // }, 60000);
 
-            console.log('nonNativeMobileLogin: listen to its event when the page changes');
+            console.debug('nonNativeMobileLogin: listen to its event when the page changes');
             ref.addEventListener('loadstart', function(event) {
-                console.log('nonNativeMobileLogin: Checking if changed url ' + event.url + ' is the same as redirection url ' + utilsService.getRedirectUri());
+                console.debug('nonNativeMobileLogin: Checking if changed url ' + event.url + ' is the same as redirection url ' + utilsService.getRedirectUri());
                 if(utilsService.startsWith(event.url, utilsService.getRedirectUri())) {
-                    console.log('nonNativeMobileLogin: event.url starts with ' + utilsService.getRedirectUri());
+                    console.debug('nonNativeMobileLogin: event.url starts with ' + utilsService.getRedirectUri());
                     if(!utilsService.getUrlParameter(event.url,'error')) {
                         var authorizationCode = QuantiModo.getAuthorizationCodeFromUrl(event);
                         ref.close();
-                        console.log('nonNativeMobileLogin: Going to get an access token using authorization code.');
+                        console.debug('nonNativeMobileLogin: Going to get an access token using authorization code.');
                         fetchAccessTokenAndUserDetails(authorizationCode);
 
                     } else {
@@ -167,7 +164,7 @@ angular.module('starter')
         };
 
         var chromeAppLogin = function(register){
-          console.log("login: Use Chrome app (content script, background page, etc.");
+          console.debug("login: Use Chrome app (content script, background page, etc.");
           var url = QuantiModo.generateV1OAuthUrl(register);
           chrome.identity.launchWebAuthFlow({
               'url': url,
@@ -183,7 +180,7 @@ angular.module('starter')
             if (register === true) {
                 loginUrl = utilsService.getURL("api/v2/auth/register");
             }
-            console.log("Using Chrome extension, so we use sessions instead of OAuth flow. ");
+            console.debug("Using Chrome extension, so we use sessions instead of OAuth flow. ");
             chrome.tabs.create({ url: loginUrl });
             window.close();
         };
@@ -191,12 +188,12 @@ angular.module('starter')
         $scope.nativeSocialLogin = function(provider, accessToken){
             localStorageService.setItem('isWelcomed', true);
             $rootScope.isWelcomed = true;
-            console.log('$scope.nativeSocialLogin: Going to try to QuantiModo.getTokensAndUserViaNativeSocialLogin for ' +
+            console.debug('$scope.nativeSocialLogin: Going to try to QuantiModo.getTokensAndUserViaNativeSocialLogin for ' +
                 provider + ' provider');
 
             QuantiModo.getTokensAndUserViaNativeSocialLogin(provider, accessToken)
                 .then(function(response){
-                    console.log('$scope.nativeSocialLogin: Response from QuantiModo.getTokensAndUserViaNativeSocialLogin:' +
+                    console.debug('$scope.nativeSocialLogin: Response from QuantiModo.getTokensAndUserViaNativeSocialLogin:' +
                         JSON.stringify(response));
 
                     if(response.user){
@@ -219,10 +216,10 @@ angular.module('starter')
                     console.debug("nativeSocialLogin: Mobile device detected and provider is " + provider + ". Got JWT token " + JWTToken);
                     var url = QuantiModo.generateV2OAuthUrl(JWTToken);
 
-                    console.log('nativeSocialLogin: open the auth window via inAppBrowser.');
+                    console.debug('nativeSocialLogin: open the auth window via inAppBrowser.');
                     var ref = cordova.InAppBrowser.open(url,'_blank', 'location=no,toolbar=yes,clearcache=no,clearsessioncache=no');
 
-                    console.log('nativeSocialLogin: listen to event at ' + url + ' when the page changes.');
+                    console.debug('nativeSocialLogin: listen to event at ' + url + ' when the page changes.');
 /*
                     $timeout(function () {
                         if(!$rootScope.user){
@@ -233,12 +230,12 @@ angular.module('starter')
                     ref.addEventListener('loadstart', function(event) {
 
                         console.debug('nativeSocialLogin: loadstart event is ' + JSON.stringify(event));
-                        console.log('nativeSocialLogin: check if changed url is the same as redirection url.');
+                        console.debug('nativeSocialLogin: check if changed url is the same as redirection url.');
 
                         if(utilsService.startsWith(event.url, utilsService.getRedirectUri())) {
                             if(!utilsService.getUrlParameter(event.url,'error')) {
                                 var authorizationCode = QuantiModo.getAuthorizationCodeFromUrl(event);
-                                console.log('nativeSocialLogin: Got authorization code: ' + authorizationCode + ' Closing inAppBrowser.');
+                                console.debug('nativeSocialLogin: Got authorization code: ' + authorizationCode + ' Closing inAppBrowser.');
                                 ref.close();
 
                                 var withJWT = true;
@@ -278,7 +275,9 @@ angular.module('starter')
 
             $timeout(function () {
                 if(!$rootScope.user){
-                    bugsnagService.reportError('$scope.googleLogin: Could not get user within 30 seconds!');
+                    bugsnagService.reportError('$scope.googleLogin: Could not get user within 30 seconds! Fallback to non-native registration...');
+                    register = true;
+                    nonNativeMobileLogin(register);
                     //utilsService.showAlert('Facebook Login Issue', 'Please try to sign in using on of the other methods below');
                 }
             }, 30000);
@@ -286,7 +285,7 @@ angular.module('starter')
             document.addEventListener('deviceready', deviceReady, false);
             function deviceReady() {
                 //I get called when everything's ready for the plugin to be called!
-                console.log('Device is ready!');
+                console.debug('Device is ready!');
                 window.plugins.googleplus.login({
                         'scopes': 'email https://www.googleapis.com/auth/fitness.activity.write https://www.googleapis.com/auth/fitness.body.write https://www.googleapis.com/auth/fitness.nutrition.write https://www.googleapis.com/auth/plus.login', // optional, space-separated list of scopes, If not included or empty, defaults to `profile` and `email`.
                         'webClientId': '1052648855194.apps.googleusercontent.com', // optional clientId of your Web application from Credentials settings of your project - On Android, this MUST be included to get an idToken. On iOS, it is not required.
@@ -299,7 +298,7 @@ angular.module('starter')
                         /** @namespace userData.oauthToken */
                         /** @namespace userData.serverAuthCode */
                         if(userData.oauthToken) {
-                            console.log('userData.oauthToken is ' + userData.oauthToken);
+                            console.debug('userData.oauthToken is ' + userData.oauthToken);
                             tokenForApi = userData.oauthToken;
                         } else if(userData.serverAuthCode) {
                             console.error('googleLogin: No userData.accessToken!  You might have to use cordova-plugin-googleplus@4.0.8 or update API to use serverAuthCode to get an accessToken from Google...');
@@ -308,7 +307,8 @@ angular.module('starter')
 
                         if(!tokenForApi){
                             Bugsnag.notify("ERROR: googleLogin could not get userData.oauthToken!  ", JSON.stringify(userData), {}, "error");
-                            console.error('googleLogin: No userData.accessToken or userData.idToken provided! Fallback to nonNativeMobileLogin...');
+                            console.error('googleLogin: No userData.accessToken or userData.idToken provided! Fallback to nonNativeMobileLogin registration...');
+                            register = true;
                             nonNativeMobileLogin(register);
                         } else {
                             $scope.nativeSocialLogin('google', tokenForApi);
@@ -316,7 +316,8 @@ angular.module('starter')
                     },
                     function (errorMessage) {
                         $scope.hideLoader();
-                        bugsnagService.reportError("ERROR: googleLogin could not get userData!  Fallback to nonNativeMobileLogin. Error: " + JSON.stringify(errorMessage));
+                        bugsnagService.reportError("ERROR: googleLogin could not get userData!  Fallback to nonNativeMobileLogin registration. Error: " + JSON.stringify(errorMessage));
+                        register = true;
                         nonNativeMobileLogin(register);
                     }
                 );
@@ -327,26 +328,27 @@ angular.module('starter')
         $scope.googleLogout = function(){
             /** @namespace window.plugins.googleplus */
             window.plugins.googleplus.logout(function (msg) {
-                console.log("logged out of google!");
+                console.debug("logged out of google!");
             }, function(fail){
-                console.log("failed to logout", fail);
+                console.debug("failed to logout", fail);
             });
         };
 
         $scope.facebookLogin = function(){
             $scope.showLoader('Logging you in...');
-            console.log("$scope.facebookLogin about to try $cordovaFacebook.login");
+            console.debug("$scope.facebookLogin about to try $cordovaFacebook.login");
             $scope.hideFacebookButton = true; // Hide button so user tries other options if it didn't work
             $timeout(function () {
                 if(!$rootScope.user){
-                    bugsnagService.reportError('Could not get user $scope.facebookLogin within 30 seconds!');
-                    utilsService.showAlert('Facebook Login Issue', 'Please try to sign in using on of the other methods below');
+                    bugsnagService.reportError('Could not get user $scope.facebookLogin within 30 seconds! Falling back to non-native registration...');
+                    var register = true;
+                    nonNativeMobileLogin(register);
                 }
             }, 30000);
 
             $cordovaFacebook.login(["public_profile", "email", "user_friends"])
                 .then(function(response) {
-                    console.log("facebookLogin_success response->", JSON.stringify(response));
+                    console.debug("facebookLogin_success response->", JSON.stringify(response));
                     var accessToken = response.authResponse.accessToken;
                     if(!accessToken){
                         bugsnagService.reportError('ERROR: facebookLogin could not get accessToken! response: ' + JSON.stringify(response));
@@ -355,7 +357,7 @@ angular.module('starter')
                     $scope.nativeSocialLogin('facebook', accessToken);
                 }, function (error) {
                     Bugsnag.notify("ERROR: facebookLogin could not get accessToken!  ", JSON.stringify(error), {}, "error");
-                    console.log("facebook login error", error);
+                    console.debug("facebook login error"+ JSON.stringify(error));
                 });
         };
 
@@ -369,7 +371,7 @@ angular.module('starter')
 
         var browserLogin = function(register) {
             //$scope.showLoader();
-            console.log("Browser Login");
+            console.debug("Browser Login");
             if (utilsService.getClientId() !== 'oAuthDisabled') {
                 oAuthBrowserLogin(register);
             } else {
@@ -390,7 +392,7 @@ angular.module('starter')
                 if (register === true) {
                     loginUrl = utilsService.getURL("api/v2/auth/register");
                 }
-                console.log("sendToNonOAuthBrowserLoginUrl: Client id is oAuthDisabled - will redirect to regular login.");
+                console.debug("sendToNonOAuthBrowserLoginUrl: Client id is oAuthDisabled - will redirect to regular login.");
                 loginUrl += "redirect_uri=" + encodeURIComponent(window.location.href.replace('app/login','app/reminders-inbox'));
                 console.debug('sendToNonOAuthBrowserLoginUrl: AUTH redirect URL created:', loginUrl);
                 var apiUrlMatchesHostName = $rootScope.qmApiUrl.indexOf(window.location.hostname);
@@ -406,21 +408,21 @@ angular.module('starter')
         var oAuthBrowserLogin = function (register) {
             //$scope.showLoader();
             var url = QuantiModo.generateV1OAuthUrl(register);
-            console.log("Going to try logging by opening new tab at url " + url);
+            console.debug("Going to try logging by opening new tab at url " + url);
 
             var ref = window.open(url, '_blank');
 
             if (!ref) {
                 alert("You must first unblock popups, and and refresh the page for this to work!");
             } else {
-                console.log('Opened ' + url + ' and now broadcasting isLoggedIn message question every second to sibling tabs');
+                console.debug('Opened ' + url + ' and now broadcasting isLoggedIn message question every second to sibling tabs');
                 var interval = setInterval(function () {
                     ref.postMessage('isLoggedIn?', utilsService.getRedirectUri());
                 }, 1000);
 
                 // handler when a message is received from a sibling tab
                 window.onMessageReceived = function (event) {
-                    console.log("message received from sibling tab", event.url);
+                    console.debug("message received from sibling tab", event.url);
 
                     if(interval !== false){
                         // Don't ask login question anymore

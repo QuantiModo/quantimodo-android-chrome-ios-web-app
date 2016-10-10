@@ -29,7 +29,7 @@ var onFaceButtonClicked = function() {
     } else if (buttonId === "buttonMoodEcstatic") {
         ratingValue = 5;
     } else {
-        console.log("How did I get here...");
+        console.debug("How did I get here...");
         return;
     }
 
@@ -96,8 +96,8 @@ document.addEventListener('DOMContentLoaded', function() {
             /*
              * it should hide and show sign in button based upon if the user is logged in or not
              */
-            if (typeof userObject['displayName'] !== "undefined") {
-                console.log(userObject['displayName'] + " is logged in.  ");
+            if (typeof userObject.displayName !== "undefined") {
+                console.debug(userObject.displayName + " is logged in.  ");
             } else {
                 var url = "https://app.quantimo.do/api/v2/auth/login";
                 chrome.tabs.create({

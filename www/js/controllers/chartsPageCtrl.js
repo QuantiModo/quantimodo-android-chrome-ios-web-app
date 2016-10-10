@@ -20,7 +20,7 @@ angular.module('starter')
         };
 
         $scope.addNewReminderButtonClick = function() {
-            console.log("addNewReminderButtonClick");
+            console.debug("addNewReminderButtonClick");
             $state.go('app.reminderAdd', {
                 variableObject: $scope.state.variableObject,
                 fromState: $state.current.name
@@ -98,8 +98,8 @@ angular.module('starter')
         var getHistoryForVariable = function(params){
             if(!params.variableName){
                 console.error("ERROR: params.variableName not provided to getHistoryForVariable");
-                console.error("params: " + JSON.stringify(params));
-                console.error("$scope.state.variableObject: " + JSON.stringify($scope.state.variableObject));
+                console.error($state.current.name + " params: " + JSON.stringify(params));
+                console.error($state.current.name + " $scope.state.variableObject: " + JSON.stringify($scope.state.variableObject));
                 return;
             }
             //$scope.showLoader('Fetching measurements');
@@ -127,7 +127,7 @@ angular.module('starter')
                 if (typeof Bugsnag !== "undefined") {
                     Bugsnag.notify(error, JSON.stringify(error), {}, "error");
                 }
-                console.error('error getting measurements', error);
+                console.error($state.current.name + ' error getting measurements: ' + JSON.stringify(error));
                 $scope.state.loading = false;
                 $scope.hideLoader();
             }, function(history) {
@@ -165,7 +165,7 @@ angular.module('starter')
                 if (typeof Bugsnag !== "undefined") {
                     Bugsnag.notify(error, JSON.stringify(error), {}, "error");
                 }
-                console.error('error getting dailyHistory measurements', error);
+                console.error($state.current.name + ' error getting dailyHistory measurements: ' + JSON.stringify(error));
                 $scope.hideLoader();
             }, function(history) {
                 $scope.state.dailyHistory = $scope.state.dailyHistory.concat(history);
@@ -184,7 +184,7 @@ angular.module('starter')
         $scope.init = function(){
             //$scope.showLoader('Fetching measurements');
             $scope.state.loading = true;
-            console.log("variablePageCtrl: init");
+            console.debug("variablePageCtrl: init");
             if($stateParams.variableObject){
                 $scope.state.variableObject = $stateParams.variableObject;
             } else if ($stateParams.trackingReminder){
@@ -208,7 +208,7 @@ angular.module('starter')
                 getDailyHistoryForVariable(params);
                 getHistoryForVariable(params);
             } else {
-                console.error('ERROR: $scope.state.variableObject.name not defined! $scope.state.variableObject: ' +
+                console.error($state.current.name + ' ERROR: $scope.state.variableObject.name not defined! $scope.state.variableObject: ' +
                     JSON.stringify($scope.state.variableObject));
             }
         };
@@ -233,10 +233,10 @@ angular.module('starter')
                 //destructiveText: '<i class="icon ion-trash-a"></i>Delete Favorite',
                 cancelText: '<i class="icon ion-ios-close"></i>Cancel',
                 cancel: function() {
-                    console.log('CANCELLED');
+                    console.debug('CANCELLED');
                 },
                 buttonClicked: function(index) {
-                    console.log('BUTTON CLICKED', index);
+                    console.debug('BUTTON CLICKED', index);
                     if(index === 0){
                         $scope.addToFavoritesUsingVariableObject($scope.state.variableObject);
                     }

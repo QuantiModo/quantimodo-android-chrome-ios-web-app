@@ -12,9 +12,9 @@ angular.module('starter')
 				console.debug("remindersService:  Finished postTrackingReminder so now refreshTrackingRemindersAndScheduleAlarms");
 				reminderService.refreshTrackingRemindersAndScheduleAlarms();
 				deferred.resolve();
-			}, function(err){
-				bugsnagService.reportError(err);
-				deferred.reject(err);
+			}, function(error){
+				if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error(error);
+				deferred.reject(error);
 			});
 
 			return deferred.promise;
@@ -30,9 +30,9 @@ angular.module('starter')
 				else {
 					deferred.reject();
 				}
-			}, function(err){
-				bugsnagService.reportError(err);
-				deferred.reject(err);
+			}, function(error){
+				if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error(error);
+				deferred.reject(error);
 			});
 
 			return deferred.promise;
@@ -48,9 +48,9 @@ angular.module('starter')
 				else {
 					deferred.reject();
 				}
-			}, function(err){
-				bugsnagService.reportError(err);
-				deferred.reject(err);
+			}, function(error){
+				if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error(error);
+				deferred.reject(error);
 			});
 
 			return deferred.promise;
@@ -67,9 +67,9 @@ angular.module('starter')
 				else {
 					deferred.reject();
 				}
-			}, function(err){
-				bugsnagService.reportError(err);
-				deferred.reject(err);
+			}, function(error){
+				if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error(error);
+				deferred.reject(error);
 			});
 
 			return deferred.promise;
@@ -85,9 +85,9 @@ angular.module('starter')
 				else {
 					deferred.reject();
 				}
-			}, function(err){
-				bugsnagService.reportError(err);
-				deferred.reject(err);
+			}, function(error){
+				if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error(error);
+				deferred.reject(error);
 			});
 
 			return deferred.promise;
@@ -139,11 +139,8 @@ angular.module('starter')
 									if($rootScope.localNotificationsEnabled){
 										notificationService.scheduleUpdateOrDeleteGenericNotificationsByDailyReminderTimes(trackingReminders);
 									}
-								} catch (err) {
-									console.error('scheduleUpdateOrDeleteGenericNotificationsByDailyReminderTimes error: ' + err);
-									if (typeof Bugsnag !== "undefined") {
-										bugsnagService.reportError(err);
-									}
+								} catch (exception) { if (typeof Bugsnag !== "undefined") { Bugsnag.notifyException(exception); }
+									console.error('scheduleUpdateOrDeleteGenericNotificationsByDailyReminderTimes error: ');
 								}
 								//notificationService.scheduleAllNotificationsByTrackingReminders(trackingReminders);
 							} else {
@@ -151,9 +148,8 @@ angular.module('starter')
 									if($rootScope.localNotificationsEnabled){
 										notificationService.scheduleUpdateOrDeleteGenericNotificationsByDailyReminderTimes(trackingReminders);
 									}
-								} catch (err) {
-									console.error('scheduleUpdateOrDeleteGenericNotificationsByDailyReminderTimes error: ' + err);
-									bugsnagService.reportError(err);
+								} catch (exception) { if (typeof Bugsnag !== "undefined") { Bugsnag.notifyException(exception); }
+									console.error('scheduleUpdateOrDeleteGenericNotificationsByDailyReminderTimes error');
 								}
 							}
 						} else {
@@ -169,10 +165,10 @@ angular.module('starter')
 						bugsnagService.reportError('No success from getTrackingReminders request');
 						deferred.reject('No success from getTrackingReminders request');
 					}
-				}, function(err){
+				}, function(error){
 					$rootScope.syncingReminders = false;
-					bugsnagService.reportError(err);
-					deferred.reject(err);
+					if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error(error);
+					deferred.reject(error);
 				});
 
 				return deferred.promise;
@@ -199,9 +195,9 @@ angular.module('starter')
 				else {
 					deferred.reject("error");
 				}
-			}, function(err){
-				bugsnagService.reportError(err);
-				deferred.reject(err);
+			}, function(error){
+				if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error(error);
+				deferred.reject(error);
 			});
 
 			return deferred.promise;
@@ -264,10 +260,10 @@ angular.module('starter')
 					$rootScope.refreshingTrackingReminderNotifications = false;
 					deferred.reject("error");
 				}
-			}, function(err){
-				bugsnagService.reportError(err);
+			}, function(error){
+				if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error(error);
 				$rootScope.refreshingTrackingReminderNotifications = false;
-				deferred.reject(err);
+				deferred.reject(error);
 			});
 
 			return deferred.promise;
@@ -284,9 +280,9 @@ angular.module('starter')
 				else {
 					deferred.reject("error");
 				}
-			}, function(err){
-				bugsnagService.reportError(err);
-				deferred.reject(err);
+			}, function(error){
+				if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error(error);
+				deferred.reject(error);
 			});
 			return deferred.promise;
 		};
@@ -336,9 +332,9 @@ angular.module('starter')
 				}
 			};
 
-			var errorHandler = function(err){
-				bugsnagService.reportError(err);
-				deferred.reject(err);
+			var errorHandler = function(error){
+				if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error(error);
+				deferred.reject(error);
 			};
 
 
@@ -398,9 +394,9 @@ angular.module('starter')
 				else {
 					deferred.reject();
 				}
-			}, function(err){
-				bugsnagService.reportError(err);
-				deferred.reject(err);
+			}, function(error){
+				if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error(error);
+				deferred.reject(error);
 			});
 
 			return deferred.promise;
@@ -445,18 +441,18 @@ angular.module('starter')
 			localStorageService.getItem('trackingReminderSyncQueue', function (trackingReminders) {
 				if(trackingReminders){
 					reminderService.postTrackingReminders(JSON.parse(trackingReminders)).then(function () {
-						console.log('reminder queue synced' + trackingReminders);
+						console.debug('reminder queue synced' + trackingReminders);
 						localStorageService.deleteItem('trackingReminderSyncQueue');
                         reminderService.refreshTrackingReminderNotifications().then(function(){
 							console.debug('reminderService.syncTrackingReminderSyncQueueToServer successfully refreshed notifications');
 						}, function (error) {
 							console.error('reminderService.syncTrackingReminderSyncQueueToServer: ' + error);
 						});
-					}, function (err) {
-						bugsnagService.reportError(err);
+					}, function(error) {
+						if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error(error);
 					});
 				} else {
-					console.log('No reminders to sync');
+					console.debug('No reminders to sync');
 				}
 			});
 		};
@@ -584,13 +580,13 @@ angular.module('starter')
 							reminderService.refreshTrackingRemindersAndScheduleAlarms();
 							localStorageService.setItem('defaultRemindersCreated', true);
 							deferred.resolve();
-						}, function (err) {
-							bugsnagService.reportError(err);
+						}, function(error) {
+							if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error(error);
 							deferred.reject();
 						});
 					}
 				} else {
-					console.log('Default reminders already created');
+					console.debug('Default reminders already created');
 				}
 			});
 			return deferred.promise;

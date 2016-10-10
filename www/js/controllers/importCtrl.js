@@ -2,7 +2,7 @@ angular.module('starter')
 	
 	// controls the Import Data page of the app
 	.controller('ImportCtrl', function($scope, $ionicLoading, $state, $rootScope, utilsService, QuantiModo,
-									   connectorsService, $cordovaOauth, bugsnagService, $ionicPopup, $stateParams) {
+									   connectorsService, $cordovaOauth, $ionicPopup, $stateParams) {
 
 		$scope.controller_name = "ImportCtrl";
 		
@@ -24,7 +24,7 @@ angular.module('starter')
 				.then(function(connectors){
 					$scope.connectors = connectors;
 					$ionicLoading.hide().then(function(){
-						console.log("The loading indicator is now hidden");
+						console.debug("The loading indicator is now hidden");
 					});
 				});
 		};
@@ -35,7 +35,7 @@ angular.module('starter')
 			QuantiModo.getAccessTokenFromAnySource().then(function(accessToken){
 				$ionicLoading.hide();
 				if(ionic.Platform.platforms[0] === "browser"){
-					console.log("Browser Detected");
+					console.debug("Browser Detected");
 
 					var url = utilsService.getURL("api/v2/account/connectors", true);
 					if(accessToken){
@@ -63,19 +63,19 @@ angular.module('starter')
 				}
 			}, function(){
 				$ionicLoading.hide();
-				console.log('importCtrl: Could not get getAccessTokenFromAnySource.  Going to login page...');
+				console.debug('importCtrl: Could not get getAccessTokenFromAnySource.  Going to login page...');
 				$rootScope.sendToLogin();
 			});
 		};
 
 		var loadNativeConnectorPage = function(){
-			console.log('importCtrl: $rootScope.isMobile so using native connector page');
+			console.debug('importCtrl: $rootScope.isMobile so using native connector page');
 			connectorsService.getConnectors()
 				.then(function(connectors){
 					$scope.connectors = connectors;
                     if(connectors) {
                         $ionicLoading.hide().then(function(){
-                            console.log("The loading indicator is now hidden");
+                            console.debug("The loading indicator is now hidden");
                         });
                     }
 					$scope.refreshConnectors();
@@ -113,7 +113,7 @@ angular.module('starter')
 			var connectWithParams = function(params, lowercaseConnectorName) {
 				connectorsService.connectWithParams(params, lowercaseConnectorName)
 					.then(function(result){
-						console.log(JSON.stringify(result));
+						console.debug(JSON.stringify(result));
 						$scope.refreshConnectors();
 					}, function (error) {
 						errorHandler(error);
@@ -122,13 +122,13 @@ angular.module('starter')
 			};
 
 			var connectWithToken = function(response) {
-				console.log("Response Object -> " + JSON.stringify(response));
+				console.debug("Response Object -> " + JSON.stringify(response));
 				var body = {
 					connectorCredentials: {token: response},
 					connector: connector
 				};
 				connectorsService.connectWithToken(body).then(function(result){
-					console.log(JSON.stringify(result));
+					console.debug(JSON.stringify(result));
 					$scope.refreshConnectors();
 				}, function (error) {
 					errorHandler(error);
@@ -137,7 +137,7 @@ angular.module('starter')
 			};
 
 			var connectWithAuthCode = function(authorizationCode, connector){
-				console.log(connector.name + " connect result is " + JSON.stringify(authorizationCode));
+				console.debug(connector.name + " connect result is " + JSON.stringify(authorizationCode));
 				connectorsService.connectWithAuthCode(authorizationCode, connector.name).then(function (){
 					$scope.refreshConnectors();
 				}, function() {
@@ -147,7 +147,7 @@ angular.module('starter')
 			};
 
 			var errorHandler = function(error){
-                bugsnagService.reportError(error);
+                if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error(error);
             };
 
 			if(connector.name === 'github') {
@@ -333,7 +333,7 @@ angular.module('starter')
 						location: String($scope.data.location)
 					};
 					connectWithParams(params, connector.name);
-					console.log('Entered zip code. Result: ', res);
+					console.debug('Entered zip code. Result: ', res);
 				});
 			}
 

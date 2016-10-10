@@ -8,7 +8,7 @@ angular.module('starter')
                                              ionicDatePicker) {
 
 	    $scope.controller_name = "RemindersAddCtrl";
-		console.log('Loading ' + $scope.controller_name);
+		console.debug('Loading ' + $scope.controller_name);
 
 	    $scope.state = {
             showAddVariableCard : false,
@@ -124,7 +124,7 @@ angular.module('starter')
             $scope.state.timePickerConfiguration = {
                 callback: function (val) {
                     if (typeof (val) === 'undefined') {
-                        console.log('Time not selected');
+                        console.debug('Time not selected');
                     } else {
                         var a = new Date();
                         var selectedTime = new Date(val * 1000);
@@ -132,7 +132,7 @@ angular.module('starter')
                         a.setMinutes(selectedTime.getUTCMinutes());
                         a.setSeconds(0);
 
-                        console.log('Selected epoch is : ', val, 'and the time is ',
+                        console.debug('Selected epoch is : ', val, 'and the time is ',
                             selectedTime.getUTCHours(), 'H :', selectedTime.getUTCMinutes(), 'M');
 
                         if(order === 'first'){
@@ -166,7 +166,7 @@ angular.module('starter')
             $scope.state.stopTrackingDatePickerConfiguration = {
                 callback: function(val) {
                     if (typeof(val)==='undefined') {
-                        console.log('Date not selected');
+                        console.debug('Date not selected');
                     } else {
                         // clears out hours and minutes
 
@@ -190,14 +190,14 @@ angular.module('starter')
             $scope.state.reminderEndTimePickerConfiguration = {
                 callback: function (val) {
                     if (typeof (val) === 'undefined') {
-                        console.log('Time not selected');
+                        console.debug('Time not selected');
                     } else {
                         var a = new Date();
                         var selectedTime = new Date(val * 1000);
                         a.setHours(selectedTime.getUTCHours());
                         a.setMinutes(selectedTime.getUTCMinutes());
 
-                        console.log('Selected epoch is : ', val, 'and the time is ',
+                        console.debug('Selected epoch is : ', val, 'and the time is ',
                             selectedTime.getUTCHours(), 'H :', selectedTime.getUTCMinutes(), 'M');
 
                         $scope.state.reminderEndTimeEpochTime = a.getTime() / 1000;
@@ -216,7 +216,7 @@ angular.module('starter')
 
 	    // when a search result is selected
 	    var setupByVariableObject = function(selectedVariable){
-            console.log("remindersAdd.onVariableSelect: " + JSON.stringify(selectedVariable));
+            console.debug("remindersAdd.onVariableSelect: " + JSON.stringify(selectedVariable));
 
 	    	if(!selectedVariable.variableCategoryName){
 	    		selectedVariable.variableCategoryName = selectedVariable.category;
@@ -439,12 +439,12 @@ angular.module('starter')
                             reminderService.refreshTrackingReminderNotifications().then(function(){
                                 console.debug('reminderAddCtrl.save successfully refreshed notifications');
                             }, function (error) {
-                                console.error('reminderAddCtrl.save: ' + error);
+                                if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error( $state.current.name + ': ' + JSON.stringify(error));
                             });
                             $scope.hideLoader();
-                        }, function(err){
+                        }, function(error){
                             $scope.hideLoader();
-                            console.error("addNewReminder ERROR: " + err);
+                            if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error( $state.current.name + ': ' + JSON.stringify(error));
                             $ionicLoading.hide();
                             $scope.loading = false;
                         });
@@ -517,7 +517,7 @@ angular.module('starter')
 
 	    // setup category view
 	    var setupVariableCategory = function(variableCategoryName){
-            console.log("remindersAdd.setupVariableCategory " + variableCategoryName);
+            console.debug("remindersAdd.setupVariableCategory " + variableCategoryName);
             if(!variableCategoryName || variableCategoryName === 'Anything'){
                 variableCategoryName = '';
             }
@@ -544,7 +544,7 @@ angular.module('starter')
                 variableService.getVariableById(variableId)
                     .then(function (variables) {
                         $scope.variableObject = variables[0];
-                        console.log('setupReminderEditingFromVariableId got this variable object ' +
+                        console.debug('setupReminderEditingFromVariableId got this variable object ' +
                             JSON.stringify($scope.variableObject));
                         setupByVariableObject($scope.variableObject);
                         $ionicLoading.hide();
@@ -650,16 +650,17 @@ angular.module('starter')
                     $ionicLoading.hide();
                     $scope.loading = false;
                     console.debug('Reminder Deleted');
-                }, function(err){
+                }, function(error){
                     $ionicLoading.hide();
                     $scope.loading = false;
+
                     console.error('ERROR: reminderService.deleteReminder Failed to Delete Reminder with id ' +
                         $scope.state.trackingReminder.id);
                 });
         };
 
         $scope.unitSelected = function(){
-            console.log("selecting_unit", $scope.state.trackingReminder.abbreviatedUnitName);
+            console.debug("selecting_unit", $scope.state.trackingReminder.abbreviatedUnitName);
             $scope.state.trackingReminder.unitName =
                 $rootScope.unitsIndexedByAbbreviatedName[$scope.state.trackingReminder.abbreviatedUnitName].name;
             $scope.state.trackingReminder.unitId =
@@ -692,10 +693,10 @@ angular.module('starter')
                 destructiveText: '<i class="icon ion-trash-a"></i>Delete Favorite',
                 cancelText: '<i class="icon ion-ios-close"></i>Cancel',
                 cancel: function() {
-                    console.log('CANCELLED');
+                    console.debug('CANCELLED');
                 },
                 buttonClicked: function(index) {
-                    console.log('BUTTON CLICKED', index);
+                    console.debug('BUTTON CLICKED', index);
 
                     if(index === 0){
                         $scope.addToFavoritesUsingVariableObject($scope.state.variableObject);

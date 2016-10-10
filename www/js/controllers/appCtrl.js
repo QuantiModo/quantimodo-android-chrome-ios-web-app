@@ -10,7 +10,7 @@ angular.module('starter')
 
         $rootScope.loaderImagePath = config.appSettings.loaderImagePath;
         $rootScope.appMigrationVersion = 1489;
-        $rootScope.appVersion = "2.0.1.0";
+        $rootScope.appVersion = "2.0.2.0";
         if (!$rootScope.loaderImagePath) {
             $rootScope.loaderImagePath = 'img/circular-loader.gif';
         }
@@ -54,7 +54,7 @@ angular.module('starter')
         $scope.fromDatePickerObj = {
             callback: function (val) {
                 if (typeof(val) === 'undefined') {
-                    console.log('Date not selected');
+                    console.debug('Date not selected');
                 } else {
                     $scope.fromDate = new Date(val);
                     $scope.saveDates();
@@ -69,7 +69,7 @@ angular.module('starter')
         $scope.toDatePickerObj = {
             callback: function (val) {
                 if (typeof(val) === 'undefined') {
-                    console.log('Date not selected');
+                    console.debug('Date not selected');
                 } else {
                     $scope.toDate = new Date(val);
                     $scope.saveDates();
@@ -92,8 +92,8 @@ angular.module('starter')
             });
         };
 
-        $scope.setLocalStorageFlagTrue = function (flagName) {
-            $scope[flagName] = true;
+        $rootScope.setLocalStorageFlagTrue = function (flagName) {
+            $rootScope[flagName] = true;
             localStorageService.setItem(flagName, true);
         };
 
@@ -126,7 +126,7 @@ angular.module('starter')
         $scope.updateDatesLocalStorage = function () {
             var to = moment($scope.toDate).unix() * 1000;
             var from = moment($scope.fromDate).unix() * 1000;
-            console.log("$scope.updateDatesLocalStorage is calling measurementService.setDates");
+            console.debug("$scope.updateDatesLocalStorage is calling measurementService.setDates");
             measurementService.setDates(to, from);
         };
 
@@ -264,7 +264,7 @@ angular.module('starter')
                                         fromUrl: window.location.href
                                     }
                                 );
-                            }, function (err) {
+                            }, function(error) {
                                 console.error('Failed to add favorite!', trackingReminder);
                             });
                     });
@@ -287,8 +287,7 @@ angular.module('starter')
         $scope.closeMenuIfNeeded = function (menuItem) {
             if (menuItem.click) {
                 $scope[menuItem.click] && $scope[menuItem.click]();
-            }
-            else if (!menuItem.isSubMenuParent) {
+            } else if (!menuItem.isSubMenuParent) {
                 $scope.closeMenu();
             }
         };
@@ -400,7 +399,7 @@ angular.module('starter')
         };
 
         $scope.init = function () {
-            console.log("Main Constructor Start");
+            console.debug("Main Constructor Start");
             QuantiModo.getAccessTokenFromUrlParameter();
             $rootScope.hideNavigationMenuIfSetInUrlParameter();
             if (!$rootScope.user) {
@@ -431,7 +430,7 @@ angular.module('starter')
         };
 
         $scope.$on('callAppCtrlInit', function () {
-            console.log("calling init");
+            console.debug("calling init");
             $scope.init();
         });
 
@@ -523,7 +522,7 @@ angular.module('starter')
             
             var successHandler = function(userObject) {
                 if (userObject) {
-                    console.log('Setting user in getUserAndSetInLocalStorage');
+                    console.debug('Setting user in getUserAndSetInLocalStorage');
                     $rootScope.setUserInLocalStorageBugsnagAndRegisterDeviceForPush(userObject);
                     if ($state.current.name === 'app.login') {
                         goToDefaultStateShowMenuClearIntroHistoryAndRedraw();
@@ -536,8 +535,8 @@ angular.module('starter')
                 [],
                 {},
                 successHandler,
-                function(err){
-                    bugsnagService.reportError(err);
+                function(error){
+                    if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error(error);
                 }
             );
         };
@@ -649,7 +648,7 @@ angular.module('starter')
                             if(window.plugins && window.plugins.emailComposer) {
                                 console.debug('Generating email with cordova-plugin-email-composer');
                                 window.plugins.emailComposer.showEmailComposerWithCallback(function(result) {
-                                        console.log("Response -> " + result);
+                                        console.debug("Response -> " + result);
                                     },
                                     subjectLine, // Subject
                                     emailBody,                      // Body
@@ -698,7 +697,7 @@ angular.module('starter')
 
             var deviceTokenOnServer = localStorageService.getItemSync('deviceTokenOnServer');
             if(deviceTokenOnServer){
-                console.log("This token is already on the server: " + deviceTokenOnServer);
+                console.debug("This token is already on the server: " + deviceTokenOnServer);
                 return;
             }
 
@@ -709,7 +708,7 @@ angular.module('starter')
         };
 
         $scope.onTextClick = function ($event) {
-            console.log("Auto selecting text so the user doesn't have to press backspace...");
+            console.debug("Auto selecting text so the user doesn't have to press backspace...");
             $event.target.select();
         };
         
