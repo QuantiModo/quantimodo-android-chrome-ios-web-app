@@ -1,6 +1,6 @@
 {
   "manifest_version": 2,
-  "name": "MoodiModo Mood-Tracking Extension",
+  "name": "Supercell Mood-Tracking Extension",
   "description": "Track and find out what influences your mood!",
   "version": "1.2.0",
   "options_page": "www/chrome_extension/options/options.html",
