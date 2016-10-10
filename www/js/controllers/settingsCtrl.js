@@ -137,7 +137,7 @@ angular.module('starter')
 			$scope.state.earliestReminderTimePickerConfiguration = {
 				callback: function (val) {
 					if (typeof (val) === 'undefined') {
-						console.log('Time not selected');
+						console.debug('Time not selected');
 					} else {
 						var a = new Date();
 						var params = {
@@ -146,7 +146,7 @@ angular.module('starter')
 						var selectedTime = new Date(val * 1000);
 						a.setHours(selectedTime.getUTCHours());
 						a.setMinutes(selectedTime.getUTCMinutes());
-						console.log('Selected epoch is : ', val, 'and the time is ',
+						console.debug('Selected epoch is : ', val, 'and the time is ',
 							selectedTime.getUTCHours(), 'H :', selectedTime.getUTCMinutes(), 'M');
 						var newEarliestReminderTime = moment(a).format('HH:mm:ss');
 						if(newEarliestReminderTime > $rootScope.user.latestReminderTime){
@@ -180,7 +180,7 @@ angular.module('starter')
 			$scope.state.latestReminderTimePickerConfiguration = {
 				callback: function (val) {
 					if (typeof (val) === 'undefined') {
-						console.log('Time not selected');
+						console.debug('Time not selected');
 					} else {
 						var a = new Date();
 						var params = {
@@ -189,7 +189,7 @@ angular.module('starter')
 						var selectedTime = new Date(val * 1000);
 						a.setHours(selectedTime.getUTCHours());
 						a.setMinutes(selectedTime.getUTCMinutes());
-						console.log('Selected epoch is : ', val, 'and the time is ',
+						console.debug('Selected epoch is : ', val, 'and the time is ',
 							selectedTime.getUTCHours(), 'H :', selectedTime.getUTCMinutes(), 'M');
 						var newLatestReminderTime = moment(a).format('HH:mm:ss');
 						if(newLatestReminderTime < $rootScope.user.earliestReminderTime){
@@ -220,7 +220,7 @@ angular.module('starter')
 		};
 
 		$scope.trackLocationChange = function() {
-			console.log('trackLocation', $scope.state.trackLocation);
+			console.debug('trackLocation', $scope.state.trackLocation);
 			$rootScope.user.trackLocation = $scope.state.trackLocation;
 			userService.updateUserSettings({trackLocation: $rootScope.user.trackLocation});
 			if($scope.state.trackLocation){
@@ -294,7 +294,7 @@ angular.module('starter')
                 });
             };
 
-			console.log('Logging out...');
+			console.debug('Logging out...');
 			$scope.hideLoader();
 			$rootScope.user = null;
 			$scope.showDataClearPopup();

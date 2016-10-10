@@ -6,7 +6,7 @@ angular.module('starter')
 
 	    $scope.controller_name = "FavoritesCtrl";
 
-		console.log('Loading ' + $scope.controller_name);
+		console.debug('Loading ' + $scope.controller_name);
 		
 	    $scope.state = {
 	    	selected1to5Value : false,
@@ -109,7 +109,7 @@ angular.module('starter')
 				modifiedReminderValue = trackingReminder.defaultValue;
 			}
 			console.debug('Tracking reminder', trackingReminder);
-			console.log('modifiedReminderValue is ' + modifiedReminderValue);
+			console.debug('modifiedReminderValue is ' + modifiedReminderValue);
 			for(var i = 0; i < $scope.state.favorites.length; i++){
 				if($scope.state.favorites[i].id === trackingReminder.id){
 					if($scope.state.favorites[i].abbreviatedUnitName !== '/5') {
@@ -224,15 +224,15 @@ angular.module('starter')
 				destructiveText: '<i class="icon ion-trash-a"></i>Delete From Favorites',
 				cancelText: '<i class="icon ion-ios-close"></i>Cancel',
 				cancel: function() {
-					console.log('CANCELLED');
+					console.debug('CANCELLED');
 				},
 				buttonClicked: function(index) {
-					console.log('BUTTON CLICKED', index);
+					console.debug('BUTTON CLICKED', index);
 					if(index === 0){
 						$state.go('app.favoriteAdd', {reminder: favorite});
 					}
 					if(index === 1){
-						$state.go('app.measurementAdd', {variableObject: variableObject});
+						$state.go('app.measurementAdd', {trackingReminder: favorite});
 					}
 					if(index === 2){
 						$state.go('app.charts',

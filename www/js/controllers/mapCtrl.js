@@ -13,7 +13,7 @@ angular.module('starter')
 					for (var i = 0; i < results.length; i++) {
 						var place = results[i];
 						//createMarker(results[i]);
-						console.log("Place is ", place);
+						console.debug("Place is ", place);
 					}
 				}
 			}

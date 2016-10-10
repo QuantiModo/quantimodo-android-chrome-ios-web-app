@@ -19,7 +19,7 @@ function isUserLoggedIn(resultListener)
 				 */
 				if(typeof userObject.displayName !== "undefined")
 				{
-						console.log(userObject.displayName + " is logged in.  ");
+						console.debug(userObject.displayName + " is logged in.  ");
 				} else {
 					var url = "https://app.quantimo.do/api/v2/auth/login";
 					chrome.tabs.create({"url":url, "selected":true});
@@ -39,13 +39,13 @@ chrome.runtime.onInstalled.addListener(function()
 	if(notificationInterval === -1)
 	{
 		chrome.alarms.clear("moodReportAlarm");
-		console.log("Alarm cancelled");
+		console.debug("Alarm cancelled");
 	}
 	else
 	{
 		var alarmInfo = {periodInMinutes: notificationInterval};
 		chrome.alarms.create("moodReportAlarm", alarmInfo);
-		console.log("Alarm set, every " + notificationInterval + " minutes");
+		console.debug("Alarm set, every " + notificationInterval + " minutes");
 	}
 });
 
@@ -54,7 +54,7 @@ chrome.runtime.onInstalled.addListener(function()
 */
 chrome.alarms.onAlarm.addListener(function(alarm)
 {
-	console.log('onAlarm Listener heard this alarm ', alarm);
+	console.debug('onAlarm Listener heard this alarm ', alarm);
 	var showNotification = (localStorage.showNotification || "true") === "true";
 
     if(showNotification){
@@ -68,7 +68,7 @@ chrome.alarms.onAlarm.addListener(function(alarm)
 */
 chrome.notifications.onClicked.addListener(function(notificationId)
 {
-    console.log('onClicked: notificationId:', notificationId);
+    console.debug('onClicked: notificationId:', notificationId);
 	var badgeParams = {text:""};
 	chrome.browserAction.setBadgeText(badgeParams);
 
@@ -100,7 +100,7 @@ chrome.notifications.onClicked.addListener(function(notificationId)
 	chrome.notifications.clear(notificationId);
 
 	// chrome.notifications.getAll(function (notifications){
-	// 	console.log('Got all notifications ', notifications);
+	// 	console.debug('Got all notifications ', notifications);
 	// 	for(var i = 0; i < notifications.length; i++){
 	// 		chrome.notifications.clear(notifications[i].id);
 	// 	}
@@ -113,7 +113,7 @@ chrome.notifications.onClicked.addListener(function(notificationId)
 */
 chrome.extension.onMessage.addListener(function(request, sender, sendResponse)
 {
-	console.log("Received request: " + request.message);
+	console.debug("Received request: " + request.message);
 	if(request.message === "uploadMeasurements")
 	{
 		pushMeasurements(request.payload, null);
@@ -135,8 +135,8 @@ function pushMeasurements(measurements, onDoneListener)
 			// If the request is completed
 			if (xhr.readyState === 4)
 			{
-				console.log("QuantiModo responds:");
-				console.log(xhr.responseText);
+				console.debug("QuantiModo responds:");
+				console.debug(xhr.responseText);
 
 				if(onDoneListener !== null)
 				{
@@ -201,7 +201,7 @@ function IsJsonString(str) {
 
 function showTrackingInboxNotification(alarm){
 
-	console.log('showTrackingInboxNotification alarm: ', alarm);
+	console.debug('showTrackingInboxNotification alarm: ', alarm);
 
 	var notificationParams = {
 		type: "basic",
@@ -216,15 +216,15 @@ function showTrackingInboxNotification(alarm){
 	if(alarm.name === "genericTrackingReminderNotificationAlarm"){
 		showGenericTrackingNotification(alarm);
 	} else if (IsJsonString(alarm.name)) {
-		console.log('alarm.name IsJsonString', alarm);
+		console.debug('alarm.name IsJsonString', alarm);
 		var trackingReminder = JSON.parse(alarm.name);
 		notificationParams.title = 'Time to track ' + trackingReminder.variableName + '!';
 		notificationParams.message = 'Click to add measurement';
         notificationId = alarm.name;
 	} else {
-		console.log('alarm.name is not a json object', alarm);
+		console.debug('alarm.name is not a json object', alarm);
 	}
 
-	console.log('notificationParams: ', notificationParams);
+	console.debug('notificationParams: ', notificationParams);
     chrome.notifications.create(notificationId, notificationParams, function(id){});
 }

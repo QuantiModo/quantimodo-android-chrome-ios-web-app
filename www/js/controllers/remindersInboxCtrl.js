@@ -6,7 +6,7 @@ angular.module('starter')
 
 	    $scope.controller_name = "RemindersInboxCtrl";
 
-		console.log('Loading ' + $scope.controller_name);
+		console.debug('Loading ' + $scope.controller_name);
 		
 	    $scope.state = {
 	    	showMeasurementBox : false,
@@ -118,7 +118,7 @@ angular.module('starter')
 			$scope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications[trackingReminderNotificationIndex].hide = true;
 			$rootScope.numberOfPendingNotifications--;
 			$scope.state.numberOfDisplayedNotifications--;
-			console.log('modifiedReminderValue is ' + $scope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications[trackingReminderNotificationIndex].total);
+			console.debug('modifiedReminderValue is ' + $scope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications[trackingReminderNotificationIndex].total);
 			var body = {
 				trackingReminderNotification: trackingReminderNotification,
 				modifiedValue: $scope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications[trackingReminderNotificationIndex].total
@@ -148,7 +148,7 @@ angular.module('starter')
 			$rootScope.numberOfPendingNotifications--;
 			$scope.state.numberOfDisplayedNotifications--;
 			console.debug('Tracking notification ' + JSON.stringify(trackingReminderNotification));
-			console.log('modifiedReminderValue is ' + modifiedReminderValue);
+			console.debug('modifiedReminderValue is ' + modifiedReminderValue);
 			var body = {
 				trackingReminderNotification: trackingReminderNotification,
 				modifiedValue: modifiedReminderValue
@@ -256,7 +256,7 @@ angular.module('starter')
 					$scope.hideLoader();
 					$scope.state.loading = false;
 				}, function(error){
-					console.log(error);
+					console.error(error);
 					$scope.hideLoader();
 					console.error("failed to get reminder notifications!");
 					//Stop the ion-refresher from spinning
@@ -266,7 +266,7 @@ angular.module('starter')
 		};
 
 		$scope.$on('getTrackingReminderNotifications', function(){
-			console.log('getTrackingReminderNotifications broadcast received..');
+			console.debug('getTrackingReminderNotifications broadcast received..');
 			getTrackingReminderNotifications();
 		});
 
@@ -344,10 +344,10 @@ angular.module('starter')
 					destructiveText: '<i class="icon ion-trash-a"></i>Clear All Notifications',
 					cancelText: '<i class="icon ion-ios-close"></i>Cancel',
 					cancel: function() {
-						console.log('CANCELLED');
+						console.debug('CANCELLED');
 					},
 					buttonClicked: function(index) {
-						console.log('BUTTON CLICKED', index);
+						console.debug('BUTTON CLICKED', index);
 						if(index === 0){
 
 						}
@@ -472,10 +472,10 @@ angular.module('starter')
 				destructiveText: '<i class="icon ion-trash-a"></i>Skip All Notifications',
 				cancelText: '<i class="icon ion-ios-close"></i>Cancel',
 				cancel: function() {
-					console.log('CANCELLED');
+					console.debug('CANCELLED');
 				},
 				buttonClicked: function(index) {
-					console.log('BUTTON CLICKED', index);
+					console.debug('BUTTON CLICKED', index);
 					if(index === 0){
 						$scope.editReminderSettingsByNotification($scope.state.trackingReminderNotification, dividerIndex, trackingReminderNotificationIndex);
 					}

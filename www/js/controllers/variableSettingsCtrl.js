@@ -22,7 +22,7 @@ angular.module('starter')
 
             variableService.getPublicVariablesByName($scope.state.variableObject.name).then(function(variableArray) {
                 var originalVariableObject = variableArray[0];
-                console.log("variableService.getPublicVariablesByName: Original variable object: " +
+                console.debug("variableService.getPublicVariablesByName: Original variable object: " +
                     JSON.stringify(originalVariableObject));
 
                 if (originalVariableObject) {
@@ -138,9 +138,9 @@ angular.module('starter')
                     localStorageService.setItem('averagePrimaryOutcomeVariableValue',0);
                     localStorageService.setItem('lastSyncTime',0);
                 }
-                console.log("All measurements for " + $scope.state.variableName + " deleted!");
+                console.debug("All measurements for " + $scope.state.variableName + " deleted!");
             }, function(error) {
-                console.log('Error deleting measurements: ', error);
+                console.debug('Error deleting measurements: '+ JSON.stringify(error));
             });
         };
 
@@ -171,7 +171,7 @@ angular.module('starter')
                 deferred.resolve();
             }, function(error) {
                 Bugsnag.notify(error, JSON.stringify(error), {}, "error");
-                console.log('Error getting measurements and deleting: ', error);
+                console.debug('Error getting measurements and deleting: '+ JSON.stringify(error));
                 deferred.reject(error);
             });
             return deferred.promise;
@@ -205,12 +205,12 @@ angular.module('starter')
                 //experimentStartTime
                 //experimentEndTime
             };
-            console.log(params);
+            console.debug(params);
             variableService.postUserVariable(params).then(function() {
-                console.log("variableService.postUserVariable: success: " + JSON.stringify(params));
+                console.debug("variableService.postUserVariable: success: " + JSON.stringify(params));
             },
-            function() {
-                console.log("error");
+            function(error) {
+                console.error(error);
             });
 
             $ionicHistory.goBack();
@@ -234,10 +234,10 @@ angular.module('starter')
                 destructiveText: '<i class="icon ion-trash-a"></i>Delete All',
                 cancelText: '<i class="icon ion-ios-close"></i>Cancel',
                 cancel: function() {
-                    console.log('CANCELLED');
+                    console.debug('CANCELLED');
                 },
                 buttonClicked: function(index) {
-                    console.log('variableSettingsCtrl BUTTON CLICKED: ' + index);
+                    console.debug('variableSettingsCtrl BUTTON CLICKED: ' + index);
                     if(index === 0){
                         $scope.addToFavoritesUsingVariableObject($scope.state.variableObject);
                     }
@@ -251,7 +251,7 @@ angular.module('starter')
                         $scope.goToChartsPageForVariableObject($scope.state.variableObject);
                     }
                     if(index === 4) {
-                        console.log('variableSettingsCtrl going to history' + JSON.stringify($scope.state.variableObject));
+                        console.debug('variableSettingsCtrl going to history' + JSON.stringify($scope.state.variableObject));
                         $scope.goToHistoryForVariableObject($scope.state.variableObject);
                     }
                     if(index === 5){

@@ -441,7 +441,7 @@ angular.module('starter')
 			localStorageService.getItem('trackingReminderSyncQueue', function (trackingReminders) {
 				if(trackingReminders){
 					reminderService.postTrackingReminders(JSON.parse(trackingReminders)).then(function () {
-						console.log('reminder queue synced' + trackingReminders);
+						console.debug('reminder queue synced' + trackingReminders);
 						localStorageService.deleteItem('trackingReminderSyncQueue');
                         reminderService.refreshTrackingReminderNotifications().then(function(){
 							console.debug('reminderService.syncTrackingReminderSyncQueueToServer successfully refreshed notifications');
@@ -452,7 +452,7 @@ angular.module('starter')
 						if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error(error);
 					});
 				} else {
-					console.log('No reminders to sync');
+					console.debug('No reminders to sync');
 				}
 			});
 		};
@@ -586,7 +586,7 @@ angular.module('starter')
 						});
 					}
 				} else {
-					console.log('Default reminders already created');
+					console.debug('Default reminders already created');
 				}
 			});
 			return deferred.promise;

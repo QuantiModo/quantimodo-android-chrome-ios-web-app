@@ -82,7 +82,7 @@ angular.module('starter')
             $scope.state.timePickerConfiguration = {
                 callback: function (val) {
                     if (typeof (val) === 'undefined') {
-                        console.log($state.current.name + ": " + 'Time not selected');
+                        console.debug($state.current.name + ": " + 'Time not selected');
                     } else {
                         var selectedDateTime = new Date(val * 1000);
                         $scope.selectedHours = selectedDateTime.getUTCHours();
@@ -90,7 +90,7 @@ angular.module('starter')
                         $scope.selectedDate.setHours($scope.selectedHours);
                         $scope.selectedDate.setMinutes($scope.selectedMinutes);
 
-                        console.log($state.current.name + ": " + 'Selected epoch is : ', val, 'and the time is ',
+                        console.debug($state.current.name + ": " + 'Selected epoch is : ', val, 'and the time is ',
                             $scope.selectedHours, 'H :', $scope.selectedMinutes, 'M');
                     }
                 },
@@ -105,7 +105,7 @@ angular.module('starter')
             $scope.state.datePickerConfiguration = {
                 callback: function(val) {
                     if (typeof(val)==='undefined') {
-                        console.log($state.current.name + ": " + 'Date not selected');
+                        console.debug($state.current.name + ": " + 'Date not selected');
                     } else {
                         // clears out hours and minutes
                         $scope.selectedDate = new Date(val);
@@ -274,7 +274,7 @@ angular.module('starter')
 
         // setup category view
         var setupVariableCategory = function(variableCategoryName){
-            console.log($state.current.name + ": " + "variableCategoryName  is " + variableCategoryName);
+            console.debug($state.current.name + ": " + "variableCategoryName  is " + variableCategoryName);
             //$scope.state.showVariableCategorySelector = false;
             if(!variableCategoryName){
                 variableCategoryName = '';
@@ -298,6 +298,9 @@ angular.module('starter')
         $scope.init = function(){
             console.debug($state.current.name + ' initializing...');
             $rootScope.stateParams = $stateParams;
+            if($stateParams.trackingReminder){
+                $stateParams.reminderNotification = $stateParams.trackingReminder;
+            }
             if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
             if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
             $scope.state.title = 'Record a Measurement';
@@ -313,7 +316,7 @@ angular.module('starter')
                     $scope.state.measurement.abbreviatedUnitName = $stateParams.variableObject.abbreviatedUnitName;
                     //$scope.unitObject.abbreviatedName = $stateParams.variableObject.abbreviatedUnitName;
                 }
-                if($stateParams.reminderNotification !== null && typeof $stateParams.reminderNotification !== "undefined") {
+                if($stateParams.reminderNotification) {
                     console.debug($state.current.name + ": " + "Setting $scope.state.measurement.abbreviatedUnitName by reminder: " + $stateParams.reminderNotification.abbreviatedUnitName);
                     if (jQuery.inArray($stateParams.reminderNotification.abbreviatedUnitName, $rootScope.abbreviatedUnitNames) === -1)
                     {
@@ -342,7 +345,7 @@ angular.module('starter')
                     setupFromReminderObjectInUrl();
                 }
                 if(!$scope.state.measurementIsSetup) {
-                    setupFromReminderStateParameter();
+                    setupFromReminderNotificationStateParameter();
                 }
                 if(!$scope.state.measurementIsSetup){
                     setMeasurementVariablesByMeasurementId().then(function() {
@@ -409,21 +412,20 @@ angular.module('starter')
         };
 
         var setupFromMeasurementStateParameter = function(){
-            console.debug($state.current.name + ": " + "setupFromMeasurementStateParameter");
-            if($stateParams.measurement !== null && typeof $stateParams.measurement !== "undefined"){
+            if($stateParams.measurement){
+                console.debug($state.current.name + ": " + "setupFromMeasurementStateParameter");
                 setupTrackingByMeasurement($stateParams.measurement);
             }
         };
 
-        var setupFromReminderStateParameter = function(){
-            console.debug($state.current.name + ": " + "setupFromReminderStateParameter");
-            if($stateParams.reminderNotification !== null && typeof $stateParams.reminderNotification !== "undefined"){
+        var setupFromReminderNotificationStateParameter = function(){
+            if($stateParams.reminderNotification){
+                console.debug($state.current.name + ": " + "setupFromReminderNotificationStateParameter");
                 setupTrackingByReminderNotification();
             }
         };
 
         var setupFromReminderObjectInUrl = function(){
-            console.debug($state.current.name + ": " + "setupFromReminderObjectInUrl: ");
             if(!$stateParams.reminderNotification){
                 var reminderFromURL =  utilsService.getUrlParameter(window.location.href, 'trackingReminderObject', true);
                 if(reminderFromURL){
@@ -435,7 +437,6 @@ angular.module('starter')
         };
 
         var setupFromMeasurementObjectInUrl = function(){
-            console.debug($state.current.name + ": " + "setupFromMeasurementObjectInUrl: ");
             if(!$stateParams.measurement){
                 var measurementFromURL =  utilsService.getUrlParameter(window.location.href, 'measurementObject', true);
                 if(measurementFromURL){
@@ -447,8 +448,8 @@ angular.module('starter')
         };
 
         var setupFromVariableStateParameter = function(){
-            console.log($state.current.name + ": " + 'setupFromVariableStateParameter: variableObject is ' + JSON.stringify($stateParams.variableObject));
-            if($stateParams.variableObject !== null && typeof $stateParams.variableObject !== "undefined") {
+            if($stateParams.variableObject) {
+                console.debug($state.current.name + ": " + 'setupFromVariableStateParameter: variableObject is ' + JSON.stringify($stateParams.variableObject));
                 $scope.state.variableObject = $stateParams.variableObject;
                 $scope.state.title = "Record Measurement";
                 $scope.state.measurement.variableName = $stateParams.variableObject.name;
@@ -495,13 +496,13 @@ angular.module('starter')
                 measurementService.getMeasurementById(measurementId).then(
                     function(response) {
                         $scope.state.measurementIsSetup = true;
-                        console.log($state.current.name + ": " + "Setting up tracking by this measurement ");
+                        console.debug($state.current.name + ": " + "Setting up tracking by this measurement ");
                         measurementObject = response;
                         setupTrackingByMeasurement(measurementObject);
                         deferred.resolve();
                     },
                     function(response) {
-                        console.log($state.current.name + ": " + "Error response");
+                        console.debug($state.current.name + ": " + "Error response");
                         deferred.resolve();
                     }
                 );
@@ -592,7 +593,7 @@ angular.module('starter')
         };
 
         var setupTrackingByReminderNotification = function(){
-            if($stateParams.reminderNotification !== null && typeof $stateParams.reminderNotification !== "undefined"){
+            if($stateParams.reminderNotification){
                 $scope.state.title = "Record Measurement";
                 if(!$scope.state.measurement.abbreviatedUnitName){
                     $scope.state.measurement.abbreviatedUnitName = $stateParams.reminderNotification.abbreviatedUnitName;
@@ -621,8 +622,7 @@ angular.module('starter')
             if (!$scope.state.variableObject) {
                 if($stateParams.variableObject !== null && typeof $stateParams.variableObject !== "undefined") {
                     $scope.state.variableObject = $stateParams.variableObject;
-                }
-                else if ($stateParams.reminderNotification) {
+                } else if ($stateParams.reminderNotification) {
                     $scope.state.variableObject = {
                         abbreviatedUnitName : $stateParams.reminderNotification.abbreviatedUnitName,
                         combinationOperation : $stateParams.reminderNotification.combinationOperation,
@@ -651,10 +651,10 @@ angular.module('starter')
                 destructiveText: '<i class="icon ion-trash-a"></i>Delete Measurement',
                 cancelText: '<i class="icon ion-ios-close"></i>Cancel',
                 cancel: function() {
-                    console.log($state.current.name + ": " + 'CANCELLED');
+                    console.debug($state.current.name + ": " + 'CANCELLED');
                 },
                 buttonClicked: function(index) {
-                    console.log($state.current.name + ": " + 'BUTTON CLICKED', index);
+                    console.debug($state.current.name + ": " + 'BUTTON CLICKED', index);
                     if(index === 0){
                         $scope.addToFavoritesUsingVariableObject($scope.state.variableObject);
                     }
@@ -708,7 +708,7 @@ angular.module('starter')
         };
 
         $scope.$on('$ionicView.beforeEnter', function(){
-            console.log($state.current.name + ": beforeEnter");
+            console.debug($state.current.name + ": beforeEnter");
             $scope.init();
         });
 
