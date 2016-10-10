@@ -232,7 +232,7 @@ angular.module('starter')
 						$state.go('app.favoriteAdd', {reminder: favorite});
 					}
 					if(index === 1){
-						$state.go('app.measurementAdd', {variableObject: variableObject});
+						$state.go('app.measurementAdd', {trackingReminder: favorite});
 					}
 					if(index === 2){
 						$state.go('app.charts',

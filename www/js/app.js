@@ -542,6 +542,7 @@ angular.module('starter',
             url: "/measurement-add/:variableName",
             cache: false,
             params: {
+                trackingReminder: null,
                 reminderNotification: null,
                 fromState : null,
                 fromUrl : null,
