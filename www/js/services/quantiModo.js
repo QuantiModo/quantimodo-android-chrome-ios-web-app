@@ -1008,6 +1008,11 @@ angular.module('starter')
         QuantiModo.registerDeviceToken = function(deviceToken){
             var deferred = $q.defer();
 
+            if(!$rootScope.isMobile){
+                deferred.reject('Not on mobile so not posting device token');
+                return deferred.promise;
+            }
+
             console.debug("Posting deviceToken to server: ", deviceToken);
             QuantiModo.postDeviceToken(deviceToken, function(response){
                 localStorageService.deleteItem('deviceTokenToSync');

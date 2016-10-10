@@ -148,6 +148,10 @@ angular.module('starter')
     		$scope.init();
     	});
 
+		// when view is changed
+		$scope.$on('$ionicView.beforeEnter', function(e) {
+			$scope.hideHistoryPageInstructionsCard = localStorageService.getItemSync('hideHistoryPageInstructionsCard');
+		});
 
 		$scope.showActionSheet = function(measurement, $index) {
 

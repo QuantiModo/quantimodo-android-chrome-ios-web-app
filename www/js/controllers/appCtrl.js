@@ -10,7 +10,7 @@ angular.module('starter')
 
         $rootScope.loaderImagePath = config.appSettings.loaderImagePath;
         $rootScope.appMigrationVersion = 1489;
-        $rootScope.appVersion = "2.0.1.0";
+        $rootScope.appVersion = "2.0.2.0";
         if (!$rootScope.loaderImagePath) {
             $rootScope.loaderImagePath = 'img/circular-loader.gif';
         }
@@ -92,8 +92,8 @@ angular.module('starter')
             });
         };
 
-        $scope.setLocalStorageFlagTrue = function (flagName) {
-            $scope[flagName] = true;
+        $rootScope.setLocalStorageFlagTrue = function (flagName) {
+            $rootScope[flagName] = true;
             localStorageService.setItem(flagName, true);
         };
 
@@ -287,8 +287,7 @@ angular.module('starter')
         $scope.closeMenuIfNeeded = function (menuItem) {
             if (menuItem.click) {
                 $scope[menuItem.click] && $scope[menuItem.click]();
-            }
-            else if (!menuItem.isSubMenuParent) {
+            } else if (!menuItem.isSubMenuParent) {
                 $scope.closeMenu();
             }
         };

@@ -2,7 +2,7 @@ angular.module('starter')
 
 	.controller('RemindersInboxCtrl', function($scope, $state, $stateParams, $rootScope, $filter, $ionicPlatform,
 											   $ionicActionSheet, $timeout, QuantiModo, reminderService, utilsService,
-											   notificationService, userService, localStorageService, bugsnagService) {
+											   notificationService, userService, localStorageService, $ionicLoading) {
 
 	    $scope.controller_name = "RemindersInboxCtrl";
 
@@ -242,6 +242,10 @@ angular.module('starter')
 				});
 		};
 
+		$scope.hideLoader = function(){
+			$ionicLoading.hide();
+		};
+
 		var getFilteredTodayTrackingReminderNotifications = function(){
 			reminderService.getTodayTrackingReminderNotifications($stateParams.variableCategoryName)
 				.then(function (trackingReminderNotifications) {
@@ -297,11 +301,6 @@ angular.module('starter')
 					console.error('$scope.refreshTrackingReminderNotifications: ' + error);
 				});
 			}
-		};
-
-		$scope.setLocalStorageFlagTrue = function (flagName) {
-			$scope[flagName] = true;
-			localStorageService.setItem(flagName, true);
 		};
 
 	    $scope.init = function(){
@@ -431,21 +430,21 @@ angular.module('starter')
 
 		$scope.$on('$ionicView.beforeEnter', function(e) { console.debug("beforeEnter state " + $state.current.name);
 			setPageTitle();
-			$scope.hideAddTreatmentRemindersCard = localStorageService.getItemSync('hideAddTreatmentRemindersCard');
-			$scope.hideAddFoodRemindersCard = localStorageService.getItemSync('hideAddFoodRemindersCard');
-			$scope.hideAddSymptomRemindersCard = localStorageService.getItemSync('hideAddSymptomRemindersCard');
-			$scope.hideAddEmotionRemindersCard = localStorageService.getItemSync('hideAddEmotionRemindersCard');
-			$scope.hideHistoryPageInstructionsCard = localStorageService.getItemSync('hideHistoryPageInstructionsCard');
-			$scope.hideImportDataCard = localStorageService.getItemSync('hideImportDataCard');
-			$scope.hideRecordMeasurementInfoCard = localStorageService.getItemSync('hideRecordMeasurementInfoCard');
-			$scope.hideNotificationSettingsInfoCard = localStorageService.getItemSync('hideNotificationSettingsInfoCard');
-			$scope.hideLocationTrackingInfoCard = localStorageService.getItemSync('hideLocationTrackingInfoCard');
-			$scope.hideChromeExtensionInfoCard = localStorageService.getItemSync('hideChromeExtensionInfoCard');
+			$rootScope.hideAddTreatmentRemindersCard = localStorageService.getItemSync('hideAddTreatmentRemindersCard');
+			$rootScope.hideAddFoodRemindersCard = localStorageService.getItemSync('hideAddFoodRemindersCard');
+			$rootScope.hideAddSymptomRemindersCard = localStorageService.getItemSync('hideAddSymptomRemindersCard');
+			$rootScope.hideAddEmotionRemindersCard = localStorageService.getItemSync('hideAddEmotionRemindersCard');
+			$rootScope.hideHistoryPageInstructionsCard = localStorageService.getItemSync('hideHistoryPageInstructionsCard');
+			$rootScope.hideImportDataCard = localStorageService.getItemSync('hideImportDataCard');
+			$rootScope.hideRecordMeasurementInfoCard = localStorageService.getItemSync('hideRecordMeasurementInfoCard');
+			$rootScope.hideNotificationSettingsInfoCard = localStorageService.getItemSync('hideNotificationSettingsInfoCard');
+			$rootScope.hideLocationTrackingInfoCard = localStorageService.getItemSync('hideLocationTrackingInfoCard');
+			$rootScope.hideChromeExtensionInfoCard = localStorageService.getItemSync('hideChromeExtensionInfoCard');
 			getTrackingReminderNotifications();
 		});
 
 		// Triggered on a button click, or some other target
-		$scope.showActionSheetForNotification = function(trackingReminderNotification, $event) {
+		$scope.showActionSheetForNotification = function(trackingReminderNotification, $event, dividerIndex, trackingReminderNotificationIndex) {
 
 			if(isGhostClick($event)){
 				return;
@@ -478,7 +477,7 @@ angular.module('starter')
 				buttonClicked: function(index) {
 					console.log('BUTTON CLICKED', index);
 					if(index === 0){
-						$scope.editReminderSettingsByNotification($scope.state.trackingReminderNotification);
+						$scope.editReminderSettingsByNotification($scope.state.trackingReminderNotification, dividerIndex, trackingReminderNotificationIndex);
 					}
 					if(index === 1){
 						$scope.addToFavoritesUsingVariableObject($scope.state.variableObject);
