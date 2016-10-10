@@ -82,7 +82,7 @@ angular.module('starter')
             $scope.state.timePickerConfiguration = {
                 callback: function (val) {
                     if (typeof (val) === 'undefined') {
-                        console.log($state.current.name + ": " + 'Time not selected');
+                        console.debug($state.current.name + ": " + 'Time not selected');
                     } else {
                         var selectedDateTime = new Date(val * 1000);
                         $scope.selectedHours = selectedDateTime.getUTCHours();
@@ -90,7 +90,7 @@ angular.module('starter')
                         $scope.selectedDate.setHours($scope.selectedHours);
                         $scope.selectedDate.setMinutes($scope.selectedMinutes);
 
-                        console.log($state.current.name + ": " + 'Selected epoch is : ', val, 'and the time is ',
+                        console.debug($state.current.name + ": " + 'Selected epoch is : ', val, 'and the time is ',
                             $scope.selectedHours, 'H :', $scope.selectedMinutes, 'M');
                     }
                 },
@@ -105,7 +105,7 @@ angular.module('starter')
             $scope.state.datePickerConfiguration = {
                 callback: function(val) {
                     if (typeof(val)==='undefined') {
-                        console.log($state.current.name + ": " + 'Date not selected');
+                        console.debug($state.current.name + ": " + 'Date not selected');
                     } else {
                         // clears out hours and minutes
                         $scope.selectedDate = new Date(val);
@@ -274,7 +274,7 @@ angular.module('starter')
 
         // setup category view
         var setupVariableCategory = function(variableCategoryName){
-            console.log($state.current.name + ": " + "variableCategoryName  is " + variableCategoryName);
+            console.debug($state.current.name + ": " + "variableCategoryName  is " + variableCategoryName);
             //$scope.state.showVariableCategorySelector = false;
             if(!variableCategoryName){
                 variableCategoryName = '';
@@ -447,7 +447,7 @@ angular.module('starter')
         };
 
         var setupFromVariableStateParameter = function(){
-            console.log($state.current.name + ": " + 'setupFromVariableStateParameter: variableObject is ' + JSON.stringify($stateParams.variableObject));
+            console.debug($state.current.name + ": " + 'setupFromVariableStateParameter: variableObject is ' + JSON.stringify($stateParams.variableObject));
             if($stateParams.variableObject !== null && typeof $stateParams.variableObject !== "undefined") {
                 $scope.state.variableObject = $stateParams.variableObject;
                 $scope.state.title = "Record Measurement";
@@ -495,13 +495,13 @@ angular.module('starter')
                 measurementService.getMeasurementById(measurementId).then(
                     function(response) {
                         $scope.state.measurementIsSetup = true;
-                        console.log($state.current.name + ": " + "Setting up tracking by this measurement ");
+                        console.debug($state.current.name + ": " + "Setting up tracking by this measurement ");
                         measurementObject = response;
                         setupTrackingByMeasurement(measurementObject);
                         deferred.resolve();
                     },
                     function(response) {
-                        console.log($state.current.name + ": " + "Error response");
+                        console.debug($state.current.name + ": " + "Error response");
                         deferred.resolve();
                     }
                 );
@@ -651,10 +651,10 @@ angular.module('starter')
                 destructiveText: '<i class="icon ion-trash-a"></i>Delete Measurement',
                 cancelText: '<i class="icon ion-ios-close"></i>Cancel',
                 cancel: function() {
-                    console.log($state.current.name + ": " + 'CANCELLED');
+                    console.debug($state.current.name + ": " + 'CANCELLED');
                 },
                 buttonClicked: function(index) {
-                    console.log($state.current.name + ": " + 'BUTTON CLICKED', index);
+                    console.debug($state.current.name + ": " + 'BUTTON CLICKED', index);
                     if(index === 0){
                         $scope.addToFavoritesUsingVariableObject($scope.state.variableObject);
                     }
@@ -708,7 +708,7 @@ angular.module('starter')
         };
 
         $scope.$on('$ionicView.beforeEnter', function(){
-            console.log($state.current.name + ": beforeEnter");
+            console.debug($state.current.name + ": beforeEnter");
             $scope.init();
         });
 

@@ -115,7 +115,7 @@ angular.module('starter')
                     };
                 }
 
-                //console.log("Making this request: " + JSON.stringify(request));
+                //console.debug("Making this request: " + JSON.stringify(request));
                 console.debug('QuantiModo.get: ' + request.url);
 
                 $http(request)
@@ -132,7 +132,7 @@ angular.module('starter')
             console.debug('QuantiModo.post: About to try to post request to ' + baseURL + ' with body: ' + JSON.stringify(items));
             QuantiModo.getAccessTokenFromAnySource().then(function(accessToken){
 
-                //console.log("Token : ", token.accessToken);
+                //console.debug("Token : ", token.accessToken);
                 // configure params
                 for (var i = 0; i < items.length; i++)
                 {
@@ -296,7 +296,7 @@ angular.module('starter')
 
         QuantiModo.logoutOfApi = function(successHandler, errorHandler){
             //TODO: Fix this
-            console.log('Logging out of api does not work yet.  Fix it!');
+            console.debug('Logging out of api does not work yet.  Fix it!');
             QuantiModo.get('api/v2/auth/logout',
                 [],
                 {},
@@ -702,7 +702,7 @@ angular.module('starter')
             var deferred = $q.defer();
 
             if(utilsService.getClientId() === 'oAuthDisabled') {
-                //console.log('getAccessTokenFromAnySource: oAuthDisabled so we do not need an access token');
+                //console.debug('getAccessTokenFromAnySource: oAuthDisabled so we do not need an access token');
                 deferred.resolve();
                 return deferred.promise;
             }
@@ -714,11 +714,11 @@ angular.module('starter')
                 if(!$rootScope.user){
                     $http.get(url).then(
                         function (userCredentialsResp) {
-                            console.log('QuantiModo.getAccessTokenFromAnySource calling setUserInLocalStorageBugsnagAndRegisterDeviceForPush');
+                            console.debug('QuantiModo.getAccessTokenFromAnySource calling setUserInLocalStorageBugsnagAndRegisterDeviceForPush');
                             $rootScope.setUserInLocalStorageBugsnagAndRegisterDeviceForPush(userCredentialsResp.data);
                         },
                         function (errorResp) {
-                            console.log('Could not get user with accessToken.  error response:', errorResp);
+                            console.debug('Could not get user with accessToken.  error response:', errorResp);
                         }
                     );
                 }
@@ -754,14 +754,14 @@ angular.module('starter')
             var refreshToken = localStorageService.getItemSync('refreshToken');
             var accessToken = localStorageService.getItemSync('accessToken');
 
-            console.log('QuantiModo.getOrRefreshAccessTokenOrLogin: Values from local storage:', JSON.stringify({
+            console.debug('QuantiModo.getOrRefreshAccessTokenOrLogin: Values from local storage:', JSON.stringify({
                 expiresAt: expiresAt,
                 refreshToken: refreshToken,
                 accessToken: accessToken
             }));
 
             if (now < expiresAt) {
-                console.log('QuantiModo.getOrRefreshAccessTokenOrLogin: Current access token should not be expired. Resolving token using one from local storage');
+                console.debug('QuantiModo.getOrRefreshAccessTokenOrLogin: Current access token should not be expired. Resolving token using one from local storage');
                 deferred.resolve({
                     accessToken: accessToken
                 });
@@ -777,7 +777,7 @@ angular.module('starter')
         };
 
         QuantiModo.refreshAccessToken = function(refreshToken, deferred) {
-            console.log('Refresh token will be used to fetch access token from ' +
+            console.debug('Refresh token will be used to fetch access token from ' +
                 utilsService.getURL("api/oauth2/token") + ' with client id ' + utilsService.getClientId());
             var url = utilsService.getURL("api/oauth2/token");
             $http.post(url, {
@@ -788,18 +788,18 @@ angular.module('starter')
             }).success(function (data) {
                 // update local storage
                 if (data.error) {
-                    console.log('Token refresh failed: ' + data.error);
+                    console.debug('Token refresh failed: ' + data.error);
                     deferred.reject('refresh failed');
                 } else {
                     var accessTokenRefreshed = QuantiModo.saveAccessTokenInLocalStorage(data);
-                    console.log('QuantiModo.refreshAccessToken: access token successfully updated from api server: ' + JSON.stringify(data));
+                    console.debug('QuantiModo.refreshAccessToken: access token successfully updated from api server: ' + JSON.stringify(data));
                     deferred.resolve({
                         accessToken: accessTokenRefreshed
                     });
                 }
 
             }).error(function (response) {
-                console.log("QuantiModo.refreshAccessToken: failed to refresh token from api server" + JSON.stringify(response));
+                console.debug("QuantiModo.refreshAccessToken: failed to refresh token from api server" + JSON.stringify(response));
                 deferred.reject(response);
             });
 
@@ -821,7 +821,7 @@ angular.module('starter')
                     localStorageService.setItem('refreshToken', refreshToken);
                 }
 
-                console.log("expires in: ", JSON.stringify(expiresIn), parseInt(expiresIn, 10));
+                console.debug("expires in: ", JSON.stringify(expiresIn), parseInt(expiresIn, 10));
 
                 // calculate expires at
                 var expiresAt = new Date().getTime() + parseInt(expiresIn, 10) * 1000 - 60000;
@@ -876,7 +876,7 @@ angular.module('starter')
         };
 
         QuantiModo.getAuthorizationCodeFromUrl = function(event) {
-            console.log('extracting authorization code from event: ' + JSON.stringify(event));
+            console.debug('extracting authorization code from event: ' + JSON.stringify(event));
             var authorizationUrl = event.url;
             if(!authorizationUrl) {
                 authorizationUrl = event.data;
@@ -892,7 +892,7 @@ angular.module('starter')
 
         // get access token from authorization code
         QuantiModo.getAccessTokenFromAuthorizationCode= function (authorizationCode) {
-            console.log("Authorization code is " + authorizationCode);
+            console.debug("Authorization code is " + authorizationCode);
 
             var deferred = $q.defer();
 
@@ -915,8 +915,8 @@ angular.module('starter')
                 }
             };
 
-            console.log('getAccessTokenFromAuthorizationCode: request is ', request);
-            console.log(JSON.stringify(request));
+            console.debug('getAccessTokenFromAuthorizationCode: request is ', request);
+            console.debug(JSON.stringify(request));
 
             // post
             $http(request).success(function (response) {
@@ -925,13 +925,13 @@ angular.module('starter')
                     alert(response.error + ": " + response.error_description + ".  Please try again or contact mike@quantimo.do.");
                     deferred.reject(response);
                 } else {
-                    console.log('getAccessTokenFromAuthorizationCode: Successful response is ', response);
-                    console.log(JSON.stringify(response));
+                    console.debug('getAccessTokenFromAuthorizationCode: Successful response is ', response);
+                    console.debug(JSON.stringify(response));
                     deferred.resolve(response);
                 }
             }).error(function (response) {
-                console.log('getAccessTokenFromAuthorizationCode: Error response is ', response);
-                console.log(JSON.stringify(response));
+                console.debug('getAccessTokenFromAuthorizationCode: Error response is ', response);
+                console.debug(JSON.stringify(response));
                 deferred.reject(response);
             });
 
@@ -951,7 +951,7 @@ angular.module('starter')
 
             $http.get(url).then(
                 function (userCredentialsResp) {
-                    console.log('QuantiModo.getAccessTokenFromAnySource calling setUserInLocalStorageBugsnagAndRegisterDeviceForPush');
+                    console.debug('QuantiModo.getAccessTokenFromAnySource calling setUserInLocalStorageBugsnagAndRegisterDeviceForPush');
                     $rootScope.setUserInLocalStorageBugsnagAndRegisterDeviceForPush(userCredentialsResp.data);
                 },
                 function (errorResp) {
@@ -976,7 +976,7 @@ angular.module('starter')
             url += "&accessToken=" + encodeURIComponent(accessToken);
             url += "&client_id=" + encodeURIComponent(utilsService.getClientId());
 
-            console.log('QuantiModo.getTokensAndUserViaNativeSocialLogin about to make request to ' + url);
+            console.debug('QuantiModo.getTokensAndUserViaNativeSocialLogin about to make request to ' + url);
 
             $http({
                 method: 'GET',
@@ -989,7 +989,7 @@ angular.module('starter')
 
                     // This didn't solve the token_invalid issue
                     // $timeout(function () {
-                    //     console.log('10 second delay to try to solve token_invalid issue');
+                    //     console.debug('10 second delay to try to solve token_invalid issue');
                     //  deferred.resolve(response.data.data.token);
                     // }, 10000);
 

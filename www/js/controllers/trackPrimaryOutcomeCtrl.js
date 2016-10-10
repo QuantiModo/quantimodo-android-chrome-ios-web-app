@@ -116,12 +116,12 @@ angular.module('starter')
         };
 
         $scope.$on('updateCharts', function(){
-            console.log('updateCharts broadcast received..');
+            console.debug('updateCharts broadcast received..');
             updateCharts();
         });
 
         $scope.$on('$ionicView.enter', function(e) { console.debug("Entering state " + $state.current.name);
-            console.log('$ionicView.enter. Updating charts and syncing..');
+            console.debug('$ionicView.enter. Updating charts and syncing..');
             $scope.init();
         });
     });

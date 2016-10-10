@@ -97,7 +97,7 @@ angular.module('starter')
 
 		$scope.trackLocationChange = function() {
 
-			console.log($state.current.name + ": " + 'trackLocation', $scope.state.trackLocation);
+			console.debug($state.current.name + ": " + 'trackLocation', $scope.state.trackLocation);
 			$rootScope.user.trackLocation = $scope.state.trackLocation;
 			userService.updateUserSettings({trackLocation: $rootScope.user.trackLocation});
 			if($scope.state.trackLocation){
@@ -136,7 +136,7 @@ angular.module('starter')
 					$scope.state.variableCategories = variableCategories;
 				}, function(error){
 					Bugsnag.notify(error, JSON.stringify(error), {}, "error");
-					console.log($state.current.name + ": " + "error getting variable categories", error);
+					console.debug($state.current.name + ": " + "error getting variable categories "+ JSON.stringify(error));
 				});
 			$scope.getHistory();
 
@@ -173,10 +173,10 @@ angular.module('starter')
 				],
 				cancelText: '<i class="icon ion-ios-close"></i>Cancel',
 				cancel: function() {
-					console.log($state.current.name + ": " + 'CANCELLED');
+					console.debug($state.current.name + ": " + 'CANCELLED');
 				},
 				buttonClicked: function(index) {
-					console.log($state.current.name + ": " + 'BUTTON CLICKED', index);
+					console.debug($state.current.name + ": " + 'BUTTON CLICKED', index);
 					if(index === 0){
 						$scope.editMeasurement($scope.state.variableObject);
 					}

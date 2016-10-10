@@ -46,7 +46,7 @@ angular.module('starter')
 
             $ionicLoading.hide();
         }, function(){
-            console.log("iframeScreen: No access token. Need to log in.");
+            console.debug("iframeScreen: No access token. Need to log in.");
             $rootScope.sendToLogin();
             $ionicLoading.hide();
         });
