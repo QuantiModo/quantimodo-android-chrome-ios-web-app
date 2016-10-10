@@ -1,6 +1,6 @@
 angular.module('starter')
     .controller('VariableSearchCtrl', function($scope, $state, $rootScope, $stateParams, $filter, localStorageService, 
-                                               QuantiModo,  variableCategoryService, variableService) {
+                                               QuantiModo,  variableCategoryService, variableService, $timeout) {
 
         $scope.controller_name = "VariableSearchCtrl";
 
@@ -122,8 +122,12 @@ angular.module('starter')
                             }
                             // If no results or no exact match, show "+ Add [variable]" button for query
                             if((variables.length < 1 || !found)){
-                                console.debug($state.current.name + ": " + "$scope.onVariableSearch: Set showAddVariableButton to true");
-                                $scope.state.showAddVariableButton = true;
+                                $timeout(function () {
+                                    if(!$scope.state.searching){
+                                        console.debug($state.current.name + ": " + "$scope.onVariableSearch: Set showAddVariableButton to true");
+                                        $scope.state.showAddVariableButton = true;
+                                    }
+                                }, 3000);
                                 if ($stateParams.nextState === "app.reminderAdd") {
                                     $scope.state.addNewVariableButtonText = '+ Add ' + $scope.state.variableSearchQuery.name +
                                         ' reminder';
