@@ -71,7 +71,7 @@ angular.module('starter',
              var finishPushes = true;  // Setting to false didn't solve notification dismissal problem
 
              push.on('notification', function(data) {
-                 console.log('Received push notification: ' + JSON.stringify(data));
+                 console.debug('Received push notification: ' + JSON.stringify(data));
                  qmLocationService.updateLocationVariablesAndPostMeasurementIfChanged();
                  reminderService.refreshTrackingReminderNotifications().then(function(){
                      console.debug('push.on.notification: successfully refreshed notifications');
@@ -85,11 +85,11 @@ angular.module('starter',
                  // data.image,
                  // data.additionalData
                  if(!finishPushes) {
-                     console.log('Not doing push.finish for data.additionalData.notId: ' + data.additionalData.notId);
+                     console.debug('Not doing push.finish for data.additionalData.notId: ' + data.additionalData.notId);
                      return;
                  }
                  push.finish(function () {
-                     console.log("processing of push data is finished: " + JSON.stringify(data));
+                     console.debug("processing of push data is finished: " + JSON.stringify(data));
                  });
              });
 
@@ -99,21 +99,21 @@ angular.module('starter',
 
              var finishPush = function (data) {
                  if(!finishPushes){
-                     console.log('Not doing push.finish for data.additionalData.notId: ' + data.additionalData.notId);
+                     console.debug('Not doing push.finish for data.additionalData.notId: ' + data.additionalData.notId);
                      return;
                  }
 
                  push.finish(function() {
-                     console.log('accept callback finished for data.additionalData.notId: ' + data.additionalData.notId);
+                     console.debug('accept callback finished for data.additionalData.notId: ' + data.additionalData.notId);
                  }, function() {
-                     console.log('accept callback failed for data.additionalData.notId: ' + data.additionalData.notId);
+                     console.debug('accept callback failed for data.additionalData.notId: ' + data.additionalData.notId);
                  }, data.additionalData.notId);
 
              };
 
              window.trackOneRatingAction = function (data){
                  
-                 console.log("trackDefaultValueAction Push data: " + JSON.stringify(data));
+                 console.debug("trackDefaultValueAction Push data: " + JSON.stringify(data));
                  var body = {
                      trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId,
                      modifiedValue: 1
@@ -125,7 +125,7 @@ angular.module('starter',
 
              window.trackTwoRatingAction = function (data){
                  
-                 console.log("trackDefaultValueAction Push data: " + JSON.stringify(data));
+                 console.debug("trackDefaultValueAction Push data: " + JSON.stringify(data));
                  var body = {
                      trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId,
                      modifiedValue: 2
@@ -137,7 +137,7 @@ angular.module('starter',
 
              window.trackThreeRatingAction = function (data){
                  
-                 console.log("trackDefaultValueAction Push data: " + JSON.stringify(data));
+                 console.debug("trackDefaultValueAction Push data: " + JSON.stringify(data));
                  var body = {
                      trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId,
                      modifiedValue: 3
@@ -149,7 +149,7 @@ angular.module('starter',
 
              window.trackFourRatingAction = function (data){
                  
-                 console.log("trackDefaultValueAction Push data: " + JSON.stringify(data));
+                 console.debug("trackDefaultValueAction Push data: " + JSON.stringify(data));
                  var body = {
                      trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId,
                      modifiedValue: 4
@@ -161,7 +161,7 @@ angular.module('starter',
 
              window.trackFiveRatingAction = function (data){
                  
-                 console.log("trackDefaultValueAction Push data: " + JSON.stringify(data));
+                 console.debug("trackDefaultValueAction Push data: " + JSON.stringify(data));
                  var body = {
                      trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId,
                      modifiedValue: 5
@@ -173,7 +173,7 @@ angular.module('starter',
 
              window.trackDefaultValueAction = function (data){
                  
-                 console.log("trackDefaultValueAction Push data: " + JSON.stringify(data));
+                 console.debug("trackDefaultValueAction Push data: " + JSON.stringify(data));
                  var body = {
                      trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId
                  };
@@ -184,7 +184,7 @@ angular.module('starter',
 
              window.snoozeAction = function (data){
                  
-                 console.log("snoozeAction push data: " + JSON.stringify(data));
+                 console.debug("snoozeAction push data: " + JSON.stringify(data));
                  var body = {
                      trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId
                  };
@@ -194,7 +194,7 @@ angular.module('starter',
 
              window.trackLastValueAction = function (data){
                  
-                 console.log("trackLastValueAction Push data: " + JSON.stringify(data));
+                 console.debug("trackLastValueAction Push data: " + JSON.stringify(data));
                  var body = {
                      trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId,
                      modifiedValue: data.additionalData.lastValue
@@ -205,7 +205,7 @@ angular.module('starter',
 
              window.trackSecondToLastValueAction = function (data){
                  
-                 console.log("trackSecondToLastValueAction Push data: " + JSON.stringify(data));
+                 console.debug("trackSecondToLastValueAction Push data: " + JSON.stringify(data));
                  var body = {
                      trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId,
                      modifiedValue: data.additionalData.secondToLastValue
@@ -216,7 +216,7 @@ angular.module('starter',
 
              window.trackThirdToLastValueAction = function (data){
                  
-                 console.log("trackThirdToLastValueAction Push data: " + JSON.stringify(data));
+                 console.debug("trackThirdToLastValueAction Push data: " + JSON.stringify(data));
                  var body = {
                      trackingReminderNotificationId: data.additionalData.trackingReminderNotificationId,
                      modifiedValue: data.additionalData.thirdToLastValue
@@ -227,11 +227,11 @@ angular.module('starter',
          }
 
         if(typeof analytics !== "undefined") {
-            console.log("Configuring Google Analytics");
+            console.debug("Configuring Google Analytics");
             //noinspection JSUnresolvedFunction
             analytics.startTrackerWithId("UA-39222734-24");
         } else {
-            //console.log("Google Analytics Unavailable");
+            //console.debug("Google Analytics Unavailable");
         }
         
         // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
@@ -341,10 +341,10 @@ angular.module('starter',
         var appName = getAppNameFromUrl();
 
         if(appName){
-            console.log('loading', appsManager.getAppConfig(appName), appsManager.getPrivateConfig(appName));
+            console.debug('loading', appsManager.getAppConfig(appName), appsManager.getPrivateConfig(appName));
             return $ocLazyLoad.load([appsManager.getAppConfig(appName), appsManager.getPrivateConfig(appName)]);
         } else{
-            console.log('Loading default app: ' + appsManager.getDefaultApp());
+            console.debug('Loading default app: ' + appsManager.getDefaultApp());
             return $ocLazyLoad.load([appsManager.getDefaultConfig(), appsManager.getDefaultPrivateConfig()]);          
         }
 
@@ -1006,10 +1006,10 @@ angular.module('starter',
         });
 
     if (window.localStorage.introSeen) {
-        console.log("Intro seen so going to inbox");
+        console.debug("Intro seen so going to inbox");
         $urlRouterProvider.otherwise('/app/reminders-inbox');
     } else {
-        console.log("Intro not seen so going to intro");
+        console.debug("Intro not seen so going to intro");
         $urlRouterProvider.otherwise('/');
     }
       // if none of the above states are matched, use this as the fallback

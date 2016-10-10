@@ -6,7 +6,7 @@ angular.module('starter')
 
 	    $scope.controller_name = "RemindersManageCtrl";
 
-		console.log('Loading ' + $scope.controller_name);
+		console.debug('Loading ' + $scope.controller_name);
 	    
 	    $scope.state = {
 			showButtons : false,
@@ -41,7 +41,7 @@ angular.module('starter')
 	    // when date is updated
 	    $scope.currentDatePickerCallback = function (val) {
 	    	if(typeof(val)==='undefined'){
-	    		console.log('Date not selected');
+	    		console.debug('Date not selected');
 	    	} else {
 	    		$scope.state.measurementDate = new Date(val);
 	    	}
@@ -50,7 +50,7 @@ angular.module('starter')
 		// when time is changed
 		$scope.currentTimePickerCallback = function (val) {
 			if (typeof (val) === 'undefined') {
-				console.log('Time not selected');
+				console.debug('Time not selected');
 			} else {
 				var a = new Date();
 				a.setHours(val.hours);
@@ -119,10 +119,10 @@ angular.module('starter')
 					],
 					cancelText: '<i class="icon ion-ios-close"></i>Cancel',
 					cancel: function() {
-						console.log('CANCELLED');
+						console.debug('CANCELLED');
 					},
 					buttonClicked: function(index) {
-						console.log('BUTTON CLICKED', index);
+						console.debug('BUTTON CLICKED', index);
 						if(index === 0){
 							console.debug("Sort by name");
 							$scope.state.orderParameter = 'variableName';
@@ -168,7 +168,7 @@ angular.module('starter')
 			});
 
 			moreNotificationInfoPopup.then(function(res) {
-				console.log('Tapped!', res);
+				console.debug('Tapped!', res);
 			});
 		};
 
@@ -220,7 +220,7 @@ angular.module('starter')
 					}, function (error) {
 						console.error('reminderService.deleteReminder: ' + error);
 					});
-					console.log("Reminder deleted");
+					console.debug("Reminder deleted");
 				}, function(error){
 					if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error(error);
 					$ionicLoading.hide();
@@ -258,10 +258,10 @@ angular.module('starter')
 				destructiveText: '<i class="icon ion-trash-a"></i>Delete Reminder',
 				cancelText: '<i class="icon ion-ios-close"></i>Cancel',
 				cancel: function() {
-					console.log('CANCELLED');
+					console.debug('CANCELLED');
 				},
 				buttonClicked: function(index) {
-					console.log('BUTTON CLICKED', index);
+					console.debug('BUTTON CLICKED', index);
 					if(index === 0){
 						$scope.edit(trackingReminder);
 					}

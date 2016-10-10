@@ -46,7 +46,7 @@ angular.module('starter')
 		});
 
 		$scope.$on('updatePrimaryOutcomeHistory', function(){
-			console.log($state.current.name + ": " + 'updatePrimaryOutcomeHistory broadcast received..');
+			console.debug($state.current.name + ": " + 'updatePrimaryOutcomeHistory broadcast received..');
 			$scope.history = measurementService.getAllLocalMeasurements();
 		});
 
@@ -69,10 +69,10 @@ angular.module('starter')
 				],
 				cancelText: '<i class="icon ion-ios-close"></i>Cancel',
 				cancel: function() {
-					console.log($state.current.name + ": " + 'CANCELLED');
+					console.debug($state.current.name + ": " + 'CANCELLED');
 				},
 				buttonClicked: function(index) {
-					console.log($state.current.name + ": " + 'BUTTON CLICKED', index);
+					console.debug($state.current.name + ": " + 'BUTTON CLICKED', index);
 					if(index === 0){
 						$scope.editMeasurement($scope.state.variableObject);
 					}
