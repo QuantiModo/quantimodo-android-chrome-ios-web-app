@@ -93,7 +93,7 @@ angular.module('starter')
         };
 
         $rootScope.setLocalStorageFlagTrue = function (flagName) {
-            $scope[flagName] = true;
+            $rootScope[flagName] = true;
             localStorageService.setItem(flagName, true);
         };
 
