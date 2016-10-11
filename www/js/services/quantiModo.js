@@ -720,10 +720,6 @@ angular.module('starter')
                 localStorageService.deleteItem('accessTokenInUrl');
             }
 
-            if($rootScope.accessTokenInUrl && !$rootScope.user){
-                QuantiModo.refreshUser();
-            }
-
             return $rootScope.accessTokenInUrl;
         };
 

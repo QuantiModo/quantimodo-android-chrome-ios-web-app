@@ -401,6 +401,9 @@ angular.module('starter')
         $scope.init = function () {
             console.debug("Main Constructor Start");
             QuantiModo.getAccessTokenFromUrlParameter();
+            if($rootScope.accessTokenInUrl && !$rootScope.user){
+                QuantiModo.refreshUser();
+            }
             $rootScope.hideNavigationMenuIfSetInUrlParameter();
             if (!$rootScope.user) {
                 $rootScope.user = localStorageService.getItemAsObject('user');
