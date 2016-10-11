@@ -555,8 +555,8 @@ angular.module('starter')
         };
 
         // post tracking reminder
-        QuantiModo.updateUserSettings = function(params, successHandler, errorHandler) {
-            console.debug("QuantiModo.updateUserSettings", params);
+        QuantiModo.postUserSettings = function(params, successHandler, errorHandler) {
+            console.debug("QuantiModo.postUserSettings", params);
             QuantiModo.post('api/v1/userSettings',
                 [],
                 params,
@@ -1066,9 +1066,9 @@ angular.module('starter')
             return deferred.promise;
         };
 
-        QuantiModo.updateUserSettings = function(params){
+        QuantiModo.updateUserSettingsDeferred = function(params){
             var deferred = $q.defer();
-            QuantiModo.updateUserSettings(params, function(response){
+            QuantiModo.postUserSettings(params, function(response){
                 QuantiModo.refreshUser();
                 deferred.resolve(response);
             }, function(response){

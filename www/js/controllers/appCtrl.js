@@ -18,7 +18,7 @@ angular.module('starter')
             localStorageService.getItem('trackLocation', function(trackLocation){
                 $rootScope.user.trackLocation = trackLocation;
                 if($rootScope.user.trackLocation){
-                    QuantiModo.updateUserSettings({trackLocation: $rootScope.user.trackLocation});
+                    QuantiModo.updateUserSettingsDeferred({trackLocation: $rootScope.user.trackLocation});
                 }
             });
         }

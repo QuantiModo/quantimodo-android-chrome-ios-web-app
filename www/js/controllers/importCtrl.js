@@ -92,7 +92,7 @@ angular.module('starter')
 				template: '<ion-spinner></ion-spinner>'
 			});
 
-			if($rootScope.isMobile){
+			if($rootScope.isMobile || $stateParams.native){
 				loadNativeConnectorPage();
 			} else {
 				goToWebImportDataPage();
@@ -345,7 +345,7 @@ angular.module('starter')
 					'<i class="icon ion-person placeholder-icon"></i>' +
 					'<input type="text" placeholder="Username" ng-model="data.username"></label>',
 					title: connector.displayName,
-					subTitle: 'Enter Your ' + connector.displayName + ' Username',
+					subTitle: 'Enter your ' + connector.displayName + ' username found next to your avatar on the WhatPulse My Stats page',
 					scope: $scope,
 					buttons: [
 						{ text: 'Cancel' },
