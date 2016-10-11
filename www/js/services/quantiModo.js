@@ -74,22 +74,20 @@ angular.module('starter')
         };
 
         var canWeMakeRequestYet = function(type, baseURL){
-            if($rootScope[type + '_' + baseURL.replace('/', '_')]){
-                console.debug('QuantiModo.get: Cannot make ' + type + ' request to ' + baseURL + " with params because we have an outstanding one already.");
+            var minimumSecondsBetweenRequests = 1;
+            if(!$rootScope[type + '_' + baseURL.replace('/', '_')]){
+                $rootScope['last_' + type + '_' + baseURL.replace('/', '_') + '_request_at'] = Math.floor(Date.now() / 1000);
+                return true;
+            }
+            if($rootScope[type + '_' + baseURL.replace('/', '_')] > Math.floor(Date.now() / 1000) - minimumSecondsBetweenRequests){
+                console.debug('QuantiModo.get: Cannot make ' + type + ' request to ' + baseURL + " because " +
+                    "we made the same request within the last " + minimumSecondsBetweenRequests + ' seconds');
                 return false;
             }
-            $rootScope[type + '_' + baseURL.replace('/', '_')] = true;
-
-            $timeout(function () {
-                if($rootScope[type + '_' + baseURL.replace('/', '_')]){
-                    $rootScope[type + '_' + baseURL.replace('/', '_')] = false;
-                }
-            }, 15000);
-
+            $rootScope['last_' + type + '_' + baseURL.replace('/', '_') + '_request_at'] = Math.floor(Date.now() / 1000);
             return true;
         };
-
-
+        
         // GET method with the added token
         QuantiModo.get = function(baseURL, allowedParams, params, successHandler, errorHandler){
 
