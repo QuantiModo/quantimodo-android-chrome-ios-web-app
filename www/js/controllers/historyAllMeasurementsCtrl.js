@@ -4,7 +4,7 @@ angular.module('starter')
 	.controller('historyAllMeasurementsCtrl', function($scope, $state, $stateParams, $rootScope, $timeout, $ionicActionSheet,
 													   QuantiModo, measurementService,
 													   variableCategoryService, ratingService, localStorageService,
-													   qmLocationService, userService) {
+													   qmLocationService) {
 
 	    $scope.controller_name = "historyAllMeasurementsCtrl";
         
@@ -99,7 +99,7 @@ angular.module('starter')
 
 			console.debug($state.current.name + ": " + 'trackLocation', $scope.state.trackLocation);
 			$rootScope.user.trackLocation = $scope.state.trackLocation;
-			userService.updateUserSettings({trackLocation: $rootScope.user.trackLocation});
+			QuantiModo.updateUserSettings({trackLocation: $rootScope.user.trackLocation});
 			if($scope.state.trackLocation){
 				qmLocationService.updateLocationVariablesAndPostMeasurementIfChanged();
 			} else {

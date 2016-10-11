@@ -200,12 +200,7 @@ angular.module('starter')
                         localStorageService.setItem('user', response.user);
                         $rootScope.user = response.user;
                         console.debug('$scope.nativeSocialLogin just set $rootScope.user to: ' + JSON.stringify($rootScope.user));
-                        localStorageService.setItem('accessToken', response.accessToken);
-                        $rootScope.accessToken = response.accessToken;
-                        localStorageService.setItem('refreshToken', response.refreshToken);
-                        $rootScope.refreshToken = response.refreshToken;
-                        localStorageService.setItem('expiresAt', response.expiresAt);
-                        $rootScope.expiresAt = response.expiresAt;
+                        QuantiModo.saveAccessTokenInLocalStorage(response);
                         $rootScope.setUserInLocalStorageBugsnagAndRegisterDeviceForPush(response.user);
                         $rootScope.hideNavigationMenu = false;
                         $state.go(config.appSettings.defaultState);
