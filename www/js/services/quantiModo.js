@@ -716,8 +716,13 @@ angular.module('starter')
             if($rootScope.accessTokenInUrl){
                 localStorageService.setItem('accessTokenInUrl', $rootScope.accessTokenInUrl);
                 localStorageService.setItem('accessToken', $rootScope.accessTokenInUrl);
+                $rootScope.accessToken = $rootScope.accessTokenInUrl;
             } else {
                 localStorageService.deleteItem('accessTokenInUrl');
+            }
+
+            if($rootScope.accessTokenInUrl && !$rootScope.user){
+                QuantiModo.refreshUser();
             }
 
             return $rootScope.accessTokenInUrl;
@@ -1062,7 +1067,7 @@ angular.module('starter')
         };
 
         // get user
-        QuantiModo.getUser = function(){
+        QuantiModo.getOrRefreshUser = function(){
             var deferred = $q.defer();
 
             localStorageService.getItem('user',function(user){

@@ -106,7 +106,7 @@ angular.module('starter')
             updateCharts();
             $scope.showRatingFaces = true;
             $scope.timeRemaining = false;
-            if($rootScope.user){
+            if($rootScope.user || $rootScope.accessToken){
                 $scope.showLoader($scope.syncDisplayText);
                 measurementService.syncPrimaryOutcomeVariableMeasurements().then(function(){
                     updateCharts();
