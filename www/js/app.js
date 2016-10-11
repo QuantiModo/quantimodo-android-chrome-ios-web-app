@@ -584,6 +584,19 @@ angular.module('starter',
                 }
             }
         })
+        .state('app.importNative', {
+            url: "/import-native",
+            cache: false,
+            params: {
+                native: true
+            },
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/import-data.html",
+                    controller: 'ImportCtrl'
+                }
+            }
+        })
         .state('app.chartSearch', {
             url: "/chart-search",
             cache: false,
