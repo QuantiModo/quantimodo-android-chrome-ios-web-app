@@ -242,6 +242,18 @@ angular.module('starter')
 				});
 		};
 
+		var getFilteredTrackingReminderNotificationsFromLocalStorage = function(){
+			var trackingReminderNotifications = localStorageService.getElementsFromItemWithFilters(
+				'trackingReminderNotifications', 'variableCategoryName', $stateParams.variableCategoryName);
+			$scope.state.numberOfDisplayedNotifications = trackingReminderNotifications.length;
+			$scope.filteredTrackingReminderNotifications =
+				reminderService.groupTrackingReminderNotificationsByDateRange(trackingReminderNotifications);
+			//Stop the ion-refresher from spinning
+			$scope.$broadcast('scroll.refreshComplete');
+			$scope.hideLoader();
+			$scope.state.loading = false;
+		};
+
 		$scope.hideLoader = function(){
 			$ionicLoading.hide();
 		};
@@ -265,9 +277,11 @@ angular.module('starter')
 				});
 		};
 
-		$scope.$on('getTrackingReminderNotifications', function(){
-			console.debug('getTrackingReminderNotifications broadcast received..');
-			getTrackingReminderNotifications();
+		$scope.$on('getTrackingReminderNotificationsFromLocalStorage', function(){
+			console.debug('getTrackingReminderNotificationsFromLocalStorage broadcast received..');
+			if(!$stateParams.today) {
+				getFilteredTrackingReminderNotificationsFromLocalStorage();
+			}
 		});
 
 	    var getTrackingReminderNotifications = function () {
