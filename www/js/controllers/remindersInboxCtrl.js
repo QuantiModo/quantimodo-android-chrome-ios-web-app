@@ -326,7 +326,7 @@ angular.module('starter')
 				var params = {
 					timeZoneOffset: timeZoneOffsetInMinutes
 				};
-				QuantiModo.updateUserSettings(params);
+				QuantiModo.updateUserSettingsDeferred(params);
 			}
 			if(!$rootScope.user){
 				QuantiModo.refreshUser();

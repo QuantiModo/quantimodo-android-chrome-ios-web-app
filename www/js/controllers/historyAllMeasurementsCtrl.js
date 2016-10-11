@@ -99,7 +99,7 @@ angular.module('starter')
 
 			console.debug($state.current.name + ": " + 'trackLocation', $scope.state.trackLocation);
 			$rootScope.user.trackLocation = $scope.state.trackLocation;
-			QuantiModo.updateUserSettings({trackLocation: $rootScope.user.trackLocation});
+			QuantiModo.updateUserSettingsDeferred({trackLocation: $rootScope.user.trackLocation});
 			if($scope.state.trackLocation){
 				qmLocationService.updateLocationVariablesAndPostMeasurementIfChanged();
 			} else {
