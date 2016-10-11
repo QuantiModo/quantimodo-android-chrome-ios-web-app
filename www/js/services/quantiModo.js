@@ -16,8 +16,6 @@ angular.module('starter')
 
         QuantiModo.errorHandler = function(data, status, headers, config, request, baseURL, type){
 
-            $rootScope[type + '_' + baseURL.replace('/', '_')] = true;
-
             if(status === 302){
                 console.warn('QuantiModo.errorHandler: Got 302 response from ' + JSON.stringify(request));
                 return;
@@ -75,16 +73,17 @@ angular.module('starter')
 
         var canWeMakeRequestYet = function(type, baseURL){
             var minimumSecondsBetweenRequests = 1;
-            if(!$rootScope[type + '_' + baseURL.replace('/', '_')]){
-                $rootScope['last_' + type + '_' + baseURL.replace('/', '_') + '_request_at'] = Math.floor(Date.now() / 1000);
+            var requestVariableName = 'last_' + type + '_' + baseURL.replace('/', '_') + '_request_at';
+            if(!$rootScope[requestVariableName]){
+                $rootScope[requestVariableName] = Math.floor(Date.now() / 1000);
                 return true;
             }
-            if($rootScope[type + '_' + baseURL.replace('/', '_')] > Math.floor(Date.now() / 1000) - minimumSecondsBetweenRequests){
+            if($rootScope[requestVariableName] > Math.floor(Date.now() / 1000) - minimumSecondsBetweenRequests){
                 console.debug('QuantiModo.get: Cannot make ' + type + ' request to ' + baseURL + " because " +
                     "we made the same request within the last " + minimumSecondsBetweenRequests + ' seconds');
                 return false;
             }
-            $rootScope['last_' + type + '_' + baseURL.replace('/', '_') + '_request_at'] = Math.floor(Date.now() / 1000);
+            $rootScope[requestVariableName] = Math.floor(Date.now() / 1000);
             return true;
         };
 
