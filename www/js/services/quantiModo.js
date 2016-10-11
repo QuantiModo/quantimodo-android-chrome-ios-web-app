@@ -14,7 +14,10 @@ angular.module('starter')
             }
         };
 
-        QuantiModo.errorHandler = function(data, status, headers, config, request){
+        QuantiModo.errorHandler = function(data, status, headers, config, request, baseURL, type){
+
+            $rootScope[type + '_' + baseURL.replace('/', '_')] = true;
+
             if(status === 302){
                 console.warn('QuantiModo.errorHandler: Got 302 response from ' + JSON.stringify(request));
                 return;
@@ -70,9 +73,28 @@ angular.module('starter')
             console.error("Request error : " + error);
         };
 
+        var canWeMakeRequestYet = function(type, baseURL){
+            var minimumSecondsBetweenRequests = 1;
+            if(!$rootScope[type + '_' + baseURL.replace('/', '_')]){
+                $rootScope['last_' + type + '_' + baseURL.replace('/', '_') + '_request_at'] = Math.floor(Date.now() / 1000);
+                return true;
+            }
+            if($rootScope[type + '_' + baseURL.replace('/', '_')] > Math.floor(Date.now() / 1000) - minimumSecondsBetweenRequests){
+                console.debug('QuantiModo.get: Cannot make ' + type + ' request to ' + baseURL + " because " +
+                    "we made the same request within the last " + minimumSecondsBetweenRequests + ' seconds');
+                return false;
+            }
+            $rootScope['last_' + type + '_' + baseURL.replace('/', '_') + '_request_at'] = Math.floor(Date.now() / 1000);
+            return true;
+        };
 
         // GET method with the added token
         QuantiModo.get = function(baseURL, allowedParams, params, successHandler, errorHandler){
+
+            if(!canWeMakeRequestYet('GET', baseURL)){
+                return;
+            }
+
             console.debug('QuantiModo.get: Going to try to make request to ' + baseURL + " with params: " + JSON.stringify(params));
             QuantiModo.getAccessTokenFromAnySource().then(function(accessToken) {
 
@@ -121,7 +143,7 @@ angular.module('starter')
                 $http(request)
                     .success(successHandler)
                     .error(function (data, status, headers, config) {
-                        QuantiModo.errorHandler(data, status, headers, config, request);
+                        QuantiModo.errorHandler(data, status, headers, config, request, baseURL, 'GET');
                         errorHandler(data);
                     }, onRequestFailed);
                 });
@@ -129,6 +151,11 @@ angular.module('starter')
 
         // POST method with the added token
         QuantiModo.post = function(baseURL, requiredFields, items, successHandler, errorHandler){
+
+            if(!canWeMakeRequestYet('POST', baseURL)){
+                return;
+            }
+
             console.debug('QuantiModo.post: About to try to post request to ' + baseURL + ' with body: ' + JSON.stringify(items));
             QuantiModo.getAccessTokenFromAnySource().then(function(accessToken){
 
@@ -180,7 +207,7 @@ angular.module('starter')
                 */
 
                 $http(request).success(successHandler).error(function(data, status, headers, config){
-                    QuantiModo.errorHandler(data, status, headers, config, request);
+                    QuantiModo.errorHandler(data, status, headers, config, request, baseURL, 'POST');
                     errorHandler(data);
                 });
 
