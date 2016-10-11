@@ -14,7 +14,7 @@ angular.module('starter')
             }
         };
 
-        QuantiModo.errorHandler = function(data, status, headers, config, request, baseUrl, type){
+        QuantiModo.errorHandler = function(data, status, headers, config, request, baseURL, type){
 
             $rootScope[type + '_' + baseURL.replace('/', '_')] = true;
 
