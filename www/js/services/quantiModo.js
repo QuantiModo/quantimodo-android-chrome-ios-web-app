@@ -1,6 +1,6 @@
 angular.module('starter')
     // QuantiModo API implementation
-    .factory('QuantiModo', function($http, $q, $rootScope, $ionicPopup, $state, $timeout,
+    .factory('QuantiModo', function($http, $q, $rootScope, $ionicPopup, $state,
                                     localStorageService, bugsnagService, utilsService) {
         var QuantiModo = {};
         $rootScope.connectionErrorShowing = false; // to prevent more than one popup
@@ -87,7 +87,7 @@ angular.module('starter')
             $rootScope['last_' + type + '_' + baseURL.replace('/', '_') + '_request_at'] = Math.floor(Date.now() / 1000);
             return true;
         };
-        
+
         // GET method with the added token
         QuantiModo.get = function(baseURL, allowedParams, params, successHandler, errorHandler){
 
