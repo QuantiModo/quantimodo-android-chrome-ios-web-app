@@ -326,10 +326,10 @@ angular.module('starter')
 				var params = {
 					timeZoneOffset: timeZoneOffsetInMinutes
 				};
-				userService.updateUserSettings(params);
+				QuantiModo.updateUserSettings(params);
 			}
 			if(!$rootScope.user){
-				userService.refreshUser();
+				QuantiModo.refreshUser();
 			}
 
 			notificationService.shouldWeUseIonicLocalNotifications();

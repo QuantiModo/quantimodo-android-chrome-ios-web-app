@@ -1028,5 +1028,48 @@ angular.module('starter')
             return deferred.promise;
         };
 
+        // get user
+        QuantiModo.getUser = function(){
+            var deferred = $q.defer();
+
+            localStorageService.getItem('user',function(user){
+                if(user){
+                    user = JSON.parse(user);
+                    $rootScope.user = user;
+                    deferred.resolve(user);
+                } else {
+                    QuantiModo.refreshUser().then(function(){
+                        deferred.resolve(user);
+                    });
+                }
+            });
+
+            return deferred.promise;
+        };
+
+        QuantiModo.refreshUser = function(){
+            var deferred = $q.defer();
+            QuantiModo.getUser(function(user){
+                localStorageService.setItem('user', JSON.stringify(user));
+                $rootScope.user = user;
+                deferred.resolve(user);
+            }, function(){
+                deferred.reject(false);
+            });
+            return deferred.promise;
+        };
+
+        QuantiModo.updateUserSettings = function(params){
+            var deferred = $q.defer();
+            QuantiModo.updateUserSettings(params, function(response){
+                QuantiModo.refreshUser();
+                deferred.resolve(response);
+            }, function(response){
+                deferred.reject(response);
+            });
+            return deferred.promise;
+        };
+
+
         return QuantiModo;
     });
