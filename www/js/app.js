@@ -985,6 +985,25 @@ angular.module('starter',
                 }
             }
         })
+         .state('app.appointmentAdd', {
+            url: "/apointment_add",
+            cache: false,
+            params: {
+                variableCategoryName : null,
+                reminder : null,
+                fromState : null,
+                fromUrl : null,
+                measurement : null,
+                variableObject : null,
+                favorite: false
+            },
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/appointment-add.html",
+                    controller: 'AppointmentAddCtrl'
+                }
+            }
+        })
         .state('app.favoriteAdd', {
             url: "/favorite-add",
             cache: false,
