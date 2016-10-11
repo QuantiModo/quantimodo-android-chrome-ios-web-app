@@ -809,22 +809,28 @@ angular.module('starter')
         QuantiModo.saveAccessTokenInLocalStorage = function (accessResponse) {
             if(accessResponse){
                 var accessToken = accessResponse.accessToken || accessResponse.access_token;
-                /** @namespace accessResponse.expiresIn */
-                var expiresIn = accessResponse.expiresIn || accessResponse.expires_in;
-                var refreshToken = accessResponse.refreshToken || accessResponse.refresh_token;
-
-                // save in localStorage
                 if(accessToken) {
                     localStorageService.setItem('accessToken', accessToken);
+                } else {
+                    console.warn('No access token provided to QuantiModo.saveAccessTokenInLocalStorage');
+                    return;
                 }
+
+                var refreshToken = accessResponse.refreshToken || accessResponse.refresh_token;
                 if(refreshToken) {
                     localStorageService.setItem('refreshToken', refreshToken);
                 }
 
-                console.debug("expires in: ", JSON.stringify(expiresIn), parseInt(expiresIn, 10));
+                var expiresAt = accessResponse.expires || accessResponse.expiresAt;
+                if(expiresAt){
+                    localStorageService.setItem('expiresAt', expiresAt);
+                    return;
+                }
 
                 // calculate expires at
-                var expiresAt = new Date().getTime() + parseInt(expiresIn, 10) * 1000 - 60000;
+                var expiresIn = accessResponse.expiresIn || accessResponse.expires_in;
+                console.debug("expires in: ", JSON.stringify(expiresIn), parseInt(expiresIn, 10));
+                expiresAt = new Date().getTime() + parseInt(expiresIn, 10) * 1000 - 60000;
 
                 // save in localStorage
                 if(expiresAt) {
@@ -1027,6 +1033,50 @@ angular.module('starter')
             });
             return deferred.promise;
         };
+
+        // get user
+        QuantiModo.getUser = function(){
+            var deferred = $q.defer();
+
+            localStorageService.getItem('user',function(user){
+                if(user){
+                    user = JSON.parse(user);
+                    $rootScope.user = user;
+                    deferred.resolve(user);
+                } else {
+                    QuantiModo.refreshUser().then(function(){
+                        deferred.resolve(user);
+                    });
+                }
+            });
+
+            return deferred.promise;
+        };
+
+        QuantiModo.refreshUser = function(){
+            var deferred = $q.defer();
+            QuantiModo.getUser(function(user){
+                localStorageService.setItem('user', JSON.stringify(user));
+                QuantiModo.saveAccessTokenInLocalStorage(user);
+                $rootScope.user = user;
+                deferred.resolve(user);
+            }, function(){
+                deferred.reject(false);
+            });
+            return deferred.promise;
+        };
+
+        QuantiModo.updateUserSettings = function(params){
+            var deferred = $q.defer();
+            QuantiModo.updateUserSettings(params, function(response){
+                QuantiModo.refreshUser();
+                deferred.resolve(response);
+            }, function(response){
+                deferred.reject(response);
+            });
+            return deferred.promise;
+        };
+
 
         return QuantiModo;
     });

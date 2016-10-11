@@ -6,7 +6,7 @@ angular.module('starter')
                                     measurementService, QuantiModo, notificationService, localStorageService,
                                     reminderService, ratingService, migrationService, ionicDatePicker, unitService,
                                     variableService, qmLocationService, variableCategoryService, bugsnagService,
-                                    utilsService, connectorsService, userService) {
+                                    utilsService) {
 
         $rootScope.loaderImagePath = config.appSettings.loaderImagePath;
         $rootScope.appMigrationVersion = 1489;
@@ -18,7 +18,7 @@ angular.module('starter')
             localStorageService.getItem('trackLocation', function(trackLocation){
                 $rootScope.user.trackLocation = trackLocation;
                 if($rootScope.user.trackLocation){
-                    userService.updateUserSettings({trackLocation: $rootScope.user.trackLocation});
+                    QuantiModo.updateUserSettings({trackLocation: $rootScope.user.trackLocation});
                 }
             });
         }
@@ -682,6 +682,7 @@ angular.module('starter')
                 };
             }
             localStorageService.setItem('user', JSON.stringify(userData));
+            QuantiModo.saveAccessTokenInLocalStorage(userData);
             $rootScope.user = userData;
             console.debug('$rootScope.setUserInLocalStorageBugsnagAndRegisterDeviceForPush just set $rootScope.user to: ' + JSON.stringify($rootScope.user));
             window.intercomSettings = {
