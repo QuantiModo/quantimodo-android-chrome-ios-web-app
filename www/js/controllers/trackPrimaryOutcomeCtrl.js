@@ -108,10 +108,13 @@ angular.module('starter')
             $scope.timeRemaining = false;
             if($rootScope.user || $rootScope.accessToken){
                 $scope.showLoader($scope.syncDisplayText);
+                console.debug($state.current.name + ' going to syncPrimaryOutcomeVariableMeasurements');
                 measurementService.syncPrimaryOutcomeVariableMeasurements().then(function(){
                     updateCharts();
                     $ionicLoading.hide();
                 });
+            } else {
+                console.debug($state.current.name + ' has no user or access token so we cannot syncPrimaryOutcomeVariableMeasurements');
             }
         };
 

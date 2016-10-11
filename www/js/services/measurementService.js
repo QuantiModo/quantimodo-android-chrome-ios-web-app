@@ -150,7 +150,7 @@ angular.module('starter')
             syncPrimaryOutcomeVariableMeasurements : function(){
                 var defer = $q.defer();
 
-                if(!$rootScope.user){
+                if(!$rootScope.user && !$rootScope.accessToken){
                     console.debug('Not doing syncPrimaryOutcomeVariableMeasurements because we do not have a $rootScope.user');
                     defer.resolve();
                     return defer.promise;
