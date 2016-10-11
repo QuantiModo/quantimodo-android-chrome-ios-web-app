@@ -26,11 +26,14 @@ angular.module('starter',
 
     $ionicPlatform.ready(function() {
         //$ionicAnalytics.register();
+
+        /*
         if(ionic.Platform.isIPad() || ionic.Platform.isIOS()){
             window.onerror = function (errorMsg, url, lineNumber) {
                 alert('Error: ' + errorMsg + ' Script: ' + url + ' Line: ' + lineNumber);
             };
         }
+        */
 
          if (typeof PushNotification !== "undefined") {
              console.debug("Going to try to register push");
