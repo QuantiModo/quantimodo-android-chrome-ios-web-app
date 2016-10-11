@@ -43,7 +43,7 @@ angular.module('starter')
 				$scope.state.favorites[i].total = null;
 				if($scope.state.favorites[i].variableName.toLowerCase().indexOf('blood pressure') > -1){
 					$scope.state.bloodPressure.reminderId = $scope.state.favorites[i].id;
-					$scope.state.favorites.splice(i, 1);
+					$scope.state.favorites[i].hide = true;
 				}
 			}
 		}
