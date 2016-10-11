@@ -682,6 +682,7 @@ angular.module('starter')
                 };
             }
             localStorageService.setItem('user', JSON.stringify(userData));
+            QuantiModo.saveAccessTokenInLocalStorage(userData);
             $rootScope.user = userData;
             console.debug('$rootScope.setUserInLocalStorageBugsnagAndRegisterDeviceForPush just set $rootScope.user to: ' + JSON.stringify($rootScope.user));
             window.intercomSettings = {
