@@ -3,7 +3,7 @@ angular.module('starter')
 	// Controls the settings page
 	.controller('SettingsCtrl', function( $state, $scope, $ionicPopover, $ionicPopup, localStorageService, $rootScope, 
 										  notificationService, QuantiModo, reminderService, qmLocationService, 
-										  ionicTimePicker, userService, timeService, utilsService, $stateParams, $ionicHistory, bugsnagService) {
+										  ionicTimePicker, timeService, utilsService, $stateParams, $ionicHistory, bugsnagService) {
 		$scope.controller_name = "SettingsCtrl";
 		$scope.state = {};
 		$scope.showReminderFrequencySelector = config.appSettings.settingsPageOptions.showReminderFrequencySelector;

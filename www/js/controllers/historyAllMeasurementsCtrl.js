@@ -4,7 +4,7 @@ angular.module('starter')
 	.controller('historyAllMeasurementsCtrl', function($scope, $state, $stateParams, $rootScope, $timeout, $ionicActionSheet,
 													   QuantiModo, measurementService,
 													   variableCategoryService, ratingService, localStorageService,
-													   qmLocationService, userService) {
+													   qmLocationService) {
 
 	    $scope.controller_name = "historyAllMeasurementsCtrl";
         
