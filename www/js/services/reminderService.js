@@ -13,7 +13,6 @@ angular.module('starter')
 				reminderService.refreshTrackingRemindersAndScheduleAlarms();
 				deferred.resolve();
 			}, function(error){
-				if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error(error);
 				deferred.reject(error);
 			});
 
@@ -154,7 +153,8 @@ angular.module('starter')
 								}
 							}
 						} else {
-							bugsnagService.reportError('No $rootScope.user in successful QuantiModo.getTrackingReminders callback! How did this happen?');
+							var error = 'No $rootScope.user in successful QuantiModo.getTrackingReminders callback! How did this happen?';
+							if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error(error);
 						}
 
 						localStorageService.setItem('trackingReminders', JSON.stringify(trackingReminders));
@@ -163,7 +163,6 @@ angular.module('starter')
 					}
 					else {
 						$rootScope.syncingReminders = false;
-						bugsnagService.reportError('No success from getTrackingReminders request');
 						deferred.reject('No success from getTrackingReminders request');
 					}
 				}, function(error){
@@ -221,7 +220,6 @@ angular.module('starter')
 						'trackingReminderNotifications', 'variableCategoryName', variableCategoryName);
 					deferred.resolve(trackingReminderNotifications);
 				}, function(error){
-					bugsnagService.reportError('reminderService.getTrackingReminderNotifications: ' + error);
 					deferred.reject(error);
 				});
 			}
