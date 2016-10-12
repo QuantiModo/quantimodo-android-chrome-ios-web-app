@@ -227,9 +227,25 @@ angular.module('starter')
 			return deferred.promise;
 		};
 
+		var canWeMakeRequestYet = function(type, baseURL, minimumSecondsBetweenRequests){
+			var requestVariableName = 'last_' + type + '_' + baseURL.replace('/', '_') + '_request_at';
+			if(!$rootScope[requestVariableName]){
+				$rootScope[requestVariableName] = Math.floor(Date.now() / 1000);
+				return true;
+			}
+			if($rootScope[requestVariableName] > Math.floor(Date.now() / 1000) - minimumSecondsBetweenRequests){
+				console.debug('Cannot make ' + type + ' request to ' + baseURL + " because " +
+					"we made the same request within the last " + minimumSecondsBetweenRequests + ' seconds');
+				return false;
+			}
+			$rootScope[requestVariableName] = Math.floor(Date.now() / 1000);
+			return true;
+		};
+
 		reminderService.refreshTrackingReminderNotifications = function(){
 			var deferred = $q.defer();
-			if($rootScope.refreshingTrackingReminderNotifications){
+			var minimumSecondsBetweenRequests = 5;
+			if(!canWeMakeRequestYet('GET', 'refreshTrackingReminderNotifications', minimumSecondsBetweenRequests)){
 				console.warn('Already called refreshTrackingReminderNotifications within last 10 seconds!  Rejecting promise!');
 				deferred.reject('Already called refreshTrackingReminderNotifications within last 10 seconds!  Rejecting promise!');
 				return deferred.promise;
