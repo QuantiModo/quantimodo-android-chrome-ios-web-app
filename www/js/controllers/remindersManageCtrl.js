@@ -138,6 +138,7 @@ angular.module('starter')
 					}
 				});
 
+				console.debug('Setting hideSheet timeout');
 				$timeout(function() {
 					hideSheet();
 				}, 20000);
@@ -310,6 +311,7 @@ angular.module('starter')
 				}
 			});
 
+			console.debug('Setting hideSheet timeout');
 			$timeout(function() {
 				hideSheet();
 			}, 20000);

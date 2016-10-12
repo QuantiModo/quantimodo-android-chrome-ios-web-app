@@ -130,7 +130,8 @@ angular.module('starter')
 
 			$scope.state[trackingReminder.id].tally += modifiedReminderValue;
 			console.debug('modified tally is ' + $scope.state[trackingReminder.id].tally);
-			
+
+			console.debug('Setting trackByReminder timeout');
             $timeout(function() {
             	if(typeof $scope.state[trackingReminder.id] === "undefined"){
             		console.error("$scope.state[trackingReminder.id] is undefined so we can't send tally in favorite controller. Not sure how this is happening.");
@@ -313,7 +314,7 @@ angular.module('starter')
 				}
 			});
 
-
+			console.debug('Setting hideSheet timeout');
 			$timeout(function() {
 				hideSheet();
 			}, 20000);

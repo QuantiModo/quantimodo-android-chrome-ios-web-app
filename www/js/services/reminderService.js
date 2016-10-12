@@ -121,6 +121,7 @@ angular.module('starter')
 
 			if(!$rootScope.syncingReminders){
 				$rootScope.syncingReminders = true;
+				console.debug('Setting refreshTrackingRemindersAndScheduleAlarms timeout');
 				$timeout(function() {
 					// Set to false after 30 seconds because it seems to get stuck on true sometimes for some reason
 					$rootScope.syncingReminders = false;
@@ -251,6 +252,7 @@ angular.module('starter')
 				return deferred.promise;
 			}
 			$rootScope.refreshingTrackingReminderNotifications = true;
+			console.debug('Setting refreshTrackingReminderNotifications timeout');
 			$timeout(function() {
 				// Set to false after 10 seconds because it seems to get stuck on true sometimes for some reason
 				if($rootScope.refreshingTrackingReminderNotifications){

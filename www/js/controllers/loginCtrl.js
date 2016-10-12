@@ -51,6 +51,7 @@ angular.module('starter')
         // User wants to login
         $scope.login = function(register) {
 
+            console.debug('Setting login timeout');
             $timeout(function () {
                 if(!$rootScope.user){
                     bugsnagService.reportError('$scope.login: Could not get user within 30 seconds!');
@@ -261,6 +262,7 @@ angular.module('starter')
         $scope.showLoader = function () {
             //$scope.state.loading = true;
             $rootScope.syncDisplayText = 'Logging you in...';
+            console.debug('Setting showLoader timeout');
             $timeout(function () {
                 $scope.hideLoader();
             }, 15000);
@@ -268,6 +270,7 @@ angular.module('starter')
 
         $scope.googleLogin = function(register){
 
+            console.debug('Setting googleLogin timeout');
             $timeout(function () {
                 if(!$rootScope.user){
                     bugsnagService.reportError('$scope.googleLogin: Could not get user within 30 seconds! Fallback to non-native registration...');
@@ -333,6 +336,7 @@ angular.module('starter')
             $scope.showLoader('Logging you in...');
             console.debug("$scope.facebookLogin about to try $cordovaFacebook.login");
             $scope.hideFacebookButton = true; // Hide button so user tries other options if it didn't work
+            console.debug('Setting facebookLogin timeout');
             $timeout(function () {
                 if(!$rootScope.user){
                     bugsnagService.reportError('Could not get user $scope.facebookLogin within 30 seconds! Falling back to non-native registration...');

@@ -585,6 +585,7 @@ angular.module('starter')
                 duration: 15000
             });
             */
+            console.debug('Setting showLoader timeout');
             $timeout(function () {
                 $scope.hideLoader();
             }, 30000);

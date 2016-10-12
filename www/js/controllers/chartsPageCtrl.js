@@ -43,6 +43,7 @@ angular.module('starter')
             $(window).resize();
 
             // Not sure what this does
+            console.debug('Setting windowResize timeout');
             $timeout(function() {
                 $scope.$broadcast('highchartsng.reflow');
             }, 10);
@@ -282,7 +283,7 @@ angular.module('starter')
                 }
             });
 
-
+            console.debug('Setting hideSheet timeout');
             $timeout(function() {
                 hideSheet();
             }, 20000);
