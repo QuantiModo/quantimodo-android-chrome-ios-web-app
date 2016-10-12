@@ -12,7 +12,7 @@ angular.module('starter')
                     if(typeof $rootScope.abbreviatedUnitNames === "undefined"){
                         $rootScope.abbreviatedUnitNames = [];
                     }
-                    if(units){
+                    if(units && units !== null && units !== "null"){
                         units = JSON.parse(units);
                         $rootScope.unitObjects = units;
                         $rootScope.abbreviatedUnitNamesIndexedByUnitId = [];

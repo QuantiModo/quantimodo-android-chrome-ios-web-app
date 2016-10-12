@@ -18,7 +18,7 @@ angular.module('starter')
             localStorageService.getItem('trackLocation', function(trackLocation){
                 $rootScope.user.trackLocation = trackLocation;
                 if($rootScope.user.trackLocation){
-                    QuantiModo.updateUserSettings({trackLocation: $rootScope.user.trackLocation});
+                    QuantiModo.updateUserSettingsDeferred({trackLocation: $rootScope.user.trackLocation});
                 }
             });
         }
@@ -401,6 +401,9 @@ angular.module('starter')
         $scope.init = function () {
             console.debug("Main Constructor Start");
             QuantiModo.getAccessTokenFromUrlParameter();
+            if($rootScope.accessTokenInUrl && !$rootScope.user){
+                QuantiModo.refreshUser();
+            }
             $rootScope.hideNavigationMenuIfSetInUrlParameter();
             if (!$rootScope.user) {
                 $rootScope.user = localStorageService.getItemAsObject('user');

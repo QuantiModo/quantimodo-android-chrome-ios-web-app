@@ -227,18 +227,36 @@ angular.module('starter')
 			return deferred.promise;
 		};
 
+		var canWeMakeRequestYet = function(type, baseURL, minimumSecondsBetweenRequests){
+			var requestVariableName = 'last_' + type + '_' + baseURL.replace('/', '_') + '_request_at';
+			if(!$rootScope[requestVariableName]){
+				$rootScope[requestVariableName] = Math.floor(Date.now() / 1000);
+				return true;
+			}
+			if($rootScope[requestVariableName] > Math.floor(Date.now() / 1000) - minimumSecondsBetweenRequests){
+				console.debug('Cannot make ' + type + ' request to ' + baseURL + " because " +
+					"we made the same request within the last " + minimumSecondsBetweenRequests + ' seconds');
+				return false;
+			}
+			$rootScope[requestVariableName] = Math.floor(Date.now() / 1000);
+			return true;
+		};
+
 		reminderService.refreshTrackingReminderNotifications = function(){
 			var deferred = $q.defer();
-			if($rootScope.refreshingTrackingReminderNotifications){
-				console.warn('Already called refreshTrackingReminderNotifications within last 10 seconds!  Rejecting promise!');
-				deferred.reject('Already called refreshTrackingReminderNotifications within last 10 seconds!  Rejecting promise!');
+			var minimumSecondsBetweenRequests = 5;
+			if(!canWeMakeRequestYet('GET', 'refreshTrackingReminderNotifications', minimumSecondsBetweenRequests)){
+				deferred.reject('Already called refreshTrackingReminderNotifications within last ' +
+					minimumSecondsBetweenRequests + ' seconds!  Rejecting promise!');
 				return deferred.promise;
 			}
 			$rootScope.refreshingTrackingReminderNotifications = true;
 			$timeout(function() {
 				// Set to false after 10 seconds because it seems to get stuck on true sometimes for some reason
-				$rootScope.refreshingTrackingReminderNotifications = false;
-			}, 10000);
+				if($rootScope.refreshingTrackingReminderNotifications){
+					$rootScope.refreshingTrackingReminderNotifications = false;
+				}
+			}, 5000);
 			var currentDateTimeInUtcStringPlus5Min = timeService.getCurrentDateTimeInUtcStringPlusMin(5);
 			var params = {};
 			params.reminderTime = '(lt)' + currentDateTimeInUtcStringPlus5Min;
@@ -253,7 +271,7 @@ angular.module('starter')
 					}
 					localStorageService.setItem('trackingReminderNotifications', JSON.stringify(trackingRemindersNotifications));
 					$rootScope.refreshingTrackingReminderNotifications = false;
-					$rootScope.$broadcast('getTrackingReminderNotifications');
+					$rootScope.$broadcast('getTrackingReminderNotificationsFromLocalStorage');
 					deferred.resolve(trackingRemindersNotifications);
 				}
 				else {

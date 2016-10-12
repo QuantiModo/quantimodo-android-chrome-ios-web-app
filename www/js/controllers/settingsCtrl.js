@@ -21,7 +21,7 @@ angular.module('starter')
 			var params = {
 				timeZoneOffset: timeZoneOffsetInMinutes
 			};
-			QuantiModo.updateUserSettings(params);
+			QuantiModo.updateUserSettingsDeferred(params);
 		}
 
 		if($rootScope.user && (!$rootScope.user.earliestReminderTime || !$rootScope.user.latestReminderTime)){
@@ -101,7 +101,7 @@ angular.module('starter')
 		};
 
 		$scope.combineNotificationChange = function() {
-			QuantiModo.updateUserSettings({combineNotifications: $rootScope.user.combineNotifications});
+			QuantiModo.updateUserSettingsDeferred({combineNotifications: $rootScope.user.combineNotifications});
 			if($rootScope.user.combineNotifications){
 				$ionicPopup.alert({
 					title: 'Disabled Individual Notifications',
@@ -158,7 +158,7 @@ angular.module('starter')
 						if(newEarliestReminderTime !== $rootScope.user.earliestReminderTime){
 							$rootScope.user.earliestReminderTime = newEarliestReminderTime;
 							params.earliestReminderTime = $rootScope.user.earliestReminderTime;
-							QuantiModo.updateUserSettings(params).then(function(){
+							QuantiModo.updateUserSettingsDeferred(params).then(function(){
 								reminderService.refreshTrackingRemindersAndScheduleAlarms();
 							});
 							$ionicPopup.alert({
@@ -201,7 +201,7 @@ angular.module('starter')
 						if(newLatestReminderTime !== $rootScope.user.latestReminderTime){
 							$rootScope.user.latestReminderTime = newLatestReminderTime;
 							params.latestReminderTime = $rootScope.user.latestReminderTime;
-							QuantiModo.updateUserSettings(params).then(function(){
+							QuantiModo.updateUserSettingsDeferred(params).then(function(){
 								reminderService.refreshTrackingRemindersAndScheduleAlarms();
 							});
 							$ionicPopup.alert({
@@ -222,7 +222,7 @@ angular.module('starter')
 		$scope.trackLocationChange = function() {
 			console.debug('trackLocation', $scope.state.trackLocation);
 			$rootScope.user.trackLocation = $scope.state.trackLocation;
-			QuantiModo.updateUserSettings({trackLocation: $rootScope.user.trackLocation});
+			QuantiModo.updateUserSettingsDeferred({trackLocation: $rootScope.user.trackLocation});
 			if($scope.state.trackLocation){
 				$ionicPopup.alert({
 					title: 'Location Tracking Enabled',

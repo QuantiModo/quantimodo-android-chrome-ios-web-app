@@ -441,6 +441,15 @@ angular.module('starter')
 					data[i][0] = data[i][0] - timezoneOffsetMilliseconds;
 				}
 
+				var minimumTimeEpochMilliseconds = data[0][0] - timezoneOffsetMilliseconds;
+				var maximumTimeEpochMilliseconds = data[data.length-1][0] - timezoneOffsetMilliseconds;
+				var millisecondsBetweenLatestAndEarliest = maximumTimeEpochMilliseconds - minimumTimeEpochMilliseconds;
+
+				if(millisecondsBetweenLatestAndEarliest < 86400*1000){
+					console.warn('Need at least a day worth of data for line chart');
+					return;
+				}
+
 	        	return {
 	        		useHighStocks: true,
 	        		options : {
@@ -462,8 +471,8 @@ angular.module('starter')
                 	        	month: '%b \'%y',
                 	        	year: '%Y'
                     	    },
-                    	    min: (data[0][0]) - timezoneOffsetMilliseconds,
-                    	    max: (data[data.length-1][0]) - timezoneOffsetMilliseconds
+                    	    min: minimumTimeEpochMilliseconds,
+                    	    max: maximumTimeEpochMilliseconds
 	        			},
 	                    credits: {
 	                        enabled: false

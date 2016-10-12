@@ -14,7 +14,8 @@ angular.module('starter')
             }
         };
 
-        QuantiModo.errorHandler = function(data, status, headers, config, request){
+        QuantiModo.errorHandler = function(data, status, headers, config, request, baseURL, type){
+
             if(status === 302){
                 console.warn('QuantiModo.errorHandler: Got 302 response from ' + JSON.stringify(request));
                 return;
@@ -70,9 +71,29 @@ angular.module('starter')
             console.error("Request error : " + error);
         };
 
+        var canWeMakeRequestYet = function(type, baseURL){
+            var minimumSecondsBetweenRequests = 1;
+            var requestVariableName = 'last_' + type + '_' + baseURL.replace('/', '_') + '_request_at';
+            if(!$rootScope[requestVariableName]){
+                $rootScope[requestVariableName] = Math.floor(Date.now() / 1000);
+                return true;
+            }
+            if($rootScope[requestVariableName] > Math.floor(Date.now() / 1000) - minimumSecondsBetweenRequests){
+                console.debug('QuantiModo.get: Cannot make ' + type + ' request to ' + baseURL + " because " +
+                    "we made the same request within the last " + minimumSecondsBetweenRequests + ' seconds');
+                return false;
+            }
+            $rootScope[requestVariableName] = Math.floor(Date.now() / 1000);
+            return true;
+        };
 
         // GET method with the added token
         QuantiModo.get = function(baseURL, allowedParams, params, successHandler, errorHandler){
+
+            if(!canWeMakeRequestYet('GET', baseURL)){
+                return;
+            }
+
             console.debug('QuantiModo.get: Going to try to make request to ' + baseURL + " with params: " + JSON.stringify(params));
             QuantiModo.getAccessTokenFromAnySource().then(function(accessToken) {
 
@@ -121,7 +142,7 @@ angular.module('starter')
                 $http(request)
                     .success(successHandler)
                     .error(function (data, status, headers, config) {
-                        QuantiModo.errorHandler(data, status, headers, config, request);
+                        QuantiModo.errorHandler(data, status, headers, config, request, baseURL, 'GET');
                         errorHandler(data);
                     }, onRequestFailed);
                 });
@@ -129,6 +150,11 @@ angular.module('starter')
 
         // POST method with the added token
         QuantiModo.post = function(baseURL, requiredFields, items, successHandler, errorHandler){
+
+            if(!canWeMakeRequestYet('POST', baseURL)){
+                return;
+            }
+
             console.debug('QuantiModo.post: About to try to post request to ' + baseURL + ' with body: ' + JSON.stringify(items));
             QuantiModo.getAccessTokenFromAnySource().then(function(accessToken){
 
@@ -180,7 +206,7 @@ angular.module('starter')
                 */
 
                 $http(request).success(successHandler).error(function(data, status, headers, config){
-                    QuantiModo.errorHandler(data, status, headers, config, request);
+                    QuantiModo.errorHandler(data, status, headers, config, request, baseURL, 'POST');
                     errorHandler(data);
                 });
 
@@ -555,8 +581,8 @@ angular.module('starter')
         };
 
         // post tracking reminder
-        QuantiModo.updateUserSettings = function(params, successHandler, errorHandler) {
-            console.debug("QuantiModo.updateUserSettings", params);
+        QuantiModo.postUserSettings = function(params, successHandler, errorHandler) {
+            console.debug("QuantiModo.postUserSettings", params);
             QuantiModo.post('api/v1/userSettings',
                 [],
                 params,
@@ -689,6 +715,7 @@ angular.module('starter')
             if($rootScope.accessTokenInUrl){
                 localStorageService.setItem('accessTokenInUrl', $rootScope.accessTokenInUrl);
                 localStorageService.setItem('accessToken', $rootScope.accessTokenInUrl);
+                $rootScope.accessToken = $rootScope.accessTokenInUrl;
             } else {
                 localStorageService.deleteItem('accessTokenInUrl');
             }
@@ -1035,7 +1062,7 @@ angular.module('starter')
         };
 
         // get user
-        QuantiModo.getUser = function(){
+        QuantiModo.getOrRefreshUser = function(){
             var deferred = $q.defer();
 
             localStorageService.getItem('user',function(user){
@@ -1066,9 +1093,9 @@ angular.module('starter')
             return deferred.promise;
         };
 
-        QuantiModo.updateUserSettings = function(params){
+        QuantiModo.updateUserSettingsDeferred = function(params){
             var deferred = $q.defer();
-            QuantiModo.updateUserSettings(params, function(response){
+            QuantiModo.postUserSettings(params, function(response){
                 QuantiModo.refreshUser();
                 deferred.resolve(response);
             }, function(response){
