@@ -856,8 +856,9 @@ angular.module('starter')
 
                 // calculate expires at
                 var expiresIn = accessResponse.expiresIn || accessResponse.expires_in;
-                console.debug("expires in: ", JSON.stringify(expiresIn), parseInt(expiresIn, 10));
+
                 expiresAt = new Date().getTime() + parseInt(expiresIn, 10) * 1000 - 60000;
+                console.debug("Expires in is " + expiresIn + '. This results in expiresAt being: ' + expiresAt);
 
                 // save in localStorage
                 if(expiresAt) {
