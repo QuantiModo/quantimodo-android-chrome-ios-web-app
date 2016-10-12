@@ -33,7 +33,17 @@ angular.module('starter')
                 return;
             }
             if (typeof Bugsnag !== "undefined") {
-                Bugsnag.notify(status + " response from " + request.url, '. DATA: ' + JSON.stringify(data) + '. HEADERS: ' + JSON.stringify(headers), {}, "error");
+                var groupingHash = request.url + ' error';
+                if(data.error){
+                    groupingHash = JSON.stringify(data.error);
+                    if(data.error.message){
+                        groupingHash = JSON.stringify(data.error.message);
+                    }
+                }
+                Bugsnag.notify(groupingHash,
+                    status + " response from " + request.url + '. DATA: ' + JSON.stringify(data) + '. HEADERS: ' + JSON.stringify(headers),
+                    {groupingHash: groupingHash},
+                    "error");
             }
             console.error(status + " response from " + request.url + '. DATA: ' + JSON.stringify(data) + '. HEADERS: ' + JSON.stringify(headers));
 
@@ -59,22 +69,8 @@ angular.module('starter')
                 return;
             }
             if(data.success){
-                return;
+                console.error('Called error handler even though we have data.success');
             }
-            var error = "Unknown error";
-            if (data && data.error) {
-                error = data.error;
-            }
-            if (data && data.error && data.error.message) {
-                error = data.error.message;
-            }
-            if(request) {
-                if (typeof Bugsnag !== "undefined") {
-                    Bugsnag.notify("API Request to " + request.url + " Failed", error, {}, "error");
-                }
-            }
-
-            console.error(error);
         };
 
         // Handler when request is failed
@@ -896,7 +892,7 @@ angular.module('starter')
         QuantiModo.convertToObjectIfJsonString = function (stringOrObject) {
             try {
                 stringOrObject = JSON.parse(stringOrObject);
-            } catch (exception) { if (typeof Bugsnag !== "undefined") { Bugsnag.notifyException(exception); }
+            } catch (exception) {
                 return stringOrObject;
             }
             return stringOrObject;
