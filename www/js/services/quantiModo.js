@@ -41,18 +41,20 @@ angular.module('starter')
                 bugsnagService.reportError('No data returned from this request: ' + JSON.stringify(request));
                 if (!$rootScope.connectionErrorShowing) {
                     $rootScope.connectionErrorShowing = true;
-                    // $ionicPopup.show({
-                    //     title: 'NOT CONNECTED',
-                    //     subTitle: 'Either you are not connected to the internet or the QuantiModo server cannot be reached.',
-                    //     buttons:[
-                    //         {text: 'OK',
-                    //             type: 'button-positive',
-                    //             onTap: function(){
-                    //                 $rootScope.connectionErrorShowing = false;
-                    //             }
-                    //         }
-                    //     ]
-                    // });
+                    if($rootScope.isIOS){
+                        $ionicPopup.show({
+                            title: 'NOT CONNECTED',
+                            subTitle: 'Either you are not connected to the internet or the QuantiModo server cannot be reached.',
+                            buttons:[
+                                {text: 'OK',
+                                    type: 'button-positive',
+                                    onTap: function(){
+                                        $rootScope.connectionErrorShowing = false;
+                                    }
+                                }
+                            ]
+                        });
+                    }
                 }
                 return;
             }
