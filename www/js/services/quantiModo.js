@@ -14,7 +14,7 @@ angular.module('starter')
             }
         };
 
-        QuantiModo.errorHandler = function(data, status, headers, config, request, baseURL, type){
+        QuantiModo.errorHandler = function(data, status, headers, config, request){
 
             if(status === 302){
                 console.warn('QuantiModo.errorHandler: Got 302 response from ' + JSON.stringify(request));
@@ -27,6 +27,11 @@ angular.module('starter')
                 $rootScope.sendToLogin();
                 return;
             }
+            if (typeof Bugsnag !== "undefined") {
+                Bugsnag.notify(status + " response from " + request.url, '. DATA: ' + JSON.stringify(data) + '. HEADERS: ' + JSON.stringify(headers), {}, "error");
+            }
+            console.error(status + " response from " + request.url + '. DATA: ' + JSON.stringify(data) + '. HEADERS: ' + JSON.stringify(headers));
+
             if(!data){
                 bugsnagService.reportError('No data returned from this request: ' + JSON.stringify(request));
                 if (!$rootScope.connectionErrorShowing) {
