@@ -1,7 +1,7 @@
 angular.module('starter')
 	// Measurement Service
 	.factory('reminderService', function($q, $rootScope, QuantiModo, timeService, notificationService,
-										 localStorageService, $timeout, bugsnagService, variableCategoryService) {
+										 localStorageService, $timeout, variableCategoryService) {
 
 		var reminderService = {};
 
