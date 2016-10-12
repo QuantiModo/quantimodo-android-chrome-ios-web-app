@@ -237,8 +237,10 @@ angular.module('starter')
 			$rootScope.refreshingTrackingReminderNotifications = true;
 			$timeout(function() {
 				// Set to false after 10 seconds because it seems to get stuck on true sometimes for some reason
-				$rootScope.refreshingTrackingReminderNotifications = false;
-			}, 10000);
+				if($rootScope.refreshingTrackingReminderNotifications){
+					$rootScope.refreshingTrackingReminderNotifications = false;
+				}
+			}, 5000);
 			var currentDateTimeInUtcStringPlus5Min = timeService.getCurrentDateTimeInUtcStringPlusMin(5);
 			var params = {};
 			params.reminderTime = '(lt)' + currentDateTimeInUtcStringPlus5Min;
