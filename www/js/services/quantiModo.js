@@ -1045,43 +1045,44 @@ angular.module('starter')
             return deferred.promise;
         };
 
+        QuantiModo.setUserInLocalStorageBugsnagIntercomPush = function(user){
+            localStorageService.setItem('user', JSON.stringify(user));
+            QuantiModo.saveAccessTokenInLocalStorage(user);
+            $rootScope.user = user;
+            if (typeof Bugsnag !== "undefined") {
+                Bugsnag.metaData = {
+                    user: {
+                        name: user.displayName,
+                        email: user.email
+                    }
+                };
+            }
+
+            window.intercomSettings = {
+                app_id: "uwtx2m33",
+                name: user.displayName,
+                email: user.email,
+                user_id: user.id,
+                app_name: config.appSettings.appName,
+                app_version: $rootScope.appVersion,
+                platform: $rootScope.currentPlatform,
+                platform_version: $rootScope.currentPlatformVersion
+            };
+
+            var deviceTokenOnServer = localStorageService.getItemSync('deviceTokenOnServer');
+            var deviceTokenToSync = localStorageService.getItemSync('deviceTokenToSync');
+            if(deviceTokenOnServer){
+                console.debug("This token is already on the server: " + deviceTokenOnServer);
+            }
+            if (deviceTokenToSync){
+                QuantiModo.registerDeviceToken(deviceTokenToSync);
+            }
+        };
+
         QuantiModo.refreshUser = function(){
             var deferred = $q.defer();
             QuantiModo.getUser(function(user){
-                localStorageService.setItem('user', JSON.stringify(user));
-                QuantiModo.saveAccessTokenInLocalStorage(user);
-                $rootScope.user = user;
-                if (typeof Bugsnag !== "undefined") {
-                    Bugsnag.metaData = {
-                        user: {
-                            name: user.displayName,
-                            email: user.email
-                        }
-                    };
-                }
-
-                window.intercomSettings = {
-                    app_id: "uwtx2m33",
-                    name: user.displayName,
-                    email: user.email,
-                    user_id: user.id,
-                    app_name: config.appSettings.appName,
-                    app_version: $rootScope.appVersion,
-                    platform: $rootScope.currentPlatform,
-                    platform_version: $rootScope.currentPlatformVersion
-                };
-
-                var deviceTokenOnServer = localStorageService.getItemSync('deviceTokenOnServer');
-                if(deviceTokenOnServer){
-                    console.debug("This token is already on the server: " + deviceTokenOnServer);
-                    return;
-                }
-
-                var deviceTokenToSync = localStorageService.getItemSync('deviceTokenToSync');
-                if(deviceTokenToSync){
-                    QuantiModo.registerDeviceToken(deviceTokenToSync);
-                }
-
+                QuantiModo.setUserInLocalStorageBugsnagIntercomPush(user);
                 deferred.resolve(user);
             }, function(error){
                 deferred.reject(error);

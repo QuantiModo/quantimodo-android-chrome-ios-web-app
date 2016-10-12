@@ -73,18 +73,10 @@ angular.module('starter')
                 browserLogin(register);
             }
 
-            var userObject = localStorageService.getItemAsObject('user');
-
-            if(userObject){
-                console.debug('$scope.login calling setUserInLocalStorageBugsnagAndRegisterDeviceForPush');
-                $rootScope.setUserInLocalStorageBugsnagAndRegisterDeviceForPush(userObject);
+            if($rootScope.user){
                 $rootScope.hideNavigationMenu = false;
-                $state.go(config.appSettings.defaultState);
-                if (typeof analytics !== 'undefined')  {
-                    analytics.trackView("Login Controller");
-                    analytics.setUserId(userObject.id);
-                }
                 reminderService.createDefaultReminders();
+                $state.go(config.appSettings.defaultState);
             }
         };
 
@@ -181,11 +173,7 @@ angular.module('starter')
                         JSON.stringify(response));
 
                     if(response.user){
-                        localStorageService.setItem('user', response.user);
-                        $rootScope.user = response.user;
-                        console.debug('$scope.nativeSocialLogin just set $rootScope.user to: ' + JSON.stringify($rootScope.user));
-                        QuantiModo.saveAccessTokenInLocalStorage(response);
-                        $rootScope.setUserInLocalStorageBugsnagAndRegisterDeviceForPush(response.user);
+                        QuantiModo.setUserInLocalStorageBugsnagIntercomPush(response.user);
                         $rootScope.hideNavigationMenu = false;
                         $state.go(config.appSettings.defaultState);
                         return;
