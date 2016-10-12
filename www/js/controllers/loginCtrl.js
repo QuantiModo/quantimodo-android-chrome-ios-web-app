@@ -32,9 +32,6 @@ angular.module('starter')
                 console.debug('ReminderInbox: Hiding splash screen because app is ready');
                 navigator.splashscreen.hide();
             }
-            if(!$rootScope.user){
-                $rootScope.getUserAndSetInLocalStorage();
-            }
             if($rootScope.user){
                 $scope.hideLoader();
                 console.debug("Already logged in on login page.  Going to default state...");
@@ -91,19 +88,6 @@ angular.module('starter')
             }
         };
 
-        var getOrSetUserInLocalStorage = function() {
-            var userObject = localStorageService.getItemAsObject('user');
-            if(!userObject){
-                userObject = $rootScope.getUserAndSetInLocalStorage();
-            }
-            if(userObject){
-                $rootScope.user = userObject;
-                console.debug('getOrSetUserInLocalStorage just set $rootScope.user to: ' + JSON.stringify($rootScope.user));
-                return userObject;
-            }
-
-        };
-
         var fetchAccessTokenAndUserDetails = function(authorization_code, withJWT) {
             QuantiModo.getAccessTokenFromAuthorizationCode(authorization_code, withJWT)
                 .then(function(response) {
@@ -115,10 +99,11 @@ angular.module('starter')
                         console.debug("Access token received",response);
                         QuantiModo.saveAccessTokenInLocalStorage(response);
                         console.debug('get user details from server and going to defaultState...');
-                        $rootScope.getUserAndSetInLocalStorage();
-                        $rootScope.hideNavigationMenu = false;
-                        $rootScope.$broadcast('callAppCtrlInit');
-                        $state.go(config.appSettings.defaultState);
+                        QuantiModo.refreshUser().then(function(){
+                            $rootScope.hideNavigationMenu = false;
+                            $rootScope.$broadcast('callAppCtrlInit');
+                            $state.go(config.appSettings.defaultState);
+                        });
                     }
                 })
                 .catch(function(exception){ if (typeof Bugsnag !== "undefined") { Bugsnag.notifyException(exception); }
@@ -380,28 +365,19 @@ angular.module('starter')
         };
 
         var sendToNonOAuthBrowserLoginUrl = function(register) {
-
-            var user = getOrSetUserInLocalStorage();
-            if(user){
-                $rootScope.hideNavigationMenu = false;
-                console.debug('sendToNonOAuthBrowserLoginUrl: User logged in so going to defaultState');
-                $state.go(config.appSettings.defaultState);
+            var loginUrl = utilsService.getURL("api/v2/auth/login");
+            if (register === true) {
+                loginUrl = utilsService.getURL("api/v2/auth/register");
             }
-            if(!user){
-                var loginUrl = utilsService.getURL("api/v2/auth/login");
-                if (register === true) {
-                    loginUrl = utilsService.getURL("api/v2/auth/register");
-                }
-                console.debug("sendToNonOAuthBrowserLoginUrl: Client id is oAuthDisabled - will redirect to regular login.");
-                loginUrl += "redirect_uri=" + encodeURIComponent(window.location.href.replace('app/login','app/reminders-inbox'));
-                console.debug('sendToNonOAuthBrowserLoginUrl: AUTH redirect URL created:', loginUrl);
-                var apiUrlMatchesHostName = $rootScope.qmApiUrl.indexOf(window.location.hostname);
-                if(apiUrlMatchesHostName > -1 || $rootScope.isChromeExtension) {
-                    $scope.showLoader('Logging you in...');
-                    window.location.replace(loginUrl);
-                } else {
-                    alert("API url doesn't match auth base url.  Please make use the same domain in config file");
-                }
+            console.debug("sendToNonOAuthBrowserLoginUrl: Client id is oAuthDisabled - will redirect to regular login.");
+            loginUrl += "redirect_uri=" + encodeURIComponent(window.location.href.replace('app/login','app/reminders-inbox'));
+            console.debug('sendToNonOAuthBrowserLoginUrl: AUTH redirect URL created:', loginUrl);
+            var apiUrlMatchesHostName = $rootScope.qmApiUrl.indexOf(window.location.hostname);
+            if(apiUrlMatchesHostName > -1 || $rootScope.isChromeExtension) {
+                $scope.showLoader('Logging you in...');
+                window.location.replace(loginUrl);
+            } else {
+                alert("API url doesn't match auth base url.  Please make use the same domain in config file");
             }
         };
 

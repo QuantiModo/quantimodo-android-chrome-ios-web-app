@@ -24,13 +24,6 @@ angular.module('starter')
 			QuantiModo.updateUserSettingsDeferred(params);
 		}
 
-		if($rootScope.user && (!$rootScope.user.earliestReminderTime || !$rootScope.user.latestReminderTime)){
-			QuantiModo.refreshUser(function(user){
-				$rootScope.user = user;
-                console.debug('SettingsCtrl just set $rootScope.user to: ' + JSON.stringify($rootScope.user));
-			});
-		}
-
 		// populate ratings interval
 		localStorageService.getItem('primaryOutcomeRatingFrequencyDescription', function (primaryOutcomeRatingFrequencyDescription) {
 			$scope.primaryOutcomeRatingFrequencyDescription = primaryOutcomeRatingFrequencyDescription ? primaryOutcomeRatingFrequencyDescription : "daily";
