@@ -32,20 +32,6 @@ angular.module('starter')
                 $rootScope.sendToLogin();
                 return;
             }
-            if (typeof Bugsnag !== "undefined") {
-                var groupingHash = request.url + ' error';
-                if(data.error){
-                    groupingHash = JSON.stringify(data.error);
-                    if(data.error.message){
-                        groupingHash = JSON.stringify(data.error.message);
-                    }
-                }
-                Bugsnag.notify(groupingHash,
-                    status + " response from " + request.url + '. DATA: ' + JSON.stringify(data) + '. HEADERS: ' + JSON.stringify(headers),
-                    {groupingHash: groupingHash},
-                    "error");
-            }
-            console.error(status + " response from " + request.url + '. DATA: ' + JSON.stringify(data) + '. HEADERS: ' + JSON.stringify(headers));
 
             if(!data){
                 bugsnagService.reportError('No data returned from this request: ' + JSON.stringify(request));
@@ -68,6 +54,22 @@ angular.module('starter')
                 }
                 return;
             }
+
+            if (typeof Bugsnag !== "undefined") {
+                var groupingHash = request.url + ' error';
+                if(data.error){
+                    groupingHash = JSON.stringify(data.error);
+                    if(data.error.message){
+                        groupingHash = JSON.stringify(data.error.message);
+                    }
+                }
+                Bugsnag.notify(groupingHash,
+                    status + " response from " + request.url + '. DATA: ' + JSON.stringify(data) + '. HEADERS: ' + JSON.stringify(headers),
+                    {groupingHash: groupingHash},
+                    "error");
+            }
+            console.error(status + " response from " + request.url + '. DATA: ' + JSON.stringify(data) + '. HEADERS: ' + JSON.stringify(headers));
+
             if(data.success){
                 console.error('Called error handler even though we have data.success');
             }
