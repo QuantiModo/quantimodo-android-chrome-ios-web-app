@@ -246,8 +246,8 @@ angular.module('starter')
 			var deferred = $q.defer();
 			var minimumSecondsBetweenRequests = 5;
 			if(!canWeMakeRequestYet('GET', 'refreshTrackingReminderNotifications', minimumSecondsBetweenRequests)){
-				console.warn('Already called refreshTrackingReminderNotifications within last 10 seconds!  Rejecting promise!');
-				deferred.reject('Already called refreshTrackingReminderNotifications within last 10 seconds!  Rejecting promise!');
+				deferred.reject('Already called refreshTrackingReminderNotifications within last ' +
+					minimumSecondsBetweenRequests + ' seconds!  Rejecting promise!');
 				return deferred.promise;
 			}
 			$rootScope.refreshingTrackingReminderNotifications = true;
