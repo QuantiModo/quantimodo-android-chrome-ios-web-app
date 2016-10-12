@@ -342,9 +342,6 @@ angular.module('starter')
 				};
 				QuantiModo.updateUserSettingsDeferred(params);
 			}
-			if(!$rootScope.user){
-				QuantiModo.refreshUser();
-			}
 
 			notificationService.shouldWeUseIonicLocalNotifications();
 

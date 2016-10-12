@@ -155,7 +155,6 @@ angular.module('starter')
 		};
 
 	    $scope.init = function(){
-	    	QuantiModo.setUserUsingAccessTokenInUrl();
 			$rootScope.stateParams = $stateParams;
 
 			if($stateParams.variableCategoryName && $stateParams.variableCategoryName  !== 'Anything'){

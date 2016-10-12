@@ -746,50 +746,32 @@ angular.module('starter')
 
             var deferred = $q.defer();
 
+            if(!$rootScope.accessTokenInUrl){
+                $rootScope.accessTokenInUrl = QuantiModo.getAccessTokenFromUrlParameter();
+            }
+
+            if($rootScope.accessTokenInUrl){
+                deferred.resolve($rootScope.accessTokenInUrl);
+                return deferred.promise;
+            }
+
+            if(!$rootScope.accessToken){
+                $rootScope.accessToken = localStorageService.getItemSync('accessToken');
+            }
+
+            if($rootScope.accessToken){
+                deferred.resolve($rootScope.accessToken);
+                return deferred.promise;
+            }
+
             if(utilsService.getClientId() === 'oAuthDisabled') {
                 //console.debug('getAccessTokenFromAnySource: oAuthDisabled so we do not need an access token');
                 deferred.resolve();
                 return deferred.promise;
             }
 
-            $rootScope.accessTokenInUrl = QuantiModo.getAccessTokenFromUrlParameter();
-
-            if ($rootScope.accessTokenInUrl) {
-                var url = utilsService.getURL("api/user") + 'accessToken=' + $rootScope.accessTokenInUrl;
-                if(!$rootScope.user){
-                    $http.get(url).then(
-                        function (userCredentialsResp) {
-                            console.debug('QuantiModo.getAccessTokenFromAnySource calling setUserInLocalStorageBugsnagAndRegisterDeviceForPush');
-                            $rootScope.setUserInLocalStorageBugsnagAndRegisterDeviceForPush(userCredentialsResp.data);
-                        },
-                        function (errorResp) {
-                            console.debug('Could not get user with accessToken.  error response:', errorResp);
-                        }
-                    );
-                }
-
-                deferred.resolve($rootScope.accessTokenInUrl);
-                return deferred.promise;
-            }
-
-            $rootScope.accessToken = localStorageService.getItemSync('accessToken');
-
-            if ($rootScope.accessToken) {
-                if($rootScope.accessToken.indexOf(' ') > -1){
-                    localStorageService.deleteItem('accessToken');
-                    $rootScope.accessToken = null;
-                    deferred.reject();
-                } else {
-                    deferred.resolve($rootScope.accessToken);
-                }
-                return deferred.promise;
-            }
-
-            if(utilsService.getClientId() !== 'oAuthDisabled') {
-                QuantiModo.getOrRefreshAccessTokenOrLogin(deferred);
-                return deferred.promise;
-            }
-
+            QuantiModo.getOrRefreshAccessTokenOrLogin(deferred);
+            return deferred.promise;
         };
 
         QuantiModo.getOrRefreshAccessTokenOrLogin = function (deferred) {
@@ -866,7 +848,7 @@ angular.module('starter')
                     localStorageService.setItem('refreshToken', refreshToken);
                 }
 
-                var expiresAt = accessResponse.expires || accessResponse.expiresAt;
+                var expiresAt = accessResponse.expires || accessResponse.expiresAt || accessResponse.accessTokenExpires;
                 if(expiresAt){
                     localStorageService.setItem('expiresAt', expiresAt);
                     return;
@@ -990,31 +972,6 @@ angular.module('starter')
             return deferred.promise;
         };
 
-        QuantiModo.setUserUsingAccessTokenInUrl= function() {
-            $rootScope.user = localStorageService.getItemAsObject('user');
-            if($rootScope.user){
-                return true;
-            }
-
-            var url = utilsService.getURL("api/user");
-            if(QuantiModo.getAccessTokenFromUrlParameter()){
-                url = url + 'accessToken=' + $rootScope.accessTokenInUrl;
-            }
-
-            $http.get(url).then(
-                function (userCredentialsResp) {
-                    console.debug('QuantiModo.getAccessTokenFromAnySource calling setUserInLocalStorageBugsnagAndRegisterDeviceForPush');
-                    $rootScope.setUserInLocalStorageBugsnagAndRegisterDeviceForPush(userCredentialsResp.data);
-                },
-                function (errorResp) {
-                    console.error('checkAuthOrSendToLogin: Could not get user with ' + url +
-                        '. Going to login page. Error response: ' + errorResp.message);
-                    $rootScope.sendToLogin();
-                }
-            );
-
-        };
-
         QuantiModo.getTokensAndUserViaNativeSocialLogin = function (provider, accessToken) {
             var deferred = $q.defer();
 
@@ -1080,34 +1037,47 @@ angular.module('starter')
             return deferred.promise;
         };
 
-        // get user
-        QuantiModo.getOrRefreshUser = function(){
-            var deferred = $q.defer();
+        QuantiModo.setUserInLocalStorageBugsnagIntercomPush = function(user){
+            localStorageService.setItem('user', JSON.stringify(user));
+            QuantiModo.saveAccessTokenInLocalStorage(user);
+            $rootScope.user = user;
+            if (typeof Bugsnag !== "undefined") {
+                Bugsnag.metaData = {
+                    user: {
+                        name: user.displayName,
+                        email: user.email
+                    }
+                };
+            }
 
-            localStorageService.getItem('user',function(user){
-                if(user){
-                    user = JSON.parse(user);
-                    $rootScope.user = user;
-                    deferred.resolve(user);
-                } else {
-                    QuantiModo.refreshUser().then(function(){
-                        deferred.resolve(user);
-                    });
-                }
-            });
+            window.intercomSettings = {
+                app_id: "uwtx2m33",
+                name: user.displayName,
+                email: user.email,
+                user_id: user.id,
+                app_name: config.appSettings.appName,
+                app_version: $rootScope.appVersion,
+                platform: $rootScope.currentPlatform,
+                platform_version: $rootScope.currentPlatformVersion
+            };
 
-            return deferred.promise;
+            var deviceTokenOnServer = localStorageService.getItemSync('deviceTokenOnServer');
+            var deviceTokenToSync = localStorageService.getItemSync('deviceTokenToSync');
+            if(deviceTokenOnServer){
+                console.debug("This token is already on the server: " + deviceTokenOnServer);
+            }
+            if (deviceTokenToSync){
+                QuantiModo.registerDeviceToken(deviceTokenToSync);
+            }
         };
 
         QuantiModo.refreshUser = function(){
             var deferred = $q.defer();
             QuantiModo.getUser(function(user){
-                localStorageService.setItem('user', JSON.stringify(user));
-                QuantiModo.saveAccessTokenInLocalStorage(user);
-                $rootScope.user = user;
+                QuantiModo.setUserInLocalStorageBugsnagIntercomPush(user);
                 deferred.resolve(user);
-            }, function(){
-                deferred.reject(false);
+            }, function(error){
+                deferred.reject(error);
             });
             return deferred.promise;
         };
@@ -1115,7 +1085,11 @@ angular.module('starter')
         QuantiModo.updateUserSettingsDeferred = function(params){
             var deferred = $q.defer();
             QuantiModo.postUserSettings(params, function(response){
-                QuantiModo.refreshUser();
+                QuantiModo.refreshUser().then(function(user){
+                    console.debug('updateUserSettingsDeferred got this user: ' + JSON.stringify(user));
+                }, function(error){
+                    console.error('QuantiModo.updateUserSettingsDeferred could not refresh user because ' + error);
+                });
                 deferred.resolve(response);
             }, function(response){
                 deferred.reject(response);
