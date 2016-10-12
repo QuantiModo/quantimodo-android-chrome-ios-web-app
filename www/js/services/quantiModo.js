@@ -5,12 +5,15 @@ angular.module('starter')
         var QuantiModo = {};
         $rootScope.connectionErrorShowing = false; // to prevent more than one popup
 
-        QuantiModo.successHandler = function(data){
+        QuantiModo.successHandler = function(data, baseURL, status){
+            var maxLength = 140;
+            console.debug(status + ' response from ' + baseURL + ': ' +  JSON.stringify(data).substring(0, maxLength) + '...');
             if(!data.success){
+                console.warn('No data.success in data response from ' + baseURL + ': ' +  JSON.stringify(data).substring(0, maxLength) + '...');
                 return;
             }
             if(data.message){
-                alert(data.message);
+                console.warn(data.message);
             }
         };
 
@@ -145,7 +148,15 @@ angular.module('starter')
                 console.debug('QuantiModo.get: ' + request.url);
 
                 $http(request)
-                    .success(successHandler)
+                    .success(function (data, status, headers, config) {
+                        if (data.error) {
+                            QuantiModo.errorHandler(data, status, headers, config, request, baseURL, 'GET');
+                            errorHandler(data);
+                        } else {
+                            QuantiModo.successHandler(data, baseURL, status);
+                            successHandler(data);
+                        }
+                    })
                     .error(function (data, status, headers, config) {
                         QuantiModo.errorHandler(data, status, headers, config, request, baseURL, 'GET');
                         errorHandler(data);
