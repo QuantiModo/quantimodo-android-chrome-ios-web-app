@@ -848,7 +848,7 @@ angular.module('starter')
                     localStorageService.setItem('refreshToken', refreshToken);
                 }
 
-                var expiresAt = accessResponse.expires || accessResponse.expiresAt;
+                var expiresAt = accessResponse.expires || accessResponse.expiresAt || accessResponse.accessTokenExpires;
                 if(expiresAt){
                     localStorageService.setItem('expiresAt', expiresAt);
                     return;
