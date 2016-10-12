@@ -405,6 +405,8 @@ angular.module('starter')
             if($rootScope.accessTokenInUrl && !$rootScope.user){
                 QuantiModo.refreshUser().then(function(){
                     $scope.syncEverything();
+                }, function(error){
+                    console.error($scope.state.name + ' could not refresh user because ' + error);
                 });
             }
 

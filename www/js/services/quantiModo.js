@@ -746,40 +746,32 @@ angular.module('starter')
 
             var deferred = $q.defer();
 
+            if($rootScope.accessTokenInUrl){
+                $rootScope.accessTokenInUrl = QuantiModo.getAccessTokenFromUrlParameter();
+            }
+
+            if($rootScope.accessTokenInUrl){
+                deferred.resolve($rootScope.accessTokenInUrl);
+                return deferred.promise;
+            }
+
+            if(!$rootScope.accessToken){
+                $rootScope.accessToken = localStorageService.getItemSync('accessToken');
+            }
+
+            if($rootScope.accessToken){
+                deferred.resolve($rootScope.accessToken);
+                return deferred.promise;
+            }
+
             if(utilsService.getClientId() === 'oAuthDisabled') {
                 //console.debug('getAccessTokenFromAnySource: oAuthDisabled so we do not need an access token');
                 deferred.resolve();
                 return deferred.promise;
             }
 
-            $rootScope.accessTokenInUrl = QuantiModo.getAccessTokenFromUrlParameter();
-
-            if ($rootScope.accessTokenInUrl) {
-                if(!$rootScope.user){
-                    QuantiModo.refreshUser();
-                }
-                deferred.resolve($rootScope.accessTokenInUrl);
-                return deferred.promise;
-            }
-
-            $rootScope.accessToken = localStorageService.getItemSync('accessToken');
-
-            if ($rootScope.accessToken) {
-                if($rootScope.accessToken.indexOf(' ') > -1){
-                    localStorageService.deleteItem('accessToken');
-                    $rootScope.accessToken = null;
-                    deferred.reject();
-                } else {
-                    deferred.resolve($rootScope.accessToken);
-                }
-                return deferred.promise;
-            }
-
-            if(utilsService.getClientId() !== 'oAuthDisabled') {
-                QuantiModo.getOrRefreshAccessTokenOrLogin(deferred);
-                return deferred.promise;
-            }
-
+            QuantiModo.getOrRefreshAccessTokenOrLogin(deferred);
+            return deferred.promise;
         };
 
         QuantiModo.getOrRefreshAccessTokenOrLogin = function (deferred) {
@@ -1093,7 +1085,11 @@ angular.module('starter')
         QuantiModo.updateUserSettingsDeferred = function(params){
             var deferred = $q.defer();
             QuantiModo.postUserSettings(params, function(response){
-                QuantiModo.refreshUser();
+                QuantiModo.refreshUser().then(function(user){
+                    console.debug('updateUserSettingsDeferred got this user: ' + JSON.stringify(user));
+                }, function(error){
+                    console.error('QuantiModo.updateUserSettingsDeferred could not refresh user because ' + error);
+                });
                 deferred.resolve(response);
             }, function(response){
                 deferred.reject(response);

@@ -91,10 +91,14 @@ angular.module('starter')
                         console.debug("Access token received",response);
                         QuantiModo.saveAccessTokenInLocalStorage(response);
                         console.debug('get user details from server and going to defaultState...');
-                        QuantiModo.refreshUser().then(function(){
+                        QuantiModo.refreshUser().then(function(user){
+                            console.debug($scope.state.name + ' fetchAccessTokenAndUserDetails got this user ' +
+                                JSON.stringify(user);
                             $rootScope.hideNavigationMenu = false;
                             $rootScope.$broadcast('callAppCtrlInit');
                             $state.go(config.appSettings.defaultState);
+                        }, function(error){
+                            console.error($scope.state.name + ' could not refresh user because ' + error);
                         });
                     }
                 })
