@@ -51,13 +51,14 @@ angular.module('starter')
         // User wants to login
         $scope.login = function(register) {
 
-            console.debug('Setting login timeout');
+            var seconds  = 30;
+            console.debug('Setting login timeout for ' + seconds + ' seconds');
             $timeout(function () {
                 if(!$rootScope.user){
                     bugsnagService.reportError('$scope.login: Could not get user within 30 seconds!');
                     //utilsService.showAlert('Facebook Login Issue', 'Please try to sign in using on of the other methods below');
                 }
-            }, 30000);
+            }, seconds * 1000);
             
             $scope.showLoader('Logging you in...');
             localStorageService.setItem('isWelcomed', true);
@@ -261,16 +262,18 @@ angular.module('starter')
 
         $scope.showLoader = function () {
             //$scope.state.loading = true;
+            var seconds  = 15;
             $rootScope.syncDisplayText = 'Logging you in...';
-            console.debug('Setting showLoader timeout');
+            console.debug('Setting showLoader timeout for ' + seconds + ' seconds');
             $timeout(function () {
                 $scope.hideLoader();
-            }, 15000);
+            }, seconds * 1000);
         };
 
         $scope.googleLogin = function(register){
 
-            console.debug('Setting googleLogin timeout');
+            var seconds  = 30;
+            console.debug('Setting googleLogin timeout for ' + seconds + ' seconds');
             $timeout(function () {
                 if(!$rootScope.user){
                     bugsnagService.reportError('$scope.googleLogin: Could not get user within 30 seconds! Fallback to non-native registration...');
@@ -278,7 +281,7 @@ angular.module('starter')
                     nonNativeMobileLogin(register);
                     //utilsService.showAlert('Facebook Login Issue', 'Please try to sign in using on of the other methods below');
                 }
-            }, 30000);
+            }, seconds * 1000);
             $scope.showLoader('Logging you in...');
             document.addEventListener('deviceready', deviceReady, false);
             function deviceReady() {
@@ -335,15 +338,16 @@ angular.module('starter')
         $scope.facebookLogin = function(){
             $scope.showLoader('Logging you in...');
             console.debug("$scope.facebookLogin about to try $cordovaFacebook.login");
+            var seconds  = 30;
             $scope.hideFacebookButton = true; // Hide button so user tries other options if it didn't work
-            console.debug('Setting facebookLogin timeout');
+            console.debug('Setting facebookLogin timeout for ' + seconds + ' seconds');
             $timeout(function () {
                 if(!$rootScope.user){
                     bugsnagService.reportError('Could not get user $scope.facebookLogin within 30 seconds! Falling back to non-native registration...');
                     var register = true;
                     nonNativeMobileLogin(register);
                 }
-            }, 30000);
+            }, seconds * 1000);
 
             $cordovaFacebook.login(["public_profile", "email", "user_friends"])
                 .then(function(response) {

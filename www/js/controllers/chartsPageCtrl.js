@@ -43,10 +43,11 @@ angular.module('starter')
             $(window).resize();
 
             // Not sure what this does
-            console.debug('Setting windowResize timeout');
+            var seconds = 0.1;
+            console.debug('Setting windowResize timeout for ' + seconds + ' seconds');
             $timeout(function() {
                 $scope.$broadcast('highchartsng.reflow');
-            }, 10);
+            }, seconds * 1000);
             // Fixes chart width
             $scope.$broadcast('highchartsng.reflow');
         };
