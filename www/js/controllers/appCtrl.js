@@ -402,6 +402,9 @@ angular.module('starter')
             console.debug("Main Constructor Start");
             QuantiModo.getAccessTokenFromUrlParameter();
             $rootScope.hideNavigationMenuIfSetInUrlParameter();
+            if(!$rootScope.user){
+                $rootScope.user = JSON.parse(localStorageService.getItemSync('user'));
+            }
             if($rootScope.accessTokenInUrl && !$rootScope.user){
                 QuantiModo.refreshUser().then(function(){
                     $scope.syncEverything();

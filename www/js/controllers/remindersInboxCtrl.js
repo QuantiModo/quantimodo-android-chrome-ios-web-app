@@ -337,6 +337,8 @@ angular.module('starter')
 			var timeZoneOffsetInMinutes = d.getTimezoneOffset();
 
 			if($rootScope.user && $rootScope.user.timeZoneOffset !== timeZoneOffsetInMinutes ){
+				console.debug('user.timeZoneOffset ' + $rootScope.user.timeZoneOffset +
+					' is different than d.getTimezoneOffset() ' + timeZoneOffsetInMinutes + ' so updating user settings.');
 				var params = {
 					timeZoneOffset: timeZoneOffsetInMinutes
 				};
