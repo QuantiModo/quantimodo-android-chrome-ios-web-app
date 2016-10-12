@@ -611,7 +611,6 @@ angular.module('starter')
 
         // post tracking reminder
         QuantiModo.postUserSettings = function(params, successHandler, errorHandler) {
-            console.debug("QuantiModo.postUserSettings", params);
             QuantiModo.post('api/v1/userSettings',
                 [],
                 params,
