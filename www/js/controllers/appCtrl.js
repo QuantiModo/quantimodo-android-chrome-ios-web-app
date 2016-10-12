@@ -405,17 +405,17 @@ angular.module('starter')
                 QuantiModo.refreshUser();
             }
             $rootScope.hideNavigationMenuIfSetInUrlParameter();
+            var userFromLocalStorage;
             if (!$rootScope.user) {
-                $rootScope.user = localStorageService.getItemAsObject('user');
-                if(!$rootScope.user && utilsService.getClientId() === 'oAuthDisabled') {
+                userFromLocalStorage = localStorageService.getItemAsObject('user');
+                if(!userFromLocalStorage && utilsService.getClientId() === 'oAuthDisabled') {
                     $rootScope.getUserAndSetInLocalStorage();
                 }
-                console.debug('appCtrl.init just set $rootScope.user from local storage to: ' + JSON.stringify($rootScope.user));
-            }
-            if ($rootScope.user) {
-                console.debug("appCtrl.init calling setUserInLocalStorageBugsnagAndRegisterDeviceForPush");
-                $rootScope.setUserInLocalStorageBugsnagAndRegisterDeviceForPush($rootScope.user);
-                $scope.syncEverything();
+                if (userFromLocalStorage) {
+                    console.debug("appCtrl.init calling setUserInLocalStorageBugsnagAndRegisterDeviceForPush");
+                    $rootScope.setUserInLocalStorageBugsnagAndRegisterDeviceForPush(userFromLocalStorage);
+                    $scope.syncEverything();
+                }
             }
 
             if ($rootScope.isMobile && $rootScope.localNotificationsEnabled) {
@@ -688,7 +688,9 @@ angular.module('starter')
             }
             localStorageService.setItem('user', JSON.stringify(userData));
             QuantiModo.saveAccessTokenInLocalStorage(userData);
-            $rootScope.user = userData;
+            if(!$rootScope.user){
+                $rootScope.user = userData;
+            }
             console.debug('$rootScope.setUserInLocalStorageBugsnagAndRegisterDeviceForPush just set $rootScope.user to: ' + JSON.stringify($rootScope.user));
             window.intercomSettings = {
                 app_id: "uwtx2m33",

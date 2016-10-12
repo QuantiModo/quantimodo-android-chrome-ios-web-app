@@ -79,13 +79,8 @@ angular.module('starter')
             var userObject = localStorageService.getItemAsObject('user');
 
             if(userObject){
-                $rootScope.user = userObject;
-                console.debug('$scope.login just set $rootScope.user to: ' + JSON.stringify($rootScope.user));
-            }
-
-            if($rootScope.user){
                 console.debug('$scope.login calling setUserInLocalStorageBugsnagAndRegisterDeviceForPush');
-                $rootScope.setUserInLocalStorageBugsnagAndRegisterDeviceForPush($rootScope.user);
+                $rootScope.setUserInLocalStorageBugsnagAndRegisterDeviceForPush(userObject);
                 $rootScope.hideNavigationMenu = false;
                 $state.go(config.appSettings.defaultState);
                 if (typeof analytics !== 'undefined')  {

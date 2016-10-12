@@ -990,7 +990,7 @@ angular.module('starter')
             return deferred.promise;
         };
 
-        QuantiModo.setUserUsingAccessTokenInUrl= function() {
+        QuantiModo.setUserUsingAccessTokenInUrl = function() {
             $rootScope.user = localStorageService.getItemAsObject('user');
             if($rootScope.user){
                 return true;
