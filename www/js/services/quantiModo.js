@@ -10,7 +10,6 @@ angular.module('starter')
             console.debug(status + ' response from ' + baseURL + ': ' +  JSON.stringify(data).substring(0, maxLength) + '...');
             if(!data.success){
                 console.warn('No data.success in data response from ' + baseURL + ': ' +  JSON.stringify(data).substring(0, maxLength) + '...');
-                return;
             }
             if(data.message){
                 console.warn(data.message);
