@@ -8,6 +8,9 @@ angular.module('starter')
         QuantiModo.successHandler = function(data, baseURL, status){
             var maxLength = 140;
             console.debug(status + ' response from ' + baseURL + ': ' +  JSON.stringify(data).substring(0, maxLength) + '...');
+            if($rootScope.connectionErrorShowing){
+                $rootScope.connectionErrorShowing = false;
+            }
             if(!data.success){
                 console.warn('No data.success in data response from ' + baseURL + ': ' +  JSON.stringify(data).substring(0, maxLength) + '...');
             }
@@ -38,18 +41,20 @@ angular.module('starter')
                 bugsnagService.reportError('No data returned from this request: ' + JSON.stringify(request));
                 if (!$rootScope.connectionErrorShowing) {
                     $rootScope.connectionErrorShowing = true;
-                    $ionicPopup.show({
-                        title: 'NOT CONNECTED',
-                        subTitle: 'Either you are not connected to the internet or the QuantiModo server cannot be reached.',
-                        buttons:[
-                            {text: 'OK',
-                                type: 'button-positive',
-                                onTap: function(){
-                                    $rootScope.connectionErrorShowing = false;
+                    if($rootScope.isIOS){
+                        $ionicPopup.show({
+                            title: 'NOT CONNECTED',
+                            subTitle: 'Either you are not connected to the internet or the QuantiModo server cannot be reached.',
+                            buttons:[
+                                {text: 'OK',
+                                    type: 'button-positive',
+                                    onTap: function(){
+                                        $rootScope.connectionErrorShowing = false;
+                                    }
                                 }
-                            }
-                        ]
-                    });
+                            ]
+                        });
+                    }
                 }
                 return;
             }
