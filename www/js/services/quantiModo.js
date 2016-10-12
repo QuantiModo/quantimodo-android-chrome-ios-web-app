@@ -746,7 +746,7 @@ angular.module('starter')
 
             var deferred = $q.defer();
 
-            if($rootScope.accessTokenInUrl){
+            if(!$rootScope.accessTokenInUrl){
                 $rootScope.accessTokenInUrl = QuantiModo.getAccessTokenFromUrlParameter();
             }
 
