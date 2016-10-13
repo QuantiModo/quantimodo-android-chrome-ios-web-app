@@ -790,7 +790,8 @@ angular.module('starter')
             }));
 
             if(refreshToken && !expiresAtMilliseconds){
-                var errorMessage = 'We have a refresh token but expiresAt is 0.  How did this happen?';
+                var errorMessage = 'We have a refresh token but expiresAtMilliseconds is ' + expiresAtMilliseconds +
+                    '.  How did this happen?';
                 Bugsnag.notify(errorMessage,
                     localStorageService.getItemSync('user'),
                     {groupingHash: errorMessage},

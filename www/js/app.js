@@ -272,7 +272,7 @@ angular.module('starter',
                 return;
             }
 
-            $rootScope.appVersion = "2.0.5.0";
+            $rootScope.appVersion = "2.0.6.0";
             $rootScope.appName = config.appSettings.appName;
 
             if (typeof Bugsnag !== "undefined") {
