@@ -779,8 +779,7 @@ angular.module('starter')
             }
 
             var now = new Date().getTime();
-            var expiresAtString = localStorageService.getItemSync('expiresAt');
-            var expiresAtMilliseconds = new Date(expiresAtString).getTime();
+            var expiresAtMilliseconds = localStorageService.getItemSync('expiresAtMilliseconds');
             var refreshToken = localStorageService.getItemSync('refreshToken');
             var accessToken = localStorageService.getItemSync('accessToken');
 
@@ -848,9 +847,9 @@ angular.module('starter')
 
         // extract values from token response and saves in local storage
         QuantiModo.saveAccessTokenInLocalStorage = function (accessResponse) {
-            if(accessResponse){
+            if(accessResponse) {
                 var accessToken = accessResponse.accessToken || accessResponse.access_token;
-                if(accessToken) {
+                if (accessToken) {
                     localStorageService.setItem('accessToken', accessToken);
                 } else {
                     console.warn('No access token provided to QuantiModo.saveAccessTokenInLocalStorage');
@@ -858,25 +857,43 @@ angular.module('starter')
                 }
 
                 var refreshToken = accessResponse.refreshToken || accessResponse.refresh_token;
-                if(refreshToken) {
+                if (refreshToken) {
                     localStorageService.setItem('refreshToken', refreshToken);
                 }
 
                 var expiresAt = accessResponse.expires || accessResponse.expiresAt || accessResponse.accessTokenExpires;
-                if(expiresAt){
-                    localStorageService.setItem('expiresAt', expiresAt);
+                var expiresAtMilliseconds;
+                var bufferInMilliseconds = 86400 * 1000;  // Refresh a day in advance
+
+                if (typeof expiresAt === 'string' || expiresAt instanceof String){
+                    expiresAtMilliseconds = new Date(expiresAt).getTime();
+                } else if (expiresAt === parseInt(expiresAt, 10) && expiresAt < new Date().getTime()) {
+                    expiresAtMilliseconds = expiresAt * 1000;
+                } else if(expiresAt === parseInt(expiresAt, 10) && expiresAt > new Date().getTime()){
+                    expiresAtMilliseconds = expiresAt;
+                } else {
+                    var groupingHash = 'Access token expiresAt not provided in recognizable form!';
+                    Bugsnag.notify(groupingHash,
+                        localStorageService.getItemSync('user'),
+                        {groupingHash: groupingHash},
+                        "error");
+                }
+
+                if(expiresAtMilliseconds){
+                    expiresAtMilliseconds = expiresAtMilliseconds - bufferInMilliseconds;
+                    localStorageService.setItem('expiresAtMilliseconds', expiresAtMilliseconds);
                     return accessToken;
                 }
 
                 // calculate expires at
-                var expiresIn = accessResponse.expiresIn || accessResponse.expires_in;
-
-                expiresAt = new Date().getTime() + parseInt(expiresIn, 10) * 1000 - 60000;
-                console.debug("Expires in is " + expiresIn + '. This results in expiresAt being: ' + expiresAt);
+                var expiresInSeconds = accessResponse.expiresIn || accessResponse.expires_in;
+                
+                expiresAtMilliseconds = new Date().getTime() + expiresInSeconds * 1000 - bufferInMilliseconds;
+                console.debug("Expires in is " + expiresInSeconds + ' seconds. This results in expiresAtMilliseconds being: ' + expiresAtMilliseconds);
 
                 // save in localStorage
-                if(expiresAt) {
-                    localStorageService.setItem('expiresAt', expiresAt);
+                if(expiresAtMilliseconds) {
+                    localStorageService.setItem('expiresAtMilliseconds', expiresAtMilliseconds);
                 }
                 $rootScope.accessToken = accessToken;
                 return accessToken;
