@@ -790,20 +790,31 @@ angular.module('starter')
                 accessToken: accessToken
             }));
 
-            if (now < expiresAtMilliseconds) {
+            if(refreshToken && !expiresAtMilliseconds){
+                var errorMessage = 'We have a refresh token but expiresAt is 0.  How did this happen?';
+                Bugsnag.notify(errorMessage,
+                    localStorageService.getItemSync('user'),
+                    {groupingHash: errorMessage},
+                    "error");
+            }
+
+            if (accessToken && now < expiresAtMilliseconds) {
                 console.debug('QuantiModo.getOrRefreshAccessTokenOrLogin: Current access token should not be expired. Resolving token using one from local storage');
                 deferred.resolve(accessToken);
-            } else if (refreshToken) {
+            } else if (refreshToken && expiresAtMilliseconds && utilsService.getClientId() !== 'oAuthDisabled') {
                 console.debug(now + ' (now) is greater than expiresAt ' + expiresAtMilliseconds);
                 QuantiModo.refreshAccessToken(refreshToken, deferred);
-            } else {
-                if(utilsService.getClientId() === 'oAuthDisabled') {
+            } else if(utilsService.getClientId() === 'oAuthDisabled') {
                     //console.debug('getAccessTokenFromAnySource: oAuthDisabled so we do not need an access token');
                     deferred.resolve();
                     return deferred.promise;
-                } else {
-                    deferred.reject('Could not get or refresh access token');
-                }
+            } else {
+                var groupingHash = 'Could not get or refresh access token';
+                Bugsnag.notify(groupingHash,
+                    localStorageService.getItemSync('user'),
+                    {groupingHash: groupingHash},
+                    "error");
+                deferred.reject(groupingHash);
             }
 
             return deferred.promise;
