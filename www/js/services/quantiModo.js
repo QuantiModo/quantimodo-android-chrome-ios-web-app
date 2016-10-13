@@ -41,7 +41,6 @@ angular.module('starter')
                         {groupingHash: groupingHash},
                         "error");
                 }
-                bugsnagService.reportError('No data returned from this request: ' + JSON.stringify(request));
                 if (!$rootScope.connectionErrorShowing) {
                     $rootScope.connectionErrorShowing = true;
                     if($rootScope.isIOS){
