@@ -302,7 +302,7 @@ angular.module('starter')
             localStorageService.setItem('primaryOutcomeVariableReportedWelcomeScreen', true);
             localStorageService.deleteItem('accessToken');
             localStorageService.deleteItem('refreshToken');
-            localStorageService.deleteItem('expiresAt');
+            localStorageService.deleteItem('expiresAtMilliseconds');
         }
 
 	    // Convert all data Array to a CSV object
