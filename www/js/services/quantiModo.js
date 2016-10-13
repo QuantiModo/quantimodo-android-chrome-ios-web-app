@@ -19,14 +19,14 @@ angular.module('starter')
             }
         };
 
-        QuantiModo.errorHandler = function(data, status, headers, config, request){
+        QuantiModo.errorHandler = function(data, status, headers, config, request, doNotSendToLogin){
 
             if(status === 302){
                 console.warn('QuantiModo.errorHandler: Got 302 response from ' + JSON.stringify(request));
                 return;
             }
 
-            if(status === 401){
+            if(status === 401 && !doNotSendToLogin){
                 console.warn('QuantiModo.errorHandler: Sending to login because we got 401 with request ' +
                     JSON.stringify(request));
                 $rootScope.sendToLogin();
@@ -106,7 +106,8 @@ angular.module('starter')
         };
 
         // GET method with the added token
-        QuantiModo.get = function(baseURL, allowedParams, params, successHandler, errorHandler, minimumSecondsBetweenRequests){
+        QuantiModo.get = function(baseURL, allowedParams, params, successHandler, errorHandler,
+                                  minimumSecondsBetweenRequests, doNotSendToLogin){
 
             if(!canWeMakeRequestYet('GET', baseURL, minimumSecondsBetweenRequests)){
                 return;
@@ -160,7 +161,7 @@ angular.module('starter')
                 $http(request)
                     .success(function (data, status, headers, config) {
                         if (data.error) {
-                            QuantiModo.errorHandler(data, status, headers, config, request, baseURL, 'GET');
+                            QuantiModo.errorHandler(data, status, headers, config, request, doNotSendToLogin);
                             errorHandler(data);
                         } else {
                             QuantiModo.successHandler(data, baseURL, status);
@@ -168,14 +169,15 @@ angular.module('starter')
                         }
                     })
                     .error(function (data, status, headers, config) {
-                        QuantiModo.errorHandler(data, status, headers, config, request, baseURL, 'GET');
+                        QuantiModo.errorHandler(data, status, headers, config, request, doNotSendToLogin);
                         errorHandler(data);
                     }, onRequestFailed);
                 });
             };
 
         // POST method with the added token
-        QuantiModo.post = function(baseURL, requiredFields, items, successHandler, errorHandler, minimumSecondsBetweenRequests){
+        QuantiModo.post = function(baseURL, requiredFields, items, successHandler, errorHandler,
+                                   minimumSecondsBetweenRequests, doNotSendToLogin){
 
             if(!canWeMakeRequestYet('POST', baseURL, minimumSecondsBetweenRequests)){
                 return;
@@ -232,7 +234,7 @@ angular.module('starter')
                 */
 
                 $http(request).success(successHandler).error(function(data, status, headers, config){
-                    QuantiModo.errorHandler(data, status, headers, config, request, baseURL, 'POST');
+                    QuantiModo.errorHandler(data, status, headers, config, request, doNotSendToLogin);
                     errorHandler(data);
                 });
 
@@ -590,11 +592,16 @@ angular.module('starter')
             if($rootScope.user){
                 console.warn('Are you sure we should be getting the user again when we already have a user?', $rootScope.user);
             }
+            var minimumSecondsBetweenRequests = 10;
+            var doNotSendToLogin = true;
             QuantiModo.get('api/user/me',
                 [],
                 {},
                 successHandler,
-                errorHandler);
+                errorHandler,
+                minimumSecondsBetweenRequests,
+                doNotSendToLogin
+            );
         };
 
         // get pending reminders
