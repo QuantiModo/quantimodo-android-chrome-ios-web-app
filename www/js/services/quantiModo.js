@@ -869,7 +869,8 @@ angular.module('starter')
                 } else if(expiresAt === parseInt(expiresAt, 10) && expiresAt > new Date().getTime()){
                     expiresAtMilliseconds = expiresAt;
                 } else {
-                    var groupingHash = 'Access token expiresAt not provided in recognizable form!  expiresAt is ' + expiresAt;
+                    var groupingHash = 'Access token expiresAt not provided in recognizable form!  accessResponse is ' +
+                        JSON.stringify(accessResponse);
                     Bugsnag.notify(groupingHash,
                         localStorageService.getItemSync('user'),
                         {groupingHash: groupingHash},
