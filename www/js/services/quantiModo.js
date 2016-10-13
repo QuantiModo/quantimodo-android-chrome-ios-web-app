@@ -809,12 +809,8 @@ angular.module('starter')
                     deferred.resolve();
                     return deferred.promise;
             } else {
-                var groupingHash = 'Could not get or refresh access token';
-                Bugsnag.notify(groupingHash,
-                    localStorageService.getItemSync('user'),
-                    {groupingHash: groupingHash},
-                    "error");
-                deferred.reject(groupingHash);
+                console.warn('Could not get or refresh access token');
+                deferred.resolve();
             }
 
             return deferred.promise;
