@@ -405,7 +405,7 @@ angular.module('starter')
             if(!$rootScope.user){
                 $rootScope.user = JSON.parse(localStorageService.getItemSync('user'));
             }
-            if($rootScope.accessTokenInUrl && !$rootScope.user){
+            if(!$rootScope.user){
                 QuantiModo.refreshUser().then(function(){
                     $scope.syncEverything();
                 }, function(error){

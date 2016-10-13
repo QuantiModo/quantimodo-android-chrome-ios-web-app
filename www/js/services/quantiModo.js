@@ -19,14 +19,14 @@ angular.module('starter')
             }
         };
 
-        QuantiModo.errorHandler = function(data, status, headers, config, request){
+        QuantiModo.errorHandler = function(data, status, headers, config, request, doNotSendToLogin){
 
             if(status === 302){
                 console.warn('QuantiModo.errorHandler: Got 302 response from ' + JSON.stringify(request));
                 return;
             }
 
-            if(status === 401){
+            if(status === 401 && !doNotSendToLogin){
                 console.warn('QuantiModo.errorHandler: Sending to login because we got 401 with request ' +
                     JSON.stringify(request));
                 $rootScope.sendToLogin();
@@ -106,7 +106,8 @@ angular.module('starter')
         };
 
         // GET method with the added token
-        QuantiModo.get = function(baseURL, allowedParams, params, successHandler, errorHandler, minimumSecondsBetweenRequests){
+        QuantiModo.get = function(baseURL, allowedParams, params, successHandler, errorHandler,
+                                  minimumSecondsBetweenRequests, doNotSendToLogin){
 
             if(!canWeMakeRequestYet('GET', baseURL, minimumSecondsBetweenRequests)){
                 return;
@@ -160,7 +161,7 @@ angular.module('starter')
                 $http(request)
                     .success(function (data, status, headers, config) {
                         if (data.error) {
-                            QuantiModo.errorHandler(data, status, headers, config, request, baseURL, 'GET');
+                            QuantiModo.errorHandler(data, status, headers, config, request, doNotSendToLogin);
                             errorHandler(data);
                         } else {
                             QuantiModo.successHandler(data, baseURL, status);
@@ -168,14 +169,15 @@ angular.module('starter')
                         }
                     })
                     .error(function (data, status, headers, config) {
-                        QuantiModo.errorHandler(data, status, headers, config, request, baseURL, 'GET');
+                        QuantiModo.errorHandler(data, status, headers, config, request, doNotSendToLogin);
                         errorHandler(data);
                     }, onRequestFailed);
                 });
             };
 
         // POST method with the added token
-        QuantiModo.post = function(baseURL, requiredFields, items, successHandler, errorHandler, minimumSecondsBetweenRequests){
+        QuantiModo.post = function(baseURL, requiredFields, items, successHandler, errorHandler,
+                                   minimumSecondsBetweenRequests, doNotSendToLogin){
 
             if(!canWeMakeRequestYet('POST', baseURL, minimumSecondsBetweenRequests)){
                 return;
@@ -232,7 +234,7 @@ angular.module('starter')
                 */
 
                 $http(request).success(successHandler).error(function(data, status, headers, config){
-                    QuantiModo.errorHandler(data, status, headers, config, request, baseURL, 'POST');
+                    QuantiModo.errorHandler(data, status, headers, config, request, doNotSendToLogin);
                     errorHandler(data);
                 });
 
@@ -590,11 +592,16 @@ angular.module('starter')
             if($rootScope.user){
                 console.warn('Are you sure we should be getting the user again when we already have a user?', $rootScope.user);
             }
+            var minimumSecondsBetweenRequests = 10;
+            var doNotSendToLogin = true;
             QuantiModo.get('api/user/me',
                 [],
                 {},
                 successHandler,
-                errorHandler);
+                errorHandler,
+                minimumSecondsBetweenRequests,
+                doNotSendToLogin
+            );
         };
 
         // get pending reminders
@@ -771,26 +778,11 @@ angular.module('starter')
                 return deferred.promise;
             }
 
-            if(!$rootScope.accessToken){
-                $rootScope.accessToken = localStorageService.getItemSync('accessToken');
-            }
-
-            if($rootScope.accessToken){
-                deferred.resolve($rootScope.accessToken);
-                return deferred.promise;
-            }
-
             if(utilsService.getClientId() === 'oAuthDisabled') {
                 //console.debug('getAccessTokenFromAnySource: oAuthDisabled so we do not need an access token');
                 deferred.resolve();
                 return deferred.promise;
             }
-
-            QuantiModo.getOrRefreshAccessTokenOrLogin(deferred);
-            return deferred.promise;
-        };
-
-        QuantiModo.getOrRefreshAccessTokenOrLogin = function (deferred) {
 
             var now = new Date().getTime();
             var expiresAt = localStorageService.getItemSync('expiresAt');
@@ -805,18 +797,11 @@ angular.module('starter')
 
             if (now < expiresAt) {
                 console.debug('QuantiModo.getOrRefreshAccessTokenOrLogin: Current access token should not be expired. Resolving token using one from local storage');
-                deferred.resolve({
-                    accessToken: accessToken
-                });
-
+                deferred.resolve(accessToken);
             } else if (refreshToken) {
-                QuantiModo.refreshAccessToken(refreshToken, deferred);
-            } else {
-                console.warn('QuantiModo.getOrRefreshAccessTokenOrLogin: Refresh token is undefined. Not enough data for oauth flow. rejecting token promise. ' +
-                    'Clearing accessToken from local storage if it exists and sending to login page...');
-                $rootScope.sendToLogin();
-                deferred.reject();
+                QuantiModo.refreshAccessToken(refreshToken);
             }
+            return deferred.promise;
         };
 
         QuantiModo.refreshAccessToken = function(refreshToken, deferred) {
@@ -836,11 +821,8 @@ angular.module('starter')
                 } else {
                     var accessTokenRefreshed = QuantiModo.saveAccessTokenInLocalStorage(data);
                     console.debug('QuantiModo.refreshAccessToken: access token successfully updated from api server: ' + JSON.stringify(data));
-                    deferred.resolve({
-                        accessToken: accessTokenRefreshed
-                    });
+                    deferred.resolve(accessTokenRefreshed);
                 }
-
             }).error(function (response) {
                 console.debug("QuantiModo.refreshAccessToken: failed to refresh token from api server" + JSON.stringify(response));
                 deferred.reject(response);
@@ -867,7 +849,7 @@ angular.module('starter')
                 var expiresAt = accessResponse.expires || accessResponse.expiresAt || accessResponse.accessTokenExpires;
                 if(expiresAt){
                     localStorageService.setItem('expiresAt', expiresAt);
-                    return;
+                    return accessToken;
                 }
 
                 // calculate expires at
