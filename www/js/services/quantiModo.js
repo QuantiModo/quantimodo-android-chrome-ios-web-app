@@ -26,11 +26,15 @@ angular.module('starter')
                 return;
             }
 
-            if(status === 401 && !doNotSendToLogin){
-                console.warn('QuantiModo.errorHandler: Sending to login because we got 401 with request ' +
-                    JSON.stringify(request));
-                $rootScope.sendToLogin();
-                return;
+            if(status === 401){
+                if(doNotSendToLogin){
+                    return;
+                } else {
+                    console.warn('QuantiModo.errorHandler: Sending to login because we got 401 with request ' +
+                        JSON.stringify(request));
+                    $rootScope.sendToLogin();
+                    return;
+                }
             }
             var groupingHash;
             if(!data){
