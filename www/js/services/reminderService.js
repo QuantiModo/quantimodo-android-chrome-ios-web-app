@@ -243,20 +243,12 @@ angular.module('starter')
 
 		reminderService.refreshTrackingReminderNotifications = function(){
 			var deferred = $q.defer();
-			var minimumSecondsBetweenRequests = 5;
+			var minimumSecondsBetweenRequests = 3;
 			if(!canWeMakeRequestYet('GET', 'refreshTrackingReminderNotifications', minimumSecondsBetweenRequests)){
 				deferred.reject('Already called refreshTrackingReminderNotifications within last ' +
 					minimumSecondsBetweenRequests + ' seconds!  Rejecting promise!');
 				return deferred.promise;
 			}
-			$rootScope.refreshingTrackingReminderNotifications = true;
-			console.debug('Setting refreshTrackingReminderNotifications timeout');
-			$timeout(function() {
-				// Set to false after 10 seconds because it seems to get stuck on true sometimes for some reason
-				if($rootScope.refreshingTrackingReminderNotifications){
-					$rootScope.refreshingTrackingReminderNotifications = false;
-				}
-			}, 5000);
 			var currentDateTimeInUtcStringPlus5Min = timeService.getCurrentDateTimeInUtcStringPlusMin(5);
 			var params = {};
 			params.reminderTime = '(lt)' + currentDateTimeInUtcStringPlus5Min;

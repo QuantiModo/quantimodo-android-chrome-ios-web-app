@@ -32,9 +32,15 @@ angular.module('starter')
                 $rootScope.sendToLogin();
                 return;
             }
-
+            var groupingHash;
             if(!data){
-                bugsnagService.reportError('No data returned from this request: ' + JSON.stringify(request));
+                if (typeof Bugsnag !== "undefined") {
+                    groupingHash = 'No data returned from this request';
+                    Bugsnag.notify(groupingHash,
+                        status + " response from url " + request.url,
+                        {groupingHash: groupingHash},
+                        "error");
+                }
                 if (!$rootScope.connectionErrorShowing) {
                     $rootScope.connectionErrorShowing = true;
                     if($rootScope.isIOS){
@@ -56,7 +62,7 @@ angular.module('starter')
             }
 
             if (typeof Bugsnag !== "undefined") {
-                var groupingHash = request.url + ' error';
+                groupingHash = request.url + ' error';
                 if(data.error){
                     groupingHash = JSON.stringify(data.error);
                     if(data.error.message){
@@ -64,11 +70,11 @@ angular.module('starter')
                     }
                 }
                 Bugsnag.notify(groupingHash,
-                    status + " response from " + request.url + '. DATA: ' + JSON.stringify(data) + '. HEADERS: ' + JSON.stringify(headers),
+                    status + " response from " + request.url + '. DATA: ' + JSON.stringify(data),
                     {groupingHash: groupingHash},
                     "error");
             }
-            console.error(status + " response from " + request.url + '. DATA: ' + JSON.stringify(data) + '. HEADERS: ' + JSON.stringify(headers));
+            console.error(status + " response from " + request.url + '. DATA: ' + JSON.stringify(data));
 
             if(data.success){
                 console.error('Called error handler even though we have data.success');
