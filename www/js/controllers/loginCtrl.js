@@ -245,6 +245,10 @@ angular.module('starter')
         };
 
         $scope.googleLogin = function(register){
+            // For debugging Google login
+            // var tokenForApi = 'ya29.CjF7A0faph6-8m91vuLDZVnKZqXeC4JjGWfubyV6PmgTqZmjkPohGx2tXVNpSjn4euhV';
+            // $scope.nativeSocialLogin('google', tokenForApi);
+            // return;
 
             var seconds  = 30;
             console.debug('Setting googleLogin timeout for ' + seconds + ' seconds');
