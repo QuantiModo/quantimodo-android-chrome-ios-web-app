@@ -14,8 +14,8 @@ angular.module('starter')
 
             QuantiModo.searchUserVariables(variableSearchQuery, params, function(vars){
                 deferred.resolve(vars);
-            }, function(){
-                deferred.reject(false);
+            }, function(error){
+                deferred.reject(error);
             });
 
             return deferred.promise;
@@ -27,8 +27,8 @@ angular.module('starter')
             // refresh always
             QuantiModo.getVariablesByName(name, function(variable){
                 deferred.resolve(variable);
-            }, function(){
-                deferred.reject(false);
+            }, function(error){
+                deferred.reject(error);
             });
 
             return deferred.promise;
@@ -38,8 +38,8 @@ angular.module('starter')
             var deferred = $q.defer();
             QuantiModo.getPublicVariablesByName(name, function(variable){
                 deferred.resolve(variable);
-            }, function(){
-                deferred.reject(false);
+            }, function(error){
+                deferred.reject(error);
             });
 
             return deferred.promise;
@@ -51,8 +51,8 @@ angular.module('starter')
             var deferred = $q.defer();
             QuantiModo.postUserVariable(userVariable, function(userVariable) {
                 deferred.resolve(userVariable);
-            }, function(){
-                deferred.reject(false);
+            }, function(error){
+                deferred.reject(error);
             });
 
             return deferred.promise;
@@ -63,8 +63,8 @@ angular.module('starter')
             var body = {variableId: variableId};
             QuantiModo.resetUserVariable(body, function(userVariable) {
                 deferred.resolve(userVariable);
-            }, function(){
-                deferred.reject(false);
+            }, function(error){
+                deferred.reject(error);
             });
 
             return deferred.promise;
@@ -76,8 +76,8 @@ angular.module('starter')
             // refresh always
             QuantiModo.getVariableById(variableId, function(variable){
                 deferred.resolve(variable);
-            }, function(){
-                deferred.reject(false);
+            }, function(error){
+                deferred.reject(error);
             });
 
             return deferred.promise;
@@ -108,9 +108,9 @@ angular.module('starter')
                         deferred.resolve(userVariables);
                     });
                 }
-            }, function(){
+            }, function(error){
                 $rootScope.syncingUserVariables = false;
-                deferred.reject(false);
+                deferred.reject(error);
             });
             return deferred.promise;
         };
@@ -138,9 +138,9 @@ angular.module('starter')
                             $rootScope.syncingUserVariables = false;
                         });
                     deferred.resolve(userVariables);
-                }, function(){
+                }, function(error){
                     $rootScope.syncingUserVariables = false;
-                    deferred.reject(false);
+                    deferred.reject(error);
                 });
 
                 return deferred.promise;
@@ -157,9 +157,9 @@ angular.module('starter')
                         deferred.resolve(commonVariables);
                     });
                 }
-            }, function(){
+            }, function(error){
                 $rootScope.syncingUserVariables = false;
-                deferred.reject(false);
+                deferred.reject(error);
             });
             return deferred.promise;
         };
@@ -189,7 +189,7 @@ angular.module('starter')
                 var errorHandler = function(error) {
                     $rootScope.syncingCommonVariables = false;
                     if (typeof Bugsnag !== "undefined") { Bugsnag.notify("ERROR: " + JSON.stringify(error), JSON.stringify(error), {}, "error"); } console.error(error);
-                    deferred.reject(false);
+                    deferred.reject(error);
                 };
 
                 var parameters = {

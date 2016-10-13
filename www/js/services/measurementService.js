@@ -134,7 +134,7 @@ angular.module('starter')
                         }
                         else {
                             // More than 200 measurements returned, something is wrong
-                            deferred.reject(false);
+                            deferred.reject(response);
                         }
 
                     }, function(error){
