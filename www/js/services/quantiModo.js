@@ -32,8 +32,15 @@ angular.module('starter')
                 $rootScope.sendToLogin();
                 return;
             }
-
+            var groupingHash;
             if(!data){
+                if (typeof Bugsnag !== "undefined") {
+                    groupingHash = 'No data returned from this request';
+                    Bugsnag.notify(groupingHash,
+                        status + " response from url " + request.url,
+                        {groupingHash: groupingHash},
+                        "error");
+                }
                 bugsnagService.reportError('No data returned from this request: ' + JSON.stringify(request));
                 if (!$rootScope.connectionErrorShowing) {
                     $rootScope.connectionErrorShowing = true;
@@ -56,7 +63,7 @@ angular.module('starter')
             }
 
             if (typeof Bugsnag !== "undefined") {
-                var groupingHash = request.url + ' error';
+                groupingHash = request.url + ' error';
                 if(data.error){
                     groupingHash = JSON.stringify(data.error);
                     if(data.error.message){
