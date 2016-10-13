@@ -267,7 +267,7 @@ angular.module('starter')
                 } else {
                     localStorageService.getItem('user', function(user){
                         if(!user){
-                            defer.reject(false);
+                            defer.reject('No user in local storage!');
                         } else {
                             response_array = response_array.concat(response);
                             params.offset+=200;
