@@ -887,7 +887,7 @@ angular.module('starter')
             var groupingHash = 'Access token expiresAt not provided in recognizable form!';
             console.error(groupingHash);
             Bugsnag.notify(groupingHash,
-                'accessResponse is ' + JSON.stringify(accessResponse) + ' and user is ' + localStorageService.getItemSync('user'),
+                'expiresAt is ' + expiresAt + ' || accessResponse is ' + JSON.stringify(accessResponse) + ' and user is ' + localStorageService.getItemSync('user'),
                 {groupingHash: groupingHash},
                 "error");
         };
