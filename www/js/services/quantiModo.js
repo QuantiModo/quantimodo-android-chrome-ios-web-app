@@ -64,11 +64,11 @@ angular.module('starter')
                     }
                 }
                 Bugsnag.notify(groupingHash,
-                    status + " response from " + request.url + '. DATA: ' + JSON.stringify(data) + '. HEADERS: ' + JSON.stringify(headers),
+                    status + " response from " + request.url + '. DATA: ' + JSON.stringify(data),
                     {groupingHash: groupingHash},
                     "error");
             }
-            console.error(status + " response from " + request.url + '. DATA: ' + JSON.stringify(data) + '. HEADERS: ' + JSON.stringify(headers));
+            console.error(status + " response from " + request.url + '. DATA: ' + JSON.stringify(data));
 
             if(data.success){
                 console.error('Called error handler even though we have data.success');
