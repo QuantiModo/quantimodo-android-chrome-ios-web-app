@@ -845,8 +845,7 @@ angular.module('starter')
             });
 
         };
-
-        // extract values from token response and saves in local storage
+        
         QuantiModo.saveAccessTokenInLocalStorage = function (accessResponse) {
             var accessToken = accessResponse.accessToken || accessResponse.access_token;
             if (accessToken) {
@@ -892,8 +891,6 @@ angular.module('starter')
                 {groupingHash: groupingHash},
                 "error");
         };
-
-
 
         QuantiModo.convertToObjectIfJsonString = function (stringOrObject) {
             try {
