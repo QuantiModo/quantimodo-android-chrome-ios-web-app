@@ -778,29 +778,34 @@ angular.module('starter')
                 return deferred.promise;
             }
 
-            if(utilsService.getClientId() === 'oAuthDisabled') {
-                //console.debug('getAccessTokenFromAnySource: oAuthDisabled so we do not need an access token');
-                deferred.resolve();
-                return deferred.promise;
-            }
-
             var now = new Date().getTime();
-            var expiresAt = localStorageService.getItemSync('expiresAt');
+            var expiresAtString = localStorageService.getItemSync('expiresAt');
+            var expiresAtMilliseconds = new Date(expiresAtString).getTime();
             var refreshToken = localStorageService.getItemSync('refreshToken');
             var accessToken = localStorageService.getItemSync('accessToken');
 
             console.debug('QuantiModo.getOrRefreshAccessTokenOrLogin: Values from local storage:', JSON.stringify({
-                expiresAt: expiresAt,
+                expiresAtMilliseconds: expiresAtMilliseconds,
                 refreshToken: refreshToken,
                 accessToken: accessToken
             }));
 
-            if (now < expiresAt) {
+            if (now < expiresAtMilliseconds) {
                 console.debug('QuantiModo.getOrRefreshAccessTokenOrLogin: Current access token should not be expired. Resolving token using one from local storage');
                 deferred.resolve(accessToken);
             } else if (refreshToken) {
-                QuantiModo.refreshAccessToken(refreshToken);
+                console.debug(now + ' (now) is greater than expiresAt ' + expiresAtMilliseconds);
+                QuantiModo.refreshAccessToken(refreshToken, deferred);
+            } else {
+                if(utilsService.getClientId() === 'oAuthDisabled') {
+                    //console.debug('getAccessTokenFromAnySource: oAuthDisabled so we do not need an access token');
+                    deferred.resolve();
+                    return deferred.promise;
+                } else {
+                    deferred.reject('Could not get or refresh access token');
+                }
             }
+
             return deferred.promise;
         };
 
