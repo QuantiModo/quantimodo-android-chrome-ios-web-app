@@ -176,10 +176,17 @@ angular.module('starter')
             if(!$scope.state.measurement.abbreviatedUnitName && !$scope.abbreviatedUnitName){
                 utilsService.showAlert('Please select a unit');
                 return;
-            }
-            else {
-                $scope.state.measurement.unitId =
-                    $rootScope.unitsIndexedByAbbreviatedName[$scope.state.measurement.abbreviatedUnitName].id;
+            } else {
+                if(!$rootScope.unitsIndexedByAbbreviatedName[$scope.state.measurement.abbreviatedUnitName]){
+                    if (typeof Bugsnag !== "undefined") {
+                        Bugsnag.notify('Cannot get unit id', 'abbreviated unit name is ' +
+                            $scope.state.measurement.abbreviatedUnitName + ' and $rootScope.unitsIndexedByAbbreviatedName are ' +
+                                JSON.stringify($rootScope.unitsIndexedByAbbreviatedName), {}, "error");
+                    }
+                } else {
+                    $scope.state.measurement.unitId =
+                        $rootScope.unitsIndexedByAbbreviatedName[$scope.state.measurement.abbreviatedUnitName].id;
+                }
             }
 
             if($rootScope.unitsIndexedByAbbreviatedName[$scope.state.measurement.abbreviatedUnitName] &&
@@ -700,7 +707,7 @@ angular.module('starter')
                 }
             });
 
-
+            console.debug('Setting hideSheet timeout');
             $timeout(function() {
                 hideSheet();
             }, 20000);

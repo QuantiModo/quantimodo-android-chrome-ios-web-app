@@ -19,6 +19,7 @@ angular.module('starter')
             $(window).resize();
 
             // Not sure what this does
+            console.debug('Setting windowResize timeout');
             $timeout(function() {
                 $scope.$broadcast('highchartsng.reflow');
             }, 10);
@@ -106,12 +107,15 @@ angular.module('starter')
             updateCharts();
             $scope.showRatingFaces = true;
             $scope.timeRemaining = false;
-            if($rootScope.user){
+            if($rootScope.user || $rootScope.accessToken){
                 $scope.showLoader($scope.syncDisplayText);
+                console.debug($state.current.name + ' going to syncPrimaryOutcomeVariableMeasurements');
                 measurementService.syncPrimaryOutcomeVariableMeasurements().then(function(){
                     updateCharts();
                     $ionicLoading.hide();
                 });
+            } else {
+                console.debug($state.current.name + ' has no user or access token so we cannot syncPrimaryOutcomeVariableMeasurements');
             }
         };
 

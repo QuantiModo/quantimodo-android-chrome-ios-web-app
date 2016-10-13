@@ -32,9 +32,6 @@ angular.module('starter')
                 console.debug('ReminderInbox: Hiding splash screen because app is ready');
                 navigator.splashscreen.hide();
             }
-            if(!$rootScope.user){
-                $rootScope.getUserAndSetInLocalStorage();
-            }
             if($rootScope.user){
                 $scope.hideLoader();
                 console.debug("Already logged in on login page.  Going to default state...");
@@ -51,12 +48,14 @@ angular.module('starter')
         // User wants to login
         $scope.login = function(register) {
 
+            var seconds  = 30;
+            console.debug('Setting login timeout for ' + seconds + ' seconds');
             $timeout(function () {
                 if(!$rootScope.user){
                     bugsnagService.reportError('$scope.login: Could not get user within 30 seconds!');
                     //utilsService.showAlert('Facebook Login Issue', 'Please try to sign in using on of the other methods below');
                 }
-            }, 30000);
+            }, seconds * 1000);
             
             $scope.showLoader('Logging you in...');
             localStorageService.setItem('isWelcomed', true);
@@ -74,35 +73,11 @@ angular.module('starter')
                 browserLogin(register);
             }
 
-            var userObject = localStorageService.getItemAsObject('user');
-
-            $rootScope.user = userObject;
-            console.debug('$scope.login just set $rootScope.user to: ' + JSON.stringify($rootScope.user));
-
             if($rootScope.user){
-                console.debug('$scope.login calling setUserInLocalStorageBugsnagAndRegisterDeviceForPush');
-                $rootScope.setUserInLocalStorageBugsnagAndRegisterDeviceForPush($rootScope.user);
                 $rootScope.hideNavigationMenu = false;
-                $state.go(config.appSettings.defaultState);
-                if (typeof analytics !== 'undefined')  {
-                    analytics.trackView("Login Controller");
-                    analytics.setUserId(userObject.id);
-                }
                 reminderService.createDefaultReminders();
+                $state.go(config.appSettings.defaultState);
             }
-        };
-
-        var getOrSetUserInLocalStorage = function() {
-            var userObject = localStorageService.getItemAsObject('user');
-            if(!userObject){
-                userObject = $rootScope.getUserAndSetInLocalStorage();
-            }
-            if(userObject){
-                $rootScope.user = userObject;
-                console.debug('getOrSetUserInLocalStorage just set $rootScope.user to: ' + JSON.stringify($rootScope.user));
-                return userObject;
-            }
-
         };
 
         var fetchAccessTokenAndUserDetails = function(authorization_code, withJWT) {
@@ -116,10 +91,15 @@ angular.module('starter')
                         console.debug("Access token received",response);
                         QuantiModo.saveAccessTokenInLocalStorage(response);
                         console.debug('get user details from server and going to defaultState...');
-                        $rootScope.getUserAndSetInLocalStorage();
-                        $rootScope.hideNavigationMenu = false;
-                        $rootScope.$broadcast('callAppCtrlInit');
-                        $state.go(config.appSettings.defaultState);
+                        QuantiModo.refreshUser().then(function(user){
+                            console.debug($state.current.name + ' fetchAccessTokenAndUserDetails got this user ' +
+                                JSON.stringify(user));
+                            $rootScope.hideNavigationMenu = false;
+                            $rootScope.$broadcast('callAppCtrlInit');
+                            $state.go(config.appSettings.defaultState);
+                        }, function(error){
+                            console.error($state.current.name + ' could not refresh user because ' + error);
+                        });
                     }
                 })
                 .catch(function(exception){ if (typeof Bugsnag !== "undefined") { Bugsnag.notifyException(exception); }
@@ -197,16 +177,7 @@ angular.module('starter')
                         JSON.stringify(response));
 
                     if(response.user){
-                        localStorageService.setItem('user', response.user);
-                        $rootScope.user = response.user;
-                        console.debug('$scope.nativeSocialLogin just set $rootScope.user to: ' + JSON.stringify($rootScope.user));
-                        localStorageService.setItem('accessToken', response.accessToken);
-                        $rootScope.accessToken = response.accessToken;
-                        localStorageService.setItem('refreshToken', response.refreshToken);
-                        $rootScope.refreshToken = response.refreshToken;
-                        localStorageService.setItem('expiresAt', response.expiresAt);
-                        $rootScope.expiresAt = response.expiresAt;
-                        $rootScope.setUserInLocalStorageBugsnagAndRegisterDeviceForPush(response.user);
+                        QuantiModo.setUserInLocalStorageBugsnagIntercomPush(response.user);
                         $rootScope.hideNavigationMenu = false;
                         $state.go(config.appSettings.defaultState);
                         return;
@@ -265,14 +236,18 @@ angular.module('starter')
 
         $scope.showLoader = function () {
             //$scope.state.loading = true;
+            var seconds  = 15;
             $rootScope.syncDisplayText = 'Logging you in...';
+            console.debug('Setting showLoader timeout for ' + seconds + ' seconds');
             $timeout(function () {
                 $scope.hideLoader();
-            }, 15000);
+            }, seconds * 1000);
         };
 
         $scope.googleLogin = function(register){
 
+            var seconds  = 30;
+            console.debug('Setting googleLogin timeout for ' + seconds + ' seconds');
             $timeout(function () {
                 if(!$rootScope.user){
                     bugsnagService.reportError('$scope.googleLogin: Could not get user within 30 seconds! Fallback to non-native registration...');
@@ -280,7 +255,7 @@ angular.module('starter')
                     nonNativeMobileLogin(register);
                     //utilsService.showAlert('Facebook Login Issue', 'Please try to sign in using on of the other methods below');
                 }
-            }, 30000);
+            }, seconds * 1000);
             $scope.showLoader('Logging you in...');
             document.addEventListener('deviceready', deviceReady, false);
             function deviceReady() {
@@ -337,14 +312,16 @@ angular.module('starter')
         $scope.facebookLogin = function(){
             $scope.showLoader('Logging you in...');
             console.debug("$scope.facebookLogin about to try $cordovaFacebook.login");
+            var seconds  = 30;
             $scope.hideFacebookButton = true; // Hide button so user tries other options if it didn't work
+            console.debug('Setting facebookLogin timeout for ' + seconds + ' seconds');
             $timeout(function () {
                 if(!$rootScope.user){
                     bugsnagService.reportError('Could not get user $scope.facebookLogin within 30 seconds! Falling back to non-native registration...');
                     var register = true;
                     nonNativeMobileLogin(register);
                 }
-            }, 30000);
+            }, seconds * 1000);
 
             $cordovaFacebook.login(["public_profile", "email", "user_friends"])
                 .then(function(response) {
@@ -380,28 +357,19 @@ angular.module('starter')
         };
 
         var sendToNonOAuthBrowserLoginUrl = function(register) {
-
-            var user = getOrSetUserInLocalStorage();
-            if(user){
-                $rootScope.hideNavigationMenu = false;
-                console.debug('sendToNonOAuthBrowserLoginUrl: User logged in so going to defaultState');
-                $state.go(config.appSettings.defaultState);
+            var loginUrl = utilsService.getURL("api/v2/auth/login");
+            if (register === true) {
+                loginUrl = utilsService.getURL("api/v2/auth/register");
             }
-            if(!user){
-                var loginUrl = utilsService.getURL("api/v2/auth/login");
-                if (register === true) {
-                    loginUrl = utilsService.getURL("api/v2/auth/register");
-                }
-                console.debug("sendToNonOAuthBrowserLoginUrl: Client id is oAuthDisabled - will redirect to regular login.");
-                loginUrl += "redirect_uri=" + encodeURIComponent(window.location.href.replace('app/login','app/reminders-inbox'));
-                console.debug('sendToNonOAuthBrowserLoginUrl: AUTH redirect URL created:', loginUrl);
-                var apiUrlMatchesHostName = $rootScope.qmApiUrl.indexOf(window.location.hostname);
-                if(apiUrlMatchesHostName > -1 || $rootScope.isChromeExtension) {
-                    $scope.showLoader('Logging you in...');
-                    window.location.replace(loginUrl);
-                } else {
-                    alert("API url doesn't match auth base url.  Please make use the same domain in config file");
-                }
+            console.debug("sendToNonOAuthBrowserLoginUrl: Client id is oAuthDisabled - will redirect to regular login.");
+            loginUrl += "redirect_uri=" + encodeURIComponent(window.location.href.replace('app/login','app/reminders-inbox'));
+            console.debug('sendToNonOAuthBrowserLoginUrl: AUTH redirect URL created:', loginUrl);
+            var apiUrlMatchesHostName = $rootScope.qmApiUrl.indexOf(window.location.hostname);
+            if(apiUrlMatchesHostName > -1 || $rootScope.isChromeExtension) {
+                $scope.showLoader('Logging you in...');
+                window.location.replace(loginUrl);
+            } else {
+                alert("API url doesn't match auth base url.  Please make use the same domain in config file");
             }
         };
 

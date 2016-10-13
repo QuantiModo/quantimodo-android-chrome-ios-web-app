@@ -2,7 +2,7 @@ angular.module('starter')
 
 	.controller('RemindersInboxCtrl', function($scope, $state, $stateParams, $rootScope, $filter, $ionicPlatform,
 											   $ionicActionSheet, $timeout, QuantiModo, reminderService, utilsService,
-											   notificationService, userService, localStorageService, $ionicLoading) {
+											   notificationService, localStorageService, $ionicLoading) {
 
 	    $scope.controller_name = "RemindersInboxCtrl";
 
@@ -242,6 +242,18 @@ angular.module('starter')
 				});
 		};
 
+		var getFilteredTrackingReminderNotificationsFromLocalStorage = function(){
+			var trackingReminderNotifications = localStorageService.getElementsFromItemWithFilters(
+				'trackingReminderNotifications', 'variableCategoryName', $stateParams.variableCategoryName);
+			$scope.state.numberOfDisplayedNotifications = trackingReminderNotifications.length;
+			$scope.filteredTrackingReminderNotifications =
+				reminderService.groupTrackingReminderNotificationsByDateRange(trackingReminderNotifications);
+			//Stop the ion-refresher from spinning
+			$scope.$broadcast('scroll.refreshComplete');
+			$scope.hideLoader();
+			$scope.state.loading = false;
+		};
+
 		$scope.hideLoader = function(){
 			$ionicLoading.hide();
 		};
@@ -265,9 +277,11 @@ angular.module('starter')
 				});
 		};
 
-		$scope.$on('getTrackingReminderNotifications', function(){
-			console.debug('getTrackingReminderNotifications broadcast received..');
-			getTrackingReminderNotifications();
+		$scope.$on('getTrackingReminderNotificationsFromLocalStorage', function(){
+			console.debug('getTrackingReminderNotificationsFromLocalStorage broadcast received..');
+			if(!$stateParams.today) {
+				getFilteredTrackingReminderNotificationsFromLocalStorage();
+			}
 		});
 
 	    var getTrackingReminderNotifications = function () {
@@ -323,13 +337,12 @@ angular.module('starter')
 			var timeZoneOffsetInMinutes = d.getTimezoneOffset();
 
 			if($rootScope.user && $rootScope.user.timeZoneOffset !== timeZoneOffsetInMinutes ){
+				console.debug('user.timeZoneOffset ' + $rootScope.user.timeZoneOffset +
+					' is different than d.getTimezoneOffset() ' + timeZoneOffsetInMinutes + ' so updating user settings.');
 				var params = {
 					timeZoneOffset: timeZoneOffsetInMinutes
 				};
-				userService.updateUserSettings(params);
-			}
-			if(!$rootScope.user){
-				userService.refreshUser();
+				QuantiModo.updateUserSettingsDeferred(params);
 			}
 
 			notificationService.shouldWeUseIonicLocalNotifications();
@@ -372,7 +385,7 @@ angular.module('starter')
 					}
 				});
 
-
+				console.debug('Setting hideSheet timeout');
 				$timeout(function() {
 					hideSheet();
 				}, 20000);
@@ -540,7 +553,7 @@ angular.module('starter')
 				}
 			});
 
-
+			console.debug('Setting hideSheet timeout');
 			$timeout(function() {
 				hideSheetForNotification();
 			}, 20000);

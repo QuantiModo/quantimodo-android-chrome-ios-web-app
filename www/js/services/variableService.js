@@ -125,6 +125,7 @@ angular.module('starter')
 
             if(!$rootScope.syncingUserVariables){
                 $rootScope.syncingUserVariables = true;
+                console.debug('Setting refreshUserVariables timeout');
                 $timeout(function() {
                     // Set to false after 10 seconds because it seems to get stuck on true sometimes for some reason
                     $rootScope.syncingUserVariables = false;
@@ -173,6 +174,7 @@ angular.module('starter')
 
             if(!$rootScope.syncingCommonVariables){
                 $rootScope.syncingCommonVariables = true;
+                console.debug('Setting refreshCommonVariables timeout');
                 $timeout(function() {
                     // Set to false after 10 seconds because it seems to get stuck on true sometimes for some reason
                     $rootScope.syncingCommonVariables = false;

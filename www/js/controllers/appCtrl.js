@@ -6,11 +6,11 @@ angular.module('starter')
                                     measurementService, QuantiModo, notificationService, localStorageService,
                                     reminderService, ratingService, migrationService, ionicDatePicker, unitService,
                                     variableService, qmLocationService, variableCategoryService, bugsnagService,
-                                    utilsService, connectorsService, userService) {
+                                    utilsService) {
 
         $rootScope.loaderImagePath = config.appSettings.loaderImagePath;
         $rootScope.appMigrationVersion = 1489;
-        $rootScope.appVersion = "2.0.2.0";
+        $rootScope.appVersion = "2.0.4.2";
         if (!$rootScope.loaderImagePath) {
             $rootScope.loaderImagePath = 'img/circular-loader.gif';
         }
@@ -18,7 +18,7 @@ angular.module('starter')
             localStorageService.getItem('trackLocation', function(trackLocation){
                 $rootScope.user.trackLocation = trackLocation;
                 if($rootScope.user.trackLocation){
-                    userService.updateUserSettings({trackLocation: $rootScope.user.trackLocation});
+                    QuantiModo.updateUserSettingsDeferred({trackLocation: $rootScope.user.trackLocation});
                 }
             });
         }
@@ -402,17 +402,15 @@ angular.module('starter')
             console.debug("Main Constructor Start");
             QuantiModo.getAccessTokenFromUrlParameter();
             $rootScope.hideNavigationMenuIfSetInUrlParameter();
-            if (!$rootScope.user) {
-                $rootScope.user = localStorageService.getItemAsObject('user');
-                if(!$rootScope.user && utilsService.getClientId() === 'oAuthDisabled') {
-                    $rootScope.getUserAndSetInLocalStorage();
-                }
-                console.debug('appCtrl.init just set $rootScope.user from local storage to: ' + JSON.stringify($rootScope.user));
+            if(!$rootScope.user){
+                $rootScope.user = JSON.parse(localStorageService.getItemSync('user'));
             }
-            if ($rootScope.user) {
-                console.debug("appCtrl.init calling setUserInLocalStorageBugsnagAndRegisterDeviceForPush");
-                $rootScope.setUserInLocalStorageBugsnagAndRegisterDeviceForPush($rootScope.user);
-                $scope.syncEverything();
+            if(!$rootScope.user){
+                QuantiModo.refreshUser().then(function(){
+                    $scope.syncEverything();
+                }, function(error){
+                    console.error('AppCtrl.init could not refresh user because ' + error);
+                });
             }
 
             if ($rootScope.isMobile && $rootScope.localNotificationsEnabled) {
@@ -518,28 +516,7 @@ angular.module('starter')
             $scope.showIntervalCard = false;
         };
 
-        $rootScope.getUserAndSetInLocalStorage = function(){
-            
-            var successHandler = function(userObject) {
-                if (userObject) {
-                    console.debug('Setting user in getUserAndSetInLocalStorage');
-                    $rootScope.setUserInLocalStorageBugsnagAndRegisterDeviceForPush(userObject);
-                    if ($state.current.name === 'app.login') {
-                        goToDefaultStateShowMenuClearIntroHistoryAndRedraw();
-                    }
-                    return userObject;
-                }
-            };
-            
-            QuantiModo.get('api/user/me',
-                [],
-                {},
-                successHandler,
-                function(error){
-                    if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error(error);
-                }
-            );
-        };
+
 
         $rootScope.sendToLogin = function(){
             localStorageService.deleteItem('user');
@@ -582,9 +559,11 @@ angular.module('starter')
                 duration: 15000
             });
             */
+            var seconds = 30;
+            console.debug('Setting showLoader timeout for ' + seconds + ' seconds');
             $timeout(function () {
                 $scope.hideLoader();
-            }, 30000);
+            }, seconds * 1000);
 
         };
 
@@ -670,41 +649,6 @@ angular.module('starter')
                 );
 
             }, false);
-        };
-
-        $rootScope.setUserInLocalStorageBugsnagAndRegisterDeviceForPush = function(userData){
-            if (typeof Bugsnag !== "undefined") {
-                Bugsnag.metaData = {
-                    user: {
-                        name: userData.displayName,
-                        email: userData.email
-                    }
-                };
-            }
-            localStorageService.setItem('user', JSON.stringify(userData));
-            $rootScope.user = userData;
-            console.debug('$rootScope.setUserInLocalStorageBugsnagAndRegisterDeviceForPush just set $rootScope.user to: ' + JSON.stringify($rootScope.user));
-            window.intercomSettings = {
-                app_id: "uwtx2m33",
-                name: userData.displayName,
-                email: userData.email,
-                user_id: userData.id,
-                app_name: config.appSettings.appName,
-                app_version: $rootScope.appVersion,
-                platform: $rootScope.currentPlatform,
-                platform_version: $rootScope.currentPlatformVersion
-            };
-
-            var deviceTokenOnServer = localStorageService.getItemSync('deviceTokenOnServer');
-            if(deviceTokenOnServer){
-                console.debug("This token is already on the server: " + deviceTokenOnServer);
-                return;
-            }
-
-            var deviceTokenToSync = localStorageService.getItemSync('deviceTokenToSync');
-            if(deviceTokenToSync){
-                QuantiModo.registerDeviceToken(deviceTokenToSync);
-            }
         };
 
         $scope.onTextClick = function ($event) {

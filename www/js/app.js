@@ -26,11 +26,14 @@ angular.module('starter',
 
     $ionicPlatform.ready(function() {
         //$ionicAnalytics.register();
+
+        /*
         if(ionic.Platform.isIPad() || ionic.Platform.isIOS()){
             window.onerror = function (errorMsg, url, lineNumber) {
                 alert('Error: ' + errorMsg + ' Script: ' + url + ' Line: ' + lineNumber);
             };
         }
+        */
 
          if (typeof PushNotification !== "undefined") {
              console.debug("Going to try to register push");
@@ -269,7 +272,7 @@ angular.module('starter',
                 return;
             }
 
-            $rootScope.appVersion = "2.0.2.0";
+            $rootScope.appVersion = "2.0.4.2";
             $rootScope.appName = config.appSettings.appName;
 
             if (typeof Bugsnag !== "undefined") {
@@ -577,6 +580,19 @@ angular.module('starter',
         .state('app.import', {
             url: "/import",
             cache: false,
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/import-data.html",
+                    controller: 'ImportCtrl'
+                }
+            }
+        })
+        .state('app.importNative', {
+            url: "/import-native",
+            cache: false,
+            params: {
+                native: true
+            },
             views: {
                 'menuContent': {
                     templateUrl: "templates/import-data.html",

@@ -43,7 +43,7 @@ angular.module('starter')
 				$scope.state.favorites[i].total = null;
 				if($scope.state.favorites[i].variableName.toLowerCase().indexOf('blood pressure') > -1){
 					$scope.state.bloodPressure.reminderId = $scope.state.favorites[i].id;
-					$scope.state.favorites.splice(i, 1);
+					$scope.state.favorites[i].hide = true;
 				}
 			}
 		}
@@ -130,7 +130,8 @@ angular.module('starter')
 
 			$scope.state[trackingReminder.id].tally += modifiedReminderValue;
 			console.debug('modified tally is ' + $scope.state[trackingReminder.id].tally);
-			
+
+			console.debug('Setting trackByReminder timeout');
             $timeout(function() {
             	if(typeof $scope.state[trackingReminder.id] === "undefined"){
             		console.error("$scope.state[trackingReminder.id] is undefined so we can't send tally in favorite controller. Not sure how this is happening.");
@@ -154,7 +155,6 @@ angular.module('starter')
 		};
 
 	    $scope.init = function(){
-	    	QuantiModo.setUserUsingAccessTokenInUrl();
 			$rootScope.stateParams = $stateParams;
 
 			if($stateParams.variableCategoryName && $stateParams.variableCategoryName  !== 'Anything'){
@@ -313,7 +313,7 @@ angular.module('starter')
 				}
 			});
 
-
+			console.debug('Setting hideSheet timeout');
 			$timeout(function() {
 				hideSheet();
 			}, 20000);

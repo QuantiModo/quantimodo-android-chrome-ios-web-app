@@ -20,10 +20,10 @@ angular.module('starter')
                 console.error('ERROR: ' + stringifiedExceptionOrError);
                 if (typeof Bugsnag !== "undefined") {
                     Bugsnag.releaseStage = utilsService.getEnv();
-                    Bugsnag.notify(stringifiedExceptionOrError, stacktrace, {}, "error");
+                    Bugsnag.notify(stringifiedExceptionOrError, stacktrace, {groupingHash: stringifiedExceptionOrError}, "error");
                     deferred.resolve();
                 } else {
-                    deferred.reject();
+                    deferred.reject('Bugsnag is not defined');
                 }
                 return deferred.promise;
             }

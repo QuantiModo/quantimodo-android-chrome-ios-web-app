@@ -3,7 +3,7 @@ angular.module('starter')
 	// Controls the settings page
 	.controller('SettingsCtrl', function( $state, $scope, $ionicPopover, $ionicPopup, localStorageService, $rootScope, 
 										  notificationService, QuantiModo, reminderService, qmLocationService, 
-										  ionicTimePicker, userService, timeService, utilsService, $stateParams, $ionicHistory, bugsnagService) {
+										  ionicTimePicker, timeService, utilsService, $stateParams, $ionicHistory, bugsnagService) {
 		$scope.controller_name = "SettingsCtrl";
 		$scope.state = {};
 		$scope.showReminderFrequencySelector = config.appSettings.settingsPageOptions.showReminderFrequencySelector;
@@ -21,14 +21,7 @@ angular.module('starter')
 			var params = {
 				timeZoneOffset: timeZoneOffsetInMinutes
 			};
-			userService.updateUserSettings(params);
-		}
-
-		if($rootScope.user && (!$rootScope.user.earliestReminderTime || !$rootScope.user.latestReminderTime)){
-			userService.refreshUser(function(user){
-				$rootScope.user = user;
-                console.debug('SettingsCtrl just set $rootScope.user to: ' + JSON.stringify($rootScope.user));
-			});
+			QuantiModo.updateUserSettingsDeferred(params);
 		}
 
 		// populate ratings interval
@@ -101,7 +94,7 @@ angular.module('starter')
 		};
 
 		$scope.combineNotificationChange = function() {
-			userService.updateUserSettings({combineNotifications: $rootScope.user.combineNotifications});
+			QuantiModo.updateUserSettingsDeferred({combineNotifications: $rootScope.user.combineNotifications});
 			if($rootScope.user.combineNotifications){
 				$ionicPopup.alert({
 					title: 'Disabled Individual Notifications',
@@ -158,7 +151,7 @@ angular.module('starter')
 						if(newEarliestReminderTime !== $rootScope.user.earliestReminderTime){
 							$rootScope.user.earliestReminderTime = newEarliestReminderTime;
 							params.earliestReminderTime = $rootScope.user.earliestReminderTime;
-							userService.updateUserSettings(params).then(function(){
+							QuantiModo.updateUserSettingsDeferred(params).then(function(){
 								reminderService.refreshTrackingRemindersAndScheduleAlarms();
 							});
 							$ionicPopup.alert({
@@ -201,7 +194,7 @@ angular.module('starter')
 						if(newLatestReminderTime !== $rootScope.user.latestReminderTime){
 							$rootScope.user.latestReminderTime = newLatestReminderTime;
 							params.latestReminderTime = $rootScope.user.latestReminderTime;
-							userService.updateUserSettings(params).then(function(){
+							QuantiModo.updateUserSettingsDeferred(params).then(function(){
 								reminderService.refreshTrackingRemindersAndScheduleAlarms();
 							});
 							$ionicPopup.alert({
@@ -222,7 +215,7 @@ angular.module('starter')
 		$scope.trackLocationChange = function() {
 			console.debug('trackLocation', $scope.state.trackLocation);
 			$rootScope.user.trackLocation = $scope.state.trackLocation;
-			userService.updateUserSettings({trackLocation: $rootScope.user.trackLocation});
+			QuantiModo.updateUserSettingsDeferred({trackLocation: $rootScope.user.trackLocation});
 			if($scope.state.trackLocation){
 				$ionicPopup.alert({
 					title: 'Location Tracking Enabled',
