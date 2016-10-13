@@ -33,6 +33,7 @@ angular.module('starter')
             }
             if ($rootScope.isIOS) { return window.private_keys.client_ids.iOS; }
             if ($rootScope.isAndroid) { return window.private_keys.client_ids.Android; }
+            if ($rootScope.isChromeExtension) { return window.private_keys.client_ids.Chrome; }
             if ($rootScope.isWindows) { return window.private_keys.client_ids.Windows; }
             return window.private_keys.client_ids.Web;
         };
@@ -91,6 +92,7 @@ angular.module('starter')
             }
             if ($rootScope.isIOS) { return window.private_keys.client_secrets.iOS; }
             if ($rootScope.isAndroid) { return window.private_keys.client_secrets.Android; }
+            if ($rootScope.isChromeExtension) { return window.private_keys.client_secrets.Chrome; }
             if ($rootScope.isWindows) { return window.private_keys.client_secrets.Windows; }
             return window.private_keys.client_secrets.Web;
         };
