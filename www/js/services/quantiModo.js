@@ -26,11 +26,15 @@ angular.module('starter')
                 return;
             }
 
-            if(status === 401 && !doNotSendToLogin){
-                console.warn('QuantiModo.errorHandler: Sending to login because we got 401 with request ' +
-                    JSON.stringify(request));
-                $rootScope.sendToLogin();
-                return;
+            if(status === 401){
+                if(doNotSendToLogin){
+                    return;
+                } else {
+                    console.warn('QuantiModo.errorHandler: Sending to login because we got 401 with request ' +
+                        JSON.stringify(request));
+                    $rootScope.sendToLogin();
+                    return;
+                }
             }
             var groupingHash;
             if(!data){
@@ -809,12 +813,8 @@ angular.module('starter')
                     deferred.resolve();
                     return deferred.promise;
             } else {
-                var groupingHash = 'Could not get or refresh access token';
-                Bugsnag.notify(groupingHash,
-                    localStorageService.getItemSync('user'),
-                    {groupingHash: groupingHash},
-                    "error");
-                deferred.reject(groupingHash);
+                console.warn('Could not get or refresh access token');
+                deferred.resolve();
             }
 
             return deferred.promise;
@@ -845,65 +845,52 @@ angular.module('starter')
             });
 
         };
-
-        // extract values from token response and saves in local storage
+        
         QuantiModo.saveAccessTokenInLocalStorage = function (accessResponse) {
-            if(accessResponse) {
-                var accessToken = accessResponse.accessToken || accessResponse.access_token;
-                if (accessToken) {
-                    localStorageService.setItem('accessToken', accessToken);
-                } else {
-                    console.warn('No access token provided to QuantiModo.saveAccessTokenInLocalStorage');
-                    return;
-                }
+            var accessToken = accessResponse.accessToken || accessResponse.access_token;
+            if (accessToken) {
+                $rootScope.accessToken = accessToken;
+                localStorageService.setItem('accessToken', accessToken);
+            } else {
+                console.error('No access token provided to QuantiModo.saveAccessTokenInLocalStorage');
+                return;
+            }
 
-                var refreshToken = accessResponse.refreshToken || accessResponse.refresh_token;
-                if (refreshToken) {
-                    localStorageService.setItem('refreshToken', refreshToken);
-                }
+            var refreshToken = accessResponse.refreshToken || accessResponse.refresh_token;
+            if (refreshToken) {
+                localStorageService.setItem('refreshToken', refreshToken);
+            }
 
-                var expiresAt = accessResponse.expires || accessResponse.expiresAt || accessResponse.accessTokenExpires;
-                var expiresAtMilliseconds;
-                var bufferInMilliseconds = 86400 * 1000;  // Refresh a day in advance
+            var expiresAt = accessResponse.expires || accessResponse.expiresAt || accessResponse.accessTokenExpires;
+            var expiresAtMilliseconds;
+            var bufferInMilliseconds = 86400 * 1000;  // Refresh a day in advance
 
-                if (typeof expiresAt === 'string' || expiresAt instanceof String){
-                    expiresAtMilliseconds = new Date(expiresAt).getTime();
-                } else if (expiresAt === parseInt(expiresAt, 10) && expiresAt < new Date().getTime()) {
-                    expiresAtMilliseconds = expiresAt * 1000;
-                } else if(expiresAt === parseInt(expiresAt, 10) && expiresAt > new Date().getTime()){
-                    expiresAtMilliseconds = expiresAt;
-                } else {
-                    var groupingHash = 'Access token expiresAt not provided in recognizable form!  expiresAt is ' + expiresAt;
-                    Bugsnag.notify(groupingHash,
-                        localStorageService.getItemSync('user'),
-                        {groupingHash: groupingHash},
-                        "error");
-                }
-
-                if(expiresAtMilliseconds){
-                    expiresAtMilliseconds = expiresAtMilliseconds - bufferInMilliseconds;
-                    localStorageService.setItem('expiresAtMilliseconds', expiresAtMilliseconds);
-                    return accessToken;
-                }
-
+            if (typeof expiresAt === 'string' || expiresAt instanceof String){
+                expiresAtMilliseconds = new Date(expiresAt).getTime();
+            } else if (expiresAt === parseInt(expiresAt, 10) && expiresAt < new Date().getTime()) {
+                expiresAtMilliseconds = expiresAt * 1000;
+            } else if(expiresAt === parseInt(expiresAt, 10) && expiresAt > new Date().getTime()){
+                expiresAtMilliseconds = expiresAt;
+            } else {
                 // calculate expires at
                 var expiresInSeconds = accessResponse.expiresIn || accessResponse.expires_in;
-                
                 expiresAtMilliseconds = new Date().getTime() + expiresInSeconds * 1000 - bufferInMilliseconds;
                 console.debug("Expires in is " + expiresInSeconds + ' seconds. This results in expiresAtMilliseconds being: ' + expiresAtMilliseconds);
-
-                // save in localStorage
-                if(expiresAtMilliseconds) {
-                    localStorageService.setItem('expiresAtMilliseconds', expiresAtMilliseconds);
-                }
-                $rootScope.accessToken = accessToken;
-                return accessToken;
-            } else {
-                return "";
             }
+
+            if(expiresAtMilliseconds){
+                expiresAtMilliseconds = expiresAtMilliseconds - bufferInMilliseconds;
+                localStorageService.setItem('expiresAtMilliseconds', expiresAtMilliseconds);
+                return accessToken;
+            }
+
+            var groupingHash = 'Access token expiresAt not provided in recognizable form!';
+            console.error(groupingHash);
+            Bugsnag.notify(groupingHash,
+                'expiresAt is ' + expiresAt + ' || accessResponse is ' + JSON.stringify(accessResponse) + ' and user is ' + localStorageService.getItemSync('user'),
+                {groupingHash: groupingHash},
+                "error");
         };
-
-
 
         QuantiModo.convertToObjectIfJsonString = function (stringOrObject) {
             try {
