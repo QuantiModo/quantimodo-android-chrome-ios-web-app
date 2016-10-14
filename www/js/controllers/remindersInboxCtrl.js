@@ -337,13 +337,12 @@ angular.module('starter')
 			var timeZoneOffsetInMinutes = d.getTimezoneOffset();
 
 			if($rootScope.user && $rootScope.user.timeZoneOffset !== timeZoneOffsetInMinutes ){
+				console.debug('user.timeZoneOffset ' + $rootScope.user.timeZoneOffset +
+					' is different than d.getTimezoneOffset() ' + timeZoneOffsetInMinutes + ' so updating user settings.');
 				var params = {
 					timeZoneOffset: timeZoneOffsetInMinutes
 				};
 				QuantiModo.updateUserSettingsDeferred(params);
-			}
-			if(!$rootScope.user){
-				QuantiModo.refreshUser();
 			}
 
 			notificationService.shouldWeUseIonicLocalNotifications();
@@ -386,7 +385,7 @@ angular.module('starter')
 					}
 				});
 
-
+				console.debug('Setting hideSheet timeout');
 				$timeout(function() {
 					hideSheet();
 				}, 20000);
@@ -554,7 +553,7 @@ angular.module('starter')
 				}
 			});
 
-
+			console.debug('Setting hideSheet timeout');
 			$timeout(function() {
 				hideSheetForNotification();
 			}, 20000);

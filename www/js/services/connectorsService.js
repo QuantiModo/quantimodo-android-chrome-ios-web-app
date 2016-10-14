@@ -27,8 +27,8 @@ angular.module('starter')
 				localStorageService.setItem('connectors', JSON.stringify(connectors));
 				connectors = connectorsService.hideBrokenConnectors(connectors);
 				deferred.resolve(connectors);
-			}, function(){
-				deferred.reject(false);
+			}, function(error){
+				deferred.reject(error);
 			});
 			return deferred.promise;
 		};
@@ -37,8 +37,8 @@ angular.module('starter')
 			var deferred = $q.defer();
 			QuantiModo.disconnectConnector(name, function(){
 				connectorsService.refreshConnectors();
-			}, function(){
-				deferred.reject(false);
+			}, function(error){
+				deferred.reject(error);
 			});
 			return deferred.promise;
 		};
@@ -47,8 +47,8 @@ angular.module('starter')
 			var deferred = $q.defer();
 			QuantiModo.connectConnectorWithParams(params, lowercaseConnectorName, function(){
 				connectorsService.refreshConnectors();
-			}, function(){
-				deferred.reject(false);
+			}, function(error){
+				deferred.reject(error);
 			});
 			return deferred.promise;
 		};
@@ -57,8 +57,8 @@ angular.module('starter')
 			var deferred = $q.defer();
 			QuantiModo.connectConnectorWithToken(body, function(){
 				connectorsService.refreshConnectors();
-			}, function(){
-				deferred.reject(false);
+			}, function(error){
+				deferred.reject(error);
 			});
 			return deferred.promise;
 		};
@@ -67,8 +67,8 @@ angular.module('starter')
 			var deferred = $q.defer();
 			QuantiModo.connectWithAuthCode(code, lowercaseConnectorName, function(){
 				connectorsService.refreshConnectors();
-			}, function(){
-				deferred.reject(false);
+			}, function(error){
+				deferred.reject(error);
 			});
 			return deferred.promise;
 		};

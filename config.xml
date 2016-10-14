@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<widget id="com.quantimodo.moodimodoapp" version="2.0.3" ios-CFBundleVersion="2.0.3.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
-  <name>Super Cell</name>
-
+<widget id="com.quantimodo.moodimodoapp" version="2.0.6" ios-CFBundleVersion="2.0.6.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+  <name>MoodiModo</name>
   <description>&#xD;
-        Super Cell
+        The mood-tracking app from QuantiModo
     </description>
   <author email="mike@quantimo.do" href="https://quantimo.do/">
       QuantiModo
@@ -85,7 +84,7 @@
   <plugin name="ionic-plugin-keyboard" version="2.2.1"/>
   <plugin name="cordova-plugin-statusbar" version="2.1.3"/>
   <vs:platformSpecificValues xmlns:vs="http://schemas.microsoft.com/appx/2014/htmlapps">
-    <vs:platformSpecificWidget platformName="windows" version="2.0.3.0" id="com.quantimodo.moodimodoapp"/>
+    <vs:platformSpecificWidget platformName="windows" version="2.0.6.0" id="com.quantimodo.moodimodoapp"/>
   </vs:platformSpecificValues>
   <icon src="resources\ios\icon\icon-small@3x.png"/>
 </widget>

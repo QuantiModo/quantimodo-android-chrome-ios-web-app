@@ -150,7 +150,7 @@ angular.module('starter')
 
 		// when view is changed
 		$scope.$on('$ionicView.beforeEnter', function(e) {
-			$scope.hideHistoryPageInstructionsCard = localStorageService.getItemSync('hideHistoryPageInstructionsCard');
+			$rootScope.hideHistoryPageInstructionsCard = localStorageService.getItemSync('hideHistoryPageInstructionsCard');
 		});
 
 		$scope.showActionSheet = function(measurement, $index) {
@@ -227,6 +227,7 @@ angular.module('starter')
 				},
 			});
 
+			console.debug('Setting hideSheet timeout');
 			$timeout(function() {
 				hideSheet();
 			}, 20000);

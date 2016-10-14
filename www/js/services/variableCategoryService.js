@@ -152,8 +152,8 @@ angular.module('starter')
                 QuantiModo.getVariableCategories(function(vars){
                     localStorageService.setItem('variableCategories',JSON.stringify(vars));
                     deferred.resolve(vars);
-                }, function(){
-                    deferred.reject(false);
+                }, function(error){
+                    deferred.reject(error);
                 });
 
                 return deferred.promise;
@@ -167,11 +167,11 @@ angular.module('starter')
                     if(variableCategories){
                         deferred.resolve(JSON.parse(variableCategories));
                     } else {
-                        QuantiModo.getVariableCategories(function(vars){
-                            localStorageService.setItem('variableCategories', JSON.stringify(vars));
-                            deferred.resolve(vars);
-                        }, function(){
-                            deferred.reject(false);
+                        QuantiModo.getVariableCategories(function(variableCategories){
+                            localStorageService.setItem('variableCategories', JSON.stringify(variableCategories));
+                            deferred.resolve(variableCategories);
+                        }, function(error){
+                            deferred.reject(error);
                         });
                     }
                 });

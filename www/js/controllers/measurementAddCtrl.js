@@ -168,18 +168,25 @@ angular.module('starter')
                 utilsService.showAlert('Please enter a variable name');
                 return;
             }
-            // if(!$scope.state.measurement.variableCategoryName){
-            //     utilsService.showAlert('Please select a variable category');
-            //     return;
-            // }
+            if(!$scope.state.measurement.variableCategoryName){
+                utilsService.showAlert('Please select a variable category');
+                return;
+            }
 
-            // if(!$scope.state.measurement.abbreviatedUnitName && !$scope.abbreviatedUnitName){
-            //     utilsService.showAlert('Please select a unit');
-            //     return;
-            // }
-            else {
-                $scope.state.measurement.unitId =
-                    $rootScope.unitsIndexedByAbbreviatedName[$scope.state.measurement.abbreviatedUnitName].id;
+            if(!$scope.state.measurement.abbreviatedUnitName && !$scope.abbreviatedUnitName){
+                utilsService.showAlert('Please select a unit');
+                return;
+            } else {
+                if(!$rootScope.unitsIndexedByAbbreviatedName[$scope.state.measurement.abbreviatedUnitName]){
+                    if (typeof Bugsnag !== "undefined") {
+                        Bugsnag.notify('Cannot get unit id', 'abbreviated unit name is ' +
+                            $scope.state.measurement.abbreviatedUnitName + ' and $rootScope.unitsIndexedByAbbreviatedName are ' +
+                                JSON.stringify($rootScope.unitsIndexedByAbbreviatedName), {}, "error");
+                    }
+                } else {
+                    $scope.state.measurement.unitId =
+                        $rootScope.unitsIndexedByAbbreviatedName[$scope.state.measurement.abbreviatedUnitName].id;
+                }
             }
 
             if($rootScope.unitsIndexedByAbbreviatedName[$scope.state.measurement.abbreviatedUnitName] &&
@@ -210,7 +217,7 @@ angular.module('starter')
                 }
             }
 
-            if ($stateParams.reminderNotification) {
+            if ($stateParams.reminderNotification && $ionicHistory.backView().stateName.toLowerCase().indexOf('inbox') > -1) {
                 // If "record a different value/time was pressed", skip reminder upon save
                 var params = {
                     trackingReminderNotificationId: $stateParams.reminderNotification.id
@@ -700,7 +707,7 @@ angular.module('starter')
                 }
             });
 
-
+            console.debug('Setting hideSheet timeout');
             $timeout(function() {
                 hideSheet();
             }, 20000);

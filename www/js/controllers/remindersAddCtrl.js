@@ -17,7 +17,6 @@ angular.module('starter')
             selectedFrequency : 'Daily',
             selectedReminder : false,
             //reminderEndTimeEpochTime : null,
-            firstReminderStartTimeLocal : $rootScope.user.earliestReminderTime,
             //reminderEndTimeStringLocal : null,
             measurementSynonymSingularLowercase : 'measurement',
             defaultValueLabel : 'Default Value',
@@ -26,7 +25,12 @@ angular.module('starter')
             selectedStopTrackingDate: null
         };
 
+        if(!$rootScope.user){
+            $rootScope.user = localStorageService.getItemAsObject('user');
+        }
+
         if($rootScope.user) {
+            $scope.state.firstReminderStartTimeLocal = $rootScope.user.earliestReminderTime;
             $scope.state.firstReminderStartTimeEpochTime = timeService.getEpochTimeFromLocalString($rootScope.user.earliestReminderTime);
         } else {
             bugsnagService.reportError($state.current.name + ': $rootScope.user is not defined!');
@@ -412,6 +416,11 @@ angular.module('starter')
             }
 
             var remindersArray = [];
+
+            if(typeof $scope.state.trackingReminder.defaultValue === "undefined"){
+                $scope.state.trackingReminder.defaultValue = null;
+            }
+
             remindersArray[0] = JSON.parse(JSON.stringify($scope.state.trackingReminder));
             remindersArray[0] = configureReminderTimeSettings(remindersArray[0],
                 $scope.state.firstReminderStartTimeLocal, $scope.state.firstReminderStartTimeEpochTime);
@@ -742,7 +751,7 @@ angular.module('starter')
                 }
             });
 
-
+            console.debug('Setting hideSheet timeout');
             $timeout(function() {
                 hideSheet();
             }, 20000);

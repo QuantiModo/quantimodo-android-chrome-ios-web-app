@@ -19,6 +19,7 @@ angular.module('starter')
             $(window).resize();
 
             // Not sure what this does
+            console.debug('Setting windowResize timeout');
             $timeout(function() {
                 $scope.$broadcast('highchartsng.reflow');
             }, 10);

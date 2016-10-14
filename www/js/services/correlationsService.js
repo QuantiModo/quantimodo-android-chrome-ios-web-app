@@ -33,9 +33,9 @@ angular.module('starter')
                 QuantiModo.postVote(correlationObject, function(response){
                     console.debug("postVote response", response);
                     deferred.resolve(true);
-                }, function(response){
-                    console.error("postVote response", response);
-                    deferred.reject(false);
+                }, function(error){
+                    console.error("postVote response", error);
+                    deferred.reject(error);
                 });
                 return deferred.promise;
             },
@@ -45,9 +45,9 @@ angular.module('starter')
                 QuantiModo.deleteVote(correlationObject, function(response){
                     console.debug("deleteVote response", response);
                     deferred.resolve(true);
-                }, function(response){
-                    console.error("deleteVote response", response);
-                    deferred.reject(false);
+                }, function(error){
+                    console.error("deleteVote response", error);
+                    deferred.reject(error);
                 });
                 return deferred.promise;
             }
