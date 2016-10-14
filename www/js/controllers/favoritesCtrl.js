@@ -45,7 +45,12 @@ angular.module('starter')
 					$scope.state.bloodPressure.reminderId = $scope.state.favorites[i].id;
 					$scope.state.favorites[i].hide = true;
 				}
+				if(typeof $scope.state.favorites[i].defaultValue === "undefined"){
+					$scope.state.favorites[i].defaultValue = null;
+				}
 			}
+			//Stop the ion-refresher from spinning
+			$scope.$broadcast('scroll.refreshComplete');
 		}
 
 		$scope.favoriteAddButtonClick = function () {
@@ -173,6 +178,8 @@ angular.module('starter')
 			if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
 			if($stateParams.presetVariables){
 				$scope.state.favorites = $stateParams.presetVariables;
+				//Stop the ion-refresher from spinning
+				$scope.$broadcast('scroll.refreshComplete');
 			} else {
 				getFavoriteTrackingRemindersFromLocalStorage();
 			}

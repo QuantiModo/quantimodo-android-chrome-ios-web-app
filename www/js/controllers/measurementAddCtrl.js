@@ -217,7 +217,7 @@ angular.module('starter')
                 }
             }
 
-            if ($stateParams.reminderNotification) {
+            if ($stateParams.reminderNotification && $ionicHistory.backView().stateName.toLowerCase().indexOf('inbox') > -1) {
                 // If "record a different value/time was pressed", skip reminder upon save
                 var params = {
                     trackingReminderNotificationId: $stateParams.reminderNotification.id

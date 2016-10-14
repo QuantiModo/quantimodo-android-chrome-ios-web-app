@@ -416,6 +416,11 @@ angular.module('starter')
             }
 
             var remindersArray = [];
+
+            if(typeof $scope.state.trackingReminder.defaultValue === "undefined"){
+                $scope.state.trackingReminder.defaultValue = null;
+            }
+
             remindersArray[0] = JSON.parse(JSON.stringify($scope.state.trackingReminder));
             remindersArray[0] = configureReminderTimeSettings(remindersArray[0],
                 $scope.state.firstReminderStartTimeLocal, $scope.state.firstReminderStartTimeEpochTime);
