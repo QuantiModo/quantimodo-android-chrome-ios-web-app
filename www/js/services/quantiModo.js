@@ -92,8 +92,8 @@ angular.module('starter')
         };
 
         var canWeMakeRequestYet = function(type, baseURL, minimumSecondsBetweenRequests){
-            if(minimumSecondsBetweenRequests === null){
-                minimumSecondsBetweenRequests = 1;
+            if(!minimumSecondsBetweenRequests){
+               return true;
             }
             var requestVariableName = 'last_' + type + '_' + baseURL.replace('/', '_') + '_request_at';
             if(!$rootScope[requestVariableName]){
@@ -247,7 +247,7 @@ angular.module('starter')
 
         // get Measurements for user
         var getMeasurements = function(params, successHandler, errorHandler){
-            var minimumSecondsBetweenRequests = 0.01;
+            var minimumSecondsBetweenRequests = 0;
             QuantiModo.get('api/measurements',
                 ['variableName', 'sort', 'startTimeEpoch', 'endTime', 'groupingWidth', 'groupingTimezone', 'source', 'unit','limit','offset','lastUpdated'],
                 params,
@@ -291,7 +291,7 @@ angular.module('starter')
         };
 
         QuantiModo.getV1Measurements = function(params, successHandler, errorHandler){
-            var minimumSecondsBetweenRequests = 0.01;
+            var minimumSecondsBetweenRequests = 0;
             QuantiModo.get('api/v1/measurements',
                 ['source', 'limit', 'offset', 'sort', 'id', 'variableCategoryName', 'variableName'],
                 params,
@@ -302,7 +302,7 @@ angular.module('starter')
         };
 
         QuantiModo.getV1MeasurementsDaily = function(params, successHandler, errorHandler){
-            var minimumSecondsBetweenRequests = 0.01;
+            var minimumSecondsBetweenRequests = 0;
             QuantiModo.get('api/v1/measurements/daily',
                 ['source', 'limit', 'offset', 'sort', 'id', 'variableCategoryName', 'variableName'],
                 params,
