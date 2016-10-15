@@ -47,15 +47,6 @@ angular.module('starter')
 
         // User wants to login
         $scope.login = function(register) {
-
-            var seconds  = 30;
-            console.debug('Setting login timeout for ' + seconds + ' seconds');
-            $timeout(function () {
-                if(!$rootScope.user){
-                    bugsnagService.reportError('$scope.login: Could not get user within 30 seconds!');
-                    //utilsService.showAlert('Facebook Login Issue', 'Please try to sign in using on of the other methods below');
-                }
-            }, seconds * 1000);
             
             $scope.showLoader('Logging you in...');
             localStorageService.setItem('isWelcomed', true);
@@ -245,6 +236,10 @@ angular.module('starter')
         };
 
         $scope.googleLogin = function(register){
+            // For debugging Google login
+            // var tokenForApi = 'ya29.CjF7A0faph6-8m91vuLDZVnKZqXeC4JjGWfubyV6PmgTqZmjkPohGx2tXVNpSjn4euhV';
+            // $scope.nativeSocialLogin('google', tokenForApi);
+            // return;
 
             var seconds  = 30;
             console.debug('Setting googleLogin timeout for ' + seconds + ' seconds');
@@ -376,7 +371,7 @@ angular.module('starter')
         var oAuthBrowserLogin = function (register) {
             //$scope.showLoader();
             var url = QuantiModo.generateV1OAuthUrl(register);
-            console.debug("Going to try logging by opening new tab at url " + url);
+            console.debug("Going to try logging in by opening new tab at url " + url);
 
             var ref = window.open(url, '_blank');
 

@@ -26,11 +26,15 @@ angular.module('starter')
                 return;
             }
 
-            if(status === 401 && !doNotSendToLogin){
-                console.warn('QuantiModo.errorHandler: Sending to login because we got 401 with request ' +
-                    JSON.stringify(request));
-                $rootScope.sendToLogin();
-                return;
+            if(status === 401){
+                if(doNotSendToLogin){
+                    return;
+                } else {
+                    console.warn('QuantiModo.errorHandler: Sending to login because we got 401 with request ' +
+                        JSON.stringify(request));
+                    $rootScope.sendToLogin();
+                    return;
+                }
             }
             var groupingHash;
             if(!data){
@@ -88,8 +92,8 @@ angular.module('starter')
         };
 
         var canWeMakeRequestYet = function(type, baseURL, minimumSecondsBetweenRequests){
-            if(minimumSecondsBetweenRequests === null){
-                minimumSecondsBetweenRequests = 1;
+            if(!minimumSecondsBetweenRequests){
+               return true;
             }
             var requestVariableName = 'last_' + type + '_' + baseURL.replace('/', '_') + '_request_at';
             if(!$rootScope[requestVariableName]){
@@ -243,7 +247,7 @@ angular.module('starter')
 
         // get Measurements for user
         var getMeasurements = function(params, successHandler, errorHandler){
-            var minimumSecondsBetweenRequests = 0.01;
+            var minimumSecondsBetweenRequests = 0;
             QuantiModo.get('api/measurements',
                 ['variableName', 'sort', 'startTimeEpoch', 'endTime', 'groupingWidth', 'groupingTimezone', 'source', 'unit','limit','offset','lastUpdated'],
                 params,
@@ -267,7 +271,7 @@ angular.module('starter')
                 } else {
                     localStorageService.getItem('user', function(user){
                         if(!user){
-                            defer.reject(false);
+                            defer.reject('No user in local storage!');
                         } else {
                             response_array = response_array.concat(response);
                             params.offset+=200;
@@ -287,7 +291,7 @@ angular.module('starter')
         };
 
         QuantiModo.getV1Measurements = function(params, successHandler, errorHandler){
-            var minimumSecondsBetweenRequests = 0.01;
+            var minimumSecondsBetweenRequests = 0;
             QuantiModo.get('api/v1/measurements',
                 ['source', 'limit', 'offset', 'sort', 'id', 'variableCategoryName', 'variableName'],
                 params,
@@ -298,7 +302,7 @@ angular.module('starter')
         };
 
         QuantiModo.getV1MeasurementsDaily = function(params, successHandler, errorHandler){
-            var minimumSecondsBetweenRequests = 0.01;
+            var minimumSecondsBetweenRequests = 0;
             QuantiModo.get('api/v1/measurements/daily',
                 ['source', 'limit', 'offset', 'sort', 'id', 'variableCategoryName', 'variableName'],
                 params,
@@ -778,29 +782,41 @@ angular.module('starter')
                 return deferred.promise;
             }
 
-            if(utilsService.getClientId() === 'oAuthDisabled') {
-                //console.debug('getAccessTokenFromAnySource: oAuthDisabled so we do not need an access token');
-                deferred.resolve();
-                return deferred.promise;
-            }
-
             var now = new Date().getTime();
-            var expiresAt = localStorageService.getItemSync('expiresAt');
+            var expiresAtMilliseconds = localStorageService.getItemSync('expiresAtMilliseconds');
             var refreshToken = localStorageService.getItemSync('refreshToken');
             var accessToken = localStorageService.getItemSync('accessToken');
 
             console.debug('QuantiModo.getOrRefreshAccessTokenOrLogin: Values from local storage:', JSON.stringify({
-                expiresAt: expiresAt,
+                expiresAtMilliseconds: expiresAtMilliseconds,
                 refreshToken: refreshToken,
                 accessToken: accessToken
             }));
 
-            if (now < expiresAt) {
+            if(refreshToken && !expiresAtMilliseconds){
+                var errorMessage = 'We have a refresh token but expiresAtMilliseconds is ' + expiresAtMilliseconds +
+                    '.  How did this happen?';
+                Bugsnag.notify(errorMessage,
+                    localStorageService.getItemSync('user'),
+                    {groupingHash: errorMessage},
+                    "error");
+            }
+
+            if (accessToken && now < expiresAtMilliseconds) {
                 console.debug('QuantiModo.getOrRefreshAccessTokenOrLogin: Current access token should not be expired. Resolving token using one from local storage');
                 deferred.resolve(accessToken);
-            } else if (refreshToken) {
-                QuantiModo.refreshAccessToken(refreshToken);
+            } else if (refreshToken && expiresAtMilliseconds && utilsService.getClientId() !== 'oAuthDisabled') {
+                console.debug(now + ' (now) is greater than expiresAt ' + expiresAtMilliseconds);
+                QuantiModo.refreshAccessToken(refreshToken, deferred);
+            } else if(utilsService.getClientId() === 'oAuthDisabled') {
+                    //console.debug('getAccessTokenFromAnySource: oAuthDisabled so we do not need an access token');
+                    deferred.resolve();
+                    return deferred.promise;
+            } else {
+                console.warn('Could not get or refresh access token');
+                deferred.resolve();
             }
+
             return deferred.promise;
         };
 
@@ -829,47 +845,51 @@ angular.module('starter')
             });
 
         };
-
-        // extract values from token response and saves in local storage
+        
         QuantiModo.saveAccessTokenInLocalStorage = function (accessResponse) {
-            if(accessResponse){
-                var accessToken = accessResponse.accessToken || accessResponse.access_token;
-                if(accessToken) {
-                    localStorageService.setItem('accessToken', accessToken);
-                } else {
-                    console.warn('No access token provided to QuantiModo.saveAccessTokenInLocalStorage');
-                    return;
-                }
-
-                var refreshToken = accessResponse.refreshToken || accessResponse.refresh_token;
-                if(refreshToken) {
-                    localStorageService.setItem('refreshToken', refreshToken);
-                }
-
-                var expiresAt = accessResponse.expires || accessResponse.expiresAt || accessResponse.accessTokenExpires;
-                if(expiresAt){
-                    localStorageService.setItem('expiresAt', expiresAt);
-                    return accessToken;
-                }
-
-                // calculate expires at
-                var expiresIn = accessResponse.expiresIn || accessResponse.expires_in;
-
-                expiresAt = new Date().getTime() + parseInt(expiresIn, 10) * 1000 - 60000;
-                console.debug("Expires in is " + expiresIn + '. This results in expiresAt being: ' + expiresAt);
-
-                // save in localStorage
-                if(expiresAt) {
-                    localStorageService.setItem('expiresAt', expiresAt);
-                }
+            var accessToken = accessResponse.accessToken || accessResponse.access_token;
+            if (accessToken) {
                 $rootScope.accessToken = accessToken;
-                return accessToken;
+                localStorageService.setItem('accessToken', accessToken);
             } else {
-                return "";
+                console.error('No access token provided to QuantiModo.saveAccessTokenInLocalStorage');
+                return;
             }
+
+            var refreshToken = accessResponse.refreshToken || accessResponse.refresh_token;
+            if (refreshToken) {
+                localStorageService.setItem('refreshToken', refreshToken);
+            }
+
+            var expiresAt = accessResponse.expires || accessResponse.expiresAt || accessResponse.accessTokenExpires;
+            var expiresAtMilliseconds;
+            var bufferInMilliseconds = 86400 * 1000;  // Refresh a day in advance
+
+            if (typeof expiresAt === 'string' || expiresAt instanceof String){
+                expiresAtMilliseconds = new Date(expiresAt).getTime();
+            } else if (expiresAt === parseInt(expiresAt, 10) && expiresAt < new Date().getTime()) {
+                expiresAtMilliseconds = expiresAt * 1000;
+            } else if(expiresAt === parseInt(expiresAt, 10) && expiresAt > new Date().getTime()){
+                expiresAtMilliseconds = expiresAt;
+            } else {
+                // calculate expires at
+                var expiresInSeconds = accessResponse.expiresIn || accessResponse.expires_in;
+                expiresAtMilliseconds = new Date().getTime() + expiresInSeconds * 1000;
+                console.debug("Expires in is " + expiresInSeconds + ' seconds. This results in expiresAtMilliseconds being: ' + expiresAtMilliseconds);
+            }
+
+            if(expiresAtMilliseconds){
+                localStorageService.setItem('expiresAtMilliseconds', expiresAtMilliseconds - bufferInMilliseconds);
+                return accessToken;
+            }
+
+            var groupingHash = 'Access token expiresAt not provided in recognizable form!';
+            console.error(groupingHash);
+            Bugsnag.notify(groupingHash,
+                'expiresAt is ' + expiresAt + ' || accessResponse is ' + JSON.stringify(accessResponse) + ' and user is ' + localStorageService.getItemSync('user'),
+                {groupingHash: groupingHash},
+                "error");
         };
-
-
 
         QuantiModo.convertToObjectIfJsonString = function (stringOrObject) {
             try {

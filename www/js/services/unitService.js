@@ -47,8 +47,8 @@ angular.module('starter')
                         $rootScope.abbreviatedUnitNamesIndexedByUnitId[units[i].id] = $rootScope.unitObjects[i].abbreviatedName;
                     }
                     deferred.resolve(units);
-                }, function(){
-                    deferred.reject(false);
+                }, function(error){
+                    deferred.reject(error);
                 });
                 return deferred.promise;
             }

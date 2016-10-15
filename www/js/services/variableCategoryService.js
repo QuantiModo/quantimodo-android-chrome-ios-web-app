@@ -152,8 +152,8 @@ angular.module('starter')
                 QuantiModo.getVariableCategories(function(vars){
                     localStorageService.setItem('variableCategories',JSON.stringify(vars));
                     deferred.resolve(vars);
-                }, function(){
-                    deferred.reject(false);
+                }, function(error){
+                    deferred.reject(error);
                 });
 
                 return deferred.promise;

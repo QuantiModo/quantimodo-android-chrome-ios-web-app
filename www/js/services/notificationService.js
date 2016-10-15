@@ -928,13 +928,9 @@ angular.module('starter')
 
             // cancel all existing notifications
         notificationService.cancelAllNotifications = function(){
-
             var deferred = $q.defer();
             if(typeof cordova !== "undefined"){
                 $ionicPlatform.ready(function () {
-                    if(!notificationService.shouldWeUseIonicLocalNotifications()) {
-                        return;
-                    }
                     cordova.plugins.notification.local.cancelAll(function () {
                         console.debug('cancelAllNotifications: notifications have been cancelled');
                         cordova.plugins.notification.local.getAll(function (notifications) {

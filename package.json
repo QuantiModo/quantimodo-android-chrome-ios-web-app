@@ -15,7 +15,7 @@
     "event-stream": "^3.3.2",
     "express": "^4.13.3",
     "glob": "^5.0.15",
-    "gulp": "^3.5.6",
+    "gulp": "3.5.6",
     "gulp-angular-templatecache": "1.9.1",
     "gulp-callback": "0.0.3",
     "gulp-change": "^1.0.0",
