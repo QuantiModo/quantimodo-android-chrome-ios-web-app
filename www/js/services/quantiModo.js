@@ -874,13 +874,12 @@ angular.module('starter')
             } else {
                 // calculate expires at
                 var expiresInSeconds = accessResponse.expiresIn || accessResponse.expires_in;
-                expiresAtMilliseconds = new Date().getTime() + expiresInSeconds * 1000 - bufferInMilliseconds;
+                expiresAtMilliseconds = new Date().getTime() + expiresInSeconds * 1000;
                 console.debug("Expires in is " + expiresInSeconds + ' seconds. This results in expiresAtMilliseconds being: ' + expiresAtMilliseconds);
             }
 
             if(expiresAtMilliseconds){
-                expiresAtMilliseconds = expiresAtMilliseconds - bufferInMilliseconds;
-                localStorageService.setItem('expiresAtMilliseconds', expiresAtMilliseconds);
+                localStorageService.setItem('expiresAtMilliseconds', expiresAtMilliseconds - bufferInMilliseconds);
                 return accessToken;
             }
 
