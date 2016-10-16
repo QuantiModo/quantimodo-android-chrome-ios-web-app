@@ -18,10 +18,10 @@ angular.module('fabric', ['ng']).config(['$provide', function($provide) {
           Bugsnag.notify("ERROR: " + message, "Stacktrace: " + stacktrace, {}, "error");
       }
 
-      if(typeof navigator !== 'undefined' && typeof navigator.crashlytics !== 'undefined'){
-        navigator.crashlytics.logException("ERROR: "+message+", stacktrace: "+stacktrace);
+      if(typeof window.fabric !== 'undefined' && typeof window.fabric.Crashlytics !== 'undefined'){
+        window.fabric.Crashlytics.addLog("ERROR: "+message+", stacktrace: "+stacktrace);
       } else {
-        console.debug('navigator.crashlytics is undefined!');
+        console.debug('window.fabric.Crashlytics is undefined!');
       }
     };
   }]);

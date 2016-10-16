@@ -101,8 +101,8 @@ cordova plugin add https://github.com/mikepsinn/cordova-plugin-googleplus.git --
 #echo "cordova plugin add cordova-fabric-plugin --variable FABRIC_API_KEY=${FABRIC_API_KEY} --variable FABRIC_API_SECRET=${FABRIC_API_SECRET} for $LOWERCASE_APP_NAME Android app..."
 #cordova plugin add cordova-fabric-plugin --variable FABRIC_API_KEY=${FABRIC_API_KEY} --variable FABRIC_API_SECRET=${FABRIC_API_SECRET}
 
-echo "ionic plugin add https://github.com/DrMoriarty/cordova-fabric-crashlytics-plugin -–variable CRASHLYTICS_API_KEY=${FABRIC_API_KEY} –-variable CRASHLYTICS_API_SECRET=${FABRIC_API_SECRET}  for $LOWERCASE_APP_NAME Android app..."
-ionic plugin add https://github.com/DrMoriarty/cordova-fabric-crashlytics-plugin -–variable CRASHLYTICS_API_KEY=${FABRIC_API_KEY} –-variable CRASHLYTICS_API_SECRET=${FABRIC_API_SECRET}
+echo "cordova plugin add cordova-fabric-plugin -–variable FABRIC_API_KEY=${FABRIC_API_KEY} –-variable FABRIC_API_SECRET=${FABRIC_API_SECRET} for $LOWERCASE_APP_NAME Android app..."
+cordova plugin add cordova-fabric-plugin -–variable FABRIC_API_KEY=${FABRIC_API_KEY} –-variable FABRIC_API_SECRET=${FABRIC_API_SECRET}
 
 source ${IONIC_PATH}/scripts/build_scripts/push_plugin_install.sh
 
