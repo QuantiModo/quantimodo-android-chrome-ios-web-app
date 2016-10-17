@@ -135,5 +135,10 @@
                 {{appName}} Version {{appVersion}}
             </a>
         </div>
+        <div ng-if="deviceToken" class="list card">
+            <a class="item ">
+                Push Notification Device Token {{deviceToken}}
+            </a>
+        </div>
     </ion-content>
 </ion-view>
