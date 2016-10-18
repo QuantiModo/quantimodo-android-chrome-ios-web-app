@@ -17,6 +17,9 @@ angular.module('starter')
             if(data.message){
                 console.warn(data.message);
             }
+            if(!$rootScope.user && baseURL.indexOf('user') === -1){
+                QuantiModo.refreshUser();
+            }
         };
 
         QuantiModo.errorHandler = function(data, status, headers, config, request, doNotSendToLogin){
