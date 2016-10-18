@@ -27,6 +27,7 @@ angular.module('starter')
 	    };
 
 		function getFavoriteTrackingRemindersFromLocalStorage(){
+			$scope.state.favorites = [];
 			var favorites = localStorageService.getElementsFromItemWithFilters('trackingReminders', 'reminderFrequency', 0);
 			for(i = 0; i < favorites.length; i++){
 				if($stateParams.variableCategoryName && $stateParams.variableCategoryName !== 'Anything'){
