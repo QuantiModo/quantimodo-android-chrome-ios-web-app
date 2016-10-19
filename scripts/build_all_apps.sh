@@ -250,6 +250,31 @@ if [ -z ${BUILD_MEDTLC} ];
         fi
 fi
 
+export APPLE_ID="1115037661"
+export APP_IDENTIFIER="com.quantimodo.epharmix"
+export APP_DISPLAY_NAME="Epharmix"
+export LOWERCASE_APP_NAME=epharmix
+export APP_DESCRIPTION=Improving Health Outcomes
+
+if [ -z ${BUILD_EPHARMIX} ];
+    then
+        echo "NOT BUILDING ${APP_DISPLAY_NAME}"
+    else
+        source ${INTERMEDIATE_PATH}/scripts/build_scripts/01_prepare_project.sh
+        source ${INTERMEDIATE_PATH}/scripts/build_scripts/03_build_android.sh
+        source ${INTERMEDIATE_PATH}/scripts/build_scripts/02_build_chrome.sh
+        #source ${INTERMEDIATE_PATH}/scripts/build_scripts/04_build_ios.sh
+
+        # We do this at this higher level so Jenkins can detect the exit code
+        if [ -f ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${LOWERCASE_APP_NAME}-android-armv7-release-signed.apk ];
+        then
+           echo echo "${LOWERCASE_APP_NAME} Android app is ready in ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${LOWERCASE_APP_NAME}-android-armv7-release-signed.apk"
+        else
+           echo "ERROR: File ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${LOWERCASE_APP_NAME}-android-armv7-release-signed.apk does not exist. Build FAILED"
+           exit 1
+        fi
+fi
+
 sudo chmod -R 777 ${DROPBOX_PATH}/QuantiModo/apps
 
 exit 0
