@@ -836,7 +836,7 @@ angular.module('starter')
                 // update local storage
                 if (data.error) {
                     console.debug('Token refresh failed: ' + data.error);
-                    deferred.reject('refresh failed');
+                    deferred.reject('Token refresh failed: ' + data.error);
                 } else {
                     var accessTokenRefreshed = QuantiModo.saveAccessTokenInLocalStorage(data);
                     console.debug('QuantiModo.refreshAccessToken: access token successfully updated from api server: ' + JSON.stringify(data));
