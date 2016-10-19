@@ -27,6 +27,7 @@ angular.module('starter')
 	    };
 
 		function getFavoriteTrackingRemindersFromLocalStorage(){
+			$scope.state.favorites = [];
 			var favorites = localStorageService.getElementsFromItemWithFilters('trackingReminders', 'reminderFrequency', 0);
 			for(i = 0; i < favorites.length; i++){
 				if($stateParams.variableCategoryName && $stateParams.variableCategoryName !== 'Anything'){
@@ -204,7 +205,7 @@ angular.module('starter')
 
 			var actionMenuButtons = [
 					{ text: '<i class="icon ion-gear-a"></i>Change Default Value' },
-					{ text: '<i class="icon ion-edit"></i>Different Value/Time/Note' },
+					{ text: '<i class="icon ion-edit"></i>Other Value/Time/Note' },
 					{ text: '<i class="icon ion-arrow-graph-up-right"></i>Charts'},
 					{ text: '<i class="icon ion-ios-list-outline"></i>' + 'History'},
 					{ text: '<i class="icon ion-settings"></i>' + 'Variable Settings'},

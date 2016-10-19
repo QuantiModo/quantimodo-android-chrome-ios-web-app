@@ -1,7 +1,7 @@
 #!/bin/bash
 
-export IONIC_APP_VERSION_NUMBER=2.0.6
-export IONIC_IOS_APP_VERSION_NUMBER="2.0.6.0"
+export IONIC_APP_VERSION_NUMBER=2.0.7
+export IONIC_IOS_APP_VERSION_NUMBER="2.0.7.0"
 
 export RED='\033[0;31m'
 export GREEN='\033[0;32m'
@@ -95,7 +95,7 @@ cordova plugin add cordova-plugin-facebook4@1.7.1 --save --variable APP_ID="${FA
 #echo "gulp addFacebookPlugin for $LOWERCASE_APP_NAME Android app..."
 #gulp addGooglePlusPlugin
 
-echo "cordova plugin add https://github.com/mikepsinn/cordova-plugin-googleplus.git REVERSED_CLIENT_ID=${REVERSED_CLIENT_ID} for $LOWERCASE_APP_NAME Android app..."
+echo "cordova plugin add https://github.com/mikepsinn/cordova-plugin-googleplus.git --variable REVERSED_CLIENT_ID=${REVERSED_CLIENT_ID} for $LOWERCASE_APP_NAME Android app..."
 cordova plugin add https://github.com/mikepsinn/cordova-plugin-googleplus.git --variable REVERSED_CLIENT_ID=${REVERSED_CLIENT_ID}
 
 #echo "cordova plugin add cordova-fabric-plugin --variable FABRIC_API_KEY=${FABRIC_API_KEY} --variable FABRIC_API_SECRET=${FABRIC_API_SECRET} for $LOWERCASE_APP_NAME Android app..."
@@ -232,6 +232,31 @@ export LOWERCASE_APP_NAME=medtlc
 export APP_DESCRIPTION=Medication Track Learn Connect
 
 if [ -z ${BUILD_MEDTLC} ];
+    then
+        echo "NOT BUILDING ${APP_DISPLAY_NAME}"
+    else
+        source ${INTERMEDIATE_PATH}/scripts/build_scripts/01_prepare_project.sh
+        source ${INTERMEDIATE_PATH}/scripts/build_scripts/03_build_android.sh
+        source ${INTERMEDIATE_PATH}/scripts/build_scripts/02_build_chrome.sh
+        #source ${INTERMEDIATE_PATH}/scripts/build_scripts/04_build_ios.sh
+
+        # We do this at this higher level so Jenkins can detect the exit code
+        if [ -f ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${LOWERCASE_APP_NAME}-android-armv7-release-signed.apk ];
+        then
+           echo echo "${LOWERCASE_APP_NAME} Android app is ready in ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${LOWERCASE_APP_NAME}-android-armv7-release-signed.apk"
+        else
+           echo "ERROR: File ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${LOWERCASE_APP_NAME}-android-armv7-release-signed.apk does not exist. Build FAILED"
+           exit 1
+        fi
+fi
+
+export APPLE_ID="1115037661"
+export APP_IDENTIFIER="com.quantimodo.epharmix"
+export APP_DISPLAY_NAME="Epharmix"
+export LOWERCASE_APP_NAME=epharmix
+export APP_DESCRIPTION=Improving Health Outcomes
+
+if [ -z ${BUILD_EPHARMIX} ];
     then
         echo "NOT BUILDING ${APP_DISPLAY_NAME}"
     else

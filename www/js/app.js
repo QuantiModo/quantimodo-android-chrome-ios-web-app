@@ -64,8 +64,10 @@ angular.module('starter',
                  var newDeviceToken = registerResponse.registrationId;
                  console.debug("Got device token for push notifications: " + registerResponse.registrationId);
                  var deviceTokenOnServer = localStorageService.getItemSync('deviceTokenOnServer');
+                 $rootScope.deviceToken = deviceTokenOnServer;
                  console.debug('deviceTokenOnServer from localStorage is ' + deviceTokenOnServer);
                  if(deviceTokenOnServer !== registerResponse.registrationId) {
+                     $rootScope.deviceToken = newDeviceToken;
                      localStorageService.setItem('deviceTokenToSync', newDeviceToken);
                      console.debug('New push device token does not match push device token on server so saving to localStorage to sync after login');
                  }
@@ -272,7 +274,7 @@ angular.module('starter',
                 return;
             }
 
-            $rootScope.appVersion = "2.0.6.0";
+            $rootScope.appVersion = "2.0.7.0";
             $rootScope.appName = config.appSettings.appName;
 
             if (typeof Bugsnag !== "undefined") {

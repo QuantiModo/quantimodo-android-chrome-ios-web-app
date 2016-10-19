@@ -929,7 +929,7 @@ angular.module('starter')
             // cancel all existing notifications
         notificationService.cancelAllNotifications = function(){
             var deferred = $q.defer();
-            if(typeof cordova !== "undefined"){
+            if(typeof cordova !== "undefined" && typeof cordova.plugins.notification !== "undefined"){
                 $ionicPlatform.ready(function () {
                     cordova.plugins.notification.local.cancelAll(function () {
                         console.debug('cancelAllNotifications: notifications have been cancelled');
@@ -946,6 +946,7 @@ angular.module('starter')
                 });
             } else {
                 console.debug('cancelAllNotifications: Chrome and cordova are not defined.');
+                deferred.resolve();
             }
 
             return deferred.promise;

@@ -34,14 +34,22 @@
             <div class="item item-divider">
                 <i class="icon ion-android-notifications-none"></i>
                 &nbsp
-                Device Notifications
+                Reminder Notifications
             </div>
             <ion-toggle ng-model="user.combineNotifications"
                         ng-change="combineNotificationChange()">
                 Combine Notifications
             </ion-toggle>
+            <ion-toggle ng-model="user.sendReminderNotificationEmails"
+                        ng-change="sendReminderNotificationEmailsChange()">
+                <i class="icon ion-email"></i>
+                &nbsp
+                Remind Me By Email
+            </ion-toggle>
             <label class="item item-input">
                 <div class="input-label" >
+                    <i class="icon ion-ios-sunny-outline"></i>
+                    &nbsp
                     Earliest Notification Time
                 </div>
                 <button class="button button-block up-top"
@@ -52,6 +60,8 @@
             </label>
             <label class="item item-input">
                 <div class="input-label" >
+                    <i class="icon ion-ios-moon"></i>
+                    &nbsp
                     Latest Notification Time
                 </div>
                 <button class="button button-block up-top"
@@ -130,9 +140,22 @@
             </div>
         </div>
 
+        <div ng-if="user" class="card sign-in" >
+            <div class="item item-text-wrap">
+                <button class="button button-block icon-left ion-refresh button-assertive" ng-click="refreshUser()">
+                    Refresh User Settings
+                </button>
+            </div>
+        </div>
+
         <div class="list card">
             <a class="item ">
                 {{appName}} Version {{appVersion}}
+            </a>
+        </div>
+        <div ng-if="deviceToken" class="list card">
+            <a class="item ">
+                Push Notification Device Token {{deviceToken}}
             </a>
         </div>
     </ion-content>

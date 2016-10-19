@@ -241,6 +241,7 @@ angular.module('starter')
             // $scope.nativeSocialLogin('google', tokenForApi);
             // return;
 
+            /* Too many undesirable redirects
             var seconds  = 30;
             console.debug('Setting googleLogin timeout for ' + seconds + ' seconds');
             $timeout(function () {
@@ -251,6 +252,7 @@ angular.module('starter')
                     //utilsService.showAlert('Facebook Login Issue', 'Please try to sign in using on of the other methods below');
                 }
             }, seconds * 1000);
+            */
             $scope.showLoader('Logging you in...');
             document.addEventListener('deviceready', deviceReady, false);
             function deviceReady() {
