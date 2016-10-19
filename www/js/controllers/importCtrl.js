@@ -28,6 +28,12 @@ angular.module('starter')
 					$ionicLoading.hide().then(function(){
 						console.debug("The loading indicator is now hidden");
 					});
+				}, function(response){
+					console.error(response);
+					$scope.$broadcast('scroll.refreshComplete');
+					$ionicLoading.hide().then(function(){
+						console.debug("The loading indicator is now hidden");
+					});
 				});
 		};
 
