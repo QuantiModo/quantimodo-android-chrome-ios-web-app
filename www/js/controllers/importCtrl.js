@@ -23,6 +23,8 @@ angular.module('starter')
 			connectorsService.refreshConnectors()
 				.then(function(connectors){
 					$scope.connectors = connectors;
+					//Stop the ion-refresher from spinning
+					$scope.$broadcast('scroll.refreshComplete');
 					$ionicLoading.hide().then(function(){
 						console.debug("The loading indicator is now hidden");
 					});
@@ -74,6 +76,8 @@ angular.module('starter')
 				.then(function(connectors){
 					$scope.connectors = connectors;
                     if(connectors) {
+						//Stop the ion-refresher from spinning
+						$scope.$broadcast('scroll.refreshComplete');
                         $ionicLoading.hide().then(function(){
                             console.debug("The loading indicator is now hidden");
                         });
@@ -541,7 +545,5 @@ angular.module('starter')
 		$scope.getItHere = function (connector){
 			window.open(connector.getItUrl, '_blank');
 		};
-
-
 
 	});
