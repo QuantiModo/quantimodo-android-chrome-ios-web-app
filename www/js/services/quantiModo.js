@@ -1111,6 +1111,10 @@ angular.module('starter')
             if (deviceTokenToSync){
                 QuantiModo.registerDeviceToken(deviceTokenToSync);
             }
+            if($rootScope.sendReminderNotificationEmails){
+                QuantiModo.updateUserSettingsDeferred({sendReminderNotificationEmails: $rootScope.sendReminderNotificationEmails});
+                $rootScope.sendReminderNotificationEmails = null;
+            }
         };
 
         QuantiModo.refreshUser = function(){
@@ -1130,7 +1134,7 @@ angular.module('starter')
                 QuantiModo.refreshUser().then(function(user){
                     console.debug('updateUserSettingsDeferred got this user: ' + JSON.stringify(user));
                 }, function(error){
-                    console.error('QuantiModo.updateUserSettingsDeferred could not refresh user because ' + error);
+                    console.error('QuantiModo.updateUserSettingsDeferred could not refresh user because ' + JSON.stringify(error));
                 });
                 deferred.resolve(response);
             }, function(response){

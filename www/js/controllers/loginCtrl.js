@@ -89,7 +89,7 @@ angular.module('starter')
                             $rootScope.$broadcast('callAppCtrlInit');
                             $state.go(config.appSettings.defaultState);
                         }, function(error){
-                            console.error($state.current.name + ' could not refresh user because ' + error);
+                            console.error($state.current.name + ' could not refresh user because ' + JSON.stringify(error));
                         });
                     }
                 })
