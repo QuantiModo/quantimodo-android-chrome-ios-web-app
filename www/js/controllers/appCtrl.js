@@ -409,7 +409,7 @@ angular.module('starter')
                 QuantiModo.refreshUser().then(function(){
                     $scope.syncEverything();
                 }, function(error){
-                    console.error('AppCtrl.init could not refresh user because ' + error);
+                    console.error('AppCtrl.init could not refresh user because ' + JSON.stringify(error));
                 });
             }
 
