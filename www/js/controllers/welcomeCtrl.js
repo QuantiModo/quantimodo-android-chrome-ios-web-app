@@ -27,7 +27,8 @@ angular.module('starter')
             }
         );
 
-        $scope.subscribeNotification = true;
+        $scope.sendReminderNotificationEmails = true;
+        $rootScope.sendDailyEmailReminder = true;
 
         $scope.saveIntervalAndGoToLogin = function(primaryOutcomeRatingFrequencyDescription){
             $scope.saveInterval(primaryOutcomeRatingFrequencyDescription);

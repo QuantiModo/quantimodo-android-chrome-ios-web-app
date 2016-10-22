@@ -140,6 +140,14 @@
             </div>
         </div>
 
+        <div ng-if="user" class="card sign-in" >
+            <div class="item item-text-wrap">
+                <button class="button button-block icon-left ion-refresh button-assertive" ng-click="refreshUser()">
+                    Refresh User Settings
+                </button>
+            </div>
+        </div>
+
         <div class="list card">
             <a class="item ">
                 {{appName}} Version {{appVersion}}

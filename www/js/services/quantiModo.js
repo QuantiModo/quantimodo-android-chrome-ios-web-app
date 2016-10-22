@@ -17,6 +17,9 @@ angular.module('starter')
             if(data.message){
                 console.warn(data.message);
             }
+            if(!$rootScope.user && baseURL.indexOf('user') === -1){
+                QuantiModo.refreshUser();
+            }
         };
 
         QuantiModo.errorHandler = function(data, status, headers, config, request, doNotSendToLogin){
@@ -833,7 +836,7 @@ angular.module('starter')
                 // update local storage
                 if (data.error) {
                     console.debug('Token refresh failed: ' + data.error);
-                    deferred.reject('refresh failed');
+                    deferred.reject('Token refresh failed: ' + data.error);
                 } else {
                     var accessTokenRefreshed = QuantiModo.saveAccessTokenInLocalStorage(data);
                     console.debug('QuantiModo.refreshAccessToken: access token successfully updated from api server: ' + JSON.stringify(data));
@@ -1068,6 +1071,27 @@ angular.module('starter')
                 };
             }
 
+            var date = new Date(user.userRegistered);
+            var userRegistered = date.getTime()/1000;
+
+            if (typeof UserVoice !== "undefined") {
+                UserVoice.push(['identify', {
+                    email: user.email, // User’s email address
+                    name: user.displayName, // User’s real name
+                    created_at: userRegistered, // Unix timestamp for the date the user signed up
+                    id: user.id, // Optional: Unique id of the user (if set, this should not change)
+                    type: config.appSettings.appName + ' for ' + $rootScope.currentPlatform + ' User (Subscribed: ' + user.subscribed + ')', // Optional: segment your users by type
+                    account: {
+                        //id: 123, // Optional: associate multiple users with a single account
+                        name: config.appSettings.appName + ' for ' + $rootScope.currentPlatform + ' v' + $rootScope.appVersion, // Account name
+                        //created_at: 1364406966, // Unix timestamp for the date the account was created
+                        //monthly_rate: 9.99, // Decimal; monthly rate of the account
+                        //ltv: 1495.00, // Decimal; lifetime value of the account
+                        //plan: 'Subscribed' // Plan name for the account
+                    }
+                }]);
+            }
+
             window.intercomSettings = {
                 app_id: "uwtx2m33",
                 name: user.displayName,
@@ -1086,6 +1110,10 @@ angular.module('starter')
             }
             if (deviceTokenToSync){
                 QuantiModo.registerDeviceToken(deviceTokenToSync);
+            }
+            if($rootScope.sendReminderNotificationEmails){
+                QuantiModo.updateUserSettingsDeferred({sendReminderNotificationEmails: $rootScope.sendReminderNotificationEmails});
+                $rootScope.sendReminderNotificationEmails = null;
             }
         };
 
@@ -1106,7 +1134,7 @@ angular.module('starter')
                 QuantiModo.refreshUser().then(function(user){
                     console.debug('updateUserSettingsDeferred got this user: ' + JSON.stringify(user));
                 }, function(error){
-                    console.error('QuantiModo.updateUserSettingsDeferred could not refresh user because ' + error);
+                    console.error('QuantiModo.updateUserSettingsDeferred could not refresh user because ' + JSON.stringify(error));
                 });
                 deferred.resolve(response);
             }, function(response){

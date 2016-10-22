@@ -21,7 +21,7 @@ before_script:
 script:
 - chmod a+x ./scripts/build_scripts/04_build_ios.sh
 - #./scripts/build_scripts/04_build_ios.sh energymodo EnergyModo 1115037652 "com.quantimodo.energymodo"
-- #./scripts/build_scripts/04_build_ios.sh medtlc MedTLC 1115037661 "com.quantimodo.medtlc"
+- #./scripts/build_scripts/04_build_ios.sh medtlc MedTLC 1115037661 "com.quantimodo.medtlcapp"
 - #./scripts/build_scripts/04_build_ios.sh mindfirst "Mind First" 1024924226 "com.quantimodo.moodimodo"
 - ./scripts/build_scripts/04_build_ios.sh moodimodo MoodiModo 1046797567 "com.quantimodo.moodimodoapp"
 - #./scripts/build_scripts/04_build_ios.sh quantimodo QuantiModo 1115037060 "com.quantimodo.quantimodo"
