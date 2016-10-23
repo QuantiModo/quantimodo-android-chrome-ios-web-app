@@ -335,9 +335,13 @@ angular.module('starter',
             for (var i = 0; i < sURLVariables.length; i++)
             {
                 var sParameterName = sURLVariables[i].split('=');
-                if (sParameterName[0] === 'app')
-                {
+                if (sParameterName[0] === 'app') {
                     return sParameterName[1].split('#')[0];
+                }
+
+                if (sParameterName[0] === 'existingUser' || sParameterName[0] === 'introSeen') {
+                    window.localStorage.introSeen = true;
+                    window.localStorage.isWelcomed = true;
                 }
             }
             return false;
