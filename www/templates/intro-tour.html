@@ -33,12 +33,14 @@
                     <br>
                     <br>
                 </p>
+                </div>
+               
                 <div ng-if="introSlide.content.finalParagraph && introSlide.content.finalParagraph.buttonBarVisible" style="bottom:0;">
-                    <div class="button-bar" style="bottom:0;">
+                    <div class="button-bar" >
                         <a id="skipButtonIntro"
                            class="button"
                            ng-show="myIntro.slideIndex != introSlides.length-1 "
-                           style="background-color: {{introSlide.backgroundColor}}; color: {{introSlide.textColor}}; text-align: left"
+                           style="background-color: {{introSlide.backgroundColor}}; color: {{introSlide.textColor}};text-align: left; "
                            ng-click="myIntro.startApp()">
                             SKIP
                         </a>
@@ -57,10 +59,10 @@
                             GET STARTED
                         </a>
                     </div>
+                    
                 </div>
 
 
-            </div>
 
         </ion-slide>
 
