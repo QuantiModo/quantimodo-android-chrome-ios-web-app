@@ -274,7 +274,7 @@ angular.module('starter',
                 return;
             }
 
-            $rootScope.appVersion = "2.0.7.0";
+            $rootScope.appVersion = "2.0.8.0";
             $rootScope.appName = config.appSettings.appName;
 
             if (typeof Bugsnag !== "undefined") {
@@ -335,9 +335,13 @@ angular.module('starter',
             for (var i = 0; i < sURLVariables.length; i++)
             {
                 var sParameterName = sURLVariables[i].split('=');
-                if (sParameterName[0] === 'app')
-                {
+                if (sParameterName[0] === 'app') {
                     return sParameterName[1].split('#')[0];
+                }
+
+                if (sParameterName[0] === 'existingUser' || sParameterName[0] === 'introSeen') {
+                    window.localStorage.introSeen = true;
+                    window.localStorage.isWelcomed = true;
                 }
             }
             return false;

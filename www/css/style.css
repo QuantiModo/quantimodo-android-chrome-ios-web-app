@@ -329,6 +329,14 @@ label.item.item-input.item-text > input[type="text"] {
 
 /* Intro */
 
+.slider-pager-page {
+    color: darkgray !important;
+}
+
+.slider-pager-page.active {
+    color: white !important;
+}
+
 div.previous {
   float: left; 
   margin-left: 15px;  

@@ -249,7 +249,7 @@ angular.module('starter')
 				notificationService.cancelAllNotifications();
 				$ionicHistory.clearHistory();
 				$ionicHistory.clearCache();
-				if (utilsService.getClientId() === 'oAuthDisabled') {
+				if (utilsService.getClientId() === 'oAuthDisabled' || $rootScope.isChromeExtension) {
 					window.open(utilsService.getURL("api/v2/auth/logout"),'_blank');
 				}
 				localStorageService.setItem('deviceTokenToSync', $rootScope.deviceTokenToSync);
@@ -263,7 +263,7 @@ angular.module('starter')
 				$rootScope.deviceTokenToSync = localStorageService.getItemSync('deviceTokenOnServer');
 				QuantiModo.deleteDeviceToken($rootScope.deviceTokenToSync);
 				clearTokensFromLocalStorage();
-				if (utilsService.getClientId() === 'oAuthDisabled') {
+				if (utilsService.getClientId() === 'oAuthDisabled' || $rootScope.isChromeExtension) {
 					window.open(utilsService.getURL("api/v2/auth/logout"),'_blank');
 				}
 				localStorageService.setItem('isWelcomed', false);
