@@ -147,8 +147,8 @@ config.appSettings  = {
         },
         {
             img : {
-                width : '180',
-                height : '180',
+                width : '250',
+                height : '250',
                 url : 'img/intro/intro-make-discoveries.png'
             },
             textColor: 'white',

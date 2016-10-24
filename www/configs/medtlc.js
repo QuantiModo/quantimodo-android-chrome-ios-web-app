@@ -131,8 +131,8 @@ config.appSettings  = {
         },
         {
             img : {
-                width : '180',
-                height : '180',
+                width : '250',
+                height : '250',
                 url : 'img/pill_icon.png'
             },
             textColor: 'black',
@@ -158,8 +158,8 @@ config.appSettings  = {
         {
             // Add icons instead of screen-shot
             img : {
-                width : '180',
-                height : '180',
+                width : '250',
+                height : '250',
                 url : 'img/symptoms_icon.png'
             },
             textColor: 'black',
@@ -187,8 +187,8 @@ config.appSettings  = {
         },
         {
             img : {
-                width : '180',
-                height : '180',
+                width : '250',
+                height : '250',
                 url : 'img/doctor_icon.png'
             },
             content : {
