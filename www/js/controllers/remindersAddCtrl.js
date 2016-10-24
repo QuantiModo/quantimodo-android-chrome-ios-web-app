@@ -22,7 +22,12 @@ angular.module('starter')
             defaultValueLabel : 'Default Value',
             defaultValuePlaceholderText : 'Enter typical value',
             showInstructionsField : false,
-            selectedStopTrackingDate: null
+            selectedStopTrackingDate: null,
+            showMoreOptions: false
+        };
+
+        $scope.showMoreOptions = function(){
+            $scope.state.showMoreOptions = true;
         };
 
         if(!$rootScope.user){
@@ -67,6 +72,9 @@ angular.module('starter')
 				{ id : 8, name : 'Hourly'},
 	    		{ id : 9, name : 'Every 30 minutes'},
 	    		{ id : 10, name : 'Never'},
+                { id : 10, name : 'Weekly'},
+                { id : 10, name : 'Every 2 weeks'},
+                { id : 10, name : 'Every 4 weeks'}
                 //{ id : 11, name : 'Minutely'}
 	    	]
 	    };
@@ -187,6 +195,28 @@ angular.module('starter')
             ionicDatePicker.openDatePicker($scope.state.stopTrackingDatePickerConfiguration);
         };
 
+        $scope.openStartTrackingDatePicker = function() {
+            var now = new Date();
+            $scope.state.startTrackingDatePickerConfiguration = {
+                callback: function(val) {
+                    if (typeof(val)==='undefined') {
+                        console.debug('Date not selected');
+                    } else {
+                        // clears out hours and minutes
+
+                        $scope.state.selectedStartTrackingDate = new Date(val);
+                    }
+                },
+                from: new Date(),
+                to: new Date(now.getTime() + 365 * 24 * 60 * 60 * 1000)
+            };
+
+            if($scope.state.selectedStartTrackingDate){
+                $scope.state.startTrackingDatePickerConfiguration.inputDate = $scope.state.selectedStartTrackingDate;
+            }
+            ionicDatePicker.openDatePicker($scope.state.startTrackingDatePickerConfiguration);
+        };
+
 /*
 
         $scope.openReminderEndTimePicker = function() {
@@ -286,7 +316,10 @@ angular.module('starter')
 	    		"Daily": 24*60*60,
 	    		"Twice a day" : 12*60*60,
 	    		"Three times a day": 8*60*60,
-                "Minutely": 60
+                "Minutely": 60,
+                'Weekly': 7 * 86400,
+                'Every 2 weeks': 14 * 86400,
+                'Every 4 weeks': 28 * 86400
 	    	};
 	    };
 
@@ -410,9 +443,13 @@ angular.module('starter')
             $scope.showLoader('Saving ' + $scope.state.trackingReminder.variableName + ' reminder...');
             $scope.state.trackingReminder.reminderFrequency = getFrequencyChart()[$scope.state.selectedFrequency];
             $scope.state.trackingReminder.valueAndFrequencyTextDescription = $scope.state.selectedFrequency;
+            var dateFormat = 'YYYY-MM-DD';
             if($scope.state.selectedStopTrackingDate){
-                var dateFormat = 'YYYY-MM-DD';
                 $scope.state.trackingReminder.stopTrackingDate = moment($scope.state.selectedStopTrackingDate).format(dateFormat);
+            }
+
+            if($scope.state.selectedStartTrackingDate){
+                $scope.state.trackingReminder.startTrackingDate = moment($scope.state.selectedStartTrackingDate).format(dateFormat);
             }
 
             var remindersArray = [];
@@ -484,8 +521,15 @@ angular.module('starter')
             if(trackingReminder.stopTrackingDate){
                 $scope.state.selectedStopTrackingDate = new Date(trackingReminder.stopTrackingDate);
             }
+
+            if(trackingReminder.startTrackingDate){
+                $scope.state.selectedStartTrackingDate = new Date(trackingReminder.startTrackingDate);
+            }
             
 	    	var reverseFrequencyChart = {
+                604800: 'Weekly',
+                1209600: 'Every 2 weeks',
+                2419200: 'Every 4 weeks',
 	    		86400: "Daily",
 	    		43200: "Every 12 hours",
 	    		28800: "Every 8 hours",
