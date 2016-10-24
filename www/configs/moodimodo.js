@@ -76,7 +76,7 @@ config.appSettings  = {
 
     /* END NEW STUFF */
 
-    welcomeText : "Let's start off by reporting your first mood on the card below",
+    welcomeText : "Let's start off by reporting your first mood below",
     primaryOutcomeVariableTrackingQuestion : "How are you?",
     primaryOutcomeVariableAverageText : "Your average mood is ",
     mobileNotificationImage : "file://img/icons/icon_128.png",
@@ -163,7 +163,7 @@ config.appSettings  = {
                 firstParagraph : {
                     visible : true,
                     content : 'Make Discoveries',
-                    classes : 'intro-paragraph'
+                    classes : 'intro-header'
                 }, 
                 
                 logoDiv : {
@@ -173,7 +173,7 @@ config.appSettings  = {
                 finalParagraph: {
                     visible : true,
                     content : 'Identify hidden factors most strongly linked to your well-being',
-                    classes : 'intro-paragraph-small',
+                    classes : 'intro-paragraph',
                     buttonBarVisible : true
                 }
             }

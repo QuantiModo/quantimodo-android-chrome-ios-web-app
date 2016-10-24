@@ -71,7 +71,7 @@ config.appSettings  = {
         'img/rating/ic_5.png'
     ],
 
-    welcomeText:"Let's start off by reporting your Energy on the card below",
+    welcomeText:"Let's start off by reporting your energy below",
     primaryOutcomeVariableTrackingQuestion:"How is your energy level right now?",
     primaryOutcomeVariableAverageText:"Your average energy level is ",
     mobileNotificationImage : "file://img/icons/icon_128.png",
