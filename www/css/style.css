@@ -313,11 +313,11 @@ label.item.item-input.item-text > input[type="text"] {
 /* Intro */
 
 .slider-pager-page {
-    color: darkgray !important;
+    color: white !important;
 }
 
 .slider-pager-page.active {
-    color: white !important;
+    color: darkgray !important;
 }
 
 div.previous {
@@ -348,14 +348,15 @@ div.next{
 
 
 div.intro-content{
-  margin: -40px 40px 0px 40px;
-  position: relative;
-  top: 50%;
-  transform: translateY(-50%);
-  -ms-transform: translateY(-50%);
-  -webkit-transform: translateY(-50%);
-  -moz-transform: translateY(-50%);
-  -o-transform: translateY(-50%);
+    margin: -40px 40px 0px 40px;
+    position: relative;
+    top: 50%;
+    height: 100%;
+    transform: translateY(-50%);
+    -ms-transform: translateY(-50%);
+    -webkit-transform: translateY(-50%);
+    -moz-transform: translateY(-50%);
+    -o-transform: translateY(-50%);
 }
 
 p.intro-paragraph {
