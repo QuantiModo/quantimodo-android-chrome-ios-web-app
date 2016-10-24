@@ -61,6 +61,7 @@ angular.module('starter')
 
 
         $scope.init = function(){
+            $rootScope.hideNavigationMenu = true;
             console.debug($state.current.name + ' initializing...');
             $rootScope.stateParams = $stateParams;
             if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
