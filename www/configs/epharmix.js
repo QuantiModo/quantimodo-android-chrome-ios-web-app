@@ -104,77 +104,52 @@ config.appSettings  = {
         // screen 1
         {
             img : {
-                width : '150',
-                height : '150',
-                url : 'img/icons/icon.png'
+                width : '250',
+                height : '250',
+                url : 'img/intro/intro-import.png'
             },
+            textColor: 'white',
+            backgroundColor: '#3467d6',
             content : {
-
                 firstParagraph : {
                     visible : true,
-                    content : 'Welcome to Epharmix',
-                    classes : 'intro-header positive'
-                }, 
+                    content : 'Import Data',
+                    classes : 'intro-header'
+                },
                 logoDiv : {
                     visible : true,
                     id : 'logo'
                 },
                 finalParagraph : {
                     visible : true,
-                    content : 'Medication - Track. Learn. Connect.',
+                    content : 'Import data from all your apps and devices',
                     classes : 'intro-paragraph',
-                    buttonBarVisible : true   
-                }
-            }
-        },
-        {
-            img : {
-                width : '180',
-                height : '180',
-                url : 'img/pill_icon.png'
-            },
-            content : {
-                firstParagraph : {
-                    visible : true,
-                    content : 'Medications',
-                    classes : 'intro-header positive'
-                },
-                logoDiv : {
-                    visible : true,
-                    id : 'logo'
-                },
-                finalParagraph: {
-                    visible : true,
-                    content : 'Add medications on the Add Medications page.',
-                    classes : 'intro-paragraph-small',
                     buttonBarVisible : true
                 }
             }
         },
         {
-            // Add icons instead of screen-shot
             img : {
-                width : '180',
-                height : '180',
-                url : 'img/symptoms_icon.png'
+                width : '250',
+                height : '250',
+                url : 'img/intro/intro-track-anything.png'
             },
+            textColor: 'white',
+            backgroundColor: '#f09402',
             content : {
-
                 firstParagraph : {
                     visible : true,
-                    content : 'Record How You Feel',
-                    classes : 'intro-header positive'
+                    content : 'Track Anything',
+                    classes : 'intro-header'
                 },
-
                 logoDiv : {
                     visible : true,
                     id : 'logo'
                 },
-
-                finalParagraph: {
+                finalParagraph : {
                     visible : true,
-                    content : ' Record "How I Feel" responses to provide critical feedback to your doctor. This feedback is one of the strongest features of Epharmix. It gives your doctor the data needed to change medications and adjust dosages when necessary, due to adverse reaction to a single drug, multiple drug interactions, and dosages that cause unwanted effects.',
-                    classes : 'intro-paragraph-small',
+                    content : 'Log treatments, diet, symptoms, emotions, and anything else',
+                    classes : 'intro-paragraph',
                     buttonBarVisible : true
                 }
             }
@@ -183,21 +158,25 @@ config.appSettings  = {
             img : {
                 width : '180',
                 height : '180',
-                url : 'img/doctor_icon.png'
+                url : 'img/intro/intro-make-discoveries.png'
             },
+            textColor: 'white',
+            backgroundColor: '#0f9d58',
             content : {
+
                 firstParagraph : {
                     visible : true,
-                    content : 'Connect with Your Physician',
-                    classes : 'intro-header positive'
-                }, 
+                    content : 'Make Discoveries',
+                    classes : 'intro-header'
+                },
+
                 logoDiv : {
                     visible : true,
                     id : 'logo'
                 },
                 finalParagraph: {
                     visible : true,
-                    content : 'Print or send reports of your responses to your doctors.',
+                    content : 'Identify hidden factors most strongly linked to your well-being',
                     classes : 'intro-paragraph',
                     buttonBarVisible : true
                 }

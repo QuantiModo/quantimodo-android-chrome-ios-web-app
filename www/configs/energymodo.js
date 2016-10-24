@@ -95,26 +95,53 @@ config.appSettings  = {
         // screen 1
         {
             img : {
-                width : '150',
-                height : '150',
-                url : 'img/icons/icon.png'
+                width : '250',
+                height : '250',
+                url : 'img/intro/intro-import.png'
             },
+            textColor: 'white',
+            backgroundColor: '#3467d6',
             content : {
-
                 firstParagraph : {
                     visible : true,
-                    content : 'Welcome to EnergyModo',
-                    classes : 'intro-header positive'
-                }, 
+                    content : 'Import Data',
+                    classes : 'intro-header'
+                },
                 logoDiv : {
                     visible : true,
                     id : 'logo'
                 },
                 finalParagraph : {
                     visible : true,
-                    content : 'EnergyModo allows you track your <span class="positive">energy level</span> and identify the hidden factors which may most influence it.',
+                    content : 'Import data from all your apps and devices',
                     classes : 'intro-paragraph',
-                    buttonBarVisible : true   
+                    buttonBarVisible : true
+                }
+            }
+        },
+        {
+            img : {
+                width : '250',
+                height : '250',
+                url : 'img/intro/intro-track-anything.png'
+            },
+            textColor: 'white',
+            backgroundColor: '#f09402',
+            content : {
+                firstParagraph : {
+                    visible : true,
+                    content : 'Track Anything',
+                    classes : 'intro-header'
+                },
+                logoDiv : {
+                    visible : true,
+                    id : 'logo'
+                },
+                finalParagraph : {
+                    visible : true,
+                    content : 'Log treatments, diet, symptoms, emotions, and anything else',
+                    classes : 'intro-paragraph',
+                    buttonBarVisible : true
                 }
             }
         },
@@ -122,24 +149,26 @@ config.appSettings  = {
             img : {
                 width : '180',
                 height : '180',
-                url : 'img/rating/ic_face_ecstatic.png'
+                url : 'img/intro/intro-make-discoveries.png'
             },
+            textColor: 'white',
+            backgroundColor: '#0f9d58',
             content : {
 
                 firstParagraph : {
                     visible : true,
-                    content : 'We are feeling energized that you\'re helping us derive a mathematical equation for optimal energy levels!',
-                    classes : 'intro-paragraph positive'
-                }, 
-                
+                    content : 'Make Discoveries',
+                    classes : 'intro-header'
+                },
+
                 logoDiv : {
                     visible : true,
                     id : 'logo'
                 },
                 finalParagraph: {
                     visible : true,
-                    content : 'Start tracking and optimize your life!',
-                    classes : 'intro-paragraph-small',
+                    content : 'Identify hidden factors most strongly linked to your well-being',
+                    classes : 'intro-paragraph',
                     buttonBarVisible : true
                 }
             }

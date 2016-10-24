@@ -108,6 +108,8 @@ config.appSettings  = {
                 height : '150',
                 url : 'img/icons/icon.png'
             },
+            textColor: 'black',
+            backgroundColor: 'white',
             content : {
 
                 firstParagraph : {
@@ -133,6 +135,8 @@ config.appSettings  = {
                 height : '180',
                 url : 'img/pill_icon.png'
             },
+            textColor: 'black',
+            backgroundColor: 'white',
             content : {
                 firstParagraph : {
                     visible : true,
@@ -158,6 +162,8 @@ config.appSettings  = {
                 height : '180',
                 url : 'img/symptoms_icon.png'
             },
+            textColor: 'black',
+            backgroundColor: 'white',
             content : {
 
                 firstParagraph : {
@@ -190,7 +196,9 @@ config.appSettings  = {
                     visible : true,
                     content : 'Connect with Your Physician',
                     classes : 'intro-header positive'
-                }, 
+                },
+                textColor: 'black',
+                backgroundColor: 'white',
                 logoDiv : {
                     visible : true,
                     id : 'logo'
