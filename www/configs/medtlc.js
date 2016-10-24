@@ -108,6 +108,8 @@ config.appSettings  = {
                 height : '150',
                 url : 'img/icons/icon.png'
             },
+            textColor: 'black',
+            backgroundColor: 'white',
             content : {
 
                 firstParagraph : {
@@ -129,10 +131,12 @@ config.appSettings  = {
         },
         {
             img : {
-                width : '180',
-                height : '180',
+                width : '250',
+                height : '250',
                 url : 'img/pill_icon.png'
             },
+            textColor: 'black',
+            backgroundColor: 'white',
             content : {
                 firstParagraph : {
                     visible : true,
@@ -154,10 +158,12 @@ config.appSettings  = {
         {
             // Add icons instead of screen-shot
             img : {
-                width : '180',
-                height : '180',
+                width : '250',
+                height : '250',
                 url : 'img/symptoms_icon.png'
             },
+            textColor: 'black',
+            backgroundColor: 'white',
             content : {
 
                 firstParagraph : {
@@ -181,8 +187,8 @@ config.appSettings  = {
         },
         {
             img : {
-                width : '180',
-                height : '180',
+                width : '250',
+                height : '250',
                 url : 'img/doctor_icon.png'
             },
             content : {
@@ -190,7 +196,9 @@ config.appSettings  = {
                     visible : true,
                     content : 'Connect with Your Physician',
                     classes : 'intro-header positive'
-                }, 
+                },
+                textColor: 'black',
+                backgroundColor: 'white',
                 logoDiv : {
                     visible : true,
                     id : 'logo'
