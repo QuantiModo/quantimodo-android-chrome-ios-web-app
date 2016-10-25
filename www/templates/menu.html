@@ -14,18 +14,29 @@
                 </div>
             </ion-nav-buttons>
         </ion-nav-bar>
-        <div class="col" ng-show="connectionErrorShowing;" ng-class="{'connection-error-indicator':connectionErrorShowing}">
+        <div class="col"
+             ng-show="hideNavigationMenu && connectionErrorShowing;"
+             style="top:0px!important;"
+             ng-class="{'connection-error-indicator':connectionErrorShowing}">
             <span> <i class="icon ion-connection-bars"></i> Currently Offline</span>
         </div>
-        <div class="col" ng-show="!hideNavigationMenu && isSyncing" ng-class="{'blink': isSyncing,'sync-indicator':isSyncing}">
+        <div class="col"
+             ng-show="!hideNavigationMenu && connectionErrorShowing;"
+             ng-class="{'connection-error-indicator':connectionErrorShowing}">
+            <span> <i class="icon ion-connection-bars"></i> Currently Offline</span>
+        </div>
+        <div class="col"
+             ng-show="!hideNavigationMenu && isSyncing"
+             ng-class="{'blink': isSyncing,'sync-indicator':isSyncing}">
             <span>{{syncDisplayText}}</span>
         </div>
-
-        <div class="col" ng-show="hideNavigationMenu && isSyncing" style="top:0px!important;" ng-class="{'blink': isSyncing,'sync-indicator':isSyncing}">
+        <div class="col"
+             ng-show="hideNavigationMenu && isSyncing"
+             style="top:0px!important;"
+             ng-class="{'blink': isSyncing,'sync-indicator':isSyncing}">
             <span>{{syncDisplayText}}</span>
         </div>
         <ion-nav-view name="menuContent">
-
         </ion-nav-view>
     </ion-side-menu-content>
 

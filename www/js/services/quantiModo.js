@@ -1092,6 +1092,7 @@ angular.module('starter')
                 }]);
             }
 
+/*            Don't need Intercom
             window.intercomSettings = {
                 app_id: "uwtx2m33",
                 name: user.displayName,
@@ -1102,6 +1103,7 @@ angular.module('starter')
                 platform: $rootScope.currentPlatform,
                 platform_version: $rootScope.currentPlatformVersion
             };
+            */
 
             var deviceTokenOnServer = localStorageService.getItemSync('deviceTokenOnServer');
             var deviceTokenToSync = localStorageService.getItemSync('deviceTokenToSync');
@@ -1110,6 +1112,10 @@ angular.module('starter')
             }
             if (deviceTokenToSync){
                 QuantiModo.registerDeviceToken(deviceTokenToSync);
+            }
+            if($rootScope.sendReminderNotificationEmails){
+                QuantiModo.updateUserSettingsDeferred({sendReminderNotificationEmails: $rootScope.sendReminderNotificationEmails});
+                $rootScope.sendReminderNotificationEmails = null;
             }
         };
 
@@ -1130,7 +1136,7 @@ angular.module('starter')
                 QuantiModo.refreshUser().then(function(user){
                     console.debug('updateUserSettingsDeferred got this user: ' + JSON.stringify(user));
                 }, function(error){
-                    console.error('QuantiModo.updateUserSettingsDeferred could not refresh user because ' + error);
+                    console.error('QuantiModo.updateUserSettingsDeferred could not refresh user because ' + JSON.stringify(error));
                 });
                 deferred.resolve(response);
             }, function(response){

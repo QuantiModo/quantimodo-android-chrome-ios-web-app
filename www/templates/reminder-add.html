@@ -1,4 +1,4 @@
-<ion-view hide-nav-bar="hideNavigationMenu">
+<ion-view hide-nav-bar="hideNavigationMenu" view-title="Add Reminder">
     <ion-nav-title>{{state.title}}</ion-nav-title>
     <ion-content scroll="true" overflow-scroll="true">
 
@@ -67,10 +67,10 @@
                         {{state.thirdReminderStartTimeEpochTime | fromUnixTimestampToLocalTimeOfDay}}
                     </button>
                 </label>
-                <lable ng-hide="state.hideAdditionalReminderTimeButton" ng-click="showAdditionalReminderTime()"
+                <label ng-hide="state.hideAdditionalReminderTimeButton" ng-click="showAdditionalReminderTime()"
                         class="item icon-left ion-clock">
                     Add additional time
-                </lable>
+                </label>
             </div>
 <!--            <div class="list card" ng-show="state.selectedFrequency !== 'Daily'">
                 <label class="item item-input">
@@ -96,7 +96,28 @@
                     </button>
                 </label>
             </div>-->
-            <div ng-if="false" class="row labeled-control">
+            <div class="list card" ng-if="!state.showMoreOptions" >
+                <div class="row" ng-click="showMoreOptions()">
+                    <label class="item icon-left ion-gear-a">
+                        More options...
+                    </label>
+                </div>
+            </div>
+            <div ng-if="state.showMoreOptions" class="row labeled-control">
+                <div class="col col-l">
+                        <span>
+                            Start Date
+                        </span>
+                </div>
+                <div class="col" style="padding-top: 15px;">
+                    <button class="button button-block measure-date up-top"
+                            style="font-size:14px;border:none;color:black;background-color: white;margin-bottom: 0px;margin-top: 0px;padding-left: 0px; text-align:left;"
+                            ng-click="openStartTrackingDatePicker()">
+                        {{ state.selectedStartTrackingDate | date:'dd - MMMM - yyyy' }}
+                    </button>
+                </div>
+            </div>
+            <div ng-if="state.showMoreOptions" class="row labeled-control">
                 <div class="col col-l">
                         <span>
                             End Date
@@ -110,8 +131,7 @@
                     </button>
                 </div>
             </div>
-
-            <label class="item item-input" ng-show="state.showInstructionsField">
+            <label class="item item-input" ng-show="state.showInstructionsField && state.showMoreOptions">
                 <span class="input-label">Instructions</span>
                 <input type="text" ng-model="state.trackingReminder.instructions" id="instructions" placeholder="Enter instructions here..." >
             </label>

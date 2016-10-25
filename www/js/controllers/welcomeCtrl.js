@@ -27,7 +27,8 @@ angular.module('starter')
             }
         );
 
-        $scope.subscribeNotification = true;
+        $scope.sendReminderNotificationEmails = true;
+        $rootScope.sendDailyEmailReminder = true;
 
         $scope.saveIntervalAndGoToLogin = function(primaryOutcomeRatingFrequencyDescription){
             $scope.saveInterval(primaryOutcomeRatingFrequencyDescription);
@@ -60,6 +61,7 @@ angular.module('starter')
 
 
         $scope.init = function(){
+            $rootScope.hideNavigationMenu = true;
             console.debug($state.current.name + ' initializing...');
             $rootScope.stateParams = $stateParams;
             if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }

@@ -1,68 +1,51 @@
-<ion-view hide-nav-bar="hideNavigationMenu" view-title="Welcome Tour">
-
-
-
-    <ion-slide-box on-slide-changed="myIntro.slideChanged(index)" >
-
-        <ion-slide ng-repeat="introSlide in introSlides" ng-show="myIntro.ready" ">
-
-            <div ng-click="myIntro.previous()" ng-show="myIntro.slideIndex > 0" class="previous">
-                <span class="ion-chevron-left positive" data-pack="default" data-tags="talk"></span>
-            </div>
-            
-            <div ng-click="myIntro.next()" ng-show="myIntro.slideIndex != introSlides.length-1" class="next">
-                <span class="ion-chevron-right positive" data-pack="default" data-tags="talk"></span>
-            </div>
-            
-            <div ng-click="myIntro.startApp()" ng-show="myIntro.slideIndex == introSlides.length-1" class="next">
-                <span class="ion-chevron-right positive" data-pack="default" data-tags="talk"></span>
-            </div>
-
-            <div class="content intro-content">
-                
-                <p ng-if="introSlide.content.firstParagraph" class="{{introSlide.content.firstParagraph.classes}}" ng-bind-html="introSlide.content.firstParagraph.content">
-                </p>
-                
-                <div ng-if="introSlide.content.showOutcomeVariableImages" >
-                    <div class="ponka" style="display:inline-block" ng-repeat="option in positiveRatingOptions">
-                        <img style="width:{{introSlide.img.width}}px; height:{{introSlide.img.height}}px;" class="intro-primary-outcome-variable" ng-src="{{option.img}}">
-                        <p>{{option.displayDescription}}</p>
-                    </div>
-
-                </div>
-
-                <br ng-if="introSlide.content.showFirstLineBreak" />
-
+<ion-view hide-nav-bar="hideNavigationMenu" view-title="Welcome">
+    <ion-slide-box on-slide-changed="myIntro.slideChanged(index)">
+        <ion-slide ng-repeat="introSlide in introSlides"
+                   ng-show="myIntro.ready"
+                   style="background-color: {{introSlide.backgroundColor}}">
+            <div class="content intro-content" >
                 <div ng-if="introSlide.content.logoDiv" id="{{introSlide.content.logoDiv.id}}">
                     <img style="width:{{introSlide.img.width}}px; height:{{introSlide.img.height}}px;" ng-src="{{introSlide.img.url}}">
                 </div>
-                
-                <br ng-if="introSlide.content.showSecondBr" />
-                <p ng-if="introSlide.content.finalParagraph" class="{{introSlide.content.finalParagraph.classes}}">
-                    <span ng-bind-html="introSlide.content.finalParagraph.content"></span>
-                    <br>
-                    <br>
-                    <br>
-                    <div ng-if="introSlide.content.finalParagraph && introSlide.content.finalParagraph.buttonBarVisible">
-                        <div class="button-bar">
-                            <a id="skipButtonIntro" class="button button-positive" ng-show="myIntro.slideIndex != introSlides.length-1 " ng-click="myIntro.startApp()">
-                                Skip
-                            </a>
-                            <a id="backButtonIntro" class="button button-positive" ng-show="myIntro.slideIndex > 0 && myIntro.slideIndex < introSlides.length-1" ng-click="myIntro.previous()">
-                                Back
-                            </a>
-                            <a id="nextButtonIntro" class="button button-positive" ng-show="myIntro.slideIndex != introSlides.length-1 && myIntro.slideIndex != introSlides.length-1" ng-click="myIntro.next()">
-                                Next
-                            </a>
-                            <a id="goButtonIntro" class="button button-positive" ng-show="myIntro.slideIndex == introSlides.length-1" ng-click="myIntro.startApp()">
-                                Go
-                            </a>
-                        </div>
-                    </div>
+                <p ng-if="introSlide.content.firstParagraph"
+                   class="{{introSlide.content.firstParagraph.classes}}"
+                   ng-bind-html="introSlide.content.firstParagraph.content"
+                   style="color: {{introSlide.textColor}}">
                 </p>
+                <p ng-if="introSlide.content.finalParagraph"
+                   class="{{introSlide.content.finalParagraph.classes}}"
+                   style="color: {{introSlide.textColor}}">
+                    <span ng-bind-html="introSlide.content.finalParagraph.content"
+                          style="color: {{introSlide.textColor}}">
+                    </span>
+                    <br>
+                    <br>
+                    <a id="goButtonIntro"
+                       class="button"
+                       style="background-color: {{introSlide.backgroundColor}}; color: {{introSlide.textColor}};"
+                       ng-show="myIntro.slideIndex == introSlides.length-1"
+                       ng-click="myIntro.startApp()">
+                        GET STARTED
+                    </a>
+                    <br>
+                </p>
+                <div class="button-bar" style="position: absolute; bottom: 0;">
+                    <a id="skipButtonIntro"
+                       class="button"
+                       ng-show="myIntro.slideIndex != introSlides.length-1 "
+                       style="background-color: {{introSlide.backgroundColor}}; color: {{introSlide.textColor}}; text-align: left"
+                       ng-click="myIntro.startApp()">
+                        SKIP
+                    </a>
+                    <a id="nextButtonIntro"
+                       class="button"
+                       style="background-color: {{introSlide.backgroundColor}}; color: {{introSlide.textColor}}; text-align: right"
+                       ng-show="myIntro.slideIndex != introSlides.length-1 && myIntro.slideIndex != introSlides.length-1"
+                       ng-click="myIntro.next()">
+                        NEXT
+                    </a>
+                </div>
             </div>
-
         </ion-slide>
-
     </ion-slide-box>
 </ion-view>
