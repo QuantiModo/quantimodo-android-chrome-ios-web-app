@@ -1092,6 +1092,7 @@ angular.module('starter')
                 }]);
             }
 
+/*            Don't need Intercom
             window.intercomSettings = {
                 app_id: "uwtx2m33",
                 name: user.displayName,
@@ -1102,6 +1103,7 @@ angular.module('starter')
                 platform: $rootScope.currentPlatform,
                 platform_version: $rootScope.currentPlatformVersion
             };
+            */
 
             var deviceTokenOnServer = localStorageService.getItemSync('deviceTokenOnServer');
             var deviceTokenToSync = localStorageService.getItemSync('deviceTokenToSync');
