@@ -3,7 +3,7 @@ angular.module('starter')
 	.factory('timeService', function() {
 
 		// service methods
-		return {
+		var timeService = {
 
 			getSecondsSinceMidnightLocalFromUtcString: function (utcTimeString) {
 
@@ -100,7 +100,6 @@ angular.module('starter')
 				var tomorrowLocalMidnightInUtcString = tomorrowLocalMidnightMoment.utc().format(timeFormat);
 				return tomorrowLocalMidnightInUtcString;
 			},
-
 			
 			getCurrentTimeInUtcString: function () {
 				var currentMoment = moment();
@@ -128,7 +127,48 @@ angular.module('starter')
 				var timeFormat = 'YYYY-MM-DD HH:mm:ss';
 				var currentDateTimeInUtcStringPlus15Min = currentMoment.utc().format(timeFormat);
 				return currentDateTimeInUtcStringPlus15Min;
-			}
+			},
+
 		};
+
+		timeService.getSecondsSinceMidnightLocalRoundedToNearestFifteen = function (defaultStartTimeInSecondsSinceMidnightLocal) {
+			// Round minutes
+			var defaultStartTime = new Date(defaultStartTimeInSecondsSinceMidnightLocal * 1000);
+			var defaultStartTimeHours = defaultStartTime.getUTCHours();
+			var defaultStartTimeMinutes = defaultStartTime.getUTCMinutes();
+			if (defaultStartTimeMinutes % 15 !== 0) {
+				if ((defaultStartTimeMinutes > 0 && defaultStartTimeMinutes <= 7)) {
+					defaultStartTimeMinutes = 0;
+				}
+				else if (defaultStartTimeMinutes > 7 && defaultStartTimeMinutes <= 22) {
+					defaultStartTimeMinutes = 15;
+				}
+				else if (defaultStartTimeMinutes > 22 && defaultStartTimeMinutes <= 37) {
+					defaultStartTimeMinutes = 30;
+				}
+				else if (defaultStartTimeMinutes > 37 && defaultStartTimeMinutes <= 52) {
+					defaultStartTimeMinutes = 45;
+				}
+				else if (defaultStartTimeMinutes > 52) {
+					defaultStartTimeMinutes = 0;
+					if (defaultStartTimeHours === 23) {
+						defaultStartTimeHours = 0;
+					}
+					else {
+						defaultStartTimeHours += 1;
+					}
+				}
+			}
+			defaultStartTimeInSecondsSinceMidnightLocal =
+				timeService.getSecondsSinceMidnightLocalFromLocalString("" + defaultStartTimeHours + ":" + defaultStartTimeMinutes + ":00");
+			return defaultStartTimeInSecondsSinceMidnightLocal;
+		};
+
+		timeService.getSecondsSinceMidnightLocalRoundedToNearestFifteenFromLocalString = function (localString) {
+			var secondsSinceMidnightLocal = timeService.getSecondsSinceMidnightLocalFromLocalString(localString);
+			return timeService.getSecondsSinceMidnightLocalRoundedToNearestFifteen(secondsSinceMidnightLocal);
+		};
+
+		return timeService;
 
 	});
