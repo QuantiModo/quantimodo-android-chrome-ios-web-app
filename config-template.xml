@@ -6,7 +6,7 @@
   </description>
   <author email="mike@quantimo.do" href="https://quantimo.do/">
       QuantiModo
-    </author>
+  </author>
   <access origin="*" />
   <access origin="https://widget.intercom.io/*" />
   <allow-intent href="http://*/*" />
