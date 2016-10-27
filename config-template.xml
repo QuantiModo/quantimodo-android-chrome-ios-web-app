@@ -46,7 +46,7 @@
     <variable name="APP_NAME" value="QuantiModo" />
   </plugin>
   <vs:platformSpecificValues xmlns:vs="http://schemas.microsoft.com/appx/2014/htmlapps">
-    <vs:platformSpecificWidget platformName="windows" version="IONIC_IOS_APP_VERSION_NUMBER" id="APP_IDENTIFIER" />
+    <vs:platformSpecificWidget platformName="windows" version="IONIC_IOS_APP_VERSION_NUMBER_PLACEHOLDER" id="APP_IDENTIFIER_PLACEHOLDER" />
   </vs:platformSpecificValues>
   <preference name="WindowsStoreDisplayName" value="MoodiModo" />
   <plugin name="cordova-plugin-datepicker" version="0.9.3" />
