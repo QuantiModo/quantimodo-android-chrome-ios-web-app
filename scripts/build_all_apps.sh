@@ -149,9 +149,9 @@ if [ -z ${BUILD_QUANTIMODO} ];
         sudo mkdir ${PREPARED_APPS_PATH}/${LOWERCASE_APP_NAME}
         sudo chmod -R 777 ${PREPARED_APPS_PATH}
         cd /jenkins
-        echo "rsync -a --delete --no-perms --omit-dir-times --exclude=/platforms/ --exclude=/node_modules/ --exclude=/build/ ${IONIC_PATH}/* ${PREPARED_APPS_PATH}/${LOWERCASE_APP_NAME}"
-        rsync -a --delete --no-perms --omit-dir-times --exclude=/platforms/ --exclude=/node_modules/ --exclude=/build/ ${IONIC_PATH}/* ${PREPARED_APPS_PATH}/${LOWERCASE_APP_NAME}
-        # rsync -a --delete --exclude=/platforms/ --exclude=/node_modules/ --exclude=/build/ QM-Ionic-Build/* /home/ubuntu/prepared_apps/quantimodo
+        echo "rsync -a --delete --no-perms --omit-dir-times --exclude=/platforms/ --exclude=/build/ ${IONIC_PATH}/* ${PREPARED_APPS_PATH}/${LOWERCASE_APP_NAME}"
+        rsync -a --delete --no-perms --omit-dir-times --exclude=/platforms/ --exclude=/build/ ${IONIC_PATH}/* ${PREPARED_APPS_PATH}/${LOWERCASE_APP_NAME}
+        # rsync -a --delete --exclude=/platforms/ --exclude=/build/ QM-Ionic-Build/* /home/ubuntu/prepared_apps/quantimodo
 
         # We do this at this higher level so Jenkins can detect the exit code
         if [ -f ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${LOWERCASE_APP_NAME}-android-armv7-release-signed.apk ];
@@ -180,8 +180,8 @@ if [ -z ${BUILD_MOODIMODO} ];
         sudo mkdir ${PREPARED_APPS_PATH}/${LOWERCASE_APP_NAME}
         sudo chmod -R 777 ${PREPARED_APPS_PATH}
         cd /jenkins
-        echo "rsync -a --delete --no-perms --omit-dir-times --exclude=/platforms/ --exclude=/node_modules/ --exclude=/build/ ${IONIC_PATH}/* ${PREPARED_APPS_PATH}/${LOWERCASE_APP_NAME}"
-        rsync -a --delete --no-perms --omit-dir-times --exclude=/platforms/ --exclude=/node_modules/ --exclude=/build/ ${IONIC_PATH}/* ${PREPARED_APPS_PATH}/${LOWERCASE_APP_NAME}
+        echo "rsync -a --delete --no-perms --omit-dir-times --exclude=/platforms/ --exclude=/build/ ${IONIC_PATH}/* ${PREPARED_APPS_PATH}/${LOWERCASE_APP_NAME}"
+        rsync -a --delete --no-perms --omit-dir-times --exclude=/platforms/ --exclude=/build/ ${IONIC_PATH}/* ${PREPARED_APPS_PATH}/${LOWERCASE_APP_NAME}
 
         # We do this at this higher level so Jenkins can detect the exit code
         if [ -f ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${LOWERCASE_APP_NAME}-android-armv7-release-signed.apk ];
@@ -211,8 +211,8 @@ if [ -z ${BUILD_MINDFIRST} ];
         sudo mkdir ${PREPARED_APPS_PATH}/${LOWERCASE_APP_NAME}
         sudo chmod -R 777 ${PREPARED_APPS_PATH}
         cd /jenkins
-        echo "rsync -a --delete --no-perms --omit-dir-times --exclude=/platforms/ --exclude=/node_modules/ --exclude=/build/ ${IONIC_PATH}/* ${PREPARED_APPS_PATH}/${LOWERCASE_APP_NAME}"
-        rsync -a --delete --no-perms --omit-dir-times --exclude=/platforms/ --exclude=/node_modules/ --exclude=/build/ ${IONIC_PATH}/* ${PREPARED_APPS_PATH}/${LOWERCASE_APP_NAME}
+        echo "rsync -a --delete --no-perms --omit-dir-times --exclude=/platforms/ --exclude=/build/ ${IONIC_PATH}/* ${PREPARED_APPS_PATH}/${LOWERCASE_APP_NAME}"
+        rsync -a --delete --no-perms --omit-dir-times --exclude=/platforms/ --exclude=/build/ ${IONIC_PATH}/* ${PREPARED_APPS_PATH}/${LOWERCASE_APP_NAME}
 
         # We do this at this higher level so Jenkins can detect the exit code
         if [ -f ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${LOWERCASE_APP_NAME}-android-armv7-release-signed.apk ];
@@ -241,8 +241,8 @@ if [ -z ${BUILD_ENERGYMODO} ];
         sudo mkdir ${PREPARED_APPS_PATH}/${LOWERCASE_APP_NAME}
         sudo chmod -R 777 ${PREPARED_APPS_PATH}
         cd /jenkins
-        echo "rsync -a --delete --no-perms --omit-dir-times --exclude=/platforms/ --exclude=/node_modules/ --exclude=/build/ ${IONIC_PATH}/* ${PREPARED_APPS_PATH}/${LOWERCASE_APP_NAME}"
-        rsync -a --delete --no-perms --omit-dir-times --exclude=/platforms/ --exclude=/node_modules/ --exclude=/build/ ${IONIC_PATH}/* ${PREPARED_APPS_PATH}/${LOWERCASE_APP_NAME}
+        echo "rsync -a --delete --no-perms --omit-dir-times --exclude=/platforms/ --exclude=/build/ ${IONIC_PATH}/* ${PREPARED_APPS_PATH}/${LOWERCASE_APP_NAME}"
+        rsync -a --delete --no-perms --omit-dir-times --exclude=/platforms/ --exclude=/build/ ${IONIC_PATH}/* ${PREPARED_APPS_PATH}/${LOWERCASE_APP_NAME}
 
         # We do this at this higher level so Jenkins can detect the exit code
         if [ -f ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${LOWERCASE_APP_NAME}-android-armv7-release-signed.apk ];
@@ -271,8 +271,8 @@ if [ -z ${BUILD_MEDTLC} ];
         sudo mkdir ${PREPARED_APPS_PATH}/${LOWERCASE_APP_NAME}
         sudo chmod -R 777 ${PREPARED_APPS_PATH}
         cd /jenkins
-        echo "rsync -a --no-perms --delete --omit-dir-times --exclude=/platforms/ --exclude=/node_modules/ --exclude=/build/ ${IONIC_PATH}/* ${PREPARED_APPS_PATH}/${LOWERCASE_APP_NAME}"
-        rsync -a --delete --no-perms --omit-dir-times --exclude=/platforms/ --exclude=/node_modules/ --exclude=/build/ ${IONIC_PATH}/* ${PREPARED_APPS_PATH}/${LOWERCASE_APP_NAME}
+        echo "rsync -a --no-perms --delete --omit-dir-times --exclude=/platforms/ --exclude=/build/ ${IONIC_PATH}/* ${PREPARED_APPS_PATH}/${LOWERCASE_APP_NAME}"
+        rsync -a --delete --no-perms --omit-dir-times --exclude=/platforms/ --exclude=/build/ ${IONIC_PATH}/* ${PREPARED_APPS_PATH}/${LOWERCASE_APP_NAME}
 
         # We do this at this higher level so Jenkins can detect the exit code
         if [ -f ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${LOWERCASE_APP_NAME}-android-armv7-release-signed.apk ];
@@ -301,8 +301,8 @@ if [ -z ${BUILD_EPHARMIX} ];
         sudo mkdir ${PREPARED_APPS_PATH}/${LOWERCASE_APP_NAME}
         sudo chmod -R 777 ${PREPARED_APPS_PATH}
         cd /jenkins
-        echo "rsync -a --delete --no-perms --omit-dir-times --exclude=/platforms/ --exclude=/node_modules/ --exclude=/build/ ${IONIC_PATH}/* ${PREPARED_APPS_PATH}/${LOWERCASE_APP_NAME}"
-        rsync -a --delete --no-perms --omit-dir-times --exclude=/platforms/ --exclude=/node_modules/ --exclude=/build/ ${IONIC_PATH}/* ${PREPARED_APPS_PATH}/${LOWERCASE_APP_NAME}
+        echo "rsync -a --delete --no-perms --omit-dir-times --exclude=/platforms/ --exclude=/build/ ${IONIC_PATH}/* ${PREPARED_APPS_PATH}/${LOWERCASE_APP_NAME}"
+        rsync -a --delete --no-perms --omit-dir-times --exclude=/platforms/ --exclude=/build/ ${IONIC_PATH}/* ${PREPARED_APPS_PATH}/${LOWERCASE_APP_NAME}
 
         # We do this at this higher level so Jenkins can detect the exit code
         if [ -f ${DROPBOX_PATH}/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${LOWERCASE_APP_NAME}-android-armv7-release-signed.apk ];
