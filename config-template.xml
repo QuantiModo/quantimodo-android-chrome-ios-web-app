@@ -8,7 +8,6 @@
       QuantiModo
   </author>
   <access origin="*" />
-  <access origin="https://widget.intercom.io/*" />
   <allow-intent href="http://*/*" />
   <allow-intent href="https://*/*" />
   <allow-intent href="tel:*" />
