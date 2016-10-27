@@ -1,7 +1,7 @@
 {
   "name": "Epharmix",
   "description": "Improving Health Outcomes",
-  "version": "IONIC_APP_VERSION_NUMBER",
+  "version": "IONIC_APP_VERSION_NUMBER_PLACEHOLDER",
   "manifest_version": 2,
   "minimum_chrome_version": "33",
   "icons": {

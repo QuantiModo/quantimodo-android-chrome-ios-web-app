@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "EnergyModo Energy-Tracking Extension",
   "description": "Track and see what affects your energy levels!",
-  "version": "IONIC_APP_VERSION_NUMBER",
+  "version": "IONIC_APP_VERSION_NUMBER_PLACEHOLDER",
   "options_page": "www/chrome_extension/options/options.html",
   "icons": {
     "16"	: "www/img/icons/icon_16.png",

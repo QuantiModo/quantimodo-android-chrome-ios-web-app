@@ -1,8 +1,8 @@
 ﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<widget id="APP_IDENTIFIER" version="IONIC_APP_VERSION_NUMBER" ios-CFBundleVersion="IONIC_IOS_APP_VERSION_NUMBER" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
-  <name>APP_DISPLAY_NAME</name>
+<widget id="APP_IDENTIFIER_PLACEHOLDER" version="IONIC_APP_VERSION_NUMBER_PLACEHOLDER" ios-CFBundleVersion="IONIC_IOS_APP_VERSION_NUMBER_PLACEHOLDER" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+  <name>APP_DISPLAY_NAME_PLACEHOLDER</name>
   <description>
-    APP_DESCRIPTION
+    APP_DESCRIPTION_PLACEHOLDER
   </description>
   <author email="mike@quantimo.do" href="https://quantimo.do/">
       QuantiModo
