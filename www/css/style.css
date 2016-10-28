@@ -664,10 +664,3 @@ img.intro-primary-outcome-variable-rating-buttons {
 #statisticsCard label {
     padding: 6px 10px 5px 16px;
 }
-/*overwrite ionic.css line 9020 to get intropage button to the bottom*/
-#skipButtonIntro, #nextButtonIntro{
-   
-    bottom:1%!important;
-    position: absolute!important;
-
-}
