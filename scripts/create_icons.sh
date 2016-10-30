@@ -15,7 +15,7 @@
 #ionic platform add android
 echo "Generating images for ${LOWERCASE_APP_NAME} at ${PWD}..."
 ionic resources
-convert resources/icon.psd -resize 700x700 -flatten resources/icon.png
+convert resources/icon.psd -resize 700x700 -flatten resources/icon.png || true
 cp resources/icon.png www/img/icons/icon_700.png
 cp resources/icon* www/img/icons/
 convert resources/icon.png -resize 16x16 www/img/icons/icon_16.png
@@ -24,6 +24,6 @@ convert resources/icon.png -resize 128x128 www/img/icons/icon_128.png
 cp -rf www/img platforms/android/res/drawable-hdpi/
 cp -rf resources/android/res platforms/android/
 
-#echo "Generating ios images for ${LOWERCASE_APP_NAME} at ${PWD}..."
-#cp resources/icon_white.png resources/icon.png
-#ionic resources ios
+echo "Generating ios images for ${LOWERCASE_APP_NAME} at ${PWD}..."
+cp resources/icon_white.png resources/icon.png || true
+ionic resources ios
