@@ -24,6 +24,6 @@ convert resources/icon.png -resize 128x128 www/img/icons/icon_128.png
 cp -rf www/img platforms/android/res/drawable-hdpi/
 cp -rf resources/android/res platforms/android/
 
-echo "Generating ios images for ${LOWERCASE_APP_NAME} at ${PWD}..."
-cp resources/icon_white.png resources/icon.png || true
-ionic resources ios
+#echo "Generating ios images for ${LOWERCASE_APP_NAME} at ${PWD}..."
+#cp resources/icon_white.png resources/icon.png || true
+#ionic resources ios
