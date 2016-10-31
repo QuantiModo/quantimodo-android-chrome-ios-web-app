@@ -1067,8 +1067,7 @@ gulp.task('ic_notification', function() {
 		.pipe(gulp.dest('./platforms/android/res'));
 });
 
-gulp.task('updateConfigXmlUsingEnvs', function(){
-
+var updateConfigXmlUsingEnvs = function(){
 	console.log('gulp updateConfigXmlUsingEnvs was called');
 	var deferred = q.defer();
 	var environmentalVariables = process.env;
@@ -1114,9 +1113,9 @@ gulp.task('updateConfigXmlUsingEnvs', function(){
 			if(process.env.APP_DISPLAY_NAME) {
 				parsedXmlFile.widget.name[0] = process.env.APP_DISPLAY_NAME;
 			}
-            if(process.env.APP_DESCRIPTION) {
-                parsedXmlFile.widget.description[0] = process.env.APP_DESCRIPTION;
-            }
+			if(process.env.APP_DESCRIPTION) {
+				parsedXmlFile.widget.description[0] = process.env.APP_DESCRIPTION;
+			}
 			if(process.env.APP_IDENTIFIER) {
 				parsedXmlFile.widget.$["id"] = process.env.APP_IDENTIFIER;
 			}
@@ -1137,6 +1136,10 @@ gulp.task('updateConfigXmlUsingEnvs', function(){
 	});
 
 	return deferred.promise;
+};
+
+gulp.task('updateConfigXmlUsingEnvs', ['generateIosResources'], function(){
+	updateConfigXmlUsingEnvs();
 });
 
 // Setup platforms to build that are supported on current hardware
@@ -1264,7 +1267,7 @@ gulp.task('template', function(done){
 });
 
 gulp.task('setVersionNumberEnvs', function () {
-	process.env.IONIC_IOS_APP_VERSION_NUMBER = "2.0.9.0";
+	process.env.IONIC_IOS_APP_VERSION_NUMBER = "2.0.9.1";
 	process.env.IONIC_APP_VERSION_NUMBER = process.env.IONIC_IOS_APP_VERSION_NUMBER.substring(0, 5);
 });
 
@@ -1281,24 +1284,29 @@ gulp.task('copyAppResources', ['clean'], function () {
 	}).pipe(gulp.dest('.'));
 });
 
-gulp.task('generateIosResources', [], function () {
+var generateIosResources = function(){
 	execute("ionic resources ios", function(error){
 		if(error !== null){
 			console.log("ERROR GENERATING iOS RESOURCES for " + process.env.LOWERCASE_APP_NAME + ": " + error);
 		} else {
 			console.log("\n***iOS RESOURCES GENERATED for " + process.env.LOWERCASE_APP_NAME);
+			updateConfigXmlUsingEnvs();
 		}
 	});
+};
+
+gulp.task('generateIosResources', [], function () {
+	generateIosResources();
 });
 
 gulp.task('prepareIosApp',
 	[
 		'setVersionNumberEnvs',
-		'copyAppResources',
-		'generateIosResources',
-		'updateConfigXmlUsingEnvs'
+		'copyAppResources'
 	],
-	function () {}
+	function () {
+		generateIosResources();
+	}
 );
 
 gulp.task('prepareQuantiModoIos', [
