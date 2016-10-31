@@ -21,7 +21,6 @@
   </feature>
   <icon src="resources\ios\icon\icon-small@3x.png"/>
   <platform name="android">
-    <hook type="after_prepare" src="hooks/copy_android_notification_icons.sh"/>
     <hook type="after_prepare" src="package-hooks/android_custom_resources.js" />
     <allow-intent href="market:*" />
   </platform>
