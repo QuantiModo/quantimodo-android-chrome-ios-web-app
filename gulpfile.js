@@ -1111,7 +1111,15 @@ gulp.task('setVersionNumbersWithEnvs', function(){
 
 			parsedXmlFile.widget.$["version"] = environmentalVariables.IONIC_APP_VERSION_NUMBER;
 			parsedXmlFile.widget.$["ios-CFBundleVersion"] = environmentalVariables.IONIC_IOS_APP_VERSION_NUMBER;
-
+			if(process.env.APP_DISPLAY_NAME) {
+				parsedXmlFile.widget.name[0] = process.env.APP_DISPLAY_NAME;
+			}
+            if(process.env.APP_DESCRIPTION) {
+                parsedXmlFile.widget.description[0] = process.env.APP_DESCRIPTION;
+            }
+			if(process.env.APP_IDENTIFIER) {
+				parsedXmlFile.widget.$["id"] = process.env.APP_IDENTIFIER;
+			}
 			var builder = new xml2js.Builder();
 			var updatedXmlFile = builder.buildObject(parsedXmlFile);
 
@@ -1254,3 +1262,32 @@ gulp.task('template', function(done){
 		.pipe(gulp.dest('./public'))
 		.on('end', done);
 });
+
+gulp.task('setQuantiModoEnvs', function () {
+	process.env.APP_DISPLAY_NAME = "QuantiModo";
+	process.env.LOWERCASE_APP_NAME = "quantimodo";
+	process.env.IONIC_APP_VERSION_NUMBER = "2.0.8";
+	process.env.IONIC_IOS_APP_VERSION_NUMBER = "2.0.8.0";
+	process.env.APP_IDENTIFIER = "com.quantimodo.quantimodo";
+	process.env.APP_DESCRIPTION = "Perfect your life!";
+});
+
+gulp.task('prepareApp', function () {
+	gulp.src(['apps/quantimodo/**/*'], {
+		base: 'apps/quantimodo'
+	}).pipe(gulp.dest('.'));
+
+	execute("ionic resources ios", function(error){
+		if(error !== null){
+			console.log("ERROR GENERATING iOS RESOURCES: " + error);
+		} else {
+			console.log("\n***iOS RESOURCES GENERATED****");
+		}
+	});
+});
+
+gulp.task('prepareQuantiModo', [
+	'setQuantiModoEnvs',
+	'prepareApp',
+	'setVersionNumbersWithEnvs'
+]);
