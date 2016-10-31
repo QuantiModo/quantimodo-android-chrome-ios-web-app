@@ -49,6 +49,9 @@ if [ ! -f ${APP_PRIVATE_CONFIG_PATH}/${LOWERCASE_APP_NAME}.config.js ]; then
     exit 1
 fi
 
+echo "Removing left over resources from previous app"
+rm -rf ${INTERMEDIATE_PATH}/resources/*
+
 export LC_CTYPE=C
 export LANG=C
 echo -e "${GREEN}Replacing IONIC_APP_VERSION_NUMBER with ${IONIC_APP_VERSION_NUMBER}...${NC}"
