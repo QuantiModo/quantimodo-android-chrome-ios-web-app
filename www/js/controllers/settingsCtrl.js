@@ -164,12 +164,12 @@ angular.module('starter')
 							});
 							$ionicPopup.alert({
 								title: 'Earliest Notification Time Updated',
-								template: 'You should not receive device notifications or tracking reminder notifications in your inbox before ' + moment(a).format('h:mm A') + '.'
+								template: 'You should not receive device notifications before ' + moment(a).format('h:mm A') + '.'
 							});
 						}
 					}
 				},
-				inputTime: timeService.getSecondsSinceMidnightLocalFromLocalString($rootScope.user.earliestReminderTime),
+				inputTime: timeService.getSecondsSinceMidnightLocalRoundedToNearestFifteenFromLocalString($rootScope.user.earliestReminderTime),
 				step: 15,
 				closeLabel: 'Cancel'
 			};
@@ -207,12 +207,12 @@ angular.module('starter')
 							});
 							$ionicPopup.alert({
 								title: 'Latest Notification Time Updated',
-								template: 'You should not receive device notifications or tracking reminder notifications in your inbox after ' + moment(a).format('h:mm A') + '.'
+								template: 'You should not receive device notification after ' + moment(a).format('h:mm A') + '.'
 							});
 						}
 					}
 				},
-				inputTime: timeService.getSecondsSinceMidnightLocalFromLocalString($rootScope.user.latestReminderTime),
+				inputTime: timeService.getSecondsSinceMidnightLocalRoundedToNearestFifteenFromLocalString($rootScope.user.latestReminderTime),
 				step: 15,
 				closeLabel: 'Cancel'
 			};

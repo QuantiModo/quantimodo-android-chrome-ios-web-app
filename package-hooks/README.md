@@ -56,6 +56,24 @@ recommended). If you want a hook to run before another one, reorder the `<hook
 * **function**: Adds the various platform CSS classes to the `<body>` tag of
   your app such as `platform-android`, `platform-ios`, etc.
 
+##### `android_custom_resources.js`
+
+* **author**: [@schmoofer](https://github.com/schmoofer)/[@dwieeb](https://github.com/dwieeb)
+* **usage**: `<hook type="after_prepare" src="package-hooks/android_custom_resources.js" />`
+* **function**: Copies assets in `resources/android/custom/` to all drawable-*
+  directories in `platforms/android/res`. Asset filenames must only use a-z,
+  0-9, and underscores. Example application: Allows for custom icons to be used
+  in Android notifications (action buttons and the notification icon) when
+  using the Push plugin.
+
+##### `android_custom_values.js`
+
+* **author**: [@Just-Ghali](https://github.com/Just-Ghali)
+* **usage**: `<hook type="after_prepare" src="package-hooks/android_custom_values.js" />`
+* **function**: Copies style files from `resources/android/values/` to `platforms/android/res/values`. Adds the ability
+  to add custom themes.xml and styles.xml to the res/values folder in the android build.
+* **credit**: [@schmoofer](https://github.com/schmoofer)/[@dwieeb](https://github.com/dwieeb)
+
 ##### `android_ignore_translation_errors.js`
 
 * **author**: [@carson-drake](https://github.com/carson-drake)
@@ -78,6 +96,16 @@ recommended). If you want a hook to run before another one, reorder the `<hook
   listings to communicate with Facebook natively to the `.plist` file,
   allowing login and other features to occur natively rather than in safari.
 * **credit**: [@mablack](https://github.com/mablack)
+
+
+##### `ios9_allow_native_whatsapp.sh`
+
+* **author**: [@alongendler](https://github.com/alongendler)
+* **usage**: `<hook type="after_prepare" src="package-hooks/ios9_allow_native_whatsapp.sh" />`
+* **function**: Adds `LSApplicationQueriesSchemes` if needed and then adds the required
+  key to communicate with whatsapp natively to the `.plist` file,
+  allowing to query the presence of WhatsApp on device using canOpenURL.
+* **credit**: [@mablack](https://github.com/mablack), [@carson-drake](https://github.com/carson-drake)
 
 ##### `ios_disable_bitcode.js`
 

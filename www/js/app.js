@@ -265,51 +265,51 @@ angular.module('starter',
         $state.go(state, params);
     };
 
+    if(!window.private_keys) {
+        console.error('Please add private config file to www/private_configs folder!  Contact mike@quantimo.do if you need help');
+        return;
+    }
+
+    $rootScope.appVersion = "2.0.9.0";
+    $rootScope.appName = config.appSettings.appName;
+
+    if (typeof Bugsnag !== "undefined") {
+        //$rootScope.bugsnagApiKey = window.private_keys.bugsnag_key;
+        //Bugsnag.apiKey = "ae7bc49d1285848342342bb5c321a2cf";
+        //Bugsnag.notifyReleaseStages = ['Production','Staging'];
+        Bugsnag.appVersion = $rootScope.appVersion;
+        Bugsnag.metaData = {
+            platform: ionic.Platform.platform(),
+            platformVersion: ionic.Platform.version(),
+            appName: config.appSettings.appName
+        };
+    }
+
+    $ionicPlatform.registerBackButtonAction(function (event) {
+        if($ionicHistory.currentStateName() === config.appSettings.defaultState){
+            ionic.Platform.exitApp();
+        }
+        else {
+            if($ionicHistory.backView()){
+                $ionicHistory.goBack();
+            } else if(localStorage.user){
+                $rootScope.hideNavigationMenu = false;
+                console.debug('registerBackButtonAction: Going to default state...');
+                $state.go(config.appSettings.defaultState);
+            } else {
+                /*
+                 console.debug('registerBackButtonAction: Going to welcome state...');
+                 $state.go(config.appSettings.welcomeState);
+                 */
+                console.debug('registerBackButtonAction: Closing the app');
+                ionic.Platform.exitApp();
+            }
+        }
+    }, 100);
+
     var intervalChecker = setInterval(function(){
         if(typeof config !== "undefined"){
             clearInterval(intervalChecker);
-
-            if(!window.private_keys) {
-                console.error('Please add private config file to www/private_configs folder!  Contact mike@quantimo.do if you need help');
-                return;
-            }
-
-            $rootScope.appVersion = "2.0.8.0";
-            $rootScope.appName = config.appSettings.appName;
-
-            if (typeof Bugsnag !== "undefined") {
-                //$rootScope.bugsnagApiKey = window.private_keys.bugsnag_key;
-                //Bugsnag.apiKey = "ae7bc49d1285848342342bb5c321a2cf";
-                //Bugsnag.notifyReleaseStages = ['Production','Staging'];
-                Bugsnag.appVersion = $rootScope.appVersion;
-                Bugsnag.metaData = {
-                    platform: ionic.Platform.platform(),
-                    platformVersion: ionic.Platform.version(),
-                    appName: config.appSettings.appName
-                };
-            }
-
-            $ionicPlatform.registerBackButtonAction(function (event) {
-                if($ionicHistory.currentStateName() === config.appSettings.defaultState){
-                    ionic.Platform.exitApp();
-                }
-                else {
-                    if($ionicHistory.backView()){
-                        $ionicHistory.goBack();
-                    } else if(localStorage.user){
-                        $rootScope.hideNavigationMenu = false;
-                        console.debug('registerBackButtonAction: Going to default state...');
-                        $state.go(config.appSettings.defaultState);
-                    } else {
-                        /*
-                        console.debug('registerBackButtonAction: Going to welcome state...');
-                        $state.go(config.appSettings.welcomeState);
-                        */
-                        console.debug('registerBackButtonAction: Closing the app');
-                        ionic.Platform.exitApp();
-                    }
-                }
-            }, 100);  
         }
     }, 500);
 
