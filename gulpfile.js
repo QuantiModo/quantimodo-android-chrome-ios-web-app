@@ -1072,18 +1072,15 @@ gulp.task('updateConfigXmlUsingEnvs', function(){
 	console.log('gulp updateConfigXmlUsingEnvs was called');
 	var deferred = q.defer();
 	var environmentalVariables = process.env;
-	if(!environmentalVariables.IONIC_APP_VERSION_NUMBER){
-		//throw new Error('Please set IONIC_APP_VERSION_NUMBER env!');
-		environmentalVariables.IONIC_APP_VERSION_NUMBER = '2.0.8';
-		console.log('No IONIC_APP_VERSION_NUMBER env!  Using hardcoded gulp version number ' +
-			environmentalVariables.IONIC_APP_VERSION_NUMBER);
-	}
 
 	if(!environmentalVariables.IONIC_IOS_APP_VERSION_NUMBER){
 		//throw new Error('Please set IONIC_IOS_APP_VERSION_NUMBER env!');
-		environmentalVariables.IONIC_IOS_APP_VERSION_NUMBER = '2.0.8.0';
+		environmentalVariables.IONIC_IOS_APP_VERSION_NUMBER = '2.0.9.0';
 		console.log('No IONIC_IOS_APP_VERSION_NUMBER env!  Using hardcoded gulp version number ' +
 			environmentalVariables.IONIC_IOS_APP_VERSION_NUMBER);
+		environmentalVariables.IONIC_APP_VERSION_NUMBER = environmentalVariables.IONIC_IOS_APP_VERSION_NUMBER.substring(0, 5);
+		console.log('No IONIC_APP_VERSION_NUMBER env!  Using hardcoded gulp version number ' +
+			environmentalVariables.IONIC_APP_VERSION_NUMBER);
 	}
 
 	var xml = fs.readFileSync('./config-template-ios.xml', 'utf8');
@@ -1267,8 +1264,8 @@ gulp.task('template', function(done){
 });
 
 gulp.task('setVersionNumberEnvs', function () {
-	process.env.IONIC_APP_VERSION_NUMBER = "2.0.8";
-	process.env.IONIC_IOS_APP_VERSION_NUMBER = "2.0.8.5";
+	process.env.IONIC_IOS_APP_VERSION_NUMBER = "2.0.9.0";
+	process.env.IONIC_APP_VERSION_NUMBER = process.env.IONIC_IOS_APP_VERSION_NUMBER.substring(0, 5);
 });
 
 gulp.task('setQuantiModoEnvs', function () {
