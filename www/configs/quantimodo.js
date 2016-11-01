@@ -96,6 +96,7 @@ config.appSettings  = {
         "happy" : 4,
         "ecstatic": 5
     },
+    backgroundColor: '#3467d6',  // TODO: Make background color configurable
 
     intro : [
         // screen 1
