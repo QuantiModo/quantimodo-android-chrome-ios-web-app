@@ -1191,6 +1191,24 @@ gulp.task('setQuantiModoEnvs', [], function(callback){
 	callback();
 });
 
+gulp.task('setMindFirstEnvs', [], function(callback){
+	process.env.APP_DISPLAY_NAME = "MindFirst";
+	process.env.LOWERCASE_APP_NAME = "mindfirst";
+	process.env.APP_IDENTIFIER = "com.quantimodo.mindfirst";
+	process.env.APP_DESCRIPTION = "Empowering a new approach to mind research";
+	callback();
+});
+
+gulp.task('setAndroidEnvs', [], function(callback){
+	process.env.CONFIG_TEPLATE_PATH = "./config-template.xml";
+	callback();
+});
+
+gulp.task('setIosEnvs', [], function(callback){
+	process.env.CONFIG_TEPLATE_PATH = "./config-template-ios.xml";
+	callback();
+});
+
 gulp.task('setVersionNumberEnvs', [], function(callback){
 	process.env.IONIC_IOS_APP_VERSION_NUMBER = "2.0.9.1";
 	process.env.IONIC_APP_VERSION_NUMBER = process.env.IONIC_IOS_APP_VERSION_NUMBER.substring(0, 5);
@@ -1232,9 +1250,9 @@ gulp.task('generateIosResources', ['useWhiteIcon'], function(callback){
 	});
 });
 
-gulp.task('updateConfigXmlUsingEnvs', ['generateIosResources'], function(callback){
+gulp.task('updateConfigXmlUsingEnvs', [], function(callback){
 	console.log('gulp updateConfigXmlUsingEnvs was called');
-	var xml = fs.readFileSync('./config-template-ios.xml', 'utf8');
+	var xml = fs.readFileSync(process.env.CONFIG_TEPLATE_PATH, 'utf8');
 	parseString(xml, function (err, parsedXmlFile) {
 		if(err){
 			throw new Error("failed to read xml file", err);
@@ -1336,7 +1354,35 @@ gulp.task('buildChromeExtension', [], function(callback){
 gulp.task('prepareQuantiModoIos', function(callback){
 	runSequence(
 		'setQuantiModoEnvs',
+		'setIosEnvs',
 		'prepareIosApp',
 		'buildChromeExtension',
+		callback);
+});
+
+gulp.task('generateAndroidResources', ['copyAppResources'], function(callback){
+	return execute("ionic resources android", function(error){
+		if(error !== null){
+			console.log("ERROR GENERATING Android RESOURCES for " + process.env.LOWERCASE_APP_NAME + ": " + error);
+		} else {
+			console.log("\n***Android RESOURCES GENERATED for " + process.env.LOWERCASE_APP_NAME);
+			callback();
+		}
+	});
+});
+
+gulp.task('prepareAndroidApp', function(callback){
+	runSequence(
+		'setVersionNumberEnvs',
+		'setAndroidEnvs',
+		'updateConfigXmlUsingEnvs',
+		'generateAndroidResources',
+		callback);
+});
+
+gulp.task('prepareMindFirstAndroid', function(callback){
+	runSequence(
+		'setMindFirstEnvs',
+		'prepareAndroidApp',
 		callback);
 });
