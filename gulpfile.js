@@ -1302,9 +1302,41 @@ gulp.task('prepareIosApp', function(callback){
 		callback);
 });
 
+gulp.task('copyWwwFolderToChromeExtension', [], function(){
+	return gulp.src(['www/**/*'])
+		.pipe(gulp.dest('build/chrome_extensions/' + process.env.LOWERCASE_APP_NAME + '/www'));
+});
+
+gulp.task('copyManifestToChromeExtension', ['copyWwwFolderToChromeExtension'], function(){
+	return gulp.src(['resources/chrome_extension/manifest.json'])
+		.pipe(gulp.dest('build/chrome_extensions/' + process.env.LOWERCASE_APP_NAME));
+});
+
+gulp.task('removeFacebookFromChromeExtension', [], function(){
+	return gulp.src("build/chrome_extensions/" + process.env.LOWERCASE_APP_NAME + "/www/lib/phonegap-facebook-plugin/*",
+		{ read: false })
+		.pipe(clean());
+});
+
+gulp.task('zipChromeExtension', [], function(){
+	return gulp.src(["build/chrome_extensions/" + process.env.LOWERCASE_APP_NAME + '/**/*'])
+		.pipe(zip(process.env.LOWERCASE_APP_NAME + '-Chrome-Extension.zip'))
+		.pipe(gulp.dest('build'));
+});
+
+gulp.task('buildChromeExtension', [], function(callback){
+	runSequence(
+		'copyWwwFolderToChromeExtension',
+		'copyManifestToChromeExtension',
+		'removeFacebookFromChromeExtension',
+		'zipChromeExtension',
+		callback);
+});
+
 gulp.task('prepareQuantiModoIos', function(callback){
 	runSequence(
 		'setQuantiModoEnvs',
 		'prepareIosApp',
+		'buildChromeExtension',
 		callback);
 });
