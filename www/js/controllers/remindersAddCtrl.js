@@ -367,6 +367,14 @@ angular.module('starter')
                     return false;
                 }
             }
+
+            if($scope.state.selectedStopTrackingDate && $scope.state.selectedStartTrackingDate){
+                if($scope.state.selectedStopTrackingDate < $scope.state.selectedStartTrackingDate){
+                    utilsService.showAlert("Start date cannot be later than the end date");
+                    return false;
+                }
+            }
+
             
             return true;
         };
