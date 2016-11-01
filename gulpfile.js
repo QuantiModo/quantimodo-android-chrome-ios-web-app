@@ -1296,14 +1296,9 @@ gulp.task('bumpIosVersion', function(callback){
 
 gulp.task('prepareIosApp', function(callback){
 	runSequence(
-		'cleanResources',
-		'copyAppResources',
-		'removeTransparentPng',
-		'removeTransparentPsd',
-		'useWhiteIcon',
 		'generateIosResources',
-		'updateConfigXmlUsingEnvs',
 		'bumpIosVersion',
+		'updateConfigXmlUsingEnvs',
 		callback);
 });
 
