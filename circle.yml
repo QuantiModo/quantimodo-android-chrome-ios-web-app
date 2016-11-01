@@ -52,7 +52,7 @@ general:
       - gh-pages # list of branches to ignore
       - /master\/.*/ # or ignore regexes
       - /release\/.*/ # or ignore regexes
-      #- /feature\/.*/ # or ignore regexes
+      - /feature\/.*/ # or ignore regexes
   artifacts:
     - "/home/ubuntu/QM-Docker/ghostinspector.json"
 
