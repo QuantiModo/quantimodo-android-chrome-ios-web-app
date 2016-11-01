@@ -209,6 +209,7 @@ angular.module('starter')
                 var urlParams = [];
                 urlParams.push(encodeURIComponent('appName') + '=' + encodeURIComponent(config.appSettings.appName));
                 urlParams.push(encodeURIComponent('appVersion') + '=' + encodeURIComponent($rootScope.appVersion));
+                items.clientId = utilsService.getClientId();
 
                 var url = utilsService.getURL(baseURL) + ((urlParams.length === 0) ? '' : urlParams.join('&'));
 
