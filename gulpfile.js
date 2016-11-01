@@ -1351,12 +1351,19 @@ gulp.task('buildChromeExtension', [], function(callback){
 		callback);
 });
 
+gulp.task('prepareQuantiModo', function(callback){
+    runSequence(
+        'setQuantiModoEnvs',
+        'prepareIosApp',
+        'buildChromeExtension',
+        callback);
+});
+
 gulp.task('prepareQuantiModoIos', function(callback){
 	runSequence(
 		'setQuantiModoEnvs',
 		'setIosEnvs',
 		'prepareIosApp',
-		'buildChromeExtension',
 		callback);
 });
 
