@@ -99,6 +99,7 @@ config.appSettings  = {
         "happy" : 4,
         "ecstatic": 5
     },
+    backgroundColor: "white",
 
     intro : [
         // screen 1
