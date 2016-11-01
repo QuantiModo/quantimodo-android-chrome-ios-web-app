@@ -97,7 +97,7 @@ angular.module('starter')
                     QuantiModo.skipTrackingReminderNotification(params, function(response){
                         console.debug(response);
                     }, function(error){
-                        console.error(error);
+                        console.error(JSON.stringify(error));
                         if (typeof Bugsnag !== "undefined") {
                             Bugsnag.notify(error, JSON.stringify(error), {}, "error");
                         }
