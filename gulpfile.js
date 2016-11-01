@@ -1234,46 +1234,11 @@ gulp.task('generateIosResources', ['useWhiteIcon'], function(callback){
 
 gulp.task('updateConfigXmlUsingEnvs', ['generateIosResources'], function(callback){
 	console.log('gulp updateConfigXmlUsingEnvs was called');
-	var environmentalVariables = process.env;
-
-	if(!environmentalVariables.IONIC_IOS_APP_VERSION_NUMBER){
-		//throw new Error('Please set IONIC_IOS_APP_VERSION_NUMBER env!');
-		environmentalVariables.IONIC_IOS_APP_VERSION_NUMBER = '2.0.9.0';
-		console.log('No IONIC_IOS_APP_VERSION_NUMBER env!  Using hardcoded gulp version number ' +
-			environmentalVariables.IONIC_IOS_APP_VERSION_NUMBER);
-		environmentalVariables.IONIC_APP_VERSION_NUMBER = environmentalVariables.IONIC_IOS_APP_VERSION_NUMBER.substring(0, 5);
-		console.log('No IONIC_APP_VERSION_NUMBER env!  Using hardcoded gulp version number ' +
-			environmentalVariables.IONIC_APP_VERSION_NUMBER);
-	}
-
 	var xml = fs.readFileSync('./config-template-ios.xml', 'utf8');
-
 	parseString(xml, function (err, parsedXmlFile) {
 		if(err){
 			throw new Error("failed to read xml file", err);
 		} else {
-
-			if(parsedXmlFile && parsedXmlFile.widget && parsedXmlFile.widget.$ ){
-				if(parsedXmlFile.widget.$['version']) {
-					var currentVersionNumber = parsedXmlFile.widget.$['version'];
-				}
-				if(parsedXmlFile.widget.$["ios-CFBundleVersion"]) {
-					var currentIosVersionNumber = parsedXmlFile.widget.$["ios-CFBundleVersion"];
-				}
-			}
-
-			if(!parsedXmlFile) {
-				parsedXmlFile = {};
-			}
-			if(!parsedXmlFile.widget) {
-				parsedXmlFile['widget'] = {};
-			}
-			if(!parsedXmlFile.widget.$) {
-				parsedXmlFile.widget['$'] = {};
-			}
-
-			parsedXmlFile.widget.$["version"] = environmentalVariables.IONIC_APP_VERSION_NUMBER;
-			parsedXmlFile.widget.$["ios-CFBundleVersion"] = environmentalVariables.IONIC_IOS_APP_VERSION_NUMBER;
 			if(process.env.APP_DISPLAY_NAME) {
 				parsedXmlFile.widget.name[0] = process.env.APP_DISPLAY_NAME;
 			}
@@ -1290,8 +1255,7 @@ gulp.task('updateConfigXmlUsingEnvs', ['generateIosResources'], function(callbac
 				if (err) {
 					console.log("Error updating version number in config.xml", err);
 				} else {
-					console.log("Successfully updated the version number to " +
-						environmentalVariables.IONIC_APP_VERSION_NUMBER + " in config.xml file");
+					console.log("Successfully updated config.xml file");
 					callback();
 				}
 			});
@@ -1299,9 +1263,39 @@ gulp.task('updateConfigXmlUsingEnvs', ['generateIosResources'], function(callbac
 	});
 });
 
-gulp.task('prepareQuantiModoIos', function(callback){
-	runSequence('setQuantiModoEnvs',
-		'setVersionNumberEnvs',
+gulp.task('bumpIosVersion', function(callback){
+	var xml = fs.readFileSync('./config-template-ios.xml', 'utf8');
+	parseString(xml, function (err, result) {
+		if(err){
+			console.log("failed to read xml file", err);
+		} else {
+			var numberToBumpArr = result.widget.$["ios-CFBundleVersion"].split('.');
+			var numberToBump = numberToBumpArr[numberToBumpArr.length-1];
+			numberToBumpArr[numberToBumpArr.length-1] = (parseInt(numberToBump)+1).toString();
+			result.widget.$["ios-CFBundleVersion"] = numberToBumpArr.join('.');
+			var builder = new xml2js.Builder();
+			var updatedXml = builder.buildObject(result);
+			fs.writeFile('./config.xml', updatedXml, 'utf8', function (err) {
+				if (err) {
+					console.log("error writing to xml file", err);
+				} else {
+					console.log("successfully updated the version number xml file");
+				}
+			});
+			fs.writeFile('./config-template-ios.xml', updatedXml, 'utf8', function (err) {
+				if (err) {
+					console.log("error writing to config-template-ios.xml file", err);
+				} else {
+					console.log("successfully updated the version number config-template-ios.xml file");
+					callback();
+				}
+			});
+		}
+	});
+});
+
+gulp.task('prepareIosApp', function(callback){
+	runSequence(
 		'cleanResources',
 		'copyAppResources',
 		'removeTransparentPng',
@@ -1309,5 +1303,13 @@ gulp.task('prepareQuantiModoIos', function(callback){
 		'useWhiteIcon',
 		'generateIosResources',
 		'updateConfigXmlUsingEnvs',
+		'bumpIosVersion',
+		callback);
+});
+
+gulp.task('prepareQuantiModoIos', function(callback){
+	runSequence(
+		'setQuantiModoEnvs',
+		'prepareIosApp',
 		callback);
 });
