@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-export IONIC_APP_VERSION_NUMBER=2.0.8
-export IONIC_IOS_APP_VERSION_NUMBER="2.0.8.0"
+export IONIC_IOS_APP_VERSION_NUMBER="2.0.9.0"
+export IONIC_APP_VERSION_NUMBER=${IONIC_IOS_APP_VERSION_NUMBER:0:5}
 
 export RED='\033[0;31m'
 export GREEN='\033[0;32m'
@@ -15,17 +15,19 @@ cd ../..
 export IONIC_PATH="$PWD"
 
 echo "IONIC_PATH is $IONIC_PATH"
-
-cd ..
-mkdir intermediates
-cd intermediates
-export INTERMEDIATE_PATH="$PWD"
+export INTERMEDIATE_PATH="$IONIC_PATH"
 echo "INTERMEDIATE_PATH is $INTERMEDIATE_PATH"
 
-cd ..
-rsync -a --delete --exclude=/platforms/ --exclude=/node_modules/  ${IONIC_PATH}/* ${INTERMEDIATE_PATH}
+#cd ..
+#mkdir intermediates
+#cd intermediates
+#export INTERMEDIATE_PATH="$PWD"
+#echo "INTERMEDIATE_PATH is $INTERMEDIATE_PATH"
+#
+#cd ..
+#rsync -a --delete --exclude=/platforms/ --exclude=/node_modules/  ${IONIC_PATH}/* ${INTERMEDIATE_PATH}
 
-cd ../..
+cd ../../..
 export QM_DOCKER_PATH="$PWD"
 echo "QM_DOCKER_PATH is ${QM_DOCKER_PATH}"
 
@@ -55,3 +57,4 @@ export APP_DESCRIPTION=Perfect your life
 echo "Cannot use exclamation point in app description"
 
 source ${INTERMEDIATE_PATH}/scripts/build_scripts/01_prepare_project.sh
+ionic resources ios

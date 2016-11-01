@@ -57,8 +57,8 @@ gulp generateXmlConfigAndUpdateAppsJs
 
 
 #ionic resources - We already do this in gulp makeIosApp
-echo "Executing gulp setVersionNumbersWithEnvs"
-gulp setVersionNumbersWithEnvs
+echo "Executing gulp updateConfigXmlUsingEnvs"
+gulp updateConfigXmlUsingEnvs
 #echo "ionic add ionic-platform-web-client"
 #ionic add ionic-platform-web-client
 

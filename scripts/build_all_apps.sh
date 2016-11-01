@@ -1,7 +1,7 @@
 #!/bin/bash
 
-export IONIC_APP_VERSION_NUMBER=2.0.8
-export IONIC_IOS_APP_VERSION_NUMBER="2.0.8.0"
+export IONIC_IOS_APP_VERSION_NUMBER="2.0.9.0"
+export IONIC_APP_VERSION_NUMBER=${IONIC_IOS_APP_VERSION_NUMBER:0:5}
 
 export RED='\033[0;31m'
 export GREEN='\033[0;32m'
@@ -147,8 +147,10 @@ if [ -z ${BUILD_QUANTIMODO} ];
         source ${INTERMEDIATE_PATH}/scripts/build_scripts/02_build_chrome.sh
         #source ${INTERMEDIATE_PATH}/scripts/build_scripts/04_build_ios.sh
         sudo mkdir ${PREPARED_APPS_PATH}/${LOWERCASE_APP_NAME}
-        cd ${INTERMEDIATE_PATH}
-        ionic resources ios
+
+        #cd ${INTERMEDIATE_PATH}
+        #ionic resources ios
+
         sudo chmod -R 777 ${PREPARED_APPS_PATH}
         cd /jenkins
         echo "rsync -a --delete --no-perms --omit-dir-times --exclude=/platforms/ --exclude=/build/ ${INTERMEDIATE_PATH}/* ${PREPARED_APPS_PATH}/${LOWERCASE_APP_NAME}"
@@ -180,8 +182,10 @@ if [ -z ${BUILD_MOODIMODO} ];
         source ${INTERMEDIATE_PATH}/scripts/build_scripts/02_build_chrome.sh
         #source ${INTERMEDIATE_PATH}/scripts/build_scripts/04_build_ios.sh
         sudo mkdir ${PREPARED_APPS_PATH}/${LOWERCASE_APP_NAME}
-        cd ${INTERMEDIATE_PATH}
-        ionic resources ios
+
+        #cd ${INTERMEDIATE_PATH}
+        #ionic resources ios
+
         sudo chmod -R 777 ${PREPARED_APPS_PATH}
         cd /jenkins
         echo "rsync -a --delete --no-perms --omit-dir-times --exclude=/platforms/ --exclude=/build/ ${INTERMEDIATE_PATH}/* ${PREPARED_APPS_PATH}/${LOWERCASE_APP_NAME}"
@@ -214,8 +218,10 @@ if [ -z ${BUILD_MINDFIRST} ];
         #source ${INTERMEDIATE_PATH}/scripts/build_scripts/04_build_ios.sh
         sudo mkdir ${PREPARED_APPS_PATH}/${LOWERCASE_APP_NAME}
         sudo chmod -R 777 ${PREPARED_APPS_PATH}
-        cd ${INTERMEDIATE_PATH}
-        ionic resources ios
+
+        #cd ${INTERMEDIATE_PATH}
+        #ionic resources ios
+
         cd /jenkins
         echo "rsync -a --delete --no-perms --omit-dir-times --exclude=/platforms/ --exclude=/build/ ${INTERMEDIATE_PATH}/* ${PREPARED_APPS_PATH}/${LOWERCASE_APP_NAME}"
         rsync -a --delete --no-perms --omit-dir-times --exclude=/platforms/ --exclude=/build/ ${INTERMEDIATE_PATH}/* ${PREPARED_APPS_PATH}/${LOWERCASE_APP_NAME}
@@ -246,8 +252,10 @@ if [ -z ${BUILD_ENERGYMODO} ];
         #source ${INTERMEDIATE_PATH}/scripts/build_scripts/04_build_ios.sh
         sudo mkdir ${PREPARED_APPS_PATH}/${LOWERCASE_APP_NAME}
         sudo chmod -R 777 ${PREPARED_APPS_PATH}
-        cd ${INTERMEDIATE_PATH}
-        ionic resources ios
+
+        #cd ${INTERMEDIATE_PATH}
+        #ionic resources ios
+
         cd /jenkins
         echo "rsync -a --delete --no-perms --omit-dir-times --exclude=/platforms/ --exclude=/build/ ${INTERMEDIATE_PATH}/* ${PREPARED_APPS_PATH}/${LOWERCASE_APP_NAME}"
         rsync -a --delete --no-perms --omit-dir-times --exclude=/platforms/ --exclude=/build/ ${INTERMEDIATE_PATH}/* ${PREPARED_APPS_PATH}/${LOWERCASE_APP_NAME}
@@ -278,8 +286,10 @@ if [ -z ${BUILD_MEDTLC} ];
         #source ${INTERMEDIATE_PATH}/scripts/build_scripts/04_build_ios.sh
         sudo mkdir ${PREPARED_APPS_PATH}/${LOWERCASE_APP_NAME}
         sudo chmod -R 777 ${PREPARED_APPS_PATH}
-        cd ${INTERMEDIATE_PATH}
-        ionic resources ios
+
+        #cd ${INTERMEDIATE_PATH}
+        #ionic resources ios
+
         cd /jenkins
         echo "rsync -a --no-perms --delete --omit-dir-times --exclude=/platforms/ --exclude=/build/ ${INTERMEDIATE_PATH}/* ${PREPARED_APPS_PATH}/${LOWERCASE_APP_NAME}"
         rsync -a --delete --no-perms --omit-dir-times --exclude=/platforms/ --exclude=/build/ ${INTERMEDIATE_PATH}/* ${PREPARED_APPS_PATH}/${LOWERCASE_APP_NAME}
@@ -310,8 +320,10 @@ if [ -z ${BUILD_EPHARMIX} ];
         #source ${INTERMEDIATE_PATH}/scripts/build_scripts/04_build_ios.sh
         sudo mkdir ${PREPARED_APPS_PATH}/${LOWERCASE_APP_NAME}
         sudo chmod -R 777 ${PREPARED_APPS_PATH}
-        cd ${INTERMEDIATE_PATH}
-        ionic resources ios
+
+        #cd ${INTERMEDIATE_PATH}
+        #ionic resources ios
+
         cd /jenkins
         echo "rsync -a --delete --no-perms --omit-dir-times --exclude=/platforms/ --exclude=/build/ ${INTERMEDIATE_PATH}/* ${PREPARED_APPS_PATH}/${LOWERCASE_APP_NAME}"
         rsync -a --delete --no-perms --omit-dir-times --exclude=/platforms/ --exclude=/build/ ${INTERMEDIATE_PATH}/* ${PREPARED_APPS_PATH}/${LOWERCASE_APP_NAME}
