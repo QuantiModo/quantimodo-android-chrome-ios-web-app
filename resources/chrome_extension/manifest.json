@@ -3,7 +3,7 @@
   "name": "QUANTIMODO_TEMPLATE_APP_NAME",
   "description": "QUANTIMODO_TEMPLATE_APP_DESCRIPTION",
   "version": "QUANTIMODO_TEMPLATE_APP_VERSION",
-  "options_page": "options/options.html",
+  "options_page": "www/chrome_extension/options/options.html",
   "icons": {
     "16"	: "www/img/icons/icon_16.png",
     "48"	: "www/img/icons/icon_48.png",
@@ -13,16 +13,17 @@
     "alarms",
     "notifications",
     "storage",
+    "cookies",
     "tabs",
     "https://app.quantimo.do/*",
     "*://cdn.rawgit.com/*"
   ],
   "browser_action": {
     "default_icon": "www/img/icons/icon_700.png",
-    "default_popup": "www/templates/chrome/iframe.html"
+    "default_popup": "www/templates/chrome/reminders-inbox-iframe.html"
   },
   "background": {
-    "scripts": ["www/js/background.js"],
+    "scripts": ["www/js/chrome/background.js"],
     "persistent": false
   }
-} 
+}

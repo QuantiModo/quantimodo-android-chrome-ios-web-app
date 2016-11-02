@@ -42,7 +42,8 @@
     "taco-team-build": "^0.2.1",
     "xcode": "0.8.9",
     "xml2js": "^0.4.15",
-    "gulp-rimraf": "latest"
+    "gulp-rimraf": "latest",
+    "gulp-string-replace": "latest"
   },
   "scripts": {
     "postinstall": "bower install && ionic config build && gulp generatePrivateConfigFromEnvsForHeroku"

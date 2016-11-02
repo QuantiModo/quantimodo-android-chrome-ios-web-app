@@ -34,3 +34,8 @@ QM-Ionic.jsproj.user
 changeList.json
 gradle-2.14.1-bin.zip
 config.xml
+build/
+resources/screenshots/4.7/
+resources/screenshots/5.5/
+resources/screenshots/4.0/
+resources/screenshots/3.5/
