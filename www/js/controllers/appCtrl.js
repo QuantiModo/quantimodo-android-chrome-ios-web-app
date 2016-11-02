@@ -460,6 +460,10 @@ angular.module('starter')
 
         $scope.init = function () {
             console.debug("Main Constructor Start");
+            if(!window.private_keys) {
+                console.error('Please add private config file to www/private_configs folder!  Contact mike@quantimo.do if you need help');
+            }
+            bugsnagService.setupBugsnag();
             QuantiModo.getAccessTokenFromUrlParameter();
             $rootScope.hideNavigationMenuIfSetInUrlParameter();
             if(!$rootScope.user){
