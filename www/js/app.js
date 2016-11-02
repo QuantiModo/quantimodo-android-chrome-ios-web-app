@@ -353,7 +353,7 @@ angular.module('starter',
             console.debug('loading', appsManager.getAppConfig(appName), appsManager.getPrivateConfig(appName));
             return $ocLazyLoad.load([appsManager.getAppConfig(appName), appsManager.getPrivateConfig(appName)]);
         } else{
-            console.debug('Loading default app: ' + appsManager.getDefaultApp());
+            console.debug('Loading default app: ' + appsManager.defaultApp);
             return $ocLazyLoad.load([appsManager.getDefaultConfig(), appsManager.getDefaultPrivateConfig()]);          
         }
 
