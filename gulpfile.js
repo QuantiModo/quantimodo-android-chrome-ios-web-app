@@ -1221,7 +1221,6 @@ gulp.task('setIosEnvs', [], function(callback){
 	callback();
 });
 
-
 gulp.task('cleanResources', [], function(){
 	return gulp.src("resources/*", { read: false }).pipe(clean());
 });
@@ -1369,6 +1368,14 @@ gulp.task('prepareQuantiModo', function(callback){
 gulp.task('prepareQuantiModoIos', function(callback){
 	runSequence(
 		'setQuantiModoEnvs',
+		'setIosEnvs',
+		'prepareIosApp',
+		callback);
+});
+
+gulp.task('prepareMindFirstIos', function(callback){
+	runSequence(
+		'setMindFirstEnvs',
 		'setIosEnvs',
 		'prepareIosApp',
 		callback);
