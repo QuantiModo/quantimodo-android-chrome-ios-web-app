@@ -50,8 +50,8 @@ general:
   branches:
     ignore:
       - gh-pages # list of branches to ignore
-      - /develop # or ignore regexes
-      - /master # or ignore regexes
+      - develop
+      - master
       - /release\/.*/ # or ignore regexes
       #- /feature\/.*/ # or ignore regexes
   artifacts:
