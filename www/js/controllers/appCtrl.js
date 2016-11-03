@@ -163,6 +163,10 @@ angular.module('starter')
             });
         };
 
+        $scope.onGenericHelpButtonPress = function () {
+            $state.go('app.help');
+        };
+
         $scope.onHelpButtonPress = function () {
             $rootScope.helpButtonPopup = $ionicPopup.show({
                 title: $rootScope.stateParams.title,
