@@ -6,7 +6,6 @@ angular.module('starter')
 
         $scope.state = { loading: false};
         $scope.controller_name = "LoginCtrl";
-        console.debug("isIos is" + $rootScope.isIos);
         $rootScope.hideNavigationMenu = true;
         $scope.headline = config.appSettings.headline;
         $scope.features = config.appSettings.features;
