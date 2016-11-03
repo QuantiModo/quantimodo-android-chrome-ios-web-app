@@ -10,7 +10,7 @@ angular.module('starter')
 
         $rootScope.loaderImagePath = config.appSettings.loaderImagePath;
         $rootScope.appMigrationVersion = 1489;
-        $rootScope.appVersion = "2.0.9.0";
+        $rootScope.appVersion = "2.1.1.0";
         if (!$rootScope.loaderImagePath) {
             $rootScope.loaderImagePath = 'img/circular-loader.gif';
         }
@@ -27,7 +27,7 @@ angular.module('starter')
         $rootScope.lastLongitude = null;
         $scope.controller_name = "AppCtrl";
         $scope.menu = config.appSettings.menu;
-        $scope.appSettings = config.appSettings;
+        $rootScope.appSettings = config.appSettings;
         $scope.showTrackingSubMenu = false;
         $rootScope.allowOffline = config.appSettings.allowOffline;
         $rootScope.numberOfPendingNotifications = null;
@@ -161,6 +161,10 @@ angular.module('starter')
                     }
                 ]
             });
+        };
+
+        $scope.onGenericHelpButtonPress = function () {
+            $state.go('app.help');
         };
 
         $scope.onHelpButtonPress = function () {
@@ -460,6 +464,10 @@ angular.module('starter')
 
         $scope.init = function () {
             console.debug("Main Constructor Start");
+            if(!window.private_keys) {
+                console.error('Please add private config file to www/private_configs folder!  Contact mike@quantimo.do if you need help');
+            }
+            bugsnagService.setupBugsnag();
             QuantiModo.getAccessTokenFromUrlParameter();
             $rootScope.hideNavigationMenuIfSetInUrlParameter();
             if(!$rootScope.user){

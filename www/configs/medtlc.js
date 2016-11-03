@@ -99,6 +99,7 @@ config.appSettings  = {
         "happy" : 4,
         "ecstatic": 5
     },
+    backgroundColor: "white",
 
     intro : [
         // screen 1
@@ -108,8 +109,8 @@ config.appSettings  = {
                 height : '150',
                 url : 'img/icons/icon.png'
             },
-            textColor: 'black',
-            backgroundColor: 'white',
+            textColor: 'white',
+            backgroundColor: '#3467d6',
             content : {
 
                 firstP : {
@@ -135,8 +136,8 @@ config.appSettings  = {
                 height : '250',
                 url : 'img/pill_icon.png'
             },
-            textColor: 'black',
-            backgroundColor: 'white',
+            textColor: 'white',
+            backgroundColor: '#0f9d58',
             content : {
                 firstP : {
                     visible : true,
@@ -149,7 +150,7 @@ config.appSettings  = {
                 },
                 finalP: {
                     visible : true,
-                    content : 'Add medications on the Add Medications page.',
+                    content : 'Add medications reminders and record your intake.',
                     classes : 'intro-paragraph-small',
                     buttonBarVisible : true
                 }
@@ -162,8 +163,8 @@ config.appSettings  = {
                 height : '250',
                 url : 'img/symptoms_icon.png'
             },
-            textColor: 'black',
-            backgroundColor: 'white',
+            textColor: 'white',
+            backgroundColor: '#f09402',
             content : {
 
                 firstP : {
@@ -179,7 +180,7 @@ config.appSettings  = {
 
                 finalP: {
                     visible : true,
-                    content : ' Record "How I Feel" responses to provide critical feedback to your doctor. This feedback is one of the strongest features of MedTLC. It gives your doctor the data needed to change medications and adjust dosages when necessary, due to adverse reaction to a single drug, multiple drug interactions, and dosages that cause unwanted effects.',
+                    content : 'Record "How I Feel" responses to provide critical feedback to your doctor. This gives your doctor the data needed to change medications and adjust dosages when necessary.',
                     classes : 'intro-paragraph-small',
                     buttonBarVisible : true
                 }
@@ -191,6 +192,8 @@ config.appSettings  = {
                 height : '250',
                 url : 'img/doctor_icon.png'
             },
+            textColor: 'white',
+            backgroundColor: '#3467d6',
             content : {
                 firstP : {
                     visible : true,
@@ -205,7 +208,7 @@ config.appSettings  = {
                 },
                 finalP: {
                     visible : true,
-                    content : 'Print or send reports of your responses to your doctors.',
+                    content : 'Print or send reports of your treatments and responses to your doctors.',
                     classes : 'intro-paragraph',
                     buttonBarVisible : true
                 }

@@ -885,6 +885,12 @@ angular.module('starter')
             if(expiresAtMilliseconds){
                 localStorageService.setItem('expiresAtMilliseconds', expiresAtMilliseconds - bufferInMilliseconds);
                 return accessToken;
+            } else {
+                console.error('No expiresAtMilliseconds!');
+                Bugsnag.notify('No expiresAtMilliseconds!',
+                    'expiresAt is ' + expiresAt + ' || accessResponse is ' + JSON.stringify(accessResponse) + ' and user is ' + localStorageService.getItemSync('user'),
+                    {groupingHash: 'No expiresAtMilliseconds!'},
+                    "error");
             }
 
             var groupingHash = 'Access token expiresAt not provided in recognizable form!';

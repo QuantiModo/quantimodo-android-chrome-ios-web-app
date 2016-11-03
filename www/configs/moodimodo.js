@@ -22,6 +22,7 @@ config.appSettings  = {
         ' - Track diet, treatments, symptoms, and anything else',
         ' - Analyze your data to see the strongest predictors of your mood'
     ],
+    backgroundColor: "blue", // TODO: Make background color configurable
 
     primaryOutcomeVariableDetails : {
         id : 1398,

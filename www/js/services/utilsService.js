@@ -27,15 +27,20 @@ angular.module('starter')
         };
 
         utilsService.getClientId = function(){
-            //if chrome app
             if (window.chrome && chrome.runtime && chrome.runtime.id) {
-                return window.private_keys.client_ids.Chrome;
+                $rootScope.clientId = window.private_keys.client_ids.Chrome; //if chrome app
+            } else if ($rootScope.isIOS) {
+                $rootScope.clientId = window.private_keys.client_ids.iOS;
+            } else if ($rootScope.isAndroid) {
+                $rootScope.clientId = window.private_keys.client_ids.Android;
+            } else if ($rootScope.isChromeExtension) {
+                $rootScope.clientId = window.private_keys.client_ids.Chrome;
+            } else if ($rootScope.isWindows) {
+                $rootScope.clientId = window.private_keys.client_ids.Windows;
+            } else {
+                $rootScope.clientId = window.private_keys.client_ids.Web;
             }
-            if ($rootScope.isIOS) { return window.private_keys.client_ids.iOS; }
-            if ($rootScope.isAndroid) { return window.private_keys.client_ids.Android; }
-            if ($rootScope.isChromeExtension) { return window.private_keys.client_ids.Chrome; }
-            if ($rootScope.isWindows) { return window.private_keys.client_ids.Windows; }
-            return window.private_keys.client_ids.Web;
+            return $rootScope.clientId;
         };
         
         utilsService.setPlatformVariables = function () {

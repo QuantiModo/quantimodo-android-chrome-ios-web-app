@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "Mind First Extension",
-  "description": "Track and find out what influences your mood!",
+  "description": "Empowering a new approach to mind research",
   "version": "IONIC_APP_VERSION_NUMBER_PLACEHOLDER",
   "options_page": "www/chrome_extension/options/options.html",
   "icons": {
