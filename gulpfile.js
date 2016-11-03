@@ -1231,6 +1231,18 @@ gulp.task('copyAppResources', ['cleanResources'], function () {
 	}).pipe(gulp.dest('.'));
 });
 
+gulp.task('copyPrivateConfig', [], function () {
+	if(!process.env.LOWERCASE_APP_NAME){
+		process.env.LOWERCASE_APP_NAME = 'mindfirst';
+	}
+	if(!process.env.pathToPrivateConfig){
+		process.env.pathToPrivateConfig = '../../../configs/ionic/private_configs/';
+	}
+	return gulp.src([process.env.pathToPrivateConfig + process.env.LOWERCASE_APP_NAME + '.config.js'], {
+		base: process.env.pathToPrivateConfig
+	}).pipe(gulp.dest('./www/private_configs/'));
+});
+
 gulp.task('removeTransparentPng', ['copyAppResources'], function () {
 	return gulp.src("resources/icon.png", { read: false }).pipe(clean());
 });
@@ -1323,6 +1335,7 @@ gulp.task('prepareIosApp', function(callback){
 		'generateIosResources',
 		'bumpIosVersion',
 		'updateConfigXmlUsingEnvs',
+		'copyPrivateConfig',
 		callback);
 });
 
@@ -1398,6 +1411,7 @@ gulp.task('prepareAndroidApp', function(callback){
 		'setAndroidEnvs',
 		'updateConfigXmlUsingEnvs',
 		'generateAndroidResources',
+		'copyPrivateConfig',
 		callback);
 });
 
