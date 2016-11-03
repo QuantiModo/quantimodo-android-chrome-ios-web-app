@@ -1021,8 +1021,15 @@ var setVersionNumberInConfigXml = function(configFilePath, callback){
 gulp.task('bumpVersionNumberEnvs', ['setVersionNumberEnvs'], function(callback){
 	process.env.OLD_IONIC_IOS_APP_VERSION_NUMBER = process.env.IONIC_IOS_APP_VERSION_NUMBER;
 	var numberToBumpArr = process.env.IONIC_APP_VERSION_NUMBER.split('.');
-	var numberToBump = numberToBumpArr[numberToBumpArr.length-1];
-	numberToBumpArr[numberToBumpArr.length-1] = (parseInt(numberToBump)+1).toString();
+	numberToBumpArr[2] = (parseInt(numberToBumpArr[2]) + 1).toString();
+	if(parseInt(numberToBumpArr[2]) === 10){
+		numberToBumpArr[2] = "0";
+		numberToBumpArr[1] = (parseInt(numberToBumpArr[1]) + 1).toString();
+	}
+	if(parseInt(numberToBumpArr[1]) === 10){
+		numberToBumpArr[1] = "0";
+		numberToBumpArr[0] = (parseInt(numberToBumpArr[1]) + 1).toString();
+	}
 	process.env.IONIC_APP_VERSION_NUMBER = numberToBumpArr.join('.');
 	process.env.IONIC_IOS_APP_VERSION_NUMBER = process.env.IONIC_APP_VERSION_NUMBER + '.0';
 	callback();
@@ -1051,7 +1058,7 @@ gulp.task('setVersionNumberInFiles', function(callback){
 	var filesToUpdate = [
 		'www/js/controllers/appCtrl.js',
 		'www/js/app.js',
-		//'gulp.js',
+		'gulp.js',
 		'scripts/build_all_apps.sh',
 		'.travis.yml'
 	];
@@ -1421,7 +1428,15 @@ gulp.task('prepareMindFirstAndroid', function(callback){
 });
 
 gulp.task('setVersionNumberEnvs', [], function(callback){
-	process.env.IONIC_IOS_APP_VERSION_NUMBER = "2.0.9.0";
-	process.env.IONIC_APP_VERSION_NUMBER = process.env.IONIC_IOS_APP_VERSION_NUMBER.substring(0, 5);
-	callback();
+	var configFilePath = './config-template-ios.xml';
+	var xml = fs.readFileSync(configFilePath, 'utf8');
+	parseString(xml, function (err, result) {
+		if(err || !result){
+			console.log("failed to read xml file or it is empty", err);
+		} else {
+			process.env.IONIC_IOS_APP_VERSION_NUMBER = result.widget.$["ios-CFBundleVersion"];
+			process.env.IONIC_APP_VERSION_NUMBER = process.env.IONIC_IOS_APP_VERSION_NUMBER.substring(0, 5);
+			callback();
+		}
+	});
 });
