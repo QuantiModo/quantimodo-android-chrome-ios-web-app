@@ -26,7 +26,6 @@ var parseString = require('xml2js').parseString;
 var clean = require('gulp-rimraf');
 var replace = require('gulp-string-replace');
 
-
 var appIds = {
     'moodimodo': 'homaagppbekhjkalcndpojiagijaiefm',
     'mindfirst': 'jeadacoeabffebaeikfdpjgpjbjinobl',
@@ -36,7 +35,6 @@ var appIds = {
 var paths = {
 	sass: ['./scss/**/*.scss']
 };
-
 
 gulp.task('default', ['sass']);
 
@@ -1339,7 +1337,7 @@ gulp.task('prepareIosApp', function(callback){
 		callback);
 });
 
-gulp.task('copyWwwFolderToChromeExtension', [], function(){
+gulp.task('copyWwwFolderToChromeExtension', ['copyPrivateConfig'], function(){
 	return gulp.src(['www/**/*'])
 		.pipe(gulp.dest('build/chrome_extensions/' + process.env.LOWERCASE_APP_NAME + '/www'));
 });
