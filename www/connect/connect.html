@@ -18,18 +18,13 @@
 			    return false;
 			};
 			var url = '';
-			if(getAppNameFromUrl()){
-			    url = appsManager.getAppConfig(getAppNameFromUrl());
-			} else url = appsManager.getDefaultConfig();
-	        var fileref=document.createElement('script')
+			url = appsManager.getAppConfig(getAppNameFromUrl());
+	        var fileref=document.createElement('script');
 	        fileref.setAttribute("type","text/javascript");
 	        fileref.setAttribute("src", '../'+url);
 	        document.getElementsByTagName("head")[0].appendChild(fileref);
-	        var private_url = '';
-			if(getAppNameFromUrl()){
-			    private_url = appsManager.getPrivateConfig(getAppNameFromUrl());
-			} else private_url = appsManager.getDefaultPrivateConfig();
-	        var private_fileref=document.createElement('script')
+			private_url = appsManager.getPrivateConfig(getAppNameFromUrl());
+	        var private_fileref=document.createElement('script');
 	        private_fileref.setAttribute("type","text/javascript");
 	        private_fileref.setAttribute("src", '../'+private_url);
 	        document.getElementsByTagName("head")[0].appendChild(private_fileref);
@@ -41,8 +36,8 @@
 		var intervalChecker = setInterval(function(){
 		    if(typeof config !== "undefined" && private_keys !== "undefined"){
 		    	
-		    	var fileref=document.createElement('script')
-		    	fileref.setAttribute("type","text/javascript")
+		    	var fileref=document.createElement('script');
+		    	fileref.setAttribute("type","text/javascript");
 		    	fileref.setAttribute("src", 'https://cdn.rawgit.com/quantimodo/import-data/f0325a518817980502dc2509d4f9d068903eef6c/connect.js');
 
 		    	document.getElementsByTagName("head")[0].appendChild(fileref);

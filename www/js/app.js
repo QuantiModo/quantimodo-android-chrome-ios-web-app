@@ -259,31 +259,11 @@ angular.module('starter',
          */
 
     });
-    
 
     $rootScope.goToState = function(state, params){
         $state.go(state, params);
     };
 
-    if(!window.private_keys) {
-        console.error('Please add private config file to www/private_configs folder!  Contact mike@quantimo.do if you need help');
-        return;
-    }
-
-    $rootScope.appVersion = "2.0.9.0";
-    $rootScope.appName = config.appSettings.appName;
-
-    if (typeof Bugsnag !== "undefined") {
-        //$rootScope.bugsnagApiKey = window.private_keys.bugsnag_key;
-        //Bugsnag.apiKey = "ae7bc49d1285848342342bb5c321a2cf";
-        //Bugsnag.notifyReleaseStages = ['Production','Staging'];
-        Bugsnag.appVersion = $rootScope.appVersion;
-        Bugsnag.metaData = {
-            platform: ionic.Platform.platform(),
-            platformVersion: ionic.Platform.version(),
-            appName: config.appSettings.appName
-        };
-    }
 
     $ionicPlatform.registerBackButtonAction(function (event) {
         if($ionicHistory.currentStateName() === config.appSettings.defaultState){
@@ -348,15 +328,7 @@ angular.module('starter',
         };
 
         var appName = getAppNameFromUrl();
-
-        if(appName){
-            console.debug('loading', appsManager.getAppConfig(appName), appsManager.getPrivateConfig(appName));
-            return $ocLazyLoad.load([appsManager.getAppConfig(appName), appsManager.getPrivateConfig(appName)]);
-        } else{
-            console.debug('Loading default app: ' + appsManager.getDefaultApp());
-            return $ocLazyLoad.load([appsManager.getDefaultConfig(), appsManager.getDefaultPrivateConfig()]);          
-        }
-
+        return $ocLazyLoad.load([appsManager.getAppConfig(appName), appsManager.getPrivateConfig(appName)]);
       }]
     };
 
