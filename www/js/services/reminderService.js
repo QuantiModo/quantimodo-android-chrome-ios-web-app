@@ -23,16 +23,22 @@ angular.module('starter')
 			var deferred = $q.defer();
 			var trackingReminderNotificationsArray = localStorageService.getItemAsObject('notificationsSyncQueue');
 			if(!trackingReminderNotificationsArray){
-                successHandler();
+                if(successHandler){
+                    successHandler();
+                }
 				deferred.resolve();
 				return deferred.promise;
 			}
 			QuantiModo.postTrackingReminderNotifications(trackingReminderNotificationsArray, function(){
 				localStorageService.deleteItem('notificationsSyncQueue');
-                successHandler();
+                if(successHandler){
+                    successHandler();
+                }
 				deferred.resolve();
 			}, function(error){
-                errorHandler();
+                if(errorHandler){
+                    errorHandler();
+                }
 				deferred.reject(error);
 			});
 
@@ -45,7 +51,10 @@ angular.module('starter')
 			reminderService.deleteNotificationFromLocalStorage(body);
 			body.action = 'skip';
 			localStorageService.addToOrReplaceElementOfItemByIdOrMoveToFront('notificationsSyncQueue', body);
-
+            $timeout(function() {
+                // Post notification queue in 5 minutes if it's still there
+                reminderService.postTrackingReminderNotifications();
+            }, 300000);
 /*
 			QuantiModo.skipTrackingReminderNotification(body, function(response){
 				if(response.success) {
@@ -86,6 +95,10 @@ angular.module('starter')
 			reminderService.deleteNotificationFromLocalStorage(body);
 			body.action = 'track';
 			localStorageService.addToOrReplaceElementOfItemByIdOrMoveToFront('notificationsSyncQueue', body);
+            $timeout(function() {
+                // Post notification queue in 5 minutes if it's still there
+                reminderService.postTrackingReminderNotifications();
+            }, 300000);
 /*
 			QuantiModo.trackTrackingReminderNotification(body, function(response){
 				if(response.success) {
@@ -108,6 +121,10 @@ angular.module('starter')
 			reminderService.deleteNotificationFromLocalStorage(body);
 			body.action = 'snooze';
 			localStorageService.addToOrReplaceElementOfItemByIdOrMoveToFront('notificationsSyncQueue', body);
+            $timeout(function() {
+                // Post notification queue in 5 minutes if it's still there
+                reminderService.postTrackingReminderNotifications();
+            }, 300000);
 
 /*
 			QuantiModo.snoozeTrackingReminderNotification(body, function(response){
