@@ -87,5 +87,5 @@
   <vs:platformSpecificValues xmlns:vs="http://schemas.microsoft.com/appx/2014/htmlapps">
     <vs:platformSpecificWidget platformName="windows" version="2.0.9.0" id="com.quantimodo.moodimodoapp"/>
   </vs:platformSpecificValues>
-  <icon src="resources\ios\icon\icon-small@3x.png"/>
+  <icon src="resources/ios/icon/icon-small@3x.png"/>
 </widget>

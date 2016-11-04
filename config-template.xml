@@ -19,7 +19,7 @@
   <feature name="StatusBar">
     <param name="ios-package" onload="true" value="CDVStatusBar" />
   </feature>
-  <icon src="resources\ios\icon\icon-small@3x.png"/>
+  <icon src="resources/icon.png"/>
   <platform name="android">
     <hook type="after_prepare" src="package-hooks/android_custom_resources.js" />
     <allow-intent href="market:*" />
