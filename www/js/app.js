@@ -844,6 +844,25 @@ angular.module('starter',
                 }
             }
         })
+
+        .state('app.measurements', {
+            url: "/measurements",
+            cache: false,
+            params: {
+                reminderFrequency: 0,
+                unit: null,
+                variableName : null,
+                dateTime : null,
+                value : null,
+                fromUrl : null
+            },
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/measurements.html",
+                    controller: 'MeasurementsCtrl'
+                }
+            }
+        })
         .state('app.favoritesCategory', {
             url: "/favorites-category/:variableCategoryName",
             cache: false,
@@ -1021,7 +1040,7 @@ angular.module('starter',
 
     if (window.localStorage.introSeen) {
         console.debug("Intro seen so going to inbox");
-        $urlRouterProvider.otherwise('/app/reminders-inbox');
+        $urlRouterProvider.otherwise('/app/reminders');
     } else {
         console.debug("Intro not seen so going to intro");
         $urlRouterProvider.otherwise('/');

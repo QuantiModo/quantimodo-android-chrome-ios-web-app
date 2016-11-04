@@ -298,7 +298,12 @@ config.appSettings  = {
         {
             title : 'Favorites',
             href : '#/app/favorites',
-            icon : 'ion-ios-star'
+            icon : 'ion-speedometer'
+        },
+           {
+            title : 'Measurements',
+            href : '#/app/measurements',
+            icon : 'ion-ios-bank'
         },
         {
             title : 'Overall Mood',
@@ -308,6 +313,7 @@ config.appSettings  = {
             collapsedIcon : 'ion-happy-outline',
             expandedIcon : 'ion-chevron-down'
         },
+
         {
             title : 'Charts',
             isSubMenuChild : true,
