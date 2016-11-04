@@ -19,17 +19,20 @@ angular.module('starter')
 			return deferred.promise;
 		};
 
-		reminderService.postTrackingReminderNotifications = function(trackingReminderNotificationsArray){
+		reminderService.postTrackingReminderNotifications = function(successHandler, errorHandler){
 			var deferred = $q.defer();
-			trackingReminderNotificationsArray = localStorageService.getItemAsObject('notificationsSyncQueue');
+			var trackingReminderNotificationsArray = localStorageService.getItemAsObject('notificationsSyncQueue');
 			if(!trackingReminderNotificationsArray){
+                successHandler();
 				deferred.resolve();
 				return deferred.promise;
 			}
 			QuantiModo.postTrackingReminderNotifications(trackingReminderNotificationsArray, function(){
 				localStorageService.deleteItem('notificationsSyncQueue');
+                successHandler();
 				deferred.resolve();
 			}, function(error){
+                errorHandler();
 				deferred.reject(error);
 			});
 
