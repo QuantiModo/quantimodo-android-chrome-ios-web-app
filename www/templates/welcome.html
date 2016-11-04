@@ -1,5 +1,5 @@
 <ion-view hide-nav-bar="hideNavigationMenu" view-title="{{viewTitle}}">
-<ion-content>
+<ion-content style="background-color: #3467d6">
 
 <div id="login-iframe">
 </div>
@@ -27,9 +27,11 @@
 
 <div class="card reporting-interval" ng-show="showIntervalCard">
 	<div class="item item-text-wrap">
-		<h1 class="positive">Report Interval</h1>
+		<h1 class="positive">Reminder Frequency</h1>
 		<ul>
-			<li>A subtle notification and easy-to-use popup complement each other perfectly, ensuring you'll never forget to report your <span class="lower-text">{{primaryOutcomeVariable}}<span></li>
+			<li>
+				A subtle notification ensures you'll never forget to report your <span class="lower-text">{{primaryOutcomeVariable}}</span>.
+			</li>
 		</ul>
 		<ul class="list">
 			<li class="item item-input item-select">
@@ -56,9 +58,9 @@
 			</li>
 			<li class="item item-checkbox checkbox-positive">
 				<label class="checkbox">
-					<input ng-model="$parent.subscribeNotification" type="checkbox">
+					<input ng-model="sendDailyEmailReminder" type="checkbox">
 				</label>
-				Show Notifications
+				Send a daily email reminder if I forget (you can change this later in Settings)
 			</li>
 		</ul>
 		<button id="scheduleButtonWelcome" class="button button-block button-positive" ng-click="saveIntervalAndGoToLogin(primaryOutcomeRatingFrequencyDescription)">

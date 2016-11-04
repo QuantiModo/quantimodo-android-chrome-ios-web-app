@@ -10,7 +10,7 @@ angular.module('starter')
 
         $rootScope.loaderImagePath = config.appSettings.loaderImagePath;
         $rootScope.appMigrationVersion = 1489;
-        $rootScope.appVersion = "2.0.7.0";
+        $rootScope.appVersion = "2.1.1.0";
         if (!$rootScope.loaderImagePath) {
             $rootScope.loaderImagePath = 'img/circular-loader.gif';
         }
@@ -27,7 +27,7 @@ angular.module('starter')
         $rootScope.lastLongitude = null;
         $scope.controller_name = "AppCtrl";
         $scope.menu = config.appSettings.menu;
-        $scope.appSettings = config.appSettings;
+        $rootScope.appSettings = config.appSettings;
         $scope.showTrackingSubMenu = false;
         $rootScope.allowOffline = config.appSettings.allowOffline;
         $rootScope.numberOfPendingNotifications = null;
@@ -42,10 +42,7 @@ angular.module('starter')
         $rootScope.unitsIndexedByAbbreviatedName = [];
         $rootScope.abbreviatedUnitNamesIndexedByUnitId = [];
 
-
-
         //  Calendar and  Date picker
-
         // will update from showCalendarPopup
         $scope.fromDate = new Date();
         $scope.toDate = new Date();
@@ -161,6 +158,10 @@ angular.module('starter')
                     }
                 ]
             });
+        };
+
+        $scope.onGenericHelpButtonPress = function () {
+            $state.go('app.help');
         };
 
         $scope.onHelpButtonPress = function () {
@@ -279,11 +280,6 @@ angular.module('starter')
             }
         };
 
-        $scope.$on('$ionicView.enter', function (e) {
-            //$scope.showHelpInfoPopupIfNecessary(e);
-            qmLocationService.updateLocationVariablesAndPostMeasurementIfChanged();
-        });
-
         $scope.closeMenuIfNeeded = function (menuItem) {
             if (menuItem.click) {
                 $scope[menuItem.click] && $scope[menuItem.click]();
@@ -309,8 +305,12 @@ angular.module('starter')
         $scope.primaryOutcomeVariableAverageText = config.appSettings.primaryOutcomeVariableAverageText;
         /*Wrapper Config End*/
 
+
+
         // when view is changed
         $scope.$on('$ionicView.enter', function (e) {
+            //$scope.showHelpInfoPopupIfNecessary(e);
+            qmLocationService.updateLocationVariablesAndPostMeasurementIfChanged();
             if (e.targetScope && e.targetScope.controller_name && e.targetScope.controller_name === "TrackPrimaryOutcomeCtrl") {
                 $scope.showCalendarButton = true;
             } else {
@@ -400,6 +400,17 @@ angular.module('starter')
 
         $scope.init = function () {
             console.debug("Main Constructor Start");
+            if(!window.private_keys) {
+                console.error('Please add private config file to www/private_configs folder!  Contact mike@quantimo.do if you need help');
+            }
+            if($rootScope.urlParameters.refreshUser){
+                localStorageService.clear();
+                window.localStorage.introSeen = true;
+                window.localStorage.isWelcomed = true;
+                $rootScope.user = null;
+                $rootScope.refreshUser = false;
+            }
+            bugsnagService.setupBugsnag();
             QuantiModo.getAccessTokenFromUrlParameter();
             $rootScope.hideNavigationMenuIfSetInUrlParameter();
             if(!$rootScope.user){
@@ -409,7 +420,7 @@ angular.module('starter')
                 QuantiModo.refreshUser().then(function(){
                     $scope.syncEverything();
                 }, function(error){
-                    console.error('AppCtrl.init could not refresh user because ' + error);
+                    console.error('AppCtrl.init could not refresh user because ' + JSON.stringify(error));
                 });
             }
 

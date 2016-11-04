@@ -1,4 +1,4 @@
-<ion-view hide-nav-bar="hideNavigationMenu">
+<ion-view hide-nav-bar="hideNavigationMenu" view-title="Variable Search">
     <ion-nav-title>{{state.title}}</ion-nav-title>
     <ion-content>
         <div class="card" ng-hide="state.noVariablesFoundCard.show && !state.searching && !$scope.state.variableSearchResults">
@@ -29,7 +29,7 @@
             </ion-list>
             <ion-list ng-show="state.variableSearchResults.length" class>
                 <!--<ion-item ng-click="selectVariable(item)" ng-repeat="item in state.variableSearchResults | orderBy:'-latestMeasurementTime' | limitTo:5 | unique:'id'  ">-->
-                <ion-item ng-click="selectVariable(item)" ng-repeat="item in state.variableSearchResults | filter:matchEveryWord() track by $index">
+                <ion-item ng-click="selectVariable(item)" ng-repeat="item in state.variableSearchResults | filter:matchEveryWord() | unique:'name' track by $index">
                     <div>
                         <p style="font-size:18px; white-space: pre;">{{item.name}}</p>
 <!--                        <p>{{item.latestMeasurementTime | fromNow}}</p>-->

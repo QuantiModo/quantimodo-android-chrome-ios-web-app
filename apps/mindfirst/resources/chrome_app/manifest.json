@@ -1,7 +1,7 @@
 {
   "name": "Mind First App",
-  "description": "Track and find out what influences your mood!",
-  "version": "IONIC_APP_VERSION_NUMBER",
+  "description": "Empowering a new approach to mind research",
+  "version": "IONIC_APP_VERSION_NUMBER_PLACEHOLDER",
   "manifest_version": 2,
   "minimum_chrome_version": "33",
   "icons": {

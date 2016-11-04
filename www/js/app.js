@@ -259,60 +259,62 @@ angular.module('starter',
          */
 
     });
-    
 
     $rootScope.goToState = function(state, params){
         $state.go(state, params);
     };
 
+
+    $ionicPlatform.registerBackButtonAction(function (event) {
+        if($ionicHistory.currentStateName() === config.appSettings.defaultState){
+            ionic.Platform.exitApp();
+        }
+        else {
+            if($ionicHistory.backView()){
+                $ionicHistory.goBack();
+            } else if(localStorage.user){
+                $rootScope.hideNavigationMenu = false;
+                console.debug('registerBackButtonAction: Going to default state...');
+                $state.go(config.appSettings.defaultState);
+            } else {
+                /*
+                 console.debug('registerBackButtonAction: Going to welcome state...');
+                 $state.go(config.appSettings.welcomeState);
+                 */
+                console.debug('registerBackButtonAction: Closing the app');
+                ionic.Platform.exitApp();
+            }
+        }
+    }, 100);
+
     var intervalChecker = setInterval(function(){
         if(typeof config !== "undefined"){
             clearInterval(intervalChecker);
-
-            if(!window.private_keys) {
-                console.error('Please add private config file to www/private_configs folder!  Contact mike@quantimo.do if you need help');
-                return;
-            }
-
-            $rootScope.appVersion = "2.0.7.0";
-            $rootScope.appName = config.appSettings.appName;
-
-            if (typeof Bugsnag !== "undefined") {
-                //$rootScope.bugsnagApiKey = window.private_keys.bugsnag_key;
-                //Bugsnag.apiKey = "ae7bc49d1285848342342bb5c321a2cf";
-                //Bugsnag.notifyReleaseStages = ['Production','Staging'];
-                Bugsnag.appVersion = $rootScope.appVersion;
-                Bugsnag.metaData = {
-                    platform: ionic.Platform.platform(),
-                    platformVersion: ionic.Platform.version(),
-                    appName: config.appSettings.appName
-                };
-            }
-
-            $ionicPlatform.registerBackButtonAction(function (event) {
-                if($ionicHistory.currentStateName() === config.appSettings.defaultState){
-                    ionic.Platform.exitApp();
-                }
-                else {
-                    if($ionicHistory.backView()){
-                        $ionicHistory.goBack();
-                    } else if(localStorage.user){
-                        $rootScope.hideNavigationMenu = false;
-                        console.debug('registerBackButtonAction: Going to default state...');
-                        $state.go(config.appSettings.defaultState);
-                    } else {
-                        /*
-                        console.debug('registerBackButtonAction: Going to welcome state...');
-                        $state.go(config.appSettings.welcomeState);
-                        */
-                        console.debug('registerBackButtonAction: Closing the app');
-                        ionic.Platform.exitApp();
-                    }
-                }
-            }, 100);  
         }
     }, 500);
 
+    var getAllUrlParams = function() {
+        $rootScope.urlParameters = {};
+        var queryString = document.location.toString().split('?')[1];
+        var sURLVariables;
+        var parameterNameValueArray;
+        if(queryString) {
+            sURLVariables = queryString.split('&');
+        }
+        if(sURLVariables) {
+            for (var i = 0; i < sURLVariables.length; i++) {
+                parameterNameValueArray = sURLVariables[i].split('=');
+                $rootScope.urlParameters[parameterNameValueArray[0]] = parameterNameValueArray[1];
+            }
+        }
+    };
+    
+    getAllUrlParams();
+    if ($rootScope.urlParameters.existingUser || $rootScope.urlParameters.introSeen || $rootScope.urlParameters.refreshUser) {
+        window.localStorage.introSeen = true;
+        window.localStorage.isWelcomed = true;
+    }
+    console.debug('url params are ', $rootScope.urlParameters);
 })
 
 .config(function($stateProvider, $urlRouterProvider, $compileProvider, ionicTimePickerProvider,
@@ -335,8 +337,7 @@ angular.module('starter',
             for (var i = 0; i < sURLVariables.length; i++)
             {
                 var sParameterName = sURLVariables[i].split('=');
-                if (sParameterName[0] === 'app')
-                {
+                if (sParameterName[0] === 'app') {
                     return sParameterName[1].split('#')[0];
                 }
             }
@@ -344,15 +345,7 @@ angular.module('starter',
         };
 
         var appName = getAppNameFromUrl();
-
-        if(appName){
-            console.debug('loading', appsManager.getAppConfig(appName), appsManager.getPrivateConfig(appName));
-            return $ocLazyLoad.load([appsManager.getAppConfig(appName), appsManager.getPrivateConfig(appName)]);
-        } else{
-            console.debug('Loading default app: ' + appsManager.getDefaultApp());
-            return $ocLazyLoad.load([appsManager.getDefaultConfig(), appsManager.getDefaultPrivateConfig()]);          
-        }
-
+        return $ocLazyLoad.load([appsManager.getAppConfig(appName), appsManager.getPrivateConfig(appName)]);
       }]
     };
 
@@ -700,6 +693,15 @@ angular.module('starter',
         })
         .state('app.search-user-relationships', {
             url: "/search-user-relationships",
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/iframe-embed.html",
+                    controller: 'IframeScreenCtrl'
+                }
+            }
+        })
+        .state('app.update-card', {
+            url: "/update-card",
             views: {
                 'menuContent': {
                     templateUrl: "templates/iframe-embed.html",

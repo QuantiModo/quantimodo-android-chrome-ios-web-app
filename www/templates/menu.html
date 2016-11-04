@@ -9,23 +9,35 @@
             <ion-nav-buttons side="right">
                 <div class="buttons">
                     <button class="button button-icon ion-calendar" ng-show="showCalendarButton" ng-click="showCalendarPopup($event)"></button>
+                    <button class="button button-icon ion-ios-help-outline" ng-hide="stateParams.helpText" ng-click="onGenericHelpButtonPress()"></button>
                     <button class="button button-icon ion-help-circled" ng-show="stateParams.helpText" ng-click="onHelpButtonPress()"></button>
                     <button class="button button-icon ion-android-more-vertical" ng-show="showMoreMenuButton" ng-click="showActionSheetMenu()"></button>
                 </div>
             </ion-nav-buttons>
         </ion-nav-bar>
-        <div class="col" ng-show="connectionErrorShowing;" ng-class="{'connection-error-indicator':connectionErrorShowing}">
+        <div class="col"
+             ng-show="hideNavigationMenu && connectionErrorShowing;"
+             style="top:0px!important;"
+             ng-class="{'connection-error-indicator':connectionErrorShowing}">
             <span> <i class="icon ion-connection-bars"></i> Currently Offline</span>
         </div>
-        <div class="col" ng-show="!hideNavigationMenu && isSyncing" ng-class="{'blink': isSyncing,'sync-indicator':isSyncing}">
+        <div class="col"
+             ng-show="!hideNavigationMenu && connectionErrorShowing;"
+             ng-class="{'connection-error-indicator':connectionErrorShowing}">
+            <span> <i class="icon ion-connection-bars"></i> Currently Offline</span>
+        </div>
+        <div class="col"
+             ng-show="!hideNavigationMenu && isSyncing"
+             ng-class="{'blink': isSyncing,'sync-indicator':isSyncing}">
             <span>{{syncDisplayText}}</span>
         </div>
-
-        <div class="col" ng-show="hideNavigationMenu && isSyncing" style="top:0px!important;" ng-class="{'blink': isSyncing,'sync-indicator':isSyncing}">
+        <div class="col"
+             ng-show="hideNavigationMenu && isSyncing"
+             style="top:0px!important;"
+             ng-class="{'blink': isSyncing,'sync-indicator':isSyncing}">
             <span>{{syncDisplayText}}</span>
         </div>
         <ion-nav-view name="menuContent">
-
         </ion-nav-view>
     </ion-side-menu-content>
 

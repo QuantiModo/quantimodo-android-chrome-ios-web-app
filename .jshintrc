@@ -38,6 +38,7 @@
     "defer" : false,
     "deferred" : false,
     "PushNotification" : false,
-    "navigator" : false
+    "navigator" : false,
+    "UserVoice" : false
   }
 }

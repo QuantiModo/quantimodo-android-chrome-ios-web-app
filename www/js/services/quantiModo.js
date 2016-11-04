@@ -17,6 +17,9 @@ angular.module('starter')
             if(data.message){
                 console.warn(data.message);
             }
+            if(!$rootScope.user && baseURL.indexOf('user') === -1){
+                QuantiModo.refreshUser();
+            }
         };
 
         QuantiModo.errorHandler = function(data, status, headers, config, request, doNotSendToLogin){
@@ -206,6 +209,7 @@ angular.module('starter')
                 var urlParams = [];
                 urlParams.push(encodeURIComponent('appName') + '=' + encodeURIComponent(config.appSettings.appName));
                 urlParams.push(encodeURIComponent('appVersion') + '=' + encodeURIComponent($rootScope.appVersion));
+                items.clientId = utilsService.getClientId();
 
                 var url = utilsService.getURL(baseURL) + ((urlParams.length === 0) ? '' : urlParams.join('&'));
 
@@ -617,6 +621,22 @@ angular.module('starter')
                 errorHandler);
         };
 
+        QuantiModo.postTrackingReminderNotifications = function(trackingReminderNotificationsArray, successHandler, errorHandler) {
+            if(!trackingReminderNotificationsArray){
+                successHandler();
+                return;
+            }
+            if(trackingReminderNotificationsArray.constructor !== Array){
+                trackingReminderNotificationsArray = [trackingReminderNotificationsArray];
+            }
+
+            QuantiModo.post('api/v1/trackingReminderNotifications',
+                [],
+                trackingReminderNotificationsArray,
+                successHandler,
+                errorHandler);
+        };
+
         // get reminders
         QuantiModo.getTrackingReminders = function(params, successHandler, errorHandler){
             QuantiModo.get('api/v1/trackingReminders',
@@ -626,7 +646,6 @@ angular.module('starter')
                 errorHandler);
         };
 
-        // post tracking reminder
         QuantiModo.postUserSettings = function(params, successHandler, errorHandler) {
             QuantiModo.post('api/v1/userSettings',
                 [],
@@ -833,7 +852,7 @@ angular.module('starter')
                 // update local storage
                 if (data.error) {
                     console.debug('Token refresh failed: ' + data.error);
-                    deferred.reject('refresh failed');
+                    deferred.reject('Token refresh failed: ' + data.error);
                 } else {
                     var accessTokenRefreshed = QuantiModo.saveAccessTokenInLocalStorage(data);
                     console.debug('QuantiModo.refreshAccessToken: access token successfully updated from api server: ' + JSON.stringify(data));
@@ -881,6 +900,12 @@ angular.module('starter')
             if(expiresAtMilliseconds){
                 localStorageService.setItem('expiresAtMilliseconds', expiresAtMilliseconds - bufferInMilliseconds);
                 return accessToken;
+            } else {
+                console.error('No expiresAtMilliseconds!');
+                Bugsnag.notify('No expiresAtMilliseconds!',
+                    'expiresAt is ' + expiresAt + ' || accessResponse is ' + JSON.stringify(accessResponse) + ' and user is ' + localStorageService.getItemSync('user'),
+                    {groupingHash: 'No expiresAtMilliseconds!'},
+                    "error");
             }
 
             var groupingHash = 'Access token expiresAt not provided in recognizable form!';
@@ -1068,6 +1093,28 @@ angular.module('starter')
                 };
             }
 
+            var date = new Date(user.userRegistered);
+            var userRegistered = date.getTime()/1000;
+
+            if (typeof UserVoice !== "undefined") {
+                UserVoice.push(['identify', {
+                    email: user.email, // User’s email address
+                    name: user.displayName, // User’s real name
+                    created_at: userRegistered, // Unix timestamp for the date the user signed up
+                    id: user.id, // Optional: Unique id of the user (if set, this should not change)
+                    type: config.appSettings.appName + ' for ' + $rootScope.currentPlatform + ' User (Subscribed: ' + user.subscribed + ')', // Optional: segment your users by type
+                    account: {
+                        //id: 123, // Optional: associate multiple users with a single account
+                        name: config.appSettings.appName + ' for ' + $rootScope.currentPlatform + ' v' + $rootScope.appVersion, // Account name
+                        //created_at: 1364406966, // Unix timestamp for the date the account was created
+                        //monthly_rate: 9.99, // Decimal; monthly rate of the account
+                        //ltv: 1495.00, // Decimal; lifetime value of the account
+                        //plan: 'Subscribed' // Plan name for the account
+                    }
+                }]);
+            }
+
+/*            Don't need Intercom
             window.intercomSettings = {
                 app_id: "uwtx2m33",
                 name: user.displayName,
@@ -1078,6 +1125,7 @@ angular.module('starter')
                 platform: $rootScope.currentPlatform,
                 platform_version: $rootScope.currentPlatformVersion
             };
+            */
 
             var deviceTokenOnServer = localStorageService.getItemSync('deviceTokenOnServer');
             var deviceTokenToSync = localStorageService.getItemSync('deviceTokenToSync');
@@ -1086,6 +1134,10 @@ angular.module('starter')
             }
             if (deviceTokenToSync){
                 QuantiModo.registerDeviceToken(deviceTokenToSync);
+            }
+            if($rootScope.sendReminderNotificationEmails){
+                QuantiModo.updateUserSettingsDeferred({sendReminderNotificationEmails: $rootScope.sendReminderNotificationEmails});
+                $rootScope.sendReminderNotificationEmails = null;
             }
         };
 
@@ -1100,13 +1152,19 @@ angular.module('starter')
             return deferred.promise;
         };
 
+        QuantiModo.clearTokensFromLocalStorage = function(){
+            localStorageService.deleteItem('accessToken');
+            localStorageService.deleteItem('refreshToken');
+            localStorageService.deleteItem('expiresAtMilliseconds');
+        };
+
         QuantiModo.updateUserSettingsDeferred = function(params){
             var deferred = $q.defer();
             QuantiModo.postUserSettings(params, function(response){
                 QuantiModo.refreshUser().then(function(user){
                     console.debug('updateUserSettingsDeferred got this user: ' + JSON.stringify(user));
                 }, function(error){
-                    console.error('QuantiModo.updateUserSettingsDeferred could not refresh user because ' + error);
+                    console.error('QuantiModo.updateUserSettingsDeferred could not refresh user because ' + JSON.stringify(error));
                 });
                 deferred.resolve(response);
             }, function(response){

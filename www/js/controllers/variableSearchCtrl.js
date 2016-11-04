@@ -209,6 +209,12 @@ angular.module('starter')
             if(userVariables && userVariables.length > 0){
                 if($scope.state.variableSearchQuery.name.length < 3) {
                     $scope.state.variableSearchResults = userVariables;
+                    /** @namespace $stateParams.doNotIncludePublicVariables */
+                    if(!$stateParams.doNotIncludePublicVariables) {
+                        var commonVariables = localStorageService.getElementsFromItemWithFilters(
+                            'commonVariables', 'variableCategoryName', $scope.state.variableCategoryName);
+                        $scope.state.variableSearchResults = $scope.state.variableSearchResults.concat(commonVariables);
+                    }
                     $scope.state.searching = false;
                     $scope.state.noVariablesFoundCard.show = false;
                 }

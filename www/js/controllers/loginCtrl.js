@@ -6,7 +6,6 @@ angular.module('starter')
 
         $scope.state = { loading: false};
         $scope.controller_name = "LoginCtrl";
-        console.debug("isIos is" + $rootScope.isIos);
         $rootScope.hideNavigationMenu = true;
         $scope.headline = config.appSettings.headline;
         $scope.features = config.appSettings.features;
@@ -89,7 +88,7 @@ angular.module('starter')
                             $rootScope.$broadcast('callAppCtrlInit');
                             $state.go(config.appSettings.defaultState);
                         }, function(error){
-                            console.error($state.current.name + ' could not refresh user because ' + error);
+                            console.error($state.current.name + ' could not refresh user because ' + JSON.stringify(error));
                         });
                     }
                 })
@@ -426,4 +425,10 @@ angular.module('starter')
         };
 
         $scope.init();
+
+        $scope.$on('$ionicView.beforeEnter', function(e) { console.debug("Entering state " + $state.current.name);
+            if($rootScope.appName !== "MoodiModo"){
+                $scope.hideFacebookButton = true;
+            }
+        });
     });

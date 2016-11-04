@@ -256,7 +256,7 @@ angular.module('starter')
 						}
 					},
 					title : {
-						text : variableObject.name + ' by Day of Week'
+						text : 'Average  ' + variableObject.name + ' by Day of Week'
 					},
 					xAxis : {
 						categories : xAxisLabels
@@ -298,7 +298,7 @@ angular.module('starter')
 					colors : [ "#5D83FF", "#68B107", "#ffbd40", "#CB0000" ]
 				},
 				series: [{
-					name : variableObject.name + ' by Day of Week',
+					name : 'Average  ' + variableObject.name + ' by Day of Week',
 					data: averageValueByWeekdayArray
 				}]
 			};
@@ -359,7 +359,7 @@ angular.module('starter')
 						}
 					},
 					title : {
-						text : variableObject.name + ' by Hour of Day'
+						text : 'Average  ' + variableObject.name + ' by Hour of Day'
 					},
 					xAxis : {
 						categories : xAxisLabels
@@ -401,7 +401,7 @@ angular.module('starter')
 					colors : [ "#5D83FF", "#68B107", "#ffbd40", "#CB0000"]
 				},
 				series: [{
-					name : variableObject.name + ' by Hour of Day',
+					name : 'Average  ' + variableObject.name + ' by Hour of Day',
 					data: averageValueByHourArray
 				}]
 			};

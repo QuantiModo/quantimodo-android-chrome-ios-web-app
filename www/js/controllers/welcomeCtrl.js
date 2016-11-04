@@ -27,7 +27,8 @@ angular.module('starter')
             }
         );
 
-        $scope.subscribeNotification = true;
+        $scope.sendReminderNotificationEmails = true;
+        $rootScope.sendDailyEmailReminder = true;
 
         $scope.saveIntervalAndGoToLogin = function(primaryOutcomeRatingFrequencyDescription){
             $scope.saveInterval(primaryOutcomeRatingFrequencyDescription);
@@ -41,25 +42,18 @@ angular.module('starter')
             $rootScope.sendToLogin();
         };
 
-        // ratingValue is reported
         $scope.storeRatingLocally = function(ratingValue){
-
             $scope.reportedVariableValue = config.appSettings.ratingTextToValueConversionDataSet[ratingValue] ?
                 config.appSettings.ratingTextToValueConversionDataSet[ratingValue] : false;
-            
-            localStorageService.setItem('primaryOutcomeVariableReportedWelcomeScreen',true);
-            //localStorageService.setItem('allMeasurements', JSON.stringify([]));
-            
-            // update local storage
             var primaryOutcomeMeasurement = measurementService.createPrimaryOutcomeMeasurement(ratingValue);
             measurementService.addToMeasurementsQueue(primaryOutcomeMeasurement);
-            
             $scope.hidePrimaryOutcomeVariableCard = true;
             $scope.showIntervalCard = true;
         };
 
 
         $scope.init = function(){
+            $rootScope.hideNavigationMenu = true;
             console.debug($state.current.name + ' initializing...');
             $rootScope.stateParams = $stateParams;
             if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }

@@ -1,4 +1,4 @@
-<ion-view hide-nav-bar="hideNavigationMenu">
+<ion-view hide-nav-bar="hideNavigationMenu" view-title="Reminder Inbox">
 	<ion-nav-title>{{state.title}}</ion-nav-title>
 	<ion-content>
 		<!--<ion-content scroll="true" overflow-scroll="true">-->
@@ -527,6 +527,9 @@
 			</div>
 		</div>
 	</ion-content>
+	<div ng-show="showUndoButton" ng-click="undo()" class="bar bar-footer bar-balanced">
+		<div class="title">Undo {{lastAction}}</div>
+	</div>
 	<nav id="floatingMaterialButton"
 		 mfb-menu position="br"
 		 effect="slidein-spring"

@@ -126,9 +126,9 @@
       <script src="lib/highcharts-ng/dist/highcharts-ng.js"></script>
       <script src="lib/ionic-datepicker/dist/ionic-datepicker.bundle.min.js"></script>
       <script src="lib/ionic-timepicker/dist/ionic-timepicker.bundle.min.js"></script>
-      <script src="https://cdn.rawgit.com/quantimodo/import-data/master/connect.js"></script>
       <script src="lib/pluralize/pluralize.js"></script>
 
+<!-- Don't think we need Intercom
       <script>(function(){var w=window;var ic=w.Intercom;if(typeof ic==="function"){ic('reattach_activator');ic('update',intercomSettings);}else{var d=document;var i=function(){i.c(arguments)};i.q=[];i.c=function(args){i.q.push(args)};w.Intercom=i;function l(){var s=d.createElement('script');s.type='text/javascript';s.async=true;s.src='https://widget.intercom.io/widget/vtynnyja';var x=d.getElementsByTagName('script')[0];x.parentNode.insertBefore(s,x);}if(w.attachEvent){w.attachEvent('onload',l);}else{w.addEventListener('load',l,false);}}})()</script>
 
       <script>
@@ -144,8 +144,9 @@
               lastWeek: '[Last] dddd',
               sameElse: 'DD/MM/YYYY HH:MM'
           });
-      </script>
-
+      </script>-->
+      <!-- UserVoice JavaScript SDK (only needed once on a page) -->
+      <script>(function(){var uv=document.createElement('script');uv.type='text/javascript';uv.async=true;uv.src='//widget.uservoice.com/zFZhM9zeDpFAXUFUyPKSQ.js';var s=document.getElementsByTagName('script')[0];s.parentNode.insertBefore(uv,s)})()</script>
   </head>
 
   <body ng-app="starter">

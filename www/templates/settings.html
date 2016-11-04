@@ -140,14 +140,23 @@
             </div>
         </div>
 
+        <div ng-if="user" class="card sign-in" >
+            <div class="item item-text-wrap">
+                <button class="button button-block icon-left ion-refresh button-assertive" ng-click="refreshUser()">
+                    Refresh User Settings
+                </button>
+            </div>
+        </div>
+
         <div class="list card">
             <a class="item ">
-                {{appName}} Version {{appVersion}}
+                {{appSettings.appName}} Version {{appVersion}} ({{clientId}})
             </a>
         </div>
         <div ng-if="deviceToken" class="list card">
             <a class="item ">
-                Push Notification Device Token {{deviceToken}}
+                Push Notification Device Token
+                <p> {{deviceToken}}</p>
             </a>
         </div>
     </ion-content>

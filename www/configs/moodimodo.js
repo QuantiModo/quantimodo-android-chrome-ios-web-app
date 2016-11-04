@@ -22,6 +22,7 @@ config.appSettings  = {
         ' - Track diet, treatments, symptoms, and anything else',
         ' - Analyze your data to see the strongest predictors of your mood'
     ],
+    backgroundColor: "blue", // TODO: Make background color configurable
 
     primaryOutcomeVariableDetails : {
         id : 1398,
@@ -76,7 +77,7 @@ config.appSettings  = {
 
     /* END NEW STUFF */
 
-    welcomeText : "Let's start off by reporting your first mood on the card below",
+    welcomeText : "Let's start off by reporting your first mood below",
     primaryOutcomeVariableTrackingQuestion : "How are you?",
     primaryOutcomeVariableAverageText : "Your average mood is ",
     mobileNotificationImage : "file://img/icons/icon_128.png",
@@ -100,16 +101,17 @@ config.appSettings  = {
         // screen 1
         {
             img : {
-                width : '150',
-                height : '150',
-                url : 'img/icons/icon.png'
+                width : '250',
+                height : '250',
+                url : 'img/intro/intro-import.png'
             },
+            textColor: 'white',
+            backgroundColor: '#3467d6',
             content : {
-
                 firstParagraph : {
                     visible : true,
-                    content : 'Welcome to MoodiModo',
-                    classes : 'intro-header positive'
+                    content : 'Import Data',
+                    classes : 'intro-header'
                 }, 
                 logoDiv : {
                     visible : true,
@@ -117,7 +119,7 @@ config.appSettings  = {
                 },
                 finalParagraph : {
                     visible : true,
-                    content : 'MoodiModo allows you track your <span class="positive">mood</span> and identify the hidden factors which may most influence it.',
+                    content : 'Import data from all your apps and devices',
                     classes : 'intro-paragraph',
                     buttonBarVisible : true   
                 }
@@ -125,16 +127,44 @@ config.appSettings  = {
         },
         {
             img : {
-                width : '180',
-                height : '180',
-                url : 'img/rating/ic_face_ecstatic.png'
+                width : '250',
+                height : '250',
+                url : 'img/intro/intro-track-anything.png'
             },
+            textColor: 'white',
+            backgroundColor: '#f09402',
+            content : {
+                firstParagraph : {
+                    visible : true,
+                    content : 'Track Anything',
+                    classes : 'intro-header'
+                },
+                logoDiv : {
+                    visible : true,
+                    id : 'logo'
+                },
+                finalParagraph : {
+                    visible : true,
+                    content : 'Log treatments, diet, symptoms, emotions, and anything else',
+                    classes : 'intro-paragraph',
+                    buttonBarVisible : true
+                }
+            }
+        },
+        {
+            img : {
+                width : '250',
+                height : '250',
+                url : 'img/intro/intro-make-discoveries.png'
+            },
+            textColor: 'white',
+            backgroundColor: '#0f9d58',
             content : {
 
                 firstParagraph : {
                     visible : true,
-                    content : 'Thank you for helping us derive a mathematical equation for happiness!',
-                    classes : 'intro-paragraph positive'
+                    content : 'Make Discoveries',
+                    classes : 'intro-header'
                 }, 
                 
                 logoDiv : {
@@ -143,8 +173,8 @@ config.appSettings  = {
                 },
                 finalParagraph: {
                     visible : true,
-                    content : 'Now start tracking and optimize your life!',
-                    classes : 'intro-paragraph-small',
+                    content : 'Identify hidden factors most strongly linked to your well-being',
+                    classes : 'intro-paragraph',
                     buttonBarVisible : true
                 }
             }
@@ -189,7 +219,7 @@ config.appSettings  = {
     favoritesController : {
         actionMenuButtons : [
                 { text: '<i class="icon ion-gear-a"></i>Change Default Value' },
-                { text: '<i class="icon ion-edit"></i>Different Value/Time/Note' },
+                { text: '<i class="icon ion-edit"></i>Other Value/Time/Note' },
                 { text: '<i class="icon ion-arrow-graph-up-right"></i>Visualize'},
                 { text: '<i class="icon ion-ios-list-outline"></i>' + 'History'},
                 { text: '<i class="icon ion-settings"></i>' + 'Variable Settings'},

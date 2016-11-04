@@ -49,18 +49,21 @@ if [ ! -f ${APP_PRIVATE_CONFIG_PATH}/${LOWERCASE_APP_NAME}.config.js ]; then
     exit 1
 fi
 
+echo "Removing left over resources from previous app"
+rm -rf ${INTERMEDIATE_PATH}/resources/*
+
 export LC_CTYPE=C
 export LANG=C
 echo -e "${GREEN}Replacing IONIC_APP_VERSION_NUMBER with ${IONIC_APP_VERSION_NUMBER}...${NC}"
 cp ${INTERMEDIATE_PATH}/config-template.xml ${INTERMEDIATE_PATH}/apps/${LOWERCASE_APP_NAME}/config.xml
 cd ${INTERMEDIATE_PATH}/apps/${LOWERCASE_APP_NAME}
-find . -type f -exec sed -i '' -e 's/IONIC_IOS_APP_VERSION_NUMBER/'${IONIC_IOS_APP_VERSION_NUMBER}'/g' {} \; >> /dev/null 2>&1
-find . -type f -exec sed -i '' -e 's/IONIC_APP_VERSION_NUMBER/'${IONIC_APP_VERSION_NUMBER}'/g' {} \; >> /dev/null 2>&1
-find . -type f -exec sed -i '' -e 's/APP_DISPLAY_NAME/'${APP_DISPLAY_NAME}'/g' {} \; >> /dev/null 2>&1
-find . -type f -exec sed -i '' -e 's/APP_IDENTIFIER/'${APP_IDENTIFIER}'/g' {} \; >> /dev/null 2>&1
+find . -type f -exec sed -i '' -e 's/IONIC_IOS_APP_VERSION_NUMBER_PLACEHOLDER/'${IONIC_IOS_APP_VERSION_NUMBER}'/g' {} \; >> /dev/null 2>&1
+find . -type f -exec sed -i '' -e 's/IONIC_APP_VERSION_NUMBER_PLACEHOLDER/'${IONIC_APP_VERSION_NUMBER}'/g' {} \; >> /dev/null 2>&1
+find . -type f -exec sed -i '' -e 's/APP_DISPLAY_NAME_PLACEHOLDER/'${APP_DISPLAY_NAME}'/g' {} \; >> /dev/null 2>&1
+find . -type f -exec sed -i '' -e 's/APP_IDENTIFIER_PLACEHOLDER/'${APP_IDENTIFIER}'/g' {} \; >> /dev/null 2>&1
 
 echo "MAKE SURE NOT TO USE QUOTES OR SPECIAL CHARACTERS WITH export APP_DESCRIPTION OR IT WILL NOT REPLACE PROPERLY"
-find . -type f -exec sed -i '' -e 's/APP_DESCRIPTION/'${APP_DESCRIPTION}'/g' {} \; >> /dev/null 2>&1
+find . -type f -exec sed -i '' -e 's/APP_DESCRIPTION_PLACEHOLDER/'${APP_DESCRIPTION}'/g' {} \; >> /dev/null 2>&1
 
 export LANG=en_US.UTF-8
 

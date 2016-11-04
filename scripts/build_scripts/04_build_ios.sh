@@ -55,7 +55,7 @@ echo "ran through gulp"
 gulp generateXmlConfigAndUpdateAppsJs
 cp apps/${LOWERCASE_APP_NAME}/resources/icon_white.png $PWD/resources/icon.png
 #ionic resources - We already do this in gulp makeIosApp
-gulp setVersionNumbersWithEnvs
+gulp updateConfigXmlUsingEnvs
 gulp makeIosApp
 chmod a+x ./scripts/package-and-upload.sh
 ./scripts/package-and-upload.sh

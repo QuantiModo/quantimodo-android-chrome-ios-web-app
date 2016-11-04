@@ -1,8 +1,6 @@
 # Specifies intentionally untracked files to ignore when using Git
 # http://git-scm.com/docs/gitignore
 node_modules/
-platforms/android/
-platforms/ios/
 plugins/
 www/lib/
 www/private_configs/*.config.js
@@ -10,23 +8,16 @@ www/private_configs/*.config.js
 *.app.dSYM.zip
 *.ipa
 *.mobileprovision
-!platforms/ios/www/lib/bugsnag/dist
 android-sdk-linux/
 android-sdk_r24.2-linux.tgz
 scripts/certs/apple.cer
 scripts/certs/dist.cer
 scripts/certs/dist.p12
-resources/android/
-apps/moodimodo/resources/chrome_extension/www/
-apps/moodimodo/resources/chrome_extension/www
-*.psd
-platforms/windows/
-bld/
+platforms/
+/bld/
 .vs/
 .vagrant/
-bin/
-resources/ios/icon/
-resources/ios/splash/
+/bin/
 QM-Ionic-Build.jsproj
 QM-Ionic-Build.sln
 QM-Ionic.jsproj
@@ -34,3 +25,10 @@ QM-Ionic.sln
 QM-Ionic.jsproj.user
 changeList.json
 gradle-2.14.1-bin.zip
+/config.xml
+/build/
+/fastlane/
+/hooks/generate_resources_fix_xcode_and_fastlane_beta.sh
+/ionic.project
+/resources/
+/www/README.md
