@@ -137,22 +137,30 @@ angular.module('starter')
 		};
 
 
-		$scope.track = function(trackingReminderNotification, modifiedReminderValue, $event, dividerIndex, trackingReminderNotificationIndex){
-
-			if(isGhostClick($event)){
-				return;
-			}
+		var notificationAction = function(trackingReminderNotification, $event, dividerIndex,
+										  trackingReminderNotificationIndex){
 			// Removing instead of hiding reminder notifications seems to cause weird dismissal problems
 			//$scope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications.splice(trackingReminderNotificationIndex, 1);
 			$scope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications[trackingReminderNotificationIndex].hide = true;
 			$rootScope.numberOfPendingNotifications--;
 			$scope.state.numberOfDisplayedNotifications--;
-			console.debug('Tracking notification ' + JSON.stringify(trackingReminderNotification));
-			console.debug('modifiedReminderValue is ' + modifiedReminderValue);
-			var body = {
+			if(!$rootScope.showUndoButton){
+				$rootScope.showUndoButton = true;
+			}
+			return {
 				trackingReminderNotification: trackingReminderNotification,
-				modifiedValue: modifiedReminderValue
+				trackingReminderNotificationId: trackingReminderNotification.id
 			};
+		};
+
+		$scope.track = function(trackingReminderNotification, modifiedReminderValue, $event, dividerIndex, trackingReminderNotificationIndex){
+			if(isGhostClick($event)){
+				return false;
+			}
+			$scope.lastAction = 'track';
+			var body = notificationAction(trackingReminderNotification, $event, dividerIndex,
+				trackingReminderNotificationIndex);
+			body.modifiedValue = modifiedReminderValue;
 	    	reminderService.trackReminderNotification(body)
 				.then(function(){
 					if($rootScope.localNotificationsEnabled){
@@ -167,21 +175,12 @@ angular.module('starter')
 	    };
 
 	    $scope.skip = function(trackingReminderNotification, $event, dividerIndex, trackingReminderNotificationIndex){
-
 			if(isGhostClick($event)){
 				return;
 			}
-
-			$scope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications[trackingReminderNotificationIndex].hide = true;
-			$rootScope.numberOfPendingNotifications--;
-			$scope.state.numberOfDisplayedNotifications--;
-			// Removing seems to cause weird dismissal problems
-			//$scope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications.splice(trackingReminderNotificationIndex, 1);
-			console.debug('Skipping notification ' + JSON.stringify(trackingReminderNotification));
-			var params = {
-				trackingReminderNotificationId: trackingReminderNotification.id,
-				trackingReminderNotification: trackingReminderNotification
-			};
+			$scope.lastAction = 'skip';
+			var params = notificationAction(trackingReminderNotification, $event, dividerIndex,
+				trackingReminderNotificationIndex);
 	    	reminderService.skipReminderNotification(params)
 				.then(function(){
 					if($rootScope.localNotificationsEnabled){
@@ -199,17 +198,9 @@ angular.module('starter')
 			if(isGhostClick($event)){
 				return;
 			}
-
-			$scope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications[trackingReminderNotificationIndex].hide = true;
-			$rootScope.numberOfPendingNotifications--;
-			$scope.state.numberOfDisplayedNotifications--;
-			// Removing seems to cause weird dismissal problems
-			//$scope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications.splice(trackingReminderNotificationIndex, 1);
-			console.debug('Snoozing notification ' + JSON.stringify(trackingReminderNotification));
-			var params = {
-				trackingReminderNotificationId: trackingReminderNotification.id,
-				trackingReminderNotification: trackingReminderNotification
-			};
+			$scope.lastAction = 'snooze';
+			var params = notificationAction(trackingReminderNotification, $event, dividerIndex,
+				trackingReminderNotificationIndex);
 	    	reminderService.snoozeReminderNotification(params)
 				.then(function(){
 					if($rootScope.localNotificationsEnabled){
@@ -222,6 +213,17 @@ angular.module('starter')
 					if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error(error);
 				});
 	    };
+
+		$scope.undo = function(){
+			var notificationsSyncQueue = localStorageService.getItemAsObject('notificationsSyncQueue');
+			notificationsSyncQueue[0].trackingReminderNotification.hide = false;
+			localStorageService.addToOrReplaceElementOfItemByIdOrMoveToFront('trackingReminderNotifications',
+				notificationsSyncQueue[0].trackingReminderNotification);
+			localStorageService.deleteElementOfItemByProperty('notificationsSyncQueue',
+				'trackingReminderNotificationId', notificationsSyncQueue[0].trackingReminderNotificationId);
+			getTrackingReminderNotifications();
+			$rootScope.showUndoButton = false;
+		};
 
 		var getFilteredTrackingReminderNotifications = function(){
 			reminderService.getTrackingReminderNotifications($stateParams.variableCategoryName)

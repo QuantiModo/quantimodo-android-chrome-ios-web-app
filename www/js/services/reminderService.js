@@ -31,6 +31,9 @@ angular.module('starter')
 			}
 			QuantiModo.postTrackingReminderNotifications(trackingReminderNotificationsArray, function(){
 				localStorageService.deleteItem('notificationsSyncQueue');
+                if($rootScope.showUndoButton){
+                    $rootScope.showUndoButton = false;
+                }
                 if(successHandler){
                     successHandler();
                 }
