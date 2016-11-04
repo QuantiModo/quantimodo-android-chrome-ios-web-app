@@ -683,6 +683,15 @@ angular.module('starter',
                 }
             }
         })
+        .state('app.update-card', {
+            url: "/update-card",
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/iframe-embed.html",
+                    controller: 'IframeScreenCtrl'
+                }
+            }
+        })
         .state('app.predictors', {
             url: "/predictors/:valence",
             params: {
