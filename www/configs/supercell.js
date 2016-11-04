@@ -298,12 +298,12 @@ config.appSettings  = {
         {
             title : 'Favorites',
             href : '#/app/favorites',
-            icon : 'ion-speedometer'
+            icon : 'ion-ios-star'
         },
            {
             title : 'Measurements',
             href : '#/app/measurements',
-            icon : 'ion-ios-bank'
+            icon : 'ion-speedometer'
         },
         {
             title : 'Overall Mood',
