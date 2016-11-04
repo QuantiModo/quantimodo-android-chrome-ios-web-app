@@ -1152,6 +1152,12 @@ angular.module('starter')
             return deferred.promise;
         };
 
+        QuantiModo.clearTokensFromLocalStorage = function(){
+            localStorageService.deleteItem('accessToken');
+            localStorageService.deleteItem('refreshToken');
+            localStorageService.deleteItem('expiresAtMilliseconds');
+        };
+
         QuantiModo.updateUserSettingsDeferred = function(params){
             var deferred = $q.defer();
             QuantiModo.postUserSettings(params, function(response){
