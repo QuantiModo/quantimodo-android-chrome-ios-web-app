@@ -308,15 +308,13 @@ angular.module('starter',
             }
         }
     };
-
+    
     getAllUrlParams();
-
     if ($rootScope.urlParameters.existingUser || $rootScope.urlParameters.introSeen || $rootScope.urlParameters.refreshUser) {
         window.localStorage.introSeen = true;
         window.localStorage.isWelcomed = true;
     }
-    console.log('url params are ', $rootScope.urlParameters);
-
+    console.debug('url params are ', $rootScope.urlParameters);
 })
 
 .config(function($stateProvider, $urlRouterProvider, $compileProvider, ionicTimePickerProvider,
