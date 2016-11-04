@@ -621,6 +621,22 @@ angular.module('starter')
                 errorHandler);
         };
 
+        QuantiModo.postTrackingReminderNotifications = function(trackingReminderNotificationsArray, successHandler, errorHandler) {
+            if(!trackingReminderNotificationsArray){
+                successHandler();
+                return;
+            }
+            if(trackingReminderNotificationsArray.constructor !== Array){
+                trackingReminderNotificationsArray = [trackingReminderNotificationsArray];
+            }
+
+            QuantiModo.post('api/v1/trackingReminderNotifications',
+                [],
+                trackingReminderNotificationsArray,
+                successHandler,
+                errorHandler);
+        };
+
         // get reminders
         QuantiModo.getTrackingReminders = function(params, successHandler, errorHandler){
             QuantiModo.get('api/v1/trackingReminders',
@@ -630,7 +646,6 @@ angular.module('starter')
                 errorHandler);
         };
 
-        // post tracking reminder
         QuantiModo.postUserSettings = function(params, successHandler, errorHandler) {
             QuantiModo.post('api/v1/userSettings',
                 [],
