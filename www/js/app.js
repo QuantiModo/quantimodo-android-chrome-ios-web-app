@@ -293,6 +293,30 @@ angular.module('starter',
         }
     }, 500);
 
+    var getAllUrlParams = function() {
+        $rootScope.urlParameters = {};
+        var queryString = document.location.toString().split('?')[1];
+        var sURLVariables;
+        var parameterNameValueArray;
+        if(queryString) {
+            sURLVariables = queryString.split('&');
+        }
+        if(sURLVariables) {
+            for (var i = 0; i < sURLVariables.length; i++) {
+                parameterNameValueArray = sURLVariables[i].split('=');
+                $rootScope.urlParameters[parameterNameValueArray[0]] = parameterNameValueArray[1];
+            }
+        }
+    };
+
+    getAllUrlParams();
+
+    if ($rootScope.urlParameters.existingUser || $rootScope.urlParameters.introSeen || $rootScope.urlParameters.refreshUser) {
+        window.localStorage.introSeen = true;
+        window.localStorage.isWelcomed = true;
+    }
+    console.log('url params are ', $rootScope.urlParameters);
+
 })
 
 .config(function($stateProvider, $urlRouterProvider, $compileProvider, ionicTimePickerProvider,
@@ -317,11 +341,6 @@ angular.module('starter',
                 var sParameterName = sURLVariables[i].split('=');
                 if (sParameterName[0] === 'app') {
                     return sParameterName[1].split('#')[0];
-                }
-
-                if (sParameterName[0] === 'existingUser' || sParameterName[0] === 'introSeen') {
-                    window.localStorage.introSeen = true;
-                    window.localStorage.isWelcomed = true;
                 }
             }
             return false;
