@@ -527,6 +527,9 @@
 			</div>
 		</div>
 	</ion-content>
+	<div ng-show="showUndoButton" ng-click="undo()" class="bar bar-footer bar-balanced">
+		<div class="title">Undo {{lastAction}}</div>
+	</div>
 	<nav id="floatingMaterialButton"
 		 mfb-menu position="bl"
 		 effect="slidein-spring"
