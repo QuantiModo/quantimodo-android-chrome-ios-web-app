@@ -884,7 +884,9 @@ angular.module('starter')
             var expiresAtMilliseconds;
             var bufferInMilliseconds = 86400 * 1000;  // Refresh a day in advance
 
-            if (typeof expiresAt === 'string' || expiresAt instanceof String){
+            if(accessResponse.accessTokenExpiresAtMilliseconds){
+                expiresAtMilliseconds = accessResponse.accessTokenExpiresAtMilliseconds;
+            } else if (typeof expiresAt === 'string' || expiresAt instanceof String){
                 expiresAtMilliseconds = new Date(expiresAt).getTime();
             } else if (expiresAt === parseInt(expiresAt, 10) && expiresAt < new Date().getTime()) {
                 expiresAtMilliseconds = expiresAt * 1000;
