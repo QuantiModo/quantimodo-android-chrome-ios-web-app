@@ -160,6 +160,18 @@ angular.module('starter')
 
 		};
 
+		$scope.refreshFavorites = function () {
+			if($rootScope.syncingReminders !== true) {
+				console.debug("ReminderMange init: calling refreshTrackingRemindersAndScheduleAlarms");
+				$scope.showLoader('Syncing...');
+				reminderService.refreshTrackingRemindersAndScheduleAlarms().then(function () {
+					getFavoriteTrackingRemindersFromLocalStorage();
+				});
+			} else {
+				$scope.$broadcast('scroll.refreshComplete');
+			}
+		};
+
 	    $scope.init = function(){
 			$rootScope.stateParams = $stateParams;
 
@@ -183,6 +195,7 @@ angular.module('starter')
 				$scope.$broadcast('scroll.refreshComplete');
 			} else {
 				getFavoriteTrackingRemindersFromLocalStorage();
+				$scope.refreshFavorites();
 			}
 			$scope.showHelpInfoPopupIfNecessary();
 
