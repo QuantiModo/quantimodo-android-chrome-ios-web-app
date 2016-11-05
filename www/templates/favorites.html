@@ -1,7 +1,7 @@
 <ion-view hide-nav-bar="hideNavigationMenu" view-title="Favorites">
     <ion-nav-title>{{state.title}}</ion-nav-title>
     <ion-content >
-        <ion-refresher on-refresh="init()"></ion-refresher>
+        <ion-refresher on-refresh="refreshFavorites()"></ion-refresher>
         <div class="list card" ng-click="favoriteAddButtonClick()">
             <a id="addFavoriteBtn" style="white-space: normal; " class="item item-icon-left ">
                 <i class="icon {{state.addButtonIcon}} positive"></i>
