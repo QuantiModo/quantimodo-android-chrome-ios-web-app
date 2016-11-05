@@ -34,6 +34,7 @@ angular.module('starter')
             if (typeof Bugsnag !== "undefined") {
                 //Bugsnag.apiKey = "ae7bc49d1285848342342bb5c321a2cf";
                 //Bugsnag.notifyReleaseStages = ['Production','Staging'];
+                Bugsnag.releaseStage = utilsService.getEnv();
                 Bugsnag.appVersion = $rootScope.appVersion;
                 Bugsnag.metaData = {
                     platform: ionic.Platform.platform(),
