@@ -262,7 +262,7 @@ angular.module('starter')
 				// Getting token so we can post as the new user if they log in again
 				$rootScope.deviceTokenToSync = localStorageService.getItemSync('deviceTokenOnServer');
 				QuantiModo.deleteDeviceToken($rootScope.deviceTokenToSync);
-				clearTokensFromLocalStorage();
+				QuantiModo.clearTokensFromLocalStorage();
 				if (utilsService.getClientId() === 'oAuthDisabled' || $rootScope.isChromeExtension) {
 					window.open(utilsService.getURL("api/v2/auth/logout"),'_blank');
 				}
@@ -299,19 +299,7 @@ angular.module('starter')
 			$scope.hideLoader();
 			$rootScope.user = null;
 			$scope.showDataClearPopup();
-            
-
-
         };
-
-        // when user is logging out
-        function clearTokensFromLocalStorage() {
-            //Set out local storage flag for welcome screen variables
-            localStorageService.setItem('primaryOutcomeVariableReportedWelcomeScreen', true);
-            localStorageService.deleteItem('accessToken');
-            localStorageService.deleteItem('refreshToken');
-            localStorageService.deleteItem('expiresAtMilliseconds');
-        }
 
 	    // Convert all data Array to a CSV object
 	    var convertToCSV = function(objArray) {

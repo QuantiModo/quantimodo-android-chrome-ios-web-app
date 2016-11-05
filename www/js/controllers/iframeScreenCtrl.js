@@ -7,6 +7,14 @@ angular.module('starter')
         var embedPlugin;
         var urlParameters = '';
         var iFrameUrl;
+        $scope.iFrameStyle = "height:2000px; width:100%;";
+
+        if(window.location.href.indexOf('update-card') > -1 )
+        {
+            $scope.iFrameStyle = "height:2500px; width:100%;";
+            iFrameUrl = $rootScope.qmApiUrl + '/api/v2/account/update-card?hideMenu=true';
+            $scope.title = 'Update Card';
+        }
 
         if(window.location.href.indexOf('search-variables') > -1 )
         {
@@ -35,15 +43,15 @@ angular.module('starter')
         QuantiModo.getAccessTokenFromAnySource().then(function(accessToken) {
 
             if(accessToken){
-                $scope.iframeUrl = $sce.trustAsResourceUrl(
-                    iFrameUrl + '&access_token=' + accessToken
-                );
-            } else {
-                $scope.iframeUrl = $sce.trustAsResourceUrl(
-                    iFrameUrl
-                );
+                if(iFrameUrl.indexOf('?') > -1){
+                    iFrameUrl = iFrameUrl + '&access_token=' + accessToken;
+                } else {
+                    iFrameUrl = iFrameUrl + '?access_token=' + accessToken;
+                }
             }
-
+            $scope.iframeUrl = $sce.trustAsResourceUrl(
+                iFrameUrl
+            );
             $ionicLoading.hide();
         }, function(){
             console.debug("iframeScreen: No access token. Need to log in.");
