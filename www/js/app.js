@@ -293,7 +293,7 @@ angular.module('starter',
         }
     }, 500);
 
-    var getAllUrlParams = function() {
+    $rootScope.getAllUrlParams = function() {
         $rootScope.urlParameters = {};
         var queryString = document.location.toString().split('?')[1];
         var sURLVariables;
@@ -308,8 +308,8 @@ angular.module('starter',
             }
         }
     };
-    
-    getAllUrlParams();
+
+    $rootScope.getAllUrlParams();
     if ($rootScope.urlParameters.existingUser || $rootScope.urlParameters.introSeen || $rootScope.urlParameters.refreshUser) {
         window.localStorage.introSeen = true;
         window.localStorage.isWelcomed = true;

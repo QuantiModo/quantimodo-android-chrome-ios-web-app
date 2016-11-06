@@ -1,27 +1,70 @@
 angular.module('starter')
 	.controller('StudyCtrl', function($scope, $state, QuantiModo, $stateParams, $ionicHistory, $rootScope,
-                                      correlationService, chartService, $timeout) {
+                                      correlationService, chartService, $timeout, $ionicLoading) {
 
 		$scope.controller_name = "StudyCtrl";
         
         $scope.init = function(){
+            $rootScope.getAllUrlParams();
             console.debug($state.current.name + ' initializing...');
             $rootScope.stateParams = $stateParams;
             if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
             if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
             $scope.state = {
-                correlationObject: $stateParams.correlationObject
+                correlationObject: $stateParams.correlationObject,
+                title: 'Loading study...'
             };
 
-            // $scope.state.correlationObject = {
-            //     effectVariableName: 'Overall Mood',
-            //     causeVariableName: 'Back Pain'
-            // };
+            if($scope.state.correlationObject){
+                $scope.state.title = $scope.state.correlationObject.predictorExplanation;
+            }
 
-            if(!$scope.state.correlationObject) {
+            if($rootScope.urlParameters.causeVariableId && $rootScope.urlParameters.effectVariableId) {
+                $ionicLoading.show({
+                    template: '<ion-spinner></ion-spinner>'
+                });
+                var params = {
+                    causeVariableId: $rootScope.urlParameters.causeVariableId,
+                    effectVariableId: $rootScope.urlParameters.effectVariableId
+                };
+
+                if (!$rootScope.urlParameters.aggregated) {
+                    correlationService.getUserCorrelations(params).then(function (correlations) {
+                        if (correlations[0]) {
+                            $scope.state.correlationObject = correlations[0];
+                            $scope.state.title = $scope.state.correlationObject.predictorExplanation;
+                        }
+                        $ionicLoading.hide();
+                    }, function (error) {
+                        $ionicLoading.hide();
+                        alert('Could not find this study!  Error: ' + error);
+                        $ionicHistory.goBack();
+                    });
+                }
+
+                if ($rootScope.urlParameters.aggregated) {
+                    correlationService.getAggregatedCorrelations(params).then(function (correlations) {
+                        if (correlations[0]) {
+                            $scope.state.correlationObject = correlations[0];
+                            $scope.state.title = $scope.state.correlationObject.predictorExplanation;
+                        }
+                        $ionicLoading.hide();
+                    }, function (error) {
+                        $ionicLoading.hide();
+                        alert('Could not find this study!  Error: ' + error);
+                        $ionicHistory.goBack();
+                    });
+                }
+            }
+
+            if(!$scope.state.correlationObject && !$rootScope.urlParameters.causeVariableId) {
                 $ionicHistory.goBack();
             }
 
+            //chartCorrelationsOverTime();
+        };
+
+        var chartCorrelationsOverTime = function () {
             var params = {
                 effectVariableName: $scope.state.correlationObject.effectVariableName,
                 causeVariableName: $scope.state.correlationObject.causeVariableName,
@@ -46,7 +89,6 @@ angular.module('starter')
                     }
                 });
             }
-
         };
 
         var windowResize = function() {
