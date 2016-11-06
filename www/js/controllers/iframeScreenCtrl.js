@@ -9,6 +9,13 @@ angular.module('starter')
         var iFrameUrl;
         $scope.iFrameStyle = "height:2000px; width:100%;";
 
+        if($state.current.name === 'app.studyCreate')
+        {
+            $scope.iFrameStyle = "height:5000px; width:100%;";
+            iFrameUrl = $rootScope.qmApiUrl + '/api/v2/studies?hideMenu=true';
+            $scope.title = 'Create Study';
+        }
+
         if(window.location.href.indexOf('update-card') > -1 )
         {
             $scope.iFrameStyle = "height:2500px; width:100%;";

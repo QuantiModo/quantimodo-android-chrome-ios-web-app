@@ -20,40 +20,22 @@ angular.module('starter')
             }
 
             if($rootScope.urlParameters.causeVariableId && $rootScope.urlParameters.effectVariableId) {
-                $ionicLoading.show({
-                    template: '<ion-spinner></ion-spinner>'
-                });
                 var params = {
                     causeVariableId: $rootScope.urlParameters.causeVariableId,
                     effectVariableId: $rootScope.urlParameters.effectVariableId
                 };
 
                 if (!$rootScope.urlParameters.aggregated) {
-                    correlationService.getUserCorrelations(params).then(function (correlations) {
-                        if (correlations[0]) {
-                            $scope.state.correlationObject = correlations[0];
-                            $scope.state.title = $scope.state.correlationObject.predictorExplanation;
-                        }
-                        $ionicLoading.hide();
-                    }, function (error) {
-                        $ionicLoading.hide();
-                        alert('Could not find this study!  Error: ' + error);
-                        $ionicHistory.goBack();
-                    });
+                    var fallbackToAggregateStudy = true;
+                    getUserStudy(params, fallbackToAggregateStudy);
                 }
 
                 if ($rootScope.urlParameters.aggregated) {
-                    correlationService.getAggregatedCorrelations(params).then(function (correlations) {
-                        if (correlations[0]) {
-                            $scope.state.correlationObject = correlations[0];
-                            $scope.state.title = $scope.state.correlationObject.predictorExplanation;
-                        }
-                        $ionicLoading.hide();
-                    }, function (error) {
-                        $ionicLoading.hide();
-                        alert('Could not find this study!  Error: ' + error);
-                        $ionicHistory.goBack();
-                    });
+                    var fallbackToUserStudy = false;
+                    if($rootScope.user){
+                        fallbackToUserStudy = true;
+                    }
+                    getAggregateStudy(params, fallbackToUserStudy);
                 }
             }
 
@@ -62,6 +44,62 @@ angular.module('starter')
             }
 
             //chartCorrelationsOverTime();
+        };
+
+        var getUserStudy = function (params, fallbackToAggregateStudy) {
+            $ionicLoading.show({
+                template: '<ion-spinner></ion-spinner>'
+            });
+            correlationService.getUserCorrelations(params).then(function (correlations) {
+                $ionicLoading.hide();
+                if (correlations[0]) {
+                    $scope.state.correlationObject = correlations[0];
+                    $scope.state.title = $scope.state.correlationObject.predictorExplanation;
+                } else {
+                    if(!fallbackToAggregateStudy){
+                        $scope.state.studyNotFound = true;
+                        $scope.state.title = 'Study Not Found';
+                    } else {
+                        getAggregateStudy(params);
+                    }
+                }
+            }, function (error) {
+                $ionicLoading.hide();
+                if(!fallbackToAggregateStudy){
+                    $scope.state.studyNotFound = true;
+                    $scope.state.title = 'Study Not Found';
+                } else {
+                    getAggregateStudy(params);
+                }
+            });
+        };
+
+        var getAggregateStudy = function (params, fallbackToUserStudy) {
+            $ionicLoading.show({
+                template: '<ion-spinner></ion-spinner>'
+            });
+            correlationService.getAggregatedCorrelations(params).then(function (correlations) {
+                $ionicLoading.hide();
+                if (correlations[0]) {
+                    $scope.state.correlationObject = correlations[0];
+                    $scope.state.title = $scope.state.correlationObject.predictorExplanation;
+                } else {
+                    if(!fallbackToUserStudy){
+                        $scope.state.studyNotFound = true;
+                        $scope.state.title = 'Study Not Found';
+                    } else {
+                        getUserStudy(params);
+                    }
+                }
+            }, function (error) {
+                $ionicLoading.hide();
+                if(!fallbackToUserStudy){
+                    $scope.state.studyNotFound = true;
+                    $scope.state.title = 'Study Not Found';
+                } else {
+                    getUserStudy(params);
+                }
+            });
         };
 
         var chartCorrelationsOverTime = function () {
