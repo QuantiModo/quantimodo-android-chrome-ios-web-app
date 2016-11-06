@@ -157,10 +157,15 @@ angular.module('starter')
 			if(isGhostClick($event)){
 				return false;
 			}
-			$scope.lastAction = 'track';
+
+			if(modifiedReminderValue === null){
+				modifiedReminderValue = trackingReminderNotification.defaultValue;
+			}
+
 			var body = notificationAction(trackingReminderNotification, $event, dividerIndex,
 				trackingReminderNotificationIndex);
 			body.modifiedValue = modifiedReminderValue;
+			$scope.lastAction = 'Record ' + modifiedReminderValue;
 	    	reminderService.trackReminderNotification(body)
 				.then(function(){
 					if($rootScope.localNotificationsEnabled){
@@ -178,7 +183,7 @@ angular.module('starter')
 			if(isGhostClick($event)){
 				return;
 			}
-			$scope.lastAction = 'skip';
+			$scope.lastAction = 'Skip';
 			var params = notificationAction(trackingReminderNotification, $event, dividerIndex,
 				trackingReminderNotificationIndex);
 	    	reminderService.skipReminderNotification(params)
@@ -198,7 +203,7 @@ angular.module('starter')
 			if(isGhostClick($event)){
 				return;
 			}
-			$scope.lastAction = 'snooze';
+			$scope.lastAction = 'Snooze';
 			var params = notificationAction(trackingReminderNotification, $event, dividerIndex,
 				trackingReminderNotificationIndex);
 	    	reminderService.snoozeReminderNotification(params)
