@@ -5,23 +5,23 @@
                 <div class="list card">
                     <ion-item style="border-style:hidden;">
                         <div class="item item-text-wrap card-item">
-                            <h3>{{correlationObject.predictorExplanation}}</h3>
+                            <h3 id="predictorExplanation">{{correlationObject.predictorExplanation}}</h3>
                             <div ng-include="'templates/correlation-buttons-fragment.html'"></div>
-                            <p>{{correlationObject.valuePredictingHighOutcomeExplanation}}</p>
-                            <p>{{correlationObject.valuePredictingLowOutcomeExplanation}}</p>
-                            <h3>Study Abstract</h3>
+                            <p id="valuePredictingHighOutcomeExplanation">{{correlationObject.valuePredictingHighOutcomeExplanation}}</p>
+                            <p id="valuePredictingLowOutcomeExplanation">{{correlationObject.valuePredictingLowOutcomeExplanation}}</p>
+                            <h3 id="studyAbstract">Study Abstract</h3>
                                <p>{{correlationObject.studyAbstract}}</p>
-                            <h3>Study Background</h3>
+                            <h3 id="studyBackground">Study Background</h3>
                                <p>{{correlationObject.studyBackground}}</p>
-                            <h3>Study Objective</h3>
+                            <h3 id="studyObjective">Study Objective</h3>
                                <p>{{correlationObject.studyObjective}}</p>
-                            <h3>Study Design</h3>
+                            <h3 id="studyDesign">Study Design</h3>
                                <p>{{correlationObject.studyDesign}}</p>
-                            <h3>Data Analysis</h3>
+                            <h3 id="dataAnalysis">Data Analysis</h3>
                                <p>{{correlationObject.dataAnalysis}}</p>
-                            <h3>Data Sources</h3>
+                            <h3 id="dataSources">Data Sources</h3>
                                <p ng-bind-html="correlationObject.dataSources"></p>
-                            <h3>Study Limitations</h3>
+                            <h3 id="studyLimitations">Study Limitations</h3>
                                 <p>{{correlationObject.studyLimitations}}</p>
                         </div>
                         <div ng-show="lineChartConfig" class="card primary-outcome-variable-reporting-chart">
