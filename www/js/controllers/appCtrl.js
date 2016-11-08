@@ -545,7 +545,7 @@ angular.module('starter')
                         {text: 'Yes',
                             type: 'button-positive',
                             onTap: function(){
-                                $scope.state.correlationObjects[$index].userVote = 0;
+                                correlationObject.userVote = 0;
                                 correlationObject.vote = 0;
                                 correlationService.vote(correlationObject)
                                     .then(function () {
@@ -580,7 +580,7 @@ angular.module('starter')
                         {text: 'Yes',
                             type: 'button-positive',
                             onTap: function(){
-                                $scope.state.correlationObjects[$index].userVote = 1;
+                                correlationObject.userVote = 1;
                                 correlationObject.vote = 1;
                                 correlationService.vote(correlationObject)
                                     .then(function () {
@@ -598,7 +598,7 @@ angular.module('starter')
         };
 
         function deleteVote(correlationObject, $index) {
-            $scope.state.correlationObjects[$index].userVote = null;
+            correlationObject.userVote = null;
             correlationService.deleteVote(correlationObject, function(response){
                 console.debug("deleteVote response", response);
             }, function(response){

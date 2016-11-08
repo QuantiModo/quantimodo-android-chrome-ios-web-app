@@ -73,13 +73,17 @@ angular.module('starter')
         }
         
         function setupUserPredictors() {
-            $scope.state.explanationText = 'These factors are most predictive of ' + $scope.state.increasingDecreasing +
+            $scope.state.explanationHeader = "Your Top Predictors";
+            $scope.state.explanationIcon = "ion-ios-person";
+            $scope.state.explanationText = 'These factors are most likely to affect ' + $scope.state.increasingDecreasing +
                 ' your ' + $scope.state.variableName + ' based on your own data.  ' +
             'Want more accurate results? Add some reminders and start tracking!';
         }
 
         function setupAggregatedPredictors() {
-            $scope.state.explanationText = 'These factors are most predictive of ' + $scope.state.increasingDecreasing +
+            $scope.state.explanationHeader = "Common Predictors";
+            $scope.state.explanationIcon = "ion-ios-people";
+            $scope.state.explanationText = 'These factors are most likely to affect ' + $scope.state.increasingDecreasing +
                 ' ' + $scope.state.variableName + ' for the average QuantiModo user.  ' +
             'Want PERSONALIZED results? Add some reminders and start tracking!';
         }
@@ -120,13 +124,13 @@ angular.module('starter')
             if($stateParams.valence === 'positive'){
                 $scope.state.increasingDecreasing = 'INCREASING';
                 $scope.state.requestParams.correlationCoefficient = "(gt)0";
-                $scope.state.title = "Positive Predictors of " + $scope.state.variableName;
+                $scope.state.title = "Positive Predictors";
             } else if($stateParams.valence === 'negative'){
                 $scope.state.increasingDecreasing = 'DECREASING';
                 $scope.state.requestParams.correlationCoefficient = "(lt)0";
-                $scope.state.title = "Negative Predictors of " + $scope.state.variableName;
+                $scope.state.title = "Negative Predictors";
             } else {
-                $scope.state.title = "Predictors of " + $scope.state.variableName;
+                $scope.state.title = "Predictors";
             }
 
             if($stateParams.aggregated){

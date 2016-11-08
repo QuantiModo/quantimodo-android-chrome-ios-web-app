@@ -1,18 +1,28 @@
 <div class="voteButtons">
     <div ng-click="upVote(correlationObject, $index)" class="show-inline">
-        <img ng-if="correlationObject.userVote === null || correlationObject.userVote === 0" src="img/thumb_up_white.png" height="32px" width="32px" />
-        <img ng-if="correlationObject.userVote === 1" src="img/thumb_up_black.png" height="32px" width="32px" />
+        <div class="tooltip" title="Relationship Seems Plausible">
+            <img ng-if="correlationObject.userVote === null || correlationObject.userVote === 0" src="img/thumb_up_white.png" height="32px" width="32px" />
+            <img ng-if="correlationObject.userVote === 1" src="img/thumb_up_black.png" height="32px" width="32px" />
+        </div>
     </div>
+    &nbsp;
     <div ng-click="downVote(correlationObject, $index)" class="show-inline">
-        <img ng-if="correlationObject.userVote === null || correlationObject.userVote === 1" src="img/thumb_down_white.png" height="32px" width="32px" />
-        <img ng-if="correlationObject.userVote === 0" src="img/thumb_down_black.png" height="32px" width="32px" />
+        <div class="tooltip" title="Relationship Seems Impossible">
+            <img ng-if="correlationObject.userVote === null || correlationObject.userVote === 1" src="img/thumb_down_white.png" height="32px" width="32px" />
+            <img ng-if="correlationObject.userVote === 0" src="img/thumb_down_black.png" height="32px" width="32px" />
+        </div>
     </div>
-    <div ng-click="goToStudyPage(correlationObject)" class="show-inline">
-        &nbsp;
-        <i  style="font-size: 32px;" class="ion-ios-book-outline"></i>
+    &nbsp;
+    <div ng-click="goToStudyPage(correlationObject)" class="show-inline" >
+        &nbsp;<div class="tooltip" title="Go to Full Study">
+            <i style="font-size: 32px;" class="ion-ios-book-outline"></i>
+        </div>
     </div>
+    &nbsp;
+    &nbsp;
     <div ng-click="goToVariableSettings(correlationObject)" class="show-inline">
-        &nbsp;
-        <i  style="font-size: 32px;" class="ion-android-options"></i>
+        &nbsp;<div class="tooltip" title="Change Analysis Parameters">
+            <i  style="font-size: 32px;" class="ion-android-options"></i>
+        </div>
     </div>
 </div>
