@@ -12,13 +12,14 @@ angular.module('starter')
             if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
             if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
             $scope.state = {
-                correlationObject: $stateParams.correlationObject,
                 title: 'Loading study...',
                 requestParams: {}
             };
             
-            if($scope.state.correlationObject){
-                $scope.state.title = $scope.state.correlationObject.predictorExplanation;
+            $scope.correlationObject = $stateParams.correlationObject;
+            
+            if($scope.correlationObject){
+                $scope.state.title = $scope.correlationObject.predictorExplanation;
                 return;
             }
 
@@ -58,8 +59,8 @@ angular.module('starter')
             correlationService.getUserCorrelations(params).then(function (correlations) {
                 $ionicLoading.hide();
                 if (correlations[0]) {
-                    $scope.state.correlationObject = correlations[0];
-                    $scope.state.title = $scope.state.correlationObject.predictorExplanation;
+                    $scope.correlationObject = correlations[0];
+                    $scope.state.title = $scope.correlationObject.predictorExplanation;
                 } else {
                     if(!fallbackToAggregateStudy){
                         $scope.state.studyNotFound = true;
@@ -86,8 +87,8 @@ angular.module('starter')
             correlationService.getAggregatedCorrelations(params).then(function (correlations) {
                 $ionicLoading.hide();
                 if (correlations[0]) {
-                    $scope.state.correlationObject = correlations[0];
-                    $scope.state.title = $scope.state.correlationObject.predictorExplanation;
+                    $scope.correlationObject = correlations[0];
+                    $scope.state.title = $scope.correlationObject.predictorExplanation;
                 } else {
                     if(!fallbackToUserStudy){
                         $scope.state.studyNotFound = true;
@@ -109,13 +110,13 @@ angular.module('starter')
 
         var chartCorrelationsOverTime = function () {
             var params = {
-                effectVariableName: $scope.state.correlationObject.effectVariableName,
-                causeVariableName: $scope.state.correlationObject.causeVariableName,
+                effectVariableName: $scope.correlationObject.effectVariableName,
+                causeVariableName: $scope.correlationObject.causeVariableName,
                 durationOfAction: 86400,
                 doNotGroup: true
             };
 
-            if($scope.state.correlationObject.userId){
+            if($scope.correlationObject.userId){
                 correlationService.getUserCorrelations(params).then(function(userCorrelations){
                     if(userCorrelations.length > 2){
                         $scope.lineChartConfig = chartService.processDataAndConfigureCorrelationOverTimeChart(userCorrelations);

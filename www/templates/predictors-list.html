@@ -11,24 +11,7 @@
             <div class="list card correlationResultList" ng-repeat="correlationObject in state.correlationObjects">
                 <ion-item class="item item-text-wrap card-item" style="border-style:hidden;">
                     <h4><a ng-click="goToStudyPage(correlationObject)">{{correlationObject.causeVariableName}}</a></h4>
-                    <div class="voteButtons">
-                        <div ng-click="upVote(correlationObject, $index)" class="show-inline">
-                            <img ng-if="correlationObject.userVote === null || correlationObject.userVote === 0" src="img/thumb_up_white.png" height="32px" width="32px" />
-                            <img ng-if="correlationObject.userVote === 1" src="img/thumb_up_black.png" height="32px" width="32px" />
-                        </div>
-                        <div ng-click="downVote(correlationObject, $index)" class="show-inline">
-                            <img ng-if="correlationObject.userVote === null || correlationObject.userVote === 1" src="img/thumb_down_white.png" height="32px" width="32px" />
-                            <img ng-if="correlationObject.userVote === 0" src="img/thumb_down_black.png" height="32px" width="32px" />
-                        </div>
-                        <div ng-click="goToStudyPage(correlationObject)" class="show-inline">
-                            &nbsp;
-                            <i  style="font-size: 32px;" class="ion-ios-book-outline"></i>
-                        </div>
-                        <div ng-click="goToVariableSettings(correlationObject)" class="show-inline">
-                            &nbsp;
-                            <i  style="font-size: 32px;" class="ion-android-options"></i>
-                        </div>
-                    </div>
+                    <div ng-include="'templates/correlation-buttons-fragment.html'"></div>
                     <p>{{correlationObject.predictorExplanation}}</p>
                     <p>{{correlationObject.valuePredictingHighOutcomeExplanation}}</p>
                     <p>{{correlationObject.valuePredictingLowOutcomeExplanation}}</p>

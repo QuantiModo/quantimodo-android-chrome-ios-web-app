@@ -6,7 +6,7 @@ angular.module('starter')
                                     measurementService, QuantiModo, notificationService, localStorageService,
                                     reminderService, ratingService, migrationService, ionicDatePicker, unitService,
                                     variableService, qmLocationService, variableCategoryService, bugsnagService,
-                                    utilsService) {
+                                    utilsService, correlationService) {
 
         $rootScope.loaderImagePath = config.appSettings.loaderImagePath;
         $rootScope.appMigrationVersion = 1489;
@@ -527,7 +527,84 @@ angular.module('starter')
             $scope.showIntervalCard = false;
         };
 
+        $scope.downVote = function(correlationObject, $index){
+            if (correlationObject.correlationCoefficient > 0) {
+                $scope.increasesDecreases = "increases";
+            } else {
+                $scope.increasesDecreases = "decreases";
+            }
 
+            if (correlationObject.userVote !== 0) {
+                $ionicPopup.show({
+                    title:'Implausible relationship?',
+                    subTitle: 'Do you think is is IMPOSSIBLE that ' + correlationObject.causeVariableName + ' ' + $scope.increasesDecreases + ' your ' + correlationObject.effect + '?',
+                    scope: $scope,
+                    template: $scope.templateConfirmationDown,
+                    buttons:[
+                        {text: 'No'},
+                        {text: 'Yes',
+                            type: 'button-positive',
+                            onTap: function(){
+                                $scope.state.correlationObjects[$index].userVote = 0;
+                                correlationObject.vote = 0;
+                                correlationService.vote(correlationObject)
+                                    .then(function () {
+                                        console.debug('Down voted!');
+                                    }, function () {
+                                        console.error('Down vote failed!');
+                                    });
+                            }
+                        }
+                    ]
+                });
+            } else {
+                deleteVote(correlationObject, $index);
+            }
+        };
+
+
+        $scope.upVote = function(correlationObject, $index){
+            if (correlationObject.correlationCoefficient > 0) {
+                $scope.increasesDecreases = "increases";
+            } else {
+                $scope.increasesDecreases = "decreases";
+            }
+            if (correlationObject.userVote !== 1) {
+                $ionicPopup.show({
+                    title:'Plausible relationship?',
+                    subTitle: 'Do you think it is POSSIBLE that '+ correlationObject.causeVariableName + ' ' + $scope.increasesDecreases + ' your ' + correlationObject.effect + '?',
+                    scope: $scope,
+                    template: $scope.templateConfirmationUp,
+                    buttons:[
+                        {text: 'No'},
+                        {text: 'Yes',
+                            type: 'button-positive',
+                            onTap: function(){
+                                $scope.state.correlationObjects[$index].userVote = 1;
+                                correlationObject.vote = 1;
+                                correlationService.vote(correlationObject)
+                                    .then(function () {
+                                        console.debug('upVote');
+                                    }, function () {
+                                        console.error('upVote failed!');
+                                    });
+                            }
+                        }
+                    ]
+                });
+            } else {
+                deleteVote(correlationObject, $index);
+            }
+        };
+
+        function deleteVote(correlationObject, $index) {
+            $scope.state.correlationObjects[$index].userVote = null;
+            correlationService.deleteVote(correlationObject, function(response){
+                console.debug("deleteVote response", response);
+            }, function(response){
+                console.error("deleteVote response", response);
+            });
+        }
 
         $rootScope.sendToLogin = function(){
             localStorageService.deleteItem('user');
