@@ -226,10 +226,7 @@ angular.module('starter')
                     { text: '<i class="icon ion-compose"></i>Record Measurement'},
                     { text: '<i class="icon ion-android-notifications-none"></i>Add Reminder'},
                     { text: '<i class="icon ion-arrow-graph-up-right"></i>' + 'Visualize'},
-                    { text: '<i class="icon ion-ios-list-outline"></i>History'},
-                    // { text: '<i class="icon ion-arrow-up-a"></i>Positive Predictors'},
-                    // { text: '<i class="icon ion-arrow-down-a"></i>Negative Predictors'},
-
+                    { text: '<i class="icon ion-ios-list-outline"></i>History'}
                 ],
                 destructiveText: '<i class="icon ion-trash-a"></i>Delete All',
                 cancelText: '<i class="icon ion-ios-close"></i>Cancel',
@@ -253,26 +250,6 @@ angular.module('starter')
                     if(index === 4) {
                         console.debug('variableSettingsCtrl going to history' + JSON.stringify($scope.state.variableObject));
                         $scope.goToHistoryForVariableObject($scope.state.variableObject);
-                    }
-                    if(index === 5){
-                        $state.go('app.predictors',
-                            {
-                                variableObject: $scope.state.variableObject,
-                                requestParams: {
-                                    effect:  $scope.state.variableObject.name,
-                                    correlationCoefficient: "(gt)0"
-                                }
-                            });
-                    }
-                    if(index === 6){
-                        $state.go('app.predictors',
-                            {
-                                variableObject: $scope.state.variableObject,
-                                requestParams: {
-                                    effect:  $scope.state.variableObject.name,
-                                    correlationCoefficient: "(lt)0"
-                                }
-                            });
                     }
 
                     return true;

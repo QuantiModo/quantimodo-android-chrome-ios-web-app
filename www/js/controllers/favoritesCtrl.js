@@ -222,9 +222,7 @@ angular.module('starter')
 					{ text: '<i class="icon ion-arrow-graph-up-right"></i>Charts'},
 					{ text: '<i class="icon ion-ios-list-outline"></i>' + 'History'},
 					{ text: '<i class="icon ion-settings"></i>' + 'Variable Settings'},
-					{ text: '<i class="icon ion-android-notifications-none"></i>Add Reminder'},
-					// { text: '<i class="icon ion-arrow-up-a"></i>Positive Predictors'},
-					// { text: '<i class="icon ion-arrow-down-a"></i>Negative Predictors'}
+					{ text: '<i class="icon ion-android-notifications-none"></i>Add Reminder'}
 				];
 
 
@@ -276,26 +274,6 @@ angular.module('starter')
 								variableObject: variableObject,
 								fromState: $state.current.name,
 								fromUrl: window.location.href
-							});
-					}
-					if(index === 6){
-						$state.go('app.predictors',
-							{
-								variableObject: variableObject,
-								requestParams: {
-									effect:  favorite.variableName,
-									correlationCoefficient: "(gt)0"
-								}
-							});
-					}
-					if(index === 6){
-						$state.go('app.predictors',
-							{
-								variableObject: variableObject,
-								requestParams: {
-									effect:  favorite.variableName,
-									correlationCoefficient: "(lt)0"
-								}
 							});
 					}
 

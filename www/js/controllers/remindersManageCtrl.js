@@ -252,9 +252,7 @@ angular.module('starter')
 					{ text: '<i class="icon ion-edit"></i>Record ' + ' Measurement' },
 					{ text: '<i class="icon ion-arrow-graph-up-right"></i>' + 'Visualize'},
 					{ text: '<i class="icon ion-ios-list-outline"></i>' + 'History'},
-					{ text: '<i class="icon ion-settings"></i>' + 'Variable Settings'},
-					// { text: '<i class="icon ion-arrow-up-a"></i>Positive Predictors'},
-					// { text: '<i class="icon ion-arrow-down-a"></i>Negative Predictors'}
+					{ text: '<i class="icon ion-settings"></i>' + 'Variable Settings'}
 				],
 				destructiveText: '<i class="icon ion-trash-a"></i>Delete Reminder',
 				cancelText: '<i class="icon ion-ios-close"></i>Cancel',
@@ -281,26 +279,6 @@ angular.module('starter')
 					if (index === 5) {
 						$state.go('app.variableSettings',
 							{variableName: trackingReminder.variableName});
-					}
-					if(index === 6){
-						$state.go('app.predictors',
-							{
-								variableObject: variableObject,
-								requestParams: {
-									effect:  variableObject.name,
-									correlationCoefficient: "(gt)0"
-								}
-							});
-					}
-					if(index === 7){
-						$state.go('app.predictors',
-							{
-								variableObject: variableObject,
-								requestParams: {
-									effect:  variableObject.name,
-									correlationCoefficient: "(lt)0"
-								}
-							});
 					}
 
 					return true;
