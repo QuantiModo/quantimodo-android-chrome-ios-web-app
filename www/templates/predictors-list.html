@@ -1,0 +1,64 @@
+<ion-view hide-nav-bar="hideNavigationMenu" view-title="Predictors">
+    <ion-nav-title>{{state.title}}</ion-nav-title>
+    <ion-content>
+        <div class="card card-positive" ng-show="state.correlationObjects.length">
+            <div class="item item-text-wrap card-item" >
+                <p >{{state.explanationText}}</a></p>
+                <p >{{state.explanationTextSecondLine}}</a></p>
+            </div>
+        </div>
+        <ion-list>
+            <div class="list card correlationResultList" ng-repeat="correlationObject in state.correlationObjects">
+                <ion-item class="item item-text-wrap card-item" style="border-style:hidden;">
+                    <h4><a ng-click="goToStudyPage(correlationObject)">{{correlationObject.causeVariableName}}</a></h4>
+                    <div class="voteButtons">
+                        <div ng-click="upVote(correlationObject, $index)" class="show-inline">
+                            <img ng-if="correlationObject.userVote === null || correlationObject.userVote === 0" src="img/thumb_up_white.png" height="32px" width="32px" />
+                            <img ng-if="correlationObject.userVote === 1" src="img/thumb_up_black.png" height="32px" width="32px" />
+                        </div>
+                        <div ng-click="downVote(correlationObject, $index)" class="show-inline">
+                            <img ng-if="correlationObject.userVote === null || correlationObject.userVote === 1" src="img/thumb_down_white.png" height="32px" width="32px" />
+                            <img ng-if="correlationObject.userVote === 0" src="img/thumb_down_black.png" height="32px" width="32px" />
+                        </div>
+                        <div ng-click="goToStudyPage(correlationObject)" class="show-inline">
+                            &nbsp;
+                            <i  style="font-size: 32px;" class="ion-ios-book-outline"></i>
+                        </div>
+                    </div>
+                    <p>{{correlationObject.predictorExplanation}}</p>
+                    <p>{{correlationObject.valuePredictingHighOutcomeExplanation}}</p>
+                    <p>{{correlationObject.valuePredictingLowOutcomeExplanation}}</p>
+                </ion-item>
+            </div>
+        </ion-list>
+        <div class="list card"  ng-show="state.noCorrelations">
+            <div class="item" style="padding-bottom:0px;">
+                <p style=" text-align: center; line-height: normal; font-size: 25px;">Not enough data!</p>
+
+                <div class="row">
+                    <div class="col" style="padding-top: 0px;">
+                        <i style="text-align: center; font-size: 60px;" class="icon positive ion-sad-outline"></i>
+                    </div>
+                    <div class="col col-75">
+                        <h2 style="white-space: normal; text-align: center; line-height: normal; ">
+                            We still don't have enough data to determine the strongest predictors of your {{state.variableName}}.
+                            We generally need about a months worth of data and 30 measurements in order to perform an analysis.
+                            If you haven't already, please add a reminder and start tracking.
+                            Please create a ticket at http://help.quantimo.do if you think you should already have enough data.
+                        </h2>
+                    </div>
+                </div>
+                <div class="row" >
+                    <div class="button-bar">
+                        <button class="button button-clear button-balanced" style="font-size: 14px;"
+                                ng-click="goToState('app.reminderSearch')">
+                            <i class="ion-plus-round">
+                                &nbsp; Add a reminder &nbsp;
+                            </i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </ion-content>
+</ion-view>

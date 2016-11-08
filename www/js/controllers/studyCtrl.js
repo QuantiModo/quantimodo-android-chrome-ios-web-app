@@ -5,6 +5,7 @@ angular.module('starter')
 		$scope.controller_name = "StudyCtrl";
         
         $scope.init = function(){
+
             $rootScope.getAllUrlParams();
             console.debug($state.current.name + ' initializing...');
             $rootScope.stateParams = $stateParams;
@@ -12,35 +13,39 @@ angular.module('starter')
             if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
             $scope.state = {
                 correlationObject: $stateParams.correlationObject,
-                title: 'Loading study...'
+                title: 'Loading study...',
+                requestParams: {}
             };
-
+            
             if($scope.state.correlationObject){
                 $scope.state.title = $scope.state.correlationObject.predictorExplanation;
+                return;
             }
 
-            if($rootScope.urlParameters.causeVariableId && $rootScope.urlParameters.effectVariableId) {
-                var params = {
-                    causeVariableId: $rootScope.urlParameters.causeVariableId,
-                    effectVariableId: $rootScope.urlParameters.effectVariableId
-                };
-
-                if (!$rootScope.urlParameters.aggregated) {
-                    var fallbackToAggregateStudy = true;
-                    getUserStudy(params, fallbackToAggregateStudy);
-                }
-
-                if ($rootScope.urlParameters.aggregated) {
-                    var fallbackToUserStudy = false;
-                    if($rootScope.user){
-                        fallbackToUserStudy = true;
-                    }
-                    getAggregateStudy(params, fallbackToUserStudy);
-                }
-            }
-
-            if(!$scope.state.correlationObject && !$rootScope.urlParameters.causeVariableId) {
+            if(Object.keys($rootScope.urlParameters).length < 2) {
                 $ionicHistory.goBack();
+                return;
+            }
+            
+            if($rootScope.urlParameters.causeVariableName){
+                $scope.state.requestParams.causeVariableName = $rootScope.urlParameters.causeVariableName;
+            }
+
+            if($rootScope.urlParameters.effectVariableName){
+                $scope.state.requestParams.effectVariableName = $rootScope.urlParameters.effectVariableName;
+            }
+
+            if (!$rootScope.urlParameters.aggregated) {
+                var fallbackToAggregateStudy = true;
+                getUserStudy($scope.state.requestParams, fallbackToAggregateStudy);
+            }
+
+            if ($rootScope.urlParameters.aggregated) {
+                var fallbackToUserStudy = false;
+                if($rootScope.user){
+                    fallbackToUserStudy = true;
+                }
+                getAggregateStudy($scope.state.requestParams, fallbackToUserStudy);
             }
 
             //chartCorrelationsOverTime();

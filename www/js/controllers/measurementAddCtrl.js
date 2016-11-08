@@ -291,7 +291,7 @@ angular.module('starter')
             if(!$scope.state.measurement.abbreviatedUnitName && $scope.state.variableCategoryObject.defaultAbbreviatedUnitName){
                 $scope.state.measurement.abbreviatedUnitName = $scope.state.variableCategoryObject.defaultAbbreviatedUnitName;
             }
-            $scope.state.title = "Add " + $filter('wordAliases')(pluralize(variableCategoryName, 1)) + " Measurement";
+            $scope.state.title = "Add Measurement";
             $scope.state.measurementSynonymSingularLowercase = $scope.state.variableCategoryObject.measurementSynonymSingularLowercase;
             if($scope.state.variableCategoryObject.defaultValueLabel){
                 $scope.state.defaultValueLabel = $scope.state.variableCategoryObject.defaultValueLabel;
@@ -651,9 +651,7 @@ angular.module('starter')
                     { text: '<i class="icon ion-android-notifications-none"></i>Add Reminder'},
                     { text: '<i class="icon ion-arrow-graph-up-right"></i>Visualize'},
                     { text: '<i class="icon ion-ios-list-outline"></i>History' },
-                    { text: '<i class="icon ion-settings"></i>' + 'Variable Settings'},
-                    // { text: '<i class="icon ion-arrow-up-a"></i>Positive Predictors'},
-                    // { text: '<i class="icon ion-arrow-down-a"></i>Negative Predictors'}
+                    { text: '<i class="icon ion-settings"></i>' + 'Variable Settings'}
                 ],
                 destructiveText: '<i class="icon ion-trash-a"></i>Delete Measurement',
                 cancelText: '<i class="icon ion-ios-close"></i>Cancel',
@@ -677,26 +675,6 @@ angular.module('starter')
                     if (index === 4) {
                         $state.go('app.variableSettings',
                             {variableName: $scope.state.measurement.variableName});
-                    }
-                    if(index === 5){
-                        $state.go('app.predictors',
-                            {
-                                variableObject: $scope.state.variableObject,
-                                requestParams: {
-                                    effect:  $scope.state.variableObject.name,
-                                    correlationCoefficient: "(gt)0"
-                                }
-                            });
-                    }
-                    if(index === 6){
-                        $state.go('app.predictors',
-                            {
-                                variableObject: $scope.state.variableObject,
-                                requestParams: {
-                                    effect:  $scope.state.variableObject.name,
-                                    correlationCoefficient: "(lt)0"
-                                }
-                            });
                     }
 
                     return true;
