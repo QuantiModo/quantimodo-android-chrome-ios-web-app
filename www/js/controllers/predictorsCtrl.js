@@ -242,6 +242,7 @@ angular.module('starter')
         };
 
         $scope.goToStudyPage = function(correlationObject) {
+            console.debug('Going to study page for ' + JSON.stringify(correlationObject));
             $state.go('app.study', {
                 correlationObject: correlationObject
             });
