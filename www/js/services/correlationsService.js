@@ -49,6 +49,8 @@ angular.module('starter')
             vote : function(correlationObject){
                 var deferred = $q.defer();
                 QuantiModo.postVote(correlationObject, function(response){
+                    localStorageService.deleteCachedResponse('GetUserCorrelations');
+                    localStorageService.deleteCachedResponse('GetAggregatedCorrelations');
                     console.debug("postVote response", response);
                     deferred.resolve(true);
                 }, function(error){
@@ -61,6 +63,8 @@ angular.module('starter')
             deleteVote: function(correlationObject){
                 var deferred = $q.defer();
                 QuantiModo.deleteVote(correlationObject, function(response){
+                    localStorageService.deleteCachedResponse('GetUserCorrelations');
+                    localStorageService.deleteCachedResponse('GetAggregatedCorrelations');
                     console.debug("deleteVote response", response);
                     deferred.resolve(true);
                 }, function(error){
