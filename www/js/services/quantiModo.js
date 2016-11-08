@@ -35,6 +35,7 @@ angular.module('starter')
                 } else {
                     console.warn('QuantiModo.errorHandler: Sending to login because we got 401 with request ' +
                         JSON.stringify(request));
+                    $rootScope.afterLoginGoTo = window.location.href;
                     $rootScope.sendToLogin();
                     return;
                 }
