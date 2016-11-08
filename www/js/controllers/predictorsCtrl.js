@@ -84,6 +84,11 @@ angular.module('starter')
             'Want PERSONALIZED results? Add some reminders and start tracking!';
         }
 
+        $scope.goToVariableSettings = function(correlationObject) {
+            $state.go('app.variableSettings',
+                {variableName: correlationObject.causeVariableName});
+        };
+
         $scope.init = function(){
             console.debug($state.current.name + ' initializing...');
             $rootScope.getAllUrlParams();
