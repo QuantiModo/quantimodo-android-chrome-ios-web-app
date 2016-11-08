@@ -86,7 +86,11 @@ angular.module('starter')
                                 JSON.stringify(user));
                             $rootScope.hideNavigationMenu = false;
                             $rootScope.$broadcast('callAppCtrlInit');
-                            $state.go(config.appSettings.defaultState);
+                            if($rootScope.afterLoginGoTo) {
+                                window.location.replace($rootScope.afterLoginGoTo);
+                            } else {
+                                $state.go(config.appSettings.defaultState);
+                            }
                         }, function(error){
                             console.error($state.current.name + ' could not refresh user because ' + JSON.stringify(error));
                         });
