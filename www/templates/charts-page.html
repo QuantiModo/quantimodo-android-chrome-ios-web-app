@@ -30,10 +30,10 @@
                 <highchart id="chart1" config="distributionChartConfig"></highchart>
             </div>
         </div>
-        <div class="card list" id="statisticsCard" ng-if="state.variableObject.numberOfMeasurements">
-            <label class="item item-content" ng-if="state.variableObject.numberOfMeasurements">
+        <div class="card list" id="statisticsCard" ng-if="state.variableObject.numberOfRawMeasurements">
+            <label class="item item-content" ng-if="state.variableObject.numberOfRawMeasurements">
                 <span class="input-label left-text"># of measurements</span>
-                <span class="input-label right-text">{{state.variableObject.numberOfMeasurements}}</span>
+                <span class="input-label right-text">{{state.variableObject.numberOfRawMeasurements}}</span>
             </label>
             <label class="item item-content" ng-if="state.variableObject.numberOfCorrelations">
                 <span class="input-label left-text"># of correlations</span>
