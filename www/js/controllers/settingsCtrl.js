@@ -3,7 +3,7 @@ angular.module('starter')
 	// Controls the settings page
 	.controller('SettingsCtrl', function( $state, $scope, $ionicPopover, $ionicPopup, localStorageService, $rootScope, 
 										  notificationService, QuantiModo, reminderService, qmLocationService, 
-										  ionicTimePicker, timeService, utilsService, $stateParams, $ionicHistory, bugsnagService) {
+										  ionicTimePicker, timeService, utilsService, $stateParams, $ionicHistory, bugsnagService, $ionicLoading) {
 		$scope.controller_name = "SettingsCtrl";
 		$scope.state = {};
 		$scope.showReminderFrequencySelector = config.appSettings.settingsPageOptions.showReminderFrequencySelector;
@@ -71,7 +71,24 @@ angular.module('starter')
 
 		$scope.init = function() {
 			console.debug($state.current.name + ' initializing...');
+			$rootScope.hideNavigationMenu = false;
 			$rootScope.stateParams = $stateParams;
+			$rootScope.getAllUrlParams();
+			if($rootScope.urlParameters.userEmail){
+				$scope.state.loading = true;
+				$ionicLoading.show({
+					template: '<ion-spinner></ion-spinner>'
+				});
+				QuantiModo.refreshUserEmailPreferences({userEmail: $rootScope.urlParameters.userEmail}).then(function(user){
+					$rootScope.user = user;
+					$scope.state.loading = false;
+					$ionicLoading.hide();
+				}, function(error){
+					$scope.state.loading = false;
+					$ionicLoading.hide();
+					console.error('AppCtrl.init could not refresh user because ' + JSON.stringify(error));
+				});
+			}
 			if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
 			if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
 			qmLocationService.getLocationVariablesFromLocalStorage();
