@@ -35,7 +35,7 @@ angular.module('starter')
                 } else {
                     console.warn('QuantiModo.errorHandler: Sending to login because we got 401 with request ' +
                         JSON.stringify(request));
-                    $rootScope.afterLoginGoTo = window.location.href;
+                    localStorageService.setItem('afterLoginGoTo', window.location.href);
                     $rootScope.sendToLogin();
                     return;
                 }
@@ -1158,6 +1158,13 @@ angular.module('starter')
             if($rootScope.sendReminderNotificationEmails){
                 QuantiModo.updateUserSettingsDeferred({sendReminderNotificationEmails: $rootScope.sendReminderNotificationEmails});
                 $rootScope.sendReminderNotificationEmails = null;
+            }
+            var afterLoginGoTo = localStorageService.getItemSync('afterLoginGoTo');
+            if(afterLoginGoTo) {
+                localStorageService.deleteItem('afterLoginGoTo');
+                window.location.replace(afterLoginGoTo);
+            } else {
+                $state.go(config.appSettings.defaultState);
             }
         };
 
