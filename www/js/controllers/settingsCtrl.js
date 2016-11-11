@@ -134,6 +134,10 @@ angular.module('starter')
 			QuantiModo.updateUserSettingsDeferred({sendReminderNotificationEmails: $rootScope.user.sendReminderNotificationEmails});
 		};
 
+        $scope.sendPredictorEmailsChange = function() {
+            QuantiModo.updateUserSettingsDeferred({sendPredictorEmails: $rootScope.user.sendPredictorEmails});
+        };
+
 		$scope.openEarliestReminderTimePicker = function() {
 			$scope.state.earliestReminderTimePickerConfiguration = {
 				callback: function (val) {

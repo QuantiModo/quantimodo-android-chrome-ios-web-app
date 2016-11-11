@@ -293,7 +293,7 @@ angular.module('starter',
         }
     }, 500);
 
-    var getAllUrlParams = function() {
+    $rootScope.getAllUrlParams = function() {
         $rootScope.urlParameters = {};
         var queryString = document.location.toString().split('?')[1];
         var sURLVariables;
@@ -304,12 +304,17 @@ angular.module('starter',
         if(sURLVariables) {
             for (var i = 0; i < sURLVariables.length; i++) {
                 parameterNameValueArray = sURLVariables[i].split('=');
-                $rootScope.urlParameters[parameterNameValueArray[0]] = parameterNameValueArray[1];
+                if(parameterNameValueArray[1].indexOf('http') > -1){
+                    $rootScope.urlParameters[parameterNameValueArray[0]] = parameterNameValueArray[1];
+                } else {
+                    $rootScope.urlParameters[parameterNameValueArray[0]] = decodeURIComponent(parameterNameValueArray[1]);
+                }
+
             }
         }
     };
-    
-    getAllUrlParams();
+
+    $rootScope.getAllUrlParams();
     if ($rootScope.urlParameters.existingUser || $rootScope.urlParameters.introSeen || $rootScope.urlParameters.refreshUser) {
         window.localStorage.introSeen = true;
         window.localStorage.isWelcomed = true;
@@ -709,21 +714,109 @@ angular.module('starter',
                 }
             }
         })
-        .state('app.predictors', {
-            url: "/predictors/:valence",
+        .state('app.studyCreate', {
+            url: "/study-create",
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/iframe-embed.html",
+                    controller: 'IframeScreenCtrl'
+                }
+            }
+        })
+        .state('app.predictorsAll', {
+            url: "/predictors",
             params: {
+                aggregated: false,
                 variableObject : null,
                 requestParams : {
-                    cause: null,
-                    effect: null,
+                    causeVariableName: null,
+                    effectVariableName: null,
                     correlationCoefficient: null
                 }
             },
             cache: false,
             views: {
                 'menuContent': {
-                  templateUrl: "templates/predictors.html",
-                  controller: 'PredictorsCtrl'
+                    templateUrl: "templates/predictors-list.html",
+                    controller: 'PredictorsCtrl'
+                }
+            }
+        })
+        .state('app.predictorsPositive', {
+            url: "/predictors/positive",
+            params: {
+                aggregated: false,
+                valence: 'positive',
+                variableObject : null,
+                requestParams : {
+                    causeVariableName: null,
+                    effectVariableName: null,
+                    correlationCoefficient: null
+                }
+            },
+            cache: false,
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/predictors-list.html",
+                    controller: 'PredictorsCtrl'
+                }
+            }
+        })
+        .state('app.predictorsNegative', {
+            url: "/predictors/negative",
+            params: {
+                aggregated: false,
+                valence: 'negative',
+                variableObject : null,
+                requestParams : {
+                    causeVariableName: null,
+                    effectVariableName: null,
+                    correlationCoefficient: null
+                }
+            },
+            cache: false,
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/predictors-list.html",
+                    controller: 'PredictorsCtrl'
+                }
+            }
+        })
+        .state('app.predictorsUser', {
+            url: "/predictors/user",
+            params: {
+                aggregated: false,
+                variableObject : null,
+                requestParams : {
+                    causeVariableName: null,
+                    effectVariableName: null,
+                    correlationCoefficient: null
+                }
+            },
+            cache: false,
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/predictors-list.html",
+                    controller: 'PredictorsCtrl'
+                }
+            }
+        })
+        .state('app.predictorsAggregated', {
+            url: "/predictors/aggregated",
+            params: {
+                aggregated: true,
+                variableObject : null,
+                requestParams : {
+                    causeVariableName: null,
+                    effectVariableName: null,
+                    correlationCoefficient: null
+                }
+            },
+            cache: false,
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/predictors-list.html",
+                    controller: 'PredictorsCtrl'
                 }
             }
         })

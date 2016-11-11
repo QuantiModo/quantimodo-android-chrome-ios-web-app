@@ -211,7 +211,7 @@ Here is the complete list of filter parameters by endpoints:
     <td>Filter variables based on the last time a measurement for them was created or updated in the UTC format "YYYY-MM-DDThh:mm:ss"</td>
   </tr>
   <tr>
-    <td>numberOfMeasurements</td>
+    <td>numberOfRawMeasurements</td>
     <td>Filter variables by the total number of measurements that they have. This could be used of you want to filter or sort by popularity.</td>
   </tr>
   <tr>
@@ -3370,7 +3370,7 @@ It is possible to apply multiple constraints by providing an array of query filt
                 return deferred.promise;
             };
             /**
-             * Get variables by the category name. <br>Supported filter parameters:<br><ul><li><b>name</b> - Original name of the variable (supports exact name match only)</li><li><b>lastUpdated</b> - Filter by the last time any of the properties of the variable were changed. Uses UTC format "YYYY-MM-DDThh:mm:ss"</li><li><b>source</b> - The name of the data source that created the variable (supports exact name match only). So if you have a client application and you only want variables that were last updated by your app, you can include the name of your app here</li><li><b>latestMeasurementTime</b> - Filter variables based on the last time a measurement for them was created or updated in the UTC format "YYYY-MM-DDThh:mm:ss"</li><li><b>numberOfMeasurements</b> - Filter variables by the total number of measurements that they have. This could be used of you want to filter or sort by popularity.</li><li><b>lastSource</b> - Limit variables to those which measurements were last submitted by a specific source. So if you have a client application and you only want variables that were last updated by your app, you can include the name of your app here. (supports exact name match only)</li></ul><br>
+             * Get variables by the category name. <br>Supported filter parameters:<br><ul><li><b>name</b> - Original name of the variable (supports exact name match only)</li><li><b>lastUpdated</b> - Filter by the last time any of the properties of the variable were changed. Uses UTC format "YYYY-MM-DDThh:mm:ss"</li><li><b>source</b> - The name of the data source that created the variable (supports exact name match only). So if you have a client application and you only want variables that were last updated by your app, you can include the name of your app here</li><li><b>latestMeasurementTime</b> - Filter variables based on the last time a measurement for them was created or updated in the UTC format "YYYY-MM-DDThh:mm:ss"</li><li><b>numberOfRawMeasurements</b> - Filter variables by the total number of measurements that they have. This could be used of you want to filter or sort by popularity.</li><li><b>lastSource</b> - Limit variables to those which measurements were last submitted by a specific source. So if you have a client application and you only want variables that were last updated by your app, you can include the name of your app here. (supports exact name match only)</li></ul><br>
              * @method
              * @name Test#getV1Variables
              * @param {integer} userId - User id

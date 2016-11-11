@@ -1,27 +1,28 @@
 <ion-view hide-nav-bar="hideNavigationMenu" view-title="Study">
-    <ion-nav-title>{{state.correlationObject.predictorExplanation}}</ion-nav-title>
+    <ion-nav-title>{{state.title}}</ion-nav-title>
         <ion-content>
-            <ion-list class="correlationResultList" ng-show="state.correlationObject">
+            <ion-list class="correlationResultList" ng-show="correlationObject">
                 <div class="list card">
                     <ion-item style="border-style:hidden;">
                         <div class="item item-text-wrap card-item">
-                            <h3>{{state.correlationObject.predictorExplanation}}</h3>
-                                <p>{{state.correlationObject.valuePredictingHighOutcomeExplanation}}</p>
-                                <p>{{state.correlationObject.valuePredictingLowOutcomeExplanation}}</p>
-                            <h3>Study Abstract</h3>
-                               <p>{{state.correlationObject.studyAbstract}}</p>
-                            <h3>Study Background</h3>
-                               <p>{{state.correlationObject.studyBackground}}</p>
-                            <h3>Study Objective</h3>
-                               <p>{{state.correlationObject.studyObjective}}</p>
-                            <h3>Study Design</h3>
-                               <p>{{state.correlationObject.studyDesign}}</p>
-                            <h3>Data Analysis</h3>
-                               <p>{{state.correlationObject.dataAnalysis}}</p>
-                            <h3>Data Sources</h3>
-                               <p ng-bind-html="state.correlationObject.dataSources"></p>
-                            <h3>Study Limitations</h3>
-                                <p>{{state.correlationObject.studyLimitations}}</p>
+                            <h3 id="predictorExplanation">{{correlationObject.predictorExplanation}}</h3>
+                            <div ng-include="'templates/correlation-buttons-fragment.html'"></div>
+                            <p id="valuePredictingHighOutcomeExplanation">{{correlationObject.valuePredictingHighOutcomeExplanation}}</p>
+                            <p id="valuePredictingLowOutcomeExplanation">{{correlationObject.valuePredictingLowOutcomeExplanation}}</p>
+                            <h3 id="studyAbstract">Study Abstract</h3>
+                               <p>{{correlationObject.studyAbstract}}</p>
+                            <h3 id="studyBackground">Study Background</h3>
+                               <p>{{correlationObject.studyBackground}}</p>
+                            <h3 id="studyObjective">Study Objective</h3>
+                               <p>{{correlationObject.studyObjective}}</p>
+                            <h3 id="studyDesign">Study Design</h3>
+                               <p>{{correlationObject.studyDesign}}</p>
+                            <h3 id="dataAnalysis">Data Analysis</h3>
+                               <p>{{correlationObject.dataAnalysis}}</p>
+                            <h3 id="dataSources">Data Sources</h3>
+                               <p ng-bind-html="correlationObject.dataSources"></p>
+                            <h3 id="studyLimitations">Study Limitations</h3>
+                                <p>{{correlationObject.studyLimitations}}</p>
                         </div>
                         <div ng-show="lineChartConfig" class="card primary-outcome-variable-reporting-chart">
                             <div class="item item-text-wrap">
@@ -31,5 +32,46 @@
                     </ion-item>
                 </div>
             </ion-list>
+            <div class="list card"  ng-if="state.studyNotFound">
+                <div class="item" style="padding-bottom:10px;">
+                    <p style=" text-align: center; line-height: normal; font-size: 25px;">Study Not Found</p>
+                    <div class="row">
+                        <div class="col" style="padding-top: 0px;">
+                            <i style="text-align: center; font-size: 60px;" class="icon positive ion-sad-outline"></i>
+                        </div>
+                        <div class="col col-75">
+                            <h2 style="white-space: normal; text-align: justify; line-height: normal; ">
+                                We don't have enough data to determine the relationship between
+                                {{state.requestParams.causeVariableName}} and {{state.requestParams.effectVariableName}}!
+                                Want to help advance citizen science?  Start tracking or create a study!
+                            </h2>
+                        </div>
+                    </div>
+                    <div class="row" >
+                        <div class="button-bar">
+                            <button class="button button-clear button-balanced" style="font-size: 14px;"
+                                    ng-click="goToState('app.reminderSearch')">
+                                <i class="ion-android-notifications"> &nbsp; Add a reminder &nbsp;</i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="row" >
+                        <div class="button-bar">
+                            <button class="button button-clear button-royal" style="font-size: 14px;"
+                                    ng-click="goToState('app.measurementAddSearch')">
+                                <i class="ion-compose"> &nbsp; Record a measurement &nbsp;</i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="row" >
+                        <div class="button-bar">
+                            <button class="button button-clear button-assertive" style="font-size: 14px;"
+                                    ng-click="goToState('app.studyCreate')">
+                                <i class="ion-ios-flask"> &nbsp; Create a Study &nbsp;</i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </ion-content>
 </ion-view>

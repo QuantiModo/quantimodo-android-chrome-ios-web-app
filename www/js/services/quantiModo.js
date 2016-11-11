@@ -35,6 +35,7 @@ angular.module('starter')
                 } else {
                     console.warn('QuantiModo.errorHandler: Sending to login because we got 401 with request ' +
                         JSON.stringify(request));
+                    $rootScope.afterLoginGoTo = window.location.href;
                     $rootScope.sendToLogin();
                     return;
                 }
@@ -378,7 +379,7 @@ angular.module('starter')
 
         QuantiModo.getAggregatedCorrelations = function(params, successHandler, errorHandler){
             QuantiModo.get('api/v1/aggregatedCorrelations',
-                ['correlationCoefficient', 'cause', 'effect'],
+                ['correlationCoefficient', 'causeVariableName', 'effectVariableName'],
                 params,
                 successHandler,
                 errorHandler);
@@ -387,7 +388,7 @@ angular.module('starter')
 
         QuantiModo.getUserCorrelations = function (params, successHandler, errorHandler) {
             QuantiModo.get('api/v1/correlations',
-                ['correlationCoefficient', 'cause', 'effect'],
+                ['correlationCoefficient', 'causeVariableName', 'effectVariableName'],
                 params,
                 successHandler,
                 errorHandler
@@ -397,7 +398,7 @@ angular.module('starter')
         // post new correlation for user
         QuantiModo.postCorrelation = function(correlationSet, successHandler ,errorHandler){
             QuantiModo.post('api/v1/correlations',
-                ['cause', 'effect', 'correlation', 'vote'],
+                ['causeVariableName', 'effectVariableName', 'correlation', 'vote'],
                 correlationSet,
                 successHandler,
                 errorHandler);
@@ -406,7 +407,7 @@ angular.module('starter')
         // post a vote
         QuantiModo.postVote = function(correlationSet, successHandler ,errorHandler){
             QuantiModo.post('api/v1/votes',
-                ['cause', 'effect', 'correlation', 'vote'],
+                ['causeVariableName', 'effectVariableName', 'correlation', 'vote'],
                 correlationSet,
                 successHandler,
                 errorHandler);
@@ -415,7 +416,7 @@ angular.module('starter')
         // delete a vote
         QuantiModo.deleteVote = function(correlationSet, successHandler ,errorHandler){
             QuantiModo.post('api/v1/votes/delete',
-                ['cause', 'effect', 'correlation'],
+                ['causeVariableName', 'effectVariableName', 'correlation'],
                 correlationSet,
                 successHandler,
                 errorHandler);

@@ -2,7 +2,7 @@ angular.module('starter')
 
     .factory('localStorageService',function($rootScope, $q, utilsService) {
 
-        return{
+        var localStorageService = {
 
             deleteItem : function(key){
                 var keyIdentifier = config.appSettings.appStorageIdentifier;
@@ -204,4 +204,37 @@ angular.module('starter')
                 }
             }
         };
+
+
+        localStorageService.getCachedResponse = function(requestName, params){
+            var cachedResponse = JSON.parse(localStorageService.getItemSync('cached' + requestName));
+            if(cachedResponse &&
+                JSON.stringify(cachedResponse.requestParams) === JSON.stringify(params) &&
+                cachedResponse.response.length &&
+                Date.now() < cachedResponse.expirationTimeMilliseconds){
+                return cachedResponse.response;
+            } else {
+                return false;
+            }
+        };
+
+        localStorageService.storeCachedResponse = function(requestName, params, response){
+            var cachedResponse = {
+                requestParams: params,
+                response: response,
+                expirationTimeMilliseconds: Date.now() + 86400 * 1000
+            };
+            localStorageService.setItem('cached' + requestName, JSON.stringify(cachedResponse));
+        };
+
+        localStorageService.deleteCachedResponse = function(requestName, params, response){
+            var cachedResponse = {
+                requestParams: params,
+                response: response,
+                expirationTimeMilliseconds: Date.now() + 86400 * 1000
+            };
+            localStorageService.setItem('cached' + requestName, JSON.stringify(cachedResponse));
+        };
+
+        return localStorageService;
     });
