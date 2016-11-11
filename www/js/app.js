@@ -842,6 +842,15 @@ angular.module('starter',
                 }
             }
         })
+        .state('app.notificationPreferences', {
+            url: "/notificationPreferences",
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/notification-preferences.html",
+                    controller: 'SettingsCtrl'
+                }
+            }
+        })
         .state('app.map', {
             url: "/map",
             views: {

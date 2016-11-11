@@ -613,6 +613,23 @@ angular.module('starter')
             );
         };
 
+        // get user data
+        QuantiModo.getUserEmailPreferences = function(params, successHandler, errorHandler){
+            if($rootScope.user){
+                console.warn('Are you sure we should be getting the user again when we already have a user?', $rootScope.user);
+            }
+            var minimumSecondsBetweenRequests = 10;
+            var doNotSendToLogin = true;
+            QuantiModo.get('api/v1/notificationPreferences',
+                ['userEmail'],
+                params,
+                successHandler,
+                errorHandler,
+                minimumSecondsBetweenRequests,
+                doNotSendToLogin
+            );
+        };
+
         // get pending reminders
         QuantiModo.getTrackingReminderNotifications = function(params, successHandler, errorHandler){
             QuantiModo.get('api/v1/trackingReminderNotifications',
@@ -1155,6 +1172,17 @@ angular.module('starter')
             return deferred.promise;
         };
 
+        QuantiModo.refreshUserEmailPreferences = function(params){
+            var deferred = $q.defer();
+            QuantiModo.getUserEmailPreferences(params, function(user){
+                QuantiModo.setUserInLocalStorageBugsnagIntercomPush(user);
+                deferred.resolve(user);
+            }, function(error){
+                deferred.reject(error);
+            });
+            return deferred.promise;
+        };
+
         QuantiModo.clearTokensFromLocalStorage = function(){
             localStorageService.deleteItem('accessToken');
             localStorageService.deleteItem('refreshToken');
@@ -1163,6 +1191,9 @@ angular.module('starter')
 
         QuantiModo.updateUserSettingsDeferred = function(params){
             var deferred = $q.defer();
+            if($rootScope.urlParameters.userEmail){
+                params.userEmail = $rootScope.urlParameters.userEmail;
+            }
             QuantiModo.postUserSettings(params, function(response){
                 QuantiModo.refreshUser().then(function(user){
                     console.debug('updateUserSettingsDeferred got this user: ' + JSON.stringify(user));
