@@ -269,7 +269,7 @@ angular.module('starter')
 
         $scope.matchEveryWord = function() {
             return function( item ) {
-                if($stateParams.manualTrackingVariablesOnly && $scope.state.variableSearchQuery.name.length < 4){
+                if($stateParams.manualTrackingVariablesOnly && $scope.state.variableSearchQuery.name.length < 5){
                     if(item.variableCategoryName.indexOf('Location') !== -1 ||
                         item.variableCategoryName.indexOf('Software') !== -1 ||
                         item.variableCategoryName.indexOf('Environment') !== -1
