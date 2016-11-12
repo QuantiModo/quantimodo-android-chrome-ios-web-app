@@ -9,7 +9,7 @@ angular.module('starter')
 
             if($rootScope.lastSearchUserVariablesPromise){
                 var message = 'Got new search request before last one completed';
-                console.warn(message);
+                console.debug(message);
                 $rootScope.lastSearchUserVariablesPromise.reject();
                 $rootScope.lastSearchUserVariablesPromise = null;
             }
