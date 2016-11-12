@@ -52,7 +52,7 @@ angular.module('starter')
 
         var trackBloodPressure = function(){
             if(!$scope.state.bloodPressure.diastolicValue || !$scope.state.bloodPressure.systolicValue){
-                utilsService.showAlert('Please enter both values for blood pressure.');
+                validationFailure('Please enter both values for blood pressure.');
                 return;
             }
             $scope.state.bloodPressure.startTimeEpoch = $scope.selectedDate.getTime()/1000;
@@ -150,34 +150,43 @@ angular.module('starter')
                 });
             }
         };
+
+        var validationFailure = function (message) {
+            utilsService.showAlert(message);
+            console.error(message);
+            if (typeof Bugsnag !== "undefined") {
+                Bugsnag.notify(message, "measurement is " + JSON.stringify($scope.state.measurement), {}, "error");
+            }
+        };
         
         var validate = function () {
 
-            if($scope.state.measurement.value === '' || typeof $scope.state.measurement.value === 'undefined'){
-                if($scope.state.measurement.abbreviatedUnitName === '/5'){
-                    utilsService.showAlert('Please select a rating');
-                } else {
-                    utilsService.showAlert('Please enter a value');
-                }
-                return false;
-            }
+            var message;
 
             if($scope.state.measurement.value === '' || typeof $scope.state.measurement.value === 'undefined'){
-                utilsService.showAlert('Please enter a value');
+                if($scope.state.measurement.abbreviatedUnitName === '/5'){
+                    message = 'Please select a rating';
+                } else {
+                    message = 'Please enter a value';
+                }
+                validationFailure(message);
                 return false;
             }
 
             if(!$scope.state.measurement.variableName || $scope.state.measurement.variableName === ""){
-                utilsService.showAlert('Please enter a variable name');
+                message = 'Please enter a variable name';
+                validationFailure(message);
                 return false;
             }
             if(!$scope.state.measurement.variableCategoryName){
-                utilsService.showAlert('Please select a variable category');
+                message = 'Please select a variable category';
+                validationFailure(message);
                 return false;
             }
 
             if(!$scope.state.measurement.abbreviatedUnitName){
-                utilsService.showAlert('Please select a unit');
+                message = 'Please select a unit';
+                validationFailure(message);
                 return false;
             } else {
                 if(!$rootScope.unitsIndexedByAbbreviatedName[$scope.state.measurement.abbreviatedUnitName]){
@@ -198,10 +207,11 @@ angular.module('starter')
             {
                 if($scope.state.measurement.value <
                     $rootScope.unitsIndexedByAbbreviatedName[$scope.state.measurement.abbreviatedUnitName].minimumValue){
-                    utilsService.showAlert($rootScope.unitsIndexedByAbbreviatedName[$scope.state.measurement.abbreviatedUnitName].minimumValue +
+                    message = $rootScope.unitsIndexedByAbbreviatedName[$scope.state.measurement.abbreviatedUnitName].minimumValue +
                         ' is the smallest possible value for the unit ' +
                         $rootScope.unitsIndexedByAbbreviatedName[$scope.state.measurement.abbreviatedUnitName].name +
-                        ".  Please select another unit or value.");
+                        ".  Please select another unit or value.";
+                    validationFailure(message);
                     return false;
                 }
             }
@@ -212,14 +222,15 @@ angular.module('starter')
             {
                 if($scope.state.measurement.value >
                     $rootScope.unitsIndexedByAbbreviatedName[$scope.state.measurement.abbreviatedUnitName].maximumValue){
-                    utilsService.showAlert($rootScope.unitsIndexedByAbbreviatedName[$scope.state.measurement.abbreviatedUnitName].maximumValue +
+                    message = $rootScope.unitsIndexedByAbbreviatedName[$scope.state.measurement.abbreviatedUnitName].maximumValue +
                         ' is the largest possible value for the unit ' +
                         $rootScope.unitsIndexedByAbbreviatedName[$scope.state.measurement.abbreviatedUnitName].name +
-                        ".  Please select another unit or value.");
+                        ".  Please select another unit or value.";
+                    validationFailure(message);
                     return false;
                 }
             }
-        }
+        };
 
 
         $scope.done = function(){
