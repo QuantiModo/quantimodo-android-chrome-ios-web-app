@@ -1203,7 +1203,7 @@ gulp.task('template', function(done){
 gulp.task('setMoodiModoEnvs', [], function(callback){
 	process.env.APP_DISPLAY_NAME = "MoodiModo";
 	process.env.LOWERCASE_APP_NAME = "moodimodo";
-	process.env.APP_IDENTIFIER = "com.quantimodo.moodimodo";
+	process.env.APP_IDENTIFIER = "com.quantimodo.moodimodoapp";
 	process.env.APP_DESCRIPTION = "Perfect your life!";
 	callback();
 });
