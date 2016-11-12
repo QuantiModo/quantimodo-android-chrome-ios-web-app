@@ -553,7 +553,7 @@ angular.module('starter')
         function setupValueFieldType(abbreviatedUnitName, variableDescription) {
             
             if(!abbreviatedUnitName){
-                validationFailure('No abbreviatedUnitName provided to setupValueFieldType');
+                console.error('No abbreviatedUnitName provided to setupValueFieldType');
                 return false;
             }
 
