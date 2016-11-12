@@ -148,11 +148,19 @@ angular.module('starter')
 		};
 
 		$scope.sendReminderNotificationEmailsChange = function() {
-			QuantiModo.updateUserSettingsDeferred({sendReminderNotificationEmails: $rootScope.user.sendReminderNotificationEmails});
+			params = {sendReminderNotificationEmails: $rootScope.user.sendReminderNotificationEmails};
+			if($rootScope.urlParameters.userEmail){
+				params.userEmail = $rootScope.urlParameters.userEmail;
+			}
+			QuantiModo.updateUserSettingsDeferred(params);
 		};
 
         $scope.sendPredictorEmailsChange = function() {
-            QuantiModo.updateUserSettingsDeferred({sendPredictorEmails: $rootScope.user.sendPredictorEmails});
+			params = {sendReminderNotificationEmails: $rootScope.user.sendReminderNotificationEmails};
+			if($rootScope.urlParameters.userEmail){
+				params.userEmail = $rootScope.urlParameters.userEmail;
+			}
+            QuantiModo.updateUserSettingsDeferred(params);
         };
 
 		$scope.openEarliestReminderTimePicker = function() {
