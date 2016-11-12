@@ -1191,15 +1191,14 @@ angular.module('starter')
 
         QuantiModo.updateUserSettingsDeferred = function(params){
             var deferred = $q.defer();
-            if($rootScope.urlParameters.userEmail){
-                params.userEmail = $rootScope.urlParameters.userEmail;
-            }
             QuantiModo.postUserSettings(params, function(response){
-                QuantiModo.refreshUser().then(function(user){
-                    console.debug('updateUserSettingsDeferred got this user: ' + JSON.stringify(user));
-                }, function(error){
-                    console.error('QuantiModo.updateUserSettingsDeferred could not refresh user because ' + JSON.stringify(error));
-                });
+                if(!params.userEmail) {
+                    QuantiModo.refreshUser().then(function(user){
+                        console.debug('updateUserSettingsDeferred got this user: ' + JSON.stringify(user));
+                    }, function(error){
+                        console.error('QuantiModo.updateUserSettingsDeferred could not refresh user because ' + JSON.stringify(error));
+                    });
+                }
                 deferred.resolve(response);
             }, function(response){
                 deferred.reject(response);
