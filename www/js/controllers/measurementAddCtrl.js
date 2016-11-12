@@ -230,6 +230,7 @@ angular.module('starter')
                     return false;
                 }
             }
+            return true;
         };
 
 
