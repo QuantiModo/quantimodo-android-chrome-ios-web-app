@@ -1335,8 +1335,15 @@ gulp.task('bumpIosVersion', function(callback){
 	});
 });
 
+gulp.task('deletePlugins', [], function(){
+	return gulp.src("plugins/*",
+		{ read: false })
+		.pipe(clean());
+});
+
 gulp.task('prepareIosApp', function(callback){
 	runSequence(
+		'deletePlugins',
 		'generateIosResources',
 		'bumpIosVersion',
 		'updateConfigXmlUsingEnvs',
