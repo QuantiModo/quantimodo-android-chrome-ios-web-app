@@ -150,38 +150,41 @@ angular.module('starter')
                 });
             }
         };
+        
+        var validate = function () {
 
-
-        $scope.done = function(){
-
-            if($scope.state.bloodPressure.show){
-                trackBloodPressure();
-                return;
+            if($scope.state.measurement.value === '' || typeof $scope.state.measurement.value === 'undefined'){
+                if($scope.state.measurement.abbreviatedUnitName === '/5'){
+                    utilsService.showAlert('Please select a rating');
+                } else {
+                    utilsService.showAlert('Please enter a value');
+                }
+                return false;
             }
 
-            // Validation
             if($scope.state.measurement.value === '' || typeof $scope.state.measurement.value === 'undefined'){
                 utilsService.showAlert('Please enter a value');
-                return;
+                return false;
             }
+
             if(!$scope.state.measurement.variableName || $scope.state.measurement.variableName === ""){
                 utilsService.showAlert('Please enter a variable name');
-                return;
+                return false;
             }
             if(!$scope.state.measurement.variableCategoryName){
                 utilsService.showAlert('Please select a variable category');
-                return;
+                return false;
             }
 
-            if(!$scope.state.measurement.abbreviatedUnitName && !$scope.abbreviatedUnitName){
+            if(!$scope.state.measurement.abbreviatedUnitName){
                 utilsService.showAlert('Please select a unit');
-                return;
+                return false;
             } else {
                 if(!$rootScope.unitsIndexedByAbbreviatedName[$scope.state.measurement.abbreviatedUnitName]){
                     if (typeof Bugsnag !== "undefined") {
                         Bugsnag.notify('Cannot get unit id', 'abbreviated unit name is ' +
                             $scope.state.measurement.abbreviatedUnitName + ' and $rootScope.unitsIndexedByAbbreviatedName are ' +
-                                JSON.stringify($rootScope.unitsIndexedByAbbreviatedName), {}, "error");
+                            JSON.stringify($rootScope.unitsIndexedByAbbreviatedName), {}, "error");
                     }
                 } else {
                     $scope.state.measurement.unitId =
@@ -195,11 +198,11 @@ angular.module('starter')
             {
                 if($scope.state.measurement.value <
                     $rootScope.unitsIndexedByAbbreviatedName[$scope.state.measurement.abbreviatedUnitName].minimumValue){
-                        utilsService.showAlert($rootScope.unitsIndexedByAbbreviatedName[$scope.state.measurement.abbreviatedUnitName].minimumValue +
-                            ' is the smallest possible value for the unit ' +
-                            $rootScope.unitsIndexedByAbbreviatedName[$scope.state.measurement.abbreviatedUnitName].name +
+                    utilsService.showAlert($rootScope.unitsIndexedByAbbreviatedName[$scope.state.measurement.abbreviatedUnitName].minimumValue +
+                        ' is the smallest possible value for the unit ' +
+                        $rootScope.unitsIndexedByAbbreviatedName[$scope.state.measurement.abbreviatedUnitName].name +
                         ".  Please select another unit or value.");
-                        return;
+                    return false;
                 }
             }
 
@@ -213,8 +216,21 @@ angular.module('starter')
                         ' is the largest possible value for the unit ' +
                         $rootScope.unitsIndexedByAbbreviatedName[$scope.state.measurement.abbreviatedUnitName].name +
                         ".  Please select another unit or value.");
-                    return;
+                    return false;
                 }
+            }
+        }
+
+
+        $scope.done = function(){
+
+            if($scope.state.bloodPressure.show){
+                trackBloodPressure();
+                return;
+            }
+
+            if(!validate()){
+                return false;
             }
 
             if ($stateParams.reminderNotification && $ionicHistory.backView().stateName.toLowerCase().indexOf('inbox') > -1) {
@@ -243,11 +259,7 @@ angular.module('starter')
                 note : $scope.state.measurement.note || jQuery('#note').val(),
                 prevStartTimeEpoch : $scope.state.measurement.prevStartTimeEpoch,
                 startTimeEpoch : $scope.state.measurement.startTimeEpoch,
-                abbreviatedUnitName : $scope.state.showAddVariable ? (typeof $scope.abbreviatedUnitName ===
-                    "undefined" || $scope.abbreviatedUnitName === "" ) ?
-                    $scope.state.measurement.abbreviatedUnitName :
-                    $scope.abbreviatedUnitName :
-                    $scope.state.measurement.abbreviatedUnitName,
+                abbreviatedUnitName : $scope.state.measurement.abbreviatedUnitName,
                 variableCategoryName : $scope.state.measurement.variableCategoryName,
                 isAvg : $scope.state.sumAvg === "avg"
             };
