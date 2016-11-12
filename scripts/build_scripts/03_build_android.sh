@@ -88,7 +88,7 @@ rm -rf platforms/android
 echo "ionic platform remove android for $LOWERCASE_APP_NAME Android app..."
 ionic platform remove android
 echo "ionic platform add android for $LOWERCASE_APP_NAME Android app..."
-ionic platform add android
+ionic platform add android@6.0.0
 
 source ${IONIC_PATH}/scripts/create_icons.sh
 
