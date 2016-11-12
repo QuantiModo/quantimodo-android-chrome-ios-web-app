@@ -122,12 +122,13 @@ angular.module('starter')
                             }
                             // If no results or no exact match, show "+ Add [variable]" button for query
                             if((variables.length < 1 || !found)){
+
                                 $timeout(function () {
                                     if(!$scope.state.searching){
                                         console.debug($state.current.name + ": " + "$scope.onVariableSearch: Set showAddVariableButton to true");
                                         $scope.state.showAddVariableButton = true;
                                     }
-                                }, 3000);
+                                }, 1000);
                                 if ($stateParams.nextState === "app.reminderAdd") {
                                     $scope.state.addNewVariableButtonText = '+ Add ' + $scope.state.variableSearchQuery.name +
                                         ' reminder';

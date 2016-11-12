@@ -551,6 +551,12 @@ angular.module('starter')
         };
 
         function setupValueFieldType(abbreviatedUnitName, variableDescription) {
+            
+            if(!abbreviatedUnitName){
+                validationFailure('No abbreviatedUnitName provided to setupValueFieldType');
+                return false;
+            }
+
             if (abbreviatedUnitName === '/5') {
                 if (!variableDescription) {
                     $scope.showNumericRatingNumberButtons = true;
