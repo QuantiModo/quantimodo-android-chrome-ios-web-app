@@ -122,9 +122,10 @@ angular.module('starter')
                             }
                             // If no results or no exact match, show "+ Add [variable]" button for query
                             if((variables.length < 1 || !found)){
-
+                                $scope.showSearchLoader = true;
                                 $timeout(function () {
                                     if(!$scope.state.searching){
+                                        $scope.showSearchLoader = false;
                                         console.debug($state.current.name + ": " + "$scope.onVariableSearch: Set showAddVariableButton to true");
                                         $scope.state.showAddVariableButton = true;
                                     }
