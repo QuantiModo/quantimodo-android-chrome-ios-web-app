@@ -314,20 +314,29 @@ angular.module('starter')
                 $scope.openReminderStartTimePicker('third');
             }
         };
+
+        var validationFailure = function (message) {
+            utilsService.showAlert(message);
+            console.error(message);
+            if (typeof Bugsnag !== "undefined") {
+                Bugsnag.notify(message, "trackingReminder is " + JSON.stringify($scope.state.trackingReminder), {}, "error");
+            }
+        };
         
         var validReminderSettings = function(){
+
             if(!$scope.state.trackingReminder.variableCategoryName) {
-                utilsService.showAlert('Please select a variable category');
+                validationFailure('Please select a variable category');
                 return false;
             }
 
             if(!$scope.state.trackingReminder.variableName) {
-                utilsService.showAlert('Please enter a variable name');
+                validationFailure('Please enter a variable name');
                 return false;
             }
 
             if(!$scope.state.trackingReminder.abbreviatedUnitName) {
-                utilsService.showAlert('Please select a unit');
+                validationFailure('Please select a unit');
                 return false;
             } else {
                 $scope.state.trackingReminder.unitId =
@@ -335,7 +344,7 @@ angular.module('starter')
             }
 
             if(!$stateParams.favorite && !$scope.state.trackingReminder.defaultValue && $scope.state.trackingReminder.defaultValue !== 0) {
-                //utilsService.showAlert('Please enter a default value');
+                //validationFailure('Please enter a default value');
                 //return false;
             }
 
@@ -345,7 +354,7 @@ angular.module('starter')
             {
                 if($scope.state.trackingReminder.defaultValue !== null && $scope.state.trackingReminder.defaultValue <
                     $rootScope.unitsIndexedByAbbreviatedName[$scope.state.trackingReminder.abbreviatedUnitName].minimumValue){
-                    utilsService.showAlert($rootScope.unitsIndexedByAbbreviatedName[$scope.state.trackingReminder.abbreviatedUnitName].minimumValue +
+                    validationFailure($rootScope.unitsIndexedByAbbreviatedName[$scope.state.trackingReminder.abbreviatedUnitName].minimumValue +
                         ' is the smallest possible value for the unit ' +
                         $rootScope.unitsIndexedByAbbreviatedName[$scope.state.trackingReminder.abbreviatedUnitName].name +
                         ".  Please select another unit or value.");
@@ -360,7 +369,7 @@ angular.module('starter')
             {
                 if($scope.state.trackingReminder.defaultValue !== null && $scope.state.trackingReminder.defaultValue >
                     $rootScope.unitsIndexedByAbbreviatedName[$scope.state.trackingReminder.abbreviatedUnitName].maximumValue){
-                    utilsService.showAlert($rootScope.unitsIndexedByAbbreviatedName[$scope.state.trackingReminder.abbreviatedUnitName].maximumValue +
+                    validationFailure($rootScope.unitsIndexedByAbbreviatedName[$scope.state.trackingReminder.abbreviatedUnitName].maximumValue +
                         ' is the largest possible value for the unit ' +
                         $rootScope.unitsIndexedByAbbreviatedName[$scope.state.trackingReminder.abbreviatedUnitName].name +
                         ".  Please select another unit or value.");
@@ -370,7 +379,7 @@ angular.module('starter')
 
             if($scope.state.selectedStopTrackingDate && $scope.state.selectedStartTrackingDate){
                 if($scope.state.selectedStopTrackingDate < $scope.state.selectedStartTrackingDate){
-                    utilsService.showAlert("Start date cannot be later than the end date");
+                    validationFailure("Start date cannot be later than the end date");
                     return false;
                 }
             }
@@ -418,7 +427,7 @@ angular.module('starter')
             }
 
             if(!validReminderSettings()){
-                return;
+                return false;
             }
 
             $scope.showLoader('Saving ' + $scope.state.trackingReminder.variableName + ' reminder...');
@@ -596,7 +605,7 @@ angular.module('starter')
             reminderService.getTrackingReminderById(reminderIdUrlParameter)
                 .then(function (reminders) {
                     if (reminders.length !== 1) {
-                        utilsService.showAlert("Reminder id " + reminderIdUrlParameter + " not found!", 'assertive');
+                        validationFailure("Reminder id " + reminderIdUrlParameter + " not found!", 'assertive');
                         $ionicHistory.goBack();
                     }
                     $stateParams.reminder = reminders[0];

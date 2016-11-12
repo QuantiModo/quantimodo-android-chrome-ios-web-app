@@ -28,6 +28,39 @@
         </div>
         <ion-list>
             <div class="list card correlationResultList" ng-repeat="correlationObject in state.correlationObjects">
+                <div class="card">
+                    <div class="item item-avatar">
+<!--                        <i class="icon positive ion-ios-medkit-outline"
+                           style="position: absolute;
+							top: 15px;
+							left: 15px;
+							font-size: 36px;
+							max-width: 40px;
+							max-height: 40px;
+							width: 100%;
+							border-radius: 4px;"
+                        ></i>-->
+                        <img src="{{correlationObject.causeVariableImage}}">
+                        <p style="
+					  height: 40px;
+					  line-height: 40px;
+					  white-space: nowrap;
+					  color: black;
+					font-size: 18px;">
+                            {{correlationObject.causeVariableName}}
+                        </p>
+                    </div>
+                    <div class="item item-body">
+                        <img class="full-image" src="{{correlationObject.causeVariableImage}}">
+                        <p>{{correlationObject.predictorExplanation}}</p>
+                        <p>{{correlationObject.valuePredictingHighOutcomeExplanation}}</p>
+                        <p>{{correlationObject.valuePredictingLowOutcomeExplanation}}</p>
+                    </div>
+                </div>
+            </div>
+        </ion-list>
+        <ion-list>
+            <div class="list card correlationResultList" ng-repeat="correlationObject in state.correlationObjects">
                 <ion-item class="item item-text-wrap card-item" style="border-style:hidden;">
                     <h4><a ng-click="goToStudyPage(correlationObject)">{{correlationObject.causeVariableName}}</a></h4>
                     <div ng-include="'templates/correlation-buttons-fragment.html'"></div>
