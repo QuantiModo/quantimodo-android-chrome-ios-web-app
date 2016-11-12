@@ -6,19 +6,29 @@ angular.module('starter')
 
         // get user variables (without public)
         variableService.searchUserVariables = function(variableSearchQuery, params){
-            var deferred = $q.defer();
+
+            if($rootScope.lastSearchUserVariablesPromise){
+                var message = 'Got new search request before last one completed';
+                console.warn(message);
+                $rootScope.lastSearchUserVariablesPromise.reject();
+                $rootScope.lastSearchUserVariablesPromise = null;
+            }
+
+            $rootScope.lastSearchUserVariablesPromise = $q.defer();
 
             if(!variableSearchQuery){
                 variableSearchQuery = '*';
             }
 
             QuantiModo.searchUserVariables(variableSearchQuery, params, function(vars){
-                deferred.resolve(vars);
+                $rootScope.lastSearchUserVariablesPromise.resolve(vars);
+                $rootScope.lastSearchUserVariablesPromise = null;
             }, function(error){
-                deferred.reject(error);
+                $rootScope.lastSearchUserVariablesPromise.reject(error);
+                $rootScope.lastSearchUserVariablesPromise = null;
             });
 
-            return deferred.promise;
+            return $rootScope.lastSearchUserVariablesPromise.promise;
         };
 
         variableService.getVariablesByName = function(name){
