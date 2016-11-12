@@ -92,6 +92,7 @@ ionic platform add android@6.0.0
 
 source ${IONIC_PATH}/scripts/create_icons.sh
 
+ionic info
 #echo "ionic browser rm crosswalk"
 #ionic browser rm crosswalk
 #cordova build --debug android >/dev/null
