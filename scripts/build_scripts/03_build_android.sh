@@ -88,11 +88,12 @@ rm -rf platforms/android
 echo "ionic platform remove android for $LOWERCASE_APP_NAME Android app..."
 ionic platform remove android
 echo "ionic platform add android for $LOWERCASE_APP_NAME Android app..."
-ionic platform add android@6.0.0
+ionic platform add android@6.X.X
 
 source ${IONIC_PATH}/scripts/create_icons.sh
 
 ionic info
+java -version
 #echo "ionic browser rm crosswalk"
 #ionic browser rm crosswalk
 #cordova build --debug android >/dev/null
