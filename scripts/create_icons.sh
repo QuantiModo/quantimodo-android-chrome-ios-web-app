@@ -13,14 +13,10 @@
 #cd "${INTERMEDIATE_PATH}"
 #echo "Adding android platform for ${LOWERCASE_APP_NAME} at ${PWD}"
 #ionic platform add android
-echo "Generating Android images for ${LOWERCASE_APP_NAME} at ${PWD}..."
-cp resources/icon_transparent.png resources/icon.png || true
+echo "Generating images for ${LOWERCASE_APP_NAME} at ${PWD}..."
 ionic resources
-
-echo "Generating Chrome images for ${LOWERCASE_APP_NAME} at ${PWD}..."
 convert resources/icon.psd -flatten -background transparent resources/icon.png || true
-cp resources/icon_transparent.png resources/icon.png || true
-cp resources/icon*.png www/img/icons/
+cp resources/icon* www/img/icons/
 convert resources/icon.png -resize 700x700 www/img/icons/icon_700.png
 convert resources/icon.png -resize 16x16 www/img/icons/icon_16.png
 convert resources/icon.png -resize 48x48 www/img/icons/icon_48.png
