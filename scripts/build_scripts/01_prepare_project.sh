@@ -69,6 +69,10 @@ export LANG=en_US.UTF-8
 
 echo -e "${GREEN}Copy ${LOWERCASE_APP_NAME} config and resource files${NC}"
 cp -R ${INTERMEDIATE_PATH}/apps/${LOWERCASE_APP_NAME}/*  "${INTERMEDIATE_PATH}"
+
+echo -e "${GREEN}cp resources/icon_transparent.png resources/icon.png${NC}"
+cp resources/icon_transparent.png resources/icon.png || true
+
 ionic config build
 
 cd "${INTERMEDIATE_PATH}"
