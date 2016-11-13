@@ -1,5 +1,6 @@
 #!/bin/bash
 
+sudo chmod -R 777 ${DROPBOX_PATH}
 mkdir "$DROPBOX_PATH/QuantiModo/apps/$LOWERCASE_APP_NAME"  || true
 
 echo "Removing old ${LOWERCASE_APP_NAME} Android versions to archive so we catch build failures"
