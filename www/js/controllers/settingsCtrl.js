@@ -156,7 +156,7 @@ angular.module('starter')
 		};
 
         $scope.sendPredictorEmailsChange = function() {
-			params = {sendReminderNotificationEmails: $rootScope.user.sendReminderNotificationEmails};
+			params = {sendPredictorEmails: $rootScope.user.sendReminderNotificationEmails};
 			if($rootScope.urlParameters.userEmail){
 				params.userEmail = $rootScope.urlParameters.userEmail;
 			}
