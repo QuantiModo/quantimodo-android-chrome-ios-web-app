@@ -12,7 +12,7 @@ angular.module('starter')
         $rootScope.appMigrationVersion = 1489;
         $rootScope.appVersion = "2.1.1.0";
         if (!$rootScope.loaderImagePath) {
-            $rootScope.loaderImagePath = 'img/circular-loader.gif';
+            $rootScope.loaderImagePath = 'img/circular_loader.gif';
         }
         if($rootScope.user && typeof $rootScope.user.trackLocation === "undefined"){
             localStorageService.getItem('trackLocation', function(trackLocation){
