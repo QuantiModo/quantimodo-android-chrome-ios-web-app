@@ -14,6 +14,7 @@
 #echo "Adding android platform for ${LOWERCASE_APP_NAME} at ${PWD}"
 #ionic platform add android
 echo "Generating Android images for ${LOWERCASE_APP_NAME} at ${PWD}..."
+cp resources/icon_transparent.png resources/icon.png || true
 ionic resources
 
 echo "Generating Chrome images for ${LOWERCASE_APP_NAME} at ${PWD}..."
