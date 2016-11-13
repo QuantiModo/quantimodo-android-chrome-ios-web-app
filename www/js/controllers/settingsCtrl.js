@@ -153,14 +153,36 @@ angular.module('starter')
 				params.userEmail = $rootScope.urlParameters.userEmail;
 			}
 			QuantiModo.updateUserSettingsDeferred(params);
+			if($rootScope.user.sendReminderNotificationEmails){
+				$ionicPopup.alert({
+					title: 'Reminder Emails Enabled',
+					template: "If you forget to record a measurement for a reminder you've created, I'll send you a daily reminder email."
+				});
+			} else {
+				$ionicPopup.alert({
+					title: 'Reminder Emails Disabled',
+					template: "If you forget to record a measurement for a reminder you've created, I won't send you a daily reminder email."
+				});
+			}
 		};
 
         $scope.sendPredictorEmailsChange = function() {
-			params = {sendPredictorEmails: $rootScope.user.sendReminderNotificationEmails};
+			params = {sendPredictorEmails: $rootScope.user.sendPredictorEmails};
 			if($rootScope.urlParameters.userEmail){
 				params.userEmail = $rootScope.urlParameters.userEmail;
 			}
             QuantiModo.updateUserSettingsDeferred(params);
+			if($rootScope.user.sendPredictorEmails){
+				$ionicPopup.alert({
+					title: 'Discovery Emails Enabled',
+					template: "I'll send you a weekly email with new discoveries from your data."
+				});
+			} else {
+				$ionicPopup.alert({
+					title: 'Discovery Emails Disabled',
+					template: "I won't send you a weekly email with new discoveries from your data."
+				});
+			}
         };
 
 		$scope.openEarliestReminderTimePicker = function() {
