@@ -40,12 +40,13 @@
                         border-radius: 4px;"
                     ></i>-->
                     <img src="{{correlationObject.causeVariableImageUrl}}">
-                    <p style="
-                  height: 40px;
-                  line-height: 40px;
-                  white-space: nowrap;
-                  color: black;
-                font-size: 18px;">
+                    <p ng-click="goToStudyPage(correlationObject)"
+                            style="
+                            height: 40px;
+                            line-height: 40px;
+                            white-space: nowrap;
+                            color: black;
+                            font-size: 18px;">
                         {{correlationObject.causeVariableName}}
                     </p>
                 </div>
