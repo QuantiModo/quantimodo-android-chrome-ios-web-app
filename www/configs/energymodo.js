@@ -5,7 +5,7 @@ config.appSettings  = {
     cordovaLocalNotificationsEnabled : false,
     linkToChromeExtension : "https://chrome.google.com/webstore/detail/quantimodo-life-tracking/ncfgnobloleophhanefmkmpclbakoakh",
     allowOffline : true,
-    loaderImagePath : 'img/pop-tart-cat.gif',
+    loaderImagePath : 'img/pop_tart_cat.gif',
     defaultState : 'app.remindersInbox',
     welcomeState : 'app.welcome',
     shoppingCartEnabled : true,
