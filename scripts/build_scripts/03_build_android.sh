@@ -123,11 +123,13 @@ export GENERIC_ALIAS=${DEBUG_ALIAS}
 export SIGNED_GENERIC_APK_FILENAME=${SIGNED_DEBUG_APK_FILENAME}
 #source ${IONIC_PATH}/scripts/build_scripts/android_sign.sh
 
-export UNSIGNED_GENERIC_APK_FILENAME="android-armv7-debug-unaligned.apk"
+#export UNSIGNED_GENERIC_APK_FILENAME="android-armv7-debug-unaligned.apk"
+export UNSIGNED_GENERIC_APK_FILENAME="android-armv7-debug.apk"
 export SIGNED_GENERIC_APK_FILENAME=${LOWERCASE_APP_NAME}-android-armv7-debug-signed.apk
 source ${IONIC_PATH}/scripts/build_scripts/android_sign.sh
 
-export UNSIGNED_GENERIC_APK_FILENAME="android-x86-debug-unaligned.apk"
+#export UNSIGNED_GENERIC_APK_FILENAME="android-x86-debug-unaligned.apk"
+export UNSIGNED_GENERIC_APK_FILENAME="android-x86-debug.apk"
 export SIGNED_GENERIC_APK_FILENAME=${LOWERCASE_APP_NAME}-android-x86-debug-signed.apk
 source ${IONIC_PATH}/scripts/build_scripts/android_sign.sh
 
