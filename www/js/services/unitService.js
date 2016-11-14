@@ -9,6 +9,7 @@ angular.module('starter')
             $rootScope.nonAdvancedAbbreviatedUnitNames = [];
             $rootScope.nonAdvancedUnitsIndexedByAbbreviatedName = [];
             $rootScope.nonAdvancedAbbreviatedUnitNamesIndexedByUnitId = [];
+            $rootScope.nonAdvancedUnitObjects = [];
             for (var i = 0; i < units.length; i++) {
                 $rootScope.abbreviatedUnitNames[i] = units[i].abbreviatedName;
                 $rootScope.unitsIndexedByAbbreviatedName[units[i].abbreviatedName] = units[i];
@@ -16,6 +17,7 @@ angular.module('starter')
 
                 if(!units[i].advanced){
                     $rootScope.nonAdvancedAbbreviatedUnitNames.push(units[i].abbreviatedName);
+                    $rootScope.nonAdvancedUnitObjects.push(units[i]);
                     $rootScope.nonAdvancedUnitsIndexedByAbbreviatedName[units[i].abbreviatedName] = units[i];
                     $rootScope.nonAdvancedAbbreviatedUnitNamesIndexedByUnitId[units[i].id] = units[i].abbreviatedName;
                 }

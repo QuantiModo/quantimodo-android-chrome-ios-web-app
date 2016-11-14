@@ -21,18 +21,18 @@
                     <div class="input-label">
                         Unit
                     </div>
-
-                    <select id="unitSelector"
+                    <select id="unitSelector2"
                             ng-if="!state.showMoreUnits"
                             ng-model="state.trackingReminder.abbreviatedUnitName"
-                            ng-options="x for x in nonAdvancedAbbreviatedUnitNames"
+                            ng-options="unit.abbreviatedName as unit.name for unit in nonAdvancedUnitObjects"
                             ng-change="unitSelected()">
-                            <!--ng-model="state.trackingReminder.abbreviatedUnitName" ng-options="x as x.abbreviatedName for x in unitObjects track by x.id">-->
                     </select>
                     <select ng-if="state.showMoreUnits"
                             id="advancedUnitSelector"
                             ng-model="state.trackingReminder.abbreviatedUnitName"
-                            ng-options="x for x in abbreviatedUnitNames"></select>
+                            ng-options="unit.abbreviatedName as unit.name for unit in unitObjects"
+                            ng-change="unitSelected()">
+                    </select>
                 </label>
                 <label class="item item-input item-select" ng-if="!stateParams.favorite">
                     <div class="input-label">

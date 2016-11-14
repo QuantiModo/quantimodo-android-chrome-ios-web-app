@@ -69,15 +69,19 @@
                     <div class="input-label">
                         Unit
                     </div>
-                    <select ng-if="!state.showMoreUnits" id="unitSelector" ng-model="state.measurement.abbreviatedUnitName" ng-options="x for x in nonAdvancedAbbreviatedUnitNames"></select>
-                    <select ng-if="state.showMoreUnits" id="advancedUnitSelector" ng-model="state.measurement.abbreviatedUnitName" ng-options="x for x in abbreviatedUnitNames"></select>
-                    <!--<select ng-model="state.measurement.abbreviatedUnitName">-->
-                        <!--<option ng-selected="unitObject.abbreviatedName === state.measurement.abbreviatedUnitName"-->
-                                <!--ng-repeat="unitObject in unitObjects"-->
-                                <!--value="{{unitObject.abbreviatedName}}">-->
-                            <!--{{unitObject.name}} ({{unitObject.abbreviatedName}})-->
-                        <!--</option>-->
-                    <!--</select>-->
+                    <select ng-if="!state.showMoreUnits"
+                            id="unitSelector"
+                            ng-model="state.measurement.abbreviatedUnitName"
+                            ng-options="unit.abbreviatedName as unit.name for unit in nonAdvancedUnitObjects"
+                            ng-change="unitSelected()">
+                    </select>
+                    <select ng-if="state.showMoreUnits"
+                            id="advancedUnitSelector"
+                            ng-model="state.measurement.abbreviatedUnitName"
+                            ng-options="unit.abbreviatedName as unit.name for unit in unitObjects"
+                            ng-change="unitSelected()">
+                    </select>
+
                 </label>
                 <div class="row labeled-control">
                     <div class="col col-l">
