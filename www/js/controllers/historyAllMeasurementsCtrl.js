@@ -167,9 +167,7 @@ angular.module('starter')
 					{ text: '<i class="icon ion-android-notifications-none"></i>Add Reminder'},
 					{ text: '<i class="icon ion-arrow-graph-up-right"></i>Visualize'},
 					{ text: '<i class="icon ion-ios-list-outline"></i>' + 'History'},
-					{ text: '<i class="icon ion-settings"></i>' + 'Variable Settings'},
-					// { text: '<i class="icon ion-arrow-up-a"></i>Positive Predictors'},
-					// { text: '<i class="icon ion-arrow-down-a"></i>Negative Predictors'}
+					{ text: '<i class="icon ion-settings"></i>' + 'Variable Settings'}
 				],
 				cancelText: '<i class="icon ion-ios-close"></i>Cancel',
 				cancel: function() {
@@ -201,26 +199,6 @@ angular.module('starter')
 					if(index === 5){
 						$state.go('app.variableSettings',
 							{variableName: $scope.state.measurement.variableName});
-					}
-					if(index === 6){
-						$state.go('app.predictors',
-							{
-								variableObject: $scope.state.variableObject,
-								requestParams: {
-									effect:  $scope.state.variableObject.name,
-									correlationCoefficient: "(gt)0"
-								}
-							});
-					}
-					if(index === 7){
-						$state.go('app.predictors',
-							{
-								variableObject: $scope.state.variableObject,
-								requestParams: {
-									effect:  $scope.state.variableObject.name,
-									correlationCoefficient: "(lt)0"
-								}
-							});
 					}
 
 					return true;

@@ -137,22 +137,35 @@ angular.module('starter')
 		};
 
 
-		$scope.track = function(trackingReminderNotification, modifiedReminderValue, $event, dividerIndex, trackingReminderNotificationIndex){
-
-			if(isGhostClick($event)){
-				return;
-			}
+		var notificationAction = function(trackingReminderNotification, $event, dividerIndex,
+										  trackingReminderNotificationIndex){
 			// Removing instead of hiding reminder notifications seems to cause weird dismissal problems
 			//$scope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications.splice(trackingReminderNotificationIndex, 1);
 			$scope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications[trackingReminderNotificationIndex].hide = true;
 			$rootScope.numberOfPendingNotifications--;
 			$scope.state.numberOfDisplayedNotifications--;
-			console.debug('Tracking notification ' + JSON.stringify(trackingReminderNotification));
-			console.debug('modifiedReminderValue is ' + modifiedReminderValue);
-			var body = {
+			if(!$rootScope.showUndoButton){
+				$rootScope.showUndoButton = true;
+			}
+			return {
 				trackingReminderNotification: trackingReminderNotification,
-				modifiedValue: modifiedReminderValue
+				trackingReminderNotificationId: trackingReminderNotification.id
 			};
+		};
+
+		$scope.track = function(trackingReminderNotification, modifiedReminderValue, $event, dividerIndex, trackingReminderNotificationIndex){
+			if(isGhostClick($event)){
+				return false;
+			}
+
+			if(modifiedReminderValue === null){
+				modifiedReminderValue = trackingReminderNotification.defaultValue;
+			}
+
+			var body = notificationAction(trackingReminderNotification, $event, dividerIndex,
+				trackingReminderNotificationIndex);
+			body.modifiedValue = modifiedReminderValue;
+			$scope.lastAction = 'Record ' + modifiedReminderValue;
 	    	reminderService.trackReminderNotification(body)
 				.then(function(){
 					if($rootScope.localNotificationsEnabled){
@@ -167,21 +180,12 @@ angular.module('starter')
 	    };
 
 	    $scope.skip = function(trackingReminderNotification, $event, dividerIndex, trackingReminderNotificationIndex){
-
 			if(isGhostClick($event)){
 				return;
 			}
-
-			$scope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications[trackingReminderNotificationIndex].hide = true;
-			$rootScope.numberOfPendingNotifications--;
-			$scope.state.numberOfDisplayedNotifications--;
-			// Removing seems to cause weird dismissal problems
-			//$scope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications.splice(trackingReminderNotificationIndex, 1);
-			console.debug('Skipping notification ' + JSON.stringify(trackingReminderNotification));
-			var params = {
-				trackingReminderNotificationId: trackingReminderNotification.id,
-				trackingReminderNotification: trackingReminderNotification
-			};
+			$scope.lastAction = 'Skip';
+			var params = notificationAction(trackingReminderNotification, $event, dividerIndex,
+				trackingReminderNotificationIndex);
 	    	reminderService.skipReminderNotification(params)
 				.then(function(){
 					if($rootScope.localNotificationsEnabled){
@@ -199,17 +203,9 @@ angular.module('starter')
 			if(isGhostClick($event)){
 				return;
 			}
-
-			$scope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications[trackingReminderNotificationIndex].hide = true;
-			$rootScope.numberOfPendingNotifications--;
-			$scope.state.numberOfDisplayedNotifications--;
-			// Removing seems to cause weird dismissal problems
-			//$scope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications.splice(trackingReminderNotificationIndex, 1);
-			console.debug('Snoozing notification ' + JSON.stringify(trackingReminderNotification));
-			var params = {
-				trackingReminderNotificationId: trackingReminderNotification.id,
-				trackingReminderNotification: trackingReminderNotification
-			};
+			$scope.lastAction = 'Snooze';
+			var params = notificationAction(trackingReminderNotification, $event, dividerIndex,
+				trackingReminderNotificationIndex);
 	    	reminderService.snoozeReminderNotification(params)
 				.then(function(){
 					if($rootScope.localNotificationsEnabled){
@@ -222,6 +218,17 @@ angular.module('starter')
 					if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error(error);
 				});
 	    };
+
+		$scope.undo = function(){
+			var notificationsSyncQueue = localStorageService.getItemAsObject('notificationsSyncQueue');
+			notificationsSyncQueue[0].trackingReminderNotification.hide = false;
+			localStorageService.addToOrReplaceElementOfItemByIdOrMoveToFront('trackingReminderNotifications',
+				notificationsSyncQueue[0].trackingReminderNotification);
+			localStorageService.deleteElementOfItemByProperty('notificationsSyncQueue',
+				'trackingReminderNotificationId', notificationsSyncQueue[0].trackingReminderNotificationId);
+			getTrackingReminderNotifications();
+			$rootScope.showUndoButton = false;
+		};
 
 		var getFilteredTrackingReminderNotifications = function(){
 			reminderService.getTrackingReminderNotifications($stateParams.variableCategoryName)
@@ -478,9 +485,7 @@ angular.module('starter')
 					{ text: '<i class="icon ion-edit"></i>Record ' + ' Measurement' },
 					{ text: '<i class="icon ion-arrow-graph-up-right"></i>' + 'Visualize'},
 					{ text: '<i class="icon ion-ios-list-outline"></i>' + 'History'},
-					{ text: '<i class="icon ion-settings"></i>' + 'Variable Settings'},
-					// { text: '<i class="icon ion-arrow-up-a"></i>Positive Predictors'},
-					// { text: '<i class="icon ion-arrow-down-a"></i>Negative Predictors'}
+					{ text: '<i class="icon ion-settings"></i>' + 'Variable Settings'}
 				],
 				destructiveText: '<i class="icon ion-trash-a"></i>Skip All Notifications',
 				cancelText: '<i class="icon ion-ios-close"></i>Cancel',
@@ -507,26 +512,6 @@ angular.module('starter')
 					if (index === 5) {
 						$state.go('app.variableSettings',
 							{variableName: $scope.state.trackingReminderNotification.variableName});
-					}
-					if(index === 6){
-						$state.go('app.predictors',
-							{
-								variableObject: $scope.state.variableObject,
-								requestParams: {
-									effect:  $scope.state.variableObject.name,
-									correlationCoefficient: "(gt)0"
-								}
-							});
-					}
-					if(index === 7){
-						$state.go('app.predictors',
-							{
-								variableObject: $scope.state.variableObject,
-								requestParams: {
-									effect:  $scope.state.variableObject.name,
-									correlationCoefficient: "(lt)0"
-								}
-							});
 					}
 
 					return true;

@@ -6,36 +6,34 @@ angular.module('starter')
         var utilsService = {};
 
         utilsService.getEnv = function(){
-
-            var env = "";
-
+            var env = "production";
             if(window.location.origin.indexOf('local')> -1){
-                //On localhost
-                env = "Development";
-            }
-            else if(window.location.origin.indexOf('file://')){
+                env = "development"; //On localhost
+            } else if(window.location.origin.indexOf('file://')){
                 env = this.environment;
+            } else if(window.location.origin.indexOf('staging') > -1){
+                env = "staging";
+            } else if(window.location.origin.indexOf('ionic.quantimo.do')){
+                env = "staging";
             }
-            else if(window.location.origin.indexOf('staging.quantimo.do') > -1){
-                env = "Staging";
-            }
-            else if(window.location.origin.indexOf('app.quantimo.do')){
-                env = "Production";
-            }
-
             return env;
         };
 
         utilsService.getClientId = function(){
-            //if chrome app
             if (window.chrome && chrome.runtime && chrome.runtime.id) {
-                return window.private_keys.client_ids.Chrome;
+                $rootScope.clientId = window.private_keys.client_ids.Chrome; //if chrome app
+            } else if ($rootScope.isIOS) {
+                $rootScope.clientId = window.private_keys.client_ids.iOS;
+            } else if ($rootScope.isAndroid) {
+                $rootScope.clientId = window.private_keys.client_ids.Android;
+            } else if ($rootScope.isChromeExtension) {
+                $rootScope.clientId = window.private_keys.client_ids.Chrome;
+            } else if ($rootScope.isWindows) {
+                $rootScope.clientId = window.private_keys.client_ids.Windows;
+            } else {
+                $rootScope.clientId = window.private_keys.client_ids.Web;
             }
-            if ($rootScope.isIOS) { return window.private_keys.client_ids.iOS; }
-            if ($rootScope.isAndroid) { return window.private_keys.client_ids.Android; }
-            if ($rootScope.isChromeExtension) { return window.private_keys.client_ids.Chrome; }
-            if ($rootScope.isWindows) { return window.private_keys.client_ids.Windows; }
-            return window.private_keys.client_ids.Web;
+            return $rootScope.clientId;
         };
         
         utilsService.setPlatformVariables = function () {

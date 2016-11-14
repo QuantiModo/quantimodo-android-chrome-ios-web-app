@@ -259,31 +259,11 @@ angular.module('starter',
          */
 
     });
-    
 
     $rootScope.goToState = function(state, params){
         $state.go(state, params);
     };
 
-    if(!window.private_keys) {
-        console.error('Please add private config file to www/private_configs folder!  Contact mike@quantimo.do if you need help');
-        return;
-    }
-
-    $rootScope.appVersion = "2.0.9.0";
-    $rootScope.appName = config.appSettings.appName;
-
-    if (typeof Bugsnag !== "undefined") {
-        //$rootScope.bugsnagApiKey = window.private_keys.bugsnag_key;
-        //Bugsnag.apiKey = "ae7bc49d1285848342342bb5c321a2cf";
-        //Bugsnag.notifyReleaseStages = ['Production','Staging'];
-        Bugsnag.appVersion = $rootScope.appVersion;
-        Bugsnag.metaData = {
-            platform: ionic.Platform.platform(),
-            platformVersion: ionic.Platform.version(),
-            appName: config.appSettings.appName
-        };
-    }
 
     $ionicPlatform.registerBackButtonAction(function (event) {
         if($ionicHistory.currentStateName() === config.appSettings.defaultState){
@@ -313,6 +293,33 @@ angular.module('starter',
         }
     }, 500);
 
+    $rootScope.getAllUrlParams = function() {
+        $rootScope.urlParameters = {};
+        var queryString = document.location.toString().split('?')[1];
+        var sURLVariables;
+        var parameterNameValueArray;
+        if(queryString) {
+            sURLVariables = queryString.split('&');
+        }
+        if(sURLVariables) {
+            for (var i = 0; i < sURLVariables.length; i++) {
+                parameterNameValueArray = sURLVariables[i].split('=');
+                if(parameterNameValueArray[1].indexOf('http') > -1){
+                    $rootScope.urlParameters[parameterNameValueArray[0]] = parameterNameValueArray[1];
+                } else {
+                    $rootScope.urlParameters[parameterNameValueArray[0]] = decodeURIComponent(parameterNameValueArray[1]);
+                }
+
+            }
+        }
+    };
+
+    $rootScope.getAllUrlParams();
+    if ($rootScope.urlParameters.existingUser || $rootScope.urlParameters.introSeen || $rootScope.urlParameters.refreshUser) {
+        window.localStorage.introSeen = true;
+        window.localStorage.isWelcomed = true;
+    }
+    console.debug('url params are ', $rootScope.urlParameters);
 })
 
 .config(function($stateProvider, $urlRouterProvider, $compileProvider, ionicTimePickerProvider,
@@ -338,25 +345,12 @@ angular.module('starter',
                 if (sParameterName[0] === 'app') {
                     return sParameterName[1].split('#')[0];
                 }
-
-                if (sParameterName[0] === 'existingUser' || sParameterName[0] === 'introSeen') {
-                    window.localStorage.introSeen = true;
-                    window.localStorage.isWelcomed = true;
-                }
             }
             return false;
         };
 
         var appName = getAppNameFromUrl();
-
-        if(appName){
-            console.debug('loading', appsManager.getAppConfig(appName), appsManager.getPrivateConfig(appName));
-            return $ocLazyLoad.load([appsManager.getAppConfig(appName), appsManager.getPrivateConfig(appName)]);
-        } else{
-            console.debug('Loading default app: ' + appsManager.getDefaultApp());
-            return $ocLazyLoad.load([appsManager.getDefaultConfig(), appsManager.getDefaultPrivateConfig()]);          
-        }
-
+        return $ocLazyLoad.load([appsManager.getAppConfig(appName), appsManager.getPrivateConfig(appName)]);
       }]
     };
 
@@ -452,7 +446,8 @@ angular.module('starter',
                 measurement : null,
                 variableObject : null,
                 nextState: 'app.measurementAdd',
-                variableCategoryName: null
+                variableCategoryName: null,
+                manualTrackingVariablesOnly: true
             },
             views: {
                 'menuContent': {
@@ -468,7 +463,8 @@ angular.module('starter',
                 fromState : null,
                 fromUrl : null,
                 measurement : null,
-                nextState: 'app.measurementAdd'
+                nextState: 'app.measurementAdd',
+                manualTrackingVariablesOnly: true
             },
             views: {
                 'menuContent': {
@@ -485,7 +481,8 @@ angular.module('starter',
                 fromUrl : null,
                 measurement : null,
                 reminderSearch: true,
-                nextState: 'app.reminderAdd'
+                nextState: 'app.reminderAdd',
+                manualTrackingVariablesOnly: true
             },
             views: {
                 'menuContent': {
@@ -502,7 +499,8 @@ angular.module('starter',
                 fromUrl : null,
                 measurement : null,
                 reminderSearch: true,
-                nextState: 'app.reminderAdd'
+                nextState: 'app.reminderAdd',
+                manualTrackingVariablesOnly: true
             },
             views: {
                 'menuContent': {
@@ -520,7 +518,8 @@ angular.module('starter',
                 measurement : null,
                 favoriteSearch: true,
                 nextState: 'app.favoriteAdd',
-                pageTitle: 'Add a favorite'
+                pageTitle: 'Add a favorite',
+                manualTrackingVariablesOnly: true
             },
             views: {
                 'menuContent': {
@@ -538,7 +537,8 @@ angular.module('starter',
                 measurement : null,
                 favoriteSearch: true,
                 nextState: 'app.favoriteAdd',
-                pageTitle: 'Add a favorite'
+                pageTitle: 'Add a favorite',
+                manualTrackingVariablesOnly: true
             },
             views: {
                 'menuContent': {
@@ -711,21 +711,118 @@ angular.module('starter',
                 }
             }
         })
-        .state('app.predictors', {
-            url: "/predictors/:valence",
+        .state('app.update-card', {
+            url: "/update-card",
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/iframe-embed.html",
+                    controller: 'IframeScreenCtrl'
+                }
+            }
+        })
+        .state('app.studyCreate', {
+            url: "/study-create",
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/iframe-embed.html",
+                    controller: 'IframeScreenCtrl'
+                }
+            }
+        })
+        .state('app.predictorsAll', {
+            url: "/predictors",
             params: {
+                aggregated: false,
                 variableObject : null,
                 requestParams : {
-                    cause: null,
-                    effect: null,
+                    causeVariableName: null,
+                    effectVariableName: null,
                     correlationCoefficient: null
                 }
             },
             cache: false,
             views: {
                 'menuContent': {
-                  templateUrl: "templates/predictors.html",
-                  controller: 'PredictorsCtrl'
+                    templateUrl: "templates/predictors-list.html",
+                    controller: 'PredictorsCtrl'
+                }
+            }
+        })
+        .state('app.predictorsPositive', {
+            url: "/predictors/positive",
+            params: {
+                aggregated: false,
+                valence: 'positive',
+                variableObject : null,
+                requestParams : {
+                    causeVariableName: null,
+                    effectVariableName: null,
+                    correlationCoefficient: null
+                }
+            },
+            cache: false,
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/predictors-list.html",
+                    controller: 'PredictorsCtrl'
+                }
+            }
+        })
+        .state('app.predictorsNegative', {
+            url: "/predictors/negative",
+            params: {
+                aggregated: false,
+                valence: 'negative',
+                variableObject : null,
+                requestParams : {
+                    causeVariableName: null,
+                    effectVariableName: null,
+                    correlationCoefficient: null
+                }
+            },
+            cache: false,
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/predictors-list.html",
+                    controller: 'PredictorsCtrl'
+                }
+            }
+        })
+        .state('app.predictorsUser', {
+            url: "/predictors/user",
+            params: {
+                aggregated: false,
+                variableObject : null,
+                requestParams : {
+                    causeVariableName: null,
+                    effectVariableName: null,
+                    correlationCoefficient: null
+                }
+            },
+            cache: false,
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/predictors-list.html",
+                    controller: 'PredictorsCtrl'
+                }
+            }
+        })
+        .state('app.predictorsAggregated', {
+            url: "/predictors/aggregated",
+            params: {
+                aggregated: true,
+                variableObject : null,
+                requestParams : {
+                    causeVariableName: null,
+                    effectVariableName: null,
+                    correlationCoefficient: null
+                }
+            },
+            cache: false,
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/predictors-list.html",
+                    controller: 'PredictorsCtrl'
                 }
             }
         })
@@ -747,6 +844,15 @@ angular.module('starter',
             views: {
                 'menuContent': {
                     templateUrl: "templates/settings.html",
+                    controller: 'SettingsCtrl'
+                }
+            }
+        })
+        .state('app.notificationPreferences', {
+            url: "/notificationPreferences",
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/notification-preferences.html",
                     controller: 'SettingsCtrl'
                 }
             }

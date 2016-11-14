@@ -1,5 +1,6 @@
 #!/bin/bash
 
+sudo chmod -R 777 ${DROPBOX_PATH}
 mkdir "$DROPBOX_PATH/QuantiModo/apps/$LOWERCASE_APP_NAME"  || true
 
 echo "Removing old ${LOWERCASE_APP_NAME} Android versions to archive so we catch build failures"
@@ -88,10 +89,12 @@ rm -rf platforms/android
 echo "ionic platform remove android for $LOWERCASE_APP_NAME Android app..."
 ionic platform remove android
 echo "ionic platform add android for $LOWERCASE_APP_NAME Android app..."
-ionic platform add android
+ionic platform add android@6.X.X
 
 source ${IONIC_PATH}/scripts/create_icons.sh
 
+ionic info
+java -version
 #echo "ionic browser rm crosswalk"
 #ionic browser rm crosswalk
 #cordova build --debug android >/dev/null
@@ -121,11 +124,13 @@ export GENERIC_ALIAS=${DEBUG_ALIAS}
 export SIGNED_GENERIC_APK_FILENAME=${SIGNED_DEBUG_APK_FILENAME}
 #source ${IONIC_PATH}/scripts/build_scripts/android_sign.sh
 
-export UNSIGNED_GENERIC_APK_FILENAME="android-armv7-debug-unaligned.apk"
+#export UNSIGNED_GENERIC_APK_FILENAME="android-armv7-debug-unaligned.apk"
+export UNSIGNED_GENERIC_APK_FILENAME="android-armv7-debug.apk"
 export SIGNED_GENERIC_APK_FILENAME=${LOWERCASE_APP_NAME}-android-armv7-debug-signed.apk
 source ${IONIC_PATH}/scripts/build_scripts/android_sign.sh
 
-export UNSIGNED_GENERIC_APK_FILENAME="android-x86-debug-unaligned.apk"
+#export UNSIGNED_GENERIC_APK_FILENAME="android-x86-debug-unaligned.apk"
+export UNSIGNED_GENERIC_APK_FILENAME="android-x86-debug.apk"
 export SIGNED_GENERIC_APK_FILENAME=${LOWERCASE_APP_NAME}-android-x86-debug-signed.apk
 source ${IONIC_PATH}/scripts/build_scripts/android_sign.sh
 

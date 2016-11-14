@@ -6,13 +6,13 @@ angular.module('starter')
                                     measurementService, QuantiModo, notificationService, localStorageService,
                                     reminderService, ratingService, migrationService, ionicDatePicker, unitService,
                                     variableService, qmLocationService, variableCategoryService, bugsnagService,
-                                    utilsService) {
+                                    utilsService, correlationService) {
 
         $rootScope.loaderImagePath = config.appSettings.loaderImagePath;
         $rootScope.appMigrationVersion = 1489;
-
+        $rootScope.appVersion = "2.1.1.0";
         if (!$rootScope.loaderImagePath) {
-            $rootScope.loaderImagePath = 'img/circular-loader.gif';
+            $rootScope.loaderImagePath = 'img/circular_loader.gif';
         }
         if($rootScope.user && typeof $rootScope.user.trackLocation === "undefined"){
             localStorageService.getItem('trackLocation', function(trackLocation){
@@ -27,7 +27,7 @@ angular.module('starter')
         $rootScope.lastLongitude = null;
         $scope.controller_name = "AppCtrl";
         $scope.menu = config.appSettings.menu;
-        $scope.appSettings = config.appSettings;
+        $rootScope.appSettings = config.appSettings;
         $scope.showTrackingSubMenu = false;
         $rootScope.allowOffline = config.appSettings.allowOffline;
         $rootScope.numberOfPendingNotifications = null;
@@ -42,10 +42,7 @@ angular.module('starter')
         $rootScope.unitsIndexedByAbbreviatedName = [];
         $rootScope.abbreviatedUnitNamesIndexedByUnitId = [];
 
-
-
         //  Calendar and  Date picker
-
         // will update from showCalendarPopup
         $scope.fromDate = new Date();
         $scope.toDate = new Date();
@@ -161,6 +158,10 @@ angular.module('starter')
                     }
                 ]
             });
+        };
+
+        $scope.onGenericHelpButtonPress = function () {
+            $state.go('app.help');
         };
 
         $scope.onHelpButtonPress = function () {
@@ -304,67 +305,6 @@ angular.module('starter')
         $scope.primaryOutcomeVariableAverageText = config.appSettings.primaryOutcomeVariableAverageText;
         /*Wrapper Config End*/
 
-        $rootScope.getAllUrlParams = function(url) {
-
-            // get query string from url (optional) or window
-            var queryString = url ? url.split('?')[1] : window.location.search.slice(1);
-
-            // we'll store the parameters here
-            var obj = {};
-
-            // if query string exists
-            if (queryString) {
-
-                // stuff after # is not part of query string, so get rid of it
-                queryString = queryString.split('#')[0];
-
-                // split our query string into its component parts
-                var arr = queryString.split('&');
-
-                for (var i=0; i<arr.length; i++) {
-                    // separate the keys and the values
-                    var a = arr[i].split('=');
-
-                    // in case params look like: list[]=thing1&list[]=thing2
-                    var paramNum = undefined;
-                    var paramName = a[0].replace(/\[\d*\]/, function(v) {
-                        paramNum = v.slice(1,-1);
-                        return '';
-                    });
-
-                    // set parameter value (use 'true' if empty)
-                    var paramValue = typeof(a[1])==='undefined' ? true : a[1];
-
-                    // (optional) keep case consistent
-                    paramName = paramName.toLowerCase();
-                    paramValue = paramValue.toLowerCase();
-
-                    // if parameter name already exists
-                    if (obj[paramName]) {
-                        // convert value to array (if still string)
-                        if (typeof obj[paramName] === 'string') {
-                            obj[paramName] = [obj[paramName]];
-                        }
-                        // if no array index number specified...
-                        if (typeof paramNum === 'undefined') {
-                            // put the value on the end of the array
-                            obj[paramName].push(paramValue);
-                        }
-                        // if array index number specified...
-                        else {
-                            // put the value at that index number
-                            obj[paramName][paramNum] = paramValue;
-                        }
-                    }
-                    // if param name doesn't exist yet, set it
-                    else {
-                        obj[paramName] = paramValue;
-                    }
-                }
-            }
-
-            return obj;
-        };
 
 
         // when view is changed
@@ -460,6 +400,17 @@ angular.module('starter')
 
         $scope.init = function () {
             console.debug("Main Constructor Start");
+            if(!window.private_keys) {
+                console.error('Please add private config file to www/private_configs folder!  Contact mike@quantimo.do if you need help');
+            }
+            if($rootScope.urlParameters.refreshUser){
+                localStorageService.clear();
+                window.localStorage.introSeen = true;
+                window.localStorage.isWelcomed = true;
+                $rootScope.user = null;
+                $rootScope.refreshUser = false;
+            }
+            bugsnagService.setupBugsnag();
             QuantiModo.getAccessTokenFromUrlParameter();
             $rootScope.hideNavigationMenuIfSetInUrlParameter();
             if(!$rootScope.user){
@@ -576,7 +527,84 @@ angular.module('starter')
             $scope.showIntervalCard = false;
         };
 
+        $scope.downVote = function(correlationObject, $index){
+            if (correlationObject.correlationCoefficient > 0) {
+                $scope.increasesDecreases = "increases";
+            } else {
+                $scope.increasesDecreases = "decreases";
+            }
 
+            if (correlationObject.userVote !== 0) {
+                $ionicPopup.show({
+                    title:'Implausible relationship?',
+                    subTitle: 'Do you think is is IMPOSSIBLE that ' + correlationObject.causeVariableName + ' ' + $scope.increasesDecreases + ' your ' + correlationObject.effect + '?',
+                    scope: $scope,
+                    template: $scope.templateConfirmationDown,
+                    buttons:[
+                        {text: 'No'},
+                        {text: 'Yes',
+                            type: 'button-positive',
+                            onTap: function(){
+                                correlationObject.userVote = 0;
+                                correlationObject.vote = 0;
+                                correlationService.vote(correlationObject)
+                                    .then(function () {
+                                        console.debug('Down voted!');
+                                    }, function () {
+                                        console.error('Down vote failed!');
+                                    });
+                            }
+                        }
+                    ]
+                });
+            } else {
+                deleteVote(correlationObject, $index);
+            }
+        };
+
+
+        $scope.upVote = function(correlationObject, $index){
+            if (correlationObject.correlationCoefficient > 0) {
+                $scope.increasesDecreases = "increases";
+            } else {
+                $scope.increasesDecreases = "decreases";
+            }
+            if (correlationObject.userVote !== 1) {
+                $ionicPopup.show({
+                    title:'Plausible relationship?',
+                    subTitle: 'Do you think it is POSSIBLE that '+ correlationObject.causeVariableName + ' ' + $scope.increasesDecreases + ' your ' + correlationObject.effect + '?',
+                    scope: $scope,
+                    template: $scope.templateConfirmationUp,
+                    buttons:[
+                        {text: 'No'},
+                        {text: 'Yes',
+                            type: 'button-positive',
+                            onTap: function(){
+                                correlationObject.userVote = 1;
+                                correlationObject.vote = 1;
+                                correlationService.vote(correlationObject)
+                                    .then(function () {
+                                        console.debug('upVote');
+                                    }, function () {
+                                        console.error('upVote failed!');
+                                    });
+                            }
+                        }
+                    ]
+                });
+            } else {
+                deleteVote(correlationObject, $index);
+            }
+        };
+
+        function deleteVote(correlationObject, $index) {
+            correlationObject.userVote = null;
+            correlationService.deleteVote(correlationObject, function(response){
+                console.debug("deleteVote response", response);
+            }, function(response){
+                console.error("deleteVote response", response);
+            });
+        }
 
         $rootScope.sendToLogin = function(){
             localStorageService.deleteItem('user');

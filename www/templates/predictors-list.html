@@ -1,0 +1,129 @@
+<ion-view hide-nav-bar="hideNavigationMenu" view-title="Predictors">
+    <ion-nav-title>{{state.title}}</ion-nav-title>
+    <ion-content>
+        <div class="card" ng-show="state.correlationObjects.length">
+            <div class="item item-avatar">
+                <i class="icon positive {{state.explanationIcon}}"
+                   style="position: absolute;
+							top: 15px;
+							left: 15px;
+							font-size: 36px;
+							max-width: 40px;
+							max-height: 40px;
+							width: 100%;
+							border-radius: 4px;"
+                ></i>
+                <p style="
+					  height: 40px;
+					  line-height: 40px;
+					  white-space: nowrap;
+					  color: black;
+					font-size: 18px;">
+                    {{state.explanationHeader}}
+                </p>
+            </div>
+            <div class="item item-body">
+                {{state.explanationText}}
+            </div>
+        </div>
+        <ion-list>
+            <div class="list card correlationResultList" ng-repeat="correlationObject in state.correlationObjects">
+                <div class="item item-avatar">
+<!--                        <i class="icon positive ion-ios-medkit-outline"
+                       style="position: absolute;
+                        top: 15px;
+                        left: 15px;
+                        font-size: 36px;
+                        max-width: 40px;
+                        max-height: 40px;
+                        width: 100%;
+                        border-radius: 4px;"
+                    ></i>-->
+                    <img src="{{correlationObject.causeVariableImageUrl}}">
+                    <p ng-click="goToStudyPage(correlationObject)"
+                            style="
+                            height: 40px;
+                            line-height: 40px;
+                            white-space: nowrap;
+                            color: black;
+                            font-size: 18px;">
+                        {{correlationObject.causeVariableName}}
+                    </p>
+                </div>
+                <div class="item item-body">
+                    <img  src="{{correlationObject.gaugeImage}}">
+                    <p>{{correlationObject.predictorExplanation}}</p>
+                    <p>{{correlationObject.valuePredictingHighOutcomeExplanation}}</p>
+                    <p>{{correlationObject.valuePredictingLowOutcomeExplanation}}</p>
+                    <div ng-include="'templates/correlation-buttons-fragment.html'"></div>
+                </div>
+<!--                <div class="item tabs tabs-secondary tabs-icon-left">
+                    <a class="tab-item">
+                        <i class="icon ion-thumbsup"></i> Like
+                    </a>
+                    <a class="tab-item">
+                        <i class="icon ion-chatbox"></i> Comment
+                    </a>
+                    <a class="tab-item">
+                        <i class="icon ion-share"></i> Share
+                    </a>
+                </div>-->
+            </div>
+        </ion-list>
+<!--        <ion-list>
+            <div class="list card correlationResultList" ng-repeat="correlationObject in state.correlationObjects">
+                <ion-item class="item item-text-wrap card-item" style="border-style:hidden;">
+                    <h4><a ng-click="goToStudyPage(correlationObject)">{{correlationObject.causeVariableName}}</a></h4>
+                    <div ng-include="'templates/correlation-buttons-fragment.html'"></div>
+                    <p>{{correlationObject.predictorExplanation}}</p>
+                    <p>{{correlationObject.valuePredictingHighOutcomeExplanation}}</p>
+                    <p>{{correlationObject.valuePredictingLowOutcomeExplanation}}</p>
+                </ion-item>
+            </div>
+        </ion-list>-->
+        <div class="list card"  ng-show="state.noCorrelations">
+            <div class="item" style="padding-bottom:0px;">
+                <p style=" text-align: center; line-height: normal; font-size: 25px;">Not enough data!</p>
+                <div class="row">
+                    <div class="col" style="padding-top: 0px;">
+                        <i style="text-align: center; font-size: 60px;" class="icon positive ion-sad-outline"></i>
+                    </div>
+                    <div class="col col-75">
+                        <h2 style="white-space: normal; text-align: center; line-height: normal; ">
+                            We still don't have enough data to determine the strongest predictors of your {{state.variableName}}.
+                            We generally need about a months worth of data and 30 measurements in order to perform an analysis.
+                            If you haven't already, please add a reminder and start tracking.
+                            Please create a ticket at http://help.quantimo.do if you think you should already have enough data.
+                        </h2>
+                    </div>
+                </div>
+                <div class="row" >
+                    <div class="button-bar">
+                        <button class="button button-clear button-balanced" style="font-size: 14px;"
+                                ng-click="goToState('app.reminderSearch')">
+                            <i class="ion-plus-round">
+                                &nbsp; Add a reminder &nbsp;
+                            </i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </ion-content>
+    <nav id="floatingMaterialButton"
+         mfb-menu position="br"
+         effect="slidein-spring"
+         active-icon="ion-minus-round"
+         resting-icon="ion-plus-round"
+         toggling-method="click"
+         ng-hide="hideNavigationMenu">
+        <button mfb-button icon={{floatingMaterialButton.button1.icon}} label={{floatingMaterialButton.button1.label}}
+                ng-click="goToState({{floatingMaterialButton.button1.stateAndParameters}})"></button>
+        <button mfb-button icon={{floatingMaterialButton.button2.icon}} label={{floatingMaterialButton.button2.label}}
+                ng-click="goToState({{floatingMaterialButton.button2.stateAndParameters}})"></button>
+        <button mfb-button icon={{floatingMaterialButton.button3.icon}} label={{floatingMaterialButton.button3.label}}
+                ng-click="goToState({{floatingMaterialButton.button3.stateAndParameters}})"></button>
+        <button mfb-button icon={{floatingMaterialButton.button4.icon}} label={{floatingMaterialButton.button4.label}}
+                ng-click="goToState({{floatingMaterialButton.button4.stateAndParameters}})"></button>
+    </nav>
+</ion-view>

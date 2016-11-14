@@ -28,6 +28,13 @@ if [ -d "${INTERMEDIATE_PATH}/apps" ];
         exit
 fi
 
+echo "Generating images for ${LOWERCASE_APP_NAME} Chrome at ${PWD}..."
+convert resources/icon_transparent.png -resize 700x700 www/img/icons/icon_700.png
+convert resources/icon_transparent.png -resize 16x16 www/img/icons/icon_16.png
+convert resources/icon_transparent.png -resize 48x48 www/img/icons/icon_48.png
+convert resources/icon_transparent.png -resize 128x128 www/img/icons/icon_128.png
+
+
 echo -e "${GREEN}Copying www folder into app and extension${NC}"
 mkdir -p "${BUILD_PATH}/${LOWERCASE_APP_NAME}/chrome_app/www"
 mkdir -p "${BUILD_PATH}/${LOWERCASE_APP_NAME}/chrome_extension/www"

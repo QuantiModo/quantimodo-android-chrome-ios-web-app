@@ -122,12 +122,14 @@ angular.module('starter')
                             }
                             // If no results or no exact match, show "+ Add [variable]" button for query
                             if((variables.length < 1 || !found)){
+                                $scope.showSearchLoader = true;
                                 $timeout(function () {
                                     if(!$scope.state.searching){
+                                        $scope.showSearchLoader = false;
                                         console.debug($state.current.name + ": " + "$scope.onVariableSearch: Set showAddVariableButton to true");
                                         $scope.state.showAddVariableButton = true;
                                     }
-                                }, 3000);
+                                }, 1000);
                                 if ($stateParams.nextState === "app.reminderAdd") {
                                     $scope.state.addNewVariableButtonText = '+ Add ' + $scope.state.variableSearchQuery.name +
                                         ' reminder';
@@ -269,7 +271,16 @@ angular.module('starter')
 
         $scope.matchEveryWord = function() {
             return function( item ) {
+                if($stateParams.manualTrackingVariablesOnly && $scope.state.variableSearchQuery.name.length < 5){
+                    if(item.variableCategoryName.indexOf('Location') !== -1 ||
+                        item.variableCategoryName.indexOf('Software') !== -1 ||
+                        item.variableCategoryName.indexOf('Environment') !== -1
+                    ){
+                        return false;
+                    }
+                }
                 var variableObjectAsString = JSON.stringify(item).toLowerCase();
+
                 var lowercaseVariableSearchQuery = $scope.state.variableSearchQuery.name.toLowerCase();
 
                 var filterBy = lowercaseVariableSearchQuery.split(/\s+/);

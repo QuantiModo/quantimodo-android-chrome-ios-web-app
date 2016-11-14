@@ -24,7 +24,7 @@ var plist = require('plist');
 var xml2js = require('xml2js');
 var parseString = require('xml2js').parseString;
 var clean = require('gulp-rimraf');
-
+var replace = require('gulp-string-replace');
 
 var appIds = {
     'moodimodo': 'homaagppbekhjkalcndpojiagijaiefm',
@@ -35,8 +35,6 @@ var appIds = {
 var paths = {
 	sass: ['./scss/**/*.scss']
 };
-
-
 
 gulp.task('default', ['sass']);
 
@@ -83,7 +81,6 @@ gulp.task('generateXmlConfigAndUpdateAppsJs', ['getAppName'], function(){
 	return deferred.promise;
 });
 
-
 gulp.task('updateAppsJs', function(){
 	gulp.src('./www/js/apps.js')
 		.pipe(change(function(content){
@@ -92,7 +89,6 @@ gulp.task('updateAppsJs', function(){
 		}))
 		.pipe(gulp.dest('./www/js/'));
 });
-
 
 gulp.task('swagger', function(){
 	var deferred = q.defer();
@@ -425,7 +421,6 @@ gulp.task('chrome', ['publishToGoogleAppStore'], function () {
 	console.log('Enjoy your day!');
 });
 
-
 gulp.task('git-check', function(done) {
 	if (!sh.which('git')) {
 		console.log(
@@ -438,9 +433,6 @@ gulp.task('git-check', function(done) {
 	}
 	done();
 });
-
-
-// making ios build
 
 var exec = require('child_process').exec;
 function execute(command, callback){
@@ -1004,139 +996,84 @@ gulp.task('makeIosAppSimplified', function(callback){
 		callback);
 });
 
-gulp.task('bumpVersion', function(){
-	var deferred = q.defer();
-
-	var xml = fs.readFileSync('./apps/' + LOWERCASE_APP_NAME + '/config.xml', 'utf8');
-
+var setVersionNumberInConfigXml = function(configFilePath, callback){
+	var xml = fs.readFileSync(configFilePath, 'utf8');
 	parseString(xml, function (err, result) {
-		if(err){
-			console.log("failed to read xml file", err);
-			deferred.reject();
+		if(err || !result){
+			console.log("failed to read xml file or it is empty", err);
 		} else {
-			var version = "1.0.0";
-
-			if(result && result.widget && result.widget.$ ){
-				if(result.widget.$['version']) {
-                    version = result.widget.$['version'];
-                }
-				if(result.widget.$["ios-CFBundleVersion"]) {
-                    version = result.widget.$["ios-CFBundleVersion"];
-                }
-			}
-
-	    	// bump version number
-	    	var numberToBumpArr = version.split('.');
-	    	var numberToBump = numberToBumpArr[numberToBumpArr.length-1];
-	    	numberToBumpArr[numberToBumpArr.length-1] = (parseInt(numberToBump)+1).toString();
-	    	version = numberToBumpArr.join('.');
-
-	    	if(!result) {
-				result = {};
-			}
-	    	if(!result.widget) {
-				result['widget'] = {};
-			}
-	    	if(!result.widget.$) {
-				result.widget['$'] = {};
-			}
-
-	    	result.widget.$["version"] = version;
-	    	result.widget.$["ios-CFBundleVersion"] = version;
-
-	    	var builder = new xml2js.Builder();
-	    	var updatedXml = builder.buildObject(result);
-
-	    	fs.writeFile('./apps/' + LOWERCASE_APP_NAME + '/config.xml', updatedXml, 'utf8', function (err) {
-	    		if (err) {
-	    			console.log("error writing to xml file", err);
-	    			deferred.reject();
-	    		} else {
-	    			console.log("successfully updated the version number xml file");
-	    			deferred.resolve();
-	    		}
-	    	});
-	    }
+			result.widget.$["version"] = process.env.IONIC_APP_VERSION_NUMBER;
+			result.widget.$["ios-CFBundleVersion"] = process.env.IONIC_IOS_APP_VERSION_NUMBER;
+			var builder = new xml2js.Builder();
+			var updatedXml = builder.buildObject(result);
+			fs.writeFile(configFilePath, updatedXml, 'utf8', function (err) {
+				if (err) {
+					console.log("error writing to xml file", err);
+				} else {
+					console.log("successfully updated the version number xml file");
+					callback();
+				}
+			});
+		}
 	});
+};
 
-	return deferred.promise;
+gulp.task('bumpVersionNumberEnvs', ['setVersionNumberEnvs'], function(callback){
+	process.env.OLD_IONIC_IOS_APP_VERSION_NUMBER = process.env.IONIC_IOS_APP_VERSION_NUMBER;
+	var numberToBumpArr = process.env.IONIC_APP_VERSION_NUMBER.split('.');
+	numberToBumpArr[2] = (parseInt(numberToBumpArr[2]) + 1).toString();
+	if(parseInt(numberToBumpArr[2]) === 10){
+		numberToBumpArr[2] = "0";
+		numberToBumpArr[1] = (parseInt(numberToBumpArr[1]) + 1).toString();
+	}
+	if(parseInt(numberToBumpArr[1]) === 10){
+		numberToBumpArr[1] = "0";
+		numberToBumpArr[0] = (parseInt(numberToBumpArr[1]) + 1).toString();
+	}
+	process.env.IONIC_APP_VERSION_NUMBER = numberToBumpArr.join('.');
+	process.env.IONIC_IOS_APP_VERSION_NUMBER = process.env.IONIC_APP_VERSION_NUMBER + '.0';
+	callback();
+});
+
+gulp.task('bumpVersionNumbersInFiles', function(callback){
+	runSequence(
+		'bumpVersionNumberEnvs',
+		'setVersionNumberInConfigXml',
+		'setVersionNumberInIosConfigXml',
+		'setVersionNumberInFiles',
+		callback);
+});
+
+gulp.task('setVersionNumberInConfigXml', [], function(callback){
+	var configFilePath = './config-template.xml';
+	setVersionNumberInConfigXml(configFilePath, callback);
+});
+
+gulp.task('setVersionNumberInIosConfigXml', [], function(callback){
+	var configFilePath = './config-template-ios.xml';
+	setVersionNumberInConfigXml(configFilePath, callback);
+});
+
+gulp.task('setVersionNumberInFiles', function(callback){
+	var filesToUpdate = [
+		'www/js/controllers/appCtrl.js',
+		'www/js/app.js',
+		'gulp.js',
+		'scripts/build_all_apps.sh',
+		'.travis.yml'
+	];
+	for(var i = 0; i < filesToUpdate.length; i++){
+		var path = './' + filesToUpdate[i].substr(0, filesToUpdate[i].lastIndexOf("/"));
+		gulp.src(["./" + filesToUpdate[i]]) // Every file allown.
+			.pipe(replace(process.env.OLD_IONIC_IOS_APP_VERSION_NUMBER, process.env.IONIC_IOS_APP_VERSION_NUMBER))
+			.pipe(gulp.dest(path));
+	}
+	callback();
 });
 
 gulp.task('ic_notification', function() {
 	gulp.src('./resources/android/res/**')
 		.pipe(gulp.dest('./platforms/android/res'));
-});
-
-gulp.task('updateConfigXmlUsingEnvs', function(){
-
-	console.log('gulp updateConfigXmlUsingEnvs was called');
-	var deferred = q.defer();
-	var environmentalVariables = process.env;
-
-	if(!environmentalVariables.IONIC_IOS_APP_VERSION_NUMBER){
-		//throw new Error('Please set IONIC_IOS_APP_VERSION_NUMBER env!');
-		environmentalVariables.IONIC_IOS_APP_VERSION_NUMBER = '2.0.9.0';
-		console.log('No IONIC_IOS_APP_VERSION_NUMBER env!  Using hardcoded gulp version number ' +
-			environmentalVariables.IONIC_IOS_APP_VERSION_NUMBER);
-		environmentalVariables.IONIC_APP_VERSION_NUMBER = environmentalVariables.IONIC_IOS_APP_VERSION_NUMBER.substring(0, 5);
-		console.log('No IONIC_APP_VERSION_NUMBER env!  Using hardcoded gulp version number ' +
-			environmentalVariables.IONIC_APP_VERSION_NUMBER);
-	}
-
-	var xml = fs.readFileSync('./config-template-ios.xml', 'utf8');
-
-	parseString(xml, function (err, parsedXmlFile) {
-		if(err){
-			throw new Error("failed to read xml file", err);
-		} else {
-
-			if(parsedXmlFile && parsedXmlFile.widget && parsedXmlFile.widget.$ ){
-				if(parsedXmlFile.widget.$['version']) {
-					var currentVersionNumber = parsedXmlFile.widget.$['version'];
-				}
-				if(parsedXmlFile.widget.$["ios-CFBundleVersion"]) {
-					var currentIosVersionNumber = parsedXmlFile.widget.$["ios-CFBundleVersion"];
-				}
-			}
-
-			if(!parsedXmlFile) {
-				parsedXmlFile = {};
-			}
-			if(!parsedXmlFile.widget) {
-				parsedXmlFile['widget'] = {};
-			}
-			if(!parsedXmlFile.widget.$) {
-				parsedXmlFile.widget['$'] = {};
-			}
-
-			parsedXmlFile.widget.$["version"] = environmentalVariables.IONIC_APP_VERSION_NUMBER;
-			parsedXmlFile.widget.$["ios-CFBundleVersion"] = environmentalVariables.IONIC_IOS_APP_VERSION_NUMBER;
-			if(process.env.APP_DISPLAY_NAME) {
-				parsedXmlFile.widget.name[0] = process.env.APP_DISPLAY_NAME;
-			}
-            if(process.env.APP_DESCRIPTION) {
-                parsedXmlFile.widget.description[0] = process.env.APP_DESCRIPTION;
-            }
-			if(process.env.APP_IDENTIFIER) {
-				parsedXmlFile.widget.$["id"] = process.env.APP_IDENTIFIER;
-			}
-			var builder = new xml2js.Builder();
-			var updatedXmlFile = builder.buildObject(parsedXmlFile);
-
-			fs.writeFile('./config.xml', updatedXmlFile, 'utf8', function (err) {
-				if (err) {
-					console.log("Error updating version number in config.xml", err);
-					deferred.reject();
-				} else {
-					console.log("Successfully updated the version number to " +
-						environmentalVariables.IONIC_APP_VERSION_NUMBER + " in config.xml file");
-					deferred.resolve();
-				}
-			});
-		}
-	});
-
-	return deferred.promise;
 });
 
 // Setup platforms to build that are supported on current hardware
@@ -1263,50 +1200,329 @@ gulp.task('template', function(done){
 		.on('end', done);
 });
 
-gulp.task('setVersionNumberEnvs', function () {
-	process.env.IONIC_IOS_APP_VERSION_NUMBER = "2.0.9.0";
-	process.env.IONIC_APP_VERSION_NUMBER = process.env.IONIC_IOS_APP_VERSION_NUMBER.substring(0, 5);
+gulp.task('setMoodiModoEnvs', [], function(callback){
+	process.env.APP_DISPLAY_NAME = "MoodiModo";
+	process.env.LOWERCASE_APP_NAME = "moodimodo";
+	process.env.APP_IDENTIFIER = "com.quantimodo.moodimodoapp";
+	process.env.APP_DESCRIPTION = "Perfect your life!";
+	callback();
 });
 
-gulp.task('setQuantiModoEnvs', function () {
+gulp.task('setQuantiModoEnvs', [], function(callback){
 	process.env.APP_DISPLAY_NAME = "QuantiModo";
 	process.env.LOWERCASE_APP_NAME = "quantimodo";
 	process.env.APP_IDENTIFIER = "com.quantimodo.quantimodo";
 	process.env.APP_DESCRIPTION = "Perfect your life!";
+	callback();
 });
 
-gulp.task('copyAppResources', ['clean'], function () {
-	gulp.src(['apps/' + process.env.LOWERCASE_APP_NAME + '/**/*'], {
+gulp.task('setMindFirstEnvs', [], function(callback){
+	process.env.APP_DISPLAY_NAME = "MindFirst";
+	process.env.LOWERCASE_APP_NAME = "mindfirst";
+	process.env.APP_IDENTIFIER = "com.quantimodo.mindfirst";
+	process.env.APP_DESCRIPTION = "Empowering a new approach to mind research";
+	callback();
+});
+
+gulp.task('setAndroidEnvs', [], function(callback){
+	process.env.CONFIG_TEPLATE_PATH = "./config-template.xml";
+	callback();
+});
+
+gulp.task('setIosEnvs', [], function(callback){
+	process.env.CONFIG_TEPLATE_PATH = "./config-template-ios.xml";
+	callback();
+});
+
+gulp.task('cleanResources', [], function(){
+	return gulp.src("resources/*", { read: false }).pipe(clean());
+});
+
+gulp.task('copyAppResources', ['cleanResources'], function () {
+	return gulp.src(['apps/' + process.env.LOWERCASE_APP_NAME + '/**/*'], {
 		base: 'apps/' + process.env.LOWERCASE_APP_NAME
 	}).pipe(gulp.dest('.'));
 });
 
-gulp.task('generateIosResources', [], function () {
-	execute("ionic resources ios", function(error){
+gulp.task('copyPrivateConfig', [], function () {
+	if(!process.env.LOWERCASE_APP_NAME){
+		process.env.LOWERCASE_APP_NAME = 'mindfirst';
+	}
+	if(!process.env.pathToPrivateConfig){
+		process.env.pathToPrivateConfig = '../../../configs/ionic/private_configs/';
+	}
+	return gulp.src([process.env.pathToPrivateConfig + process.env.LOWERCASE_APP_NAME + '.config.js'], {
+		base: process.env.pathToPrivateConfig
+	}).pipe(gulp.dest('./www/private_configs/'));
+});
+
+gulp.task('removeTransparentPng', ['copyAppResources'], function () {
+	return gulp.src("resources/icon.png", { read: false }).pipe(clean());
+});
+
+gulp.task('removeTransparentPsd', ['removeTransparentPng'], function () {
+	return gulp.src("resources/icon.psd", { read: false }).pipe(clean());
+});
+
+gulp.task('useWhiteIcon', ['removeTransparentPsd'], function () {
+	return gulp.src('./resources/icon_white.png')
+		.pipe(rename('icon.png'))
+		.pipe(gulp.dest('resources'));
+});
+
+gulp.task('generateIosResources', ['useWhiteIcon'], function(callback){
+	return execute("ionic resources ios", function(error){
 		if(error !== null){
 			console.log("ERROR GENERATING iOS RESOURCES for " + process.env.LOWERCASE_APP_NAME + ": " + error);
 		} else {
 			console.log("\n***iOS RESOURCES GENERATED for " + process.env.LOWERCASE_APP_NAME);
+			callback();
 		}
 	});
 });
 
-gulp.task('prepareIosApp',
-	[
-		'setVersionNumberEnvs',
-		'copyAppResources',
+gulp.task('updateConfigXmlUsingEnvs', [], function(callback){
+	console.log('gulp updateConfigXmlUsingEnvs was called');
+	var xml = fs.readFileSync(process.env.CONFIG_TEPLATE_PATH, 'utf8');
+	parseString(xml, function (err, parsedXmlFile) {
+		if(err){
+			throw new Error("failed to read xml file", err);
+		} else {
+			if(process.env.APP_DISPLAY_NAME) {
+				parsedXmlFile.widget.name[0] = process.env.APP_DISPLAY_NAME;
+			}
+			if(process.env.APP_DESCRIPTION) {
+				parsedXmlFile.widget.description[0] = process.env.APP_DESCRIPTION;
+			}
+			if(process.env.APP_IDENTIFIER) {
+				parsedXmlFile.widget.$["id"] = process.env.APP_IDENTIFIER;
+			}
+			var builder = new xml2js.Builder();
+			var updatedXmlFile = builder.buildObject(parsedXmlFile);
+
+			fs.writeFile('./config.xml', updatedXmlFile, 'utf8', function (err) {
+				if (err) {
+					console.log("Error updating version number in config.xml", err);
+				} else {
+					console.log("Successfully updated config.xml file");
+					callback();
+				}
+			});
+		}
+	});
+});
+
+gulp.task('bumpIosVersion', function(callback){
+	var xml = fs.readFileSync('./config-template-ios.xml', 'utf8');
+	parseString(xml, function (err, result) {
+		if(err){
+			console.log("failed to read xml file", err);
+		} else {
+			var numberToBumpArr = result.widget.$["ios-CFBundleVersion"].split('.');
+			var numberToBump = numberToBumpArr[numberToBumpArr.length-1];
+			numberToBumpArr[numberToBumpArr.length-1] = (parseInt(numberToBump)+1).toString();
+			result.widget.$["ios-CFBundleVersion"] = numberToBumpArr.join('.');
+			var builder = new xml2js.Builder();
+			var updatedXml = builder.buildObject(result);
+			fs.writeFile('./config.xml', updatedXml, 'utf8', function (err) {
+				if (err) {
+					console.log("error writing to xml file", err);
+				} else {
+					console.log("successfully updated the version number xml file");
+				}
+			});
+			fs.writeFile('./config-template-ios.xml', updatedXml, 'utf8', function (err) {
+				if (err) {
+					console.log("error writing to config-template-ios.xml file", err);
+				} else {
+					console.log("successfully updated the version number config-template-ios.xml file");
+					callback();
+				}
+			});
+		}
+	});
+});
+
+gulp.task('deletePlugins', [], function(){
+	return gulp.src("plugins/*",
+		{ read: false })
+		.pipe(clean());
+});
+
+gulp.task('prepareIosApp', function(callback){
+	runSequence(
+		'deletePlugins',
 		'generateIosResources',
-		'updateConfigXmlUsingEnvs'
-	],
-	function () {}
-);
+		'bumpIosVersion',
+		'updateConfigXmlUsingEnvs',
+		'copyPrivateConfig',
+		callback);
+});
 
-gulp.task('prepareQuantiModoIos', [
-	'setQuantiModoEnvs',
-	'prepareIosApp'
-]);
+gulp.task('copyWwwFolderToChromeExtension', ['copyPrivateConfig'], function(){
+	return gulp.src(['www/**/*'])
+		.pipe(gulp.dest('build/chrome_extensions/' + process.env.LOWERCASE_APP_NAME + '/www'));
+});
 
-gulp.task('clean', [], function() {
-	console.log("Clean all files in resources folder");
-	return gulp.src("resources/*", { read: false }).pipe(clean());
+gulp.task('copyManifestToChromeExtension', ['copyWwwFolderToChromeExtension'], function(){
+	return gulp.src(['resources/chrome_extension/manifest.json'])
+		.pipe(gulp.dest('build/chrome_extensions/' + process.env.LOWERCASE_APP_NAME));
+});
+
+gulp.task('removeFacebookFromChromeExtension', [], function(){
+	return gulp.src("build/chrome_extensions/" + process.env.LOWERCASE_APP_NAME + "/www/lib/phonegap-facebook-plugin/*",
+		{ read: false })
+		.pipe(clean());
+});
+
+gulp.task('zipChromeExtension', [], function(){
+	return gulp.src(["build/chrome_extensions/" + process.env.LOWERCASE_APP_NAME + '/**/*'])
+		.pipe(zip(process.env.LOWERCASE_APP_NAME + '-Chrome-Extension.zip'))
+		.pipe(gulp.dest('build'));
+});
+
+gulp.task('buildChromeExtension', [], function(callback){
+	runSequence(
+		'copyWwwFolderToChromeExtension',
+		'copyManifestToChromeExtension',
+		'removeFacebookFromChromeExtension',
+		'zipChromeExtension',
+		callback);
+});
+
+gulp.task('prepareQuantiModo', function(callback){
+    runSequence(
+        'setQuantiModoEnvs',
+        'prepareIosApp',
+        'buildChromeExtension',
+        callback);
+});
+
+gulp.task('prepareMoodiModoIos', function(callback){
+	runSequence(
+		'setMoodiModoEnvs',
+		'setIosEnvs',
+		'prepareIosApp',
+		callback);
+});
+
+gulp.task('buildQuantiModo', function(callback){
+	runSequence(
+		'setQuantiModoEnvs',
+		'prepareAndroidApp',
+
+		'setIosEnvs',
+		'prepareIosApp',
+		callback);
+});
+
+gulp.task('ionicPlatformAddAndroid', function(callback){
+	return execute("ionic platform add android", function(error){
+			if(error !== null){
+				console.log("ERROR for " + process.env.LOWERCASE_APP_NAME + ": " + error);
+			} else {
+				console.log("\n***Android for " + process.env.LOWERCASE_APP_NAME);
+				callback();
+			}
+		});
+});
+
+gulp.task('ionicPlatformAddAndroid', function(callback){
+	return execute("ionic platform add android", function(error){
+		if(error !== null){
+			console.log("ERROR for " + process.env.LOWERCASE_APP_NAME + ": " + error);
+		} else {
+			console.log("\n***Android for " + process.env.LOWERCASE_APP_NAME);
+			callback();
+		}
+	});
+});
+
+gulp.task('cordovaBuildAndroidDebug', function(callback){
+	return execute("cordova build --debug android", function(error){
+		if(error !== null){
+			console.log("ERROR for " + process.env.LOWERCASE_APP_NAME + ": " + error);
+		} else {
+			console.log("\n***Android for " + process.env.LOWERCASE_APP_NAME);
+			callback();
+		}
+	});
+});
+
+gulp.task('cordovaBuildAndroidRelease', function(callback){
+	return execute("cordova build --release android", function(error){
+		if(error !== null){
+			console.log("ERROR for " + process.env.LOWERCASE_APP_NAME + ": " + error);
+		} else {
+			console.log("\n***Android for " + process.env.LOWERCASE_APP_NAME);
+			callback();
+		}
+	});
+});
+
+gulp.task('copyAndroidResources', ['copyPrivateConfig'], function(){
+	return gulp.src(['resources/android/**/*'])
+		.pipe(gulp.dest('platforms/android'));
+});
+
+gulp.task('prepareQuantiModoIos', function(callback){
+	runSequence(
+		'setQuantiModoEnvs',
+		'setIosEnvs',
+		'prepareIosApp',
+		callback);
+});
+
+gulp.task('prepareMindFirstIos', function(callback){
+	runSequence(
+		'setMindFirstEnvs',
+		'setIosEnvs',
+		'prepareIosApp',
+		callback);
+});
+
+gulp.task('generateAndroidResources', ['copyAppResources'], function(callback){
+	return execute("ionic resources android", function(error){
+		if(error !== null){
+			console.log("ERROR GENERATING Android RESOURCES for " + process.env.LOWERCASE_APP_NAME + ": " + error);
+		} else {
+			console.log("\n***Android RESOURCES GENERATED for " + process.env.LOWERCASE_APP_NAME);
+			callback();
+		}
+	});
+});
+
+gulp.task('prepareAndroidApp', function(callback){
+	runSequence(
+		'setVersionNumberEnvs',
+		'setAndroidEnvs',
+		'updateConfigXmlUsingEnvs',
+		'generateAndroidResources',
+		'copyPrivateConfig',
+		'ionicPlatformAddAndroid',
+		'copyAndroidResources',
+		'cordovaBuildAndroidRelease',
+		'cordovaBuildAndroidDebug',
+		callback);
+});
+
+gulp.task('prepareMindFirstAndroid', function(callback){
+	runSequence(
+		'setMindFirstEnvs',
+		'prepareAndroidApp',
+		callback);
+});
+
+gulp.task('setVersionNumberEnvs', [], function(callback){
+	var configFilePath = './config-template-ios.xml';
+	var xml = fs.readFileSync(configFilePath, 'utf8');
+	parseString(xml, function (err, result) {
+		if(err || !result){
+			console.log("failed to read xml file or it is empty", err);
+		} else {
+			process.env.IONIC_IOS_APP_VERSION_NUMBER = result.widget.$["ios-CFBundleVersion"];
+			process.env.IONIC_APP_VERSION_NUMBER = process.env.IONIC_IOS_APP_VERSION_NUMBER.substring(0, 5);
+			callback();
+		}
+	});
 });

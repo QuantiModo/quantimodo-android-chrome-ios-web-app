@@ -74,9 +74,17 @@ angular.module('starter')
 				});
 		};
 
+		var validationFailure = function (message) {
+			utilsService.showAlert(message);
+			console.error(message);
+			if (typeof Bugsnag !== "undefined") {
+				Bugsnag.notify(message, "bloodPressure is " + JSON.stringify($scope.state.bloodPressure), {}, "error");
+			}
+		};
+
 		$scope.trackBloodPressure = function(){
 			if(!$scope.state.bloodPressure.diastolicValue || !$scope.state.bloodPressure.systolicValue){
-				utilsService.showAlert('Please enter both values for blood pressure.');
+				validationFailure('Please enter both values for blood pressure.');
 				return;
 			}
 			$scope.state.bloodPressure.displayTotal = "Recorded " + $scope.state.bloodPressure.systolicValue + "/" + $scope.state.bloodPressure.diastolicValue + ' Blood Pressure';
@@ -96,7 +104,7 @@ angular.module('starter')
 			// 	reminderService.postTrackingReminders([$scope.state.favorites[$index]]);
 			// }
 			if($scope.state.favorites[$index].total === null){
-				utilsService.showAlert('Please specify a value for ' + $scope.state.favorites[$index].variableName);
+				validationFailure('Please specify a value for ' + $scope.state.favorites[$index].variableName);
 				return;
 			}
 			$scope.state.favorites[$index].displayTotal = "Recorded " + $scope.state.favorites[$index].total + " " + $scope.state.favorites[$index].abbreviatedUnitName;
@@ -160,6 +168,18 @@ angular.module('starter')
 
 		};
 
+		$scope.refreshFavorites = function () {
+			if($rootScope.syncingReminders !== true) {
+				console.debug("ReminderMange init: calling refreshTrackingRemindersAndScheduleAlarms");
+				$scope.showLoader('Syncing...');
+				reminderService.refreshTrackingRemindersAndScheduleAlarms().then(function () {
+					getFavoriteTrackingRemindersFromLocalStorage();
+				});
+			} else {
+				$scope.$broadcast('scroll.refreshComplete');
+			}
+		};
+
 	    $scope.init = function(){
 			$rootScope.stateParams = $stateParams;
 
@@ -183,6 +203,7 @@ angular.module('starter')
 				$scope.$broadcast('scroll.refreshComplete');
 			} else {
 				getFavoriteTrackingRemindersFromLocalStorage();
+				$scope.refreshFavorites();
 			}
 			$scope.showHelpInfoPopupIfNecessary();
 
@@ -209,9 +230,7 @@ angular.module('starter')
 					{ text: '<i class="icon ion-arrow-graph-up-right"></i>Charts'},
 					{ text: '<i class="icon ion-ios-list-outline"></i>' + 'History'},
 					{ text: '<i class="icon ion-settings"></i>' + 'Variable Settings'},
-					{ text: '<i class="icon ion-android-notifications-none"></i>Add Reminder'},
-					// { text: '<i class="icon ion-arrow-up-a"></i>Positive Predictors'},
-					// { text: '<i class="icon ion-arrow-down-a"></i>Negative Predictors'}
+					{ text: '<i class="icon ion-android-notifications-none"></i>Add Reminder'}
 				];
 
 
@@ -263,26 +282,6 @@ angular.module('starter')
 								variableObject: variableObject,
 								fromState: $state.current.name,
 								fromUrl: window.location.href
-							});
-					}
-					if(index === 6){
-						$state.go('app.predictors',
-							{
-								variableObject: variableObject,
-								requestParams: {
-									effect:  favorite.variableName,
-									correlationCoefficient: "(gt)0"
-								}
-							});
-					}
-					if(index === 6){
-						$state.go('app.predictors',
-							{
-								variableObject: variableObject,
-								requestParams: {
-									effect:  favorite.variableName,
-									correlationCoefficient: "(lt)0"
-								}
 							});
 					}
 

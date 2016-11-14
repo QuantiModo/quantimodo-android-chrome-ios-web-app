@@ -3,7 +3,7 @@ angular.module('starter')
     // Controls the variable settings editing Page
     .controller('VariableSettingsCtrl',
         function($scope, $state, $rootScope, $timeout, $ionicPopup, $q, $stateParams, $ionicHistory, $ionicActionSheet,
-                 QuantiModo, measurementService, localStorageService, variableService) {
+                 QuantiModo, measurementService, localStorageService, variableService, $ionicLoading) {
 
         $scope.controller_name = "VariableSettingsCtrl";
 
@@ -19,8 +19,12 @@ angular.module('starter')
 
         $scope.resetToDefaultSettings = function() {
             // Populate fields with original settings for variable
+            $ionicLoading.show({
+                template: '<ion-spinner></ion-spinner>'
+            });
 
             variableService.getPublicVariablesByName($scope.state.variableObject.name).then(function(variableArray) {
+                $ionicLoading.hide();
                 var originalVariableObject = variableArray[0];
                 console.debug("variableService.getPublicVariablesByName: Original variable object: " +
                     JSON.stringify(originalVariableObject));
@@ -76,47 +80,37 @@ angular.module('starter')
             });
         };
 
-        $scope.showExplanationsPopup = function(setting) {
-            var explanationText = "";
-            if (setting === "Minimum value") {
-                explanationText = "The minimum allowed value for measurements. " +
+        $scope.showExplanationsPopup = function(settingName) {
+            var explanationText = {
+                "Minimum value": "The minimum allowed value for measurements. " +
                     "While you can record a value below this minimum, it will be " +
-                    "excluded from the correlation analysis.";
-            }
-            else if (setting === "Maximum value") {
-                explanationText = "The maximum allowed value for measurements. " +
+                    "excluded from the correlation analysis.",
+                "Maximum value": "The maximum allowed value for measurements. " +
                     "While you can record a value above this maximum, it will be " +
-                    "excluded from the correlation analysis.";
-            }
-            else if (setting === "Onset delay") {
-                explanationText = "An outcome is always preceded by the predictor or stimulus. " +
+                    "excluded from the correlation analysis.",
+                "Onset delay": "An outcome is always preceded by the predictor or stimulus. " +
                     "The amount of time that elapses after the predictor/stimulus event " +
                     "before the outcome as perceived by a self-tracker is known as the “onset delay”.  " +
                     "For example, the “onset delay” between the time a person takes an aspirin " +
                     "(predictor/stimulus event) and the time a person perceives a change in their" +
-                    " headache severity (outcome) is approximately 30 minutes.";
-
-            }
-            else if (setting === "Duration of action") {
-                explanationText = "The amount of time over " +
+                    " headache severity (outcome) is approximately 30 minutes.",
+                "Duration of action": "The amount of time over " +
                     "which a predictor/stimulus event can exert an observable influence " +
                     "on an outcome variable’s value. For instance, aspirin (stimulus/predictor) " +
                     "typically decreases headache severity for approximately four hours" +
-                    " (duration of action) following the onset delay.";
-
-            }
-            else if (setting === "Filling value") {
-                explanationText = "When it comes to analysis to determine the effects of this variable," +
+                    " (duration of action) following the onset delay.",
+                "Filling value": "When it comes to analysis to determine the effects of this variable," +
                     " knowing when it did not occur is as important as knowing when it did occur. " +
                     "For example, if you are tracking a medication, it is important to know " +
                     "when you did not take it, but you do not have to log zero values for " +
                     "all the days when you haven't taken it. Hence, you can specify a filling value " +
-                    "(typically 0) to insert whenever data is missing.";
-            }
+                    "(typically 0) to insert whenever data is missing.",
+                "Combination Method": "How multiple measurements are combined over time.  We use the average (or mean) for things like your weight.  Summing is used for things like number of apples eaten. "
+            };
 
             $ionicPopup.show({
-                title: setting,
-                subTitle: explanationText,
+                title: settingName,
+                subTitle: explanationText[settingName],
                 scope: $scope,
                 buttons: [
                     {
@@ -143,40 +137,6 @@ angular.module('starter')
                 console.debug('Error deleting measurements: '+ JSON.stringify(error));
             });
         };
-
-        // Deprecated
-        /*
-        $scope.getMeasurementsAndDelete = function(params) {
-            var deferred = $q.defer();
-            QuantiModo.getV1Measurements(params, function(measurements){
-                var i;
-                for (i in measurements) {
-                    var measurementToDelete = {
-                        id : measurements[i].id,
-                        variableName : measurements[i].variable,
-                        startTimeEpoch : measurements[i].startTimeEpoch
-                    };
-                    measurementService.deleteMeasurementFromServer(measurementToDelete);
-                }
-                if(measurements.length === 200){
-                    $scope.state.offset = $scope.state.offset + 200;
-                    params = {
-                        offset: $scope.state.offset,
-                        sort: "startTimeEpoch",
-                        variableName: $scope.state.variableName,
-                        limit: 200
-                    };
-                    $scope.getMeasurementsAndDelete(params);
-                }
-                deferred.resolve();
-            }, function(error) {
-                Bugsnag.notify(error, JSON.stringify(error), {}, "error");
-                console.debug('Error getting measurements and deleting: '+ JSON.stringify(error));
-                deferred.reject(error);
-            });
-            return deferred.promise;
-        };
-        */
 
         $scope.save = function(){
             var maximumAllowedValue = $scope.state.maximumAllowedValue;
@@ -226,10 +186,7 @@ angular.module('starter')
                     { text: '<i class="icon ion-compose"></i>Record Measurement'},
                     { text: '<i class="icon ion-android-notifications-none"></i>Add Reminder'},
                     { text: '<i class="icon ion-arrow-graph-up-right"></i>' + 'Visualize'},
-                    { text: '<i class="icon ion-ios-list-outline"></i>History'},
-                    // { text: '<i class="icon ion-arrow-up-a"></i>Positive Predictors'},
-                    // { text: '<i class="icon ion-arrow-down-a"></i>Negative Predictors'},
-
+                    { text: '<i class="icon ion-ios-list-outline"></i>History'}
                 ],
                 destructiveText: '<i class="icon ion-trash-a"></i>Delete All',
                 cancelText: '<i class="icon ion-ios-close"></i>Cancel',
@@ -253,26 +210,6 @@ angular.module('starter')
                     if(index === 4) {
                         console.debug('variableSettingsCtrl going to history' + JSON.stringify($scope.state.variableObject));
                         $scope.goToHistoryForVariableObject($scope.state.variableObject);
-                    }
-                    if(index === 5){
-                        $state.go('app.predictors',
-                            {
-                                variableObject: $scope.state.variableObject,
-                                requestParams: {
-                                    effect:  $scope.state.variableObject.name,
-                                    correlationCoefficient: "(gt)0"
-                                }
-                            });
-                    }
-                    if(index === 6){
-                        $state.go('app.predictors',
-                            {
-                                variableObject: $scope.state.variableObject,
-                                requestParams: {
-                                    effect:  $scope.state.variableObject.name,
-                                    correlationCoefficient: "(lt)0"
-                                }
-                            });
                     }
 
                     return true;
@@ -348,7 +285,11 @@ angular.module('starter')
             } else if ($stateParams.variableName) {
                 $scope.state.title = $stateParams.variableName + ' Variable Settings';
                 $scope.state.variableName = $stateParams.variableName;
+                $ionicLoading.show({
+                    template: '<ion-spinner></ion-spinner>'
+                });
                 variableService.getVariablesByName($stateParams.variableName).then(function(variableObject){
+                    $ionicLoading.hide();
                     $scope.state.variableObject = variableObject;
                     setupByVariableObject(variableObject);
                 });

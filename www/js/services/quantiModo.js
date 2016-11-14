@@ -35,6 +35,7 @@ angular.module('starter')
                 } else {
                     console.warn('QuantiModo.errorHandler: Sending to login because we got 401 with request ' +
                         JSON.stringify(request));
+                    $rootScope.afterLoginGoTo = window.location.href;
                     $rootScope.sendToLogin();
                     return;
                 }
@@ -209,6 +210,7 @@ angular.module('starter')
                 var urlParams = [];
                 urlParams.push(encodeURIComponent('appName') + '=' + encodeURIComponent(config.appSettings.appName));
                 urlParams.push(encodeURIComponent('appVersion') + '=' + encodeURIComponent($rootScope.appVersion));
+                items.clientId = utilsService.getClientId();
 
                 var url = utilsService.getURL(baseURL) + ((urlParams.length === 0) ? '' : urlParams.join('&'));
 
@@ -377,7 +379,7 @@ angular.module('starter')
 
         QuantiModo.getAggregatedCorrelations = function(params, successHandler, errorHandler){
             QuantiModo.get('api/v1/aggregatedCorrelations',
-                ['correlationCoefficient', 'cause', 'effect'],
+                ['correlationCoefficient', 'causeVariableName', 'effectVariableName'],
                 params,
                 successHandler,
                 errorHandler);
@@ -386,7 +388,7 @@ angular.module('starter')
 
         QuantiModo.getUserCorrelations = function (params, successHandler, errorHandler) {
             QuantiModo.get('api/v1/correlations',
-                ['correlationCoefficient', 'cause', 'effect'],
+                ['correlationCoefficient', 'causeVariableName', 'effectVariableName'],
                 params,
                 successHandler,
                 errorHandler
@@ -396,7 +398,7 @@ angular.module('starter')
         // post new correlation for user
         QuantiModo.postCorrelation = function(correlationSet, successHandler ,errorHandler){
             QuantiModo.post('api/v1/correlations',
-                ['cause', 'effect', 'correlation', 'vote'],
+                ['causeVariableName', 'effectVariableName', 'correlation', 'vote'],
                 correlationSet,
                 successHandler,
                 errorHandler);
@@ -405,7 +407,7 @@ angular.module('starter')
         // post a vote
         QuantiModo.postVote = function(correlationSet, successHandler ,errorHandler){
             QuantiModo.post('api/v1/votes',
-                ['cause', 'effect', 'correlation', 'vote'],
+                ['causeVariableName', 'effectVariableName', 'correlation', 'vote'],
                 correlationSet,
                 successHandler,
                 errorHandler);
@@ -414,7 +416,7 @@ angular.module('starter')
         // delete a vote
         QuantiModo.deleteVote = function(correlationSet, successHandler ,errorHandler){
             QuantiModo.post('api/v1/votes/delete',
-                ['cause', 'effect', 'correlation'],
+                ['causeVariableName', 'effectVariableName', 'correlation'],
                 correlationSet,
                 successHandler,
                 errorHandler);
@@ -611,11 +613,44 @@ angular.module('starter')
             );
         };
 
+        // get user data
+        QuantiModo.getUserEmailPreferences = function(params, successHandler, errorHandler){
+            if($rootScope.user){
+                console.warn('Are you sure we should be getting the user again when we already have a user?', $rootScope.user);
+            }
+            var minimumSecondsBetweenRequests = 10;
+            var doNotSendToLogin = true;
+            QuantiModo.get('api/v1/notificationPreferences',
+                ['userEmail'],
+                params,
+                successHandler,
+                errorHandler,
+                minimumSecondsBetweenRequests,
+                doNotSendToLogin
+            );
+        };
+
         // get pending reminders
         QuantiModo.getTrackingReminderNotifications = function(params, successHandler, errorHandler){
             QuantiModo.get('api/v1/trackingReminderNotifications',
                 ['variableCategoryName', 'reminderTime', 'sort', 'reminderFrequency'],
                 params,
+                successHandler,
+                errorHandler);
+        };
+
+        QuantiModo.postTrackingReminderNotifications = function(trackingReminderNotificationsArray, successHandler, errorHandler) {
+            if(!trackingReminderNotificationsArray){
+                successHandler();
+                return;
+            }
+            if(trackingReminderNotificationsArray.constructor !== Array){
+                trackingReminderNotificationsArray = [trackingReminderNotificationsArray];
+            }
+
+            QuantiModo.post('api/v1/trackingReminderNotifications',
+                [],
+                trackingReminderNotificationsArray,
                 successHandler,
                 errorHandler);
         };
@@ -629,7 +664,6 @@ angular.module('starter')
                 errorHandler);
         };
 
-        // post tracking reminder
         QuantiModo.postUserSettings = function(params, successHandler, errorHandler) {
             QuantiModo.post('api/v1/userSettings',
                 [],
@@ -868,7 +902,9 @@ angular.module('starter')
             var expiresAtMilliseconds;
             var bufferInMilliseconds = 86400 * 1000;  // Refresh a day in advance
 
-            if (typeof expiresAt === 'string' || expiresAt instanceof String){
+            if(accessResponse.accessTokenExpiresAtMilliseconds){
+                expiresAtMilliseconds = accessResponse.accessTokenExpiresAtMilliseconds;
+            } else if (typeof expiresAt === 'string' || expiresAt instanceof String){
                 expiresAtMilliseconds = new Date(expiresAt).getTime();
             } else if (expiresAt === parseInt(expiresAt, 10) && expiresAt < new Date().getTime()) {
                 expiresAtMilliseconds = expiresAt * 1000;
@@ -884,6 +920,12 @@ angular.module('starter')
             if(expiresAtMilliseconds){
                 localStorageService.setItem('expiresAtMilliseconds', expiresAtMilliseconds - bufferInMilliseconds);
                 return accessToken;
+            } else {
+                console.error('No expiresAtMilliseconds!');
+                Bugsnag.notify('No expiresAtMilliseconds!',
+                    'expiresAt is ' + expiresAt + ' || accessResponse is ' + JSON.stringify(accessResponse) + ' and user is ' + localStorageService.getItemSync('user'),
+                    {groupingHash: 'No expiresAtMilliseconds!'},
+                    "error");
             }
 
             var groupingHash = 'Access token expiresAt not provided in recognizable form!';
@@ -1130,14 +1172,33 @@ angular.module('starter')
             return deferred.promise;
         };
 
+        QuantiModo.refreshUserEmailPreferences = function(params){
+            var deferred = $q.defer();
+            QuantiModo.getUserEmailPreferences(params, function(user){
+                QuantiModo.setUserInLocalStorageBugsnagIntercomPush(user);
+                deferred.resolve(user);
+            }, function(error){
+                deferred.reject(error);
+            });
+            return deferred.promise;
+        };
+
+        QuantiModo.clearTokensFromLocalStorage = function(){
+            localStorageService.deleteItem('accessToken');
+            localStorageService.deleteItem('refreshToken');
+            localStorageService.deleteItem('expiresAtMilliseconds');
+        };
+
         QuantiModo.updateUserSettingsDeferred = function(params){
             var deferred = $q.defer();
             QuantiModo.postUserSettings(params, function(response){
-                QuantiModo.refreshUser().then(function(user){
-                    console.debug('updateUserSettingsDeferred got this user: ' + JSON.stringify(user));
-                }, function(error){
-                    console.error('QuantiModo.updateUserSettingsDeferred could not refresh user because ' + JSON.stringify(error));
-                });
+                if(!params.userEmail) {
+                    QuantiModo.refreshUser().then(function(user){
+                        console.debug('updateUserSettingsDeferred got this user: ' + JSON.stringify(user));
+                    }, function(error){
+                        console.error('QuantiModo.updateUserSettingsDeferred could not refresh user because ' + JSON.stringify(error));
+                    });
+                }
                 deferred.resolve(response);
             }, function(response){
                 deferred.reject(response);

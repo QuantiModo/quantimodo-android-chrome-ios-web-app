@@ -1,0 +1,24 @@
+<ion-view hide-nav-bar="hideNavigationMenu" view-title="Notification Settings">
+    <ion-content ng-hide="state.loading">
+        <div class="list card">
+            <a href="" ng-show="!user.displayName" ng-click="sendToLogin()" class="item ">
+                Preferences for {{urlParameters.userEmail}}
+                <p>Tap to sign in as a different user</p>
+            </a>
+
+            <a id="userName" href="" ng-show="user.displayName" ng-click="logout()" class="item ">
+                <i class="icon ion-person"></i>
+                &nbsp
+                Signed in as {{user.displayName}}
+                <p>Tap to sign out</p>
+            </a>
+        </div>
+        <div ng-include="'templates/email-preferences-fragment.html'"></div>
+        <div class="list card">
+            <a ng-click="contactUs()" class="item ">
+                <i class="icon ion-help-buoy"></i>
+                Help & Feedback
+            </a>
+        </div>
+    </ion-content>
+</ion-view>

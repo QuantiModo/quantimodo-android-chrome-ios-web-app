@@ -5,196 +5,140 @@ angular.module('starter')
 
 		$scope.controller_name = "PredictorsCtrl";
         $scope.state = {
-            requestParams: {
-                cause: null,
-                effect: config.appSettings.primaryOutcomeVariableDetails.name
-            },
-            variableObject: null
+            requestParams: $stateParams.requestParams,
+            variableName: config.appSettings.primaryOutcomeVariableDetails.name,
+            increasingDecreasing: ''
         };
 
-        function showPositivePredictors() {
-            $scope.state.title = "Positive Predictors of " + $stateParams.variableObject.name;
-            $scope.increasingDecreasing = "INCREASING";
-            if (typeof Bugsnag !== "undefined") {
-                Bugsnag.context = "positivePredictors";
-            }
-            $scope.showLoader('Fetching positive predictors...');
+        function populateAggregatedCorrelationList() {
+            $ionicLoading.show({
+                template: '<ion-spinner></ion-spinner>'
+            });
+            setupAggregatedPredictors();
+            correlationService.getAggregatedCorrelations($scope.state.requestParams)
+                .then(function (correlationObjects) {
+                    if(correlationObjects.length) {
+                        $scope.state.correlationObjects = correlationObjects;
+                        $ionicLoading.hide();
+                    } else {
+                        correlationService.getUserCorrelations($scope.state.requestParams)
+                            .then(function (correlationObjects) {
+                                $ionicLoading.hide();
+                                if(correlationObjects.length) {
+                                    setupUserPredictors();
+                                    $scope.state.explanationText = "Unfortunately, I don't have enough data get common " +
+                                        " predictors for " + $scope.state.variableName + ", yet. " + $scope.state.explanationText;
+                                    $scope.state.correlationObjects = correlationObjects;
+                                } else {
+                                    $scope.state.noCorrelations = true;
+                                }
+                                
+                            });
+                    }
+
+                }, function () {
+                    $ionicLoading.hide();
+                    console.error('predictorsCtrl: Could not get correlations');
+                });
         }
 
-        function showNegativePredictors() {
-            $scope.state.title = "Negative Predictors of " + $stateParams.variableObject.name;
-            $scope.increasingDecreasing = "DECREASING";
-            if (typeof Bugsnag !== "undefined") {
-                Bugsnag.context = "negativePredictors";
-            }
-            $scope.showLoader('Fetching negative predictors...');
+        function populateUserCorrelationList() {
+            $ionicLoading.show({
+                template: '<ion-spinner></ion-spinner>'
+            });
+            setupUserPredictors();
+            correlationService.getUserCorrelations($scope.state.requestParams)
+                .then(function (correlationObjects) {
+                    if(correlationObjects.length) {
+                        $scope.state.correlationObjects = correlationObjects;
+                        $ionicLoading.hide();
+                    } else {
+                        correlationService.getAggregatedCorrelations($scope.state.requestParams)
+                            .then(function (correlationObjects) {
+                                $ionicLoading.hide();
+                                if(correlationObjects.length) {
+                                    setupAggregatedPredictors();
+                                    $scope.state.explanationText = "Unfortunately, I don't have enough data from you to get " +
+                                        "your personal predictors for " + $scope.state.variableName + ", yet. " + $scope.state.explanationText;
+                                    $scope.state.correlationObjects = correlationObjects;
+                                } else {
+                                    $scope.state.noCorrelations = true;
+                                }
+                            });
+                    }
+                }, function () {
+                    $ionicLoading.hide();
+                    console.error('predictorsCtrl: Could not get correlations');
+                });
+        }
+        
+        function setupUserPredictors() {
+            $scope.state.explanationHeader = "Your Top Predictors";
+            $scope.state.explanationIcon = "ion-ios-person";
+            $scope.state.explanationText = 'These factors are most likely to affect ' + $scope.state.increasingDecreasing +
+                ' your ' + $scope.state.variableName + ' based on your own data.  ' +
+            'Want more accurate results? Add some reminders and start tracking!';
         }
 
-        function showPredictors() {
-            $scope.state.title = "Predictors of " + $stateParams.variableObject.name;
-            if (typeof Bugsnag !== "undefined") {
-                Bugsnag.context = "predictors";
-            }
-            $scope.showLoader('Fetching predictors...');
-
+        function setupAggregatedPredictors() {
+            $scope.state.explanationHeader = "Common Predictors";
+            $scope.state.explanationIcon = "ion-ios-people";
+            $scope.state.explanationText = 'These factors are most likely to affect ' + $scope.state.increasingDecreasing +
+                ' ' + $scope.state.variableName + ' for the average QuantiModo user.  ' +
+            'Want PERSONALIZED results? Add some reminders and start tracking!';
         }
 
-        function showOutcomes() {
-            $scope.state.title = "Likely Outcomes of " + $stateParams.variableObject.name;
-            if (typeof Bugsnag !== "undefined") {
-                Bugsnag.context = "outcomes";
-            }
-            $scope.showLoader('Fetching outcomes...');
-        }
+        $scope.goToVariableSettings = function(correlationObject) {
+            $state.go('app.variableSettings',
+                {variableName: correlationObject.causeVariableName});
+        };
 
         $scope.init = function(){
             console.debug($state.current.name + ' initializing...');
-            $rootScope.stateParams = $stateParams;
+            $rootScope.getAllUrlParams();
             if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
             if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
-            $scope.state.correlationObjects = null;
-            $scope.state.usersCorrelationObjects = null;
-            if(!$stateParams.variableObject){
-                $stateParams.variableObject = config.appSettings.primaryOutcomeVariableDetails;
+            $scope.state.correlationObjects = [];
+
+            if($rootScope.urlParameters.aggregated){
+                $stateParams.aggregated = $rootScope.urlParameters.aggregated;
             }
-            if($stateParams.requestParams.cause || $stateParams.requestParams.effect){
-                $scope.state.requestParams = $stateParams.requestParams;
+            
+            if($rootScope.urlParameters.causeVariableName){
+                $scope.state.requestParams.causeVariableName = $rootScope.urlParameters.causeVariableName;
+                $scope.state.variableName = $rootScope.urlParameters.causeVariableName;
+            } else if($rootScope.urlParameters.effectVariableName){
+                $scope.state.variableName = $rootScope.urlParameters.effectVariableName;
+                $scope.state.requestParams.effectVariableName = $rootScope.urlParameters.effectVariableName;
+            } else if ($stateParams.causeVariableName){
+                $scope.state.requestParams.causeVariableName = $stateParams.causeVariableName;
+                $scope.state.variableName = $stateParams.causeVariableName;
+            } else if ($stateParams.effectVariableName) {
+                $scope.state.requestParams.effectVariableName = $stateParams.effectVariableName;
+                $scope.state.variableName = $stateParams.effectVariableName;
+            } else {
+                $scope.state.requestParams.effectVariableName = config.appSettings.primaryOutcomeVariableDetails.name;
+                $scope.state.variableName = config.appSettings.primaryOutcomeVariableDetails.name;
             }
+
             if($stateParams.valence === 'positive'){
+                $scope.state.increasingDecreasing = 'INCREASING';
                 $scope.state.requestParams.correlationCoefficient = "(gt)0";
-            }
-            if($stateParams.valence === 'negative'){
+                $scope.state.title = "Positive Predictors";
+            } else if($stateParams.valence === 'negative'){
+                $scope.state.increasingDecreasing = 'DECREASING';
                 $scope.state.requestParams.correlationCoefficient = "(lt)0";
-            }
-            $scope.state.variableObject = $stateParams.variableObject;
-            if($scope.state.requestParams.effect){
-                if ($scope.state.requestParams.correlationCoefficient === "(lt)0") {
-                    showNegativePredictors();
-                } else if ($scope.state.requestParams.correlationCoefficient === "(gt)0") {
-                    showPositivePredictors();
-                } else{
-                    showPredictors();
-                }
-            } else if ($scope.state.requestParams.cause){
-                showOutcomes();
+                $scope.state.title = "Negative Predictors";
             } else {
-                console.error("Please provide a $stateParams.requestParams.cause or $scope.state.requestParams.effect variable name.");
+                $scope.state.title = "Predictors";
             }
 
-            correlationService.getAggregatedCorrelations($scope.state.requestParams)
-                .then(function(correlationObjects){
-                    $scope.state.correlationObjects = correlationObjects;
-                    correlationService.getUserCorrelations($scope.state.requestParams)
-                        .then(function(correlationObjects){
-                            $scope.state.usersCorrelationObjects = correlationObjects;
-                        });
-                    $ionicLoading.hide();
-                    $scope.hideLoader();
-                }, function(){
-                    $ionicLoading.hide();
-                    $scope.hideLoader();
-                    console.error('predictorsCtrl: Could not get correlations');
-                });
-        };
-
-	    $scope.downVote = function(correlationObject, $index, userOrPublic){
-            if (correlationObject.correlationCoefficient > 0) {
-                $scope.increasesDecreases = "increases";
+            if($stateParams.aggregated){
+                populateAggregatedCorrelationList();
             } else {
-                $scope.increasesDecreases = "decreases";
-            }
-
-            if (correlationObject.userVote !== 0) {
-                $ionicPopup.show({
-                    title:'Implausible relationship?',
-                    subTitle: 'Do you think is is IMPOSSIBLE that ' + correlationObject.cause + ' ' + $scope.increasesDecreases + ' your ' + correlationObject.effect + '?',
-                    scope: $scope,
-                    template: $scope.templateConfirmationDown,
-                    buttons:[
-                        {text: 'No'},
-                        {text: 'Yes',
-                            type: 'button-positive',
-                            onTap: function(){
-                                downVote(correlationObject, $index, userOrPublic);
-                            }
-                        }
-                    ]
-                });
-            } else {
-                deleteVote(correlationObject, $index, userOrPublic);
+                populateUserCorrelationList();
             }
         };
-
-        function downVote(correlationObject, $index, userOrPublic){
-            if(userOrPublic === 'user'){
-                $scope.state.usersCorrelationObjects[$index].userVote = 0;
-            } else {
-                $scope.state.correlationObjects[$index].userVote = 0;
-            }
-            correlationObject.vote = 0;
-            correlationService.vote(correlationObject)
-                .then(function () {
-                    console.debug('Down voted!');
-                }, function () {
-                    console.error('Down vote failed!');
-                });
-        }
-
-	    $scope.upVote = function(correlationObject, $index, userOrPublic){
-            if (correlationObject.correlationCoefficient > 0) {
-                $scope.increasesDecreases = "increases";
-            } else {
-                $scope.increasesDecreases = "decreases";
-            }
-            if (correlationObject.userVote !== 1) {
-                $ionicPopup.show({
-                    title:'Plausible relationship?',
-                    subTitle: 'Do you think it is POSSIBLE that '+ correlationObject.cause + ' ' + $scope.increasesDecreases + ' your ' + correlationObject.effect + '?',
-                    scope: $scope,
-                    template: $scope.templateConfirmationUp,
-                    buttons:[
-                        {text: 'No'},
-                        {text: 'Yes',
-                            type: 'button-positive',
-                            onTap: function(){
-                                upVote(correlationObject, $index, userOrPublic);
-                            }
-                        }
-                    ]
-                });
-            } else {
-
-                deleteVote(correlationObject, $index, userOrPublic);
-            }
-	    };
-
-        function upVote(correlationObject, $index, userOrPublic){
-            if(userOrPublic === 'user'){
-                $scope.state.usersCorrelationObjects[$index].userVote = 1;
-            } else {
-                $scope.state.correlationObjects[$index].userVote = 1;
-            }
-            correlationObject.vote = 1;
-            correlationService.vote(correlationObject)
-                .then(function () {
-                    console.debug('upVote');
-                }, function () {
-                    console.error('upVote failed!');
-                });
-        }
-
-        function deleteVote(correlationObject, $index, userOrPublic) {
-            if(userOrPublic === 'user'){
-                $scope.state.usersCorrelationObjects[$index].userVote = null;
-            } else {
-                $scope.state.correlationObjects[$index].userVote = null;
-            }
-            correlationService.deleteVote(correlationObject, function(response){
-                console.debug("deleteVote response", response);
-            }, function(response){
-                console.error("deleteVote response", response);
-            });
-        }
 
         // open store in inAppbrowser
 	    $scope.openStore = function(name){
@@ -221,16 +165,16 @@ angular.module('starter')
         };
 
         $scope.goToStudyPage = function(correlationObject) {
+            console.debug('Going to study page for ' + JSON.stringify(correlationObject));
             $state.go('app.study', {
                 correlationObject: correlationObject
             });
         };
 
         // when view is changed
-        $scope.$on('$ionicView.enter', function(e) { console.debug("Entering state " + $state.current.name);
+        $scope.$on('$ionicView.beforeEnter', function(e) { console.debug("Entering state " + $state.current.name);
             $scope.hideLoader();
             $scope.init();
         });
 
-        $scope.init();
 	});

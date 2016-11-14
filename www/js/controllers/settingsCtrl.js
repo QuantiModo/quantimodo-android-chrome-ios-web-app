@@ -3,7 +3,7 @@ angular.module('starter')
 	// Controls the settings page
 	.controller('SettingsCtrl', function( $state, $scope, $ionicPopover, $ionicPopup, localStorageService, $rootScope, 
 										  notificationService, QuantiModo, reminderService, qmLocationService, 
-										  ionicTimePicker, timeService, utilsService, $stateParams, $ionicHistory, bugsnagService) {
+										  ionicTimePicker, timeService, utilsService, $stateParams, $ionicHistory, bugsnagService, $ionicLoading) {
 		$scope.controller_name = "SettingsCtrl";
 		$scope.state = {};
 		$scope.showReminderFrequencySelector = config.appSettings.settingsPageOptions.showReminderFrequencySelector;
@@ -71,7 +71,24 @@ angular.module('starter')
 
 		$scope.init = function() {
 			console.debug($state.current.name + ' initializing...');
+			$rootScope.hideNavigationMenu = false;
 			$rootScope.stateParams = $stateParams;
+			$rootScope.getAllUrlParams();
+			if($rootScope.urlParameters.userEmail){
+				$scope.state.loading = true;
+				$ionicLoading.show({
+					template: '<ion-spinner></ion-spinner>'
+				});
+				QuantiModo.refreshUserEmailPreferences({userEmail: $rootScope.urlParameters.userEmail}).then(function(user){
+					$rootScope.user = user;
+					$scope.state.loading = false;
+					$ionicLoading.hide();
+				}, function(error){
+					$scope.state.loading = false;
+					$ionicLoading.hide();
+					console.error('AppCtrl.init could not refresh user because ' + JSON.stringify(error));
+				});
+			}
 			if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
 			if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
 			qmLocationService.getLocationVariablesFromLocalStorage();
@@ -131,8 +148,42 @@ angular.module('starter')
 		};
 
 		$scope.sendReminderNotificationEmailsChange = function() {
-			QuantiModo.updateUserSettingsDeferred({sendReminderNotificationEmails: $rootScope.user.sendReminderNotificationEmails});
+			params = {sendReminderNotificationEmails: $rootScope.user.sendReminderNotificationEmails};
+			if($rootScope.urlParameters.userEmail){
+				params.userEmail = $rootScope.urlParameters.userEmail;
+			}
+			QuantiModo.updateUserSettingsDeferred(params);
+			if($rootScope.user.sendReminderNotificationEmails){
+				$ionicPopup.alert({
+					title: 'Reminder Emails Enabled',
+					template: "If you forget to record a measurement for a reminder you've created, I'll send you a daily reminder email."
+				});
+			} else {
+				$ionicPopup.alert({
+					title: 'Reminder Emails Disabled',
+					template: "If you forget to record a measurement for a reminder you've created, I won't send you a daily reminder email."
+				});
+			}
 		};
+
+        $scope.sendPredictorEmailsChange = function() {
+			params = {sendPredictorEmails: $rootScope.user.sendPredictorEmails};
+			if($rootScope.urlParameters.userEmail){
+				params.userEmail = $rootScope.urlParameters.userEmail;
+			}
+            QuantiModo.updateUserSettingsDeferred(params);
+			if($rootScope.user.sendPredictorEmails){
+				$ionicPopup.alert({
+					title: 'Discovery Emails Enabled',
+					template: "I'll send you a weekly email with new discoveries from your data."
+				});
+			} else {
+				$ionicPopup.alert({
+					title: 'Discovery Emails Disabled',
+					template: "I won't send you a weekly email with new discoveries from your data."
+				});
+			}
+        };
 
 		$scope.openEarliestReminderTimePicker = function() {
 			$scope.state.earliestReminderTimePickerConfiguration = {
@@ -262,7 +313,7 @@ angular.module('starter')
 				// Getting token so we can post as the new user if they log in again
 				$rootScope.deviceTokenToSync = localStorageService.getItemSync('deviceTokenOnServer');
 				QuantiModo.deleteDeviceToken($rootScope.deviceTokenToSync);
-				clearTokensFromLocalStorage();
+				QuantiModo.clearTokensFromLocalStorage();
 				if (utilsService.getClientId() === 'oAuthDisabled' || $rootScope.isChromeExtension) {
 					window.open(utilsService.getURL("api/v2/auth/logout"),'_blank');
 				}
@@ -299,19 +350,7 @@ angular.module('starter')
 			$scope.hideLoader();
 			$rootScope.user = null;
 			$scope.showDataClearPopup();
-            
-
-
         };
-
-        // when user is logging out
-        function clearTokensFromLocalStorage() {
-            //Set out local storage flag for welcome screen variables
-            localStorageService.setItem('primaryOutcomeVariableReportedWelcomeScreen', true);
-            localStorageService.deleteItem('accessToken');
-            localStorageService.deleteItem('refreshToken');
-            localStorageService.deleteItem('expiresAtMilliseconds');
-        }
 
 	    // Convert all data Array to a CSV object
 	    var convertToCSV = function(objArray) {

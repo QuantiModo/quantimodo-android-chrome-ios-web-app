@@ -314,20 +314,29 @@ angular.module('starter')
                 $scope.openReminderStartTimePicker('third');
             }
         };
+
+        var validationFailure = function (message) {
+            utilsService.showAlert(message);
+            console.error(message);
+            if (typeof Bugsnag !== "undefined") {
+                Bugsnag.notify(message, "trackingReminder is " + JSON.stringify($scope.state.trackingReminder), {}, "error");
+            }
+        };
         
         var validReminderSettings = function(){
+
             if(!$scope.state.trackingReminder.variableCategoryName) {
-                utilsService.showAlert('Please select a variable category');
+                validationFailure('Please select a variable category');
                 return false;
             }
 
             if(!$scope.state.trackingReminder.variableName) {
-                utilsService.showAlert('Please enter a variable name');
+                validationFailure('Please enter a variable name');
                 return false;
             }
 
             if(!$scope.state.trackingReminder.abbreviatedUnitName) {
-                utilsService.showAlert('Please select a unit');
+                validationFailure('Please select a unit');
                 return false;
             } else {
                 $scope.state.trackingReminder.unitId =
@@ -335,7 +344,7 @@ angular.module('starter')
             }
 
             if(!$stateParams.favorite && !$scope.state.trackingReminder.defaultValue && $scope.state.trackingReminder.defaultValue !== 0) {
-                //utilsService.showAlert('Please enter a default value');
+                //validationFailure('Please enter a default value');
                 //return false;
             }
 
@@ -345,7 +354,7 @@ angular.module('starter')
             {
                 if($scope.state.trackingReminder.defaultValue !== null && $scope.state.trackingReminder.defaultValue <
                     $rootScope.unitsIndexedByAbbreviatedName[$scope.state.trackingReminder.abbreviatedUnitName].minimumValue){
-                    utilsService.showAlert($rootScope.unitsIndexedByAbbreviatedName[$scope.state.trackingReminder.abbreviatedUnitName].minimumValue +
+                    validationFailure($rootScope.unitsIndexedByAbbreviatedName[$scope.state.trackingReminder.abbreviatedUnitName].minimumValue +
                         ' is the smallest possible value for the unit ' +
                         $rootScope.unitsIndexedByAbbreviatedName[$scope.state.trackingReminder.abbreviatedUnitName].name +
                         ".  Please select another unit or value.");
@@ -360,13 +369,21 @@ angular.module('starter')
             {
                 if($scope.state.trackingReminder.defaultValue !== null && $scope.state.trackingReminder.defaultValue >
                     $rootScope.unitsIndexedByAbbreviatedName[$scope.state.trackingReminder.abbreviatedUnitName].maximumValue){
-                    utilsService.showAlert($rootScope.unitsIndexedByAbbreviatedName[$scope.state.trackingReminder.abbreviatedUnitName].maximumValue +
+                    validationFailure($rootScope.unitsIndexedByAbbreviatedName[$scope.state.trackingReminder.abbreviatedUnitName].maximumValue +
                         ' is the largest possible value for the unit ' +
                         $rootScope.unitsIndexedByAbbreviatedName[$scope.state.trackingReminder.abbreviatedUnitName].name +
                         ".  Please select another unit or value.");
                     return false;
                 }
             }
+
+            if($scope.state.selectedStopTrackingDate && $scope.state.selectedStartTrackingDate){
+                if($scope.state.selectedStopTrackingDate < $scope.state.selectedStartTrackingDate){
+                    validationFailure("Start date cannot be later than the end date");
+                    return false;
+                }
+            }
+
             
             return true;
         };
@@ -410,7 +427,7 @@ angular.module('starter')
             }
 
             if(!validReminderSettings()){
-                return;
+                return false;
             }
 
             $scope.showLoader('Saving ' + $scope.state.trackingReminder.variableName + ' reminder...');
@@ -588,7 +605,7 @@ angular.module('starter')
             reminderService.getTrackingReminderById(reminderIdUrlParameter)
                 .then(function (reminders) {
                     if (reminders.length !== 1) {
-                        utilsService.showAlert("Reminder id " + reminderIdUrlParameter + " not found!", 'assertive');
+                        validationFailure("Reminder id " + reminderIdUrlParameter + " not found!", 'assertive');
                         $ionicHistory.goBack();
                     }
                     $stateParams.reminder = reminders[0];
@@ -712,9 +729,7 @@ angular.module('starter')
                     { text: '<i class="icon ion-android-notifications-none"></i>Record Measurement'},
                     { text: '<i class="icon ion-arrow-graph-up-right"></i>Visualize'},
                     { text: '<i class="icon ion-ios-list-outline"></i>History' },
-                    { text: '<i class="icon ion-settings"></i>' + 'Variable Settings'},
-                    // { text: '<i class="icon ion-arrow-up-a"></i>Positive Predictors'},
-                    // { text: '<i class="icon ion-arrow-down-a"></i>Negative Predictors'}
+                    { text: '<i class="icon ion-settings"></i>' + 'Variable Settings'}
                 ],
                 destructiveText: '<i class="icon ion-trash-a"></i>Delete Favorite',
                 cancelText: '<i class="icon ion-ios-close"></i>Cancel',
@@ -739,26 +754,6 @@ angular.module('starter')
                     if (index === 4) {
                         $state.go('app.variableSettings',
                             {variableName: $scope.state.trackingReminder.variableName});
-                    }
-                    if(index === 5){
-                        $state.go('app.predictors',
-                            {
-                                variableObject: $scope.state.variableObject,
-                                requestParams: {
-                                    effect:  $scope.state.variableObject.name,
-                                    correlationCoefficient: "(gt)0"
-                                }
-                            });
-                    }
-                    if(index === 6){
-                        $state.go('app.predictors',
-                            {
-                                variableObject: $scope.state.variableObject,
-                                requestParams: {
-                                    effect:  $scope.state.variableObject.name,
-                                    correlationCoefficient: "(lt)0"
-                                }
-                            });
                     }
                     return true;
                 },

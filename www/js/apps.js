@@ -7,47 +7,18 @@ var appsManager = { // jshint ignore:line
 		"quantimodo" : "configs/quantimodo"
 	},
 	defaultApp : "moodimodo",
-	getDefaultConfig : function(){
-		if(appsManager.apps[appsManager.defaultApp]){
-			console.debug("getDefaultPrivateConfig returning " + appsManager.apps[appsManager.defaultApp]+'.js');
-			return appsManager.apps[appsManager.defaultApp]+'.js';
-		} else {
-			console.debug("ERROR: getDefaultConfig appsManager.apps[appsManager.defaultApp] does not exist");
-			return false;
-		}
-	},
-	getDefaultApp : function(){
-		console.debug("getDefaultApp is returning " + appsManager.defaultApp);
-		return appsManager.defaultApp;
-	},
-	getDefaultPrivateConfig : function(){
-		if(appsManager.apps[appsManager.defaultApp]){
-			console.debug("getDefaultPrivateConfig returning " +
-				'./private_'+appsManager.apps[appsManager.defaultApp]+ '.config.js');
-			return './private_'+appsManager.apps[appsManager.defaultApp]+ '.config.js';
-		} else {
-			console.debug("ERROR: getDefaultPrivateConfig appsManager.apps[appsManager.defaultApp] does not exist");
-			return false;
-		}
-	},
 	getAppConfig : function(app){
 		if(appsManager.apps[app]){
-			console.debug("getAppConfig returning " +
-				appsManager.apps[app]+'.js');
-			return appsManager.apps[app]+'.js';
+			return 'configs/' + app + '.js';
 		} else {
-			console.debug("getAppConfig returning appsManager.getDefaultConfig()");
-			return appsManager.getDefaultConfig();
+			return 'configs/' + appsManager.defaultApp + '.js';
 		}
 	},
 	getPrivateConfig : function(app){
 		if(appsManager.apps[app]){
-			console.debug("getPrivateConfig returning " +
-				'./private_'+appsManager.apps[app]+'.config.js');
-			return './private_'+appsManager.apps[app]+'.config.js';
+			return './private_configs/'+ app + '.config.js';
 		} else {
-			console.debug("getPrivateConfig returning appsManager.getDefaultPrivateConfig()");
-			return appsManager.getDefaultPrivateConfig();
+			return './private_configs/'+ appsManager.defaultApp + '.config.js';
 		}
 	}
 };
