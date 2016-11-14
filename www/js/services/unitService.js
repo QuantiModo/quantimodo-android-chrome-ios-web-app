@@ -3,6 +3,25 @@ angular.module('starter')
     .factory('unitService', function($q, $rootScope, QuantiModo, localStorageService) {
         
         // service methods
+        function addUnitsToRootScope(units) {
+            $rootScope.unitObjects = units;
+            $rootScope.abbreviatedUnitNamesIndexedByUnitId = [];
+            $rootScope.nonAdvancedAbbreviatedUnitNames = [];
+            $rootScope.nonAdvancedUnitsIndexedByAbbreviatedName = [];
+            $rootScope.nonAdvancedAbbreviatedUnitNamesIndexedByUnitId = [];
+            for (var i = 0; i < units.length; i++) {
+                $rootScope.abbreviatedUnitNames[i] = units[i].abbreviatedName;
+                $rootScope.unitsIndexedByAbbreviatedName[units[i].abbreviatedName] = units[i];
+                $rootScope.abbreviatedUnitNamesIndexedByUnitId[units[i].id] = units[i].abbreviatedName;
+
+                if(!units[i].advanced){
+                    $rootScope.nonAdvancedAbbreviatedUnitNames.push(units[i].abbreviatedName);
+                    $rootScope.nonAdvancedUnitsIndexedByAbbreviatedName[units[i].abbreviatedName] = units[i];
+                    $rootScope.nonAdvancedAbbreviatedUnitNamesIndexedByUnitId[units[i].id] = units[i].abbreviatedName;
+                }
+            }
+        }
+
         var unitService = {
 
             getUnits : function(){
@@ -12,15 +31,9 @@ angular.module('starter')
                     if(typeof $rootScope.abbreviatedUnitNames === "undefined"){
                         $rootScope.abbreviatedUnitNames = [];
                     }
-                    if(units && units !== null && units !== "null"){
+                    if(units && units !== null && units !== "null" && typeof(units[0].advanced) !== "undefined"){
                         units = JSON.parse(units);
-                        $rootScope.unitObjects = units;
-                        $rootScope.abbreviatedUnitNamesIndexedByUnitId = [];
-                        for(var i =0; i< $rootScope.unitObjects.length; i++){
-                            $rootScope.abbreviatedUnitNames[i] = $rootScope.unitObjects[i].abbreviatedName;
-                            $rootScope.unitsIndexedByAbbreviatedName[units[i].abbreviatedName] = units[i];
-                            $rootScope.abbreviatedUnitNamesIndexedByUnitId[units[i].id] = $rootScope.unitObjects[i].abbreviatedName;
-                        }
+                        addUnitsToRootScope(units);
                         deferred.resolve(units);
                     } else {
                         unitService.refreshUnits().then(function(){
@@ -39,13 +52,7 @@ angular.module('starter')
                         $rootScope.abbreviatedUnitNames = [];
                     }
                     localStorageService.setItem('units', JSON.stringify(units));
-                    $rootScope.unitObjects = units;
-                    $rootScope.abbreviatedUnitNamesIndexedByUnitId = [];
-                    for(var i =0; i < $rootScope.unitObjects.length; i++){
-                        $rootScope.abbreviatedUnitNames[i] = $rootScope.unitObjects[i].abbreviatedName;
-                        $rootScope.unitsIndexedByAbbreviatedName[units[i].abbreviatedName] = units[i];
-                        $rootScope.abbreviatedUnitNamesIndexedByUnitId[units[i].id] = $rootScope.unitObjects[i].abbreviatedName;
-                    }
+                    addUnitsToRootScope(units);
                     deferred.resolve(units);
                 }, function(error){
                     deferred.reject(error);

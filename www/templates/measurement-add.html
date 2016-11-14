@@ -69,8 +69,8 @@
                     <div class="input-label">
                         Unit
                     </div>
-                    <select id="unitSelector" ng-model="state.measurement.abbreviatedUnitName" ng-options="x for x in abbreviatedUnitNames">
-                    </select>
+                    <select ng-if="!state.showMoreUnits" id="unitSelector" ng-model="state.measurement.abbreviatedUnitName" ng-options="x for x in nonAdvancedAbbreviatedUnitNames"></select>
+                    <select ng-if="state.showMoreUnits" id="advancedUnitSelector" ng-model="state.measurement.abbreviatedUnitName" ng-options="x for x in abbreviatedUnitNames"></select>
                     <!--<select ng-model="state.measurement.abbreviatedUnitName">-->
                         <!--<option ng-selected="unitObject.abbreviatedName === state.measurement.abbreviatedUnitName"-->
                                 <!--ng-repeat="unitObject in unitObjects"-->

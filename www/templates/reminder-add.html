@@ -23,9 +23,16 @@
                     </div>
 
                     <select id="unitSelector"
-                            ng-model="state.trackingReminder.abbreviatedUnitName" ng-options="x for x in abbreviatedUnitNames" ng-change="unitSelected()">
+                            ng-if="!state.showMoreUnits"
+                            ng-model="state.trackingReminder.abbreviatedUnitName"
+                            ng-options="x for x in nonAdvancedAbbreviatedUnitNames"
+                            ng-change="unitSelected()">
                             <!--ng-model="state.trackingReminder.abbreviatedUnitName" ng-options="x as x.abbreviatedName for x in unitObjects track by x.id">-->
                     </select>
+                    <select ng-if="state.showMoreUnits"
+                            id="advancedUnitSelector"
+                            ng-model="state.trackingReminder.abbreviatedUnitName"
+                            ng-options="x for x in abbreviatedUnitNames"></select>
                 </label>
                 <label class="item item-input item-select" ng-if="!stateParams.favorite">
                     <div class="input-label">

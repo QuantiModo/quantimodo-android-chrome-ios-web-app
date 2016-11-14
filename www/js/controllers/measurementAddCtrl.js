@@ -47,7 +47,8 @@ angular.module('starter')
                 diastolicValue: null,
                 systolicValue: null,
                 show: false
-            }
+            },
+            showMoreUnits: false
         };
 
         var trackBloodPressure = function(){
@@ -681,7 +682,8 @@ angular.module('starter')
                     { text: '<i class="icon ion-android-notifications-none"></i>Add Reminder'},
                     { text: '<i class="icon ion-arrow-graph-up-right"></i>Visualize'},
                     { text: '<i class="icon ion-ios-list-outline"></i>History' },
-                    { text: '<i class="icon ion-settings"></i>' + 'Variable Settings'}
+                    { text: '<i class="icon ion-settings"></i>' + 'Variable Settings'},
+                    { text: '<i class="icon ion-settings"></i>' + 'Show More Units'}
                 ],
                 destructiveText: '<i class="icon ion-trash-a"></i>Delete Measurement',
                 cancelText: '<i class="icon ion-ios-close"></i>Cancel',
@@ -705,6 +707,9 @@ angular.module('starter')
                     if (index === 4) {
                         $state.go('app.variableSettings',
                             {variableName: $scope.state.measurement.variableName});
+                    }
+                    if (index === 5) {
+                        $scope.state.showMoreUnits = true;
                     }
 
                     return true;
