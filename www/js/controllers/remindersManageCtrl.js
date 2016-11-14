@@ -27,9 +27,12 @@ angular.module('starter')
 			isDisabled : false,
 			loading : true,
 			showTreatmentInfoCard : false,
-			showSymptomInfoCard : false,
-			orderParameter : 'variableName'
+			showSymptomInfoCard : false
 	    };
+
+	    if(!$rootScope.reminderOrderParameter){
+			$rootScope.reminderOrderParameter = 'variableName';
+		}
 
 		function showAppropriateHelpInfoCards(){
 			$scope.state.showTreatmentInfoCard = ($scope.state.trackingReminders.length === 0) &&
@@ -125,12 +128,12 @@ angular.module('starter')
 						console.debug('BUTTON CLICKED', index);
 						if(index === 0){
 							console.debug("Sort by name");
-							$scope.state.orderParameter = 'variableName';
+							$rootScope.reminderOrderParameter = 'variableName';
 							$scope.init();
 						}
 						if(index === 1){
 							console.debug("Sort by time");
-							$scope.state.orderParameter = 'reminderStartTimeLocal';
+							$rootScope.reminderOrderParameter = 'reminderStartTimeLocal';
 							$scope.init();
 						}
 
