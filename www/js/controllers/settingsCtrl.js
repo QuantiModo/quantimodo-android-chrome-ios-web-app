@@ -147,6 +147,18 @@ angular.module('starter')
 			
 		};
 
+		$scope.showAppInfoPopup = function () {
+
+			var template = "QuantiModo Client Id: " + utilsService.getClientId();
+			if($rootScope.deviceToken){
+				template = template + "<br><br>" + "Push Notification Device Token: " + $rootScope.deviceToken;
+			}
+			$ionicPopup.alert({
+				title: $rootScope.appSettings.appName + ' ' + $rootScope.appVersion,
+				template: template
+			});
+		};
+
 		$scope.sendReminderNotificationEmailsChange = function() {
 			params = {sendReminderNotificationEmails: $rootScope.user.sendReminderNotificationEmails};
 			if($rootScope.urlParameters.userEmail){
