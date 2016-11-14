@@ -23,7 +23,8 @@ angular.module('starter')
             defaultValuePlaceholderText : 'Enter typical value',
             showInstructionsField : false,
             selectedStopTrackingDate: null,
-            showMoreOptions: false
+            showMoreOptions: false,
+            showMoreUnits: false
         };
 
         $scope.showMoreOptions = function(){
@@ -729,7 +730,8 @@ angular.module('starter')
                     { text: '<i class="icon ion-android-notifications-none"></i>Record Measurement'},
                     { text: '<i class="icon ion-arrow-graph-up-right"></i>Visualize'},
                     { text: '<i class="icon ion-ios-list-outline"></i>History' },
-                    { text: '<i class="icon ion-settings"></i>' + 'Variable Settings'}
+                    { text: '<i class="icon ion-settings"></i>' + 'Variable Settings'},
+                    { text: '<i class="icon ion-settings"></i>' + 'Show More Units'}
                 ],
                 destructiveText: '<i class="icon ion-trash-a"></i>Delete Favorite',
                 cancelText: '<i class="icon ion-ios-close"></i>Cancel',
@@ -754,6 +756,9 @@ angular.module('starter')
                     if (index === 4) {
                         $state.go('app.variableSettings',
                             {variableName: $scope.state.trackingReminder.variableName});
+                    }
+                    if (index === 5) {
+                        $scope.state.showMoreUnits = true;
                     }
                     return true;
                 },
