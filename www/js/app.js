@@ -446,7 +446,8 @@ angular.module('starter',
                 measurement : null,
                 variableObject : null,
                 nextState: 'app.measurementAdd',
-                variableCategoryName: null
+                variableCategoryName: null,
+                manualTrackingVariablesOnly: true
             },
             views: {
                 'menuContent': {
@@ -462,7 +463,8 @@ angular.module('starter',
                 fromState : null,
                 fromUrl : null,
                 measurement : null,
-                nextState: 'app.measurementAdd'
+                nextState: 'app.measurementAdd',
+                manualTrackingVariablesOnly: true
             },
             views: {
                 'menuContent': {
@@ -479,7 +481,8 @@ angular.module('starter',
                 fromUrl : null,
                 measurement : null,
                 reminderSearch: true,
-                nextState: 'app.reminderAdd'
+                nextState: 'app.reminderAdd',
+                manualTrackingVariablesOnly: true
             },
             views: {
                 'menuContent': {
@@ -496,7 +499,8 @@ angular.module('starter',
                 fromUrl : null,
                 measurement : null,
                 reminderSearch: true,
-                nextState: 'app.reminderAdd'
+                nextState: 'app.reminderAdd',
+                manualTrackingVariablesOnly: true
             },
             views: {
                 'menuContent': {
@@ -514,7 +518,8 @@ angular.module('starter',
                 measurement : null,
                 favoriteSearch: true,
                 nextState: 'app.favoriteAdd',
-                pageTitle: 'Add a favorite'
+                pageTitle: 'Add a favorite',
+                manualTrackingVariablesOnly: true
             },
             views: {
                 'menuContent': {
@@ -532,7 +537,8 @@ angular.module('starter',
                 measurement : null,
                 favoriteSearch: true,
                 nextState: 'app.favoriteAdd',
-                pageTitle: 'Add a favorite'
+                pageTitle: 'Add a favorite',
+                manualTrackingVariablesOnly: true
             },
             views: {
                 'menuContent': {
@@ -838,6 +844,15 @@ angular.module('starter',
             views: {
                 'menuContent': {
                     templateUrl: "templates/settings.html",
+                    controller: 'SettingsCtrl'
+                }
+            }
+        })
+        .state('app.notificationPreferences', {
+            url: "/notificationPreferences",
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/notification-preferences.html",
                     controller: 'SettingsCtrl'
                 }
             }

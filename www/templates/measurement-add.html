@@ -41,15 +41,47 @@
                         mmHg
                     </span>
                 </label>
-               
-
+                <div class="primary-outcome-variable-rating-buttons primary-outcome-variable-history col"
+                     ng-if="showNumericRatingNumberButtons">
+                    <img ng-repeat="option in numericRatingOptions"
+                         ng-click="selectPrimaryOutcomeVariableValue($event, option.numericValue)"
+                         ng-src="{{option.img}}"
+                         ng-class="{'active-primary-outcome-variable-rating-button' :
+                         option.numericValue === state.measurement.value}">
+                </div>
+                <div class="primary-outcome-variable-rating-buttons primary-outcome-variable-history col"
+                     ng-if="showPositiveRatingFaceButtons">
+                    <img ng-repeat="option in positiveRatingOptions"
+                         ng-click="selectPrimaryOutcomeVariableValue($event, option.numericValue)"
+                         ng-src="{{option.img}}"
+                         ng-class="{'active-primary-outcome-variable-rating-button' :
+                         option.numericValue === state.measurement.value}">
+                </div>
+                <div class="primary-outcome-variable-rating-buttons primary-outcome-variable-history col"
+                     ng-if="showNegativeRatingFaceButtons">
+                    <img ng-repeat="option in negativeRatingOptions"
+                         ng-click="selectPrimaryOutcomeVariableValue($event, option.numericValue)"
+                         ng-src="{{option.img}}"
+                         ng-class="{'active-primary-outcome-variable-rating-button' :
+                         option.numericValue === state.measurement.value}">
+                </div>
                 <label ng-if="(state.measurement.abbreviatedUnitName !== '/5' && !state.bloodPressure.show)" class="item item-input item-select">
                     <div class="input-label">
                         Unit
                     </div>
-                    <select id="unitSelector" ng-model="state.measurement.abbreviatedUnitName" ng-options="x for x in abbreviatedUnitNames">
+                    <select ng-if="!state.showMoreUnits"
+                            id="unitSelector"
+                            ng-model="state.measurement.abbreviatedUnitName"
+                            ng-options="unit.abbreviatedName as unit.name for unit in nonAdvancedUnitObjects"
+                            ng-change="unitSelected()">
                     </select>
-                
+                    <select ng-if="state.showMoreUnits"
+                            id="advancedUnitSelector"
+                            ng-model="state.measurement.abbreviatedUnitName"
+                            ng-options="unit.abbreviatedName as unit.name for unit in unitObjects"
+                            ng-change="unitSelected()">
+                    </select>
+
                 </label>
                 <div class="row labeled-control">
                     <div class="col col-l">
@@ -95,14 +127,14 @@
             </div>
             <div class="row">
                 <div class="col col-50">
-                    <button id="cancelButton" class="button button-block icon-left ion-android-cancel button-royal" ng-click="cancel()">Cancel</button>
+                    <button id="cancelButton" class="button button-block icon-left ion-android-cancel button-assertive" ng-click="cancel()">Cancel</button>
                 </div>
                 <div class="col col-50">
-                    <button id="saveButton" class="button  button-block icon-left ion-android-done button-balanced" ng-click="done()">Save</button>
+                    <button id="saveButton" class="button button-block icon-left ion-android-done button-positive" ng-click="done()">Save</button>
                 </div>
             </div>
             <div ng-hide="state.hideRemindMeButton" class="row">
-                <button id="reminderButton" ng-click="goToAddReminder()" class="button icon-left ion-android-notifications   button-block button-stable">
+                <button id="reminderButton" ng-click="goToAddReminder()" class="button icon-left ion-android-notifications button-positive button-block">
                     Remind me to track
                 </button>
             </div>

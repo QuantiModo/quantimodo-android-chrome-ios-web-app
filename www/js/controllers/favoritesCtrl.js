@@ -74,9 +74,17 @@ angular.module('starter')
 				});
 		};
 
+		var validationFailure = function (message) {
+			utilsService.showAlert(message);
+			console.error(message);
+			if (typeof Bugsnag !== "undefined") {
+				Bugsnag.notify(message, "bloodPressure is " + JSON.stringify($scope.state.bloodPressure), {}, "error");
+			}
+		};
+
 		$scope.trackBloodPressure = function(){
 			if(!$scope.state.bloodPressure.diastolicValue || !$scope.state.bloodPressure.systolicValue){
-				utilsService.showAlert('Please enter both values for blood pressure.');
+				validationFailure('Please enter both values for blood pressure.');
 				return;
 			}
 			$scope.state.bloodPressure.displayTotal = "Recorded " + $scope.state.bloodPressure.systolicValue + "/" + $scope.state.bloodPressure.diastolicValue + ' Blood Pressure';
@@ -96,7 +104,7 @@ angular.module('starter')
 			// 	reminderService.postTrackingReminders([$scope.state.favorites[$index]]);
 			// }
 			if($scope.state.favorites[$index].total === null){
-				utilsService.showAlert('Please specify a value for ' + $scope.state.favorites[$index].variableName);
+				validationFailure('Please specify a value for ' + $scope.state.favorites[$index].variableName);
 				return;
 			}
 			$scope.state.favorites[$index].displayTotal = "Recorded " + $scope.state.favorites[$index].total + " " + $scope.state.favorites[$index].abbreviatedUnitName;

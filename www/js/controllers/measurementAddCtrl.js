@@ -47,12 +47,13 @@ angular.module('starter')
                 diastolicValue: null,
                 systolicValue: null,
                 show: false
-            }
+            },
+            showMoreUnits: false
         };
 
         var trackBloodPressure = function(){
             if(!$scope.state.bloodPressure.diastolicValue || !$scope.state.bloodPressure.systolicValue){
-                utilsService.showAlert('Please enter both values for blood pressure.');
+                validationFailure('Please enter both values for blood pressure.');
                 return;
             }
             $scope.state.bloodPressure.startTimeEpoch = $scope.selectedDate.getTime()/1000;
@@ -151,37 +152,49 @@ angular.module('starter')
             }
         };
 
-
-        $scope.done = function(){
-
-            if($scope.state.bloodPressure.show){
-                trackBloodPressure();
-                return;
+        var validationFailure = function (message) {
+            utilsService.showAlert(message);
+            console.error(message);
+            if (typeof Bugsnag !== "undefined") {
+                Bugsnag.notify(message, "measurement is " + JSON.stringify($scope.state.measurement), {}, "error");
             }
+        };
+        
+        var validate = function () {
 
-            // Validation
+            var message;
+
             if($scope.state.measurement.value === '' || typeof $scope.state.measurement.value === 'undefined'){
-                utilsService.showAlert('Please enter a value');
-                return;
+                if($scope.state.measurement.abbreviatedUnitName === '/5'){
+                    message = 'Please select a rating';
+                } else {
+                    message = 'Please enter a value';
+                }
+                validationFailure(message);
+                return false;
             }
+
             if(!$scope.state.measurement.variableName || $scope.state.measurement.variableName === ""){
-                utilsService.showAlert('Please enter a variable name');
-                return;
+                message = 'Please enter a variable name';
+                validationFailure(message);
+                return false;
             }
             if(!$scope.state.measurement.variableCategoryName){
-                utilsService.showAlert('Please select a variable category');
-                return;
+                message = 'Please select a variable category';
+                validationFailure(message);
+                return false;
             }
 
-            if(!$scope.state.measurement.abbreviatedUnitName && !$scope.abbreviatedUnitName){
-                utilsService.showAlert('Please select a unit');
-                return;
+            if(!$scope.state.measurement.abbreviatedUnitName){
+                message = 'Please select a unit';
+                validationFailure(message);
+                return false;
             } else {
                 if(!$rootScope.unitsIndexedByAbbreviatedName[$scope.state.measurement.abbreviatedUnitName]){
                     if (typeof Bugsnag !== "undefined") {
                         Bugsnag.notify('Cannot get unit id', 'abbreviated unit name is ' +
                             $scope.state.measurement.abbreviatedUnitName + ' and $rootScope.unitsIndexedByAbbreviatedName are ' +
-                                JSON.stringify($rootScope.unitsIndexedByAbbreviatedName), {}, "error");
+                            JSON.stringify($rootScope.unitsIndexedByAbbreviatedName), {}, "error");
                     }
                 } else {
                     $scope.state.measurement.unitId =
@@ -195,11 +208,12 @@ angular.module('starter')
             {
                 if($scope.state.measurement.value <
                     $rootScope.unitsIndexedByAbbreviatedName[$scope.state.measurement.abbreviatedUnitName].minimumValue){
-                        utilsService.showAlert($rootScope.unitsIndexedByAbbreviatedName[$scope.state.measurement.abbreviatedUnitName].minimumValue +
-                            ' is the smallest possible value for the unit ' +
-                            $rootScope.unitsIndexedByAbbreviatedName[$scope.state.measurement.abbreviatedUnitName].name +
-                        ".  Please select another unit or value.");
-                        return;
+                    message = $rootScope.unitsIndexedByAbbreviatedName[$scope.state.measurement.abbreviatedUnitName].minimumValue +
+                        ' is the smallest possible value for the unit ' +
+                        $rootScope.unitsIndexedByAbbreviatedName[$scope.state.measurement.abbreviatedUnitName].name +
+                        ".  Please select another unit or value.";
+                    validationFailure(message);
+                    return false;
                 }
             }
 
@@ -209,12 +223,27 @@ angular.module('starter')
             {
                 if($scope.state.measurement.value >
                     $rootScope.unitsIndexedByAbbreviatedName[$scope.state.measurement.abbreviatedUnitName].maximumValue){
-                    utilsService.showAlert($rootScope.unitsIndexedByAbbreviatedName[$scope.state.measurement.abbreviatedUnitName].maximumValue +
+                    message = $rootScope.unitsIndexedByAbbreviatedName[$scope.state.measurement.abbreviatedUnitName].maximumValue +
                         ' is the largest possible value for the unit ' +
                         $rootScope.unitsIndexedByAbbreviatedName[$scope.state.measurement.abbreviatedUnitName].name +
-                        ".  Please select another unit or value.");
-                    return;
+                        ".  Please select another unit or value.";
+                    validationFailure(message);
+                    return false;
                 }
+            }
+            return true;
+        };
+
+
+        $scope.done = function(){
+
+            if($scope.state.bloodPressure.show){
+                trackBloodPressure();
+                return;
+            }
+
+            if(!validate()){
+                return false;
             }
 
             if ($stateParams.reminderNotification && $ionicHistory.backView().stateName.toLowerCase().indexOf('inbox') > -1) {
@@ -243,11 +272,7 @@ angular.module('starter')
                 note : $scope.state.measurement.note || jQuery('#note').val(),
                 prevStartTimeEpoch : $scope.state.measurement.prevStartTimeEpoch,
                 startTimeEpoch : $scope.state.measurement.startTimeEpoch,
-                abbreviatedUnitName : $scope.state.showAddVariable ? (typeof $scope.abbreviatedUnitName ===
-                    "undefined" || $scope.abbreviatedUnitName === "" ) ?
-                    $scope.state.measurement.abbreviatedUnitName :
-                    $scope.abbreviatedUnitName :
-                    $scope.state.measurement.abbreviatedUnitName,
+                abbreviatedUnitName : $scope.state.measurement.abbreviatedUnitName,
                 variableCategoryName : $scope.state.measurement.variableCategoryName,
                 isAvg : $scope.state.sumAvg === "avg"
             };
@@ -527,6 +552,12 @@ angular.module('starter')
         };
 
         function setupValueFieldType(abbreviatedUnitName, variableDescription) {
+            
+            if(!abbreviatedUnitName){
+                console.error('No abbreviatedUnitName provided to setupValueFieldType');
+                return false;
+            }
+
             if (abbreviatedUnitName === '/5') {
                 if (!variableDescription) {
                     $scope.showNumericRatingNumberButtons = true;
@@ -651,7 +682,8 @@ angular.module('starter')
                     { text: '<i class="icon ion-android-notifications-none"></i>Add Reminder'},
                     { text: '<i class="icon ion-arrow-graph-up-right"></i>Visualize'},
                     { text: '<i class="icon ion-ios-list-outline"></i>History' },
-                    { text: '<i class="icon ion-settings"></i>' + 'Variable Settings'}
+                    { text: '<i class="icon ion-settings"></i>' + 'Variable Settings'},
+                    { text: '<i class="icon ion-settings"></i>' + 'Show More Units'}
                 ],
                 destructiveText: '<i class="icon ion-trash-a"></i>Delete Measurement',
                 cancelText: '<i class="icon ion-ios-close"></i>Cancel',
@@ -675,6 +707,9 @@ angular.module('starter')
                     if (index === 4) {
                         $state.go('app.variableSettings',
                             {variableName: $scope.state.measurement.variableName});
+                    }
+                    if (index === 5) {
+                        $scope.state.showMoreUnits = true;
                     }
 
                     return true;

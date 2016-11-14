@@ -1200,6 +1200,14 @@ gulp.task('template', function(done){
 		.on('end', done);
 });
 
+gulp.task('setMoodiModoEnvs', [], function(callback){
+	process.env.APP_DISPLAY_NAME = "MoodiModo";
+	process.env.LOWERCASE_APP_NAME = "moodimodo";
+	process.env.APP_IDENTIFIER = "com.quantimodo.moodimodoapp";
+	process.env.APP_DESCRIPTION = "Perfect your life!";
+	callback();
+});
+
 gulp.task('setQuantiModoEnvs', [], function(callback){
 	process.env.APP_DISPLAY_NAME = "QuantiModo";
 	process.env.LOWERCASE_APP_NAME = "quantimodo";
@@ -1335,8 +1343,15 @@ gulp.task('bumpIosVersion', function(callback){
 	});
 });
 
+gulp.task('deletePlugins', [], function(){
+	return gulp.src("plugins/*",
+		{ read: false })
+		.pipe(clean());
+});
+
 gulp.task('prepareIosApp', function(callback){
 	runSequence(
+		'deletePlugins',
 		'generateIosResources',
 		'bumpIosVersion',
 		'updateConfigXmlUsingEnvs',
@@ -1383,6 +1398,73 @@ gulp.task('prepareQuantiModo', function(callback){
         callback);
 });
 
+gulp.task('prepareMoodiModoIos', function(callback){
+	runSequence(
+		'setMoodiModoEnvs',
+		'setIosEnvs',
+		'prepareIosApp',
+		callback);
+});
+
+gulp.task('buildQuantiModo', function(callback){
+	runSequence(
+		'setQuantiModoEnvs',
+		'prepareAndroidApp',
+
+		'setIosEnvs',
+		'prepareIosApp',
+		callback);
+});
+
+gulp.task('ionicPlatformAddAndroid', function(callback){
+	return execute("ionic platform add android", function(error){
+			if(error !== null){
+				console.log("ERROR for " + process.env.LOWERCASE_APP_NAME + ": " + error);
+			} else {
+				console.log("\n***Android for " + process.env.LOWERCASE_APP_NAME);
+				callback();
+			}
+		});
+});
+
+gulp.task('ionicPlatformAddAndroid', function(callback){
+	return execute("ionic platform add android", function(error){
+		if(error !== null){
+			console.log("ERROR for " + process.env.LOWERCASE_APP_NAME + ": " + error);
+		} else {
+			console.log("\n***Android for " + process.env.LOWERCASE_APP_NAME);
+			callback();
+		}
+	});
+});
+
+gulp.task('cordovaBuildAndroidDebug', function(callback){
+	return execute("cordova build --debug android", function(error){
+		if(error !== null){
+			console.log("ERROR for " + process.env.LOWERCASE_APP_NAME + ": " + error);
+		} else {
+			console.log("\n***Android for " + process.env.LOWERCASE_APP_NAME);
+			callback();
+		}
+	});
+});
+
+gulp.task('cordovaBuildAndroidRelease', function(callback){
+	return execute("cordova build --release android", function(error){
+		if(error !== null){
+			console.log("ERROR for " + process.env.LOWERCASE_APP_NAME + ": " + error);
+		} else {
+			console.log("\n***Android for " + process.env.LOWERCASE_APP_NAME);
+			callback();
+		}
+	});
+});
+
+gulp.task('copyAndroidResources', ['copyPrivateConfig'], function(){
+	return gulp.src(['resources/android/**/*'])
+		.pipe(gulp.dest('platforms/android'));
+});
+
 gulp.task('prepareQuantiModoIos', function(callback){
 	runSequence(
 		'setQuantiModoEnvs',
@@ -1417,6 +1499,10 @@ gulp.task('prepareAndroidApp', function(callback){
 		'updateConfigXmlUsingEnvs',
 		'generateAndroidResources',
 		'copyPrivateConfig',
+		'ionicPlatformAddAndroid',
+		'copyAndroidResources',
+		'cordovaBuildAndroidRelease',
+		'cordovaBuildAndroidDebug',
 		callback);
 });
 

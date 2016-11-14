@@ -23,11 +23,6 @@ angular.module('starter')
                 return;
             }
 
-            if(Object.keys($rootScope.urlParameters).length < 2) {
-                $ionicHistory.goBack();
-                return;
-            }
-            
             if($rootScope.urlParameters.causeVariableName){
                 $scope.state.requestParams.causeVariableName = $rootScope.urlParameters.causeVariableName;
             }
@@ -36,17 +31,15 @@ angular.module('starter')
                 $scope.state.requestParams.effectVariableName = $rootScope.urlParameters.effectVariableName;
             }
 
-            if (!$rootScope.urlParameters.aggregated) {
-                var fallbackToAggregateStudy = true;
-                getUserStudy($scope.state.requestParams, fallbackToAggregateStudy);
-            }
-
-            if ($rootScope.urlParameters.aggregated) {
+            if ($rootScope.urlParameters.aggregated || !$rootScope.user) {
                 var fallbackToUserStudy = false;
                 if($rootScope.user){
                     fallbackToUserStudy = true;
                 }
                 getAggregateStudy($scope.state.requestParams, fallbackToUserStudy);
+            } else {
+                var fallbackToAggregateStudy = true;
+                getUserStudy($scope.state.requestParams, fallbackToAggregateStudy);
             }
 
             //chartCorrelationsOverTime();

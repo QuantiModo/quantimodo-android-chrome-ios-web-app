@@ -1,0 +1,35 @@
+<div class="card" >
+    <div class="item item-divider">
+        <i class="icon ion-android-notifications-none"></i>
+        &nbsp
+        Push Notification Preferences
+    </div>
+    <ion-toggle ng-model="user.combineNotifications"
+                ng-change="combineNotificationChange()">
+        Combine Notifications
+    </ion-toggle>
+    <label class="item item-input">
+        <div class="input-label" >
+            <i class="icon ion-ios-sunny-outline"></i>
+            &nbsp
+            Earliest Notification Time
+        </div>
+        <button class="button button-block up-top"
+                style="text-align:left;font-size:14px;border:none;color:black;background-color: white;margin-bottom: 0px;margin-top: 0px;padding-left: 0px;"
+                ng-click="openEarliestReminderTimePicker()">
+            {{user.earliestReminderTime | fromTwentyFourToTwelveHourFormat}}
+        </button>
+    </label>
+    <label class="item item-input">
+        <div class="input-label" >
+            <i class="icon ion-ios-moon"></i>
+            &nbsp
+            Latest Notification Time
+        </div>
+        <button class="button button-block up-top"
+                style="text-align:left;font-size:14px;border:none;color:black;background-color: white;margin-bottom: 0px;margin-top: 0px;padding-left: 0px;"
+                ng-click="openLatestReminderTimePicker()">
+            {{user.latestReminderTime | fromTwentyFourToTwelveHourFormat}}
+        </button>
+    </label>
+</div>

@@ -22,7 +22,13 @@ angular.module('starter')
             defaultValueLabel : 'Default Value',
             defaultValuePlaceholderText : 'Enter typical value',
             showInstructionsField : false,
-            selectedStopTrackingDate: null
+            selectedStopTrackingDate: null,
+            showMoreOptions: false,
+            showMoreUnits: false
+        };
+
+        $scope.showMoreOptions = function(){
+            $scope.state.showMoreOptions = true;
         };
 
         if(!$rootScope.user){
@@ -67,6 +73,9 @@ angular.module('starter')
 				{ id : 8, name : 'Hourly'},
 	    		{ id : 9, name : 'Every 30 minutes'},
 	    		{ id : 10, name : 'Never'},
+                { id : 10, name : 'Weekly'},
+                { id : 10, name : 'Every 2 weeks'},
+                { id : 10, name : 'Every 4 weeks'}
                 //{ id : 11, name : 'Minutely'}
 	    	]
 	    };
@@ -95,35 +104,8 @@ angular.module('starter')
                 }
             }
 
-            // Round minutes
-            var defaultStartTime = new Date(defaultStartTimeInSecondsSinceMidnightLocal * 1000);
-            var defaultStartTimeHours = defaultStartTime.getUTCHours();
-            var defaultStartTimeMinutes = defaultStartTime.getUTCMinutes();
-            if (defaultStartTimeMinutes % 15 !== 0) {
-                if ((defaultStartTimeMinutes > 0 && defaultStartTimeMinutes <= 7)) {
-                    defaultStartTimeMinutes = 0;
-                }
-                else if (defaultStartTimeMinutes > 7 && defaultStartTimeMinutes <= 22) {
-                    defaultStartTimeMinutes = 15;
-                }
-                else if (defaultStartTimeMinutes > 22 && defaultStartTimeMinutes <= 37) {
-                    defaultStartTimeMinutes = 30;
-                }
-                else if (defaultStartTimeMinutes > 37 && defaultStartTimeMinutes <= 52) {
-                    defaultStartTimeMinutes = 45;
-                }
-                else if (defaultStartTimeMinutes > 52) {
-                    defaultStartTimeMinutes = 0;
-                    if (defaultStartTimeHours === 23) {
-                        defaultStartTimeHours = 0;
-                    }
-                    else {
-                        defaultStartTimeHours += 1;
-                    }
-                }
-            }
             defaultStartTimeInSecondsSinceMidnightLocal =
-                timeService.getSecondsSinceMidnightLocalFromLocalString("" + defaultStartTimeHours + ":" + defaultStartTimeMinutes + ":00");
+                timeService.getSecondsSinceMidnightLocalRoundedToNearestFifteen(defaultStartTimeInSecondsSinceMidnightLocal);
             
             $scope.state.timePickerConfiguration = {
                 callback: function (val) {
@@ -185,6 +167,28 @@ angular.module('starter')
                 $scope.state.stopTrackingDatePickerConfiguration.inputDate = $scope.state.selectedStopTrackingDate;
             }
             ionicDatePicker.openDatePicker($scope.state.stopTrackingDatePickerConfiguration);
+        };
+
+        $scope.openStartTrackingDatePicker = function() {
+            var now = new Date();
+            $scope.state.startTrackingDatePickerConfiguration = {
+                callback: function(val) {
+                    if (typeof(val)==='undefined') {
+                        console.debug('Date not selected');
+                    } else {
+                        // clears out hours and minutes
+
+                        $scope.state.selectedStartTrackingDate = new Date(val);
+                    }
+                },
+                from: new Date(),
+                to: new Date(now.getTime() + 365 * 24 * 60 * 60 * 1000)
+            };
+
+            if($scope.state.selectedStartTrackingDate){
+                $scope.state.startTrackingDatePickerConfiguration.inputDate = $scope.state.selectedStartTrackingDate;
+            }
+            ionicDatePicker.openDatePicker($scope.state.startTrackingDatePickerConfiguration);
         };
 
 /*
@@ -286,7 +290,10 @@ angular.module('starter')
 	    		"Daily": 24*60*60,
 	    		"Twice a day" : 12*60*60,
 	    		"Three times a day": 8*60*60,
-                "Minutely": 60
+                "Minutely": 60,
+                'Weekly': 7 * 86400,
+                'Every 2 weeks': 14 * 86400,
+                'Every 4 weeks': 28 * 86400
 	    	};
 	    };
 
@@ -308,20 +315,29 @@ angular.module('starter')
                 $scope.openReminderStartTimePicker('third');
             }
         };
+
+        var validationFailure = function (message) {
+            utilsService.showAlert(message);
+            console.error(message);
+            if (typeof Bugsnag !== "undefined") {
+                Bugsnag.notify(message, "trackingReminder is " + JSON.stringify($scope.state.trackingReminder), {}, "error");
+            }
+        };
         
         var validReminderSettings = function(){
+
             if(!$scope.state.trackingReminder.variableCategoryName) {
-                utilsService.showAlert('Please select a variable category');
+                validationFailure('Please select a variable category');
                 return false;
             }
 
             if(!$scope.state.trackingReminder.variableName) {
-                utilsService.showAlert('Please enter a variable name');
+                validationFailure('Please enter a variable name');
                 return false;
             }
 
             if(!$scope.state.trackingReminder.abbreviatedUnitName) {
-                utilsService.showAlert('Please select a unit');
+                validationFailure('Please select a unit');
                 return false;
             } else {
                 $scope.state.trackingReminder.unitId =
@@ -329,7 +345,7 @@ angular.module('starter')
             }
 
             if(!$stateParams.favorite && !$scope.state.trackingReminder.defaultValue && $scope.state.trackingReminder.defaultValue !== 0) {
-                //utilsService.showAlert('Please enter a default value');
+                //validationFailure('Please enter a default value');
                 //return false;
             }
 
@@ -339,7 +355,7 @@ angular.module('starter')
             {
                 if($scope.state.trackingReminder.defaultValue !== null && $scope.state.trackingReminder.defaultValue <
                     $rootScope.unitsIndexedByAbbreviatedName[$scope.state.trackingReminder.abbreviatedUnitName].minimumValue){
-                    utilsService.showAlert($rootScope.unitsIndexedByAbbreviatedName[$scope.state.trackingReminder.abbreviatedUnitName].minimumValue +
+                    validationFailure($rootScope.unitsIndexedByAbbreviatedName[$scope.state.trackingReminder.abbreviatedUnitName].minimumValue +
                         ' is the smallest possible value for the unit ' +
                         $rootScope.unitsIndexedByAbbreviatedName[$scope.state.trackingReminder.abbreviatedUnitName].name +
                         ".  Please select another unit or value.");
@@ -354,7 +370,7 @@ angular.module('starter')
             {
                 if($scope.state.trackingReminder.defaultValue !== null && $scope.state.trackingReminder.defaultValue >
                     $rootScope.unitsIndexedByAbbreviatedName[$scope.state.trackingReminder.abbreviatedUnitName].maximumValue){
-                    utilsService.showAlert($rootScope.unitsIndexedByAbbreviatedName[$scope.state.trackingReminder.abbreviatedUnitName].maximumValue +
+                    validationFailure($rootScope.unitsIndexedByAbbreviatedName[$scope.state.trackingReminder.abbreviatedUnitName].maximumValue +
                         ' is the largest possible value for the unit ' +
                         $rootScope.unitsIndexedByAbbreviatedName[$scope.state.trackingReminder.abbreviatedUnitName].name +
                         ".  Please select another unit or value.");
@@ -364,7 +380,7 @@ angular.module('starter')
 
             if($scope.state.selectedStopTrackingDate && $scope.state.selectedStartTrackingDate){
                 if($scope.state.selectedStopTrackingDate < $scope.state.selectedStartTrackingDate){
-                    utilsService.showAlert("Start date cannot be later than the end date");
+                    validationFailure("Start date cannot be later than the end date");
                     return false;
                 }
             }
@@ -412,15 +428,19 @@ angular.module('starter')
             }
 
             if(!validReminderSettings()){
-                return;
+                return false;
             }
 
             $scope.showLoader('Saving ' + $scope.state.trackingReminder.variableName + ' reminder...');
             $scope.state.trackingReminder.reminderFrequency = getFrequencyChart()[$scope.state.selectedFrequency];
             $scope.state.trackingReminder.valueAndFrequencyTextDescription = $scope.state.selectedFrequency;
+            var dateFormat = 'YYYY-MM-DD';
             if($scope.state.selectedStopTrackingDate){
-                var dateFormat = 'YYYY-MM-DD';
                 $scope.state.trackingReminder.stopTrackingDate = moment($scope.state.selectedStopTrackingDate).format(dateFormat);
+            }
+
+            if($scope.state.selectedStartTrackingDate){
+                $scope.state.trackingReminder.startTrackingDate = moment($scope.state.selectedStartTrackingDate).format(dateFormat);
             }
 
             var remindersArray = [];
@@ -492,8 +512,15 @@ angular.module('starter')
             if(trackingReminder.stopTrackingDate){
                 $scope.state.selectedStopTrackingDate = new Date(trackingReminder.stopTrackingDate);
             }
+
+            if(trackingReminder.startTrackingDate){
+                $scope.state.selectedStartTrackingDate = new Date(trackingReminder.startTrackingDate);
+            }
             
 	    	var reverseFrequencyChart = {
+                604800: 'Weekly',
+                1209600: 'Every 2 weeks',
+                2419200: 'Every 4 weeks',
 	    		86400: "Daily",
 	    		43200: "Every 12 hours",
 	    		28800: "Every 8 hours",
@@ -579,7 +606,7 @@ angular.module('starter')
             reminderService.getTrackingReminderById(reminderIdUrlParameter)
                 .then(function (reminders) {
                     if (reminders.length !== 1) {
-                        utilsService.showAlert("Reminder id " + reminderIdUrlParameter + " not found!", 'assertive');
+                        validationFailure("Reminder id " + reminderIdUrlParameter + " not found!", 'assertive');
                         $ionicHistory.goBack();
                     }
                     $stateParams.reminder = reminders[0];
@@ -703,7 +730,8 @@ angular.module('starter')
                     { text: '<i class="icon ion-android-notifications-none"></i>Record Measurement'},
                     { text: '<i class="icon ion-arrow-graph-up-right"></i>Visualize'},
                     { text: '<i class="icon ion-ios-list-outline"></i>History' },
-                    { text: '<i class="icon ion-settings"></i>' + 'Variable Settings'}
+                    { text: '<i class="icon ion-settings"></i>' + 'Variable Settings'},
+                    { text: '<i class="icon ion-settings"></i>' + 'Show More Units'}
                 ],
                 destructiveText: '<i class="icon ion-trash-a"></i>Delete Favorite',
                 cancelText: '<i class="icon ion-ios-close"></i>Cancel',
@@ -728,6 +756,9 @@ angular.module('starter')
                     if (index === 4) {
                         $state.go('app.variableSettings',
                             {variableName: $scope.state.trackingReminder.variableName});
+                    }
+                    if (index === 5) {
+                        $scope.state.showMoreUnits = true;
                     }
                     return true;
                 },
