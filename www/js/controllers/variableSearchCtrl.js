@@ -10,7 +10,6 @@ angular.module('starter')
             showVariableCategorySelector: false,
             variableSearchResults : [],
             variableCategoryName: $stateParams.variableCategoryName,
-            helpText: variableCategoryService.getVariableCategoryInfo($stateParams.variableCategoryName).helpText,
             variableSearchQuery : {name:''},
             trackingReminder: {},
             noVariablesFoundCard: {
