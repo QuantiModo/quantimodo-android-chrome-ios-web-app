@@ -642,6 +642,24 @@ angular.module('starter',
                 }
             }
         })
+        .state('app.predictorSearch', {
+            url: "/predictor-search",
+            cache: false,
+            params: {
+                title: "Select Outcome",
+                variableSearchPlaceholderText: "Search for an outcome...",
+                helpText: "Search for an outcome like overall mood or a symptom that you want to know the causes of...",
+                variableCategoryName: null,
+                nextState: 'app.predictorsAll',
+                variableSearchParameters: { fallbackToAggregatedCorrelations: true, numberOfUserCorrelationsAsEffect: '(gt)1'}
+            },
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/variable-search.html",
+                    controller: 'VariableSearchCtrl'
+                }
+            }
+        })
         .state('app.searchVariablesWithUserPredictors', {
             url: "/search-variables-with-user-predictors",
             cache: false,

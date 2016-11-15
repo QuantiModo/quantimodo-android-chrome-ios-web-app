@@ -236,5 +236,41 @@ angular.module('starter')
             localStorageService.setItem('cached' + requestName, JSON.stringify(cachedResponse));
         };
 
+        localStorageService.getElementsFromItemWithRequestParams = function (localStorageItemName, requestParams) {
+            var greaterThanPropertyName = null;
+            var greaterThanPropertyValue = null;
+            var lessThanPropertyName = null;
+            var lessThanPropertyValue = null;
+            var filterPropertyName = null;
+            var filterPropertyValue = null;
+
+            var log = [];
+            angular.forEach(requestParams, function(value, key) {
+                if(typeof value === "string" && value.indexOf('(lt)') !== -1){
+                    lessThanPropertyValue = value.replace('(lt)', "");
+                    if(!isNaN(lessThanPropertyValue)){
+                        lessThanPropertyValue = Number(lessThanPropertyValue);
+                    }
+                    lessThanPropertyName = key;
+                } else if (typeof value === "string" && value.indexOf('(gt)') !== -1){
+                    greaterThanPropertyValue = value.replace('(gt)', "");
+                    if(!isNaN(greaterThanPropertyValue)){
+                        greaterThanPropertyValue = Number(greaterThanPropertyValue);
+                    }
+                    greaterThanPropertyName = key;
+                } else if (typeof value === "string"){
+                    filterPropertyValue = value;
+                    if(!isNaN(filterPropertyValue)){
+                        filterPropertyValue = Number(filterPropertyValue);
+                    }
+                    filterPropertyName = key;
+                }
+            }, log);
+
+            return localStorageService.getElementsFromItemWithFilters(localStorageItemName, filterPropertyName,
+                filterPropertyValue, lessThanPropertyName, lessThanPropertyValue, greaterThanPropertyName,
+                greaterThanPropertyValue);
+        };
+
         return localStorageService;
     });
