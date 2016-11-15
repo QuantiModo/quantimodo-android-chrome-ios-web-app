@@ -488,7 +488,9 @@ angular.module('starter')
 
                     var backView = $ionicHistory.backView();
                     if(backView.stateName.toLowerCase().indexOf('search') > -1){
-                        $ionicHistory.goBack(-2);
+                        $state.go(config.appSettings.defaultState);
+                        // This often doesn't work and the user should go to the inbox more anyway
+                        //$ionicHistory.goBack(-2);
                     } else {
                         $ionicHistory.goBack();
                     }
