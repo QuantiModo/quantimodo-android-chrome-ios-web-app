@@ -5,7 +5,6 @@ angular.module('starter')
         $scope.controller_name = "VariableSearchCtrl";
 
         $scope.state = {
-            showVariableSearchCard: false,
             showAddVariableButton: false,
             showVariableCategorySelector: false,
             variableSearchResults : [],
@@ -21,7 +20,6 @@ angular.module('starter')
             variableSearchPlaceholderText: "Search for a variable here..."
         };
 
-        // when an old measurement is tapped to remeasure
         $scope.selectVariable = function(variableObject) {
             console.debug($state.current.name + ": " + "$scope.selectVariable: " + JSON.stringify(variableObject));
             if(variableObject.lastValue !== null){
@@ -50,18 +48,7 @@ angular.module('starter')
             $rootScope.stateParams = $stateParams;
             if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
             if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
-            if ($scope.state.variableCategoryName === 'Anything') {
-                $scope.state.variableCategoryName = null;
-            }
-            if ($scope.state.variableCategoryName && $scope.state.variableCategoryName !== 'Anything') {
-                $scope.state.variableSearchPlaceholderText = "Search for a " +
-                    $filter('wordAliases')(pluralize($scope.state.variableCategoryName, 1).toLowerCase()) + " here...";
-                $scope.state.title = "Select " + $filter('wordAliases')(pluralize($scope.state.variableCategoryName, 1));
-                $scope.state.noVariablesFoundCard.title = 'No ' + $stateParams.variableCategoryName + ' Found';
-                $stateParams.variableSearchParameters.variableCategoryName = $scope.state.variableCategoryName;
-            }
             $scope.showHelpInfoPopupIfNecessary();
-            $scope.state.showVariableSearchCard = true;
             if($scope.state.variableSearchResults.length < 10){
                 populateUserVariables();
             }
@@ -69,16 +56,13 @@ angular.module('starter')
 
         // when a query is searched in the search box
         $scope.onVariableSearch = function(){
-            var params;
             $scope.state.showAddVariableButton = false;
             console.debug($state.current.name + ": " + "Search term: ", $scope.state.variableSearchQuery.name);
             if($scope.state.variableSearchQuery.name.length > 2){
                 $scope.state.searching = true;
-                if ($stateParams.variableSearchParameters.includePublic === false) { // on variable search page, only show user's variables
+                if (!$stateParams.variableSearchParameters.includePublic) { // on variable search page, only show user's variables
                     variableService.searchUserVariables($scope.state.variableSearchQuery.name, $stateParams.variableSearchParameters)
                         .then(function(variables){
-                            console.debug($state.current.name + ": " + "$scope.onVariableSearch: Populating list with " +
-                                "variableService.searchUserVariables results ");
                             $scope.state.showAddVariableButton = false;
                             $scope.state.variableSearchResults = variables;
                             $scope.state.searching = false;
@@ -88,12 +72,9 @@ angular.module('starter')
                                 $scope.state.noVariablesFoundCard.show = false;
                             }
                         });
-                }
-                else { // on add reminder or record measurement search pages; include public variables
+                } else { // on add reminder or record measurement search pages; include public variables
                     variableService.searchUserVariables($scope.state.variableSearchQuery.name, $stateParams.variableSearchParameters)
                         .then(function(variables){
-                            console.debug($state.current.name + ": " + "$scope.onVariableSearch: Populating list with " +
-                                "variableService.searchVariablesIncludePublic results ");
                             $scope.state.showAddVariableButton = false;
                             $scope.state.variableSearchResults = variables;
                             $scope.state.searching = false;
@@ -104,8 +85,7 @@ angular.module('starter')
                                 if ($scope.state.variableSearchResults[resultIndex].name.toLowerCase() ===
                                     $scope.state.variableSearchQuery.name.toLowerCase()) {
                                     found = true;
-                                }
-                                else {
+                                } else {
                                     resultIndex++;
                                 }
                             }
@@ -122,20 +102,16 @@ angular.module('starter')
                                 if ($stateParams.nextState === "app.reminderAdd") {
                                     $scope.state.addNewVariableButtonText = '+ Add ' + $scope.state.variableSearchQuery.name +
                                         ' reminder';
-                                }
-                                else if ($stateParams.nextState === "app.measurementAdd") {
+                                } else if ($stateParams.nextState === "app.measurementAdd") {
                                     $scope.state.addNewVariableButtonText = '+ Add ' + $scope.state.variableSearchQuery.name +
                                         ' measurement';
-                                }
-                                else {
+                                } else {
                                     $scope.state.addNewVariableButtonText = '+ ' + $scope.state.variableSearchQuery.name;
                                 }
-
                             }
                         });
                 }
-            }
-            else {
+            } else {
                 populateUserVariables();
             }
         };
@@ -156,12 +132,9 @@ angular.module('starter')
             }
 
             var commonVariables;
-            if($stateParams.variableSearchParameters){
+            if($stateParams.variableSearchParameters) {
                 commonVariables = localStorageService.getElementsFromItemWithRequestParams(
                     'commonVariables', $stateParams.variableSearchParameters);
-            } else {
-                commonVariables = localStorageService.getElementsFromItemWithFilters(
-                    'commonVariables', 'variableCategoryName', $scope.state.variableCategoryName);
             }
 
             if(commonVariables && commonVariables.length > 0){
@@ -279,6 +252,17 @@ angular.module('starter')
 
             if($stateParams.variableSearchPlaceholderText){
                 $scope.state.variableSearchPlaceholderText = $stateParams.variableSearchPlaceholderText;
+            }
+
+            if ($scope.state.variableCategoryName === 'Anything') {
+                $scope.state.variableCategoryName = null;
+            }
+            if ($scope.state.variableCategoryName && $scope.state.variableCategoryName !== 'Anything') {
+                $scope.state.variableSearchPlaceholderText = "Search for a " +
+                    $filter('wordAliases')(pluralize($scope.state.variableCategoryName, 1).toLowerCase()) + " here...";
+                $scope.state.title = "Select " + $filter('wordAliases')(pluralize($scope.state.variableCategoryName, 1));
+                $scope.state.noVariablesFoundCard.title = 'No ' + $stateParams.variableCategoryName + ' Found';
+                $stateParams.variableSearchParameters.variableCategoryName = $scope.state.variableCategoryName;
             }
         });
 
