@@ -684,8 +684,12 @@ angular.module('starter',
                 variableCategoryName: null,
                 nextState: 'app.predictorsAll',
                 variableSearchParameters: {
+                    includePublic: true,
                     fallbackToAggregatedCorrelations: true,
                     numberOfUserCorrelationsAsEffect: '(gt)1'
+                },
+                commonVariableSearchParameters: {
+                    numberOfAggregateCorrelationsAsEffect: '(gt)1'
                 }
             },
             views: {
