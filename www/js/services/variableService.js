@@ -115,7 +115,7 @@ angular.module('starter')
             var userVariables = localStorageService.getElementsFromItemWithRequestParams(
                 'userVariables', params);
 
-            if(userVariables.length > 0){
+            if(userVariables && userVariables.length > 0){
                 deferred.resolve(userVariables);
                 return deferred.promise;
             }
@@ -173,12 +173,12 @@ angular.module('starter')
             var commonVariables = localStorageService.getElementsFromItemWithRequestParams(
                 'commonVariables', params);
 
-            if(commonVariables.length > 0){
+            if(commonVariables && commonVariables.length > 0){
                 deferred.resolve(commonVariables);
                 return deferred.promise;
             }
 
-            if(localStorageService.getItemSync('commonVariables').length > 10){
+            if(localStorageService.getItemSync('commonVariables')){
                 console.debug("We already have commonVariables that didn't match filters so no need to refresh them");
                 deferred.resolve([]);
                 return deferred.promise;

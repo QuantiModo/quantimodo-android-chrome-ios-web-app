@@ -140,6 +140,10 @@ angular.module('starter')
                     itemAsString = localStorage.getItem(keyIdentifier + localStorageItemName);
                 }
 
+                if(!itemAsString){
+                    return null;
+                }
+
                 var matchingElements = JSON.parse(itemAsString);
 
                 if(matchingElements.length){
