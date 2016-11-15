@@ -110,20 +110,29 @@ angular.module('starter')
             return deferred.promise;
         };
 
-        variableService.getUserVariables = function(){
+        variableService.getUserVariables = function(params){
             var deferred = $q.defer();
-            localStorageService.getElementsFromItemWithFilters('userVariables', function(userVariables){
-                if(userVariables){
-                    deferred.resolve(userVariables);
-                } else {
-                    variableService.refreshUserVariables().then(function (userVariables) {
-                        deferred.resolve(userVariables);
-                    });
-                }
-            }, function(error){
-                $rootScope.syncingUserVariables = false;
+            var userVariables = localStorageService.getElementsFromItemWithRequestParams(
+                'userVariables', params);
+
+            if(userVariables.length > 0){
+                deferred.resolve(userVariables);
+                return deferred.promise;
+            }
+
+            if(localStorageService.getItemSync('userVariables') === "[]"){
+                deferred.resolve([]);
+                return deferred.promise;
+            }
+
+            variableService.refreshUserVariables().then(function () {
+                userVariables = localStorageService.getElementsFromItemWithRequestParams(
+                    'userVariables', params);
+                deferred.resolve(userVariables);
+            }, function (error) {
                 deferred.reject(error);
             });
+
             return deferred.promise;
         };
 
@@ -159,20 +168,30 @@ angular.module('starter')
             }
         };
 
-        variableService.getCommonVariables = function(){
+        variableService.getCommonVariables = function(params){
             var deferred = $q.defer();
-            localStorageService.getElementsFromItemWithFilters('commonVariables', function(commonVariables){
-                if(commonVariables){
-                    deferred.resolve(commonVariables);
-                } else {
-                    variableService.refreshCommonVariables().then(function (commonVariables) {
-                        deferred.resolve(commonVariables);
-                    });
-                }
-            }, function(error){
-                $rootScope.syncingUserVariables = false;
+            var commonVariables = localStorageService.getElementsFromItemWithRequestParams(
+                'commonVariables', params);
+
+            if(commonVariables.length > 0){
+                deferred.resolve(commonVariables);
+                return deferred.promise;
+            }
+
+            if(localStorageService.getItemSync('commonVariables').length > 10){
+                console.debug("We already have commonVariables that didn't match filters so no need to refresh them");
+                deferred.resolve([]);
+                return deferred.promise;
+            }
+
+            variableService.refreshCommonVariables().then(function () {
+                commonVariables = localStorageService.getElementsFromItemWithRequestParams(
+                    'commonVariables', params);
+                deferred.resolve(commonVariables);
+            }, function (error) {
                 deferred.reject(error);
             });
+
             return deferred.promise;
         };
 

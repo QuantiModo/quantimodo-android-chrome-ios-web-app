@@ -29,17 +29,18 @@ angular.module('starter')
             getUnits : function(){
                 var deferred = $q.defer();
 
-                localStorageService.getItem('units',function(units){
+                localStorageService.getItem('units', function(unitsString){
                     if(typeof $rootScope.abbreviatedUnitNames === "undefined"){
                         $rootScope.abbreviatedUnitNames = [];
                     }
-                    if(units && units !== null && units !== "null" && typeof(units[0].advanced) !== "undefined"){
-                        units = JSON.parse(units);
-                        addUnitsToRootScope(units);
-                        deferred.resolve(units);
+                    var unitObjects = JSON.parse(unitsString);
+
+                    if(unitObjects && typeof(unitObjects[0].advanced) !== "undefined"){
+                        addUnitsToRootScope(unitObjects);
+                        deferred.resolve(unitObjects);
                     } else {
-                        unitService.refreshUnits().then(function(){
-                            deferred.resolve(units);
+                        unitService.refreshUnits().then(function(unitObjects){
+                            deferred.resolve(unitObjects);
                         });
                     }
                 });
@@ -49,13 +50,13 @@ angular.module('starter')
 
             refreshUnits : function(){
                 var deferred = $q.defer();
-                QuantiModo.getUnits(function(units){
+                QuantiModo.getUnits(function(unitObjects){
                     if(typeof $rootScope.abbreviatedUnitNames === "undefined"){
                         $rootScope.abbreviatedUnitNames = [];
                     }
-                    localStorageService.setItem('units', JSON.stringify(units));
-                    addUnitsToRootScope(units);
-                    deferred.resolve(units);
+                    localStorageService.setItem('units', JSON.stringify(unitObjects));
+                    addUnitsToRootScope(unitObjects);
+                    deferred.resolve(unitObjects);
                 }, function(error){
                     deferred.reject(error);
                 });

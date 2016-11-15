@@ -127,17 +127,34 @@ angular.module('starter')
                                                       greaterThanPropertyName, greaterThanPropertyValue) {
                 var keyIdentifier = config.appSettings.appStorageIdentifier;
                 var unfilteredElementArray = [];
-                var matchingElements = [];
+                var itemAsString;
+
                 var i;
                 if ($rootScope.isChromeApp) {
                     // Code running in a Chrome extension (content script, background page, etc.)
                     chrome.storage.local.get(keyIdentifier+localStorageItemName,function(localStorageItems){
-                        matchingElements = JSON.parse(localStorageItems[keyIdentifier + localStorageItemName]);
+                        itemAsString = localStorageItems[keyIdentifier + localStorageItemName];
                     });
                 } else {
                     //console.debug(localStorage.getItem(keyIdentifier + localStorageItemName));
-                    var itemAsString = localStorage.getItem(keyIdentifier + localStorageItemName);
-                    matchingElements = JSON.parse(itemAsString);
+                    itemAsString = localStorage.getItem(keyIdentifier + localStorageItemName);
+                }
+
+                var matchingElements = JSON.parse(itemAsString);
+
+                if(matchingElements.length){
+
+                    if(greaterThanPropertyName && typeof matchingElements[0][greaterThanPropertyName] === "undefined") {
+                        console.error(greaterThanPropertyName + " greaterThanPropertyName does not exist for " + localStorageItemName);
+                    }
+
+                    if(filterPropertyName && typeof matchingElements[0][filterPropertyName] === "undefined"){
+                        console.error(filterPropertyName + " filterPropertyName does not exist for " + localStorageItemName);
+                    }
+
+                    if(lessThanPropertyName && typeof matchingElements[0][lessThanPropertyName] === "undefined"){
+                        console.error(lessThanPropertyName + " lessThanPropertyName does not exist for " + localStorageItemName);
+                    }
                 }
 
                 if(filterPropertyName && typeof filterPropertyValue !== "undefined" && filterPropertyValue !== null){

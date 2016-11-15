@@ -51,6 +51,7 @@ angular.module('starter')
             $scope.showHelpInfoPopupIfNecessary();
             if($scope.state.variableSearchResults.length < 10){
                 populateUserVariables();
+                populateCommonVariables();
             }
         };
 
@@ -122,7 +123,9 @@ angular.module('starter')
         });
 
         var populateCommonVariables = function(){
-            
+            if(!$stateParams.variableSearchParameters.includePublic) {
+                return;
+            }
             if($scope.state.variableSearchQuery.name.length > 2){
                 return;
             }
@@ -130,34 +133,16 @@ angular.module('starter')
             if(!$scope.state.variableSearchResults || $scope.state.variableSearchResults.length < 1){
                 $scope.state.searching = true;
             }
-
-            var commonVariables;
-            if($stateParams.variableSearchParameters) {
-                commonVariables = localStorageService.getElementsFromItemWithRequestParams(
-                    'commonVariables', $stateParams.variableSearchParameters);
-            }
-
-            if(commonVariables && commonVariables.length > 0){
-                if($scope.state.variableSearchQuery.name.length < 3 && $scope.state.variableSearchResults.length < 1) {
-                    $scope.state.variableSearchResults = $scope.state.variableSearchResults.concat(commonVariables);
-                    $scope.state.searching = false;
-                }
-            } else {
-                if($scope.state.variableSearchQuery.name.length < 3 && $scope.state.variableSearchResults.length < 1) {
-                    if(!$rootScope.syncingCommonVariables) {
-                        variableService.refreshCommonVariables().then(function () {
-                            if ($scope.state.variableSearchQuery.name.length < 3 && $scope.state.variableSearchResults.length < 1) {
-                                commonVariables = localStorageService.getElementsFromItemWithFilters(
-                                    'commonVariables', 'variableCategoryName', $scope.state.variableCategoryName);
-                                if(commonVariables){
-                                    $scope.state.variableSearchResults = $scope.state.variableSearchResults.concat(commonVariables);
-                                }
-                                $scope.state.searching = false;
-                            }
-                        });
+            variableService.getCommonVariables($stateParams.commonVariableSearchParameters).then(function (commonVariables) {
+                if(commonVariables && commonVariables.length > 0){
+                    if($scope.state.variableSearchQuery.name.length < 3) {
+                        $scope.state.variableSearchResults = $scope.state.variableSearchResults.concat(commonVariables);
+                        $scope.state.searching = false;
                     }
                 }
-            }
+            }, function (error) {
+                console.error(error);
+            });
         };
 
         var populateUserVariables = function(){
@@ -168,54 +153,28 @@ angular.module('starter')
             if(!$scope.state.variableSearchResults || $scope.state.variableSearchResults.length < 1){
                 $scope.state.searching = true;
             }
-            if ($scope.state.variableCategoryName === 'Anything') {
-                $scope.state.variableCategoryName = null;
-            }
 
-            var userVariables;
-            /** @namespace $stateParams.variableSearchParameters */
-            if($stateParams.variableSearchParameters){
-                userVariables = localStorageService.getElementsFromItemWithRequestParams(
-                    'userVariables', $stateParams.variableSearchParameters);
-            } else {
-                userVariables = localStorageService.getElementsFromItemWithFilters(
-                    'userVariables', 'variableCategoryName', $scope.state.variableCategoryName);
-            }
-
-            if(userVariables && userVariables.length > 0){
-                if($scope.state.variableSearchQuery.name.length < 3) {
-                    $scope.state.variableSearchResults = userVariables;
-                    if($stateParams.variableSearchParameters.includePublic) {
-                        var commonVariables = localStorageService.getElementsFromItemWithFilters(
-                            'commonVariables', 'variableCategoryName', $scope.state.variableCategoryName);
-                        $scope.state.variableSearchResults = $scope.state.variableSearchResults.concat(commonVariables);
+            variableService.getUserVariables($stateParams.variableSearchParameters).then(function (userVariables) {
+                if(userVariables && userVariables.length > 0){
+                    if($scope.state.variableSearchQuery.name.length < 3) {
+                        // Put user variables at top of list
+                        var existingResults = $scope.state.variableSearchResults;
+                        $scope.state.variableSearchResults = userVariables;
+                        $scope.state.variableSearchResults = $scope.state.variableSearchResults.concat(existingResults);
+                        $scope.state.searching = false;
+                        $scope.state.noVariablesFoundCard.show = false;
                     }
-                    $scope.state.searching = false;
-                    $scope.state.noVariablesFoundCard.show = false;
-                }
-            } else {
-                if(!$stateParams.variableSearchParameters.includePublic){
-                    $scope.state.noVariablesFoundCard.show = true;
-                }
-                if($scope.state.variableSearchResults.length < 1 && $stateParams.variableSearchParameters.includePublic){
-                    populateCommonVariables();
-                }
-                if($scope.state.variableSearchQuery.name.length < 3 && $scope.state.variableSearchResults.length < 1) {
-                    if(!$rootScope.syncingUserVariables) {
-                        variableService.refreshUserVariables().then(function () {
-                            if ($scope.state.variableSearchQuery.name.length < 3 && $scope.state.variableSearchResults.length < 1) {
-                                userVariables = localStorageService.getElementsFromItemWithFilters(
-                                    'userVariables', 'variableCategoryName', $scope.state.variableCategoryName);
-                                if(userVariables){
-                                    $scope.state.variableSearchResults = userVariables;
-                                }
-                                $scope.state.searching = false;
-                            }
-                        });
+                } else {
+                    if(!$stateParams.variableSearchParameters.includePublic){
+                        $scope.state.noVariablesFoundCard.show = true;
+                    }
+                    if($scope.state.variableSearchResults.length < 1 && $stateParams.variableSearchParameters.includePublic){
+                        populateCommonVariables();
                     }
                 }
-            }
-            
+            }, function (error) {
+                console.error(error);
+            });
         };
 
         // when add new variable is tapped
@@ -257,12 +216,27 @@ angular.module('starter')
             if ($scope.state.variableCategoryName === 'Anything') {
                 $scope.state.variableCategoryName = null;
             }
+
+            if(!$stateParams.variableSearchParameters){
+                $stateParams.variableSearchParameters = {};
+            }
+            if(!$stateParams.variableSearchParameters.variableCategoryName){
+                $stateParams.variableSearchParameters.variableCategoryName = $scope.state.variableCategoryName;
+            }
+
+            if(!$stateParams.commonVariableSearchParameters){
+                $stateParams.commonVariableSearchParameters = $stateParams.variableSearchParameters;
+            }
+
+            if(!$stateParams.commonVariableSearchParameters.variableCategoryName){
+                $stateParams.commonVariableSearchParameters.variableCategoryName = $scope.state.variableCategoryName;
+            }
+
             if ($scope.state.variableCategoryName && $scope.state.variableCategoryName !== 'Anything') {
                 $scope.state.variableSearchPlaceholderText = "Search for a " +
                     $filter('wordAliases')(pluralize($scope.state.variableCategoryName, 1).toLowerCase()) + " here...";
                 $scope.state.title = "Select " + $filter('wordAliases')(pluralize($scope.state.variableCategoryName, 1));
                 $scope.state.noVariablesFoundCard.title = 'No ' + $stateParams.variableCategoryName + ' Found';
-                $stateParams.variableSearchParameters.variableCategoryName = $scope.state.variableCategoryName;
             }
         });
 
