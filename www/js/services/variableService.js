@@ -178,9 +178,8 @@ angular.module('starter')
                 return deferred.promise;
             }
 
-            commonVariables = localStorageService.getItemSync('commonVariables');
-            if(commonVariables){
-                console.debug("We already have commonVariables that didn't match filters so no need to refresh them: " + commonVariables);
+            if(localStorageService.getItemSync('commonVariables').length > 10){
+                console.debug("We already have commonVariables that didn't match filters so no need to refresh them");
                 deferred.resolve([]);
                 return deferred.promise;
             }
