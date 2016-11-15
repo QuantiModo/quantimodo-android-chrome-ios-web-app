@@ -35,7 +35,7 @@ angular.module('starter')
                     }
                     var unitObjects = JSON.parse(unitsString);
 
-                    if(typeof(unitObjects[0].advanced) !== "undefined"){
+                    if(unitObjects && typeof(unitObjects[0].advanced) !== "undefined"){
                         addUnitsToRootScope(unitObjects);
                         deferred.resolve(unitObjects);
                     } else {
