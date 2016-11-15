@@ -135,7 +135,7 @@ angular.module('starter')
             }
             variableService.getCommonVariables($stateParams.commonVariableSearchParameters).then(function (commonVariables) {
                 if(commonVariables && commonVariables.length > 0){
-                    if($scope.state.variableSearchQuery.name.length < 3 && $scope.state.variableSearchResults.length < 1) {
+                    if($scope.state.variableSearchQuery.name.length < 3) {
                         $scope.state.variableSearchResults = $scope.state.variableSearchResults.concat(commonVariables);
                         $scope.state.searching = false;
                     }
@@ -157,7 +157,10 @@ angular.module('starter')
             variableService.getUserVariables($stateParams.variableSearchParameters).then(function (userVariables) {
                 if(userVariables && userVariables.length > 0){
                     if($scope.state.variableSearchQuery.name.length < 3) {
-                        $scope.state.variableSearchResults = $scope.state.variableSearchResults.concat(userVariables);
+                        // Put user variables at top of list
+                        var existingResults = $scope.state.variableSearchResults;
+                        $scope.state.variableSearchResults = userVariables;
+                        $scope.state.variableSearchResults = $scope.state.variableSearchResults.concat(existingResults);
                         $scope.state.searching = false;
                         $scope.state.noVariablesFoundCard.show = false;
                     }
