@@ -140,6 +140,21 @@ angular.module('starter')
                     matchingElements = JSON.parse(itemAsString);
                 }
 
+                if(matchingElements.length){
+
+                    if(greaterThanPropertyName && typeof matchingElements[0][greaterThanPropertyName] === "undefined") {
+                        console.error(greaterThanPropertyName + " greaterThanPropertyName does not exist for " + localStorageItemName);
+                    }
+
+                    if(filterPropertyName && typeof matchingElements[0][filterPropertyName] === "undefined"){
+                        console.error(filterPropertyName + " filterPropertyName does not exist for " + localStorageItemName);
+                    }
+
+                    if(lessThanPropertyName && typeof matchingElements[0][lessThanPropertyName] === "undefined"){
+                        console.error(lessThanPropertyName + " lessThanPropertyName does not exist for " + localStorageItemName);
+                    }
+                }
+
                 if(filterPropertyName && typeof filterPropertyValue !== "undefined" && filterPropertyValue !== null){
                     if(matchingElements){
                         unfilteredElementArray = matchingElements;
