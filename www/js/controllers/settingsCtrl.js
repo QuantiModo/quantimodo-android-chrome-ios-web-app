@@ -128,7 +128,7 @@ angular.module('starter')
 						"refreshTrackingRemindersAndScheduleAlarms will schedule a single notification for highest " +
 						"frequency reminder");
                     if(!$rootScope.deviceToken){
-                        console.warning("Could not find device token for push notifications so scheduling combined local notifications");
+                        console.warn("Could not find device token for push notifications so scheduling combined local notifications");
                         reminderService.refreshTrackingRemindersAndScheduleAlarms();
                     }
 				});
@@ -149,12 +149,14 @@ angular.module('starter')
 
 		$scope.showAppInfoPopup = function () {
 
-			var template = "QuantiModo Client Id: " + utilsService.getClientId();
+			var template = "Please provide the following information when submitting a bug report: <br><br>";
+			template =  template + $rootScope.appSettings.appName + ' ' + $rootScope.appVersion + "<br><br>";
+			template = template + "QuantiModo Client Id: " + utilsService.getClientId();
 			if($rootScope.deviceToken){
 				template = template + "<br><br>" + "Push Notification Device Token: " + $rootScope.deviceToken;
 			}
 			$ionicPopup.alert({
-				title: $rootScope.appSettings.appName + ' ' + $rootScope.appVersion,
+				title: "App Information",
 				template: template
 			});
 		};
