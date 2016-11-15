@@ -120,6 +120,11 @@ angular.module('starter')
                 return deferred.promise;
             }
 
+            if(localStorageService.getItemSync('userVariables') === "[]"){
+                deferred.resolve([]);
+                return deferred.promise;
+            }
+
             variableService.refreshUserVariables().then(function () {
                 userVariables = localStorageService.getElementsFromItemWithRequestParams(
                     'userVariables', params);

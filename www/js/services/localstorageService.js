@@ -127,18 +127,20 @@ angular.module('starter')
                                                       greaterThanPropertyName, greaterThanPropertyValue) {
                 var keyIdentifier = config.appSettings.appStorageIdentifier;
                 var unfilteredElementArray = [];
-                var matchingElements = [];
+                var itemAsString;
+
                 var i;
                 if ($rootScope.isChromeApp) {
                     // Code running in a Chrome extension (content script, background page, etc.)
                     chrome.storage.local.get(keyIdentifier+localStorageItemName,function(localStorageItems){
-                        matchingElements = JSON.parse(localStorageItems[keyIdentifier + localStorageItemName]);
+                        itemAsString = localStorageItems[keyIdentifier + localStorageItemName];
                     });
                 } else {
                     //console.debug(localStorage.getItem(keyIdentifier + localStorageItemName));
-                    var itemAsString = localStorage.getItem(keyIdentifier + localStorageItemName);
-                    matchingElements = JSON.parse(itemAsString);
+                    itemAsString = localStorage.getItem(keyIdentifier + localStorageItemName);
                 }
+
+                var matchingElements = JSON.parse(itemAsString);
 
                 if(matchingElements.length){
 
