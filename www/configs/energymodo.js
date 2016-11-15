@@ -454,19 +454,26 @@ config.appSettings  = {
             expandedIcon : 'ion-chevron-down'
         },
         {
-            title : 'For Everyone',
+            title : 'Predictor Search',
             isSubMenuChild : true,
             showSubMenuVariable : 'showPredictorSearchSubMenu',
-            href : '#/app/search-common-relationships',
-            icon : 'ion-ios-people'
+            href : '#/app/predictor-search',
+            icon : 'ion-search'
         },
-        {
-            title : 'For You',
-            isSubMenuChild : true,
-            showSubMenuVariable : 'showPredictorSearchSubMenu',
-            href : '#/app/search-user-relationships',
-            icon : 'ion-person'
-        },
+        /*        {
+         title : 'For Everyone',
+         isSubMenuChild : true,
+         showSubMenuVariable : 'showPredictorSearchSubMenu',
+         href : '#/app/search-common-relationships',
+         icon : 'ion-ios-people'
+         },
+         {
+         title : 'For You',
+         isSubMenuChild : true,
+         showSubMenuVariable : 'showPredictorSearchSubMenu',
+         href : '#/app/search-user-relationships',
+         icon : 'ion-person'
+         },*/
         {
             title : 'High Energy',
             isSubMenuChild : true,
