@@ -178,6 +178,13 @@ angular.module('starter')
                 return deferred.promise;
             }
 
+            commonVariables = localStorageService.getItemSync('commonVariables');
+            if(commonVariables){
+                console.debug("We already have commonVariables that didn't match filters so no need to refresh them: " + commonVariables);
+                deferred.resolve([]);
+                return deferred.promise;
+            }
+
             variableService.refreshCommonVariables().then(function () {
                 commonVariables = localStorageService.getElementsFromItemWithRequestParams(
                     'commonVariables', params);
