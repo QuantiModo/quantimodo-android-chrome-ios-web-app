@@ -447,7 +447,11 @@ angular.module('starter',
                 variableObject : null,
                 nextState: 'app.measurementAdd',
                 variableCategoryName: null,
-                manualTrackingVariablesOnly: true
+                variableSearchParameters: {
+                    limit: 100,
+                    includePublic: true,
+                    manualTracking: true
+                }
             },
             views: {
                 'menuContent': {
@@ -464,7 +468,11 @@ angular.module('starter',
                 fromUrl : null,
                 measurement : null,
                 nextState: 'app.measurementAdd',
-                manualTrackingVariablesOnly: true
+                variableSearchParameters: {
+                    limit: 100,
+                    includePublic: true,
+                    manualTracking: true
+                }
             },
             views: {
                 'menuContent': {
@@ -482,7 +490,11 @@ angular.module('starter',
                 measurement : null,
                 reminderSearch: true,
                 nextState: 'app.reminderAdd',
-                manualTrackingVariablesOnly: true
+                variableSearchParameters: {
+                    limit: 100,
+                    includePublic: true,
+                    manualTracking: true
+                }
             },
             views: {
                 'menuContent': {
@@ -500,7 +512,11 @@ angular.module('starter',
                 measurement : null,
                 reminderSearch: true,
                 nextState: 'app.reminderAdd',
-                manualTrackingVariablesOnly: true
+                variableSearchParameters: {
+                    limit: 100,
+                    includePublic: true,
+                    manualTracking: true
+                }
             },
             views: {
                 'menuContent': {
@@ -519,7 +535,11 @@ angular.module('starter',
                 favoriteSearch: true,
                 nextState: 'app.favoriteAdd',
                 pageTitle: 'Add a favorite',
-                manualTrackingVariablesOnly: true
+                variableSearchParameters: {
+                    limit: 100,
+                    includePublic: true,
+                    manualTracking: true
+                }
             },
             views: {
                 'menuContent': {
@@ -538,7 +558,11 @@ angular.module('starter',
                 favoriteSearch: true,
                 nextState: 'app.favoriteAdd',
                 pageTitle: 'Add a favorite',
-                manualTrackingVariablesOnly: true
+                variableSearchParameters: {
+                    limit: 100,
+                    includePublic: true,
+                    manualTracking: true
+                }
             },
             views: {
                 'menuContent': {
@@ -614,8 +638,12 @@ angular.module('starter',
                 fromState: null,
                 fromUrl: null,
                 measurement: null,
-                doNotIncludePublicVariables: true,
-                nextState: 'app.charts'
+                nextState: 'app.charts',
+                variableSearchParameters: {
+                    limit: 100,
+                    includePublic: false,
+                    manualTracking: false
+                }
             },
             views: {
                 'menuContent': {
@@ -632,8 +660,12 @@ angular.module('starter',
                 fromState: null,
                 fromUrl: null,
                 measurement: null,
-                doNotIncludePublicVariables: true,
-                nextState: 'app.charts'
+                nextState: 'app.charts',
+                variableSearchParameters: {
+                    limit: 100,
+                    includePublic: false,
+                    manualTracking: false
+                }
             },
             views: {
                 'menuContent': {
@@ -651,7 +683,10 @@ angular.module('starter',
                 helpText: "Search for an outcome like overall mood or a symptom that you want to know the causes of...",
                 variableCategoryName: null,
                 nextState: 'app.predictorsAll',
-                variableSearchParameters: { fallbackToAggregatedCorrelations: true, numberOfUserCorrelationsAsEffect: '(gt)1'}
+                variableSearchParameters: {
+                    fallbackToAggregatedCorrelations: true,
+                    numberOfUserCorrelationsAsEffect: '(gt)1'
+                }
             },
             views: {
                 'menuContent': {
@@ -665,9 +700,12 @@ angular.module('starter',
             cache: false,
             params: {
                 variableCategoryName: null,
-                doNotIncludePublicVariables: true,
                 nextState: 'app.predictors',
-                variableSearchParameters: { numberOfUserCorrelations: '(gt)1'}
+                variableSearchParameters: {
+                    includePublic: false,
+                    manualTracking: false,
+                    numberOfUserCorrelations: '(gt)1'
+                }
             },
             views: {
                 'menuContent': {
@@ -681,9 +719,12 @@ angular.module('starter',
             cache: false,
             params: {
                 variableCategoryName: null,
-                doNotIncludePublicVariables: true,
                 nextState: 'app.predictors',
-                variableSearchParameters: { numberOfUserCorrelations: '(gt)1'}
+                variableSearchParameters: {
+                    includePublic: true,
+                    manualTracking: false,
+                    numberOfAggregatedCorrelations: '(gt)1'
+                }
             },
             views: {
                 'menuContent': {

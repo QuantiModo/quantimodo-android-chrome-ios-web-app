@@ -21,8 +21,10 @@ angular.module('starter')
             }
 
             QuantiModo.searchUserVariables(variableSearchQuery, params, function(vars){
-                $rootScope.lastSearchUserVariablesPromise.resolve(vars);
-                $rootScope.lastSearchUserVariablesPromise = null;
+                if($rootScope.lastSearchUserVariablesPromise){
+                    $rootScope.lastSearchUserVariablesPromise.resolve(vars);
+                    $rootScope.lastSearchUserVariablesPromise = null;
+                }
             }, function(error){
                 $rootScope.lastSearchUserVariablesPromise.reject(error);
                 $rootScope.lastSearchUserVariablesPromise = null;
