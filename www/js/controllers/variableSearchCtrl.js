@@ -17,10 +17,11 @@ angular.module('starter')
                 show: false,
                 title: 'No Variables Found'
             },
-            searching: true
+            searching: true,
+            title : "Select Variable",
+            variableSearchPlaceholderText: "Search for a variable here..."
         };
 
-        
         // when an old measurement is tapped to remeasure
         $scope.selectVariable = function(variableObject) {
             console.debug($state.current.name + ": " + "$scope.selectVariable: " + JSON.stringify(variableObject));
@@ -46,10 +47,6 @@ angular.module('starter')
             $rootScope.stateParams = $stateParams;
             if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
             if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
-
-            $scope.state.variableSearchPlaceholderText = "Search for a variable here...";
-            $scope.state.title = "Select Variable";
-
             if ($scope.state.variableCategoryName && $scope.state.variableCategoryName !== 'Anything') {
                 $scope.state.variableSearchPlaceholderText = "Search for a " +
                     $filter('wordAliases')(pluralize($scope.state.variableCategoryName, 1).toLowerCase()) + " here...";
@@ -57,13 +54,11 @@ angular.module('starter')
                 $scope.state.noVariablesFoundCard.title = 'No ' + $stateParams.variableCategoryName + ' Found';
 
             }
-
             $scope.showHelpInfoPopupIfNecessary();
             $scope.state.showVariableSearchCard = true;
             if($scope.state.variableSearchResults.length < 10){
                 populateUserVariables();
             }
-
         };
 
         // when a query is searched in the search box
@@ -169,8 +164,15 @@ angular.module('starter')
                 $scope.state.searching = true;
             }
 
-            var commonVariables = localStorageService.getElementsFromItemWithFilters(
-                'commonVariables', 'variableCategoryName', $scope.state.variableCategoryName);
+            var commonVariables;
+            if($stateParams.variableSearchParameters){
+                commonVariables = localStorageService.getElementsFromItemWithRequestParams(
+                    'commonVariables', $stateParams.variableSearchParameters);
+            } else {
+                commonVariables = localStorageService.getElementsFromItemWithFilters(
+                    'commonVariables', 'variableCategoryName', $scope.state.variableCategoryName);
+            }
+
             if(commonVariables && commonVariables.length > 0){
                 if($scope.state.variableSearchQuery.name.length < 3 && $scope.state.variableSearchResults.length < 1) {
                     $scope.state.variableSearchResults = $scope.state.variableSearchResults.concat(commonVariables);
@@ -206,8 +208,15 @@ angular.module('starter')
                 $scope.state.variableCategoryName = null;
             }
 
-            var userVariables = localStorageService.getElementsFromItemWithFilters(
-                'userVariables', 'variableCategoryName', $scope.state.variableCategoryName);
+            var userVariables;
+            if($stateParams.variableSearchParameters){
+                userVariables = localStorageService.getElementsFromItemWithRequestParams(
+                    'userVariables', $stateParams.variableSearchParameters);
+            } else {
+                userVariables = localStorageService.getElementsFromItemWithFilters(
+                    'userVariables', 'variableCategoryName', $scope.state.variableCategoryName);
+            }
+
             if(userVariables && userVariables.length > 0){
                 if($scope.state.variableSearchQuery.name.length < 3) {
                     $scope.state.variableSearchResults = userVariables;
@@ -261,13 +270,26 @@ angular.module('starter')
             }
         };
 
-        
         // update data when view is navigated to
         $scope.$on('$ionicView.enter', function(e) { console.debug("Entering state " + $state.current.name);
             $scope.hideLoader();
             $scope.init();
         });
 
+        // update data when view is navigated to
+        $scope.$on('$ionicView.beforeEnter', function(e) { console.debug("Entering state " + $state.current.name);
+            if($stateParams.helpText){
+                $scope.state.helpText = $stateParams.helpText;
+            }
+
+            if($stateParams.title){
+                $scope.state.title = $stateParams.title;
+            }
+
+            if($stateParams.variableSearchPlaceholderText){
+                $scope.state.variableSearchPlaceholderText = $stateParams.variableSearchPlaceholderText;
+            }
+        });
 
         $scope.matchEveryWord = function() {
             return function( item ) {
@@ -302,6 +324,5 @@ angular.module('starter')
 
             };
         };
-
 
     });
