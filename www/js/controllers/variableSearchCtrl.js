@@ -51,9 +51,7 @@ angular.module('starter')
             $scope.showHelpInfoPopupIfNecessary();
             if($scope.state.variableSearchResults.length < 10){
                 populateUserVariables();
-                if($stateParams.variableSearchParameters.includePublic) {
-                    populateCommonVariables();
-                }
+                populateCommonVariables();
             }
         };
 
@@ -125,6 +123,9 @@ angular.module('starter')
         });
 
         var populateCommonVariables = function(){
+            if(!$stateParams.variableSearchParameters.includePublic) {
+                return;
+            }
             if($scope.state.variableSearchQuery.name.length > 2){
                 return;
             }
