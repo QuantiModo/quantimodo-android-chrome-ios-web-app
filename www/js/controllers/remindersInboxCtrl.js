@@ -31,7 +31,8 @@ angular.module('starter')
 			loading : true,
 			lastButtonPressTimeStamp : 0,
 			lastClientX : 0,
-			lastClientY : 0
+			lastClientY : 0,
+			numberOfDisplayedNotifications: 0
 	    };
 
 		if(typeof config.appSettings.remindersInbox.showAddHowIFeelResponseButton !== 'undefined'){
