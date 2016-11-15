@@ -678,7 +678,7 @@ angular.module('starter',
             url: "/predictor-search",
             cache: false,
             params: {
-                title: "Select Outcome",
+                title: "Outcomes", // Gets cut off on iPod if any longer
                 variableSearchPlaceholderText: "Search for an outcome...",
                 helpText: "Search for an outcome like overall mood or a symptom that you want to know the causes of...",
                 variableCategoryName: null,
