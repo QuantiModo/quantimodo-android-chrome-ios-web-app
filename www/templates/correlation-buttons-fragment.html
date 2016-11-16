@@ -13,14 +13,14 @@
         </div>
     </div>
     &nbsp;
-    <div ng-click="goToStudyPage(correlationObject)" class="show-inline" >
+    <div ng-hide="state.hideStudyButton" ng-click="goToStudyPage(correlationObject)" class="show-inline" >
         &nbsp;<div class="tooltip" title="Go to Full Study">
             <i style="font-size: 32px;" class="ion-ios-book-outline"></i>
         </div>
     </div>
     &nbsp;
     &nbsp;
-    <div ng-click="goToVariableSettings(correlationObject)" class="show-inline">
+    <div ng-click="goToVariableSettingsForCauseVariable(correlationObject)" class="show-inline">
         &nbsp;<div class="tooltip" title="Change Analysis Parameters">
             <i  style="font-size: 32px;" class="ion-android-options"></i>
         </div>

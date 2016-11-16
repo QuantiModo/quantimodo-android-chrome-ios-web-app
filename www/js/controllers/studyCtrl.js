@@ -13,7 +13,8 @@ angular.module('starter')
             if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
             $scope.state = {
                 title: 'Loading study...',
-                requestParams: {}
+                requestParams: {},
+                hideStudyButton: true
             };
             
             $scope.correlationObject = $stateParams.correlationObject;
