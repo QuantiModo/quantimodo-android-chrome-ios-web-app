@@ -992,8 +992,8 @@ angular.module('starter',
             },
             views: {
                 'menuContent': {
-                    templateUrl: "templates/measurements.html",
-                    controller: 'MeasurementsCtrl'
+                    templateUrl: "templates/Yimeasurements.html",
+                    controller: 'YiMeasurementsCtrl'
                 }
             }
         })
@@ -1174,7 +1174,7 @@ angular.module('starter',
 
     if (window.localStorage.introSeen) {
         console.debug("Intro seen so going to inbox");
-        $urlRouterProvider.otherwise('/app/reminders');
+        $urlRouterProvider.otherwise('/app/reminders-inbox');
     } else {
         console.debug("Intro not seen so going to intro");
         $urlRouterProvider.otherwise('/');
