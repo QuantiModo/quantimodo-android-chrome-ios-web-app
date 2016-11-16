@@ -1499,6 +1499,17 @@ gulp.task('generateAndroidResources', ['copyAppResources'], function(callback){
 	});
 });
 
+gulp.task('ionicRunAndroid', [], function(callback){
+	return execute("ionic run android", function(error){
+		if(error !== null){
+			console.log("ERROR GENERATING Android RESOURCES for " + process.env.LOWERCASE_APP_NAME + ": " + error);
+		} else {
+			console.log("\n***Android RESOURCES GENERATED for " + process.env.LOWERCASE_APP_NAME);
+			callback();
+		}
+	});
+});
+
 gulp.task('prepareAndroidApp', function(callback){
 	runSequence(
 		'setVersionNumberEnvs',
@@ -1508,6 +1519,12 @@ gulp.task('prepareAndroidApp', function(callback){
 		'copyPrivateConfig',
 		'ionicPlatformAddAndroid',
 		'copyAndroidResources',
+		callback);
+});
+
+gulp.task('buildAndroidApp', function(callback){
+	runSequence(
+		'prepareAndroidApp',
 		'cordovaBuildAndroidRelease',
 		'cordovaBuildAndroidDebug',
 		callback);
@@ -1517,6 +1534,14 @@ gulp.task('prepareMindFirstAndroid', function(callback){
 	runSequence(
 		'setMindFirstEnvs',
 		'prepareAndroidApp',
+		callback);
+});
+
+gulp.task('runMindFirstAndroid', function(callback){
+	runSequence(
+		'setMindFirstEnvs',
+		'prepareAndroidApp',
+		'ionicRunAndroid',
 		callback);
 });
 
