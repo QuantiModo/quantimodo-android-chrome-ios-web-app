@@ -81,6 +81,13 @@ gulp.task('generateXmlConfigAndUpdateAppsJs', ['getAppName'], function(){
 	return deferred.promise;
 });
 
+gulp.task('deleteNodeModules', function(){
+	console.log('If file is locked in Windows, open Resource Monitor as Administrator.  Then go to CPU -> Associated ' +
+		'Handles and search for the locked file.  Then right click to kill all the processes using it.  Then try this ' +
+		'task again.');
+	return gulp.src("node_modules/*", { read: false }).pipe(clean());
+});
+
 gulp.task('updateAppsJs', function(){
 	gulp.src('./www/js/apps.js')
 		.pipe(change(function(content){
