@@ -7,15 +7,19 @@ angular.module('starter')
 
         utilsService.getEnv = function(){
             var env = "production";
-            if(window.location.origin.indexOf('local')> -1){
+            
+            if(window.location.origin.indexOf('local') !== -1){
                 env = "development"; //On localhost
-            } else if(window.location.origin.indexOf('file://')){
-                env = this.environment;
-            } else if(window.location.origin.indexOf('staging') > -1){
-                env = "staging";
-            } else if(window.location.origin.indexOf('ionic.quantimo.do')){
+            }
+
+            if(window.location.origin.indexOf('staging') !== -1){
                 env = "staging";
             }
+
+            if(window.location.origin.indexOf('ionic.quantimo.do') !== -1){
+                env = "staging";
+            }
+
             return env;
         };
 

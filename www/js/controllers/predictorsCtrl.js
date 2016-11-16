@@ -103,22 +103,29 @@ angular.module('starter')
             if($rootScope.urlParameters.aggregated){
                 $stateParams.aggregated = $rootScope.urlParameters.aggregated;
             }
+
+            if($stateParams.requestParams){
+                $scope.state.requestParams = $stateParams.requestParams;
+            }
             
             if($rootScope.urlParameters.causeVariableName){
                 $scope.state.requestParams.causeVariableName = $rootScope.urlParameters.causeVariableName;
-                $scope.state.variableName = $rootScope.urlParameters.causeVariableName;
-            } else if($rootScope.urlParameters.effectVariableName){
-                $scope.state.variableName = $rootScope.urlParameters.effectVariableName;
+            }
+
+            if($rootScope.urlParameters.effectVariableName){
                 $scope.state.requestParams.effectVariableName = $rootScope.urlParameters.effectVariableName;
-            } else if ($stateParams.causeVariableName){
-                $scope.state.requestParams.causeVariableName = $stateParams.causeVariableName;
-                $scope.state.variableName = $stateParams.causeVariableName;
-            } else if ($stateParams.effectVariableName) {
-                $scope.state.requestParams.effectVariableName = $stateParams.effectVariableName;
-                $scope.state.variableName = $stateParams.effectVariableName;
-            } else {
+            }
+
+            if(!$scope.state.requestParams.causeVariableName && ! $scope.state.requestParams.effectVariableName) {
                 $scope.state.requestParams.effectVariableName = config.appSettings.primaryOutcomeVariableDetails.name;
-                $scope.state.variableName = config.appSettings.primaryOutcomeVariableDetails.name;
+            }
+
+            if ($scope.state.requestParams.causeVariableName){
+                $scope.state.variableName = $scope.state.requestParams.causeVariableName;
+            }
+
+            if ($scope.state.requestParams.effectVariableName) {
+                $scope.state.variableName = $scope.state.requestParams.effectVariableName;
             }
 
             if($stateParams.valence === 'positive'){
