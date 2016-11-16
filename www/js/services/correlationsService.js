@@ -6,6 +6,14 @@ angular.module('starter')
             Date.now = function() { return new Date().getTime(); };
         }
 
+        var useLocalGaugeImage = function (correlationObjects) {
+            for(var i = 0; i < correlationObjects.length; i++){
+                correlationObjects[i].gaugeImage = correlationObjects[i].gaugeImage.substring(correlationObjects[i].gaugeImage.lastIndexOf("/") + 1);
+                correlationObjects[i].gaugeImage = 'img/gauges/' + correlationObjects[i].gaugeImage;
+            }
+            return correlationObjects;
+        };
+
         return {
             getAggregatedCorrelations : function(params){
                 var deferred = $q.defer();
@@ -16,6 +24,7 @@ angular.module('starter')
                 }
 
                 QuantiModo.getAggregatedCorrelations(params, function(correlationObjects){
+                    correlationObjects = useLocalGaugeImage(correlationObjects);
                     localStorageService.storeCachedResponse('GetAggregatedCorrelations', params, correlationObjects);
                     deferred.resolve(correlationObjects);
                 }, function(error){
@@ -35,6 +44,7 @@ angular.module('starter')
                     return deferred.promise;
                 }
                 QuantiModo.getUserCorrelations(params, function(correlationObjects){
+                    correlationObjects = useLocalGaugeImage(correlationObjects);
                     localStorageService.storeCachedResponse('GetUserCorrelations', params, correlationObjects);
                     deferred.resolve(correlationObjects);
                 }, function(error){
