@@ -77,6 +77,11 @@ angular.module('starter')
             to: new Date() //today
         };
 
+        $scope.goToVariableSettingsForCauseVariable = function(correlationObject) {
+            $state.go('app.variableSettings',
+                {variableName: correlationObject.causeVariableName});
+        };
+
         $scope.goToState = function (state, stateParameters) {
             var variableCategoryName = null;
             if (stateParameters && stateParameters.variableCategoryName) {
