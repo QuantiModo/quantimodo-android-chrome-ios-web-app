@@ -41,7 +41,7 @@
                         width: 100%;
                         border-radius: 4px;"
                     ></i>-->
-                    <img src="{{correlationObject.causeVariableImageUrl}}">
+                    <img ng-src="{{correlationObject.causeVariableImageUrl}}">
                     <p ng-click="goToStudyPage(correlationObject)"
                             style="
                             height: 40px;
@@ -53,7 +53,7 @@
                     </p>
                 </div>
                 <div class="item item-body">
-                    <img  src="{{correlationObject.gaugeImage}}">
+                    <img ng-src="{{correlationObject.gaugeImage}}">
                     <p>{{correlationObject.predictorExplanation}}</p>
                     <p>{{correlationObject.valuePredictingHighOutcomeExplanation}}</p>
                     <p>{{correlationObject.valuePredictingLowOutcomeExplanation}}</p>
