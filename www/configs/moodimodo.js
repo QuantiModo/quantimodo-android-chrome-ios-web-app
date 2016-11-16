@@ -473,6 +473,13 @@ config.appSettings  = {
             expandedIcon : 'ion-chevron-down'
         },
         {
+            title : 'Predictor Search',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showPredictorSearchSubMenu',
+            href : '#/app/predictor-search',
+            icon : 'ion-search'
+        },
+/*        {
             title : 'For Everyone',
             isSubMenuChild : true,
             showSubMenuVariable : 'showPredictorSearchSubMenu',
@@ -485,7 +492,7 @@ config.appSettings  = {
             showSubMenuVariable : 'showPredictorSearchSubMenu',
             href : '#/app/search-user-relationships',
             icon : 'ion-person'
-        },
+        },*/
         {
             title : 'Positive Mood',
             isSubMenuChild : true,

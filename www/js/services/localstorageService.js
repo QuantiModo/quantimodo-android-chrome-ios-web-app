@@ -127,17 +127,38 @@ angular.module('starter')
                                                       greaterThanPropertyName, greaterThanPropertyValue) {
                 var keyIdentifier = config.appSettings.appStorageIdentifier;
                 var unfilteredElementArray = [];
-                var matchingElements = [];
+                var itemAsString;
+
                 var i;
                 if ($rootScope.isChromeApp) {
                     // Code running in a Chrome extension (content script, background page, etc.)
                     chrome.storage.local.get(keyIdentifier+localStorageItemName,function(localStorageItems){
-                        matchingElements = JSON.parse(localStorageItems[keyIdentifier + localStorageItemName]);
+                        itemAsString = localStorageItems[keyIdentifier + localStorageItemName];
                     });
                 } else {
                     //console.debug(localStorage.getItem(keyIdentifier + localStorageItemName));
-                    var itemAsString = localStorage.getItem(keyIdentifier + localStorageItemName);
-                    matchingElements = JSON.parse(itemAsString);
+                    itemAsString = localStorage.getItem(keyIdentifier + localStorageItemName);
+                }
+
+                if(!itemAsString){
+                    return null;
+                }
+
+                var matchingElements = JSON.parse(itemAsString);
+
+                if(matchingElements.length){
+
+                    if(greaterThanPropertyName && typeof matchingElements[0][greaterThanPropertyName] === "undefined") {
+                        console.error(greaterThanPropertyName + " greaterThanPropertyName does not exist for " + localStorageItemName);
+                    }
+
+                    if(filterPropertyName && typeof matchingElements[0][filterPropertyName] === "undefined"){
+                        console.error(filterPropertyName + " filterPropertyName does not exist for " + localStorageItemName);
+                    }
+
+                    if(lessThanPropertyName && typeof matchingElements[0][lessThanPropertyName] === "undefined"){
+                        console.error(lessThanPropertyName + " lessThanPropertyName does not exist for " + localStorageItemName);
+                    }
                 }
 
                 if(filterPropertyName && typeof filterPropertyValue !== "undefined" && filterPropertyValue !== null){
@@ -234,6 +255,42 @@ angular.module('starter')
                 expirationTimeMilliseconds: Date.now() + 86400 * 1000
             };
             localStorageService.setItem('cached' + requestName, JSON.stringify(cachedResponse));
+        };
+
+        localStorageService.getElementsFromItemWithRequestParams = function (localStorageItemName, requestParams) {
+            var greaterThanPropertyName = null;
+            var greaterThanPropertyValue = null;
+            var lessThanPropertyName = null;
+            var lessThanPropertyValue = null;
+            var filterPropertyName = null;
+            var filterPropertyValue = null;
+
+            var log = [];
+            angular.forEach(requestParams, function(value, key) {
+                if(typeof value === "string" && value.indexOf('(lt)') !== -1){
+                    lessThanPropertyValue = value.replace('(lt)', "");
+                    if(!isNaN(lessThanPropertyValue)){
+                        lessThanPropertyValue = Number(lessThanPropertyValue);
+                    }
+                    lessThanPropertyName = key;
+                } else if (typeof value === "string" && value.indexOf('(gt)') !== -1){
+                    greaterThanPropertyValue = value.replace('(gt)', "");
+                    if(!isNaN(greaterThanPropertyValue)){
+                        greaterThanPropertyValue = Number(greaterThanPropertyValue);
+                    }
+                    greaterThanPropertyName = key;
+                } else if (typeof value === "string"){
+                    filterPropertyValue = value;
+                    if(!isNaN(filterPropertyValue)){
+                        filterPropertyValue = Number(filterPropertyValue);
+                    }
+                    filterPropertyName = key;
+                }
+            }, log);
+
+            return localStorageService.getElementsFromItemWithFilters(localStorageItemName, filterPropertyName,
+                filterPropertyValue, lessThanPropertyName, lessThanPropertyValue, greaterThanPropertyName,
+                greaterThanPropertyValue);
         };
 
         return localStorageService;

@@ -1,8 +1,8 @@
 <ion-view hide-nav-bar="hideNavigationMenu" view-title="Variable Search">
     <ion-nav-title>{{state.title}}</ion-nav-title>
     <ion-content>
-        <div class="card" ng-hide="state.noVariablesFoundCard.show && !state.searching && !$scope.state.variableSearchResults">
-            <div ng-show="state.showTrackingHelpQuestion" class="item item-text-wrap">
+        <div class="card" >
+            <div ng-show="state.helpText" class="item item-text-wrap">
                 <div>
                     <div>
                         <!--<span class="heading positive">Track {{state.measurement.variableCategoryName}}</span>-->
