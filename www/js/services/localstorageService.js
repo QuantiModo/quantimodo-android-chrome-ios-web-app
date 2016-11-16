@@ -229,6 +229,9 @@ angular.module('starter')
 
         localStorageService.getCachedResponse = function(requestName, params){
             var cachedResponse = JSON.parse(localStorageService.getItemSync('cached' + requestName));
+            if(!cachedResponse){
+                return false;
+            }
             var paramsMatch = JSON.stringify(cachedResponse.requestParams) === JSON.stringify(params);
             var cacheNotExpired = Date.now() < cachedResponse.expirationTimeMilliseconds;
 
