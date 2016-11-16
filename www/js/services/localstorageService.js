@@ -285,6 +285,9 @@ angular.module('starter')
                         filterPropertyValue = Number(filterPropertyValue);
                     }
                     filterPropertyName = key;
+                } else if (typeof value === "boolean" && key === "outcome"){
+                    filterPropertyValue = value;
+                    filterPropertyName = key;
                 }
             }, log);
 
