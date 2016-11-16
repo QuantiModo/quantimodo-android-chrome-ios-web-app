@@ -47,9 +47,15 @@ angular.module('starter')
                 template: '<ion-spinner></ion-spinner>'
             });
             setupUserPredictors();
+            if(typeof $scope.state.requestParams.fallbackToAggregatedCorrelations === "undefined"){
+                $scope.state.requestParams.fallbackToAggregatedCorrelations = true;
+            }
             correlationService.getUserCorrelations($scope.state.requestParams)
                 .then(function (correlationObjects) {
                     if(correlationObjects.length) {
+                        if(typeof correlationObjects[0].userId === "undefined") {
+                            setupAggregatedPredictors();
+                        }
                         $scope.state.correlationObjects = correlationObjects;
                         $ionicLoading.hide();
                     } else {
