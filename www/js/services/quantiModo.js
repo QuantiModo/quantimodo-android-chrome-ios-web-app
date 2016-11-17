@@ -1216,6 +1216,38 @@ angular.module('starter')
             return deferred.promise;
         };
 
+        QuantiModo.getFavoriteTrackingRemindersFromLocalStorage = function(){
+            $rootScope.favoritesArray = [];
+            var favorites = localStorageService.getElementsFromItemWithFilters('trackingReminders', 'reminderFrequency', 0);
+            if(!favorites){
+                //Stop the ion-refresher from spinning
+                $scope.$broadcast('scroll.refreshComplete');
+                return false;
+            }
+            for(i = 0; i < favorites.length; i++){
+                if($stateParams.variableCategoryName && $stateParams.variableCategoryName !== 'Anything'){
+                    if($stateParams.variableCategoryName === favorites[i].variableCategoryName){
+                        $rootScope.favoritesArray.push(favorites[i]);
+                    }
+                } else {
+                    $rootScope.favoritesArray.push(favorites[i]);
+                }
+            }
+            $rootScope.favoritesArray = variableCategoryService.attachVariableCategoryIcons($rootScope.favoritesArray);
+            var i;
+            for(i = 0; i < $rootScope.favoritesArray.length; i++){
+                $rootScope.favoritesArray[i].total = null;
+                if($rootScope.favoritesArray[i].variableName.toLowerCase().indexOf('blood pressure') > -1){
+                    $scope.state.bloodPressure.reminderId = $rootScope.favoritesArray[i].id;
+                    $rootScope.favoritesArray[i].hide = true;
+                }
+                if(typeof $rootScope.favoritesArray[i].defaultValue === "undefined"){
+                    $rootScope.favoritesArray[i].defaultValue = null;
+                }
+            }
+
+        }
+
 
         return QuantiModo;
     });

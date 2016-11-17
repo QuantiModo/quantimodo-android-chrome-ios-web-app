@@ -345,6 +345,9 @@ angular.module('starter')
 			if($rootScope.localNotificationsEnabled){
 				console.debug("reminderInbox init: calling refreshTrackingRemindersAndScheduleAlarms");
 				reminderService.refreshTrackingRemindersAndScheduleAlarms();
+			} else {
+				// This is normally done in refreshTrackingRemindersAndScheduleAlarms()
+				QuantiModo.getFavoriteTrackingRemindersFromLocalStorage();
 			}
 
 
