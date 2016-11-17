@@ -221,6 +221,7 @@ angular.module('starter')
 	    };
 
 		$scope.undo = function(){
+			$rootScope.showUndoButton = false;
 			var notificationsSyncQueue = localStorageService.getItemAsObject('notificationsSyncQueue');
 			notificationsSyncQueue[0].trackingReminderNotification.hide = false;
 			localStorageService.addToOrReplaceElementOfItemByIdOrMoveToFront('trackingReminderNotifications',
@@ -228,7 +229,6 @@ angular.module('starter')
 			localStorageService.deleteElementOfItemByProperty('notificationsSyncQueue',
 				'trackingReminderNotificationId', notificationsSyncQueue[0].trackingReminderNotificationId);
 			getTrackingReminderNotifications();
-			$rootScope.showUndoButton = false;
 		};
 
 		var getFilteredTrackingReminderNotifications = function(){
