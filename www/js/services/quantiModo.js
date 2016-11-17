@@ -689,6 +689,16 @@ angular.module('starter')
                 errorHandler);
         };
 
+        QuantiModo.updateUserTimeZoneIfNecessary = function () {
+            var d = new Date();
+            var timeZoneOffsetInMinutes = d.getTimezoneOffset();
+            if($rootScope.user && $rootScope.user.timeZoneOffset !== timeZoneOffsetInMinutes ){
+                var params = {
+                    timeZoneOffset: timeZoneOffsetInMinutes
+                };
+                QuantiModo.updateUserSettingsDeferred(params);
+            }
+        };
 
         QuantiModo.postDeviceToken = function(deviceToken, successHandler, errorHandler) {
             var platform;

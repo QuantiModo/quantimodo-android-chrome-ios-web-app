@@ -347,17 +347,8 @@ angular.module('starter')
 				reminderService.refreshTrackingRemindersAndScheduleAlarms();
 			}
 
-			var d = new Date();
-			var timeZoneOffsetInMinutes = d.getTimezoneOffset();
 
-			if($rootScope.user && $rootScope.user.timeZoneOffset !== timeZoneOffsetInMinutes ){
-				console.debug('user.timeZoneOffset ' + $rootScope.user.timeZoneOffset +
-					' is different than d.getTimezoneOffset() ' + timeZoneOffsetInMinutes + ' so updating user settings.');
-				var params = {
-					timeZoneOffset: timeZoneOffsetInMinutes
-				};
-				QuantiModo.updateUserSettingsDeferred(params);
-			}
+			QuantiModo.updateUserTimeZoneIfNecessary();
 
 			notificationService.shouldWeUseIonicLocalNotifications();
 
