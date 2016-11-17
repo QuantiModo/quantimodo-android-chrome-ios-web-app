@@ -917,17 +917,17 @@ angular.module('starter')
                     }
 
                     if(bloodPressure){
-                        reminderService.deleteReminder($scope.state.bloodPressure.reminderId)
+                        reminderService.deleteReminder($rootScope.bloodPressureReminderId)
                             .then(function(){
                                 console.debug('Favorite deleted: ' + JSON.stringify($scope.state.bloodPressure));
                             }, function(error){
                                 console.error('Failed to Delete Favorite!  Error is ' + error.message + '.  Favorite is ' + JSON.stringify($scope.state.bloodPressure));
                             });
-                        localStorageService.deleteElementOfItemById('trackingReminders', $scope.state.bloodPressure.reminderId)
+                        localStorageService.deleteElementOfItemById('trackingReminders', $rootScope.bloodPressureReminderId)
                             .then(function(){
                                 //$scope.init();
                             });
-                        $scope.state.bloodPressure.reminderId = null;
+                        $rootScope.bloodPressureReminderId = null;
                         return true;
                     }
                 }

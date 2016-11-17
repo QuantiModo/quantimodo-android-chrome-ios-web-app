@@ -243,7 +243,7 @@ angular.module('starter')
 			QuantiModo.getTrackingReminderNotifications(params, function(response){
 				if(response.success) {
 					var trackingRemindersNotifications =
-						variableCategoryService.attachVariableCategoryIcons(response.data);
+						QuantiModo.attachVariableCategoryIcons(response.data);
 					$rootScope.numberOfPendingNotifications = trackingRemindersNotifications.length;
 					deferred.resolve(trackingRemindersNotifications);
 				}
@@ -313,7 +313,7 @@ angular.module('starter')
 				QuantiModo.getTrackingReminderNotifications(params, function(response){
 					if(response.success) {
 						var trackingRemindersNotifications =
-							variableCategoryService.attachVariableCategoryIcons(response.data);
+							QuantiModo.attachVariableCategoryIcons(response.data);
 						$rootScope.numberOfPendingNotifications = trackingRemindersNotifications.length;
 						if (window.chrome && window.chrome.browserAction) {
 							chrome.browserAction.setBadgeText({text: String($rootScope.numberOfPendingNotifications)});
@@ -611,7 +611,7 @@ angular.module('starter')
 			var nonFavoriteReminders = [];
 			var unfilteredReminders = JSON.parse(localStorageService.getItemSync('trackingReminders'));
 			unfilteredReminders =
-				variableCategoryService.attachVariableCategoryIcons(unfilteredReminders);
+				QuantiModo.attachVariableCategoryIcons(unfilteredReminders);
 			if(unfilteredReminders) {
 				for(var k = 0; k < unfilteredReminders.length; k++){
 					if(unfilteredReminders[k].reminderFrequency !== 0){

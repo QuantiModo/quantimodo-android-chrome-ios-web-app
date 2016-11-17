@@ -8,7 +8,7 @@ angular.module('starter')
         $scope.controller_name = "MeasurementAddCtrl";
 
         var variableCategoryName = $stateParams.variableCategoryName;
-        var variableCategoryObject = variableCategoryService.getVariableCategoryInfo(variableCategoryName);
+        var variableCategoryObject = QuantiModo.getVariableCategoryInfo(variableCategoryName);
         var currentTime = new Date();
 
         $scope.state = {
@@ -299,7 +299,7 @@ angular.module('starter')
         };
 
         $scope.variableCategorySelectorChange = function(variableCategoryName) {
-            $scope.state.variableCategoryObject = variableCategoryService.getVariableCategoryInfo(variableCategoryName);
+            $scope.state.variableCategoryObject = QuantiModo.getVariableCategoryInfo(variableCategoryName);
             $scope.state.measurement.abbreviatedUnitName = $scope.state.variableCategoryObject.defaultAbbreviatedUnitName;
             $scope.state.defaultValuePlaceholderText = 'Enter a value';
             $scope.state.defaultValueLabel = 'Value';
@@ -315,7 +315,7 @@ angular.module('starter')
                 variableCategoryName = '';
             }
             $scope.state.measurement.variableCategoryName = variableCategoryName;
-            $scope.state.variableCategoryObject = variableCategoryService.getVariableCategoryInfo(variableCategoryName);
+            $scope.state.variableCategoryObject = QuantiModo.getVariableCategoryInfo(variableCategoryName);
             if(!$scope.state.measurement.abbreviatedUnitName && $scope.state.variableCategoryObject.defaultAbbreviatedUnitName){
                 $scope.state.measurement.abbreviatedUnitName = $scope.state.variableCategoryObject.defaultAbbreviatedUnitName;
             }
