@@ -27,7 +27,7 @@ angular.module('starter')
 	    };
 
 		function getFavoriteTrackingRemindersFromLocalStorage(){
-			$scope.state.favorites = [];
+			$rootScope.favoritesArray = [];
 			var favorites = localStorageService.getElementsFromItemWithFilters('trackingReminders', 'reminderFrequency', 0);
 			if(!favorites){
 				//Stop the ion-refresher from spinning
@@ -37,22 +37,22 @@ angular.module('starter')
 			for(i = 0; i < favorites.length; i++){
 				if($stateParams.variableCategoryName && $stateParams.variableCategoryName !== 'Anything'){
 					if($stateParams.variableCategoryName === favorites[i].variableCategoryName){
-						$scope.state.favorites.push(favorites[i]);
+						$rootScope.favoritesArray.push(favorites[i]);
 					}
 				} else {
-					$scope.state.favorites.push(favorites[i]);
+					$rootScope.favoritesArray.push(favorites[i]);
 				}
 			}
-			$scope.state.favorites = variableCategoryService.attachVariableCategoryIcons($scope.state.favorites);
+			$rootScope.favoritesArray = variableCategoryService.attachVariableCategoryIcons($rootScope.favoritesArray);
 			var i;
-			for(i = 0; i < $scope.state.favorites.length; i++){
-				$scope.state.favorites[i].total = null;
-				if($scope.state.favorites[i].variableName.toLowerCase().indexOf('blood pressure') > -1){
-					$scope.state.bloodPressure.reminderId = $scope.state.favorites[i].id;
-					$scope.state.favorites[i].hide = true;
+			for(i = 0; i < $rootScope.favoritesArray.length; i++){
+				$rootScope.favoritesArray[i].total = null;
+				if($rootScope.favoritesArray[i].variableName.toLowerCase().indexOf('blood pressure') > -1){
+					$scope.state.bloodPressure.reminderId = $rootScope.favoritesArray[i].id;
+					$rootScope.favoritesArray[i].hide = true;
 				}
-				if(typeof $scope.state.favorites[i].defaultValue === "undefined"){
-					$scope.state.favorites[i].defaultValue = null;
+				if(typeof $rootScope.favoritesArray[i].defaultValue === "undefined"){
+					$rootScope.favoritesArray[i].defaultValue = null;
 				}
 			}
 			//Stop the ion-refresher from spinning
@@ -63,16 +63,16 @@ angular.module('starter')
 			$scope.goToState('app.favoriteSearch', $rootScope.stateParams);
 		};
 
-		$scope.trackByValueField = function(trackingReminder, $index){
-			// if($scope.state.favorites[$index].newDefaultValue !== $scope.state.favorites[$index].defaultValue){
-			// 	$scope.state.favorites[$index].defaultValue = $scope.state.favorites[$index].newDefaultValue;
-			// 	localStorageService.addToOrReplaceElementOfItemByIdOrMoveToFront($scope.state.favorites[$index]);
-			// 	reminderService.postTrackingReminders([$scope.state.favorites[$index]]);
+		$scope.trackFavoriteByValueField = function(favoriteItem, $index){
+			// if($rootScope.favoritesArray[$index].newDefaultValue !== $rootScope.favoritesArray[$index].defaultValue){
+			// 	$rootScope.favoritesArray[$index].defaultValue = $rootScope.favoritesArray[$index].newDefaultValue;
+			// 	localStorageService.addToOrReplaceElementOfItemByIdOrMoveToFront($rootScope.favoritesArray[$index]);
+			// 	reminderService.postTrackingReminders([$rootScope.favoritesArray[$index]]);
 			// }
-			$scope.state.favorites[$index].displayTotal = "Recorded " + $scope.state.favorites[$index].total + " " + $scope.state.favorites[$index].abbreviatedUnitName;
-			measurementService.postMeasurementByReminder($scope.state.favorites[$index], $scope.state.favorites[$index].total)
+			$rootScope.favoritesArray[$index].displayTotal = "Recorded " + $rootScope.favoritesArray[$index].total + " " + $rootScope.favoritesArray[$index].abbreviatedUnitName;
+			measurementService.postMeasurementByReminder($rootScope.favoritesArray[$index], $rootScope.favoritesArray[$index].total)
 				.then(function () {
-					console.debug("Successfully measurementService.postMeasurementByReminder: " + JSON.stringify($scope.state.favorites[$index]));
+					console.debug("Successfully measurementService.postMeasurementByReminder: " + JSON.stringify($rootScope.favoritesArray[$index]));
 				}, function(error) {
 					if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error(error);
 					console.error('Failed to Track by favorite, Try again!');
@@ -103,19 +103,19 @@ angular.module('starter')
 		};
 
 		$scope.trackByValueField = function(trackingReminder, $index){
-			// if($scope.state.favorites[$index].newDefaultValue !== $scope.state.favorites[$index].defaultValue){
-			// 	$scope.state.favorites[$index].defaultValue = $scope.state.favorites[$index].newDefaultValue;
-			// 	localStorageService.addToOrReplaceElementOfItemByIdOrMoveToFront($scope.state.favorites[$index]);
-			// 	reminderService.postTrackingReminders([$scope.state.favorites[$index]]);
+			// if($rootScope.favoritesArray[$index].newDefaultValue !== $rootScope.favoritesArray[$index].defaultValue){
+			// 	$rootScope.favoritesArray[$index].defaultValue = $rootScope.favoritesArray[$index].newDefaultValue;
+			// 	localStorageService.addToOrReplaceElementOfItemByIdOrMoveToFront($rootScope.favoritesArray[$index]);
+			// 	reminderService.postTrackingReminders([$rootScope.favoritesArray[$index]]);
 			// }
-			if($scope.state.favorites[$index].total === null){
-				validationFailure('Please specify a value for ' + $scope.state.favorites[$index].variableName);
+			if($rootScope.favoritesArray[$index].total === null){
+				validationFailure('Please specify a value for ' + $rootScope.favoritesArray[$index].variableName);
 				return;
 			}
-			$scope.state.favorites[$index].displayTotal = "Recorded " + $scope.state.favorites[$index].total + " " + $scope.state.favorites[$index].abbreviatedUnitName;
-			measurementService.postMeasurementByReminder($scope.state.favorites[$index], $scope.state.favorites[$index].total)
+			$rootScope.favoritesArray[$index].displayTotal = "Recorded " + $rootScope.favoritesArray[$index].total + " " + $rootScope.favoritesArray[$index].abbreviatedUnitName;
+			measurementService.postMeasurementByReminder($rootScope.favoritesArray[$index], $rootScope.favoritesArray[$index].total)
 				.then(function () {
-					console.debug("Successfully measurementService.postMeasurementByReminder: " + JSON.stringify($scope.state.favorites[$index]));
+					console.debug("Successfully measurementService.postMeasurementByReminder: " + JSON.stringify($rootScope.favoritesArray[$index]));
 				}, function(error) {
 					if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error(error);
 					console.error(error);
@@ -129,13 +129,13 @@ angular.module('starter')
 			}
 			console.debug('Tracking reminder', trackingReminder);
 			console.debug('modifiedReminderValue is ' + modifiedReminderValue);
-			for(var i = 0; i < $scope.state.favorites.length; i++){
-				if($scope.state.favorites[i].id === trackingReminder.id){
-					if($scope.state.favorites[i].abbreviatedUnitName !== '/5') {
-						$scope.state.favorites[i].total = $scope.state.favorites[i].total + modifiedReminderValue;
-						$scope.state.favorites[i].displayTotal = $scope.state.favorites[i].total + " " + $scope.state.favorites[i].abbreviatedUnitName;
+			for(var i = 0; i < $rootScope.favoritesArray.length; i++){
+				if($rootScope.favoritesArray[i].id === trackingReminder.id){
+					if($rootScope.favoritesArray[i].abbreviatedUnitName !== '/5') {
+						$rootScope.favoritesArray[i].total = $rootScope.favoritesArray[i].total + modifiedReminderValue;
+						$rootScope.favoritesArray[i].displayTotal = $rootScope.favoritesArray[i].total + " " + $rootScope.favoritesArray[i].abbreviatedUnitName;
 					} else {
-						$scope.state.favorites[i].displayTotal = modifiedReminderValue + '/5';
+						$rootScope.favoritesArray[i].displayTotal = modifiedReminderValue + '/5';
 					}
 
 				}
@@ -203,7 +203,7 @@ angular.module('starter')
 			if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
 			if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
 			if($stateParams.presetVariables){
-				$scope.state.favorites = $stateParams.presetVariables;
+				$rootScope.favoritesArray = $stateParams.presetVariables;
 				//Stop the ion-refresher from spinning
 				$scope.$broadcast('scroll.refreshComplete');
 			} else {
@@ -294,7 +294,7 @@ angular.module('starter')
 				},
 				destructiveButtonClicked: function() {
 					if(!bloodPressure){
-						$scope.state.favorites.splice($index, 1);
+						$rootScope.favoritesArray.splice($index, 1);
 						reminderService.deleteReminder(favorite.id)
 							.then(function(){
 								console.debug('Favorite deleted: ' + JSON.stringify(favorite));

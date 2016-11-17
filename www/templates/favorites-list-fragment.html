@@ -1,4 +1,4 @@
-<div class="list card" id="favoritesList" ng-if="state.favorites.length && !favorite.hide" ng-repeat="favorite in state.favorites track by $index" on-hold="showActionSheet(favorite, $index)">
+<div class="list card" id="favoritesList" ng-if="favoritesArray.length && !favorite.hide" ng-repeat="favorite in favoritesArray track by $index" on-hold="showActionSheet(favorite, $index)">
     <div class="item" style="padding-bottom:0px;" ng-if="!favorite.hide">
         <div class="row">
             <div ng-click="showActionSheet(favorite, $index)" class="col col-10" style="padding-top: 0px; text-align: center;">
@@ -22,7 +22,7 @@
                    ng-click="onTextClick($event)"
                    placeholder="Enter value"
                    style="text-align: center">
-            <span on-tap="trackByValueField(favorite, $index)" class="input-label">{{favorite.abbreviatedUnitName}} &nbsp <i style="font-size: 20px;" class="icon positive ion-checkmark-round"></i></span>
+            <span on-tap="trackFavoriteByValueField(favorite, $index)" class="input-label">{{favorite.abbreviatedUnitName}} &nbsp <i style="font-size: 20px;" class="icon positive ion-checkmark-round"></i></span>
         </label>
         <div class="primary-outcome-variable-reporting"
              ng-if="!favorite.variableDescription && favorite.abbreviatedUnitName === '/5'">
