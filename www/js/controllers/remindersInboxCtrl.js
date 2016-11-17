@@ -32,7 +32,8 @@ angular.module('starter')
 			lastButtonPressTimeStamp : 0,
 			lastClientX : 0,
 			lastClientY : 0,
-			numberOfDisplayedNotifications: 0
+			numberOfDisplayedNotifications: 0,
+			favoritesTitle: "Your Favorites"
 	    };
 
 		if(typeof config.appSettings.remindersInbox.showAddHowIFeelResponseButton !== 'undefined'){
@@ -60,6 +61,7 @@ angular.module('starter')
 			if($stateParams.today) {
 				if($stateParams.variableCategoryName === 'Treatments') {
 					$scope.state.title = "Today's Scheduled Meds";
+					$scope.state.favoritesTitle = "As-Needed Meds";
 				} else if ($stateParams.variableCategoryName) {
 					$scope.state.title = "Today's Scheduled " + $stateParams.variableCategoryName;
 				} else {
@@ -68,6 +70,7 @@ angular.module('starter')
 			} else {
 				if($stateParams.variableCategoryName === 'Treatments') {
 					$scope.state.title = 'Overdue Meds';
+					$scope.state.favoritesTitle = "As-Needed Meds";
 				} else if ($stateParams.variableCategoryName) {
 					$scope.state.title = $filter('wordAliases')($stateParams.variableCategoryName) + " " + $filter('wordAliases')("Reminder Inbox");
 				} else {
@@ -345,11 +348,9 @@ angular.module('starter')
 			if($rootScope.localNotificationsEnabled){
 				console.debug("reminderInbox init: calling refreshTrackingRemindersAndScheduleAlarms");
 				reminderService.refreshTrackingRemindersAndScheduleAlarms();
-			} else {
-				// This is normally done in refreshTrackingRemindersAndScheduleAlarms()
-				QuantiModo.getFavoriteTrackingRemindersFromLocalStorage();
 			}
 
+			QuantiModo.getFavoriteTrackingRemindersFromLocalStorage($stateParams.variableCategoryName);
 
 			QuantiModo.updateUserTimeZoneIfNecessary();
 

@@ -52,7 +52,7 @@ angular.module('starter')
 				console.debug("ReminderMange init: calling refreshTrackingRemindersAndScheduleAlarms");
 				$scope.showLoader('Syncing...');
 				reminderService.refreshTrackingRemindersAndScheduleAlarms().then(function () {
-					//QuantiModo.getFavoriteTrackingRemindersFromLocalStorage();  This is already done in refreshTrackingRemindersAndScheduleAlarms
+					QuantiModo.getFavoriteTrackingRemindersFromLocalStorage($stateParams.variableCategoryName);
 					//Stop the ion-refresher from spinning
 					$scope.$broadcast('scroll.refreshComplete');
 				});
@@ -83,7 +83,7 @@ angular.module('starter')
 				//Stop the ion-refresher from spinning
 				$scope.$broadcast('scroll.refreshComplete');
 			} else {
-				QuantiModo.getFavoriteTrackingRemindersFromLocalStorage();
+				QuantiModo.getFavoriteTrackingRemindersFromLocalStorage($stateParams.variableCategoryName);
 				$scope.refreshFavorites();
 			}
 			$scope.showHelpInfoPopupIfNecessary();

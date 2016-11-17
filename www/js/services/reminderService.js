@@ -213,7 +213,6 @@ angular.module('starter')
 
 						localStorageService.setItem('trackingReminders', JSON.stringify(trackingReminders));
 						$rootScope.syncingReminders = false;
-						QuantiModo.getFavoriteTrackingRemindersFromLocalStorage();
 						deferred.resolve(trackingReminders);
 					}
 					else {
