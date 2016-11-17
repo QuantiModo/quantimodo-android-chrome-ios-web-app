@@ -686,7 +686,8 @@ angular.module('starter',
                 variableSearchParameters: {
                     includePublic: true,
                     fallbackToAggregatedCorrelations: true,
-                    numberOfUserCorrelationsAsEffect: '(gt)1'
+                    numberOfUserCorrelationsAsEffect: '(gt)1',
+                    outcome: true
                 },
                 commonVariableSearchParameters: {
                     numberOfAggregateCorrelationsAsEffect: '(gt)1'

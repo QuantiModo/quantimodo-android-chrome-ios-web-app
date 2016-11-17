@@ -77,6 +77,11 @@ angular.module('starter')
             to: new Date() //today
         };
 
+        $scope.goToVariableSettingsForCauseVariable = function(correlationObject) {
+            $state.go('app.variableSettings',
+                {variableName: correlationObject.causeVariableName});
+        };
+
         $scope.goToState = function (state, stateParameters) {
             var variableCategoryName = null;
             if (stateParameters && stateParameters.variableCategoryName) {
@@ -403,6 +408,11 @@ angular.module('starter')
             if(!window.private_keys) {
                 console.error('Please add private config file to www/private_configs folder!  Contact mike@quantimo.do if you need help');
             }
+
+            if($rootScope.showUndoButton){
+                $rootScope.showUndoButton = false;
+            }
+            
             if($rootScope.urlParameters.refreshUser){
                 localStorageService.clear();
                 window.localStorage.introSeen = true;

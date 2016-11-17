@@ -81,6 +81,13 @@ gulp.task('generateXmlConfigAndUpdateAppsJs', ['getAppName'], function(){
 	return deferred.promise;
 });
 
+gulp.task('deleteNodeModules', function(){
+	console.log('If file is locked in Windows, open Resource Monitor as Administrator.  Then go to CPU -> Associated ' +
+		'Handles and search for the locked file.  Then right click to kill all the processes using it.  Then try this ' +
+		'task again.');
+	return gulp.src("node_modules/*", { read: false }).pipe(clean());
+});
+
 gulp.task('updateAppsJs', function(){
 	gulp.src('./www/js/apps.js')
 		.pipe(change(function(content){
@@ -1492,6 +1499,17 @@ gulp.task('generateAndroidResources', ['copyAppResources'], function(callback){
 	});
 });
 
+gulp.task('ionicRunAndroid', [], function(callback){
+	return execute("ionic run android", function(error){
+		if(error !== null){
+			console.log("ERROR GENERATING Android RESOURCES for " + process.env.LOWERCASE_APP_NAME + ": " + error);
+		} else {
+			console.log("\n***Android RESOURCES GENERATED for " + process.env.LOWERCASE_APP_NAME);
+			callback();
+		}
+	});
+});
+
 gulp.task('prepareAndroidApp', function(callback){
 	runSequence(
 		'setVersionNumberEnvs',
@@ -1501,6 +1519,12 @@ gulp.task('prepareAndroidApp', function(callback){
 		'copyPrivateConfig',
 		'ionicPlatformAddAndroid',
 		'copyAndroidResources',
+		callback);
+});
+
+gulp.task('buildAndroidApp', function(callback){
+	runSequence(
+		'prepareAndroidApp',
 		'cordovaBuildAndroidRelease',
 		'cordovaBuildAndroidDebug',
 		callback);
@@ -1510,6 +1534,14 @@ gulp.task('prepareMindFirstAndroid', function(callback){
 	runSequence(
 		'setMindFirstEnvs',
 		'prepareAndroidApp',
+		callback);
+});
+
+gulp.task('runMindFirstAndroid', function(callback){
+	runSequence(
+		'setMindFirstEnvs',
+		'prepareAndroidApp',
+		'ionicRunAndroid',
 		callback);
 });
 

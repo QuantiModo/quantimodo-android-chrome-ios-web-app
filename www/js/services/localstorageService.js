@@ -229,10 +229,13 @@ angular.module('starter')
 
         localStorageService.getCachedResponse = function(requestName, params){
             var cachedResponse = JSON.parse(localStorageService.getItemSync('cached' + requestName));
-            if(cachedResponse &&
-                JSON.stringify(cachedResponse.requestParams) === JSON.stringify(params) &&
-                cachedResponse.response.length &&
-                Date.now() < cachedResponse.expirationTimeMilliseconds){
+            if(!cachedResponse){
+                return false;
+            }
+            var paramsMatch = JSON.stringify(cachedResponse.requestParams) === JSON.stringify(params);
+            var cacheNotExpired = Date.now() < cachedResponse.expirationTimeMilliseconds;
+
+            if(cachedResponse && paramsMatch && cachedResponse.response.length && cacheNotExpired){
                 return cachedResponse.response;
             } else {
                 return false;
@@ -284,6 +287,9 @@ angular.module('starter')
                     if(!isNaN(filterPropertyValue)){
                         filterPropertyValue = Number(filterPropertyValue);
                     }
+                    filterPropertyName = key;
+                } else if (typeof value === "boolean" && key === "outcome"){
+                    filterPropertyValue = value;
                     filterPropertyName = key;
                 }
             }, log);
