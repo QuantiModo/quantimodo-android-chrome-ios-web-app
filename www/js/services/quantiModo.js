@@ -1404,5 +1404,34 @@ angular.module('starter')
             return selectedVariableCategoryObject;
         };
 
+        QuantiModo.getPairs = function (params, successHandler, errorHandler){
+            var minimumSecondsBetweenRequests = 0;
+            QuantiModo.get('api/v1/pairs',
+                ['source', 'limit', 'offset', 'sort', 'id', 'variableCategoryName', 'causeVariableName', 'effectVariableName'],
+                params,
+                successHandler,
+                errorHandler,
+                minimumSecondsBetweenRequests
+            );
+        };
+
+        QuantiModo.getPairsDeferred = function (params, successHandler, errorHandler){
+            var deferred = $q.defer();
+            QuantiModo.getPairs(params, function (pairs) {
+                if(successHandler){
+                    successHandler();
+                }
+                deferred.resolve(pairs);
+            }, function (error) {
+                if(errorHandler){
+                    errorHandler();
+                }
+                deferred.reject(error);
+                console.error(error);
+            });
+
+            return deferred.promise;
+        };
+
         return QuantiModo;
     });
