@@ -223,6 +223,9 @@ angular.module('starter')
 		$scope.undo = function(){
 			$rootScope.showUndoButton = false;
 			var notificationsSyncQueue = localStorageService.getItemAsObject('notificationsSyncQueue');
+			if(!notificationsSyncQueue){
+				return false;
+			}
 			notificationsSyncQueue[0].trackingReminderNotification.hide = false;
 			localStorageService.addToOrReplaceElementOfItemByIdOrMoveToFront('trackingReminderNotifications',
 				notificationsSyncQueue[0].trackingReminderNotification);
