@@ -6,10 +6,16 @@ angular.module('starter')
             Date.now = function() { return new Date().getTime(); };
         }
 
-        var useLocalGaugeImage = function (correlationObjects) {
+        var useLocalImages = function (correlationObjects) {
             for(var i = 0; i < correlationObjects.length; i++){
                 correlationObjects[i].gaugeImage = correlationObjects[i].gaugeImage.substring(correlationObjects[i].gaugeImage.lastIndexOf("/") + 1);
                 correlationObjects[i].gaugeImage = 'img/gauges/' + correlationObjects[i].gaugeImage;
+
+                correlationObjects[i].causeVariableImageUrl = correlationObjects[i].causeVariableImageUrl.substring(correlationObjects[i].causeVariableImageUrl.lastIndexOf("/") + 1);
+                correlationObjects[i].causeVariableImageUrl = 'img/variable_categories/' + correlationObjects[i].causeVariableImageUrl;
+
+                correlationObjects[i].effectVariableImageUrl = correlationObjects[i].effectVariableImageUrl.substring(correlationObjects[i].effectVariableImageUrl.lastIndexOf("/") + 1);
+                correlationObjects[i].effectVariableImageUrl = 'img/variable_categories/' + correlationObjects[i].effectVariableImageUrl;
             }
             return correlationObjects;
         };
@@ -24,7 +30,7 @@ angular.module('starter')
                 }
 
                 QuantiModo.getAggregatedCorrelations(params, function(correlationObjects){
-                    correlationObjects = useLocalGaugeImage(correlationObjects);
+                    correlationObjects = useLocalImages(correlationObjects);
                     localStorageService.storeCachedResponse('GetAggregatedCorrelations', params, correlationObjects);
                     deferred.resolve(correlationObjects);
                 }, function(error){
@@ -44,7 +50,7 @@ angular.module('starter')
                     return deferred.promise;
                 }
                 QuantiModo.getUserCorrelations(params, function(correlationObjects){
-                    correlationObjects = useLocalGaugeImage(correlationObjects);
+                    correlationObjects = useLocalImages(correlationObjects);
                     localStorageService.storeCachedResponse('GetUserCorrelations', params, correlationObjects);
                     deferred.resolve(correlationObjects);
                 }, function(error){
