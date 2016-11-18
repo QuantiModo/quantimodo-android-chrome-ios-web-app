@@ -54,7 +54,9 @@ angular.module('starter')
         };
 
         function createUserCharts(params) {
+            $scope.loadingCharts = true;
             QuantiModo.getPairsDeferred(params).then(function (pairs) {
+                $scope.loadingCharts = false;
                 $scope.scatterplotChartConfig = chartService.createScatterPlot(params, pairs);
                 //$scope.timelineChartConfig = chartService.configureLineChartForPairs(params, pairs);
                 //$scope.causeTimelineChartConfig = chartService.configureLineChartForPairs(params, pairs);

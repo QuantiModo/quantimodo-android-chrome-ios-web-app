@@ -11,6 +11,11 @@
                             <p id="valuePredictingLowOutcomeExplanation">{{correlationObject.valuePredictingLowOutcomeExplanation}}</p>
                             <h3 id="studyAbstract">Study Abstract</h3>
                             <p>{{correlationObject.studyAbstract}}</p>
+                            <div ng-show="loadingCharts" style="text-align: center">
+                                <br>
+                                <ion-spinner icon="android"></ion-spinner>
+                                <br>
+                            </div>
                             <div ng-show="causeTimelineChartConfig" class="card primary-outcome-variable-reporting-chart">
                                 <div class="item item-text-wrap">
                                     <highchart id="causeTimeline" config="causeTimelineChartConfig"></highchart>
