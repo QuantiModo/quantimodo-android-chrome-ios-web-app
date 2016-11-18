@@ -301,8 +301,8 @@ config.appSettings  = {
             icon : 'ion-ios-star'
         },
            {
-            title : 'Measurements',
-            href : '#/app/measurements',
+            title : 'YiMeasurements',
+            href : '#/app/yimeasurements',
             icon : 'ion-speedometer'
         },
         {
@@ -539,6 +539,13 @@ config.appSettings  = {
             expandedIcon : 'ion-chevron-down'
         },
         {
+            title : 'Predictor Search',
+            isSubMenuChild : true,
+            showSubMenuVariable : 'showPredictorSearchSubMenu',
+            href : '#/app/predictor-search',
+            icon : 'ion-search'
+        },
+/*        {
             title : 'For Everyone',
             isSubMenuChild : true,
             showSubMenuVariable : 'showPredictorSearchSubMenu',
@@ -551,7 +558,7 @@ config.appSettings  = {
             showSubMenuVariable : 'showPredictorSearchSubMenu',
             href : '#/app/search-user-relationships',
             icon : 'ion-person'
-        },
+        },*/
         {
             title : 'Positive Mood',
             isSubMenuChild : true,
@@ -578,6 +585,7 @@ config.appSettings  = {
         }
     ]
 };
+
 
 window.notification_callback = function(reportedVariable, reportingTime){
     var startTime  = Math.floor(reportingTime/1000) || Math.floor(new Date().getTime()/1000);

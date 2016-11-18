@@ -525,6 +525,24 @@ angular.module('starter',
                 }
             }
         })
+           .state('app.yimeasurements', {
+            url: "/yimeasurements",
+            cache: false,
+            params: {
+                reminderFrequency: 0,
+                unit: null,
+                variableName : null,
+                dateTime : null,
+                value : null,
+                fromUrl : null
+            },
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/Yimeasurements.html",
+                    controller: 'YiMeasurementsCtrl'
+                }
+            }
+        })
         .state('app.favoriteSearchCategory', {
             url: "/favorite-search-category/:variableCategoryName",
             params: {
@@ -1042,25 +1060,6 @@ angular.module('starter',
                 }
             }
         })
-
-        .state('app.measurements', {
-            url: "/measurements",
-            cache: false,
-            params: {
-                reminderFrequency: 0,
-                unit: null,
-                variableName : null,
-                dateTime : null,
-                value : null,
-                fromUrl : null
-            },
-            views: {
-                'menuContent': {
-                    templateUrl: "templates/Yimeasurements.html",
-                    controller: 'YiMeasurementsCtrl'
-                }
-            }
-        })
         .state('app.favoritesCategory', {
             url: "/favorites-category/:variableCategoryName",
             cache: false,
@@ -1193,25 +1192,6 @@ angular.module('starter',
                 'menuContent': {
                     templateUrl: "templates/reminder-add.html",
                     controller: 'RemindersAddCtrl'
-                }
-            }
-        })
-         .state('app.appointmentAdd', {
-            url: "/apointment_add",
-            cache: false,
-            params: {
-                variableCategoryName : null,
-                reminder : null,
-                fromState : null,
-                fromUrl : null,
-                measurement : null,
-                variableObject : null,
-                favorite: false
-            },
-            views: {
-                'menuContent': {
-                    templateUrl: "templates/appointment-add.html",
-                    controller: 'AppointmentAddCtrl'
                 }
             }
         })
