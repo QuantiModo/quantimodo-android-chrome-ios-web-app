@@ -7,7 +7,8 @@ angular.module('starter')
         $scope.state = {
             requestParams: $stateParams.requestParams,
             variableName: config.appSettings.primaryOutcomeVariableDetails.name,
-            increasingDecreasing: ''
+            increasingDecreasing: '',
+            correlationObjects: []
         };
 
         function populateAggregatedCorrelationList() {
@@ -18,17 +19,19 @@ angular.module('starter')
             correlationService.getAggregatedCorrelations($scope.state.requestParams)
                 .then(function (correlationObjects) {
                     if(correlationObjects.length) {
-                        $scope.state.correlationObjects = correlationObjects;
+                        $scope.state.correlationObjects = $scope.state.correlationObjects.concat(correlationObjects);
                         $ionicLoading.hide();
+                        $scope.$broadcast('scroll.infiniteScrollComplete');
                     } else {
                         correlationService.getUserCorrelations($scope.state.requestParams)
                             .then(function (correlationObjects) {
                                 $ionicLoading.hide();
+                                $scope.$broadcast('scroll.infiniteScrollComplete');
                                 if(correlationObjects.length) {
                                     setupUserPredictors();
                                     $scope.state.explanationText = "Unfortunately, I don't have enough data get common " +
                                         " predictors for " + $scope.state.variableName + ", yet. " + $scope.state.explanationText;
-                                    $scope.state.correlationObjects = correlationObjects;
+                                    $scope.state.correlationObjects = $scope.state.correlationObjects.concat(correlationObjects);
                                 } else {
                                     $scope.state.noCorrelations = true;
                                 }
@@ -42,6 +45,10 @@ angular.module('starter')
                 });
         }
 
+        $scope.$on('$stateChangeSuccess', function() {
+            $scope.loadMore();
+        });
+
         function populateUserCorrelationList() {
             $ionicLoading.show({
                 template: '<ion-spinner></ion-spinner>'
@@ -50,14 +57,16 @@ angular.module('starter')
             if(typeof $scope.state.requestParams.fallbackToAggregatedCorrelations === "undefined"){
                 $scope.state.requestParams.fallbackToAggregatedCorrelations = true;
             }
+
             correlationService.getUserCorrelations($scope.state.requestParams)
                 .then(function (correlationObjects) {
                     if(correlationObjects.length) {
                         if(typeof correlationObjects[0].userId === "undefined") {
                             setupAggregatedPredictors();
                         }
-                        $scope.state.correlationObjects = correlationObjects;
+                        $scope.state.correlationObjects = $scope.state.correlationObjects.concat(correlationObjects);
                         $ionicLoading.hide();
+                        $scope.$broadcast('scroll.infiniteScrollComplete');
                     } else {
                         correlationService.getAggregatedCorrelations($scope.state.requestParams)
                             .then(function (correlationObjects) {
@@ -66,7 +75,8 @@ angular.module('starter')
                                     setupAggregatedPredictors();
                                     $scope.state.explanationText = "Unfortunately, I don't have enough data from you to get " +
                                         "your personal predictors for " + $scope.state.variableName + ", yet. " + $scope.state.explanationText;
-                                    $scope.state.correlationObjects = correlationObjects;
+                                    $scope.state.correlationObjects = $scope.state.correlationObjects.concat(correlationObjects);
+                                    $scope.$broadcast('scroll.infiniteScrollComplete');
                                 } else {
                                     $scope.state.noCorrelations = true;
                                 }
@@ -77,6 +87,11 @@ angular.module('starter')
                     console.error('predictorsCtrl: Could not get correlations');
                 });
         }
+
+        $scope.loadMore = function () {
+            $scope.state.requestParams.offset = $scope.state.requestParams.offset + $scope.state.requestParams.limit;
+            populateUserCorrelationList();
+        };
         
         function setupUserPredictors() {
             $scope.state.explanationHeader = "Your Top Predictors";
@@ -99,7 +114,6 @@ angular.module('starter')
             $rootScope.getAllUrlParams();
             if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
             if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
-            $scope.state.correlationObjects = [];
 
             if($rootScope.urlParameters.aggregated){
                 $stateParams.aggregated = $rootScope.urlParameters.aggregated;
@@ -120,6 +134,9 @@ angular.module('starter')
             if(!$scope.state.requestParams.causeVariableName && ! $scope.state.requestParams.effectVariableName) {
                 $scope.state.requestParams.effectVariableName = config.appSettings.primaryOutcomeVariableDetails.name;
             }
+
+            $scope.state.requestParams.offset = 0;
+            $scope.state.requestParams.limit = 10;
 
             if ($scope.state.requestParams.causeVariableName){
                 $scope.state.variableName = $scope.state.requestParams.causeVariableName;
@@ -173,7 +190,7 @@ angular.module('starter')
         };
 
         $scope.goToStudyPage = function(correlationObject) {
-            console.debug('Going to study page for ' + JSON.stringify(correlationObject));
+            //console.debug('Going to study page for ' + JSON.stringify(correlationObject));
             $state.go('app.study', {
                 correlationObject: correlationObject
             });

@@ -554,7 +554,7 @@ angular.module('starter')
 	    };
 
         $scope.variableCategorySelectorChange = function(variableCategoryName) {
-            $scope.state.variableCategoryObject = variableCategoryService.getVariableCategoryInfo(variableCategoryName);
+            $scope.state.variableCategoryObject = QuantiModo.getVariableCategoryInfo(variableCategoryName);
             $scope.state.trackingReminder.abbreviatedUnitName = $scope.state.variableCategoryObject.defaultAbbreviatedUnitName;
             $scope.state.defaultValuePlaceholderText = 'Enter most common value';
             $scope.state.defaultValueLabel = 'Default Value';
@@ -569,7 +569,7 @@ angular.module('starter')
                 variableCategoryName = '';
             }
             $scope.state.trackingReminder.variableCategoryName = variableCategoryName;
-            $scope.state.variableCategoryObject = variableCategoryService.getVariableCategoryInfo(variableCategoryName);
+            $scope.state.variableCategoryObject = QuantiModo.getVariableCategoryInfo(variableCategoryName);
             if (!$scope.state.trackingReminder.abbreviatedUnitName) {
             	$scope.state.trackingReminder.abbreviatedUnitName = $scope.state.variableCategoryObject.defaultAbbreviatedUnitName;
             }

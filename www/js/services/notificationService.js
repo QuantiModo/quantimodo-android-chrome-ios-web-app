@@ -171,7 +171,7 @@ angular.module('starter')
                         $rootScope.trackingReminderNotifications = response.data;
                         $rootScope.numberOfPendingNotifications = $rootScope.trackingReminderNotifications.length;
                         $rootScope.trackingRemindersNotifications =
-                            variableCategoryService.attachVariableCategoryIcons($rootScope.trackingReminderNotifications);
+                            QuantiModo.attachVariableCategoryIcons($rootScope.trackingReminderNotifications);
                         if($rootScope.trackingRemindersNotifications.length > 1){
                             localStorageService.setItem('trackingReminderNotifications',
                                 JSON.stringify($rootScope.trackingRemindersNotifications));

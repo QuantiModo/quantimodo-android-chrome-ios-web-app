@@ -19,9 +19,46 @@ angular.module('starter')
 			return deferred.promise;
 		};
 
+		reminderService.postTrackingReminderNotifications = function(successHandler, errorHandler){
+			var deferred = $q.defer();
+			var trackingReminderNotificationsArray = localStorageService.getItemAsObject('notificationsSyncQueue');
+			if(!trackingReminderNotificationsArray){
+                if(successHandler){
+                    successHandler();
+                }
+				deferred.resolve();
+				return deferred.promise;
+			}
+			QuantiModo.postTrackingReminderNotifications(trackingReminderNotificationsArray, function(){
+				localStorageService.deleteItem('notificationsSyncQueue');
+                if($rootScope.showUndoButton){
+                    $rootScope.showUndoButton = false;
+                }
+                if(successHandler){
+                    successHandler();
+                }
+				deferred.resolve();
+			}, function(error){
+                if(errorHandler){
+                    errorHandler();
+                }
+				deferred.reject(error);
+			});
+
+			return deferred.promise;
+		};
+
+
 		reminderService.skipReminderNotification = function(body){
 			var deferred = $q.defer();
 			reminderService.deleteNotificationFromLocalStorage(body);
+			body.action = 'skip';
+			localStorageService.addToOrReplaceElementOfItemByIdOrMoveToFront('notificationsSyncQueue', body);
+            $timeout(function() {
+                // Post notification queue in 5 minutes if it's still there
+                reminderService.postTrackingReminderNotifications();
+            }, 300000);
+/*
 			QuantiModo.skipTrackingReminderNotification(body, function(response){
 				if(response.success) {
 					deferred.resolve();
@@ -33,7 +70,7 @@ angular.module('starter')
 				if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error(error);
 				deferred.reject(error);
 			});
-
+*/
 			return deferred.promise;
 		};
 
@@ -59,6 +96,13 @@ angular.module('starter')
 			var deferred = $q.defer();
 			console.debug('reminderService.trackReminderNotification: Going to track ' + JSON.stringify(body));
 			reminderService.deleteNotificationFromLocalStorage(body);
+			body.action = 'track';
+			localStorageService.addToOrReplaceElementOfItemByIdOrMoveToFront('notificationsSyncQueue', body);
+            $timeout(function() {
+                // Post notification queue in 5 minutes if it's still there
+                reminderService.postTrackingReminderNotifications();
+            }, 300000);
+/*
 			QuantiModo.trackTrackingReminderNotification(body, function(response){
 				if(response.success) {
 					deferred.resolve();
@@ -70,6 +114,7 @@ angular.module('starter')
 				if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error(error);
 				deferred.reject(error);
 			});
+*/
 
 			return deferred.promise;
 		};
@@ -77,6 +122,14 @@ angular.module('starter')
 		reminderService.snoozeReminderNotification = function(body){
 			var deferred = $q.defer();
 			reminderService.deleteNotificationFromLocalStorage(body);
+			body.action = 'snooze';
+			localStorageService.addToOrReplaceElementOfItemByIdOrMoveToFront('notificationsSyncQueue', body);
+            $timeout(function() {
+                // Post notification queue in 5 minutes if it's still there
+                reminderService.postTrackingReminderNotifications();
+            }, 300000);
+
+/*
 			QuantiModo.snoozeTrackingReminderNotification(body, function(response){
 				if(response.success) {
 					deferred.resolve();
@@ -88,6 +141,7 @@ angular.module('starter')
 				if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error(error);
 				deferred.reject(error);
 			});
+*/
 
 			return deferred.promise;
 		};
@@ -188,7 +242,7 @@ angular.module('starter')
 			QuantiModo.getTrackingReminderNotifications(params, function(response){
 				if(response.success) {
 					var trackingRemindersNotifications =
-						variableCategoryService.attachVariableCategoryIcons(response.data);
+						QuantiModo.attachVariableCategoryIcons(response.data);
 					$rootScope.numberOfPendingNotifications = trackingRemindersNotifications.length;
 					deferred.resolve(trackingRemindersNotifications);
 				}
@@ -249,27 +303,34 @@ angular.module('starter')
 					minimumSecondsBetweenRequests + ' seconds!  Rejecting promise!');
 				return deferred.promise;
 			}
-			var currentDateTimeInUtcStringPlus5Min = timeService.getCurrentDateTimeInUtcStringPlusMin(5);
-			var params = {};
-			params.reminderTime = '(lt)' + currentDateTimeInUtcStringPlus5Min;
-			params.sort = '-reminderTime';
-			QuantiModo.getTrackingReminderNotifications(params, function(response){
-				if(response.success) {
-					var trackingRemindersNotifications =
-						variableCategoryService.attachVariableCategoryIcons(response.data);
-					$rootScope.numberOfPendingNotifications = trackingRemindersNotifications.length;
-					if (window.chrome && window.chrome.browserAction) {
-						chrome.browserAction.setBadgeText({text: String($rootScope.numberOfPendingNotifications)});
+
+			reminderService.postTrackingReminderNotifications(function(){
+				var currentDateTimeInUtcStringPlus5Min = timeService.getCurrentDateTimeInUtcStringPlusMin(5);
+				var params = {};
+				params.reminderTime = '(lt)' + currentDateTimeInUtcStringPlus5Min;
+				params.sort = '-reminderTime';
+				QuantiModo.getTrackingReminderNotifications(params, function(response){
+					if(response.success) {
+						var trackingRemindersNotifications =
+							QuantiModo.attachVariableCategoryIcons(response.data);
+						$rootScope.numberOfPendingNotifications = trackingRemindersNotifications.length;
+						if (window.chrome && window.chrome.browserAction) {
+							chrome.browserAction.setBadgeText({text: String($rootScope.numberOfPendingNotifications)});
+						}
+						localStorageService.setItem('trackingReminderNotifications', JSON.stringify(trackingRemindersNotifications));
+						$rootScope.refreshingTrackingReminderNotifications = false;
+						$rootScope.$broadcast('getTrackingReminderNotificationsFromLocalStorage');
+						deferred.resolve(trackingRemindersNotifications);
 					}
-					localStorageService.setItem('trackingReminderNotifications', JSON.stringify(trackingRemindersNotifications));
+					else {
+						$rootScope.refreshingTrackingReminderNotifications = false;
+						deferred.reject("error");
+					}
+				}, function(error){
+					if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error(error);
 					$rootScope.refreshingTrackingReminderNotifications = false;
-					$rootScope.$broadcast('getTrackingReminderNotificationsFromLocalStorage');
-					deferred.resolve(trackingRemindersNotifications);
-				}
-				else {
-					$rootScope.refreshingTrackingReminderNotifications = false;
-					deferred.reject("error");
-				}
+					deferred.reject(error);
+				});
 			}, function(error){
 				if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error(error);
 				$rootScope.refreshingTrackingReminderNotifications = false;
@@ -549,7 +610,7 @@ angular.module('starter')
 			var nonFavoriteReminders = [];
 			var unfilteredReminders = JSON.parse(localStorageService.getItemSync('trackingReminders'));
 			unfilteredReminders =
-				variableCategoryService.attachVariableCategoryIcons(unfilteredReminders);
+				QuantiModo.attachVariableCategoryIcons(unfilteredReminders);
 			if(unfilteredReminders) {
 				for(var k = 0; k < unfilteredReminders.length; k++){
 					if(unfilteredReminders[k].reminderFrequency !== 0){
@@ -602,22 +663,5 @@ angular.module('starter')
 			return deferred.promise;
 		};
 
-		// return reminderService;
-		// reminderService.createDefaultReminders = function () {
-		// 	var deferred = $q.defer();
-		// 	localStorageService.getItem('defaultRemindersCreated', function (defaultRemindersCreated) {
-		// 		if(JSON.parse(defaultRemindersCreated) !== true) {
-		// 			var defaultReminders = config.appSettings.defaultReminders;
-		// 			if(defaultReminders && defaultReminders.length){
-		// 				console.debug('Creating default reminders ' + JSON.stringify(defaultReminders));
-		// 				reminderService.postTrackingReminders(defaultReminders);
-		// 				localStorageService.setItem('defaultRemindersCreated', true);
-		// 				deferred.resolve();
-		// 			}
-		// 		}
-		// 	});
-		// 	return deferred.promise;
-		// };
-
-		 return reminderService;
+		return reminderService;
 	});

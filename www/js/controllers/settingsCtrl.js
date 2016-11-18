@@ -15,14 +15,7 @@ angular.module('starter')
 			console.debug('trackLocation is '+ $scope.state.trackLocation);
 		}
 
-		var d = new Date();
-		var timeZoneOffsetInMinutes = d.getTimezoneOffset();
-		if($rootScope.user && $rootScope.user.timeZoneOffset !== timeZoneOffsetInMinutes ){
-			var params = {
-				timeZoneOffset: timeZoneOffsetInMinutes
-			};
-			QuantiModo.updateUserSettingsDeferred(params);
-		}
+		//QuantiModo.updateUserTimeZoneIfNecessary();
 
 		// populate ratings interval
 		localStorageService.getItem('primaryOutcomeRatingFrequencyDescription', function (primaryOutcomeRatingFrequencyDescription) {
