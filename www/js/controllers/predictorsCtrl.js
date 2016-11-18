@@ -58,14 +58,6 @@ angular.module('starter')
                 $scope.state.requestParams.fallbackToAggregatedCorrelations = true;
             }
 
-            if(typeof $scope.state.requestParams.offset === "undefined"){
-                $scope.state.requestParams.offset = 0;
-            }
-
-            if(typeof $scope.state.requestParams.limit === "undefined"){
-                $scope.state.requestParams.limit = 10;
-            }
-
             correlationService.getUserCorrelations($scope.state.requestParams)
                 .then(function (correlationObjects) {
                     if(correlationObjects.length) {
@@ -142,6 +134,9 @@ angular.module('starter')
             if(!$scope.state.requestParams.causeVariableName && ! $scope.state.requestParams.effectVariableName) {
                 $scope.state.requestParams.effectVariableName = config.appSettings.primaryOutcomeVariableDetails.name;
             }
+
+            $scope.state.requestParams.offset = 0;
+            $scope.state.requestParams.limit = 10;
 
             if ($scope.state.requestParams.causeVariableName){
                 $scope.state.variableName = $scope.state.requestParams.causeVariableName;
