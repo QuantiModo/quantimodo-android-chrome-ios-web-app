@@ -167,7 +167,7 @@ angular.module('starter')
                     }
                     matchingElements = [];
                     for(i = 0; i < unfilteredElementArray.length; i++){
-                        if(unfilteredElementArray[i][filterPropertyName] === filterPropertyValue){
+                        if(unfilteredElementArray[i][filterPropertyName] == filterPropertyValue){
                             matchingElements.push(unfilteredElementArray[i]);
                         }
                     }
@@ -288,7 +288,7 @@ angular.module('starter')
                         filterPropertyValue = Number(filterPropertyValue);
                     }
                     filterPropertyName = key;
-                } else if (typeof value === "boolean" && key === "outcome"){
+                } else if (typeof value === "boolean" && (key === "outcome" || key === 'manualTracking')){
                     filterPropertyValue = value;
                     filterPropertyName = key;
                 }
