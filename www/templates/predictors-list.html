@@ -27,6 +27,10 @@
             </div>
         </div>
         <ion-list>
+<!--            <div class="list card correlationResultList"
+                 style="text-align: center"
+                 item-height="483px"
+                 collection-repeat="correlationObject in state.correlationObjects">-->
             <div class="list card correlationResultList"
                  style="text-align: center"
                  ng-repeat="correlationObject in state.correlationObjects">
@@ -83,6 +87,10 @@
                 </ion-item>
             </div>
         </ion-list>-->
+        <ion-infinite-scroll
+                on-infinite="loadMore()"
+                distance="1%">
+        </ion-infinite-scroll>
         <div class="list card"  ng-show="state.noCorrelations">
             <div class="item" style="padding-bottom:0px;">
                 <p style=" text-align: center; line-height: normal; font-size: 25px;">Not enough data!</p>
