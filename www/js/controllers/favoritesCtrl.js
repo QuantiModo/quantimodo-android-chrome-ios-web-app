@@ -14,11 +14,6 @@ angular.module('starter')
             trackingReminder : null,
             lastSent: new Date(),
 			title: "Favorites",
-			bloodPressure: {
-            	systolicValue: null,
-				diastolicValue: null,
-				displayTotal: "Blood Pressure"
-			},
 			favorites: [],
 			addButtonText: "Add a Favorite Variable",
 			addButtonIcon: "ion-ios-star",
@@ -26,25 +21,8 @@ angular.module('starter')
 			moreHelpText: "Tip: I recommend using reminders instead of favorites whenever possible because they allow you to record regular 0 values as well. Knowing when you didn't take a medication or eat something helps our analytics engine to figure out how these things might be affecting you."
 	    };
 
-
-
 		$scope.favoriteAddButtonClick = function () {
 			$scope.goToState('app.favoriteSearch', $rootScope.stateParams);
-		};
-
-		$scope.trackBloodPressure = function(){
-			if(!$scope.state.bloodPressure.diastolicValue || !$scope.state.bloodPressure.systolicValue){
-				$scope.favoriteValidationFailure('Please enter both values for blood pressure.');
-				return;
-			}
-			$scope.state.bloodPressure.displayTotal = "Recorded " + $scope.state.bloodPressure.systolicValue + "/" + $scope.state.bloodPressure.diastolicValue + ' Blood Pressure';
-			measurementService.postBloodPressureMeasurements($scope.state.bloodPressure)
-				.then(function () {
-					console.debug("Successfully measurementService.postMeasurementByReminder: " + JSON.stringify($scope.state.bloodPressure));
-				}, function(error) {
-					if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error(error);
-					console.error('Failed to Track by favorite, Try again!');
-				});
 		};
 
 		$scope.refreshFavorites = function () {

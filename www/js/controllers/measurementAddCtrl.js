@@ -52,15 +52,15 @@ angular.module('starter')
         };
 
         var trackBloodPressure = function(){
-            if(!$scope.state.bloodPressure.diastolicValue || !$scope.state.bloodPressure.systolicValue){
+            if(!$rootScope.bloodPressure.diastolicValue || !$rootScope.bloodPressure.systolicValue){
                 validationFailure('Please enter both values for blood pressure.');
                 return;
             }
-            $scope.state.bloodPressure.startTimeEpoch = $scope.selectedDate.getTime()/1000;
-            $scope.state.bloodPressure.note = $scope.state.measurement.note;
-            measurementService.postBloodPressureMeasurements($scope.state.bloodPressure)
+            $rootScope.bloodPressure.startTimeEpoch = $scope.selectedDate.getTime()/1000;
+            $rootScope.bloodPressure.note = $scope.state.measurement.note;
+            measurementService.postBloodPressureMeasurements($rootScope.bloodPressure)
                 .then(function () {
-                    console.debug("Successfully measurementService.postMeasurementByReminder: " + JSON.stringify($scope.state.bloodPressure));
+                    console.debug("Successfully measurementService.postMeasurementByReminder: " + JSON.stringify($rootScope.bloodPressure));
                 }, function(error) {
                     if (typeof Bugsnag !== "undefined") {
                         Bugsnag.notify(error, JSON.stringify(error), {}, "error");
@@ -238,7 +238,7 @@ angular.module('starter')
 
         $scope.done = function(){
 
-            if($scope.state.bloodPressure.show){
+            if($rootScope.bloodPressure.show){
                 trackBloodPressure();
                 return;
             }
@@ -493,7 +493,7 @@ angular.module('starter')
                 }
 
                 if($scope.state.measurement.variableName.toLowerCase().indexOf('blood pressure') > -1) {
-                    $scope.state.bloodPressure.show = true;
+                    $rootScope.bloodPressure.show = true;
                 }
 
                 if($stateParams.variableObject.category){

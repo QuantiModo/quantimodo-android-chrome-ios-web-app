@@ -10,7 +10,7 @@ angular.module('starter')
 
         $rootScope.loaderImagePath = config.appSettings.loaderImagePath;
         $rootScope.appMigrationVersion = 1489;
-        $rootScope.appVersion = "2.1.3.0";
+        $rootScope.appVersion = "2.1.4.0";
         if (!$rootScope.loaderImagePath) {
             $rootScope.loaderImagePath = 'img/circular_loader.gif';
         }
@@ -33,6 +33,14 @@ angular.module('starter')
         $rootScope.numberOfPendingNotifications = null;
         $scope.showReminderSubMenu = false;
         $scope.primaryOutcomeVariableDetails = config.appSettings.primaryOutcomeVariableDetails;
+
+
+        $rootScope.bloodPressure = {
+            systolicValue: null,
+                diastolicValue: null,
+                displayTotal: "Blood Pressure"
+        };
+
         // Not used
         //$scope.ratingInfo = ratingService.getRatingInfo();
         $scope.closeMenu = function () {
@@ -758,7 +766,7 @@ angular.module('starter')
             utilsService.showAlert(message);
             console.error(message);
             if (typeof Bugsnag !== "undefined") {
-                Bugsnag.notify(message, "bloodPressure is " + JSON.stringify($scope.state.bloodPressure), {}, "error");
+                Bugsnag.notify(message, message, {}, "error");
             }
         };
 
@@ -795,24 +803,29 @@ angular.module('starter')
 
                 }
             }
+            
+            if(!$rootScope.favoritesTally){
+                $rootScope.favoritesTally = {};
+            }
 
-            if(!$scope.state[trackingReminder.id] || !$scope.state[trackingReminder.id].tally){
-                $scope.state[trackingReminder.id] = {
+            
+            if(!$rootScope.favoritesTally[trackingReminder.id] || !$rootScope.favoritesTally[trackingReminder.id].tally){
+                $rootScope.favoritesTally[trackingReminder.id] = {
                     tally: 0
                 };
             }
 
-            $scope.state[trackingReminder.id].tally += modifiedReminderValue;
-            console.debug('modified tally is ' + $scope.state[trackingReminder.id].tally);
+            $rootScope.favoritesTally[trackingReminder.id].tally += modifiedReminderValue;
+            console.debug('modified tally is ' + $rootScope.favoritesTally[trackingReminder.id].tally);
 
             console.debug('Setting trackByFavorite timeout');
             $timeout(function() {
-                if(typeof $scope.state[trackingReminder.id] === "undefined"){
-                    console.error("$scope.state[trackingReminder.id] is undefined so we can't send tally in favorite controller. Not sure how this is happening.");
+                if(typeof $rootScope.favoritesTally[trackingReminder.id] === "undefined"){
+                    console.error("$rootScope.favoritesTally[trackingReminder.id] is undefined so we can't send tally in favorite controller. Not sure how this is happening.");
                     return;
                 }
-                if($scope.state[trackingReminder.id].tally) {
-                    measurementService.postMeasurementByReminder(trackingReminder, $scope.state[trackingReminder.id].tally)
+                if($rootScope.favoritesTally[trackingReminder.id].tally) {
+                    measurementService.postMeasurementByReminder(trackingReminder, $rootScope.favoritesTally[trackingReminder.id].tally)
                         .then(function () {
                             console.debug("Successfully measurementService.postMeasurementByReminder: " + JSON.stringify(trackingReminder));
                         }, function(error) {
@@ -822,7 +835,7 @@ angular.module('starter')
                             console.error(error);
                             console.error('Failed to Track by favorite, Try again!');
                         });
-                    $scope.state[trackingReminder.id].tally = 0;
+                    $rootScope.favoritesTally[trackingReminder.id].tally = 0;
                 }
             }, 2000);
 
@@ -919,9 +932,9 @@ angular.module('starter')
                     if(bloodPressure){
                         reminderService.deleteReminder($rootScope.bloodPressureReminderId)
                             .then(function(){
-                                console.debug('Favorite deleted: ' + JSON.stringify($scope.state.bloodPressure));
+                                console.debug('Favorite deleted: ' + JSON.stringify($rootScope.bloodPressure));
                             }, function(error){
-                                console.error('Failed to Delete Favorite!  Error is ' + error.message + '.  Favorite is ' + JSON.stringify($scope.state.bloodPressure));
+                                console.error('Failed to Delete Favorite!  Error is ' + error.message + '.  Favorite is ' + JSON.stringify($rootScope.bloodPressure));
                             });
                         localStorageService.deleteElementOfItemById('trackingReminders', $rootScope.bloodPressureReminderId)
                             .then(function(){
@@ -938,6 +951,40 @@ angular.module('starter')
                 hideSheet();
             }, 20000);
 
+        };
+
+        $scope.trackBloodPressure = function(){
+            if(!$rootScope.bloodPressure.diastolicValue || !$rootScope.bloodPressure.systolicValue){
+                $scope.favoriteValidationFailure('Please enter both values for blood pressure.');
+                return;
+            }
+            $rootScope.bloodPressure.displayTotal = "Recorded " + $rootScope.bloodPressure.systolicValue + "/" + $rootScope.bloodPressure.diastolicValue + ' Blood Pressure';
+            measurementService.postBloodPressureMeasurements($rootScope.bloodPressure)
+                .then(function () {
+                    console.debug("Successfully measurementService.postMeasurementByReminder: " + JSON.stringify($rootScope.bloodPressure));
+                }, function(error) {
+                    if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error(error);
+                    console.error('Failed to Track by favorite, Try again!');
+                });
+        };
+
+        $scope.refreshVariables = function () {
+            variableService.refreshCommonVariables().then(function () {
+                //Stop the ion-refresher from spinning
+                $scope.$broadcast('scroll.refreshComplete');
+            }, function (error) {
+                console.error(error);
+                //Stop the ion-refresher from spinning
+                $scope.$broadcast('scroll.refreshComplete');
+            });
+            variableService.refreshUserVariables().then(function () {
+                //Stop the ion-refresher from spinning
+                $scope.$broadcast('scroll.refreshComplete');
+            }, function (error) {
+                console.error(error);
+                //Stop the ion-refresher from spinning
+                $scope.$broadcast('scroll.refreshComplete');
+            });
         };
         
         $scope.init();
