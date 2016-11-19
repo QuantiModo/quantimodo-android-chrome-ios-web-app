@@ -33,6 +33,14 @@ angular.module('starter')
         $rootScope.numberOfPendingNotifications = null;
         $scope.showReminderSubMenu = false;
         $scope.primaryOutcomeVariableDetails = config.appSettings.primaryOutcomeVariableDetails;
+
+
+        $rootScope.bloodPressure = {
+            systolicValue: null,
+                diastolicValue: null,
+                displayTotal: "Blood Pressure"
+        };
+
         // Not used
         //$scope.ratingInfo = ratingService.getRatingInfo();
         $scope.closeMenu = function () {
@@ -758,7 +766,7 @@ angular.module('starter')
             utilsService.showAlert(message);
             console.error(message);
             if (typeof Bugsnag !== "undefined") {
-                Bugsnag.notify(message, "bloodPressure is " + JSON.stringify($scope.state.bloodPressure), {}, "error");
+                Bugsnag.notify(message, message, {}, "error");
             }
         };
 
@@ -919,9 +927,9 @@ angular.module('starter')
                     if(bloodPressure){
                         reminderService.deleteReminder($rootScope.bloodPressureReminderId)
                             .then(function(){
-                                console.debug('Favorite deleted: ' + JSON.stringify($scope.state.bloodPressure));
+                                console.debug('Favorite deleted: ' + JSON.stringify($rootScope.bloodPressure));
                             }, function(error){
-                                console.error('Failed to Delete Favorite!  Error is ' + error.message + '.  Favorite is ' + JSON.stringify($scope.state.bloodPressure));
+                                console.error('Failed to Delete Favorite!  Error is ' + error.message + '.  Favorite is ' + JSON.stringify($rootScope.bloodPressure));
                             });
                         localStorageService.deleteElementOfItemById('trackingReminders', $rootScope.bloodPressureReminderId)
                             .then(function(){
@@ -938,6 +946,21 @@ angular.module('starter')
                 hideSheet();
             }, 20000);
 
+        };
+
+        $scope.trackBloodPressure = function(){
+            if(!$rootScope.bloodPressure.diastolicValue || !$rootScope.bloodPressure.systolicValue){
+                $scope.favoriteValidationFailure('Please enter both values for blood pressure.');
+                return;
+            }
+            $rootScope.bloodPressure.displayTotal = "Recorded " + $rootScope.bloodPressure.systolicValue + "/" + $rootScope.bloodPressure.diastolicValue + ' Blood Pressure';
+            measurementService.postBloodPressureMeasurements($rootScope.bloodPressure)
+                .then(function () {
+                    console.debug("Successfully measurementService.postMeasurementByReminder: " + JSON.stringify($rootScope.bloodPressure));
+                }, function(error) {
+                    if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error(error);
+                    console.error('Failed to Track by favorite, Try again!');
+                });
         };
         
         $scope.init();
