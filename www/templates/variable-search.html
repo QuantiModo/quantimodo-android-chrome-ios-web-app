@@ -1,6 +1,7 @@
 <ion-view hide-nav-bar="hideNavigationMenu" view-title="Variable Search">
     <ion-nav-title>{{state.title}}</ion-nav-title>
     <ion-content>
+        <ion-refresher on-refresh="refreshVariables()"></ion-refresher>
         <div class="card" >
             <div ng-show="state.helpText" class="item item-text-wrap">
                 <div>

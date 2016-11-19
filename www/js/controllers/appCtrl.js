@@ -962,6 +962,11 @@ angular.module('starter')
                     console.error('Failed to Track by favorite, Try again!');
                 });
         };
+
+        $scope.refreshVariables = function () {
+            variableService.refreshCommonVariables();
+            variableService.refreshUserVariables();
+        };
         
         $scope.init();
     });
