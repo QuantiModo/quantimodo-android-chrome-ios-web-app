@@ -13,13 +13,21 @@ angular.module('starter')
             if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
             $scope.state = {
                 title: 'Loading study...',
-                requestParams: {}
+                requestParams: {},
+                hideStudyButton: true
             };
             
             $scope.correlationObject = $stateParams.correlationObject;
             
             if($scope.correlationObject){
+                $scope.state.requestParams = {
+                    causeVariableName: $scope.correlationObject.causeVariableName,
+                    effectVariableName: $scope.correlationObject.effectVariableName
+                };
                 $scope.state.title = $scope.correlationObject.predictorExplanation;
+                if($scope.correlationObject.userId){
+                    createUserCharts($scope.state.requestParams);
+                }
                 return;
             }
 
@@ -45,15 +53,30 @@ angular.module('starter')
             //chartCorrelationsOverTime();
         };
 
+        function createUserCharts(params) {
+            $scope.loadingCharts = true;
+            QuantiModo.getPairsDeferred(params).then(function (pairs) {
+                $scope.loadingCharts = false;
+                $scope.scatterplotChartConfig = chartService.createScatterPlot(params, pairs);
+                //$scope.timelineChartConfig = chartService.configureLineChartForPairs(params, pairs);
+                //$scope.causeTimelineChartConfig = chartService.configureLineChartForPairs(params, pairs);
+                $scope.causeTimelineChartConfig = chartService.configureLineChartForCause(params, pairs);
+                $scope.effectTimelineChartConfig = chartService.configureLineChartForEffect(params, pairs);
+                windowResize();
+            });
+        }
+
         var getUserStudy = function (params, fallbackToAggregateStudy) {
             $ionicLoading.show({
                 template: '<ion-spinner></ion-spinner>'
             });
+            
             correlationService.getUserCorrelations(params).then(function (correlations) {
                 $ionicLoading.hide();
                 if (correlations[0]) {
                     $scope.correlationObject = correlations[0];
                     $scope.state.title = $scope.correlationObject.predictorExplanation;
+                    createUserCharts(params);
                 } else {
                     if(!fallbackToAggregateStudy){
                         $scope.state.studyNotFound = true;

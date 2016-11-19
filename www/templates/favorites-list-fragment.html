@@ -1,0 +1,59 @@
+<div class="list card" id="favoritesList" ng-if="favoritesArray.length && !favorite.hide" ng-repeat="favorite in favoritesArray track by $index" on-hold="showFavoriteActionSheet(favorite, $index)">
+    <div class="item" style="padding-bottom:0px;" ng-if="!favorite.hide">
+        <div class="row">
+            <div ng-click="showFavoriteActionSheet(favorite, $index)" class="col col-10" style="padding-top: 0px; text-align: center;">
+                <i style="font-size: 40px;" class="icon positive {{favorite.icon}}"></i>
+            </div>
+            <div class="col col-70">
+                <h2 ng-click="showFavoriteActionSheet(favorite, $index)" ng-if="favorite.abbreviatedUnitName !== '/5'" style="white-space: normal; line-height: normal; text-align: center; ">{{favorite.displayTotal}}&nbsp{{favorite.variableName}}</h2>
+                <h2 ng-click="showFavoriteActionSheet(favorite, $index)" ng-if="favorite.abbreviatedUnitName == '/5'" style="white-space: normal; line-height: normal; text-align: center; ">{{favorite.displayTotal}} {{favorite.variableName}}</h2>
+                <button ng-if="favorite.abbreviatedUnitName != '/5' && favorite.defaultValue !== null"
+                        class="button button-clear button-balanced" style="text-overflow: clip; font-size: 14px; width:100%; "
+                        ng-click="trackByFavorite(favorite, null, $index)">
+                    <i class="ion-android-done"> &nbsp; Record {{favorite.defaultValue}} {{favorite.abbreviatedUnitName}}</i>
+                </button>
+            </div>
+            <div ng-click="showFavoriteActionSheet(favorite, $index)" class="col col-10">
+                <i style="font-size: 20px;" class="icon positive ion-more"></i>
+            </div>
+        </div>
+        <label ng-if="favorite.defaultValue === null && favorite.abbreviatedUnitName !== '/5'" class="item item-input">
+            <input type="number" ng-model="favorite.total" id="defaultValueField"
+                   ng-click="onTextClick($event)"
+                   placeholder="Enter value"
+                   style="text-align: center">
+            <span on-tap="trackFavoriteByValueField(favorite, $index)" class="input-label">{{favorite.abbreviatedUnitName}} &nbsp <i style="font-size: 20px;" class="icon positive ion-checkmark-round"></i></span>
+        </label>
+        <div class="primary-outcome-variable-reporting"
+             ng-if="!favorite.variableDescription && favorite.abbreviatedUnitName === '/5'">
+            <div class="primary-outcome-variable-rating-buttons" >
+                <img ng-repeat="option in numericRatingOptions"
+                     ng-click="trackByFavorite(favorite, option.numericValue)"
+                     ng-src="{{option.img}}">
+            </div>
+            <br>
+        </div>
+        <div class="primary-outcome-variable-reporting"
+             ng-if="favorite.abbreviatedUnitName === '/5' &&
+                            favorite.variableDescription.toLowerCase().indexOf('positive') > -1">
+            <div class="primary-outcome-variable-rating-buttons" >
+                <img ng-repeat="option in positiveRatingOptions"
+                     ng-click="trackByFavorite(favorite, option.numericValue)"
+                     ng-src="{{option.img}}">
+                <br>
+            </div>
+            <br>
+        </div>
+        <div class="primary-outcome-variable-reporting"
+             ng-if="favorite.abbreviatedUnitName === '/5' &&
+                            favorite.variableDescription.toLowerCase().indexOf('negative') > -1">
+            <div class="primary-outcome-variable-rating-buttons" >
+                <img ng-repeat="option in negativeRatingOptions"
+                     ng-click="trackByFavorite(favorite, option.numericValue)"
+                     ng-src="{{option.img}}">
+                <br>
+            </div>
+            <br>
+        </div>
+    </div>
+</div>
