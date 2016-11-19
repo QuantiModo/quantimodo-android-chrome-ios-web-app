@@ -967,6 +967,25 @@ angular.module('starter')
                     console.error('Failed to Track by favorite, Try again!');
                 });
         };
+
+        $scope.refreshVariables = function () {
+            variableService.refreshCommonVariables().then(function () {
+                //Stop the ion-refresher from spinning
+                $scope.$broadcast('scroll.refreshComplete');
+            }, function (error) {
+                console.error(error);
+                //Stop the ion-refresher from spinning
+                $scope.$broadcast('scroll.refreshComplete');
+            });
+            variableService.refreshUserVariables().then(function () {
+                //Stop the ion-refresher from spinning
+                $scope.$broadcast('scroll.refreshComplete');
+            }, function (error) {
+                console.error(error);
+                //Stop the ion-refresher from spinning
+                $scope.$broadcast('scroll.refreshComplete');
+            });
+        };
         
         $scope.init();
     });
