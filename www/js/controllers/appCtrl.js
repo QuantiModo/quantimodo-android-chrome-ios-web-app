@@ -803,24 +803,29 @@ angular.module('starter')
 
                 }
             }
+            
+            if(!$rootScope.favoritesTally){
+                $rootScope.favoritesTally = {};
+            }
 
-            if(!$scope.state[trackingReminder.id] || !$scope.state[trackingReminder.id].tally){
-                $scope.state[trackingReminder.id] = {
+            
+            if(!$rootScope.favoritesTally[trackingReminder.id] || !$rootScope.favoritesTally[trackingReminder.id].tally){
+                $rootScope.favoritesTally[trackingReminder.id] = {
                     tally: 0
                 };
             }
 
-            $scope.state[trackingReminder.id].tally += modifiedReminderValue;
-            console.debug('modified tally is ' + $scope.state[trackingReminder.id].tally);
+            $rootScope.favoritesTally[trackingReminder.id].tally += modifiedReminderValue;
+            console.debug('modified tally is ' + $rootScope.favoritesTally[trackingReminder.id].tally);
 
             console.debug('Setting trackByFavorite timeout');
             $timeout(function() {
-                if(typeof $scope.state[trackingReminder.id] === "undefined"){
-                    console.error("$scope.state[trackingReminder.id] is undefined so we can't send tally in favorite controller. Not sure how this is happening.");
+                if(typeof $rootScope.favoritesTally[trackingReminder.id] === "undefined"){
+                    console.error("$rootScope.favoritesTally[trackingReminder.id] is undefined so we can't send tally in favorite controller. Not sure how this is happening.");
                     return;
                 }
-                if($scope.state[trackingReminder.id].tally) {
-                    measurementService.postMeasurementByReminder(trackingReminder, $scope.state[trackingReminder.id].tally)
+                if($rootScope.favoritesTally[trackingReminder.id].tally) {
+                    measurementService.postMeasurementByReminder(trackingReminder, $rootScope.favoritesTally[trackingReminder.id].tally)
                         .then(function () {
                             console.debug("Successfully measurementService.postMeasurementByReminder: " + JSON.stringify(trackingReminder));
                         }, function(error) {
@@ -830,7 +835,7 @@ angular.module('starter')
                             console.error(error);
                             console.error('Failed to Track by favorite, Try again!');
                         });
-                    $scope.state[trackingReminder.id].tally = 0;
+                    $rootScope.favoritesTally[trackingReminder.id].tally = 0;
                 }
             }, 2000);
 
