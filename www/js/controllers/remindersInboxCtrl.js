@@ -476,9 +476,9 @@ angular.module('starter')
 			$scope.state.trackingReminderNotification = trackingReminderNotification;
 			$scope.state.trackingReminder = trackingReminderNotification;
 			$scope.state.trackingReminder.id = trackingReminderNotification.trackingReminderId;
-			$scope.state.variableObject = trackingReminderNotification;
-			$scope.state.variableObject.id = trackingReminderNotification.variableId;
-			$scope.state.variableObject.name = trackingReminderNotification.variableName;
+			$rootScope.variableObject = trackingReminderNotification;
+			$rootScope.variableObject.id = trackingReminderNotification.variableId;
+			$rootScope.variableObject.name = trackingReminderNotification.variableName;
 			// Show the action sheet
 			var hideSheetForNotification = $ionicActionSheet.show({
 				buttons: [
@@ -500,16 +500,16 @@ angular.module('starter')
 						$scope.editReminderSettingsByNotification($scope.state.trackingReminderNotification, dividerIndex, trackingReminderNotificationIndex);
 					}
 					if(index === 1){
-						$scope.addToFavoritesUsingVariableObject($scope.state.variableObject);
+						$scope.addToFavoritesUsingVariableObject($rootScope.variableObject);
 					}
 					if(index === 2){
-						$scope.goToAddMeasurementForVariableObject($scope.state.variableObject);
+						$scope.goToAddMeasurementForVariableObject($rootScope.variableObject);
 					}
 					if(index === 3){
-						$scope.goToChartsPageForVariableObject($scope.state.variableObject);
+						$scope.goToChartsPageForVariableObject($rootScope.variableObject);
 					}
 					if(index === 4){
-						$scope.goToHistoryForVariableObject($scope.state.variableObject);
+						$scope.goToHistoryForVariableObject($rootScope.variableObject);
 					}
 					if (index === 5) {
 						$state.go('app.variableSettings',
@@ -523,7 +523,7 @@ angular.module('starter')
 					var params = {
 						trackingReminderId : $scope.state.trackingReminderNotification.trackingReminderId
 					};
-					$scope.showLoader('Skipping all ' + $scope.state.variableObject.name + ' reminder notifications...');
+					$scope.showLoader('Skipping all ' + $rootScope.variableObject.name + ' reminder notifications...');
 					reminderService.skipAllReminderNotifications(params)
 						.then(function(){
 							$scope.hideLoader();

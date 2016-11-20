@@ -841,6 +841,48 @@ angular.module('starter')
 
         };
 
+        $scope.deleteAllMeasurementsForVariable = function() {
+            $ionicLoading.show({
+                template: '<ion-spinner></ion-spinner>'
+            });
+            // Delete all measurements for a variable
+            variableService.deleteAllMeasurementsForVariable($rootScope.variableObject.id).then(function() {
+                // If primaryOutcomeVariable, delete local storage measurements
+                if ($rootScope.variableName === config.appSettings.primaryOutcomeVariableDetails.name) {
+                    localStorageService.setItem('allMeasurements',[]);
+                    localStorageService.setItem('measurementsQueue',[]);
+                    localStorageService.setItem('averagePrimaryOutcomeVariableValue',0);
+                    localStorageService.setItem('lastSyncTime',0);
+                }
+                $ionicLoading.hide();
+                $state.go(config.appSettings.defaultState);
+                console.debug("All measurements for " + $rootScope.variableName + " deleted!");
+            }, function(error) {
+                $ionicLoading.hide();
+                console.debug('Error deleting measurements: '+ JSON.stringify(error));
+            });
+        };
+
+        $scope.showDeleteAllMeasurementsForVariablePopup = function(){
+            $ionicPopup.show({
+                title:'Delete all ' + $rootScope.variableName + " measurements?",
+                subTitle: 'This cannot be undone!',
+                scope: $scope,
+                buttons:[
+                    {
+                        text: 'Yes',
+                        type: 'button-positive',
+                        onTap: $scope.deleteAllMeasurementsForVariable
+                    },
+                    {
+                        text: 'No',
+                        type: 'button-assertive'
+                    }
+                ]
+
+            });
+        };
+
         // Triggered on a button click, or some other target
         $scope.showFavoriteActionSheet = function(favorite, $index, bloodPressure) {
 
