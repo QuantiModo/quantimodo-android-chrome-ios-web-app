@@ -190,7 +190,6 @@ angular.module('starter')
             console.debug("variablePageCtrl: init");
             if($stateParams.variableObject){
                 $rootScope.variableObject = $stateParams.variableObject;
-
             } else if ($stateParams.trackingReminder){
                 getStatisticsForVariable($stateParams.trackingReminder.variableName);
             } else if ($stateParams.variableName){
@@ -203,7 +202,7 @@ angular.module('starter')
             $ionicLoading.hide();
 
             if($rootScope.variableObject.name){
-                $rootScope.variableName = $stateParams.variableObject.name;
+                $rootScope.variableName = $rootScope.variableObject.name;
                 var params = {
                     sort: "startTimeEpoch",
                     variableName: $rootScope.variableObject.name,
