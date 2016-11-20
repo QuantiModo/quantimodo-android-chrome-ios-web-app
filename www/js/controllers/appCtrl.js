@@ -846,9 +846,9 @@ angular.module('starter')
                 template: '<ion-spinner></ion-spinner>'
             });
             // Delete all measurements for a variable
-            variableService.deleteAllMeasurementsForVariable($scope.state.variableObject.id).then(function() {
+            variableService.deleteAllMeasurementsForVariable($rootScope.variableObject.id).then(function() {
                 // If primaryOutcomeVariable, delete local storage measurements
-                if ($scope.state.variableName === config.appSettings.primaryOutcomeVariableDetails.name) {
+                if ($rootScope.variableName === config.appSettings.primaryOutcomeVariableDetails.name) {
                     localStorageService.setItem('allMeasurements',[]);
                     localStorageService.setItem('measurementsQueue',[]);
                     localStorageService.setItem('averagePrimaryOutcomeVariableValue',0);
@@ -856,7 +856,7 @@ angular.module('starter')
                 }
                 $ionicLoading.hide();
                 $state.go(config.appSettings.defaultState);
-                console.debug("All measurements for " + $scope.state.variableName + " deleted!");
+                console.debug("All measurements for " + $rootScope.variableName + " deleted!");
             }, function(error) {
                 $ionicLoading.hide();
                 console.debug('Error deleting measurements: '+ JSON.stringify(error));
@@ -865,7 +865,7 @@ angular.module('starter')
 
         $scope.showDeleteAllMeasurementsForVariablePopup = function(){
             $ionicPopup.show({
-                title:'Delete all ' + $scope.state.variableName + " measurements?",
+                title:'Delete all ' + $rootScope.variableName + " measurements?",
                 subTitle: 'This cannot be undone!',
                 scope: $scope,
                 buttons:[

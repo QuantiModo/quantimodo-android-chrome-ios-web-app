@@ -30,7 +30,7 @@ angular.module('starter')
                                 if(correlationObjects.length) {
                                     setupUserPredictors();
                                     $scope.state.explanationText = "Unfortunately, I don't have enough data get common " +
-                                        " predictors for " + $scope.state.variableName + ", yet. " + $scope.state.explanationText;
+                                        " predictors for " + $rootScope.variableName + ", yet. " + $scope.state.explanationText;
                                     $scope.state.correlationObjects = $scope.state.correlationObjects.concat(correlationObjects);
                                 } else {
                                     $scope.state.noCorrelations = true;
@@ -74,7 +74,7 @@ angular.module('starter')
                                 if(correlationObjects.length) {
                                     setupAggregatedPredictors();
                                     $scope.state.explanationText = "Unfortunately, I don't have enough data from you to get " +
-                                        "your personal predictors for " + $scope.state.variableName + ", yet. " + $scope.state.explanationText;
+                                        "your personal predictors for " + $rootScope.variableName + ", yet. " + $scope.state.explanationText;
                                     $scope.state.correlationObjects = $scope.state.correlationObjects.concat(correlationObjects);
                                     $scope.$broadcast('scroll.infiniteScrollComplete');
                                 } else {
@@ -97,7 +97,7 @@ angular.module('starter')
             $scope.state.explanationHeader = "Your Top Predictors";
             $scope.state.explanationIcon = "ion-ios-person";
             $scope.state.explanationText = 'These factors are most likely to affect ' + $scope.state.increasingDecreasing +
-                ' your ' + $scope.state.variableName + ' based on your own data.  ' +
+                ' your ' + $rootScope.variableName + ' based on your own data.  ' +
             'Want more accurate results? Add some reminders and start tracking!';
         }
 
@@ -105,7 +105,7 @@ angular.module('starter')
             $scope.state.explanationHeader = "Common Predictors";
             $scope.state.explanationIcon = "ion-ios-people";
             $scope.state.explanationText = 'These factors are most likely to affect ' + $scope.state.increasingDecreasing +
-                ' ' + $scope.state.variableName + ' for the average QuantiModo user.  ' +
+                ' ' + $rootScope.variableName + ' for the average QuantiModo user.  ' +
             'Want PERSONALIZED results? Add some reminders and start tracking!';
         }
 
@@ -139,11 +139,11 @@ angular.module('starter')
             $scope.state.requestParams.limit = 10;
 
             if ($scope.state.requestParams.causeVariableName){
-                $scope.state.variableName = $scope.state.requestParams.causeVariableName;
+                $rootScope.variableName = $scope.state.requestParams.causeVariableName;
             }
 
             if ($scope.state.requestParams.effectVariableName) {
-                $scope.state.variableName = $scope.state.requestParams.effectVariableName;
+                $rootScope.variableName = $scope.state.requestParams.effectVariableName;
             }
 
             if($stateParams.valence === 'positive'){

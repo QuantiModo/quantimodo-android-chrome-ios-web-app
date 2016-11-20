@@ -23,14 +23,14 @@ angular.module('starter')
                 template: '<ion-spinner></ion-spinner>'
             });
 
-            variableService.getPublicVariablesByName($scope.state.variableObject.name).then(function(variableArray) {
+            variableService.getPublicVariablesByName($rootScope.variableObject.name).then(function(variableArray) {
                 $ionicLoading.hide();
                 var originalVariableObject = variableArray[0];
                 console.debug("variableService.getPublicVariablesByName: Original variable object: " +
                     JSON.stringify(originalVariableObject));
 
                 if (originalVariableObject) {
-                    if ($scope.state.variableObject.abbreviatedUnitName !== "/5") {
+                    if ($rootScope.variableObject.abbreviatedUnitName !== "/5") {
                         if (originalVariableObject.minimumAllowedValue !== "-Infinity") {
                             $scope.state.minimumAllowedValue = originalVariableObject.minimumAllowedValue;
                         }
@@ -118,7 +118,7 @@ angular.module('starter')
 
             // populate params
             var params = {
-                variableId: $scope.state.variableObject.id,
+                variableId: $rootScope.variableObject.id,
                 durationOfAction: $scope.state.durationOfAction*60*60,
                 fillingValue: fillingValue,
                 //joinWith
@@ -143,7 +143,7 @@ angular.module('starter')
 
         $rootScope.showActionSheetMenu = function() {
 
-            console.debug("variableSettingsCtrl.showActionSheetMenu: Show the action sheet!  $scope.state.variableObject: ", $scope.state.variableObject);
+            console.debug("variableSettingsCtrl.showActionSheetMenu: Show the action sheet!  $rootScope.variableObject: ", $rootScope.variableObject);
             var hideSheet = $ionicActionSheet.show({
                 buttons: [
                     { text: '<i class="icon ion-ios-star"></i>Add to Favorites'},
@@ -160,20 +160,20 @@ angular.module('starter')
                 buttonClicked: function(index) {
                     console.debug('variableSettingsCtrl BUTTON CLICKED: ' + index);
                     if(index === 0){
-                        $scope.addToFavoritesUsingVariableObject($scope.state.variableObject);
+                        $scope.addToFavoritesUsingVariableObject($rootScope.variableObject);
                     }
                     if(index === 1){
-                        $scope.goToAddMeasurementForVariableObject($scope.state.variableObject);
+                        $scope.goToAddMeasurementForVariableObject($rootScope.variableObject);
                     }
                     if(index === 2){
-                        $scope.goToAddReminderForVariableObject($scope.state.variableObject);
+                        $scope.goToAddReminderForVariableObject($rootScope.variableObject);
                     }
                     if (index === 3) {
-                        $scope.goToChartsPageForVariableObject($scope.state.variableObject);
+                        $scope.goToChartsPageForVariableObject($rootScope.variableObject);
                     }
                     if(index === 4) {
-                        console.debug('variableSettingsCtrl going to history' + JSON.stringify($scope.state.variableObject));
-                        $scope.goToHistoryForVariableObject($scope.state.variableObject);
+                        console.debug('variableSettingsCtrl going to history' + JSON.stringify($rootScope.variableObject));
+                        $scope.goToHistoryForVariableObject($rootScope.variableObject);
                     }
 
                     return true;
@@ -193,8 +193,8 @@ angular.module('starter')
 
         function setupByVariableObject(variableObject) {
             $scope.state.title = variableObject.name + ' Variable Settings';
-            $scope.state.variableName = variableObject.name;
-            $scope.state.variableObject = variableObject;
+            $rootScope.variableName = variableObject.name;
+            $rootScope.variableObject = variableObject;
             $scope.state.sumAvg = variableObject.combinationOperation === "MEAN" ? "avg" : "sum";
             if (variableObject.abbreviatedUnitName === "/5") {
                 // FIXME hide other fixed range variables as well
@@ -248,13 +248,13 @@ angular.module('starter')
                 setupByVariableObject($stateParams.variableObject);
             } else if ($stateParams.variableName) {
                 $scope.state.title = $stateParams.variableName + ' Variable Settings';
-                $scope.state.variableName = $stateParams.variableName;
+                $rootScope.variableName = $stateParams.variableName;
                 $ionicLoading.show({
                     template: '<ion-spinner></ion-spinner>'
                 });
                 variableService.getVariablesByName($stateParams.variableName).then(function(variableObject){
                     $ionicLoading.hide();
-                    $scope.state.variableObject = variableObject;
+                    $rootScope.variableObject = variableObject;
                     setupByVariableObject(variableObject);
                 });
             } else {
