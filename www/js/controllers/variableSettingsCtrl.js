@@ -60,26 +60,6 @@ angular.module('starter')
 
         };
 
-        $scope.showDeleteAllMeasurementsForVariablePopup = function(){
-            $ionicPopup.show({
-                title:'Delete all ' + $scope.state.variableName + " measurements?",
-                subTitle: 'This cannot be undone!',
-                scope: $scope,
-                buttons:[
-                    {
-                        text: 'Yes',
-                        type: 'button-positive',
-                        onTap: $scope.deleteAllMeasurementsForVariable
-                    },
-                    {
-                        text: 'No',
-                        type: 'button-assertive'
-                    }
-                ]
-
-            });
-        };
-
         $scope.showExplanationsPopup = function(settingName) {
             var explanationText = {
                 "Minimum value": "The minimum allowed value for measurements. " +
@@ -120,22 +100,6 @@ angular.module('starter')
                 ]
             });
 
-        };
-
-        $scope.deleteAllMeasurementsForVariable = function() {
-            // Delete all measurements for a variable
-            variableService.deleteAllMeasurementsForVariable($scope.state.variableObject.id).then(function() {
-                // If primaryOutcomeVariable, delete local storage measurements
-                if ($scope.state.variableName === config.appSettings.primaryOutcomeVariableDetails.name) {
-                    localStorageService.setItem('allMeasurements',[]);
-                    localStorageService.setItem('measurementsQueue',[]);
-                    localStorageService.setItem('averagePrimaryOutcomeVariableValue',0);
-                    localStorageService.setItem('lastSyncTime',0);
-                }
-                console.debug("All measurements for " + $scope.state.variableName + " deleted!");
-            }, function(error) {
-                console.debug('Error deleting measurements: '+ JSON.stringify(error));
-            });
         };
 
         $scope.save = function(){
