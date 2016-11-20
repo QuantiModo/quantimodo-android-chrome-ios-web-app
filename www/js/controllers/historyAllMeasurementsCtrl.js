@@ -156,9 +156,9 @@ angular.module('starter')
 		$scope.showActionSheet = function(measurement, $index) {
 
 			$scope.state.measurement = measurement;
-			$scope.state.variableObject = measurement;
-			$scope.state.variableObject.id = measurement.variableId;
-			$scope.state.variableObject.name = measurement.variableName;
+			$rootScope.variableObject = measurement;
+			$rootScope.variableObject.id = measurement.variableId;
+			$rootScope.variableObject.name = measurement.variableName;
 			// Show the action sheet
 			var hideSheet = $ionicActionSheet.show({
 				buttons: [
@@ -176,24 +176,24 @@ angular.module('starter')
 				buttonClicked: function(index) {
 					console.debug($state.current.name + ": " + 'BUTTON CLICKED', index);
 					if(index === 0){
-						$scope.editMeasurement($scope.state.variableObject);
+						$scope.editMeasurement($rootScope.variableObject);
 					}
 					if(index === 1){
-						$scope.addToFavoritesUsingVariableObject($scope.state.variableObject);
+						$scope.addToFavoritesUsingVariableObject($rootScope.variableObject);
 					}
 					if(index === 2){
 						$state.go('app.reminderAdd',
 							{
-								variableObject: $scope.state.variableObject,
+								variableObject: $rootScope.variableObject,
 								fromState: $state.current.name,
 								fromUrl: window.location.href
 							});
 					}
 					if (index === 3) {
-						$scope.goToChartsPageForVariableObject($scope.state.variableObject);
+						$scope.goToChartsPageForVariableObject($rootScope.variableObject);
 					}
 					if (index === 4) {
-						$scope.goToHistoryForVariableObject($scope.state.variableObject);
+						$scope.goToHistoryForVariableObject($rootScope.variableObject);
 
 					}
 					if(index === 5){
