@@ -590,7 +590,7 @@ angular.module('starter',
             }
         })
         .state('app.variableSettings', {
-            url: "/variable_settings/:variableName",
+            url: "/variable-settings/:variableName",
             cache: false,
             params: {
                 reminder : null,
@@ -766,7 +766,7 @@ angular.module('starter',
                 }
             }
         })
-        .state('app.search-user-relationships', {
+        .state('app.searchUserRelationships', {
             url: "/search-user-relationships",
             views: {
                 'menuContent': {
@@ -775,7 +775,7 @@ angular.module('starter',
                 }
             }
         })
-        .state('app.update-card', {
+        .state('app.updateCard', {
             url: "/update-card",
             views: {
                 'menuContent': {
@@ -1159,7 +1159,7 @@ angular.module('starter',
             }
         })
         .state('app.reminderAdd', {
-            url: "/reminder_add",
+            url: "/reminder-add",
             cache: false,
             params: {
                 variableCategoryName : null,
