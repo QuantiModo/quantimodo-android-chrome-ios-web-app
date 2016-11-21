@@ -87,10 +87,10 @@
                 </ion-item>
             </div>
         </ion-list>-->
-        <ion-infinite-scroll
+<!--        <ion-infinite-scroll  Keeps getting called all the time for no reason
                 on-infinite="loadMore()"
                 distance="1%">
-        </ion-infinite-scroll>
+        </ion-infinite-scroll>-->
         <div class="list card"  ng-show="state.noCorrelations">
             <div class="item" style="padding-bottom:0px;">
                 <p style=" text-align: center; line-height: normal; font-size: 25px;">Not enough data!</p>
@@ -118,6 +118,9 @@
                     </div>
                 </div>
             </div>
+        </div>
+        <div class="button-bar" ng-hide="state.noCorrelations">
+            <a class="button button-clear button-calm" ng-click="loadMore()" style="text-overflow: clip;"><i class="ion-refresh">  Load More</i></a>
         </div>
     </ion-content>
     <nav id="floatingMaterialButton"
