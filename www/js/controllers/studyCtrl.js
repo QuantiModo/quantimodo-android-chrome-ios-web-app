@@ -91,6 +91,7 @@ angular.module('starter')
                     }
                 }
             }, function (error) {
+                console.error(error);
                 $ionicLoading.hide();
                 if(!fallbackToAggregateStudy){
                     $scope.state.studyNotFound = true;
