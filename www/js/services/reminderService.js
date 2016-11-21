@@ -236,7 +236,6 @@ angular.module('starter')
 				});
 
 				return $rootScope.lastRefreshTrackingRemindersAndScheduleAlarmsPromise.promise;
-			}
 		};
 
 		reminderService.getTodayTrackingReminderNotifications = function(variableCategoryName){
