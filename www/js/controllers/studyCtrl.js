@@ -31,6 +31,11 @@ angular.module('starter')
                 return;
             }
 
+            if($rootScope.urlParameters.userId && !$rootScope.user) {
+                $rootScope.afterLoginGoTo = window.location.href;
+                $rootScope.sendToLogin();
+            }
+
             if($rootScope.urlParameters.causeVariableName){
                 $scope.state.requestParams.causeVariableName = $rootScope.urlParameters.causeVariableName;
             }

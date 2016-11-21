@@ -1,4 +1,7 @@
-<div class="list card" id="favoritesList" ng-if="favoritesArray.length && !favorite.hide" ng-repeat="favorite in favoritesArray track by $index" on-hold="showFavoriteActionSheet(favorite, $index)">
+<div class="list card" id="favoritesList"
+     ng-if="favoritesArray.length && !favorite.hide"
+     ng-repeat="favorite in favoritesArray | orderBy:'numberOfRawMeasurements':true  track by $index"
+     on-hold="showFavoriteActionSheet(favorite, $index)">
     <div class="item" style="padding-bottom:0px;" ng-if="!favorite.hide">
         <div class="row">
             <div ng-click="showFavoriteActionSheet(favorite, $index)" class="col col-10" style="padding-top: 0px; text-align: center;">

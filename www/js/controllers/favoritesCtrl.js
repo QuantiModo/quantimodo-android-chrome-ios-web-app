@@ -14,11 +14,6 @@ angular.module('starter')
             trackingReminder : null,
             lastSent: new Date(),
 			title: "Favorites",
-			bloodPressure: {
-            	systolicValue: null,
-				diastolicValue: null,
-				displayTotal: "Blood Pressure"
-			},
 			favorites: [],
 			addButtonText: "Add a Favorite Variable",
 			addButtonIcon: "ion-ios-star",
@@ -26,25 +21,8 @@ angular.module('starter')
 			moreHelpText: "Tip: I recommend using reminders instead of favorites whenever possible because they allow you to record regular 0 values as well. Knowing when you didn't take a medication or eat something helps our analytics engine to figure out how these things might be affecting you."
 	    };
 
-
-
 		$scope.favoriteAddButtonClick = function () {
 			$scope.goToState('app.favoriteSearch', $rootScope.stateParams);
-		};
-
-		$scope.trackBloodPressure = function(){
-			if(!$scope.state.bloodPressure.diastolicValue || !$scope.state.bloodPressure.systolicValue){
-				$scope.favoriteValidationFailure('Please enter both values for blood pressure.');
-				return;
-			}
-			$scope.state.bloodPressure.displayTotal = "Recorded " + $scope.state.bloodPressure.systolicValue + "/" + $scope.state.bloodPressure.diastolicValue + ' Blood Pressure';
-			measurementService.postBloodPressureMeasurements($scope.state.bloodPressure)
-				.then(function () {
-					console.debug("Successfully measurementService.postMeasurementByReminder: " + JSON.stringify($scope.state.bloodPressure));
-				}, function(error) {
-					if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error(error);
-					console.error('Failed to Track by favorite, Try again!');
-				});
 		};
 
 		$scope.refreshFavorites = function () {
@@ -65,10 +43,13 @@ angular.module('starter')
 			$rootScope.stateParams = $stateParams;
 
 			if($stateParams.variableCategoryName && $stateParams.variableCategoryName  !== 'Anything'){
-				$scope.state.addButtonText = "Add favorite " + pluralize($stateParams.variableCategoryName, 1).toLowerCase();
-				$scope.state.title = pluralize($stateParams.variableCategoryName, 1) + " Favorites";
+                $rootScope.variableCategoryName = $stateParams.variableCategoryName;
+				$scope.state.addButtonText = "Add favorite " + $stateParams.variableCategoryName.toLowerCase();
+				$scope.state.title = 'Favorite ' + $stateParams.variableCategoryName;
 				$scope.state.moreHelpText = null;
-			}
+			} else {
+                $rootScope.variableCategoryName = null;
+            }
 			if($stateParams.variableCategoryName === 'Treatments') {
 				$scope.state.addButtonText = "Add an as-needed medication";
 				$scope.state.helpText = "Quickly record doses of medications taken as needed just by tapping.  Tap twice for two doses, etc.";

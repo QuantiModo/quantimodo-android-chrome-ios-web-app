@@ -1,7 +1,7 @@
 <ion-view hide-nav-bar="hideNavigationMenu" view-title="Variable Settings">
     <ion-nav-title>{{state.title}}</ion-nav-title>
     <ion-content>
-        <div ng-show="state.variableObject" class="card variable-settings" >
+        <div ng-show="variableObject" class="card variable-settings" >
             <div class="list">
                 <div class="item item-divider ng-binding">Properties</div>
                 <!--FIXME Use this once variable aliasing is implemented-->
@@ -13,19 +13,19 @@
                 -->
                 <label class="item item-content" style="padding: 6px 10px 5px 16px;">
                     <span class="input-label left-text">Variable Name</span>
-                    <span class="input-label right-text " id="variableName">{{state.variableName}}</span>
+                    <span class="input-label right-text " id="variableName">{{variableName}}</span>
                 </label>
                 <label class="item item-content" style="padding: 6px 10px 5px 16px;">
                     <span class="input-label left-text">Variable Category</span>
-                    <span class="input-label right-text ">{{state.variableObject.variableCategoryName}}</span>
+                    <span class="input-label right-text ">{{variableObject.variableCategoryName}}</span>
                 </label>
                 <label class="item item-content" style="padding: 6px 10px 5px 16px;" >
                     <span class="input-label left-text">Unit</span>
-                    <span class="input-label right-text ">{{state.variableObject.unitName}}</span>
+                    <span class="input-label right-text ">{{variableObject.unitName}}</span>
                 </label>
                 <label class="item item-content" style="padding: 6px 10px 5px 16px;" ng-click="showExplanationsPopup('Combination Method')">
                     <span class="input-label left-span" >Combination Method &nbsp; <i class="icon ion-help-circled"></i></span>
-                    <span class="input-label right-text ">{{state.variableObject.combinationOperation}}</span>
+                    <span class="input-label right-text ">{{variableObject.combinationOperation}}</span>
                 </label>
                 <div class="item item-divider ng-binding">Data Optimization</div>
                     <!--

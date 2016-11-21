@@ -232,7 +232,7 @@ angular.module('starter')
 	    	if (!selectedVariable.variableCategoryName) {
 	    		$scope.state.showAddVariableCard = true;
 	    	}
-	    	$scope.variableObject=selectedVariable;
+	    	$rootScope.variableObject=selectedVariable;
 
             setupVariableCategory(selectedVariable.variableCategoryName);
             if (selectedVariable.abbreviatedUnitName) {
@@ -590,10 +590,10 @@ angular.module('starter')
             if(variableId){
                 variableService.getVariableById(variableId)
                     .then(function (variables) {
-                        $scope.variableObject = variables[0];
+                        $rootScope.variableObject = variables[0];
                         console.debug('setupReminderEditingFromVariableId got this variable object ' +
-                            JSON.stringify($scope.variableObject));
-                        setupByVariableObject($scope.variableObject);
+                            JSON.stringify($rootScope.variableObject));
+                        setupByVariableObject($rootScope.variableObject);
                         $ionicLoading.hide();
                         $scope.loading = false;
                     }, function () {
@@ -664,7 +664,7 @@ angular.module('starter')
                 var reminderIdUrlParameter = utilsService.getUrlParameter(window.location.href, 'reminderId');
                 var variableIdUrlParameter = utilsService.getUrlParameter(window.location.href, 'variableId');
                 if ($stateParams.variableObject) {
-                    $scope.variableObject = $stateParams.variableObject;
+                    $rootScope.variableObject = $stateParams.variableObject;
                     setupByVariableObject($stateParams.variableObject);
                 } else if ($stateParams.reminder && $stateParams.reminder !== null) {
                     setupEditReminder($stateParams.reminder);
@@ -723,10 +723,10 @@ angular.module('starter')
         };
 
         $rootScope.showActionSheetMenu = function() {
-            $scope.state.variableObject = $scope.state.trackingReminder;
-            $scope.state.variableObject.id = $scope.state.trackingReminder.variableId;
-            $scope.state.variableObject.name = $scope.state.trackingReminder.variableName;
-            console.debug("remindersAddCtrl.showActionSheetMenu:   $scope.state.variableObject: ", $scope.state.variableObject);
+            $scope.variableObject = $scope.state.trackingReminder;
+            $scope.variableObject.id = $scope.state.trackingReminder.variableId;
+            $scope.variableObject.name = $scope.state.trackingReminder.variableName;
+            console.debug("remindersAddCtrl.showActionSheetMenu:   $scope.variableObject: ", $scope.variableObject);
             var hideSheet = $ionicActionSheet.show({
                 buttons: [
                     { text: '<i class="icon ion-ios-star"></i>Add to Favorites' },
@@ -745,16 +745,16 @@ angular.module('starter')
                     console.debug('BUTTON CLICKED', index);
 
                     if(index === 0){
-                        $scope.addToFavoritesUsingVariableObject($scope.state.variableObject);
+                        $scope.addToFavoritesUsingVariableObject($scope.variableObject);
                     }
                     if(index === 1){
-                        $scope.goToAddMeasurementForVariableObject($scope.state.variableObject);
+                        $scope.goToAddMeasurementForVariableObject($scope.variableObject);
                     }
                     if(index === 2){
-                        $scope.goToChartsPageForVariableObject($scope.state.variableObject);
+                        $scope.goToChartsPageForVariableObject($scope.variableObject);
                     }
                     if(index === 3) {
-                        $scope.goToHistoryForVariableObject($scope.state.variableObject);
+                        $scope.goToHistoryForVariableObject($scope.variableObject);
                     }
                     if (index === 4) {
                         $state.go('app.variableSettings',

@@ -758,8 +758,18 @@ angular.module('starter')
 				series :[{
 					name : variableObject.name + ' Over Time',
 					data : data,
+					marker: {
+						enabled: true,
+						radius: 2
+					},
 					tooltip: {
 						valueDecimals: 2
+					},
+					lineWidth: 0,
+					states: {
+						hover: {
+							lineWidthPlus: 0
+						}
 					}
 				}]
 			};

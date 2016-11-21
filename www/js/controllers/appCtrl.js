@@ -10,7 +10,7 @@ angular.module('starter')
 
         $rootScope.loaderImagePath = config.appSettings.loaderImagePath;
         $rootScope.appMigrationVersion = 1489;
-        $rootScope.appVersion = "2.1.3.0";
+        $rootScope.appVersion = "2.1.5.0";
         if (!$rootScope.loaderImagePath) {
             $rootScope.loaderImagePath = 'img/circular_loader.gif';
         }
@@ -33,6 +33,14 @@ angular.module('starter')
         $rootScope.numberOfPendingNotifications = null;
         $scope.showReminderSubMenu = false;
         $scope.primaryOutcomeVariableDetails = config.appSettings.primaryOutcomeVariableDetails;
+
+
+        $rootScope.bloodPressure = {
+            systolicValue: null,
+                diastolicValue: null,
+                displayTotal: "Blood Pressure"
+        };
+
         // Not used
         //$scope.ratingInfo = ratingService.getRatingInfo();
         $scope.closeMenu = function () {
@@ -256,24 +264,37 @@ angular.module('starter')
             trackingReminder.variableDescription = variableObject.description;
             trackingReminder.variableCategoryName = variableObject.variableCategoryName;
 
+            if($rootScope.lastRefreshTrackingRemindersAndScheduleAlarmsPromise){
+                var message = 'Got deletion request before last reminder refresh completed';
+                console.debug(message);
+                $rootScope.lastRefreshTrackingRemindersAndScheduleAlarmsPromise.reject();
+                $rootScope.lastRefreshTrackingRemindersAndScheduleAlarmsPromise = null;
+                $rootScope.syncingReminders = false;
+            }
+
             if (trackingReminder.abbreviatedUnitName === '/5') {
+                $ionicLoading.show({
+                    template: '<ion-spinner></ion-spinner>'
+                });
                 trackingReminder.defaultValue = 3;
                 localStorageService.addToOrReplaceElementOfItemByIdOrMoveToFront('trackingReminders', trackingReminder)
                     .then(function() {
                         reminderService.postTrackingReminders(trackingReminder)
                             .then(function () {
+                                $ionicLoading.hide();
                                 console.debug("Saved to favorites: " + JSON.stringify(trackingReminder));
-                                $state.go('app.favorites',
-                                    {
-                                        trackingReminder: trackingReminder,
-                                        fromState: $state.current.name,
-                                        fromUrl: window.location.href
-                                    }
-                                );
                             }, function(error) {
-                                console.error('Failed to add favorite!', trackingReminder);
+                                $ionicLoading.hide();
+                                console.error('Failed to add favorite!' + JSON.stringify(error));
                             });
                     });
+                $state.go('app.favorites',
+                    {
+                        trackingReminder: trackingReminder,
+                        fromState: $state.current.name,
+                        fromUrl: window.location.href
+                    }
+                );
             } else {
                 $state.go('app.favoriteAdd',
                     {
@@ -403,6 +424,10 @@ angular.module('starter')
             }
         };
 
+        $scope.$on('getFavoriteTrackingRemindersFromLocalStorage', function(){
+            QuantiModo.getFavoriteTrackingRemindersFromLocalStorage($rootScope.variableCategoryName);
+        });
+
         $scope.init = function () {
             console.debug("Main Constructor Start");
             if(!window.private_keys) {
@@ -412,6 +437,8 @@ angular.module('starter')
             if($rootScope.showUndoButton){
                 $rootScope.showUndoButton = false;
             }
+
+            $rootScope.favoritesOrderParameter = 'numberOfRawMeasurements';
             
             if($rootScope.urlParameters.refreshUser){
                 localStorageService.clear();
@@ -758,7 +785,7 @@ angular.module('starter')
             utilsService.showAlert(message);
             console.error(message);
             if (typeof Bugsnag !== "undefined") {
-                Bugsnag.notify(message, "bloodPressure is " + JSON.stringify($scope.state.bloodPressure), {}, "error");
+                Bugsnag.notify(message, message, {}, "error");
             }
         };
 
@@ -795,24 +822,29 @@ angular.module('starter')
 
                 }
             }
+            
+            if(!$rootScope.favoritesTally){
+                $rootScope.favoritesTally = {};
+            }
 
-            if(!$scope.state[trackingReminder.id] || !$scope.state[trackingReminder.id].tally){
-                $scope.state[trackingReminder.id] = {
+            
+            if(!$rootScope.favoritesTally[trackingReminder.id] || !$rootScope.favoritesTally[trackingReminder.id].tally){
+                $rootScope.favoritesTally[trackingReminder.id] = {
                     tally: 0
                 };
             }
 
-            $scope.state[trackingReminder.id].tally += modifiedReminderValue;
-            console.debug('modified tally is ' + $scope.state[trackingReminder.id].tally);
+            $rootScope.favoritesTally[trackingReminder.id].tally += modifiedReminderValue;
+            console.debug('modified tally is ' + $rootScope.favoritesTally[trackingReminder.id].tally);
 
             console.debug('Setting trackByFavorite timeout');
             $timeout(function() {
-                if(typeof $scope.state[trackingReminder.id] === "undefined"){
-                    console.error("$scope.state[trackingReminder.id] is undefined so we can't send tally in favorite controller. Not sure how this is happening.");
+                if(typeof $rootScope.favoritesTally[trackingReminder.id] === "undefined"){
+                    console.error("$rootScope.favoritesTally[trackingReminder.id] is undefined so we can't send tally in favorite controller. Not sure how this is happening.");
                     return;
                 }
-                if($scope.state[trackingReminder.id].tally) {
-                    measurementService.postMeasurementByReminder(trackingReminder, $scope.state[trackingReminder.id].tally)
+                if($rootScope.favoritesTally[trackingReminder.id].tally) {
+                    measurementService.postMeasurementByReminder(trackingReminder, $rootScope.favoritesTally[trackingReminder.id].tally)
                         .then(function () {
                             console.debug("Successfully measurementService.postMeasurementByReminder: " + JSON.stringify(trackingReminder));
                         }, function(error) {
@@ -822,10 +854,52 @@ angular.module('starter')
                             console.error(error);
                             console.error('Failed to Track by favorite, Try again!');
                         });
-                    $scope.state[trackingReminder.id].tally = 0;
+                    $rootScope.favoritesTally[trackingReminder.id].tally = 0;
                 }
             }, 2000);
 
+        };
+
+        $scope.deleteAllMeasurementsForVariable = function() {
+            $ionicLoading.show({
+                template: '<ion-spinner></ion-spinner>'
+            });
+            // Delete all measurements for a variable
+            variableService.deleteAllMeasurementsForVariable($rootScope.variableObject.id).then(function() {
+                // If primaryOutcomeVariable, delete local storage measurements
+                if ($rootScope.variableName === config.appSettings.primaryOutcomeVariableDetails.name) {
+                    localStorageService.setItem('allMeasurements',[]);
+                    localStorageService.setItem('measurementsQueue',[]);
+                    localStorageService.setItem('averagePrimaryOutcomeVariableValue',0);
+                    localStorageService.setItem('lastSyncTime',0);
+                }
+                $ionicLoading.hide();
+                $state.go(config.appSettings.defaultState);
+                console.debug("All measurements for " + $rootScope.variableName + " deleted!");
+            }, function(error) {
+                $ionicLoading.hide();
+                console.debug('Error deleting measurements: '+ JSON.stringify(error));
+            });
+        };
+
+        $scope.showDeleteAllMeasurementsForVariablePopup = function(){
+            $ionicPopup.show({
+                title:'Delete all ' + $rootScope.variableName + " measurements?",
+                subTitle: 'This cannot be undone!',
+                scope: $scope,
+                buttons:[
+                    {
+                        text: 'Yes',
+                        type: 'button-positive',
+                        onTap: $scope.deleteAllMeasurementsForVariable
+                    },
+                    {
+                        text: 'No',
+                        type: 'button-assertive'
+                    }
+                ]
+
+            });
         };
 
         // Triggered on a button click, or some other target
@@ -919,9 +993,9 @@ angular.module('starter')
                     if(bloodPressure){
                         reminderService.deleteReminder($rootScope.bloodPressureReminderId)
                             .then(function(){
-                                console.debug('Favorite deleted: ' + JSON.stringify($scope.state.bloodPressure));
+                                console.debug('Favorite deleted: ' + JSON.stringify($rootScope.bloodPressure));
                             }, function(error){
-                                console.error('Failed to Delete Favorite!  Error is ' + error.message + '.  Favorite is ' + JSON.stringify($scope.state.bloodPressure));
+                                console.error('Failed to Delete Favorite!  Error is ' + error.message + '.  Favorite is ' + JSON.stringify($rootScope.bloodPressure));
                             });
                         localStorageService.deleteElementOfItemById('trackingReminders', $rootScope.bloodPressureReminderId)
                             .then(function(){
@@ -938,6 +1012,40 @@ angular.module('starter')
                 hideSheet();
             }, 20000);
 
+        };
+
+        $scope.trackBloodPressure = function(){
+            if(!$rootScope.bloodPressure.diastolicValue || !$rootScope.bloodPressure.systolicValue){
+                $scope.favoriteValidationFailure('Please enter both values for blood pressure.');
+                return;
+            }
+            $rootScope.bloodPressure.displayTotal = "Recorded " + $rootScope.bloodPressure.systolicValue + "/" + $rootScope.bloodPressure.diastolicValue + ' Blood Pressure';
+            measurementService.postBloodPressureMeasurements($rootScope.bloodPressure)
+                .then(function () {
+                    console.debug("Successfully measurementService.postMeasurementByReminder: " + JSON.stringify($rootScope.bloodPressure));
+                }, function(error) {
+                    if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error(error);
+                    console.error('Failed to Track by favorite, Try again!');
+                });
+        };
+
+        $scope.refreshVariables = function () {
+            variableService.refreshCommonVariables().then(function () {
+                //Stop the ion-refresher from spinning
+                $scope.$broadcast('scroll.refreshComplete');
+            }, function (error) {
+                console.error(error);
+                //Stop the ion-refresher from spinning
+                $scope.$broadcast('scroll.refreshComplete');
+            });
+            variableService.refreshUserVariables().then(function () {
+                //Stop the ion-refresher from spinning
+                $scope.$broadcast('scroll.refreshComplete');
+            }, function (error) {
+                console.error(error);
+                //Stop the ion-refresher from spinning
+                $scope.$broadcast('scroll.refreshComplete');
+            });
         };
         
         $scope.init();
