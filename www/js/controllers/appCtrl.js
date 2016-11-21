@@ -10,7 +10,7 @@ angular.module('starter')
 
         $rootScope.loaderImagePath = config.appSettings.loaderImagePath;
         $rootScope.appMigrationVersion = 1489;
-        $rootScope.appVersion = "2.1.4.0";
+        $rootScope.appVersion = "2.1.5.0";
         if (!$rootScope.loaderImagePath) {
             $rootScope.loaderImagePath = 'img/circular_loader.gif';
         }
@@ -264,24 +264,37 @@ angular.module('starter')
             trackingReminder.variableDescription = variableObject.description;
             trackingReminder.variableCategoryName = variableObject.variableCategoryName;
 
+            if($rootScope.lastRefreshTrackingRemindersAndScheduleAlarmsPromise){
+                var message = 'Got deletion request before last reminder refresh completed';
+                console.debug(message);
+                $rootScope.lastRefreshTrackingRemindersAndScheduleAlarmsPromise.reject();
+                $rootScope.lastRefreshTrackingRemindersAndScheduleAlarmsPromise = null;
+                $rootScope.syncingReminders = false;
+            }
+
             if (trackingReminder.abbreviatedUnitName === '/5') {
+                $ionicLoading.show({
+                    template: '<ion-spinner></ion-spinner>'
+                });
                 trackingReminder.defaultValue = 3;
                 localStorageService.addToOrReplaceElementOfItemByIdOrMoveToFront('trackingReminders', trackingReminder)
                     .then(function() {
                         reminderService.postTrackingReminders(trackingReminder)
                             .then(function () {
+                                $ionicLoading.hide();
                                 console.debug("Saved to favorites: " + JSON.stringify(trackingReminder));
-                                $state.go('app.favorites',
-                                    {
-                                        trackingReminder: trackingReminder,
-                                        fromState: $state.current.name,
-                                        fromUrl: window.location.href
-                                    }
-                                );
                             }, function(error) {
-                                console.error('Failed to add favorite!', trackingReminder);
+                                $ionicLoading.hide();
+                                console.error('Failed to add favorite!' + JSON.stringify(error));
                             });
                     });
+                $state.go('app.favorites',
+                    {
+                        trackingReminder: trackingReminder,
+                        fromState: $state.current.name,
+                        fromUrl: window.location.href
+                    }
+                );
             } else {
                 $state.go('app.favoriteAdd',
                     {
@@ -411,6 +424,10 @@ angular.module('starter')
             }
         };
 
+        $scope.$on('getFavoriteTrackingRemindersFromLocalStorage', function(){
+            QuantiModo.getFavoriteTrackingRemindersFromLocalStorage($rootScope.variableCategoryName);
+        });
+
         $scope.init = function () {
             console.debug("Main Constructor Start");
             if(!window.private_keys) {
@@ -420,6 +437,8 @@ angular.module('starter')
             if($rootScope.showUndoButton){
                 $rootScope.showUndoButton = false;
             }
+
+            $rootScope.favoritesOrderParameter = 'numberOfRawMeasurements';
             
             if($rootScope.urlParameters.refreshUser){
                 localStorageService.clear();
@@ -839,6 +858,48 @@ angular.module('starter')
                 }
             }, 2000);
 
+        };
+
+        $scope.deleteAllMeasurementsForVariable = function() {
+            $ionicLoading.show({
+                template: '<ion-spinner></ion-spinner>'
+            });
+            // Delete all measurements for a variable
+            variableService.deleteAllMeasurementsForVariable($rootScope.variableObject.id).then(function() {
+                // If primaryOutcomeVariable, delete local storage measurements
+                if ($rootScope.variableName === config.appSettings.primaryOutcomeVariableDetails.name) {
+                    localStorageService.setItem('allMeasurements',[]);
+                    localStorageService.setItem('measurementsQueue',[]);
+                    localStorageService.setItem('averagePrimaryOutcomeVariableValue',0);
+                    localStorageService.setItem('lastSyncTime',0);
+                }
+                $ionicLoading.hide();
+                $state.go(config.appSettings.defaultState);
+                console.debug("All measurements for " + $rootScope.variableName + " deleted!");
+            }, function(error) {
+                $ionicLoading.hide();
+                console.debug('Error deleting measurements: '+ JSON.stringify(error));
+            });
+        };
+
+        $scope.showDeleteAllMeasurementsForVariablePopup = function(){
+            $ionicPopup.show({
+                title:'Delete all ' + $rootScope.variableName + " measurements?",
+                subTitle: 'This cannot be undone!',
+                scope: $scope,
+                buttons:[
+                    {
+                        text: 'Yes',
+                        type: 'button-positive',
+                        onTap: $scope.deleteAllMeasurementsForVariable
+                    },
+                    {
+                        text: 'No',
+                        type: 'button-assertive'
+                    }
+                ]
+
+            });
         };
 
         // Triggered on a button click, or some other target
