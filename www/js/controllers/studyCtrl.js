@@ -60,13 +60,16 @@ angular.module('starter')
 
         function createUserCharts(params) {
             $scope.loadingCharts = true;
-            QuantiModo.getPairsDeferred(params).then(function (pairs) {
+            params.includeProcessedMeasurements = true;
+            QuantiModo.getPairsDeferred(params).then(function (data) {
                 $scope.loadingCharts = false;
-                $scope.scatterplotChartConfig = chartService.createScatterPlot(params, pairs);
+                $scope.scatterplotChartConfig = chartService.createScatterPlot(params, data.pairs);
                 //$scope.timelineChartConfig = chartService.configureLineChartForPairs(params, pairs);
                 //$scope.causeTimelineChartConfig = chartService.configureLineChartForPairs(params, pairs);
-                $scope.causeTimelineChartConfig = chartService.configureLineChartForCause(params, pairs);
-                $scope.effectTimelineChartConfig = chartService.configureLineChartForEffect(params, pairs);
+                $scope.causeTimelineChartConfig = chartService.processDataAndConfigureLineChart(
+                    data.causeProcessedMeasurements, {variableName: params.causeVariableName});
+                $scope.effectTimelineChartConfig = chartService.processDataAndConfigureLineChart(
+                    data.effectProcessedMeasurements, {variableName: params.effectVariableName});
                 windowResize();
             });
         }

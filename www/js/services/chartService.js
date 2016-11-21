@@ -410,6 +410,9 @@ angular.module('starter')
 		chartService.processDataAndConfigureLineChart = function(measurements, variableObject) {
 			var lineChartData = [];
 			var lineChartItem;
+			if(!variableObject.abbreviatedUnitName){
+				variableObject.abbreviatedUnitName = measurements[0].abbreviatedUnitName;
+			}
 			for (var i = 0; i < measurements.length; i++) {
 				lineChartItem = [measurements[i].startTimeEpoch * 1000, measurements[i].value];
 				lineChartData.push(lineChartItem);
@@ -680,8 +683,12 @@ angular.module('starter')
 
 		chartService.configureLineChart = function(data, variableObject) {
 			if(!variableObject.name){
-				console.error("ERROR: No variable name provided to configureLineChart");
-				return;
+				if(variableObject.variableName){
+					variableObject.name = variableObject.variableName;
+				} else {
+					console.error("ERROR: No variable name provided to configureLineChart");
+					return;
+				}
 			}
 			if(data.length < 1){
 				console.error("ERROR: No data provided to configureLineChart");

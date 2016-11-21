@@ -119,7 +119,7 @@
                 </div>
             </div>
         </div>
-        <div class="button-bar" ng-hide="state.noCorrelations">
+        <div class="button-bar" ng-hide="state.noCorrelations || !state.correlationObjects.length">
             <a class="button button-clear button-calm" ng-click="loadMore()" style="text-overflow: clip;"><i class="ion-refresh">  Load More</i></a>
         </div>
     </ion-content>
