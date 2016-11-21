@@ -123,10 +123,16 @@ angular.module('starter')
 			$rootScope.numberOfPendingNotifications--;
 			$scope.state.numberOfDisplayedNotifications--;
 			console.debug('modifiedReminderValue is ' + $scope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications[trackingReminderNotificationIndex].total);
+
+			var value = $scope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications[trackingReminderNotificationIndex].total;
+			$scope.lastAction = 'Record ' + value + trackingReminderNotification.abbreviatedUnitName;
 			var body = {
 				trackingReminderNotification: trackingReminderNotification,
-				modifiedValue: $scope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications[trackingReminderNotificationIndex].total
+				modifiedValue: value
 			};
+			if(!$rootScope.showUndoButton){
+				$rootScope.showUndoButton = true;
+			}
 			reminderService.trackReminderNotification(body)
 				.then(function(){
 					if($rootScope.localNotificationsEnabled){
@@ -169,7 +175,7 @@ angular.module('starter')
 			var body = notificationAction(trackingReminderNotification, $event, dividerIndex,
 				trackingReminderNotificationIndex);
 			body.modifiedValue = modifiedReminderValue;
-			$scope.lastAction = 'Record ' + modifiedReminderValue;
+			$scope.lastAction = 'Record ' + modifiedReminderValue + trackingReminderNotification.abbreviatedUnitName;
 	    	reminderService.trackReminderNotification(body)
 				.then(function(){
 					if($rootScope.localNotificationsEnabled){
