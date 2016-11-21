@@ -166,29 +166,24 @@ angular.module('starter')
 
 		reminderService.refreshTrackingRemindersAndScheduleAlarms = function(){
 
-			if($rootScope.syncingReminders){
+			if($rootScope.lastRefreshTrackingRemindersAndScheduleAlarmsPromise){
+				var deferred = $q.defer();
 				console.warn('Already refreshTrackingRemindersAndScheduleAlarms within last 10 seconds! Rejecting promise!');
 				deferred.reject('Already refreshTrackingRemindersAndScheduleAlarms within last 10 seconds! Rejecting promise!');
-				return $rootScope.lastRefreshTrackingRemindersAndScheduleAlarmsPromise.promise;
-			}
-
-			if($rootScope.lastRefreshTrackingRemindersAndScheduleAlarmsPromise){
-				var message = 'Got new search request before last one completed';
-				console.debug(message);
-				$rootScope.lastRefreshTrackingRemindersAndScheduleAlarmsPromise.reject();
-				$rootScope.lastRefreshTrackingRemindersAndScheduleAlarmsPromise = null;
+				return deferred.promise;
 			}
 
 			$rootScope.lastRefreshTrackingRemindersAndScheduleAlarmsPromise = $q.defer();
 
-
-			if(!$rootScope.syncingReminders){
-				$rootScope.syncingReminders = true;
-				console.debug('Setting refreshTrackingRemindersAndScheduleAlarms timeout');
+				console.debug('Setting lastRefreshTrackingRemindersAndScheduleAlarmsPromise timeout');
 				$timeout(function() {
 					// Set to false after 30 seconds because it seems to get stuck on true sometimes for some reason
-					$rootScope.syncingReminders = false;
-				}, 10000);
+					if($rootScope.lastRefreshTrackingRemindersAndScheduleAlarmsPromise){
+						$rootScope.lastRefreshTrackingRemindersAndScheduleAlarmsPromise.reject(
+							'30 seconds elapsed before lastRefreshTrackingRemindersAndScheduleAlarmsPromise resolving');
+						$rootScope.lastRefreshTrackingRemindersAndScheduleAlarmsPromise = null;
+					}
+				}, 30000);
 
 				var params = {
 					limit: 200
@@ -225,15 +220,19 @@ angular.module('starter')
 						$rootScope.$broadcast('getFavoriteTrackingRemindersFromLocalStorage');
 						$rootScope.syncingReminders = false;
 						$rootScope.lastRefreshTrackingRemindersAndScheduleAlarmsPromise.resolve(trackingReminders);
+						$rootScope.lastRefreshTrackingRemindersAndScheduleAlarmsPromise = null;
 					}
 					else {
 						$rootScope.syncingReminders = false;
-						$rootScope.lastRefreshTrackingRemindersAndScheduleAlarmsPromise.reject('No success from getTrackingReminders request');
+						$rootScope.lastRefreshTrackingRemindersAndScheduleAlarmsPromise.reject(
+							'No success from getTrackingReminders request');
+						$rootScope.lastRefreshTrackingRemindersAndScheduleAlarmsPromise = null;
 					}
 				}, function(error){
 					$rootScope.syncingReminders = false;
 					if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error(error);
 					$rootScope.lastRefreshTrackingRemindersAndScheduleAlarmsPromise.reject(error);
+					$rootScope.lastRefreshTrackingRemindersAndScheduleAlarmsPromise = null;
 				});
 
 				return $rootScope.lastRefreshTrackingRemindersAndScheduleAlarmsPromise.promise;
