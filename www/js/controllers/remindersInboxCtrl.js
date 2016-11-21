@@ -339,6 +339,12 @@ angular.module('starter')
 			}
 			if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
 			if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
+
+			if($stateParams.variableCategoryName && $stateParams.variableCategoryName !== 'Anything'){
+				$rootScope.variableCategoryName = $stateParams.variableCategoryName;
+			} else {
+				$rootScope.variableCategoryName = null;
+			}
 			showLoader();
 			QuantiModo.getAccessTokenFromUrlParameter();
 			$rootScope.hideNavigationMenuIfSetInUrlParameter();

@@ -165,12 +165,22 @@ angular.module('starter')
 		};
 
 		reminderService.refreshTrackingRemindersAndScheduleAlarms = function(){
-			var deferred = $q.defer();
+
 			if($rootScope.syncingReminders){
 				console.warn('Already refreshTrackingRemindersAndScheduleAlarms within last 10 seconds! Rejecting promise!');
 				deferred.reject('Already refreshTrackingRemindersAndScheduleAlarms within last 10 seconds! Rejecting promise!');
-				return deferred.promise;
+				return $rootScope.lastRefreshTrackingRemindersAndScheduleAlarmsPromise.promise;
 			}
+
+			if($rootScope.lastRefreshTrackingRemindersAndScheduleAlarmsPromise){
+				var message = 'Got new search request before last one completed';
+				console.debug(message);
+				$rootScope.lastRefreshTrackingRemindersAndScheduleAlarmsPromise.reject();
+				$rootScope.lastRefreshTrackingRemindersAndScheduleAlarmsPromise = null;
+			}
+
+			$rootScope.lastRefreshTrackingRemindersAndScheduleAlarmsPromise = $q.defer();
+
 
 			if(!$rootScope.syncingReminders){
 				$rootScope.syncingReminders = true;
@@ -212,20 +222,21 @@ angular.module('starter')
 						}
 
 						localStorageService.setItem('trackingReminders', JSON.stringify(trackingReminders));
+						$rootScope.$broadcast('getFavoriteTrackingRemindersFromLocalStorage');
 						$rootScope.syncingReminders = false;
-						deferred.resolve(trackingReminders);
+						$rootScope.lastRefreshTrackingRemindersAndScheduleAlarmsPromise.resolve(trackingReminders);
 					}
 					else {
 						$rootScope.syncingReminders = false;
-						deferred.reject('No success from getTrackingReminders request');
+						$rootScope.lastRefreshTrackingRemindersAndScheduleAlarmsPromise.reject('No success from getTrackingReminders request');
 					}
 				}, function(error){
 					$rootScope.syncingReminders = false;
 					if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error(error);
-					deferred.reject(error);
+					$rootScope.lastRefreshTrackingRemindersAndScheduleAlarmsPromise.reject(error);
 				});
 
-				return deferred.promise;
+				return $rootScope.lastRefreshTrackingRemindersAndScheduleAlarmsPromise.promise;
 			}
 		};
 
@@ -450,6 +461,14 @@ angular.module('starter')
 
 		reminderService.deleteReminder = function(reminderId){
 			var deferred = $q.defer();
+
+			if($rootScope.lastRefreshTrackingRemindersAndScheduleAlarmsPromise){
+				var message = 'Got deletion request before last reminder refresh completed';
+				console.debug(message);
+				$rootScope.lastRefreshTrackingRemindersAndScheduleAlarmsPromise.reject();
+				$rootScope.lastRefreshTrackingRemindersAndScheduleAlarmsPromise = null;
+				$rootScope.syncingReminders = false;
+			}
 
 			localStorageService.deleteElementOfItemById('trackingReminders', reminderId);
 
