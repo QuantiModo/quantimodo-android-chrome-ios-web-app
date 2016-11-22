@@ -1,7 +1,14 @@
 angular.module('starter')
 	// returns high chart compatible Stubs for line and Bar charts
-	.factory('chartService', function(ratingService) {
+	.factory('chartService', function(ratingService, localStorageService, $q, $timeout) {
 	    var chartService = {};
+
+		chartService.getWeekdayChartConfigForPrimaryOutcome = function () {
+			var deferred = $q.defer();
+			deferred.resolve(chartService.processDataAndConfigureWeekdayChart(localStorageService.getItemAsObject('allMeasurements'),
+				config.appSettings.primaryOutcomeVariableDetails));
+			return deferred.promise;
+		};
 
 		chartService.generateDistributionArray = function(allMeasurements){
 			var distributionArray = [];
@@ -20,6 +27,10 @@ angular.module('starter')
 		};
 
 		chartService.generateWeekdayMeasurementArray = function(allMeasurements){
+            if(!allMeasurements){
+                console.error('No measurements provided to generateWeekdayMeasurementArray');
+                return false;
+            }
 			var weekdayMeasurementArrays = [];
 			var startTimeMilliseconds = null;
 			for (var i = 0; i < allMeasurements.length; i++) {
@@ -172,11 +183,20 @@ angular.module('starter')
 				series: [{
 					name : variableObject.name + ' Distribution',
 					data: data
-				}]
+				}],
+                func: function(chart) {
+                    $timeout(function() {
+                        chart.reflow();
+                    }, 0);
+                }
 			};
 		};
 
 		chartService.processDataAndConfigureWeekdayChart = function(measurements, variableObject) {
+            if(!measurements){
+                console.error('No measurements provided to processDataAndConfigureWeekdayChart');
+                return false;
+            }
 			if(!variableObject.name){
 				console.error("ERROR: No variable name provided to processDataAndConfigureWeekdayChart");
 				return;
@@ -300,7 +320,12 @@ angular.module('starter')
 				series: [{
 					name : 'Average  ' + variableObject.name + ' by Day of Week',
 					data: averageValueByWeekdayArray
-				}]
+				}],
+                func: function(chart) {
+                    $timeout(function() {
+                        chart.reflow();
+                    }, 0);
+                }
 			};
 		};
 
@@ -403,13 +428,21 @@ angular.module('starter')
 				series: [{
 					name : 'Average  ' + variableObject.name + ' by Hour of Day',
 					data: averageValueByHourArray
-				}]
+				}],
+                func: function(chart) {
+                    $timeout(function() {
+                        chart.reflow();
+                    }, 0);
+                }
 			};
 		};
 
 		chartService.processDataAndConfigureLineChart = function(measurements, variableObject) {
 			var lineChartData = [];
 			var lineChartItem;
+			if(!variableObject.abbreviatedUnitName){
+				variableObject.abbreviatedUnitName = measurements[0].abbreviatedUnitName;
+			}
 			for (var i = 0; i < measurements.length; i++) {
 				lineChartItem = [measurements[i].startTimeEpoch * 1000, measurements[i].value];
 				lineChartData.push(lineChartItem);
@@ -488,7 +521,12 @@ angular.module('starter')
 				subtitle: {
 					text: ''
 				},
-				loading: false
+				loading: false,
+                func: function(chart) {
+                    $timeout(function() {
+                        chart.reflow();
+                    }, 0);
+                }
 			};
 
 			var xyVariableValues = [];
@@ -680,8 +718,12 @@ angular.module('starter')
 
 		chartService.configureLineChart = function(data, variableObject) {
 			if(!variableObject.name){
-				console.error("ERROR: No variable name provided to configureLineChart");
-				return;
+				if(variableObject.variableName){
+					variableObject.name = variableObject.variableName;
+				} else {
+					console.error("ERROR: No variable name provided to configureLineChart");
+					return;
+				}
 			}
 			if(data.length < 1){
 				console.error("ERROR: No data provided to configureLineChart");
@@ -771,7 +813,12 @@ angular.module('starter')
 							lineWidthPlus: 0
 						}
 					}
-				}]
+				}],            
+                func: function(chart) {
+                    $timeout(function() {
+                        chart.reflow();
+                    }, 0);
+                }
 			};
 		};
 

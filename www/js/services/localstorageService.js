@@ -228,6 +228,10 @@ angular.module('starter')
 
 
         localStorageService.getCachedResponse = function(requestName, params){
+            if(!params){
+                console.error('No params provided to getCachedResponse');
+                return false;
+            }
             var cachedResponse = JSON.parse(localStorageService.getItemSync('cached' + requestName));
             if(!cachedResponse){
                 return false;
