@@ -29,8 +29,8 @@ script:
 - #APP_IDENTIFIER="com.quantimodo.moodimodoapp"
 env:
   global:
-  - IONIC_APP_VERSION_NUMBER="2.1.5"
-  - IONIC_IOS_APP_VERSION_NUMBER="2.1.5.0"
+  - IONIC_APP_VERSION_NUMBER="2.1.6"
+  - IONIC_IOS_APP_VERSION_NUMBER="2.1.6.0"
   - TEAM_ID="YD2FK7S2S5"
   - DEVELOPER_NAME="iPhone Distribution: Mike Sinn (YD2FK7S2S5)"
   - PROFILE_NAME="match_AppStore_comquantimodomoodimodoapp"
