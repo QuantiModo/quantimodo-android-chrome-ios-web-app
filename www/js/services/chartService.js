@@ -1,6 +1,6 @@
 angular.module('starter')
 	// returns high chart compatible Stubs for line and Bar charts
-	.factory('chartService', function(ratingService) {
+	.factory('chartService', function(ratingService, $timeout) {
 	    var chartService = {};
 
 		chartService.generateDistributionArray = function(allMeasurements){
@@ -172,7 +172,12 @@ angular.module('starter')
 				series: [{
 					name : variableObject.name + ' Distribution',
 					data: data
-				}]
+				}],
+                func: function(chart) {
+                    $timeout(function() {
+                        chart.reflow();
+                    }, 0);
+                }
 			};
 		};
 
@@ -300,7 +305,12 @@ angular.module('starter')
 				series: [{
 					name : 'Average  ' + variableObject.name + ' by Day of Week',
 					data: averageValueByWeekdayArray
-				}]
+				}],
+                func: function(chart) {
+                    $timeout(function() {
+                        chart.reflow();
+                    }, 0);
+                }
 			};
 		};
 
@@ -403,7 +413,12 @@ angular.module('starter')
 				series: [{
 					name : 'Average  ' + variableObject.name + ' by Hour of Day',
 					data: averageValueByHourArray
-				}]
+				}],
+                func: function(chart) {
+                    $timeout(function() {
+                        chart.reflow();
+                    }, 0);
+                }
 			};
 		};
 
@@ -491,7 +506,12 @@ angular.module('starter')
 				subtitle: {
 					text: ''
 				},
-				loading: false
+				loading: false,
+                func: function(chart) {
+                    $timeout(function() {
+                        chart.reflow();
+                    }, 0);
+                }
 			};
 
 			var xyVariableValues = [];
