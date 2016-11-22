@@ -6,13 +6,13 @@ angular.module('starter')
                                     measurementService, QuantiModo, notificationService, localStorageService,
                                     reminderService, ratingService, migrationService, ionicDatePicker, unitService,
                                     variableService, qmLocationService, variableCategoryService, bugsnagService,
-                                    utilsService, correlationService) {
+                                    utilsService, correlationService, $ionicActionSheet) {
 
         $rootScope.loaderImagePath = config.appSettings.loaderImagePath;
         $rootScope.appMigrationVersion = 1489;
-        $rootScope.appVersion = "2.1.1.0";
+        $rootScope.appVersion = "2.1.5.0";
         if (!$rootScope.loaderImagePath) {
-            $rootScope.loaderImagePath = 'img/circular-loader.gif';
+            $rootScope.loaderImagePath = 'img/circular_loader.gif';
         }
         if($rootScope.user && typeof $rootScope.user.trackLocation === "undefined"){
             localStorageService.getItem('trackLocation', function(trackLocation){
@@ -33,6 +33,14 @@ angular.module('starter')
         $rootScope.numberOfPendingNotifications = null;
         $scope.showReminderSubMenu = false;
         $scope.primaryOutcomeVariableDetails = config.appSettings.primaryOutcomeVariableDetails;
+
+
+        $rootScope.bloodPressure = {
+            systolicValue: null,
+                diastolicValue: null,
+                displayTotal: "Blood Pressure"
+        };
+
         // Not used
         //$scope.ratingInfo = ratingService.getRatingInfo();
         $scope.closeMenu = function () {
@@ -75,6 +83,11 @@ angular.module('starter')
             inputDate: $scope.toDate, // previously selected value
             from: $scope.fromDate, // don't allow toDate to be after fromDate
             to: new Date() //today
+        };
+
+        $scope.goToVariableSettingsForCauseVariable = function(correlationObject) {
+            $state.go('app.variableSettings',
+                {variableName: correlationObject.causeVariableName});
         };
 
         $scope.goToState = function (state, stateParameters) {
@@ -251,24 +264,37 @@ angular.module('starter')
             trackingReminder.variableDescription = variableObject.description;
             trackingReminder.variableCategoryName = variableObject.variableCategoryName;
 
+            if($rootScope.lastRefreshTrackingRemindersAndScheduleAlarmsPromise){
+                var message = 'Got deletion request before last reminder refresh completed';
+                console.debug(message);
+                $rootScope.lastRefreshTrackingRemindersAndScheduleAlarmsPromise.reject();
+                $rootScope.lastRefreshTrackingRemindersAndScheduleAlarmsPromise = null;
+                $rootScope.syncingReminders = false;
+            }
+
             if (trackingReminder.abbreviatedUnitName === '/5') {
+                $ionicLoading.show({
+                    template: '<ion-spinner></ion-spinner>'
+                });
                 trackingReminder.defaultValue = 3;
                 localStorageService.addToOrReplaceElementOfItemByIdOrMoveToFront('trackingReminders', trackingReminder)
                     .then(function() {
                         reminderService.postTrackingReminders(trackingReminder)
                             .then(function () {
+                                $ionicLoading.hide();
                                 console.debug("Saved to favorites: " + JSON.stringify(trackingReminder));
-                                $state.go('app.favorites',
-                                    {
-                                        trackingReminder: trackingReminder,
-                                        fromState: $state.current.name,
-                                        fromUrl: window.location.href
-                                    }
-                                );
                             }, function(error) {
-                                console.error('Failed to add favorite!', trackingReminder);
+                                $ionicLoading.hide();
+                                console.error('Failed to add favorite!' + JSON.stringify(error));
                             });
                     });
+                $state.go('app.favorites',
+                    {
+                        trackingReminder: trackingReminder,
+                        fromState: $state.current.name,
+                        fromUrl: window.location.href
+                    }
+                );
             } else {
                 $state.go('app.favoriteAdd',
                     {
@@ -398,11 +424,22 @@ angular.module('starter')
             }
         };
 
+        $scope.$on('getFavoriteTrackingRemindersFromLocalStorage', function(){
+            QuantiModo.getFavoriteTrackingRemindersFromLocalStorage($rootScope.variableCategoryName);
+        });
+
         $scope.init = function () {
             console.debug("Main Constructor Start");
             if(!window.private_keys) {
                 console.error('Please add private config file to www/private_configs folder!  Contact mike@quantimo.do if you need help');
             }
+
+            if($rootScope.showUndoButton){
+                $rootScope.showUndoButton = false;
+            }
+
+            $rootScope.favoritesOrderParameter = 'numberOfRawMeasurements';
+            
             if($rootScope.urlParameters.refreshUser){
                 localStorageService.clear();
                 window.localStorage.introSeen = true;
@@ -742,6 +779,273 @@ angular.module('starter')
         $scope.onTextClick = function ($event) {
             console.debug("Auto selecting text so the user doesn't have to press backspace...");
             $event.target.select();
+        };
+
+        $scope.favoriteValidationFailure = function (message) {
+            utilsService.showAlert(message);
+            console.error(message);
+            if (typeof Bugsnag !== "undefined") {
+                Bugsnag.notify(message, message, {}, "error");
+            }
+        };
+
+        $scope.trackFavoriteByValueField = function(trackingReminder, $index){
+            if($rootScope.favoritesArray[$index].total === null){
+                $scope.favoriteValidationFailure('Please specify a value for ' + $rootScope.favoritesArray[$index].variableName);
+                return;
+            }
+            $rootScope.favoritesArray[$index].displayTotal = "Recorded " + $rootScope.favoritesArray[$index].total + " " + $rootScope.favoritesArray[$index].abbreviatedUnitName;
+            measurementService.postMeasurementByReminder($rootScope.favoritesArray[$index], $rootScope.favoritesArray[$index].total)
+                .then(function () {
+                    console.debug("Successfully measurementService.postMeasurementByReminder: " + JSON.stringify($rootScope.favoritesArray[$index]));
+                }, function(error) {
+                    if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error(error);
+                    console.error(error);
+                    console.error('Failed to Track by favorite, Try again!');
+                });
+        };
+
+        $scope.trackByFavorite = function(trackingReminder, modifiedReminderValue){
+            if(!modifiedReminderValue){
+                modifiedReminderValue = trackingReminder.defaultValue;
+            }
+            console.debug('Tracking reminder', trackingReminder);
+            console.debug('modifiedReminderValue is ' + modifiedReminderValue);
+            for(var i = 0; i < $rootScope.favoritesArray.length; i++){
+                if($rootScope.favoritesArray[i].id === trackingReminder.id){
+                    if($rootScope.favoritesArray[i].abbreviatedUnitName !== '/5') {
+                        $rootScope.favoritesArray[i].total = $rootScope.favoritesArray[i].total + modifiedReminderValue;
+                        $rootScope.favoritesArray[i].displayTotal = $rootScope.favoritesArray[i].total + " " + $rootScope.favoritesArray[i].abbreviatedUnitName;
+                    } else {
+                        $rootScope.favoritesArray[i].displayTotal = modifiedReminderValue + '/5';
+                    }
+
+                }
+            }
+            
+            if(!$rootScope.favoritesTally){
+                $rootScope.favoritesTally = {};
+            }
+
+            
+            if(!$rootScope.favoritesTally[trackingReminder.id] || !$rootScope.favoritesTally[trackingReminder.id].tally){
+                $rootScope.favoritesTally[trackingReminder.id] = {
+                    tally: 0
+                };
+            }
+
+            $rootScope.favoritesTally[trackingReminder.id].tally += modifiedReminderValue;
+            console.debug('modified tally is ' + $rootScope.favoritesTally[trackingReminder.id].tally);
+
+            console.debug('Setting trackByFavorite timeout');
+            $timeout(function() {
+                if(typeof $rootScope.favoritesTally[trackingReminder.id] === "undefined"){
+                    console.error("$rootScope.favoritesTally[trackingReminder.id] is undefined so we can't send tally in favorite controller. Not sure how this is happening.");
+                    return;
+                }
+                if($rootScope.favoritesTally[trackingReminder.id].tally) {
+                    measurementService.postMeasurementByReminder(trackingReminder, $rootScope.favoritesTally[trackingReminder.id].tally)
+                        .then(function () {
+                            console.debug("Successfully measurementService.postMeasurementByReminder: " + JSON.stringify(trackingReminder));
+                        }, function(error) {
+                            if (typeof Bugsnag !== "undefined") {
+                                Bugsnag.notify(error, JSON.stringify(error), {}, "error");
+                            }
+                            console.error(error);
+                            console.error('Failed to Track by favorite, Try again!');
+                        });
+                    $rootScope.favoritesTally[trackingReminder.id].tally = 0;
+                }
+            }, 2000);
+
+        };
+
+        $scope.deleteAllMeasurementsForVariable = function() {
+            $ionicLoading.show({
+                template: '<ion-spinner></ion-spinner>'
+            });
+            // Delete all measurements for a variable
+            variableService.deleteAllMeasurementsForVariable($rootScope.variableObject.id).then(function() {
+                // If primaryOutcomeVariable, delete local storage measurements
+                if ($rootScope.variableName === config.appSettings.primaryOutcomeVariableDetails.name) {
+                    localStorageService.setItem('allMeasurements',[]);
+                    localStorageService.setItem('measurementsQueue',[]);
+                    localStorageService.setItem('averagePrimaryOutcomeVariableValue',0);
+                    localStorageService.setItem('lastSyncTime',0);
+                }
+                $ionicLoading.hide();
+                $state.go(config.appSettings.defaultState);
+                console.debug("All measurements for " + $rootScope.variableName + " deleted!");
+            }, function(error) {
+                $ionicLoading.hide();
+                console.debug('Error deleting measurements: '+ JSON.stringify(error));
+            });
+        };
+
+        $scope.showDeleteAllMeasurementsForVariablePopup = function(){
+            $ionicPopup.show({
+                title:'Delete all ' + $rootScope.variableName + " measurements?",
+                subTitle: 'This cannot be undone!',
+                scope: $scope,
+                buttons:[
+                    {
+                        text: 'Yes',
+                        type: 'button-positive',
+                        onTap: $scope.deleteAllMeasurementsForVariable
+                    },
+                    {
+                        text: 'No',
+                        type: 'button-assertive'
+                    }
+                ]
+
+            });
+        };
+
+        // Triggered on a button click, or some other target
+        $scope.showFavoriteActionSheet = function(favorite, $index, bloodPressure) {
+
+            var variableObject = {
+                id: favorite.variableId,
+                name: favorite.variableName
+            };
+
+
+            var actionMenuButtons = [
+                { text: '<i class="icon ion-gear-a"></i>Change Default Value' },
+                { text: '<i class="icon ion-edit"></i>Other Value/Time/Note' },
+                { text: '<i class="icon ion-arrow-graph-up-right"></i>Charts'},
+                { text: '<i class="icon ion-ios-list-outline"></i>' + 'History'},
+                { text: '<i class="icon ion-settings"></i>' + 'Variable Settings'},
+                { text: '<i class="icon ion-android-notifications-none"></i>Add Reminder'}
+            ];
+
+
+            if(config.appSettings.favoritesController){
+                if(config.appSettings.favoritesController.actionMenuButtons){
+                    actionMenuButtons = config.appSettings.favoritesController.actionMenuButtons;
+                }
+            }
+
+
+            if(bloodPressure){
+                actionMenuButtons = [];
+            }
+
+            // Show the action sheet
+            var hideSheet = $ionicActionSheet.show({
+                buttons: actionMenuButtons,
+                destructiveText: '<i class="icon ion-trash-a"></i>Delete From Favorites',
+                cancelText: '<i class="icon ion-ios-close"></i>Cancel',
+                cancel: function() {
+                    console.debug('CANCELLED');
+                },
+                buttonClicked: function(index) {
+                    console.debug('BUTTON CLICKED', index);
+                    if(index === 0){
+                        $state.go('app.favoriteAdd', {reminder: favorite});
+                    }
+                    if(index === 1){
+                        $state.go('app.measurementAdd', {trackingReminder: favorite});
+                    }
+                    if(index === 2){
+                        $state.go('app.charts',
+                            {
+                                trackingReminder: favorite,
+                                fromState: $state.current.name,
+                                fromUrl: window.location.href
+                            });
+                    }
+                    if (index === 3) {
+                        $scope.goToHistoryForVariableObject(variableObject);
+                    }
+                    if (index === 4) {
+                        $state.go('app.variableSettings',
+                            {variableName: favorite.variableName});
+                    }
+                    if(index === 5){
+                        $state.go('app.reminderAdd',
+                            {
+                                variableObject: variableObject,
+                                fromState: $state.current.name,
+                                fromUrl: window.location.href
+                            });
+                    }
+
+                    return true;
+                },
+                destructiveButtonClicked: function() {
+                    if(!bloodPressure){
+                        $rootScope.favoritesArray.splice($index, 1);
+                        reminderService.deleteReminder(favorite.id)
+                            .then(function(){
+                                console.debug('Favorite deleted: ' + JSON.stringify(favorite));
+                            }, function(error){
+                                console.error('Failed to Delete Favorite!  Error is ' + error.message + '.  Favorite is ' + JSON.stringify(favorite));
+                            });
+                        localStorageService.deleteElementOfItemById('trackingReminders', favorite.id)
+                            .then(function(){
+                                //$scope.init();
+                            });
+                        return true;
+                    }
+
+                    if(bloodPressure){
+                        reminderService.deleteReminder($rootScope.bloodPressureReminderId)
+                            .then(function(){
+                                console.debug('Favorite deleted: ' + JSON.stringify($rootScope.bloodPressure));
+                            }, function(error){
+                                console.error('Failed to Delete Favorite!  Error is ' + error.message + '.  Favorite is ' + JSON.stringify($rootScope.bloodPressure));
+                            });
+                        localStorageService.deleteElementOfItemById('trackingReminders', $rootScope.bloodPressureReminderId)
+                            .then(function(){
+                                //$scope.init();
+                            });
+                        $rootScope.bloodPressureReminderId = null;
+                        return true;
+                    }
+                }
+            });
+
+            console.debug('Setting hideSheet timeout');
+            $timeout(function() {
+                hideSheet();
+            }, 20000);
+
+        };
+
+        $scope.trackBloodPressure = function(){
+            if(!$rootScope.bloodPressure.diastolicValue || !$rootScope.bloodPressure.systolicValue){
+                $scope.favoriteValidationFailure('Please enter both values for blood pressure.');
+                return;
+            }
+            $rootScope.bloodPressure.displayTotal = "Recorded " + $rootScope.bloodPressure.systolicValue + "/" + $rootScope.bloodPressure.diastolicValue + ' Blood Pressure';
+            measurementService.postBloodPressureMeasurements($rootScope.bloodPressure)
+                .then(function () {
+                    console.debug("Successfully measurementService.postMeasurementByReminder: " + JSON.stringify($rootScope.bloodPressure));
+                }, function(error) {
+                    if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error(error);
+                    console.error('Failed to Track by favorite, Try again!');
+                });
+        };
+
+        $scope.refreshVariables = function () {
+            variableService.refreshCommonVariables().then(function () {
+                //Stop the ion-refresher from spinning
+                $scope.$broadcast('scroll.refreshComplete');
+            }, function (error) {
+                console.error(error);
+                //Stop the ion-refresher from spinning
+                $scope.$broadcast('scroll.refreshComplete');
+            });
+            variableService.refreshUserVariables().then(function () {
+                //Stop the ion-refresher from spinning
+                $scope.$broadcast('scroll.refreshComplete');
+            }, function (error) {
+                console.error(error);
+                //Stop the ion-refresher from spinning
+                $scope.$broadcast('scroll.refreshComplete');
+            });
         };
         
         $scope.init();

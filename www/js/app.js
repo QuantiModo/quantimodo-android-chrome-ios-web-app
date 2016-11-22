@@ -446,7 +446,12 @@ angular.module('starter',
                 measurement : null,
                 variableObject : null,
                 nextState: 'app.measurementAdd',
-                variableCategoryName: null
+                variableCategoryName: null,
+                variableSearchParameters: {
+                    limit: 100,
+                    includePublic: true,
+                    manualTracking: true
+                }
             },
             views: {
                 'menuContent': {
@@ -462,7 +467,12 @@ angular.module('starter',
                 fromState : null,
                 fromUrl : null,
                 measurement : null,
-                nextState: 'app.measurementAdd'
+                nextState: 'app.measurementAdd',
+                variableSearchParameters: {
+                    limit: 100,
+                    includePublic: true,
+                    manualTracking: true
+                }
             },
             views: {
                 'menuContent': {
@@ -479,7 +489,12 @@ angular.module('starter',
                 fromUrl : null,
                 measurement : null,
                 reminderSearch: true,
-                nextState: 'app.reminderAdd'
+                nextState: 'app.reminderAdd',
+                variableSearchParameters: {
+                    limit: 100,
+                    includePublic: true,
+                    manualTracking: true
+                }
             },
             views: {
                 'menuContent': {
@@ -496,7 +511,12 @@ angular.module('starter',
                 fromUrl : null,
                 measurement : null,
                 reminderSearch: true,
-                nextState: 'app.reminderAdd'
+                nextState: 'app.reminderAdd',
+                variableSearchParameters: {
+                    limit: 100,
+                    includePublic: true,
+                    manualTracking: true
+                }
             },
             views: {
                 'menuContent': {
@@ -514,7 +534,12 @@ angular.module('starter',
                 measurement : null,
                 favoriteSearch: true,
                 nextState: 'app.favoriteAdd',
-                pageTitle: 'Add a favorite'
+                pageTitle: 'Add a favorite',
+                variableSearchParameters: {
+                    limit: 100,
+                    includePublic: true,
+                    manualTracking: true
+                }
             },
             views: {
                 'menuContent': {
@@ -532,7 +557,12 @@ angular.module('starter',
                 measurement : null,
                 favoriteSearch: true,
                 nextState: 'app.favoriteAdd',
-                pageTitle: 'Add a favorite'
+                pageTitle: 'Add a favorite',
+                variableSearchParameters: {
+                    limit: 100,
+                    includePublic: true,
+                    manualTracking: true
+                }
             },
             views: {
                 'menuContent': {
@@ -608,8 +638,12 @@ angular.module('starter',
                 fromState: null,
                 fromUrl: null,
                 measurement: null,
-                doNotIncludePublicVariables: true,
-                nextState: 'app.charts'
+                nextState: 'app.charts',
+                variableSearchParameters: {
+                    limit: 100,
+                    includePublic: false,
+                    manualTracking: false
+                }
             },
             views: {
                 'menuContent': {
@@ -626,8 +660,38 @@ angular.module('starter',
                 fromState: null,
                 fromUrl: null,
                 measurement: null,
-                doNotIncludePublicVariables: true,
-                nextState: 'app.charts'
+                nextState: 'app.charts',
+                variableSearchParameters: {
+                    limit: 100,
+                    includePublic: false,
+                    manualTracking: false
+                }
+            },
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/variable-search.html",
+                    controller: 'VariableSearchCtrl'
+                }
+            }
+        })
+        .state('app.predictorSearch', {
+            url: "/predictor-search",
+            cache: false,
+            params: {
+                title: "Outcomes", // Gets cut off on iPod if any longer
+                variableSearchPlaceholderText: "Search for an outcome...",
+                helpText: "Search for an outcome like overall mood or a symptom that you want to know the causes of...",
+                variableCategoryName: null,
+                nextState: 'app.predictorsAll',
+                variableSearchParameters: {
+                    includePublic: true,
+                    fallbackToAggregatedCorrelations: true,
+                    numberOfUserCorrelationsAsEffect: '(gt)1',
+                    outcome: true
+                },
+                commonVariableSearchParameters: {
+                    numberOfAggregateCorrelationsAsEffect: '(gt)1'
+                }
             },
             views: {
                 'menuContent': {
@@ -641,9 +705,12 @@ angular.module('starter',
             cache: false,
             params: {
                 variableCategoryName: null,
-                doNotIncludePublicVariables: true,
                 nextState: 'app.predictors',
-                variableSearchParameters: { numberOfUserCorrelations: '(gt)1'}
+                variableSearchParameters: {
+                    includePublic: false,
+                    manualTracking: false,
+                    numberOfUserCorrelations: '(gt)1'
+                }
             },
             views: {
                 'menuContent': {
@@ -657,9 +724,12 @@ angular.module('starter',
             cache: false,
             params: {
                 variableCategoryName: null,
-                doNotIncludePublicVariables: true,
                 nextState: 'app.predictors',
-                variableSearchParameters: { numberOfUserCorrelations: '(gt)1'}
+                variableSearchParameters: {
+                    includePublic: true,
+                    manualTracking: false,
+                    numberOfAggregatedCorrelations: '(gt)1'
+                }
             },
             views: {
                 'menuContent': {

@@ -27,6 +27,56 @@
             </div>
         </div>
         <ion-list>
+<!--            <div class="list card correlationResultList"
+                 style="text-align: center"
+                 item-height="483px"
+                 collection-repeat="correlationObject in state.correlationObjects">-->
+            <div class="list card correlationResultList"
+                 style="text-align: center"
+                 ng-repeat="correlationObject in state.correlationObjects">
+                <div class="item item-avatar">
+<!--                        <i class="icon positive ion-ios-medkit-outline"
+                       style="position: absolute;
+                        top: 15px;
+                        left: 15px;
+                        font-size: 36px;
+                        max-width: 40px;
+                        max-height: 40px;
+                        width: 100%;
+                        border-radius: 4px;"
+                    ></i>-->
+                    <img ng-src="{{correlationObject.causeVariableImageUrl}}">
+                    <p ng-click="goToStudyPage(correlationObject)"
+                            style="
+                            height: 40px;
+                            line-height: 40px;
+                            white-space: nowrap;
+                            color: black;
+                            font-size: 18px;">
+                        {{correlationObject.causeVariableName}}
+                    </p>
+                </div>
+                <div class="item item-body">
+                    <img ng-src="{{correlationObject.gaugeImage}}">
+                    <p>{{correlationObject.predictorExplanation}}</p>
+                    <p>{{correlationObject.valuePredictingHighOutcomeExplanation}}</p>
+                    <p>{{correlationObject.valuePredictingLowOutcomeExplanation}}</p>
+                    <div ng-include="'templates/correlation-buttons-fragment.html'"></div>
+                </div>
+<!--                <div class="item tabs tabs-secondary tabs-icon-left">
+                    <a class="tab-item">
+                        <i class="icon ion-thumbsup"></i> Like
+                    </a>
+                    <a class="tab-item">
+                        <i class="icon ion-chatbox"></i> Comment
+                    </a>
+                    <a class="tab-item">
+                        <i class="icon ion-share"></i> Share
+                    </a>
+                </div>-->
+            </div>
+        </ion-list>
+<!--        <ion-list>
             <div class="list card correlationResultList" ng-repeat="correlationObject in state.correlationObjects">
                 <ion-item class="item item-text-wrap card-item" style="border-style:hidden;">
                     <h4><a ng-click="goToStudyPage(correlationObject)">{{correlationObject.causeVariableName}}</a></h4>
@@ -36,7 +86,11 @@
                     <p>{{correlationObject.valuePredictingLowOutcomeExplanation}}</p>
                 </ion-item>
             </div>
-        </ion-list>
+        </ion-list>-->
+<!--        <ion-infinite-scroll  Keeps getting called all the time for no reason
+                on-infinite="loadMore()"
+                distance="1%">
+        </ion-infinite-scroll>-->
         <div class="list card"  ng-show="state.noCorrelations">
             <div class="item" style="padding-bottom:0px;">
                 <p style=" text-align: center; line-height: normal; font-size: 25px;">Not enough data!</p>
@@ -46,7 +100,7 @@
                     </div>
                     <div class="col col-75">
                         <h2 style="white-space: normal; text-align: center; line-height: normal; ">
-                            We still don't have enough data to determine the strongest predictors of your {{state.variableName}}.
+                            We still don't have enough data to determine the strongest predictors of your {{variableName}}.
                             We generally need about a months worth of data and 30 measurements in order to perform an analysis.
                             If you haven't already, please add a reminder and start tracking.
                             Please create a ticket at http://help.quantimo.do if you think you should already have enough data.
@@ -64,6 +118,9 @@
                     </div>
                 </div>
             </div>
+        </div>
+        <div class="button-bar" ng-hide="state.noCorrelations || !state.correlationObjects.length">
+            <a class="button button-clear button-calm" ng-click="loadMore()" style="text-overflow: clip;"><i class="ion-refresh">  Load More</i></a>
         </div>
     </ion-content>
     <nav id="floatingMaterialButton"

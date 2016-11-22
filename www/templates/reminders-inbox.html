@@ -386,7 +386,7 @@
 							<input type="number" ng-model="trackingReminderNotification.total" id="defaultValueField"
 								   ng-click="onTextClick($event)"
 								   placeholder="Enter value"
-								   style="text-align: center">
+								   style="text-align: center; max-width: 125px; padding-right: 10px">
 							<span on-tap="trackByValueField(trackingReminderNotification, $event, dividerIndex, trackingReminderNotificationIndex)"
 								  class="input-label">
 								{{trackingReminderNotification.abbreviatedUnitName}} &nbsp
@@ -455,6 +455,15 @@
 					</div>
 				</div>
 			</div>
+		</div>
+
+		<div class="list card"
+			 ng-if="!state.loading && state.numberOfDisplayedNotifications === 0 && favoritesArray && favoritesArray.length"
+			 id="Favorites">
+			<div class="item item-divider" style="">
+				{{state.favoritesTitle}}
+			</div>
+			<div ng-include="'templates/favorites-list-fragment.html'"></div>
 		</div>
 		<div class="list card"  ng-if="!state.loading && state.numberOfDisplayedNotifications === 0">
 			<div class="item" style="padding-bottom:10px;">

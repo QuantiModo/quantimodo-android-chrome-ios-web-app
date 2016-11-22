@@ -7,7 +7,8 @@ angular.module('starter')
         $scope.state = {
             requestParams: $stateParams.requestParams,
             variableName: config.appSettings.primaryOutcomeVariableDetails.name,
-            increasingDecreasing: ''
+            increasingDecreasing: '',
+            correlationObjects: []
         };
 
         function populateAggregatedCorrelationList() {
@@ -18,17 +19,19 @@ angular.module('starter')
             correlationService.getAggregatedCorrelations($scope.state.requestParams)
                 .then(function (correlationObjects) {
                     if(correlationObjects.length) {
-                        $scope.state.correlationObjects = correlationObjects;
+                        $scope.state.correlationObjects = $scope.state.correlationObjects.concat(correlationObjects);
                         $ionicLoading.hide();
+                        $scope.$broadcast('scroll.infiniteScrollComplete');
                     } else {
                         correlationService.getUserCorrelations($scope.state.requestParams)
                             .then(function (correlationObjects) {
                                 $ionicLoading.hide();
+                                $scope.$broadcast('scroll.infiniteScrollComplete');
                                 if(correlationObjects.length) {
                                     setupUserPredictors();
                                     $scope.state.explanationText = "Unfortunately, I don't have enough data get common " +
-                                        " predictors for " + $scope.state.variableName + ", yet. " + $scope.state.explanationText;
-                                    $scope.state.correlationObjects = correlationObjects;
+                                        " predictors for " + $rootScope.variableName + ", yet. " + $scope.state.explanationText;
+                                    $scope.state.correlationObjects = $scope.state.correlationObjects.concat(correlationObjects);
                                 } else {
                                     $scope.state.noCorrelations = true;
                                 }
@@ -42,16 +45,31 @@ angular.module('starter')
                 });
         }
 
+/*
+        Keeps getting called all the time for no reason
+        $scope.$on('$stateChangeSuccess', function() {
+            $scope.loadMore();
+        });
+*/
+
         function populateUserCorrelationList() {
             $ionicLoading.show({
                 template: '<ion-spinner></ion-spinner>'
             });
             setupUserPredictors();
+            if(typeof $scope.state.requestParams.fallbackToAggregatedCorrelations === "undefined"){
+                $scope.state.requestParams.fallbackToAggregatedCorrelations = true;
+            }
+
             correlationService.getUserCorrelations($scope.state.requestParams)
                 .then(function (correlationObjects) {
                     if(correlationObjects.length) {
-                        $scope.state.correlationObjects = correlationObjects;
+                        if(typeof correlationObjects[0].userId === "undefined") {
+                            setupAggregatedPredictors();
+                        }
+                        $scope.state.correlationObjects = $scope.state.correlationObjects.concat(correlationObjects);
                         $ionicLoading.hide();
+                        $scope.$broadcast('scroll.infiniteScrollComplete');
                     } else {
                         correlationService.getAggregatedCorrelations($scope.state.requestParams)
                             .then(function (correlationObjects) {
@@ -59,8 +77,9 @@ angular.module('starter')
                                 if(correlationObjects.length) {
                                     setupAggregatedPredictors();
                                     $scope.state.explanationText = "Unfortunately, I don't have enough data from you to get " +
-                                        "your personal predictors for " + $scope.state.variableName + ", yet. " + $scope.state.explanationText;
-                                    $scope.state.correlationObjects = correlationObjects;
+                                        "your personal predictors for " + $rootScope.variableName + ", yet. " + $scope.state.explanationText;
+                                    $scope.state.correlationObjects = $scope.state.correlationObjects.concat(correlationObjects);
+                                    $scope.$broadcast('scroll.infiniteScrollComplete');
                                 } else {
                                     $scope.state.noCorrelations = true;
                                 }
@@ -71,12 +90,19 @@ angular.module('starter')
                     console.error('predictorsCtrl: Could not get correlations: ' + JSON.stringify(error));
                 });
         }
+
+        $scope.loadMore = function () {
+            if($scope.state.correlationObjects.length){
+                $scope.state.requestParams.offset = $scope.state.requestParams.offset + $scope.state.requestParams.limit;
+                populateUserCorrelationList();
+            }
+        };
         
         function setupUserPredictors() {
             $scope.state.explanationHeader = "Your Top Predictors";
             $scope.state.explanationIcon = "ion-ios-person";
             $scope.state.explanationText = 'These factors are most likely to affect ' + $scope.state.increasingDecreasing +
-                ' your ' + $scope.state.variableName + ' based on your own data.  ' +
+                ' your ' + $rootScope.variableName + ' based on your own data.  ' +
             'Want more accurate results? Add some reminders and start tracking!';
         }
 
@@ -84,41 +110,45 @@ angular.module('starter')
             $scope.state.explanationHeader = "Common Predictors";
             $scope.state.explanationIcon = "ion-ios-people";
             $scope.state.explanationText = 'These factors are most likely to affect ' + $scope.state.increasingDecreasing +
-                ' ' + $scope.state.variableName + ' for the average QuantiModo user.  ' +
+                ' ' + $rootScope.variableName + ' for the average QuantiModo user.  ' +
             'Want PERSONALIZED results? Add some reminders and start tracking!';
         }
-
-        $scope.goToVariableSettings = function(correlationObject) {
-            $state.go('app.variableSettings',
-                {variableName: correlationObject.causeVariableName});
-        };
 
         $scope.init = function(){
             console.debug($state.current.name + ' initializing...');
             $rootScope.getAllUrlParams();
             if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
             if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
-            $scope.state.correlationObjects = [];
 
             if($rootScope.urlParameters.aggregated){
                 $stateParams.aggregated = $rootScope.urlParameters.aggregated;
             }
+
+            if($stateParams.requestParams){
+                $scope.state.requestParams = $stateParams.requestParams;
+            }
             
             if($rootScope.urlParameters.causeVariableName){
                 $scope.state.requestParams.causeVariableName = $rootScope.urlParameters.causeVariableName;
-                $scope.state.variableName = $rootScope.urlParameters.causeVariableName;
-            } else if($rootScope.urlParameters.effectVariableName){
-                $scope.state.variableName = $rootScope.urlParameters.effectVariableName;
+            }
+
+            if($rootScope.urlParameters.effectVariableName){
                 $scope.state.requestParams.effectVariableName = $rootScope.urlParameters.effectVariableName;
-            } else if ($stateParams.causeVariableName){
-                $scope.state.requestParams.causeVariableName = $stateParams.causeVariableName;
-                $scope.state.variableName = $stateParams.causeVariableName;
-            } else if ($stateParams.effectVariableName) {
-                $scope.state.requestParams.effectVariableName = $stateParams.effectVariableName;
-                $scope.state.variableName = $stateParams.effectVariableName;
-            } else {
+            }
+
+            if(!$scope.state.requestParams.causeVariableName && ! $scope.state.requestParams.effectVariableName) {
                 $scope.state.requestParams.effectVariableName = config.appSettings.primaryOutcomeVariableDetails.name;
-                $scope.state.variableName = config.appSettings.primaryOutcomeVariableDetails.name;
+            }
+
+            $scope.state.requestParams.offset = 0;
+            $scope.state.requestParams.limit = 10;
+
+            if ($scope.state.requestParams.causeVariableName){
+                $rootScope.variableName = $scope.state.requestParams.causeVariableName;
+            }
+
+            if ($scope.state.requestParams.effectVariableName) {
+                $rootScope.variableName = $scope.state.requestParams.effectVariableName;
             }
 
             if($stateParams.valence === 'positive'){
@@ -165,7 +195,7 @@ angular.module('starter')
         };
 
         $scope.goToStudyPage = function(correlationObject) {
-            console.debug('Going to study page for ' + JSON.stringify(correlationObject));
+            //console.debug('Going to study page for ' + JSON.stringify(correlationObject));
             $state.go('app.study', {
                 correlationObject: correlationObject
             });

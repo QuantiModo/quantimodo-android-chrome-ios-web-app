@@ -15,14 +15,7 @@ angular.module('starter')
 			console.debug('trackLocation is '+ $scope.state.trackLocation);
 		}
 
-		var d = new Date();
-		var timeZoneOffsetInMinutes = d.getTimezoneOffset();
-		if($rootScope.user && $rootScope.user.timeZoneOffset !== timeZoneOffsetInMinutes ){
-			var params = {
-				timeZoneOffset: timeZoneOffsetInMinutes
-			};
-			QuantiModo.updateUserSettingsDeferred(params);
-		}
+		//QuantiModo.updateUserTimeZoneIfNecessary();
 
 		// populate ratings interval
 		localStorageService.getItem('primaryOutcomeRatingFrequencyDescription', function (primaryOutcomeRatingFrequencyDescription) {
@@ -128,7 +121,7 @@ angular.module('starter')
 						"refreshTrackingRemindersAndScheduleAlarms will schedule a single notification for highest " +
 						"frequency reminder");
                     if(!$rootScope.deviceToken){
-                        console.warning("Could not find device token for push notifications so scheduling combined local notifications");
+                        console.warn("Could not find device token for push notifications so scheduling combined local notifications");
                         reminderService.refreshTrackingRemindersAndScheduleAlarms();
                     }
 				});
@@ -147,12 +140,56 @@ angular.module('starter')
 			
 		};
 
+		$scope.showAppInfoPopup = function () {
+
+			var template = "Please provide the following information when submitting a bug report: <br><br>";
+			template =  template + $rootScope.appSettings.appName + ' ' + $rootScope.appVersion + "<br><br>";
+			template = template + "QuantiModo Client Id: " + utilsService.getClientId();
+			if($rootScope.deviceToken){
+				template = template + "<br><br>" + "Push Notification Device Token: " + $rootScope.deviceToken;
+			}
+			$ionicPopup.alert({
+				title: "App Information",
+				template: template
+			});
+		};
+
 		$scope.sendReminderNotificationEmailsChange = function() {
-			QuantiModo.updateUserSettingsDeferred({sendReminderNotificationEmails: $rootScope.user.sendReminderNotificationEmails});
+			params = {sendReminderNotificationEmails: $rootScope.user.sendReminderNotificationEmails};
+			if($rootScope.urlParameters.userEmail){
+				params.userEmail = $rootScope.urlParameters.userEmail;
+			}
+			QuantiModo.updateUserSettingsDeferred(params);
+			if($rootScope.user.sendReminderNotificationEmails){
+				$ionicPopup.alert({
+					title: 'Reminder Emails Enabled',
+					template: "If you forget to record a measurement for a reminder you've created, I'll send you a daily reminder email."
+				});
+			} else {
+				$ionicPopup.alert({
+					title: 'Reminder Emails Disabled',
+					template: "If you forget to record a measurement for a reminder you've created, I won't send you a daily reminder email."
+				});
+			}
 		};
 
         $scope.sendPredictorEmailsChange = function() {
-            QuantiModo.updateUserSettingsDeferred({sendPredictorEmails: $rootScope.user.sendPredictorEmails});
+			params = {sendPredictorEmails: $rootScope.user.sendPredictorEmails};
+			if($rootScope.urlParameters.userEmail){
+				params.userEmail = $rootScope.urlParameters.userEmail;
+			}
+            QuantiModo.updateUserSettingsDeferred(params);
+			if($rootScope.user.sendPredictorEmails){
+				$ionicPopup.alert({
+					title: 'Discovery Emails Enabled',
+					template: "I'll send you a weekly email with new discoveries from your data."
+				});
+			} else {
+				$ionicPopup.alert({
+					title: 'Discovery Emails Disabled',
+					template: "I won't send you a weekly email with new discoveries from your data."
+				});
+			}
         };
 
 		$scope.openEarliestReminderTimePicker = function() {

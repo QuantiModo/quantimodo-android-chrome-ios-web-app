@@ -106,7 +106,7 @@ config.appSettings  = {
             img : {
                 width : '250',
                 height : '250',
-                url : 'img/intro/intro-import.png'
+                url : 'img/intro/intro_import.png'
             },
             textColor: 'white',
             backgroundColor: '#3467d6',
@@ -132,7 +132,7 @@ config.appSettings  = {
             img : {
                 width : '250',
                 height : '250',
-                url : 'img/intro/intro-track-anything.png'
+                url : 'img/intro/intro_track_anything.png'
             },
             textColor: 'white',
             backgroundColor: '#f09402',
@@ -158,7 +158,7 @@ config.appSettings  = {
             img : {
                 width : '250',
                 height : '250',
-                url : 'img/intro/intro-make-discoveries.png'
+                url : 'img/intro/intro_make_discoveries.png'
             },
             textColor: 'white',
             backgroundColor: '#0f9d58',
@@ -840,19 +840,26 @@ config.appSettings  = {
             expandedIcon : 'ion-chevron-down'
         },
         {
-            title : 'For Everyone',
+            title : 'Predictor Search',
             isSubMenuChild : true,
             showSubMenuVariable : 'showPredictorSearchSubMenu',
-            href : '#/app/search-common-relationships',
-            icon : 'ion-ios-people'
+            href : '#/app/predictor-search',
+            icon : 'ion-search'
         },
-        {
-            title : 'For You',
-            isSubMenuChild : true,
-            showSubMenuVariable : 'showPredictorSearchSubMenu',
-            href : '#/app/search-user-relationships',
-            icon : 'ion-person'
-        },
+        /*        {
+         title : 'For Everyone',
+         isSubMenuChild : true,
+         showSubMenuVariable : 'showPredictorSearchSubMenu',
+         href : '#/app/search-common-relationships',
+         icon : 'ion-ios-people'
+         },
+         {
+         title : 'For You',
+         isSubMenuChild : true,
+         showSubMenuVariable : 'showPredictorSearchSubMenu',
+         href : '#/app/search-user-relationships',
+         icon : 'ion-person'
+         },*/
         {
             title : 'Settings',
             href : '#/app/settings',

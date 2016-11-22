@@ -1,12 +1,13 @@
 {
-  "name": "MoodiModo",
+  "name": "quantimodo-ionic-template-app",
   "repository": {
     "type": "git",
-    "url": "git@github.com:Abolitionist-Project/QuantiModo-Ionic-Template-App.git"
+    "url": "https://github.com/Abolitionist-Project/QuantiModo-Ionic-Template-App.git"
   },
   "version": "1.0.0",
   "description": "Perfect your life!",
   "devDependencies": {
+    "chalk": "^1.1.3",
     "ionic-minify": "^2.0.10"
   },
   "dependencies": {

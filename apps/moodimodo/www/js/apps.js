@@ -1,4 +1,4 @@
-var appsManager = {
+var appsManager = { // jshint ignore:line
 	apps : {
 		"moodimodo" : "configs/moodimodo",
 		"energymodo" : "configs/energymodo",
@@ -11,7 +11,6 @@ var appsManager = {
 		if(appsManager.apps[app]){
 			return 'configs/' + app + '.js';
 		} else {
-			console.debug("getAppConfig returning appsManager.getDefaultConfig()");
 			return 'configs/' + appsManager.defaultApp + '.js';
 		}
 	},
@@ -19,7 +18,6 @@ var appsManager = {
 		if(appsManager.apps[app]){
 			return './private_configs/'+ app + '.config.js';
 		} else {
-			console.debug("getPrivateConfig returning appsManager.getDefaultPrivateConfig()");
 			return './private_configs/'+ appsManager.defaultApp + '.config.js';
 		}
 	}

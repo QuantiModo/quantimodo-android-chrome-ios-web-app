@@ -304,6 +304,8 @@ angular.module('starter')
             });
         };
 
+
+
         $scope.facebookLogin = function(){
             $scope.showLoader('Logging you in...');
             console.debug("$scope.facebookLogin about to try $cordovaFacebook.login");

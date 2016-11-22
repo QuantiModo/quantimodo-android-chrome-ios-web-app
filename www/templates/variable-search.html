@@ -1,8 +1,9 @@
 <ion-view hide-nav-bar="hideNavigationMenu" view-title="Variable Search">
     <ion-nav-title>{{state.title}}</ion-nav-title>
     <ion-content>
-        <div class="card" ng-hide="state.noVariablesFoundCard.show && !state.searching && !$scope.state.variableSearchResults">
-            <div ng-show="state.showTrackingHelpQuestion" class="item item-text-wrap">
+        <ion-refresher on-refresh="refreshVariables()"></ion-refresher>
+        <div class="card" >
+            <div ng-show="state.helpText" class="item item-text-wrap">
                 <div>
                     <div>
                         <!--<span class="heading positive">Track {{state.measurement.variableCategoryName}}</span>-->
@@ -23,7 +24,7 @@
             </label>
             <p></p>
             <ion-list>
-                <ion-item style="text-align:center;border-bottom: 1px solid rgb(221, 221, 221);" ng-show="state.searching">
+                <ion-item style="text-align:center;border-bottom: 1px solid rgb(221, 221, 221);" ng-show="state.searching || showSearchLoader">
                     <ion-spinner></ion-spinner>
                 </ion-item>
             </ion-list>

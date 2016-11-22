@@ -410,6 +410,9 @@ angular.module('starter')
 		chartService.processDataAndConfigureLineChart = function(measurements, variableObject) {
 			var lineChartData = [];
 			var lineChartItem;
+			if(!variableObject.abbreviatedUnitName){
+				variableObject.abbreviatedUnitName = measurements[0].abbreviatedUnitName;
+			}
 			for (var i = 0; i < measurements.length; i++) {
 				lineChartItem = [measurements[i].startTimeEpoch * 1000, measurements[i].value];
 				lineChartData.push(lineChartItem);
@@ -427,10 +430,265 @@ angular.module('starter')
 			return chartService.configureCorrelationOverTimeLineChart(lineChartData, correlations[0]);
 		};
 
-		chartService.configureLineChart = function(data, variableObject) {
-			if(!variableObject.name){
+		chartService.createScatterPlot = function (params, pairs) {
+			var scatterplotOptions = {
+				options: {
+					chart: {
+						type: 'scatter',
+						zoomType: 'xy'
+					},
+					plotOptions: {
+						scatter: {
+							marker: {
+								radius: 5,
+								states: {
+									hover: {
+										enabled: true,
+										lineColor: 'rgb(100,100,100)'
+									}
+								}
+							},
+							states: {
+								hover: {
+									marker: {
+										enabled: false
+									}
+								}
+							},
+							tooltip: {
+								//headerFormat: '<b>{series.name}</b><br>',
+								pointFormat: '{point.x} ' + params.causeVariableName + ', {point.y} ' + params.effectVariableName
+							}
+						}
+					},
+					credits: {
+						enabled: false
+					}
+				},
+				xAxis: {
+					title: {
+						enabled: true,
+						text: 'Height (cm)'
+					},
+					startOnTick: true,
+					endOnTick: true,
+					showLastLabel: true
+				},
+				yAxis: {
+					title: {
+						text: 'Weight (kg)'
+					}
+				},
+
+				series: [{
+					name: params.effectVariableName + ' by ' + params.causeVariableName,
+					color: 'rgba(223, 83, 83, .5)',
+					data: []
+				}],
+				title: {
+					text: params.effectVariableName + ' by ' + params.causeVariableName
+				},
+				subtitle: {
+					text: ''
+				},
+				loading: false
+			};
+
+			var xyVariableValues = [];
+
+			for(var i = 0; i < pairs.length; i++ ){
+				xyVariableValues.push([pairs[i].causeMeasurementValue, pairs[i].effectMeasurementValue]);
+			}
+
+			scatterplotOptions.series[0].data = xyVariableValues;
+			scatterplotOptions.xAxis.title.text = params.causeVariableName + ' (' + pairs[0].causeAbbreviatedUnitName + ')';
+			scatterplotOptions.yAxis.title.text = params.effectVariableName + ' (' + pairs[0].effectAbbreviatedUnitName + ')';
+			scatterplotOptions.options.plotOptions.scatter.tooltip.pointFormat = '{point.x}' + pairs[0].causeAbbreviatedUnitName + ', {point.y}' + pairs[0].effectAbbreviatedUnitName;
+			return scatterplotOptions;
+
+
+		};
+
+		chartService.configureLineChartForCause  = function(params, pairs) {
+			var variableObject = {
+				abbreviatedUnitName: pairs[0].causeAbbreviatedUnitName,
+				name: params.causeVariableName
+			};
+			
+			var data = [];
+			
+			for (var i = 0; i < pairs.length; i++) {
+				data[i] = [pairs[i].timestamp * 1000, pairs[i].causeMeasurementValue];
+			}
+			
+			return chartService.configureLineChart(data, variableObject);
+		};
+
+		chartService.configureLineChartForEffect  = function(params, pairs) {
+			var variableObject = {
+				abbreviatedUnitName: pairs[0].effectAbbreviatedUnitName,
+				name: params.effectVariableName
+			};
+
+			var data = [];
+
+			for (var i = 0; i < pairs.length; i++) {
+				data[i] = [pairs[i].timestamp * 1000, pairs[i].effectMeasurementValue];
+			}
+
+			return chartService.configureLineChart(data, variableObject);
+		};
+
+		chartService.configureLineChartForPairs = function(params, pairs) {
+			var inputColor = '#26B14C', outputColor = '#3284FF', mixedColor = '#26B14C', linearRegressionColor = '#FFBB00';
+
+			if(!params.causeVariableName){
 				console.error("ERROR: No variable name provided to configureLineChart");
 				return;
+			}
+			if(pairs.length < 1){
+				console.error("ERROR: No data provided to configureLineChart");
+				return;
+			}
+			var date = new Date();
+			var timezoneOffsetHours = (date.getTimezoneOffset())/60;
+			var timezoneOffsetMilliseconds = timezoneOffsetHours*60*60*1000; // minutes, seconds, milliseconds
+
+			var causeSeries = [];
+			var effectSeries = [];
+
+			for (var i = 0; i < pairs.length; i++) {
+				causeSeries[i] = [pairs[i].timestamp * 1000 - timezoneOffsetMilliseconds, pairs[i].causeMeasurementValue];
+				effectSeries[i] = [pairs[i].timestamp * 1000 - timezoneOffsetMilliseconds, pairs[i].effectMeasurementValue];
+			}
+
+			var minimumTimeEpochMilliseconds = pairs[0].timestamp * 1000 - timezoneOffsetMilliseconds;
+			var maximumTimeEpochMilliseconds = pairs[pairs.length-1].timestamp * 1000 - timezoneOffsetMilliseconds;
+			var millisecondsBetweenLatestAndEarliest = maximumTimeEpochMilliseconds - minimumTimeEpochMilliseconds;
+
+			if(millisecondsBetweenLatestAndEarliest < 86400 * 1000){
+				console.warn('Need at least a day worth of data for line chart');
+				return;
+			}
+
+			var tlSmoothGraph, tlGraphType; // Smoothgraph true = graphType spline
+			var tlEnableMarkers;
+			var tlEnableHorizontalGuides = 1;
+			tlSmoothGraph = true;
+			tlGraphType = tlSmoothGraph === true ? 'spline' : 'line'; // spline if smoothGraph = true
+			tlEnableMarkers = true; // On by default
+
+			return  {
+				chart: {renderTo: 'timeline', zoomType: 'x'},
+				title: {
+					text: params.causeVariableName + ' & ' + params.effectVariableName + ' Over Time'
+				},
+				//subtitle: {text: 'Longitudinal Timeline' + resolution, useHTML: true},
+				legend: {enabled: false},
+				scrollbar: {
+					barBackgroundColor: '#eeeeee',
+					barBorderRadius: 0,
+					barBorderWidth: 0,
+					buttonBackgroundColor: '#eeeeee',
+					buttonBorderWidth: 0,
+					buttonBorderRadius: 0,
+					trackBackgroundColor: 'none',
+					trackBorderWidth: 0.5,
+					trackBorderRadius: 0,
+					trackBorderColor: '#CCC'
+				},
+				navigator: {
+					adaptToUpdatedData: true,
+					margin: 10,
+					height: 50,
+					handles: {
+						backgroundColor: '#eeeeee'
+					}
+				},
+				xAxis: {
+					type: 'datetime',
+					gridLineWidth: false,
+					dateTimeLabelFormats: {
+						millisecond: '%H:%M:%S.%L',
+						second: '%H:%M:%S',
+						minute: '%H:%M',
+						hour: '%H:%M',
+						day: '%e. %b',
+						week: '%e. %b',
+						month: '%b \'%y',
+						year: '%Y'
+					},
+					min: minimumTimeEpochMilliseconds,
+					max: maximumTimeEpochMilliseconds
+				},
+				yAxis: [
+					{
+						gridLineWidth: tlEnableHorizontalGuides,
+						title: {text: '', style: {color: inputColor}},
+						labels: {
+							formatter: function () {
+								return this.value;
+							}, style: {color: inputColor}
+						}
+					},
+					{
+						gridLineWidth: tlEnableHorizontalGuides,
+						title: {text: 'Data is coming down the pipes!', style: {color: outputColor}},
+						labels: {
+							formatter: function () {
+								return this.value;
+							}, style: {color: outputColor}
+						},
+						opposite: true
+					}
+				],
+				plotOptions: {
+					series: {
+						lineWidth: 1,
+						states: {
+							hover: {
+								enabled: true,
+								lineWidth: 1.5
+							}
+						}
+					}
+				},
+				series: [
+					{
+						yAxis: 0,
+						name : params.causeVariableName,
+						type: tlGraphType,
+						color: inputColor,
+						data: causeSeries,
+						marker: {enabled: tlEnableMarkers, radius: 3}
+					},
+					{
+						yAxis: 1,
+						name : params.effectVariableName,
+						type: tlGraphType,
+						color: outputColor,
+						data: effectSeries,
+						marker: {enabled: tlEnableMarkers, radius: 3}
+					}
+				],
+				credits: {
+					enabled: false
+				},
+				rangeSelector: {
+					inputBoxWidth: 120,
+					inputBoxHeight: 18
+				}
+			};
+		};
+
+		chartService.configureLineChart = function(data, variableObject) {
+			if(!variableObject.name){
+				if(variableObject.variableName){
+					variableObject.name = variableObject.variableName;
+				} else {
+					console.error("ERROR: No variable name provided to configureLineChart");
+					return;
+				}
 			}
 			if(data.length < 1){
 				console.error("ERROR: No data provided to configureLineChart");
@@ -464,7 +722,7 @@ angular.module('starter')
 						enabled : false
 					},
 					title: {
-						text: variableObject.name + ' Over Time'
+						text: variableObject.name + ' Over Time (' + variableObject.abbreviatedUnitName + ')'
 					},
 					xAxis : {
 						type: 'datetime',
@@ -507,8 +765,18 @@ angular.module('starter')
 				series :[{
 					name : variableObject.name + ' Over Time',
 					data : data,
+					marker: {
+						enabled: true,
+						radius: 2
+					},
 					tooltip: {
 						valueDecimals: 2
+					},
+					lineWidth: 0,
+					states: {
+						hover: {
+							lineWidthPlus: 0
+						}
 					}
 				}]
 			};

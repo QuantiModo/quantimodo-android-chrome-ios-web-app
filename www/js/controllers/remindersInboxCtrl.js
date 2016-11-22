@@ -31,7 +31,9 @@ angular.module('starter')
 			loading : true,
 			lastButtonPressTimeStamp : 0,
 			lastClientX : 0,
-			lastClientY : 0
+			lastClientY : 0,
+			numberOfDisplayedNotifications: 0,
+			favoritesTitle: "Your Favorites"
 	    };
 
 		if(typeof config.appSettings.remindersInbox.showAddHowIFeelResponseButton !== 'undefined'){
@@ -59,6 +61,7 @@ angular.module('starter')
 			if($stateParams.today) {
 				if($stateParams.variableCategoryName === 'Treatments') {
 					$scope.state.title = "Today's Scheduled Meds";
+					$scope.state.favoritesTitle = "As-Needed Meds";
 				} else if ($stateParams.variableCategoryName) {
 					$scope.state.title = "Today's Scheduled " + $stateParams.variableCategoryName;
 				} else {
@@ -67,6 +70,7 @@ angular.module('starter')
 			} else {
 				if($stateParams.variableCategoryName === 'Treatments') {
 					$scope.state.title = 'Overdue Meds';
+					$scope.state.favoritesTitle = "As-Needed Meds";
 				} else if ($stateParams.variableCategoryName) {
 					$scope.state.title = $filter('wordAliases')($stateParams.variableCategoryName) + " " + $filter('wordAliases')("Reminder Inbox");
 				} else {
@@ -119,10 +123,16 @@ angular.module('starter')
 			$rootScope.numberOfPendingNotifications--;
 			$scope.state.numberOfDisplayedNotifications--;
 			console.debug('modifiedReminderValue is ' + $scope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications[trackingReminderNotificationIndex].total);
+
+			var value = $scope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications[trackingReminderNotificationIndex].total;
+			$scope.lastAction = 'Record ' + value + trackingReminderNotification.abbreviatedUnitName;
 			var body = {
 				trackingReminderNotification: trackingReminderNotification,
-				modifiedValue: $scope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications[trackingReminderNotificationIndex].total
+				modifiedValue: value
 			};
+			if(!$rootScope.showUndoButton){
+				$rootScope.showUndoButton = true;
+			}
 			reminderService.trackReminderNotification(body)
 				.then(function(){
 					if($rootScope.localNotificationsEnabled){
@@ -165,7 +175,7 @@ angular.module('starter')
 			var body = notificationAction(trackingReminderNotification, $event, dividerIndex,
 				trackingReminderNotificationIndex);
 			body.modifiedValue = modifiedReminderValue;
-			$scope.lastAction = 'Record ' + modifiedReminderValue;
+			$scope.lastAction = 'Record ' + modifiedReminderValue + trackingReminderNotification.abbreviatedUnitName;
 	    	reminderService.trackReminderNotification(body)
 				.then(function(){
 					if($rootScope.localNotificationsEnabled){
@@ -220,14 +230,17 @@ angular.module('starter')
 	    };
 
 		$scope.undo = function(){
+			$rootScope.showUndoButton = false;
 			var notificationsSyncQueue = localStorageService.getItemAsObject('notificationsSyncQueue');
+			if(!notificationsSyncQueue){
+				return false;
+			}
 			notificationsSyncQueue[0].trackingReminderNotification.hide = false;
 			localStorageService.addToOrReplaceElementOfItemByIdOrMoveToFront('trackingReminderNotifications',
 				notificationsSyncQueue[0].trackingReminderNotification);
 			localStorageService.deleteElementOfItemByProperty('notificationsSyncQueue',
 				'trackingReminderNotificationId', notificationsSyncQueue[0].trackingReminderNotificationId);
 			getTrackingReminderNotifications();
-			$rootScope.showUndoButton = false;
 		};
 
 		var getFilteredTrackingReminderNotifications = function(){
@@ -327,8 +340,17 @@ angular.module('starter')
 	    $scope.init = function(){
 			console.debug($state.current.name + ' initializing...');
 			$rootScope.stateParams = $stateParams;
+			if($rootScope.showUndoButton){
+				$rootScope.showUndoButton = false;
+			}
 			if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
 			if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
+
+			if($stateParams.variableCategoryName && $stateParams.variableCategoryName !== 'Anything'){
+				$rootScope.variableCategoryName = $stateParams.variableCategoryName;
+			} else {
+				$rootScope.variableCategoryName = null;
+			}
 			showLoader();
 			QuantiModo.getAccessTokenFromUrlParameter();
 			$rootScope.hideNavigationMenuIfSetInUrlParameter();
@@ -340,17 +362,9 @@ angular.module('starter')
 				reminderService.refreshTrackingRemindersAndScheduleAlarms();
 			}
 
-			var d = new Date();
-			var timeZoneOffsetInMinutes = d.getTimezoneOffset();
+			QuantiModo.getFavoriteTrackingRemindersFromLocalStorage($stateParams.variableCategoryName);
 
-			if($rootScope.user && $rootScope.user.timeZoneOffset !== timeZoneOffsetInMinutes ){
-				console.debug('user.timeZoneOffset ' + $rootScope.user.timeZoneOffset +
-					' is different than d.getTimezoneOffset() ' + timeZoneOffsetInMinutes + ' so updating user settings.');
-				var params = {
-					timeZoneOffset: timeZoneOffsetInMinutes
-				};
-				QuantiModo.updateUserSettingsDeferred(params);
-			}
+			QuantiModo.updateUserTimeZoneIfNecessary();
 
 			notificationService.shouldWeUseIonicLocalNotifications();
 
@@ -474,9 +488,9 @@ angular.module('starter')
 			$scope.state.trackingReminderNotification = trackingReminderNotification;
 			$scope.state.trackingReminder = trackingReminderNotification;
 			$scope.state.trackingReminder.id = trackingReminderNotification.trackingReminderId;
-			$scope.state.variableObject = trackingReminderNotification;
-			$scope.state.variableObject.id = trackingReminderNotification.variableId;
-			$scope.state.variableObject.name = trackingReminderNotification.variableName;
+			$rootScope.variableObject = trackingReminderNotification;
+			$rootScope.variableObject.id = trackingReminderNotification.variableId;
+			$rootScope.variableObject.name = trackingReminderNotification.variableName;
 			// Show the action sheet
 			var hideSheetForNotification = $ionicActionSheet.show({
 				buttons: [
@@ -498,16 +512,16 @@ angular.module('starter')
 						$scope.editReminderSettingsByNotification($scope.state.trackingReminderNotification, dividerIndex, trackingReminderNotificationIndex);
 					}
 					if(index === 1){
-						$scope.addToFavoritesUsingVariableObject($scope.state.variableObject);
+						$scope.addToFavoritesUsingVariableObject($rootScope.variableObject);
 					}
 					if(index === 2){
-						$scope.goToAddMeasurementForVariableObject($scope.state.variableObject);
+						$scope.goToAddMeasurementForVariableObject($rootScope.variableObject);
 					}
 					if(index === 3){
-						$scope.goToChartsPageForVariableObject($scope.state.variableObject);
+						$scope.goToChartsPageForVariableObject($rootScope.variableObject);
 					}
 					if(index === 4){
-						$scope.goToHistoryForVariableObject($scope.state.variableObject);
+						$scope.goToHistoryForVariableObject($rootScope.variableObject);
 					}
 					if (index === 5) {
 						$state.go('app.variableSettings',
@@ -521,7 +535,7 @@ angular.module('starter')
 					var params = {
 						trackingReminderId : $scope.state.trackingReminderNotification.trackingReminderId
 					};
-					$scope.showLoader('Skipping all ' + $scope.state.variableObject.name + ' reminder notifications...');
+					$scope.showLoader('Skipping all ' + $rootScope.variableObject.name + ' reminder notifications...');
 					reminderService.skipAllReminderNotifications(params)
 						.then(function(){
 							$scope.hideLoader();

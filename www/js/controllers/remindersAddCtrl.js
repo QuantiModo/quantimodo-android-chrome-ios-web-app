@@ -23,7 +23,8 @@ angular.module('starter')
             defaultValuePlaceholderText : 'Enter typical value',
             showInstructionsField : false,
             selectedStopTrackingDate: null,
-            showMoreOptions: false
+            showMoreOptions: false,
+            showMoreUnits: false
         };
 
         $scope.showMoreOptions = function(){
@@ -231,7 +232,7 @@ angular.module('starter')
 	    	if (!selectedVariable.variableCategoryName) {
 	    		$scope.state.showAddVariableCard = true;
 	    	}
-	    	$scope.variableObject=selectedVariable;
+	    	$rootScope.variableObject=selectedVariable;
 
             setupVariableCategory(selectedVariable.variableCategoryName);
             if (selectedVariable.abbreviatedUnitName) {
@@ -314,20 +315,29 @@ angular.module('starter')
                 $scope.openReminderStartTimePicker('third');
             }
         };
+
+        var validationFailure = function (message) {
+            utilsService.showAlert(message);
+            console.error(message);
+            if (typeof Bugsnag !== "undefined") {
+                Bugsnag.notify(message, "trackingReminder is " + JSON.stringify($scope.state.trackingReminder), {}, "error");
+            }
+        };
         
         var validReminderSettings = function(){
+
             if(!$scope.state.trackingReminder.variableCategoryName) {
-                utilsService.showAlert('Please select a variable category');
+                validationFailure('Please select a variable category');
                 return false;
             }
 
             if(!$scope.state.trackingReminder.variableName) {
-                utilsService.showAlert('Please enter a variable name');
+                validationFailure('Please enter a variable name');
                 return false;
             }
 
             if(!$scope.state.trackingReminder.abbreviatedUnitName) {
-                utilsService.showAlert('Please select a unit');
+                validationFailure('Please select a unit');
                 return false;
             } else {
                 $scope.state.trackingReminder.unitId =
@@ -335,7 +345,7 @@ angular.module('starter')
             }
 
             if(!$stateParams.favorite && !$scope.state.trackingReminder.defaultValue && $scope.state.trackingReminder.defaultValue !== 0) {
-                //utilsService.showAlert('Please enter a default value');
+                //validationFailure('Please enter a default value');
                 //return false;
             }
 
@@ -345,7 +355,7 @@ angular.module('starter')
             {
                 if($scope.state.trackingReminder.defaultValue !== null && $scope.state.trackingReminder.defaultValue <
                     $rootScope.unitsIndexedByAbbreviatedName[$scope.state.trackingReminder.abbreviatedUnitName].minimumValue){
-                    utilsService.showAlert($rootScope.unitsIndexedByAbbreviatedName[$scope.state.trackingReminder.abbreviatedUnitName].minimumValue +
+                    validationFailure($rootScope.unitsIndexedByAbbreviatedName[$scope.state.trackingReminder.abbreviatedUnitName].minimumValue +
                         ' is the smallest possible value for the unit ' +
                         $rootScope.unitsIndexedByAbbreviatedName[$scope.state.trackingReminder.abbreviatedUnitName].name +
                         ".  Please select another unit or value.");
@@ -360,7 +370,7 @@ angular.module('starter')
             {
                 if($scope.state.trackingReminder.defaultValue !== null && $scope.state.trackingReminder.defaultValue >
                     $rootScope.unitsIndexedByAbbreviatedName[$scope.state.trackingReminder.abbreviatedUnitName].maximumValue){
-                    utilsService.showAlert($rootScope.unitsIndexedByAbbreviatedName[$scope.state.trackingReminder.abbreviatedUnitName].maximumValue +
+                    validationFailure($rootScope.unitsIndexedByAbbreviatedName[$scope.state.trackingReminder.abbreviatedUnitName].maximumValue +
                         ' is the largest possible value for the unit ' +
                         $rootScope.unitsIndexedByAbbreviatedName[$scope.state.trackingReminder.abbreviatedUnitName].name +
                         ".  Please select another unit or value.");
@@ -370,7 +380,7 @@ angular.module('starter')
 
             if($scope.state.selectedStopTrackingDate && $scope.state.selectedStartTrackingDate){
                 if($scope.state.selectedStopTrackingDate < $scope.state.selectedStartTrackingDate){
-                    utilsService.showAlert("Start date cannot be later than the end date");
+                    validationFailure("Start date cannot be later than the end date");
                     return false;
                 }
             }
@@ -418,7 +428,7 @@ angular.module('starter')
             }
 
             if(!validReminderSettings()){
-                return;
+                return false;
             }
 
             $scope.showLoader('Saving ' + $scope.state.trackingReminder.variableName + ' reminder...');
@@ -466,7 +476,8 @@ angular.module('starter')
                             reminderService.refreshTrackingReminderNotifications().then(function(){
                                 console.debug('reminderAddCtrl.save successfully refreshed notifications');
                             }, function (error) {
-                                if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error( $state.current.name + ': ' + JSON.stringify(error));
+                                console.error(error);
+                                //if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error( $state.current.name + ': ' + JSON.stringify(error));
                             });
                             $scope.hideLoader();
                         }, function(error){
@@ -478,7 +489,9 @@ angular.module('starter')
 
                     var backView = $ionicHistory.backView();
                     if(backView.stateName.toLowerCase().indexOf('search') > -1){
-                        $ionicHistory.goBack(-2);
+                        $state.go(config.appSettings.defaultState);
+                        // This often doesn't work and the user should go to the inbox more anyway
+                        //$ionicHistory.goBack(-2);
                     } else {
                         $ionicHistory.goBack();
                     }
@@ -541,7 +554,7 @@ angular.module('starter')
 	    };
 
         $scope.variableCategorySelectorChange = function(variableCategoryName) {
-            $scope.state.variableCategoryObject = variableCategoryService.getVariableCategoryInfo(variableCategoryName);
+            $scope.state.variableCategoryObject = QuantiModo.getVariableCategoryInfo(variableCategoryName);
             $scope.state.trackingReminder.abbreviatedUnitName = $scope.state.variableCategoryObject.defaultAbbreviatedUnitName;
             $scope.state.defaultValuePlaceholderText = 'Enter most common value';
             $scope.state.defaultValueLabel = 'Default Value';
@@ -556,7 +569,7 @@ angular.module('starter')
                 variableCategoryName = '';
             }
             $scope.state.trackingReminder.variableCategoryName = variableCategoryName;
-            $scope.state.variableCategoryObject = variableCategoryService.getVariableCategoryInfo(variableCategoryName);
+            $scope.state.variableCategoryObject = QuantiModo.getVariableCategoryInfo(variableCategoryName);
             if (!$scope.state.trackingReminder.abbreviatedUnitName) {
             	$scope.state.trackingReminder.abbreviatedUnitName = $scope.state.variableCategoryObject.defaultAbbreviatedUnitName;
             }
@@ -577,10 +590,10 @@ angular.module('starter')
             if(variableId){
                 variableService.getVariableById(variableId)
                     .then(function (variables) {
-                        $scope.variableObject = variables[0];
+                        $rootScope.variableObject = variables[0];
                         console.debug('setupReminderEditingFromVariableId got this variable object ' +
-                            JSON.stringify($scope.variableObject));
-                        setupByVariableObject($scope.variableObject);
+                            JSON.stringify($rootScope.variableObject));
+                        setupByVariableObject($rootScope.variableObject);
                         $ionicLoading.hide();
                         $scope.loading = false;
                     }, function () {
@@ -596,7 +609,7 @@ angular.module('starter')
             reminderService.getTrackingReminderById(reminderIdUrlParameter)
                 .then(function (reminders) {
                     if (reminders.length !== 1) {
-                        utilsService.showAlert("Reminder id " + reminderIdUrlParameter + " not found!", 'assertive');
+                        validationFailure("Reminder id " + reminderIdUrlParameter + " not found!", 'assertive');
                         $ionicHistory.goBack();
                     }
                     $stateParams.reminder = reminders[0];
@@ -651,7 +664,7 @@ angular.module('starter')
                 var reminderIdUrlParameter = utilsService.getUrlParameter(window.location.href, 'reminderId');
                 var variableIdUrlParameter = utilsService.getUrlParameter(window.location.href, 'variableId');
                 if ($stateParams.variableObject) {
-                    $scope.variableObject = $stateParams.variableObject;
+                    $rootScope.variableObject = $stateParams.variableObject;
                     setupByVariableObject($stateParams.variableObject);
                 } else if ($stateParams.reminder && $stateParams.reminder !== null) {
                     setupEditReminder($stateParams.reminder);
@@ -710,17 +723,18 @@ angular.module('starter')
         };
 
         $rootScope.showActionSheetMenu = function() {
-            $scope.state.variableObject = $scope.state.trackingReminder;
-            $scope.state.variableObject.id = $scope.state.trackingReminder.variableId;
-            $scope.state.variableObject.name = $scope.state.trackingReminder.variableName;
-            console.debug("remindersAddCtrl.showActionSheetMenu:   $scope.state.variableObject: ", $scope.state.variableObject);
+            $scope.variableObject = $scope.state.trackingReminder;
+            $scope.variableObject.id = $scope.state.trackingReminder.variableId;
+            $scope.variableObject.name = $scope.state.trackingReminder.variableName;
+            console.debug("remindersAddCtrl.showActionSheetMenu:   $scope.variableObject: ", $scope.variableObject);
             var hideSheet = $ionicActionSheet.show({
                 buttons: [
                     { text: '<i class="icon ion-ios-star"></i>Add to Favorites' },
                     { text: '<i class="icon ion-android-notifications-none"></i>Record Measurement'},
                     { text: '<i class="icon ion-arrow-graph-up-right"></i>Visualize'},
                     { text: '<i class="icon ion-ios-list-outline"></i>History' },
-                    { text: '<i class="icon ion-settings"></i>' + 'Variable Settings'}
+                    { text: '<i class="icon ion-settings"></i>' + 'Variable Settings'},
+                    { text: '<i class="icon ion-settings"></i>' + 'Show More Units'}
                 ],
                 destructiveText: '<i class="icon ion-trash-a"></i>Delete Favorite',
                 cancelText: '<i class="icon ion-ios-close"></i>Cancel',
@@ -731,20 +745,23 @@ angular.module('starter')
                     console.debug('BUTTON CLICKED', index);
 
                     if(index === 0){
-                        $scope.addToFavoritesUsingVariableObject($scope.state.variableObject);
+                        $scope.addToFavoritesUsingVariableObject($scope.variableObject);
                     }
                     if(index === 1){
-                        $scope.goToAddMeasurementForVariableObject($scope.state.variableObject);
+                        $scope.goToAddMeasurementForVariableObject($scope.variableObject);
                     }
                     if(index === 2){
-                        $scope.goToChartsPageForVariableObject($scope.state.variableObject);
+                        $scope.goToChartsPageForVariableObject($scope.variableObject);
                     }
                     if(index === 3) {
-                        $scope.goToHistoryForVariableObject($scope.state.variableObject);
+                        $scope.goToHistoryForVariableObject($scope.variableObject);
                     }
                     if (index === 4) {
                         $state.go('app.variableSettings',
                             {variableName: $scope.state.trackingReminder.variableName});
+                    }
+                    if (index === 5) {
+                        $scope.state.showMoreUnits = true;
                     }
                     return true;
                 },
