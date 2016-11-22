@@ -1,6 +1,6 @@
 angular.module('starter')
 	// returns high chart compatible Stubs for line and Bar charts
-	.factory('chartService', function(ratingService, localStorageService, $q) {
+	.factory('chartService', function(ratingService, localStorageService, $q, $timeout) {
 	    var chartService = {};
 
 		chartService.getWeekdayChartConfigForPrimaryOutcome = function () {
