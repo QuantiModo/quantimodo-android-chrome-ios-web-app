@@ -67,7 +67,10 @@ angular.module('starter')
                             $scope.state.showAddVariableButton = false;
                             $scope.state.variableSearchResults = variables;
                             $scope.state.searching = false;
-                            if(!$scope.state.variableSearchResults){
+                            if(!$scope.state.variableSearchResults.length){
+                                $scope.state.noVariablesFoundCard.title = $scope.state.variableSearchQuery.name + ' Not Found';
+                                $scope.state.noVariablesFoundCard.body = "You don't have any data for " +
+                                    $scope.state.variableSearchQuery.name + ", yet.  Start tracking!";
                                 $scope.state.noVariablesFoundCard.show = true;
                             } else {
                                 $scope.state.noVariablesFoundCard.show = false;
