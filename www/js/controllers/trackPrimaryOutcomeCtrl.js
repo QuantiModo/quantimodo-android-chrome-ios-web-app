@@ -15,18 +15,6 @@ angular.module('starter')
         $scope.showRatingFaces = true;
         $scope.syncDisplayText = 'Syncing ' + config.appSettings.primaryOutcomeVariableDetails.name + ' measurements...';
 
-        var windowResize = function() {
-            $(window).resize();
-
-            // Not sure what this does
-            console.debug('Setting windowResize timeout');
-            $timeout(function() {
-                $scope.$broadcast('highchartsng.reflow');
-            }, 10);
-            // Fixes chart width
-            $scope.$broadcast('highchartsng.reflow');
-        };
-
         $scope.storeRatingLocalAndServerAndUpdateCharts = function (numericRatingValue) {
 
             // flag for blink effect
@@ -66,7 +54,6 @@ angular.module('starter')
             if($scope.averagePrimaryOutcomeVariableText){
                 $scope.averagePrimaryOutcomeVariableImage = ratingService.getRatingFaceImageByText($scope.averagePrimaryOutcomeVariableText);
             }
-            windowResize();
         };
 
         var updateCharts = function(){
@@ -93,7 +80,6 @@ angular.module('starter')
                         config.appSettings.primaryOutcomeVariableDetails);
                 updateAveragePrimaryOutcomeRatingView();
             }
-            windowResize();
         };
 
 
