@@ -1174,7 +1174,7 @@ angular.module('starter')
                 localStorageService.deleteItem('afterLoginGoTo');
                 window.location.replace(afterLoginGoTo);
             } else {
-                $state.go(config.appSettings.defaultState);
+                //$state.go(config.appSettings.defaultState);
             }
         };
 
