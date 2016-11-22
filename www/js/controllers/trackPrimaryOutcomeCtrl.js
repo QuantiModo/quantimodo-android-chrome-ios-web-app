@@ -86,7 +86,7 @@ angular.module('starter')
                     chartService.processDataAndConfigureHourlyChart( $scope.state.primaryOutcomeMeasurements,
                         config.appSettings.primaryOutcomeVariableDetails);
                 $scope.weekdayChartConfig =
-                    chartService.processDataAndConfigureWeekdayChart( $scope.state.primaryOutcomeMeasurements,
+                    chartService.processDataAndConfigureWeekdayChart($scope.state.primaryOutcomeMeasurements,
                         config.appSettings.primaryOutcomeVariableDetails);
                 $scope.distributionChartConfig =
                     chartService.processDataAndConfigureDistributionChart( $scope.state.primaryOutcomeMeasurements,
