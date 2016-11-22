@@ -101,7 +101,7 @@ angular.module('starter')
         function setupUserPredictors() {
             $scope.state.explanationHeader = "Your Top Predictors";
             $scope.state.explanationIcon = "ion-ios-person";
-            $scope.state.explanationText = 'These factors are most likely to affect ' + $scope.state.increasingDecreasing +
+            $scope.state.explanationText = 'These factors are most predictive of ' + $scope.state.increasingDecreasing +
                 ' your ' + $rootScope.variableName + ' based on your own data.  ' +
             'Want more accurate results? Add some reminders and start tracking!';
         }
@@ -109,7 +109,7 @@ angular.module('starter')
         function setupAggregatedPredictors() {
             $scope.state.explanationHeader = "Common Predictors";
             $scope.state.explanationIcon = "ion-ios-people";
-            $scope.state.explanationText = 'These factors are most likely to affect ' + $scope.state.increasingDecreasing +
+            $scope.state.explanationText = 'These factors are most predictive of ' + $scope.state.increasingDecreasing +
                 ' ' + $rootScope.variableName + ' for the average QuantiModo user.  ' +
             'Want PERSONALIZED results? Add some reminders and start tracking!';
         }
