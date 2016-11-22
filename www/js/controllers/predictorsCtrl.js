@@ -39,9 +39,9 @@ angular.module('starter')
                             });
                     }
 
-                }, function () {
+                }, function (error) {
                     $ionicLoading.hide();
-                    console.error('predictorsCtrl: Could not get correlations');
+                    console.error('predictorsCtrl: Could not get correlations: ' + JSON.stringify(error));
                 });
         }
 
@@ -85,9 +85,9 @@ angular.module('starter')
                                 }
                             });
                     }
-                }, function () {
+                }, function (error) {
                     $ionicLoading.hide();
-                    console.error('predictorsCtrl: Could not get correlations');
+                    console.error('predictorsCtrl: Could not get correlations: ' + JSON.stringify(error));
                 });
         }
 

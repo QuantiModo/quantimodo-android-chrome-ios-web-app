@@ -1,7 +1,14 @@
 angular.module('starter')
 	// returns high chart compatible Stubs for line and Bar charts
-	.factory('chartService', function(ratingService, $timeout) {
+	.factory('chartService', function(ratingService, localStorageService, $q) {
 	    var chartService = {};
+
+		chartService.getWeekdayChartConfigForPrimaryOutcome = function () {
+			var deferred = $q.defer();
+			deferred.resolve(chartService.processDataAndConfigureWeekdayChart(localStorageService.getItemAsObject('allMeasurements'),
+				config.appSettings.primaryOutcomeVariableDetails));
+			return deferred.promise;
+		};
 
 		chartService.generateDistributionArray = function(allMeasurements){
 			var distributionArray = [];
@@ -20,6 +27,10 @@ angular.module('starter')
 		};
 
 		chartService.generateWeekdayMeasurementArray = function(allMeasurements){
+            if(!allMeasurements){
+                console.error('No measurements provided to generateWeekdayMeasurementArray');
+                return false;
+            }
 			var weekdayMeasurementArrays = [];
 			var startTimeMilliseconds = null;
 			for (var i = 0; i < allMeasurements.length; i++) {
@@ -182,6 +193,10 @@ angular.module('starter')
 		};
 
 		chartService.processDataAndConfigureWeekdayChart = function(measurements, variableObject) {
+            if(!measurements){
+                console.error('No measurements provided to processDataAndConfigureWeekdayChart');
+                return false;
+            }
 			if(!variableObject.name){
 				console.error("ERROR: No variable name provided to processDataAndConfigureWeekdayChart");
 				return;
