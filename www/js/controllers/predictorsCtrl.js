@@ -39,15 +39,18 @@ angular.module('starter')
                             });
                     }
 
-                }, function () {
+                }, function (error) {
                     $ionicLoading.hide();
-                    console.error('predictorsCtrl: Could not get correlations');
+                    console.error('predictorsCtrl: Could not get correlations: ' + JSON.stringify(error));
                 });
         }
 
+/*
+        Keeps getting called all the time for no reason
         $scope.$on('$stateChangeSuccess', function() {
             $scope.loadMore();
         });
+*/
 
         function populateUserCorrelationList() {
             $ionicLoading.show({
@@ -82,15 +85,17 @@ angular.module('starter')
                                 }
                             });
                     }
-                }, function () {
+                }, function (error) {
                     $ionicLoading.hide();
-                    console.error('predictorsCtrl: Could not get correlations');
+                    console.error('predictorsCtrl: Could not get correlations: ' + JSON.stringify(error));
                 });
         }
 
         $scope.loadMore = function () {
-            $scope.state.requestParams.offset = $scope.state.requestParams.offset + $scope.state.requestParams.limit;
-            populateUserCorrelationList();
+            if($scope.state.correlationObjects.length){
+                $scope.state.requestParams.offset = $scope.state.requestParams.offset + $scope.state.requestParams.limit;
+                populateUserCorrelationList();
+            }
         };
         
         function setupUserPredictors() {

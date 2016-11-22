@@ -2,7 +2,7 @@ angular.module('starter')
 
 	.controller('RemindersInboxCtrl', function($scope, $state, $stateParams, $rootScope, $filter, $ionicPlatform,
 											   $ionicActionSheet, $timeout, QuantiModo, reminderService, utilsService,
-											   notificationService, localStorageService, $ionicLoading) {
+											   notificationService, localStorageService, $ionicLoading, chartService) {
 
 	    $scope.controller_name = "RemindersInboxCtrl";
 
@@ -122,11 +122,18 @@ angular.module('starter')
 			$scope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications[trackingReminderNotificationIndex].hide = true;
 			$rootScope.numberOfPendingNotifications--;
 			$scope.state.numberOfDisplayedNotifications--;
+			getWeekdayChartIfNecessary();
 			console.debug('modifiedReminderValue is ' + $scope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications[trackingReminderNotificationIndex].total);
+
+			var value = $scope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications[trackingReminderNotificationIndex].total;
+			$scope.lastAction = 'Record ' + value + trackingReminderNotification.abbreviatedUnitName;
 			var body = {
 				trackingReminderNotification: trackingReminderNotification,
-				modifiedValue: $scope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications[trackingReminderNotificationIndex].total
+				modifiedValue: value
 			};
+			if(!$rootScope.showUndoButton){
+				$rootScope.showUndoButton = true;
+			}
 			reminderService.trackReminderNotification(body)
 				.then(function(){
 					if($rootScope.localNotificationsEnabled){
@@ -140,6 +147,15 @@ angular.module('starter')
 				});
 		};
 
+		var getWeekdayChartIfNecessary = function () {
+			if(!$state.numberOfDisplayedNotifications && !$scope.weekdayChartConfig){
+				chartService.getWeekdayChartConfigForPrimaryOutcome($scope.state.primaryOutcomeMeasurements,
+					config.appSettings.primaryOutcomeVariableDetails).then(function (chartConfig) {
+					$scope.weekdayChartConfig = chartConfig;
+				});
+			}
+		};
+
 
 		var notificationAction = function(trackingReminderNotification, $event, dividerIndex,
 										  trackingReminderNotificationIndex){
@@ -148,6 +164,7 @@ angular.module('starter')
 			$scope.filteredTrackingReminderNotifications[dividerIndex].trackingReminderNotifications[trackingReminderNotificationIndex].hide = true;
 			$rootScope.numberOfPendingNotifications--;
 			$scope.state.numberOfDisplayedNotifications--;
+			getWeekdayChartIfNecessary();
 			if(!$rootScope.showUndoButton){
 				$rootScope.showUndoButton = true;
 			}
@@ -169,7 +186,7 @@ angular.module('starter')
 			var body = notificationAction(trackingReminderNotification, $event, dividerIndex,
 				trackingReminderNotificationIndex);
 			body.modifiedValue = modifiedReminderValue;
-			$scope.lastAction = 'Record ' + modifiedReminderValue;
+			$scope.lastAction = 'Record ' + modifiedReminderValue + trackingReminderNotification.abbreviatedUnitName;
 	    	reminderService.trackReminderNotification(body)
 				.then(function(){
 					if($rootScope.localNotificationsEnabled){
@@ -243,11 +260,13 @@ angular.module('starter')
 					$scope.state.numberOfDisplayedNotifications = trackingReminderNotifications.length;
 					$scope.filteredTrackingReminderNotifications =
 						reminderService.groupTrackingReminderNotificationsByDateRange(trackingReminderNotifications);
+					getWeekdayChartIfNecessary();
 					//Stop the ion-refresher from spinning
 					$scope.$broadcast('scroll.refreshComplete');
 					$scope.hideLoader();
 					$scope.state.loading = false;
 				}, function(){
+					getWeekdayChartIfNecessary();
 					$scope.hideLoader();
 					console.error("failed to get reminder notifications!");
 					//Stop the ion-refresher from spinning
@@ -277,11 +296,13 @@ angular.module('starter')
 				.then(function (trackingReminderNotifications) {
 					$scope.state.numberOfDisplayedNotifications = trackingReminderNotifications.length;
 					$scope.filteredTrackingReminderNotifications = reminderService.groupTrackingReminderNotificationsByDateRange(trackingReminderNotifications);
+					getWeekdayChartIfNecessary();
 					//Stop the ion-refresher from spinning
 					$scope.$broadcast('scroll.refreshComplete');
 					$scope.hideLoader();
 					$scope.state.loading = false;
 				}, function(error){
+					getWeekdayChartIfNecessary();
 					console.error(error);
 					$scope.hideLoader();
 					console.error("failed to get reminder notifications!");
@@ -339,6 +360,12 @@ angular.module('starter')
 			}
 			if (typeof Bugsnag !== "undefined") { Bugsnag.context = $state.current.name; }
 			if (typeof analytics !== 'undefined')  { analytics.trackView($state.current.name); }
+
+			if($stateParams.variableCategoryName && $stateParams.variableCategoryName !== 'Anything'){
+				$rootScope.variableCategoryName = $stateParams.variableCategoryName;
+			} else {
+				$rootScope.variableCategoryName = null;
+			}
 			showLoader();
 			QuantiModo.getAccessTokenFromUrlParameter();
 			$rootScope.hideNavigationMenuIfSetInUrlParameter();

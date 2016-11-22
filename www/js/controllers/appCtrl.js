@@ -10,7 +10,7 @@ angular.module('starter')
 
         $rootScope.loaderImagePath = config.appSettings.loaderImagePath;
         $rootScope.appMigrationVersion = 1489;
-        $rootScope.appVersion = "2.1.4.0";
+        $rootScope.appVersion = "2.1.5.0";
         if (!$rootScope.loaderImagePath) {
             $rootScope.loaderImagePath = 'img/circular_loader.gif';
         }
@@ -264,24 +264,37 @@ angular.module('starter')
             trackingReminder.variableDescription = variableObject.description;
             trackingReminder.variableCategoryName = variableObject.variableCategoryName;
 
+            if($rootScope.lastRefreshTrackingRemindersAndScheduleAlarmsPromise){
+                var message = 'Got deletion request before last reminder refresh completed';
+                console.debug(message);
+                $rootScope.lastRefreshTrackingRemindersAndScheduleAlarmsPromise.reject();
+                $rootScope.lastRefreshTrackingRemindersAndScheduleAlarmsPromise = null;
+                $rootScope.syncingReminders = false;
+            }
+
             if (trackingReminder.abbreviatedUnitName === '/5') {
+                $ionicLoading.show({
+                    template: '<ion-spinner></ion-spinner>'
+                });
                 trackingReminder.defaultValue = 3;
                 localStorageService.addToOrReplaceElementOfItemByIdOrMoveToFront('trackingReminders', trackingReminder)
                     .then(function() {
                         reminderService.postTrackingReminders(trackingReminder)
                             .then(function () {
+                                $ionicLoading.hide();
                                 console.debug("Saved to favorites: " + JSON.stringify(trackingReminder));
-                                $state.go('app.favorites',
-                                    {
-                                        trackingReminder: trackingReminder,
-                                        fromState: $state.current.name,
-                                        fromUrl: window.location.href
-                                    }
-                                );
                             }, function(error) {
-                                console.error('Failed to add favorite!', trackingReminder);
+                                $ionicLoading.hide();
+                                console.error('Failed to add favorite!' + JSON.stringify(error));
                             });
                     });
+                $state.go('app.favorites',
+                    {
+                        trackingReminder: trackingReminder,
+                        fromState: $state.current.name,
+                        fromUrl: window.location.href
+                    }
+                );
             } else {
                 $state.go('app.favoriteAdd',
                     {
@@ -411,6 +424,10 @@ angular.module('starter')
             }
         };
 
+        $scope.$on('getFavoriteTrackingRemindersFromLocalStorage', function(){
+            QuantiModo.getFavoriteTrackingRemindersFromLocalStorage($rootScope.variableCategoryName);
+        });
+
         $scope.init = function () {
             console.debug("Main Constructor Start");
             if(!window.private_keys) {
@@ -420,6 +437,8 @@ angular.module('starter')
             if($rootScope.showUndoButton){
                 $rootScope.showUndoButton = false;
             }
+
+            $rootScope.favoritesOrderParameter = 'numberOfRawMeasurements';
             
             if($rootScope.urlParameters.refreshUser){
                 localStorageService.clear();

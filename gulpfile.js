@@ -1051,6 +1051,22 @@ gulp.task('bumpVersionNumbersInFiles', function(callback){
 		callback);
 });
 
+gulp.task('replaceVersionNumbersInFiles', function(callback){
+
+	process.env.OLD_IONIC_IOS_APP_VERSION_NUMBER = '2.1.4.16';
+	console.log('Using process.env.OLD_IONIC_IOS_APP_VERSION_NUMBER ' + process.env.OLD_IONIC_IOS_APP_VERSION_NUMBER);
+	process.env.OLD_IONIC_APP_VERSION_NUMBER = process.env.OLD_IONIC_IOS_APP_VERSION_NUMBER.substring(0, 5);
+
+	process.env.IONIC_IOS_APP_VERSION_NUMBER = '2.1.5.0';
+	process.env.IONIC_APP_VERSION_NUMBER = process.env.IONIC_IOS_APP_VERSION_NUMBER.substring(0, 5);
+
+	runSequence(
+		//'setVersionNumberInConfigXml',  Messes it up, I think. Replacing with shell script for now.
+		//'setVersionNumberInIosConfigXml',
+		'setVersionNumberInFiles',
+		callback);
+});
+
 gulp.task('setVersionNumberInConfigXml', [], function(callback){
 	var configFilePath = './config-template.xml';
 	setVersionNumberInConfigXml(configFilePath, callback);
@@ -1062,20 +1078,52 @@ gulp.task('setVersionNumberInIosConfigXml', [], function(callback){
 });
 
 gulp.task('setVersionNumberInFiles', function(callback){
+
+	if(process.env.OLD_IONIC_IOS_APP_VERSION_NUMBER === process.env.IONIC_IOS_APP_VERSION_NUMBER){
+		throw 'process.env.OLD_IONIC_IOS_APP_VERSION_NUMBER should be less than process.env.IONIC_IOS_APP_VERSION_NUMBER';
+	}
+
+	if(process.env.OLD_IONIC_APP_VERSION_NUMBER === process.env.IONIC_APP_VERSION_NUMBER){
+		throw 'process.env.OLD_IONIC_APP_VERSION_NUMBER should be less than process.env.IONIC_APP_VERSION_NUMBER';
+	}
+
+	if(!process.env.IONIC_IOS_APP_VERSION_NUMBER){
+		throw 'Please set process.env.IONIC_IOS_APP_VERSION_NUMBER';
+	}
+
+	if(!process.env.OLD_IONIC_IOS_APP_VERSION_NUMBER){
+		throw 'Please set process.env.OLD_IONIC_IOS_APP_VERSION_NUMBER';
+	}
+
+	if(!process.env.OLD_IONIC_APP_VERSION_NUMBER){
+		throw 'Please set process.env.OLD_IONIC_APP_VERSION_NUMBER';
+	}
+
+	if(!process.env.IONIC_APP_VERSION_NUMBER){
+		throw 'Please set process.env.IONIC_APP_VERSION_NUMBER';
+	}
+
 	var filesToUpdate = [
 		'www/js/controllers/appCtrl.js',
 		'www/js/app.js',
 		'gulp.js',
 		'scripts/build_all_apps.sh',
-		'.travis.yml'
+		'.travis.yml',
+		'config.xml',
+		'config-template.xml',
+		'config-template-ios.xml',
+		'resources/chrome_extension/manifest.json',
+		'resources/chrome_app/manifest.json'
 	];
-	for(var i = 0; i < filesToUpdate.length; i++){
-		var path = './' + filesToUpdate[i].substr(0, filesToUpdate[i].lastIndexOf("/"));
-		gulp.src(["./" + filesToUpdate[i]]) // Every file allown.
-			.pipe(replace(process.env.OLD_IONIC_IOS_APP_VERSION_NUMBER, process.env.IONIC_IOS_APP_VERSION_NUMBER))
-			.pipe(gulp.dest(path));
-	}
+	
+	gulp.src(filesToUpdate, {base: "."}) // Every file allown.
+		.pipe(replace(process.env.OLD_IONIC_IOS_APP_VERSION_NUMBER, process.env.IONIC_IOS_APP_VERSION_NUMBER))
+		.pipe(replace('IONIC_IOS_APP_VERSION_NUMBER_PLACEHOLDER', process.env.IONIC_IOS_APP_VERSION_NUMBER))
+		.pipe(replace(process.env.OLD_IONIC_APP_VERSION_NUMBER, process.env.IONIC_APP_VERSION_NUMBER))
+		.pipe(replace('IONIC_APP_VERSION_NUMBER_PLACEHOLDER', process.env.IONIC_APP_VERSION_NUMBER))
+		.pipe(gulp.dest('./'));
 	callback();
+
 });
 
 gulp.task('ic_notification', function() {
