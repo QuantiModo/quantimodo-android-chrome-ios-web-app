@@ -1,7 +1,14 @@
 angular.module('starter')
 	// returns high chart compatible Stubs for line and Bar charts
-	.factory('chartService', function(ratingService) {
+	.factory('chartService', function(ratingService, localStorageService, $q) {
 	    var chartService = {};
+
+		chartService.getWeekdayChartConfigForPrimaryOutcome = function () {
+			var deferred = $q.defer();
+			deferred.resolve(chartService.processDataAndConfigureWeekdayChart(localStorageService.getItemAsObject('allMeasurements'),
+				config.appSettings.primaryOutcomeVariableDetails));
+			return deferred.promise;
+		};
 
 		chartService.generateDistributionArray = function(allMeasurements){
 			var distributionArray = [];
