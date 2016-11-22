@@ -27,6 +27,10 @@ angular.module('starter')
 		};
 
 		chartService.generateWeekdayMeasurementArray = function(allMeasurements){
+            if(!allMeasurements){
+                console.error('No measurements provided to generateWeekdayMeasurementArray');
+                return false;
+            }
 			var weekdayMeasurementArrays = [];
 			var startTimeMilliseconds = null;
 			for (var i = 0; i < allMeasurements.length; i++) {
@@ -184,6 +188,10 @@ angular.module('starter')
 		};
 
 		chartService.processDataAndConfigureWeekdayChart = function(measurements, variableObject) {
+            if(!measurements){
+                console.error('No measurements provided to processDataAndConfigureWeekdayChart');
+                return false;
+            }
 			if(!variableObject.name){
 				console.error("ERROR: No variable name provided to processDataAndConfigureWeekdayChart");
 				return;
