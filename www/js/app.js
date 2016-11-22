@@ -319,7 +319,7 @@ angular.module('starter',
         window.localStorage.introSeen = true;
         window.localStorage.isWelcomed = true;
     }
-    console.debug('url params are ', $rootScope.urlParameters);
+    console.debug('url params are ' + JSON.stringify($rootScope.urlParameters));
 })
 
 .config(function($stateProvider, $urlRouterProvider, $compileProvider, ionicTimePickerProvider,
