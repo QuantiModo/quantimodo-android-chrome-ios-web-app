@@ -798,7 +798,12 @@ angular.module('starter')
 							lineWidthPlus: 0
 						}
 					}
-				}]
+				}],            
+                func: function(chart) {
+                    $timeout(function() {
+                        chart.reflow();
+                    }, 0);
+                }
 			};
 		};
 
