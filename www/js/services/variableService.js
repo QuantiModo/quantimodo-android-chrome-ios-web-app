@@ -152,7 +152,12 @@ angular.module('starter')
                     $rootScope.syncingUserVariables = false;
                 }, 10000);
 
-                QuantiModo.getUserVariables(null, function(userVariables){
+                var parameters = {
+                    limit: 200,
+                    sort: "-numberOfMeasurements"
+                };
+
+                QuantiModo.getUserVariables(parameters, function(userVariables){
                     localStorageService.setItem('userVariables', JSON.stringify(userVariables))
                         .then(function () {
                             $rootScope.$broadcast('populateUserVariables');
