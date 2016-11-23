@@ -687,6 +687,10 @@ angular.module('starter',
                 variableCategoryName: null,
                 nextState: 'app.predictorsAll',
                 doNotShowAddVariableButton: true,
+                noVariablesFoundCard: {
+                    body: "I don't have enough data to determine the top predictors of __VARIABLE_NAME__, yet. " +
+                    "I generally need about a month of data to produce significant results so start tracking!"
+                },
                 variableSearchParameters: {
                     includePublic: true,
                     fallbackToAggregatedCorrelations: true,

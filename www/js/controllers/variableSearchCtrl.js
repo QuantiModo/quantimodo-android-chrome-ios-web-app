@@ -94,14 +94,26 @@ angular.module('starter')
         }
 
         function showNoVariablesFoundCardIfNecessary() {
-            if (!$scope.state.variableSearchResults.length && $stateParams.doNotShowAddVariableButton) {
-                $scope.state.noVariablesFoundCard.title = $scope.state.variableSearchQuery.name + ' Not Found';
-                $scope.state.noVariablesFoundCard.body = "You don't have any data for " +
-                    $scope.state.variableSearchQuery.name + ", yet.  Start tracking!";
-                $scope.state.noVariablesFoundCard.show = true;
-            } else {
+
+            if ($scope.state.variableSearchResults.length) {
                 $scope.state.noVariablesFoundCard.show = false;
+                return;
             }
+
+            if (!$stateParams.doNotShowAddVariableButton) {
+                $scope.state.noVariablesFoundCard.show = false;
+                return;
+            }
+
+            $scope.state.noVariablesFoundCard.title = $scope.state.variableSearchQuery.name + ' Not Found';
+            if($stateParams.noVariablesFoundCard && $stateParams.noVariablesFoundCard.body){
+                $scope.state.noVariablesFoundCard.body =
+                    $stateParams.noVariablesFoundCard.body.replace('__VARIABLE_NAME__', $scope.state.variableSearchQuery.name.toUpperCase());
+            } else {
+                $scope.state.noVariablesFoundCard.body = "You don't have any data for " +
+                    $scope.state.variableSearchQuery.name.toUpperCase() + ", yet.  Start tracking!";
+            }
+            $scope.state.noVariablesFoundCard.show = true;
         }
 
         $scope.onVariableSearch = function(){
