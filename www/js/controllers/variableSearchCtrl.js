@@ -56,65 +56,69 @@ angular.module('starter')
         };
 
         // when a query is searched in the search box
+        function showAddVariableButtonIfNecessary(variables) {
+            if($stateParams.doNotShowAddVariableButton){
+                $scope.state.showAddVariableButton = false;
+                return;
+            }
+            var resultIndex = 0;
+            var found = false;
+            while (!found && resultIndex < $scope.state.variableSearchResults.length) {
+                if ($scope.state.variableSearchResults[resultIndex].name.toLowerCase() ===
+                    $scope.state.variableSearchQuery.name.toLowerCase()) {
+                    found = true;
+                } else {
+                    resultIndex++;
+                }
+            }
+            // If no results or no exact match, show "+ Add [variable]" button for query
+            if ((variables.length < 1 || !found)) {
+                $scope.showSearchLoader = true;
+                $timeout(function () {
+                    if (!$scope.state.searching) {
+                        $scope.showSearchLoader = false;
+                        console.debug($state.current.name + ": " + "$scope.onVariableSearch: Set showAddVariableButton to true");
+                        $scope.state.showAddVariableButton = true;
+                    }
+                }, 1000);
+                if ($stateParams.nextState === "app.reminderAdd") {
+                    $scope.state.addNewVariableButtonText = '+ Add ' + $scope.state.variableSearchQuery.name +
+                        ' reminder';
+                } else if ($stateParams.nextState === "app.measurementAdd") {
+                    $scope.state.addNewVariableButtonText = '+ Add ' + $scope.state.variableSearchQuery.name +
+                        ' measurement';
+                } else {
+                    $scope.state.addNewVariableButtonText = '+ ' + $scope.state.variableSearchQuery.name;
+                }
+            }
+        }
+
+        function showNoVariablesFoundCardIfNecessary() {
+            if (!$scope.state.variableSearchResults.length && $stateParams.doNotShowAddVariableButton) {
+                $scope.state.noVariablesFoundCard.title = $scope.state.variableSearchQuery.name + ' Not Found';
+                $scope.state.noVariablesFoundCard.body = "You don't have any data for " +
+                    $scope.state.variableSearchQuery.name + ", yet.  Start tracking!";
+                $scope.state.noVariablesFoundCard.show = true;
+            } else {
+                $scope.state.noVariablesFoundCard.show = false;
+            }
+        }
+
         $scope.onVariableSearch = function(){
+            $scope.state.noVariablesFoundCard.show = false;
             $scope.state.showAddVariableButton = false;
             console.debug($state.current.name + ": " + "Search term: ", $scope.state.variableSearchQuery.name);
             if($scope.state.variableSearchQuery.name.length > 2){
                 $scope.state.searching = true;
-                if (!$stateParams.variableSearchParameters.includePublic) { // on variable search page, only show user's variables
-                    variableService.searchUserVariables($scope.state.variableSearchQuery.name, $stateParams.variableSearchParameters)
-                        .then(function(variables){
-                            $scope.state.showAddVariableButton = false;
-                            $scope.state.variableSearchResults = variables;
-                            $scope.state.searching = false;
-                            if(!$scope.state.variableSearchResults.length){
-                                $scope.state.noVariablesFoundCard.title = $scope.state.variableSearchQuery.name + ' Not Found';
-                                $scope.state.noVariablesFoundCard.body = "You don't have any data for " +
-                                    $scope.state.variableSearchQuery.name + ", yet.  Start tracking!";
-                                $scope.state.noVariablesFoundCard.show = true;
-                            } else {
-                                $scope.state.noVariablesFoundCard.show = false;
-                            }
-                        });
-                } else { // on add reminder or record measurement search pages; include public variables
-                    variableService.searchUserVariables($scope.state.variableSearchQuery.name, $stateParams.variableSearchParameters)
-                        .then(function(variables){
-                            $scope.state.showAddVariableButton = false;
-                            $scope.state.variableSearchResults = variables;
-                            $scope.state.searching = false;
-                            // Check if exact match is present in results
-                            var resultIndex = 0;
-                            var found = false;
-                            while (!found && resultIndex < $scope.state.variableSearchResults.length) {
-                                if ($scope.state.variableSearchResults[resultIndex].name.toLowerCase() ===
-                                    $scope.state.variableSearchQuery.name.toLowerCase()) {
-                                    found = true;
-                                } else {
-                                    resultIndex++;
-                                }
-                            }
-                            // If no results or no exact match, show "+ Add [variable]" button for query
-                            if((variables.length < 1 || !found)){
-                                $scope.showSearchLoader = true;
-                                $timeout(function () {
-                                    if(!$scope.state.searching){
-                                        $scope.showSearchLoader = false;
-                                        console.debug($state.current.name + ": " + "$scope.onVariableSearch: Set showAddVariableButton to true");
-                                        $scope.state.showAddVariableButton = true;
-                                    }
-                                }, 1000);
-                                if ($stateParams.nextState === "app.reminderAdd") {
-                                    $scope.state.addNewVariableButtonText = '+ Add ' + $scope.state.variableSearchQuery.name +
-                                        ' reminder';
-                                } else if ($stateParams.nextState === "app.measurementAdd") {
-                                    $scope.state.addNewVariableButtonText = '+ Add ' + $scope.state.variableSearchQuery.name +
-                                        ' measurement';
-                                } else {
-                                    $scope.state.addNewVariableButtonText = '+ ' + $scope.state.variableSearchQuery.name;
-                                }
-                            }
-                        });
-                }
+                variableService.searchUserVariables($scope.state.variableSearchQuery.name, $stateParams.variableSearchParameters)
+                    .then(function(variables){
+                        $scope.state.noVariablesFoundCard.show = false;
+                        $scope.state.showAddVariableButton = false;
+                        $scope.state.variableSearchResults = variables;
+                        $scope.state.searching = false;
+                        showAddVariableButtonIfNecessary(variables);
+                        showNoVariablesFoundCardIfNecessary();
+                    });
             } else {
                 populateUserVariables();
             }
