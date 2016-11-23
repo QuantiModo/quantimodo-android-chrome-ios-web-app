@@ -43,11 +43,6 @@ angular.module('starter')
             hideReminderMeButton : false,
             showMoreMenuButton: true,
             editReminder : false,
-            bloodPressure : {
-                diastolicValue: null,
-                systolicValue: null,
-                show: false
-            },
             showMoreUnits: false
         };
 
@@ -331,6 +326,11 @@ angular.module('starter')
         };
 
         $scope.init = function(){
+            $rootScope.bloodPressure = {
+                diastolicValue: null,
+                systolicValue: null,
+                show: false
+            };
             console.debug($state.current.name + ' initializing...');
             $rootScope.stateParams = $stateParams;
             if($stateParams.trackingReminder){
