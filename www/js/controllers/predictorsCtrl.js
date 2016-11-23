@@ -1,7 +1,7 @@
 angular.module('starter')
 
 	.controller('PredictorsCtrl', function($scope, $ionicLoading, $state, $stateParams, $ionicPopup, correlationService,
-                                           $rootScope) {
+                                           $rootScope, QuantiModo) {
 
 		$scope.controller_name = "PredictorsCtrl";
         $scope.state = {
@@ -223,26 +223,15 @@ angular.module('starter')
         // when view is changed
         $scope.$on('$ionicView.afterEnter', function(e) {
             $rootScope.getAllUrlParams();
-            var newHash;
             if ($scope.state.requestParams.effectVariableName) {
                 if(!$rootScope.urlParameters.effectVariableName){
-                    newHash = document.location.hash + '?effectVariableName=' + encodeURIComponent($scope.state.requestParams.effectVariableName);
-                    if(history.pushState) {
-                        history.pushState(null, null, newHash);
-                    } else {
-                        document.location.hash = newHash;
-                    }
+                    QuantiModo.addParameterToUrl('effectVariableName', $scope.state.requestParams.effectVariableName);
                 }
             }
 
             if ($scope.state.requestParams.causeVariableName) {
                 if(!$rootScope.urlParameters.causeVariableName){
-                    newHash = document.location.hash + '?causeVariableName=' + encodeURIComponent($scope.state.requestParams.causeVariableName);
-                    if(history.pushState) {
-                        history.pushState(null, null, newHash);
-                    } else {
-                        document.location.hash = newHash;
-                    }
+                    QuantiModo.addParameterToUrl('causeVariableName', $scope.state.requestParams.causeVariableName);
                 }
             }
         });

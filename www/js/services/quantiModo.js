@@ -1478,5 +1478,19 @@ angular.module('starter')
             return deferred.promise;
         };
 
+        QuantiModo.addParameterToUrl = function (parameterName, value) {
+            var newHash;
+            var joiner = '?';
+            if(document.location.hash.indexOf('?') !== -1){
+                joiner = '&';
+            }
+            newHash = document.location.hash + joiner + parameterName + '=' + encodeURIComponent(value);
+            if(history.pushState) {
+                history.pushState(null, null, newHash);
+            } else {
+                document.location.hash = newHash;
+            }
+        };
+
         return QuantiModo;
     });
