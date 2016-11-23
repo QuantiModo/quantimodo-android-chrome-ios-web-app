@@ -16,9 +16,11 @@ angular.module('starter')
                 requestParams: {},
                 hideStudyButton: true
             };
-            
-            $scope.correlationObject = $stateParams.correlationObject;
-            localStorageService.setItem('lastStudy', JSON.stringify($scope.correlationObject));
+
+            if($stateParams.correlationObject){
+                $scope.correlationObject = $stateParams.correlationObject;
+                localStorageService.setItem('lastStudy', JSON.stringify($scope.correlationObject));
+            }
             
             if($scope.correlationObject){
                 $scope.state.requestParams = {
