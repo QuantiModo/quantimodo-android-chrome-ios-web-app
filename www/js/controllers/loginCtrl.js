@@ -359,7 +359,14 @@ angular.module('starter')
                 loginUrl = utilsService.getURL("api/v2/auth/register");
             }
             console.debug("sendToNonOAuthBrowserLoginUrl: Client id is oAuthDisabled - will redirect to regular login.");
-            loginUrl += "redirect_uri=" + encodeURIComponent(window.location.href.replace('app/login','app/reminders-inbox'));
+            var afterLoginGoTo = localStorageService.getItemSync('afterLoginGoTo');
+            console.debug("afterLoginGoTo from localstorage is  " + afterLoginGoTo);
+            if(afterLoginGoTo) {
+                localStorageService.deleteItem('afterLoginGoTo');
+                loginUrl += "redirect_uri=" + encodeURIComponent(afterLoginGoTo);
+            } else {
+                loginUrl += "redirect_uri=" + encodeURIComponent(window.location.href.replace('app/login','app/reminders-inbox'));
+            }
             console.debug('sendToNonOAuthBrowserLoginUrl: AUTH redirect URL created:', loginUrl);
             var apiUrlMatchesHostName = $rootScope.qmApiUrl.indexOf(window.location.hostname);
             if(apiUrlMatchesHostName > -1 || $rootScope.isChromeExtension) {

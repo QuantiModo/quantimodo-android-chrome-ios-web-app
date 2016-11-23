@@ -1,6 +1,6 @@
 angular.module('starter')
 	.controller('StudyCtrl', function($scope, $state, QuantiModo, $stateParams, $ionicHistory, $rootScope,
-                                      correlationService, chartService, $timeout, $ionicLoading) {
+                                      correlationService, chartService, $timeout, $ionicLoading, localStorageService) {
 
 		$scope.controller_name = "StudyCtrl";
         
@@ -18,6 +18,7 @@ angular.module('starter')
             };
             
             $scope.correlationObject = $stateParams.correlationObject;
+            localStorageService.setItem('lastStudy', JSON.stringify($scope.correlationObject));
             
             if($scope.correlationObject){
                 $scope.state.requestParams = {
@@ -31,11 +32,6 @@ angular.module('starter')
                 return;
             }
 
-            if($rootScope.urlParameters.userId && !$rootScope.user) {
-                $rootScope.afterLoginGoTo = window.location.href;
-                $rootScope.sendToLogin();
-            }
-
             if($rootScope.urlParameters.causeVariableName){
                 $scope.state.requestParams.causeVariableName = $rootScope.urlParameters.causeVariableName;
             }
@@ -44,7 +40,7 @@ angular.module('starter')
                 $scope.state.requestParams.effectVariableName = $rootScope.urlParameters.effectVariableName;
             }
 
-            if ($rootScope.urlParameters.aggregated || !$rootScope.user) {
+            if ($rootScope.urlParameters.aggregated) {
                 var fallbackToUserStudy = false;
                 if($rootScope.user){
                     fallbackToUserStudy = true;
@@ -82,6 +78,7 @@ angular.module('starter')
                 $ionicLoading.hide();
                 if (correlations[0]) {
                     $scope.correlationObject = correlations[0];
+                    localStorageService.setItem('lastStudy', JSON.stringify($scope.correlationObject));
                     $scope.state.title = $scope.correlationObject.predictorExplanation;
                     createUserCharts(params);
                 } else {
@@ -112,6 +109,7 @@ angular.module('starter')
                 $ionicLoading.hide();
                 if (correlations[0]) {
                     $scope.correlationObject = correlations[0];
+                    localStorageService.setItem('lastStudy', JSON.stringify($scope.correlationObject));
                     $scope.state.title = $scope.correlationObject.predictorExplanation;
                 } else {
                     if(!fallbackToUserStudy){

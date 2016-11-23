@@ -63,6 +63,7 @@ angular.module('starter')
         }, function(){
             console.debug("iframeScreen: No access token. Need to log in.");
             localStorageService.setItem('afterLoginGoTo', window.location.href);
+            console.debug("set afterLoginGoTo to " + window.location.href);
             $rootScope.sendToLogin();
             $ionicLoading.hide();
         });

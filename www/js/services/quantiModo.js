@@ -36,6 +36,7 @@ angular.module('starter')
                     console.warn('QuantiModo.errorHandler: Sending to login because we got 401 with request ' +
                         JSON.stringify(request));
                     localStorageService.setItem('afterLoginGoTo', window.location.href);
+                    console.debug("set afterLoginGoTo to " + window.location.href);
                     $rootScope.sendToLogin();
                     return;
                 }
@@ -1170,6 +1171,7 @@ angular.module('starter')
                 $rootScope.sendReminderNotificationEmails = null;
             }
             var afterLoginGoTo = localStorageService.getItemSync('afterLoginGoTo');
+            console.debug("afterLoginGoTo from localstorage is  " + afterLoginGoTo);
             if(afterLoginGoTo) {
                 localStorageService.deleteItem('afterLoginGoTo');
                 window.location.replace(afterLoginGoTo);
