@@ -639,8 +639,6 @@ angular.module('starter',
                 fromUrl: null,
                 measurement: null,
                 nextState: 'app.charts',
-                doNotShowAddVariableButton: true,
-
                 variableSearchParameters: {
                     limit: 100,
                     includePublic: false,
@@ -663,7 +661,6 @@ angular.module('starter',
                 fromUrl: null,
                 measurement: null,
                 nextState: 'app.charts',
-                doNotShowAddVariableButton: true,
                 variableSearchParameters: {
                     limit: 100,
                     includePublic: false,
@@ -686,7 +683,6 @@ angular.module('starter',
                 helpText: "Search for an outcome like overall mood or a symptom that you want to know the causes of...",
                 variableCategoryName: null,
                 nextState: 'app.predictorsAll',
-                doNotShowAddVariableButton: true,
                 variableSearchParameters: {
                     includePublic: true,
                     fallbackToAggregatedCorrelations: true,
@@ -710,7 +706,6 @@ angular.module('starter',
             params: {
                 variableCategoryName: null,
                 nextState: 'app.predictors',
-                doNotShowAddVariableButton: true,
                 variableSearchParameters: {
                     includePublic: false,
                     manualTracking: false,
@@ -730,7 +725,6 @@ angular.module('starter',
             params: {
                 variableCategoryName: null,
                 nextState: 'app.predictors',
-                doNotShowAddVariableButton: true,
                 variableSearchParameters: {
                     includePublic: true,
                     manualTracking: false,
