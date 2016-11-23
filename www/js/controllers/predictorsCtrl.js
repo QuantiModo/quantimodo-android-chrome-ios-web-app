@@ -12,6 +12,13 @@ angular.module('starter')
             showLoadMoreButton: false
         };
 
+        function showLoadMoreButtonIfNecessary() {
+            if($scope.state.correlationObjects.length &&
+                $scope.state.correlationObjects.length%$scope.state.requestParams.limit === 0){
+                $scope.state.showLoadMoreButton = true;
+            }
+        }
+
         function populateAggregatedCorrelationList() {
             $ionicLoading.show({
                 template: '<ion-spinner></ion-spinner>'
@@ -54,12 +61,7 @@ angular.module('starter')
             $scope.loadMore();
         });
 */
-        function showLoadMoreButtonIfNecessary() {
-            if($scope.state.correlationObjects.length &&
-                $scope.state.correlationObjects.length%$scope.state.requestParams.limit === 0){
-                $scope.state.showLoadMoreButton = true;
-            }
-        }
+
 
         function populateUserCorrelationList() {
             $ionicLoading.show({
