@@ -8,7 +8,8 @@ angular.module('starter')
             requestParams: $stateParams.requestParams,
             variableName: config.appSettings.primaryOutcomeVariableDetails.name,
             increasingDecreasing: '',
-            correlationObjects: []
+            correlationObjects: [],
+            showLoadMoreButton: false
         };
 
         function populateAggregatedCorrelationList() {
@@ -20,6 +21,7 @@ angular.module('starter')
                 .then(function (correlationObjects) {
                     if(correlationObjects.length) {
                         $scope.state.correlationObjects = $scope.state.correlationObjects.concat(correlationObjects);
+                        showLoadMoreButtonIfNecessary();
                         $ionicLoading.hide();
                         $scope.$broadcast('scroll.infiniteScrollComplete');
                     } else {
@@ -32,6 +34,7 @@ angular.module('starter')
                                     $scope.state.explanationText = "Unfortunately, I don't have enough data get common " +
                                         " predictors for " + $rootScope.variableName + ", yet. " + $scope.state.explanationText;
                                     $scope.state.correlationObjects = $scope.state.correlationObjects.concat(correlationObjects);
+                                    showLoadMoreButtonIfNecessary();
                                 } else {
                                     $scope.state.noCorrelations = true;
                                 }
@@ -51,6 +54,12 @@ angular.module('starter')
             $scope.loadMore();
         });
 */
+        function showLoadMoreButtonIfNecessary() {
+            if($scope.state.correlationObjects.length &&
+                $scope.state.correlationObjects.length%$scope.state.requestParams.limit === 0){
+                $scope.state.showLoadMoreButton = true;
+            }
+        }
 
         function populateUserCorrelationList() {
             $ionicLoading.show({
@@ -68,6 +77,7 @@ angular.module('starter')
                             setupAggregatedPredictors();
                         }
                         $scope.state.correlationObjects = $scope.state.correlationObjects.concat(correlationObjects);
+                        showLoadMoreButtonIfNecessary();
                         $ionicLoading.hide();
                         $scope.$broadcast('scroll.infiniteScrollComplete');
                     } else {
@@ -79,6 +89,7 @@ angular.module('starter')
                                     $scope.state.explanationText = "Unfortunately, I don't have enough data from you to get " +
                                         "your personal predictors for " + $rootScope.variableName + ", yet. " + $scope.state.explanationText;
                                     $scope.state.correlationObjects = $scope.state.correlationObjects.concat(correlationObjects);
+                                    showLoadMoreButtonIfNecessary();
                                     $scope.$broadcast('scroll.infiniteScrollComplete');
                                 } else {
                                     $scope.state.noCorrelations = true;
