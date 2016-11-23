@@ -159,4 +159,30 @@ angular.module('starter')
             $scope.hideLoader();
             $scope.init();
         });
+
+        $scope.$on('$ionicView.afterEnter', function(e) {
+            $rootScope.getAllUrlParams();
+            var newHash;
+            if ($scope.state.requestParams.effectVariableName) {
+                if(!$rootScope.urlParameters.effectVariableName){
+                    newHash = document.location.hash + '?effectVariableName=' + encodeURIComponent($scope.state.requestParams.effectVariableName);
+                    if(history.pushState) {
+                        history.pushState(null, null, newHash);
+                    } else {
+                        document.location.hash = newHash;
+                    }
+                }
+            }
+
+            if ($scope.state.requestParams.causeVariableName) {
+                if(!$rootScope.urlParameters.causeVariableName){
+                    newHash = document.location.hash + '&causeVariableName=' + encodeURIComponent($scope.state.requestParams.causeVariableName);
+                    if(history.pushState) {
+                        history.pushState(null, null, newHash);
+                    } else {
+                        document.location.hash = newHash;
+                    }
+                }
+            }
+        });
 	});
