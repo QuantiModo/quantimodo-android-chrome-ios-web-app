@@ -37,8 +37,8 @@ angular.module('starter')
 
         $rootScope.bloodPressure = {
             systolicValue: null,
-                diastolicValue: null,
-                displayTotal: "Blood Pressure"
+            diastolicValue: null,
+            displayTotal: "Blood Pressure"
         };
 
         // Not used
