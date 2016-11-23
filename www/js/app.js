@@ -639,6 +639,8 @@ angular.module('starter',
                 fromUrl: null,
                 measurement: null,
                 nextState: 'app.charts',
+                doNotShowAddVariableButton: true,
+
                 variableSearchParameters: {
                     limit: 100,
                     includePublic: false,
@@ -661,6 +663,7 @@ angular.module('starter',
                 fromUrl: null,
                 measurement: null,
                 nextState: 'app.charts',
+                doNotShowAddVariableButton: true,
                 variableSearchParameters: {
                     limit: 100,
                     includePublic: false,
@@ -683,6 +686,11 @@ angular.module('starter',
                 helpText: "Search for an outcome like overall mood or a symptom that you want to know the causes of...",
                 variableCategoryName: null,
                 nextState: 'app.predictorsAll',
+                doNotShowAddVariableButton: true,
+                noVariablesFoundCard: {
+                    body: "I don't have enough data to determine the top predictors of __VARIABLE_NAME__, yet. " +
+                    "I generally need about a month of data to produce significant results so start tracking!"
+                },
                 variableSearchParameters: {
                     includePublic: true,
                     fallbackToAggregatedCorrelations: true,
@@ -706,6 +714,7 @@ angular.module('starter',
             params: {
                 variableCategoryName: null,
                 nextState: 'app.predictors',
+                doNotShowAddVariableButton: true,
                 variableSearchParameters: {
                     includePublic: false,
                     manualTracking: false,
@@ -725,6 +734,7 @@ angular.module('starter',
             params: {
                 variableCategoryName: null,
                 nextState: 'app.predictors',
+                doNotShowAddVariableButton: true,
                 variableSearchParameters: {
                     includePublic: true,
                     manualTracking: false,
