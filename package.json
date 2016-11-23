@@ -28,7 +28,7 @@
     "gulp-run": "^1.6.12",
     "gulp-sass": "^2.1.1",
     "gulp-shell": "^0.5.1",
-    "gulp-string-replace": "latest"
+    "gulp-string-replace": "latest",
     "gulp-typescript": "^2.11.0",
     "gulp-util": "^3.0.6",
     "gulp-zip": "^3.0.2",
@@ -44,7 +44,7 @@
     "swagger-js-codegen": "^1.1.4",
     "taco-team-build": "^0.2.1",
     "xcode": "0.8.9",
-    "xml2js": "^0.4.15",
+    "xml2js": "^0.4.15"
   },
   "scripts": {
     "postinstall": "bower install && ionic config build && gulp generatePrivateConfigFromEnvsForHeroku"
