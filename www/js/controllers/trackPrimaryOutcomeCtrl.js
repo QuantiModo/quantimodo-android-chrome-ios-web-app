@@ -66,9 +66,6 @@ angular.module('starter')
                 $scope.state.primaryOutcomeMeasurements =  $scope.state.primaryOutcomeMeasurements.concat(measurementsQueue);
             }
             if( $scope.state.primaryOutcomeMeasurements) {
-                $scope.lineChartConfig =
-                    chartService.processDataAndConfigureLineChart( $scope.state.primaryOutcomeMeasurements,
-                        config.appSettings.primaryOutcomeVariableDetails);
                 $scope.hourlyChartConfig =
                     chartService.processDataAndConfigureHourlyChart( $scope.state.primaryOutcomeMeasurements,
                         config.appSettings.primaryOutcomeVariableDetails);
@@ -79,6 +76,9 @@ angular.module('starter')
                     chartService.processDataAndConfigureDistributionChart( $scope.state.primaryOutcomeMeasurements,
                         config.appSettings.primaryOutcomeVariableDetails);
                 updateAveragePrimaryOutcomeRatingView();
+                $scope.lineChartConfig =
+                    chartService.processDataAndConfigureLineChart( $scope.state.primaryOutcomeMeasurements,
+                        config.appSettings.primaryOutcomeVariableDetails);
             }
         };
 
