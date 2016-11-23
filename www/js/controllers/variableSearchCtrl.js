@@ -141,6 +141,11 @@ angular.module('starter')
             populateUserVariables();
         });
 
+        $scope.$on('populateCommonVariables', function(){
+            console.debug('populateUserVariables broadcast received..');
+            populateUserVariables();
+        });
+
         var populateCommonVariables = function(){
             if(!$stateParams.variableSearchParameters.includePublic) {
                 return;

@@ -218,7 +218,9 @@ angular.module('starter')
                 }, 10000);
 
                 var successHandler = function(commonVariables) {
-                    localStorageService.setItem('commonVariables', JSON.stringify(commonVariables));
+                    localStorageService.setItem('commonVariables', JSON.stringify(commonVariables)).then(function () {
+                        $rootScope.$broadcast('populateCommonVariables');
+                    });
                     $rootScope.syncingCommonVariables = false;
                     deferred.resolve(commonVariables);
                 };
