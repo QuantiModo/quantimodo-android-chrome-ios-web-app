@@ -1482,17 +1482,6 @@ gulp.task('ionicPlatformAddAndroid', function(callback){
 		});
 });
 
-gulp.task('ionicPlatformAddAndroid', function(callback){
-	return execute("ionic platform add android", function(error){
-		if(error !== null){
-			console.log("ERROR for " + process.env.LOWERCASE_APP_NAME + ": " + error);
-		} else {
-			console.log("\n***Android for " + process.env.LOWERCASE_APP_NAME);
-			callback();
-		}
-	});
-});
-
 gulp.task('cordovaBuildAndroidDebug', function(callback){
 	return execute("cordova build --debug android", function(error){
 		if(error !== null){
