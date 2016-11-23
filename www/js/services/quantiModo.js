@@ -37,7 +37,12 @@ angular.module('starter')
                         JSON.stringify(request));
                     localStorageService.setItem('afterLoginGoTo', window.location.href);
                     console.debug("set afterLoginGoTo to " + window.location.href);
-                    $rootScope.sendToLogin();
+                    if (utilsService.getClientId() !== 'oAuthDisabled') {
+                        $rootScope.sendToLogin();
+                    } else {
+                        var register = true;
+                        QuantiModo.sendToNonOAuthBrowserLoginUrl(register);
+                    }
                     return;
                 }
             }
@@ -1189,6 +1194,29 @@ angular.module('starter')
                 deferred.reject(error);
             });
             return deferred.promise;
+        };
+
+        QuantiModo.sendToNonOAuthBrowserLoginUrl = function(register) {
+            var loginUrl = utilsService.getURL("api/v2/auth/login");
+            if (register === true) {
+                loginUrl = utilsService.getURL("api/v2/auth/register");
+            }
+            console.debug("sendToNonOAuthBrowserLoginUrl: Client id is oAuthDisabled - will redirect to regular login.");
+            var afterLoginGoTo = localStorageService.getItemSync('afterLoginGoTo');
+            console.debug("afterLoginGoTo from localstorage is  " + afterLoginGoTo);
+            if(afterLoginGoTo) {
+                localStorageService.deleteItem('afterLoginGoTo');
+                loginUrl += "redirect_uri=" + encodeURIComponent(afterLoginGoTo);
+            } else {
+                loginUrl += "redirect_uri=" + encodeURIComponent(window.location.href.replace('app/login','app/reminders-inbox'));
+            }
+            console.debug('sendToNonOAuthBrowserLoginUrl: AUTH redirect URL created:', loginUrl);
+            var apiUrlMatchesHostName = $rootScope.qmApiUrl.indexOf(window.location.hostname);
+            if(apiUrlMatchesHostName > -1 || $rootScope.isChromeExtension) {
+                window.location.replace(loginUrl);
+            } else {
+                alert("API url doesn't match auth base url.  Please make use the same domain in config file");
+            }
         };
 
         QuantiModo.refreshUserEmailPreferences = function(params){
