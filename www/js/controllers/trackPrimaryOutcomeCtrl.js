@@ -80,6 +80,7 @@ angular.module('starter')
                         config.appSettings.primaryOutcomeVariableDetails);
                 updateAveragePrimaryOutcomeRatingView();
             }
+            $scope.state.loadingCharts = false;
         };
 
 
@@ -96,6 +97,7 @@ angular.module('starter')
             if($rootScope.user || $rootScope.accessToken){
                 $scope.showLoader($scope.syncDisplayText);
                 console.debug($state.current.name + ' going to syncPrimaryOutcomeVariableMeasurements');
+                $scope.state.loadingCharts = true;
                 measurementService.syncPrimaryOutcomeVariableMeasurements().then(function(){
                     updateCharts();
                     $ionicLoading.hide();
