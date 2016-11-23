@@ -61,7 +61,7 @@
                     <p>{{correlationObject.predictorExplanation}}</p>
                     <p>{{correlationObject.valuePredictingHighOutcomeExplanation}}</p>
                     <p>{{correlationObject.valuePredictingLowOutcomeExplanation}}</p>
-                    <div ng-include="'templates/correlation-buttons-fragment.html'"></div>
+                    <div ng-include="'templates/fragments/correlation-buttons-fragment.html'"></div>
                 </div>
 <!--                <div class="item tabs tabs-secondary tabs-icon-left">
                     <a class="tab-item">
@@ -80,7 +80,7 @@
             <div class="list card correlationResultList" ng-repeat="correlationObject in state.correlationObjects">
                 <ion-item class="item item-text-wrap card-item" style="border-style:hidden;">
                     <h4><a ng-click="goToStudyPage(correlationObject)">{{correlationObject.causeVariableName}}</a></h4>
-                    <div ng-include="'templates/correlation-buttons-fragment.html'"></div>
+                    <div ng-include="'templates/fragments/correlation-buttons-fragment.html'"></div>
                     <p>{{correlationObject.predictorExplanation}}</p>
                     <p>{{correlationObject.valuePredictingHighOutcomeExplanation}}</p>
                     <p>{{correlationObject.valuePredictingLowOutcomeExplanation}}</p>
