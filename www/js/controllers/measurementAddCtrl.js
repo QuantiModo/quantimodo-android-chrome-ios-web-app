@@ -554,12 +554,22 @@ angular.module('starter')
             });
         };
 
+        var showMoreUnitsIfNecessary = function () {
+            if($scope.state.measurement.abbreviatedUnitName &&
+                !$rootScope.nonAdvancedUnitsIndexedByAbbreviatedName[$scope.state.measurement.abbreviatedUnitName]){
+                $scope.state.showMoreUnits = true;
+            }
+        };
+
+
         function setupValueFieldType(abbreviatedUnitName, variableDescription) {
             
             if(!abbreviatedUnitName){
                 console.error('No abbreviatedUnitName provided to setupValueFieldType');
                 return false;
             }
+
+            showMoreUnitsIfNecessary();
 
             if (abbreviatedUnitName === '/5') {
                 if (!variableDescription) {
