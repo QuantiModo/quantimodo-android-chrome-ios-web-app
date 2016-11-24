@@ -715,12 +715,20 @@ angular.module('starter')
                 });
         };
 
+
         $scope.unitSelected = function(){
-            console.debug("selecting_unit", $scope.state.trackingReminder.abbreviatedUnitName);
-            $scope.state.trackingReminder.unitName =
-                $rootScope.unitsIndexedByAbbreviatedName[$scope.state.trackingReminder.abbreviatedUnitName].name;
-            $scope.state.trackingReminder.unitId =
-                $rootScope.unitsIndexedByAbbreviatedName[$scope.state.trackingReminder.abbreviatedUnitName].id;
+            if($scope.state.trackingReminder.abbreviatedUnitName === 'Show more units'){
+                $scope.state.showMoreUnits = true;
+                $scope.state.trackingReminder.abbreviatedUnitName = null;
+                $scope.state.trackingReminder.unitName = null;
+                $scope.state.trackingReminder.unitId = null;
+            } else {
+                console.debug("selecting_unit", $scope.state.trackingReminder.abbreviatedUnitName);
+                $scope.state.trackingReminder.unitName =
+                    $rootScope.unitsIndexedByAbbreviatedName[$scope.state.trackingReminder.abbreviatedUnitName].name;
+                $scope.state.trackingReminder.unitId =
+                    $rootScope.unitsIndexedByAbbreviatedName[$scope.state.trackingReminder.abbreviatedUnitName].id;
+            }
         };
 
         $scope.toggleShowUnits = function(){
