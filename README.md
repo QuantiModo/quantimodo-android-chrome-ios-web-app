@@ -663,7 +663,7 @@ To run the chrome app locally, simply follow these steps:
   `cordova -d plugin add ~/Developer/fbplugin/phonegap-facebook-plugin --variable APP_ID="225078261031461" --variable APP_NAME="QuantiModo"` 
 > Replace the app with your appid and name. Also make sure your bundle id is included in the Facebook App Settings.
 
-10. run `pods Init` 
+10. run `pod init` 
 > Make sure you have cocoa pods installed
 
 11. Open the PodFile in `platforms/ios/ProjectName/Podfile` directory and add a pod 
