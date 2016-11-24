@@ -416,6 +416,19 @@ angular.module('starter')
             return updatedTrackingReminder;
         };
 
+        var goBack = function () {
+            $ionicLoading.hide();
+            $scope.loading = false;
+            var backView = $ionicHistory.backView();
+            if(backView.stateName.toLowerCase().indexOf('search') > -1){
+                $state.go(config.appSettings.defaultState);
+                // This often doesn't work and the user should go to the inbox more anyway
+                //$ionicHistory.goBack(-2);
+            } else {
+                $ionicHistory.goBack();
+            }
+        };
+
 	    // when the reminder is saved/edited
 	    $scope.save = function(){
 
@@ -469,6 +482,9 @@ angular.module('starter')
                     $scope.state.thirdReminderStartTimeLocal, $scope.state.thirdReminderStartTimeEpochTime);
             }
 
+            $ionicLoading.show({
+                template: '<ion-spinner></ion-spinner>'
+            });
             localStorageService.addToOrReplaceElementOfItemByIdOrMoveToFront('trackingReminders',
                 remindersArray)
                 .then(function(){
@@ -480,22 +496,17 @@ angular.module('starter')
                                 console.error(error);
                                 //if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error( $state.current.name + ': ' + JSON.stringify(error));
                             });
-                            $scope.hideLoader();
+
+                            // We need to do this again in case a reminder sync replaced our updated one before posting finished
+                            localStorageService.addToOrReplaceElementOfItemByIdOrMoveToFront('trackingReminders', remindersArray);
+                            goBack(); // We can't go back until reminder is posted so the correct reminders or favorites are shown when we return
                         }, function(error){
-                            $scope.hideLoader();
                             if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, JSON.stringify(error), {}, "error"); } console.error( $state.current.name + ': ' + JSON.stringify(error));
-                            $ionicLoading.hide();
-                            $scope.loading = false;
+                            // We need to do this again in case a reminder sync replaced our updated one before posting finished
+                            localStorageService.addToOrReplaceElementOfItemByIdOrMoveToFront('trackingReminders', remindersArray);
+                            goBack(); // We can't go back until reminder is posted so the correct reminders or favorites are shown when we return
                         });
 
-                    var backView = $ionicHistory.backView();
-                    if(backView.stateName.toLowerCase().indexOf('search') > -1){
-                        $state.go(config.appSettings.defaultState);
-                        // This often doesn't work and the user should go to the inbox more anyway
-                        //$ionicHistory.goBack(-2);
-                    } else {
-                        $ionicHistory.goBack();
-                    }
                 }
 
             );
