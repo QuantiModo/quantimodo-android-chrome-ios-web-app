@@ -35,7 +35,7 @@
                 <h3 ng-show="correlationObject.dataSources" id="dataSources">Data Sources</h3>
                    <p ng-bind-html="correlationObject.dataSources"></p><br>
                 <h3 ng-show="correlationObject.studyLimitations" id="studyLimitations">Study Limitations</h3>
-                    <p>{{correlationObject.studyLimitations}}</p>
+                    <p>{{correlationObject.studyLimitations}}</p><br>
             </div>
             <highchart ng-show="lineChartConfig" id="chart2" config="lineChartConfig"></highchart>
             <div class="list card"  ng-if="state.studyNotFound">
