@@ -3,12 +3,19 @@
         <ion-content>
             <ion-list class="correlationResultList" ng-show="correlationObject">
                 <div class="list card">
-                    <ion-item style="border-style:hidden;">
+                    <ion-item style="border-style:hidden; text-align: center">
                         <div class="item item-text-wrap card-item">
                             <h3 id="predictorExplanation">{{correlationObject.predictorExplanation}}</h3>
-                            <div ng-include="'templates/correlation-buttons-fragment.html'"></div>
-                            <p id="valuePredictingHighOutcomeExplanation">{{correlationObject.valuePredictingHighOutcomeExplanation}}</p>
+                            <br>
+                            <img ng-src="{{correlationObject.gaugeImage}}">
+                            <br>
+<!--                        Doesn't look right yet
+                            <img ng-src="{{correlationObject.causeVariableImageUrl}}">
+                            <img ng-src="{{correlationObject.effectVariableImageUrl}}">-->
+                            <p id="valuePredictingHighOutcomeExplanation">{{correlationObject.valuePredictingHighOutcomeExplanation}}
+                            <br><br>
                             <p id="valuePredictingLowOutcomeExplanation">{{correlationObject.valuePredictingLowOutcomeExplanation}}</p>
+                            <div ng-include="'templates/correlation-buttons-fragment.html'"></div>
                             <h3 id="studyAbstract">Study Abstract</h3>
                             <p>{{correlationObject.studyAbstract}}</p>
                             <div ng-show="loadingCharts" style="text-align: center">
@@ -31,17 +38,17 @@
                                     <highchart id="scatterplot" config="scatterplotChartConfig"></highchart>
                                 </div>
                             </div>
-                            <h3 id="studyBackground">Study Background</h3>
+                            <h3 ng-show="correlationObject.studyBackground" id="studyBackground">Study Background</h3>
                                <p>{{correlationObject.studyBackground}}</p>
-                            <h3 id="studyObjective">Study Objective</h3>
+                            <h3 ng-show="correlationObject.studyObjective" id="studyObjective">Study Objective</h3>
                                <p>{{correlationObject.studyObjective}}</p>
-                            <h3 id="studyDesign">Study Design</h3>
+                            <h3 ng-show="correlationObject.studyDesign" id="studyDesign">Study Design</h3>
                                <p>{{correlationObject.studyDesign}}</p>
-                            <h3 id="dataAnalysis">Data Analysis</h3>
+                            <h3 ng-show="correlationObject.dataAnalysis" id="dataAnalysis">Data Analysis</h3>
                                <p>{{correlationObject.dataAnalysis}}</p>
-                            <h3 id="dataSources">Data Sources</h3>
+                            <h3 ng-show="correlationObject.dataSources" id="dataSources">Data Sources</h3>
                                <p ng-bind-html="correlationObject.dataSources"></p>
-                            <h3 id="studyLimitations">Study Limitations</h3>
+                            <h3 ng-show="correlationObject.studyLimitations" id="studyLimitations">Study Limitations</h3>
                                 <p>{{correlationObject.studyLimitations}}</p>
                         </div>
                         <div ng-show="lineChartConfig" class="card primary-outcome-variable-reporting-chart">
@@ -94,4 +101,5 @@
                 </div>
             </div>
         </ion-content>
+    <div ng-include="'templates/floating-material-action-button-fragment.html'"></div>
 </ion-view>

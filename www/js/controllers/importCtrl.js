@@ -2,7 +2,7 @@ angular.module('starter')
 	
 	// controls the Import Data page of the app
 	.controller('ImportCtrl', function($scope, $ionicLoading, $state, $rootScope, utilsService, QuantiModo,
-									   connectorsService, $cordovaOauth, $ionicPopup, $stateParams) {
+									   connectorsService, $cordovaOauth, $ionicPopup, $stateParams, localStorageService) {
 
 		$scope.controller_name = "ImportCtrl";
 		
@@ -72,7 +72,8 @@ angular.module('starter')
 			}, function(){
 				$ionicLoading.hide();
 				console.debug('importCtrl: Could not get getAccessTokenFromAnySource.  Going to login page...');
-				$rootScope.afterLoginGoTo = window.location.href;
+				localStorageService.setItem('afterLoginGoTo', window.location.href);
+				console.debug("set afterLoginGoTo to " + window.location.href);
 				$rootScope.sendToLogin();
 			});
 		};

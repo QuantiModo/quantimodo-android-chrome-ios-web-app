@@ -319,7 +319,7 @@ angular.module('starter',
         window.localStorage.introSeen = true;
         window.localStorage.isWelcomed = true;
     }
-    console.debug('url params are ', $rootScope.urlParameters);
+    console.debug('url params are ' + JSON.stringify($rootScope.urlParameters));
 })
 
 .config(function($stateProvider, $urlRouterProvider, $compileProvider, ionicTimePickerProvider,
@@ -590,7 +590,7 @@ angular.module('starter',
             }
         })
         .state('app.variableSettings', {
-            url: "/variable_settings/:variableName",
+            url: "/variable-settings/:variableName",
             cache: false,
             params: {
                 reminder : null,
@@ -639,6 +639,8 @@ angular.module('starter',
                 fromUrl: null,
                 measurement: null,
                 nextState: 'app.charts',
+                doNotShowAddVariableButton: true,
+
                 variableSearchParameters: {
                     limit: 100,
                     includePublic: false,
@@ -661,6 +663,7 @@ angular.module('starter',
                 fromUrl: null,
                 measurement: null,
                 nextState: 'app.charts',
+                doNotShowAddVariableButton: true,
                 variableSearchParameters: {
                     limit: 100,
                     includePublic: false,
@@ -683,6 +686,11 @@ angular.module('starter',
                 helpText: "Search for an outcome like overall mood or a symptom that you want to know the causes of...",
                 variableCategoryName: null,
                 nextState: 'app.predictorsAll',
+                doNotShowAddVariableButton: true,
+                noVariablesFoundCard: {
+                    body: "I don't have enough data to determine the top predictors of __VARIABLE_NAME__, yet. " +
+                    "I generally need about a month of data to produce significant results so start tracking!"
+                },
                 variableSearchParameters: {
                     includePublic: true,
                     fallbackToAggregatedCorrelations: true,
@@ -706,6 +714,7 @@ angular.module('starter',
             params: {
                 variableCategoryName: null,
                 nextState: 'app.predictors',
+                doNotShowAddVariableButton: true,
                 variableSearchParameters: {
                     includePublic: false,
                     manualTracking: false,
@@ -725,6 +734,7 @@ angular.module('starter',
             params: {
                 variableCategoryName: null,
                 nextState: 'app.predictors',
+                doNotShowAddVariableButton: true,
                 variableSearchParameters: {
                     includePublic: true,
                     manualTracking: false,
@@ -766,7 +776,7 @@ angular.module('starter',
                 }
             }
         })
-        .state('app.search-user-relationships', {
+        .state('app.searchUserRelationships', {
             url: "/search-user-relationships",
             views: {
                 'menuContent': {
@@ -775,7 +785,7 @@ angular.module('starter',
                 }
             }
         })
-        .state('app.update-card', {
+        .state('app.updateCard', {
             url: "/update-card",
             views: {
                 'menuContent': {
@@ -1159,7 +1169,7 @@ angular.module('starter',
             }
         })
         .state('app.reminderAdd', {
-            url: "/reminder_add",
+            url: "/reminder-add",
             cache: false,
             params: {
                 variableCategoryName : null,

@@ -35,6 +35,11 @@
             </div>
         </div>
 
+        <div ng-show="loadingCharts" style="text-align: center">
+            <br>
+            <ion-spinner icon="android"></ion-spinner>
+            <br>
+        </div>
 
         <div ng-show="lineChartConfig" class="card primary-outcome-variable-reporting-chart">
     		<div class="item item-text-wrap">
@@ -60,4 +65,5 @@
     		</div>
     	</div>
     </ion-content>
+    <div ng-include="'templates/floating-material-action-button-fragment.html'"></div>
 </ion-view>

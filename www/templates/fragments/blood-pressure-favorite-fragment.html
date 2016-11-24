@@ -1,0 +1,43 @@
+<div class="list card" id="bloodPressureCard"
+     ng-if="bloodPressureReminderId"
+     on-hold="showFavoriteActionSheet(favorite, $index)">
+    <div class="item" style="padding-bottom:0px;">
+        <div class="row">
+            <div ng-click="showFavoriteActionSheet(bloodPressure, $index, true)" class="col col-10" style="padding-top: 0px; text-align: center;">
+                <i style="font-size: 40px;" class="icon positive ion-heart"></i>
+            </div>
+            <div class="col col-70">
+                <h2 ng-click="showFavoriteActionSheet(bloodPressure, $index, true)"
+                    style="white-space: normal; line-height: normal;
+                            text-align: center; ">{{bloodPressure.displayTotal}}
+                </h2>
+            </div>
+            <div ng-click="showFavoriteActionSheet(bloodPressure, $index, true)" class="col col-10">
+                <i style="font-size: 20px;" class="icon positive ion-more"></i>
+            </div>
+        </div>
+        <label class="item item-input">
+            <input type="number" ng-model="bloodPressure.systolicValue" id="systolicValueField"
+                   ng-click="onTextClick($event)"
+                   placeholder="Enter systolic value"
+                   style="text-align: center">
+            <span on-tap="trackBloodPressure()"
+                  class="input-label">
+                        mmHg
+                    </span>
+        </label>
+        <label class="item item-input">
+            <input type="number" ng-model="bloodPressure.diastolicValue" id="diastolicValueField"
+                   ng-click="onTextClick($event)"
+                   placeholder="Enter diastolic value"
+                   style="text-align: center">
+            <span on-tap="trackBloodPressure()"
+                  class="input-label">
+                        mmHg &nbsp
+                        <i style="font-size: 20px;"
+                           class="icon positive ion-checkmark-round">
+                        </i>
+                    </span>
+        </label>
+    </div>
+</div>

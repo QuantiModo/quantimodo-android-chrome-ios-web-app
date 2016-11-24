@@ -1,6 +1,6 @@
 angular.module('starter')
 	.controller('StudyCtrl', function($scope, $state, QuantiModo, $stateParams, $ionicHistory, $rootScope,
-                                      correlationService, chartService, $timeout, $ionicLoading) {
+                                      correlationService, chartService, $timeout, $ionicLoading, localStorageService) {
 
 		$scope.controller_name = "StudyCtrl";
         
@@ -16,8 +16,11 @@ angular.module('starter')
                 requestParams: {},
                 hideStudyButton: true
             };
-            
-            $scope.correlationObject = $stateParams.correlationObject;
+
+            if($stateParams.correlationObject){
+                $scope.correlationObject = $stateParams.correlationObject;
+                localStorageService.setItem('lastStudy', JSON.stringify($scope.correlationObject));
+            }
             
             if($scope.correlationObject){
                 $scope.state.requestParams = {
@@ -31,11 +34,6 @@ angular.module('starter')
                 return;
             }
 
-            if($rootScope.urlParameters.userId && !$rootScope.user) {
-                $rootScope.afterLoginGoTo = window.location.href;
-                $rootScope.sendToLogin();
-            }
-
             if($rootScope.urlParameters.causeVariableName){
                 $scope.state.requestParams.causeVariableName = $rootScope.urlParameters.causeVariableName;
             }
@@ -44,7 +42,7 @@ angular.module('starter')
                 $scope.state.requestParams.effectVariableName = $rootScope.urlParameters.effectVariableName;
             }
 
-            if ($rootScope.urlParameters.aggregated || !$rootScope.user) {
+            if ($rootScope.urlParameters.aggregated) {
                 var fallbackToUserStudy = false;
                 if($rootScope.user){
                     fallbackToUserStudy = true;
@@ -60,14 +58,16 @@ angular.module('starter')
 
         function createUserCharts(params) {
             $scope.loadingCharts = true;
-            QuantiModo.getPairsDeferred(params).then(function (pairs) {
+            params.includeProcessedMeasurements = true;
+            QuantiModo.getPairsDeferred(params).then(function (data) {
                 $scope.loadingCharts = false;
-                $scope.scatterplotChartConfig = chartService.createScatterPlot(params, pairs);
+                $scope.scatterplotChartConfig = chartService.createScatterPlot(params, data.pairs);
                 //$scope.timelineChartConfig = chartService.configureLineChartForPairs(params, pairs);
                 //$scope.causeTimelineChartConfig = chartService.configureLineChartForPairs(params, pairs);
-                $scope.causeTimelineChartConfig = chartService.configureLineChartForCause(params, pairs);
-                $scope.effectTimelineChartConfig = chartService.configureLineChartForEffect(params, pairs);
-                windowResize();
+                $scope.causeTimelineChartConfig = chartService.processDataAndConfigureLineChart(
+                    data.causeProcessedMeasurements, {variableName: params.causeVariableName});
+                $scope.effectTimelineChartConfig = chartService.processDataAndConfigureLineChart(
+                    data.effectProcessedMeasurements, {variableName: params.effectVariableName});
             });
         }
 
@@ -80,6 +80,7 @@ angular.module('starter')
                 $ionicLoading.hide();
                 if (correlations[0]) {
                     $scope.correlationObject = correlations[0];
+                    localStorageService.setItem('lastStudy', JSON.stringify($scope.correlationObject));
                     $scope.state.title = $scope.correlationObject.predictorExplanation;
                     createUserCharts(params);
                 } else {
@@ -91,6 +92,7 @@ angular.module('starter')
                     }
                 }
             }, function (error) {
+                console.error(error);
                 $ionicLoading.hide();
                 if(!fallbackToAggregateStudy){
                     $scope.state.studyNotFound = true;
@@ -109,6 +111,7 @@ angular.module('starter')
                 $ionicLoading.hide();
                 if (correlations[0]) {
                     $scope.correlationObject = correlations[0];
+                    localStorageService.setItem('lastStudy', JSON.stringify($scope.correlationObject));
                     $scope.state.title = $scope.correlationObject.predictorExplanation;
                 } else {
                     if(!fallbackToUserStudy){
@@ -142,7 +145,6 @@ angular.module('starter')
                     if(userCorrelations.length > 2){
                         $scope.lineChartConfig = chartService.processDataAndConfigureCorrelationOverTimeChart(userCorrelations);
                         console.debug($scope.lineChartConfig);
-                        windowResize();
                     }
                 });
             } else {
@@ -150,23 +152,9 @@ angular.module('starter')
                     if(aggregatedCorrelations.length > 2){
                         $scope.lineChartConfig = chartService.processDataAndConfigureCorrelationOverTimeChart(aggregatedCorrelations);
                         console.debug($scope.lineChartConfig);
-                        windowResize();
                     }
                 });
             }
-        };
-
-        var windowResize = function() {
-            $(window).resize();
-
-            // Not sure what this does
-            var seconds = 0.1;
-            console.debug('Setting windowResize timeout for ' + seconds + ' seconds');
-            $timeout(function() {
-                $scope.$broadcast('highchartsng.reflow');
-            }, seconds * 1000);
-            // Fixes chart width
-            $scope.$broadcast('highchartsng.reflow');
         };
 
         $scope.$on('$ionicView.enter', function(e) { console.debug("Entering state " + $state.current.name);

@@ -1,5 +1,5 @@
 angular.module('starter')
-    .controller('IframeScreenCtrl', function ($scope, $ionicLoading, $sce, $state, $rootScope, QuantiModo) {
+    .controller('IframeScreenCtrl', function ($scope, $ionicLoading, $sce, $state, $rootScope, QuantiModo, localStorageService) {
 
         $scope.showLoader();
         console.debug('IframeScreenCtrl works!');
@@ -62,7 +62,8 @@ angular.module('starter')
             $ionicLoading.hide();
         }, function(){
             console.debug("iframeScreen: No access token. Need to log in.");
-            $rootScope.afterLoginGoTo = window.location.href;
+            localStorageService.setItem('afterLoginGoTo', window.location.href);
+            console.debug("set afterLoginGoTo to " + window.location.href);
             $rootScope.sendToLogin();
             $ionicLoading.hide();
         });

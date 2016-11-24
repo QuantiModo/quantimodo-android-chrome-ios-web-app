@@ -8,50 +8,8 @@
                 {{state.addButtonText}}
             </a>
         </div>
-        <div class="list card" id="bloodPressureCard"
-             ng-if="bloodPressureReminderId"
-             on-hold="showFavoriteActionSheet(favorite, $index)">
-            <div class="item" style="padding-bottom:0px;">
-                <div class="row">
-                    <div ng-click="showFavoriteActionSheet(bloodPressure, $index, true)" class="col col-10" style="padding-top: 0px; text-align: center;">
-                        <i style="font-size: 40px;" class="icon positive ion-heart"></i>
-                    </div>
-                    <div class="col col-70">
-                        <h2 ng-click="showFavoriteActionSheet(bloodPressure, $index, true)"
-                            style="white-space: normal; line-height: normal;
-                            text-align: center; ">{{bloodPressure.displayTotal}}
-                        </h2>
-                    </div>
-                    <div ng-click="showFavoriteActionSheet(bloodPressure, $index, true)" class="col col-10">
-                        <i style="font-size: 20px;" class="icon positive ion-more"></i>
-                    </div>
-                </div>
-                <label class="item item-input">
-                    <input type="number" ng-model="bloodPressure.systolicValue" id="systolicValueField"
-                           ng-click="onTextClick($event)"
-                           placeholder="Enter systolic value"
-                           style="text-align: center">
-                    <span on-tap="trackBloodPressure()"
-                          class="input-label">
-                        mmHg
-                    </span>
-                </label>
-                <label class="item item-input">
-                    <input type="number" ng-model="bloodPressure.diastolicValue" id="diastolicValueField"
-                           ng-click="onTextClick($event)"
-                           placeholder="Enter diastolic value"
-                           style="text-align: center">
-                    <span on-tap="trackBloodPressure()"
-                          class="input-label">
-                        mmHg &nbsp
-                        <i style="font-size: 20px;"
-                           class="icon positive ion-checkmark-round">
-                        </i>
-                    </span>
-                </label>
-            </div>
-        </div>
-        <div ng-include="'templates/favorites-list-fragment.html'"></div>
+        <div ng-include="'templates/fragments/blood-pressure-favorite-fragment.html'"></div>
+        <div ng-include="'templates/fragments/favorites-list-fragment.html'"></div>
         <div class="list card" id="noFavoritesExplanation" ng-if="favoritesArray.length === 0" >
             <div class="item" style="padding-bottom:0px;">
                 <div class="row">
@@ -72,13 +30,5 @@
             </div>
         </div>
     </ion-content>
-	<nav mfb-menu position="br" effect="slidein-spring"
-		 active-icon="ion-minus-round" resting-icon="ion-plus-round"
-		 toggling-method="click" ng-hide="hideNavigationMenu">
-		<button mfb-button icon={{floatingMaterialButton.button1.icon}} label={{floatingMaterialButton.button1.label}} ng-click="goToState({{floatingMaterialButton.button1.stateAndParameters}})"></button>
-		<button mfb-button icon={{floatingMaterialButton.button2.icon}} label={{floatingMaterialButton.button2.label}} ng-click="goToState({{floatingMaterialButton.button2.stateAndParameters}})"></button>
-		<button mfb-button icon={{floatingMaterialButton.button3.icon}} label={{floatingMaterialButton.button3.label}} ng-click="goToState({{floatingMaterialButton.button3.stateAndParameters}})"></button>
-		<button mfb-button icon={{floatingMaterialButton.button4.icon}} label={{floatingMaterialButton.button4.label}} ng-click="goToState({{floatingMaterialButton.button4.stateAndParameters}})"></button>
-	</nav>
-
+    <div ng-include="'templates/floating-material-action-button-fragment.html'"></div>
 </ion-view>
