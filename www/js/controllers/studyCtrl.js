@@ -161,4 +161,19 @@ angular.module('starter')
             $scope.hideLoader();
             $scope.init();
         });
+
+        $scope.$on('$ionicView.afterEnter', function(e) {
+            $rootScope.getAllUrlParams();
+            if ($scope.state.requestParams.effectVariableName) {
+                if(!$rootScope.urlParameters.effectVariableName){
+                    QuantiModo.addParameterToUrl('effectVariableName', $scope.state.requestParams.effectVariableName);
+                }
+            }
+
+            if ($scope.state.requestParams.causeVariableName) {
+                if(!$rootScope.urlParameters.causeVariableName){
+                    QuantiModo.addParameterToUrl('causeVariableName', $scope.state.requestParams.causeVariableName);
+                }
+            }
+        });
 	});
