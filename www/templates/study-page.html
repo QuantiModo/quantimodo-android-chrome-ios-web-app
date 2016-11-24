@@ -1,64 +1,43 @@
 <ion-view hide-nav-bar="hideNavigationMenu" view-title="Study">
     <ion-nav-title>Study</ion-nav-title>
         <ion-content>
-            <ion-list class="correlationResultList" ng-show="correlationObject">
-                <div class="list card">
-                    <ion-item style="border-style:hidden; text-align: center">
-                        <div class="item item-text-wrap card-item">
-                            <h3 id="predictorExplanation">{{correlationObject.predictorExplanation}}</h3>
-                            <br>
-                            <img ng-src="{{correlationObject.gaugeImage}}">
-                            <br>
+            <div class="item item-text-wrap card-item" style="border-style:hidden; text-align: center">
+                <br>
+                <h2 id="predictorExplanation">{{correlationObject.predictorExplanation}}</h2>
+                <br>
+                <img ng-src="{{correlationObject.gaugeImage}}">
+                <br>
 <!--                        Doesn't look right yet
-                            <img ng-src="{{correlationObject.causeVariableImageUrl}}">
-                            <img ng-src="{{correlationObject.effectVariableImageUrl}}">-->
-                            <p id="valuePredictingHighOutcomeExplanation">{{correlationObject.valuePredictingHighOutcomeExplanation}}
-                            <br><br>
-                            <p id="valuePredictingLowOutcomeExplanation">{{correlationObject.valuePredictingLowOutcomeExplanation}}</p>
-                            <div ng-include="'templates/correlation-buttons-fragment.html'"></div>
-                            <h3 id="studyAbstract">Study Abstract</h3>
-                            <p>{{correlationObject.studyAbstract}}</p>
-                            <div ng-show="loadingCharts" style="text-align: center">
-                                <br>
-                                <ion-spinner icon="android"></ion-spinner>
-                                <br>
-                            </div>
-                            <div ng-show="causeTimelineChartConfig" class="card primary-outcome-variable-reporting-chart">
-                                <div class="item item-text-wrap">
-                                    <highchart id="causeTimeline" config="causeTimelineChartConfig"></highchart>
-                                </div>
-                            </div>
-                            <div ng-show="effectTimelineChartConfig" class="card primary-outcome-variable-reporting-chart">
-                                <div class="item item-text-wrap">
-                                    <highchart id="effectTimeline" config="effectTimelineChartConfig"></highchart>
-                                </div>
-                            </div>
-                            <div ng-show="scatterplotChartConfig" class="card primary-outcome-variable-reporting-chart">
-                                <div class="item item-text-wrap">
-                                    <highchart id="scatterplot" config="scatterplotChartConfig"></highchart>
-                                </div>
-                            </div>
-                            <h3 ng-show="correlationObject.studyBackground" id="studyBackground">Study Background</h3>
-                               <p>{{correlationObject.studyBackground}}</p>
-                            <h3 ng-show="correlationObject.studyObjective" id="studyObjective">Study Objective</h3>
-                               <p>{{correlationObject.studyObjective}}</p>
-                            <h3 ng-show="correlationObject.studyDesign" id="studyDesign">Study Design</h3>
-                               <p>{{correlationObject.studyDesign}}</p>
-                            <h3 ng-show="correlationObject.dataAnalysis" id="dataAnalysis">Data Analysis</h3>
-                               <p>{{correlationObject.dataAnalysis}}</p>
-                            <h3 ng-show="correlationObject.dataSources" id="dataSources">Data Sources</h3>
-                               <p ng-bind-html="correlationObject.dataSources"></p>
-                            <h3 ng-show="correlationObject.studyLimitations" id="studyLimitations">Study Limitations</h3>
-                                <p>{{correlationObject.studyLimitations}}</p>
-                        </div>
-                        <div ng-show="lineChartConfig" class="card primary-outcome-variable-reporting-chart">
-                            <div class="item item-text-wrap">
-                                <highchart id="chart2" config="lineChartConfig"></highchart>
-                            </div>
-                        </div>
-                    </ion-item>
+                <img ng-src="{{correlationObject.causeVariableImageUrl}}">
+                <img ng-src="{{correlationObject.effectVariableImageUrl}}">-->
+                <p id="valuePredictingHighOutcomeExplanation">{{correlationObject.valuePredictingHighOutcomeExplanation}}
+                <br><br>
+                <p id="valuePredictingLowOutcomeExplanation">{{correlationObject.valuePredictingLowOutcomeExplanation}}</p>
+                <div ng-include="'templates/fragments/correlation-buttons-fragment.html'"></div><br>
+                <h3 id="studyAbstract">Study Abstract</h3>
+                <p>{{correlationObject.studyAbstract}}</p><br>
+                <div ng-show="loadingCharts" style="text-align: center">
+                    <br>
+                    <ion-spinner icon="android"></ion-spinner>
+                    <br>
                 </div>
-            </ion-list>
+                <highchart ng-show="causeTimelineChartConfig" id="causeTimeline" config="causeTimelineChartConfig"></highchart>
+                <highchart ng-show="effectTimelineChartConfig" id="effectTimeline" config="effectTimelineChartConfig"></highchart>
+                <highchart ng-show="scatterplotChartConfig" id="scatterplot" config="scatterplotChartConfig"></highchart>
+                <h3 ng-show="correlationObject.studyBackground" id="studyBackground">Study Background</h3>
+                   <p>{{correlationObject.studyBackground}}</p><br>
+                <h3 ng-show="correlationObject.studyObjective" id="studyObjective">Study Objective</h3>
+                   <p>{{correlationObject.studyObjective}}</p><br>
+                <h3 ng-show="correlationObject.studyDesign" id="studyDesign">Study Design</h3>
+                   <p>{{correlationObject.studyDesign}}</p><br>
+                <h3 ng-show="correlationObject.dataAnalysis" id="dataAnalysis">Data Analysis</h3>
+                   <p>{{correlationObject.dataAnalysis}}</p><br>
+                <h3 ng-show="correlationObject.dataSources" id="dataSources">Data Sources</h3>
+                   <p ng-bind-html="correlationObject.dataSources"></p><br>
+                <h3 ng-show="correlationObject.studyLimitations" id="studyLimitations">Study Limitations</h3>
+                    <p>{{correlationObject.studyLimitations}}</p><br>
+            </div>
+            <highchart ng-show="lineChartConfig" id="chart2" config="lineChartConfig"></highchart>
             <div class="list card"  ng-if="state.studyNotFound">
                 <div class="item" style="padding-bottom:10px;">
                     <p style=" text-align: center; line-height: normal; font-size: 25px;">Study Not Found</p>
@@ -101,5 +80,5 @@
                 </div>
             </div>
         </ion-content>
-    <div ng-include="'templates/floating-material-action-button-fragment.html'"></div>
+    <div ng-include="'templates/fragments/floating-material-action-button-fragment.html'"></div>
 </ion-view>

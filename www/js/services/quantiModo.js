@@ -1262,6 +1262,7 @@ angular.module('starter')
         };
 
         QuantiModo.getFavoriteTrackingRemindersFromLocalStorage = function(variableCategoryName){
+            console.debug('Getting favorites from local storage');
             $rootScope.favoritesArray = [];
             var favorites = localStorageService.getElementsFromItemWithFilters('trackingReminders', 'reminderFrequency', 0);
             if(!favorites){
@@ -1288,6 +1289,13 @@ angular.module('starter')
                     $rootScope.favoritesArray[i].defaultValue = null;
                 }
             }
+
+            var difference;
+            $rootScope.favoritesArray.sort(function(a, b) {
+                difference = b.numberOfRawMeasurements - a.numberOfRawMeasurements;
+                //console.debug(difference);
+                return difference;
+            });
         };
 
         QuantiModo.attachVariableCategoryIcons = function(dataArray){
