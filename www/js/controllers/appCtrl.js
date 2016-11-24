@@ -836,7 +836,12 @@ angular.module('starter')
                 };
             }
 
-            $rootScope.favoritesTally[trackingReminder.id].tally += modifiedReminderValue;
+            if(trackingReminder.combinationOperation === "SUM"){
+                $rootScope.favoritesTally[trackingReminder.id].tally += modifiedReminderValue;
+            } else {
+                $rootScope.favoritesTally[trackingReminder.id].tally = modifiedReminderValue;
+            }
+
             console.debug('modified tally is ' + $rootScope.favoritesTally[trackingReminder.id].tally);
 
             console.debug('Setting trackByFavorite timeout');
