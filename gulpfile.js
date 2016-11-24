@@ -1053,11 +1053,11 @@ gulp.task('bumpVersionNumbersInFiles', function(callback){
 
 gulp.task('replaceVersionNumbersInFiles', function(callback){
 
-	process.env.OLD_IONIC_IOS_APP_VERSION_NUMBER = '2.1.4.16';
+	process.env.OLD_IONIC_IOS_APP_VERSION_NUMBER = '2.1.5.0';
 	console.log('Using process.env.OLD_IONIC_IOS_APP_VERSION_NUMBER ' + process.env.OLD_IONIC_IOS_APP_VERSION_NUMBER);
 	process.env.OLD_IONIC_APP_VERSION_NUMBER = process.env.OLD_IONIC_IOS_APP_VERSION_NUMBER.substring(0, 5);
 
-	process.env.IONIC_IOS_APP_VERSION_NUMBER = '2.1.5.0';
+	process.env.IONIC_IOS_APP_VERSION_NUMBER = '2.1.6.0';
 	process.env.IONIC_APP_VERSION_NUMBER = process.env.IONIC_IOS_APP_VERSION_NUMBER.substring(0, 5);
 
 	runSequence(
@@ -1480,17 +1480,6 @@ gulp.task('ionicPlatformAddAndroid', function(callback){
 				callback();
 			}
 		});
-});
-
-gulp.task('ionicPlatformAddAndroid', function(callback){
-	return execute("ionic platform add android", function(error){
-		if(error !== null){
-			console.log("ERROR for " + process.env.LOWERCASE_APP_NAME + ": " + error);
-		} else {
-			console.log("\n***Android for " + process.env.LOWERCASE_APP_NAME);
-			callback();
-		}
-	});
 });
 
 gulp.task('cordovaBuildAndroidDebug', function(callback){

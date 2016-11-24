@@ -8,8 +8,16 @@ angular.module('starter')
             requestParams: $stateParams.requestParams,
             variableName: config.appSettings.primaryOutcomeVariableDetails.name,
             increasingDecreasing: '',
-            correlationObjects: []
+            correlationObjects: [],
+            showLoadMoreButton: false
         };
+
+        function showLoadMoreButtonIfNecessary() {
+            if($scope.state.correlationObjects.length &&
+                $scope.state.correlationObjects.length%$scope.state.requestParams.limit === 0){
+                $scope.state.showLoadMoreButton = true;
+            }
+        }
 
         function populateAggregatedCorrelationList() {
             $ionicLoading.show({
@@ -20,6 +28,7 @@ angular.module('starter')
                 .then(function (correlationObjects) {
                     if(correlationObjects.length) {
                         $scope.state.correlationObjects = $scope.state.correlationObjects.concat(correlationObjects);
+                        showLoadMoreButtonIfNecessary();
                         $ionicLoading.hide();
                         $scope.$broadcast('scroll.infiniteScrollComplete');
                     } else {
@@ -32,6 +41,7 @@ angular.module('starter')
                                     $scope.state.explanationText = "Unfortunately, I don't have enough data get common " +
                                         " predictors for " + $rootScope.variableName + ", yet. " + $scope.state.explanationText;
                                     $scope.state.correlationObjects = $scope.state.correlationObjects.concat(correlationObjects);
+                                    showLoadMoreButtonIfNecessary();
                                 } else {
                                     $scope.state.noCorrelations = true;
                                 }
@@ -52,6 +62,7 @@ angular.module('starter')
         });
 */
 
+
         function populateUserCorrelationList() {
             $ionicLoading.show({
                 template: '<ion-spinner></ion-spinner>'
@@ -68,6 +79,7 @@ angular.module('starter')
                             setupAggregatedPredictors();
                         }
                         $scope.state.correlationObjects = $scope.state.correlationObjects.concat(correlationObjects);
+                        showLoadMoreButtonIfNecessary();
                         $ionicLoading.hide();
                         $scope.$broadcast('scroll.infiniteScrollComplete');
                     } else {
@@ -79,6 +91,7 @@ angular.module('starter')
                                     $scope.state.explanationText = "Unfortunately, I don't have enough data from you to get " +
                                         "your personal predictors for " + $rootScope.variableName + ", yet. " + $scope.state.explanationText;
                                     $scope.state.correlationObjects = $scope.state.correlationObjects.concat(correlationObjects);
+                                    showLoadMoreButtonIfNecessary();
                                     $scope.$broadcast('scroll.infiniteScrollComplete');
                                 } else {
                                     $scope.state.noCorrelations = true;
@@ -101,7 +114,7 @@ angular.module('starter')
         function setupUserPredictors() {
             $scope.state.explanationHeader = "Your Top Predictors";
             $scope.state.explanationIcon = "ion-ios-person";
-            $scope.state.explanationText = 'These factors are most likely to affect ' + $scope.state.increasingDecreasing +
+            $scope.state.explanationText = 'These factors are most predictive of ' + $scope.state.increasingDecreasing +
                 ' your ' + $rootScope.variableName + ' based on your own data.  ' +
             'Want more accurate results? Add some reminders and start tracking!';
         }
@@ -109,7 +122,7 @@ angular.module('starter')
         function setupAggregatedPredictors() {
             $scope.state.explanationHeader = "Common Predictors";
             $scope.state.explanationIcon = "ion-ios-people";
-            $scope.state.explanationText = 'These factors are most likely to affect ' + $scope.state.increasingDecreasing +
+            $scope.state.explanationText = 'These factors are most predictive of ' + $scope.state.increasingDecreasing +
                 ' ' + $rootScope.variableName + ' for the average QuantiModo user.  ' +
             'Want PERSONALIZED results? Add some reminders and start tracking!';
         }

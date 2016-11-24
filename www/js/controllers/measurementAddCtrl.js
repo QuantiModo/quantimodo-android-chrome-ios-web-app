@@ -43,11 +43,6 @@ angular.module('starter')
             hideReminderMeButton : false,
             showMoreMenuButton: true,
             editReminder : false,
-            bloodPressure : {
-                diastolicValue: null,
-                systolicValue: null,
-                show: false
-            },
             showMoreUnits: false
         };
 
@@ -331,6 +326,11 @@ angular.module('starter')
         };
 
         $scope.init = function(){
+            $rootScope.bloodPressure = {
+                diastolicValue: null,
+                systolicValue: null,
+                show: false
+            };
             console.debug($state.current.name + ' initializing...');
             $rootScope.stateParams = $stateParams;
             if($stateParams.trackingReminder){
@@ -554,12 +554,22 @@ angular.module('starter')
             });
         };
 
+        var showMoreUnitsIfNecessary = function () {
+            if($scope.state.measurement.abbreviatedUnitName &&
+                !$rootScope.nonAdvancedUnitsIndexedByAbbreviatedName[$scope.state.measurement.abbreviatedUnitName]){
+                $scope.state.showMoreUnits = true;
+            }
+        };
+
+
         function setupValueFieldType(abbreviatedUnitName, variableDescription) {
             
             if(!abbreviatedUnitName){
                 console.error('No abbreviatedUnitName provided to setupValueFieldType');
                 return false;
             }
+
+            showMoreUnitsIfNecessary();
 
             if (abbreviatedUnitName === '/5') {
                 if (!variableDescription) {

@@ -36,7 +36,13 @@ angular.module('starter')
                     console.warn('QuantiModo.errorHandler: Sending to login because we got 401 with request ' +
                         JSON.stringify(request));
                     localStorageService.setItem('afterLoginGoTo', window.location.href);
-                    $rootScope.sendToLogin();
+                    console.debug("set afterLoginGoTo to " + window.location.href);
+                    if (utilsService.getClientId() !== 'oAuthDisabled') {
+                        $rootScope.sendToLogin();
+                    } else {
+                        var register = true;
+                        QuantiModo.sendToNonOAuthBrowserLoginUrl(register);
+                    }
                     return;
                 }
             }
@@ -457,10 +463,18 @@ angular.module('starter')
 
 
         // get user variables
-        QuantiModo.getUserVariables = function(variableCategoryName, successHandler, errorHandler){
-            var params = {'limit' : 200};
-            if(variableCategoryName && variableCategoryName !== 'Anything'){
-                params.variableCategoryName = variableCategoryName;
+        QuantiModo.getUserVariables = function(params, successHandler, errorHandler){
+
+            if(!params){
+                params = {};
+            }
+
+            if(!params.limit){
+                params.limit = 200;
+            }
+
+            if(params.variableCategoryName && params.variableCategoryName === 'Anything'){
+                params.variableCategoryName = null;
             }
 
             QuantiModo.get('api/v1/variables',
@@ -1155,6 +1169,7 @@ angular.module('starter')
                 $rootScope.sendReminderNotificationEmails = null;
             }
             var afterLoginGoTo = localStorageService.getItemSync('afterLoginGoTo');
+            console.debug("afterLoginGoTo from localstorage is  " + afterLoginGoTo);
             if(afterLoginGoTo) {
                 localStorageService.deleteItem('afterLoginGoTo');
                 window.location.replace(afterLoginGoTo);
@@ -1172,6 +1187,29 @@ angular.module('starter')
                 deferred.reject(error);
             });
             return deferred.promise;
+        };
+
+        QuantiModo.sendToNonOAuthBrowserLoginUrl = function(register) {
+            var loginUrl = utilsService.getURL("api/v2/auth/login");
+            if (register === true) {
+                loginUrl = utilsService.getURL("api/v2/auth/register");
+            }
+            console.debug("sendToNonOAuthBrowserLoginUrl: Client id is oAuthDisabled - will redirect to regular login.");
+            var afterLoginGoTo = localStorageService.getItemSync('afterLoginGoTo');
+            console.debug("afterLoginGoTo from localstorage is  " + afterLoginGoTo);
+            if(afterLoginGoTo) {
+                localStorageService.deleteItem('afterLoginGoTo');
+                loginUrl += "redirect_uri=" + encodeURIComponent(afterLoginGoTo);
+            } else {
+                loginUrl += "redirect_uri=" + encodeURIComponent(window.location.href.replace('app/login','app/reminders-inbox'));
+            }
+            console.debug('sendToNonOAuthBrowserLoginUrl: AUTH redirect URL created:', loginUrl);
+            var apiUrlMatchesHostName = $rootScope.qmApiUrl.indexOf(window.location.hostname);
+            if(apiUrlMatchesHostName > -1 || $rootScope.isChromeExtension) {
+                window.location.replace(loginUrl);
+            } else {
+                alert("API url doesn't match auth base url.  Please make use the same domain in config file");
+            }
         };
 
         QuantiModo.refreshUserEmailPreferences = function(params){

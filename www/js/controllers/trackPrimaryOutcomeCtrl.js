@@ -66,9 +66,6 @@ angular.module('starter')
                 $scope.state.primaryOutcomeMeasurements =  $scope.state.primaryOutcomeMeasurements.concat(measurementsQueue);
             }
             if( $scope.state.primaryOutcomeMeasurements) {
-                $scope.lineChartConfig =
-                    chartService.processDataAndConfigureLineChart( $scope.state.primaryOutcomeMeasurements,
-                        config.appSettings.primaryOutcomeVariableDetails);
                 $scope.hourlyChartConfig =
                     chartService.processDataAndConfigureHourlyChart( $scope.state.primaryOutcomeMeasurements,
                         config.appSettings.primaryOutcomeVariableDetails);
@@ -79,7 +76,11 @@ angular.module('starter')
                     chartService.processDataAndConfigureDistributionChart( $scope.state.primaryOutcomeMeasurements,
                         config.appSettings.primaryOutcomeVariableDetails);
                 updateAveragePrimaryOutcomeRatingView();
+                $scope.lineChartConfig =
+                    chartService.processDataAndConfigureLineChart( $scope.state.primaryOutcomeMeasurements,
+                        config.appSettings.primaryOutcomeVariableDetails);
             }
+            $scope.state.loadingCharts = false;
         };
 
 
@@ -96,6 +97,7 @@ angular.module('starter')
             if($rootScope.user || $rootScope.accessToken){
                 $scope.showLoader($scope.syncDisplayText);
                 console.debug($state.current.name + ' going to syncPrimaryOutcomeVariableMeasurements');
+                $scope.state.loadingCharts = true;
                 measurementService.syncPrimaryOutcomeVariableMeasurements().then(function(){
                     updateCharts();
                     $ionicLoading.hide();

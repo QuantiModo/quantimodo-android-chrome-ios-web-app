@@ -10,7 +10,7 @@ angular.module('starter')
 
         $rootScope.loaderImagePath = config.appSettings.loaderImagePath;
         $rootScope.appMigrationVersion = 1489;
-        $rootScope.appVersion = "2.1.5.0";
+        $rootScope.appVersion = "2.1.6.0";
         if (!$rootScope.loaderImagePath) {
             $rootScope.loaderImagePath = 'img/circular_loader.gif';
         }
@@ -37,8 +37,8 @@ angular.module('starter')
 
         $rootScope.bloodPressure = {
             systolicValue: null,
-                diastolicValue: null,
-                displayTotal: "Blood Pressure"
+            diastolicValue: null,
+            displayTotal: "Blood Pressure"
         };
 
         // Not used
@@ -272,13 +272,21 @@ angular.module('starter')
                 $rootScope.syncingReminders = false;
             }
 
-            if (trackingReminder.abbreviatedUnitName === '/5') {
+            if (trackingReminder.abbreviatedUnitName === '/5' || trackingReminder.variableName === "Blood Pressure") {
                 $ionicLoading.show({
                     template: '<ion-spinner></ion-spinner>'
                 });
-                trackingReminder.defaultValue = 3;
+                //trackingReminder.defaultValue = 3;
                 localStorageService.addToOrReplaceElementOfItemByIdOrMoveToFront('trackingReminders', trackingReminder)
                     .then(function() {
+                        // We should wait unit this is in local storage before going to Favorites page so they don't see a blank screen
+                        $state.go('app.favorites',
+                            {
+                                trackingReminder: trackingReminder,
+                                fromState: $state.current.name,
+                                fromUrl: window.location.href
+                            }
+                        );
                         reminderService.postTrackingReminders(trackingReminder)
                             .then(function () {
                                 $ionicLoading.hide();
@@ -288,13 +296,7 @@ angular.module('starter')
                                 console.error('Failed to add favorite!' + JSON.stringify(error));
                             });
                     });
-                $state.go('app.favorites',
-                    {
-                        trackingReminder: trackingReminder,
-                        fromState: $state.current.name,
-                        fromUrl: window.location.href
-                    }
-                );
+
             } else {
                 $state.go('app.favoriteAdd',
                     {

@@ -463,7 +463,8 @@
 			<div class="item item-divider" style="">
 				{{state.favoritesTitle}}
 			</div>
-			<div ng-include="'templates/favorites-list-fragment.html'"></div>
+			<div ng-include="'templates/fragments/blood-pressure-favorite-fragment.html'"></div>
+			<div ng-include="'templates/fragments/favorites-list-fragment.html'"></div>
 		</div>
 		<div class="list card"  ng-if="!state.loading && state.numberOfDisplayedNotifications === 0">
 			<div class="item" style="padding-bottom:10px;">
@@ -542,20 +543,5 @@
 	<div ng-show="showUndoButton" ng-click="undo()" class="bar bar-footer bar-balanced">
 		<div class="title"> <i class="icon ion-reply"></i> &nbsp Undo {{lastAction}}</div>
 	</div>
-	<nav id="floatingMaterialButton"
-		 mfb-menu position="br"
-		 effect="slidein-spring"
-		 active-icon="ion-minus-round"
-		 resting-icon="ion-plus-round"
-		 toggling-method="click"
-		 ng-hide="hideNavigationMenu">
-		<button mfb-button icon={{floatingMaterialButton.button1.icon}} label={{floatingMaterialButton.button1.label}}
-				ng-click="goToState({{floatingMaterialButton.button1.stateAndParameters}})"></button>
-		<button mfb-button icon={{floatingMaterialButton.button2.icon}} label={{floatingMaterialButton.button2.label}}
-				ng-click="goToState({{floatingMaterialButton.button2.stateAndParameters}})"></button>
-		<button mfb-button icon={{floatingMaterialButton.button3.icon}} label={{floatingMaterialButton.button3.label}}
-				ng-click="goToState({{floatingMaterialButton.button3.stateAndParameters}})"></button>
-		<button mfb-button icon={{floatingMaterialButton.button4.icon}} label={{floatingMaterialButton.button4.label}}
-				ng-click="goToState({{floatingMaterialButton.button4.stateAndParameters}})"></button>
-	</nav>
+	<div ng-include="'templates/fragments/floating-material-action-button-fragment.html'"></div>
 </ion-view>
