@@ -325,6 +325,21 @@ angular.module('starter')
             setupValueFieldType($scope.state.variableCategoryObject.defaultAbbreviatedUnitName, null);
         };
 
+        $scope.unitSelected = function(){
+            if($scope.state.measurement.abbreviatedUnitName === 'Show more units'){
+                $scope.state.showMoreUnits = true;
+                $scope.state.measurement.abbreviatedUnitName = null;
+                $scope.state.measurement.unitName = null;
+                $scope.state.measurement.unitId = null;
+            } else {
+                console.debug("selecting_unit", $scope.state.measurement.abbreviatedUnitName);
+                $scope.state.measurement.unitName =
+                    $rootScope.unitsIndexedByAbbreviatedName[$scope.state.measurement.abbreviatedUnitName].name;
+                $scope.state.measurement.unitId =
+                    $rootScope.unitsIndexedByAbbreviatedName[$scope.state.measurement.abbreviatedUnitName].id;
+            }
+        };
+
         $scope.init = function(){
             $rootScope.bloodPressure = {
                 diastolicValue: null,
