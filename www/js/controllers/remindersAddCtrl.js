@@ -269,6 +269,7 @@ angular.module('starter')
             if ($scope.state.trackingReminder.abbreviatedUnitName === "/5") {
                 //$scope.state.trackingReminder.defaultValue = 3; // Default to 3 ("ok") if variable unit is /5
             }
+            showMoreUnitsIfNecessary();
 	    };
 
 	    // when adding/editing is cancelled
@@ -559,7 +560,14 @@ angular.module('starter')
             $scope.state.defaultValuePlaceholderText = 'Enter most common value';
             $scope.state.defaultValueLabel = 'Default Value';
             setupVariableCategory(variableCategoryName);
+            showMoreUnitsIfNecessary();
+        };
 
+        var showMoreUnitsIfNecessary = function () {
+            if($scope.state.trackingReminder.abbreviatedUnitName &&
+                !$rootScope.nonAdvancedUnitsIndexedByAbbreviatedName[$scope.state.trackingReminder.abbreviatedUnitName]){
+                $scope.state.showMoreUnits = true;
+            }
         };
 
 	    // setup category view
@@ -584,6 +592,7 @@ angular.module('starter')
             if(variableCategoryName === 'Treatments'){
                 $scope.state.showInstructionsField = true;
             }
+            showMoreUnitsIfNecessary();
 	    };
 
         function setupReminderEditingFromVariableId(variableId) {
