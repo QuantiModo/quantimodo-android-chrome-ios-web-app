@@ -586,6 +586,30 @@ gulp.task('getAppNameFromGitBranchName', function(){
   });
 });
 
+gulp.task('gitPull', function(){
+	var commandForGit = 'git pull';
+	execute(commandForGit, function(error, output){
+		output = output.trim();
+		if(error){
+			console.log("Failed to pull: " + output, error);
+		} else {
+			console.log("Pulled changes " + output);
+		}
+	});
+});
+
+gulp.task('gitCheckoutAppJs', function(){
+	var commandForGit = 'git checkout -- www/js/app.js';
+	execute(commandForGit, function(error, output){
+		output = output.trim();
+		if(error){
+			console.log("Failed to gitCheckoutAppJs: " + output, error);
+		} else {
+			console.log("gitCheckoutAppJs " + output);
+		}
+	});
+});
+
 var FACEBOOK_APP_ID = false;
 var FACEBOOK_APP_NAME = false;
 var REVERSED_CLIENT_ID = false;
@@ -1406,6 +1430,8 @@ gulp.task('deletePlugins', [], function(){
 
 gulp.task('prepareIosApp', function(callback){
 	runSequence(
+		'gitPull',
+		'gitCheckoutAppJs',
 		'deletePlugins',
 		'generateIosResources',
 		'bumpIosVersion',
@@ -1549,6 +1575,7 @@ gulp.task('ionicRunAndroid', [], function(callback){
 
 gulp.task('prepareAndroidApp', function(callback){
 	runSequence(
+		'gitCheckoutAppJs',
 		'setVersionNumberEnvs',
 		'setAndroidEnvs',
 		'updateConfigXmlUsingEnvs',
