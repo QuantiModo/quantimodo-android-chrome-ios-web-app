@@ -456,16 +456,6 @@
 				</div>
 			</div>
 		</div>
-
-		<div class="list card"
-			 ng-if="!state.loading && state.numberOfDisplayedNotifications === 0 && favoritesArray && favoritesArray.length"
-			 id="Favorites">
-			<div class="item item-divider" style="">
-				{{state.favoritesTitle}}
-			</div>
-			<div ng-include="'templates/fragments/blood-pressure-favorite-fragment.html'"></div>
-			<div ng-include="'templates/fragments/favorites-list-fragment.html'"></div>
-		</div>
 		<div class="list card"  ng-if="!state.loading && state.numberOfDisplayedNotifications === 0">
 			<div class="item" style="padding-bottom:10px;">
 				<p style=" text-align: center; line-height: normal; font-size: 25px;">All caught up!</p>
@@ -520,6 +510,15 @@
 					</div>
 				</div>
 			</div>
+		</div>
+		<div class="list card"
+			 ng-if="!state.loading && state.numberOfDisplayedNotifications === 0 && favoritesArray && favoritesArray.length"
+			 id="Favorites">
+			<div class="item item-divider" style="">
+				{{state.favoritesTitle}}
+			</div>
+			<div ng-include="'templates/fragments/blood-pressure-favorite-fragment.html'"></div>
+			<div ng-include="'templates/fragments/favorites-list-fragment.html'"></div>
 		</div>
 		<div ng-if="weekdayChartConfig">
 			<highchart id="chart3" config="weekdayChartConfig"></highchart>
