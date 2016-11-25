@@ -35,12 +35,6 @@ angular.module('starter')
         $scope.primaryOutcomeVariableDetails = config.appSettings.primaryOutcomeVariableDetails;
 
 
-        $rootScope.bloodPressure = {
-            systolicValue: null,
-            diastolicValue: null,
-            displayTotal: "Blood Pressure"
-        };
-
         // Not used
         //$scope.ratingInfo = ratingService.getRatingInfo();
         $scope.closeMenu = function () {

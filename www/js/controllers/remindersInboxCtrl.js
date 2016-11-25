@@ -354,6 +354,13 @@ angular.module('starter')
 
 	    $scope.init = function(){
 			console.debug($state.current.name + ' initializing...');
+
+			$rootScope.bloodPressure = {
+				systolicValue: null,
+				diastolicValue: null,
+				displayTotal: "Blood Pressure"
+			};
+
 			$rootScope.stateParams = $stateParams;
 			if($rootScope.showUndoButton){
 				$rootScope.showUndoButton = false;
