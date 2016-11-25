@@ -39,6 +39,19 @@ angular.module('starter')
                 {variableObject: $rootScope.variableObject});
         };
 
+        var windowResize = function() {
+            $(window).resize();
+
+            // Not sure what this does
+            var seconds = 0.1;
+            console.debug('Setting windowResize timeout for ' + seconds + ' seconds');
+            $timeout(function() {
+                $scope.$broadcast('highchartsng.reflow');
+            }, seconds * 1000);
+            // Fixes chart width
+            $scope.$broadcast('highchartsng.reflow');
+        };
+
         var updateDailyCharts = function(){
 
             if ($scope.state.dailyHistory.length > 0) {
@@ -58,6 +71,7 @@ angular.module('starter')
                 $scope.lineChartConfig = chartService.processDataAndConfigureLineChart($scope.state.dailyHistory, $rootScope.variableObject);
                 $scope.weekdayChartConfig =
                     chartService.processDataAndConfigureWeekdayChart($scope.state.dailyHistory, $rootScope.variableObject);
+                windowResize();
             }
         };
 
@@ -79,6 +93,7 @@ angular.module('starter')
                 }
                 $scope.hourlyChartConfig =
                     chartService.processDataAndConfigureHourlyChart($scope.state.history, $rootScope.variableObject);
+                windowResize();
             }
         };
 
@@ -93,11 +108,11 @@ angular.module('starter')
             QuantiModo.getV1Measurements(params, function(history){
                 $scope.state.history = $scope.state.history.concat(history);
                 
-                if(history.length > 0){
+                if(history.length > 0 && $scope.state.history.length < 1000){
                     $scope.state.offset = $scope.state.offset + 200;
                     params = {
                         offset: $scope.state.offset,
-                        sort: "startTimeEpoch",
+                        sort: "-startTimeEpoch",
                         variableName: $rootScope.variableObject.name,
                         limit: 200
                     };
@@ -133,11 +148,11 @@ angular.module('starter')
             QuantiModo.getV1MeasurementsDaily(params, function(dailyHistory){
                 $scope.state.dailyHistory = $scope.state.dailyHistory.concat(dailyHistory);
 
-                if(dailyHistory.length > 0){
+                if(dailyHistory.length > 0 && $scope.state.dailyHistory.length < 1000){
                     $scope.state.dailyHistoryOffset = $scope.state.dailyHistoryOffset + 200;
                     params = {
                         offset: $scope.state.dailyHistoryOffset,
-                        sort: "startTimeEpoch",
+                        sort: "-startTimeEpoch",
                         variableName: $rootScope.variableObject.name,
                         limit: 200
                     };

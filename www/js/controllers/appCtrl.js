@@ -10,7 +10,7 @@ angular.module('starter')
 
         $rootScope.loaderImagePath = config.appSettings.loaderImagePath;
         $rootScope.appMigrationVersion = 1489;
-        $rootScope.appVersion = "2.1.8.0";
+        $rootScope.appVersion = "2.1.9.0";
         if (!$rootScope.loaderImagePath) {
             $rootScope.loaderImagePath = 'img/circular_loader.gif';
         }
@@ -34,12 +34,6 @@ angular.module('starter')
         $scope.showReminderSubMenu = false;
         $scope.primaryOutcomeVariableDetails = config.appSettings.primaryOutcomeVariableDetails;
 
-
-        $rootScope.bloodPressure = {
-            systolicValue: null,
-            diastolicValue: null,
-            displayTotal: "Blood Pressure"
-        };
 
         // Not used
         //$scope.ratingInfo = ratingService.getRatingInfo();
@@ -816,7 +810,11 @@ angular.module('starter')
             for(var i = 0; i < $rootScope.favoritesArray.length; i++){
                 if($rootScope.favoritesArray[i].id === trackingReminder.id){
                     if($rootScope.favoritesArray[i].abbreviatedUnitName !== '/5') {
-                        $rootScope.favoritesArray[i].total = $rootScope.favoritesArray[i].total + modifiedReminderValue;
+                        if(trackingReminder.combinationOperation === "SUM"){
+                            $rootScope.favoritesArray[i].total = $rootScope.favoritesArray[i].total + modifiedReminderValue;
+                        } else {
+                            $rootScope.favoritesArray[i].total = modifiedReminderValue;
+                        }
                         $rootScope.favoritesArray[i].displayTotal = $rootScope.favoritesArray[i].total + " " + $rootScope.favoritesArray[i].abbreviatedUnitName;
                     } else {
                         $rootScope.favoritesArray[i].displayTotal = modifiedReminderValue + '/5';

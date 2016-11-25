@@ -13,7 +13,8 @@ angular.module('starter')
             trackingReminder: {},
             noVariablesFoundCard: {
                 show: false,
-                title: 'No Variables Found'
+                title: 'No Variables Found',
+                body: "You don't have any data, yet.  Start tracking!"
             },
             searching: true,
             title : "Select Variable",
@@ -191,6 +192,7 @@ angular.module('starter')
                 } else {
                     if(!$stateParams.variableSearchParameters.includePublic){
                         $scope.state.noVariablesFoundCard.show = true;
+                        $scope.state.searching = false;
                     }
                     if($scope.state.variableSearchResults.length < 1 && $stateParams.variableSearchParameters.includePublic){
                         populateCommonVariables();
