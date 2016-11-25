@@ -11,6 +11,7 @@
     "ionic-minify": "^2.0.10"
   },
   "dependencies": {
+    "@ionic/cloud": "^0.14.1",
     "async": "^2.0.1",
     "bower": "~1.3.3",
     "event-stream": "^3.3.2",

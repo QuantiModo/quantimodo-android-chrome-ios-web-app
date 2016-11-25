@@ -6,7 +6,7 @@ angular.module('starter')
                                     measurementService, QuantiModo, notificationService, localStorageService,
                                     reminderService, ratingService, migrationService, ionicDatePicker, unitService,
                                     variableService, qmLocationService, variableCategoryService, bugsnagService,
-                                    utilsService, correlationService, $ionicActionSheet) {
+                                    utilsService, correlationService, $ionicActionSheet, $ionicDeploy) {
 
         $rootScope.loaderImagePath = config.appSettings.loaderImagePath;
         $rootScope.appMigrationVersion = 1489;
@@ -332,7 +332,6 @@ angular.module('starter')
         // when view is changed
         $scope.$on('$ionicView.enter', function (e) {
             //$scope.showHelpInfoPopupIfNecessary(e);
-            qmLocationService.updateLocationVariablesAndPostMeasurementIfChanged();
             if (e.targetScope && e.targetScope.controller_name && e.targetScope.controller_name === "TrackPrimaryOutcomeCtrl") {
                 $scope.showCalendarButton = true;
             } else {
@@ -354,6 +353,29 @@ angular.module('starter')
                 $scope.showMoreMenuButton = false;
             }
         });
+
+        // when view is changed
+        $scope.$on('$ionicView.afterEnter', function (e) {
+            qmLocationService.updateLocationVariablesAndPostMeasurementIfChanged();
+            $scope.updateApp();
+        });
+
+        $scope.updateApp = function () {
+            $ionicPlatform.ready(function () {
+                console.debug('Checking for new snapshot');
+                $ionicDeploy.check().then(function(snapshotAvailable) {
+                    if (snapshotAvailable) {
+                        console.debug('New snapshot available');
+                        // When snapshotAvailable is true, you can apply the snapshot
+                        $ionicDeploy.download().then(function() {
+                            return $ionicDeploy.extract();
+                        });
+                    } else {
+                        console.debug('No new snapshot available');
+                    }
+                });
+            });
+        };
 
         $ionicPopover.fromTemplateUrl('templates/popover.html', {
             scope: $scope

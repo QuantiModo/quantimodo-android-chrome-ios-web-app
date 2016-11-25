@@ -88,6 +88,9 @@ echo "deleting platforms/android for $LOWERCASE_APP_NAME Android app..."
 rm -rf platforms/android
 echo "ionic platform remove android for $LOWERCASE_APP_NAME Android app..."
 ionic platform remove android
+
+gulp setIonicAppId
+
 echo "ionic platform add android for $LOWERCASE_APP_NAME Android app..."
 ionic platform add android@6.X.X
 
@@ -153,7 +156,9 @@ if [ -f "$DROPBOX_PATH/QuantiModo/apps/${LOWERCASE_APP_NAME}/android/${SIGNED_GE
 then
     cd ${INTERMEDIATE_PATH}
     COMMIT_MESSAGE=$(git log -1 HEAD --pretty=format:%s)
-    #ionic upload --email ${IONIC_EMAIL} --password ${IONIC_PASSWORD} --note "$COMMIT_MESSAGE"
+    echo "Deploying with note: $COMMIT_MESSAGE"
+    echo "ionic upload --email ${IONIC_EMAIL} --password ${IONIC_PASSWORD} --note "$COMMIT_MESSAGE" --deploy staging"
+    ionic upload --email ${IONIC_EMAIL} --password ${IONIC_PASSWORD} --note "$COMMIT_MESSAGE" --deploy staging
     #ionic package build android --email ${IONIC_EMAIL} --password ${IONIC_PASSWORD}
     #ionic package build android --release --profile production --email ${IONIC_EMAIL} --password ${IONIC_PASSWORD}
     #ionic package build ios --release --profile production --email ${IONIC_EMAIL} --password ${IONIC_PASSWORD}

@@ -1126,6 +1126,23 @@ gulp.task('setVersionNumberInFiles', function(callback){
 
 });
 
+gulp.task('setIonicAppId', function(callback){
+
+	if(!process.env.IONIC_APP_ID){
+		throw 'Please set process.env.IONIC_APP_ID';
+	}
+
+	var filesToUpdate = [
+		'www/js/app.js'
+	];
+
+	gulp.src(filesToUpdate, {base: "."}) // Every file allown.
+		.pipe(replace('__IONIC_APP_ID__', process.env.IONIC_APP_ID))
+		.pipe(gulp.dest('./'));
+	callback();
+
+});
+
 gulp.task('ic_notification', function() {
 	gulp.src('./resources/android/res/**')
 		.pipe(gulp.dest('./platforms/android/res'));
@@ -1260,6 +1277,7 @@ gulp.task('setMoodiModoEnvs', [], function(callback){
 	process.env.LOWERCASE_APP_NAME = "moodimodo";
 	process.env.APP_IDENTIFIER = "com.quantimodo.moodimodoapp";
 	process.env.APP_DESCRIPTION = "Perfect your life!";
+	process.env.IONIC_APP_ID = "470c1f1b";
 	callback();
 });
 
@@ -1268,6 +1286,7 @@ gulp.task('setQuantiModoEnvs', [], function(callback){
 	process.env.LOWERCASE_APP_NAME = "quantimodo";
 	process.env.APP_IDENTIFIER = "com.quantimodo.quantimodo";
 	process.env.APP_DESCRIPTION = "Perfect your life!";
+	process.env.IONIC_APP_ID = "42fe48d4";
 	callback();
 });
 
@@ -1276,6 +1295,7 @@ gulp.task('setMindFirstEnvs', [], function(callback){
 	process.env.LOWERCASE_APP_NAME = "mindfirst";
 	process.env.APP_IDENTIFIER = "com.quantimodo.mindfirst";
 	process.env.APP_DESCRIPTION = "Empowering a new approach to mind research";
+	process.env.IONIC_APP_ID = "6d8e312f";
 	callback();
 });
 
@@ -1411,6 +1431,7 @@ gulp.task('prepareIosApp', function(callback){
 		'bumpIosVersion',
 		'updateConfigXmlUsingEnvs',
 		'copyPrivateConfig',
+		'setIonicAppId',
 		callback);
 });
 
@@ -1556,6 +1577,7 @@ gulp.task('prepareAndroidApp', function(callback){
 		'copyPrivateConfig',
 		'ionicPlatformAddAndroid',
 		'copyAndroidResources',
+		'setIonicAppId',
 		callback);
 });
 

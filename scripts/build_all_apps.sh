@@ -129,6 +129,7 @@ export APP_DISPLAY_NAME="QuantiModo"
 export LOWERCASE_APP_NAME=quantimodo
 export APP_DESCRIPTION=Perfect your life
 echo "Cannot use exclamation point in app description"
+export IONIC_APP_ID="42fe48d4"
 
 
 if [ -z ${BUILD_QUANTIMODO} ];
@@ -155,6 +156,7 @@ export APP_IDENTIFIER="com.quantimodo.moodimodoapp"
 export APP_DISPLAY_NAME="MoodiModo"
 export LOWERCASE_APP_NAME=moodimodo
 export APP_DESCRIPTION=Track and find out what affects your mood
+export IONIC_APP_ID="470c1f1b"
 
 if [ -z ${BUILD_MOODIMODO} ];
     then
@@ -181,6 +183,7 @@ export APP_DISPLAY_NAME=MindFirst
 echo "Replace doesn't work if there's a space"
 export LOWERCASE_APP_NAME=mindfirst
 export APP_DESCRIPTION=Empowering a New Approach to Mind Research
+export IONIC_APP_ID="6d8e312f"
 
 if [ -z ${BUILD_MINDFIRST} ];
     then
@@ -207,6 +210,7 @@ export APP_IDENTIFIER="com.quantimodo.energymodo"
 export APP_DISPLAY_NAME="EnergyModo"
 export LOWERCASE_APP_NAME=energymodo
 export APP_DESCRIPTION=Track and find out what affects your energy levels
+export IONIC_APP_ID="f837bb35"
 
 if [ -z ${BUILD_ENERGYMODO} ];
     then
@@ -232,6 +236,7 @@ export APP_IDENTIFIER="com.quantimodo.medtlcapp"
 export APP_DISPLAY_NAME="MedTLC"
 export LOWERCASE_APP_NAME=medtlc
 export APP_DESCRIPTION=Medication Track Learn Connect
+export IONIC_APP_ID="e85b92b4"
 
 if [ -z ${BUILD_MEDTLC} ];
     then
@@ -257,6 +262,7 @@ export APP_IDENTIFIER="com.quantimodo.epharmix"
 export APP_DISPLAY_NAME="Epharmix"
 export LOWERCASE_APP_NAME=epharmix
 export APP_DESCRIPTION=Improving Health Outcomes
+export IONIC_APP_ID=""
 
 if [ -z ${BUILD_EPHARMIX} ];
     then
