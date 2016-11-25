@@ -161,7 +161,7 @@ if [ -z ${BUILD_MOODIMODO} ];
         echo "NOT BUILDING ${APP_DISPLAY_NAME}"
     else
         source ${INTERMEDIATE_PATH}/scripts/build_scripts/01_prepare_project.sh
-        source ${INTERMEDIATE_PATH}/scripts/build_scripts/03_build_android.sh
+        #source ${INTERMEDIATE_PATH}/scripts/build_scripts/03_build_android.sh
         source ${INTERMEDIATE_PATH}/scripts/build_scripts/02_build_chrome.sh
         #source ${INTERMEDIATE_PATH}/scripts/build_scripts/04_build_ios.sh
 
