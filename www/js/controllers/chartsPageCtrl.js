@@ -39,6 +39,19 @@ angular.module('starter')
                 {variableObject: $rootScope.variableObject});
         };
 
+        var windowResize = function() {
+            $(window).resize();
+
+            // Not sure what this does
+            var seconds = 0.1;
+            console.debug('Setting windowResize timeout for ' + seconds + ' seconds');
+            $timeout(function() {
+                $scope.$broadcast('highchartsng.reflow');
+            }, seconds * 1000);
+            // Fixes chart width
+            $scope.$broadcast('highchartsng.reflow');
+        };
+
         var updateDailyCharts = function(){
 
             if ($scope.state.dailyHistory.length > 0) {
@@ -58,6 +71,7 @@ angular.module('starter')
                 $scope.lineChartConfig = chartService.processDataAndConfigureLineChart($scope.state.dailyHistory, $rootScope.variableObject);
                 $scope.weekdayChartConfig =
                     chartService.processDataAndConfigureWeekdayChart($scope.state.dailyHistory, $rootScope.variableObject);
+                windowResize();
             }
         };
 
@@ -79,6 +93,7 @@ angular.module('starter')
                 }
                 $scope.hourlyChartConfig =
                     chartService.processDataAndConfigureHourlyChart($scope.state.history, $rootScope.variableObject);
+                windowResize();
             }
         };
 

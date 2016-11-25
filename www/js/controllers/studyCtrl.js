@@ -68,6 +68,7 @@ angular.module('starter')
                     data.causeProcessedMeasurements, {variableName: params.causeVariableName});
                 $scope.effectTimelineChartConfig = chartService.processDataAndConfigureLineChart(
                     data.effectProcessedMeasurements, {variableName: params.effectVariableName});
+                windowResize();
             });
         }
 
@@ -145,6 +146,7 @@ angular.module('starter')
                     if(userCorrelations.length > 2){
                         $scope.lineChartConfig = chartService.processDataAndConfigureCorrelationOverTimeChart(userCorrelations);
                         console.debug($scope.lineChartConfig);
+                        windowResize();
                     }
                 });
             } else {
@@ -152,9 +154,23 @@ angular.module('starter')
                     if(aggregatedCorrelations.length > 2){
                         $scope.lineChartConfig = chartService.processDataAndConfigureCorrelationOverTimeChart(aggregatedCorrelations);
                         console.debug($scope.lineChartConfig);
+                        windowResize();
                     }
                 });
             }
+        };
+
+        var windowResize = function() {
+            $(window).resize();
+
+            // Not sure what this does
+            var seconds = 0.1;
+            console.debug('Setting windowResize timeout for ' + seconds + ' seconds');
+            $timeout(function() {
+                $scope.$broadcast('highchartsng.reflow');
+            }, seconds * 1000);
+            // Fixes chart width
+            $scope.$broadcast('highchartsng.reflow');
         };
 
         $scope.$on('$ionicView.enter', function(e) { console.debug("Entering state " + $state.current.name);
