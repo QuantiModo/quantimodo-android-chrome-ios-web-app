@@ -79,19 +79,26 @@ angular.module('starter')
                 $scope.state.primaryOutcomeMeasurements =  $scope.state.primaryOutcomeMeasurements.concat(measurementsQueue);
             }
             if( $scope.state.primaryOutcomeMeasurements) {
-                $scope.hourlyChartConfig =
-                    chartService.processDataAndConfigureHourlyChart( $scope.state.primaryOutcomeMeasurements,
-                        config.appSettings.primaryOutcomeVariableDetails);
-                $scope.weekdayChartConfig =
-                    chartService.processDataAndConfigureWeekdayChart($scope.state.primaryOutcomeMeasurements,
-                        config.appSettings.primaryOutcomeVariableDetails);
-                $scope.distributionChartConfig =
-                    chartService.processDataAndConfigureDistributionChart( $scope.state.primaryOutcomeMeasurements,
-                        config.appSettings.primaryOutcomeVariableDetails);
+
+                chartService.processDataAndConfigureHourlyChart( $scope.state.primaryOutcomeMeasurements,
+                    config.appSettings.primaryOutcomeVariableDetails).then(function (config) {
+                    $scope.hourlyChartConfig = config;
+                });
+
+                chartService.processDataAndConfigureWeekdayChart($scope.state.primaryOutcomeMeasurements,
+                    config.appSettings.primaryOutcomeVariableDetails).then(function (config) {
+                    $scope.weekdayChartConfig = config;
+                });
+
+                chartService.processDataAndConfigureDistributionChart( $scope.state.primaryOutcomeMeasurements,
+                    config.appSettings.primaryOutcomeVariableDetails).then(function (config) {
+                    $scope.distributionChartConfig = config;
+                });
                 updateAveragePrimaryOutcomeRatingView();
-                $scope.lineChartConfig =
-                    chartService.processDataAndConfigureLineChart( $scope.state.primaryOutcomeMeasurements,
-                        config.appSettings.primaryOutcomeVariableDetails);
+                chartService.processDataAndConfigureLineChart( $scope.state.primaryOutcomeMeasurements,
+                    config.appSettings.primaryOutcomeVariableDetails).then(function (config) {
+                    $scope.lineChartConfig = config;
+                });
             }
             windowResize();
         };
