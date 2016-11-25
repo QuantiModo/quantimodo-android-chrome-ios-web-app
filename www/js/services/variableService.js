@@ -154,7 +154,7 @@ angular.module('starter')
 
                 var parameters = {
                     limit: 200,
-                    sort: "-numberOfMeasurements"
+                    sort: "-latestMeasurementTime"
                 };
 
                 QuantiModo.getUserVariables(parameters, function(userVariables){
