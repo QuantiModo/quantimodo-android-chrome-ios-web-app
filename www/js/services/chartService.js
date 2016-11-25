@@ -107,10 +107,12 @@ angular.module('starter')
 				return parseFloat(n) % 1 === 0;
 			}
 
+			var dataAndLabels2 = [];
 			for(var propertyName in dataAndLabels) {
 				// propertyName is what you want
 				// you can get the value like this: myObject[propertyName]
 				if(dataAndLabels.hasOwnProperty(propertyName)){
+					dataAndLabels2.push({label: propertyName, value: dataAndLabels[propertyName]});
 					xAxisLabels.push(propertyName);
 					if(variableObject.name === config.appSettings.primaryOutcomeVariableDetails.name){
 						if(isInt(propertyName)){
@@ -120,6 +122,18 @@ angular.module('starter')
 						data.push(dataAndLabels[propertyName]);
 					}
 				}
+			}
+
+			dataAndLabels2.sort(function(a, b) {
+				return a.label - b.label;
+			});
+
+			xAxisLabels = [];
+			data = [];
+
+			for(var i = 0; i < dataAndLabels2.length; i++){
+				xAxisLabels.push(dataAndLabels2[i].label);
+				data.push(dataAndLabels2[i].value);
 			}
 
 			if(variableObject.name === config.appSettings.primaryOutcomeVariableDetails.name) {
@@ -170,7 +184,7 @@ angular.module('starter')
 							pointPadding : 0.2,
 							borderWidth : 0,
 							pointWidth : 40 * 5 / xAxisLabels.length,
-							enableMouseTracking : false,
+							enableMouseTracking : true,
 							colorByPoint : true
 						}
 					},
@@ -183,12 +197,7 @@ angular.module('starter')
 				series: [{
 					name : variableObject.name + ' Distribution',
 					data: data
-				}],
-                func: function(chart) {
-                    $timeout(function() {
-                        chart.reflow();
-                    }, 0);
-                }
+				}]
 			};
 		};
 
@@ -320,12 +329,7 @@ angular.module('starter')
 				series: [{
 					name : 'Average  ' + variableObject.name + ' by Day of Week',
 					data: averageValueByWeekdayArray
-				}],
-                func: function(chart) {
-                    $timeout(function() {
-                        chart.reflow();
-                    }, 0);
-                }
+				}]
 			};
 		};
 
@@ -428,12 +432,7 @@ angular.module('starter')
 				series: [{
 					name : 'Average  ' + variableObject.name + ' by Hour of Day',
 					data: averageValueByHourArray
-				}],
-                func: function(chart) {
-                    $timeout(function() {
-                        chart.reflow();
-                    }, 0);
-                }
+				}]
 			};
 		};
 
@@ -521,12 +520,7 @@ angular.module('starter')
 				subtitle: {
 					text: ''
 				},
-				loading: false,
-                func: function(chart) {
-                    $timeout(function() {
-                        chart.reflow();
-                    }, 0);
-                }
+				loading: false
 			};
 
 			var xyVariableValues = [];
@@ -813,12 +807,7 @@ angular.module('starter')
 							lineWidthPlus: 0
 						}
 					}
-				}],            
-                func: function(chart) {
-                    $timeout(function() {
-                        chart.reflow();
-                    }, 0);
-                }
+				}]
 			};
 		};
 

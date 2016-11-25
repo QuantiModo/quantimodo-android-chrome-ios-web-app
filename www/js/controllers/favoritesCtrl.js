@@ -42,6 +42,12 @@ angular.module('starter')
 	    $scope.init = function(){
 			$rootScope.stateParams = $stateParams;
 
+			$rootScope.bloodPressure = {
+				systolicValue: null,
+				diastolicValue: null,
+				displayTotal: "Blood Pressure"
+			};
+
 			if($stateParams.variableCategoryName && $stateParams.variableCategoryName  !== 'Anything'){
                 $rootScope.variableCategoryName = $stateParams.variableCategoryName;
 				$scope.state.addButtonText = "Add favorite " + $stateParams.variableCategoryName.toLowerCase();

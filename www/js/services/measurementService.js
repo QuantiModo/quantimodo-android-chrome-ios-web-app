@@ -50,10 +50,10 @@ angular.module('starter')
 
                 // send request
                 var params;
-                var paramTime = moment($rootScope.lastSyncTime).subtract(15, 'minutes').format("YYYY-MM-DDTHH:mm:ss");
+                var lastSyncTimeMinusFifteenMinutes = moment($rootScope.lastSyncTime).subtract(15, 'minutes').format("YYYY-MM-DDTHH:mm:ss");
                 params = {
                     variableName : config.appSettings.primaryOutcomeVariableDetails.name,
-                    'updatedAt':'(ge)'+ paramTime ,
+                    'updatedAt':'(ge)'+ lastSyncTimeMinusFifteenMinutes ,
                     sort : '-startTimeEpoch',
                     limit:200,
                     offset:0
@@ -115,16 +115,16 @@ angular.module('starter')
                             });
                         }
 
-                        if (response.length < 200 || params.offset > 2000) {
+                        if (response.length < 200 || params.offset > 1000) {
                             $rootScope.lastSyncTime = moment.utc().format('YYYY-MM-DDTHH:mm:ss');
                             localStorageService.setItem('lastSyncTime', $rootScope.lastSyncTime);
                             console.debug("Measurement sync completed and lastSyncTime set to " + $rootScope.lastSyncTime);
                             deferred.resolve(response);
-                        } else if (response.length === 200 && params.offset < 2001) {
+                        } else if (response.length === 200 && params.offset < 1001) {
                             // Keep querying
                             params = {
                                 variableName: config.appSettings.primaryOutcomeVariableDetails.name,
-                                'updatedAt':'(ge)'+ paramTime ,
+                                'updatedAt':'(ge)'+ lastSyncTimeMinusFifteenMinutes ,
                                 sort : '-startTimeEpoch',
                                 limit: 200,
                                 offset: params.offset + 200

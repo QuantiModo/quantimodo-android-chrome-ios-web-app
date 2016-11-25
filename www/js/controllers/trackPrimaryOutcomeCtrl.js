@@ -15,6 +15,18 @@ angular.module('starter')
         $scope.showRatingFaces = true;
         $scope.syncDisplayText = 'Syncing ' + config.appSettings.primaryOutcomeVariableDetails.name + ' measurements...';
 
+        var windowResize = function() {
+            $(window).resize();
+
+            // Not sure what this does
+            console.debug('Setting windowResize timeout');
+            $timeout(function() {
+                $scope.$broadcast('highchartsng.reflow');
+            }, 10);
+            // Fixes chart width
+            $scope.$broadcast('highchartsng.reflow');
+        };
+
         $scope.storeRatingLocalAndServerAndUpdateCharts = function (numericRatingValue) {
 
             // flag for blink effect
@@ -54,6 +66,7 @@ angular.module('starter')
             if($scope.averagePrimaryOutcomeVariableText){
                 $scope.averagePrimaryOutcomeVariableImage = ratingService.getRatingFaceImageByText($scope.averagePrimaryOutcomeVariableText);
             }
+            windowResize();
         };
 
         var updateCharts = function(){
@@ -80,7 +93,7 @@ angular.module('starter')
                     chartService.processDataAndConfigureLineChart( $scope.state.primaryOutcomeMeasurements,
                         config.appSettings.primaryOutcomeVariableDetails);
             }
-            $scope.state.loadingCharts = false;
+            windowResize();
         };
 
 
@@ -97,7 +110,6 @@ angular.module('starter')
             if($rootScope.user || $rootScope.accessToken){
                 $scope.showLoader($scope.syncDisplayText);
                 console.debug($state.current.name + ' going to syncPrimaryOutcomeVariableMeasurements');
-                $scope.state.loadingCharts = true;
                 measurementService.syncPrimaryOutcomeVariableMeasurements().then(function(){
                     updateCharts();
                     $ionicLoading.hide();

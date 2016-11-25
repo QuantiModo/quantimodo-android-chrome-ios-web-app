@@ -22,6 +22,13 @@ angular.module('starter')
                     $rootScope.nonAdvancedAbbreviatedUnitNamesIndexedByUnitId[units[i].id] = units[i].abbreviatedName;
                 }
             }
+            var showMoreUnitsObject = {
+                name: "Show more units",
+                abbreviatedName: "Show more units"
+            };
+            $rootScope.nonAdvancedAbbreviatedUnitNames.push(showMoreUnitsObject.abbreviatedName);
+            $rootScope.nonAdvancedUnitObjects.push(showMoreUnitsObject);
+            $rootScope.nonAdvancedUnitsIndexedByAbbreviatedName["Show more units"] = showMoreUnitsObject;
         }
 
         var unitService = {
