@@ -610,6 +610,18 @@ gulp.task('gitCheckoutAppJs', function(){
 	});
 });
 
+gulp.task('ionicUpload', function(){
+	var commandForGit = 'ionic upload --email m@thinkbnumbers.org --password ' + process.env.IONIC_PASSWORD + ' --note "$(git log -1 HEAD --pretty=format:%s)" --deploy staging';
+	execute(commandForGit, function(error, output){
+		output = output.trim();
+		if(error){
+			console.log("Failed to ionicUpload: " + output, error);
+		} else {
+			console.log("ionicUpload " + output);
+		}
+	});
+});
+
 var FACEBOOK_APP_ID = false;
 var FACEBOOK_APP_NAME = false;
 var REVERSED_CLIENT_ID = false;
@@ -1458,6 +1470,7 @@ gulp.task('prepareIosApp', function(callback){
 		'updateConfigXmlUsingEnvs',
 		'copyPrivateConfig',
 		'setIonicAppId',
+		'ionicUpload',
 		callback);
 });
 
