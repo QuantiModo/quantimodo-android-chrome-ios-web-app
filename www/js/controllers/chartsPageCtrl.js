@@ -108,11 +108,11 @@ angular.module('starter')
             QuantiModo.getV1Measurements(params, function(history){
                 $scope.state.history = $scope.state.history.concat(history);
                 
-                if(history.length > 0){
+                if(history.length > 0 && $scope.state.offset < 1000){
                     $scope.state.offset = $scope.state.offset + 200;
                     params = {
                         offset: $scope.state.offset,
-                        sort: "startTimeEpoch",
+                        sort: "-startTimeEpoch",
                         variableName: $rootScope.variableObject.name,
                         limit: 200
                     };
