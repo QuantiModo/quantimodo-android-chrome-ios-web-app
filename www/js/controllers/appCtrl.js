@@ -357,10 +357,13 @@ angular.module('starter')
         // when view is changed
         $scope.$on('$ionicView.afterEnter', function (e) {
             qmLocationService.updateLocationVariablesAndPostMeasurementIfChanged();
-            $scope.updateApp();
         });
 
         $scope.updateApp = function () {
+            if(!$rootScope.isMobile){
+                console.debug("Cannot update app because platform is not mobile");
+                return;
+            }
             $ionicPlatform.ready(function () {
                 console.debug('Checking for new snapshot');
                 $ionicDeploy.check().then(function(snapshotAvailable) {
@@ -376,6 +379,8 @@ angular.module('starter')
                 });
             });
         };
+
+        $scope.updateApp();
 
         $ionicPopover.fromTemplateUrl('templates/popover.html', {
             scope: $scope
