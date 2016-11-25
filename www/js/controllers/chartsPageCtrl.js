@@ -108,7 +108,7 @@ angular.module('starter')
             QuantiModo.getV1Measurements(params, function(history){
                 $scope.state.history = $scope.state.history.concat(history);
                 
-                if(history.length > 0 && $scope.state.offset < 1000){
+                if(history.length > 0 && $scope.state.history.length < 1000){
                     $scope.state.offset = $scope.state.offset + 200;
                     params = {
                         offset: $scope.state.offset,
@@ -148,7 +148,7 @@ angular.module('starter')
             QuantiModo.getV1MeasurementsDaily(params, function(dailyHistory){
                 $scope.state.dailyHistory = $scope.state.dailyHistory.concat(dailyHistory);
 
-                if(dailyHistory.length > 0 && $scope.state.dailyHistoryOffset < 1000){
+                if(dailyHistory.length > 0 && $scope.state.dailyHistory.length < 1000){
                     $scope.state.dailyHistoryOffset = $scope.state.dailyHistoryOffset + 200;
                     params = {
                         offset: $scope.state.dailyHistoryOffset,
