@@ -611,14 +611,19 @@ gulp.task('gitCheckoutAppJs', function(){
 });
 
 gulp.task('ionicUpload', function(){
-	var commandForGit = 'ionic upload --email m@thinkbnumbers.org --password ' + process.env.IONIC_PASSWORD + ' --note "$(git log -1 HEAD --pretty=format:%s)" --deploy staging';
+	var commandForGit = 'git log -1 HEAD --pretty=format:%s';
 	execute(commandForGit, function(error, output){
-		output = output.trim();
-		if(error){
-			console.log("Failed to ionicUpload: " + output, error);
-		} else {
-			console.log("ionicUpload " + output);
-		}
+		var commitMessage = output.trim();
+		var commandForGit = 'ionic upload --email m@thinkbnumbers.org --password ' + process.env.IONIC_PASSWORD +
+			' --note ' + commitMessage + ' --deploy staging';
+		execute(commandForGit, function(error, output){
+			output = output.trim();
+			if(error){
+				console.log("Failed to ionicUpload: " + output, error);
+			} else {
+				console.log("ionicUpload " + output);
+			}
+		});
 	});
 });
 
