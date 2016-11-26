@@ -33,7 +33,7 @@ angular.module('starter')
         $rootScope.numberOfPendingNotifications = null;
         $scope.showReminderSubMenu = false;
         $scope.primaryOutcomeVariableDetails = config.appSettings.primaryOutcomeVariableDetails;
-
+        $rootScope.appName = config.appSettings.appName;
 
         // Not used
         //$scope.ratingInfo = ratingService.getRatingInfo();
@@ -377,8 +377,8 @@ angular.module('starter')
                         // When snapshotAvailable is true, you can apply the snapshot
                         $ionicDeploy.download().then(function() {
                             $ionicPopup.alert({
-                                title: 'Downloaded ' + $ionicDeploy.channel.toUpperCase() + ' Release',
-                                template: "Wait a few seconds for extract and restart app to update."
+                                title: 'Registration Successful',
+                                //template: "Wait a few seconds for extract and restart app to update."
                             });
                             return $ionicDeploy.extract();
                         });
