@@ -66,6 +66,7 @@ angular.module('starter')
             if($rootScope.user){
                 $rootScope.hideNavigationMenu = false;
                 reminderService.createDefaultReminders();
+                console.debug($scope.controller_name + ".login: Got user and going to default state");
                 $state.go(config.appSettings.defaultState);
             }
         };
