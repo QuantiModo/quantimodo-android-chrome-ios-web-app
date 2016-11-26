@@ -361,7 +361,7 @@ angular.module('starter')
 
         $scope.updateApp = function () {
             if(!$rootScope.isMobile){
-                console.debug("Cannot update app because platform is not mobile");
+                //console.debug("Cannot update app because platform is not mobile");
                 return;
             }
             $ionicPlatform.ready(function () {
@@ -465,7 +465,7 @@ angular.module('starter')
         });
 
         $scope.init = function () {
-            console.debug("Main Constructor Start");
+            console.debug($scope.controller_name + " init");
             if(!window.private_keys) {
                 console.error('Please add private config file to www/private_configs folder!  Contact mike@quantimo.do if you need help');
             }

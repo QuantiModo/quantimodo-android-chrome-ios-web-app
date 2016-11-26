@@ -13,7 +13,7 @@ angular.module('starter')
         $rootScope.isChrome = window.chrome ? true : false;
 		if($rootScope.user){
 			$scope.state.trackLocation = $rootScope.user.trackLocation;
-			console.debug('trackLocation is '+ $scope.state.trackLocation);
+			//console.debug('trackLocation is '+ $scope.state.trackLocation);
 			if(!$rootScope.user.getPreviewBuilds){
 				$rootScope.user.getPreviewBuilds = false;
 			}
@@ -67,7 +67,7 @@ angular.module('starter')
 		};
 
 		$scope.init = function() {
-			console.debug($state.current.name + ' initializing...');
+			//console.debug($state.current.name + ' initializing...');
 			$rootScope.hideNavigationMenu = false;
 			$rootScope.stateParams = $stateParams;
 			$rootScope.getAllUrlParams();
@@ -435,7 +435,7 @@ angular.module('starter')
 		};
 
 		// when view is changed
-		$scope.$on('$ionicView.beforeEnter', function(e) { console.debug("Entering state " + $state.current.name);
+		$scope.$on('$ionicView.beforeEnter', function(e) { console.debug("beforeEnter " + $state.current.name);
 			$scope.init();
             if($rootScope.user){
                 $scope.state.trackLocation = $rootScope.user.trackLocation;
