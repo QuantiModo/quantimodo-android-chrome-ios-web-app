@@ -69,20 +69,21 @@ angular.module('starter')
 
 		$scope.sendBugReport = function() {
 			var subjectLine = encodeURIComponent( $rootScope.appName + ' ' + $rootScope.appVersion + ' Bug Report');
-			var template = "Please provide the following information when submitting a bug report: <br><br>";
-			template =  template + $rootScope.appSettings.appName + ' ' + $rootScope.appVersion + "<br><br>";
+			var template = "Please describe the issue here:  " + '\r\n' + '\r\n' + '\r\n' + '\r\n' +
+				"Additional Information: " + '\r\n';
+			//template =  template + $rootScope.appSettings.appName + ' ' + $rootScope.appVersion + '\r\n';
 			template = template + "QuantiModo Client Id: " + utilsService.getClientId();
 			if($rootScope.deviceToken){
-				template = template + "<br><br>" + "Push Notification Device Token: " + $rootScope.deviceToken;
+				template = template + '\r\n' + "Push Notification Device Token: " + $rootScope.deviceToken;
 			}
 
 			$ionicPlatform.ready(function () {
 				var snapshotList;
 				$ionicDeploy.getSnapshots().then(function (snapshots) {
 					for (var i = 0; i < snapshots.length; i++) {
-						snapshotList = snapshotList + ',<br>' + snapshots[i];
+						snapshotList = snapshotList + '\r\n' + snapshots[i];
 					}
-					template = template + "<br><br>" + "Snapshots: " + snapshotList;
+					template = template + '\r\n' + "Snapshots: " + snapshotList;
 				});
 			});
 

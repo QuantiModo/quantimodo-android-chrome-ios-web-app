@@ -779,7 +779,11 @@ angular.module('starter')
         };
 
         $scope.sendWithMailTo = function(subjectLine, emailBody, emailAddress, fallbackUrl){
-            var emailUrl = 'mailto:?subject=' + subjectLine + '&body=' + emailBody;
+            var emailUrl = 'mailto:';
+            if(emailAddress){
+                emailUrl = emailUrl + emailAddress;
+            }
+            emailUrl = emailUrl + '?subject=' + subjectLine + '&body=' + emailBody;
             if($rootScope.isChromeExtension){
                 console.debug('isChromeExtension so sending to website');
                 var newTab = window.open(fallbackUrl,'_blank');
