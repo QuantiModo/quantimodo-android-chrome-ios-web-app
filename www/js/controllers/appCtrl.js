@@ -778,12 +778,11 @@ angular.module('starter')
             }
         };
 
-        $scope.sendWithMailTo = function(subjectLine, emailBody){
+        $scope.sendWithMailTo = function(subjectLine, emailBody, emailAddress, fallbackUrl){
             var emailUrl = 'mailto:?subject=' + subjectLine + '&body=' + emailBody;
             if($rootScope.isChromeExtension){
-                console.debug('isChromeExtension so sending to website to share data');
-                var url = utilsService.getURL("api/v2/account/applications", true);
-                var newTab = window.open(url,'_blank');
+                console.debug('isChromeExtension so sending to website');
+                var newTab = window.open(fallbackUrl,'_blank');
                 if(!newTab){
                     alert("Please unblock popups and refresh to access the Data Sharing page.");
                 }
@@ -796,12 +795,16 @@ angular.module('starter')
             }
         };
 
-        $scope.sendWithEmailComposer = function(subjectLine, emailBody){
+        $scope.sendWithEmailComposer = function(subjectLine, emailBody, emailAddress, fallbackUrl){
             if(!cordova || !cordova.plugins.email){
                 bugsnagService.reportError('Trying to send with cordova.plugins.email even though it is not installed. ' +
                     ' Using $scope.sendWithMailTo instead.');
-                $scope.sendWithMailTo(subjectLine, emailBody);
+                $scope.sendWithMailTo(subjectLine, emailBody, emailAddress, fallbackUrl);
                 return;
+            }
+
+            if(!emailAddress){
+                emailAddress = null;
             }
 
             document.addEventListener('deviceready', function () {
@@ -816,7 +819,7 @@ angular.module('starter')
                                     },
                                     subjectLine, // Subject
                                     emailBody,                      // Body
-                                    null,    // To
+                                    emailAddress,    // To
                                     'info@quantimo.do',                    // CC
                                     null,                    // BCC
                                     true,                   // isHTML
@@ -824,11 +827,11 @@ angular.module('starter')
                                     null);                   // Attachment Data
                             } else {
                                 console.error('window.plugins.emailComposer not available!');
-                                $scope.sendWithMailTo(subjectLine, emailBody);
+                                $scope.sendWithMailTo(subjectLine, emailBody, emailAddress, fallbackUrl);
                             }
                         } else {
                             console.error('Email has not been configured for this device!');
-                            $scope.sendWithMailTo(subjectLine, emailBody);
+                            $scope.sendWithMailTo(subjectLine, emailBody, emailAddress, fallbackUrl);
                         }
                     }
                 );
