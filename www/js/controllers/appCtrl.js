@@ -455,7 +455,8 @@ angular.module('starter')
             var loginState = 'app.login';
             if (loginState.indexOf($state.current.name) !== -1 && $rootScope.user) {
                 $rootScope.hideNavigationMenu = false;
-                console.debug('goToDefaultStateIfLoggedInOnLoginState: Going to default state...');
+                console.debug('goToDefaultStateIfLoggedInOnLoginState: Going to default state. $state.current.name is ' +
+                    $state.current.name);
                 $state.go(config.appSettings.defaultState);
             }
         };
