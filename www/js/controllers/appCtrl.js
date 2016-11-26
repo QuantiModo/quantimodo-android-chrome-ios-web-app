@@ -376,10 +376,11 @@ angular.module('starter')
                         console.debug('New snapshot available');
                         // When snapshotAvailable is true, you can apply the snapshot
                         $ionicDeploy.download().then(function() {
-                            $ionicPopup.alert({
+                            console.debug('Downloaded new version');
+                            /*$ionicPopup.alert({
                                 title: 'Registration Successful',
                                 //template: "Wait a few seconds for extract and restart app to update."
-                            });
+                            });*/
                             return $ionicDeploy.extract();
                         });
                     } else {
