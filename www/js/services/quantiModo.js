@@ -12,7 +12,7 @@ angular.module('starter')
                 $rootScope.connectionErrorShowing = false;
             }
             if(!data.success){
-                console.debug('No data.success in data response from ' + baseURL + ': ' +  JSON.stringify(data).substring(0, maxLength) + '...');
+                console.warn('No data.success in data response from ' + baseURL + ': ' +  JSON.stringify(data).substring(0, maxLength) + '...');
             }
             if(data.message){
                 console.warn(data.message);
@@ -127,7 +127,7 @@ angular.module('starter')
                 return;
             }
 
-            //console.debug('QuantiModo.get: Going to try to make request to ' + baseURL + " with params: " + JSON.stringify(params));
+            console.debug('QuantiModo.get: Going to try to make request to ' + baseURL + " with params: " + JSON.stringify(params));
             QuantiModo.getAccessTokenFromAnySource().then(function(accessToken) {
 
                 allowedParams.push('limit');
@@ -170,7 +170,7 @@ angular.module('starter')
                 }
 
                 //console.debug("Making this request: " + JSON.stringify(request));
-                //console.debug('QuantiModo.get: ' + request.url);
+                console.debug('QuantiModo.get: ' + request.url);
 
                 $http(request)
                     .success(function (data, status, headers, config) {
@@ -848,8 +848,11 @@ angular.module('starter')
             var refreshToken = localStorageService.getItemSync('refreshToken');
             var accessToken = localStorageService.getItemSync('accessToken');
 
-            //console.debug('QuantiModo.getOrRefreshAccessTokenOrLogin: Values from local storage:', JSON.stringify({
-            //    expiresAtMilliseconds: expiresAtMilliseconds, refreshToken: refreshToken, accessToken: accessToken }));
+            console.debug('QuantiModo.getOrRefreshAccessTokenOrLogin: Values from local storage:', JSON.stringify({
+                expiresAtMilliseconds: expiresAtMilliseconds,
+                refreshToken: refreshToken,
+                accessToken: accessToken
+            }));
 
             if(refreshToken && !expiresAtMilliseconds){
                 var errorMessage = 'We have a refresh token but expiresAtMilliseconds is ' + expiresAtMilliseconds +
@@ -861,7 +864,7 @@ angular.module('starter')
             }
 
             if (accessToken && now < expiresAtMilliseconds) {
-                //console.debug('QuantiModo.getOrRefreshAccessTokenOrLogin: Current access token should not be expired. Resolving token using one from local storage');
+                console.debug('QuantiModo.getOrRefreshAccessTokenOrLogin: Current access token should not be expired. Resolving token using one from local storage');
                 deferred.resolve(accessToken);
             } else if (refreshToken && expiresAtMilliseconds && utilsService.getClientId() !== 'oAuthDisabled') {
                 console.debug(now + ' (now) is greater than expiresAt ' + expiresAtMilliseconds);
@@ -1246,7 +1249,7 @@ angular.module('starter')
             QuantiModo.postUserSettings(params, function(response){
                 if(!params.userEmail) {
                     QuantiModo.refreshUser().then(function(user){
-                        //console.debug('updateUserSettingsDeferred got this user: ' + JSON.stringify(user));
+                        console.debug('updateUserSettingsDeferred got this user: ' + JSON.stringify(user));
                     }, function(error){
                         console.error('QuantiModo.updateUserSettingsDeferred could not refresh user because ' + JSON.stringify(error));
                     });
