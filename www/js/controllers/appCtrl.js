@@ -1033,9 +1033,12 @@ angular.module('starter')
                             {variableName: favorite.variableName});
                     }
                     if(index === 5){
+                        var reminder = JSON.parse(JSON.stringify(favorite));
+                        reminder.id = null;
+                        reminder.trackingReminderId = null;
                         $state.go('app.reminderAdd',
                             {
-                                variableObject: variableObject,
+                                reminder: reminder,
                                 fromState: $state.current.name,
                                 fromUrl: window.location.href
                             });
