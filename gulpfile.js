@@ -616,7 +616,7 @@ gulp.task('ionicUpload', function(){
 		var commitMessage = output.trim();
 		var uploadCommand = 'ionic upload --email m@thinkbnumbers.org --password ' + process.env.IONIC_PASSWORD +
 			' --note "' + commitMessage + '" --deploy staging';
-		console.log(uploadCommand);
+		console.log('\n' + uploadCommand);
 		execute(uploadCommand, function(error, uploadOutput){
 			uploadOutput = uploadOutput.trim();
 			if(error){
