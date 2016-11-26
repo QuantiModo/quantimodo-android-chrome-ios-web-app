@@ -359,6 +359,28 @@ angular.module('starter')
             qmLocationService.updateLocationVariablesAndPostMeasurementIfChanged();
         });
 
+
+        $scope.highchartsReflow = function() {
+
+            //$(window).resize();
+
+            if(!$rootScope.reflowScheduled){
+                $rootScope.reflowScheduled = true; // Avoids Error: [$rootScope:inprog] $digest already in progress
+                var seconds = 0.1;
+                console.debug('Setting highchartsReflow timeout for ' + seconds + ' seconds');
+                $timeout(function() {
+                    console.debug('executing broadcast(highchartsng.reflow)');
+                    $scope.$broadcast('highchartsng.reflow');
+                    $rootScope.reflowScheduled = false;
+                }, seconds * 1000);
+                // Fixes chart width
+                //$scope.$broadcast('highchartsng.reflow');
+            } else {
+                console.debug('broadcast(highchartsng.reflow) already scheduled');
+            }
+
+        };
+
         $scope.updateApp = function () {
             if(!$rootScope.isMobile){
                 console.debug("Cannot update app because platform is not mobile");
