@@ -65,12 +65,18 @@ angular.module('starter')
                  toDate = Date.now();
                  }*/
                 if($rootScope.variableObject.fillingValue !== null && $rootScope.variableObject.fillingValue !== -1){
-                    $scope.distributionChartConfig =
-                        chartService.processDataAndConfigureDistributionChart($scope.state.dailyHistory, $rootScope.variableObject);
+                    chartService.processDataAndConfigureDistributionChart($scope.state.dailyHistory, $rootScope.variableObject).then(function (config) {
+                        $scope.distributionChartConfig = config;
+                    });
                 }
-                $scope.lineChartConfig = chartService.processDataAndConfigureLineChart($scope.state.dailyHistory, $rootScope.variableObject);
-                $scope.weekdayChartConfig =
-                    chartService.processDataAndConfigureWeekdayChart($scope.state.dailyHistory, $rootScope.variableObject);
+
+                chartService.processDataAndConfigureLineChart($scope.state.dailyHistory, $rootScope.variableObject).then(function (config) {
+                    $scope.lineChartConfig = config;
+                });
+
+                chartService.processDataAndConfigureWeekdayChart($scope.state.dailyHistory, $rootScope.variableObject).then(function (config) {
+                    $scope.weekdayChartConfig = config;
+                });
                 windowResize();
             }
         };
@@ -88,11 +94,13 @@ angular.module('starter')
                     toDate = Date.now();
                 }*/
                 if($rootScope.variableObject.fillingValue === null || $rootScope.variableObject.fillingValue === -1){
-                    $scope.distributionChartConfig =
-                        chartService.processDataAndConfigureDistributionChart($scope.state.history, $rootScope.variableObject);
+                    chartService.processDataAndConfigureDistributionChart($scope.state.history, $rootScope.variableObject).then(function (config) {
+                        $scope.distributionChartConfig = config;
+                    });
                 }
-                $scope.hourlyChartConfig =
-                    chartService.processDataAndConfigureHourlyChart($scope.state.history, $rootScope.variableObject);
+                chartService.processDataAndConfigureHourlyChart($scope.state.history, $rootScope.variableObject).then(function (config) {
+                    $scope.hourlyChartConfig = config;
+                });
                 windowResize();
             }
         };

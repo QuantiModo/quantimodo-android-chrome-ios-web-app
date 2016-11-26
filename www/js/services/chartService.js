@@ -202,6 +202,7 @@ angular.module('starter')
 		};
 
 		chartService.processDataAndConfigureWeekdayChart = function(measurements, variableObject) {
+			var deferred = $q.defer();
             if(!measurements){
                 console.error('No measurements provided to processDataAndConfigureWeekdayChart');
                 return false;
@@ -220,10 +221,12 @@ angular.module('starter')
 			}
 			var weekdayMeasurementArray = this.generateWeekdayMeasurementArray(measurements);
 			var averageValueByWeekdayArray = this.calculateAverageValueByWeekday(weekdayMeasurementArray);
-			return this.configureWeekdayChart(averageValueByWeekdayArray, variableObject);
+			deferred.resolve(this.configureWeekdayChart(averageValueByWeekdayArray, variableObject));
+			return deferred.promise;
 		};
 
 		chartService.processDataAndConfigureHourlyChart = function(measurements, variableObject) {
+			var deferred = $q.defer();
 			if(!variableObject.name){
 				console.error("ERROR: No variable name provided to processDataAndConfigureHourlyChart");
 				return;
@@ -237,10 +240,12 @@ angular.module('starter')
 			}
 			var hourlyMeasurementArray = this.generateHourlyMeasurementArray(measurements);
 			var averageValueByHourArray = this.calculateAverageValueByHour(hourlyMeasurementArray);
-			return this.configureHourlyChart(averageValueByHourArray, variableObject);
+			deferred.resolve(this.configureHourlyChart(averageValueByHourArray, variableObject));
+			return deferred.promise;
 		};
 
 		chartService.processDataAndConfigureDistributionChart = function(measurements, variableObject) {
+			var deferred = $q.defer();
 			if(!variableObject.name){
 				console.error("ERROR: No variable name provided to processDataAndConfigureHourlyChart");
 				return;
@@ -253,7 +258,8 @@ angular.module('starter')
 				variableObject.unitName = measurements[0].abbreviatedUnitName;
 			}
 			var distributionArray = this.generateDistributionArray(measurements);
-			return this.configureDistributionChart(distributionArray, variableObject);
+			deferred.resolve(this.configureDistributionChart(distributionArray, variableObject));
+			return deferred.promise;
 		};
 
 		chartService.configureWeekdayChart = function(averageValueByWeekdayArray, variableObject){
