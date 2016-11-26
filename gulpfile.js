@@ -614,13 +614,13 @@ gulp.task('ionicUpload', function(){
 	var commandForGit = 'git log -1 HEAD --pretty=format:%s';
 	execute(commandForGit, function(error, output){
 		var commitMessage = output.trim();
-		var commandForGit = 'ionic upload --email m@thinkbnumbers.org --password ' + process.env.IONIC_PASSWORD +
+		var uploadCommand = 'ionic upload --email m@thinkbnumbers.org --password ' + process.env.IONIC_PASSWORD +
 			' --note "' + commitMessage + '" --deploy staging';
-		console.log(commandForGit);
-		execute(commandForGit, function(error, output){
-			output = output.trim();
+		console.log(uploadCommand);
+		execute(uploadCommand, function(error, uploadOutput){
+			uploadOutput = uploadOutput.trim();
 			if(error){
-				console.log("Failed to ionicUpload: " + output, error);
+				console.log("Failed to ionicUpload: " + uploadOutput + error);
 			}
 		});
 	});
