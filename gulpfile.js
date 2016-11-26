@@ -1371,6 +1371,10 @@ gulp.task('copyPrivateConfig', [], function () {
 	}).pipe(gulp.dest('./www/private_configs/'));
 });
 
+gulp.task('copyIonicCloudLibrary', [], function () {
+	return gulp.src(['node_modules/@ionic/cloud/dist/bundle/ionic.cloud.min.js']).pipe(gulp.dest('www/lib'));
+});
+
 gulp.task('removeTransparentPng', ['copyAppResources'], function () {
 	return gulp.src("resources/icon.png", { read: false }).pipe(clean());
 });
@@ -1474,6 +1478,7 @@ gulp.task('prepareIosApp', function(callback){
 		'updateConfigXmlUsingEnvs',
 		'copyPrivateConfig',
 		'setIonicAppId',
+		'copyIonicCloudLibrary',
 		'ionicUpload',
 		callback);
 });
