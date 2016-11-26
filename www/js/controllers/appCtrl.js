@@ -376,9 +376,17 @@ angular.module('starter')
                         console.debug('New snapshot available');
                         // When snapshotAvailable is true, you can apply the snapshot
                         $ionicDeploy.download().then(function() {
+                            $ionicPopup.alert({
+                                title: 'Downloaded ' + $ionicDeploy.channel.toUpperCase() + ' Release',
+                                template: "Wait a few seconds for extract and restart app to update."
+                            });
                             return $ionicDeploy.extract();
                         });
                     } else {
+                        /*$ionicPopup.alert({
+                            title: 'Not Updating',
+                            template: "No new snapshot available"
+                        });*/
                         console.debug('No new snapshot available');
                     }
                 });

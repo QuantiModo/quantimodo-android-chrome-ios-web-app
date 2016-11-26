@@ -48,7 +48,7 @@
     "xml2js": "^0.4.15"
   },
   "scripts": {
-    "postinstall": "bower install && ionic config build && gulp generatePrivateConfigFromEnvsForHeroku && cp node_modules/@ionic/cloud/dist/bundle/ionic.cloud.min.js www/lib"
+    "postinstall": "bower install && ionic config build && gulp generatePrivateConfigFromEnvsForHeroku && gulp copyIonicCloudLibrary"
   },
   "cordovaPlugins": [
     "cordova-plugin-device",
