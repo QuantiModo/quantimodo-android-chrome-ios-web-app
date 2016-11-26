@@ -161,11 +161,6 @@ angular.module('starter')
 		$scope.getPreviewBuildsChange = function() {
 			var params = {getPreviewBuilds: $rootScope.user.getPreviewBuilds};
 			QuantiModo.updateUserSettingsDeferred(params);
-			if($rootScope.user.getPreviewBuilds){
-				$ionicDeploy.channel = 'staging';
-			} else {
-				$ionicDeploy.channel = 'production';
-			}
 			$scope.updateApp();
 		};
 
