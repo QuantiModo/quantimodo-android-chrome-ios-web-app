@@ -1,6 +1,6 @@
 #!/bin/bash
 
-export IONIC_IOS_APP_VERSION_NUMBER="2.1.9.0"
+export IONIC_IOS_APP_VERSION_NUMBER="2.2.0.0"
 export IONIC_APP_VERSION_NUMBER=${IONIC_IOS_APP_VERSION_NUMBER:0:5}
 
 export RED='\033[0;31m'
@@ -161,7 +161,7 @@ if [ -z ${BUILD_MOODIMODO} ];
         echo "NOT BUILDING ${APP_DISPLAY_NAME}"
     else
         source ${INTERMEDIATE_PATH}/scripts/build_scripts/01_prepare_project.sh
-        source ${INTERMEDIATE_PATH}/scripts/build_scripts/03_build_android.sh
+        #source ${INTERMEDIATE_PATH}/scripts/build_scripts/03_build_android.sh
         source ${INTERMEDIATE_PATH}/scripts/build_scripts/02_build_chrome.sh
         #source ${INTERMEDIATE_PATH}/scripts/build_scripts/04_build_ios.sh
 

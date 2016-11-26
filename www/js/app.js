@@ -661,8 +661,8 @@ angular.module('starter',
 
                 variableSearchParameters: {
                     limit: 100,
-                    includePublic: false,
-                    manualTracking: false
+                    includePublic: false
+                    //manualTracking: false  Shouldn't do this because it will only include explicitly false variables
                 }
             },
             views: {
@@ -684,8 +684,8 @@ angular.module('starter',
                 doNotShowAddVariableButton: true,
                 variableSearchParameters: {
                     limit: 100,
-                    includePublic: false,
-                    manualTracking: false
+                    includePublic: false
+                    //manualTracking: false  Shouldn't do this because it will only include explicitly false variables
                 }
             },
             views: {
@@ -735,7 +735,7 @@ angular.module('starter',
                 doNotShowAddVariableButton: true,
                 variableSearchParameters: {
                     includePublic: false,
-                    manualTracking: false,
+                    //manualTracking: false,  Shouldn't do this because it will only include explicitly false variables
                     numberOfUserCorrelations: '(gt)1'
                 }
             },
@@ -755,7 +755,7 @@ angular.module('starter',
                 doNotShowAddVariableButton: true,
                 variableSearchParameters: {
                     includePublic: true,
-                    manualTracking: false,
+                    //manualTracking: false  Shouldn't do this because it will only include explicitly false variables
                     numberOfAggregatedCorrelations: '(gt)1'
                 }
             },

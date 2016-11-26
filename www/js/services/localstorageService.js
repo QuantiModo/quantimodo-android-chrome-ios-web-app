@@ -292,7 +292,7 @@ angular.module('starter')
                         filterPropertyValue = Number(filterPropertyValue);
                     }
                     filterPropertyName = key;
-                } else if (typeof value === "boolean" && (key === "outcome" || key === 'manualTracking')){
+                } else if (typeof value === "boolean" && (key === "outcome" || (key === 'manualTracking' && value === true))){
                     filterPropertyValue = value;
                     filterPropertyName = key;
                 }

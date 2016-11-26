@@ -29,7 +29,9 @@
                     </a>
                     <br>
                 </p>
-                <div class="button-bar" style="position: absolute; bottom: 0;" ng-hide="isIOS">
+                <div class="button-bar">
+                    <!--Don't put at bottom because they conflict with the dots-->
+                <!--<div class="button-bar" style="position: absolute; bottom: 0;" ng-hide="isIOS">-->
                     <a id="skipButtonIntro"
                        class="button"
                        ng-show="myIntro.slideIndex != introSlides.length-1 "
