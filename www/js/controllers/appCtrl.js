@@ -365,6 +365,11 @@ angular.module('starter')
                 return;
             }
             $ionicPlatform.ready(function () {
+                if($rootScope.user && $rootScope.user.getPreviewBuilds){
+                    $ionicDeploy.channel = 'staging';
+                } else {
+                    $ionicDeploy.channel = 'production';
+                }
                 console.debug('Checking for new snapshot');
                 $ionicDeploy.check().then(function(snapshotAvailable) {
                     if (snapshotAvailable) {
