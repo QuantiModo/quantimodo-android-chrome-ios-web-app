@@ -1094,11 +1094,11 @@ gulp.task('bumpVersionNumbersInFiles', function(callback){
 
 gulp.task('replaceVersionNumbersInFiles', function(callback){
 
-	process.env.OLD_IONIC_IOS_APP_VERSION_NUMBER = '2.1.8.0';
+	process.env.OLD_IONIC_IOS_APP_VERSION_NUMBER = '2.1.9.0';
 	console.log('Using process.env.OLD_IONIC_IOS_APP_VERSION_NUMBER ' + process.env.OLD_IONIC_IOS_APP_VERSION_NUMBER);
 	process.env.OLD_IONIC_APP_VERSION_NUMBER = process.env.OLD_IONIC_IOS_APP_VERSION_NUMBER.substring(0, 5);
 
-	process.env.IONIC_IOS_APP_VERSION_NUMBER = '2.1.9.0';
+	process.env.IONIC_IOS_APP_VERSION_NUMBER = '2.2.0.0';
 	process.env.IONIC_APP_VERSION_NUMBER = process.env.IONIC_IOS_APP_VERSION_NUMBER.substring(0, 5);
 
 	runSequence(
