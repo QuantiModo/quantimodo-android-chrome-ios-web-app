@@ -74,7 +74,7 @@ angular.module('starter')
 				} else if ($stateParams.variableCategoryName) {
 					$scope.state.title = $filter('wordAliases')($stateParams.variableCategoryName) + " " + $filter('wordAliases')("Reminder Inbox");
 				} else {
-					$scope.state.title = 'Reminder Inbox';
+					$scope.state.title = 'Inbox';
 				}
 			}
 		};

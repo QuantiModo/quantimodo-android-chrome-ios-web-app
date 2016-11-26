@@ -6,11 +6,11 @@ angular.module('starter')
                                     measurementService, QuantiModo, notificationService, localStorageService,
                                     reminderService, ratingService, migrationService, ionicDatePicker, unitService,
                                     variableService, qmLocationService, variableCategoryService, bugsnagService,
-                                    utilsService, correlationService, $ionicActionSheet) {
+                                    utilsService, correlationService, $ionicActionSheet, $ionicDeploy) {
 
         $rootScope.loaderImagePath = config.appSettings.loaderImagePath;
         $rootScope.appMigrationVersion = 1489;
-        $rootScope.appVersion = "2.2.0.0";
+        $rootScope.appVersion = "2.2.1.0";
         if (!$rootScope.loaderImagePath) {
             $rootScope.loaderImagePath = 'img/circular_loader.gif';
         }
@@ -33,7 +33,7 @@ angular.module('starter')
         $rootScope.numberOfPendingNotifications = null;
         $scope.showReminderSubMenu = false;
         $scope.primaryOutcomeVariableDetails = config.appSettings.primaryOutcomeVariableDetails;
-
+        $rootScope.appName = config.appSettings.appName;
 
         // Not used
         //$scope.ratingInfo = ratingService.getRatingInfo();
@@ -332,7 +332,6 @@ angular.module('starter')
         // when view is changed
         $scope.$on('$ionicView.enter', function (e) {
             //$scope.showHelpInfoPopupIfNecessary(e);
-            qmLocationService.updateLocationVariablesAndPostMeasurementIfChanged();
             if (e.targetScope && e.targetScope.controller_name && e.targetScope.controller_name === "TrackPrimaryOutcomeCtrl") {
                 $scope.showCalendarButton = true;
             } else {
@@ -354,6 +353,47 @@ angular.module('starter')
                 $scope.showMoreMenuButton = false;
             }
         });
+
+        // when view is changed
+        $scope.$on('$ionicView.afterEnter', function (e) {
+            qmLocationService.updateLocationVariablesAndPostMeasurementIfChanged();
+        });
+
+        $scope.updateApp = function () {
+            if(!$rootScope.isMobile){
+                //console.debug("Cannot update app because platform is not mobile");
+                return;
+            }
+            $ionicPlatform.ready(function () {
+                if($rootScope.user && $rootScope.user.getPreviewBuilds){
+                    $ionicDeploy.channel = 'staging';
+                } else {
+                    $ionicDeploy.channel = 'production';
+                }
+                console.debug('Checking for new snapshot');
+                $ionicDeploy.check().then(function(snapshotAvailable) {
+                    if (snapshotAvailable) {
+                        console.debug('New snapshot available');
+                        // When snapshotAvailable is true, you can apply the snapshot
+                        $ionicDeploy.download().then(function() {
+                            $ionicPopup.alert({
+                                title: 'Registration Successful',
+                                //template: "Wait a few seconds for extract and restart app to update."
+                            });
+                            return $ionicDeploy.extract();
+                        });
+                    } else {
+                        /*$ionicPopup.alert({
+                            title: 'Not Updating',
+                            template: "No new snapshot available"
+                        });*/
+                        console.debug('No new snapshot available');
+                    }
+                });
+            });
+        };
+
+        $scope.updateApp();
 
         $ionicPopover.fromTemplateUrl('templates/popover.html', {
             scope: $scope
@@ -415,7 +455,8 @@ angular.module('starter')
             var loginState = 'app.login';
             if (loginState.indexOf($state.current.name) !== -1 && $rootScope.user) {
                 $rootScope.hideNavigationMenu = false;
-                console.debug('goToDefaultStateIfLoggedInOnLoginState: Going to default state...');
+                console.debug('goToDefaultStateIfLoggedInOnLoginState: Going to default state. $state.current.name is ' +
+                    $state.current.name);
                 $state.go(config.appSettings.defaultState);
             }
         };
@@ -425,7 +466,7 @@ angular.module('starter')
         });
 
         $scope.init = function () {
-            console.debug("Main Constructor Start");
+            console.debug($scope.controller_name + " init");
             if(!window.private_keys) {
                 console.error('Please add private config file to www/private_configs folder!  Contact mike@quantimo.do if you need help');
             }

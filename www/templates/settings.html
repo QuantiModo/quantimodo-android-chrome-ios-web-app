@@ -90,5 +90,17 @@
                 App Information
             </a>
         </div>
+        <div class="card" >
+            <div class="item item-divider">
+                <i class="icon ion-erlenmeyer-flask"></i>
+                &nbsp
+                Beta Program
+            </div>
+            <ion-toggle ng-model="user.getPreviewBuilds"
+                        ng-change="getPreviewBuildsChange()">
+                Request to Join
+            </ion-toggle>
+        </div>
+        <br>
     </ion-content>
 </ion-view>

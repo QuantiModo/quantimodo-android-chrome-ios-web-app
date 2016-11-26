@@ -3,7 +3,8 @@ angular.module('starter')
 	// Controls the settings page
 	.controller('SettingsCtrl', function( $state, $scope, $ionicPopover, $ionicPopup, localStorageService, $rootScope, 
 										  notificationService, QuantiModo, reminderService, qmLocationService, 
-										  ionicTimePicker, timeService, utilsService, $stateParams, $ionicHistory, bugsnagService, $ionicLoading) {
+										  ionicTimePicker, timeService, utilsService, $stateParams, $ionicHistory,
+										  bugsnagService, $ionicLoading, $ionicDeploy) {
 		$scope.controller_name = "SettingsCtrl";
 		$scope.state = {};
 		$scope.showReminderFrequencySelector = config.appSettings.settingsPageOptions.showReminderFrequencySelector;
@@ -12,7 +13,10 @@ angular.module('starter')
         $rootScope.isChrome = window.chrome ? true : false;
 		if($rootScope.user){
 			$scope.state.trackLocation = $rootScope.user.trackLocation;
-			console.debug('trackLocation is '+ $scope.state.trackLocation);
+			//console.debug('trackLocation is '+ $scope.state.trackLocation);
+			if(!$rootScope.user.getPreviewBuilds){
+				$rootScope.user.getPreviewBuilds = false;
+			}
 		}
 
 		//QuantiModo.updateUserTimeZoneIfNecessary();
@@ -63,7 +67,7 @@ angular.module('starter')
 		};
 
 		$scope.init = function() {
-			console.debug($state.current.name + ' initializing...');
+			//console.debug($state.current.name + ' initializing...');
 			$rootScope.hideNavigationMenu = false;
 			$rootScope.stateParams = $stateParams;
 			$rootScope.getAllUrlParams();
@@ -154,8 +158,14 @@ angular.module('starter')
 			});
 		};
 
+		$scope.getPreviewBuildsChange = function() {
+			var params = {getPreviewBuilds: $rootScope.user.getPreviewBuilds};
+			QuantiModo.updateUserSettingsDeferred(params);
+			$scope.updateApp();
+		};
+
 		$scope.sendReminderNotificationEmailsChange = function() {
-			params = {sendReminderNotificationEmails: $rootScope.user.sendReminderNotificationEmails};
+			var params = {sendReminderNotificationEmails: $rootScope.user.sendReminderNotificationEmails};
 			if($rootScope.urlParameters.userEmail){
 				params.userEmail = $rootScope.urlParameters.userEmail;
 			}
@@ -174,7 +184,7 @@ angular.module('starter')
 		};
 
         $scope.sendPredictorEmailsChange = function() {
-			params = {sendPredictorEmails: $rootScope.user.sendPredictorEmails};
+			var params = {sendPredictorEmails: $rootScope.user.sendPredictorEmails};
 			if($rootScope.urlParameters.userEmail){
 				params.userEmail = $rootScope.urlParameters.userEmail;
 			}
@@ -425,7 +435,7 @@ angular.module('starter')
 		};
 
 		// when view is changed
-		$scope.$on('$ionicView.beforeEnter', function(e) { console.debug("Entering state " + $state.current.name);
+		$scope.$on('$ionicView.beforeEnter', function(e) { console.debug("beforeEnter " + $state.current.name);
 			$scope.init();
             if($rootScope.user){
                 $scope.state.trackLocation = $rootScope.user.trackLocation;

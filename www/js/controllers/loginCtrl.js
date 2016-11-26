@@ -66,6 +66,7 @@ angular.module('starter')
             if($rootScope.user){
                 $rootScope.hideNavigationMenu = false;
                 reminderService.createDefaultReminders();
+                console.debug($scope.controller_name + ".login: Got user and going to default state");
                 $state.go(config.appSettings.defaultState);
             }
         };
@@ -168,6 +169,7 @@ angular.module('starter')
                     if(response.user){
                         QuantiModo.setUserInLocalStorageBugsnagIntercomPush(response.user);
                         $rootScope.hideNavigationMenu = false;
+                        console.debug($scope.controller_name + ".getTokensAndUserViaNativeSocialLogin: Got user and going to default state");
                         $state.go(config.appSettings.defaultState);
                         return;
                     }
