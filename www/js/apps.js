@@ -7,7 +7,7 @@ var appsManager = { // jshint ignore:line
 		"quantimodo" : "configs/quantimodo",
 		"supercell":"configs/supercell"
 	},
-	defaultApp : "supercell",
+	defaultApp : "moodimodo",
 	getAppConfig : function(app){
 		if(appsManager.apps[app]){
 			return 'configs/' + app + '.js';

@@ -1,9 +1,9 @@
 /*favorite page */
 
 /* to increase the input area width */
-.yiInput{
+/*.yiInput{
  
-  width: 500px!important;}
+  width: 500px!important;}*/
 
 .resetButton{
   float:right;
@@ -664,3 +664,9 @@ img.intro-primary-outcome-variable-rating-buttons {
 #statisticsCard label {
     padding: 6px 10px 5px 16px;
 }
+
+ #skipButtonIntro:hover, #nextButtonIntro:hover
+ {
+  border-color:transparent;
+}
+
