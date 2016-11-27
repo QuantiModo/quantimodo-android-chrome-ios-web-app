@@ -86,7 +86,7 @@ angular.module('starter')
                     $scope.causeWikiImage = causeData.data.query.pages[0].thumbnail.source;
                     //on success
                 } else {
-                    var error = 'Wiki not found for ' + $scope.predictorVariableName;
+                    var error = 'Wiki not found for ' + causeSearchTerm;
                     if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, error, {}, "error"); }
                     console.error(error);
                 }
@@ -114,7 +114,7 @@ angular.module('starter')
                     //$scope.correlationObject.studyBackground = $scope.correlationObject.studyBackground + '<br>' + $scope.effectWikiEntry;
                     $scope.effectWikiImage = effectData.data.query.pages[0].thumbnail.source;
                 } else {
-                    var error = 'Wiki not found for ' + $scope.outcomeVariableName;
+                    var error = 'Wiki not found for ' + effectSearchTerm;
                     if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, error, {}, "error"); }
                     console.error(error);
                 }
@@ -146,8 +146,6 @@ angular.module('starter')
             $ionicLoading.show({
                 template: '<ion-spinner></ion-spinner>'
             });
-
-
             
             correlationService.getUserCorrelations(params).then(function (correlations) {
                 $ionicLoading.hide();
