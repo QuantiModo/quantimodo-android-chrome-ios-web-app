@@ -391,6 +391,8 @@ angular.module('starter')
                     $ionicDeploy.channel = 'staging';
                 } else {
                     $ionicDeploy.channel = 'production';
+                    console.debug('Not updating because user is not signed up for preview builds');
+                    return;
                 }
                 console.debug('Checking for new snapshot');
                 $ionicDeploy.check().then(function(snapshotAvailable) {
