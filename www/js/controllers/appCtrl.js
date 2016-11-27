@@ -6,11 +6,11 @@ angular.module('starter')
                                     measurementService, QuantiModo, notificationService, localStorageService,
                                     reminderService, ratingService, migrationService, ionicDatePicker, unitService,
                                     variableService, qmLocationService, variableCategoryService, bugsnagService,
-                                    utilsService, correlationService, $ionicActionSheet) {
+                                    utilsService, correlationService, $ionicActionSheet, $ionicDeploy) {
 
         $rootScope.loaderImagePath = config.appSettings.loaderImagePath;
         $rootScope.appMigrationVersion = 1489;
-        $rootScope.appVersion = "2.2.0.0";
+        $rootScope.appVersion = "2.2.1.0";
         if (!$rootScope.loaderImagePath) {
             $rootScope.loaderImagePath = 'img/circular_loader.gif';
         }
@@ -33,7 +33,7 @@ angular.module('starter')
         $rootScope.numberOfPendingNotifications = null;
         $scope.showReminderSubMenu = false;
         $scope.primaryOutcomeVariableDetails = config.appSettings.primaryOutcomeVariableDetails;
-
+        $rootScope.appName = config.appSettings.appName;
 
         // Not used
         //$scope.ratingInfo = ratingService.getRatingInfo();
@@ -332,7 +332,6 @@ angular.module('starter')
         // when view is changed
         $scope.$on('$ionicView.enter', function (e) {
             //$scope.showHelpInfoPopupIfNecessary(e);
-            qmLocationService.updateLocationVariablesAndPostMeasurementIfChanged();
             if (e.targetScope && e.targetScope.controller_name && e.targetScope.controller_name === "TrackPrimaryOutcomeCtrl") {
                 $scope.showCalendarButton = true;
             } else {
@@ -354,6 +353,70 @@ angular.module('starter')
                 $scope.showMoreMenuButton = false;
             }
         });
+
+        // when view is changed
+        $scope.$on('$ionicView.afterEnter', function (e) {
+            qmLocationService.updateLocationVariablesAndPostMeasurementIfChanged();
+        });
+
+
+        $scope.highchartsReflow = function() {
+
+            //$(window).resize();
+
+            if(!$rootScope.reflowScheduled){
+                $rootScope.reflowScheduled = true; // Avoids Error: [$rootScope:inprog] $digest already in progress
+                var seconds = 0.1;
+                console.debug('Setting highchartsReflow timeout for ' + seconds + ' seconds');
+                $timeout(function() {
+                    console.debug('executing broadcast(highchartsng.reflow)');
+                    $scope.$broadcast('highchartsng.reflow');
+                    $rootScope.reflowScheduled = false;
+                }, seconds * 1000);
+                // Fixes chart width
+                //$scope.$broadcast('highchartsng.reflow');
+            } else {
+                console.debug('broadcast(highchartsng.reflow) already scheduled');
+            }
+
+        };
+
+        $scope.updateApp = function () {
+            if(!$rootScope.isMobile){
+                console.debug("Cannot update app because platform is not mobile");
+                return;
+            }
+            $ionicPlatform.ready(function () {
+                if($rootScope.user && $rootScope.user.getPreviewBuilds){
+                    $ionicDeploy.channel = 'staging';
+                } else {
+                    $ionicDeploy.channel = 'production';
+                }
+                console.debug('Checking for new snapshot');
+                $ionicDeploy.check().then(function(snapshotAvailable) {
+                    if (snapshotAvailable) {
+                        console.debug('New snapshot available');
+                        // When snapshotAvailable is true, you can apply the snapshot
+                        $ionicDeploy.download().then(function() {
+                            console.debug('Downloaded new version');
+                            /*$ionicPopup.alert({
+                                title: 'Registration Successful',
+                                //template: "Wait a few seconds for extract and restart app to update."
+                            });*/
+                            return $ionicDeploy.extract();
+                        });
+                    } else {
+                        /*$ionicPopup.alert({
+                            title: 'Not Updating',
+                            template: "No new snapshot available"
+                        });*/
+                        console.debug('No new snapshot available');
+                    }
+                });
+            });
+        };
+
+        $scope.updateApp();
 
         $ionicPopover.fromTemplateUrl('templates/popover.html', {
             scope: $scope
@@ -415,7 +478,8 @@ angular.module('starter')
             var loginState = 'app.login';
             if (loginState.indexOf($state.current.name) !== -1 && $rootScope.user) {
                 $rootScope.hideNavigationMenu = false;
-                console.debug('goToDefaultStateIfLoggedInOnLoginState: Going to default state...');
+                console.debug('goToDefaultStateIfLoggedInOnLoginState: Going to default state. $state.current.name is ' +
+                    $state.current.name);
                 $state.go(config.appSettings.defaultState);
             }
         };
@@ -714,12 +778,15 @@ angular.module('starter')
             }
         };
 
-        $scope.sendWithMailTo = function(subjectLine, emailBody){
-            var emailUrl = 'mailto:?subject=' + subjectLine + '&body=' + emailBody;
+        $scope.sendWithMailTo = function(subjectLine, emailBody, emailAddress, fallbackUrl){
+            var emailUrl = 'mailto:';
+            if(emailAddress){
+                emailUrl = emailUrl + emailAddress;
+            }
+            emailUrl = emailUrl + '?subject=' + subjectLine + '&body=' + emailBody;
             if($rootScope.isChromeExtension){
-                console.debug('isChromeExtension so sending to website to share data');
-                var url = utilsService.getURL("api/v2/account/applications", true);
-                var newTab = window.open(url,'_blank');
+                console.debug('isChromeExtension so sending to website');
+                var newTab = window.open(fallbackUrl,'_blank');
                 if(!newTab){
                     alert("Please unblock popups and refresh to access the Data Sharing page.");
                 }
@@ -732,12 +799,16 @@ angular.module('starter')
             }
         };
 
-        $scope.sendWithEmailComposer = function(subjectLine, emailBody){
+        $scope.sendWithEmailComposer = function(subjectLine, emailBody, emailAddress, fallbackUrl){
             if(!cordova || !cordova.plugins.email){
                 bugsnagService.reportError('Trying to send with cordova.plugins.email even though it is not installed. ' +
                     ' Using $scope.sendWithMailTo instead.');
-                $scope.sendWithMailTo(subjectLine, emailBody);
+                $scope.sendWithMailTo(subjectLine, emailBody, emailAddress, fallbackUrl);
                 return;
+            }
+
+            if(!emailAddress){
+                emailAddress = null;
             }
 
             document.addEventListener('deviceready', function () {
@@ -752,7 +823,7 @@ angular.module('starter')
                                     },
                                     subjectLine, // Subject
                                     emailBody,                      // Body
-                                    null,    // To
+                                    emailAddress,    // To
                                     'info@quantimo.do',                    // CC
                                     null,                    // BCC
                                     true,                   // isHTML
@@ -760,11 +831,11 @@ angular.module('starter')
                                     null);                   // Attachment Data
                             } else {
                                 console.error('window.plugins.emailComposer not available!');
-                                $scope.sendWithMailTo(subjectLine, emailBody);
+                                $scope.sendWithMailTo(subjectLine, emailBody, emailAddress, fallbackUrl);
                             }
                         } else {
                             console.error('Email has not been configured for this device!');
-                            $scope.sendWithMailTo(subjectLine, emailBody);
+                            $scope.sendWithMailTo(subjectLine, emailBody, emailAddress, fallbackUrl);
                         }
                     }
                 );
@@ -969,9 +1040,12 @@ angular.module('starter')
                             {variableName: favorite.variableName});
                     }
                     if(index === 5){
+                        var reminder = JSON.parse(JSON.stringify(favorite));
+                        reminder.id = null;
+                        reminder.trackingReminderId = null;
                         $state.go('app.reminderAdd',
                             {
-                                variableObject: variableObject,
+                                reminder: reminder,
                                 fromState: $state.current.name,
                                 fromUrl: window.location.href
                             });

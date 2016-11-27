@@ -3,7 +3,8 @@ angular.module('starter')
 	// Controls the settings page
 	.controller('SettingsCtrl', function( $state, $scope, $ionicPopover, $ionicPopup, localStorageService, $rootScope, 
 										  notificationService, QuantiModo, reminderService, qmLocationService, 
-										  ionicTimePicker, timeService, utilsService, $stateParams, $ionicHistory, bugsnagService, $ionicLoading) {
+										  ionicTimePicker, timeService, utilsService, $stateParams, $ionicHistory,
+										  bugsnagService, $ionicLoading, $ionicDeploy, $ionicPlatform) {
 		$scope.controller_name = "SettingsCtrl";
 		$scope.state = {};
 		$scope.showReminderFrequencySelector = config.appSettings.settingsPageOptions.showReminderFrequencySelector;
@@ -13,6 +14,9 @@ angular.module('starter')
 		if($rootScope.user){
 			$scope.state.trackLocation = $rootScope.user.trackLocation;
 			console.debug('trackLocation is '+ $scope.state.trackLocation);
+			if(!$rootScope.user.getPreviewBuilds){
+				$rootScope.user.getPreviewBuilds = false;
+			}
 		}
 
 		//QuantiModo.updateUserTimeZoneIfNecessary();
@@ -54,11 +58,42 @@ angular.module('starter')
 		$scope.sendSharingInvitation= function() {
 			var subjectLine = "I%27d%20like%20to%20share%20my%20data%20with%20you";
 			var emailBody = "Hi!%20%20%0A%0AI%27m%20tracking%20my%20health%20and%20happiness%20with%20an%20app%20and%20I%27d%20like%20to%20share%20my%20data%20with%20you.%20%20%0A%0APlease%20generate%20a%20data%20authorization%20URL%20at%20https%3A%2F%2Fapp.quantimo.do%2Fapi%2Fv2%2Fphysicians%20and%20email%20it%20to%20me.%20%0A%0AThanks!%20%3AD";
-
+			var fallbackUrl = utilsService.getURL("api/v2/account/applications", true);
+			var emailAddress = null;
 			if($rootScope.isMobile){
-				$scope.sendWithEmailComposer(subjectLine, emailBody);
+				$scope.sendWithEmailComposer(subjectLine, emailBody, emailAddress, fallbackUrl);
 			} else {
-				$scope.sendWithMailTo(subjectLine, emailBody);
+				$scope.sendWithMailTo(subjectLine, emailBody, emailAddress, fallbackUrl);
+			}
+		};
+
+		$scope.sendBugReport = function() {
+			var subjectLine = encodeURIComponent( $rootScope.appName + ' ' + $rootScope.appVersion + ' Bug Report');
+			var template = "Please describe the issue here:  " + '\r\n' + '\r\n' + '\r\n' + '\r\n' +
+				"Additional Information: " + '\r\n';
+			//template =  template + $rootScope.appSettings.appName + ' ' + $rootScope.appVersion + '\r\n';
+			template = template + "QuantiModo Client Id: " + utilsService.getClientId();
+			if($rootScope.deviceToken){
+				template = template + '\r\n' + "Push Notification Device Token: " + $rootScope.deviceToken;
+			}
+
+			$ionicPlatform.ready(function () {
+				var snapshotList;
+				$ionicDeploy.getSnapshots().then(function (snapshots) {
+					for (var i = 0; i < snapshots.length; i++) {
+						snapshotList = snapshotList + '\r\n' + snapshots[i];
+					}
+					template = template + '\r\n' + "Snapshots: " + snapshotList;
+				});
+			});
+
+			var emailBody = encodeURIComponent(template);
+			var emailAddress = 'mike@quantimo.do';
+			var fallbackUrl = 'http://help.quantimo.do';
+			if($rootScope.isMobile){
+				$scope.sendWithEmailComposer(subjectLine, emailBody, emailAddress, fallbackUrl);
+			} else {
+				$scope.sendWithMailTo(subjectLine, emailBody, emailAddress, fallbackUrl);
 			}
 		};
 
@@ -154,8 +189,14 @@ angular.module('starter')
 			});
 		};
 
+		$scope.getPreviewBuildsChange = function() {
+			var params = {getPreviewBuilds: $rootScope.user.getPreviewBuilds};
+			QuantiModo.updateUserSettingsDeferred(params);
+			$scope.updateApp();
+		};
+
 		$scope.sendReminderNotificationEmailsChange = function() {
-			params = {sendReminderNotificationEmails: $rootScope.user.sendReminderNotificationEmails};
+			var params = {sendReminderNotificationEmails: $rootScope.user.sendReminderNotificationEmails};
 			if($rootScope.urlParameters.userEmail){
 				params.userEmail = $rootScope.urlParameters.userEmail;
 			}
@@ -174,7 +215,7 @@ angular.module('starter')
 		};
 
         $scope.sendPredictorEmailsChange = function() {
-			params = {sendPredictorEmails: $rootScope.user.sendPredictorEmails};
+			var params = {sendPredictorEmails: $rootScope.user.sendPredictorEmails};
 			if($rootScope.urlParameters.userEmail){
 				params.userEmail = $rootScope.urlParameters.userEmail;
 			}

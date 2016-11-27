@@ -3,7 +3,9 @@
 
 angular.module('starter',
     [
-        'ionic','ionic.service.core',
+        'ionic',
+        //'ionic.service.core',
+        'ionic.cloud',
         //'ionic.service.push',
         //'ionic.service.analytics',
         'oc.lazyLoad',
@@ -15,7 +17,8 @@ angular.module('starter',
         'ng-mfb',
         //'templates',
         'fabric',
-        'ngCordovaOauth'
+        'ngCordovaOauth',
+        'jtt_wikipedia'
     ]
 )
 
@@ -323,7 +326,14 @@ angular.module('starter',
 })
 
 .config(function($stateProvider, $urlRouterProvider, $compileProvider, ionicTimePickerProvider,
-                 ionicDatePickerProvider, $ionicConfigProvider) {
+                 ionicDatePickerProvider, $ionicConfigProvider, $ionicCloudProvider) {
+
+    $ionicCloudProvider.init({
+        "core": {
+            "app_id": "__IONIC_APP_ID__"
+        }
+    });
+
     $compileProvider.imgSrcSanitizationWhitelist(/^\s*(https?|ftp|file|mailto|chrome-extension|ms-appx-web|ms-appx):/);
     $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|file|ftp|mailto|chrome-extension|ms-appx-web|ms-appx):/);
     $ionicConfigProvider.tabs.position("bottom"); //Places them at the bottom for all OS
@@ -1240,6 +1250,7 @@ angular.module('starter',
 angular.module('exceptionOverride', []).factory('$exceptionHandler', function () {
     return function (exception, cause) {
         if (typeof Bugsnag !== "undefined") {
+            Bugsnag.apiKey = "ae7bc49d1285848342342bb5c321a2cf";
             Bugsnag.notifyException(exception, {diagnostics: {cause: cause}});
         }
     };

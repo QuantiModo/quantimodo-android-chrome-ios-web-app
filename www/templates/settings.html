@@ -83,12 +83,24 @@
         </div>
 -->
 
-        <div class="list card" ng-click="showAppInfoPopup()">
+        <div class="list card" ng-click="sendBugReport()">
             <a class="item">
-                <i class="icon ion-information-circled"></i>
+                <i class="icon ion-bug"></i>
                 &nbsp;
-                App Information
+                Submit Bug Report
             </a>
         </div>
+        <div class="card" >
+            <div class="item item-divider">
+                <i class="icon ion-erlenmeyer-flask"></i>
+                &nbsp
+                Beta Program
+            </div>
+            <ion-toggle ng-model="user.getPreviewBuilds"
+                        ng-change="getPreviewBuildsChange()">
+                Request to Join
+            </ion-toggle>
+        </div>
+        <br>
     </ion-content>
 </ion-view>

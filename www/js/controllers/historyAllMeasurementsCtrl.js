@@ -153,6 +153,17 @@ angular.module('starter')
 			$rootScope.hideHistoryPageInstructionsCard = localStorageService.getItemSync('hideHistoryPageInstructionsCard');
 		});
 
+		$scope.deleteMeasurement = function(measurement){
+			measurement.hide = true;
+			if(measurement.variableName === config.appSettings.primaryOutcomeVariableDetails.name){
+				measurementService.deleteMeasurementFromLocalStorage(measurement).then(function (){
+					measurementService.deleteMeasurementFromServer(measurement).then(function (){});
+				});
+			} else {
+				measurementService.deleteMeasurementFromServer(measurement).then(function (){});
+			}
+		};
+
 		$scope.showActionSheet = function(measurement, $index) {
 
 			$scope.state.measurement = measurement;
@@ -169,6 +180,7 @@ angular.module('starter')
 					{ text: '<i class="icon ion-ios-list-outline"></i>' + 'History'},
 					{ text: '<i class="icon ion-settings"></i>' + 'Variable Settings'}
 				],
+				destructiveText: '<i class="icon ion-trash-a"></i>Delete Measurement',
 				cancelText: '<i class="icon ion-ios-close"></i>Cancel',
 				cancel: function() {
 					console.debug($state.current.name + ": " + 'CANCELLED');
@@ -203,6 +215,10 @@ angular.module('starter')
 
 					return true;
 				},
+				destructiveButtonClicked: function() {
+					$scope.deleteMeasurement(measurement);
+					return true;
+				}
 			});
 
 			console.debug('Setting hideSheet timeout');
