@@ -61,18 +61,24 @@ angular.module('starter')
         };
 
         function addWikipediaInfo() {
+            $scope.causeWikiEntry = null;
+            $scope.causeWikiImage = null;
+            $scope.effectWikiEntry = null;
+            $scope.effectWikiImage = null;
 
-            if(!$scope.correlationObject.studyBackground){
-                $scope.correlationObject.studyBackground = '';
+            var causeSearchTerm = $scope.correlationObject.causeVariableCommonAlias;
+            if(!causeSearchTerm){
+                causeSearchTerm = $scope.state.requestParams.causeVariableName;
             }
+
             wikipediaFactory.searchArticlesByTitle({
-                term: $scope.state.requestParams.causeVariableName, // Searchterm
+                term: causeSearchTerm, // Searchterm
                 //lang: '<LANGUAGE>', // (optional) default: 'en'
                 //gsrlimit: '<GS_LIMIT>', // (optional) default: 10. valid values: 0-500
                 pithumbsize: '200', // (optional) default: 400
                 //pilimit: '<PAGE_IMAGES_LIMIT>', // (optional) 'max': images for all articles, otherwise only for the first
-                //exlimit: '<EX_LIMIT>', // (optional) 'max': extracts for all articles, otherwise only for the first
-                //exintro: '<EX_INTRO>', // (optional) '1': if we just want the intro, otherwise it shows all sections
+                exlimit: '1', // (optional) 'max': extracts for all articles, otherwise only for the first
+                exintro: '1', // (optional) '1': if we just want the intro, otherwise it shows all sections
             }).then(function (causeData) {
                 if(causeData.data.query) {
                     $scope.causeWikiEntry = causeData.data.query.pages[0].extract;
@@ -80,7 +86,7 @@ angular.module('starter')
                     $scope.causeWikiImage = causeData.data.query.pages[0].thumbnail.source;
                     //on success
                 } else {
-                    var error = 'Wiki not found for ' + $scope.state.requestParams.causeVariableName;
+                    var error = 'Wiki not found for ' + $scope.predictorVariableName;
                     if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, error, {}, "error"); }
                     console.error(error);
                 }
@@ -89,21 +95,26 @@ angular.module('starter')
                 //on error
             });
 
+            var effectSearchTerm = $scope.correlationObject.effectVariableCommonAlias;
+            if(!effectSearchTerm){
+                effectSearchTerm = $scope.state.requestParams.effectVariableName;
+            }
+
             wikipediaFactory.searchArticlesByTitle({
-                term: $scope.state.requestParams.effectVariableName, // Searchterm
+                term: effectSearchTerm, // Searchterm
                 //lang: '<LANGUAGE>', // (optional) default: 'en'
                 //gsrlimit: '<GS_LIMIT>', // (optional) default: 10. valid values: 0-500
                 pithumbsize: '200', // (optional) default: 400
                 //pilimit: '<PAGE_IMAGES_LIMIT>', // (optional) 'max': images for all articles, otherwise only for the first
-                //exlimit: '<EX_LIMIT>', // (optional) 'max': extracts for all articles, otherwise only for the first
-                //exintro: '<EX_INTRO>', // (optional) '1': if we just want the intro, otherwise it shows all sections
+                exlimit: '1', // (optional) 'max': extracts for all articles, otherwise only for the first
+                exintro: '1', // (optional) '1': if we just want the intro, otherwise it shows all sections
             }).then(function (effectData) {
                 if(effectData.data.query){
                     $scope.effectWikiEntry = effectData.data.query.pages[0].extract;
                     //$scope.correlationObject.studyBackground = $scope.correlationObject.studyBackground + '<br>' + $scope.effectWikiEntry;
                     $scope.effectWikiImage = effectData.data.query.pages[0].thumbnail.source;
                 } else {
-                    var error = 'Wiki not found for ' + $scope.state.requestParams.effectVariableName;
+                    var error = 'Wiki not found for ' + $scope.outcomeVariableName;
                     if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, error, {}, "error"); }
                     console.error(error);
                 }
