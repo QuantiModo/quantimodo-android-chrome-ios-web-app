@@ -236,7 +236,18 @@ angular.module('starter')
 				variableObject.unitName = measurements[0].abbreviatedUnitName;
 			}
 			var hourlyMeasurementArray = this.generateHourlyMeasurementArray(measurements);
-			if(hourlyMeasurementArray.length < 3){
+			var count = 0;
+			for(var i = 0; i < hourlyMeasurementArray.length; ++i){
+				if(hourlyMeasurementArray[i]) {
+					count++;
+				}
+			}
+
+			if(variableObject.name.toLowerCase().indexOf('daily') !== -1){
+				console.debug('Not showing hourly chart because variable name contains daily');
+				return false;
+			}
+			if(count < 3){
 				console.debug('Not showing hourly chart because we have less than 3 hours with measurements');
 				return false;
 			}
