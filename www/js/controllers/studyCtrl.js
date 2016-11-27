@@ -1,6 +1,7 @@
 angular.module('starter')
 	.controller('StudyCtrl', function($scope, $state, QuantiModo, $stateParams, $ionicHistory, $rootScope,
-                                      correlationService, chartService, $timeout, $ionicLoading, localStorageService) {
+                                      correlationService, chartService, $timeout, $ionicLoading, localStorageService,
+                                      wikipediaFactory) {
 
 		$scope.controller_name = "StudyCtrl";
         
@@ -28,6 +29,7 @@ angular.module('starter')
                     effectVariableName: $scope.correlationObject.effectVariableName
                 };
                 $scope.state.title = $scope.correlationObject.predictorExplanation;
+                addWikipediaInfo();
                 if($scope.correlationObject.userId){
                     createUserCharts($scope.state.requestParams);
                 }
@@ -48,13 +50,81 @@ angular.module('starter')
                     fallbackToUserStudy = true;
                 }
                 getAggregateStudy($scope.state.requestParams, fallbackToUserStudy);
+                addWikipediaInfo();
             } else {
                 var fallbackToAggregateStudy = true;
                 getUserStudy($scope.state.requestParams, fallbackToAggregateStudy);
+                addWikipediaInfo();
             }
 
             //chartCorrelationsOverTime();
         };
+
+        function addWikipediaInfo() {
+            $scope.causeWikiEntry = null;
+            $scope.causeWikiImage = null;
+            $scope.effectWikiEntry = null;
+            $scope.effectWikiImage = null;
+
+            var causeSearchTerm = $scope.correlationObject.causeVariableCommonAlias;
+            if(!causeSearchTerm){
+                causeSearchTerm = $scope.state.requestParams.causeVariableName;
+            }
+
+            wikipediaFactory.searchArticlesByTitle({
+                term: causeSearchTerm, // Searchterm
+                //lang: '<LANGUAGE>', // (optional) default: 'en'
+                //gsrlimit: '<GS_LIMIT>', // (optional) default: 10. valid values: 0-500
+                pithumbsize: '200', // (optional) default: 400
+                //pilimit: '<PAGE_IMAGES_LIMIT>', // (optional) 'max': images for all articles, otherwise only for the first
+                exlimit: '1', // (optional) 'max': extracts for all articles, otherwise only for the first
+                exintro: '1', // (optional) '1': if we just want the intro, otherwise it shows all sections
+            }).then(function (causeData) {
+                if(causeData.data.query) {
+                    $scope.causeWikiEntry = causeData.data.query.pages[0].extract;
+                    //$scope.correlationObject.studyBackground = $scope.correlationObject.studyBackground + '<br>' + $scope.causeWikiEntry;
+                    $scope.causeWikiImage = causeData.data.query.pages[0].thumbnail.source;
+                    //on success
+                } else {
+                    var error = 'Wiki not found for ' + causeSearchTerm;
+                    if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, error, {}, "error"); }
+                    console.error(error);
+                }
+            }).catch(function (error) {
+                console.error(error);
+                //on error
+            });
+
+            var effectSearchTerm = $scope.correlationObject.effectVariableCommonAlias;
+            if(!effectSearchTerm){
+                effectSearchTerm = $scope.state.requestParams.effectVariableName;
+            }
+
+            wikipediaFactory.searchArticlesByTitle({
+                term: effectSearchTerm, // Searchterm
+                //lang: '<LANGUAGE>', // (optional) default: 'en'
+                //gsrlimit: '<GS_LIMIT>', // (optional) default: 10. valid values: 0-500
+                pithumbsize: '200', // (optional) default: 400
+                //pilimit: '<PAGE_IMAGES_LIMIT>', // (optional) 'max': images for all articles, otherwise only for the first
+                exlimit: '1', // (optional) 'max': extracts for all articles, otherwise only for the first
+                exintro: '1', // (optional) '1': if we just want the intro, otherwise it shows all sections
+            }).then(function (effectData) {
+                if(effectData.data.query){
+                    $scope.effectWikiEntry = effectData.data.query.pages[0].extract;
+                    //$scope.correlationObject.studyBackground = $scope.correlationObject.studyBackground + '<br>' + $scope.effectWikiEntry;
+                    $scope.effectWikiImage = effectData.data.query.pages[0].thumbnail.source;
+                } else {
+                    var error = 'Wiki not found for ' + effectSearchTerm;
+                    if (typeof Bugsnag !== "undefined") { Bugsnag.notify(error, error, {}, "error"); }
+                    console.error(error);
+                }
+
+                //on success
+            }).catch(function (error) {
+                console.error(error);
+                //on error
+            });
+        }
 
         function createUserCharts(params) {
             $scope.loadingCharts = true;

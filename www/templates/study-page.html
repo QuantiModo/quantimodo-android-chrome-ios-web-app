@@ -24,18 +24,43 @@
                 <highchart ng-show="causeTimelineChartConfig" id="causeTimeline" config="causeTimelineChartConfig"></highchart>
                 <highchart ng-show="effectTimelineChartConfig" id="effectTimeline" config="effectTimelineChartConfig"></highchart>
                 <highchart ng-show="scatterplotChartConfig" id="scatterplot" config="scatterplotChartConfig"></highchart>
-                <h3 ng-show="correlationObject.studyBackground" id="studyBackground">Study Background</h3>
-                   <p>{{correlationObject.studyBackground}}</p><br>
-                <h3 ng-show="correlationObject.studyObjective" id="studyObjective">Study Objective</h3>
-                   <p>{{correlationObject.studyObjective}}</p><br>
-                <h3 ng-show="correlationObject.studyDesign" id="studyDesign">Study Design</h3>
-                   <p>{{correlationObject.studyDesign}}</p><br>
-                <h3 ng-show="correlationObject.dataAnalysis" id="dataAnalysis">Data Analysis</h3>
-                   <p>{{correlationObject.dataAnalysis}}</p><br>
-                <h3 ng-show="correlationObject.dataSources" id="dataSources">Data Sources</h3>
-                   <p ng-bind-html="correlationObject.dataSources"></p><br>
-                <h3 ng-show="correlationObject.studyLimitations" id="studyLimitations">Study Limitations</h3>
-                    <p>{{correlationObject.studyLimitations}}</p><br>
+                <div id="studyBody" >
+                    <h3 id="studyBackground">Study Background</h3>
+                       <p ng-bind-html="correlationObject.studyBackground" style="text-align: justify"></p>
+                    <br>
+
+                    <div>
+                        <div ng-if="causeWikiImage" style="width: 100%">
+                            <img hspace="20" style="float:right; padding: 5px" ng-show="causeWikiImage" ng-src="{{causeWikiImage}}" >
+                        </div>
+                        <div ng-if="causeWikiEntry">
+                            <p ng-bind-html="causeWikiEntry" style="text-align: left"></p>
+                        </div>
+                    </div>
+                    <br>
+                    <div>
+                        <div ng-if="effectWikiImage" style="width: 100%">
+                            <img hspace="20" style="float:right; padding: 5px" ng-show="effectWikiImage" ng-src="{{effectWikiImage}}" >
+                        </div>
+                        <div ng-if="effectWikiEntry">
+                            <p ng-bind-html="effectWikiEntry" style="text-align: left"></p>
+                        </div>
+                    </div>
+                    <br>
+                    <h3 ng-show="correlationObject.studyObjective" id="studyObjective">Study Objective</h3>
+                       <p>{{correlationObject.studyObjective}}</p><br>
+                    <h3 ng-show="correlationObject.studyDesign" id="studyDesign">Study Design</h3>
+                       <p>{{correlationObject.studyDesign}}</p><br>
+                    <h3 ng-show="correlationObject.dataAnalysis" id="dataAnalysis">Data Analysis</h3>
+                       <p>{{correlationObject.dataAnalysis}}</p><br>
+                    <h3 ng-show="correlationObject.dataSources" id="dataSources">Data Sources</h3>
+                       <p ng-bind-html="correlationObject.dataSources"></p><br>
+                    <h3 ng-show="correlationObject.studyLimitations" id="studyLimitations">Study Limitations</h3>
+                        <p>{{correlationObject.studyLimitations}}</p><br>
+                    <br>
+                    <br>
+                    <br>
+                </div>
             </div>
             <highchart ng-show="lineChartConfig" id="chart2" config="lineChartConfig"></highchart>
             <div class="list card"  ng-if="state.studyNotFound">

@@ -17,7 +17,8 @@ angular.module('starter',
         'ng-mfb',
         //'templates',
         'fabric',
-        'ngCordovaOauth'
+        'ngCordovaOauth',
+        'jtt_wikipedia'
     ]
 )
 
