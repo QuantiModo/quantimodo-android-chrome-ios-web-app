@@ -382,6 +382,7 @@ angular.module('starter')
         };
 
         $scope.updateApp = function () {
+            var message;
             if(!$rootScope.isMobile){
                 console.debug("Cannot update app because platform is not mobile");
                 return;
@@ -391,16 +392,22 @@ angular.module('starter')
                     $ionicDeploy.channel = 'staging';
                 } else {
                     $ionicDeploy.channel = 'production';
-                    console.debug('Not updating because user is not signed up for preview builds');
+                    message = 'Not updating because user is not signed up for preview builds';
+                    console.debug(message);
+                    if (typeof Bugsnag !== "undefined") { Bugsnag.notify(message, message, {}, "error"); }
                     return;
                 }
                 console.debug('Checking for new snapshot');
                 $ionicDeploy.check().then(function(snapshotAvailable) {
                     if (snapshotAvailable) {
-                        console.debug('New snapshot available');
+                        message = 'New snapshot available';
+                        console.debug(message);
+                        if (typeof Bugsnag !== "undefined") { Bugsnag.notify(message, message, {}, "error"); }
                         // When snapshotAvailable is true, you can apply the snapshot
                         $ionicDeploy.download().then(function() {
-                            console.debug('Downloaded new version');
+                            message = 'Downloaded new version';
+                            console.debug(message);
+                            if (typeof Bugsnag !== "undefined") { Bugsnag.notify(message, message, {}, "error"); }
                             /*$ionicPopup.alert({
                                 title: 'Registration Successful',
                                 //template: "Wait a few seconds for extract and restart app to update."
@@ -412,7 +419,9 @@ angular.module('starter')
                             title: 'Not Updating',
                             template: "No new snapshot available"
                         });*/
-                        console.debug('No new snapshot available');
+                        message = 'No new snapshot available';
+                        console.debug(message);
+                        if (typeof Bugsnag !== "undefined") { Bugsnag.notify(message, message, {}, "error"); }
                     }
                 });
             });
