@@ -10,7 +10,7 @@ function isUserLoggedIn(resultListener)
 	var xhr = new XMLHttpRequest();
 	var url = "https://app.quantimo.do/api/user/me";
 	if(localStorage.accessToken){
-		url = url + '?acesss_token=' + localStorage.accessToken;
+		url = url + '?access_token=' + localStorage.accessToken;
 	}
 	xhr.open("GET", url, false);
 	xhr.onreadystatechange = function()
@@ -152,7 +152,7 @@ function pushMeasurements(measurements, onDoneListener)
 	var xhr = new XMLHttpRequest();
 	var url = "https://app.quantimo.do/api/measurements/v2";
 	if(localStorage.accessToken){
-		url = url + '?acesss_token=' + localStorage.accessToken;
+		url = url + '?access_token=' + localStorage.accessToken;
 	}
 	xhr.open("POST", url, true);
 	xhr.onreadystatechange = function()
@@ -207,7 +207,7 @@ function showInboxPopupOrNotificationIfWeHaveWaitingOnes(alarm)
     var xhr = new XMLHttpRequest();
 	var url = "https://app.quantimo.do:443/api/v1/trackingReminderNotifications/past";
 	if(localStorage.accessToken){
-		url = url + '?acesss_token=' + localStorage.accessToken;
+		url = url + '?access_token=' + localStorage.accessToken;
 	}
     xhr.open("GET", url, false);
 
