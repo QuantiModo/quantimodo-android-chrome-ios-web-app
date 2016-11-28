@@ -101,8 +101,17 @@ angular.module('starter')
         };
 
         $rootScope.setLocalStorageFlagTrue = function (flagName) {
+            console.debug('Set ' + flagName + ' to true');
             $rootScope[flagName] = true;
             localStorageService.setItem(flagName, true);
+        };
+
+        $rootScope.hideHelpCard = function (card) {
+            card.hide = true;
+            $rootScope.defaultHelpCards = $rootScope.defaultHelpCards.filter(function( obj ) {
+                return obj.id !== card.id;
+            });
+            localStorageService.deleteElementOfItemById('defaultHelpCards', card.id);
         };
 
         // open datepicker for "from" date

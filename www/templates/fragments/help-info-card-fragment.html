@@ -1,0 +1,37 @@
+<div class="card" ng-if="!card.hide">
+    <div class="item item-avatar">
+        <i class="{{card.iconClass}}"
+           style="position: absolute;
+							top: 15px;
+							left: 15px;
+							font-size: 36px;
+							max-width: 40px;
+							max-height: 40px;
+							width: 100%;
+							border-radius: 4px;"
+        ></i>
+        <p style="  text-align: center;
+					  height: 40px;
+					  line-height: 40px;
+					  white-space: nowrap;
+					  color: black;
+					font-size: 18px;">
+           {{card.title}}
+        </p>
+    </div>
+    <div class="item item-body" style="text-align: center;">
+        {{card.bodyText}}
+    </div>
+    <!--buttons: <pre>{{card.buttons|json}}</pre>-->
+    <div ng-repeat="button in card.buttons" >
+        <!--button: <pre>{{button|json}}</pre>-->
+        <div class="row" >
+            <div class="button-bar">
+                <button class="{{button.buttonClass}}" style="font-size: 14px;"
+                        ng-click="{{button.clickFunctionCall}}">
+                    <i class="{{button.buttonIconClass}}"> &nbsp; {{button.buttonText}} &nbsp;</i>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
