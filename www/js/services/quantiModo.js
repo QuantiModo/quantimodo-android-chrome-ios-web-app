@@ -821,6 +821,7 @@ angular.module('starter')
             if($rootScope.accessTokenInUrl){
                 localStorageService.setItem('accessTokenInUrl', $rootScope.accessTokenInUrl);
                 localStorageService.setItem('accessToken', $rootScope.accessTokenInUrl);
+                localStorage.accessToken = $rootScope.accessTokenInUrl;  // This is for Chrome extension
                 $rootScope.accessToken = $rootScope.accessTokenInUrl;
             } else {
                 localStorageService.deleteItem('accessTokenInUrl');
@@ -912,6 +913,7 @@ angular.module('starter')
             if (accessToken) {
                 $rootScope.accessToken = accessToken;
                 localStorageService.setItem('accessToken', accessToken);
+                localStorage.accessToken = accessToken;   // This is for Chrome extension
             } else {
                 console.error('No access token provided to QuantiModo.saveAccessTokenInLocalStorage');
                 return;
