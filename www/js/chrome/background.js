@@ -208,9 +208,9 @@ function showInboxPopupOrNotificationIfWeHaveWaitingOnes(alarm)
 
 				var showNotification = localStorage.showNotification == "true";
 				if(showNotification){
-					openPopup(notificationId);
-				} else {
 					chrome.notifications.create(notificationId, notificationParams, function(id){});
+				} else {
+					openPopup(notificationId);
 				}
             } else {
 				chrome.browserAction.setBadgeText({text: ""});
