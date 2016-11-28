@@ -46,7 +46,16 @@
                         border-radius: 4px;"
                     ></i>-->
                     <img ng-src="{{correlationObject.causeVariableImageUrl}}">
-                    <p ng-click="goToStudyPage(correlationObject)"
+                    <p ng-if="state.requestParams.causeVariableName" ng-click="goToStudyPage(correlationObject)"
+                       style="
+                            height: 40px;
+                            line-height: 40px;
+                            white-space: nowrap;
+                            color: black;
+                            font-size: 18px;">
+                        {{correlationObject.effectVariableName}}
+                    </p>
+                    <p ng-if="state.requestParams.effectVariableName" ng-click="goToStudyPage(correlationObject)"
                             style="
                             height: 40px;
                             line-height: 40px;

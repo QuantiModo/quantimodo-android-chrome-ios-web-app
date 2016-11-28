@@ -112,19 +112,43 @@ angular.module('starter')
         };
         
         function setupUserPredictors() {
-            $scope.state.explanationHeader = "Your Top Predictors";
-            $scope.state.explanationIcon = "ion-ios-person";
-            $scope.state.explanationText = 'These factors are most predictive of ' + $scope.state.increasingDecreasing +
-                ' your ' + $rootScope.variableName + ' based on your own data.  ' +
-            'Want more accurate results? Add some reminders and start tracking!';
+            if($scope.state.requestParams.effectVariableName){
+                $scope.state.explanationHeader = "Your Top Predictors";
+                $scope.state.explanationIcon = "ion-ios-person";
+                $scope.state.explanationText = 'These factors are most predictive of ' + $scope.state.increasingDecreasing +
+                    ' your ' + $rootScope.variableName + ' based on your own data.  ' +
+                    'Want more accurate results? Add some reminders and start tracking!';
+            } else {
+                setupUserOutcomes();
+            }
         }
 
         function setupAggregatedPredictors() {
-            $scope.state.explanationHeader = "Common Predictors";
+            if($scope.state.requestParams.effectVariableName){
+                $scope.state.explanationHeader = "Common Predictors";
+                $scope.state.explanationIcon = "ion-ios-people";
+                $scope.state.explanationText = 'These factors are most predictive of ' + $scope.state.increasingDecreasing +
+                    ' ' + $rootScope.variableName + ' for the average QuantiModo user.  ' +
+                'Want PERSONALIZED results? Add some reminders and start tracking!';
+            } else {
+                setupAggregatedOutcomes();
+            }
+        }
+
+        function setupUserOutcomes() {
+            $scope.state.explanationHeader = "Your Top Outcomes";
+            $scope.state.explanationIcon = "ion-ios-person";
+            $scope.state.explanationText = 'These are the outcomes most likely to be influenced by ' + $scope.state.increasingDecreasing +
+                ' your ' + $rootScope.variableName + ' based on your own data.  ' +
+                'Want more accurate results? Add some reminders and start tracking!';
+        }
+
+        function setupAggregatedOutcomes() {
+            $scope.state.explanationHeader = "Common Outcomes";
             $scope.state.explanationIcon = "ion-ios-people";
-            $scope.state.explanationText = 'These factors are most predictive of ' + $scope.state.increasingDecreasing +
+            $scope.state.explanationText = 'These are the outcomes most likely to be influenced by ' + $scope.state.increasingDecreasing +
                 ' ' + $rootScope.variableName + ' for the average QuantiModo user.  ' +
-            'Want PERSONALIZED results? Add some reminders and start tracking!';
+                'Want PERSONALIZED results? Add some reminders and start tracking!';
         }
 
         $scope.init = function(){
@@ -164,17 +188,22 @@ angular.module('starter')
                 $rootScope.variableName = $scope.state.requestParams.effectVariableName;
             }
 
-            if($stateParams.valence === 'positive'){
-                $scope.state.increasingDecreasing = 'INCREASING';
-                $scope.state.requestParams.correlationCoefficient = "(gt)0";
-                $scope.state.title = "Positive Predictors";
-            } else if($stateParams.valence === 'negative'){
-                $scope.state.increasingDecreasing = 'DECREASING';
-                $scope.state.requestParams.correlationCoefficient = "(lt)0";
-                $scope.state.title = "Negative Predictors";
+            if($scope.state.requestParams.effectVariableName){
+                if($stateParams.valence === 'positive'){
+                    $scope.state.increasingDecreasing = 'INCREASING';
+                    $scope.state.requestParams.correlationCoefficient = "(gt)0";
+                    $scope.state.title = "Positive Predictors";
+                } else if($stateParams.valence === 'negative'){
+                    $scope.state.increasingDecreasing = 'DECREASING';
+                    $scope.state.requestParams.correlationCoefficient = "(lt)0";
+                    $scope.state.title = "Negative Predictors";
+                } else {
+                    $scope.state.title = "Predictors";
+                }
             } else {
-                $scope.state.title = "Predictors";
+                $scope.state.title = "Outcomes";
             }
+
 
             if($stateParams.aggregated){
                 populateAggregatedCorrelationList();
