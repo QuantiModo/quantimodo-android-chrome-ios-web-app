@@ -56,7 +56,7 @@ chrome.alarms.onAlarm.addListener(function(alarm)
 {
 	console.debug('onAlarm Listener heard this alarm ', alarm);
 
-	showNotificationForAlarm(alarm);
+	showInboxPopupOrNotificationIfWeHaveWaitingOnes(alarm);
 
 });
 
@@ -165,8 +165,26 @@ function objectLength(obj) {
     return result;
 }
 
-function showInboxNotificationIfWeHaveWaitingOnes(alarm)
+function showInboxPopupOrNotificationIfWeHaveWaitingOnes(alarm)
 {
+	console.debug('showNotificationOrPopupForAlarm alarm: ', alarm);
+
+	var notificationParams = {
+		type: "basic",
+		title: "How are you?",
+		message: "Click to open reminder inbox",
+		iconUrl: "www/img/icons/icon_700.png",
+		priority: 2
+	};
+
+	if (IsJsonString(alarm.name)) {
+		console.debug('alarm.name IsJsonString', alarm);
+		var trackingReminder = JSON.parse(alarm.name);
+		notificationParams.title = 'Time to track ' + trackingReminder.variableName + '!';
+		notificationParams.message = 'Click to add measurement';
+	} else {
+		console.debug('alarm.name is not a json object', alarm);
+	}
 
     var xhr = new XMLHttpRequest();
     xhr.open("GET", "https://app.quantimo.do:443/api/v1/trackingReminderNotifications", false);
@@ -210,40 +228,4 @@ function IsJsonString(str) {
         return false;
     }
     return true;
-}
-
-function showNotificationForAlarm(alarm){
-
-	console.debug('showNotificationForAlarm alarm: ', alarm);
-
-	var notificationParams = {
-		type: "basic",
-		title: "How are you?",
-		message: "Click to open reminder inbox",
-		iconUrl: "www/img/icons/icon_700.png",
-		priority: 2
-	};
-
-    var notificationId = "trackingInboxNotification";
-
-	if(alarm.name === "genericTrackingReminderNotificationAlarm"){
-		showInboxNotificationIfWeHaveWaitingOnes(alarm);
-	} else if (IsJsonString(alarm.name)) {
-		console.debug('alarm.name IsJsonString', alarm);
-		var trackingReminder = JSON.parse(alarm.name);
-		notificationParams.title = 'Time to track ' + trackingReminder.variableName + '!';
-		notificationParams.message = 'Click to add measurement';
-        notificationId = alarm.name;
-	} else {
-		console.debug('alarm.name is not a json object', alarm);
-	}
-
-	console.debug('notificationParams: ', notificationParams);
-
-	var showNotification = localStorage.showNotification == "true";
-	if(showNotification) {
-		chrome.notifications.create(notificationId, notificationParams, function(id){});
-	} else {
-		openPopup(notificationId);
-	}
 }
