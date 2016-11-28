@@ -187,7 +187,7 @@ function showInboxPopupOrNotificationIfWeHaveWaitingOnes(alarm)
 	}
 
     var xhr = new XMLHttpRequest();
-    xhr.open("GET", "https://app.quantimo.do:443/api/v1/trackingReminderNotifications", false);
+    xhr.open("GET", "https://app.quantimo.do:443/api/v1/trackingReminderNotifications/past", false);
     xhr.onreadystatechange = function()
     {
         if (xhr.readyState === 4)
